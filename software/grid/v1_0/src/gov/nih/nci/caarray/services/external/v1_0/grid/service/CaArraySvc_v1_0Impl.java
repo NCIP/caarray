@@ -44,6 +44,8 @@ import org.oasis.wsrf.faults.BaseFaultTypeDescription;
 
 import com.healthmarketscience.rmiio.RemoteInputStream;
 import com.healthmarketscience.rmiio.RemoteInputStreamClient;
+import gov.nih.nci.caarray.services.external.v1_0.InvalidInputException;
+import gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.InvalidInputFault;
 
 /**
  * Implementation of the v1.0 of the CaArray grid service
@@ -108,9 +110,7 @@ public class CaArraySvc_v1_0Impl extends CaArraySvc_v1_0ImplBase {
   public gov.nih.nci.caarray.external.v1_0.query.SearchResult searchForExperiments(gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria criteria,gov.nih.nci.caarray.external.v1_0.query.LimitOffset limitOffset) throws RemoteException, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.UnsupportedCategoryFault, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.IncorrectEntityTypeFault, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.NoEntityMatchingReferenceFault {
         try {
             return getCaArrayServer().getSearchService().searchForExperiments(criteria, limitOffset);
-        } catch (InvalidReferenceException e) {
-            throw toFault(e);
-        } catch (UnsupportedCategoryException e) {
+        } catch (InvalidInputException e) {
             throw toFault(e);
         } 
     }
@@ -156,7 +156,7 @@ public class CaArraySvc_v1_0Impl extends CaArraySvc_v1_0ImplBase {
   }
 
   private TransferServiceContextReference stageFileContentsWithRmiStream(CaArrayServer server,
-            CaArrayEntityReference fileRef, boolean compress) throws InvalidReferenceFault, DataStagingFault {
+            CaArrayEntityReference fileRef, boolean compress) throws InvalidInputFault, DataStagingFault {
       try {
           TransferServiceContextReference ref = null;
           java.io.File retrievedFile = getDataUtils().downloadFileContentsToTempFile(fileRef, compress);
@@ -170,7 +170,7 @@ public class CaArraySvc_v1_0Impl extends CaArraySvc_v1_0ImplBase {
           throw mapExceptionToFault(e, DataStagingFault.class);
       } catch (IOException e) {
           throw mapExceptionToFault(e, DataStagingFault.class);
-    }
+      }
   }
 
   public gov.nih.nci.caarray.external.v1_0.data.DataSet getDataSet(gov.nih.nci.caarray.external.v1_0.query.DataSetRequest dataSetRequest) throws RemoteException, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.InconsistentDataSetsFault, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.NoEntityMatchingReferenceFault, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.IncorrectEntityTypeFault {
@@ -192,9 +192,9 @@ public class CaArraySvc_v1_0Impl extends CaArraySvc_v1_0ImplBase {
   public gov.nih.nci.caarray.external.v1_0.query.SearchResult searchForFiles(gov.nih.nci.caarray.external.v1_0.query.FileSearchCriteria criteria,gov.nih.nci.caarray.external.v1_0.query.LimitOffset limitOffset) throws RemoteException, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.IncorrectEntityTypeFault, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.NoEntityMatchingReferenceFault {
       try {
           return getCaArrayServer().getSearchService().searchForFiles(criteria, limitOffset);
-        } catch (InvalidReferenceException e) {
-            throw toFault(e);
-        }
+      } catch (InvalidInputException e) {
+          throw toFault(e);
+      }
   }
 
   @SuppressWarnings("unchecked")
@@ -206,9 +206,7 @@ public class CaArraySvc_v1_0Impl extends CaArraySvc_v1_0ImplBase {
   public gov.nih.nci.caarray.external.v1_0.query.SearchResult searchForBiomaterials(gov.nih.nci.caarray.external.v1_0.query.BiomaterialSearchCriteria criteria,gov.nih.nci.caarray.external.v1_0.query.LimitOffset limitOffset) throws RemoteException, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.IncorrectEntityTypeFault, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.NoEntityMatchingReferenceFault, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.UnsupportedCategoryFault {
       try {
           return getCaArrayServer().getSearchService().searchForBiomaterials(criteria, limitOffset);
-        } catch (InvalidReferenceException e) {
-            throw toFault(e);
-        } catch (UnsupportedCategoryException e) {
+        } catch (InvalidInputException e) {
             throw toFault(e);
         }
   }
@@ -217,7 +215,7 @@ public class CaArraySvc_v1_0Impl extends CaArraySvc_v1_0ImplBase {
   public gov.nih.nci.caarray.external.v1_0.query.SearchResult searchForHybridizations(gov.nih.nci.caarray.external.v1_0.query.HybridizationSearchCriteria criteria,gov.nih.nci.caarray.external.v1_0.query.LimitOffset limitOffset) throws RemoteException, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.IncorrectEntityTypeFault, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.NoEntityMatchingReferenceFault {
       try {
           return getCaArrayServer().getSearchService().searchForHybridizations(criteria, limitOffset);
-        } catch (InvalidReferenceException e) {
+        } catch (InvalidInputException e) {
             throw toFault(e);
         } 
   }
@@ -243,7 +241,7 @@ public class CaArraySvc_v1_0Impl extends CaArraySvc_v1_0ImplBase {
             is = RemoteInputStreamClient.wrap(ris);
             IOUtils.copy(is, fos);
             return TransferServiceHelper.createTransferContext(file, null, true);
-        } catch (InvalidReferenceException e) {
+        } catch (InvalidInputException e) {
             throw toFault(e);
         } catch (DataTransferException e) {
             throw mapExceptionToFault(e, DataStagingFault.class);
@@ -263,20 +261,24 @@ public class CaArraySvc_v1_0Impl extends CaArraySvc_v1_0ImplBase {
         try {
             List<QuantitationType> types = getCaArrayServer().getSearchService().searchForQuantitationTypes(criteria);
             return types.toArray(new QuantitationType[types.size()]);
-        } catch (InvalidReferenceException e) {
+        } catch (InvalidInputException e) {
             throw toFault(e);
         }
   }
 
   @SuppressWarnings("unchecked")
   public gov.nih.nci.caarray.external.v1_0.query.SearchResult searchByExample(gov.nih.nci.caarray.external.v1_0.query.ExampleSearchCriteria criteria,gov.nih.nci.caarray.external.v1_0.query.LimitOffset limitOffset) throws RemoteException {
-      return getCaArrayServer().getSearchService().searchByExample(criteria, limitOffset);
+      try {
+        return getCaArrayServer().getSearchService().searchByExample(criteria, limitOffset);
+      } catch (InvalidInputException e) {
+          throw toFault(e);
+      }
   }
   
   public gov.nih.nci.caarray.external.v1_0.sample.AnnotationSet getAnnotationSet(gov.nih.nci.caarray.external.v1_0.query.AnnotationSetRequest request) throws RemoteException, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.IncorrectEntityTypeFault, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.NoEntityMatchingReferenceFault {
       try {
         return getCaArrayServer().getSearchService().getAnnotationSet(request);
-    } catch (InvalidReferenceException e) {
+    } catch (InvalidInputException e) {
         throw toFault(e);
     }
   }
@@ -285,7 +287,7 @@ public class CaArraySvc_v1_0Impl extends CaArraySvc_v1_0ImplBase {
       try {
           List<Term> terms = getCaArrayServer().getSearchService().getTermsForCategory(categoryRef, valuePrefix);
           return terms.toArray(new Term[terms.size()]);
-      } catch (InvalidReferenceException e) {
+      } catch (InvalidInputException e) {
           throw toFault(e);
       }
   }
@@ -294,29 +296,34 @@ public class CaArraySvc_v1_0Impl extends CaArraySvc_v1_0ImplBase {
       try {
           List<Category> categories = getCaArrayServer().getSearchService().getAllCharacteristicCategories(experimentRef);
           return categories.toArray(new Category[categories.size()]);
-      } catch (InvalidReferenceException e) {
+      } catch (InvalidInputException e) {
           throw toFault(e);
       }
   }
   
-  private InvalidReferenceFault toFault(InvalidReferenceException e) {
-      InvalidReferenceFault fault;
-      if (e instanceof NoEntityMatchingReferenceException) {
-          fault = mapExceptionToFault(e, NoEntityMatchingReferenceFault.class);
-      } else if (e instanceof IncorrectEntityTypeException) {
-          fault = mapExceptionToFault(e, IncorrectEntityTypeFault.class);
-      } else {
-          fault = mapExceptionToFault(e, InvalidReferenceFault.class);
-      }
-      fault.setCaArrayEntityReference(e.getReference());
-      return fault;
-  }
+    private InvalidInputFault toFault(InvalidInputException e) {
+        InvalidInputFault fault;
+        if (e instanceof InvalidReferenceException){
+            InvalidReferenceFault tmp;
+            if (e instanceof NoEntityMatchingReferenceException) {
+                tmp = mapExceptionToFault(e, NoEntityMatchingReferenceFault.class);
+            } else if (e instanceof IncorrectEntityTypeException) {
+                tmp = mapExceptionToFault(e, IncorrectEntityTypeFault.class);
+            } else {
+                tmp = mapExceptionToFault(e, InvalidReferenceFault.class);
+            }
+            tmp.setCaArrayEntityReference(((InvalidReferenceException)e).getReference());
+            fault = tmp;
+        } else if (e instanceof UnsupportedCategoryException){
+            fault = mapExceptionToFault(e, UnsupportedCategoryFault.class);
+        } else {
+            fault = mapExceptionToFault(e, InvalidInputFault.class);
+        }
+      
+        return fault;
+    }
 
-  private UnsupportedCategoryFault toFault(UnsupportedCategoryException e) {
-      UnsupportedCategoryFault fault = mapExceptionToFault(e, UnsupportedCategoryFault.class);
-      fault.setCaArrayEntityReference(e.getCategory());
-      return fault;
-  }
+  
 
   private <T extends BaseFaultType> T mapExceptionToFault(Exception e, Class<T> faultType) {
         try {

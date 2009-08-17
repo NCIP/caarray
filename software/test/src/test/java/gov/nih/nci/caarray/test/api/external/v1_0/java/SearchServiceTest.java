@@ -47,6 +47,7 @@ import gov.nih.nci.caarray.external.v1_0.value.UserDefinedValue;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.Category;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.Term;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.TermSource;
+import gov.nih.nci.caarray.services.external.v1_0.InvalidInputException;
 import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
 import gov.nih.nci.caarray.services.external.v1_0.UnsupportedCategoryException;
 import gov.nih.nci.caarray.services.external.v1_0.search.SearchService;
@@ -103,28 +104,28 @@ public class SearchServiceTest extends AbstractExternalJavaApiTest {
     /////////////////////////////////////////////////////////////
 
     @Test(expected = InvalidReferenceException.class)
-    public void testGetAllCharacteristicCategories_NonEx() throws InvalidReferenceException {
+    public void testGetAllCharacteristicCategories_NonEx() throws InvalidInputException {
         logForSilverCompatibility(TEST_NAME, "testGetAllCharacteristicCategories_NonEx");
         String qtid = "URN:LSID:gov.nih.nci.caarray.external.v1_0.data.QuantitationType:1";
         service.getAllCharacteristicCategories(new CaArrayEntityReference(qtid));
     }
 
     @Test(expected = InvalidReferenceException.class)
-    public void testGetAllCharacteristicCategories_Bad() throws InvalidReferenceException {
+    public void testGetAllCharacteristicCategories_Bad() throws InvalidInputException {
         logForSilverCompatibility(TEST_NAME, "testGetAllCharacteristicCategories_Bad");
         String qtid = "foo";
         service.getAllCharacteristicCategories(new CaArrayEntityReference(qtid));
     }
 
     @Test
-    public void testGetAllCharacteristicCategories_All() throws InvalidReferenceException {
+    public void testGetAllCharacteristicCategories_All() throws InvalidInputException {
         logForSilverCompatibility(TEST_NAME, "testGetAllCharacteristicCategories_All");
         List<Category> l = service.getAllCharacteristicCategories(null);
         assertEquals(9, l.size());
     }
 
     @Test
-    public void testGetAllCharacteristicCategories_Ex() throws InvalidReferenceException {
+    public void testGetAllCharacteristicCategories_Ex() throws InvalidInputException {
         logForSilverCompatibility(TEST_NAME, "testGetAllCharacteristicCategories_Ex");
         String type = gov.nih.nci.caarray.external.v1_0.experiment.Experiment.class.getName();
         String eid = "URN:LSID:" + type + ":1";
@@ -136,25 +137,20 @@ public class SearchServiceTest extends AbstractExternalJavaApiTest {
     /////////////////////////////////////////////////////
 
     @Test(expected = InvalidReferenceException.class)
-    public void testGetTermsForCategory_NonCategory() throws InvalidReferenceException {
+    public void testGetTermsForCategory_NonCategory() throws InvalidInputException {
         logForSilverCompatibility(TEST_NAME, "testGetTermsForCategory_NonCategory");
         String qtid = "URN:LSID:gov.nih.nci.caarray.external.v1_0.data.QuantitationType:1";
         service.getTermsForCategory(new CaArrayEntityReference(qtid), null);
     }
 
-    @Test
-    public void testGetTermsForCategory_Null() throws InvalidReferenceException {
+    @Test(expected = InvalidInputException.class)
+    public void testGetTermsForCategory_Null() throws InvalidInputException {
         logForSilverCompatibility(TEST_NAME, "testGetTermsForCategory_Null");
-        try{
-            service.getTermsForCategory(null, null);
-            fail("should fail");
-        } catch(EJBException e) {
-            assertEquals(NullPointerException.class, e.getCausedByException().getClass());
-        }
+        service.getTermsForCategory(null, null);
     }
 
     @Test
-    public void testGetTermsForCategory_Category() throws InvalidReferenceException {
+    public void testGetTermsForCategory_Category() throws InvalidInputException {
         logForSilverCompatibility(TEST_NAME, "testGetTermsForCategory_Category");
         String cid = "URN:LSID:"+Category.class.getName()+":231"; // DerivedBioAssayType
         List<Term> l = service.getTermsForCategory(new CaArrayEntityReference(cid), null);
@@ -181,7 +177,7 @@ public class SearchServiceTest extends AbstractExternalJavaApiTest {
     }
 
     @Test
-    public void testGetTermsForCategory_CategoryAndPrefix() throws InvalidReferenceException {
+    public void testGetTermsForCategory_CategoryAndPrefix() throws InvalidInputException {
         logForSilverCompatibility(TEST_NAME, "testGetTermsForCategory_CategoryAndPrefix");
         String cid = "URN:LSID:"+Category.class.getName()+":231"; // DerivedBioAssayType
         String prefix = "a";
@@ -195,7 +191,7 @@ public class SearchServiceTest extends AbstractExternalJavaApiTest {
     ////////////////////////////////////////////////////
 
     @Test
-    public void testsearchForBiomaterials_All() throws InvalidReferenceException, UnsupportedCategoryException {
+    public void testsearchForBiomaterials_All() throws InvalidInputException {
         logForSilverCompatibility(TEST_NAME, "testsearchForBiomaterials_All");
 
         BiomaterialSearchCriteria bisc = new BiomaterialSearchCriteria();
@@ -228,7 +224,7 @@ public class SearchServiceTest extends AbstractExternalJavaApiTest {
     }
 
     @Test
-    public void testsearchForBiomaterials_Limit() throws InvalidReferenceException, UnsupportedCategoryException {
+    public void testsearchForBiomaterials_Limit() throws InvalidInputException {
         logForSilverCompatibility(TEST_NAME, "testsearchForBiomaterials_Limit");
 
         BiomaterialSearchCriteria bisc = new BiomaterialSearchCriteria();
@@ -264,7 +260,7 @@ public class SearchServiceTest extends AbstractExternalJavaApiTest {
     }
 
     @Test(expected = UnsupportedCategoryException.class)
-    public void testsearchForBiomaterials_BadCategory() throws InvalidReferenceException, UnsupportedCategoryException {
+    public void testsearchForBiomaterials_BadCategory() throws InvalidInputException {
         logForSilverCompatibility(TEST_NAME, "testsearchForBiomaterials_BadCategory");
         BiomaterialSearchCriteria bisc = new BiomaterialSearchCriteria();
         CaArrayEntityReference c = new CaArrayEntityReference("URN:LSID:caarray.nci.nih.gov:"+Category.class.getName()+":1");//CancerSite
@@ -279,7 +275,7 @@ public class SearchServiceTest extends AbstractExternalJavaApiTest {
     private static final String URN_CATEGORY = "URN:LSID:caarray.nci.nih.gov:"+Category.class.getName()+":";
 
     @Test
-    public void testsearchForBiomaterials_Category_DiseaseState() throws InvalidReferenceException, UnsupportedCategoryException {
+    public void testsearchForBiomaterials_Category_DiseaseState() throws InvalidInputException {
         logForSilverCompatibility(TEST_NAME, "testsearchForBiomaterials_Category_DiseaseState");
 
         String value = "???";
@@ -288,7 +284,7 @@ public class SearchServiceTest extends AbstractExternalJavaApiTest {
     }
 
     @Test
-    public void testsearchForBiomaterials_Category_CellType() throws InvalidReferenceException, UnsupportedCategoryException {
+    public void testsearchForBiomaterials_Category_CellType() throws InvalidInputException {
         logForSilverCompatibility(TEST_NAME, "testsearchForBiomaterials_Category_CellType");
         String value = "low grade prostatic intraepithelial neoplasia";
         int count = 19;
@@ -296,7 +292,7 @@ public class SearchServiceTest extends AbstractExternalJavaApiTest {
     }
     
     @Test
-    public void testsearchForBiomaterials_Category_MaterialType() throws InvalidReferenceException, UnsupportedCategoryException {
+    public void testsearchForBiomaterials_Category_MaterialType() throws InvalidInputException {
         logForSilverCompatibility(TEST_NAME, "testsearchForBiomaterials_Category_MaterialType");
         String value = "synthetic_RNA";
         int count = 74;
@@ -304,14 +300,14 @@ public class SearchServiceTest extends AbstractExternalJavaApiTest {
     }
 
     @Test
-    public void testsearchForBiomaterials_Category_OrganismPart() throws InvalidReferenceException, UnsupportedCategoryException {
+    public void testsearchForBiomaterials_Category_OrganismPart() throws InvalidInputException {
         logForSilverCompatibility(TEST_NAME, "testsearchForBiomaterials_Category_OrganismPart");//tissue_site
         String value = "???";
         int count = 0;
         searchBioByCategory(178L, value, count);
     }
 
-    private void searchBioByCategory(long categoryId, String value, int count) throws UnsupportedCategoryException, InvalidReferenceException {
+    private void searchBioByCategory(long categoryId, String value, int count) throws InvalidInputException {
         CaArrayEntityReference cat = new CaArrayEntityReference(URN_CATEGORY + categoryId);
         BiomaterialSearchCriteria bisc = new BiomaterialSearchCriteria();
         bisc.getAnnotationCriterions().add(new AnnotationCriterion(cat, value));
@@ -348,10 +344,7 @@ public class SearchServiceTest extends AbstractExternalJavaApiTest {
             List<Experiment> experiments = service.searchForExperiments(crit, null).getResults();
             assertEquals(1, experiments.size());
             assertEquals("test1", experiments.get(0).getTitle());
-        } catch (InvalidReferenceException e) {
-            e.printStackTrace();
-            fail("Couldn't search experiments: " + e);
-        } catch (UnsupportedCategoryException e) {
+        } catch (InvalidInputException e) {
             e.printStackTrace();
             fail("Couldn't search experiments: " + e);
         }
@@ -363,10 +356,7 @@ public class SearchServiceTest extends AbstractExternalJavaApiTest {
             List<Experiment> experiments = service.searchForExperiments(crit, null).getResults();
             assertEquals(1, experiments.size());
             assertEquals("test1", experiments.get(0).getTitle());
-        } catch (InvalidReferenceException e) {
-            e.printStackTrace();
-            fail("Couldn't search experiments: " + e);
-        } catch (UnsupportedCategoryException e) {
+        } catch (InvalidInputException e) {
             e.printStackTrace();
             fail("Couldn't search experiments: " + e);
         }
@@ -380,10 +370,7 @@ public class SearchServiceTest extends AbstractExternalJavaApiTest {
             List<Experiment> experiments = service.searchForExperiments(crit, null).getResults();
             assertEquals(1, experiments.size());
             assertEquals("test2", experiments.get(0).getTitle());
-        } catch (InvalidReferenceException e) {
-            e.printStackTrace();
-            fail("Couldn't search experiments: " + e);
-        } catch (UnsupportedCategoryException e) {
+        } catch (InvalidInputException e) {
             e.printStackTrace();
             fail("Couldn't search experiments: " + e);
         }
@@ -423,7 +410,7 @@ public class SearchServiceTest extends AbstractExternalJavaApiTest {
     ///////////////////////////
 
     @Test
-    public void testSearchForBiomaterials() throws InvalidReferenceException, UnsupportedCategoryException {
+    public void testSearchForBiomaterials() throws InvalidInputException {
         logForSilverCompatibility(TEST_NAME, "testSearchForBiomaterials");
         BiomaterialSearchCriteria crit = new BiomaterialSearchCriteria();
         crit.setExperiment(new CaArrayEntityReference("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experiment.Experiment:1"));
@@ -433,7 +420,7 @@ public class SearchServiceTest extends AbstractExternalJavaApiTest {
     }
 
     @Test
-    public void testSearchForHybridizations() throws InvalidReferenceException {
+    public void testSearchForHybridizations() throws InvalidInputException {
         logForSilverCompatibility(TEST_NAME, "testSearchForHybridizations");
         HybridizationSearchCriteria crit = new HybridizationSearchCriteria();
         crit.setExperiment(new CaArrayEntityReference("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experiment.Experiment:1"));
@@ -458,7 +445,7 @@ public class SearchServiceTest extends AbstractExternalJavaApiTest {
     /////////////////////////////////
 
     @Test
-    public void testSearchForQuantitationTypes() throws InvalidReferenceException {
+    public void testSearchForQuantitationTypes() throws InvalidInputException {
         logForSilverCompatibility(TEST_NAME, "testSearchForQuantitationTypes");
         QuantitationTypeSearchCriteria crit = new QuantitationTypeSearchCriteria();
         crit.setHybridization(new CaArrayEntityReference(
@@ -477,7 +464,7 @@ public class SearchServiceTest extends AbstractExternalJavaApiTest {
     }
 
     @Test
-    public void testSearchForQuantitationTypes_NoHyb() throws InvalidReferenceException {
+    public void testSearchForQuantitationTypes_NoHyb() throws InvalidInputException {
         logForSilverCompatibility(TEST_NAME, "testSearchForQuantitationTypes_NoHyb");
 
         try {
@@ -492,7 +479,7 @@ public class SearchServiceTest extends AbstractExternalJavaApiTest {
     }
 
     @Test
-    public void testSearchForQuantitationTypes_All() throws InvalidReferenceException {
+    public void testSearchForQuantitationTypes_All() throws InvalidInputException {
         logForSilverCompatibility(TEST_NAME, "testSearchForQuantitationTypes_All");
         QuantitationTypeSearchCriteria crit = new QuantitationTypeSearchCriteria();
         crit.setHybridization(new CaArrayEntityReference(
@@ -503,7 +490,7 @@ public class SearchServiceTest extends AbstractExternalJavaApiTest {
     }
 
     @Test
-    public void testSearchForQuantitationTypes_ArrayDataType() throws InvalidReferenceException {
+    public void testSearchForQuantitationTypes_ArrayDataType() throws InvalidInputException {
         logForSilverCompatibility(TEST_NAME, "testSearchForQuantitationTypes_ArrayDataType");
         QuantitationTypeSearchCriteria crit = new QuantitationTypeSearchCriteria();
         crit.setHybridization(new CaArrayEntityReference(
@@ -519,7 +506,7 @@ public class SearchServiceTest extends AbstractExternalJavaApiTest {
     }
 
     @Test
-    public void testSearchForQuantitationTypes_FileTypeCategories() throws InvalidReferenceException {
+    public void testSearchForQuantitationTypes_FileTypeCategories() throws InvalidInputException {
         logForSilverCompatibility(TEST_NAME, "testSearchForQuantitationTypes_FileTypeCategories");
         QuantitationTypeSearchCriteria crit = new QuantitationTypeSearchCriteria();
         crit.setHybridization(new CaArrayEntityReference(
@@ -534,7 +521,7 @@ public class SearchServiceTest extends AbstractExternalJavaApiTest {
      * see GF 22409.
      **/
     @Test
-    public void testSearchForQuantitationTypes_FileTypes() throws InvalidReferenceException {
+    public void testSearchForQuantitationTypes_FileTypes() throws InvalidInputException {
         logForSilverCompatibility(TEST_NAME, "testSearchForQuantitationTypes_FileTypes");
         QuantitationTypeSearchCriteria crit = new QuantitationTypeSearchCriteria();
         crit.setHybridization(new CaArrayEntityReference(
@@ -551,7 +538,7 @@ public class SearchServiceTest extends AbstractExternalJavaApiTest {
     ///////////////////////////////
     
     @Test
-    public void testSearchForFiles() throws InvalidReferenceException {
+    public void testSearchForFiles() throws InvalidInputException {
         logForSilverCompatibility(TEST_NAME, "testSearchForFiles");
         FileSearchCriteria crit = new FileSearchCriteria();
         crit.setExperiment(new CaArrayEntityReference(
@@ -575,7 +562,7 @@ public class SearchServiceTest extends AbstractExternalJavaApiTest {
     }
 
     @Test
-    public void testSearchForFiles_Experiment() throws InvalidReferenceException {
+    public void testSearchForFiles_Experiment() throws InvalidInputException {
         logForSilverCompatibility(TEST_NAME, "testSearchForFiles_Experiment");
         FileSearchCriteria crit = new FileSearchCriteria();
         crit.setExperiment(new CaArrayEntityReference(
@@ -585,7 +572,7 @@ public class SearchServiceTest extends AbstractExternalJavaApiTest {
     }
 
     @Test
-    public void testSearchForFiles_ExperimentGraphNodes() throws InvalidReferenceException {
+    public void testSearchForFiles_ExperimentGraphNodes() throws InvalidInputException {
         logForSilverCompatibility(TEST_NAME, "testSearchForFiles_ExperimentGraphNodes");
         FileSearchCriteria crit = new FileSearchCriteria();
         crit.getExperimentGraphNodes().add(new CaArrayEntityReference(
@@ -615,7 +602,7 @@ public class SearchServiceTest extends AbstractExternalJavaApiTest {
     }
 
     @Test
-    public void testSearchForFiles_Extention() throws InvalidReferenceException {
+    public void testSearchForFiles_Extention() throws InvalidInputException {
         logForSilverCompatibility(TEST_NAME, "testSearchForFiles_Extention");
         FileSearchCriteria crit = new FileSearchCriteria();
         crit.setExtension("gpr");
@@ -627,7 +614,7 @@ public class SearchServiceTest extends AbstractExternalJavaApiTest {
     }
 
     @Test
-    public void testSearchForFiles_Type() throws InvalidReferenceException {
+    public void testSearchForFiles_Type() throws InvalidInputException {
         logForSilverCompatibility(TEST_NAME, "testSearchForFiles_Type");
         FileSearchCriteria crit = new FileSearchCriteria();
         crit.getTypes().add(new CaArrayEntityReference("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.FileType:GENEPIX_GPR"));
@@ -636,7 +623,7 @@ public class SearchServiceTest extends AbstractExternalJavaApiTest {
     }
 
     @Test
-    public void testSearchForFiles_All() throws InvalidReferenceException {
+    public void testSearchForFiles_All() throws InvalidInputException {
         logForSilverCompatibility(TEST_NAME, "testSearchForFiles_All");
         FileSearchCriteria crit = new FileSearchCriteria();
         List<File> files = service.searchForFiles(crit, null).getResults();
@@ -644,7 +631,7 @@ public class SearchServiceTest extends AbstractExternalJavaApiTest {
     }
 
     @Test
-    public void testSearchForFiles_Limit() throws InvalidReferenceException {
+    public void testSearchForFiles_Limit() throws InvalidInputException {
         logForSilverCompatibility(TEST_NAME, "testSearchForFiles_Limit");
         FileSearchCriteria fsc = new FileSearchCriteria();
         SearchResult<File> sr = service.searchForFiles(fsc, null);
@@ -679,9 +666,8 @@ public class SearchServiceTest extends AbstractExternalJavaApiTest {
             SearchResult sr = service.searchByExample(null, null);
             logForSilverCompatibility(TEST_OUTPUT, "unexpected outcome");
             fail();
-        } catch(javax.ejb.EJBException e) {
-            assertEquals(NullPointerException.class, e.getCausedByException().getClass());
-            logForSilverCompatibility(TEST_OUTPUT, "null Criteria validation :" + e.getCause());
+        } catch(InvalidInputException e) {
+            logForSilverCompatibility(TEST_OUTPUT, "null Criteria validation :" + e);
         }
 
         try {
@@ -690,9 +676,8 @@ public class SearchServiceTest extends AbstractExternalJavaApiTest {
             SearchResult sr = service.searchByExample(xsc, null);
             logForSilverCompatibility(TEST_OUTPUT, "unexpected outcome");
             fail();
-        } catch(javax.ejb.EJBException e) {
-            assertEquals(NullPointerException.class, e.getCausedByException().getClass());
-            logForSilverCompatibility(TEST_OUTPUT, "null example validation :" + e.getCause());
+        } catch(InvalidInputException e) {
+            logForSilverCompatibility(TEST_OUTPUT, "null example validation :" + e);
         }
     }
 

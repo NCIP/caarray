@@ -96,10 +96,9 @@ import gov.nih.nci.caarray.external.v1_0.query.LimitOffset;
 import gov.nih.nci.caarray.external.v1_0.query.SearchResult;
 import gov.nih.nci.caarray.external.v1_0.sample.Biomaterial;
 import gov.nih.nci.caarray.external.v1_0.sample.Hybridization;
-import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
-import gov.nih.nci.caarray.services.external.v1_0.UnsupportedCategoryException;
 
 import com.google.common.base.Function;
+import gov.nih.nci.caarray.services.external.v1_0.InvalidInputException;
 
 /**
  * Utility class that allows for easier return of all results or iteration of results from a search service.
@@ -128,9 +127,7 @@ public class JavaSearchApiUtils extends AbstractSearchApiUtils implements Search
             public SearchResult<Experiment> apply(LimitOffset from) {
                 try {
                     return searchService.searchForExperiments(criteria, from);
-                } catch (InvalidReferenceException e) {
-                    throw new WrapperExeption(e);
-                } catch (UnsupportedCategoryException e) {
+                } catch (InvalidInputException e) {
                     throw new WrapperExeption(e);
                 }
             }
@@ -160,9 +157,7 @@ public class JavaSearchApiUtils extends AbstractSearchApiUtils implements Search
             public SearchResult<Biomaterial> apply(LimitOffset from) {
                 try {
                     return searchService.searchForBiomaterials(criteria, from);
-                } catch (InvalidReferenceException e) {
-                    throw new WrapperExeption(e);
-                } catch (UnsupportedCategoryException e) {
+                } catch (InvalidInputException e) {
                     throw new WrapperExeption(e);
                 }
             }
@@ -192,7 +187,7 @@ public class JavaSearchApiUtils extends AbstractSearchApiUtils implements Search
             public SearchResult<File> apply(LimitOffset from) {
                 try {
                     return searchService.searchForFiles(criteria, from);
-                } catch (InvalidReferenceException e) {
+                } catch (InvalidInputException e) {
                     throw new WrapperExeption(e);
                 }
             }
@@ -209,7 +204,7 @@ public class JavaSearchApiUtils extends AbstractSearchApiUtils implements Search
             public SearchResult<Hybridization> apply(LimitOffset from) {
                 try {
                     return searchService.searchForHybridizations(criteria, from);
-                } catch (InvalidReferenceException e) {
+                } catch (InvalidInputException e) {
                     throw new WrapperExeption(e);
                 }
             }
@@ -224,7 +219,11 @@ public class JavaSearchApiUtils extends AbstractSearchApiUtils implements Search
             final ExampleSearchCriteria<T> criteria) {
         return new Function<LimitOffset, SearchResult<T>>() {
             public SearchResult<T> apply(LimitOffset from) {
-                return searchService.searchByExample(criteria, from);
+                try {
+                    return searchService.searchByExample(criteria, from);
+                } catch (InvalidInputException e) {
+                    throw new WrapperExeption(e);
+                }
             }
         };
     }

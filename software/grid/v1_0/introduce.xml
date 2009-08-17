@@ -135,6 +135,7 @@
    <ns2:SchemaElement type="InvalidReferenceFault" xsi:type="ns2:SchemaElementType"/>
    <ns2:SchemaElement type="NoEntityMatchingReferenceFault" xsi:type="ns2:SchemaElementType"/>
    <ns2:SchemaElement type="UnsupportedCategoryFault" xsi:type="ns2:SchemaElementType"/>
+   <ns2:SchemaElement type="InvalidInputFault" xsi:type="ns2:SchemaElementType"/>
   </ns2:Namespace>
   <ns2:Namespace generateStubs="false" location="./xsd/cagrid/types/security/security.xsd" namespace="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.security" packageName="gov.nih.nci.cagrid.metadata.security" xsi:type="ns2:NamespaceType">
    <ns2:SchemaElement type="CommunicationMechanism" xsi:type="ns2:SchemaElementType"/>

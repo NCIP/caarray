@@ -19,7 +19,7 @@
   <element name="UnsupportedCategoryFault" type="tns:UnsupportedCategoryFault" />
   <complexType name="UnsupportedCategoryFault">
     <complexContent>
-      <extension base="wsrbf:BaseFaultType">
+      <extension base="tns:InvalidInputFault">
         <xs:sequence>
           <element minOccurs="1" maxOccurs="1" ref="car:CaArrayEntityReference" />
         </xs:sequence>
@@ -29,7 +29,7 @@
   <element name="InvalidReferenceFault" type="tns:InvalidReferenceFault" />
   <complexType name="InvalidReferenceFault">
     <complexContent>
-      <extension base="wsrbf:BaseFaultType">
+      <extension base="tns:InvalidInputFault">
         <xs:sequence>
           <element minOccurs="1" maxOccurs="1" ref="car:CaArrayEntityReference" />
         </xs:sequence>
@@ -50,6 +50,12 @@
   </complexType>
   <element name="DataStagingFault" type="tns:DataStagingFault" />
   <complexType name="DataStagingFault">
+    <complexContent>
+      <extension base="wsrbf:BaseFaultType" />
+    </complexContent>
+  </complexType>
+  <element name="InvalidInputFault" type="tns:InvalidInputFault" />
+  <complexType name="InvalidInputFault">
     <complexContent>
       <extension base="wsrbf:BaseFaultType" />
     </complexContent>

@@ -90,7 +90,7 @@ import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
  * 
  * @author dkokotov
  */
-public class UnsupportedCategoryException extends ApiException {
+public class UnsupportedCategoryException extends InvalidInputException {
     private static final long serialVersionUID = 1L;
     
     private final CaArrayEntityReference category;

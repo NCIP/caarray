@@ -150,6 +150,8 @@ import org.jboss.annotation.ejb.RemoteBinding;
 import org.jboss.annotation.ejb.TransactionTimeout;
 
 import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
+import gov.nih.nci.caarray.services.external.v1_0.InvalidInputException;
+import gov.nih.nci.caarray.services.external.v1_0.NoEntityMatchingReferenceException;
 
 /**
  * @author dkokotov
@@ -350,8 +352,11 @@ public class SearchServiceBean extends BaseV1_0ExternalService implements Search
      */    
     @SuppressWarnings("unchecked")
     public <T extends AbstractCaArrayEntity> SearchResult<T> searchByExample(ExampleSearchCriteria<T> criteria,
-            LimitOffset pagingParams) {
+            LimitOffset pagingParams) throws InvalidInputException {
         T example = criteria.getExample();
+        if (example == null) {
+            throw new InvalidInputException("example cannot be null");
+        }
         LimitOffset actualParams = defaultIfNull(pagingParams, MAX_EXAMPLE_RESULTS);
         EntityHandler<T> resolver = getEntityHandlerRegistry().getResolver((Class<T>) example.getClass());
         List<T> results = resolver.queryByExample(criteria, actualParams);
@@ -444,7 +449,8 @@ public class SearchServiceBean extends BaseV1_0ExternalService implements Search
     /**
      * {@inheritDoc}
      */
-    public List<QuantitationType> searchForQuantitationTypes(QuantitationTypeSearchCriteria criteria) {
+    public List<QuantitationType> searchForQuantitationTypes(QuantitationTypeSearchCriteria criteria)
+            throws InvalidInputException {
         List<QuantitationType> externalTypes = new ArrayList<QuantitationType>();
         com.fiveamsolutions.nci.commons.data.search.PageSortParams<gov.nih.nci.caarray.domain.data.QuantitationType> 
             actualParams = toInternalParams(defaultIfNull(null, -1), "name", false);
@@ -458,7 +464,10 @@ public class SearchServiceBean extends BaseV1_0ExternalService implements Search
     }
 
     private gov.nih.nci.caarray.domain.search.QuantitationTypeSearchCriteria toInternalCriteria(
-            QuantitationTypeSearchCriteria criteria) {
+            QuantitationTypeSearchCriteria criteria) throws InvalidInputException {
+        if (criteria.getHybridization() == null) {
+            throw new InvalidInputException("hybridization must be set");
+        }
         gov.nih.nci.caarray.domain.search.QuantitationTypeSearchCriteria intCriteria = 
             new gov.nih.nci.caarray.domain.search.QuantitationTypeSearchCriteria();
         
@@ -468,6 +477,9 @@ public class SearchServiceBean extends BaseV1_0ExternalService implements Search
         for (CaArrayEntityReference arrayDataTypeRef : criteria.getArrayDataTypes()) {
             gov.nih.nci.caarray.domain.data.ArrayDataType type =
                     (gov.nih.nci.caarray.domain.data.ArrayDataType) getByExternalId(arrayDataTypeRef.getId());
+            if (type == null) {
+                throw new NoEntityMatchingReferenceException(arrayDataTypeRef);
+            }
             intCriteria.getArrayDataTypes().add(type);
         }
         

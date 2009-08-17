@@ -104,8 +104,7 @@ import gov.nih.nci.caarray.external.v1_0.sample.Biomaterial;
 import gov.nih.nci.caarray.external.v1_0.sample.Hybridization;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.Category;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.Term;
-import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
-import gov.nih.nci.caarray.services.external.v1_0.UnsupportedCategoryException;
+import gov.nih.nci.caarray.services.external.v1_0.InvalidInputException;
 
 import java.util.List;
 
@@ -137,10 +136,11 @@ public interface SearchService {
      * @param experimentRef if not null, then only categories of characteristics of biomaterials in the
      * given experiment are returned, otherwise categories of all characteristivcs in the system are returned.
      * @return the list of Category entities as described above.
-     * @throws InvalidReferenceException if there is no experiment with given reference
+     * @throws InvalidInputException if there is no experiment with given reference
+     * ({@link gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException})
      */
     List<Category> getAllCharacteristicCategories(CaArrayEntityReference experimentRef)
-            throws InvalidReferenceException;
+            throws InvalidInputException;
 
     /**
      * Retrieve the list of all terms belonging to given category in the system.
@@ -149,10 +149,11 @@ public interface SearchService {
      * @param valuePrefix if not null, only include terms whose value starts with given prefix, using case insensitive
      *            matching
      * @return the terms in the given category
-     * @throws InvalidReferenceException if there is no category with given reference
+     * @throws InvalidInputException if there is no category with given reference
+     * ({@link gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException})
      */
     List<Term> getTermsForCategory(CaArrayEntityReference categoryRef, String valuePrefix)
-            throws InvalidReferenceException;
+            throws InvalidInputException;
 
     /**
      * Search for biomaterials satisfying the given search criteria.
@@ -160,12 +161,16 @@ public interface SearchService {
      * @param criteria the search criteria
      * @param pagingParams paging parameters
      * @return the subset of the biomaterials matching the given criteria, subject to the paging params.
-     * @throws InvalidReferenceException if there is no experiment with given reference
-     * @throws UnsupportedCategoryException if the search criteria includes an annotation criterion with a category
-     *             other that disease state, cell type, material type, tissue site.
+     * @throws InvalidInputException <ul>
+     * <li>{@link gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException}
+     * if there is no experiment with given reference</li>
+     * <li>{@link gov.nih.nci.caarray.services.external.v1_0.UnsupportedCategoryException}
+     * if the search criteria includes an annotation criterion with a category
+     * other that disease state, cell type, material type, tissue site.</li>
+     * </ul>
      */
     SearchResult<Biomaterial> searchForBiomaterials(BiomaterialSearchCriteria criteria, LimitOffset pagingParams)
-            throws InvalidReferenceException, UnsupportedCategoryException;
+            throws InvalidInputException;
 
     /**
      * Search for hybridizations satisfying the given search criteria.
@@ -173,10 +178,11 @@ public interface SearchService {
      * @param criteria the search criteria
      * @param pagingParams paging parameters
      * @return the subset of the hybridizations matching the given criteria, subject to the paging params.
-     * @throws InvalidReferenceException if there is no experiment with given reference
+     * @throws InvalidInputException if there is no experiment with given reference
+     * ({@link gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException})
      */
     SearchResult<Hybridization> searchForHybridizations(HybridizationSearchCriteria criteria, LimitOffset pagingParams)
-            throws InvalidReferenceException;
+            throws InvalidInputException;
 
     /**
      * Returns a list of experiments satisfying the given search criteria.
@@ -184,12 +190,15 @@ public interface SearchService {
      * @param criteria the search criteria.
      * @param pagingParams paging params.
      * @return the list of experiments matching criteria, subject to the paging specifications.
-     * @throws InvalidReferenceException if the search criteria includes any invalid references.
-     * @throws UnsupportedCategoryException if the search criteria includes an annotation criterion with a category
-     *             other that disease state, cell type, material type, tissue site.
+     * @throws InvalidInputException if the search criteria was invalid. 
+     * <ul><li>{@link gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException}
+     * if the search criteria includes any invalid references.</li>
+     * <li>{@link gov.nih.nci.caarray.services.external.v1_0.UnsupportedCategoryException}
+     * if the search criteria includes an annotation criterion with a category
+     *             other that disease state, cell type, material type, tissue site.</li></ul>
      */
     SearchResult<Experiment> searchForExperiments(ExperimentSearchCriteria criteria, LimitOffset pagingParams)
-            throws InvalidReferenceException, UnsupportedCategoryException;
+            throws InvalidInputException;
 
     /**
      * Returns a list of experiments matching the given keyword.
@@ -206,10 +215,11 @@ public interface SearchService {
      * @param criteria the search criteria.
      * @param pagingParams paging params.
      * @return the list of files matching criteria, subject to the paging specifications.
-     * @throws InvalidReferenceException if the search criteria includes any invalid references.
+     * @throws InvalidInputException if the search criteria includes any invalid references
+     * ({@link gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException}).
      */
     SearchResult<File> searchForFiles(FileSearchCriteria criteria, LimitOffset pagingParams)
-            throws InvalidReferenceException;
+            throws InvalidInputException;
     
     /**
      * Returns a list of biomaterials matching the given keyword. 
@@ -226,10 +236,10 @@ public interface SearchService {
      * 
      * @param criteria the search criteria.
      * @return the list of quantitation types matching criteria.
-     * @throws InvalidReferenceException if the search criteria includes any invalid references.
+     * @throws InvalidInputException if the search criteria includes any invalid references or incomplete.
      */
     List<QuantitationType> searchForQuantitationTypes(QuantitationTypeSearchCriteria criteria)
-            throws InvalidReferenceException;
+            throws InvalidInputException;
     
     /**
      * Do a query by example.
@@ -237,16 +247,18 @@ public interface SearchService {
      * @param criteria the example entity to query for
      * @param pagingParams paging params.
      * @return list of entities matching example, subject to paging params
+     * @throws InvalidInputException thrown if the search criteria is malformed or incomplete.
      */
     <T extends AbstractCaArrayEntity> SearchResult<T> searchByExample(ExampleSearchCriteria<T> criteria,
-            LimitOffset pagingParams);
+            LimitOffset pagingParams) throws InvalidInputException;
     
     /**
      * Returns an annotation set matching the given request.
      * 
      * @param request the annotation set request
      * @return the annotation set.
-     * @throws InvalidReferenceException if there are any invalid references in the request
+     * @throws InvalidInputException if there are any invalid references in the request
+     * ({@link gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException})
      */
-    AnnotationSet getAnnotationSet(AnnotationSetRequest request) throws InvalidReferenceException;
+    AnnotationSet getAnnotationSet(AnnotationSetRequest request) throws InvalidInputException;
 }
