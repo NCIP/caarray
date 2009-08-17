@@ -42,33 +42,12 @@ following public experiment being present:
    Data files: test3_data.zip
 The data/ directory contains these (and other) files if you need them.
 -----
-KNOWN ISSUES IN RC2 WHICH WILL BE FIXED BEFORE GA:
+KNOWN ISSUES IN RC3 WHICH WILL BE FIXED BEFORE GA:
 
-1. ant select_files: The search for Affymetrix CEL files throws an exception.
-   The following WORKAROUND has been introduced in SelectFiles.java to address the problem:
-   Replaced the following line:
-      CaArrayEntityReference celFileTypeRef = getCelFileType();
-   ... with the following line:
-      CaArrayEntityReference celFileTypeRef = new CaArrayEntityReference("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.FileType:AFFYMETRIX_CEL");
-2. ant lookup_entities: If you look at the file LookUpEntities.java, you will see that 3 methods are commented out:
-   * lookupCharacteristicCategories()
-   * lookupEntityByReference()
-   * lookupEntitiesByReference()
-   These methods don't work correctly in RC2.
-3. ant download_data_columns_from_file, download_data_columns_from_hyb, download_sample_annotations:
-   The search for Affymetrix CHP files throws an exception.
-   The following WORKAROUND has been introduced in DownloadDataColumnsFromFile.java, DownloadDataColumnsFromHybridizations.java and DownloadSampleAnnotationsForHybridizations.java to address the problem:
-   WORKAROUND:
-   Replace the following line:
-      CaArrayEntityReference chpFileTypeRef = getChpFileType();
-   ... with the following line:
-      CaArrayEntityReference chpFileTypeRef = new CaArrayEntityReference("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.FileType:AFFYMETRIX_CHP");
-4. ant download_data_columns_from_genepix_file:
-   The search for Genepix GPR files throws an exception.
-   The following WORKAROUND has been introduced in DownloadDataColumnsFromGenepixFile.java to address the problem:
-   WORKAROUND:
-   Replace the following line:
-      CaArrayEntityReference gprFileTypeRef = getGprFileType();
-   ... with the following line:
-      CaArrayEntityReference gprFileTypeRef = new CaArrayEntityReference("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.FileType:GENEPIX_GPR");
-
+* The following ant targets fail because of a known bug where the data type of a QuantitationType nees to be set before doing an example search:
+     download_data_columns_from_file
+     download_data_columns_from_illumina_file
+     download_data_columns_from_genepix_file
+* Biomaterial keyword search is very slow. This affects the following ant targets:
+     search_biomaterials_by_keyword
+     lookup_entities

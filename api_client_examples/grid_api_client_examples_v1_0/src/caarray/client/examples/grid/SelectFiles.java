@@ -243,8 +243,8 @@ public class SelectFiles {
         FileSearchCriteria fileSearchCriteria = new FileSearchCriteria();
         fileSearchCriteria.setExperiment(experimentRef);
 
-        //CaArrayEntityReference celFileTypeRef = getCelFileType();
-        CaArrayEntityReference celFileTypeRef = new CaArrayEntityReference("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.FileType:AFFYMETRIX_CEL");
+        CaArrayEntityReference celFileTypeRef = getCelFileType();
+        //CaArrayEntityReference celFileTypeRef = new CaArrayEntityReference("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.FileType:AFFYMETRIX_CEL");
         fileSearchCriteria.getTypes().add(celFileTypeRef);
 
         List<File> files = searchServiceHelper.filesByCriteria(fileSearchCriteria).list();

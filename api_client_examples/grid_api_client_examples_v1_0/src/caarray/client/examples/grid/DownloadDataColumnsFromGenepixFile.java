@@ -223,8 +223,8 @@ public class DownloadDataColumnsFromGenepixFile {
         FileSearchCriteria fileSearchCriteria = new FileSearchCriteria();
         fileSearchCriteria.setExperiment(experimentRef);
         // Search for all GENEPIX_GPR data files in the experiment.
-        // CaArrayEntityReference gprFileTypeRef = getGprFileType();
-        CaArrayEntityReference gprFileTypeRef = new CaArrayEntityReference("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.FileType:GENEPIX_GPR");
+        CaArrayEntityReference gprFileTypeRef = getGprFileType();
+        // CaArrayEntityReference gprFileTypeRef = new CaArrayEntityReference("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.FileType:GENEPIX_GPR");
         fileSearchCriteria.getTypes().add(gprFileTypeRef);
 
         List<File> files = (searchServiceHelper.filesByCriteria(fileSearchCriteria)).list();
