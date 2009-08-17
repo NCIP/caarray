@@ -260,6 +260,11 @@ public enum FileType implements Comparable<FileType> {
     GEO_GSM,
 
     /**
+     * Gene Expression Omnibus (GEO) GPL format array design.
+     */
+    GEO_GPL,
+
+    /**
      * ScanArray CSV format data type.
      */
     SCANARRAY_CSV;
@@ -275,7 +280,7 @@ public enum FileType implements Comparable<FileType> {
      */
     public static final Set<FileType> ARRAY_DESIGN_FILE_TYPES = EnumSet.of(AFFYMETRIX_CDF, AFFYMETRIX_CLF,
             AFFYMETRIX_PGF, ILLUMINA_DESIGN_CSV, GENEPIX_GAL, AGILENT_CSV, AGILENT_XML, IMAGENE_TPL, NIMBLEGEN_NDF,
-            UCSF_SPOT_SPT, MAGE_TAB_ADF);
+            UCSF_SPOT_SPT, MAGE_TAB_ADF, GEO_GPL);
     
     /**
      * The set of raw array data file types.

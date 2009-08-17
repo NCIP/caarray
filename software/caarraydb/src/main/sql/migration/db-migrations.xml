@@ -79,4 +79,7 @@
     <migration fromVersion="2.3.0.rc2" toVersion="2.3.0.rc3">
         <sql-script>migrate-2.3.0.rc2-to-2.3.0.rc3.sql</sql-script>
     </migration>
+    <migration fromVersion="2.3.0.rc3" toVersion="2.3.0.rc4">
+        <sql-script>migrate-2.3.0.rc3-to-2.3.0.rc4.sql</sql-script>
+    </migration>
 </migrations>

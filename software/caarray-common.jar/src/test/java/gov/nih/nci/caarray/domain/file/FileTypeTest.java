@@ -93,6 +93,7 @@ public class FileTypeTest {
         assertTrue(FileType.AFFYMETRIX_CDF.isArrayDesign());
         assertTrue(FileType.ILLUMINA_DESIGN_CSV.isArrayDesign());
         assertTrue(FileType.GENEPIX_GAL.isArrayDesign());
+        assertTrue(FileType.GEO_GPL.isArrayDesign());
         assertFalse(FileType.AFFYMETRIX_CEL.isArrayDesign());
         assertFalse(FileType.GEO_GSM.isArrayDesign());
         assertFalse(FileType.GEO_SOFT.isArrayDesign());
