@@ -182,7 +182,7 @@ public class DownloadFileZipFromExperiment {
         // Search for all raw data files in the experiment. (Experiment ref is a mandatory parameter.)
         FileSearchCriteria fileSearchCriteria = new FileSearchCriteria();
         fileSearchCriteria.setExperiment(experimentRef);
-        fileSearchCriteria.getCategories().add(FileCategory.OTHER);
+        fileSearchCriteria.getCategories().add(FileCategory.RAW_DATA);
 
         // Alternatively, search for all AFFYMETRIX_CEL data files)
         // CaArrayEntityReference celFileTypeRef = getCelFileType();
