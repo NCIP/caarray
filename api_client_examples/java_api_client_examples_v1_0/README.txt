@@ -41,3 +41,12 @@ following public experiment being present:
    Data files: test3_data.zip
 The data/ directory contains these (and other) files if you need them.
 -----
+KNOWN ISSUES IN RC3 WHICH WILL BE FIXED BEFORE GA:
+
+* The following ant targets fail because of a known bug where the data type of a QuantitationType nees to be set before doing an example search:
+     download_data_columns_from_file
+     download_data_columns_from_illumina_file
+     download_data_columns_from_genepix_file
+* Biomaterial keyword search is very slow. This affects the following ant targets:
+     search_biomaterials_by_keyword
+     lookup_entities
