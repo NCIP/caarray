@@ -86,8 +86,7 @@ import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
 import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
 import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
 import gov.nih.nci.caarray.services.external.v1_0.CaArrayServer;
-import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
-import gov.nih.nci.caarray.services.external.v1_0.UnsupportedCategoryException;
+import gov.nih.nci.caarray.services.external.v1_0.InvalidInputException;
 import gov.nih.nci.caarray.services.external.v1_0.data.DataApiUtils;
 import gov.nih.nci.caarray.services.external.v1_0.data.DataService;
 import gov.nih.nci.caarray.services.external.v1_0.data.JavaDataApiUtils;
@@ -150,7 +149,7 @@ public class DownloadMageTabExportWithDataFiles {
     /**
      * Search for an experiment based on its title or public identifier.
      */
-    private CaArrayEntityReference searchForExperiment() throws RemoteException, InvalidReferenceException, UnsupportedCategoryException {
+    private CaArrayEntityReference searchForExperiment() throws RemoteException, InvalidInputException {
         // Search for experiment with the given title.
         ExperimentSearchCriteria experimentSearchCriteria = new ExperimentSearchCriteria();
         experimentSearchCriteria.setTitle(EXPERIMENT_TITLE);

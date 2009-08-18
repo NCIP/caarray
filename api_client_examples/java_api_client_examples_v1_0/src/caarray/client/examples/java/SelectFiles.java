@@ -95,6 +95,7 @@ import gov.nih.nci.caarray.external.v1_0.query.SearchResult;
 import gov.nih.nci.caarray.external.v1_0.sample.Biomaterial;
 import gov.nih.nci.caarray.external.v1_0.sample.BiomaterialType;
 import gov.nih.nci.caarray.services.external.v1_0.CaArrayServer;
+import gov.nih.nci.caarray.services.external.v1_0.InvalidInputException;
 import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
 import gov.nih.nci.caarray.services.external.v1_0.UnsupportedCategoryException;
 import gov.nih.nci.caarray.services.external.v1_0.search.JavaSearchApiUtils;
@@ -143,7 +144,7 @@ public class SelectFiles {
         }
     }
 
-    private void selectFilesInExperiment(CaArrayEntityReference experimentRef) throws RemoteException, InvalidReferenceException {
+    private void selectFilesInExperiment(CaArrayEntityReference experimentRef) throws RemoteException, InvalidInputException {
         List<CaArrayEntityReference> fileRefs = selectRawFiles(experimentRef);
         if (fileRefs == null) {
             System.out.println("Could not find any raw files in the experiment.");
@@ -181,7 +182,7 @@ public class SelectFiles {
     /**
      * Search for an experiment based on its title or public identifier.
      */
-    private CaArrayEntityReference searchForExperiment() throws RemoteException, InvalidReferenceException, UnsupportedCategoryException {
+    private CaArrayEntityReference searchForExperiment() throws RemoteException, InvalidInputException {
         // Search for experiment with the given title.
         ExperimentSearchCriteria experimentSearchCriteria = new ExperimentSearchCriteria();
         experimentSearchCriteria.setTitle(EXPERIMENT_TITLE);
@@ -249,7 +250,7 @@ public class SelectFiles {
      * Select all Affymetrix CEL data files in the experiment.
      */
     private List<CaArrayEntityReference> selectCelFiles(CaArrayEntityReference experimentRef) throws RemoteException,
-            InvalidReferenceException {
+            InvalidInputException {
         FileSearchCriteria fileSearchCriteria = new FileSearchCriteria();
         fileSearchCriteria.setExperiment(experimentRef);
 
@@ -270,7 +271,7 @@ public class SelectFiles {
         return fileRefs;
     }
 
-    private CaArrayEntityReference getCelFileType() {
+    private CaArrayEntityReference getCelFileType() throws InvalidInputException {
         ExampleSearchCriteria<FileType> criteria = new ExampleSearchCriteria<FileType>();
         FileType exampleFileType = new FileType();
         exampleFileType.setName("AFFYMETRIX_CEL");

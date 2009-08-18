@@ -170,7 +170,7 @@ public class SearchServiceBean extends BaseV1_0ExternalService implements Search
     static final int MAX_BIOMATERIAL_RESULTS = 200;
     static final int MAX_HYBRIDIZATION_RESULTS = 200;
     static final int MAX_FILE_RESULTS = 200;        
-    static final int MAX_EXAMPLE_RESULTS = 100;
+    static final int MAX_EXAMPLE_RESULTS = 50;
     
     /**
      * {@inheritDoc}
@@ -276,10 +276,11 @@ public class SearchServiceBean extends BaseV1_0ExternalService implements Search
                 gov.nih.nci.caarray.domain.project.Experiment.class);
         List<gov.nih.nci.caarray.domain.vocabulary.Category> categories = getDaoFactory().getVocabularyDao()
                 .searchForCharacteristicCategory(experiment, AbstractCharacteristic.class, null);
-        // add in the four standard categories
+        // add in the standard categories
         for (ExperimentOntologyCategory cat : EnumSet.of(ExperimentOntologyCategory.ORGANISM_PART,
                 ExperimentOntologyCategory.DISEASE_STATE, ExperimentOntologyCategory.CELL_TYPE,
-                ExperimentOntologyCategory.MATERIAL_TYPE)) {
+                ExperimentOntologyCategory.MATERIAL_TYPE, ExperimentOntologyCategory.LABEL_COMPOUND,
+                ExperimentOntologyCategory.EXTERNAL_ID)) {
             categories.add(VocabularyUtils.getCategory(cat)); 
         }
         mapCollection(categories, externalCategories, Category.class);

@@ -90,6 +90,7 @@ import gov.nih.nci.caarray.external.v1_0.query.SearchResult;
 import gov.nih.nci.caarray.external.v1_0.sample.Biomaterial;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.Category;
 import gov.nih.nci.caarray.services.external.v1_0.CaArrayServer;
+import gov.nih.nci.caarray.services.external.v1_0.InvalidInputException;
 import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
 import gov.nih.nci.caarray.services.external.v1_0.UnsupportedCategoryException;
 import gov.nih.nci.caarray.services.external.v1_0.search.JavaSearchApiUtils;
@@ -127,7 +128,7 @@ public class SearchBiomaterialsByCriteria {
         }
     }
 
-    private void search() throws RemoteException, InvalidReferenceException, UnsupportedCategoryException {
+    private void search() throws RemoteException, InvalidInputException {
         BiomaterialSearchCriteria biomaterialSearchCriteria = new BiomaterialSearchCriteria();
 
         // Set external ID.
@@ -151,7 +152,7 @@ public class SearchBiomaterialsByCriteria {
         }
     }
 
-    private CaArrayEntityReference getCategoryReference(String categoryName) {
+    private CaArrayEntityReference getCategoryReference(String categoryName) throws InvalidInputException {
         ExampleSearchCriteria<Category> criteria = new ExampleSearchCriteria<Category>();
         Category exampleCategory = new Category();
         exampleCategory.setName(categoryName);

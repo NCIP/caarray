@@ -88,8 +88,7 @@ import gov.nih.nci.caarray.external.v1_0.query.KeywordSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.sample.Biomaterial;
 import gov.nih.nci.caarray.external.v1_0.sample.BiomaterialType;
 import gov.nih.nci.caarray.services.external.v1_0.CaArrayServer;
-import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
-import gov.nih.nci.caarray.services.external.v1_0.UnsupportedCategoryException;
+import gov.nih.nci.caarray.services.external.v1_0.InvalidInputException;
 import gov.nih.nci.caarray.services.external.v1_0.search.JavaSearchApiUtils;
 import gov.nih.nci.caarray.services.external.v1_0.search.SearchApiUtils;
 import gov.nih.nci.caarray.services.external.v1_0.search.SearchService;
@@ -123,7 +122,7 @@ public class SearchExperimentsByKeyword {
         }
     }
 
-    private void seek() throws RemoteException, InvalidReferenceException, UnsupportedCategoryException {
+    private void seek() throws RemoteException, InvalidInputException {
         KeywordSearchCriteria criteria = new KeywordSearchCriteria();
         criteria.setKeyword(KEYPHRASE);
         long startTime = System.currentTimeMillis();
@@ -140,7 +139,7 @@ public class SearchExperimentsByKeyword {
         }
     }
 
-    private void printExperimentDetails(Experiment experiment) throws RemoteException, InvalidReferenceException, UnsupportedCategoryException {
+    private void printExperimentDetails(Experiment experiment) throws RemoteException, InvalidInputException {
         // Print basic experiment attributes.
         System.out.print(experiment.getPublicIdentifier() + "\t");
         System.out.print(experiment.getTitle() + "\t");

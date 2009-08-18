@@ -85,13 +85,20 @@ package gov.nih.nci.caarray.domain.sample;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+
+import java.util.Set;
+
 import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.domain.contact.Person;
+import gov.nih.nci.caarray.domain.project.ExperimentOntology;
+import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
 import gov.nih.nci.caarray.domain.protocol.MeasurementParameterValue;
 import gov.nih.nci.caarray.domain.protocol.Parameter;
 import gov.nih.nci.caarray.domain.protocol.Protocol;
 import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
+import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
+import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 
 import org.junit.Test;
 
@@ -231,4 +238,50 @@ public class SourceTest {
         }
     }
 
+    @Test
+    public void testGetCharacteristicsRecursively() {
+        Source so1 = new Source();
+        so1.setName("Foo");
+        so1.setExternalId("X");
+        
+        TermSource mged = new TermSource();
+        mged.setName(ExperimentOntology.MGED_ONTOLOGY.getOntologyName());
+        mged.setVersion(ExperimentOntology.MGED_ONTOLOGY.getVersion());
+        
+        TermSource caarray = new TermSource();
+        caarray.setName(ExperimentOntology.CAARRAY.getOntologyName());
+        caarray.setVersion(ExperimentOntology.CAARRAY.getVersion());
+        
+        Category ds = new Category(ExperimentOntologyCategory.DISEASE_STATE.getCategoryName(), mged);
+        Category mt = new Category(ExperimentOntologyCategory.MATERIAL_TYPE.getCategoryName(), mged);
+        Category ct = new Category(ExperimentOntologyCategory.CELL_TYPE.getCategoryName(), mged);
+        Category c2 = new Category("Fake category", caarray);
+        
+        Term carcinoma = new Term();
+        carcinoma.setValue("Foo");
+        carcinoma.setCategory(ds);
+        so1.setMaterialType(carcinoma);
+        
+        UserDefinedCharacteristic udf = new UserDefinedCharacteristic();
+        udf.setCategory(c2);
+        udf.setValue("Foo");
+        so1.getCharacteristics().add(udf);
+        
+        Set<AbstractCharacteristic> chars = so1.getCharacteristicsRecursively(mt);
+        assertEquals(1, chars.size());
+        AbstractCharacteristic char1 = chars.iterator().next();
+        assertTrue(char1 instanceof TermBasedCharacteristic);
+        assertEquals(mt.getName(), char1.getCategory().getName());
+        assertEquals(carcinoma, ((TermBasedCharacteristic) char1).getTerm());
+        
+        chars = so1.getCharacteristicsRecursively(ds);
+        assertEquals(0, chars.size());
+        
+        chars = so1.getCharacteristicsRecursively(ct);
+        assertEquals(0, chars.size());
+
+        chars = so1.getCharacteristicsRecursively(c2);
+        assertEquals(1, chars.size());
+        assertEquals(udf, chars.iterator().next());
+    }
 }

@@ -82,7 +82,6 @@
  */
 package caarray.client.examples.java;
 
-import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
 import gov.nih.nci.caarray.external.v1_0.array.ArrayDesign;
 import gov.nih.nci.caarray.external.v1_0.array.ArrayProvider;
@@ -90,7 +89,6 @@ import gov.nih.nci.caarray.external.v1_0.array.AssayType;
 import gov.nih.nci.caarray.external.v1_0.data.ArrayDataType;
 import gov.nih.nci.caarray.external.v1_0.data.DataType;
 import gov.nih.nci.caarray.external.v1_0.data.File;
-import gov.nih.nci.caarray.external.v1_0.data.FileCategory;
 import gov.nih.nci.caarray.external.v1_0.data.FileMetadata;
 import gov.nih.nci.caarray.external.v1_0.data.FileType;
 import gov.nih.nci.caarray.external.v1_0.data.QuantitationType;
@@ -101,7 +99,6 @@ import gov.nih.nci.caarray.external.v1_0.experiment.Person;
 import gov.nih.nci.caarray.external.v1_0.factor.Factor;
 import gov.nih.nci.caarray.external.v1_0.query.ExampleSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
-import gov.nih.nci.caarray.external.v1_0.query.FileSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.LimitOffset;
 import gov.nih.nci.caarray.external.v1_0.query.MatchMode;
 import gov.nih.nci.caarray.external.v1_0.query.SearchResult;
@@ -111,15 +108,14 @@ import gov.nih.nci.caarray.external.v1_0.vocabulary.Category;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.Term;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.TermSource;
 import gov.nih.nci.caarray.services.external.v1_0.CaArrayServer;
+import gov.nih.nci.caarray.services.external.v1_0.InvalidInputException;
 import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
 import gov.nih.nci.caarray.services.external.v1_0.NoEntityMatchingReferenceException;
-import gov.nih.nci.caarray.services.external.v1_0.UnsupportedCategoryException;
 import gov.nih.nci.caarray.services.external.v1_0.search.JavaSearchApiUtils;
 import gov.nih.nci.caarray.services.external.v1_0.search.SearchApiUtils;
 import gov.nih.nci.caarray.services.external.v1_0.search.SearchService;
 
 import java.rmi.RemoteException;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -151,7 +147,7 @@ public class LookUpEntities {
         }
     }
 
-    private void lookup() throws RemoteException, NoEntityMatchingReferenceException, InvalidReferenceException, UnsupportedCategoryException {
+    private void lookup() throws RemoteException, NoEntityMatchingReferenceException, InvalidInputException {
         lookupArrayDataTypes();
         lookupArrayDesigns();
         lookupArrayProviders();
@@ -430,7 +426,7 @@ public class LookUpEntities {
         System.out.println("End of principal investigator lookup.");
     }
 
-    private void lookupCharacteristicCategories() throws RemoteException, InvalidReferenceException, UnsupportedCategoryException {
+    private void lookupCharacteristicCategories() throws RemoteException, InvalidInputException {
         CaArrayEntityReference experimentRef = searchForExperiment();
         startTime = System.currentTimeMillis();
         List<Category> categories = searchService.getAllCharacteristicCategories(experimentRef);
@@ -442,7 +438,7 @@ public class LookUpEntities {
         System.out.println("End of characteristic categories lookup.");
     }
 
-    private void lookupTermsInCategory() throws RemoteException, InvalidReferenceException {
+    private void lookupTermsInCategory() throws RemoteException, InvalidInputException {
         CaArrayEntityReference categoryRef = getCategoryReference();
         startTime = System.currentTimeMillis();
         List<Term> terms = searchService.getTermsForCategory(categoryRef, null);
@@ -509,7 +505,7 @@ public class LookUpEntities {
         System.out.println("End of person lookup.");
     }
 
-    private void lookupExperimentsPageByPage() {
+    private void lookupExperimentsPageByPage() throws InvalidInputException {
         ExampleSearchCriteria<Experiment> criteria = new ExampleSearchCriteria<Experiment>();
         Experiment exampleExperiment = new Experiment();
         criteria.setExample(exampleExperiment);
@@ -541,7 +537,7 @@ public class LookUpEntities {
     /**
      * Search for an experiment based on its title.
      */
-    private CaArrayEntityReference searchForExperiment() throws RemoteException, InvalidReferenceException, UnsupportedCategoryException {
+    private CaArrayEntityReference searchForExperiment() throws RemoteException, InvalidInputException {
         // Search for experiment with the given title.
         ExperimentSearchCriteria experimentSearchCriteria = new ExperimentSearchCriteria();
         experimentSearchCriteria.setTitle(EXPERIMENT_TITLE);
@@ -557,7 +553,7 @@ public class LookUpEntities {
         return experiment.getReference();
     }
 
-    private CaArrayEntityReference getCategoryReference() {
+    private CaArrayEntityReference getCategoryReference() throws InvalidInputException {
         String TISSUE_SITE_CATEGORY = "OrganismPart";
         ExampleSearchCriteria<Category> criteria = new ExampleSearchCriteria<Category>();
         Category exampleCategory = new Category();

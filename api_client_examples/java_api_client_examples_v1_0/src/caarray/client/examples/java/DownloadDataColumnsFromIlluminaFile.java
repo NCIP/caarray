@@ -104,8 +104,7 @@ import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.FileSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.SearchResult;
 import gov.nih.nci.caarray.services.external.v1_0.CaArrayServer;
-import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
-import gov.nih.nci.caarray.services.external.v1_0.UnsupportedCategoryException;
+import gov.nih.nci.caarray.services.external.v1_0.InvalidInputException;
 import gov.nih.nci.caarray.services.external.v1_0.data.DataService;
 import gov.nih.nci.caarray.services.external.v1_0.search.JavaSearchApiUtils;
 import gov.nih.nci.caarray.services.external.v1_0.search.SearchApiUtils;
@@ -204,7 +203,7 @@ public class DownloadDataColumnsFromIlluminaFile {
     /**
      * Search for experiments and select one.
      */
-    private CaArrayEntityReference selectExperiment() throws RemoteException, InvalidReferenceException, UnsupportedCategoryException {
+    private CaArrayEntityReference selectExperiment() throws RemoteException, InvalidInputException {
         // Search for experiment with the given title.
         ExperimentSearchCriteria experimentSearchCriteria = new ExperimentSearchCriteria();
         experimentSearchCriteria.setTitle(EXPERIMENT_TITLE);
@@ -228,7 +227,7 @@ public class DownloadDataColumnsFromIlluminaFile {
      * Search for data files in the experiment and select one.
      */
     private CaArrayEntityReference selectDataFile(CaArrayEntityReference experimentRef) throws RemoteException,
-            InvalidReferenceException {
+            InvalidInputException {
         FileSearchCriteria fileSearchCriteria = new FileSearchCriteria();
         fileSearchCriteria.setExperiment(experimentRef);
 
@@ -246,7 +245,7 @@ public class DownloadDataColumnsFromIlluminaFile {
     /**
      * Select the quantitation types (data columns) of interest.
      */
-    private Set<CaArrayEntityReference> selectQuantitationTypes() {
+    private Set<CaArrayEntityReference> selectQuantitationTypes() throws InvalidInputException {
         ExampleSearchCriteria<QuantitationType> criteria = new ExampleSearchCriteria<QuantitationType>();
         Set<CaArrayEntityReference> quantitationTypeRefs = new HashSet<CaArrayEntityReference>();
         String[] quantitationTypeNames = QUANTITATION_TYPES_CSV_STRING.split(",");

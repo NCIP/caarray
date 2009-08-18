@@ -87,12 +87,14 @@ import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.AbstractExperimentDesignNode;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.ExperimentDesignNodeType;
+import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.security.Protectable;
 import gov.nih.nci.caarray.security.ProtectableDescendent;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.DiscriminatorValue;
@@ -210,6 +212,18 @@ public class LabeledExtract extends AbstractBioMaterial implements ProtectableDe
     @Transient
     public Set<Hybridization> getRelatedHybridizations() {
         return getHybridizations();
+    }
+    
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transient
+    protected Map<ExperimentOntologyCategory, Term> getSpecialCharacteristics() {
+        Map<ExperimentOntologyCategory, Term> chars = super.getSpecialCharacteristics();
+        chars.put(ExperimentOntologyCategory.LABEL_COMPOUND, this.label);
+        return chars;
     }
 
     /**

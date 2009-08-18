@@ -225,7 +225,7 @@ public class DataApiTest extends AbstractExternalGridApiTest {
     @Test
     public void testStreamFileContents_BadRef() throws Exception {
         logForSilverCompatibility(TEST_NAME, "testStreamFileContents_BadRef");
-        String dfid = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.DataFile:0";
+        String dfid = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.File:0";
         CaArrayEntityReference fileRef = new CaArrayEntityReference(dfid);
         try {
             TransferServiceContextReference ris =  gridClient.getFileContentsTransfer(fileRef, true);
@@ -237,7 +237,7 @@ public class DataApiTest extends AbstractExternalGridApiTest {
     @Test
     public void testStreamFileContents_Compressed() throws Exception {
         logForSilverCompatibility(TEST_NAME, "testStreamFileContents_Compressed");
-        String dfid = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.DataFile:1";
+        String dfid = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.File:1";
         CaArrayEntityReference fileRef = new CaArrayEntityReference(dfid);
         TransferServiceContextReference ris =  gridClient.getFileContentsTransfer(fileRef, true);
         InputStream is = toStream(ris);
@@ -251,7 +251,7 @@ public class DataApiTest extends AbstractExternalGridApiTest {
     @Test
     public void testStreamFileContents_UnCompressed() throws Exception {
         logForSilverCompatibility(TEST_NAME, "testStreamFileContents_UnCompressed");
-        String dfid = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.DataFile:1";
+        String dfid = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.File:1";
         CaArrayEntityReference fileRef = new CaArrayEntityReference(dfid);
         TransferServiceContextReference ris =  gridClient.getFileContentsTransfer(fileRef, false);
         InputStream is = toStream(ris);
@@ -270,8 +270,8 @@ public class DataApiTest extends AbstractExternalGridApiTest {
     @Test
     public void testStreamFileContentsZip_2() throws Exception {
         logForSilverCompatibility(TEST_NAME, "testStreamFileContentsZip");
-        String dfid1 = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.DataFile:1";
-        String dfid2 = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.DataFile:2";
+        String dfid1 = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.File:1";
+        String dfid2 = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.File:2";
         CaArrayEntityReference fileRef1 = new CaArrayEntityReference(dfid1);
         CaArrayEntityReference fileRef2 = new CaArrayEntityReference(dfid2);
         FileDownloadRequest fdr = new FileDownloadRequest();

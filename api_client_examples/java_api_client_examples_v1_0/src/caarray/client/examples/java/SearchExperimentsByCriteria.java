@@ -93,8 +93,7 @@ import gov.nih.nci.caarray.external.v1_0.query.ExampleSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.Category;
 import gov.nih.nci.caarray.services.external.v1_0.CaArrayServer;
-import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
-import gov.nih.nci.caarray.services.external.v1_0.UnsupportedCategoryException;
+import gov.nih.nci.caarray.services.external.v1_0.InvalidInputException;
 import gov.nih.nci.caarray.services.external.v1_0.search.JavaSearchApiUtils;
 import gov.nih.nci.caarray.services.external.v1_0.search.SearchApiUtils;
 import gov.nih.nci.caarray.services.external.v1_0.search.SearchService;
@@ -134,7 +133,7 @@ public class SearchExperimentsByCriteria {
         }
     }
 
-    private void search() throws RemoteException, InvalidReferenceException, UnsupportedCategoryException {
+    private void search() throws RemoteException, InvalidInputException {
         ExperimentSearchCriteria experimentSearchCriteria = new ExperimentSearchCriteria();
 
         // Select array provider. (See LookUpEntities example client to see how to get list of all array providers.)
@@ -182,7 +181,7 @@ public class SearchExperimentsByCriteria {
         List<Person> investigators = searchService.getAllPrincipalInvestigators();
         for (Person investigator : investigators) {
             if (PI_NAME.equalsIgnoreCase(investigator.getLastName())) {
-                experimentSearchCriteria.setPrincipalInvestigator(investigator.getReference());
+                experimentSearchCriteria.getPrincipalInvestigators().add(investigator.getReference());
                 break;
             }
         }
@@ -208,7 +207,7 @@ public class SearchExperimentsByCriteria {
         }
     }
 
-    private CaArrayEntityReference getCategoryReference(String categoryName) {
+    private CaArrayEntityReference getCategoryReference(String categoryName) throws InvalidInputException {
         ExampleSearchCriteria<Category> criteria = new ExampleSearchCriteria<Category>();
         Category exampleCategory = new Category();
         exampleCategory.setName(categoryName);

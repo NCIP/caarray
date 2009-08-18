@@ -130,6 +130,23 @@ public class Category extends AbstractCaArrayEntity implements Cloneable {
     private Set<Category> children = new HashSet<Category>();
 
     /**
+     * Empty constructor (for tools).
+     */
+    public Category() {
+        // empty on purpose
+    }
+
+    /**
+     * Create Category with given name and source.
+     * @param name the category name
+     * @param ts the TermSource to which the category belongs
+     */
+    public Category(String name, TermSource ts) {
+        this.name = name;
+        this.source = ts;
+    }
+    
+    /**
      * Gets the name.
      *
      * @return the name

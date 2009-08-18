@@ -109,8 +109,7 @@ import gov.nih.nci.caarray.external.v1_0.query.QuantitationTypeSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.SearchResult;
 import gov.nih.nci.caarray.external.v1_0.sample.Hybridization;
 import gov.nih.nci.caarray.services.external.v1_0.CaArrayServer;
-import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
-import gov.nih.nci.caarray.services.external.v1_0.UnsupportedCategoryException;
+import gov.nih.nci.caarray.services.external.v1_0.InvalidInputException;
 import gov.nih.nci.caarray.services.external.v1_0.data.DataService;
 import gov.nih.nci.caarray.services.external.v1_0.search.JavaSearchApiUtils;
 import gov.nih.nci.caarray.services.external.v1_0.search.SearchApiUtils;
@@ -200,7 +199,7 @@ public class DownloadDataColumnsFromHybridizations {
     /**
      * Search for experiments and select one.
      */
-    private CaArrayEntityReference selectExperiment() throws RemoteException, InvalidReferenceException, UnsupportedCategoryException {
+    private CaArrayEntityReference selectExperiment() throws RemoteException, InvalidInputException {
         // Search for experiment with the given title.
         ExperimentSearchCriteria experimentSearchCriteria = new ExperimentSearchCriteria();
         experimentSearchCriteria.setTitle(EXPERIMENT_TITLE);
@@ -224,7 +223,7 @@ public class DownloadDataColumnsFromHybridizations {
      * Select all hybridizations in the given experiment that have CHP data.
      */
     private Set<CaArrayEntityReference> selectHybridizations(CaArrayEntityReference experimentRef)
-            throws RemoteException, InvalidReferenceException {
+            throws RemoteException, InvalidInputException {
         HybridizationSearchCriteria searchCriteria = new HybridizationSearchCriteria();
         searchCriteria.setExperiment(experimentRef);
         List<Hybridization> hybridizations = (searchServiceHelper.hybridizationsByCriteria(searchCriteria)).list();
@@ -247,7 +246,7 @@ public class DownloadDataColumnsFromHybridizations {
     }
 
     private boolean haveChpFiles(CaArrayEntityReference experimentRef, Set<CaArrayEntityReference> hybridizationRefs) throws RemoteException,
-            InvalidReferenceException {
+            InvalidInputException {
         FileSearchCriteria searchCriteria = new FileSearchCriteria();
         searchCriteria.setExperiment(experimentRef);
         CaArrayEntityReference chpFileTypeRef = getChpFileType();
@@ -261,7 +260,7 @@ public class DownloadDataColumnsFromHybridizations {
         }
     }
 
-    private CaArrayEntityReference getChpFileType() {
+    private CaArrayEntityReference getChpFileType() throws InvalidInputException {
         ExampleSearchCriteria<FileType> criteria = new ExampleSearchCriteria<FileType>();
         FileType exampleFileType = new FileType();
         exampleFileType.setName("AFFYMETRIX_CHP");
@@ -272,7 +271,7 @@ public class DownloadDataColumnsFromHybridizations {
         return chpFileType.getReference();
     }
 
-    private Set<CaArrayEntityReference> selectQuantitationTypes() {
+    private Set<CaArrayEntityReference> selectQuantitationTypes() throws InvalidInputException {
         ExampleSearchCriteria<QuantitationType> criteria = new ExampleSearchCriteria<QuantitationType>();
         Set<CaArrayEntityReference> quantitationTypeRefs = new HashSet<CaArrayEntityReference>();
         String[] quantitationTypeNames = QUANTITATION_TYPES_CSV_STRING.split(",");

@@ -112,6 +112,11 @@ public enum ExperimentOntologyCategory {
      * DiseaseState category, used for diseases/conditions of an experiment.
      */
     DISEASE_STATE("DiseaseState", ExperimentOntology.MGED_ONTOLOGY),
+    
+    /**
+     * LabelCompound category, used for the label of a LabeledExtract.
+     */
+    LABEL_COMPOUND("LabelCompound", ExperimentOntology.MGED_ONTOLOGY),
 
     /**
      * ExperimentDesignType category, for selecting type of experiment design.

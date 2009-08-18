@@ -105,8 +105,7 @@ import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.FileSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.SearchResult;
 import gov.nih.nci.caarray.services.external.v1_0.CaArrayServer;
-import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
-import gov.nih.nci.caarray.services.external.v1_0.UnsupportedCategoryException;
+import gov.nih.nci.caarray.services.external.v1_0.InvalidInputException;
 import gov.nih.nci.caarray.services.external.v1_0.data.DataService;
 import gov.nih.nci.caarray.services.external.v1_0.search.JavaSearchApiUtils;
 import gov.nih.nci.caarray.services.external.v1_0.search.SearchApiUtils;
@@ -205,7 +204,7 @@ public class DownloadDataColumnsFromGenepixFile {
     /**
      * Search for experiments and select one.
      */
-    private CaArrayEntityReference selectExperiment() throws RemoteException, InvalidReferenceException, UnsupportedCategoryException {
+    private CaArrayEntityReference selectExperiment() throws RemoteException, InvalidInputException {
         // Search for experiment with the given title.
         ExperimentSearchCriteria experimentSearchCriteria = new ExperimentSearchCriteria();
         experimentSearchCriteria.setTitle(EXPERIMENT_TITLE);
@@ -229,7 +228,7 @@ public class DownloadDataColumnsFromGenepixFile {
      * Search for data files of a certain type in the experiment and select one.
      */
     private CaArrayEntityReference selectDataFile(CaArrayEntityReference experimentRef) throws RemoteException,
-            InvalidReferenceException {
+            InvalidInputException {
         FileSearchCriteria fileSearchCriteria = new FileSearchCriteria();
         fileSearchCriteria.setExperiment(experimentRef);
         // Search for all GENEPIX_GPR data files in the experiment.
@@ -247,7 +246,7 @@ public class DownloadDataColumnsFromGenepixFile {
         return file.getReference();
     }
 
-    private CaArrayEntityReference getGprFileType() {
+    private CaArrayEntityReference getGprFileType() throws InvalidInputException {
         ExampleSearchCriteria<FileType> criteria = new ExampleSearchCriteria<FileType>();
         FileType exampleFileType = new FileType();
         exampleFileType.setName("GENEPIX_GPR");
@@ -261,7 +260,7 @@ public class DownloadDataColumnsFromGenepixFile {
     /**
      * Select the quantitation types (data columns) of interest.
      */
-    private Set<CaArrayEntityReference> selectQuantitationTypes() {
+    private Set<CaArrayEntityReference> selectQuantitationTypes() throws InvalidInputException {
         ExampleSearchCriteria<QuantitationType> criteria = new ExampleSearchCriteria<QuantitationType>();
         Set<CaArrayEntityReference> quantitationTypeRefs = new HashSet<CaArrayEntityReference>();
         String[] quantitationTypeNames = QUANTITATION_TYPES_CSV_STRING.split(",");

@@ -89,6 +89,7 @@ import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.AbstractExperimentDesignNode;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.ExperimentDesignNodeType;
+import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
 import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
@@ -96,10 +97,11 @@ import gov.nih.nci.caarray.validation.UniqueConstraint;
 import gov.nih.nci.caarray.validation.UniqueConstraintField;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.DiscriminatorColumn;
@@ -116,6 +118,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cascade;
@@ -347,17 +350,56 @@ public abstract class AbstractBioMaterial extends AbstractExperimentDesignNode {
                 return category.equals(input.getCategory());
             }
         }));
-        for (Term t : Arrays.asList(this.diseaseState, this.cellType, this.materialType,
-                this.tissueSite)) {
-            if (t != null && t.getCategories().contains(category)) {
+
+        // special handling for the built-in characteristics
+        Map<ExperimentOntologyCategory, Term> builtins = getSpecialCharacteristics();        
+        for (Map.Entry<ExperimentOntologyCategory, Term> builtin : builtins.entrySet()) {
+            if (builtin.getValue() != null && category.getName().equals(builtin.getKey().getCategoryName())) {
                 TermBasedCharacteristic c = new TermBasedCharacteristic();
                 c.setBioMaterial(this);
                 c.setCategory(category);
-                c.setTerm(t);
+                c.setTerm(builtin.getValue());
                 chars.add(c);
             }
         }
+        
+        // special handling for the external id
+        if (StringUtils.isNotEmpty(this.externalId)
+                && category.getName().equals(ExperimentOntologyCategory.EXTERNAL_ID.getCategoryName())) {
+            UserDefinedCharacteristic c = new UserDefinedCharacteristic();
+            c.setBioMaterial(this);
+            c.setCategory(category);
+            c.setValue(this.externalId);
+            chars.add(c);
+        }
+        
         return chars;
+    }    
+    
+    /**
+     * Returns the characteristics that are handled specially and have their own fields in AbstractBioMaterial or
+     * one of its subclasses, rather than being placed in the general characteristics collection. These are returned
+     * as a map, with keys being category constants defining the category of the special characteristic, and the 
+     * values being the Term values of the characteristic.  
+     * For AbstractBioMaterial, this will return a map with four entries:
+     * <ul>
+     * <li>ExperimentOntologyCategory.DISEASE_STATE -> this.diseaseState
+     * <li>ExperimentOntologyCategory.CELL_TYPE -> this.cellType
+     * <li>ExperimentOntologyCategory.MATERIAL_TYPE -> this.materialType
+     * <li>ExperimentOntologyCategory.ORGANISM_PART -> this.tissueSite
+     * </ul>
+     * Subclasses can override this method to add additional entries if they have other characteristics that they
+     * store directly.
+     * @return the map of special characterstics as described above
+     */
+    @Transient
+    protected Map<ExperimentOntologyCategory, Term> getSpecialCharacteristics() {
+        Map<ExperimentOntologyCategory, Term> builtins = new HashMap<ExperimentOntologyCategory, Term>();
+        builtins.put(ExperimentOntologyCategory.DISEASE_STATE, this.diseaseState);
+        builtins.put(ExperimentOntologyCategory.CELL_TYPE, this.cellType);
+        builtins.put(ExperimentOntologyCategory.MATERIAL_TYPE, this.materialType);
+        builtins.put(ExperimentOntologyCategory.ORGANISM_PART, this.tissueSite);
+        return builtins;
     }
 
     /**

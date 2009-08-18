@@ -174,7 +174,7 @@ public class SearchExperimentsByCriteria {
         Person[] investigators = client.getAllPrincipalInvestigators();
         for (Person investigator : investigators) {
             if (PI_NAME.equalsIgnoreCase(investigator.getLastName())) {
-                experimentSearchCriteria.setPrincipalInvestigator(investigator.getReference());
+                experimentSearchCriteria.getPrincipalInvestigators().add(investigator.getReference());
                 break;
             }
         }
