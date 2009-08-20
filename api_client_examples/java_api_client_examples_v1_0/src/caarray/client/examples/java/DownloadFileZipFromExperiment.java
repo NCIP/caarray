@@ -99,7 +99,7 @@ import gov.nih.nci.caarray.services.external.v1_0.search.JavaSearchApiUtils;
 import gov.nih.nci.caarray.services.external.v1_0.search.SearchApiUtils;
 import gov.nih.nci.caarray.services.external.v1_0.search.SearchService;
 
-import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -214,15 +214,12 @@ public class DownloadFileZipFromExperiment {
         FileDownloadRequest downloadRequest = new FileDownloadRequest();
         downloadRequest.setFiles(fileRefs);
         boolean compressEachIndividualFile = false;
-        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+	java.io.File tempOutFile = new java.io.File("downloadedFiles.zip");
+        FileOutputStream outStream = new FileOutputStream(tempOutFile);
         long startTime = System.currentTimeMillis();
         dataServiceHelper.copyFileContentsZipToOutputStream(downloadRequest, compressEachIndividualFile, outStream);
         long totalTime = System.currentTimeMillis() - startTime;
-        byte[] byteArray = outStream.toByteArray();
-        if (byteArray != null) {
-            System.out.println("Retrieved " + byteArray.length + " bytes in " + totalTime + " ms.");
-        } else {
-            System.err.println("Error: Retrieved null byte array.");
-        }
+	outStream.close();
+        System.out.println("Retrieved file zip in " + totalTime + " ms.");
     }
 }
