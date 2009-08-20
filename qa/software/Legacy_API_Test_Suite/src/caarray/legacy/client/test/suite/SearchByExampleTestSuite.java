@@ -119,8 +119,24 @@ public abstract class SearchByExampleTestSuite extends ConfigurableTestSuite
                 long startTime = System.currentTimeMillis();
                 try
                 {
+                    if (search.isLogin())
+                    {
+                        List<AbstractCaArrayObject> nonLoginResults = new ArrayList<AbstractCaArrayObject>();
+                        nonLoginResults.addAll(apiFacade.searchByExample(search.getApi(), search.getExample(), false));
+                        startTime = System.currentTimeMillis();
+                        resultsList.addAll(apiFacade.searchByExample(search.getApi(), search.getExample(), true));
+                        if (resultsList.size() <= nonLoginResults.size())
+                        {
+                            String errorMessage = "Login search did not return more results than non-login search. Login: " + 
+                                resultsList.size() + ", non-login: " + nonLoginResults.size();
+                            setTestResultFailure(testResult, search, errorMessage);
+                        }
+                    }
+                    else
+                    {
+                        resultsList.addAll(apiFacade.searchByExample(search.getApi(), search.getExample(), false));
+                    }
                     
-                    resultsList.addAll(apiFacade.searchByExample(search.getApi(), search.getExample()));
                     
                 }
                 catch (Throwable t)

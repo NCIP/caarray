@@ -29,9 +29,10 @@ public class ExperimentTestSuite extends SearchByExampleTestSuite
 
     private static final String ORG_SCI_NAME = "Organism Scientific Name";
     private static final String ARRAY_PROVIDER = "Array Provider";
+    private static final String LOGIN = "Login";
     
     private static final String[] COLUMN_HEADERS = new String[] { TEST_CASE,
-            API, ORG_SCI_NAME, ARRAY_PROVIDER, EXPECTED_RESULTS, MIN_RESULTS };
+            API, ORG_SCI_NAME, ARRAY_PROVIDER, EXPECTED_RESULTS, MIN_RESULTS, LOGIN };
 
 
     /**
@@ -132,6 +133,10 @@ public class ExperimentTestSuite extends SearchByExampleTestSuite
         if (headerIndexMap.get(TEST_CASE) < input.length
                 && !input[headerIndexMap.get(TEST_CASE)].equals(""))
             search.setTestCase(Float.parseFloat(input[headerIndexMap.get(TEST_CASE)]
+                    .trim()));
+        if (headerIndexMap.get(LOGIN) < input.length
+                && !input[headerIndexMap.get(LOGIN)].equals(""))
+            search.setLogin(Boolean.parseBoolean(input[headerIndexMap.get(LOGIN)]
                     .trim()));
         
         Organism organism = null;

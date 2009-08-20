@@ -16,6 +16,7 @@ public abstract class ExampleSearch
     protected String api = null;
     protected Integer expectedResults = null;
     protected Integer minResults = null;
+    protected boolean login = false;
     
     protected ExampleSearch()
     {
@@ -61,6 +62,22 @@ public abstract class ExampleSearch
     public void setMinResults(Integer minResults)
     {
         this.minResults = minResults;
+    }
+
+    /**
+     * @return the login
+     */
+    public boolean isLogin()
+    {
+        return login;
+    }
+
+    /**
+     * @param login the login to set
+     */
+    public void setLogin(boolean login)
+    {
+        this.login = login;
     }
 
 }

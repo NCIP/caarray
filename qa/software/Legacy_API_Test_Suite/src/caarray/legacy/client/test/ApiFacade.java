@@ -22,7 +22,7 @@ public interface ApiFacade
 
     public void connect() throws Exception;
     
-    public <T extends AbstractCaArrayObject> List<T> searchByExample(String api, T example);
+    public <T extends AbstractCaArrayObject> List<T> searchByExample(String api, T example, boolean login) throws Exception;
     
     public Object query(String api, CQLQuery cqlQuery) throws Exception;
     

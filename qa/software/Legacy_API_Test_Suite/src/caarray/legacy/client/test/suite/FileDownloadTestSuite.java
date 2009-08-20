@@ -153,7 +153,7 @@ public class FileDownloadTestSuite extends ConfigurableTestSuite
             {
                 CaArrayFile exampleFile = new CaArrayFile();
                 exampleFile.setName(name);
-                List<CaArrayFile> fileList = apiFacade.searchByExample(search.getApi(), exampleFile);
+                List<CaArrayFile> fileList = apiFacade.searchByExample(search.getApi(), exampleFile, false);
                 if (!fileList.isEmpty())
                 {
                     file = fileList.get(0);
@@ -176,7 +176,7 @@ public class FileDownloadTestSuite extends ConfigurableTestSuite
             {
                 ArrayDesign ad = new ArrayDesign();
                 ad.setName(name);
-                List<ArrayDesign> adList = apiFacade.searchByExample(search.getApi(), ad);
+                List<ArrayDesign> adList = apiFacade.searchByExample(search.getApi(), ad, false);
                 if (!adList.isEmpty())
                 {
                     arrayDesign = adList.get(0);

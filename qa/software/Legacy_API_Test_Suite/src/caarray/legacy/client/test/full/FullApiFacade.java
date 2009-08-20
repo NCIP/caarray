@@ -9,13 +9,9 @@ import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
 import gov.nih.nci.caarray.domain.data.DataRetrievalRequest;
 import gov.nih.nci.caarray.domain.data.DataSet;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
-import gov.nih.nci.caarray.services.ServerConnectionException;
 import gov.nih.nci.cagrid.cqlquery.CQLQuery;
 
-import java.rmi.RemoteException;
 import java.util.List;
-
-import org.apache.axis.types.URI.MalformedURIException;
 
 import caarray.legacy.client.test.ApiFacade;
 import caarray.legacy.client.test.TestProperties;
@@ -59,9 +55,9 @@ public class FullApiFacade implements ApiFacade
     /* (non-Javadoc)
      * @see caarray.legacy.client.test.ApiFacade#searchByExample(gov.nih.nci.caarray.domain.AbstractCaArrayObject)
      */
-    public <T extends AbstractCaArrayObject> List<T> searchByExample(String api, T example)
+    public <T extends AbstractCaArrayObject> List<T> searchByExample(String api, T example, boolean login) throws Exception
     {
-        return getFacade(api).searchByExample(api, example);
+        return getFacade(api).searchByExample(api, example, login);
     }
 
     /* (non-Javadoc)

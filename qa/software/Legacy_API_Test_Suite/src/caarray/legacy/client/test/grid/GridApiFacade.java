@@ -45,7 +45,7 @@ public class GridApiFacade implements ApiFacade
      * @see caarray.legacy.client.test.ApiFacade#searchByExample(java.lang.String, gov.nih.nci.caarray.domain.AbstractCaArrayObject)
      */
     public <T extends AbstractCaArrayObject> List<T> searchByExample(
-            String api, T example)
+            String api, T example, boolean login) throws Exception
     {
         //TODO: handle this for grid api?
         return new ArrayList<T>();

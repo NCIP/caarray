@@ -179,7 +179,7 @@ public class DataSetTestSuite extends ConfigurableTestSuite
             {
                 Hybridization hyb = new Hybridization();
                 hyb.setName(name);
-                List<Hybridization> hybList = apiFacade.searchByExample(search.getApi(), hyb);
+                List<Hybridization> hybList = apiFacade.searchByExample(search.getApi(), hyb, false);
                 if (!hybList.isEmpty())
                 {
                     request.addHybridization(hybList.get(0));
@@ -202,7 +202,7 @@ public class DataSetTestSuite extends ConfigurableTestSuite
             {
                 QuantitationType quant = new QuantitationType();
                 quant.setName(name);
-                List<QuantitationType> quantList = apiFacade.searchByExample(search.getApi(), quant);
+                List<QuantitationType> quantList = apiFacade.searchByExample(search.getApi(), quant, false);
                 if (!quantList.isEmpty())
                 {
                     request.addQuantitationType(quantList.get(0));
@@ -233,7 +233,7 @@ public class DataSetTestSuite extends ConfigurableTestSuite
             {
                 Hybridization hyb = new Hybridization();
                 hyb.setName(name);
-                List<Hybridization> hybList = apiFacade.searchByExample(search.getApi(), hyb);
+                List<Hybridization> hybList = apiFacade.searchByExample(search.getApi(), hyb, false);
                 if (!hybList.isEmpty())
                 {
                     request.addHybridization(hybList.get(0));
@@ -256,7 +256,7 @@ public class DataSetTestSuite extends ConfigurableTestSuite
             {
                 QuantitationType quant = new QuantitationType();
                 quant.setName(name);
-                List<QuantitationType> quantList = apiFacade.searchByExample(search.getApi(), quant);
+                List<QuantitationType> quantList = apiFacade.searchByExample(search.getApi(), quant, false);
                 if (!quantList.isEmpty())
                 {
                     request.addQuantitationType(quantList.get(0));

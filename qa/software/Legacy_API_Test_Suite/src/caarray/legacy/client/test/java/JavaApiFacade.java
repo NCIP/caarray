@@ -10,6 +10,7 @@ import gov.nih.nci.caarray.domain.data.DataRetrievalRequest;
 import gov.nih.nci.caarray.domain.data.DataSet;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.services.CaArrayServer;
+import gov.nih.nci.caarray.services.ServerConnectionException;
 import gov.nih.nci.caarray.services.arraydesign.ArrayDesignDetailsService;
 import gov.nih.nci.caarray.services.data.DataRetrievalService;
 import gov.nih.nci.caarray.services.file.FileRetrievalService;
@@ -17,6 +18,8 @@ import gov.nih.nci.caarray.services.search.CaArraySearchService;
 import gov.nih.nci.cagrid.cqlquery.CQLQuery;
 
 import java.util.List;
+
+import javax.security.auth.login.FailedLoginException;
 
 import caarray.legacy.client.test.ApiFacade;
 import caarray.legacy.client.test.TestProperties;
@@ -29,6 +32,7 @@ public class JavaApiFacade implements ApiFacade
 {
 
     private CaArraySearchService javaSearchService = null;
+    private CaArraySearchService loginSearchService = null;
     private DataRetrievalService dataService = null;
     private ArrayDesignDetailsService arrayDesignService = null;
     private FileRetrievalService fileRetrievalService = null;
@@ -49,12 +53,30 @@ public class JavaApiFacade implements ApiFacade
         arrayDesignService = server.getArrayDesignDetailsService();
         fileRetrievalService = server.getFileRetrievalService();
     }
+    
+    private void connectWithLogin() throws ServerConnectionException, FailedLoginException
+    {
+        String hostName = TestProperties.getJavaServerHostname();
+        int port = TestProperties.getJavaServerJndiPort();
+        System.out.println("Connecting to java server: " + hostName + ":" + port);
+        CaArrayServer server = new CaArrayServer(hostName, port);
+        server.connect("caarrayuser","Pass#1234");
+        loginSearchService = server.getSearchService();
+    }
 
     /* (non-Javadoc)
      * @see caarray.legacy.client.test.ApiFacade#searchByExample(gov.nih.nci.caarray.domain.AbstractCaArrayObject)
      */
-    public <T extends AbstractCaArrayObject> List<T> searchByExample(String api, T example)
+    public <T extends AbstractCaArrayObject> List<T> searchByExample(String api, T example, boolean login) throws Exception
     {
+        if (login)
+        {
+            if (loginSearchService == null)
+            {
+                connectWithLogin();
+            }
+            return loginSearchService.search(example);
+        }
         return javaSearchService.search(example);
     }
 
