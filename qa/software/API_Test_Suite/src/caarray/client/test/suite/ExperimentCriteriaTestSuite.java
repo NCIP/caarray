@@ -15,7 +15,9 @@ import gov.nih.nci.caarray.external.v1_0.query.SearchResult;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import caarray.client.test.ApiFacade;
 import caarray.client.test.TestProperties;
@@ -409,8 +411,8 @@ public class ExperimentCriteriaTestSuite extends SearchByCriteriaTestSuite
             String name = input[headerIndexMap.get(PI_REF)];
             if (name.startsWith(VAR_START))
                 name = getVariableValue(name);
+            criteria.getPrincipalInvestigators().add(new CaArrayEntityReference(name));
             
-            criteria.setPrincipalInvestigator(new CaArrayEntityReference(name));
         }
         
         search.setExperimentSearchCriteria(criteria);    
