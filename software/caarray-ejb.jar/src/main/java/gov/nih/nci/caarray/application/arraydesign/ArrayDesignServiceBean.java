@@ -325,6 +325,9 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
         } else if ((FileType.AGILENT_CSV.equals(type) || FileType.AGILENT_XML.equals(type))
                 && throwInvalidNumOfArgsExc(FileType.AGILENT_CSV.toString(), designFiles.size(), 1)) {
             return new AgilentUnsupportedDesignHandler(getVocabularyService(), daoFactory, designFile);
+        } else if ((FileType.GEO_GPL.equals(type))
+                && throwInvalidNumOfArgsExc(FileType.GEO_GPL.toString(), designFiles.size(), 1)) {
+            return new GeoUnsupportedDesignHandler(getVocabularyService(), daoFactory, designFile);
         } else if (FileType.IMAGENE_TPL.equals(type)
                 && throwInvalidNumOfArgsExc(FileType.IMAGENE_TPL.toString(), designFiles.size(), 1)) {
             return new ImageneTplHandler(getVocabularyService(), daoFactory, designFile);
