@@ -156,8 +156,8 @@ public abstract class ConfigurableTestSuite
     
         try
         {
-            loadConfiguredTests();
-            executeConfiguredTests(resultReport);
+            loadTestsFromFile();
+            executeTests(resultReport);
         }
         catch (FileNotFoundException e)
         {
@@ -202,7 +202,7 @@ public abstract class ConfigurableTestSuite
      * @throws IOException
      * @throws TestConfigurationException
      */
-    protected void loadConfiguredTests() throws FileNotFoundException,
+    protected void loadTestsFromFile() throws FileNotFoundException,
             IOException, TestConfigurationException
     {
         File configFile = new File(getConfigFilename());
@@ -277,7 +277,7 @@ public abstract class ConfigurableTestSuite
      * 
      * @param resultReport TestResultReport to which test results will be added.
      */
-    protected abstract void executeConfiguredTests(TestResultReport resultReport);
+    protected abstract void executeTests(TestResultReport resultReport);
     
     /**
      * Type-specific method for constructing the searches to be used in this test suite.

@@ -120,7 +120,7 @@ public abstract class SearchByCriteriaTestSuite extends ConfigurableTestSuite
      * @see caarray.client.test.suite.ConfigurableTestSuite#executeConfiguredTests(caarray.client.test.TestResultReport)
      */
     @Override
-    protected void executeConfiguredTests(TestResultReport resultReport)
+    protected void executeTests(TestResultReport resultReport)
     {
         for (CriteriaSearch search : configuredSearches)
         {

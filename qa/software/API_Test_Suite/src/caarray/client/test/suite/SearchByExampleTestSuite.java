@@ -185,7 +185,7 @@ public abstract class SearchByExampleTestSuite extends ConfigurableTestSuite
         filterSearches();
     }
 
-    protected void executeConfiguredTests(TestResultReport resultReport)
+    protected void executeTests(TestResultReport resultReport)
     {
         for (ExampleSearch search : configuredSearches)
         {

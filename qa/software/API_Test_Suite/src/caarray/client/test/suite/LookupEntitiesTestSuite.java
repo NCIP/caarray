@@ -286,7 +286,7 @@ public class LookupEntitiesTestSuite extends ConfigurableTestSuite
      * @see caarray.client.test.ConfigurableTestSuite#executeConfiguredTests(caarray.client.test.TestResultReport)
      */
     @Override
-    protected void executeConfiguredTests(TestResultReport resultReport)
+    protected void executeTests(TestResultReport resultReport)
     {
         for (ConfigurableTest test : configuredTests)
         {
