@@ -1,0 +1,180 @@
+<!-- *********************************************************************** -->
+<!-- ** PROJECT:   caArray Remote Client Examples                         ** -->
+<!-- *********************************************************************** -->
+
+<project name="caarrayRemoteClientExamples" default="build" basedir=".">
+    <!-- ******************************************************************* -->
+    <!-- ** SERVER CONNECTION PROPERTIES                                  ** -->
+    <!-- ******************************************************************* -->
+    <property name="server.hostname" value="array-stage.nci.nih.gov" />
+    <property name="server.jndi.port" value="8080" />
+    <property name="globoss.server.hostname" value="array-stage.nci.nih.gov" />
+    <property name="globoss.server.http.port" value="80" />
+
+    <!-- ******************************************************************* -->
+    <!-- ** PROPERTIES NEEDED FOR BUILD                                   ** -->
+    <!-- ******************************************************************* -->
+    <property name="src.dir" value="${basedir}/src" />
+    <property name="lib.dir" value="${basedir}/lib" />
+    <property name="classes.dir" value="${basedir}/classes" />
+
+    <!-- ******************************************************************* -->
+    <!-- ** BUILD TARGETS                                                 ** -->
+    <!-- ******************************************************************* -->
+    <target name="clean">
+        <delete dir="${classes.dir}" />
+    </target>
+
+    <target name="build">
+        <mkdir dir="${classes.dir}" />
+        <javac srcdir="${src.dir}" destdir="${classes.dir}" debug="true">
+            <classpath>
+                <fileset dir="${lib.dir}">
+                    <include name="**/*.jar" />
+                </fileset>
+            </classpath>
+        </javac>
+    </target>
+
+    <!-- ******************************************************************* -->
+    <!-- ** EXAMPLE 1: SEARCH                                             ** -->
+    <!-- ******************************************************************* -->
+    <target name="run_search_java" depends="build">
+        <java classname="caarray.client.examples.search.java.ApiSearchExperimentByExample">
+            <classpath>
+                <pathelement path="${classes.dir}" />
+                <fileset dir="${lib.dir}">
+                    <include name="**/*.jar" />
+                </fileset>
+            </classpath>
+            <sysproperty key="server.hostname" value="${server.hostname}" />
+            <sysproperty key="server.jndi.port" value="${server.jndi.port}" />
+        </java>
+    </target>
+
+    <target name="run_search_grid" depends="build">
+        <java classname="caarray.client.examples.search.grid.GridCqlSearchExperiment">
+            <classpath>
+                <pathelement path="${classes.dir}" />
+                <fileset dir="${lib.dir}">
+                    <include name="**/*.jar" />
+                </fileset>
+            </classpath>
+            <sysproperty key="globoss.server.hostname" value="${globoss.server.hostname}" />
+            <sysproperty key="globoss.server.http.port" value="${globoss.server.http.port}" />
+        </java>
+    </target>
+
+    <target name="run_search_using_credentials_java" depends="build">
+        <java classname="caarray.client.examples.search.java.ApiLoginAndSearch" fork="true">
+            <classpath>
+                <pathelement path="${classes.dir}" />
+                <fileset dir="${lib.dir}">
+                    <include name="**/*.jar" />
+                </fileset>
+            </classpath>
+            <sysproperty key="server.hostname" value="${server.hostname}" />
+            <sysproperty key="server.jndi.port" value="${server.jndi.port}" />
+        </java>
+    </target>
+
+    <!-- ******************************************************************* -->
+    <!-- ** EXAMPLE 2: DOWNLOAD BYTE CONTENTS OF A FILE                   ** -->
+    <!-- ******************************************************************* -->
+    <target name="run_download_file_java" depends="build">
+        <java classname="caarray.client.examples.download_file.java.ApiFileDownload">
+            <classpath>
+                <pathelement path="${classes.dir}" />
+                <fileset dir="${lib.dir}">
+                    <include name="**/*.jar" />
+                </fileset>
+            </classpath>
+            <sysproperty key="server.hostname" value="${server.hostname}" />
+            <sysproperty key="server.jndi.port" value="${server.jndi.port}" />
+        </java>
+    </target>
+
+    <target name="run_download_file_grid" depends="build">
+        <java classname="caarray.client.examples.download_file.grid.GridFileDownload">
+            <classpath>
+                <pathelement path="${classes.dir}" />
+                <fileset dir="${lib.dir}">
+                    <include name="**/*.jar" />
+                </fileset>
+            </classpath>
+            <sysproperty key="globoss.server.hostname" value="${globoss.server.hostname}" />
+            <sysproperty key="globoss.server.http.port" value="${globoss.server.http.port}" />
+        </java>
+    </target>
+
+    <!-- ******************************************************************* -->
+    <!-- ** EXAMPLE 3: DOWNLOAD PARSED DATA                               ** -->
+    <!-- ******************************************************************* -->
+    <target name="run_download_parsed_data_java" depends="build">
+        <java classname="caarray.client.examples.download_parsed_data.java.ApiDataSetDownload">
+            <classpath>
+                <pathelement path="${classes.dir}" />
+                <fileset dir="${lib.dir}">
+                    <include name="**/*.jar" />
+                </fileset>
+            </classpath>
+            <sysproperty key="server.hostname" value="${server.hostname}" />
+            <sysproperty key="server.jndi.port" value="${server.jndi.port}" />
+        </java>
+    </target>
+
+    <target name="run_download_parsed_data_grid" depends="build">
+        <java classname="caarray.client.examples.download_parsed_data.grid.GridDataSetDownload">
+            <classpath>
+                <pathelement path="${classes.dir}" />
+                <fileset dir="${lib.dir}">
+                    <include name="**/*.jar" />
+                </fileset>
+            </classpath>
+            <sysproperty key="globoss.server.hostname" value="${globoss.server.hostname}" />
+            <sysproperty key="globoss.server.http.port" value="${globoss.server.http.port}" />
+        </java>
+    </target>
+
+    <target name="run_download_parsed_data_from_file_java" depends="build">
+        <java classname="caarray.client.examples.download_parsed_data.java.ApiOneFileDataSetDownload">
+            <classpath>
+                <pathelement path="${classes.dir}" />
+                <fileset dir="${lib.dir}">
+                    <include name="**/*.jar" />
+                </fileset>
+            </classpath>
+            <sysproperty key="server.hostname" value="${server.hostname}" />
+            <sysproperty key="server.jndi.port" value="${server.jndi.port}" />
+        </java>
+    </target>
+
+    <!-- ******************************************************************* -->
+    <!-- ** EXAMPLE 4: DOWNLOAD DETAILS OF AN ARRAY DESIGN                ** -->
+    <!-- ******************************************************************* -->
+    <target name="run_download_array_design_java" depends="build">
+        <java classname="caarray.client.examples.download_array_design.java.ApiArrayDesignDownload">
+            <classpath>
+                <pathelement path="${classes.dir}" />
+                <fileset dir="${lib.dir}">
+                    <include name="**/*.jar" />
+                </fileset>
+            </classpath>
+            <sysproperty key="server.hostname" value="${server.hostname}" />
+            <sysproperty key="server.jndi.port" value="${server.jndi.port}" />
+        </java>
+    </target>
+
+    <target name="run_download_array_design_grid" depends="build">
+        <java classname="caarray.client.examples.download_array_design.grid.GridArrayDesignDownload">
+            <classpath>
+                <pathelement path="${classes.dir}" />
+                <fileset dir="${lib.dir}">
+                    <include name="**/*.jar" />
+                </fileset>
+            </classpath>
+            <sysproperty key="globoss.server.hostname" value="${globoss.server.hostname}" />
+            <sysproperty key="globoss.server.http.port" value="${globoss.server.http.port}" />
+        </java>
+    </target>
+</project>
