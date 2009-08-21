@@ -9,9 +9,9 @@ Test Case,API,Title,Organism Scientific Name,Array Provider,Assay Type,Array Des
 235,java,invalid#%!,,,,,,0,,,,
 236,grid,invalid#%!,,,,,,0,,,,
 237.1,java,,Plasmodium falciparum,,,,,1,,,,
-237.2,java,,,,,URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.array.ArrayDesign:24,,9,,,,
+237.2,java,,,,,URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.array.ArrayDesign:24,,7,,,,
 238.1,grid,,Plasmodium falciparum,,,,,1,,,,
-238.2,grid,,,,,URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.array.ArrayDesign:24,,9,,,,
+238.2,grid,,,,,URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.array.ArrayDesign:24,,7,,,,
 101,java,,,,,,,,100,,10,
 102,grid,,,,,,,,100,,10,
 103,java,,,,,,,,100,,,TRUE

@@ -194,6 +194,7 @@ public class FileTypeTestSuite extends SearchByExampleTestSuite
 
         if (headerIndexMap.get(NAME) < input.length && !input[headerIndexMap.get(NAME)].equals(""))
             example.setName(input[headerIndexMap.get(NAME)].trim());
+            
         
         search.setFileType(example);
         if (headerIndexMap.get(TEST_CASE) < input.length

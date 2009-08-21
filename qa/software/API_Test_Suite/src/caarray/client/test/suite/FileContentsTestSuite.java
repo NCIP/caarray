@@ -425,11 +425,19 @@ public class FileContentsTestSuite extends SearchByCriteriaTestSuite
                 name = getVariableValue(name);
             List<String> names = new ArrayList<String>();
             names.add(name);
-            List<File> files = apiFacade.getFilesByName(search.getApi(), names, experimentName);
-            for (File file : files)
+            try
             {
-                search.addFileReference(file.getReference());
+                List<File> files = apiFacade.getFilesByName(search.getApi(), names, experimentName);
+                for (File file : files)
+                {
+                    search.addFileReference(file.getReference());
+                }
+            } 
+            catch (Exception e)
+            {
+                System.out.println("Exception occured retrieving file for FileContents test: " + search.getTestCase());
             }
+            
         }
         if (headerIndexMap.get(HYB) < input.length && !input[headerIndexMap.get(HYB)].equals(""))
         {

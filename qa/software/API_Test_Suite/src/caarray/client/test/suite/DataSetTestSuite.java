@@ -362,11 +362,19 @@ public class DataSetTestSuite extends SearchByCriteriaTestSuite
                 name = getVariableValue(name);
             List<String> fileNames = new ArrayList<String>();
             fileNames.add(name);
-            List<File> files = apiFacade.getFilesByName(search.getApi(), fileNames, search.getExperimentName());
+            try
+            {
+                List<File> files = apiFacade.getFilesByName(search.getApi(), fileNames, search.getExperimentName());
                 for (File file : files)
                 {
                     criteria.getDataFiles().add(file.getReference());
                 }
+            }
+            catch (Exception e)
+            {
+                System.out.println("Exception occured retrieving files for DataSet test: " + search.getTestCase());
+            }
+            
             
             
         }

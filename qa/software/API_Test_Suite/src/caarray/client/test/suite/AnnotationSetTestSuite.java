@@ -62,18 +62,22 @@ public class AnnotationSetTestSuite extends SearchByCriteriaTestSuite
         AnnotationSet annoResults = (AnnotationSet)resultsList;
         int namedResults = 0;
         Set<String> emptyCategories = new HashSet<String>();
-        for (AnnotationColumn column : annoResults.getColumns())
+        if (annoResults != null)
         {
-            if (column != null)
+            for (AnnotationColumn column : annoResults.getColumns())
             {
-                for (AnnotationValueSet valueSet : column.getValueSets())
+                if (column != null)
                 {
-                    
-                    namedResults += valueSet.getValues().size();
+                    for (AnnotationValueSet valueSet : column.getValueSets())
+                    {
+                        
+                        namedResults += valueSet.getValues().size();
+                    }
                 }
+                    
             }
-                
         }
+        
         if (annoSearch.getExpectedResults() != null)
         {
             
@@ -245,7 +249,7 @@ public class AnnotationSetTestSuite extends SearchByCriteriaTestSuite
             }
             catch (Exception e)
             {
-                ref = new CaArrayEntityReference(name);
+                System.out.println("No hybrid found for test case: " + search.getTestCase());
             }
                      
             request.getExperimentGraphNodes().add(ref);
@@ -268,7 +272,7 @@ public class AnnotationSetTestSuite extends SearchByCriteriaTestSuite
             }
             catch (Exception e)
             {
-                ref = new CaArrayEntityReference(name);
+                System.out.println("No sample found for test case: " + search.getTestCase());
             }
                      
             request.getExperimentGraphNodes().add(ref);
@@ -312,50 +316,69 @@ public class AnnotationSetTestSuite extends SearchByCriteriaTestSuite
         
         if (headerIndexMap.get(CATEGORY) < input.length && !input[headerIndexMap.get(CATEGORY)].equals(""))
         {
+            CaArrayEntityReference ref = null;
             String title = input[headerIndexMap.get(CATEGORY)].trim();
             if (title.startsWith(VAR_START))
+            {
                 title = getVariableValue(title);
-            CaArrayEntityReference ref = apiFacade.getCategoryReference(search.getApi(), title);
-            if (ref == null)
                 ref = new CaArrayEntityReference(title);
+            }
+            else
+            {
+                ref = apiFacade.getCategoryReference(search.getApi(), title);
+            }
+            if (ref == null)
+                System.out.println("No category found for test case: " + search.getTestCase());
                     
             criteria.getCategories().add(ref);
         }
             
         if (headerIndexMap.get(HYBRID) < input.length && !input[headerIndexMap.get(HYBRID)].equals(""))
         {
+            CaArrayEntityReference ref = null;
             String name = input[headerIndexMap.get(HYBRID)].trim();
             if (name.startsWith(VAR_START))
+            {
                 name = getVariableValue(name);
-            CaArrayEntityReference ref = null;
-            try
-            {
-                Hybridization hyb = apiFacade.getHybridization(search.getApi(), name);
-                ref = (hyb != null ? hyb.getReference() : new CaArrayEntityReference(name));
-            }
-            catch (Exception e)
-            {
                 ref = new CaArrayEntityReference(name);
+            }  
+            else
+            {
+                try
+                {
+                    Hybridization hyb = apiFacade.getHybridization(search.getApi(), name);
+                    ref = (hyb != null ? hyb.getReference() : new CaArrayEntityReference(name));
+                }
+                catch (Exception e)
+                {
+                    System.out.println("No hybridization found for annotation set test case: " + search.getTestCase());
+                }
             }
+            
                      
             criteria.getExperimentGraphNodes().add(ref);
         }
         if (headerIndexMap.get(SAMPLE) < input.length && !input[headerIndexMap.get(SAMPLE)].equals(""))
         {
+            CaArrayEntityReference ref = null;
             String name = input[headerIndexMap.get(SAMPLE)].trim();
             if (name.startsWith(VAR_START))
-                name = getVariableValue(name);
-            CaArrayEntityReference ref = null;
-            try
             {
-                Biomaterial bio = apiFacade.getBiomaterial(search.getApi(), name);
-                ref = (bio != null ? bio.getReference() : new CaArrayEntityReference(name));
-            }
-            catch (Exception e)
-            {
+                name = getVariableValue(name); 
                 ref = new CaArrayEntityReference(name);
             }
-                     
+            else
+            {
+                try
+                {
+                    Biomaterial bio = apiFacade.getBiomaterial(search.getApi(), name);
+                    ref = (bio != null ? bio.getReference() : new CaArrayEntityReference(name));
+                }
+                catch (Exception e)
+                {
+                    System.out.println("No sample found for annotation set test case: " + search.getTestCase());
+                } 
+            }        
             criteria.getExperimentGraphNodes().add(ref);
         }
          

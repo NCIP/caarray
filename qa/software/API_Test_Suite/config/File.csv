@@ -9,3 +9,5 @@ Test Case,API,Name,File Type,Expected Results,Min Results,Exclude Zero
 234,grid,,AFFYMETRIX_CEL,,2000,
 322,java,MiaPaCa_panc_SS110885_HG-U133_Plus_2_HCHP-63400_.mas5.txt,AFFYMETRIX_CEL,1,,
 323,grid,MiaPaCa_panc_SS110885_HG-U133_Plus_2_HCHP-63400_.mas5.txt,AFFYMETRIX_CEL,1,,
+1,java,MiaPaCa_panc_SS110885_HG-U133_Plus_2_HCHP-63400_.CEL,,1,,
+2,grid,MiaPaCa_panc_SS110885_HG-U133_Plus_2_HCHP-63400_.CEL,,1,,
