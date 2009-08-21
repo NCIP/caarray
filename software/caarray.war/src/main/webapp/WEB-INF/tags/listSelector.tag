@@ -82,7 +82,8 @@
                         </c:if>
                         <span id="${baseId}ProgressMsg" style="display: none"><img alt="Indicator" src="<c:url value="/images/indicator.gif"/>" /></span>
                         <c:if test="${hideAddButton != 'true'}">
-                            <span style="position: relative; left: 15px; float: right;">
+                            <!--[if (IE 6 | IE 7)]><span style="position: relative; left: 15px; margin-top: -24px; float: right;"><![endif]-->
+                            <![if IE 8 | !IE]><span style="position: relative; left: 15px; float: right;"><![endif]>
                                 <caarray:linkButton actionClass="add" text="Add" url="${addButtonUrl}" onclick="return TabUtils.confirmNavigateFromForm()"/>
                             </span>
                         </c:if>
