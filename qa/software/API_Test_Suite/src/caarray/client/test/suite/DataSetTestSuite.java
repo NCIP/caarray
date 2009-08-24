@@ -57,7 +57,7 @@ public class DataSetTestSuite extends SearchByCriteriaTestSuite
 
     private static final String[] COLUMN_HEADERS = new String[] { TEST_CASE,
             API, FILE_REF, FILE, EXPECTED_RESULTS, MIN_RESULTS, FILE_EXPERIMENT, FILE_EXPERIMENT_ID,QUANT_TYPE, HYB, HYB_REF,EXPECTED_QUANT_TYPE,
-            EXPECTED_PROBE, EXPECTED_DATA_TYPE, EXPECTED_DATA_RESULTS};
+            EXPECTED_PROBE, EXPECTED_DATA_TYPE, EXPECTED_DATA_RESULTS, MAX_TIME};
     /**
      * @param apiFacade
      */
@@ -117,6 +117,23 @@ public class DataSetTestSuite extends SearchByCriteriaTestSuite
             {
                 String detail = "Found expected number of results: "
                         + namedResults;
+                testResult.addDetail(detail);
+            }
+        }
+        if (dataSearch.getMaxTime() != null)
+        {
+
+            if (testResult.getElapsedTime() < dataSearch.getMaxTime())
+            {
+                String errorMessage = "Search did not complete in expected time, expected: "
+                        + dataSearch.getMaxTime()
+                        + ", actual time: " + testResult.getElapsedTime();
+                setTestResultFailure(testResult, dataSearch, errorMessage);
+            }
+            else
+            {
+                String detail = "Search completed in expected time: "
+                        + testResult.getElapsedTime();
                 testResult.addDetail(detail);
             }
         }
@@ -453,6 +470,10 @@ public class DataSetTestSuite extends SearchByCriteriaTestSuite
                 && !input[headerIndexMap.get(MIN_RESULTS)].equals(""))
             search.setMinResults(Integer
                     .parseInt(input[headerIndexMap.get(MIN_RESULTS)].trim()));
+        if (headerIndexMap.get(MAX_TIME) < input.length
+                && !input[headerIndexMap.get(MAX_TIME)].equals(""))
+            search.setMaxTime(Long
+                    .parseLong(input[headerIndexMap.get(MAX_TIME)].trim()));
         
         if (headerIndexMap.get(EXPECTED_PROBE) < input.length
                 && !input[headerIndexMap.get(EXPECTED_PROBE)].equals(""))
