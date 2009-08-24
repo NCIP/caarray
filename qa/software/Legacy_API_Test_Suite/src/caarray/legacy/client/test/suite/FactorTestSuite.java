@@ -23,7 +23,7 @@ public class FactorTestSuite extends SearchByExampleTestSuite
 {
 
     private static final String CONFIG_FILE = TestProperties.CONFIG_DIR
-    + File.separator + "QuantitationType.csv";
+    + File.separator + "Factor.csv";
 
     private static final String NAME = "Name";
 

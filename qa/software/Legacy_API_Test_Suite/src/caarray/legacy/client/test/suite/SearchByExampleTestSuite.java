@@ -131,6 +131,12 @@ public abstract class SearchByExampleTestSuite extends ConfigurableTestSuite
                                 resultsList.size() + ", non-login: " + nonLoginResults.size();
                             setTestResultFailure(testResult, search, errorMessage);
                         }
+                        else
+                        {
+                            String detail = "Login search returned more results than non-login search: " + resultsList.size() +
+                                ", " + nonLoginResults.size();
+                            testResult.addDetail(detail);
+                        }
                     }
                     else
                     {

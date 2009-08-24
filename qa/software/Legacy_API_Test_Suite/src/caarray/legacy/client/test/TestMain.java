@@ -7,11 +7,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import caarray.legacy.client.test.suite.AssayTypeTestSuite;
 import caarray.legacy.client.test.suite.CQLTestSuite;
 import caarray.legacy.client.test.suite.CaArrayFileTestSuite;
+import caarray.legacy.client.test.suite.CategoryTestSuite;
 import caarray.legacy.client.test.suite.ConfigurableTestSuite;
 import caarray.legacy.client.test.suite.DataSetTestSuite;
 import caarray.legacy.client.test.suite.ExperimentTestSuite;
+import caarray.legacy.client.test.suite.FactorTestSuite;
 import caarray.legacy.client.test.suite.FileDownloadTestSuite;
 import caarray.legacy.client.test.suite.QuantitationTypeTestSuite;
 import caarray.legacy.client.test.suite.SampleTestSuite;
@@ -55,7 +58,8 @@ public class TestMain
     {
         ConfigurableTestSuite[] shortSuites = new ConfigurableTestSuite[]{new SampleTestSuite(apiFacade),
                 new CaArrayFileTestSuite(apiFacade), new ExperimentTestSuite(apiFacade), new QuantitationTypeTestSuite(apiFacade),
-                new CQLTestSuite(apiFacade), new DataSetTestSuite(apiFacade), new FileDownloadTestSuite(apiFacade)};
+                new CQLTestSuite(apiFacade), new DataSetTestSuite(apiFacade), new FileDownloadTestSuite(apiFacade),
+                new CategoryTestSuite(apiFacade), new AssayTypeTestSuite(apiFacade),new FactorTestSuite(apiFacade)};
         
         
         return Arrays.asList(shortSuites);
