@@ -292,6 +292,9 @@ public class SearchServiceBean extends BaseV1_0ExternalService implements Search
      */
     public List<Term> getTermsForCategory(CaArrayEntityReference categoryRef, String valuePrefix)
             throws InvalidReferenceException {
+        if (categoryRef == null) {
+            throw new InvalidReferenceException(null);
+        }
         gov.nih.nci.caarray.domain.vocabulary.Category category = getRequiredByLsid(categoryRef.getId(),
                 gov.nih.nci.caarray.domain.vocabulary.Category.class);
         Set<gov.nih.nci.caarray.domain.vocabulary.Term> terms = getDaoFactory().getVocabularyDao().getTermsRecursive(
@@ -354,6 +357,9 @@ public class SearchServiceBean extends BaseV1_0ExternalService implements Search
     @SuppressWarnings("unchecked")
     public <T extends AbstractCaArrayEntity> SearchResult<T> searchByExample(ExampleSearchCriteria<T> criteria,
             LimitOffset pagingParams) throws InvalidInputException {
+        if (criteria == null) {
+            throw new InvalidInputException("criteria cannot be null");
+        }
         T example = criteria.getExample();
         if (example == null) {
             throw new InvalidInputException("example cannot be null");

@@ -1207,6 +1207,7 @@
             <fileset refid="grid.dependencies.caarray-grid-svc.v1_0.build.fileset" />
             <fileset refid="grid.dependencies.caarray-grid-svc.lib.fileset" />
             <path refid="caarray-client.common.grid.dependencies.path"/>
+            <path refid="external.api.dependencies.path" />
         </path>
 
         <path id="caarray-client.common.dependencies.path">

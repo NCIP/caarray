@@ -205,9 +205,23 @@ public abstract class AbstractCaArrayEntity extends AbstractCaArrayObject {
      * @param lsid the LSID to set.
      */
     public void setLsid(LSID lsid) {
-        setLsidAuthority(lsid.getAuthority());
-        setLsidNamespace(lsid.getNamespace());
-        setLsidObjectId(lsid.getObjectId());
+        if (lsid != null) {
+            setLsidAuthority(lsid.getAuthority());
+            setLsidNamespace(lsid.getNamespace());
+            setLsidObjectId(lsid.getObjectId());
+        } else {
+            setLsidAuthority(null);
+            setLsidNamespace(null);
+            setLsidObjectId(null);
+        }
+    }
+
+    /**
+     * Set the LSID for this entity.
+     * @param lsid the LSID to set.
+     */
+    public void setLsid(String lsid) {
+        setLsid(lsid == null ? null : new LSID(lsid));
     }
 
     /**

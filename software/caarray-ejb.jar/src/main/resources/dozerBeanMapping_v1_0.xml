@@ -49,26 +49,52 @@
             <b>name</b>
         </field>
   	</mapping>  
-	<mapping> 
-    	<class-a>gov.nih.nci.caarray.domain.project.Experiment</class-a>
+    <mapping>
+        <class-a>gov.nih.nci.caarray.domain.project.Experiment</class-a>
     	<class-b>gov.nih.nci.caarray.external.v1_0.experiment.Experiment</class-b>   
     	<field custom-converter="gov.nih.nci.caarray.services.external.IdToExternalIdConverter" custom-converter-param="gov.nih.nci.caarray.external.v1_0.experiment.Experiment">
-      		<a>id</a>
-     	 	<b>id</b>
-    	</field>
-    	<field>
-      		<a>manufacturer</a>
-     	 	<b>arrayProvider</b>
-    	</field>
-    	<field>
-      		<a>experimentDesignTypes</a>
-     	 	<b>experimentalDesigns</b>
-    	</field>
-    	<field>
-      		<a>experimentContacts</a>
-     	 	<b>contacts</b>
-    	</field>
-  	</mapping>  
+            <a>id</a>
+            <b>id</b>
+        </field>
+        <field>
+            <a>manufacturer</a>
+            <b>arrayProvider</b>
+        </field>
+        <field>
+            <a>experimentDesignTypes</a>
+            <b>experimentalDesigns</b>
+        </field>
+        <field>
+            <a>experimentContacts</a>
+            <b>contacts</b>
+            <a-hint>gov.nih.nci.caarray.domain.project.ExperimentContact</a-hint>
+            <b-hint>gov.nih.nci.caarray.external.v1_0.experiment.ExperimentalContact</b-hint>
+        </field>
+        <field>
+            <a>factors</a>
+            <b>factors</b>
+            <a-hint>gov.nih.nci.caarray.domain.project.Factor</a-hint>
+            <b-hint>gov.nih.nci.caarray.external.v1_0.factor.Factor</b-hint>
+        </field>
+        <field>
+            <a>normalizationTypes</a>
+            <b>normalizationTypes</b>
+            <a-hint>gov.nih.nci.caarray.domain.vocabulary.Term</a-hint>
+            <b-hint>gov.nih.nci.caarray.external.v1_0.vocabulary.Term</b-hint>
+        </field>
+        <field>
+            <a>qualityControlTypes</a>
+            <b>qualityControlTypes</b>
+            <a-hint>gov.nih.nci.caarray.domain.vocabulary.Term</a-hint>
+            <b-hint>gov.nih.nci.caarray.external.v1_0.vocabulary.Term</b-hint>
+        </field>
+        <field>
+            <a>replicateTypes</a>
+            <b>replicateTypes</b>
+            <a-hint>gov.nih.nci.caarray.domain.vocabulary.Term</a-hint>
+            <b-hint>gov.nih.nci.caarray.external.v1_0.vocabulary.Term</b-hint>
+        </field>
+    </mapping>
     <mapping> 
         <class-a>gov.nih.nci.caarray.domain.project.Experiment</class-a>
         <class-b>gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference</class-b>   
@@ -124,7 +150,7 @@
 	<mapping> 
     	<class-a>gov.nih.nci.caarray.domain.project.ExperimentContact</class-a>
     	<class-b>gov.nih.nci.caarray.external.v1_0.experiment.ExperimentalContact</class-b>   
-        <field custom-converter="gov.nih.nci.caarray.services.external.IdToExternalIdConverter" custom-converter-param="gov.nih.nci.caarray.external.v1_0.experimentExperimentalContact">
+        <field custom-converter="gov.nih.nci.caarray.services.external.IdToExternalIdConverter" custom-converter-param="gov.nih.nci.caarray.external.v1_0.experiment.ExperimentalContact">
             <a>id</a>
             <b>id</b>
         </field>
@@ -311,8 +337,8 @@
             <a>valuesAsString</a>
             <b>valuesAsString</b>
         </field-exclude>
-    </mapping>    
-	<mapping> 
+    </mapping>
+    <mapping>
     	<class-a>gov.nih.nci.caarray.domain.file.CaArrayFile</class-a>
     	<class-b>gov.nih.nci.caarray.external.v1_0.data.File</class-b>   
     	<field custom-converter="gov.nih.nci.caarray.services.external.IdToExternalIdConverter" custom-converter-param="gov.nih.nci.caarray.external.v1_0.data.File">
@@ -331,12 +357,12 @@
             <a>uncompressedSize</a>
             <b>metadata.uncompressedSize</b>
         </field>
-        <field custom-converter="gov.nih.nci.caarray.services.external.EnumConverter">
+        <field custom-converter="gov.nih.nci.caarray.services.external.AbstractEnumConverter$FileTypeConverter">
             <a>fileType</a>
             <b>metadata.fileType</b>
         </field>
-  	</mapping>    
-	<mapping> 
+    </mapping>
+    <mapping>
     	<class-a>gov.nih.nci.caarray.domain.hybridization.Hybridization</class-a>
     	<class-b>gov.nih.nci.caarray.external.v1_0.sample.Hybridization</class-b>   
     	<field custom-converter="gov.nih.nci.caarray.services.external.IdToExternalIdConverter" custom-converter-param="gov.nih.nci.caarray.external.v1_0.sample.Hybridization">

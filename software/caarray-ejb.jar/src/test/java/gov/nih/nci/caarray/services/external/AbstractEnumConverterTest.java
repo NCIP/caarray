@@ -93,10 +93,10 @@ import static org.junit.Assert.*;
  *
  * @author gax
  */
-public class EnumConverterTest {
+public class AbstractEnumConverterTest {
 
 
-    private EnumConverter instance = new EnumConverter();
+    private AbstractEnumConverter instance = new AbstractEnumConverter.FileTypeConverter();
 
     private static final Class enumClass = gov.nih.nci.caarray.domain.file.FileType.class;
     private static final Class entityClass = FileType.class;

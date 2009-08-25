@@ -101,7 +101,7 @@ public class InvalidReferenceException extends InvalidInputException {
      * @param reference the problematic reference
      */
     public InvalidReferenceException(CaArrayEntityReference reference) {
-        super(reference.getId());
+        super(reference == null ? null : reference.getId());
         this.reference = reference;
     }
 

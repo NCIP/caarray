@@ -129,9 +129,8 @@ import gov.nih.nci.caarray.external.v1_0.vocabulary.Category;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.Term;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.TermSource;
 import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
-import gov.nih.nci.caarray.services.external.v1_0.UnsupportedCategoryException;
 import gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.IncorrectEntityTypeFault;
-import gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.InvalidReferenceFault;
+import gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.InvalidInputFault;
 import gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.NoEntityMatchingReferenceFault;
 import gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.UnsupportedCategoryFault;
 import java.util.ArrayList;
@@ -178,7 +177,7 @@ public class SearchApiTest extends AbstractExternalGridApiTest {
     /////////////////////////////////////////////////////////////
 
     @Test(expected = IncorrectEntityTypeFault.class)
-    public void testGetAllCharacteristicCategories_NonEx() throws InvalidReferenceException, RemoteException {
+    public void testGetAllCharacteristicCategories_NonEx() throws RemoteException {
         logForSilverCompatibility(TEST_NAME, "testGetAllCharacteristicCategories_NonEx");
         String qtid = "URN:LSID:gov.nih.nci.caarray.external.v1_0.data.QuantitationType:1";
         gridClient.getAllCharacteristicCategories(new CaArrayEntityReference(qtid));
@@ -192,44 +191,39 @@ public class SearchApiTest extends AbstractExternalGridApiTest {
     }
 
     @Test
-    public void testGetAllCharacteristicCategories_All() throws InvalidReferenceException, RemoteException {
+    public void testGetAllCharacteristicCategories_All() throws RemoteException {
         logForSilverCompatibility(TEST_NAME, "testGetAllCharacteristicCategories_All");
         Category[] l = gridClient.getAllCharacteristicCategories(null);
-        assertEquals(9, l.length);
+        assertEquals(11, l.length);
     }
 
     @Test
-    public void testGetAllCharacteristicCategories_Ex() throws InvalidReferenceException, RemoteException {
+    public void testGetAllCharacteristicCategories_Ex() throws RemoteException {
         logForSilverCompatibility(TEST_NAME, "testGetAllCharacteristicCategories_Ex");
         String type = gov.nih.nci.caarray.external.v1_0.experiment.Experiment.class.getName();
         String eid = "URN:LSID:" + type + ":1";
         CaArrayEntityReference ref = new CaArrayEntityReference(eid);
         Category[] l = gridClient.getAllCharacteristicCategories(ref);
-        assertEquals(9, l.length);
+        assertEquals(11, l.length);
     }
 
     /////////////////////////////////////////////////////
 
     @Test(expected = IncorrectEntityTypeFault.class)
-    public void testGetTermsForCategory_NonCategory() throws InvalidReferenceException, RemoteException {
+    public void testGetTermsForCategory_NonCategory() throws RemoteException {
         logForSilverCompatibility(TEST_NAME, "testGetTermsForCategory_NonCategory");
         String qtid = "URN:LSID:gov.nih.nci.caarray.external.v1_0.data.QuantitationType:1";
         gridClient.getTermsForCategory(new CaArrayEntityReference(qtid), null);
     }
 
-    @Test
-    public void testGetTermsForCategory_Null() throws InvalidReferenceException, RemoteException {
+    @Test(expected = InvalidInputFault.class)
+    public void testGetTermsForCategory_Null() throws RemoteException {
         logForSilverCompatibility(TEST_NAME, "testGetTermsForCategory_Null");
-        try{
-            gridClient.getTermsForCategory(null, null);
-            fail("should fail");
-        } catch(AxisFault e) {
-            assertTrue(e.toString(),  e.getMessage().contains(NullPointerException.class.getName()));
-        }
+        gridClient.getTermsForCategory(null, null);
     }
 
     @Test
-    public void testGetTermsForCategory_Category() throws InvalidReferenceException, RemoteException {
+    public void testGetTermsForCategory_Category() throws RemoteException {
         logForSilverCompatibility(TEST_NAME, "testGetTermsForCategory_Category");
         String cid = "URN:LSID:"+Category.class.getName()+":231"; // DerivedBioAssayType
         Term[] l = gridClient.getTermsForCategory(new CaArrayEntityReference(cid), null);
@@ -256,7 +250,7 @@ public class SearchApiTest extends AbstractExternalGridApiTest {
     }
 
     @Test
-    public void testGetTermsForCategory_CategoryAndPrefix() throws InvalidReferenceException, RemoteException {
+    public void testGetTermsForCategory_CategoryAndPrefix() throws RemoteException {
         logForSilverCompatibility(TEST_NAME, "testGetTermsForCategory_CategoryAndPrefix");
         String cid = "URN:LSID:"+Category.class.getName()+":231"; // DerivedBioAssayType
         String prefix = "a";
@@ -270,7 +264,7 @@ public class SearchApiTest extends AbstractExternalGridApiTest {
     ////////////////////////////////////////////////////
 
     @Test
-    public void testsearchForBiomaterials_All() throws InvalidReferenceException, UnsupportedCategoryException, RemoteException {
+    public void testsearchForBiomaterials_All() throws RemoteException {
         logForSilverCompatibility(TEST_NAME, "testsearchForBiomaterials_All");
 
         BiomaterialSearchCriteria bisc = new BiomaterialSearchCriteria();
@@ -303,7 +297,7 @@ public class SearchApiTest extends AbstractExternalGridApiTest {
     }
 
     @Test
-    public void testsearchForBiomaterials_Limit() throws InvalidReferenceException, UnsupportedCategoryException, RemoteException {
+    public void testsearchForBiomaterials_Limit() throws RemoteException {
         logForSilverCompatibility(TEST_NAME, "testsearchForBiomaterials_Limit");
 
         BiomaterialSearchCriteria bisc = new BiomaterialSearchCriteria();
@@ -339,7 +333,7 @@ public class SearchApiTest extends AbstractExternalGridApiTest {
     }
 
     @Test(expected = UnsupportedCategoryFault.class)
-    public void testsearchForBiomaterials_BadCategory() throws InvalidReferenceException, UnsupportedCategoryException, RemoteException {
+    public void testsearchForBiomaterials_BadCategory() throws RemoteException {
         logForSilverCompatibility(TEST_NAME, "testsearchForBiomaterials_BadCategory");
         BiomaterialSearchCriteria bisc = new BiomaterialSearchCriteria();
         CaArrayEntityReference c = new CaArrayEntityReference("URN:LSID:caarray.nci.nih.gov:"+Category.class.getName()+":1");//CancerSite
@@ -354,7 +348,7 @@ public class SearchApiTest extends AbstractExternalGridApiTest {
     private static final String URN_CATEGORY = "URN:LSID:caarray.nci.nih.gov:"+Category.class.getName()+":";
 
     @Test
-    public void testsearchForBiomaterials_Category_DiseaseState() throws InvalidReferenceException, UnsupportedCategoryException, RemoteException {
+    public void testsearchForBiomaterials_Category_DiseaseState() throws RemoteException {
         logForSilverCompatibility(TEST_NAME, "testsearchForBiomaterials_Category_DiseaseState");
 
         String value = "???";
@@ -363,7 +357,7 @@ public class SearchApiTest extends AbstractExternalGridApiTest {
     }
 
     @Test
-    public void testsearchForBiomaterials_Category_CellType() throws InvalidReferenceException, UnsupportedCategoryException, RemoteException {
+    public void testsearchForBiomaterials_Category_CellType() throws RemoteException {
         logForSilverCompatibility(TEST_NAME, "testsearchForBiomaterials_Category_CellType");
         String value = "low grade prostatic intraepithelial neoplasia";
         int count = 19;
@@ -371,7 +365,7 @@ public class SearchApiTest extends AbstractExternalGridApiTest {
     }
 
     @Test
-    public void testsearchForBiomaterials_Category_MaterialType() throws InvalidReferenceException, UnsupportedCategoryException, RemoteException {
+    public void testsearchForBiomaterials_Category_MaterialType() throws RemoteException {
         logForSilverCompatibility(TEST_NAME, "testsearchForBiomaterials_Category_MaterialType");
         String value = "synthetic_RNA";
         int count = 74;
@@ -379,14 +373,14 @@ public class SearchApiTest extends AbstractExternalGridApiTest {
     }
 
     @Test
-    public void testsearchForBiomaterials_Category_OrganismPart() throws InvalidReferenceException, UnsupportedCategoryException, RemoteException {
+    public void testsearchForBiomaterials_Category_OrganismPart() throws RemoteException {
         logForSilverCompatibility(TEST_NAME, "testsearchForBiomaterials_Category_OrganismPart");//tissue_site
         String value = "???";
         int count = 0;
         searchBioByCategory(178L, value, count);
     }
 
-    private void searchBioByCategory(long categoryId, String value, int count) throws UnsupportedCategoryException, InvalidReferenceException, RemoteException {
+    private void searchBioByCategory(long categoryId, String value, int count) throws RemoteException {
         CaArrayEntityReference cat = new CaArrayEntityReference(URN_CATEGORY + categoryId);
         BiomaterialSearchCriteria bisc = new BiomaterialSearchCriteria();
         bisc.getAnnotationCriterions().add(new AnnotationCriterion(cat, value));
@@ -423,10 +417,7 @@ public class SearchApiTest extends AbstractExternalGridApiTest {
             List<Experiment> experiments = gridClient.searchForExperiments(crit, null).getResults();
             assertEquals(1, experiments.size());
             assertEquals("test1", experiments.get(0).getTitle());
-        } catch (InvalidReferenceFault e) {
-            e.printStackTrace();
-            fail("Couldn't search experiments: " + e);
-        } catch (UnsupportedCategoryFault e) {
+        } catch (InvalidInputFault e) {
             e.printStackTrace();
             fail("Couldn't search experiments: " + e);
         }
@@ -438,10 +429,7 @@ public class SearchApiTest extends AbstractExternalGridApiTest {
             List<Experiment> experiments = gridClient.searchForExperiments(crit, null).getResults();
             assertEquals(1, experiments.size());
             assertEquals("test1", experiments.get(0).getTitle());
-        } catch (InvalidReferenceFault e) {
-            e.printStackTrace();
-            fail("Couldn't search experiments: " + e);
-        } catch (UnsupportedCategoryFault e) {
+        } catch (InvalidInputFault e) {
             e.printStackTrace();
             fail("Couldn't search experiments: " + e);
         }
@@ -455,10 +443,7 @@ public class SearchApiTest extends AbstractExternalGridApiTest {
             List<Experiment> experiments = gridClient.searchForExperiments(crit, null).getResults();
             assertEquals(1, experiments.size());
             assertEquals("test2", experiments.get(0).getTitle());
-        } catch (InvalidReferenceFault e) {
-            e.printStackTrace();
-            fail("Couldn't search experiments: " + e);
-        } catch (UnsupportedCategoryFault e) {
+        } catch (InvalidInputFault e) {
             e.printStackTrace();
             fail("Couldn't search experiments: " + e);
         }
@@ -497,7 +482,7 @@ public class SearchApiTest extends AbstractExternalGridApiTest {
     ///////////////////////////
 
     @Test
-    public void testSearchForBiomaterials() throws InvalidReferenceException, UnsupportedCategoryException, RemoteException {
+    public void testSearchForBiomaterials() throws RemoteException {
         logForSilverCompatibility(TEST_NAME, "testSearchForBiomaterials");
         BiomaterialSearchCriteria crit = new BiomaterialSearchCriteria();
         crit.setExperiment(new CaArrayEntityReference("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experiment.Experiment:1"));
@@ -507,7 +492,7 @@ public class SearchApiTest extends AbstractExternalGridApiTest {
     }
 
     @Test
-    public void testSearchForHybridizations() throws InvalidReferenceException, RemoteException {
+    public void testSearchForHybridizations() throws RemoteException {
         logForSilverCompatibility(TEST_NAME, "testSearchForHybridizations");
         HybridizationSearchCriteria crit = new HybridizationSearchCriteria();
         crit.setExperiment(new CaArrayEntityReference("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experiment.Experiment:1"));
@@ -532,7 +517,7 @@ public class SearchApiTest extends AbstractExternalGridApiTest {
     /////////////////////////////////
 
     @Test
-    public void testSearchForQuantitationTypes() throws InvalidReferenceException, RemoteException {
+    public void testSearchForQuantitationTypes() throws RemoteException {
         logForSilverCompatibility(TEST_NAME, "testSearchForQuantitationTypes");
         QuantitationTypeSearchCriteria crit = new QuantitationTypeSearchCriteria();
         crit.setHybridization(new CaArrayEntityReference(
@@ -551,7 +536,7 @@ public class SearchApiTest extends AbstractExternalGridApiTest {
     }
 
     @Test
-    public void testSearchForQuantitationTypes_NoHyb() throws InvalidReferenceException, RemoteException {
+    public void testSearchForQuantitationTypes_NoHyb() throws RemoteException {
         logForSilverCompatibility(TEST_NAME, "testSearchForQuantitationTypes_NoHyb");
 
         try {
@@ -559,14 +544,13 @@ public class SearchApiTest extends AbstractExternalGridApiTest {
             QuantitationType[] types = gridClient.searchForQuantitationTypes(crit);
             logForSilverCompatibility(TEST_OUTPUT, "unexpected validation outcome");
             fail();
-        } catch(AxisFault e) {
-            assertTrue(e.toString(), e.getMessage().contains(NullPointerException.class.getName()));
+        } catch(InvalidInputFault e) {
             logForSilverCompatibility(TEST_OUTPUT, "null Hyb validation :" + e.getCause());
         }
     }
 
     @Test
-    public void testSearchForQuantitationTypes_All() throws InvalidReferenceException, RemoteException {
+    public void testSearchForQuantitationTypes_All() throws RemoteException {
         logForSilverCompatibility(TEST_NAME, "testSearchForQuantitationTypes_All");
         QuantitationTypeSearchCriteria crit = new QuantitationTypeSearchCriteria();
         crit.setHybridization(new CaArrayEntityReference(
@@ -577,7 +561,7 @@ public class SearchApiTest extends AbstractExternalGridApiTest {
     }
 
     @Test
-    public void testSearchForQuantitationTypes_ArrayDataType() throws InvalidReferenceException, RemoteException {
+    public void testSearchForQuantitationTypes_ArrayDataType() throws RemoteException {
         logForSilverCompatibility(TEST_NAME, "testSearchForQuantitationTypes_ArrayDataType");
         QuantitationTypeSearchCriteria crit = new QuantitationTypeSearchCriteria();
         crit.setHybridization(new CaArrayEntityReference(
@@ -595,7 +579,7 @@ public class SearchApiTest extends AbstractExternalGridApiTest {
     }
 
     @Test
-    public void testSearchForQuantitationTypes_FileTypeCategories() throws InvalidReferenceException, RemoteException {
+    public void testSearchForQuantitationTypes_FileTypeCategories() throws RemoteException {
         logForSilverCompatibility(TEST_NAME, "testSearchForQuantitationTypes_FileTypeCategories");
         QuantitationTypeSearchCriteria crit = new QuantitationTypeSearchCriteria();
         crit.setHybridization(new CaArrayEntityReference(
@@ -610,7 +594,7 @@ public class SearchApiTest extends AbstractExternalGridApiTest {
      * see GF 22409.
      **/
     @Test
-    public void testSearchForQuantitationTypes_FileTypes() throws InvalidReferenceException, RemoteException {
+    public void testSearchForQuantitationTypes_FileTypes() throws RemoteException {
         logForSilverCompatibility(TEST_NAME, "testSearchForQuantitationTypes_FileTypes");
         QuantitationTypeSearchCriteria crit = new QuantitationTypeSearchCriteria();
         crit.setHybridization(new CaArrayEntityReference(
@@ -622,12 +606,12 @@ public class SearchApiTest extends AbstractExternalGridApiTest {
         crit.getFileTypes().clear();
         crit.getFileTypes().add(new CaArrayEntityReference("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.FileType:ILLUMINA_IDAT"));
         types = gridClient.searchForQuantitationTypes(crit);
-        assertEquals(0, types.length);
+        assertNull(types);
     }
     ///////////////////////////////
 
     @Test
-    public void testSearchForFiles() throws InvalidReferenceException, RemoteException {
+    public void testSearchForFiles() throws RemoteException {
         logForSilverCompatibility(TEST_NAME, "testSearchForFiles");
         FileSearchCriteria crit = new FileSearchCriteria();
         crit.setExperiment(new CaArrayEntityReference(
@@ -651,17 +635,17 @@ public class SearchApiTest extends AbstractExternalGridApiTest {
     }
 
     @Test
-    public void testSearchForFiles_Experiment() throws InvalidReferenceException, RemoteException {
+    public void testSearchForFiles_Experiment() throws RemoteException {
         logForSilverCompatibility(TEST_NAME, "testSearchForFiles_Experiment");
         FileSearchCriteria crit = new FileSearchCriteria();
         crit.setExperiment(new CaArrayEntityReference(
                 "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experiment.Experiment:1"));
         List<File> files = gridClient.searchForFiles(crit, null).getResults();
-        assertEquals(files.toString(), 19, files.size());
+        assertEquals(files.toString(), 21, files.size());
     }
 
     @Test
-    public void testSearchForFiles_ExperimentGraphNodes() throws InvalidReferenceException, RemoteException {
+    public void testSearchForFiles_ExperimentGraphNodes() throws RemoteException {
         logForSilverCompatibility(TEST_NAME, "testSearchForFiles_ExperimentGraphNodes");
         FileSearchCriteria crit = new FileSearchCriteria();
         crit.getExperimentGraphNodes().add(new CaArrayEntityReference(
@@ -691,7 +675,7 @@ public class SearchApiTest extends AbstractExternalGridApiTest {
     }
 
     @Test
-    public void testSearchForFiles_Extention() throws InvalidReferenceException, RemoteException {
+    public void testSearchForFiles_Extention() throws RemoteException {
         logForSilverCompatibility(TEST_NAME, "testSearchForFiles_Extention");
         FileSearchCriteria crit = new FileSearchCriteria();
         crit.setExtension("gpr");
@@ -703,7 +687,7 @@ public class SearchApiTest extends AbstractExternalGridApiTest {
     }
 
     @Test
-    public void testSearchForFiles_Type() throws InvalidReferenceException, RemoteException {
+    public void testSearchForFiles_Type() throws RemoteException {
         logForSilverCompatibility(TEST_NAME, "testSearchForFiles_Type");
         FileSearchCriteria crit = new FileSearchCriteria();
         crit.getTypes().add(new CaArrayEntityReference("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.FileType:GENEPIX_GPR"));
@@ -712,15 +696,15 @@ public class SearchApiTest extends AbstractExternalGridApiTest {
     }
 
     @Test
-    public void testSearchForFiles_All() throws InvalidReferenceException, RemoteException {
+    public void testSearchForFiles_All() throws RemoteException {
         logForSilverCompatibility(TEST_NAME, "testSearchForFiles_All");
         FileSearchCriteria crit = new FileSearchCriteria();
         List<File> files = gridClient.searchForFiles(crit, null).getResults();
-        assertEquals(19, files.size());
+        assertEquals(22, files.size());
     }
 
     @Test
-    public void testSearchForFiles_Limit() throws InvalidReferenceException, RemoteException {
+    public void testSearchForFiles_Limit() throws RemoteException {
         logForSilverCompatibility(TEST_NAME, "testSearchForFiles_Limit");
         FileSearchCriteria fsc = new FileSearchCriteria();
         SearchResult<File> sr = gridClient.searchForFiles(fsc, null);
@@ -755,19 +739,17 @@ public class SearchApiTest extends AbstractExternalGridApiTest {
             SearchResult sr = gridClient.searchByExample(null, null);
             logForSilverCompatibility(TEST_OUTPUT, "unexpected outcome");
             fail();
-        } catch(AxisFault e) {
-            assertTrue(e.toString(), e.getMessage().contains(NullPointerException.class.getName()));
+        } catch(InvalidInputFault e) {
             logForSilverCompatibility(TEST_OUTPUT, "null Criteria validation :" + e);
         }
 
         try {
-            logForSilverCompatibility(TEST_OUTPUT, "null exanple");
+            logForSilverCompatibility(TEST_OUTPUT, "null example");
             ExampleSearchCriteria xsc = new ExampleSearchCriteria(null);
             SearchResult sr = gridClient.searchByExample(xsc, null);
             logForSilverCompatibility(TEST_OUTPUT, "unexpected outcome");
             fail();
-        } catch(AxisFault e) {
-            assertTrue(e.toString(), e.getMessage().contains(NullPointerException.class.getName()));
+        } catch(InvalidInputFault e) {
             logForSilverCompatibility(TEST_OUTPUT, "null example validation :" + e);
         }
     }
@@ -783,13 +765,17 @@ public class SearchApiTest extends AbstractExternalGridApiTest {
         if (property != null) {
             PropertyUtils.setProperty(example, property, value);
         }
-        SearchResult<T> sr = gridClient.searchByExample(xsc, null);
-        if (sr.isFullResult()){
-            assertEquals("count for search by "+property, count, sr.getResults().size());
-        } else {
-            assertTrue("result size " + sr.getResults().size() + " < " + count, sr.getResults().size() < count);
-            assertEquals(sr.getMaxAllowedResults(), sr.getResults().size());
+        LimitOffset lo = new LimitOffset();
+        ArrayList<T> all = new ArrayList<T>(count + 1);
+        SearchResult<T> sr = gridClient.searchByExample(xsc, lo);
+        all.addAll(sr.getResults());
+        while (!sr.isFullResult()) {
+            lo.setOffset(all.size());
+            sr = gridClient.searchByExample(xsc, lo);
+            all.addAll(sr.getResults());
         }
+        assertEquals("count for search by "+property, count, all.size());
+
         if (property != null) {
             for (T t : sr.getResults()) {
                 Object got = PropertyUtils.getProperty(t, property);
@@ -890,7 +876,7 @@ public class SearchApiTest extends AbstractExternalGridApiTest {
         testExampleProperty(new Experiment(), "arrayProvider", ap, 1);
         AssayType at = new AssayType("Gene Expression");
         at.setId("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.array.AssayType:3");
-        testExampleProperty(new Experiment(), "assayTypes", Collections.singleton(at), 1);
+        testExampleProperty(new Experiment(), "assayTypes", Collections.singleton(at), 2);
         Term t = new Term();
         t.setId("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.Term:697");
         testExampleProperty(new Experiment(), "experimentalDesigns", Collections.singleton(t), 1);
@@ -899,24 +885,27 @@ public class SearchApiTest extends AbstractExternalGridApiTest {
         testExampleProperty(new Experiment(), "factors", Collections.singleton(f), 1);
         Organism o = new Organism();
         o.setId("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experiment.Organism:2");
-        testExampleProperty(new Experiment(), "organism", o, 1);
-        Person p = new Person();
-        p.setId("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experiment.Person:12");
+        testExampleProperty(new Experiment(), "organism", o, 2);
+        ExperimentalContact p = new ExperimentalContact();
+        p.setId("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experiment.ExperimentalContact:3");
         testExampleProperty(new Experiment(), "contacts", Collections.singleton(p), 1);
         ArrayDesign ad = new ArrayDesign();
         ad.setId("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.array.ArrayDesign:1");
-        ad.setName("Mm-Incyte-v1px_16Bx24Cx23R");
-        testExampleProperty(new Experiment(), "arrayDesigns", Collections.singleton(ad), 1);
-        testExampleProperty(new Experiment(), "normalizationTypes", "TODO", 1);
-        testExampleProperty(new Experiment(), "qualityControlTypes", "TODO", 1);
-        testExampleProperty(new Experiment(), "replicateTypes", "TODO", 1);
+        testExampleProperty(new Experiment(), "arrayDesigns", Collections.singleton(ad), 2);
+//        t.setId("TODO: no test data form normalizationTypes");
+//        testExampleProperty(new Experiment(), "normalizationTypes", Collections.singleton(t), 0);
+        t.setId("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.Term:53");
+        testExampleProperty(new Experiment(), "qualityControlTypes", Collections.singleton(t), 1);
+//        t.setId("TODO: no test data form replicateTypes");
+//        testExampleProperty(new Experiment(), "replicateTypes", Collections.singleton(t), 0);
     }
 
     @Test
     public void testSearchByExample_Person() throws Exception {
         logForSilverCompatibility(TEST_NAME, "testSearchByExample_Person");
         testExampleProperty(new Person(), null, null, 4);
-        testExampleProperty(new Person(), "id", "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experiment.Person:1", 1);
+        testExampleProperty(new Person(), "id", "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experiment.Person:9", 1);
+        testExampleProperty(new Person(), "id", "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experiment.Person:1", 0);// org
         testExampleProperty(new Person(), "id", "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experiment.Person:0", 0);
 
         testExampleProperty(new Person(), "emailAddress", "JEGreen@nih.gov", 2);
@@ -943,9 +932,6 @@ public class SearchApiTest extends AbstractExternalGridApiTest {
         f.setId("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.factor.Factor:1");
         fv.setFactor(f);
         UserDefinedValue v = new UserDefinedValue();
-        Term t = new Term();
-        t.setId("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.TermSource:1");
-        v.setUnit(t);
         v.setValue("Pr111 reference");
         fv.setValue(v);
         testExampleProperty(new Hybridization(), "factorValues", Collections.singleton(fv), 19);
@@ -961,7 +947,7 @@ public class SearchApiTest extends AbstractExternalGridApiTest {
 
         testExampleProperty(new Term(), "accession", "MO_562", 1);
         TermSource ts = new TermSource();
-        ts.setId("id=URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.TermSource:3");
+        ts.setId("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.TermSource:3");
         testExampleProperty(new Term(), "termSource", ts, 10);
         testExampleProperty(new Term(), "url", "http://mged.sourceforge.net/ontologies/MGEDontology.php#silicon", 1);
         testExampleProperty(new Term(), "value", "synthetic_RNA", 1);
@@ -970,14 +956,14 @@ public class SearchApiTest extends AbstractExternalGridApiTest {
     @Test
     public void testSearchByExample_Category() throws Exception {
         logForSilverCompatibility(TEST_NAME, "testSearchByExample_Category");
-        testExampleProperty(new Category(), null, null, 239);
+        testExampleProperty(new Category(), null, null, 240);
         testExampleProperty(new Category(), "id", "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.Category:1", 1);
         testExampleProperty(new Category(), "id", "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.Category:0", 0);
 
         testExampleProperty(new Category(), "accession", "MO_119", 1);
         testExampleProperty(new Category(), "name", "MeasurementType", 1);
         TermSource ts = new TermSource();
-        ts.setId("id=URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.TermSource:1");
+        ts.setId("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.TermSource:1");
         testExampleProperty(new Category(), "termSource", ts, 233);
         testExampleProperty(new Category(), "url", "http://mged.sourceforge.net/ontologies/MGEDontology.php#InitialTimePoint", 1);
     }
@@ -1012,15 +998,15 @@ public class SearchApiTest extends AbstractExternalGridApiTest {
     public void testSearchByExample_ExperimentalContact() throws Exception {
         logForSilverCompatibility(TEST_NAME, "testSearchByExample_ExperimentalContact");
         testExampleProperty(new ExperimentalContact(), null, null, 4);
-        testExampleProperty(new ExperimentalContact(), "id", "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experimentExperimentalContact:1", 1);
-        testExampleProperty(new ExperimentalContact(), "id", "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experimentExperimentalContact:0", 0);
+        testExampleProperty(new ExperimentalContact(), "id", "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experiment.ExperimentalContact:1", 1);
+        testExampleProperty(new ExperimentalContact(), "id", "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experiment.ExperimentalContact:0", 0);
 
         Person p = new Person();
         p.setId("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experiment.Person:9");
         testExampleProperty(new ExperimentalContact(), "person", p, 1);
         Term t = new Term();
-        t.setId("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.Term:286");//???
-        testExampleProperty(new ExperimentalContact(), "roles", Collections.singleton(t), 1);
+        t.setId("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.Term:59");//investigator
+        testExampleProperty(new ExperimentalContact(), "roles", Collections.singleton(t), 3);
     }
 
     @Test
@@ -1036,13 +1022,16 @@ public class SearchApiTest extends AbstractExternalGridApiTest {
         AssayType at = new AssayType("Gene Expression");
         at.setId("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.array.AssayType:3");
         testExampleProperty(new ArrayDesign(), "assayTypes", Collections.singleton(at), 1);
+
         File df = new File();
         df.setId("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.File:1");
         ExampleSearchCriteria<ArrayDesign> xsc = new ExampleSearchCriteria<ArrayDesign>();
         xsc.setExcludeZeroes(true);
         xsc.setExample(new ArrayDesign());
         testExampleProperty(xsc, "files", Collections.singleton(df), 1);
-        testExampleProperty(new ArrayDesign(), "lsid", "TODO", 0);
+
+        testExampleProperty(new ArrayDesign(), "lsid", "foo", 0);
+        testExampleProperty(new ArrayDesign(), "lsid", "URN:LSID:caarray.nci.nih.gov:domain:Mm-Incyte-v1px_16Bx24Cx23R", 1);
         testExampleProperty(new ArrayDesign(), "name", "Mm-Incyte-v1px_16Bx24Cx23R", 1);
         Organism o = new Organism();
         o.setId("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experiment.Organism:2");// Mus musculus
@@ -1071,7 +1060,7 @@ public class SearchApiTest extends AbstractExternalGridApiTest {
         Category ct = new Category();
         ct.setId("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.Category:39");
         c.setCategory(ct);
-        testExampleProperty(new Biomaterial(), "characteristics", Collections.singleton(c), 0);
+        testExampleProperty(new Biomaterial(), "characteristics", Collections.singleton(c), 148);
 
         testExampleProperty(new Biomaterial(), "description", "foo", 0);
 
@@ -1089,19 +1078,19 @@ public class SearchApiTest extends AbstractExternalGridApiTest {
         t = new Term();
         t.setId("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.Term:152");
         tv.setTerm(t);
-        testExampleProperty(new Biomaterial(), "materialType", tv, 1);
+        testExampleProperty(new Biomaterial(), "materialType", tv, 74);
 
         testExampleProperty(new Biomaterial(), "name", "Cy3 labeled Pr111 reference_8kNewPr111_14v1p4m11", 1);
 
         Organism o = new Organism();
         o.setId("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experiment.Organism:2");
-        testExampleProperty(new Biomaterial(), "organism", o, 1);
+        testExampleProperty(new Biomaterial(), "organism", o, 0);
 
         tv = new TermValue();
         t = new Term();
         t.setId("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.Term:682");
         tv.setTerm(t);
-        testExampleProperty(new Biomaterial(), "tissueSite", tv, 1);
+        testExampleProperty(new Biomaterial(), "tissueSite", tv, 37);
 
         testExampleProperty(new Biomaterial(), "type", BiomaterialType.SOURCE, 37);
     }

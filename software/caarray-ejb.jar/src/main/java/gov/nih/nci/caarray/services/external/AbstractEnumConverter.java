@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.services.external;
 
 import gov.nih.nci.caarray.domain.LSID;
+import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
 import net.sf.dozer.util.mapping.converters.CustomConverter;
 
@@ -90,11 +91,14 @@ import net.sf.dozer.util.mapping.converters.CustomConverter;
  *
  * Convert an Enum instance to and from an AbstractCaArrayEntity.  AbstractCaArrayEntity use the name of the enum as
  * the entity id's objectId.
+ * @param <A> Enum type.
+ * @param <B> Entity type.
  *
  * @author gax
  *
  */
-public class EnumConverter implements CustomConverter {
+public abstract class AbstractEnumConverter<A extends Enum, B extends AbstractCaArrayEntity>
+        implements CustomConverter {
     /**
      * {@inheritDoc}
      */
@@ -109,20 +113,43 @@ public class EnumConverter implements CustomConverter {
             String name = new LSID(entity.getId()).getObjectId();
             return Enum.valueOf(destClass, name);
         } else if (AbstractCaArrayEntity.class.isAssignableFrom(destClass)) {
-            AbstractCaArrayEntity entity;
+            B entity;
             if (dest != null) {
-                entity = (AbstractCaArrayEntity) dest;
+                entity = (B) dest;
             } else {
                 try {
-                    entity = (AbstractCaArrayEntity) destClass.newInstance();
+                    entity = (B) destClass.newInstance();
                 } catch (Exception ex) {
                     throw new IllegalArgumentException(ex);
                 }
             }
             entity.setId(AbstractExternalService.makeExternalId(destClass, src));
+            copyPropertiesToB((A) src, entity);
             return entity;            
         }
 
         throw new IllegalArgumentException("don't know ow to convert " + src + " to a " + destClass.getName());
+    }
+    
+    /**
+     * Copy all properties (except id) from the enum to the external object.
+     * @param a the source.
+     * @param b the external object to populate.
+     */
+    protected abstract void copyPropertiesToB(A a, B b);
+
+    /**
+     * FileType converter.
+     */
+    public static class FileTypeConverter
+            extends AbstractEnumConverter<FileType, gov.nih.nci.caarray.external.v1_0.data.FileType> {
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        protected void copyPropertiesToB(FileType a, gov.nih.nci.caarray.external.v1_0.data.FileType b) {
+            b.setName(a.getName());
+        }
     }
 }

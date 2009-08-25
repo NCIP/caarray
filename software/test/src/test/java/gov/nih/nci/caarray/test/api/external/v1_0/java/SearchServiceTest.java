@@ -57,10 +57,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import javax.ejb.EJBException;
 
 import org.apache.commons.beanutils.PropertyUtils;
 import org.junit.Before;
@@ -121,7 +120,7 @@ public class SearchServiceTest extends AbstractExternalJavaApiTest {
     public void testGetAllCharacteristicCategories_All() throws InvalidInputException {
         logForSilverCompatibility(TEST_NAME, "testGetAllCharacteristicCategories_All");
         List<Category> l = service.getAllCharacteristicCategories(null);
-        assertEquals(9, l.size());
+        assertEquals(11, l.size());
     }
 
     @Test
@@ -131,7 +130,7 @@ public class SearchServiceTest extends AbstractExternalJavaApiTest {
         String eid = "URN:LSID:" + type + ":1";
         CaArrayEntityReference ref = new CaArrayEntityReference(eid);
         List<Category> l = service.getAllCharacteristicCategories(ref);
-        assertEquals(9, l.size());
+        assertEquals(11, l.size());
     }
 
     /////////////////////////////////////////////////////
@@ -463,19 +462,13 @@ public class SearchServiceTest extends AbstractExternalJavaApiTest {
         assertEquals(DataType.INTEGER, qt.getDataType());
     }
 
-    @Test
+    @Test(expected = InvalidInputException.class)
     public void testSearchForQuantitationTypes_NoHyb() throws InvalidInputException {
         logForSilverCompatibility(TEST_NAME, "testSearchForQuantitationTypes_NoHyb");
-
-        try {
-            QuantitationTypeSearchCriteria crit = new QuantitationTypeSearchCriteria();
-            List<QuantitationType> types = service.searchForQuantitationTypes(crit);
-            logForSilverCompatibility(TEST_OUTPUT, "unexpected validation outcome");
-            fail();
-        } catch(javax.ejb.EJBException e) {
-            assertEquals(NullPointerException.class, e.getCausedByException().getClass());
-            logForSilverCompatibility(TEST_OUTPUT, "null Hyb validation :" + e.getCause());
-        }
+        QuantitationTypeSearchCriteria crit = new QuantitationTypeSearchCriteria();
+        List<QuantitationType> types = service.searchForQuantitationTypes(crit);
+        logForSilverCompatibility(TEST_OUTPUT, "unexpected validation outcome");
+        fail();
     }
 
     @Test
@@ -558,7 +551,7 @@ public class SearchServiceTest extends AbstractExternalJavaApiTest {
         assertNotNull(df);
         assertEquals("fileType.name", "GENEPIX_GPR", df.getMetadata().getFileType().getName());
         assertEquals("CompressedSize", 682885, df.getMetadata().getCompressedSize());
-        assertEquals("UncompressedSize", 1771373, df.getMetadata().getUncompressedSize());        
+        assertEquals("UncompressedSize", 1771373, df.getMetadata().getUncompressedSize());
     }
 
     @Test
@@ -568,7 +561,7 @@ public class SearchServiceTest extends AbstractExternalJavaApiTest {
         crit.setExperiment(new CaArrayEntityReference(
                 "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experiment.Experiment:1"));
         List<File> files = service.searchForFiles(crit, null).getResults();
-        assertEquals(files.toString(), 19, files.size());
+        assertEquals(files.toString(), 21, files.size());
     }
 
     @Test
@@ -627,7 +620,7 @@ public class SearchServiceTest extends AbstractExternalJavaApiTest {
         logForSilverCompatibility(TEST_NAME, "testSearchForFiles_All");
         FileSearchCriteria crit = new FileSearchCriteria();
         List<File> files = service.searchForFiles(crit, null).getResults();
-        assertEquals(19, files.size());
+        assertEquals(22, files.size());
     }
 
     @Test
@@ -681,6 +674,47 @@ public class SearchServiceTest extends AbstractExternalJavaApiTest {
         }
     }
 
+    /** GF 22885 {@linkplain http://gforge.nci.nih.gov/tracker/?func=detail&aid=22885&group_id=305&atid=1344} */
+    @Test
+    public void testSearchByExample_CollectionPropertyDisjunction() throws InvalidInputException {
+        logForSilverCompatibility(TEST_NAME, "testSearchByExample_CollectionPropertyDisjunction");
+        Term tInv = new Term();
+        tInv.setId("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.Term:59");//investigator
+        ExperimentalContact e = new ExperimentalContact();
+        e.getRoles().add(tInv);
+        SearchResult<ExperimentalContact> res = service.searchByExample(new ExampleSearchCriteria<ExperimentalContact>(e) , null);
+        assertEquals("count", 3, res.getResults().size());
+        for (ExperimentalContact ex : res.getResults()) {
+            assertTrue(ex.getId().endsWith(":1")
+                    || ex.getId().endsWith(":2")
+                    || ex.getId().endsWith(":4"));
+        }
+        Term tSub = new Term();
+        tSub.setId("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.Term:576");//submitter
+        e.getRoles().clear();
+        e.getRoles().add(tSub);
+        res = service.searchByExample(new ExampleSearchCriteria<ExperimentalContact>(e) , null);
+        assertEquals("count", 3, res.getResults().size());
+        for (ExperimentalContact ex : res.getResults()) {
+            assertTrue(ex.getId().endsWith(":1")
+                    || ex.getId().endsWith(":3")
+                    || ex.getId().endsWith(":4"));
+        }
+
+        HashSet<Term> set = new HashSet<Term>(2);
+        set.add(tSub);
+        set.add(tInv);
+        e.setRoles(set);
+        res = service.searchByExample(new ExampleSearchCriteria<ExperimentalContact>(e) , null);
+        assertEquals("count", 4, res.getResults().size());
+        for (ExperimentalContact ex : res.getResults()) {
+            assertTrue(ex.getId().endsWith(":1")
+                    || ex.getId().endsWith(":2")
+                    || ex.getId().endsWith(":3")
+                    || ex.getId().endsWith(":4"));
+        }
+    }
+
     private <T extends AbstractCaArrayEntity> void testExampleProperty(T example, String property, Object value, int count) throws Exception {
         ExampleSearchCriteria xsc = new ExampleSearchCriteria(example);
         testExampleProperty(xsc, property, value, count);
@@ -693,20 +727,24 @@ public class SearchServiceTest extends AbstractExternalJavaApiTest {
         if (property != null) {
             PropertyUtils.setProperty(example, property, value);
         }
-        SearchResult<T> sr = service.searchByExample(xsc, null);
-        if (sr.isFullResult()){
-            assertEquals("count for search by "+property, count, sr.getResults().size());
-        } else {
-            assertTrue("result size " + sr.getResults().size() + " < " + count, sr.getResults().size() < count);
-            assertEquals(sr.getMaxAllowedResults(), sr.getResults().size());
+        LimitOffset lo = new LimitOffset();
+        ArrayList<T> all = new ArrayList<T>(count + 1);
+        SearchResult<T> sr = service.searchByExample(xsc, lo);
+        all.addAll(sr.getResults());
+        while (!sr.isFullResult()) {
+            lo.setOffset(all.size());
+            sr = service.searchByExample(xsc, lo);
+            all.addAll(sr.getResults());
         }
+        assertEquals("count for search by "+property, count, all.size());
+
         if (property != null) {
             for (T t : sr.getResults()) {
                 Object got = PropertyUtils.getProperty(t, property);
                 assertTrue(property + " \nexpected :"+value+"\nbut was :"+got, verify(property, value, got));
             }
         } else {
-           for (T t : sr.getResults()) {
+           for (T t : all) {
                 System.out.println(t.toString());
             }
         }
@@ -799,7 +837,7 @@ public class SearchServiceTest extends AbstractExternalJavaApiTest {
         testExampleProperty(new Experiment(), "arrayProvider", ap, 1);
         AssayType at = new AssayType("Gene Expression");
         at.setId("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.array.AssayType:3");
-        testExampleProperty(new Experiment(), "assayTypes", Collections.singleton(at), 1);
+        testExampleProperty(new Experiment(), "assayTypes", Collections.singleton(at), 2);
         Term t = new Term();
         t.setId("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.Term:697");
         testExampleProperty(new Experiment(), "experimentalDesigns", Collections.singleton(t), 1);
@@ -808,24 +846,27 @@ public class SearchServiceTest extends AbstractExternalJavaApiTest {
         testExampleProperty(new Experiment(), "factors", Collections.singleton(f), 1);
         Organism o = new Organism();
         o.setId("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experiment.Organism:2");
-        testExampleProperty(new Experiment(), "organism", o, 1);
-        Person p = new Person();
-        p.setId("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experiment.Person:12");
+        testExampleProperty(new Experiment(), "organism", o, 2);
+        ExperimentalContact p = new ExperimentalContact();
+        p.setId("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experiment.ExperimentalContact:3");
         testExampleProperty(new Experiment(), "contacts", Collections.singleton(p), 1);
         ArrayDesign ad = new ArrayDesign();
         ad.setId("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.array.ArrayDesign:1");
-        ad.setName("Mm-Incyte-v1px_16Bx24Cx23R");
-        testExampleProperty(new Experiment(), "arrayDesigns", Collections.singleton(ad), 1);
-        testExampleProperty(new Experiment(), "normalizationTypes", "TODO", 1);
-        testExampleProperty(new Experiment(), "qualityControlTypes", "TODO", 1);
-        testExampleProperty(new Experiment(), "replicateTypes", "TODO", 1);
+        testExampleProperty(new Experiment(), "arrayDesigns", Collections.singleton(ad), 2);
+//        t.setId("TODO: no test data form normalizationTypes");
+//        testExampleProperty(new Experiment(), "normalizationTypes", Collections.singleton(t), 0);
+        t.setId("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.Term:53");
+        testExampleProperty(new Experiment(), "qualityControlTypes", Collections.singleton(t), 1);
+//        t.setId("TODO: no test data form replicateTypes");
+//        testExampleProperty(new Experiment(), "replicateTypes", Collections.singleton(t), 0);
     }
 
     @Test
     public void testSearchByExample_Person() throws Exception {
         logForSilverCompatibility(TEST_NAME, "testSearchByExample_Person");
         testExampleProperty(new Person(), null, null, 4);
-        testExampleProperty(new Person(), "id", "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experiment.Person:1", 1);
+        testExampleProperty(new Person(), "id", "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experiment.Person:9", 1);
+        testExampleProperty(new Person(), "id", "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experiment.Person:1", 0);// org
         testExampleProperty(new Person(), "id", "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experiment.Person:0", 0);
 
         testExampleProperty(new Person(), "emailAddress", "JEGreen@nih.gov", 2);
@@ -852,9 +893,6 @@ public class SearchServiceTest extends AbstractExternalJavaApiTest {
         f.setId("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.factor.Factor:1");
         fv.setFactor(f);
         UserDefinedValue v = new UserDefinedValue();
-        Term t = new Term();
-        t.setId("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.TermSource:1");
-        v.setUnit(t);
         v.setValue("Pr111 reference");
         fv.setValue(v);
         testExampleProperty(new Hybridization(), "factorValues", Collections.singleton(fv), 19);
@@ -870,7 +908,7 @@ public class SearchServiceTest extends AbstractExternalJavaApiTest {
 
         testExampleProperty(new Term(), "accession", "MO_562", 1);
         TermSource ts = new TermSource();
-        ts.setId("id=URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.TermSource:3");
+        ts.setId("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.TermSource:3");
         testExampleProperty(new Term(), "termSource", ts, 10);
         testExampleProperty(new Term(), "url", "http://mged.sourceforge.net/ontologies/MGEDontology.php#silicon", 1);
         testExampleProperty(new Term(), "value", "synthetic_RNA", 1);
@@ -879,14 +917,14 @@ public class SearchServiceTest extends AbstractExternalJavaApiTest {
     @Test
     public void testSearchByExample_Category() throws Exception {
         logForSilverCompatibility(TEST_NAME, "testSearchByExample_Category");
-        testExampleProperty(new Category(), null, null, 239);
+        testExampleProperty(new Category(), null, null, 240);
         testExampleProperty(new Category(), "id", "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.Category:1", 1);
         testExampleProperty(new Category(), "id", "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.Category:0", 0);
 
         testExampleProperty(new Category(), "accession", "MO_119", 1);
         testExampleProperty(new Category(), "name", "MeasurementType", 1);
         TermSource ts = new TermSource();
-        ts.setId("id=URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.TermSource:1");
+        ts.setId("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.TermSource:1");
         testExampleProperty(new Category(), "termSource", ts, 233);
         testExampleProperty(new Category(), "url", "http://mged.sourceforge.net/ontologies/MGEDontology.php#InitialTimePoint", 1);
     }
@@ -921,15 +959,15 @@ public class SearchServiceTest extends AbstractExternalJavaApiTest {
     public void testSearchByExample_ExperimentalContact() throws Exception {
         logForSilverCompatibility(TEST_NAME, "testSearchByExample_ExperimentalContact");
         testExampleProperty(new ExperimentalContact(), null, null, 4);
-        testExampleProperty(new ExperimentalContact(), "id", "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experimentExperimentalContact:1", 1);
-        testExampleProperty(new ExperimentalContact(), "id", "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experimentExperimentalContact:0", 0);
+        testExampleProperty(new ExperimentalContact(), "id", "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experiment.ExperimentalContact:1", 1);
+        testExampleProperty(new ExperimentalContact(), "id", "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experiment.ExperimentalContact:0", 0);
 
         Person p = new Person();
         p.setId("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experiment.Person:9");
         testExampleProperty(new ExperimentalContact(), "person", p, 1);
-        Term t = new Term();
-        t.setId("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.Term:286");//???
-        testExampleProperty(new ExperimentalContact(), "roles", Collections.singleton(t), 1);
+        Term tInv = new Term();
+        tInv.setId("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.Term:59");//investigator
+        testExampleProperty(new ExperimentalContact(), "roles", Collections.singleton(tInv), 3);
     }
     
     @Test
@@ -953,7 +991,8 @@ public class SearchServiceTest extends AbstractExternalJavaApiTest {
         xsc.setExample(new ArrayDesign());
         testExampleProperty(xsc, "files", Collections.singleton(df), 1);
         
-        testExampleProperty(new ArrayDesign(), "lsid", "TODO", 0);
+        testExampleProperty(new ArrayDesign(), "lsid", "foo", 0);
+        testExampleProperty(new ArrayDesign(), "lsid", "URN:LSID:caarray.nci.nih.gov:domain:Mm-Incyte-v1px_16Bx24Cx23R", 1);
         testExampleProperty(new ArrayDesign(), "name", "Mm-Incyte-v1px_16Bx24Cx23R", 1);
         Organism o = new Organism();
         o.setId("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experiment.Organism:2");// Mus musculus
@@ -982,7 +1021,7 @@ public class SearchServiceTest extends AbstractExternalJavaApiTest {
         Category ct = new Category();
         ct.setId("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.Category:39");
         c.setCategory(ct);
-        testExampleProperty(new Biomaterial(), "characteristics", Collections.singleton(c), 0);
+        testExampleProperty(new Biomaterial(), "characteristics", Collections.singleton(c), 148);
 
         testExampleProperty(new Biomaterial(), "description", "foo", 0);
 
@@ -1000,19 +1039,19 @@ public class SearchServiceTest extends AbstractExternalJavaApiTest {
         t = new Term();
         t.setId("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.Term:152");
         tv.setTerm(t);
-        testExampleProperty(new Biomaterial(), "materialType", tv, 1);
+        testExampleProperty(new Biomaterial(), "materialType", tv, 74);
 
         testExampleProperty(new Biomaterial(), "name", "Cy3 labeled Pr111 reference_8kNewPr111_14v1p4m11", 1);
 
         Organism o = new Organism();
         o.setId("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experiment.Organism:2");
-        testExampleProperty(new Biomaterial(), "organism", o, 1);
+        testExampleProperty(new Biomaterial(), "organism", o, 0);
 
         tv = new TermValue();
         t = new Term();
         t.setId("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.Term:682");
         tv.setTerm(t);
-        testExampleProperty(new Biomaterial(), "tissueSite", tv, 1);
+        testExampleProperty(new Biomaterial(), "tissueSite", tv, 37);
 
         testExampleProperty(new Biomaterial(), "type", BiomaterialType.SOURCE, 37);
     }
