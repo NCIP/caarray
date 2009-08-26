@@ -109,8 +109,12 @@ public class TestProperties {
     
     public static final String REPORT_DIR_KEY = "report.dir";
     public static final String REPORT_FILE_KEY = "report.file";
+    public static final String LOAD_REPORT_FILE_KEY = "load.report.file";
+    public static final String LOAD_ANALYSIS_FILE_KEY = "load.analysis.file";
     public static final String DEFAULT_REPORT_DIR = "report";
     public static final String DEFAULT_REPORT_FILE = "External_API_Test_Results";
+    public static final String DEFAULT_LOAD_REPORT_FILE = "Load_Tests_API_Test_Results";
+    public static final String DEFAULT_LOAD_ANALYSIS_FILE = "Load_Test_Analysis";
     
     public static final String API_ALL = "all";
     public static final String API_GRID = "grid";
@@ -122,6 +126,8 @@ public class TestProperties {
     public static final String TEST_VERSION_SHORT = "short";
     public static final String TEST_VERSION_LONG = "long";
     public static final String TEST_VERSION_ALL = "all";
+    
+    public static final String NUM_THREADS_KEY = "threads.num";
     
     public static final String CONFIG_DIR = "config";
     
@@ -175,7 +181,17 @@ public class TestProperties {
     
     public static String getReportFile()
     {
-    	return System.getProperty(REPORT_DIR_KEY,DEFAULT_REPORT_DIR) + File.separator + System.getProperty(REPORT_FILE_KEY,DEFAULT_REPORT_FILE);
+        if (getNumThreads() <= 1)
+            return System.getProperty(REPORT_DIR_KEY,DEFAULT_REPORT_DIR) + File.separator + System.getProperty(REPORT_FILE_KEY,DEFAULT_REPORT_FILE);
+        
+        return System.getProperty(REPORT_DIR_KEY,DEFAULT_REPORT_DIR) + File.separator + System.getProperty(LOAD_REPORT_FILE_KEY,
+                DEFAULT_LOAD_REPORT_FILE);
+    }
+    
+    public static String getLoadAnalysisFile()
+    {
+        return System.getProperty(REPORT_DIR_KEY,DEFAULT_REPORT_DIR) + File.separator + System.getProperty(LOAD_ANALYSIS_FILE_KEY,
+                DEFAULT_LOAD_ANALYSIS_FILE);    
     }
 
 	public static String getTargetApi()
@@ -188,7 +204,17 @@ public class TestProperties {
 	    return System.getProperty(TEST_VERSION_KEY,TEST_VERSION_SHORT);
 	}
 	
-	public static void setExcludedTests(List<Float> tests)
+	public static int getNumThreads()
+	{
+	    return Integer.parseInt(System.getProperty(NUM_THREADS_KEY,"1"));
+	}
+	
+	public static void setNumThreads(int numThreads)
+	{
+	    System.setProperty(NUM_THREADS_KEY, Integer.toString(numThreads));
+	}
+	
+	public static synchronized void setExcludedTests(List<Float> tests)
 	{
 	    excludedTests.clear();
 	    excludedTests.addAll(tests);
@@ -199,7 +225,7 @@ public class TestProperties {
 	    return new ArrayList<Float>(excludedTests);
 	}
 	
-	public static void setIncludeOnlyTests(List<Float> tests)
+	public static synchronized void setIncludeOnlyTests(List<Float> tests)
 	{
 	    includeOnlyTests.clear();
 	    includeOnlyTests.addAll(tests);

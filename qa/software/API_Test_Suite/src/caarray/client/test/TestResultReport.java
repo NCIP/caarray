@@ -92,7 +92,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 /**
@@ -108,7 +110,7 @@ public class TestResultReport {
 	private List<String> errorMessages = new ArrayList<String>();
 	
 	
-	private static final String[] COLUMN_HEADERS = new String[]{"Test Case", "Test Status", "Elapsed Time","Details"};
+	private static final String[] COLUMN_HEADERS = new String[]{"Test Case", "Thread", "Test Status", "Elapsed Time","Details"};
 	private static final String DELIMITER = ",";
 	
 	public TestResultReport()
@@ -127,6 +129,17 @@ public class TestResultReport {
 	}
 	
 	/**
+	 * Adds the results of the given TestResultReport to this TestResultReport.
+	 * 
+	 * @param report TestResultReport to be merged with this report.
+	 */
+	public void merge(TestResultReport report)
+	{
+	    results.addAll(report.results);
+	    errorMessages.addAll(report.errorMessages);
+	}
+	
+	/**
 	 * Adds an error message that does not correspond to an
 	 * individual test, such as an error encountered in a configuration
 	 * file. Error messages will be included in the report file.
@@ -136,6 +149,19 @@ public class TestResultReport {
 	public void addErrorMessage(String errorMessage)
 	{
 		errorMessages.add(errorMessage);
+	}
+	
+	/**
+	 * Sets the threadId for every TestResult in this TestResultReport.
+	 * 
+	 * @param threadId The threadId to be set for every TestResult in this report.
+	 */
+	public void setThreadId(int threadId)
+	{
+	    for (TestResult result : results)
+	    {
+	        result.setThreadId(threadId);
+	    }
 	}
 	
 	/**
@@ -179,7 +205,7 @@ public class TestResultReport {
 		}
 		for (TestResult result : results)
 		{
-			String[] resultArray = new String[]{Float.toString(result.getTestCase()),
+			String[] resultArray = new String[]{Float.toString(result.getTestCase()), Integer.toString(result.getThreadId()),
 					(result.isPassed() ? "passed" : "failed"), Long.toString(result.getElapsedTime()) + " ms",result.getDetails()};
 			String results = TestUtils.delimit(resultArray, DELIMITER);
 			writer.write(results);
@@ -189,5 +215,150 @@ public class TestResultReport {
 		writer.close();
 		System.out.println("Test result report written to: " + reportFilename);
 		
+	}
+	
+	/**
+	 * Produces two CSV files, one detailing the TestResults contained
+     * in this TestResultReport and the other detailing pass/fail and execution
+     * time discrepancies between threads for individual test cases.
+     * 
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 */
+	public void writeLoadTestReports() throws FileNotFoundException, IOException
+	{
+	    writeLoadTestAnalysis();
+	    writeReport();
+	}
+	
+	private void writeLoadTestAnalysis() throws FileNotFoundException, IOException
+	{
+	    String[] columnHeaders = new String[]{"Test Case", "Pass/Fail Discrepancy","Execution Time Discrepancy"};
+	    List<String[]> resultRows = new ArrayList<String[]>();
+	    
+	    List<TestResult> resultList = new ArrayList<TestResult>();
+	    resultList.addAll(results);
+	    
+	    Map<Float, List<Integer>> testCaseIndexMap = new TreeMap<Float, List<Integer>>();
+	    for (int i = 0; i < resultList.size(); i++)
+	    {
+	        TestResult result = resultList.get(i);
+	        float testCase = result.getTestCase();
+	        if (!testCaseIndexMap.containsKey(testCase))
+	        {
+	            testCaseIndexMap.put(testCase, new ArrayList<Integer>());
+	        }
+	        testCaseIndexMap.get(testCase).add(i);
+	    }
+	    
+	    for (float testCase : testCaseIndexMap.keySet())
+	    {
+	        String[] resultRow = null;
+	        List<Integer> indices = testCaseIndexMap.get(testCase);
+	        List<Integer> passed = new ArrayList<Integer>();
+	        List<Integer> failed = new ArrayList<Integer>();
+	        long minTime = Long.MAX_VALUE;
+            long maxTime = Long.MIN_VALUE;
+            int shortThread = -1;
+            int longThread = -1;
+            long maxDiff = 60000;
+	        for (int i : indices)
+	        {
+	            TestResult result = resultList.get(i);
+	            if (result.isPassed())
+	            {
+	                passed.add(result.getThreadId());
+	            }
+	            else
+	            {
+	                failed.add(result.getThreadId());
+	            }
+	            long time = result.getElapsedTime();
+	            if (time < minTime)
+	            {
+	                minTime = time;
+	                shortThread = result.getThreadId();
+	            }
+	            if (time > maxTime)
+	            {
+	                maxTime = time;
+	                longThread = result.getThreadId();
+	            }
+	        }
+	        if (passed.size() > 0 && failed.size() > 0)
+	        {
+	            resultRow = new String[3];
+	            resultRow[0] = Float.toString(testCase);
+	            String detail = "Passing threads: ";
+	            for (int pass : passed)
+	            {
+	                detail += pass + " ";
+	            }
+	            detail += ";";
+	            detail += " Failing threads: ";
+	            for (int fail: failed)
+	            {
+	                detail += fail + " ";
+	            }
+	            detail += ".";
+	            resultRow[1] = detail;
+	            resultRow[2] = "";
+	        }
+	        if (maxTime - minTime > maxDiff)
+	        {
+	            long diff = maxTime - minTime;
+	           if (resultRow == null)
+	           {
+	               resultRow = new String[3];
+	               resultRow[0] = Float.toString(testCase);
+	               resultRow[1] = "";
+	           }
+	           String detail = "Difference between shortest and longest execution time: " + (double)diff/(double)1000 + " seconds. ";
+	           detail += "Shortest thread: " + shortThread + ", longest thread: " + longThread;
+	           resultRow[2] = detail;
+	        }
+	        if (resultRow != null)
+	        {
+	            resultRows.add(resultRow);
+	        }
+	    }
+	    
+	    String reportDirName = TestProperties.getReportDir();
+        File reportDir = new File(reportDirName);
+        if (!reportDir.exists())
+        {
+            reportDir.mkdirs();
+        }
+        SimpleDateFormat df = new SimpleDateFormat("-yyyy-MM-dd-HH.mm");
+        String reportFilename = TestProperties.getLoadAnalysisFile() + df.format(Calendar.getInstance().getTime()) + ".csv";
+        File reportFile = new File(reportFilename);
+        if (!reportFile.exists())
+        {
+            reportFile.createNewFile();
+        }
+        
+        Writer writer = new OutputStreamWriter(new FileOutputStream(reportFile));
+        String headers = TestUtils.delimit(columnHeaders, DELIMITER);
+        writer.write(headers);
+        writer.write('\n');
+        if (resultRows.isEmpty())
+        {
+            String detail = "No pass/fail or execution time discrepancies were found.";
+            writer.write(detail);
+            writer.write('\n');
+        }
+        else
+        {
+            for (String[] result : resultRows)
+            {
+                String results = TestUtils.delimit(result, DELIMITER);
+                writer.write(results);
+                writer.write('\n');
+            } 
+        }
+        
+        
+        writer.close();
+        System.out.println("Load test analysis written to: " + reportFilename);
 	}
 }

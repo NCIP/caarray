@@ -32,12 +32,15 @@
 	<!-- ** TEST SUITE PROPERTIES                                         ** -->
 	<!-- ******************************************************************* -->
 	<property name="test.version" value="all" />
+	<property name="threads.num" value="1" />
 
 	<!-- ******************************************************************* -->
 	<!-- ** TEST RESULT REPORT PROPERTIES                                 ** -->
 	<!-- ******************************************************************* -->
 	<property name="report.dir" value="${basedir}/report" />
 	<property name="report.file" value="External_API_Test_Results"/>
+	<property name="load.report.file" value="Load_Tests_API_Test_Results"/>
+	<property name="load.analysis.file" value="Load_Test_Analysis"/>
 
 
 	<!-- ******************************************************************* -->
@@ -105,6 +108,9 @@
 			<sysproperty key="report.file" value="${report.file}"/>
 			<sysproperty key="api.use" value="all"/>
 			<sysproperty key="test.version" value="${test.version}"/>
+			<sysproperty key="load.report.file" value="${load.report.file}"/>
+			<sysproperty key="load.analysis.file" value="${load.analysis.file}"/>
+			<sysproperty key="threads.num" value="${threads.num}" />
 		</java>
 	</target>
 
@@ -129,6 +135,9 @@
 			<sysproperty key="report.file" value="${report.file}"/>
 			<sysproperty key="api.use" value="grid"/>
 			<sysproperty key="test.version" value="${test.version}"/>
+			<sysproperty key="load.report.file" value="${load.report.file}"/>
+			<sysproperty key="load.analysis.file" value="${load.analysis.file}"/>
+			<sysproperty key="threads.num" value="${threads.num}" />
 		</java>
 	</target>
 
@@ -153,8 +162,35 @@
 			<sysproperty key="report.file" value="${report.file}"/>
 			<sysproperty key="api.use" value="java"/>
 			<sysproperty key="test.version" value="${test.version}"/>
+			<sysproperty key="load.report.file" value="${load.report.file}"/>
+			<sysproperty key="load.analysis.file" value="${load.analysis.file}"/>
+			<sysproperty key="threads.num" value="${threads.num}" />
 		</java>
 	</target>
+	
+	<target name="run_load_tests" depends="clean,build_all">
+			<java classname="caarray.client.test.full.LoadTest" fork="yes">
+				<classpath>
+					<pathelement path="${classes.dir}" />
+					<fileset dir="${lib.dir}">
+						<include name="**/*.jar" />
+					</fileset>
+				</classpath>
+				<jvmarg value="-Xms64m"/>
+				<jvmarg value="-Xmx1280m"/>
+				<sysproperty key="grid.server.hostname" value="${grid.server.hostname}" />
+				<sysproperty key="grid.server.http.port" value="${grid.server.http.port}" />
+				<sysproperty key="server.hostname" value="${server.hostname}" />
+				<sysproperty key="server.jndi.port" value="${server.jndi.port}" />
+				<sysproperty key="report.dir" value="${report.dir}"/>
+				<sysproperty key="report.file" value="${report.file}"/>
+				<sysproperty key="api.use" value="java"/>
+				<sysproperty key="test.version" value="${test.version}"/>
+				<sysproperty key="load.report.file" value="${load.report.file}"/>
+				<sysproperty key="load.analysis.file" value="${load.analysis.file}"/>
+				<sysproperty key="threads.num" value="${threads.num}" />
+			</java>
+		</target>
 	
 	<path id="jar.classpath">
 		<fileset dir="${lib.dir}">
@@ -188,5 +224,6 @@
 	<target name="test_all" depends="clean,jar,run_tests_all"/>
 	<target name="test_java" depends="run_tests_java"/>
 	<target name="test_grid" depends="run_tests_grid"/>
+	<target name="load_test" depends="run_load_tests"/>
 
 </project>

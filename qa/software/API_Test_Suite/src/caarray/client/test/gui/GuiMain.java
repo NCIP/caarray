@@ -42,9 +42,11 @@ public class GuiMain
 
     private boolean[] runTests;
     private Boolean isRunning = false;
-    private List<ConfigurableTestSuite> testSuites = new ArrayList<ConfigurableTestSuite>();
+    //private List<ConfigurableTestSuite> testSuites = new ArrayList<ConfigurableTestSuite>();
+    private List<List<ConfigurableTestSuite>> testSuiteCollection = new ArrayList<List<ConfigurableTestSuite>>();
     private List<JCheckBox> testCheckBoxes = new ArrayList<JCheckBox>();
-    private ApiFacade apiFacade = new FullApiFacade();
+    //private ApiFacade apiFacade = new FullApiFacade();
+    private List<ApiFacade> apiFacades = new ArrayList<ApiFacade>();
     Thread executionThread;
     
     private JPanel selectionPanel = new JPanel();
@@ -135,6 +137,8 @@ public class GuiMain
             
         });
         
+        
+        
         JLabel excludeLabel = new JLabel("Exclude test cases (comma-separated list):");
         final JTextField excludeText = new JTextField("",30);
         JButton save5 = new JButton("Save");
@@ -207,13 +211,34 @@ public class GuiMain
             
         });
 
-        
+        JLabel threadLabel = new JLabel("Number of threads:");
+        final JTextField threadText = new JTextField(Integer
+                .toString(TestProperties.getNumThreads()),5);
+        JButton save7 = new JButton("Save");
+        save7.addActionListener(new ActionListener()
+        {
+
+            public void actionPerformed(ActionEvent arg0)
+            {
+                try
+                {
+                    int threads = Integer.parseInt(threadText.getText());
+                    TestProperties.setNumThreads(threads);
+                }
+                catch (NumberFormatException e)
+                {
+                    System.out.println(threadText.getText() + " is not a valid thread number.");
+                }
+                
+            }
+            
+        });
         GridBagLayout topLayout = new GridBagLayout();
         topPanel.setLayout(topLayout);
         
-        JLabel[] labels = new JLabel[]{javaHostLabel,javaPortLabel,gridHostLabel,gridPortLabel, excludeLabel, includeLabel};
-        JTextField[] textFields = new JTextField[]{javaHostText,javaPortText,gridHostText,gridPortText,excludeText, includeText};
-        JButton[] buttons = new JButton[]{save,save2,save3,save4,save5, save6};
+        JLabel[] labels = new JLabel[]{javaHostLabel,javaPortLabel,gridHostLabel,gridPortLabel,excludeLabel, includeLabel, threadLabel};
+        JTextField[] textFields = new JTextField[]{javaHostText,javaPortText,gridHostText,gridPortText,excludeText, includeText,threadText};
+        JButton[] buttons = new JButton[]{save,save2,save3,save4, save5, save6, save7};
         for (int i = 0; i < labels.length; i++)
         {
             GridBagConstraints c = new GridBagConstraints();
@@ -289,11 +314,13 @@ public class GuiMain
         frame.setVisible(true);
     }
 
-    private void initializeTests()
+    private void initializeTests() throws Exception
     {
         int index = 0;
+        ApiFacade apiFacade = new FullApiFacade();
         List<ConfigurableTestSuite> shortTests = TestMain.getShortTestSuites(apiFacade);
         List<ConfigurableTestSuite> longTests = TestMain.getLongTestSuites(apiFacade);
+        List<ConfigurableTestSuite> testSuites = new ArrayList<ConfigurableTestSuite>();
         runTests = new boolean[shortTests.size() + longTests.size()];
         
         for (ConfigurableTestSuite test : shortTests)
@@ -315,16 +342,23 @@ public class GuiMain
             selectionPanel.add(box);
             testSuites.add(test);
             index++;
-        }    
+        } 
+        testSuiteCollection.add(testSuites);
+        apiFacades.add(apiFacade);
     }
     
-    private void resetTests()
+    private void resetTests() throws Exception
     {
+        apiFacades.clear();
+        testSuiteCollection.clear();
+        ApiFacade apiFacade = new FullApiFacade();
         List<ConfigurableTestSuite> shortTests = TestMain.getShortTestSuites(apiFacade);
         List<ConfigurableTestSuite> longTests = TestMain.getLongTestSuites(apiFacade);
-        testSuites.clear();
+        List<ConfigurableTestSuite> testSuites = new ArrayList<ConfigurableTestSuite>();
         testSuites.addAll(shortTests);
         testSuites.addAll(longTests);
+        testSuiteCollection.add(testSuites);
+        apiFacades.add(apiFacade);
     }
     
     private void selectAll(boolean select)
@@ -341,50 +375,189 @@ public class GuiMain
            if (!isRunning)
            {
                isRunning = true;
-               final TestResultReport resultReport = new TestResultReport();
-               Runnable runner = new Runnable()
+               int numThreads = TestProperties.getNumThreads();
+               if (numThreads <= 1)
                {
-
-                   public void run()
-                   {
-                       
-                       try
-                       {
-                           apiFacade.connect();
-                           System.out.println("Executing test suites ...");
-                           long start = System.currentTimeMillis();
-                           for (int i = 0; i < runTests.length; i++)
-                           {
-                               if (runTests[i])
-                               {
-                                   testSuites.get(i).runTests(resultReport);
-                               }
-                           }
-                           long time = System.currentTimeMillis() - start;
-                           System.out.println("Tests executed in: " + (double)time/(double)1000 + " seconds.");
-                           resultReport.writeReport();
-                           executionThread = null;
-                           resetTests();
-                           isRunning = false;
-                       }
-                       catch (Throwable t)
-                       {
-                           System.out.println("An exception occured execuitng the tests: " + t.getClass());
-                           System.out.println("Test suite aborted.");
-                           t.printStackTrace();
-                       }
-                       
-                   }
-                   
-               };
-               executionThread = new Thread(runner);
-               executionThread.start();
+                   runSingleThreadTest();
+               }
+               else
+               {
+                   runLoadTest(numThreads);
+               }
            }
         }
         
     }
     
+    private void runSingleThreadTest()
+    {
 
+        final TestResultReport resultReport = new TestResultReport();
+        final ApiFacade apiFacade = apiFacades.get(0);
+        final List<ConfigurableTestSuite> testSuites = testSuiteCollection.get(0);
+        Runnable runner = new Runnable()
+        {
+
+            public void run()
+            {
+                
+                try
+                {
+                    apiFacade.connect();
+                    System.out.println("Executing test suites ...");
+                    long start = System.currentTimeMillis();
+                    for (int i = 0; i < runTests.length; i++)
+                    {
+                        if (runTests[i])
+                        {
+                            testSuites.get(i).runTests(resultReport);
+                        }
+                    }
+                    long time = System.currentTimeMillis() - start;
+                    System.out.println("Tests executed in: " + (double)time/(double)1000 + " seconds.");
+                    resultReport.writeReport();
+                    executionThread = null;
+                    resetTests();
+                    isRunning = false;
+                }
+                catch (Throwable t)
+                {
+                    System.out.println("An exception occured execuitng the tests: " + t.getClass());
+                    System.out.println("Test suite aborted.");
+                    t.printStackTrace();
+                }
+                
+            }
+            
+        };
+        executionThread = new Thread(runner);
+        executionThread.start();
+    }
+    
+    private void runLoadTest(int numThreads)
+    {
+        LoadTestExecutor executor = new LoadTestExecutor(numThreads);
+        executionThread = new Thread(executor);
+        executionThread.start();
+    }
+    
+    class LoadTestExecutor implements Runnable
+    {
+        private int numThreads;
+        
+        public LoadTestExecutor(int numThreads)
+        {
+            this.numThreads = numThreads;
+        }
+        
+        public void run()
+        {
+            try
+            {
+                for (int i = apiFacades.size(); i < numThreads; i++)
+                {
+                    apiFacades.add(new FullApiFacade());
+                }
+                for (int i = testSuiteCollection.size(); i < numThreads; i++)
+                {
+                    List<ConfigurableTestSuite> shortTests = TestMain.getShortTestSuites(apiFacades.get(i));
+                    List<ConfigurableTestSuite> longTests = TestMain.getLongTestSuites(apiFacades.get(i));
+                    List<ConfigurableTestSuite> testSuites = new ArrayList<ConfigurableTestSuite>();
+                    testSuites.addAll(shortTests);
+                    testSuites.addAll(longTests);
+                    testSuiteCollection.add(testSuites);
+                }
+                TestResultReport[] threadReports = new TestResultReport[numThreads];
+                for (int i = 0; i < numThreads; i++)
+                {
+                    threadReports[i] = new TestResultReport();
+                }
+                Thread[] loadTestThreads = new Thread[numThreads];
+                for (int i = 0; i < numThreads; i++)
+                {
+                    LoadTestThread thread = new LoadTestThread(apiFacades.get(i),testSuiteCollection.get(i),
+                            threadReports[i],i);
+                    loadTestThreads[i] = new Thread(thread);
+                }
+                System.out.println("Executing load tests for " + numThreads + " threads ...");
+                long start = System.currentTimeMillis();
+                for (int i = 0; i < numThreads; i++)
+                {
+                    loadTestThreads[i].start();
+                }
+                for (int i = 0; i < numThreads; i++)
+                {
+                    loadTestThreads[i].join();
+                }
+                long time = System.currentTimeMillis() - start;
+                System.out.println("Load tests completed in " + (double)time/(double)1000 + " seconds.");
+                
+                TestResultReport finalReport = new TestResultReport();
+                for (TestResultReport report : threadReports)
+                {
+                    finalReport.merge(report);
+                }
+                System.out.println("Analyzing load test results ...");
+                finalReport.writeLoadTestReports();
+                executionThread = null;
+                resetTests();
+                isRunning = false;
+            }
+            catch (Throwable t)
+            {
+                System.out.println("An exception occured execuitng the load tests: " + t.getClass());
+                System.out.println("Test suite aborted.");
+                t.printStackTrace();
+            }
+            
+            
+        }       
+    }
+    
+    class LoadTestThread implements Runnable
+    {
+        private ApiFacade apiFacade;
+        private List<ConfigurableTestSuite> testSuites;
+        private TestResultReport resultReport;
+        private int thread;
+        public LoadTestThread(ApiFacade apiFacade, List<ConfigurableTestSuite> testSuites, TestResultReport resultReport, int thread)
+        {
+            this.apiFacade = apiFacade;
+            this.testSuites = testSuites;
+            this.resultReport = resultReport;
+            this.thread = thread;
+        }
+        /* (non-Javadoc)
+         * @see java.lang.Runnable#run()
+         */
+        public void run()
+        {
+            
+            try
+            {
+                apiFacade.connect();
+                for (int i = 0; i < runTests.length; i++)
+                {
+                    if (runTests[i])
+                    {
+                        testSuites.get(i).runTests(resultReport);
+                    }
+                }
+                resultReport.setThreadId(thread);
+                
+            }
+            catch (Throwable t)
+            {
+                System.out.println("An exception occured in thread " + thread + ": " + t.getClass());
+                System.out.println("Test suite aborted.");
+                t.printStackTrace();
+            }
+            
+        }
+        
+        
+    }
+    
     class SelectTestListener implements ChangeListener
     {
         private int index;

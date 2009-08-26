@@ -94,6 +94,7 @@ public class TestResult {
 	private boolean passed = true;
 	private String details;
 	private long elapsedTime = 0;
+	private int threadId = 0;
 	
 	public TestResult()
 	{}
@@ -131,6 +132,22 @@ public class TestResult {
 
     public void setTestCase(float testCase) {
     	this.testCase = testCase;
+    }
+
+    /**
+     * @return the thread
+     */
+    public int getThreadId()
+    {
+        return threadId;
+    }
+
+    /**
+     * @param thread the thread to set
+     */
+    public void setThreadId(int thread)
+    {
+        this.threadId = thread;
     }
 	
 	
