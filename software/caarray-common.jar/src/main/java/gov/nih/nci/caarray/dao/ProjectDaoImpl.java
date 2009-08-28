@@ -127,7 +127,6 @@ import org.hibernate.criterion.Restrictions;
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
 import com.fiveamsolutions.nci.commons.data.search.SortCriterion;
-import com.fiveamsolutions.nci.commons.util.HibernateHelper;
 
 /**
  * DAO for entities in the <code>gov.nih.nci.caarray.domain.project</code> package.
@@ -318,17 +317,17 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
             queryParams.put("organism_id", criteria.getOrganism().getId());            
         }
         if (criteria.getAssayType() != null) {
-            from.append(" LEFT JOIN e.assayTypes at");
+            from.append(" INNER JOIN e.assayTypes at");
             where.append(" AND at.id = :assay_type_id");
             queryParams.put("assay_type_id", criteria.getAssayType().getId());            
         }
         if (criteria.getArrayProvider() != null) {
-            from.append(" LEFT JOIN e.manufacturer m");
+            from.append(" INNER JOIN e.manufacturer m");
             where.append(" AND m.id = :array_provider_id");
             queryParams.put("array_provider_id", criteria.getArrayProvider().getId());            
         }
         if (!criteria.getPrincipalInvestigators().isEmpty()) {
-            from.append(" LEFT JOIN e.experimentContacts ec LEFT JOIN ec.roles r LEFT JOIN ec.contact p");
+            from.append(" INNER JOIN e.experimentContacts ec INNER JOIN ec.roles r INNER JOIN ec.contact p");
             where.append(" AND r.value = :pi_role AND p in (:pis)");
             queryParams.put("pi_role", ExperimentContact.PI_ROLE);
             queryParams.put("pis", criteria.getPrincipalInvestigators());
@@ -347,15 +346,13 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
                         .equals(ExperimentOntologyCategory.MATERIAL_TYPE.getCategoryName())) {
                     materialTypes.add(ac.getValue());
                 } else if (ac.getCategory().getName().equals(
-                        ExperimentOntologyCategory.TISSUE_ANATOMIC_SITE.getCategoryName())) {
+                        ExperimentOntologyCategory.ORGANISM_PART.getCategoryName())) {
                     tissueSites.add(ac.getValue());
                 }
             }
               
             if (!diseaseStates.isEmpty() || !tissueSites.isEmpty() || !cellTypes.isEmpty() 
                     || !materialTypes.isEmpty()) {
-                from.append(" LEFT JOIN e.sources so LEFT JOIN e.samples sa ");
-                where.append(" AND ( (0=1) ");
                 Map<String, List<? extends Serializable>> blocks = new HashMap<String, List<? extends Serializable>>();
                 addAnnotationCriterionValues(where, from, diseaseStates, "diseaseState", "ds", blocks);
                 addAnnotationCriterionValues(where, from, tissueSites, "tissueSite", "ts", blocks);
@@ -379,14 +376,11 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
     @SuppressWarnings("PMD.ExcessiveParameterList")
     private void addAnnotationCriterionValues(StringBuilder where, StringBuilder from, List<String> values,
             String assocPath, String alias, Map<String, List<? extends Serializable>> blocks) {
-        if (!values.isEmpty()) {
-            String sourceAlias = alias + "_so";
-            String sampleAlias = alias + "_sa";
-            
-            from.append(" LEFT JOIN so.").append(assocPath).append(" ").append(sourceAlias).append(" LEFT JOIN sa.")
-                    .append(assocPath).append(" ").append(sampleAlias);
-            where.append(" OR ").append(HibernateHelper.buildInClause(values, sourceAlias + ".value", blocks));
-            where.append(" OR ").append(HibernateHelper.buildInClause(values, sampleAlias + ".value", blocks));
+        String bmAlias = "b_" + alias;
+        if (!values.isEmpty()) {            
+            from.append(" INNER JOIN e.biomaterials ").append(bmAlias);
+            from.append(" INNER JOIN ").append(bmAlias).append(".").append(assocPath).append(" ").append(alias);
+            where.append(" AND ").append(HibernateUtil.buildInClause(values, alias + ".value", blocks));
         }
     }
 

@@ -101,6 +101,8 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.Index;
+import org.hibernate.annotations.Table;
 import org.hibernate.validator.Length;
 import org.hibernate.validator.NotNull;
 
@@ -113,6 +115,8 @@ import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 @BatchSize(size = AbstractCaArrayObject.DEFAULT_BATCH_SIZE)
 @UniqueConstraint(fields = { @UniqueConstraintField(name = "scientificName"), 
         @UniqueConstraintField(name = "termSource") }, message = "{organism.uniqueConstraint}")
+@Table(appliesTo = "organism", 
+        indexes = @Index(name = "idx_common_name", columnNames = { "commonName", "term_source" }))
 public class Organism implements PersistentObject {
     private static final long serialVersionUID = 1L;
     

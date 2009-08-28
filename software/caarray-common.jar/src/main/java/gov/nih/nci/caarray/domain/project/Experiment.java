@@ -135,6 +135,7 @@ import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.FilterDef;
 import org.hibernate.annotations.Filters;
 import org.hibernate.annotations.ForeignKey;
+import org.hibernate.annotations.Index;
 import org.hibernate.annotations.IndexColumn;
 import org.hibernate.annotations.Sort;
 import org.hibernate.annotations.SortType;
@@ -189,6 +190,17 @@ public class Experiment extends AbstractCaArrayEntity {
     private static final String READABLE_SAMPLE_ALIAS_CLAUSE = "(select " + CaarrayInnoDBDialect.FILTER_ALIAS
         + ".attribute_value from " + READABLE_SAMPLE_CLAUSE + " " + CaarrayInnoDBDialect.FILTER_ALIAS + ")";
 
+    /** @Where filter for biomaterials */
+    public static final String BIOMATERIALS_ALIAS_FILTER = "id in (select b.ID from biomaterial b "
+        + "left join experiment ex on b.experiment_id = ex.id left join project p on ex.id = p.experiment "
+        + "left join sampleextract se on b.id = se.extract_id left join biomaterial b2 on b2.id = se.sample_id "
+        + "left join extractlabeledextract ele on b.id = ele.labeledextract_id "
+        + "left join sampleextract se2 on ele.extract_id = se2.extract_id "
+        + "left join biomaterial b3 on b3.id = se2.sample_id "
+        + "where b.discriminator='SO' and p.id in " + READABLE_PROJECT_CLAUSE
+        + " or b.discriminator = 'SA' and b.ID in " + READABLE_SAMPLE_ALIAS_CLAUSE
+        + " or b2.discriminator = 'SA' and b2.ID in " + READABLE_SAMPLE_ALIAS_CLAUSE
+        + " or b3.discriminator = 'SA' and b3.ID in " + READABLE_SAMPLE_ALIAS_CLAUSE + ")";
     /** @Where filter for samples */
     public static final String SAMPLES_FILTER = "id in (select s.ID from biomaterial s where s.discriminator = 'SA' "
         + "and s.ID in " + READABLE_SAMPLE_CLAUSE + ")";
@@ -258,6 +270,7 @@ public class Experiment extends AbstractCaArrayEntity {
     private Set<Term> normalizationTypes = new HashSet<Term>();
     private Set<Publication> publications = new HashSet<Publication>();
     private Set<ArrayDesign> arrayDesigns = new HashSet<ArrayDesign>();
+    private Set<AbstractBioMaterial> biomaterials = new HashSet<AbstractBioMaterial>();
     private Set<Source> sources = new HashSet<Source>();
     private Set<Sample> samples = new HashSet<Sample>();
     private Set<Extract> extracts = new HashSet<Extract>();
@@ -340,6 +353,7 @@ public class Experiment extends AbstractCaArrayEntity {
      */
     @Length(min = 1, max = DEFAULT_STRING_COLUMN_SIZE)
     @NotNull
+    @Index(name = "idx_title")
     @AttributePolicy(allow = SecurityPolicy.BROWSE_POLICY_NAME)
     public String getTitle() {
         return this.title;
@@ -368,6 +382,7 @@ public class Experiment extends AbstractCaArrayEntity {
      * @return the public identifier if this project is persistent, null otherwise
      */
     @Column(length = DEFAULT_STRING_COLUMN_SIZE)
+    @Index(name = "idx_public_identifier")
     @AttributePolicy(allow = SecurityPolicy.BROWSE_POLICY_NAME)
     public String getPublicIdentifier() {
         return this.publicIdentifier;
@@ -584,6 +599,33 @@ public class Experiment extends AbstractCaArrayEntity {
         this.replicateTypes = replicateTypesVal;
     }
 
+    /**
+     * Gets all the biomaterials (e.g. union of sources, samples, extracts, labeled extracts).
+     * This is currently private, as it is only used in hibernate queries. If in the future
+     * client code needs to access it, a wrapper method should be added that wraps this in
+     * an unmodifiable set, to assure that modifications are only made to the underlying
+     * source, sample, etc, collection.
+     *
+     * @return the biomaterials
+     */
+    @OneToMany(mappedBy = "experiment", fetch = FetchType.LAZY)
+    @Filter(name = "Project1", condition = BIOMATERIALS_ALIAS_FILTER)
+    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
+    private Set<AbstractBioMaterial> getBiomaterials() {
+        return this.biomaterials;
+    }
+
+    /**
+     * Sets the biomaterials. This is only there for javabean compliance and should not be used.
+     *
+     * @param biomaterials the biomaterials
+     */
+    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
+    private void setBiomaterials(final Set<AbstractBioMaterial> biomaterials) {
+        this.biomaterials = biomaterials;
+    }
+
+    
     /**
      * Gets the sources.
      *
@@ -976,20 +1018,6 @@ public class Experiment extends AbstractCaArrayEntity {
         return (Hybridization) CollectionUtils.find(getHybridizations(), new ExperimentDesignNodeNamePredicate(
                 hybridizationName));
      }
-
-    /**
-     * @return all the biomaterials for this experiment, e.g. the union of sources, samples, extracts and labeled
-     *         extracts
-     */
-    @Transient
-    public Set<AbstractBioMaterial> getAllBiomaterials() {
-        Set<AbstractBioMaterial> bms = new HashSet<AbstractBioMaterial>();
-        bms.addAll(this.sources);
-        bms.addAll(this.samples);
-        bms.addAll(this.extracts);
-        bms.addAll(this.labeledExtracts);
-        return bms;
-    }
 
     /**
      * Predicate to match biomaterial/hybridization names.

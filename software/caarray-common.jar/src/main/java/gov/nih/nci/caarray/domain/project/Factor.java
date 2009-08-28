@@ -100,6 +100,7 @@ import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.ForeignKey;
+import org.hibernate.annotations.Index;
 import org.hibernate.validator.Length;
 import org.hibernate.validator.NotNull;
 
@@ -124,6 +125,7 @@ public class Factor extends AbstractCaArrayEntity {
      */
     @NotNull
     @Length(min = 1, max = DEFAULT_STRING_COLUMN_SIZE)
+    @Index(name = "idx_name")
     public String getName() {
         return this.name;
     }

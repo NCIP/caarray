@@ -112,6 +112,7 @@ import javax.persistence.Transient;
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.ForeignKey;
+import org.hibernate.annotations.Index;
 import org.hibernate.validator.NotNull;
 
 /**
@@ -141,6 +142,7 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
      * @return the name
      */
     @Column(length = DEFAULT_STRING_COLUMN_SIZE)
+    @Index(name = "idx_name")
     public String getName() {
         return this.name;
     }

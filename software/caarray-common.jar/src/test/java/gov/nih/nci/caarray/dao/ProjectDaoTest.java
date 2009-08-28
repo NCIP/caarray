@@ -912,6 +912,8 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
     public void testSearchByCriteria() {
         Transaction tx = HibernateUtil.beginTransaction();
         DUMMY_SAMPLE.setDiseaseState(DUMMY_NORMALIZATION_TYPE);
+        DUMMY_SOURCE.setTissueSite(DUMMY_REPLICATE_TYPE);
+        DUMMY_SOURCE.setCellType(DUMMY_FACTOR_TYPE_1);
         saveSupportingObjects();
         DAO_OBJECT.save(DUMMY_ASSAYTYPE_1);
         DAO_OBJECT.save(DUMMY_ASSAYTYPE_2);
@@ -963,6 +965,24 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
         experiments = DAO_OBJECT.searchByCriteria(psp, crit);
         assertEquals(1, experiments.size());
         assertEquals(DUMMY_EXPERIMENT_1, experiments.get(0));
+
+        Category ts = new Category();
+        ts.setName(ExperimentOntologyCategory.ORGANISM_PART.getCategoryName());
+        crit.getAnnotationCriterions().add(new AnnotationCriterion(ts, DUMMY_REPLICATE_TYPE.getValue()));
+        experiments = DAO_OBJECT.searchByCriteria(psp, crit);
+        assertEquals(1, experiments.size());
+        assertEquals(DUMMY_EXPERIMENT_1, experiments.get(0));
+        
+        crit.getAnnotationCriterions().add(new AnnotationCriterion(ts, DUMMY_FACTOR_TYPE_1.getValue()));
+        experiments = DAO_OBJECT.searchByCriteria(psp, crit);
+        assertEquals(1, experiments.size());
+        assertEquals(DUMMY_EXPERIMENT_1, experiments.get(0));
+        
+        Category ct = new Category();
+        ct.setName(ExperimentOntologyCategory.CELL_TYPE.getCategoryName());
+        crit.getAnnotationCriterions().add(new AnnotationCriterion(ct, DUMMY_REPLICATE_TYPE.getValue()));
+        experiments = DAO_OBJECT.searchByCriteria(psp, crit);
+        assertEquals(0, experiments.size());
 
         // test principal investigator criteria
         crit = new ExperimentSearchCriteria();

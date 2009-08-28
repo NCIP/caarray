@@ -90,6 +90,7 @@ import javax.persistence.Entity;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.hibernate.annotations.Index;
 
 /**
  * Represents an organization.
@@ -109,6 +110,7 @@ public class Organization extends AbstractContact {
      * @return the name
      */
     @Column(length = DEFAULT_STRING_COLUMN_SIZE)
+    @Index(name = "idx_name")
     public String getName() {
         return name;
     }
