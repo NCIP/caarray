@@ -351,7 +351,6 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
     <target name="install:jboss:configure" description="Configure caArray JBoss installation" unless="exclude.jboss"
         depends="install:jboss:binaries,
         -install:jboss:configure:ports,
-        -install:jboss:configure:ejb-invoker-compression,
         -install:jboss:configure:log4j,
         -install:jboss:configure:secure-console,
         -install:jboss:configure:update-shutdown,
@@ -369,23 +368,6 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
             jboss.server.bindingfile.location="${jboss.home}/server/${jboss.server.name}/conf/bindings.xml"
             jboss.server.binding.template.location="${bda-utils.dir}/resource/template-binding.xml"
             />
-    </target>
-
-    <target name="-install:jboss:configure:ejb-invoker-compression" description="Configures JBoss EJB3 Invoker to use marshalling/unmarshalling compressors to improve performance over-the-wire.">
-        <property name="target.file" value="${jboss.home}/server/${jboss.server.name}/deploy/ejb3.deployer/META-INF/jboss-service.xml"/>
-        <loadfile srcFile="${target.file}" property="target.file.contents"/>
-        <propertyregex property="ejb3.compression.already.configured" input="${target.file.contents}" regexp="org.jboss.remoting.marshal.compress.CompressingMarshaller(.*)" select="\1" />
-        <if>
-            <not>
-                <isset property="ejb3.compression.already.configured" />
-            </not>
-            <then>
-                <replaceregexp file="${target.file}"
-                    match="&lt;attribute name=&quot;InvokerLocator&quot;&gt;(.*)&lt;/attribute&gt;"
-                    replace="&lt;attribute name=&quot;InvokerLocator&quot;&gt;\1/?marshaller=org.jboss.remoting.marshal.compress.CompressingMarshaller&amp;amp;unmarshaller=org.jboss.remoting.marshal.compress.CompressingUnMarshaller&lt;/attribute&gt;"
-                    byline="true"/>
-            </then>
-        </if>
     </target>
 
     <!-- Configure log4j settings based on contents of caarray/software/resrouces/deploy/log4j.block.xml -->
@@ -544,7 +526,6 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
         install:jboss:stop,
         install:jboss:caarray:re-configure,
         -install:jboss:configure:secure-console,
-        -install:jboss:configure:ejb-invoker-compression,
         -install:jboss:configure:update-runscripts,
         -install:jboss:configure:api:streaming:port,
         install:jboss:caarray,

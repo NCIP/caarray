@@ -834,6 +834,15 @@
     </panel>
 
     <panel order="18">
+        <field type="title" txt="JBoss Server Java Opts" bold="true" size="1" />
+        <field type="staticText" align="left" txt="Please configure the options that will be passed to the caArray JBoss server's JVM."/>
+        <field type="divider" align="top"/>
+        <field type="text" variable="jboss.java.opts">
+            <spec txt="JBoss Java Opts " id="text.label" size="75" set="-server -Xms2048m -Xmx2048m -XX:ThreadStackSize=128 -XX:SurvivorRatio=10 -XX:PermSize=128m -XX:MaxPermSize=128m -Dsun.rmi.dgc.client.gcInterval=3600000 -Dsun.rmi.dgc.server.gcInterval=3600000 -Djava.awt.headless=true -Dcom.healthmarketscience.rmiio.exporter.port=${java.api.filestreaming.port}"/>
+        </field>
+    </panel>
+
+    <panel order="19">
         <field type="title" txt="Installation Summary" bold="true" size="1" />
         <field type="staticText" align="left" txt="Below are "/>
         <field type="divider" align="top"/>
@@ -865,7 +874,7 @@
         <field type="staticText" align="left" txt="Database User [${database.user}] "/>
     </panel>
 
-    <panel order="19">
+    <panel order="20">
         <field type="title" txt="Installation Summary" bold="true" size="1" />
         <field type="staticText" align="left" txt="Below are "/>
         <field type="divider" align="top"/>
@@ -889,7 +898,6 @@
         <field type="staticText" align="left" txt="Grid URL [http://${grid.server.hostname}:${grid.server.port}/wsrf/services/cagrid/CaArraySvc] - This will be the url the grid index service uses to communicate with your caArray grid service."/>
         <field type="space"/>
         <field type="staticText" align="left" txt="Grid Log Dir [${existing.installation.home}/jboss-4.0.4.GA/server/${jboss.server.name}/log] - This is where the caArray grid service logs can be found."/>
-
     </panel>
-
+    
 </userInput>
