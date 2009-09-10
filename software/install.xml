@@ -355,8 +355,17 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
         -install:jboss:configure:secure-console,
         -install:jboss:configure:update-shutdown,
         -install:jboss:configure:java_opts,
+        -install:jboss:configure:tomcat,
         -install:jboss:configure:update-runscripts
         "/>
+    
+    <target name="-install:jboss:configure:tomcat" description="Configure tomcat web container for caArray JBoss installation.">
+        <!-- set the ldap-related servlet parameters -->
+        <xmltask source="${jboss.home}/server/${jboss.server.name}/deploy/jbossweb-tomcat55.sar/server.xml" dest="${jboss.home}/server/${jboss.server.name}/deploy/jbossweb-tomcat55.sar/server.xml">
+            <xmlcatalog refid="bda.xml.catalog"/>
+            <attr path="//Connector" attr="emptySessionPath" value="false"/>
+        </xmltask>
+    </target>
 
     <!-- Configure ports used by JBOSS (either bindings or editing jboss config.files) -->
     <target name="-install:jboss:configure:ports" description="Configure caarray" unless="exclude.jboss">
@@ -527,6 +536,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
         install:jboss:caarray:re-configure,
         -install:jboss:configure:secure-console,
         -install:jboss:configure:update-runscripts,
+        -install:jboss:configure:tomcat,
         -install:jboss:configure:api:streaming:port,
         install:jboss:caarray,
         install:jboss:start
