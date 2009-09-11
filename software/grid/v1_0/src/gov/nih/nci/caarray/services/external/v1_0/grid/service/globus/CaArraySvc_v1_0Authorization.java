@@ -93,16 +93,6 @@ public class CaArraySvc_v1_0Authorization implements PDP {
 		
 	}
 					
-	public static void authorizeGetFileContentsZipTransfer() throws RemoteException {
-		
-		
-	}
-					
-	public static void authorizeGetFileContentsTransfers() throws RemoteException {
-		
-		
-	}
-					
 	public static void authorizeGetFileContentsTransfer() throws RemoteException {
 		
 		
@@ -139,11 +129,6 @@ public class CaArraySvc_v1_0Authorization implements PDP {
 	}
 					
 	public static void authorizeGetMageTabExport() throws RemoteException {
-		
-		
-	}
-					
-	public static void authorizeGetMageTabZipTransfer() throws RemoteException {
 		
 		
 	}
@@ -266,22 +251,6 @@ public class CaArraySvc_v1_0Authorization implements PDP {
 				e.printStackTrace();
 				return false;
 			}
-		} else if(operation.getLocalPart().equals("getFileContentsZipTransfer")){
-			try{
-				authorizeGetFileContentsZipTransfer();
-				return true;
-			} catch (Exception e){
-				e.printStackTrace();
-				return false;
-			}
-		} else if(operation.getLocalPart().equals("getFileContentsTransfers")){
-			try{
-				authorizeGetFileContentsTransfers();
-				return true;
-			} catch (Exception e){
-				e.printStackTrace();
-				return false;
-			}
 		} else if(operation.getLocalPart().equals("getFileContentsTransfer")){
 			try{
 				authorizeGetFileContentsTransfer();
@@ -341,14 +310,6 @@ public class CaArraySvc_v1_0Authorization implements PDP {
 		} else if(operation.getLocalPart().equals("getMageTabExport")){
 			try{
 				authorizeGetMageTabExport();
-				return true;
-			} catch (Exception e){
-				e.printStackTrace();
-				return false;
-			}
-		} else if(operation.getLocalPart().equals("getMageTabZipTransfer")){
-			try{
-				authorizeGetMageTabZipTransfer();
 				return true;
 			} catch (Exception e){
 				e.printStackTrace();

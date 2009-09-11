@@ -163,21 +163,12 @@ public abstract class AbstractExternalService {
     }
 
     /**
-     * Retrieve the entity in the internal domain model identified by the given external id. This is
-     * expected to be implemented by version-specific subclasses.
-     * 
-     * @param id the external id
-     * @return the entity
-     */
-    protected abstract Object getByExternalId(String id);
-
-    /**
      * Return the class of the entity identified by the given external id. 
      * 
      * @param id the external id
      * @return the class.
      */
-    protected Class<?> getClassFromExternalId(String id) {
+    public static Class<?> getClassFromExternalId(String id) {
         LSID lsidObj = new LSID(id);
         try {
             return Class.forName(lsidObj.getNamespace());
@@ -194,13 +185,13 @@ public abstract class AbstractExternalService {
      * @param id the external id
      * @return the entity id
      */
-    protected Long getIdFromExternalId(String id) {
-        LSID lsidObj = new LSID(id);
-        return Long.valueOf(lsidObj.getObjectId());
+    public static String getIdFromExternalId(String id) {
+        return new LSID(id).getObjectId();
     }
 
     /**
      * Apply remote api-time security policies to the given set of entities.
+     * 
      * @param entities the entities to apply policies to.
      */
     protected void applySecurityPolicies(Collection<?> entities) {
@@ -211,6 +202,7 @@ public abstract class AbstractExternalService {
 
     /**
      * Apply remote api-time security policies to the given entity.
+     * 
      * @param entity the entity to apply policies to.
      */
     protected void applySecurityPolicies(Object entity) {
@@ -225,6 +217,7 @@ public abstract class AbstractExternalService {
 
     /**
      * Return the hibernate MatchMode constant with given name.
+     * 
      * @param matchMode the MatchMode constant to return
      * @return the MatchMode constant.
      */
@@ -246,18 +239,23 @@ public abstract class AbstractExternalService {
     }
 
     /**
-     * @param namespaceClass external type.
-     * @param id internal entity id.
-     * @return LSID.
+     * Create the external id for an entity of given class with given internal id. 
+     * This uses the fully qualified classname as the external id namespace.
+     * 
+     * @param namespaceClass the external model class for the entity
+     * @param id the id of the entity in the internal model
+     * @return the external id
      */
-    public static String makeExternalId(Class namespaceClass, Object id) {
+    public static String makeExternalId(Class<?> namespaceClass, Object id) {
         return makeExternalId(namespaceClass.getName(), id.toString());
     }
 
     /**
-     * @param namespace external type name or LSID namespace.
-     * @param id internal entity id.
-     * @return LSID.
+     * Create the external id for an entity in given namespace with given internal id.
+     * 
+     * @param namespace the namespace to use for the id.
+     * @param id the id of the entity in the internal model
+     * @return the external id
      */
     public static String makeExternalId(String namespace, String id) {
         return new LSID(gov.nih.nci.caarray.domain.AbstractCaArrayEntity.CAARRAY_LSID_AUTHORITY, namespace, id)

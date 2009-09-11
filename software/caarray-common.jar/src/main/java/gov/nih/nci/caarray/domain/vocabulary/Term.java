@@ -284,7 +284,7 @@ public class Term extends AbstractCaArrayEntity implements Comparable<Term> {
             return true;
         }
         Term other = (Term) o;
-        return new EqualsBuilder().append(this.getValue(), other.getValue())
+        return new EqualsBuilder().append(this.getId(), other.getId()).append(this.getValue(), other.getValue())
                 .append(this.getSource(), other.getSource()).isEquals();
     }
 
@@ -293,7 +293,7 @@ public class Term extends AbstractCaArrayEntity implements Comparable<Term> {
      */
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(this.getValue()).append(this.getSource()).toHashCode();
+        return new HashCodeBuilder().append(this.getId()).append(this.getValue()).append(this.getSource()).toHashCode();
     }
 
     /**
@@ -302,6 +302,7 @@ public class Term extends AbstractCaArrayEntity implements Comparable<Term> {
     @Override
     public String toString() {
         return new ToStringBuilder(this)
+            .append("id", getId())
             .append("source", this.source)
             .append("value", this.value)
             .append("accession", this.accession)

@@ -481,12 +481,6 @@
       <bind-xml name="firstResultOffset" node="attribute" />
     </field>
   </class>
-  <class name="gov.nih.nci.caarray.external.v1_0.query.FileDownloadRequest">
-    <map-to xml="FileDownloadRequest" ns-uri="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.query" />
-    <field name="files" type="gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference" collection="collection">
-      <bind-xml name="CaArrayEntityReference" type="gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference" location="files" node="element" />
-    </field>
-  </class>
   <class name="gov.nih.nci.caarray.external.v1_0.query.DataSetRequest">
     <map-to xml="DataSetRequest" ns-uri="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.query" />
     <field name="quantitationTypes" type="gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference" collection="collection">

@@ -284,9 +284,19 @@ public abstract class AbstractExperimentDesignNode extends AbstractCaArrayEntity
     }
 
     /**
-     * Return the characteristics with given category in this biomaterial. 
-     * @param category category
-     * @return the characteristics with given category.
+     * Return the characteristics with given category that are present in the chain terminating at this node.
+     * 
+     * The set of returned characteristics is determined as follows:
+     * <ul>
+     * <li>If this node has characteristics with the given category directly, then the returned set consists of all such
+     * characteristics</li>
+     * <li>Otherwise, the returned set is given by the union of the results of calling getCharacteristicsRecursively on
+     * each direct predecessor of this ExperimentDesignNode</li>
+     * </ul>
+     * 
+     * @param category the category of characteristics to find
+     * @return the characteristics with given category that are present in the chain terminating at this node, as
+     *         described above.
      */
     public Set<AbstractCharacteristic> getCharacteristicsRecursively(final Category category) {
         Set<AbstractCharacteristic> chars = new HashSet<AbstractCharacteristic>(getCharacteristics(category));
@@ -301,9 +311,10 @@ public abstract class AbstractExperimentDesignNode extends AbstractCaArrayEntity
     }
     
     /**
-     * Return the characteristics with given category in this biomaterial. 
+     * Return the characteristics with given category that are directly present on this ExperimentDesignNode.
+     *  
      * @param category category
-     * @return the characteristics with given category.
+     * @return the characteristics with given category that are directly present on this.
      */
     public Set<AbstractCharacteristic> getCharacteristics(final Category category) {
         return Collections.emptySet();

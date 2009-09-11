@@ -82,6 +82,8 @@
  */
 package gov.nih.nci.caarray.external.v1_0.data;
 
+import java.io.Serializable;
+
 import gov.nih.nci.caarray.util.CaArrayUtils;
 
 
@@ -108,6 +110,22 @@ public final class LongColumn extends AbstractDataColumn {
      */
     public void setValues(long[] values) {
         this.values = values;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override    
+    protected Serializable getSerializableValues() {
+        return values;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void setSerializableValues(Serializable serValues) {
+        this.values = (long[]) serValues;        
     }
 
     /**

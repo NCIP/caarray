@@ -83,7 +83,6 @@
 package gov.nih.nci.caarray.services.external.v1_0.impl;
 
 import gov.nih.nci.caarray.application.ServiceLocatorFactory;
-import gov.nih.nci.caarray.domain.LSID;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileType;
@@ -260,37 +259,43 @@ public class BaseV1_0ExternalService extends AbstractExternalService {
     }
     
     /**
+     * Retrieve the entity in the internal domain model identified by the given external id. This is
+     * expected to be implemented by version-specific subclasses.
+     * 
+     * @param externalId the external id     
+     * @return the entity
      * {@inheritDoc}
      */
     @SuppressWarnings(UNCHECKED)
-    protected java.lang.Object getByExternalId(String lsid) {        
+    protected java.lang.Object getByExternalId(String externalId) {        
         Class<? extends AbstractCaArrayEntity> entityClass = 
-            (Class<? extends AbstractCaArrayEntity>) getClassFromExternalId(lsid);
+            (Class<? extends AbstractCaArrayEntity>) getClassFromExternalId(externalId);
         EntityHandler<? extends AbstractCaArrayEntity> resolver = entityHandlerRegistry.getResolver(entityClass); 
         if (resolver == null) {
             return null;
         }
-        String objectId = new LSID(lsid).getObjectId();
-        return resolver.resolve(objectId);
+        return resolver.resolve(getIdFromExternalId(externalId));
     }
 
     /**
-     * Retrieve the entity with given lsid expected to exist in the persistent store and have given type.
+     * Retrieve the entity with given external id expected to exist in the persistent store and have given type.
+     * 
      * @param <T> the entity type
-     * @param lsid the lsid of entity to retrieve
+     * @param externalId the the external id of entity to retrieve
      * @param type the class for the entity type
      * @return the entity
-     * @throws InvalidReferenceException if no entity exists with given lsid or the entity is not of the expected type.
+     * @throws InvalidReferenceException if no entity exists with given external id or the entity is not of the expected
+     *             type.
      */
-    protected <T> T getRequiredByLsid(String lsid, Class<T> type) throws InvalidReferenceException {
-        java.lang.Object o = getByExternalId(lsid);
+    protected <T> T getRequiredByExternalId(String externalId, Class<T> type) throws InvalidReferenceException {
+        java.lang.Object o = getByExternalId(externalId);
         if (o == null) {
-            throw new NoEntityMatchingReferenceException(new CaArrayEntityReference(lsid));
+            throw new NoEntityMatchingReferenceException(new CaArrayEntityReference(externalId));
         }
         try {
             return type.cast(o);                    
         } catch (ClassCastException e) {
-            throw new IncorrectEntityTypeException(new CaArrayEntityReference(lsid), // NOPMD
+            throw new IncorrectEntityTypeException(new CaArrayEntityReference(externalId), // NOPMD
                         "expected a reference to a type " + type.getName());
         }
     }
@@ -306,7 +311,7 @@ public class BaseV1_0ExternalService extends AbstractExternalService {
      *             type.
      */
     protected <T> T getByReference(CaArrayEntityReference reference, Class<T> type) throws InvalidReferenceException {
-        return reference == null ? null : getRequiredByLsid(reference.getId(), type);
+        return reference == null ? null : getRequiredByExternalId(reference.getId(), type);
     }
         
     /**
@@ -322,7 +327,7 @@ public class BaseV1_0ExternalService extends AbstractExternalService {
     protected <T> Collection<T> mapRequiredReferencesToEntities(Collection<CaArrayEntityReference> refs,
             Collection<T> entities, Class<T> type) throws InvalidReferenceException {
         for (CaArrayEntityReference ref : refs) {
-            entities.add(getRequiredByLsid(ref.getId(), type));
+            entities.add(getRequiredByExternalId(ref.getId(), type));
         }
         return entities;
     }

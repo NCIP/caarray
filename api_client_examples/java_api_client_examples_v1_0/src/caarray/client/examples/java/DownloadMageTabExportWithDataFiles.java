@@ -89,15 +89,13 @@ import gov.nih.nci.caarray.services.external.v1_0.CaArrayServer;
 import gov.nih.nci.caarray.services.external.v1_0.InvalidInputException;
 import gov.nih.nci.caarray.services.external.v1_0.data.DataApiUtils;
 import gov.nih.nci.caarray.services.external.v1_0.data.DataService;
+import gov.nih.nci.caarray.services.external.v1_0.data.DataTransferException;
 import gov.nih.nci.caarray.services.external.v1_0.data.JavaDataApiUtils;
 import gov.nih.nci.caarray.services.external.v1_0.search.SearchService;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.rmi.RemoteException;
 import java.util.List;
-
-import com.sun.org.apache.xerces.internal.util.URI.MalformedURIException;
 
 /**
  * A client downloading a zip of files from an experiment using the caArray Java API.
@@ -127,16 +125,15 @@ public class DownloadMageTabExportWithDataFiles {
         }
     }
 
-    private void download() throws RemoteException, MalformedURIException, IOException, Exception {
+    private void download() throws InvalidInputException, DataTransferException, IOException {
         CaArrayEntityReference experimentRef = searchForExperiment();
         if (experimentRef == null) {
             System.err.println("Could not find experiment with the requested title.");
             return;
         }
-        boolean compressEachIndividualFile = false;
         ByteArrayOutputStream outStream = new ByteArrayOutputStream();
         long startTime = System.currentTimeMillis();
-        dataServiceHelper.copyMageTabZipToOutputStream(experimentRef, compressEachIndividualFile, outStream);
+        dataServiceHelper.copyMageTabZipToOutputStream(experimentRef, outStream);
         long totalTime = System.currentTimeMillis() - startTime;
         byte[] byteArray = outStream.toByteArray();
         if (byteArray != null) {
@@ -149,7 +146,7 @@ public class DownloadMageTabExportWithDataFiles {
     /**
      * Search for an experiment based on its title or public identifier.
      */
-    private CaArrayEntityReference searchForExperiment() throws RemoteException, InvalidInputException {
+    private CaArrayEntityReference searchForExperiment() throws InvalidInputException {
         // Search for experiment with the given title.
         ExperimentSearchCriteria experimentSearchCriteria = new ExperimentSearchCriteria();
         experimentSearchCriteria.setTitle(EXPERIMENT_TITLE);

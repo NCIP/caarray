@@ -82,7 +82,6 @@
  */
 package gov.nih.nci.caarray.application.project;
 
-import gov.nih.nci.caarray.domain.contact.Person;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.permissions.AccessProfile;
 import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
@@ -488,12 +487,6 @@ public interface ProjectManagementService {
      */
     int searchCount(String keyword, Class<? extends AbstractBioMaterial> biomaterialClass,
             BiomaterialSearchCategory... categories);
-
-    /**
-     * @return all principal investigators in the system, e.g. all persons that are a contact with the 
-     * principal investigator role for some experiment
-     */
-    List<Person> getAllPrincipalInvestigators();
 
     /**
      * Changes the owner of a project.

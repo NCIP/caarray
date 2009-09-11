@@ -83,7 +83,7 @@
 package gov.nih.nci.caarray.domain.data;
 
 import gov.nih.nci.caarray.domain.MultiPartBlob;
-import gov.nih.nci.caarray.domain.SerializationHelperUtility;
+import gov.nih.nci.caarray.util.CaArrayUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -148,12 +148,12 @@ class Serializer implements Serializable {
     }
 
     private void serialize() {
-        setSerializedValues(SerializationHelperUtility.serialize(value));
+        setSerializedValues(CaArrayUtils.serialize(value));
         value = null;
     }
 
     private void deserialize() {
-        value = SerializationHelperUtility.deserialize(getSerializedValues());
+        value = CaArrayUtils.deserialize(getSerializedValues());
         serializedValue = null;
     }
     

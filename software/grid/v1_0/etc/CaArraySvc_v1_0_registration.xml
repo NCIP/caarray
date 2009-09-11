@@ -18,20 +18,20 @@
 			xmlns:ns11="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata"
 			xmlns:ns14="http://gov.nih.nci.cagrid.enumeration/EnumerationResponseContainer"
 			xmlns:xs="http://www.w3.org/2001/XMLSchema"
-			xmlns:ns3="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.value"
-			xmlns:ns6="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.factor"
+			xmlns:ns6="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.value"
+			xmlns:ns8="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.factor"
 			xmlns:ns12="http://schemas.xmlsoap.org/ws/2004/09/enumeration"
 			xmlns:ns10="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.security"
-			xmlns:ns7="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.sample"
-			xmlns:ns1="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.experiment"
-			xmlns:ns4="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.vocabulary"
+			xmlns:ns0="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.sample"
+			xmlns:ns1="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.vocabulary"
+			xmlns:ns7="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.experiment"
 			xmlns:ns15="http://transfer.cagrid.org/TransferService/Context/types"
-			xmlns:ns5="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.query"
+			xmlns:ns2="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.query"
 			xmlns:ns9="http://grid.v1_0.external.services.caarray.nci.nih.gov/CaArraySvc_v1_0/types"
 			xmlns:ns17="http://gov.nih.nci.cagrid.enumeration/CaGridEnumeration/types"
-			xmlns:ns2="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external"
-			xmlns:ns8="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.array"
-			xmlns:ns0="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.data">
+			xmlns:ns4="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external"
+			xmlns:ns3="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.array"
+			xmlns:ns5="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.data">
         <!-- Specifies that the index should refresh information
             every 300000 milliseconds (once every 5 minutes) -->
         <agg:PollIntervalMillis>INDEX_REFRESH</agg:PollIntervalMillis>

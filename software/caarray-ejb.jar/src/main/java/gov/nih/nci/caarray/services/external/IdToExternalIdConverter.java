@@ -82,7 +82,6 @@
  */
 package gov.nih.nci.caarray.services.external;
 
-import gov.nih.nci.caarray.domain.LSID;
 import net.sf.dozer.util.mapping.converters.ConfigurableCustomConverter;
 
 /**
@@ -100,7 +99,7 @@ public class IdToExternalIdConverter implements ConfigurableCustomConverter {
         } else if (src instanceof Long) {
             return AbstractExternalService.makeExternalId(param, src.toString());
         } else if (src instanceof String) {
-            return Long.valueOf(new LSID(src.toString()).getObjectId());
+            return Long.valueOf(AbstractExternalService.getIdFromExternalId(src.toString()));
         } else {
             throw new IllegalArgumentException("This converter cannot convert object of type " + srcClass);
         }

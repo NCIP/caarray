@@ -103,7 +103,7 @@ import gov.nih.nci.caarray.external.v1_0.query.DataSetRequest;
 import gov.nih.nci.caarray.external.v1_0.query.ExampleSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.FileSearchCriteria;
-import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
+import gov.nih.nci.caarray.services.external.v1_0.InvalidInputException;
 import gov.nih.nci.caarray.services.external.v1_0.grid.client.CaArraySvc_v1_0Client;
 import gov.nih.nci.caarray.services.external.v1_0.grid.client.GridSearchApiUtils;
 import gov.nih.nci.caarray.services.external.v1_0.search.SearchApiUtils;
@@ -116,6 +116,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.axis.types.URI.MalformedURIException;
+import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
  * A client downloading columns from a data file using the caArray Grid service API.
@@ -219,7 +220,7 @@ public class DownloadDataColumnsFromFile {
     /**
      * Search for data files of a certain type in the experiment and select one.
      */
-    private CaArrayEntityReference selectDataFile(CaArrayEntityReference experimentRef) throws RemoteException, InvalidReferenceException {
+    private CaArrayEntityReference selectDataFile(CaArrayEntityReference experimentRef) throws RemoteException, InvalidInputException {
         FileSearchCriteria fileSearchCriteria = new FileSearchCriteria();
         fileSearchCriteria.setExperiment(experimentRef);
         // Search for all AFFYMETRIX_CHP data files in the experiment.
@@ -293,6 +294,7 @@ public class DownloadDataColumnsFromFile {
         case FLOAT:
             float[] floatValues = ((FloatColumn) dataColumn).getValues();
             System.out.println("Retrieved " + floatValues.length + " float values.");
+            System.out.println("Float values: " + ToStringBuilder.reflectionToString(floatValues));
             break;
         case SHORT:
             short[] shortValues = ((ShortColumn) dataColumn).getValues();

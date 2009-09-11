@@ -87,6 +87,7 @@ import gov.nih.nci.caarray.external.v1_0.sample.Biomaterial;
 import gov.nih.nci.caarray.external.v1_0.sample.BiomaterialType;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.Term;
 import gov.nih.nci.caarray.services.external.v1_0.CaArrayServer;
+import gov.nih.nci.caarray.services.external.v1_0.InvalidInputException;
 import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
 import gov.nih.nci.caarray.services.external.v1_0.search.JavaSearchApiUtils;
 import gov.nih.nci.caarray.services.external.v1_0.search.SearchApiUtils;
@@ -121,13 +122,13 @@ public class SearchBiomaterialsByKeyword {
         }
     }
 
-    private void search() throws RemoteException, InvalidReferenceException {
+    private void search() throws InvalidInputException {
         BiomaterialKeywordSearchCriteria criteria = new BiomaterialKeywordSearchCriteria();
         criteria.setKeyword(KEYPHRASE);
         criteria.getTypes().add(BiomaterialType.SAMPLE);
         criteria.getTypes().add(BiomaterialType.SOURCE);
         long startTime = System.currentTimeMillis();
-        List<Biomaterial> biomaterials = (searchServiceHelper.biomaterialsByKeyword(criteria)).list();
+        List<Biomaterial> biomaterials = searchServiceHelper.biomaterialsByKeyword(criteria).list();
         long totalTime = System.currentTimeMillis() - startTime;
         if (biomaterials == null || biomaterials.size() <= 0) {
             System.err.println("No biomaterials found.");
@@ -140,7 +141,7 @@ public class SearchBiomaterialsByKeyword {
         }
     }
 
-    private void printBiomaterialDetails(Biomaterial biomaterial) throws RemoteException {
+    private void printBiomaterialDetails(Biomaterial biomaterial) {
         // Print basic biomaterial attributes.
         System.out.print(biomaterial.getName() + "\t");
         System.out.print(biomaterial.getType() + "\t");

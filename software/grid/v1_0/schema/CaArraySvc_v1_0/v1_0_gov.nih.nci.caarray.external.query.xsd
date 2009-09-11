@@ -227,19 +227,6 @@
         <xs:attribute name="firstResultOffset" type="xs:int"/>
     </xs:complexType>
     
-    <xs:element name="FileDownloadRequest" type="qry:FileDownloadRequest" />
-    <xs:complexType name="FileDownloadRequest">
-    	<xs:sequence>
-			<xs:element name="files">
-	  			<xs:complexType>
-	    			<xs:sequence>
-	      				<xs:element ref="car:CaArrayEntityReference" minOccurs="1" maxOccurs="unbounded"/>
-	    			</xs:sequence>
-	  			</xs:complexType>
-			</xs:element>
-      	</xs:sequence>
-    </xs:complexType>
-
     <xs:element name="DataSetRequest" type="qry:DataSetRequest" />
     <xs:complexType name="DataSetRequest">
     	<xs:sequence>

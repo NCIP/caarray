@@ -85,18 +85,16 @@ package caarray.client.examples.grid;
 import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
 import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
 import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
+import gov.nih.nci.caarray.services.external.v1_0.data.DataApiUtils;
 import gov.nih.nci.caarray.services.external.v1_0.grid.client.CaArraySvc_v1_0Client;
+import gov.nih.nci.caarray.services.external.v1_0.grid.client.GridDataApiUtils;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.rmi.RemoteException;
 import java.util.List;
 
 import org.apache.axis.types.URI.MalformedURIException;
-import org.apache.commons.io.IOUtils;
-import org.cagrid.transfer.context.client.TransferServiceContextClient;
-import org.cagrid.transfer.context.client.helper.TransferClientHelper;
-import org.cagrid.transfer.context.stubs.types.TransferServiceContextReference;
 
 /**
  * A client exporting an experiment into MAGE-TAB and downloading a zip of the IDF, SDRF and data files
@@ -107,11 +105,13 @@ import org.cagrid.transfer.context.stubs.types.TransferServiceContextReference;
 public class DownloadMageTabExportWithDataFiles {
     private static CaArraySvc_v1_0Client client = null;
     private static final String EXPERIMENT_TITLE = BaseProperties.AFFYMETRIX_EXPERIMENT;
+    private static DataApiUtils dataServiceHelper = null;
 
     public static void main(String[] args) {
         DownloadMageTabExportWithDataFiles downloader = new DownloadMageTabExportWithDataFiles();
         try {
             client = new CaArraySvc_v1_0Client(BaseProperties.getGridServiceUrl());
+            dataServiceHelper = new GridDataApiUtils(client);
             System.out.println("Exporting MAGE-TAB plus data files for experiment: " + EXPERIMENT_TITLE + "...");
             downloader.download();
         } catch (Throwable t) {
@@ -126,13 +126,11 @@ public class DownloadMageTabExportWithDataFiles {
             System.err.println("Could not find experiment with the requested title.");
             return;
         }
-        boolean compressIndividualFiles = false;
+        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
         long startTime = System.currentTimeMillis();
-        TransferServiceContextReference serviceContextRef = client.getMageTabZipTransfer(experimentRef, compressIndividualFiles);
-        TransferServiceContextClient transferClient = new TransferServiceContextClient(serviceContextRef.getEndpointReference());
-        InputStream stream = TransferClientHelper.getData(transferClient.getDataTransferDescriptor());
+        dataServiceHelper.copyMageTabZipToOutputStream(experimentRef, outStream);
         long totalTime = System.currentTimeMillis() - startTime;
-        byte[] byteArray = IOUtils.toByteArray(stream);
+        byte[] byteArray = outStream.toByteArray();
 
         if (byteArray != null) {
             System.out.println("Retrieved " + byteArray.length + " bytes in " + totalTime + " ms.");

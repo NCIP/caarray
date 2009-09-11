@@ -330,6 +330,7 @@ public abstract class AbstractBioMaterial extends AbstractExperimentDesignNode {
      * Return the characteristic with given category name in this biomaterial. If multiple characteristics
      * have the same category name, return one at random.
      * If there is none, return null.
+     * 
      * @param categoryName name of category for which to find a characteristic.
      * @return the characteristic with given category name or null if there is none.
      */
@@ -343,6 +344,7 @@ public abstract class AbstractBioMaterial extends AbstractExperimentDesignNode {
 
     /**
      * Return the characteristics with given category in this biomaterial. 
+     * 
      * @param category category
      * @return the characteristics with given category.
      */

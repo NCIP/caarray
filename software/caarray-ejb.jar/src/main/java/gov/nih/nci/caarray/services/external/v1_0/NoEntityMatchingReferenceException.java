@@ -100,4 +100,13 @@ public class NoEntityMatchingReferenceException extends InvalidReferenceExceptio
     public NoEntityMatchingReferenceException(CaArrayEntityReference reference) {
         super(reference);
     }
+    
+    /**
+     * Constructor with message.
+     * @param reference the problematic reference
+     * @param message message.
+     */
+    public NoEntityMatchingReferenceException(CaArrayEntityReference reference, String message) {
+        super(reference, message);
+    }
 }

@@ -82,6 +82,8 @@
  */
 package gov.nih.nci.caarray.external.v1_0.data;
 
+import java.io.Serializable;
+
 import gov.nih.nci.caarray.util.CaArrayUtils;
 
 
@@ -110,6 +112,22 @@ public final class FloatColumn extends AbstractDataColumn {
         this.values = values;
     }
     
+    /**
+     * {@inheritDoc}
+     */
+    @Override    
+    protected Serializable getSerializableValues() {
+        return values;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void setSerializableValues(Serializable serValues) {
+        this.values = (float[]) serValues;        
+    }
+
     /**
      * @return the values of this column, in a space-separated representation, where each value is 
      * encoded using the literal representation of the xs:float type defined in the XML Schema standard.

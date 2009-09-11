@@ -105,6 +105,8 @@ import gov.nih.nci.caarray.external.v1_0.sample.Hybridization;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.Category;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.Term;
 import gov.nih.nci.caarray.services.external.v1_0.InvalidInputException;
+import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
+import gov.nih.nci.caarray.services.external.v1_0.UnsupportedCategoryException;
 
 import java.util.List;
 
@@ -113,6 +115,14 @@ import javax.ejb.Remote;
 /**
  * Remote service for search and data enumeration. Used by the grid service, and can also be used directly by EJB
  * clients.
+ * 
+ * Several methods in this service accept a LimitOffset parameter to allow the client to request a subset of the results
+ * that would otherwise be matched by the provided criteria. For these methods, there may also be a maximum number of
+ * results that the system is willing to return for that query, regardless of the limit requested by the client. This
+ * maximum is not specified in the method definition (and varies between the methods), but will be be indicated in the
+ * return value. The actual number of results returned for these methods will then be the smaller of { maximum system
+ * threshold, limit requested by client in the LimitOffset parameter, actual number of results available (taking into
+ * account the offset specified)
  * 
  * @author dkokotov
  */
@@ -124,7 +134,9 @@ public interface SearchService {
     String JNDI_NAME = "caarray/external/v1_0/SearchServiceBean";
 
     /**
-     * Retrieve list of Principal Inestigators in the system.
+     * Retrieve list of Person entities that are Principal Investigators on at least one experiment in the system. A
+     * Person is considered a Principal Investigator if he/she is an experiment contact on an experiment with a set of
+     * roles that includes the "investigator" term from the MGED ontology.
      * 
      * @return the list of Person entities that are principal investigators on at least one experiment in the system.
      */
@@ -132,15 +144,26 @@ public interface SearchService {
 
     /**
      * Retrieve the list of all categories of characteristics, either in the entire system, or for given experiment.
+     * This list always includes the following "standard" categories:
+     * <ul>
+     * <li>MGED Ontology : OrganismPart
+     * <li>MGED Ontology : DiseaseState
+     * <li>MGED Ontology : MaterialType
+     * <li>MGED Ontology : CellType
+     * <li>MGED Ontology : LabelCompound
+     * <li>caArray Ontology : ExternalId
+     * </ul>
+     * In addition if an experiment specified, then it includes all categories from any characteristics belonging to any
+     * of the biomaterials in that experiment. If an experiment is not specified, then it includes all categories from
+     * any characteristics belonging to any of the biomaterials in the entire system.
      * 
-     * @param experimentRef if not null, then only categories of characteristics of biomaterials in the
-     * given experiment are returned, otherwise categories of all characteristivcs in the system are returned.
+     * @param experimentRef if not null, then only categories of characteristics of biomaterials in the given experiment
+     *            are returned, otherwise categories of all characteristics in the system are returned.
      * @return the list of Category entities as described above.
-     * @throws InvalidInputException if there is no experiment with given reference
-     * ({@link gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException})
+     * @throws InvalidReferenceException if the given reference does not identify an existing experiment in the system.
      */
     List<Category> getAllCharacteristicCategories(CaArrayEntityReference experimentRef)
-            throws InvalidInputException;
+            throws InvalidReferenceException;
 
     /**
      * Retrieve the list of all terms belonging to given category in the system.
@@ -148,117 +171,161 @@ public interface SearchService {
      * @param categoryRef reference identifying the category
      * @param valuePrefix if not null, only include terms whose value starts with given prefix, using case insensitive
      *            matching
-     * @return the terms in the given category
-     * @throws InvalidInputException if there is no category with given reference
-     * ({@link gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException})
+     * @return the terms in the given category, possibly filtered for the given prefix
+     * @throws InvalidReferenceException if the given reference does not identify an existing category in the system.
      */
     List<Term> getTermsForCategory(CaArrayEntityReference categoryRef, String valuePrefix)
-            throws InvalidInputException;
+            throws InvalidReferenceException;
+
+    /**
+     * Search for experiments satisfying the given search criteria.
+     * 
+     * @param criteria the search criteria.
+     * @param limitOffset an optional parameter specifying the number of results to return, and the offset of the first
+     *            result to return within the overall result set. May be left null to indicate the entire result set is
+     *            requested.
+     * @return a SearchResult with the matching experiments and metadata on the subset of matching results actually
+     *         returned. This may be smaller than the requested number of results - see the class level Javadoc for
+     *         details.
+     * @throws InvalidReferenceException if any references within the given criteria are not valid, e.g. refer to
+     *             entities that do not exist or are not of the correct types
+     * @throws UnsupportedCategoryException if the search criteria includes an annotation criterion with a category
+     *             other that disease state, cell type, material type, tissue site.
+     */
+    SearchResult<Experiment> searchForExperiments(ExperimentSearchCriteria criteria, LimitOffset limitOffset)
+            throws InvalidReferenceException, UnsupportedCategoryException;
+
+    /**
+     * Search for experiments matching the given keyword keyword criteria.
+     * 
+     * @param criteria the keyword criteria to search for.
+     * @param limitOffset an optional parameter specifying the number of results to return, and the offset of the first
+     *            result to return within the overall result set. May be left null to indicate the entire result set is
+     *            requested.
+     * @return a SearchResult with the matching experiments and metadata on the subset of matching results actually
+     *         returned. This may be smaller than the requested number of results - see the class level Javadoc for
+     *         details.
+     */
+    SearchResult<Experiment> searchForExperimentsByKeyword(KeywordSearchCriteria criteria, LimitOffset limitOffset);
 
     /**
      * Search for biomaterials satisfying the given search criteria.
      * 
      * @param criteria the search criteria
-     * @param pagingParams paging parameters
-     * @return the subset of the biomaterials matching the given criteria, subject to the paging params.
-     * @throws InvalidInputException <ul>
-     * <li>{@link gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException}
-     * if there is no experiment with given reference</li>
-     * <li>{@link gov.nih.nci.caarray.services.external.v1_0.UnsupportedCategoryException}
-     * if the search criteria includes an annotation criterion with a category
-     * other that disease state, cell type, material type, tissue site.</li>
-     * </ul>
+     * @param limitOffset an optional parameter specifying the number of results to return, and the offset of the first
+     *            result to return within the overall result set. May be left null to indicate the entire result set is
+     *            requested.
+     * @return a SearchResult with the matching biomaterials and metadata on the subset of matching results actually
+     *         returned. This may be smaller than the requested number of results - see the class level Javadoc for
+     *         details.
+     * @throws InvalidReferenceException if any references within the given criteria are not valid, e.g. refer to
+     *             entities that do not exist or are not of the correct types
+     * @throws UnsupportedCategoryException if the search criteria includes an annotation criterion with a category
+     *             other that disease state, cell type, material type, tissue site.
      */
-    SearchResult<Biomaterial> searchForBiomaterials(BiomaterialSearchCriteria criteria, LimitOffset pagingParams)
-            throws InvalidInputException;
+    SearchResult<Biomaterial> searchForBiomaterials(BiomaterialSearchCriteria criteria, LimitOffset limitOffset)
+            throws InvalidReferenceException, UnsupportedCategoryException;
+
+    /**
+     * Search for biomaterials matching the given keyword criteria. 
+     * 
+     * @param criteria the keyword criteria to search for.
+     * @param limitOffset an optional parameter specifying the number of results to return, and the offset of the first
+     *            result to return within the overall result set. May be left null to indicate the entire result set is
+     *            requested.
+     * @return a SearchResult with the matching biomaterials and metadata on the subset of matching results actually
+     *         returned. This may be smaller than the requested number of results - see the class level Javadoc for
+     *         details.
+     */
+    SearchResult<Biomaterial> searchForBiomaterialsByKeyword(BiomaterialKeywordSearchCriteria criteria,
+            LimitOffset limitOffset);
 
     /**
      * Search for hybridizations satisfying the given search criteria.
      * 
      * @param criteria the search criteria
-     * @param pagingParams paging parameters
-     * @return the subset of the hybridizations matching the given criteria, subject to the paging params.
-     * @throws InvalidInputException if there is no experiment with given reference
-     * ({@link gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException})
+     * @param limitOffset an optional parameter specifying the number of results to return, and the offset of the first
+     *            result to return within the overall result set. May be left null to indicate the entire result set is
+     *            requested.
+     * @return a SearchResult with the matching hybridizations and metadata on the subset of matching results actually
+     *         returned. This may be smaller than the requested number of results - see the class level Javadoc for
+     *         details.
+     * @throws InvalidReferenceException if any references within the given criteria are not valid, e.g. refer to
+     *             entities that do not exist or are not of the correct types
      */
-    SearchResult<Hybridization> searchForHybridizations(HybridizationSearchCriteria criteria, LimitOffset pagingParams)
-            throws InvalidInputException;
+    SearchResult<Hybridization> searchForHybridizations(HybridizationSearchCriteria criteria, LimitOffset limitOffset)
+            throws InvalidReferenceException;
+
 
     /**
-     * Returns a list of experiments satisfying the given search criteria.
+     * Search for files satisfying the given search criteria. Note that the File instances returned by this search only
+     * contain file metadata; to retrieve the actual file contents, use the file retrieval methods in DataService.
      * 
      * @param criteria the search criteria.
-     * @param pagingParams paging params.
-     * @return the list of experiments matching criteria, subject to the paging specifications.
-     * @throws InvalidInputException if the search criteria was invalid. 
-     * <ul><li>{@link gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException}
-     * if the search criteria includes any invalid references.</li>
-     * <li>{@link gov.nih.nci.caarray.services.external.v1_0.UnsupportedCategoryException}
-     * if the search criteria includes an annotation criterion with a category
-     *             other that disease state, cell type, material type, tissue site.</li></ul>
+     * @param limitOffset an optional parameter specifying the number of results to return, and the offset of the first
+     *            result to return within the overall result set. May be left null to indicate the entire result set is
+     *            requested.
+     * @return a SearchResult with the matching hybridizations and metadata on the subset of matching results actually
+     *         returned. This may be smaller than the requested number of results - see the class level Javadoc for
+     *         details.
+     * @throws InvalidReferenceException if any references within the given criteria are not valid, e.g. refer to
+     *             entities that do not exist or are not of the correct types
+     * @see DataService
      */
-    SearchResult<Experiment> searchForExperiments(ExperimentSearchCriteria criteria, LimitOffset pagingParams)
-            throws InvalidInputException;
-
-    /**
-     * Returns a list of experiments matching the given keyword.
-     * 
-     * @param criteria the keyword criteria to search for.
-     * @param pagingParams paging params.
-     * @return the list of experiments matching criteria, subject to the paging specifications.
-     */
-    SearchResult<Experiment> searchForExperimentsByKeyword(KeywordSearchCriteria criteria, LimitOffset pagingParams);
-
-    /**
-     * Returns a list of data files satisfying the given search criteria.
-     * 
-     * @param criteria the search criteria.
-     * @param pagingParams paging params.
-     * @return the list of files matching criteria, subject to the paging specifications.
-     * @throws InvalidInputException if the search criteria includes any invalid references
-     * ({@link gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException}).
-     */
-    SearchResult<File> searchForFiles(FileSearchCriteria criteria, LimitOffset pagingParams)
-            throws InvalidInputException;
+    SearchResult<File> searchForFiles(FileSearchCriteria criteria, LimitOffset limitOffset)
+            throws InvalidReferenceException;
     
-    /**
-     * Returns a list of biomaterials matching the given keyword. 
-     * 
-     * @param criteria the keyword criteria to search for.
-     * @param pagingParams paging params.
-     * @return the list of biomaterials matching the criteria, subject to the paging specifications.
-     */
-    SearchResult<Biomaterial> searchForBiomaterialsByKeyword(BiomaterialKeywordSearchCriteria criteria,
-            LimitOffset pagingParams);
 
     /**
      * Returns a list of quantitation types satisfying the given search criteria.
      * 
-     * @param criteria the search criteria.
-     * @return the list of quantitation types matching criteria.
-     * @throws InvalidInputException if the search criteria includes any invalid references or incomplete.
+     * @param criteria the search criteria. The criteria must, at a minimum, include a reference to a Hybridization.
+     * @return the list of QuantitationType matching criteria.
+     * @throws InvalidReferenceException if any references within the given criteria are not valid, e.g. refer to
+     *             entities that do not exist or are not of the correct types
+     * @throws InvalidInputException if the search criteria does not have a non-null Hybridization reference
      */
     List<QuantitationType> searchForQuantitationTypes(QuantitationTypeSearchCriteria criteria)
-            throws InvalidInputException;
+            throws InvalidReferenceException, InvalidInputException;
     
     /**
-     * Do a query by example.
+     * Search for entities based on a specified example. 
+     * 
      * @param <T> type of the example entity
-     * @param criteria the example entity to query for
-     * @param pagingParams paging params.
-     * @return list of entities matching example, subject to paging params
-     * @throws InvalidInputException thrown if the search criteria is malformed or incomplete.
+     * @param criteria the criteria specifying the example entity, as well as rules defining how candidate entities are
+     * matched against the example
+     * @param limitOffset an optional parameter specifying the number of results to return, and the offset of the first
+     *            result to return within the overall result set. May be left null to indicate the entire result set is
+     *            requested.
+     * @return a SearchResult with the matching entities and metadata on the subset of matching results actually
+     *         returned. This may be smaller than the requested number of results - see the class level Javadoc for
+     *         details. 
+     * @throws InvalidInputException if a null example is given
      */
     <T extends AbstractCaArrayEntity> SearchResult<T> searchByExample(ExampleSearchCriteria<T> criteria,
-            LimitOffset pagingParams) throws InvalidInputException;
+            LimitOffset limitOffset) throws InvalidInputException;
     
     /**
-     * Returns an annotation set matching the given request.
+     * Returns an annotation set matching the given request. This annotation set consists of the values of
+     * Characteristics with categories specified in the request across the experiment nodes (biomaterials and/or
+     * hybridizations) specified in the request.
+     * <p>
+     * 
+     * The annotation set will include an AnnotationColumn for each ExperimentGraphNode included in the request; each
+     * AnnotationColumn will include an AnnotationValueSet for each Category included in the request. The
+     * AnnotationValueSet for a given experiment node and characteristic category is calculated as follows:
+     * 
+     * <ul>
+     * <li>If the node has characteristics with the category directly, then the returned set consists of the values of
+     * all such characteristics</li>
+     * <li>Otherwise, the returned set is given by the applying this algorithm recursively to the direct predecessors of
+     * this node in the chain, and union-ing the resulting values.
+     * </ul>
      * 
      * @param request the annotation set request
      * @return the annotation set.
-     * @throws InvalidInputException if there are any invalid references in the request
-     * ({@link gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException})
+     * @throws InvalidReferenceException if any references within the given criteria are not valid, e.g. refer to
+     *             entities that do not exist or are not of the correct types
      */
-    AnnotationSet getAnnotationSet(AnnotationSetRequest request) throws InvalidInputException;
+    AnnotationSet getAnnotationSet(AnnotationSetRequest request) throws InvalidReferenceException;
 }

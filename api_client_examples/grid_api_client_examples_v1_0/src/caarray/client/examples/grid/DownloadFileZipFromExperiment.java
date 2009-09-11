@@ -84,29 +84,28 @@ package caarray.client.examples.grid;
 
 import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
 import gov.nih.nci.caarray.external.v1_0.data.File;
-import gov.nih.nci.caarray.external.v1_0.data.FileType;
 import gov.nih.nci.caarray.external.v1_0.data.FileCategory;
+import gov.nih.nci.caarray.external.v1_0.data.FileType;
 import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
 import gov.nih.nci.caarray.external.v1_0.query.ExampleSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
-import gov.nih.nci.caarray.external.v1_0.query.FileDownloadRequest;
 import gov.nih.nci.caarray.external.v1_0.query.FileSearchCriteria;
+import gov.nih.nci.caarray.services.external.v1_0.InvalidInputException;
 import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
+import gov.nih.nci.caarray.services.external.v1_0.data.DataApiUtils;
 import gov.nih.nci.caarray.services.external.v1_0.grid.client.CaArraySvc_v1_0Client;
+import gov.nih.nci.caarray.services.external.v1_0.grid.client.GridDataApiUtils;
 import gov.nih.nci.caarray.services.external.v1_0.grid.client.GridSearchApiUtils;
 import gov.nih.nci.caarray.services.external.v1_0.search.SearchApiUtils;
 
+import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.axis.types.URI.MalformedURIException;
-import org.apache.commons.io.IOUtils;
-import org.cagrid.transfer.context.client.TransferServiceContextClient;
-import org.cagrid.transfer.context.client.helper.TransferClientHelper;
-import org.cagrid.transfer.context.stubs.types.TransferServiceContextReference;
 
 /**
  * A client downloading a zip of files from an experiment using the caArray Grid service API.
@@ -116,6 +115,7 @@ import org.cagrid.transfer.context.stubs.types.TransferServiceContextReference;
 public class DownloadFileZipFromExperiment {
     private static CaArraySvc_v1_0Client client = null;
     private static SearchApiUtils searchServiceHelper = null;
+    private static DataApiUtils dataServiceHelper = null;
     private static final String EXPERIMENT_TITLE = BaseProperties.AFFYMETRIX_EXPERIMENT;
 
     public static void main(String[] args) {
@@ -123,6 +123,7 @@ public class DownloadFileZipFromExperiment {
         try {
             client = new CaArraySvc_v1_0Client(BaseProperties.getGridServiceUrl());
             searchServiceHelper = new GridSearchApiUtils(client);
+            dataServiceHelper = new GridDataApiUtils(client);
             System.out.println("Downloading file zip from " + EXPERIMENT_TITLE + "...");
             downloader.download();
         } catch (Throwable t) {
@@ -171,7 +172,7 @@ public class DownloadFileZipFromExperiment {
     /**
      * Search for a certain type or category of files in an experiment.
      */
-    private List<CaArrayEntityReference> searchForFiles(CaArrayEntityReference experimentRef) throws RemoteException, InvalidReferenceException {
+    private List<CaArrayEntityReference> searchForFiles(CaArrayEntityReference experimentRef) throws RemoteException, InvalidInputException {
         // Search for all raw data files in the experiment. (Experiment ref is a mandatory parameter.)
         FileSearchCriteria fileSearchCriteria = new FileSearchCriteria();
         fileSearchCriteria.setExperiment(experimentRef);
@@ -214,21 +215,12 @@ public class DownloadFileZipFromExperiment {
      */
     private void downloadZipOfFiles(List<CaArrayEntityReference> fileRefs) throws RemoteException,
             MalformedURIException, IOException, Exception {
-        FileDownloadRequest downloadRequest = new FileDownloadRequest();
-        downloadRequest.setFiles(fileRefs);
-        boolean compressEachIndividualFile = false;
+        java.io.File tempOutFile = new java.io.File("downloadedFiles.zip");
+        FileOutputStream outStream = new FileOutputStream(tempOutFile);
         long startTime = System.currentTimeMillis();
-        TransferServiceContextReference serviceContextRef = client.getFileContentsZipTransfer(downloadRequest,
-                compressEachIndividualFile);
-        TransferServiceContextClient transferClient = new TransferServiceContextClient(serviceContextRef
-                .getEndpointReference());
-        InputStream stream = TransferClientHelper.getData(transferClient.getDataTransferDescriptor());
+        dataServiceHelper.copyFileContentsZipToOutputStream(fileRefs, outStream);
         long totalTime = System.currentTimeMillis() - startTime;
-        byte[] byteArray = IOUtils.toByteArray(stream);
-        if (byteArray != null) {
-            System.out.println("Retrieved " + byteArray.length + " bytes in " + totalTime + " ms.");
-        } else {
-            System.err.println("Error: Retrieved null byte array.");
-        }
+        outStream.close();
+        System.out.println("Retrieved file zip in " + totalTime + " ms.");
     }
 }

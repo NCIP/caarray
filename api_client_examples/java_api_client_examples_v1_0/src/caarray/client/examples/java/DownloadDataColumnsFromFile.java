@@ -106,19 +106,20 @@ import gov.nih.nci.caarray.external.v1_0.query.FileSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.SearchResult;
 import gov.nih.nci.caarray.services.external.v1_0.CaArrayServer;
 import gov.nih.nci.caarray.services.external.v1_0.InvalidInputException;
+import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
+import gov.nih.nci.caarray.services.external.v1_0.UnsupportedCategoryException;
 import gov.nih.nci.caarray.services.external.v1_0.data.DataService;
+import gov.nih.nci.caarray.services.external.v1_0.data.InconsistentDataSetsException;
 import gov.nih.nci.caarray.services.external.v1_0.search.JavaSearchApiUtils;
 import gov.nih.nci.caarray.services.external.v1_0.search.SearchApiUtils;
 import gov.nih.nci.caarray.services.external.v1_0.search.SearchService;
 
-import java.io.IOException;
-import java.rmi.RemoteException;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import com.sun.org.apache.xerces.internal.util.URI.MalformedURIException;
+import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
  * A client downloading columns from a data file using the caArray Java API.
@@ -149,7 +150,7 @@ public class DownloadDataColumnsFromFile {
         }
     }
 
-    private void download() throws RemoteException, MalformedURIException, IOException, Exception {
+    private void download() throws InvalidInputException, InconsistentDataSetsException {
         DataSetRequest dataSetRequest = new DataSetRequest();
         // Select an experiment of interest.
         CaArrayEntityReference experimentRef = selectExperiment();
@@ -203,8 +204,10 @@ public class DownloadDataColumnsFromFile {
 
     /**
      * Search for experiments and select one.
+     * @throws UnsupportedCategoryException 
+     * @throws InvalidReferenceException 
      */
-    private CaArrayEntityReference selectExperiment() throws RemoteException, InvalidInputException {
+    private CaArrayEntityReference selectExperiment() throws InvalidReferenceException, UnsupportedCategoryException  {
         // Search for experiment with the given title.
         ExperimentSearchCriteria experimentSearchCriteria = new ExperimentSearchCriteria();
         experimentSearchCriteria.setTitle(EXPERIMENT_TITLE);
@@ -213,7 +216,7 @@ public class DownloadDataColumnsFromFile {
         // ExperimentSearchCriteria experimentSearchCriteria = new ExperimentSearchCriteria();
         // experimentSearchCriteria.setPublicIdentifier(EXPERIMENT_PUBLIC_IDENTIFIER);
 
-        List<Experiment> experiments = (searchService.searchForExperiments(experimentSearchCriteria, null)).getResults();
+        List<Experiment> experiments = searchService.searchForExperiments(experimentSearchCriteria, null).getResults();
         if (experiments == null || experiments.size() <= 0) {
             return null;
         }
@@ -227,8 +230,7 @@ public class DownloadDataColumnsFromFile {
     /**
      * Search for data files of a certain type in the experiment and select one.
      */
-    private CaArrayEntityReference selectDataFile(CaArrayEntityReference experimentRef) throws RemoteException,
-            InvalidInputException {
+    private CaArrayEntityReference selectDataFile(CaArrayEntityReference experimentRef) throws InvalidInputException {
         FileSearchCriteria fileSearchCriteria = new FileSearchCriteria();
         fileSearchCriteria.setExperiment(experimentRef);
         // Search for all AFFYMETRIX_CHP data files in the experiment.
@@ -307,6 +309,7 @@ public class DownloadDataColumnsFromFile {
         case FLOAT:
             float[] floatValues = ((FloatColumn) dataColumn).getValues();
             System.out.println("Retrieved " + floatValues.length + " float values.");
+            System.out.println("Float values: " + ToStringBuilder.reflectionToString(floatValues));
             break;
         case SHORT:
             short[] shortValues = ((ShortColumn) dataColumn).getValues();

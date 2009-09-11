@@ -82,28 +82,31 @@
  */
 package gov.nih.nci.caarray.test.api.external.v1_0.grid;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
 import gov.nih.nci.caarray.external.v1_0.data.DataSet;
+import gov.nih.nci.caarray.external.v1_0.data.File;
 import gov.nih.nci.caarray.external.v1_0.data.HybridizationData;
 import gov.nih.nci.caarray.external.v1_0.data.MageTabFileSet;
-import static org.junit.Assert.*;
-
 import gov.nih.nci.caarray.external.v1_0.query.DataSetRequest;
-import gov.nih.nci.caarray.external.v1_0.query.FileDownloadRequest;
-import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
-import gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.DataStagingFault;
 import gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.IncorrectEntityTypeFault;
+import gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.InvalidInputFault;
+import gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.InvalidReferenceFault;
 import gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.NoEntityMatchingReferenceFault;
+
 import java.io.IOException;
 import java.io.InputStream;
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.zip.GZIPInputStream;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
+
 import org.apache.axis.AxisFault;
 import org.apache.axis.utils.JavaUtils;
 import org.cagrid.transfer.context.client.TransferServiceContextClient;
@@ -125,9 +128,8 @@ public class DataApiTest extends AbstractExternalGridApiTest {
         try {
             gridClient.getDataSet(dataRequest);
             logForSilverCompatibility(TEST_OUTPUT, "unexpected validation outcome");
-            fail();
-        } catch(AxisFault e) {
-            assertContains(e, IllegalArgumentException.class.getName());
+            fail("Expected InvalidInputFault");
+        } catch(InvalidInputFault e) {
             logForSilverCompatibility(TEST_OUTPUT, "null validation :" + e.dumpToString());
         }
 
@@ -136,48 +138,48 @@ public class DataApiTest extends AbstractExternalGridApiTest {
         try {
             gridClient.getDataSet(dataRequest);
             logForSilverCompatibility(TEST_OUTPUT, "unexpected validation outcome");
-            fail();
+            fail("Expected InvalidInputFault");
         } catch(AxisFault e) {
-            assertContains(e, IllegalArgumentException.class.getName());
             logForSilverCompatibility(TEST_OUTPUT, "validation :" + e.dumpToString());
         }
 
         logForSilverCompatibility(TEST_OUTPUT, "BadHib");
         dataRequest = new DataSetRequest();
+        String qtid = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.QuantitationType:24";
+        dataRequest.setQuantitationTypes(Collections.singleton(new CaArrayEntityReference(qtid)));
         try {
             dataRequest.setHybridizations(Collections.singleton(new CaArrayEntityReference("foo hib")));
             gridClient.getDataSet(dataRequest);
             logForSilverCompatibility(TEST_OUTPUT, "unexpected validation outcome");
-            fail();
-        } catch(AxisFault e) {
-            assertContains(e, IllegalArgumentException.class.getName());
+            fail("Expected InvalidReferenceFault");
+        } catch(InvalidReferenceFault e) {
             logForSilverCompatibility(TEST_OUTPUT, "validation :" + e.dumpToString());
         }
 
         logForSilverCompatibility(TEST_OUTPUT, "BadDataFiles");
         dataRequest = new DataSetRequest();
+        dataRequest.setQuantitationTypes(Collections.singleton(new CaArrayEntityReference(qtid)));
         try {
             dataRequest.setDataFiles(Collections.singleton(new CaArrayEntityReference("foo df")));
             gridClient.getDataSet(dataRequest);
             logForSilverCompatibility(TEST_OUTPUT, "unexpected validation outcome");
-            fail();
-        } catch(AxisFault e) {
-            assertContains(e, IllegalArgumentException.class.getName());
+            fail("Expected InvalidReferenceFault");
+        } catch(InvalidReferenceFault e) {
             logForSilverCompatibility(TEST_OUTPUT, "validation :" + e.dumpToString());
         }
 
         logForSilverCompatibility(TEST_OUTPUT, "BadQuantitationTypes");
         dataRequest = new DataSetRequest();
+        String hid = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.sample.Hybridization:1";
+        dataRequest.setHybridizations(Collections.singleton(new CaArrayEntityReference(hid)));
+        dataRequest.setQuantitationTypes(Collections.singleton(new CaArrayEntityReference("foo qt")));
         try {
-            dataRequest.setQuantitationTypes(Collections.singleton(new CaArrayEntityReference("foo qt")));
             gridClient.getDataSet(dataRequest);
             logForSilverCompatibility(TEST_OUTPUT, "unexpected validation outcome");
-            fail();
-        } catch(AxisFault e) {
-            assertContains(e, IllegalArgumentException.class.getName());
+            fail("Expected InvalidReferenceFault");
+        } catch(InvalidReferenceFault e) {
             logForSilverCompatibility(TEST_OUTPUT, "validation :" + e.dumpToString());
         }
-
     }
 
     @Test
@@ -267,41 +269,6 @@ public class DataApiTest extends AbstractExternalGridApiTest {
 
     ////////////////////////////////
 
-    @Test
-    public void testStreamFileContentsZip_2() throws Exception {
-        logForSilverCompatibility(TEST_NAME, "testStreamFileContentsZip");
-        String dfid1 = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.File:1";
-        String dfid2 = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.File:2";
-        CaArrayEntityReference fileRef1 = new CaArrayEntityReference(dfid1);
-        CaArrayEntityReference fileRef2 = new CaArrayEntityReference(dfid2);
-        FileDownloadRequest fdr = new FileDownloadRequest();
-        fdr.getFiles().add(fileRef1);
-        fdr.getFiles().add(fileRef2);
-        TransferServiceContextReference ris =  gridClient.getFileContentsZipTransfer(fdr, true);
-        InputStream is = toStream(ris);
-        ZipInputStream zin = new ZipInputStream(is);
-        ZipEntry ze = zin.getNextEntry();
-        byte[] b = gov.nih.nci.caarray.test.api.external.v1_0.java.DataServiceTest.md5(zin);
-        long sz = ze.getSize();
-        assertEquals(114521L, ze.getSize());
-        ze = zin.getNextEntry();
-        assertEquals(682885L, ze.getSize());
-        logForSilverCompatibility(TEST_OUTPUT, "2 zip entries");
-    }
-
-    @Test
-    public void testStreamFileContentsZip_0() throws Exception {
-        logForSilverCompatibility(TEST_NAME, "testStreamFileContentsZip_0");
-        FileDownloadRequest fdr = new FileDownloadRequest();
-        // will fail to create an empty zip.
-        try {
-            TransferServiceContextReference ris =  gridClient.getFileContentsZipTransfer(fdr, false);
-        } catch(DataStagingFault e) {
-            logForSilverCompatibility(TEST_OUTPUT, "validation :" + e);
-        }
-    }
-
-    ///////////////////////////////////////////////////
 
     @Test
     public void testExportMageTab_badRef() throws Exception {
@@ -324,25 +291,10 @@ public class DataApiTest extends AbstractExternalGridApiTest {
         MageTabFileSet df = gridClient.getMageTabExport(ref);
         logForSilverCompatibility(TEST_OUTPUT, "exteriment has " + df.getDataFiles().size() + " data files");
         assertEquals(19, df.getDataFiles().size());
-    }
+        assertEquals("admin-00001.idf", df.getIdf().getMetadata().getName());
+        assertEquals("admin-00001.sdrf", df.getSdrf().getMetadata().getName());
 
-    /////////////////////////////////////////////////
-    @Test
-    public void testStreamMageTabZip_2() throws Exception {
-        int id = 1;
-        logForSilverCompatibility(TEST_NAME, "testStreamMageTabZip_2");
-        String type = gov.nih.nci.caarray.external.v1_0.experiment.Experiment.class.getName();
-        String eid = "URN:LSID:"+type+":"+id;
-        CaArrayEntityReference ref = new CaArrayEntityReference(eid);
-
-        TransferServiceContextReference ris =  gridClient.getMageTabZipTransfer(ref, false);
-        InputStream is = toStream(ris);
-        ZipInputStream zin = new ZipInputStream(is);
-        ZipEntry ze = zin.getNextEntry();
-        HashMap<String, String> expected = new HashMap<String, String>();
-        expected.put("admin-0000"+id+".idf", "<synthetic>");//?? changes  dynamic?
-        expected.put("admin-0000"+id+".sdrf", "<synthetic>");
-
+        Map<String, String> expected = new HashMap<String, String>();
         expected.put("8kNew111_14v1p4m12.gpr", "84823097c0db8d62028cfaa896a14ff9");
         expected.put("8kNew111_14_4601_m84.gpr", "a563783e47fe4ef352f82ac1731f848b");
         expected.put("8kNew111_17m12701m36.gpr", "3aaeb9ef790bf2867750913070008f7a");
@@ -363,40 +315,28 @@ public class DataApiTest extends AbstractExternalGridApiTest {
         expected.put("VG_8k3New111_C14401m80.gpr", "cedff2aa6707bc8518578d0b177cd0a5");
         expected.put("VG_8k4New111_C14401m81.gpr", "f528f00fc219062a641cff653d08456");
 
-
-
-        while (ze != null) {
-            String exHash = expected.get(ze.getName());
-            assertNotNull("unexpected file "+ze.getName(), exHash);
-            if (!"<synthetic>".equals(exHash)) {
-                byte[] b = gov.nih.nci.caarray.test.api.external.v1_0.java.DataServiceTest.md5(zin);
-                String hash = gov.nih.nci.caarray.test.api.external.v1_0.java.DataServiceTest.toHex(b);
-                logForSilverCompatibility(TEST_OUTPUT, "file \""+ze.getName()+"\", MD5 \""+hash+"\"");
-                assertEquals("hash for "+ze.getName(), exHash, hash);
-            }
-            expected.remove(ze.getName());
-            ze = zin.getNextEntry();
+        for (File f : df.getDataFiles()) {
+            String exHash = expected.get(f.getMetadata().getName());
+            assertNotNull(exHash);
+            TransferServiceContextReference ris =  gridClient.getFileContentsTransfer(f.getReference(), true);
+            InputStream is = toStream(ris);
+            GZIPInputStream zin = new GZIPInputStream(is);
+            byte[] b = gov.nih.nci.caarray.test.api.external.v1_0.java.DataServiceTest.md5(zin);
+            String hash = gov.nih.nci.caarray.test.api.external.v1_0.java.DataServiceTest.toHex(b);
+            assertEquals(exHash, hash);
         }
-        assertTrue("some didnt make it through :"+expected.keySet().toString(), expected.isEmpty());
     }
 
     @Test
-    public void testStreamMageTabZip_0() throws Exception {
-        int id = 2;
-        logForSilverCompatibility(TEST_NAME, "testStreamMageTabZip_0");
+    public void testExportMageTab_2Ex() throws Exception {
+        logForSilverCompatibility(TEST_NAME, "testStreamMageTab_2Ex");
         String type = gov.nih.nci.caarray.external.v1_0.experiment.Experiment.class.getName();
-        String eid = "URN:LSID:"+type+":"+id;
+        String eid = "URN:LSID:"+type+":2";
         CaArrayEntityReference ref = new CaArrayEntityReference(eid);
-        TransferServiceContextReference ris =  gridClient.getMageTabZipTransfer(ref, false);
-        InputStream is = toStream(ris);
-        ZipInputStream zin = new ZipInputStream(is);
-        ZipEntry ze = zin.getNextEntry();
-        assertEquals("admin-0000"+id+".idf", ze.getName());
-        ze = zin.getNextEntry();
-        assertEquals("admin-0000"+id+".sdrf", ze.getName());
-        ze = zin.getNextEntry();
-        logForSilverCompatibility(TEST_OUTPUT, "2 zip entries");
-        assertNull("empty experiment.  should only have 2 entries", ze);
+        MageTabFileSet df = gridClient.getMageTabExport(ref);
+        assertEquals(0, df.getDataFiles().size());
+        assertEquals("admin-00002.idf", df.getIdf().getMetadata().getName());
+        assertEquals("admin-00002.sdrf", df.getSdrf().getMetadata().getName());
     }
 
     private static InputStream toStream(TransferServiceContextReference transferRef) throws Exception {

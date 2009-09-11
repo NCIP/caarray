@@ -1020,6 +1020,7 @@
             <fileset refid="javacsv.jar.fileset"/>
             <fileset refid="mysql-connector-java.jar.fileset"/>
             <fileset refid="netcdf.jar.fileset"/>
+            <fileset refid="rmiio.jar.fileset"/>
             <fileset refid="xerces-J.jar.fileset"/>
             <fileset refid="xercesImpl.jar.fileset"/>
             <fileset refid="commons-configuration.jar.fileset"/>
@@ -1052,7 +1053,6 @@
 
         <path id="external.api.dependencies.path">
             <fileset refid="dozer.jar.fileset"/>
-            <fileset refid="rmiio.jar.fileset"/>
             <fileset refid="google-collections.jar.fileset"/>
         </path>
         <pathtofileset name="external.api.dependencies.fileset" pathrefid="external.api.dependencies.path" dir="${project.lib}"/>
@@ -2240,6 +2240,18 @@
         <waitfor maxwait="3" maxwaitunit="minute" checkevery="500">
             <http url="http://${jboss.server.hostname}:${jboss.server.port}/wsrf"/>
         </waitfor>
+    </target>
+
+    <target name="test:api" depends="
+        init:third-party-paths,
+        test:functional:prepare,
+        -test:functional:setup,
+        test:api:run-tests,
+        test:grid:run-tests,
+        deploy:stop-jboss,
+        test:functional:report,
+        test:functional:cobertura-report">
+        <fail if="junit.failure" message="There were functional test failures." />
     </target>
 
     <target name="test:functional" depends="

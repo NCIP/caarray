@@ -128,7 +128,7 @@ public class JavaSearchApiUtils extends AbstractSearchApiUtils implements Search
                 try {
                     return searchService.searchForExperiments(criteria, from);
                 } catch (InvalidInputException e) {
-                    throw new WrapperExeption(e);
+                    throw new WrapperException(e);
                 }
             }
         };
@@ -158,7 +158,7 @@ public class JavaSearchApiUtils extends AbstractSearchApiUtils implements Search
                 try {
                     return searchService.searchForBiomaterials(criteria, from);
                 } catch (InvalidInputException e) {
-                    throw new WrapperExeption(e);
+                    throw new WrapperException(e);
                 }
             }
         };
@@ -188,7 +188,7 @@ public class JavaSearchApiUtils extends AbstractSearchApiUtils implements Search
                 try {
                     return searchService.searchForFiles(criteria, from);
                 } catch (InvalidInputException e) {
-                    throw new WrapperExeption(e);
+                    throw new WrapperException(e);
                 }
             }
         };
@@ -205,7 +205,7 @@ public class JavaSearchApiUtils extends AbstractSearchApiUtils implements Search
                 try {
                     return searchService.searchForHybridizations(criteria, from);
                 } catch (InvalidInputException e) {
-                    throw new WrapperExeption(e);
+                    throw new WrapperException(e);
                 }
             }
         };
@@ -222,7 +222,7 @@ public class JavaSearchApiUtils extends AbstractSearchApiUtils implements Search
                 try {
                     return searchService.searchByExample(criteria, from);
                 } catch (InvalidInputException e) {
-                    throw new WrapperExeption(e);
+                    throw new WrapperException(e);
                 }
             }
         };

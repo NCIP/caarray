@@ -74,17 +74,20 @@ public interface SearchApiUtils {
     <T extends AbstractCaArrayEntity> Search<T> byExample(ExampleSearchCriteria<T> criteria);
 
     /**
-     * Wrapper exception.
+     * Wrapper for exceptions that may be thrown by invoking the actual service API methods. This is needed
+     * because these exceptions may be thrown from methods implementing generic APIs (e.g. Iterator.next()) which
+     * do not allow for checked exceptions. In that case, the original exception will be wrapped in this
+     * class (which is extends RuntimeException), and can be retrieved by calling getCause().
      * 
      * @author dkokotov
      */
-    public static final class WrapperExeption extends RuntimeException {
+    public static final class WrapperException extends RuntimeException {
         private static final long serialVersionUID = 1L;
 
         /**
          * @param t the wrapped exception
          */
-        public WrapperExeption(Throwable t) {
+        public WrapperException(Throwable t) {
             super(t);
         }        
     }

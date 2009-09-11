@@ -82,6 +82,8 @@
  */
 package gov.nih.nci.caarray.external.v1_0.data;
 
+import java.io.Serializable;
+
 import gov.nih.nci.caarray.util.CaArrayUtils;
 
 
@@ -109,6 +111,22 @@ public final class ShortColumn extends AbstractDataColumn {
     public void setValues(short[] values) {
         this.values = values;
     }    
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override    
+    protected Serializable getSerializableValues() {
+        return values;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void setSerializableValues(Serializable serValues) {
+        this.values = (short[]) serValues;        
+    }
 
     /**
      * @return the values of this column, in a space-separated representation, where each value is 

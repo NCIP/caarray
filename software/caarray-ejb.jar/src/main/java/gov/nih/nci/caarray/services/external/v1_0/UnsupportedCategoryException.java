@@ -105,6 +105,16 @@ public class UnsupportedCategoryException extends InvalidInputException {
     }
 
     /**
+     * Constructor for no cause.
+     * @param category the reference to the category that is not supported
+     * @param msg a message with more information about the exception
+     */
+    public UnsupportedCategoryException(CaArrayEntityReference category, String msg) {
+        super(msg);
+        this.category = category;
+    }
+
+    /**
      * @return the category that is not supported
      */
     public CaArrayEntityReference getCategory() {

@@ -111,18 +111,15 @@ import gov.nih.nci.caarray.external.v1_0.sample.Hybridization;
 import gov.nih.nci.caarray.services.external.v1_0.CaArrayServer;
 import gov.nih.nci.caarray.services.external.v1_0.InvalidInputException;
 import gov.nih.nci.caarray.services.external.v1_0.data.DataService;
+import gov.nih.nci.caarray.services.external.v1_0.data.InconsistentDataSetsException;
 import gov.nih.nci.caarray.services.external.v1_0.search.JavaSearchApiUtils;
 import gov.nih.nci.caarray.services.external.v1_0.search.SearchApiUtils;
 import gov.nih.nci.caarray.services.external.v1_0.search.SearchService;
 
-import java.io.IOException;
-import java.rmi.RemoteException;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-
-import com.sun.org.apache.xerces.internal.util.URI.MalformedURIException;
 
 /**
  * A client downloading data columns from hybridizations using the caArray Java API.
@@ -153,7 +150,7 @@ public class DownloadDataColumnsFromHybridizations {
         }
     }
 
-    private void download() throws RemoteException, MalformedURIException, IOException, Exception {
+    private void download() throws InvalidInputException, InconsistentDataSetsException {
         DataSetRequest dataSetRequest = new DataSetRequest();
         // Select an experiment of interest.
         CaArrayEntityReference experimentRef = selectExperiment();
@@ -199,7 +196,7 @@ public class DownloadDataColumnsFromHybridizations {
     /**
      * Search for experiments and select one.
      */
-    private CaArrayEntityReference selectExperiment() throws RemoteException, InvalidInputException {
+    private CaArrayEntityReference selectExperiment() throws InvalidInputException {
         // Search for experiment with the given title.
         ExperimentSearchCriteria experimentSearchCriteria = new ExperimentSearchCriteria();
         experimentSearchCriteria.setTitle(EXPERIMENT_TITLE);
@@ -223,7 +220,7 @@ public class DownloadDataColumnsFromHybridizations {
      * Select all hybridizations in the given experiment that have CHP data.
      */
     private Set<CaArrayEntityReference> selectHybridizations(CaArrayEntityReference experimentRef)
-            throws RemoteException, InvalidInputException {
+            throws InvalidInputException {
         HybridizationSearchCriteria searchCriteria = new HybridizationSearchCriteria();
         searchCriteria.setExperiment(experimentRef);
         List<Hybridization> hybridizations = (searchServiceHelper.hybridizationsByCriteria(searchCriteria)).list();
@@ -245,7 +242,7 @@ public class DownloadDataColumnsFromHybridizations {
         }
     }
 
-    private boolean haveChpFiles(CaArrayEntityReference experimentRef, Set<CaArrayEntityReference> hybridizationRefs) throws RemoteException,
+    private boolean haveChpFiles(CaArrayEntityReference experimentRef, Set<CaArrayEntityReference> hybridizationRefs) throws
             InvalidInputException {
         FileSearchCriteria searchCriteria = new FileSearchCriteria();
         searchCriteria.setExperiment(experimentRef);
@@ -269,25 +266,6 @@ public class DownloadDataColumnsFromHybridizations {
         List<FileType> fileTypes = results.getResults();
         FileType chpFileType = fileTypes.iterator().next();
         return chpFileType.getReference();
-    }
-
-    private Set<CaArrayEntityReference> selectQuantitationTypes() throws InvalidInputException {
-        ExampleSearchCriteria<QuantitationType> criteria = new ExampleSearchCriteria<QuantitationType>();
-        Set<CaArrayEntityReference> quantitationTypeRefs = new HashSet<CaArrayEntityReference>();
-        String[] quantitationTypeNames = QUANTITATION_TYPES_CSV_STRING.split(",");
-        for (String quantitationTypeName : quantitationTypeNames) {
-            QuantitationType exampleQuantitationType = new QuantitationType();
-            exampleQuantitationType.setName(quantitationTypeName);
-            criteria.setExample(exampleQuantitationType);
-            SearchResult<QuantitationType> results = searchService.searchByExample(criteria, null);
-            List<QuantitationType> quantitationTypes = results.getResults();
-            if (quantitationTypes == null || quantitationTypes.size() <= 0) {
-                return null;
-            }
-            QuantitationType quantitationType = quantitationTypes.iterator().next();
-            quantitationTypeRefs.add(quantitationType.getReference());
-        }
-        return quantitationTypeRefs;
     }
 
     private void printDataSet(DataSet dataSet) {

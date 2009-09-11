@@ -1,7 +1,6 @@
 package gov.nih.nci.caarray.services.external.v1_0.data;
 
 import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
-import gov.nih.nci.caarray.external.v1_0.query.FileDownloadRequest;
 import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
 
 import java.io.File;
@@ -78,84 +77,73 @@ public interface DataApiUtils {
             throws InvalidReferenceException, DataTransferException, IOException;
 
     /**
-     * Retrieve a ZIP of the caArray files identified by the given request and save it in a temporary file. 
+     * Retrieve the caArray files identified by the given references and create a temporary Zip file containing them.
      * The temporary file will be created in the directory specified by the <b>java.io.tempDir</b> property
      * 
-     * @param request the FileDownloadRequest identifying the files to retrieve
-     * @param compressIndividually if true, then each file in the Zip will be compressed using GZip, and will then be
-     *            added to the Zip using the STORED method. If false, then each file will be added to the zip as-is
-     *            using the DEFLATED method
-     * @return a File handle for the temporary file which will hold the contents of the ZIP.
+     * @param fileRefs the file references identifying the files to retrieve
+     * @return a File handle for the temporary Zip file, whose entries will be the retrieved files.
      * 
      * @throws InvalidReferenceException if any of the file reference in the download request is invalid.
      * @throws DataTransferException if there is an error transferring the data
      * @throws IOException if there is an error writing the data to the temporary file
      */
-    File downloadFileContentsZipToTempFile(FileDownloadRequest request, boolean compressIndividually)
+    File downloadFileContentsZipToTempFile(Iterable<CaArrayEntityReference> fileRefs)
             throws InvalidReferenceException, DataTransferException, IOException;
 
     /**
-     * Retrieve a ZIP of the caArray files identified by the given request and save it in the given file. 
+     * Retrieve the caArray files identified by the given references and create a Zip file containing them at the
+     * location specified by the given file.
      * 
-     * @param request the FileDownloadRequest identifying the files to retrieve
-     * @param compressIndividually if true, then each file in the Zip will be compressed using GZip, and will then be
-     *            added to the Zip using the STORED method. If false, then each file will be added to the zip as-is
-     *            using the DEFLATED method
-     * @param toFile the File handle identifying the file in which to save the ZIP. If the file does not
-     * exist, it will be created otherwise it will be overwritten.
+     * @param fileRefs the file references identifying the files to retrieve
+     * @param toFile the File handle identifying the absolute pathname of the file in which to save the Zip. If the file
+     *            does not exist, it will be created otherwise it will be overwritten.
      * 
      * @throws InvalidReferenceException if any of the file reference in the download request is invalid.
      * @throws DataTransferException if there is an error transferring the data
      * @throws IOException if there is an error writing the data to the file
      */
-    void downloadFileContentsZipToFile(FileDownloadRequest request, boolean compressIndividually, File toFile)
+    void downloadFileContentsZipToFile(Iterable<CaArrayEntityReference> fileRefs, File toFile)
             throws InvalidReferenceException, DataTransferException, IOException;
 
     /**
-     * Retrieve a ZIP of the caArray files identified by the given request and copy the ZIP contents to the given 
-     * OutputStream. 
+     * Retrieve the caArray files identified by the given references and write a Zip file containing them to the given
+     * OutputStream.
      * 
-     * @param request the FileDownloadRequest identifying the files to retrieve
-     * @param compressIndividually if true, then each file in the Zip will be compressed using GZip, and will then be
-     *            added to the Zip using the STORED method. If false, then each file will be added to the zip as-is
-     *            using the DEFLATED method
-     * @param ostream the output stream into which the retrieved ZIP should be written. 
+     * @param fileRefs the file references identifying the files to retrieve
+     * @param ostream the output stream into which the Zip of the retrieved files should be written.
      * 
      * @throws InvalidReferenceException if any of the file reference in the download request is invalid.
      * @throws DataTransferException if there is an error transferring the data
      * @throws IOException if there is an error writing the data to the output stream
      */
-    void copyFileContentsZipToOutputStream(FileDownloadRequest request, boolean compressIndividually,
-            OutputStream ostream) throws InvalidReferenceException, DataTransferException, IOException;
+    void copyFileContentsZipToOutputStream(Iterable<CaArrayEntityReference> fileRefs, OutputStream ostream)
+            throws InvalidReferenceException, DataTransferException, IOException;
 
     /**
-     * Retrieve a ZIP of the caArray files identified by the given request, and extract the files in the ZIP
-     * to a temporary directory.
-     * The temporary directory will be created in the directory specified by the <b>java.io.tempDir</b> property.
+     * Retrieve the caArray files identified by the given references, and put them in a temporary directory. The
+     * temporary directory will be created as a child of directory specified by the <b>java.io.tempDir</b> property.
      * 
-     * @param request the FileDownloadRequest identifying the files to retrieve
-     * @return the File handle to the directory into which the files in the ZIP will be extracted.
+     * @param fileRefs the file references identifying the files to retrieve
+     * @return the File handle to the directory into which the files will be downloaded
      * 
      * @throws InvalidReferenceException if any of the file reference in the download request is invalid.
      * @throws DataTransferException if there is an error transferring the data
      * @throws IOException if there is an error creating the temporary directory or extracting files into it.
      */
-    File downloadAndExtractFileContentsZipToTempDir(FileDownloadRequest request) throws InvalidReferenceException,
+    File downloadFileContentsToTempDir(Iterable<CaArrayEntityReference> fileRefs) throws InvalidReferenceException,
             DataTransferException, IOException;
 
     /**
-     * Retrieve a ZIP of the caArray files identified by the given request, and extract the files in the ZIP
-     * to the given directory.
+     * Retrieve the caArray files identified by the given references, and put them in the given directory.
      * 
-     * @param request the FileDownloadRequest identifying the files to retrieve
-     * @param dir the File handle identifying the directory into which to extract the files in the ZIP. 
-     * If the directory does not exist, it will be created.
+     * @param fileRefs the file references identifying the files to retrieve
+     * @param dir the File handle identifying the directory into which to download the files.
      * 
      * @throws InvalidReferenceException if any of the file reference in the download request is invalid.
      * @throws DataTransferException if there is an error transferring the data
      * @throws IOException if there is an error creating the directory or extracting files into it.
      */
-    void downloadAndExtractFileContentsZipToDir(FileDownloadRequest request, File dir)
+    void downloadFileContentsToDir(Iterable<CaArrayEntityReference> fileRefs, File dir)
             throws InvalidReferenceException, DataTransferException, IOException;
 
     /**
@@ -165,16 +153,13 @@ public interface DataApiUtils {
      * <b>java.io.tempDir</b> property
      * 
      * @param experimentRef reference identifying the experiment for which to download the MAGE-TAB ZIP.
-     * @param compressIndividually if true, then each file in the Zip will be compressed using GZip, and will then be
-     *            added to the Zip using the STORED method. If false, then each file will be added to the zip as-is
-     *            using the DEFLATED method
      * @return a File handle for the temporary file which will hold the contents of the ZIP.
      * 
      * @throws InvalidReferenceException if the experiment reference is invalid.
      * @throws DataTransferException if there is an error transferring the data
      * @throws IOException if there is an error writing the data to the temporary file
      */
-    File downloadMageTabZipToTempFile(CaArrayEntityReference experimentRef, boolean compressIndividually)
+    File downloadMageTabZipToTempFile(CaArrayEntityReference experimentRef)
             throws InvalidReferenceException, DataTransferException, IOException;
 
     /**
@@ -183,9 +168,6 @@ public interface DataApiUtils {
      * data files referenced by the mage-tab SDRF.
      * 
      * @param experimentRef reference identifying the experiment for which to download the MAGE-TAB ZIP.
-     * @param compressIndividually if true, then each file in the Zip will be compressed using GZip, and will then be
-     *            added to the Zip using the STORED method. If false, then each file will be added to the zip as-is
-     *            using the DEFLATED method
      * @param toFile the File handle identifying the file in which to save the ZIP. If the file does not exist, it will
      *            be created otherwise it will be overwritten.
      * 
@@ -193,7 +175,7 @@ public interface DataApiUtils {
      * @throws DataTransferException if there is an error transferring the data
      * @throws IOException if there is an error writing the data to the file
      */
-    void downloadMageTabZipToFile(CaArrayEntityReference experimentRef, boolean compressIndividually, File toFile)
+    void downloadMageTabZipToFile(CaArrayEntityReference experimentRef, File toFile)
             throws InvalidReferenceException, DataTransferException, IOException;
 
     /**
@@ -202,48 +184,46 @@ public interface DataApiUtils {
      * contains the data files referenced by the mage-tab SDRF.
      * 
      * @param experimentRef reference identifying the experiment for which to download the MAGE-TAB ZIP.
-     * @param compressIndividually if true, then each file in the Zip will be compressed using GZip, and will then be
-     *            added to the Zip using the STORED method. If false, then each file will be added to the zip as-is
-     *            using the DEFLATED method
      * @param ostream the output stream into which the retrieved ZIP should be written. 
      * 
      * @throws InvalidReferenceException if the experiment reference is invalid.
      * @throws DataTransferException if there is an error transferring the data
      * @throws IOException if there is an error writing the data to the output stream
      */
-    void copyMageTabZipToOutputStream(CaArrayEntityReference experimentRef, boolean compressIndividually,
-            OutputStream ostream) throws InvalidReferenceException, DataTransferException, IOException;
+    void copyMageTabZipToOutputStream(CaArrayEntityReference experimentRef, OutputStream ostream)
+            throws InvalidReferenceException, DataTransferException, IOException;
 
     /**
-     * Retrieves a ZIP of files containing the mage-tab IDF and SDRF for the experiment identified by the given
-     * reference, and extract the files in the ZIP to a temporary directory. The IDF and SDRF are generated dynamically.
-     * The ZIP also contains the data files referenced by the mage-tab SDRF. The temporary directory will be created in
-     * the directory specified by the <b>java.io.tempDir</b> property.
+     * Retrieves a set of files containing the mage-tab IDF and SDRF for the experiment identified by the given
+     * reference, as well as all data files referenced from the SDRF, to a temporary directory. The IDF and SDRF are
+     * generated dynamically. The temporary directory will be created as a child of the directory specified by the
+     * <b>java.io.tempDir</b> property.
      * 
-     * @param experimentRef reference identifying the experiment for which to download the MAGE-TAB ZIP.
-     * @return the File handle to the directory into which the files in the ZIP will be extracted.
+     * @param experimentRef reference identifying the experiment for which to download the MAGE-TAB fileset
+     * @return the File handle to the directory into which the files comprising the MAGE-TAB fileset will
+     * be downloaded
      * 
      * @throws InvalidReferenceException if the experiment reference is invalid.
      * @throws DataTransferException if there is an error transferring the data
      * @throws IOException if there is an error creating the temporary directory or extracting files into it.
      */
-    File downloadAndExtractMageTabZipToTempDir(CaArrayEntityReference experimentRef) throws InvalidReferenceException,
+    File downloadMageTabFilesetToTempDir(CaArrayEntityReference experimentRef) throws InvalidReferenceException,
             DataTransferException, IOException;
 
     /**
-     * Retrieves a ZIP of files containing the mage-tab IDF and SDRF for the experiment identified by the given
-     * reference, and extract the files in the ZIP to the given directory. The IDF and SDRF are generated dynamically.
-     * The ZIP also contains the data files referenced by the mage-tab SDRF. 
+     * Retrieves a set of files containing the mage-tab IDF and SDRF for the experiment identified by the given
+     * reference, as well as all data files referenced from the SDRF, to the given directory. The IDF and SDRF are
+     * generated dynamically. 
      * 
-     * @param experimentRef reference identifying the experiment for which to download the MAGE-TAB ZIP.
-     * @param dir the File handle identifying the directory into which to extract the files in the ZIP. 
-     * If the directory does not exist, it will be created.
+     * @param experimentRef reference identifying the experiment for which to download the MAGE-TAB fileset
+     * @param dir the File handle identifying the directory into which to download the files comprising
+     * the MAGE-TAB fileset
      * 
      * @throws InvalidReferenceException if the experiment reference is invalid.
      * @throws DataTransferException if there is an error transferring the data
      * @throws IOException if there is an error creating the directory or extracting files into it.
      */
-    void downloadAndExtractMageTabZipToDir(CaArrayEntityReference experimentRef, File dir)
+    void downloadMageTabFileSetToDir(CaArrayEntityReference experimentRef, File dir)
             throws InvalidReferenceException, DataTransferException, IOException;
 
 }

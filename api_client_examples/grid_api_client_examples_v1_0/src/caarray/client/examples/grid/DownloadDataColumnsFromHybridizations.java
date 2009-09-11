@@ -107,6 +107,7 @@ import gov.nih.nci.caarray.external.v1_0.query.FileSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.HybridizationSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.QuantitationTypeSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.sample.Hybridization;
+import gov.nih.nci.caarray.services.external.v1_0.InvalidInputException;
 import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
 import gov.nih.nci.caarray.services.external.v1_0.grid.client.CaArraySvc_v1_0Client;
 import gov.nih.nci.caarray.services.external.v1_0.grid.client.GridSearchApiUtils;
@@ -214,7 +215,7 @@ public class DownloadDataColumnsFromHybridizations {
     /**
      * Select all hybridizations in the given experiment that have CHP data.
      */
-    private Set<CaArrayEntityReference> selectHybridizations(CaArrayEntityReference experimentRef) throws RemoteException, InvalidReferenceException {
+    private Set<CaArrayEntityReference> selectHybridizations(CaArrayEntityReference experimentRef) throws RemoteException, InvalidInputException {
         HybridizationSearchCriteria searchCriteria = new HybridizationSearchCriteria();
         searchCriteria.setExperiment(experimentRef);
         List<Hybridization> hybridizations = (searchServiceHelper.hybridizationsByCriteria(searchCriteria)).list();

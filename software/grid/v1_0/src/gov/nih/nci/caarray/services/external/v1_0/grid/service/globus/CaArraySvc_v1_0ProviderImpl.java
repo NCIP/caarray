@@ -44,18 +44,6 @@ public class CaArraySvc_v1_0ProviderImpl{
     return boxedResult;
   }
 
-    public gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetFileContentsZipTransferResponse getFileContentsZipTransfer(gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetFileContentsZipTransferRequest params) throws RemoteException, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.DataStagingFault, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.IncorrectEntityTypeFault, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.NoEntityMatchingReferenceFault {
-    gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetFileContentsZipTransferResponse boxedResult = new gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetFileContentsZipTransferResponse();
-    boxedResult.setTransferServiceContextReference(impl.getFileContentsZipTransfer(params.getFileDownloadRequest().getFileDownloadRequest(),params.isCompressIndividually()));
-    return boxedResult;
-  }
-
-    public gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetFileContentsTransfersResponse getFileContentsTransfers(gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetFileContentsTransfersRequest params) throws RemoteException, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.IncorrectEntityTypeFault, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.NoEntityMatchingReferenceFault, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.DataStagingFault {
-    gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetFileContentsTransfersResponse boxedResult = new gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetFileContentsTransfersResponse();
-    boxedResult.setTransferServiceContextReference(impl.getFileContentsTransfers(params.getFileDownloadRequest().getFileDownloadRequest(),params.isCompress()));
-    return boxedResult;
-  }
-
     public gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetFileContentsTransferResponse getFileContentsTransfer(gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetFileContentsTransferRequest params) throws RemoteException, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.IncorrectEntityTypeFault, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.NoEntityMatchingReferenceFault, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.DataStagingFault {
     gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetFileContentsTransferResponse boxedResult = new gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetFileContentsTransferResponse();
     boxedResult.setTransferServiceContextReference(impl.getFileContentsTransfer(params.getFileRef().getCaArrayEntityReference(),params.isCompress()));
@@ -101,12 +89,6 @@ public class CaArraySvc_v1_0ProviderImpl{
     public gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetMageTabExportResponse getMageTabExport(gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetMageTabExportRequest params) throws RemoteException, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.IncorrectEntityTypeFault, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.NoEntityMatchingReferenceFault, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.DataStagingFault {
     gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetMageTabExportResponse boxedResult = new gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetMageTabExportResponse();
     boxedResult.setMageTabFileSet(impl.getMageTabExport(params.getExperimentRef().getCaArrayEntityReference()));
-    return boxedResult;
-  }
-
-    public gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetMageTabZipTransferResponse getMageTabZipTransfer(gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetMageTabZipTransferRequest params) throws RemoteException, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.IncorrectEntityTypeFault, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.NoEntityMatchingReferenceFault, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.DataStagingFault {
-    gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetMageTabZipTransferResponse boxedResult = new gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetMageTabZipTransferResponse();
-    boxedResult.setTransferServiceContextReference(impl.getMageTabZipTransfer(params.getExperimentRef().getCaArrayEntityReference(),params.isCompressIndividually()));
     return boxedResult;
   }
 

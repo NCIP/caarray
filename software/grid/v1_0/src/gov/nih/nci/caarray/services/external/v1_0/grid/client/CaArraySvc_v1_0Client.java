@@ -148,32 +148,6 @@ public class CaArraySvc_v1_0Client extends CaArraySvc_v1_0ClientBase implements 
     }
   }
 
-  public org.cagrid.transfer.context.stubs.types.TransferServiceContextReference getFileContentsZipTransfer(gov.nih.nci.caarray.external.v1_0.query.FileDownloadRequest fileDownloadRequest,boolean compressIndividually) throws RemoteException, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.DataStagingFault, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.IncorrectEntityTypeFault, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.NoEntityMatchingReferenceFault {
-    synchronized(portTypeMutex){
-      configureStubSecurity((Stub)portType,"getFileContentsZipTransfer");
-    gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetFileContentsZipTransferRequest params = new gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetFileContentsZipTransferRequest();
-    gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetFileContentsZipTransferRequestFileDownloadRequest fileDownloadRequestContainer = new gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetFileContentsZipTransferRequestFileDownloadRequest();
-    fileDownloadRequestContainer.setFileDownloadRequest(fileDownloadRequest);
-    params.setFileDownloadRequest(fileDownloadRequestContainer);
-    params.setCompressIndividually(compressIndividually);
-    gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetFileContentsZipTransferResponse boxedResult = portType.getFileContentsZipTransfer(params);
-    return boxedResult.getTransferServiceContextReference();
-    }
-  }
-
-  public org.cagrid.transfer.context.stubs.types.TransferServiceContextReference[] getFileContentsTransfers(gov.nih.nci.caarray.external.v1_0.query.FileDownloadRequest fileDownloadRequest,boolean compress) throws RemoteException, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.IncorrectEntityTypeFault, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.NoEntityMatchingReferenceFault, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.DataStagingFault {
-    synchronized(portTypeMutex){
-      configureStubSecurity((Stub)portType,"getFileContentsTransfers");
-    gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetFileContentsTransfersRequest params = new gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetFileContentsTransfersRequest();
-    gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetFileContentsTransfersRequestFileDownloadRequest fileDownloadRequestContainer = new gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetFileContentsTransfersRequestFileDownloadRequest();
-    fileDownloadRequestContainer.setFileDownloadRequest(fileDownloadRequest);
-    params.setFileDownloadRequest(fileDownloadRequestContainer);
-    params.setCompress(compress);
-    gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetFileContentsTransfersResponse boxedResult = portType.getFileContentsTransfers(params);
-    return boxedResult.getTransferServiceContextReference();
-    }
-  }
-
   public org.cagrid.transfer.context.stubs.types.TransferServiceContextReference getFileContentsTransfer(gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference fileRef,boolean compress) throws RemoteException, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.IncorrectEntityTypeFault, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.NoEntityMatchingReferenceFault, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.DataStagingFault {
     synchronized(portTypeMutex){
       configureStubSecurity((Stub)portType,"getFileContentsTransfer");
@@ -283,19 +257,6 @@ public class CaArraySvc_v1_0Client extends CaArraySvc_v1_0ClientBase implements 
     params.setExperimentRef(experimentRefContainer);
     gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetMageTabExportResponse boxedResult = portType.getMageTabExport(params);
     return boxedResult.getMageTabFileSet();
-    }
-  }
-
-  public org.cagrid.transfer.context.stubs.types.TransferServiceContextReference getMageTabZipTransfer(gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference experimentRef,boolean compressIndividually) throws RemoteException, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.IncorrectEntityTypeFault, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.NoEntityMatchingReferenceFault, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.DataStagingFault {
-    synchronized(portTypeMutex){
-      configureStubSecurity((Stub)portType,"getMageTabZipTransfer");
-    gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetMageTabZipTransferRequest params = new gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetMageTabZipTransferRequest();
-    gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetMageTabZipTransferRequestExperimentRef experimentRefContainer = new gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetMageTabZipTransferRequestExperimentRef();
-    experimentRefContainer.setCaArrayEntityReference(experimentRef);
-    params.setExperimentRef(experimentRefContainer);
-    params.setCompressIndividually(compressIndividually);
-    gov.nih.nci.caarray.services.external.v1_0.grid.stubs.GetMageTabZipTransferResponse boxedResult = portType.getMageTabZipTransfer(params);
-    return boxedResult.getTransferServiceContextReference();
     }
   }
 

@@ -84,8 +84,8 @@ package caarray.client.examples.grid;
 
 import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
 import gov.nih.nci.caarray.external.v1_0.data.File;
-import gov.nih.nci.caarray.external.v1_0.data.FileType;
 import gov.nih.nci.caarray.external.v1_0.data.FileCategory;
+import gov.nih.nci.caarray.external.v1_0.data.FileType;
 import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
 import gov.nih.nci.caarray.external.v1_0.query.BiomaterialSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.ExampleSearchCriteria;
@@ -93,7 +93,7 @@ import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.FileSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.sample.Biomaterial;
 import gov.nih.nci.caarray.external.v1_0.sample.BiomaterialType;
-import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
+import gov.nih.nci.caarray.services.external.v1_0.InvalidInputException;
 import gov.nih.nci.caarray.services.external.v1_0.grid.client.CaArraySvc_v1_0Client;
 import gov.nih.nci.caarray.services.external.v1_0.grid.client.GridSearchApiUtils;
 import gov.nih.nci.caarray.services.external.v1_0.search.SearchApiUtils;
@@ -136,7 +136,7 @@ public class SelectFiles {
         }
     }
 
-    private void selectFilesInExperiment(CaArrayEntityReference experimentRef) throws RemoteException, InvalidReferenceException {
+    private void selectFilesInExperiment(CaArrayEntityReference experimentRef) throws RemoteException, InvalidInputException {
         List<CaArrayEntityReference> fileRefs = selectRawFiles(experimentRef);
         if (fileRefs == null) {
             System.out.println("Could not find any raw files in the experiment.");
@@ -217,7 +217,7 @@ public class SelectFiles {
     /**
      * Select all raw data files in the experiment.
      */
-    private List<CaArrayEntityReference> selectRawFiles(CaArrayEntityReference experimentRef) throws RemoteException, InvalidReferenceException {
+    private List<CaArrayEntityReference> selectRawFiles(CaArrayEntityReference experimentRef) throws RemoteException, InvalidInputException {
         FileSearchCriteria fileSearchCriteria = new FileSearchCriteria();
         fileSearchCriteria.setExperiment(experimentRef);
         fileSearchCriteria.getCategories().add(FileCategory.RAW_DATA);
@@ -239,7 +239,7 @@ public class SelectFiles {
     /**
      * Select all Affymetrix CEL data files in the experiment.
      */
-    private List<CaArrayEntityReference> selectCelFiles(CaArrayEntityReference experimentRef) throws RemoteException, InvalidReferenceException {
+    private List<CaArrayEntityReference> selectCelFiles(CaArrayEntityReference experimentRef) throws RemoteException, InvalidInputException {
         FileSearchCriteria fileSearchCriteria = new FileSearchCriteria();
         fileSearchCriteria.setExperiment(experimentRef);
 
@@ -274,7 +274,7 @@ public class SelectFiles {
     /**
      * Select all derived data files with extension .CHP in the experiment.
      */
-    private List<CaArrayEntityReference> selectChpFiles(CaArrayEntityReference experimentRef) throws RemoteException, InvalidReferenceException {
+    private List<CaArrayEntityReference> selectChpFiles(CaArrayEntityReference experimentRef) throws RemoteException, InvalidInputException {
         FileSearchCriteria fileSearchCriteria = new FileSearchCriteria();
         fileSearchCriteria.setExperiment(experimentRef);
         fileSearchCriteria.setExtension("CHP");

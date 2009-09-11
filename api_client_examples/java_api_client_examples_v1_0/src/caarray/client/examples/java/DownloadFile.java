@@ -100,10 +100,7 @@ import gov.nih.nci.caarray.services.external.v1_0.search.SearchService;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.rmi.RemoteException;
 import java.util.List;
-
-import com.sun.org.apache.xerces.internal.util.URI.MalformedURIException;
 
 /**
  * A client downloading contents of a single file using the caArray Java API.
@@ -137,7 +134,7 @@ public class DownloadFile {
         }
     }
 
-    private void download() throws RemoteException, MalformedURIException, IOException, Exception {
+    private void download() throws InvalidInputException, DataTransferException, IOException {
         CaArrayEntityReference experimentRef = searchForExperiment();
         if (experimentRef == null) {
             System.err.println("Could not find experiment with the requested title.");
@@ -154,7 +151,7 @@ public class DownloadFile {
     /**
      * Search for an experiment based on its title.
      */
-    private CaArrayEntityReference searchForExperiment() throws RemoteException, InvalidInputException {
+    private CaArrayEntityReference searchForExperiment() throws InvalidInputException {
         // Search for experiment with the given title.
         ExperimentSearchCriteria experimentSearchCriteria = new ExperimentSearchCriteria();
         experimentSearchCriteria.setTitle(EXPERIMENT_TITLE);
@@ -173,12 +170,11 @@ public class DownloadFile {
     /**
      * Search for a file with the given name.
      */
-    private CaArrayEntityReference searchForFile(CaArrayEntityReference experimentRef) throws RemoteException,
-            InvalidReferenceException {
+    private CaArrayEntityReference searchForFile(CaArrayEntityReference experimentRef) throws InvalidInputException {
         FileSearchCriteria fileSearchCriteria = new FileSearchCriteria();
         fileSearchCriteria.setExperiment(experimentRef);
 
-        List<File> files = (searchServiceHelper.filesByCriteria(fileSearchCriteria)).list();
+        List<File> files = searchServiceHelper.filesByCriteria(fileSearchCriteria).list();
         if (files == null || files.size() <= 0) {
             return null;
         }
@@ -191,7 +187,7 @@ public class DownloadFile {
         return null;
     }
 
-    private void downloadContents(CaArrayEntityReference fileRef) throws RemoteException, DataTransferException, InvalidReferenceException, IOException {
+    private void downloadContents(CaArrayEntityReference fileRef) throws DataTransferException, InvalidReferenceException, IOException {
         boolean compressFile = false;
         ByteArrayOutputStream outStream = new ByteArrayOutputStream();
         long startTime = System.currentTimeMillis();

@@ -109,7 +109,6 @@ import gov.nih.nci.caarray.external.v1_0.vocabulary.Term;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.TermSource;
 import gov.nih.nci.caarray.services.external.v1_0.CaArrayServer;
 import gov.nih.nci.caarray.services.external.v1_0.InvalidInputException;
-import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
 import gov.nih.nci.caarray.services.external.v1_0.NoEntityMatchingReferenceException;
 import gov.nih.nci.caarray.services.external.v1_0.search.JavaSearchApiUtils;
 import gov.nih.nci.caarray.services.external.v1_0.search.SearchApiUtils;
@@ -173,7 +172,7 @@ public class LookUpEntities {
         lookupExperimentsPageByPage();
     }
 
-    private void lookupArrayDataTypes() throws InvalidReferenceException {
+    private void lookupArrayDataTypes() throws InvalidInputException {
         ExampleSearchCriteria<ArrayDataType> criteria = new ExampleSearchCriteria<ArrayDataType>();
         ArrayDataType exampleArrayDataType = new ArrayDataType();
         criteria.setExample(exampleArrayDataType);
@@ -187,7 +186,7 @@ public class LookUpEntities {
         System.out.println("End of array data type lookup.");
     }
 
-    private void lookupArrayDesigns() throws InvalidReferenceException {
+    private void lookupArrayDesigns() throws InvalidInputException {
         ExampleSearchCriteria<ArrayDesign> criteria = new ExampleSearchCriteria<ArrayDesign>();
         ArrayDesign exampleDesign = new ArrayDesign();
         criteria.setExample(exampleDesign);
@@ -201,7 +200,7 @@ public class LookUpEntities {
         System.out.println("End of array design lookup.");
     }
 
-    private void lookupArrayProviders() throws InvalidReferenceException {
+    private void lookupArrayProviders() throws InvalidInputException {
         ExampleSearchCriteria<ArrayProvider> criteria = new ExampleSearchCriteria<ArrayProvider>();
         ArrayProvider exampleProvider = new ArrayProvider();
         criteria.setExample(exampleProvider);
@@ -215,7 +214,7 @@ public class LookUpEntities {
         System.out.println("End of array provider lookup.");
     }
 
-    private void lookupAssayTypes() throws InvalidReferenceException {
+    private void lookupAssayTypes() throws InvalidInputException {
         ExampleSearchCriteria<AssayType> criteria = new ExampleSearchCriteria<AssayType>();
         AssayType exampleAssayType = new AssayType();
         criteria.setExample(exampleAssayType);
@@ -229,7 +228,7 @@ public class LookUpEntities {
         System.out.println("End of assay type lookup.");
     }
 
-    private void lookupBiomaterials() throws InvalidReferenceException {
+    private void lookupBiomaterials() throws InvalidInputException {
         ExampleSearchCriteria<Biomaterial> criteria = new ExampleSearchCriteria<Biomaterial>();
         Biomaterial exampleBiomaterial = new Biomaterial();
         criteria.setExample(exampleBiomaterial);
@@ -243,7 +242,7 @@ public class LookUpEntities {
         System.out.println("End of biomaterial lookup.");
     }
 
-    private void lookupCategories() throws InvalidReferenceException {
+    private void lookupCategories() throws InvalidInputException {
         ExampleSearchCriteria<Category> criteria = new ExampleSearchCriteria<Category>();
         Category exampleCategory = new Category();
         criteria.setExample(exampleCategory);
@@ -257,7 +256,7 @@ public class LookUpEntities {
         System.out.println("End of category lookup.");
     }
 
-    private void lookupFiles() throws InvalidReferenceException {
+    private void lookupFiles() throws InvalidInputException {
         ExampleSearchCriteria<File> criteria = new ExampleSearchCriteria<File>();
         File exampleFile = new File();
         exampleFile.setMetadata(new FileMetadata());
@@ -274,7 +273,7 @@ public class LookUpEntities {
         System.out.println("End of file lookup.");
     }
 
-    private void lookupExperiments() throws InvalidReferenceException {
+    private void lookupExperiments() throws InvalidInputException {
         ExampleSearchCriteria<Experiment> criteria = new ExampleSearchCriteria<Experiment>();
         Experiment exampleExperiment = new Experiment();
         criteria.setExample(exampleExperiment);
@@ -288,7 +287,7 @@ public class LookUpEntities {
         System.out.println("End of experiment lookup.");
     }
 
-    private void lookupExperimentalContacts() throws InvalidReferenceException {
+    private void lookupExperimentalContacts() throws InvalidInputException {
         ExampleSearchCriteria<ExperimentalContact> criteria = new ExampleSearchCriteria<ExperimentalContact>();
         ExperimentalContact exampleContact = new ExperimentalContact();
         criteria.setExample(exampleContact);
@@ -302,7 +301,7 @@ public class LookUpEntities {
         System.out.println("End of experimental contact lookup.");
     }
 
-    private void lookupFactors() throws InvalidReferenceException {
+    private void lookupFactors() throws InvalidInputException {
         ExampleSearchCriteria<Factor> criteria = new ExampleSearchCriteria<Factor>();
         Factor exampleFactor = new Factor();
         criteria.setExample(exampleFactor);
@@ -316,7 +315,7 @@ public class LookUpEntities {
         System.out.println("End of factor lookup.");
     }
 
-    private void lookupFileTypes() throws InvalidReferenceException {
+    private void lookupFileTypes() throws InvalidInputException {
         ExampleSearchCriteria<FileType> criteria = new ExampleSearchCriteria<FileType>();
         FileType exampleFileType = new FileType();
         criteria.setExample(exampleFileType);
@@ -330,7 +329,7 @@ public class LookUpEntities {
         System.out.println("End of file type lookup.");
     }
 
-    private void lookupHybridizations() throws InvalidReferenceException {
+    private void lookupHybridizations() throws InvalidInputException {
         ExampleSearchCriteria<Hybridization> criteria = new ExampleSearchCriteria<Hybridization>();
         Hybridization exampleHybridization = new Hybridization();
         criteria.setExample(exampleHybridization);
@@ -344,7 +343,7 @@ public class LookUpEntities {
         System.out.println("End of hybridization lookup.");
     }
 
-    private void lookupOrganisms() throws InvalidReferenceException {
+    private void lookupOrganisms() throws InvalidInputException {
         ExampleSearchCriteria<Organism> criteria = new ExampleSearchCriteria<Organism>();
         Organism exampleOrganism = new Organism();
         criteria.setExample(exampleOrganism);
@@ -358,7 +357,7 @@ public class LookUpEntities {
         System.out.println("End of organism lookup.");
     }
 
-    private void lookupPersons() throws InvalidReferenceException {
+    private void lookupPersons() throws InvalidInputException {
         ExampleSearchCriteria<Person> criteria = new ExampleSearchCriteria<Person>();
         Person examplePerson = new Person();
         criteria.setExample(examplePerson);
@@ -372,7 +371,7 @@ public class LookUpEntities {
         System.out.println("End of person lookup.");
     }
 
-    private void lookupQuantitationTypes() throws InvalidReferenceException {
+    private void lookupQuantitationTypes() throws InvalidInputException {
         ExampleSearchCriteria<QuantitationType> criteria = new ExampleSearchCriteria<QuantitationType>();
         QuantitationType exampleQuantitationType = new QuantitationType();
         exampleQuantitationType.setDataType(DataType.FLOAT);
@@ -387,7 +386,7 @@ public class LookUpEntities {
         System.out.println("End of quantitation type lookup.");
     }
 
-    private void lookupTerms() throws InvalidReferenceException {
+    private void lookupTerms() throws InvalidInputException {
         ExampleSearchCriteria<Term> criteria = new ExampleSearchCriteria<Term>();
         Term exampleTerm = new Term();
         criteria.setExample(exampleTerm);
@@ -401,7 +400,7 @@ public class LookUpEntities {
         System.out.println("End of term lookup.");
     }
 
-    private void lookupTermSources() throws InvalidReferenceException {
+    private void lookupTermSources() throws InvalidInputException {
         ExampleSearchCriteria<TermSource> criteria = new ExampleSearchCriteria<TermSource>();
         TermSource exampleTermSource = new TermSource();
         criteria.setExample(exampleTermSource);
@@ -450,7 +449,7 @@ public class LookUpEntities {
         System.out.println("End of terms in category lookup.");
     }
 
-    private void lookupPersonsByMatchMode() throws InvalidReferenceException {
+    private void lookupPersonsByMatchMode() throws InvalidInputException {
         ExampleSearchCriteria<Person> criteria = new ExampleSearchCriteria<Person>();
         Person examplePerson = new Person();
         // MatchMode = START

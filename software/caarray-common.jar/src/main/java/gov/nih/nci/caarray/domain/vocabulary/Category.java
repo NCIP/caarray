@@ -270,8 +270,8 @@ public class Category extends AbstractCaArrayEntity implements Cloneable {
             return true;
         }
         Category other = (Category) o;
-        return new EqualsBuilder().append(this.getName(), other.getName())
-                .append(this.getSource(), other.getSource()).isEquals();
+        return new EqualsBuilder().append(this.getId(), other.getId()).append(this.getName(), other.getName()).append(
+                this.getSource(), other.getSource()).isEquals();
     }
 
     /**
@@ -279,7 +279,7 @@ public class Category extends AbstractCaArrayEntity implements Cloneable {
      */
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(this.getName()).append(this.getSource()).toHashCode();
+        return new HashCodeBuilder().append(this.getId()).append(this.getName()).append(this.getSource()).toHashCode();
     }
 
     /**

@@ -90,8 +90,8 @@ import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.HybridizationSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.sample.Hybridization;
 import gov.nih.nci.caarray.services.external.v1_0.CaArrayServer;
-import gov.nih.nci.caarray.services.external.v1_0.InvalidInputException;
 import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
+import gov.nih.nci.caarray.services.external.v1_0.UnsupportedCategoryException;
 import gov.nih.nci.caarray.services.external.v1_0.data.DataApiUtils;
 import gov.nih.nci.caarray.services.external.v1_0.data.DataService;
 import gov.nih.nci.caarray.services.external.v1_0.data.DataTransferException;
@@ -100,11 +100,8 @@ import gov.nih.nci.caarray.services.external.v1_0.search.SearchService;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.rmi.RemoteException;
 import java.util.List;
 import java.util.Set;
-
-import com.sun.org.apache.xerces.internal.util.URI.MalformedURIException;
 
 /**
  * A client downloading the array design file associated with a hybridization using the caArray Java API.
@@ -136,7 +133,7 @@ public class DownloadArrayDesignForHybridization {
         }
     }
 
-    private void download() throws RemoteException, MalformedURIException, IOException, Exception {
+    private void download() throws InvalidReferenceException, DataTransferException, IOException, UnsupportedCategoryException {
         // Select an experiment of interest.
         CaArrayEntityReference experimentRef = selectExperiment();
         if (experimentRef == null) {
@@ -167,8 +164,10 @@ public class DownloadArrayDesignForHybridization {
 
     /**
      * Search for experiments and select one.
+     * @throws UnsupportedCategoryException 
+     * @throws InvalidReferenceException 
      */
-    private CaArrayEntityReference selectExperiment() throws RemoteException, InvalidInputException {
+    private CaArrayEntityReference selectExperiment() throws InvalidReferenceException, UnsupportedCategoryException  {
         // Search for experiment with the given title.
         ExperimentSearchCriteria experimentSearchCriteria = new ExperimentSearchCriteria();
         experimentSearchCriteria.setTitle(EXPERIMENT_TITLE);
@@ -177,7 +176,7 @@ public class DownloadArrayDesignForHybridization {
         // ExperimentSearchCriteria experimentSearchCriteria = new ExperimentSearchCriteria();
         // experimentSearchCriteria.setPublicIdentifier(EXPERIMENT_PUBLIC_IDENTIFIER);
 
-        List<Experiment> experiments = (searchService.searchForExperiments(experimentSearchCriteria, null)).getResults();
+        List<Experiment> experiments = searchService.searchForExperiments(experimentSearchCriteria, null).getResults();
         if (experiments == null || experiments.size() <= 0) {
             return null;
         }
@@ -190,13 +189,13 @@ public class DownloadArrayDesignForHybridization {
 
     /**
      * Select hybridization with given name in the experiment.
+     * @throws InvalidReferenceException 
      */
-    private Hybridization selectHybridization(CaArrayEntityReference experimentRef) throws RemoteException,
-            InvalidInputException {
+    private Hybridization selectHybridization(CaArrayEntityReference experimentRef) throws InvalidReferenceException  {
         HybridizationSearchCriteria searchCriteria = new HybridizationSearchCriteria();
         searchCriteria.setExperiment(experimentRef);
         searchCriteria.getNames().add(HYBRIDIZATION_NAME);
-        List<Hybridization> hybridizations = (searchService.searchForHybridizations(searchCriteria, null)).getResults();
+        List<Hybridization> hybridizations = searchService.searchForHybridizations(searchCriteria, null).getResults();
         if (hybridizations == null || hybridizations.size() <= 0) {
             return null;
         }
@@ -204,8 +203,7 @@ public class DownloadArrayDesignForHybridization {
         return hybridizations.iterator().next();
     }
 
-    private void downloadContents(CaArrayEntityReference fileRef) throws RemoteException, DataTransferException,
-            InvalidReferenceException, IOException {
+    private void downloadContents(CaArrayEntityReference fileRef) throws InvalidReferenceException, DataTransferException, IOException  {
         boolean compressFile = false;
         ByteArrayOutputStream outStream = new ByteArrayOutputStream();
         long startTime = System.currentTimeMillis();

@@ -82,7 +82,12 @@
  */
 package gov.nih.nci.caarray.util;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
@@ -96,7 +101,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -106,7 +114,7 @@ import com.csvreader.CsvWriter;
 /**
  * Utility classes for our project.
  */
-@SuppressWarnings("PMD.CyclomaticComplexity")
+@SuppressWarnings({"PMD.CyclomaticComplexity", "PMD.ExcessiveClassLength" })
 public final class CaArrayUtils {
     private static final SortedSet<Object> EMPTY_SORTED_SET = new TreeSet<Object>();
 
@@ -567,5 +575,60 @@ public final class CaArrayUtils {
             names.add(oneEnum.name());
         }
         return names;
+    }
+
+    /**
+     * Serializes the given object (zipped) to a byte array.
+     *
+     * @param serializable object to serialize
+     * @return the serialized object as a byte array.
+     */
+    public static byte[] serialize(Serializable serializable) {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        GZIPOutputStream gZipOutputStream = null;
+        ObjectOutputStream objectOutputStream = null;
+        try {
+            gZipOutputStream = new GZIPOutputStream(byteArrayOutputStream);
+            objectOutputStream = new ObjectOutputStream(gZipOutputStream);
+            objectOutputStream.writeObject(serializable);
+            objectOutputStream.flush();
+            gZipOutputStream.finish();
+            gZipOutputStream.flush();
+            byteArrayOutputStream.flush();
+        } catch (IOException e) {
+            throw new IllegalStateException("Couldn't serialize object", e);
+        } finally {
+            IOUtils.closeQuietly(objectOutputStream);
+            IOUtils.closeQuietly(gZipOutputStream);
+            IOUtils.closeQuietly(byteArrayOutputStream);
+        }
+        return byteArrayOutputStream.toByteArray();
+    }
+
+    /**
+     * Deserializes an object from a zipped serialized representation in a byte array.
+     *
+     * @param bytes the byte array
+     * @return the deserialized object.
+     */
+    public static Serializable deserialize(byte[] bytes) {
+        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
+        GZIPInputStream gzipInputStream = null;
+        ObjectInputStream objectInputStream = null;
+        Serializable object = null;
+        try {
+            gzipInputStream = new GZIPInputStream(byteArrayInputStream);
+            objectInputStream = new ObjectInputStream(gzipInputStream);
+            object = (Serializable) objectInputStream.readObject();
+        } catch (IOException e) {
+            throw new IllegalStateException("Couldn't read object", e);
+        } catch (ClassNotFoundException e) {
+            throw new IllegalStateException("Couldn't read object", e);
+        } finally {
+            IOUtils.closeQuietly(objectInputStream);
+            IOUtils.closeQuietly(gzipInputStream);
+            IOUtils.closeQuietly(byteArrayInputStream);
+        }
+        return object;
     }
 }

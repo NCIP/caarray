@@ -80,43 +80,65 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.external.v1_0.query;
-
-import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
+package gov.nih.nci.caarray.external.v1_0.data;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
+import com.healthmarketscience.rmiio.RemoteInputStream;
 
 /**
+ * FileStreamableContents combines a file's metadata with a RemoteInputStream for reading its contents.
+ * 
  * @author dkokotov
- *
  */
-public class FileDownloadRequest implements Serializable {
+public class FileStreamableContents implements Serializable {
     private static final long serialVersionUID = 1L;
     
-    private List<CaArrayEntityReference> files = new ArrayList<CaArrayEntityReference>();
+    private FileMetadata metadata;
+    private RemoteInputStream contentStream;
+    private boolean compressed;
 
     /**
-     * @return the files
+     * @return whether the contents that the contentStream will expose have been compressed using the GZIP algorithm.
      */
-    public List<CaArrayEntityReference> getFiles() {
-        return files;
+    public boolean isCompressed() {
+        return compressed;
     }
 
     /**
-     * @param files the files to set
+     * @param compressed whether the contents that the contentCtream will expose have been compressed using the GZIP
+     *            algorithm.
      */
-    public void setFiles(List<CaArrayEntityReference> files) {
-        this.files = files;
+    public void setCompressed(boolean compressed) {
+        this.compressed = compressed;
     }
 
     /**
-     * {@inheritDoc}
+     * @return the metadata for this file
      */
-    public String toString() {
-        return ToStringBuilder.reflectionToString(this);
-    }    
+    public FileMetadata getMetadata() {
+        return metadata;
+    }
+
+    /**
+     * @param metadata the metadata for this file
+     */
+    public void setMetadata(FileMetadata metadata) {
+        this.metadata = metadata;
+    }
+
+    /**
+     * @return the RemoteInputStream via which the contents for this file can be read. The stream will contain either
+     *         the raw contents, or the contents compressed using GZIP, depending on the compressed property.
+     */
+    public RemoteInputStream getContentStream() {
+        return contentStream;
+    }
+
+    /**
+     * @param contentStream the RemoteInputStream via which the contents for this file can be read.
+     */
+    public void setContentStream(RemoteInputStream contentStream) {
+        this.contentStream = contentStream;
+    }
 }

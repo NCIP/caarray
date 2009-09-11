@@ -25,10 +25,10 @@
     <xs:complexType name="QuantitationType">
         <xs:complexContent>
             <xs:extension base="car:AbstractCaArrayEntity">
-                <xs:attribute name="name" type="xs:string" />
                 <xs:sequence>
                     <xs:element name="dataType" type="dat:DataType" minOccurs="0" maxOccurs="1"/>
                 </xs:sequence>
+                <xs:attribute name="name" type="xs:string" />
 	    </xs:extension>
 	</xs:complexContent>
     </xs:complexType>

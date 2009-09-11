@@ -96,8 +96,7 @@ import gov.nih.nci.caarray.external.v1_0.query.LimitOffset;
 import gov.nih.nci.caarray.external.v1_0.query.SearchResult;
 import gov.nih.nci.caarray.external.v1_0.sample.Biomaterial;
 import gov.nih.nci.caarray.external.v1_0.sample.Hybridization;
-import gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.InvalidReferenceFault;
-import gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.UnsupportedCategoryFault;
+import gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.InvalidInputFault;
 import gov.nih.nci.caarray.services.external.v1_0.search.AbstractSearchApiUtils;
 import gov.nih.nci.caarray.services.external.v1_0.search.SearchApiUtils;
 
@@ -131,12 +130,10 @@ public class GridSearchApiUtils extends AbstractSearchApiUtils implements Search
             public SearchResult<Experiment> apply(LimitOffset from) {
                 try {
                     return client.searchForExperiments(criteria, from);
-                } catch (InvalidReferenceFault e) {
-                    throw new WrapperExeption(e);
-                } catch (UnsupportedCategoryFault e) {
-                    throw new WrapperExeption(e);
+                } catch (InvalidInputFault f) {
+                    throw new WrapperException(GridApiUtils.translateFault(f));
                 } catch (RemoteException e) {
-                    throw new WrapperExeption(e);
+                    throw new RuntimeException("Error executing API method", e);
                 }
             }
         };
@@ -154,7 +151,7 @@ public class GridSearchApiUtils extends AbstractSearchApiUtils implements Search
                 try {
                     return client.searchForExperimentsByKeyword(criteria, from);
                 } catch (RemoteException e) {
-                    throw new WrapperExeption(e);
+                    throw new RuntimeException("Error executing API method", e);
                 }
             }
         };
@@ -171,12 +168,10 @@ public class GridSearchApiUtils extends AbstractSearchApiUtils implements Search
             public SearchResult<Biomaterial> apply(LimitOffset from) {
                 try {
                     return client.searchForBiomaterials(criteria, from);
-                } catch (InvalidReferenceFault e) {
-                    throw new WrapperExeption(e);
-                } catch (UnsupportedCategoryFault e) {
-                    throw new WrapperExeption(e);
+                } catch (InvalidInputFault f) {
+                    throw new WrapperException(GridApiUtils.translateFault(f));
                 } catch (RemoteException e) {
-                    throw new WrapperExeption(e);
+                    throw new RuntimeException("Error executing API method", e);
                 }
             }
         };
@@ -194,7 +189,7 @@ public class GridSearchApiUtils extends AbstractSearchApiUtils implements Search
                 try {
                     return client.searchForBiomaterialsByKeyword(criteria, from);                    
                 } catch (RemoteException e) {
-                    throw new WrapperExeption(e);
+                    throw new RuntimeException("Error executing API method", e);
                 }
             }
         };
@@ -211,10 +206,10 @@ public class GridSearchApiUtils extends AbstractSearchApiUtils implements Search
             public SearchResult<File> apply(LimitOffset from) {
                 try {
                     return client.searchForFiles(criteria, from);
-                } catch (InvalidReferenceFault e) {
-                    throw new WrapperExeption(e);
+                } catch (InvalidInputFault f) {
+                    throw new WrapperException(GridApiUtils.translateFault(f));
                 } catch (RemoteException e) {
-                    throw new WrapperExeption(e);
+                    throw new RuntimeException("Error executing API method", e);
                 }
             }
         };
@@ -231,10 +226,10 @@ public class GridSearchApiUtils extends AbstractSearchApiUtils implements Search
             public SearchResult<Hybridization> apply(LimitOffset from) {
                 try {
                     return client.searchForHybridizations(criteria, from);
-                } catch (InvalidReferenceFault e) {
-                    throw new WrapperExeption(e);
+                } catch (InvalidInputFault f) {
+                    throw new WrapperException(GridApiUtils.translateFault(f));
                 } catch (RemoteException e) {
-                    throw new WrapperExeption(e);
+                    throw new RuntimeException("Error executing API method", e);
                 }
             }
         };
@@ -251,8 +246,10 @@ public class GridSearchApiUtils extends AbstractSearchApiUtils implements Search
             public SearchResult<T> apply(LimitOffset from) {
                 try {
                     return client.searchByExample(criteria, from);                    
+                } catch (InvalidInputFault f) {
+                    throw new WrapperException(GridApiUtils.translateFault(f));
                 } catch (RemoteException e) {
-                    throw new WrapperExeption(e);
+                    throw new RuntimeException("Error executing API method", e);
                 }
             }
         };

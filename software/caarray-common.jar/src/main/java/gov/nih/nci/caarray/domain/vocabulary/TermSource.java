@@ -12,6 +12,7 @@ import javax.persistence.Transient;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.validator.Length;
 import org.hibernate.validator.NotNull;
@@ -199,8 +200,8 @@ public class TermSource extends AbstractCaArrayEntity {
             return true;
         }
         TermSource other = (TermSource) o;
-        return new EqualsBuilder().append(this.getName(), other.getName())
-                .append(this.getVersion(), other.getVersion()).isEquals();
+        return new EqualsBuilder().append(this.getId(), other.getId()).append(this.getName(), other.getName()).append(
+                this.getVersion(), other.getVersion()).isEquals();
     }
 
     /**
@@ -208,7 +209,7 @@ public class TermSource extends AbstractCaArrayEntity {
      */
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(this.getName()).append(this.getVersion()).toHashCode();
+        return new HashCodeBuilder().append(this.getId()).append(this.getName()).append(this.getVersion()).toHashCode();
     }
 
     /**
@@ -216,14 +217,11 @@ public class TermSource extends AbstractCaArrayEntity {
      */
     @Override
     public String toString() {
-        StringBuffer stringBuffer = new StringBuffer();
-        stringBuffer.append(super.toString());
-        stringBuffer.append(" name=");
-        stringBuffer.append(getName());
-        stringBuffer.append(" url=");
-        stringBuffer.append(getUrl());
-        stringBuffer.append(" version=");
-        stringBuffer.append(getVersion());
-        return stringBuffer.toString();
+        return new ToStringBuilder(this)
+        .append("id", getId())
+        .append("name", this.name)
+        .append("url", this.url)
+        .append("version", this.version)
+        .toString();
     }
 }

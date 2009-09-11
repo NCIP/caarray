@@ -128,7 +128,7 @@ public class SearchBiomaterialsByCriteria {
         }
     }
 
-    private void search() throws RemoteException, InvalidInputException {
+    private void search() throws InvalidInputException {
         BiomaterialSearchCriteria biomaterialSearchCriteria = new BiomaterialSearchCriteria();
 
         // Set external ID.

@@ -107,18 +107,15 @@ import gov.nih.nci.caarray.external.v1_0.query.SearchResult;
 import gov.nih.nci.caarray.services.external.v1_0.CaArrayServer;
 import gov.nih.nci.caarray.services.external.v1_0.InvalidInputException;
 import gov.nih.nci.caarray.services.external.v1_0.data.DataService;
+import gov.nih.nci.caarray.services.external.v1_0.data.InconsistentDataSetsException;
 import gov.nih.nci.caarray.services.external.v1_0.search.JavaSearchApiUtils;
 import gov.nih.nci.caarray.services.external.v1_0.search.SearchApiUtils;
 import gov.nih.nci.caarray.services.external.v1_0.search.SearchService;
 
-import java.io.IOException;
-import java.rmi.RemoteException;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-
-import com.sun.org.apache.xerces.internal.util.URI.MalformedURIException;
 
 /**
  * A client downloading columns from a data file using the caArray Java API.
@@ -149,7 +146,7 @@ public class DownloadDataColumnsFromGenepixFile {
         }
     }
 
-    private void download() throws RemoteException, MalformedURIException, IOException, Exception {
+    private void download() throws InvalidInputException, InconsistentDataSetsException {
         DataSetRequest dataSetRequest = new DataSetRequest();
         // Select an experiment of interest.
         CaArrayEntityReference experimentRef = selectExperiment();
@@ -204,7 +201,7 @@ public class DownloadDataColumnsFromGenepixFile {
     /**
      * Search for experiments and select one.
      */
-    private CaArrayEntityReference selectExperiment() throws RemoteException, InvalidInputException {
+    private CaArrayEntityReference selectExperiment() throws InvalidInputException {
         // Search for experiment with the given title.
         ExperimentSearchCriteria experimentSearchCriteria = new ExperimentSearchCriteria();
         experimentSearchCriteria.setTitle(EXPERIMENT_TITLE);
@@ -227,15 +224,14 @@ public class DownloadDataColumnsFromGenepixFile {
     /**
      * Search for data files of a certain type in the experiment and select one.
      */
-    private CaArrayEntityReference selectDataFile(CaArrayEntityReference experimentRef) throws RemoteException,
-            InvalidInputException {
+    private CaArrayEntityReference selectDataFile(CaArrayEntityReference experimentRef) throws InvalidInputException {
         FileSearchCriteria fileSearchCriteria = new FileSearchCriteria();
         fileSearchCriteria.setExperiment(experimentRef);
         // Search for all GENEPIX_GPR data files in the experiment.
         CaArrayEntityReference fileTypeRef = getGprFileType();
         fileSearchCriteria.getTypes().add(fileTypeRef);
 
-        List<File> files = (searchServiceHelper.filesByCriteria(fileSearchCriteria)).list();
+        List<File> files = searchServiceHelper.filesByCriteria(fileSearchCriteria).list();
         if (files == null || files.size() <= 0) {
             return null;
         }

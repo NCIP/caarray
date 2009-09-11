@@ -90,14 +90,14 @@ import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
 import gov.nih.nci.caarray.services.external.v1_0.CaArrayServer;
 import gov.nih.nci.caarray.services.external.v1_0.InvalidInputException;
 import gov.nih.nci.caarray.services.external.v1_0.data.DataService;
+import gov.nih.nci.caarray.services.external.v1_0.data.DataTransferException;
 import gov.nih.nci.caarray.services.external.v1_0.search.SearchService;
 
 import java.io.IOException;
-import java.rmi.RemoteException;
 import java.util.List;
 import java.util.Set;
 
-import com.sun.org.apache.xerces.internal.util.URI.MalformedURIException;
+import org.apache.commons.io.IOUtils;
 
 /**
  * A client exporting an experiment into MAGE-TAB and downloading the IDF, SDRF and references
@@ -126,7 +126,7 @@ public class DownloadMageTabExport {
         }
     }
 
-    private void download() throws RemoteException, MalformedURIException, IOException, Exception {
+    private void download() throws InvalidInputException, DataTransferException, IOException  {
         CaArrayEntityReference experimentRef = searchForExperiment();
         if (experimentRef == null) {
             System.err.println("Could not find experiment with the requested title.");
@@ -142,12 +142,17 @@ public class DownloadMageTabExport {
         int numDataFileRefs = dataFiles == null || dataFiles.size() <= 0 ? 0 : dataFiles.size();
 
         System.out.println("Retrieved " + bytesRetrieved + " bytes and " + numDataFileRefs + " data file references in " + totalTime + " ms.");
+        System.out.println("IDF:");
+        IOUtils.write(idfContents, System.out);
+        System.out.println("SDRF:");
+        IOUtils.write(sdrfContents, System.out);
+        
     }
 
     /**
      * Search for an experiment based on its title.
      */
-    private CaArrayEntityReference searchForExperiment() throws RemoteException, InvalidInputException {
+    private CaArrayEntityReference searchForExperiment() throws InvalidInputException {
         // Search for experiment with the given title.
         ExperimentSearchCriteria experimentSearchCriteria = new ExperimentSearchCriteria();
         experimentSearchCriteria.setTitle(EXPERIMENT_TITLE);

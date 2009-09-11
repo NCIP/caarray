@@ -2,6 +2,7 @@ package gov.nih.nci.caarray.services.external.v1_0.grid.service;
 
 import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
 import gov.nih.nci.caarray.external.v1_0.data.File;
+import gov.nih.nci.caarray.external.v1_0.data.FileStreamableContents;
 import gov.nih.nci.caarray.external.v1_0.data.QuantitationType;
 import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
 import gov.nih.nci.caarray.external.v1_0.experiment.Person;
@@ -12,6 +13,7 @@ import gov.nih.nci.caarray.external.v1_0.vocabulary.Term;
 import gov.nih.nci.caarray.services.ServerConnectionException;
 import gov.nih.nci.caarray.services.external.v1_0.CaArrayServer;
 import gov.nih.nci.caarray.services.external.v1_0.IncorrectEntityTypeException;
+import gov.nih.nci.caarray.services.external.v1_0.InvalidInputException;
 import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
 import gov.nih.nci.caarray.services.external.v1_0.NoEntityMatchingReferenceException;
 import gov.nih.nci.caarray.services.external.v1_0.UnsupportedCategoryException;
@@ -21,6 +23,7 @@ import gov.nih.nci.caarray.services.external.v1_0.data.JavaDataApiUtils;
 import gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.DataStagingFault;
 import gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.InconsistentDataSetsFault;
 import gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.IncorrectEntityTypeFault;
+import gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.InvalidInputFault;
 import gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.InvalidReferenceFault;
 import gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.NoEntityMatchingReferenceFault;
 import gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.UnsupportedCategoryFault;
@@ -29,7 +32,6 @@ import gov.nih.nci.caarray.services.external.v1_0.search.SearchApiUtils;
 import gov.nih.nci.cagrid.wsenum.utils.EnumerateResponseFactory;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.rmi.RemoteException;
 import java.util.List;
@@ -39,13 +41,9 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.cagrid.transfer.context.service.helper.TransferServiceHelper;
 import org.cagrid.transfer.context.stubs.types.TransferServiceContextReference;
+import org.cagrid.transfer.descriptor.DataDescriptor;
 import org.oasis.wsrf.faults.BaseFaultType;
 import org.oasis.wsrf.faults.BaseFaultTypeDescription;
-
-import com.healthmarketscience.rmiio.RemoteInputStream;
-import com.healthmarketscience.rmiio.RemoteInputStreamClient;
-import gov.nih.nci.caarray.services.external.v1_0.InvalidInputException;
-import gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.InvalidInputFault;
 
 /**
  * Implementation of the v1.0 of the CaArray grid service
@@ -129,54 +127,37 @@ public class CaArraySvc_v1_0Impl extends CaArraySvc_v1_0ImplBase {
         }
     }
 
-  public org.cagrid.transfer.context.stubs.types.TransferServiceContextReference getFileContentsZipTransfer(gov.nih.nci.caarray.external.v1_0.query.FileDownloadRequest fileDownloadRequest,boolean compressIndividually) throws RemoteException, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.DataStagingFault, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.IncorrectEntityTypeFault, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.NoEntityMatchingReferenceFault {
-      try {
-            java.io.File file = getDataUtils().downloadFileContentsZipToTempFile(fileDownloadRequest, compressIndividually);
-            return TransferServiceHelper.createTransferContext(file, null, true);
-      } catch (InvalidReferenceException e) {
-          throw toFault(e);
-      } catch (DataTransferException e) {
-          throw mapExceptionToFault(e, DataStagingFault.class);
-      } catch (IOException e) {
-          throw mapExceptionToFault(e, DataStagingFault.class);
-      }
-  }
-
-  public org.cagrid.transfer.context.stubs.types.TransferServiceContextReference[] getFileContentsTransfers(gov.nih.nci.caarray.external.v1_0.query.FileDownloadRequest fileDownloadRequest,boolean compress) throws RemoteException, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.IncorrectEntityTypeFault, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.NoEntityMatchingReferenceFault, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.DataStagingFault {
-      TransferServiceContextReference[] refs = new TransferServiceContextReference[fileDownloadRequest.getFiles().size()];
-      int i = 0;
-      for (CaArrayEntityReference fileRef : fileDownloadRequest.getFiles()) {
-          refs[i++] = getFileContentsTransfer(fileRef, compress);
-      }
-      return refs;
-  }
-
   public org.cagrid.transfer.context.stubs.types.TransferServiceContextReference getFileContentsTransfer(gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference fileRef,boolean compress) throws RemoteException, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.IncorrectEntityTypeFault, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.NoEntityMatchingReferenceFault, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.DataStagingFault {
-      return stageFileContentsWithRmiStream(caArrayServer, fileRef, compress);
+      return stageFileContentsWithRmiStream(fileRef, compress);
   }
 
-  private TransferServiceContextReference stageFileContentsWithRmiStream(CaArrayServer server,
-            CaArrayEntityReference fileRef, boolean compress) throws InvalidInputFault, DataStagingFault {
+    private TransferServiceContextReference stageFileContentsWithRmiStream(CaArrayEntityReference fileRef,
+            boolean compressed) throws InvalidInputFault, DataStagingFault {
+      OutputStream ostream = null;
       try {
-          TransferServiceContextReference ref = null;
-          java.io.File retrievedFile = getDataUtils().downloadFileContentsToTempFile(fileRef, compress);
-          if (retrievedFile != null) {
-              ref = TransferServiceHelper.createTransferContext(retrievedFile, null, true);
-          }
-          return ref;
+          java.io.File tempFile = java.io.File.createTempFile("stagedFile", null);
+          FileStreamableContents fsContents = caArrayServer.getDataService().streamFileContents(fileRef, compressed);
+          ostream = FileUtils.openOutputStream(tempFile);
+          JavaDataApiUtils.readFully(fsContents.getContentStream(), ostream, false);          
+            return TransferServiceHelper.createTransferContext(tempFile, new DataDescriptor(false, fsContents
+                    .getMetadata().getName()), true);
       } catch (InvalidReferenceException e) {
           throw toFault(e);
       } catch (DataTransferException e) {
           throw mapExceptionToFault(e, DataStagingFault.class);
       } catch (IOException e) {
           throw mapExceptionToFault(e, DataStagingFault.class);
+      } finally {
+          if (ostream != null) {
+              IOUtils.closeQuietly(ostream);
+          }
       }
   }
 
   public gov.nih.nci.caarray.external.v1_0.data.DataSet getDataSet(gov.nih.nci.caarray.external.v1_0.query.DataSetRequest dataSetRequest) throws RemoteException, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.InconsistentDataSetsFault, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.NoEntityMatchingReferenceFault, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.IncorrectEntityTypeFault {
         try {
             return getCaArrayServer().getDataService().getDataSet(dataSetRequest);
-        } catch (InvalidReferenceException e) {
+        } catch (InvalidInputException e) {
             throw toFault(e);
         } catch (InconsistentDataSetsException e) {
             throw mapExceptionToFault(e, InconsistentDataSetsFault.class);
@@ -230,32 +211,6 @@ public class CaArraySvc_v1_0Impl extends CaArraySvc_v1_0ImplBase {
 
     } 
   }
-
-  public org.cagrid.transfer.context.stubs.types.TransferServiceContextReference getMageTabZipTransfer(gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference experimentRef,boolean compressIndividually) throws RemoteException, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.IncorrectEntityTypeFault, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.NoEntityMatchingReferenceFault, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.DataStagingFault {
-        OutputStream fos = null;
-        InputStream is = null;
-        try {
-            java.io.File file = java.io.File.createTempFile("caarray_magetab_zip_transfer", null);
-            fos = FileUtils.openOutputStream(file);
-            RemoteInputStream ris = getCaArrayServer().getDataService().streamMageTabZip(experimentRef, compressIndividually);
-            is = RemoteInputStreamClient.wrap(ris);
-            IOUtils.copy(is, fos);
-            return TransferServiceHelper.createTransferContext(file, null, true);
-        } catch (InvalidInputException e) {
-            throw toFault(e);
-        } catch (DataTransferException e) {
-            throw mapExceptionToFault(e, DataStagingFault.class);
-        } catch (IOException e) {
-            throw mapExceptionToFault(e, DataStagingFault.class);
-        } finally {
-            if (is != null) {
-                IOUtils.closeQuietly(is);
-            }
-            if (fos != null) {
-                IOUtils.closeQuietly(fos);
-            }
-        }
-    }
 
   public gov.nih.nci.caarray.external.v1_0.data.QuantitationType[] searchForQuantitationTypes(gov.nih.nci.caarray.external.v1_0.query.QuantitationTypeSearchCriteria criteria) throws RemoteException, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.IncorrectEntityTypeFault, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.NoEntityMatchingReferenceFault {
         try {

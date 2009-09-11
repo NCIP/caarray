@@ -83,7 +83,6 @@
 package gov.nih.nci.caarray.services.external.v1_0.data.impl;
 
 import gov.nih.nci.caarray.application.ServiceLocatorFactory;
-import gov.nih.nci.caarray.application.fileaccess.FileAccessUtils;
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCache;
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
@@ -98,15 +97,15 @@ import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.search.AdHocSortCriterion;
 import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
-import gov.nih.nci.caarray.external.v1_0.data.File;
-import gov.nih.nci.caarray.external.v1_0.data.FileContents;
 import gov.nih.nci.caarray.external.v1_0.data.DataSet;
 import gov.nih.nci.caarray.external.v1_0.data.DesignElement;
+import gov.nih.nci.caarray.external.v1_0.data.File;
+import gov.nih.nci.caarray.external.v1_0.data.FileContents;
 import gov.nih.nci.caarray.external.v1_0.data.FileMetadata;
+import gov.nih.nci.caarray.external.v1_0.data.FileStreamableContents;
 import gov.nih.nci.caarray.external.v1_0.data.MageTabFileSet;
 import gov.nih.nci.caarray.external.v1_0.data.QuantitationType;
 import gov.nih.nci.caarray.external.v1_0.query.DataSetRequest;
-import gov.nih.nci.caarray.external.v1_0.query.FileDownloadRequest;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.magetab.sdrf.ArrayDataFile;
 import gov.nih.nci.caarray.magetab.sdrf.ArrayDataMatrixFile;
@@ -116,6 +115,7 @@ import gov.nih.nci.caarray.magetab.sdrf.SdrfDocument;
 import gov.nih.nci.caarray.services.AuthorizationInterceptor;
 import gov.nih.nci.caarray.services.HibernateSessionInterceptor;
 import gov.nih.nci.caarray.services.TemporaryFileCleanupInterceptor;
+import gov.nih.nci.caarray.services.external.v1_0.InvalidInputException;
 import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
 import gov.nih.nci.caarray.services.external.v1_0.data.DataService;
 import gov.nih.nci.caarray.services.external.v1_0.data.DataTransferException;
@@ -125,13 +125,9 @@ import gov.nih.nci.caarray.util.HibernateUtil;
 
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.zip.GZIPOutputStream;
-import java.util.zip.ZipOutputStream;
 
 import javax.annotation.security.PermitAll;
 import javax.ejb.Stateless;
@@ -141,13 +137,11 @@ import javax.interceptor.Interceptors;
 
 import org.apache.commons.collections.ListUtils;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.jboss.annotation.ejb.RemoteBinding;
 import org.jboss.annotation.ejb.TransactionTimeout;
 
 import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
-import com.healthmarketscience.rmiio.RemoteInputStream;
 import com.healthmarketscience.rmiio.RemoteInputStreamMonitor;
 import com.healthmarketscience.rmiio.RemoteInputStreamServer;
 import com.healthmarketscience.rmiio.SimpleRemoteInputStream;
@@ -166,14 +160,17 @@ import com.healthmarketscience.rmiio.SimpleRemoteInputStream;
 @SuppressWarnings("PMD")
 public class DataServiceBean extends BaseV1_0ExternalService implements DataService {
     private static final Logger LOG = Logger.getLogger(DataServiceBean.class);
+    
     static final int TIMEOUT_SECONDS = 1800;
+    static final long MAX_FILE_REQUEST_SIZE = 1024 * 1024 * 1024; // 1 GB
 
     private final CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
 
     /**
      * {@inheritDoc}
      */
-    public DataSet getDataSet(DataSetRequest request) throws InvalidReferenceException, InconsistentDataSetsException {
+    public DataSet getDataSet(DataSetRequest request) throws InvalidReferenceException, InvalidInputException,
+            InconsistentDataSetsException {
         LOG.info("Received data retrieval request");
         checkRequest(request);
         List<gov.nih.nci.caarray.domain.data.DataSet> dataSets = getDataSets(request);
@@ -184,7 +181,7 @@ public class DataServiceBean extends BaseV1_0ExternalService implements DataServ
         HibernateUtil.getCurrentSession().clear();
         return externalDataSet;
     }
-
+    
     private DataSet toExternalDataSet(gov.nih.nci.caarray.domain.data.DataSet dataSet) {
         DataSet externalDataSet = new DataSet();
         mapCollection(dataSet.getQuantitationTypes(), externalDataSet.getQuantitationTypes(), QuantitationType.class);
@@ -264,13 +261,13 @@ public class DataServiceBean extends BaseV1_0ExternalService implements DataServ
         }
     }
 
-    private void checkRequest(DataSetRequest request) {
+    private void checkRequest(DataSetRequest request) throws InvalidInputException {
         if (request == null) {
-            throw new IllegalArgumentException("DataRetrievalRequest was null");
+            throw new InvalidInputException("DataRetrievalRequest was null");
         } else if (request.getHybridizations().isEmpty() && request.getDataFiles().isEmpty()) {
-            throw new IllegalArgumentException("DataRetrievalRequest didn't specify any Hybridizations or Files");
+            throw new InvalidInputException("DataRetrievalRequest didn't specify any Hybridizations or Files");
         } else if (request.getQuantitationTypes().isEmpty()) {
-            throw new IllegalArgumentException("DataRetrievalRequest didn't specify QuantitationTypes");
+            throw new InvalidInputException("DataRetrievalRequest didn't specify QuantitationTypes");
         }
     }
 
@@ -333,7 +330,7 @@ public class DataServiceBean extends BaseV1_0ExternalService implements DataServ
     private List<Hybridization> getHybridizations(DataSetRequest request) throws InvalidReferenceException {
         List<Hybridization> hybridizations = new ArrayList<Hybridization>(request.getHybridizations().size());
         for (CaArrayEntityReference hybRef : request.getHybridizations()) {
-            hybridizations.add(getRequiredByLsid(hybRef.getId(), Hybridization.class));
+            hybridizations.add(getRequiredByExternalId(hybRef.getId(), Hybridization.class));
         }
         return hybridizations;
     }
@@ -341,7 +338,7 @@ public class DataServiceBean extends BaseV1_0ExternalService implements DataServ
     private List<CaArrayFile> getFiles(DataSetRequest request) throws InvalidReferenceException {
         List<CaArrayFile> files = new ArrayList<CaArrayFile>(request.getDataFiles().size());
         for (CaArrayEntityReference fileRef : request.getDataFiles()) {
-            files.add(getRequiredByLsid(fileRef.getId(), CaArrayFile.class));
+            files.add(getRequiredByExternalId(fileRef.getId(), CaArrayFile.class));
         }
         return files;
     }
@@ -351,7 +348,7 @@ public class DataServiceBean extends BaseV1_0ExternalService implements DataServ
         List<gov.nih.nci.caarray.domain.data.QuantitationType> types = 
             new ArrayList<gov.nih.nci.caarray.domain.data.QuantitationType>(request.getDataFiles().size());
         for (CaArrayEntityReference qtRef : request.getQuantitationTypes()) {
-            types.add(getRequiredByLsid(qtRef.getId(), gov.nih.nci.caarray.domain.data.QuantitationType.class));
+            types.add(getRequiredByExternalId(qtRef.getId(), gov.nih.nci.caarray.domain.data.QuantitationType.class));
         }
         return types;
     }
@@ -359,61 +356,25 @@ public class DataServiceBean extends BaseV1_0ExternalService implements DataServ
     /**
      * {@inheritDoc}
      */
-    public RemoteInputStream streamFileContents(CaArrayEntityReference fileRef, boolean compressed)
+    public FileStreamableContents streamFileContents(CaArrayEntityReference fileRef, boolean compressed)
             throws InvalidReferenceException, DataTransferException {
-        CaArrayFile caarrayFile = getRequiredByLsid(fileRef.getId(), CaArrayFile.class);
+        CaArrayFile caarrayFile = getRequiredByExternalId(fileRef.getId(), CaArrayFile.class);
         RemoteInputStreamServer istream = null;
         TemporaryFileCache tempFileCache = TemporaryFileCacheLocator.newTemporaryFileCache();
+        FileStreamableContents fsContents =  new FileStreamableContents();
+        fsContents.setMetadata(mapEntity(caarrayFile, File.class).getMetadata());
+        fsContents.setCompressed(compressed);
         try {
             java.io.File file = tempFileCache.getFile(caarrayFile, !compressed);
             
             istream = new SimpleRemoteInputStream(new BufferedInputStream(new FileInputStream(file)),
                     new CacheClosingMonitor(tempFileCache));
-            RemoteInputStream result = istream.export();
+            fsContents.setContentStream(istream.export());
             // after all the hard work, discard the local reference (we are passing
             // responsibility to the client)
             istream = null;
             
-            return result;
-        } catch (Exception e) {
-            LOG.warn("Could not create input stream for file contents", e);
-            throw new DataTransferException("Could not create input stream for file contents");
-        } finally {
-            // we will only close the stream here if the server fails before
-            // returning an exported stream
-            if (istream != null) {
-                istream.close();
-                tempFileCache.closeFiles();
-            }
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public RemoteInputStream streamFileContentsZip(FileDownloadRequest downloadRequest, boolean compressIndividually)
-            throws InvalidReferenceException, DataTransferException {
-        TemporaryFileCache tempFileCache = TemporaryFileCacheLocator.newTemporaryFileCache();
-        RemoteInputStreamServer istream = null;
-        try {
-            java.io.File zipFile = tempFileCache.createFile("contents.zip");
-            FileOutputStream fos = FileUtils.openOutputStream(zipFile);
-
-            List<CaArrayFile> files = new LinkedList<CaArrayFile>();
-            for (CaArrayEntityReference fileRef : downloadRequest.getFiles()) {
-                files.add(getRequiredByLsid(fileRef.getId(), CaArrayFile.class));
-            }
-            FileAccessUtils.downloadFiles(files, compressIndividually, fos);
-            fos.close();
-
-            istream = new SimpleRemoteInputStream(new BufferedInputStream(new FileInputStream(zipFile)),
-                    new CacheClosingMonitor(tempFileCache));
-            RemoteInputStream result = istream.export();
-            // after all the hard work, discard the local reference (we are passing
-            // responsibility to the client)
-            istream = null;
-
-            return result;
+            return fsContents;
         } catch (Exception e) {
             LOG.warn("Could not create input stream for file contents", e);
             throw new DataTransferException("Could not create input stream for file contents");
@@ -432,7 +393,7 @@ public class DataServiceBean extends BaseV1_0ExternalService implements DataServ
      */
     public MageTabFileSet exportMageTab(CaArrayEntityReference experimentRef) throws InvalidReferenceException,
             DataTransferException {
-        gov.nih.nci.caarray.domain.project.Experiment experiment = getRequiredByLsid(experimentRef.getId(),
+        gov.nih.nci.caarray.domain.project.Experiment experiment = getRequiredByExternalId(experimentRef.getId(),
                 gov.nih.nci.caarray.domain.project.Experiment.class);
         try {
             MageTabFileSet mageTabSet = new MageTabFileSet();
@@ -486,75 +447,7 @@ public class DataServiceBean extends BaseV1_0ExternalService implements DataServ
                 new PageSortParams<CaArrayFile>(-1, 0, new AdHocSortCriterion<CaArrayFile>("name"), false));
         return dataFiles;
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    public RemoteInputStream streamMageTabZip(CaArrayEntityReference experimentRef, boolean compressIndividually)
-            throws InvalidReferenceException, DataTransferException {
-        gov.nih.nci.caarray.domain.project.Experiment experiment = getRequiredByLsid(experimentRef.getId(),
-                gov.nih.nci.caarray.domain.project.Experiment.class);            
-        
-        final TemporaryFileCache tempFileCache = TemporaryFileCacheLocator.newTemporaryFileCache();
-        RemoteInputStreamServer istream = null;
-        try {
-            java.io.File zipFile = tempFileCache.createFile("magetab_contents.zip");
-            FileOutputStream fos = FileUtils.openOutputStream(zipFile);
-            ZipOutputStream zos = new ZipOutputStream(fos);
-
-            MageTabDocumentSet docSet = exportToMageTab(experiment);
-            addMageTabFileToZip(zos, docSet.getIdfDocuments().iterator().next().getFile(), compressIndividually);
-            addMageTabFileToZip(zos, docSet.getSdrfDocuments().iterator().next().getFile(), compressIndividually);
-            
-            List<CaArrayFile> dataFiles = getDataFilesReferencedByMageTab(docSet, experiment);
-            FileAccessUtils.addToZip(dataFiles, compressIndividually, zos);
-
-            zos.finish();
-            zos.close();
-
-            istream = new SimpleRemoteInputStream(new BufferedInputStream(new FileInputStream(zipFile)),
-                    new CacheClosingMonitor(tempFileCache));
-            RemoteInputStream result = istream.export();
-            // after all the hard work, discard the local reference (we are passing
-            // responsibility to the client)
-            istream = null;
-            
-            return result;
-        } catch (Exception e) {
-            LOG.warn("Could not create input stream for file contents", e);
-            throw new DataTransferException("Could not create input stream for file contents");
-        } finally {
-            HibernateUtil.getCurrentSession().clear();
-            // we will only close the stream here if the server fails before
-            // returning an exported stream
-            if (istream != null) {
-                istream.close();
-            }
-        }
-    }
     
-    private static void addMageTabFileToZip(ZipOutputStream zos, java.io.File file, boolean compressIndividually)
-            throws IOException {
-        String name = file.getName();
-        if (compressIndividually) {
-            file = compressWithGzip(file);
-            name = name + FileAccessUtils.GZIP_FILE_SUFFIX;
-        }
-        FileAccessUtils.writeZipEntry(zos, file, name, compressIndividually);
-    }
-    
-    private static java.io.File compressWithGzip(java.io.File file) throws IOException {
-        TemporaryFileCache cache = TemporaryFileCacheLocator.getTemporaryFileCache();
-        java.io.File tempFile = cache.createFile("gzip_" + file.getName());
-        FileOutputStream fos = FileUtils.openOutputStream(tempFile);
-        FileInputStream fis = FileUtils.openInputStream(file);
-        GZIPOutputStream gos = new GZIPOutputStream(fos);
-        IOUtils.copy(fis, gos);
-        IOUtils.closeQuietly(gos);
-        IOUtils.closeQuietly(fos);
-        return tempFile;
-    }
-
     private FileContents toFileContents(java.io.File mageTabFile, FileType fileType) throws IOException {
         FileContents fc = new FileContents();
         fc.setContents(FileUtils.readFileToByteArray(mageTabFile));

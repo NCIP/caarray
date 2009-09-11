@@ -114,7 +114,7 @@
 	<mapping> 
     	<class-a>gov.nih.nci.caarray.domain.project.MeasurementFactorValue</class-a>
     	<class-b>gov.nih.nci.caarray.external.v1_0.factor.FactorValue</class-b>   
-    	<field custom-converter="gov.nih.nci.caarray.services.external.v1_0.impl.FactorValueConverter">
+    	<field custom-converter="gov.nih.nci.caarray.services.external.v1_0.impl.ValueConverter">
       		<a>value</a>
      	 	<b>value</b>
     	</field>
@@ -126,7 +126,7 @@
     <mapping> 
         <class-a>gov.nih.nci.caarray.domain.project.UserDefinedFactorValue</class-a>
         <class-b>gov.nih.nci.caarray.external.v1_0.factor.FactorValue</class-b>   
-        <field custom-converter="gov.nih.nci.caarray.services.external.v1_0.impl.FactorValueConverter">
+        <field custom-converter="gov.nih.nci.caarray.services.external.v1_0.impl.ValueConverter">
             <a>value</a>
             <b>value</b>
         </field>
@@ -138,7 +138,7 @@
     <mapping> 
         <class-a>gov.nih.nci.caarray.domain.project.TermBasedFactorValue</class-a>
         <class-b>gov.nih.nci.caarray.external.v1_0.factor.FactorValue</class-b>   
-        <field custom-converter="gov.nih.nci.caarray.services.external.v1_0.impl.FactorValueConverter">
+        <field custom-converter="gov.nih.nci.caarray.services.external.v1_0.impl.ValueConverter">
             <a>term</a>
             <b>value</b>
         </field>
@@ -158,6 +158,12 @@
       		<a>contact</a>
      	 	<b>person</b>
     	</field>
+        <field>
+            <a>roles</a>
+            <b>roles</b>
+            <a-hint>gov.nih.nci.caarray.domain.vocabulary.Term</a-hint>
+            <b-hint>gov.nih.nci.caarray.external.v1_0.vocabulary.Term</b-hint>
+        </field>
   	</mapping>  
 	<mapping> 
     	<class-a>gov.nih.nci.caarray.domain.contact.Person</class-a>
@@ -405,7 +411,7 @@
    <mapping> 
         <class-a>gov.nih.nci.caarray.domain.sample.TermBasedCharacteristic</class-a>
         <class-b>gov.nih.nci.caarray.external.v1_0.sample.Characteristic</class-b>   
-        <field custom-converter="gov.nih.nci.caarray.services.external.v1_0.impl.FactorValueConverter">
+        <field custom-converter="gov.nih.nci.caarray.services.external.v1_0.impl.ValueConverter">
             <a>term</a>
             <b>value</b>
         </field>
@@ -417,7 +423,7 @@
     <mapping> 
         <class-a>gov.nih.nci.caarray.domain.sample.MeasurementCharacteristic</class-a>
         <class-b>gov.nih.nci.caarray.external.v1_0.sample.Characteristic</class-b>   
-        <field custom-converter="gov.nih.nci.caarray.services.external.v1_0.impl.FactorValueConverter">
+        <field custom-converter="gov.nih.nci.caarray.services.external.v1_0.impl.ValueConverter">
             <a>value</a>
             <b>value</b>
         </field>
@@ -429,7 +435,7 @@
     <mapping> 
         <class-a>gov.nih.nci.caarray.domain.sample.UserDefinedCharacteristic</class-a>
         <class-b>gov.nih.nci.caarray.external.v1_0.sample.Characteristic</class-b>   
-        <field custom-converter="gov.nih.nci.caarray.services.external.v1_0.impl.FactorValueConverter">
+        <field custom-converter="gov.nih.nci.caarray.services.external.v1_0.impl.ValueConverter">
             <a>value</a>
             <b>value</b>
         </field>

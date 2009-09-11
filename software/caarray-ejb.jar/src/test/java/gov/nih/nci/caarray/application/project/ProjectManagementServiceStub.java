@@ -83,7 +83,6 @@
 package gov.nih.nci.caarray.application.project;
 
 import gov.nih.nci.caarray.domain.contact.Organization;
-import gov.nih.nci.caarray.domain.contact.Person;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.permissions.AccessProfile;
@@ -120,7 +119,7 @@ import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
 
 /**
- * Basic sintub -- returns null for all methods returning objects. Subclass and override
+ * Basic stub -- returns null for all methods returning objects. Subclass and override
  * to provide desired functionality in tests.
  */
 @SuppressWarnings("PMD.AvoidDuplicateLiterals")
@@ -480,10 +479,6 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
      * {@inheritDoc}
      */
     public void changeOwner(Long projectId, String newOwner) throws CSException {
-    }
-
-    public List<Person> getAllPrincipalInvestigators() {
-        return Collections.emptyList();
     }
 
     public List<Experiment> searchByCriteria(PageSortParams<Experiment> params, ExperimentSearchCriteria criteria) {

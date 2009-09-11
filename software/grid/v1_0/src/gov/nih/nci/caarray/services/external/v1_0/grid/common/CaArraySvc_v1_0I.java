@@ -46,34 +46,6 @@ public interface CaArraySvc_v1_0I {
   public gov.nih.nci.cagrid.enumeration.stubs.response.EnumerationResponseContainer enumerateExperiments(gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria experimentSearchCriteria) throws RemoteException ;
 
   /**
-   * Returns a grid transfer reference which will retrieve the zip of all the files included in the download
-   *
-   * @param fileDownloadRequest
-   * @param compressIndividually
-   * @throws DataStagingFault
-   *	
-   * @throws IncorrectEntityTypeFault
-   *	
-   * @throws NoEntityMatchingReferenceFault
-   *	
-   */
-  public org.cagrid.transfer.context.stubs.types.TransferServiceContextReference getFileContentsZipTransfer(gov.nih.nci.caarray.external.v1_0.query.FileDownloadRequest fileDownloadRequest,boolean compressIndividually) throws RemoteException, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.DataStagingFault, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.IncorrectEntityTypeFault, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.NoEntityMatchingReferenceFault ;
-
-  /**
-   * Returns an array of file content transfers for all files in the given request
-   *
-   * @param fileDownloadRequest
-   * @param compress
-   * @throws IncorrectEntityTypeFault
-   *	
-   * @throws NoEntityMatchingReferenceFault
-   *	
-   * @throws DataStagingFault
-   *	
-   */
-  public org.cagrid.transfer.context.stubs.types.TransferServiceContextReference[] getFileContentsTransfers(gov.nih.nci.caarray.external.v1_0.query.FileDownloadRequest fileDownloadRequest,boolean compress) throws RemoteException, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.IncorrectEntityTypeFault, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.NoEntityMatchingReferenceFault, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.DataStagingFault ;
-
-  /**
    * Returns a grid transfer reference for retrieving the given reference
    *
    * @param fileRef
@@ -168,20 +140,6 @@ public interface CaArraySvc_v1_0I {
    *	
    */
   public gov.nih.nci.caarray.external.v1_0.data.MageTabFileSet getMageTabExport(gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference experimentRef) throws RemoteException, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.IncorrectEntityTypeFault, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.NoEntityMatchingReferenceFault, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.DataStagingFault ;
-
-  /**
-   * returns a transfer reference for retrieving a zipped mage tab export of an experiment. The zip will include the idf and sdrf and all referenced data files
-   *
-   * @param experimentRef
-   * @param compressIndividually
-   * @throws IncorrectEntityTypeFault
-   *	
-   * @throws NoEntityMatchingReferenceFault
-   *	
-   * @throws DataStagingFault
-   *	
-   */
-  public org.cagrid.transfer.context.stubs.types.TransferServiceContextReference getMageTabZipTransfer(gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference experimentRef,boolean compressIndividually) throws RemoteException, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.IncorrectEntityTypeFault, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.NoEntityMatchingReferenceFault, gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.DataStagingFault ;
 
   /**
    * Search for quantitation types matching criteria

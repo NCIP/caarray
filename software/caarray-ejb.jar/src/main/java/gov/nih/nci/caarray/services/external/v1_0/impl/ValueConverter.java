@@ -96,7 +96,7 @@ import net.sf.dozer.util.mapping.converters.CustomConverter;
  * @author dkokotov
  *
  */
-public class FactorValueConverter implements CustomConverter {
+public class ValueConverter implements CustomConverter {
     /**
      * {@inheritDoc}
      */

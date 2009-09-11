@@ -82,7 +82,6 @@
  */
 package caarray.client.examples.grid;
 
-import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
 import gov.nih.nci.caarray.external.v1_0.array.ArrayDesign;
 import gov.nih.nci.caarray.external.v1_0.array.ArrayProvider;
@@ -106,7 +105,7 @@ import gov.nih.nci.caarray.external.v1_0.sample.Hybridization;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.Category;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.Term;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.TermSource;
-import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
+import gov.nih.nci.caarray.services.external.v1_0.InvalidInputException;
 import gov.nih.nci.caarray.services.external.v1_0.grid.client.CaArraySvc_v1_0Client;
 import gov.nih.nci.caarray.services.external.v1_0.grid.client.GridSearchApiUtils;
 import gov.nih.nci.caarray.services.external.v1_0.search.SearchApiUtils;
@@ -151,7 +150,7 @@ public class LookUpEntities {
         }
     }
 
-    private void lookup() throws RemoteException, DeserializationException, InvalidReferenceException {
+    private void lookup() throws RemoteException, DeserializationException, InvalidInputException {
         lookupArrayDataTypes();
         lookupArrayDesigns();
         lookupArrayProviders();
@@ -178,7 +177,7 @@ public class LookUpEntities {
         lookupExperimentsPageByPage();
     }
 
-    private void lookupArrayDataTypes() throws RemoteException, InvalidReferenceException {
+    private void lookupArrayDataTypes() throws RemoteException, InvalidInputException {
         ExampleSearchCriteria<ArrayDataType> criteria = new ExampleSearchCriteria<ArrayDataType>();
         ArrayDataType exampleArrayDataType = new ArrayDataType();
         criteria.setExample(exampleArrayDataType);
@@ -192,7 +191,7 @@ public class LookUpEntities {
         System.out.println("End of array data type lookup.");
     }
 
-    private void lookupArrayDesigns() throws RemoteException, InvalidReferenceException {
+    private void lookupArrayDesigns() throws RemoteException, InvalidInputException {
         ExampleSearchCriteria<ArrayDesign> criteria = new ExampleSearchCriteria<ArrayDesign>();
         ArrayDesign exampleDesign = new ArrayDesign();
         criteria.setExample(exampleDesign);
@@ -206,7 +205,7 @@ public class LookUpEntities {
         System.out.println("End of array design lookup.");
     }
 
-    private void lookupArrayProviders() throws RemoteException, InvalidReferenceException {
+    private void lookupArrayProviders() throws RemoteException, InvalidInputException {
         ExampleSearchCriteria<ArrayProvider> criteria = new ExampleSearchCriteria<ArrayProvider>();
         ArrayProvider exampleProvider = new ArrayProvider();
         criteria.setExample(exampleProvider);
@@ -220,7 +219,7 @@ public class LookUpEntities {
         System.out.println("End of array provider lookup.");
     }
 
-    private void lookupAssayTypes() throws RemoteException, InvalidReferenceException {
+    private void lookupAssayTypes() throws RemoteException, InvalidInputException {
         ExampleSearchCriteria<AssayType> criteria = new ExampleSearchCriteria<AssayType>();
         AssayType exampleAssayType = new AssayType();
         criteria.setExample(exampleAssayType);
@@ -234,7 +233,7 @@ public class LookUpEntities {
         System.out.println("End of assay type lookup.");
     }
 
-    private void lookupBiomaterials() throws RemoteException, InvalidReferenceException {
+    private void lookupBiomaterials() throws RemoteException, InvalidInputException {
         ExampleSearchCriteria<Biomaterial> criteria = new ExampleSearchCriteria<Biomaterial>();
         Biomaterial exampleBiomaterial = new Biomaterial();
         criteria.setExample(exampleBiomaterial);
@@ -248,7 +247,7 @@ public class LookUpEntities {
         System.out.println("End of biomaterial lookup.");
     }
 
-    private void lookupCategories() throws RemoteException, InvalidReferenceException {
+    private void lookupCategories() throws RemoteException, InvalidInputException {
         ExampleSearchCriteria<Category> criteria = new ExampleSearchCriteria<Category>();
         Category exampleCategory = new Category();
         criteria.setExample(exampleCategory);
@@ -262,7 +261,7 @@ public class LookUpEntities {
         System.out.println("End of category lookup.");
     }
 
-    private void lookupFiles() throws RemoteException, InvalidReferenceException {
+    private void lookupFiles() throws RemoteException, InvalidInputException {
         ExampleSearchCriteria<File> criteria = new ExampleSearchCriteria<File>();
         File exampleFile = new File();
         criteria.setExample(exampleFile);
@@ -276,7 +275,7 @@ public class LookUpEntities {
         System.out.println("End of file lookup.");
     }
 
-    private void lookupExperiments() throws RemoteException, InvalidReferenceException {
+    private void lookupExperiments() throws RemoteException, InvalidInputException {
         ExampleSearchCriteria<Experiment> criteria = new ExampleSearchCriteria<Experiment>();
         Experiment exampleExperiment = new Experiment();
         criteria.setExample(exampleExperiment);
@@ -290,7 +289,7 @@ public class LookUpEntities {
         System.out.println("End of experiment lookup.");
     }
 
-    private void lookupExperimentalContacts() throws RemoteException, InvalidReferenceException {
+    private void lookupExperimentalContacts() throws RemoteException, InvalidInputException {
         ExampleSearchCriteria<ExperimentalContact> criteria = new ExampleSearchCriteria<ExperimentalContact>();
         ExperimentalContact exampleContact = new ExperimentalContact();
         criteria.setExample(exampleContact);
@@ -304,7 +303,7 @@ public class LookUpEntities {
         System.out.println("End of experimental contact lookup.");
     }
 
-    private void lookupFactors() throws RemoteException, InvalidReferenceException {
+    private void lookupFactors() throws RemoteException, InvalidInputException {
         ExampleSearchCriteria<Factor> criteria = new ExampleSearchCriteria<Factor>();
         Factor exampleFactor = new Factor();
         criteria.setExample(exampleFactor);
@@ -318,7 +317,7 @@ public class LookUpEntities {
         System.out.println("End of factor lookup.");
     }
 
-    private void lookupFileTypes() throws RemoteException, InvalidReferenceException {
+    private void lookupFileTypes() throws RemoteException, InvalidInputException {
         ExampleSearchCriteria<FileType> criteria = new ExampleSearchCriteria<FileType>();
         FileType exampleFileType = new FileType();
         criteria.setExample(exampleFileType);
@@ -332,7 +331,7 @@ public class LookUpEntities {
         System.out.println("End of file type lookup.");
     }
 
-    private void lookupHybridizations() throws RemoteException, InvalidReferenceException {
+    private void lookupHybridizations() throws RemoteException, InvalidInputException {
         ExampleSearchCriteria<Hybridization> criteria = new ExampleSearchCriteria<Hybridization>();
         Hybridization exampleHybridization = new Hybridization();
         criteria.setExample(exampleHybridization);
@@ -346,7 +345,7 @@ public class LookUpEntities {
         System.out.println("End of hybridization lookup.");
     }
 
-    private void lookupOrganisms() throws RemoteException, InvalidReferenceException {
+    private void lookupOrganisms() throws RemoteException, InvalidInputException {
         ExampleSearchCriteria<Organism> criteria = new ExampleSearchCriteria<Organism>();
         Organism exampleOrganism = new Organism();
         criteria.setExample(exampleOrganism);
@@ -360,7 +359,7 @@ public class LookUpEntities {
         System.out.println("End of organism lookup.");
     }
 
-    private void lookupPersons() throws RemoteException, InvalidReferenceException {
+    private void lookupPersons() throws RemoteException, InvalidInputException {
         ExampleSearchCriteria<Person> criteria = new ExampleSearchCriteria<Person>();
         Person examplePerson = new Person();
         criteria.setExample(examplePerson);
@@ -374,7 +373,7 @@ public class LookUpEntities {
         System.out.println("End of person lookup.");
     }
 
-    private void lookupQuantitationTypes() throws RemoteException, InvalidReferenceException {
+    private void lookupQuantitationTypes() throws RemoteException, InvalidInputException {
         ExampleSearchCriteria<QuantitationType> criteria = new ExampleSearchCriteria<QuantitationType>();
         QuantitationType exampleQuantitationType = new QuantitationType();
         exampleQuantitationType.setDataType(DataType.FLOAT);
@@ -389,7 +388,7 @@ public class LookUpEntities {
         System.out.println("End of quantitation type lookup.");
     }
 
-    private void lookupTerms() throws RemoteException, InvalidReferenceException {
+    private void lookupTerms() throws RemoteException, InvalidInputException {
         ExampleSearchCriteria<Term> criteria = new ExampleSearchCriteria<Term>();
         Term exampleTerm = new Term();
         criteria.setExample(exampleTerm);
@@ -403,7 +402,7 @@ public class LookUpEntities {
         System.out.println("End of term lookup.");
     }
 
-    private void lookupTermSources() throws RemoteException, InvalidReferenceException {
+    private void lookupTermSources() throws RemoteException, InvalidInputException {
         ExampleSearchCriteria<TermSource> criteria = new ExampleSearchCriteria<TermSource>();
         TermSource exampleTermSource = new TermSource();
         criteria.setExample(exampleTermSource);
@@ -428,7 +427,7 @@ public class LookUpEntities {
         System.out.println("End of principal investigator lookup.");
     }
 
-    private void lookupCharacteristicCategories() throws RemoteException, InvalidReferenceException {
+    private void lookupCharacteristicCategories() throws RemoteException, InvalidInputException {
         CaArrayEntityReference experimentRef = searchForExperiment();
         startTime = System.currentTimeMillis();
         Category[] categories = client.getAllCharacteristicCategories(experimentRef);
@@ -440,7 +439,7 @@ public class LookUpEntities {
         System.out.println("End of characteristic categories lookup.");
     }
 
-    private void lookupTermsInCategory() throws RemoteException, InvalidReferenceException {
+    private void lookupTermsInCategory() throws RemoteException, InvalidInputException {
         CaArrayEntityReference categoryRef = getCategoryReference();
         startTime = System.currentTimeMillis();
         Term[] terms = client.getTermsForCategory(categoryRef, null);
@@ -478,7 +477,7 @@ public class LookUpEntities {
         System.out.println("Found " + numExperimentsFound + " experiments in " + totalTime + " ms.");
     }
 
-    private void lookupPersonsByMatchMode() throws RemoteException, InvalidReferenceException {
+    private void lookupPersonsByMatchMode() throws RemoteException, InvalidInputException {
         ExampleSearchCriteria<Person> criteria = new ExampleSearchCriteria<Person>();
         Person examplePerson = new Person();
         // MatchMode = START
@@ -561,7 +560,7 @@ public class LookUpEntities {
     /**
      * Search for an experiment based on its title.
      */
-    private CaArrayEntityReference searchForExperiment() throws RemoteException, InvalidReferenceException {
+    private CaArrayEntityReference searchForExperiment() throws RemoteException, InvalidInputException {
         // Search for experiment with the given title.
         ExperimentSearchCriteria experimentSearchCriteria = new ExperimentSearchCriteria();
         experimentSearchCriteria.setTitle(EXPERIMENT_TITLE);

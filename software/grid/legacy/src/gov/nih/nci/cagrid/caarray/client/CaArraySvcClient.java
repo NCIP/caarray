@@ -1,6 +1,5 @@
 package gov.nih.nci.cagrid.caarray.client;
 
-import gov.nih.nci.caarray.domain.SerializationHelperUtility;
 import gov.nih.nci.caarray.domain.array.AbstractDesignElement;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
@@ -28,6 +27,7 @@ import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.domain.sample.TermBasedCharacteristic;
 import gov.nih.nci.caarray.domain.sample.UserDefinedCharacteristic;
+import gov.nih.nci.caarray.util.CaArrayUtils;
 import gov.nih.nci.cagrid.caarray.util.GridTransferResultHandler;
 import gov.nih.nci.cagrid.cqlquery.Attribute;
 import gov.nih.nci.cagrid.cqlquery.CQLQuery;
@@ -75,7 +75,7 @@ public class CaArraySvcClient extends CaArraySvcClientBase {
     private static GridTransferResultHandler DATA_COLUMN_HANDLER = new GridTransferResultHandler() {
         public java.lang.Object processRetrievedData(InputStream stream) throws IOException {
             byte[] dataBytes = IOUtils.toByteArray(stream);
-            return SerializationHelperUtility.deserialize(dataBytes);
+            return CaArrayUtils.deserialize(dataBytes);
         }
     };
 

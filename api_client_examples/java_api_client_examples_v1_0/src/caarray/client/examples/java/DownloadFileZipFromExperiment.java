@@ -87,13 +87,13 @@ import gov.nih.nci.caarray.external.v1_0.data.File;
 import gov.nih.nci.caarray.external.v1_0.data.FileCategory;
 import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
 import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
-import gov.nih.nci.caarray.external.v1_0.query.FileDownloadRequest;
 import gov.nih.nci.caarray.external.v1_0.query.FileSearchCriteria;
 import gov.nih.nci.caarray.services.external.v1_0.CaArrayServer;
 import gov.nih.nci.caarray.services.external.v1_0.InvalidInputException;
 import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
 import gov.nih.nci.caarray.services.external.v1_0.data.DataApiUtils;
 import gov.nih.nci.caarray.services.external.v1_0.data.DataService;
+import gov.nih.nci.caarray.services.external.v1_0.data.DataTransferException;
 import gov.nih.nci.caarray.services.external.v1_0.data.JavaDataApiUtils;
 import gov.nih.nci.caarray.services.external.v1_0.search.JavaSearchApiUtils;
 import gov.nih.nci.caarray.services.external.v1_0.search.SearchApiUtils;
@@ -104,8 +104,6 @@ import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.sun.org.apache.xerces.internal.util.URI.MalformedURIException;
 
 /**
  * A client downloading a zip of files from an experiment using the caArray Java API.
@@ -137,7 +135,7 @@ public class DownloadFileZipFromExperiment {
         }
     }
 
-    private void download() throws RemoteException, MalformedURIException, IOException, Exception {
+    private void download() throws InvalidInputException, DataTransferException, IOException {
         CaArrayEntityReference experimentRef = searchForExperiment();
         if (experimentRef == null) {
             System.err.println("Could not find experiment with the requested title or public identifier.");
@@ -154,7 +152,7 @@ public class DownloadFileZipFromExperiment {
     /**
      * Search for an experiment based on its title or public identifier.
      */
-    private CaArrayEntityReference searchForExperiment() throws RemoteException, InvalidInputException {
+    private CaArrayEntityReference searchForExperiment() throws InvalidInputException {
         // Search for experiment with the given title.
         ExperimentSearchCriteria experimentSearchCriteria = new ExperimentSearchCriteria();
         experimentSearchCriteria.setTitle(EXPERIMENT_TITLE);
@@ -178,7 +176,7 @@ public class DownloadFileZipFromExperiment {
      * Search for a certain type or category of files in an experiment.
      */
     private List<CaArrayEntityReference> searchForFiles(CaArrayEntityReference experimentRef) throws RemoteException,
-            InvalidReferenceException {
+            InvalidInputException {
         // Search for all raw data files in the experiment. (Experiment ref is a mandatory parameter.)
         FileSearchCriteria fileSearchCriteria = new FileSearchCriteria();
         fileSearchCriteria.setExperiment(experimentRef);
@@ -192,7 +190,7 @@ public class DownloadFileZipFromExperiment {
         // fileSearchCriteria.getCategories().add(FileTypeCategory.DERIVED);
         // fileSearchCriteria.setExtension("CHP");
 
-        List<File> files = (searchServiceHelper.filesByCriteria(fileSearchCriteria)).list();
+        List<File> files = searchServiceHelper.filesByCriteria(fileSearchCriteria).list();
         if (files.size() <= 0) {
             return null;
         }
@@ -209,17 +207,13 @@ public class DownloadFileZipFromExperiment {
     /**
      * Download a zip of the given files.
      */
-    private void downloadZipOfFiles(List<CaArrayEntityReference> fileRefs) throws RemoteException,
-            MalformedURIException, IOException, Exception {
-        FileDownloadRequest downloadRequest = new FileDownloadRequest();
-        downloadRequest.setFiles(fileRefs);
-        boolean compressEachIndividualFile = false;
-	java.io.File tempOutFile = new java.io.File("downloadedFiles.zip");
+    private void downloadZipOfFiles(List<CaArrayEntityReference> fileRefs) throws InvalidReferenceException, DataTransferException, IOException {
+        java.io.File tempOutFile = new java.io.File("downloadedFiles.zip");
         FileOutputStream outStream = new FileOutputStream(tempOutFile);
         long startTime = System.currentTimeMillis();
-        dataServiceHelper.copyFileContentsZipToOutputStream(downloadRequest, compressEachIndividualFile, outStream);
+        dataServiceHelper.copyFileContentsZipToOutputStream(fileRefs, outStream);
         long totalTime = System.currentTimeMillis() - startTime;
-	outStream.close();
+        outStream.close();
         System.out.println("Retrieved file zip in " + totalTime + " ms.");
     }
 }

@@ -93,7 +93,6 @@ import gov.nih.nci.caarray.dao.ProjectDao;
 import gov.nih.nci.caarray.dao.SampleDao;
 import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
-import gov.nih.nci.caarray.domain.contact.Person;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.permissions.AccessProfile;
@@ -729,13 +728,6 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
         return getSampleDao().searchCount(keyword, biomaterialClass, categories);
     }
     
-    /**
-     * {@inheritDoc}
-     */
-    public List<Person> getAllPrincipalInvestigators() {
-        return this.daoFactory.getContactDao().getAllPrincipalInvestigators();
-    }
-
     /**
      * {@inheritDoc}
      */

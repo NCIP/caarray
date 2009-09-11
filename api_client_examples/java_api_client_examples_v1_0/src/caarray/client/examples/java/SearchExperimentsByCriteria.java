@@ -98,7 +98,6 @@ import gov.nih.nci.caarray.services.external.v1_0.search.JavaSearchApiUtils;
 import gov.nih.nci.caarray.services.external.v1_0.search.SearchApiUtils;
 import gov.nih.nci.caarray.services.external.v1_0.search.SearchService;
 
-import java.rmi.RemoteException;
 import java.util.List;
 
 /**
@@ -133,7 +132,7 @@ public class SearchExperimentsByCriteria {
         }
     }
 
-    private void search() throws RemoteException, InvalidInputException {
+    private void search() throws InvalidInputException {
         ExperimentSearchCriteria experimentSearchCriteria = new ExperimentSearchCriteria();
 
         // Select array provider. (See LookUpEntities example client to see how to get list of all array providers.)

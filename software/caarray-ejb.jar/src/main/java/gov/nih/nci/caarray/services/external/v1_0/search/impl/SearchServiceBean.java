@@ -127,7 +127,9 @@ import gov.nih.nci.caarray.external.v1_0.vocabulary.Category;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.Term;
 import gov.nih.nci.caarray.services.AuthorizationInterceptor;
 import gov.nih.nci.caarray.services.HibernateSessionInterceptor;
+import gov.nih.nci.caarray.services.external.v1_0.InvalidInputException;
 import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
+import gov.nih.nci.caarray.services.external.v1_0.NoEntityMatchingReferenceException;
 import gov.nih.nci.caarray.services.external.v1_0.UnsupportedCategoryException;
 import gov.nih.nci.caarray.services.external.v1_0.impl.BaseV1_0ExternalService;
 import gov.nih.nci.caarray.services.external.v1_0.search.SearchService;
@@ -150,8 +152,6 @@ import org.jboss.annotation.ejb.RemoteBinding;
 import org.jboss.annotation.ejb.TransactionTimeout;
 
 import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
-import gov.nih.nci.caarray.services.external.v1_0.InvalidInputException;
-import gov.nih.nci.caarray.services.external.v1_0.NoEntityMatchingReferenceException;
 
 /**
  * @author dkokotov
@@ -260,7 +260,7 @@ public class SearchServiceBean extends BaseV1_0ExternalService implements Search
      */
     public List<Person> getAllPrincipalInvestigators() {
         List<Person> externalPersons = new ArrayList<Person>();
-        List<gov.nih.nci.caarray.domain.contact.Person> persons = ServiceLocatorFactory.getProjectManagementService()
+        List<gov.nih.nci.caarray.domain.contact.Person> persons = getDaoFactory().getContactDao()
                 .getAllPrincipalInvestigators();
         mapCollection(persons, externalPersons, Person.class);
         return externalPersons;
@@ -295,7 +295,7 @@ public class SearchServiceBean extends BaseV1_0ExternalService implements Search
         if (categoryRef == null) {
             throw new InvalidReferenceException(null);
         }
-        gov.nih.nci.caarray.domain.vocabulary.Category category = getRequiredByLsid(categoryRef.getId(),
+        gov.nih.nci.caarray.domain.vocabulary.Category category = getRequiredByExternalId(categoryRef.getId(),
                 gov.nih.nci.caarray.domain.vocabulary.Category.class);
         Set<gov.nih.nci.caarray.domain.vocabulary.Term> terms = getDaoFactory().getVocabularyDao().getTermsRecursive(
                 category, valuePrefix);

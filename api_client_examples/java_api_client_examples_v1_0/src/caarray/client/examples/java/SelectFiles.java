@@ -96,8 +96,6 @@ import gov.nih.nci.caarray.external.v1_0.sample.Biomaterial;
 import gov.nih.nci.caarray.external.v1_0.sample.BiomaterialType;
 import gov.nih.nci.caarray.services.external.v1_0.CaArrayServer;
 import gov.nih.nci.caarray.services.external.v1_0.InvalidInputException;
-import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
-import gov.nih.nci.caarray.services.external.v1_0.UnsupportedCategoryException;
 import gov.nih.nci.caarray.services.external.v1_0.search.JavaSearchApiUtils;
 import gov.nih.nci.caarray.services.external.v1_0.search.SearchApiUtils;
 import gov.nih.nci.caarray.services.external.v1_0.search.SearchService;
@@ -165,7 +163,7 @@ public class SelectFiles {
         }
     }
 
-    private void selectFilesFromSamples(CaArrayEntityReference experimentRef) throws RemoteException, InvalidReferenceException, UnsupportedCategoryException {
+    private void selectFilesFromSamples(CaArrayEntityReference experimentRef) throws InvalidInputException {
         Set<CaArrayEntityReference> sampleRefs = searchForSamples(experimentRef);
         if (sampleRefs == null || sampleRefs.size() <= 0) {
             System.out.println("Could not find the requested samples.");
@@ -205,14 +203,14 @@ public class SelectFiles {
     /**
      * Search for samples based on name.
      */
-    private Set<CaArrayEntityReference> searchForSamples(CaArrayEntityReference experimentRef) throws RemoteException,
-            InvalidReferenceException, UnsupportedCategoryException {
+    private Set<CaArrayEntityReference> searchForSamples(CaArrayEntityReference experimentRef) throws 
+            InvalidInputException {
         BiomaterialSearchCriteria criteria = new BiomaterialSearchCriteria();
         criteria.setExperiment(experimentRef);
         criteria.getNames().add(SAMPLE_NAME_01);
         criteria.getNames().add(SAMPLE_NAME_02);
         criteria.getTypes().add(BiomaterialType.SAMPLE);
-        List<Biomaterial> samples = (searchServiceHelper.biomaterialsByCriteria(criteria)).list();
+        List<Biomaterial> samples = searchServiceHelper.biomaterialsByCriteria(criteria).list();
         if (samples == null || samples.size() <= 0) {
             return null;
         }
@@ -226,8 +224,8 @@ public class SelectFiles {
     /**
      * Select all raw data files in the experiment.
      */
-    private List<CaArrayEntityReference> selectRawFiles(CaArrayEntityReference experimentRef) throws RemoteException,
-            InvalidReferenceException {
+    private List<CaArrayEntityReference> selectRawFiles(CaArrayEntityReference experimentRef) throws 
+            InvalidInputException {
         FileSearchCriteria fileSearchCriteria = new FileSearchCriteria();
         fileSearchCriteria.setExperiment(experimentRef);
         fileSearchCriteria.getCategories().add(FileCategory.RAW_DATA);
@@ -249,7 +247,7 @@ public class SelectFiles {
     /**
      * Select all Affymetrix CEL data files in the experiment.
      */
-    private List<CaArrayEntityReference> selectCelFiles(CaArrayEntityReference experimentRef) throws RemoteException,
+    private List<CaArrayEntityReference> selectCelFiles(CaArrayEntityReference experimentRef) throws 
             InvalidInputException {
         FileSearchCriteria fileSearchCriteria = new FileSearchCriteria();
         fileSearchCriteria.setExperiment(experimentRef);
@@ -285,13 +283,13 @@ public class SelectFiles {
     /**
      * Select all derived data files with extension .CHP in the experiment.
      */
-    private List<CaArrayEntityReference> selectChpFiles(CaArrayEntityReference experimentRef) throws RemoteException,
-            InvalidReferenceException {
+    private List<CaArrayEntityReference> selectChpFiles(CaArrayEntityReference experimentRef)
+            throws InvalidInputException {
         FileSearchCriteria fileSearchCriteria = new FileSearchCriteria();
         fileSearchCriteria.setExperiment(experimentRef);
         fileSearchCriteria.setExtension("CHP");
 
-        List<File> files = (searchServiceHelper.filesByCriteria(fileSearchCriteria)).list();
+        List<File> files = searchServiceHelper.filesByCriteria(fileSearchCriteria).list();
         if (files.size() <= 0) {
             return null;
         }
@@ -309,13 +307,13 @@ public class SelectFiles {
      * Select all raw data files associated with the given samples.
      */
     private List<CaArrayEntityReference> selectRawFilesFromSamples(CaArrayEntityReference experimentRef,
-            Set<CaArrayEntityReference> sampleRefs) throws RemoteException, InvalidReferenceException {
+            Set<CaArrayEntityReference> sampleRefs) throws InvalidInputException {
         FileSearchCriteria fileSearchCriteria = new FileSearchCriteria();
         fileSearchCriteria.setExperiment(experimentRef);
         fileSearchCriteria.setExperimentGraphNodes(sampleRefs);
         fileSearchCriteria.getCategories().add(FileCategory.RAW_DATA);
 
-        List<File> files = (searchServiceHelper.filesByCriteria(fileSearchCriteria)).list();
+        List<File> files = searchServiceHelper.filesByCriteria(fileSearchCriteria).list();
         if (files.size() <= 0) {
             return null;
         }

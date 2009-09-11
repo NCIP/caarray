@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caArray2
+ * source code form and machine readable, binary, object code form. The caArray2-branch
  * Software was developed in conjunction with the National Cancer Institute 
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent 
  * government employees are authors, any rights in such works shall be subject 
  * to Title 17 of the United States Code, section 105. 
  *
- * This caArray2 Software License (the License) is between NCI and You. You (or 
+ * This caArray2-branch Software License (the License) is between NCI and You. You (or 
  * Your) shall mean a person or an entity, and all other entities that control, 
  * are controlled by, or are under common control with the entity. Control for 
  * purposes of this definition means (i) the direct or indirect power to cause 
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described 
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up, 
  * no-charge, irrevocable, transferable and royalty-free right and license in 
- * its rights in the caArray2 Software to (i) use, install, access, operate, 
+ * its rights in the caArray2-branch Software to (i) use, install, access, operate, 
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caArray2 Software; (ii) distribute and 
- * have distributed to and by third parties the caArray2 Software and any 
+ * and prepare derivative works of the caArray2-branch Software; (ii) distribute and 
+ * have distributed to and by third parties the caArray2-branch Software and any 
  * modifications and derivative works thereof; and (iii) sublicense the 
  * foregoing rights set out in (i) and (ii) to third parties, including the 
  * right to license such rights to further third parties. For sake of clarity, 
@@ -80,83 +80,57 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.services.external.v1_0.search;
+package gov.nih.nci.caarray.services.external.v1_0.grid.client;
 
-import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
-import gov.nih.nci.caarray.external.v1_0.query.LimitOffset;
-import gov.nih.nci.caarray.external.v1_0.query.SearchResult;
+import gov.nih.nci.caarray.services.external.v1_0.IncorrectEntityTypeException;
 import gov.nih.nci.caarray.services.external.v1_0.InvalidInputException;
-import gov.nih.nci.caarray.services.external.v1_0.search.SearchApiUtils.WrapperException;
+import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
+import gov.nih.nci.caarray.services.external.v1_0.NoEntityMatchingReferenceException;
+import gov.nih.nci.caarray.services.external.v1_0.UnsupportedCategoryException;
+import gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.IncorrectEntityTypeFault;
+import gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.InvalidInputFault;
+import gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.InvalidReferenceFault;
+import gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.NoEntityMatchingReferenceFault;
+import gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.UnsupportedCategoryFault;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import com.google.common.base.Function;
+import org.apache.commons.lang.ArrayUtils;
+import org.oasis.wsrf.faults.BaseFaultType;
 
 /**
- * Represents a particular API search - somewhat equivalent to a Hibernate Criteria or Query. Exposes generic
- * methods for listing or iterating over the results of the search.
- * 
- * @param <T> the type of the result entity
  * @author dkokotov
+ *
  */
-public class Search<T extends AbstractCaArrayEntity> implements Iterable<T> {
-    private final Function<LimitOffset, SearchResult<T>> searchFunction;
-    
-    /**
-     * @param searchFunction a function that accepts a PagingParams and performs the search.
-     */
-    public Search(Function<LimitOffset, SearchResult<T>> searchFunction) {
-        this.searchFunction = searchFunction;
+public final class GridApiUtils {
+    private GridApiUtils() {
+        // empty - utility class
     }
     
-    /**
-     * Retrieve all results for this search. 
-     * @return the full list of results for this search.
-     * @throws InvalidInputException if executing the underlying search service method results in this exception
-     */
-    public List<T> list() throws InvalidInputException {
-        return getAllSearchResults();
-    }   
-
-    /**
-     * Get an iterator over all results for this search. 
-     * @return an iterator over the full list of results for this search.
-     */
-    public SearchResultIterator<T> iterator() {
-        return new SearchResultIterator<T>(searchFunction);
-    }   
-
-    /**
-     * Get an iterator over all results for this search, starting at given index. 
-     * @param startIndex the index (0-based) of the result to start with.
-     * @return an iterator over the results, starting with the result at the given index.
-     */
-    public SearchResultIterator<T> iterator(int startIndex) {
-        return new SearchResultIterator<T>(searchFunction, startIndex);
-    }   
+    static String getMessage(BaseFaultType fault) {
+        if (!ArrayUtils.isEmpty(fault.getDescription())) {
+            return fault.getDescription(0).get_value();
+        }
+        return null;
+    }
     
-    private List<T> getAllSearchResults() throws InvalidInputException {
-        List<T> allResults = new ArrayList<T>();
-        try {
-            SearchResult<T> oneResult = searchFunction.apply(null);
-            allResults.addAll(oneResult.getResults());
-            
-            if (oneResult.isFullResult()) {
-                return allResults;
-            } 
-
-            LimitOffset pagingParams = 
-                new LimitOffset(oneResult.getResults().size(), oneResult.getMaxAllowedResults());
-            while (oneResult.getResults().size() == pagingParams.getLimit()) {
-                oneResult = searchFunction.apply(pagingParams);
-                allResults.addAll(oneResult.getResults());
-                pagingParams.setOffset(oneResult.getFirstResultOffset() + oneResult.getResults().size());
+    static InvalidInputException translateFault(InvalidInputFault f) {
+        InvalidInputException e = null;
+        String msg = getMessage(f);
+        if (f instanceof InvalidReferenceFault) {
+            InvalidReferenceFault irf = (InvalidReferenceFault) f;
+            if (f instanceof IncorrectEntityTypeFault) {
+                e = new IncorrectEntityTypeException(irf.getCaArrayEntityReference(), msg);
+            } else if (f instanceof NoEntityMatchingReferenceFault) {
+                e = new NoEntityMatchingReferenceException(irf.getCaArrayEntityReference(), msg);
+            } else {
+                e = new InvalidReferenceException(irf.getCaArrayEntityReference(), msg); 
             }
-        } catch (WrapperException e) {
-            throw (InvalidInputException) e.getCause();
+        } else if (f instanceof UnsupportedCategoryFault) {
+            e = new UnsupportedCategoryException(((UnsupportedCategoryFault) f).getCaArrayEntityReference(), msg);
+        } else {
+            e = new InvalidInputException(msg);
         }
         
-        return allResults;
+        return e;
     }
+    
 }
