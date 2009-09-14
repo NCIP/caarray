@@ -2,7 +2,7 @@
 delete from contact where name='GEO' and provider = true and discriminator = 'O';
 
 -- GF 22880 (ExperimentOntologyCategory.EXTERNAL_ID needs database entry)
-insert into category (source, name) select id, 'ExternalId' from term_source where name='caArray';
+insert ignore into category (source, name) select id, 'ExternalId' from term_source where name='caArray' and version='2.0';
 
 -- adding indices for performance
 create index idx_name on biomaterial (name);
