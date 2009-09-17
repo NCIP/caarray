@@ -55,3 +55,5 @@ Test Case,API,File Reference,File,File Experiment,File Experiment Id,Quantitatio
 ,,,,,,CELMask,,,,,,,,,
 ,,,,,,CELOutlier,,,,,,,,,
 ,,,,,,CELPixels,,,,,,,,,
+411,java,,QaApiTestAffymetrixData.CHP,QA Affymetrix Experiment for API Testing,,CHPSignal,,,345,CHPSignal,FLOAT,345,,,
+412,grid,,QaApiTestAffymetrixData.CHP,QA Affymetrix Experiment for API Testing,,CHPSignal,,,345,CHPSignal,FLOAT,345,,,

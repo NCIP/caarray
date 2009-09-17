@@ -21,7 +21,6 @@ import gov.nih.nci.caarray.external.v1_0.query.BiomaterialSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.DataSetRequest;
 import gov.nih.nci.caarray.external.v1_0.query.ExampleSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
-import gov.nih.nci.caarray.external.v1_0.query.FileDownloadRequest;
 import gov.nih.nci.caarray.external.v1_0.query.FileSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.HybridizationSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.KeywordSearchCriteria;
@@ -43,6 +42,8 @@ import gov.nih.nci.caarray.services.external.v1_0.search.SearchResultIterator;
 import gov.nih.nci.caarray.services.external.v1_0.search.SearchService;
 
 import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
+import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -455,33 +456,43 @@ public class JavaApiFacade implements ApiFacade
         return retVal;    
     }
 
-    public byte[] getFileContentsZip(String api,
+    public byte[][] getFileContentsZip(String api,
             List<CaArrayEntityReference> fileReferences, boolean compressed)
             throws Exception
     {
-        FileDownloadRequest request = new FileDownloadRequest();
+        /*FileDownloadRequest request = new FileDownloadRequest();
         request.setFiles(fileReferences);
         ByteArrayOutputStream outStream = new ByteArrayOutputStream();
         dataApiUtils.copyFileContentsZipToOutputStream(request, compressed, outStream);
-        return outStream.toByteArray();
+        return outStream.toByteArray();*/
+        return copyFileContentsZipUtils(api, fileReferences, compressed);
     }
 
-    public byte[] copyFileContentsUtils(String api,
+    public byte[][] copyFileContentsUtils(String api,
             List<CaArrayEntityReference> fileReferences, boolean compressed)
             throws Exception
     {
         byte[][] retVal = getFileContents(api, fileReferences, compressed);
         if (retVal == null || retVal.length == 0)
-            return new byte[0];
+            return new byte[0][0];
         
-        return retVal[0];
+        return retVal;
     }
 
-    public byte[] copyFileContentsZipUtils(String api,
+    public byte[][] copyFileContentsZipUtils(String api,
             List<CaArrayEntityReference> fileReferences, boolean compressed)
             throws Exception
     {
-        return getFileContentsZip(api, fileReferences, compressed);
+        java.io.File toFile = dataApiUtils.downloadFileContentsZipToTempFile(fileReferences);
+        FileInputStream stream = new FileInputStream(toFile);
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        byte[] bite = new byte[16384];
+        int read;
+        while ((read = stream.read(bite)) > -1)
+        {
+            out.write(bite,0,read);
+        }
+        return new byte[][]{out.toByteArray()};
     }
 
     public List<Biomaterial> enumerateBiomaterials(String api,
@@ -535,7 +546,7 @@ public class JavaApiFacade implements ApiFacade
             throws Exception
     {
         ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-        dataApiUtils.copyMageTabZipToOutputStream(experimentReference, compressed, outStream);
+        dataApiUtils.copyMageTabZipToOutputStream(experimentReference,  outStream);
         return outStream.toByteArray();
     }
 

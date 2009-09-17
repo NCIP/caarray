@@ -21,7 +21,6 @@ import gov.nih.nci.caarray.external.v1_0.query.BiomaterialSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.DataSetRequest;
 import gov.nih.nci.caarray.external.v1_0.query.ExampleSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
-import gov.nih.nci.caarray.external.v1_0.query.FileDownloadRequest;
 import gov.nih.nci.caarray.external.v1_0.query.FileSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.HybridizationSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.KeywordSearchCriteria;
@@ -483,10 +482,11 @@ public class GridApiFacade implements ApiFacade
         }
         else
         {
-            FileDownloadRequest downloadRequest = new FileDownloadRequest();
+            /*FileDownloadRequest downloadRequest = new FileDownloadRequest();
             downloadRequest.setFiles(fileReferences);
             TransferServiceContextReference[] serviceContextRefs = gridClient
                     .getFileContentsTransfers(downloadRequest, compressed);
+            //dataApiUtils.cop
             if (serviceContextRefs == null || serviceContextRefs.length <= 0)
             {
                 return new byte[][] { new byte[0] };
@@ -500,48 +500,56 @@ public class GridApiFacade implements ApiFacade
                 stream = TransferClientHelper.getData(transferClient
                         .getDataTransferDescriptor());
                 retVal[i] = IOUtils.toByteArray(stream);
-            }
+            }*/
+            return copyFileContentsUtils(api, fileReferences, compressed);
         }
         
         return retVal;      
     }
     
-    public byte[] getFileContentsZip(String api,
+    public byte[][] getFileContentsZip(String api,
             List<CaArrayEntityReference> fileReferences, boolean compressed)
             throws Exception
     {
-        FileDownloadRequest downloadRequest = new FileDownloadRequest();
+        /*FileDownloadRequest downloadRequest = new FileDownloadRequest();
         downloadRequest.setFiles(fileReferences);
         TransferServiceContextReference serviceContextRef = gridClient.getFileContentsZipTransfer(downloadRequest,
                 compressed);
         TransferServiceContextClient transferClient = new TransferServiceContextClient(serviceContextRef
                 .getEndpointReference());
         InputStream stream = TransferClientHelper.getData(transferClient.getDataTransferDescriptor());
-        return IOUtils.toByteArray(stream);
+        return IOUtils.toByteArray(stream);*/
+        return copyFileContentsUtils(api, fileReferences, compressed);
     }
     
-    public byte[] copyFileContentsUtils(String api,
+    public byte[][] copyFileContentsUtils(String api,
             List<CaArrayEntityReference> fileReferences, boolean compressed)
             throws Exception
     {
         if (fileReferences.isEmpty())
-            return new byte[0];
+            return new byte[0][0];
         
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        dataApiUtils.copyFileContentsToOutputStream(fileReferences.get(0), compressed, stream);
-        return stream.toByteArray(); 
+        byte[][] retVal = new byte[fileReferences.size()][];
+        for (int i = 0; i < fileReferences.size(); i++)
+        {
+          ByteArrayOutputStream stream = new ByteArrayOutputStream();  
+          dataApiUtils.copyFileContentsToOutputStream(fileReferences.get(0), compressed, stream);
+          retVal[i] = stream.toByteArray();
+        }
+       return retVal;
     }
     
-    public byte[] copyFileContentsZipUtils(String api,
+    public byte[][] copyFileContentsZipUtils(String api,
             List<CaArrayEntityReference> fileReferences, boolean compressed)
             throws Exception
     {
-        FileDownloadRequest downloadRequest = new FileDownloadRequest();
+        /*FileDownloadRequest downloadRequest = new FileDownloadRequest();
         downloadRequest.setFiles(fileReferences);
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         dataApiUtils.copyFileContentsZipToOutputStream(downloadRequest,
                 compressed, stream);
-        return stream.toByteArray();
+        return stream.toByteArray();*/
+        return copyFileContentsUtils(api, fileReferences, compressed);
     }
     public List<Biomaterial> enumerateBiomaterials(String api,
             BiomaterialSearchCriteria criteria) throws Exception
@@ -705,10 +713,12 @@ public class GridApiFacade implements ApiFacade
             CaArrayEntityReference experimentReference, boolean compressed)
             throws Exception
     {
-        TransferServiceContextReference serviceContextRef = gridClient.getMageTabZipTransfer(experimentReference, compressed);
+        /*TransferServiceContextReference serviceContextRef = gridClient.getMageTabZipTransfer(experimentReference, compressed);
+        
         TransferServiceContextClient transferClient = new TransferServiceContextClient(serviceContextRef.getEndpointReference());
         InputStream stream = TransferClientHelper.getData(transferClient.getDataTransferDescriptor());
-        return IOUtils.toByteArray(stream);
+        return IOUtils.toByteArray(stream);*/
+        return copyMageTabZipApiUtils(api, experimentReference, compressed);
     }
 
     /* (non-Javadoc)
@@ -728,7 +738,7 @@ public class GridApiFacade implements ApiFacade
             throws Exception
     {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        dataApiUtils.copyMageTabZipToOutputStream(experimentReference, compressed, stream);
+        dataApiUtils.copyMageTabZipToOutputStream(experimentReference, stream);
         return stream.toByteArray();
     }
 

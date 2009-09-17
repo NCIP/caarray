@@ -228,22 +228,32 @@ public abstract class SearchByExampleTestSuite extends ConfigurableTestSuite
                         {
                             offset = new LimitOffset(search.getPages(),0);        
                         }
+                        else if (search.getStopResults() != null)
+                        {
+                            offset = new LimitOffset(search.getStopResults(),0);
+                        }
                         SearchResult<? extends AbstractCaArrayEntity> results = getSearchResults(search.getApi(), criteria, offset);
                         search.addPageReturned(results.getResults().size());
                         resultsList.addAll(results.getResults());
-                        while (!results.isFullResult() || (offset != null && search.getPages() != null 
-                                && results.getResults().size() == search.getPages()))
+                        boolean fullResults = results.isFullResult();
+                        boolean stopResults = search.getStopResults() != null && results.getResults().size() >= search.getStopResults();
+                        if (!stopResults)
                         {
-                            offset = new LimitOffset();
-                            if (search.getPages() != null)
-                                offset.setLimit(search.getPages());
-                            offset.setOffset(results.getResults().size()
-                                    + results.getFirstResultOffset());
-                            
-                            results = getSearchResults(search.getApi(), criteria, offset);
-                            resultsList.addAll(results.getResults());
-                            search.addPageReturned(results.getResults().size());                         
+                            while (!fullResults || (offset != null && search.getPages() != null 
+                                    && results.getResults().size() == search.getPages()))
+                            {
+                                offset = new LimitOffset();
+                                if (search.getPages() != null)
+                                    offset.setLimit(search.getPages());
+                                offset.setOffset(results.getResults().size()
+                                        + results.getFirstResultOffset());
+                                
+                                results = getSearchResults(search.getApi(), criteria, offset);
+                                resultsList.addAll(results.getResults());
+                                search.addPageReturned(results.getResults().size());                         
+                            }
                         }
+                        
                     }
                     
                 }

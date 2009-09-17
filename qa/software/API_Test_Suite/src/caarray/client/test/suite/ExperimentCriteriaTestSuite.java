@@ -368,17 +368,29 @@ public class ExperimentCriteriaTestSuite extends SearchByCriteriaTestSuite
                 commonName = getVariableValue(commonName);
         }
         if (scientificName != null || commonName != null)
-        {         
-            organism = apiFacade.getOrganism(search.getApi(), scientificName, commonName);
-            if (organism != null)
+        {      
+            if (scientificName != null && scientificName.equals(""))
             {
-                criteria.setOrganism(organism.getReference());
+                criteria.setOrganism(new CaArrayEntityReference(""));
+            }
+            else if (commonName != null && commonName.equals(""))
+            {
+                criteria.setOrganism(new CaArrayEntityReference(""));
             }
             else
             {
-                //likely a purposeful invalid reference, so this should work the same way
-                criteria.setOrganism(new CaArrayEntityReference(scientificName != null ? scientificName : commonName));
-            }           
+                organism = apiFacade.getOrganism(search.getApi(), scientificName, commonName);
+                if (organism != null)
+                {
+                    criteria.setOrganism(organism.getReference());
+                }
+                else
+                {
+                    //likely a purposeful invalid reference, so this should work the same way
+                    criteria.setOrganism(new CaArrayEntityReference(scientificName != null ? scientificName : commonName));
+                }  
+            }
+                     
         }
         if (headerIndexMap.get(ASSAY_TYPE) < input.length && !input[headerIndexMap.get(ASSAY_TYPE)].equals(""))
         {

@@ -136,11 +136,11 @@ public interface ApiFacade
     
     public byte[][] getFileContents(String api, List<CaArrayEntityReference> fileReferences, boolean compressed) throws Exception;
     
-    public byte[] getFileContentsZip(String api, List<CaArrayEntityReference> fileReferences, boolean compressed) throws Exception;
+    public byte[][] getFileContentsZip(String api, List<CaArrayEntityReference> fileReferences, boolean compressed) throws Exception;
     
-    public byte[] copyFileContentsUtils(String api, List<CaArrayEntityReference> fileReferences, boolean compressed) throws Exception;
+    public byte[][] copyFileContentsUtils(String api, List<CaArrayEntityReference> fileReferences, boolean compressed) throws Exception;
     
-    public byte[] copyFileContentsZipUtils(String api, List<CaArrayEntityReference> fileReferences, boolean compressed) throws Exception;
+    public byte[][] copyFileContentsZipUtils(String api, List<CaArrayEntityReference> fileReferences, boolean compressed) throws Exception;
     
     public MageTabFileSet getMageTabExport(String api, CaArrayEntityReference experimentReference) throws Exception;
     

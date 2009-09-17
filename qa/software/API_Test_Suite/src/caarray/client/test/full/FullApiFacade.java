@@ -307,21 +307,21 @@ public class FullApiFacade implements ApiFacade
         return getFacade(api).getFileContents(api, fileReferences, compressed);
     }
 
-    public byte[] getFileContentsZip(String api,
+    public byte[][] getFileContentsZip(String api,
             List<CaArrayEntityReference> fileReferences, boolean compressed)
             throws Exception
     {
         return getFacade(api).getFileContentsZip(api, fileReferences, compressed);
     }
 
-    public byte[] copyFileContentsUtils(String api,
+    public byte[][] copyFileContentsUtils(String api,
             List<CaArrayEntityReference> fileReferences, boolean compressed)
             throws Exception
     {
        return getFacade(api).copyFileContentsUtils(api, fileReferences, compressed);
     }
 
-    public byte[] copyFileContentsZipUtils(String api,
+    public byte[][] copyFileContentsZipUtils(String api,
             List<CaArrayEntityReference> fileReferences, boolean compressed)
             throws Exception
     {

@@ -248,6 +248,9 @@ public class ExperimentTestSuite extends SearchByExampleTestSuite
         if (headerIndexMap.get(MIN_RESULTS) < input.length
                 && !input[headerIndexMap.get(MIN_RESULTS)].equals(""))
             search.setMinResults(Integer.parseInt(input[headerIndexMap.get(MIN_RESULTS)].trim()));
+        if (headerIndexMap.get(MAX_RESULTS) < input.length
+                && !input[headerIndexMap.get(MAX_RESULTS)].equals(""))
+            search.setStopResults(Integer.parseInt(input[headerIndexMap.get(MAX_RESULTS)].trim()));
         if (headerIndexMap.get(ENUMERATE) < input.length
                 && !input[headerIndexMap.get(ENUMERATE)].equals(""))
             search.setEnumerate(Boolean.parseBoolean(input[headerIndexMap

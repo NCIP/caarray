@@ -11,7 +11,7 @@ Test Case,API,Keyword,Expected Results,Min Results,API Utils,Enumerate
 120,grid,QaApiTestExtract01,1,,,
 121,grid,QA_API_TEST_EXTERNAL_ID_02,1,,,
 122,grid,Plasmodium falciparum,8,,,
-123,grid,AbcCarcinoma,,8,,
+123,grid,AbcCarcinoma,,2,,
 124,java,,,20000,TRUE,
 350,grid,,,20000,,TRUE
 287,java,QA_API_TEST_EXTERNAL_ID_02,1,

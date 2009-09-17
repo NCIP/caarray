@@ -118,6 +118,7 @@ public abstract class ConfigurableTestSuite
     protected static final String API = "API";
     protected static final String EXPECTED_RESULTS = "Expected Results";
     protected static final String MIN_RESULTS = "Min Results";
+    protected static final String MAX_RESULTS = "Max Results";
     protected static final String VAR_START = "${";
     protected static final String EMPTY_STRING_VAR = "${empty}";
     protected static final String EMPTY_STRING_SPACE_VAR = "${empty_s}";
@@ -126,6 +127,7 @@ public abstract class ConfigurableTestSuite
     protected static final String EXCLUDE_ZERO = "Exclude Zero";
     protected static final String LOGIN= "Login";
     protected static final String API_UTILS_SEARCH = "API Utils";
+    protected static final String LOAD = "Load Test";
     private static Map<String, String> varMap = new HashMap<String, String>();
     
     protected ApiFacade apiFacade;

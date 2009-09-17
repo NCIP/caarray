@@ -14,6 +14,6 @@ Test Case,API,Hybridization,Hybridization Reference,File Type Reference,File Typ
 156.3,java,QaApiTestHybridization01,,URN:LSID:gov.nih.nci.caarray.external.v1_0.data.FileType:AFFYMETRIX_CHP,,,18
 ,,,,URN:LSID:gov.nih.nci.caarray.external.v1_0.data.FileType:AFFYMETRIX_CEL,,,
 340,java,QaApiTestHybridization01,,,RAW_DATA,,7
-341,java,,,,,Affymetrix CHP (Gene Expression),18
+341,java,QaApiTestHybridization01,,,,Affymetrix CHP (Gene Expression),11
 343,grid,QaApiTestHybridization01,,,RAW_DATA,,7
-344,grid,,,,,Affymetrix CHP (Gene Expression),18
+344,grid,QaApiTestHybridization01,,,,Affymetrix CHP (Gene Expression),11

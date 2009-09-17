@@ -100,7 +100,7 @@ public abstract class ExampleSearch
     protected Float testCase = null;
     protected String api = null;
     protected Integer expectedResults = null;
-    protected Integer minResults = null, pages = null;
+    protected Integer minResults = null, pages = null, stopResults = null;
     protected List<Integer> pagesReturned = new ArrayList<Integer>();
     protected MatchMode matchMode;
     protected boolean enumerate = false, apiUtil = false, login = false, excludeZeros = false;
@@ -231,6 +231,22 @@ public abstract class ExampleSearch
     public void setExcludeZeros(boolean excludeZeros)
     {
         this.excludeZeros = excludeZeros;
+    }
+
+    /**
+     * @return the stopResults
+     */
+    public Integer getStopResults()
+    {
+        return stopResults;
+    }
+
+    /**
+     * @param stopResults the stopResults to set
+     */
+    public void setStopResults(Integer stopResults)
+    {
+        this.stopResults = stopResults;
     }
     
 
