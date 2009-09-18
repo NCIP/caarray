@@ -35,7 +35,7 @@
                 </c:otherwise>
             </c:choose>
         </display:column>
-        <display:column property="experiment.title" sortProperty="TITLE" title="Experiment Title" escapeXml="true" sortable="true" maxLength="30"/>
+        <display:column sortProperty="TITLE" title="Experiment Title" sortable="true" maxLength="30"><c:out value="${row.experiment.title}" escapeXml="true"/></display:column>
         <display:column titleKey="project.experiment.assayTypes" >
             <s:if test="${row.experiment.assayTypes != null}">
                 <c:forEach items="${row.experiment.assayTypes}" var="currType" varStatus="status">

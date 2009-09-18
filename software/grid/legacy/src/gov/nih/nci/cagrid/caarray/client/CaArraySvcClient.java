@@ -72,13 +72,6 @@ public class CaArraySvcClient extends CaArraySvcClientBase {
     private static final String EXPERIMENT_NAME = "hg133plus2";
     private static final String QUANTITATION_TYPES_CSV_STRING = "CELX,CELY,CELintensity,CELintensityStdev,CELMask,CELOutlier,CELPixels";
     
-    private static GridTransferResultHandler DATA_COLUMN_HANDLER = new GridTransferResultHandler() {
-        public java.lang.Object processRetrievedData(InputStream stream) throws IOException {
-            byte[] dataBytes = IOUtils.toByteArray(stream);
-            return CaArrayUtils.deserialize(dataBytes);
-        }
-    };
-
     public CaArraySvcClient(String url) throws MalformedURIException, RemoteException {
         this(url,null);
     }

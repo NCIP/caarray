@@ -6,6 +6,8 @@
 <policy>
     <application-policy name="caarray">
         <authentication>
+            <login-module code="com.fiveamsolutions.nci.commons.authentication.SessionFixationProtectionLoginModule" flag="required"/>
+            
             <!--
                  Notes on the policy here:
                  - Designed to work for local installers that won't be connecting to LDAP.

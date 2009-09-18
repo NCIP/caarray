@@ -1,7 +1,6 @@
 <%@ tag display-name="helpPrint" description="Renders the help and print buttons at the top of each page" body-content="empty"%>
 
-
-<%@ taglib tagdir="/WEB-INF/tags" prefix="caarray" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 
 <%@ attribute name="extraContent" required="false" fragment="true"%>
 

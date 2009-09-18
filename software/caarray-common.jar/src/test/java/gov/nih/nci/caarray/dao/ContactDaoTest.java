@@ -98,7 +98,7 @@ public class ContactDaoTest extends AbstractDaoTest {
     private static final ContactDao DAO_OBJECT = CaArrayDaoFactory.INSTANCE.getContactDao();
 
     @Test
-    public void testGetAll() {
+    public void testGetAllProviders() {
         Transaction tx = HibernateUtil.beginTransaction();
         assertEquals(0, DAO_OBJECT.getAllProviders().size());
         tx.commit();
@@ -118,5 +118,5 @@ public class ContactDaoTest extends AbstractDaoTest {
         assertEquals(1, DAO_OBJECT.getAllProviders().size());
         assertEquals("Foo", DAO_OBJECT.getAllProviders().get(0).getName());
         tx.commit();
-    }
+    }    
 }

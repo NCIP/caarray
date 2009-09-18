@@ -103,7 +103,7 @@ import org.hibernate.criterion.MatchMode;
  * @author dkokotov
  */
 public abstract class AbstractExternalService {
-    private final CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
+    private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
 
     /**
      * @return an instance of the Dozer Mapper.
@@ -236,6 +236,13 @@ public abstract class AbstractExternalService {
      */
     public CaArrayDaoFactory getDaoFactory() {
         return daoFactory;
+    }        
+
+    /**
+     * @param daoFactory the daoFactory to set
+     */
+    public void setDaoFactory(CaArrayDaoFactory daoFactory) {
+        this.daoFactory = daoFactory;
     }
 
     /**

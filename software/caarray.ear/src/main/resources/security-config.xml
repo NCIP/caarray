@@ -14,6 +14,8 @@
                  - The CaArrayLoginModule uses CSM and integrates with the JBoss password stacking
                    mechanism.
              -->
+            <login-module code="com.fiveamsolutions.nci.commons.authentication.SessionFixationProtectionLoginModule" flag="required"/>
+
             <login-module code="com.fiveamsolutions.nci.commons.authentication.CommonsLDAPLoginModule" flag="optional">
                 <module-option name="ldapHost">@ldap.host@</module-option>
                 <module-option name="ldapSearchableBase">@ldap.searchbase@</module-option>
@@ -33,6 +35,7 @@
               <module-option name="dsJndiName">java:jdbc/CaArrayDataSource</module-option>
               <module-option name="rolesQuery">SELECT cg.group_name, 'Roles' FROM csm_group cg, csm_user_group cug, csm_user cu WHERE cg.group_id = cug.group_id AND cug.user_id = cu.user_id AND cu.login_name = ?</module-option>
             </login-module>
+
         </authentication>
     </application-policy>
 </policy>

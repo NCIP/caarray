@@ -107,4 +107,16 @@
     </example>
   </function>
 
+ <function>
+    <description>
+      Encode URLs.
+    </description>
+    <name>encodeUrl</name>
+    <function-class>java.net.URLEncoder</function-class>
+    <function-signature>java.lang.String encode(java.lang.String)</function-signature>
+    <example>
+      &lt;a href="${caarrayfn:encodeUrl(string)}"&gt;link&lt;/a&gt;
+    </example>
+  </function>
+
 </taglib>

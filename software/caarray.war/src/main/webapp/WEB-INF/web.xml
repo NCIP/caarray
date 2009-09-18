@@ -101,7 +101,15 @@
             <param-value>true</param-value>
         </init-param>
     </filter>
+    <filter>
+        <filter-name>sessionFixation</filter-name>
+        <filter-class>com.fiveamsolutions.nci.commons.web.filter.SessionFixationProtectionFilter</filter-class>
+    </filter>
 
+    <filter-mapping>
+        <filter-name>sessionFixation</filter-name>
+        <url-pattern>*.action</url-pattern>
+    </filter-mapping>
     <filter-mapping>
         <filter-name>upgradeFilter</filter-name>
         <url-pattern>*.action</url-pattern>
@@ -164,7 +172,7 @@
         <dispatcher>REQUEST</dispatcher>
         <dispatcher>FORWARD</dispatcher>
     </filter-mapping>
-
+    
     <listener>
         <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
     </listener>

@@ -82,12 +82,16 @@
  */
 package gov.nih.nci.caarray.dao;
 
+import gov.nih.nci.caarray.domain.vocabulary.Category;
+import gov.nih.nci.caarray.domain.vocabulary.Term;
+import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.security.authorization.domainobjects.Group;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionElement;
 import gov.nih.nci.security.authorization.domainobjects.User;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -110,14 +114,21 @@ public final class HibernateIntegrationTestCleanUpUtility {
     private static final Logger LOG = Logger.getLogger(HibernateIntegrationTestCleanUpUtility.class);
     private static List<Class<?>> classesToRemove;
     private static final String SELF_GROUP_PATTERN = "'" + SecurityUtils.SELF_GROUP_PREFIX + "%'";
+    private static final Map<Class<?>, String> CLASS_DELETE_CONSTRAINTS = new HashMap<Class<?>, String>();
+    static {
+        CLASS_DELETE_CONSTRAINTS.put(TermSource.class, "id > 0");
+        CLASS_DELETE_CONSTRAINTS.put(Category.class, "id > 0");
+        CLASS_DELETE_CONSTRAINTS.put(Term.class, "id > 0");
+        CLASS_DELETE_CONSTRAINTS.put(User.class, "id > 9");
+        CLASS_DELETE_CONSTRAINTS.put(Group.class, "id > 8 and not (groupName like " + SELF_GROUP_PATTERN + ")");
+        CLASS_DELETE_CONSTRAINTS.put(ProtectionElement.class, "id > 2");
+    }
 
-    private static final Class<?>[] CSM_CLASSES_NOT_TO_REMOVE = {gov.nih.nci.security.authorization.domainobjects.Application.class,
-        gov.nih.nci.security.authorization.domainobjects.Group.class,
-        gov.nih.nci.security.authorization.domainobjects.Privilege.class,
-        gov.nih.nci.security.authorization.domainobjects.ProtectionElement.class,
-        gov.nih.nci.security.authorization.domainobjects.Role.class,
-        gov.nih.nci.security.authorization.domainobjects.User.class,
-        gov.nih.nci.security.authorization.domainobjects.FilterClause.class };
+    private static final Class<?>[] CSM_CLASSES_NOT_TO_REMOVE = {
+            gov.nih.nci.security.authorization.domainobjects.Application.class,
+            gov.nih.nci.security.authorization.domainobjects.Privilege.class,
+            gov.nih.nci.security.authorization.domainobjects.Role.class,
+            gov.nih.nci.security.authorization.domainobjects.FilterClause.class };
 
     private HibernateIntegrationTestCleanUpUtility() {
         super();
@@ -144,30 +155,19 @@ public final class HibernateIntegrationTestCleanUpUtility {
                 boolean removed = doCleanUp(c);
                 done &= !removed;
             }
-            done &= !doCleanUpProtectionElements();
-            done &= !doCleanUpGroups();
-            done &= !doCleanUpUsers();
         }
         return done;
     }
 
     private static boolean doCleanUp(Class<?> c) {
-        return doCleanUp("DELETE FROM " + c.getName());
+        StringBuilder sb = new StringBuilder("DELETE FROM " + c.getName());
+        String condition = CLASS_DELETE_CONSTRAINTS.get(c);
+        if (condition != null) {
+            sb.append(" where ").append(condition);
+        }
+        return doCleanUp(sb.toString());
     }
     
-    private static boolean doCleanUpGroups() {
-        return doCleanUp("DELETE FROM " + Group.class.getName() + " where id > 8 and not (groupName like "
-                + SELF_GROUP_PATTERN + ")");
-    }
-
-    private static boolean doCleanUpProtectionElements() {
-        return doCleanUp("DELETE FROM " + ProtectionElement.class.getName() + " where id > 2");
-    }
-
-    private static boolean doCleanUpUsers() {
-        return doCleanUp("DELETE FROM " + User.class.getName() + " where id > 9");
-    }
-
     private static boolean doCleanUp(String deleteSql) {
         Transaction tx = null;
         boolean removed = false;

@@ -86,6 +86,7 @@ import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.dao.DAOException;
 import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
+import gov.nih.nci.caarray.domain.search.ExampleSearchCriteria;
 import gov.nih.nci.caarray.services.AuthorizationInterceptor;
 import gov.nih.nci.caarray.services.EntityConfiguringInterceptor;
 import gov.nih.nci.caarray.services.HibernateSessionInterceptor;
@@ -125,6 +126,14 @@ public class CaArraySearchServiceBean implements CaArraySearchService {
      * {@inheritDoc}
      */
     public <T extends AbstractCaArrayObject> List<T> search(final T entityExample) {
+        return search(entityExample, true, false);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public <T extends AbstractCaArrayObject> List<T> search(final T entityExample
+            , boolean excludeNulls, boolean excludeZeroes) {
         List<T> retrievedList = new ArrayList<T>();
         if (entityExample == null) {
             LOG.error("Search was called with null example entity.");
@@ -132,7 +141,10 @@ public class CaArraySearchServiceBean implements CaArraySearchService {
         }
 
         try {
-            retrievedList = getSearchDao().query(entityExample);
+            ExampleSearchCriteria<T> ex = new ExampleSearchCriteria<T>(entityExample);
+            ex.setExcludeNulls(excludeNulls);
+            ex.setExcludeZeroes(excludeZeroes);
+            retrievedList = getSearchDao().queryEntityByExample(ex);
         } catch (DAOException e) {
             LOG.error("DAO exception while querying by example: ", e);
         } catch (Exception e) {

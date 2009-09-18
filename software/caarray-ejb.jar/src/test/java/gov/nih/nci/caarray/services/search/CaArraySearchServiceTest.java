@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.services.search;
 
+import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -91,11 +92,14 @@ import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
 import gov.nih.nci.caarray.dao.stub.SearchDaoStub;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.domain.search.ExampleSearchCriteria;
 import gov.nih.nci.cagrid.cqlquery.CQLQuery;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
+import org.hibernate.criterion.Order;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -118,6 +122,17 @@ public class CaArraySearchServiceTest extends AbstractServiceTest {
         assertTrue(projects.isEmpty());
         exampleProject = new Project();
         projects = searchService.search(exampleProject);
+        assertEquals(1, projects.size());
+        assertEquals(exampleProject, projects.get(0));
+    }
+
+    @Test
+    public void testSearch2() {
+        Project exampleProject = null;
+        List<Project> projects = searchService.search(exampleProject, true, true);
+        assertTrue(projects.isEmpty());
+        exampleProject = new Project();
+        projects = searchService.search(exampleProject, true, true);
         assertEquals(1, projects.size());
         assertEquals(exampleProject, projects.get(0));
     }
@@ -151,6 +166,12 @@ public class CaArraySearchServiceTest extends AbstractServiceTest {
                     list.add(new Project());
                     return list;
                 }
+
+                @Override
+                public <T extends PersistentObject> List<T> queryEntityByExample(ExampleSearchCriteria<T> criteria, int maxResults,
+                    int firstResult, Order... orders) {
+                return Collections.singletonList(criteria.getExample());
+            }
 
             };
         }

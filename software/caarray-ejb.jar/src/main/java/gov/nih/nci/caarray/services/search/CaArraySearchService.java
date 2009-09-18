@@ -103,13 +103,30 @@ public interface CaArraySearchService {
      * Performs a query-by-example search based on the entity passed.
      * If the id of the given entity is not null, this query will only match by id,
      * ignoring all other fields.
-     *
+     * This method is equivalent to a call to
+     * {@link #search(gov.nih.nci.caarray.domain.AbstractCaArrayObject, boolean, boolean)}
+     * with {@code excludeNulls} set to {@code true}, and {@code excludeZeroes} set to {@code false}.
      * @param <T> object type to search for
      * @param entityExample find entities that match the non-null fields and associations of this example.
      *
      * @return the matching entities.
+     * @see #search(gov.nih.nci.caarray.domain.AbstractCaArrayObject, boolean, boolean)
      */
     <T extends AbstractCaArrayObject> List<T> search(T entityExample);
+
+    /**
+     * Performs a query-by-example search based on the entity passed.
+     * If the id of the given entity is not null, this query will only match by id,
+     * ignoring all other fields.
+     *
+     * @param <T> object type to search for
+     * @param entityExample find entities that match the non-null fields and associations of this example.
+     * @param excludeNulls when true, {@code null} properties are not considered for matching reults.
+     * @param excludeZeroes when true, {@code 0} (or unset) primitive properties are not considered for matching reults.
+     *
+     * @return the matching entities.
+     */
+    <T extends AbstractCaArrayObject> List<T> search(T entityExample, boolean excludeNulls, boolean excludeZeroes);
 
     /**
      * Searches for entities based on the given CQL query.
