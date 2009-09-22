@@ -265,43 +265,43 @@
     </field>
   </class>
   <class name="gov.nih.nci.caarray.external.v1_0.data.ShortColumn" extends="gov.nih.nci.caarray.external.v1_0.data.AbstractDataColumn">
-    <map-to xml="ShortColumn" ns-uri="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.external.v1_0.data" />
+    <map-to xml="ShortColumn" ns-uri="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.v1_0.data" />
     <field name="valuesAsString" type="string">
       <bind-xml name="values" node="element"/>
     </field>    
   </class>
   <class name="gov.nih.nci.caarray.external.v1_0.data.IntegerColumn" extends="gov.nih.nci.caarray.external.v1_0.data.AbstractDataColumn">
-    <map-to xml="integerColumn" ns-uri="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.external.v1_0.data" />
+    <map-to xml="integerColumn" ns-uri="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.v1_0.data" />
     <field name="valuesAsString" type="string">
       <bind-xml name="values" node="element"/>
     </field>    
   </class>
   <class name="gov.nih.nci.caarray.external.v1_0.data.LongColumn" extends="gov.nih.nci.caarray.external.v1_0.data.AbstractDataColumn">
-    <map-to xml="LongColumn" ns-uri="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.external.v1_0.data" />
+    <map-to xml="LongColumn" ns-uri="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.v1_0.data" />
     <field name="valuesAsString" type="string">
       <bind-xml name="values" node="element"/>
     </field>    
   </class>
   <class name="gov.nih.nci.caarray.external.v1_0.data.FloatColumn" extends="gov.nih.nci.caarray.external.v1_0.data.AbstractDataColumn">
-    <map-to xml="FloatColumn" ns-uri="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.external.v1_0.data" />
+    <map-to xml="FloatColumn" ns-uri="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.v1_0.data" />
     <field name="valuesAsString" type="string">
       <bind-xml name="values" node="element" />
     </field>    
   </class>
   <class name="gov.nih.nci.caarray.external.v1_0.data.DoubleColumn" extends="gov.nih.nci.caarray.external.v1_0.data.AbstractDataColumn">
-    <map-to xml="DoubleColumn" ns-uri="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.external.v1_0.data" />
+    <map-to xml="DoubleColumn" ns-uri="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.v1_0.data" />
     <field name="valuesAsString" type="string">
       <bind-xml name="values" node="element"/>
     </field>    
   </class>
   <class name="gov.nih.nci.caarray.external.v1_0.data.StringColumn" extends="gov.nih.nci.caarray.external.v1_0.data.AbstractDataColumn">
-    <map-to xml="StringColumn" ns-uri="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.external.v1_0.data" />
+    <map-to xml="StringColumn" ns-uri="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.v1_0.data" />
     <field name="valuesAsString" type="string">
       <bind-xml name="values" node="element"/>
     </field>    
   </class>
   <class name="gov.nih.nci.caarray.external.v1_0.data.BooleanColumn" extends="gov.nih.nci.caarray.external.v1_0.data.AbstractDataColumn">
-    <map-to xml="BooleanColumn" ns-uri="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.external.v1_0.data" />
+    <map-to xml="BooleanColumn" ns-uri="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.v1_0.data" />
     <field name="valuesAsString" type="string">
       <bind-xml name="values" node="element" />
     </field>    

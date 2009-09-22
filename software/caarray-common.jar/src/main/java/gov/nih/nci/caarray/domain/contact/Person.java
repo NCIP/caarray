@@ -83,6 +83,7 @@
 
 package gov.nih.nci.caarray.domain.contact;
 
+import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.security.authorization.domainobjects.User;
 
 import java.util.HashSet;
@@ -99,6 +100,7 @@ import javax.persistence.Transient;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.validator.Length;
@@ -195,7 +197,7 @@ public class Person extends AbstractContact {
      *
      * @return the affiliations
      */
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "personorganization",
             joinColumns = { @JoinColumn(name = "person_id") },
@@ -203,6 +205,7 @@ public class Person extends AbstractContact {
     )
     @ForeignKey(name = "perorg_person_fk", inverseName = "perorg_organization_fk")
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @BatchSize(size = AbstractCaArrayObject.DEFAULT_BATCH_SIZE)
     public Set<Organization> getAffiliations() {
         return this.affiliations;
     }

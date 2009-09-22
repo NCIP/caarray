@@ -84,6 +84,7 @@
 package gov.nih.nci.caarray.domain.file;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.domain.MultiPartBlob;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Project;
@@ -111,6 +112,7 @@ import javax.persistence.Transient;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
 import org.hibernate.validator.NotNull;
@@ -118,6 +120,7 @@ import org.hibernate.validator.NotNull;
 /**
  */
 @Entity
+@BatchSize(size = AbstractCaArrayObject.DEFAULT_BATCH_SIZE)
 @Table(name = "caarrayfile")
 @SuppressWarnings("PMD.TooManyMethods")
 public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaArrayFile>, ProtectableDescendent {

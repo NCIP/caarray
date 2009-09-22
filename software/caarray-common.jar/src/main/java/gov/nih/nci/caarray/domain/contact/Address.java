@@ -84,6 +84,7 @@
 package gov.nih.nci.caarray.domain.contact;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -91,11 +92,13 @@ import javax.persistence.Entity;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.hibernate.annotations.BatchSize;
 
 /**
  *
  */
 @Entity
+@BatchSize(size = AbstractCaArrayObject.DEFAULT_BATCH_SIZE)
 public class Address extends AbstractCaArrayEntity {
 
     private static final long serialVersionUID = 1234567890L;

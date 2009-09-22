@@ -85,6 +85,7 @@ package gov.nih.nci.caarray.domain.array;
 
 import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
@@ -110,6 +111,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.ForeignKey;
@@ -451,13 +453,14 @@ public class ArrayDesign extends AbstractCaArrayEntity {
      *
      * @return the assay type
      */
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "array_design")
     @ForeignKey(name = "array_design_assaytypes_ad_fk", inverseName = "array_design_assaytypes_at_fk")
     @AttributePolicy(allow = SecurityPolicy.BROWSE_POLICY_NAME)
     @Sort(type = SortType.NATURAL)
     @NotNull
     @Size(min = 1)
+    @BatchSize(size = AbstractCaArrayObject.DEFAULT_BATCH_SIZE)
     public SortedSet<AssayType> getAssayTypes() {
         return this.assayTypes;
     }

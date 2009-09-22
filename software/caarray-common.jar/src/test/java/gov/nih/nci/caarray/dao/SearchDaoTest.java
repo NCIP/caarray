@@ -100,6 +100,7 @@ import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.util.HibernateUtil;
+import gov.nih.nci.caarray.util.UnfilteredCallback;
 import gov.nih.nci.cagrid.cqlquery.Association;
 import gov.nih.nci.cagrid.cqlquery.Attribute;
 import gov.nih.nci.cagrid.cqlquery.CQLQuery;
@@ -188,9 +189,9 @@ public class SearchDaoTest extends AbstractDaoTest {
     /**
      * Tests searching for an entity by example.
      */
-    //@Test
+    @Test
     @SuppressWarnings("deprecation")
-    public void notestSearchByExample() {
+    public void testSearchByExample() {
         saveSupportingObjects();
         Transaction tx = null;
         try {
@@ -216,6 +217,70 @@ public class SearchDaoTest extends AbstractDaoTest {
             HibernateUtil.rollbackTransaction(tx);
             fail("DAO exception during search by example: " + e.getMessage());
         }
+    }
+    
+    @Test
+    public void testSearchByExampleLimitOffset() {
+        Transaction tx = HibernateUtil.beginTransaction();
+
+        AssayType at1 = new AssayType("AT1");        
+        AssayType at2 = new AssayType("AT2");
+        SEARCH_DAO.save(Arrays.asList(at1, at2));
+        
+        TermSource ts1 = new TermSource();
+        ts1.setName("TS1");
+        SEARCH_DAO.save(ts1);
+        
+        Organism o1 = new Organism();
+        o1.setScientificName("Foo");
+        o1.setTermSource(ts1);
+        SEARCH_DAO.save(o1);
+        
+        Experiment e1 = new Experiment();
+        e1.setTitle("e1");
+        e1.setOrganism(o1);
+        e1.getAssayTypes().add(at1);
+        e1.getAssayTypes().add(at2);
+        Project p1 = new Project();
+        p1.setExperiment(e1);
+
+        Experiment e2 = new Experiment();
+        e2.setTitle("e2");
+        e2.setOrganism(o1);
+        e2.getAssayTypes().add(at1);
+        Project p2 = new Project();
+        p2.setExperiment(e2);
+
+        Experiment e3 = new Experiment();
+        e3.setTitle("e3");
+        e3.setOrganism(o1);
+        e3.getAssayTypes().add(at2);
+        Project p3 = new Project();
+        p3.setExperiment(e3);
+
+        Experiment e4 = new Experiment();
+        e4.setTitle("e4");
+        e4.setOrganism(o1);
+        e4.getAssayTypes().add(at2);
+        Project p4 = new Project();
+        p4.setExperiment(e4);
+        
+        SEARCH_DAO.save(Arrays.asList(p1, p2, p3, p4));
+
+        tx.commit();
+        tx = HibernateUtil.beginTransaction();
+        @SuppressWarnings("unchecked")
+        List<Experiment> results = (List<Experiment>) HibernateUtil.doUnfiltered(new UnfilteredCallback() {
+            public Object doUnfiltered(Session s) {
+                return SEARCH_DAO.queryEntityByExample(ExampleSearchCriteria.forEntity(new Experiment()), 3, 0, Order
+                        .asc("title"));
+            }
+        });
+        assertEquals(3, results.size());
+        assertEquals("e1", results.get(0).getTitle());
+        assertEquals("e2", results.get(1).getTitle());
+        assertEquals("e3", results.get(2).getTitle());
+        tx.commit();
     }
     
     @Test

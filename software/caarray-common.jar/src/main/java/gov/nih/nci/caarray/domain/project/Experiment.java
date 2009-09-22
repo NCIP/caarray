@@ -463,11 +463,12 @@ public class Experiment extends AbstractCaArrayEntity {
      *
      * @return the assay type
      */
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "experiment")
     @ForeignKey(name = "experiment_assaytypes_exp_fk", inverseName = "experiment_assaytypes_at_fk")
     @AttributePolicy(allow = SecurityPolicy.BROWSE_POLICY_NAME)
     @Sort(type = SortType.NATURAL)
+    @BatchSize(size = AbstractCaArrayObject.DEFAULT_BATCH_SIZE)
     public SortedSet<AssayType> getAssayTypes() {
         return this.assayTypes;
     }

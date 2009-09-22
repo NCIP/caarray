@@ -179,6 +179,9 @@ public class ArrayDataServiceBean implements ArrayDataService {
      */
     public ArrayDesign getArrayDesign(CaArrayFile caArrayFile) {
         LogUtil.logSubsystemEntry(LOG, caArrayFile);
+        if (!caArrayFile.getFileType().isArrayData()) {
+            return null;
+        }
         AbstractDataFileHandler handler = ArrayDataHandlerFactory.getInstance().getHandler(caArrayFile.getFileType());
         File file = TemporaryFileCacheLocator.getTemporaryFileCache().getFile(caArrayFile);
         ArrayDesign ad = handler.getArrayDesign(ServiceLocatorFactory.getArrayDesignService(), file);
