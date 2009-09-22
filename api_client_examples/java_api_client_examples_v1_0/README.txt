@@ -40,9 +40,3 @@ following public experiment being present:
    Array design: Test3.cdf
    Data files: test3_data.zip
 The data/ directory contains these (and other) files if you need them.
------
-KNOWN ISSUES IN RC4:
-
-* Biomaterial keyword search is very slow. This affects the following ant targets:
-     search_biomaterials_by_keyword
-     lookup_entities
