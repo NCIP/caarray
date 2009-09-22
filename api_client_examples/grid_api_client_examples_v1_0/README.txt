@@ -20,7 +20,6 @@ Java clients to test the caArray GRID API v1.0:
      select_files
      download_file
      download_file_zip
-     download_multiple_files
      download_data_columns_from_file
      download_data_columns_from_hyb
      download_data_columns_from_illumina_file
@@ -41,9 +40,3 @@ following public experiment being present:
    Array design: Test3.cdf
    Data files: test3_data.zip
 The data/ directory contains these (and other) files if you need them.
------
-KNOWN ISSUES IN RC4:
-
-* Biomaterial keyword search is very slow. This affects the following ant targets:
-     search_biomaterials_by_keyword
-     lookup_entities

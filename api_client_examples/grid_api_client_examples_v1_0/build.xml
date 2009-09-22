@@ -137,19 +137,6 @@
         </java>
     </target>
 
-    <target name="download_multiple_files" depends="build">
-        <java classname="caarray.client.examples.grid.DownloadMultipleFiles">
-            <classpath>
-                <pathelement path="${classes.dir}" />
-                <fileset dir="${lib.dir}">
-                    <include name="**/*.jar" />
-                </fileset>
-            </classpath>
-            <sysproperty key="grid.server.hostname" value="${grid.server.hostname}" />
-            <sysproperty key="grid.server.http.port" value="${grid.server.http.port}" />
-        </java>
-    </target>
-
     <!-- ******************************************************************* -->
     <!-- ** DOWNLOAD DATA COLUMNS                                         ** -->
     <!-- ******************************************************************* -->
