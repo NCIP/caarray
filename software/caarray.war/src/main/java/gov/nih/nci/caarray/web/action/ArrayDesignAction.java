@@ -658,9 +658,9 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
 
          } else {
            if (uploads.size() > 1) {
-               addFieldError(UPLOAD_FIELD_NAME, getText("arrayDesign.error.multipleUnsupportedFiles"));
+               addFieldError(UPLOAD_FIELD_NAME, getText("arrayDesign.error.multipleCannotDetermineType"));
            } else {
-               addFieldError(UPLOAD_FIELD_NAME, getText("arrayDesign.error.unsupportedFile"));
+               addFieldError(UPLOAD_FIELD_NAME, getText("arrayDesign.error.cannotDetermineType"));
            }
 
          }
