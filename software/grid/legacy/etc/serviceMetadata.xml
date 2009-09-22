@@ -1,6 +1,6 @@
 <ns1:ServiceMetadata xmlns:ns1="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata">
  <ns1:serviceDescription>
-  <ns2:Service description="" name="CaArraySvc" version="1.1" xmlns:ns2="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.service">
+  <ns2:Service description="" name="CaArraySvc" version="2.3" xmlns:ns2="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.service">
    <ns2:pointOfContactCollection>
     <ns3:PointOfContact affiliation="" email="" firstName="" lastName="" phoneNumber="" role="" xmlns:ns3="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.common"/>
    </ns2:pointOfContactCollection>
@@ -24,28 +24,28 @@
       </ns2:Operation>
       <ns2:Operation description="" name="getDesignDetails">
        <ns2:inputParameterCollection>
-        <ns2:InputParameter qName="ns7:ArrayDesign" dimensionality="1" index="0" isArray="false" isRequired="false" name="arrayDesign" xmlns:ns7="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.array"/>
+        <ns2:InputParameter qName="ns7:ArrayDesign" dimensionality="1" index="0" isArray="false" isRequired="false" name="arrayDesign" xmlns:ns7="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.array"/>
        </ns2:inputParameterCollection>
-       <ns2:Output qName="ns8:ArrayDesignDetails" dimensionality="1" isArray="false" xmlns:ns8="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.array"/>
+       <ns2:Output qName="ns8:ArrayDesignDetails" dimensionality="1" isArray="false" xmlns:ns8="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.array"/>
        <ns2:faultCollection/>
       </ns2:Operation>
       <ns2:Operation description="" name="readFile">
        <ns2:inputParameterCollection>
-        <ns2:InputParameter qName="ns9:CaArrayFile" dimensionality="1" index="0" isArray="false" isRequired="false" name="caArrayFile" xmlns:ns9="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.file"/>
+        <ns2:InputParameter qName="ns9:CaArrayFile" dimensionality="1" index="0" isArray="false" isRequired="false" name="caArrayFile" xmlns:ns9="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.file"/>
        </ns2:inputParameterCollection>
        <ns2:Output qName="xsd:byte" dimensionality="1" isArray="true" xmlns:xsd="http://www.w3.org/2001/XMLSchema"/>
        <ns2:faultCollection/>
       </ns2:Operation>
       <ns2:Operation description="" name="getDataSet">
        <ns2:inputParameterCollection>
-        <ns2:InputParameter qName="ns10:DataRetrievalRequest" dimensionality="1" index="0" isArray="false" isRequired="false" name="dataRetrievalRequest" xmlns:ns10="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.data"/>
+        <ns2:InputParameter qName="ns10:DataRetrievalRequest" dimensionality="1" index="0" isArray="false" isRequired="false" name="dataRetrievalRequest" xmlns:ns10="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.data"/>
        </ns2:inputParameterCollection>
-       <ns2:Output qName="ns11:DataSet" dimensionality="1" isArray="false" xmlns:ns11="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.data"/>
+       <ns2:Output qName="ns11:DataSet" dimensionality="1" isArray="false" xmlns:ns11="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.data"/>
        <ns2:faultCollection/>
       </ns2:Operation>
       <ns2:Operation description="Requests a Grid Transfer handle for the given file" name="createFileTransfer">
        <ns2:inputParameterCollection>
-        <ns2:InputParameter qName="ns12:CaArrayFile" dimensionality="1" index="0" isArray="false" isRequired="false" name="caArrayFile" xmlns:ns12="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.file"/>
+        <ns2:InputParameter qName="ns12:CaArrayFile" dimensionality="1" index="0" isArray="false" isRequired="false" name="caArrayFile" xmlns:ns12="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.file"/>
        </ns2:inputParameterCollection>
        <ns2:Output qName="ns13:TransferServiceContextReference" dimensionality="1" isArray="false" xmlns:ns13="http://transfer.cagrid.org/TransferService/Context/types"/>
        <ns2:faultCollection/>

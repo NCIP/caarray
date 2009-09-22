@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.file"
-    xmlns:gov.nih.nci.caarray.domain="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain"
-    xmlns:gov.nih.nci.caarray.domain.project="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.project"
-    targetNamespace="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.file" elementFormDefault="qualified">
-    <xs:import namespace="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.project"
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.file"
+    xmlns:gov.nih.nci.caarray.domain="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain"
+    xmlns:gov.nih.nci.caarray.domain.project="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.project"
+    targetNamespace="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.file" elementFormDefault="qualified">
+    <xs:import namespace="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.project"
         schemaLocation="gov.nih.nci.caarray.domain.project.xsd" />
-    <xs:import namespace="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain"
+    <xs:import namespace="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain"
         schemaLocation="gov.nih.nci.caarray.domain.xsd" />
 
     <xs:element name="CaArrayFile" type="CaArrayFile" />

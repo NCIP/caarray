@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="gme://caArray.caBIG/2.1/edu.georgetown.pir"
-    xmlns:gov.nih.nci.caarray.domain.vocabulary="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.vocabulary"
-    targetNamespace="gme://caArray.caBIG/2.1/edu.georgetown.pir" elementFormDefault="qualified">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="gme://Internal.caArray.caBIG/2.3/edu.georgetown.pir"
+    xmlns:gov.nih.nci.caarray.domain.vocabulary="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.vocabulary"
+    targetNamespace="gme://Internal.caArray.caBIG/2.3/edu.georgetown.pir" elementFormDefault="qualified">
     
-    <xs:import namespace="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.vocabulary"
+    <xs:import namespace="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.vocabulary"
         schemaLocation="gov.nih.nci.caarray.domain.vocabulary.xsd" />
 
     <xs:element name="Organism" type="Organism" />

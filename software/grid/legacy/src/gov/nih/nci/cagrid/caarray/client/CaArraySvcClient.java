@@ -107,18 +107,18 @@ public class CaArraySvcClient extends CaArraySvcClientBase {
                 Object target = new Object();
                 cqlQuery.setTarget(target);
 
-                target.setName(Source.class.getName());
-//                Attribute a = new Attribute();
-//                a.setName("id");
-//                a.setValue("1");
-//                a.setPredicate(Predicate.EQUAL_TO);
-//                target.setAttribute(a);
+                target.setName(TermBasedCharacteristic.class.getName());
+                Attribute a = new Attribute();
+                a.setName("id");
+                a.setValue("1");
+                a.setPredicate(Predicate.EQUAL_TO);
+                target.setAttribute(a);
 
                 CQLQueryResults results = client.query(cqlQuery);
                 CQLQueryResultsIterator iter = new CQLQueryResultsIterator(results, CaArraySvcClient.class.getResourceAsStream("client-config.wsdd"));
                 while (iter.hasNext()) {
-                    AbstractBioMaterial c = (AbstractBioMaterial) iter.next();
-                    System.out.println("Characteristic: " + ToStringBuilder.reflectionToString(c));
+                    java.lang.Object o = iter.next();
+                    System.out.println("Characteristic: " + ToStringBuilder.reflectionToString(o));
                 }
                 sw.stop();
                 System.out.println("Time for simple data service retrieval: " + sw.toString());

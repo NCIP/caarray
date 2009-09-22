@@ -14,29 +14,29 @@
     <agg:AggregatorConfig xsi:type="agg:AggregatorConfig">
       <agg:GetMultipleResourcePropertiesPollType
 			xmlns:ns16="http://CQL.caBIG/1/gov.nih.nci.cagrid.CQLQuery"
-			xmlns:ns7="gme://caArray.caBIG/2.1/edu.georgetown.pir"
+			xmlns:ns7="gme://Internal.caArray.caBIG/2.3/edu.georgetown.pir"
 			xmlns:ns22="http://transfer.cagrid.org/Transfer"
 			xmlns:ns15="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata"
 			xmlns:ns20="http://gov.nih.nci.cagrid.data/DataServiceExceptions"
 			xmlns:ns13="http://caarray.cagrid.nci.nih.gov/CaArraySvc/types"
 			xmlns:ns19="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.dataservice"
-			xmlns:ns2="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.hybridization"
-			xmlns:ns1="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.data"
+			xmlns:ns2="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.hybridization"
+			xmlns:ns1="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.data"
 			xmlns:xs="http://www.w3.org/2001/XMLSchema"
 			xmlns:ns14="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.security"
-			xmlns:ns5="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.array"
-			xmlns:ns4="gme://caArray.caBIG/2.1/gov.nih.nci.cabio.domain"
-			xmlns:ns9="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.project"
-			xmlns:ns3="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.protocol"
-			xmlns:ns12="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.contact"
+			xmlns:ns5="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.array"
+			xmlns:ns4="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.cabio.domain"
+			xmlns:ns9="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.project"
+			xmlns:ns3="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.protocol"
+			xmlns:ns12="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.contact"
 			xmlns:ns21="http://transfer.cagrid.org/TransferService/Context/types"
-			xmlns:ns0="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.file"
+			xmlns:ns0="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.file"
 			xmlns:ns17="http://CQL.caBIG/1/gov.nih.nci.cagrid.CQLResultSet"
-			xmlns:ns11="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.sample"
+			xmlns:ns11="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.sample"
 			xmlns:ns18="http://caarray.cagrid.nci.nih.gov/CaArraySvc/CQLResultTypes"
-			xmlns:ns6="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.publication"
-			xmlns:ns8="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.vocabulary"
-			xmlns:ns10="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain">
+			xmlns:ns6="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.publication"
+			xmlns:ns8="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.vocabulary"
+			xmlns:ns10="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain">
         <!-- Specifies that the index should refresh information
             every 300000 milliseconds (once every 5 minutes) -->
         <agg:PollIntervalMillis>INDEX_REFRESH</agg:PollIntervalMillis>
