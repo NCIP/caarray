@@ -142,14 +142,15 @@ public final class EntityPruner {
      * @param val object to perform cutting on
      */
     @SuppressWarnings("PMD.ExcessiveMethodLength")
-    // Big comment causes us to go over
     public void makeLeaf(Object val) {
         if (val == null) {
             return;
         }
 
-        applySecurityPolicies(val);
-        ReflectionHelper helper = getOrCreateHelper(val.getClass());
+        // ensure we are dealing with the real underyling object, not a proxy
+        Object actualVal = HibernateUtil.unwrapProxy(val);
+        applySecurityPolicies(actualVal);
+        ReflectionHelper helper = getOrCreateHelper(actualVal.getClass());
         boolean initialized = false;
         for (PropertyAccessor accessor : helper.getAccessors()) {
             Class<?> type = accessor.getType();
@@ -163,7 +164,7 @@ public final class EntityPruner {
                 // Ensures that object is initialized and not a Hibernate proxy
                 if (!initialized && !accessor.getter().getName().equals("getId")) {
                     try {
-                        accessor.get(val);
+                        accessor.get(actualVal);
                         initialized = true;
                     } catch (Exception e) {
                         LOG.error("Unable to call a getter: " + e.getMessage(), e);
@@ -173,7 +174,7 @@ public final class EntityPruner {
             }
 
             try {
-                accessor.set(val, param);
+                accessor.set(actualVal, param);
             } catch (Exception e) {
                 // We catch here, rather than re-throwing. This is a violation of our standard
                 // practice, but it's done for good reason. If invoking fails, that means

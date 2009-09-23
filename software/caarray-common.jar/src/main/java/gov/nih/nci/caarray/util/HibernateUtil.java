@@ -98,6 +98,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.engine.FilterDefinition;
+import org.hibernate.proxy.HibernateProxy;
 
 import com.fiveamsolutions.nci.commons.audit.AuditLogInterceptor;
 import com.fiveamsolutions.nci.commons.util.CompositeInterceptor;
@@ -335,5 +336,20 @@ public final class HibernateUtil {
             blocks.put(paramName, block);
         }
         return inClause.toString();
+    }
+    
+    /**
+     * If entity is a hibernate proxy, return the actual object it proxies, otherwise return the entity itself.
+     *
+     * @param entity the object to unwrap (if it is a proxy)
+     * @return the unwrapped proxy, or original object.
+     */
+    public static Object unwrapProxy(Object entity) {
+        if (entity instanceof HibernateProxy) {
+            return ((HibernateProxy) entity).getHibernateLazyInitializer()
+                    .getImplementation();
+        } else {
+            return entity;
+        }
     }
 }

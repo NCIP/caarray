@@ -51,7 +51,6 @@ import org.hibernate.mapping.Column;
 import org.hibernate.mapping.PersistentClass;
 import org.hibernate.mapping.Property;
 import org.hibernate.metadata.ClassMetadata;
-import org.hibernate.proxy.HibernateProxy;
 import org.hibernate.util.ReflectHelper;
 import org.hibernate.validator.PersistentClassConstraint;
 import org.hibernate.validator.Validator;
@@ -79,7 +78,7 @@ public class UniqueConstraintValidator implements Validator<UniqueConstraint>, P
     public boolean isValid(final Object o) {
         UnfilteredCallback unfilteredCallback = new UnfilteredCallback() {
             public Object doUnfiltered(Session s) {
-                Class<?> classWithConstraint = findClassDeclaringConstraint(unwrap(o).getClass()); 
+                Class<?> classWithConstraint = findClassDeclaringConstraint(HibernateUtil.unwrapProxy(o).getClass()); 
                 Criteria crit = s.createCriteria(classWithConstraint);
                 ClassMetadata metadata = HibernateUtil.getSessionFactory()
                         .getClassMetadata(classWithConstraint);
@@ -104,7 +103,7 @@ public class UniqueConstraintValidator implements Validator<UniqueConstraint>, P
                         // satisfying uniqueness
                         ClassMetadata fieldMetadata = HibernateUtil
                                 .getSessionFactory().getClassMetadata(
-                                        unwrap(fieldVal).getClass());
+                                        HibernateUtil.unwrapProxy(fieldVal).getClass());
                         if (fieldMetadata == null || fieldMetadata.getIdentifier(fieldVal, EntityMode.POJO) != null) {
                             crit.add(Restrictions.eq(field.name(), ReflectHelper.getGetter(o.getClass(), field.name())
                                     .get(o)));
@@ -125,21 +124,6 @@ public class UniqueConstraintValidator implements Validator<UniqueConstraint>, P
         };
         return (Boolean) HibernateUtil.doUnfiltered(unfilteredCallback);
 
-    }
-
-    /**
-     * If entity is a hibernate proxy, return the actual object it proxies, otherwise return the entity itself.
-     *
-     * @param entity
-     * @return the unwrapped proxy, or original object.
-     */
-    private static Object unwrap(Object entity) {
-        if (entity instanceof HibernateProxy) {
-            return ((HibernateProxy) entity).getHibernateLazyInitializer()
-                    .getImplementation();
-        } else {
-            return entity;
-        }
     }
     
     private Class<?> findClassDeclaringConstraint(Class<?> concreteClass) { 
