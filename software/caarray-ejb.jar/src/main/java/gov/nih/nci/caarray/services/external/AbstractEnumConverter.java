@@ -83,7 +83,6 @@
 package gov.nih.nci.caarray.services.external;
 
 import gov.nih.nci.caarray.domain.LSID;
-import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
 import net.sf.dozer.util.mapping.converters.CustomConverter;
 
@@ -95,9 +94,8 @@ import net.sf.dozer.util.mapping.converters.CustomConverter;
  * @param <B> Entity type.
  *
  * @author gax
- *
  */
-public abstract class AbstractEnumConverter<A extends Enum, B extends AbstractCaArrayEntity>
+public abstract class AbstractEnumConverter<A extends Enum<A>, B extends AbstractCaArrayEntity>
         implements CustomConverter {
     /**
      * {@inheritDoc}
@@ -109,26 +107,36 @@ public abstract class AbstractEnumConverter<A extends Enum, B extends AbstractCa
         }
 
         if (Enum.class.isAssignableFrom(destClass)) {
-            AbstractCaArrayEntity entity = (AbstractCaArrayEntity) src;
-            String name = new LSID(entity.getId()).getObjectId();
-            return Enum.valueOf(destClass, name);
+            return convertToEnum((AbstractCaArrayEntity) src, (Class<A>) destClass);
         } else if (AbstractCaArrayEntity.class.isAssignableFrom(destClass)) {
-            B entity;
-            if (dest != null) {
-                entity = (B) dest;
-            } else {
-                try {
-                    entity = (B) destClass.newInstance();
-                } catch (Exception ex) {
-                    throw new IllegalArgumentException(ex);
-                }
-            }
-            entity.setId(AbstractExternalService.makeExternalId(destClass, src));
-            copyPropertiesToB((A) src, entity);
-            return entity;            
+            return convertToEntity((A) src, (B) dest, (Class<B>) destClass);
         }
 
         throw new IllegalArgumentException("don't know ow to convert " + src + " to a " + destClass.getName());
+    }
+    
+    private A convertToEnum(AbstractCaArrayEntity entity, Class<A> destClass) {
+        if (entity.getId() == null) {
+            return null;
+        }
+        String name = new LSID(entity.getId()).getObjectId();
+        return Enum.valueOf(destClass, name);        
+    }
+    
+    private B convertToEntity(A src, B dest, Class<B> destClass) {
+        B entity;
+        if (dest != null) {
+            entity = dest;
+        } else {
+            try {
+                entity = destClass.newInstance();
+            } catch (Exception ex) {
+                throw new IllegalArgumentException(ex);
+            }
+        }
+        entity.setId(AbstractExternalService.makeExternalId(destClass, src.name()));
+        copyPropertiesToB(src, entity);
+        return entity;            
     }
     
     /**
@@ -137,19 +145,4 @@ public abstract class AbstractEnumConverter<A extends Enum, B extends AbstractCa
      * @param b the external object to populate.
      */
     protected abstract void copyPropertiesToB(A a, B b);
-
-    /**
-     * FileType converter.
-     */
-    public static class FileTypeConverter
-            extends AbstractEnumConverter<FileType, gov.nih.nci.caarray.external.v1_0.data.FileType> {
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        protected void copyPropertiesToB(FileType a, gov.nih.nci.caarray.external.v1_0.data.FileType b) {
-            b.setName(a.getName());
-        }
-    }
 }

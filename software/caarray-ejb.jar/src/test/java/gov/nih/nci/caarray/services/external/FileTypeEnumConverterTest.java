@@ -93,15 +93,14 @@ import static org.junit.Assert.*;
  *
  * @author gax
  */
-public class AbstractEnumConverterTest {
+public class FileTypeEnumConverterTest {
 
 
-    private AbstractEnumConverter instance = new AbstractEnumConverter.FileTypeConverter();
+    private FileTypeConverter instance = new FileTypeConverter();
 
-    private static final Class enumClass = gov.nih.nci.caarray.domain.file.FileType.class;
-    private static final Class entityClass = FileType.class;
+    private static final Class<gov.nih.nci.caarray.domain.file.FileType> enumClass = gov.nih.nci.caarray.domain.file.FileType.class;
+    private static final Class<FileType> entityClass = FileType.class;
     private static final String lsid = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.FileType:AFFYMETRIX_CEL";
-
 
 
     @Test
@@ -110,7 +109,8 @@ public class AbstractEnumConverterTest {
         src.setId(lsid);
         Object expResult = gov.nih.nci.caarray.domain.file.FileType.AFFYMETRIX_CEL;
         Object result = instance.convert(null, src, enumClass, entityClass);
-        assertEquals(expResult, result);
+        assertEquals(expResult, result);        
+        assertEquals(null, instance.convert(null, null, enumClass, entityClass));
     }
 
     @Test
