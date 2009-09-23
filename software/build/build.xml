@@ -1053,7 +1053,8 @@
 
         <path id="external.api.dependencies.path">
             <fileset refid="dozer.jar.fileset"/>
-            <fileset refid="google-collections.jar.fileset"/>
+        	<fileset refid="rmiio.jar.fileset"/>
+        	<fileset refid="google-collections.jar.fileset"/>
         </path>
         <pathtofileset name="external.api.dependencies.fileset" pathrefid="external.api.dependencies.path" dir="${project.lib}"/>
 
@@ -1271,7 +1272,8 @@
 
         <path id="caarray-client.external.v1_0.java.dependencies.path">
             <fileset refid="caarray-client.common.java.dependencies.fileset"/>
-            <fileset refid="external.api.dependencies.fileset"/>
+            <fileset refid="external.api.dependencies.fileset"/>        	
+            <fileset dir="${project.lib}" includes="${mysql-connector-java.jar}"/>
         </path>
         <pathtofileset name="caarray-client.external.v1_0.java.dependencies.fileset" pathrefid="caarray-client.external.v1_0.java.dependencies.path" dir="${project.lib}"/>
 
