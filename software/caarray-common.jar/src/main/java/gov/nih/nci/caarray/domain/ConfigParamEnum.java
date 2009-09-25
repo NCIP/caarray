@@ -151,5 +151,10 @@ public enum ConfigParamEnum {
     /**
      * caArray version number, for schema migration purposes.
      */
-    SCHEMA_VERSION;
+    SCHEMA_VERSION,
+    
+    /**
+     * Chunk size for the RMIIO-based file retrieval API.
+     */
+    FILE_RETRIEVAL_API_CHUNK_SIZE;
 }

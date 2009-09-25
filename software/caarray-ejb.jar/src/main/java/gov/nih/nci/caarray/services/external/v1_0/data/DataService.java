@@ -108,7 +108,7 @@ public interface DataService {
     /**
      * Retrieves the parsed data set identified by the given request. The DataSet will contain a HybridizationData for
      * each Hybridization referenced by the request, and/or for each Hybridization linked to a data File referenced by
-     * the request. Each HybridizationData will contain one DataColumn for each QuantitationType refernced by the
+     * the request. Each HybridizationData will contain one DataColumn for each QuantitationType referenced by the
      * request.
      * 
      * @param dataSetRequest a DataSetRequest instance identifying the parsed data to be retrieved. The request must

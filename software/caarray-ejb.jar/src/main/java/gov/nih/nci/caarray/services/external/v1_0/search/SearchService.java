@@ -289,7 +289,10 @@ public interface SearchService {
             throws InvalidReferenceException, InvalidInputException;
     
     /**
-     * Search for entities based on a specified example. 
+     * Search for entities based on a specified example. Searches by example use the root example entities,
+     * as well as its directly associated entities, to construct the query. Entities with association chains of
+     * more than 1 link to the root example entities are ignored. The ExampleSearchCriteria class also allows
+     * the caller to specify how to treat empty and zero-valued properties, and how string comparisons should be done.
      * 
      * @param <T> type of the example entity
      * @param criteria the criteria specifying the example entity, as well as rules defining how candidate entities are

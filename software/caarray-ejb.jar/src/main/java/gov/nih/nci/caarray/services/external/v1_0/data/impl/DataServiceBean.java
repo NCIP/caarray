@@ -82,10 +82,12 @@
  */
 package gov.nih.nci.caarray.services.external.v1_0.data.impl;
 
+import gov.nih.nci.caarray.application.ConfigurationHelper;
 import gov.nih.nci.caarray.application.ServiceLocatorFactory;
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCache;
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
+import gov.nih.nci.caarray.domain.ConfigParamEnum;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.DerivedArrayData;
 import gov.nih.nci.caarray.domain.data.DesignElementList;
@@ -136,6 +138,7 @@ import javax.ejb.TransactionAttributeType;
 import javax.interceptor.Interceptors;
 
 import org.apache.commons.collections.ListUtils;
+import org.apache.commons.configuration.DataConfiguration;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.jboss.annotation.ejb.RemoteBinding;
@@ -366,9 +369,10 @@ public class DataServiceBean extends BaseV1_0ExternalService implements DataServ
         fsContents.setCompressed(compressed);
         try {
             java.io.File file = tempFileCache.getFile(caarrayFile, !compressed);
-            
+            DataConfiguration config = ConfigurationHelper.getConfiguration();
+            int packetSize = config.getInt(ConfigParamEnum.FILE_RETRIEVAL_API_CHUNK_SIZE.name());
             istream = new SimpleRemoteInputStream(new BufferedInputStream(new FileInputStream(file)),
-                    new CacheClosingMonitor(tempFileCache));
+                    new CacheClosingMonitor(tempFileCache), packetSize);
             fsContents.setContentStream(istream.export());
             // after all the hard work, discard the local reference (we are passing
             // responsibility to the client)

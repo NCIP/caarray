@@ -415,6 +415,7 @@ insert into config_parameter (param, raw_value) values ('SCHEMA_VERSION', '2.3.0
 insert into config_parameter (param, raw_value) values ('SUBMIT_EXPERIMENT_EMAIL_SUBJECT', 'caArray Experiment Submitted');
 insert into config_parameter (param, raw_value) values ('SUBMIT_EXPERIMENT_EMAIL_PLAIN_CONTENT', 'Dear {0}\n\nThank you for submitting experiment {1} to caArray. You may access this experiment at {2}.');
 insert into config_parameter (param, raw_value) values ('SUBMIT_EXPERIMENT_EMAIL_HTML_CONTENT', '<p>Dear {0}</p><p>Thank you for submitting experiment {1} to caArray. You may access this experiment at <a href="{2}">{2}</a>.');
+insert into config_parameter (param, raw_value) values ('FILE_RETRIEVAL_API_CHUNK_SIZE', '65536');
 
 insert into config_parameter (param, raw_value) values ('BACKGROUND_THREAD_TRANSACTION_TIMEOUT', '28800');
 insert into config_parameter (param, raw_value) values ('STRUTS_MULTIPART_SAVEDIR', '');
