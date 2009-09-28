@@ -184,7 +184,7 @@ public class TestResultReport {
 		{
 			reportDir.mkdirs();
 		}
-		SimpleDateFormat df = new SimpleDateFormat("-yyyy-MM-dd-HH.mm");
+		SimpleDateFormat df = new SimpleDateFormat("-yyyy-MM-dd-HH.mm.ss.SSS");
 		String reportFilename = TestProperties.getReportFile() + df.format(Calendar.getInstance().getTime()) + ".csv";
 		File reportFile = new File(reportFilename);
 		if (!reportFile.exists())
@@ -329,7 +329,7 @@ public class TestResultReport {
         {
             reportDir.mkdirs();
         }
-        SimpleDateFormat df = new SimpleDateFormat("-yyyy-MM-dd-HH.mm");
+        SimpleDateFormat df = new SimpleDateFormat("-yyyy-MM-dd-HH.mm.ss.SSS");
         String reportFilename = TestProperties.getLoadAnalysisFile() + df.format(Calendar.getInstance().getTime()) + ".csv";
         File reportFile = new File(reportFilename);
         if (!reportFile.exists())

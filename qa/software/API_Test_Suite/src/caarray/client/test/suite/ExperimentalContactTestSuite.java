@@ -27,9 +27,10 @@ public class ExperimentalContactTestSuite extends SearchByExampleTestSuite
     + File.separator + "ExperimentalContact.csv";
 
     private static final String LAST_NAME = "Last Name";
+    private static final String ID = "Id";
     
     private static final String[] COLUMN_HEADERS = new String[] { TEST_CASE,
-        API, LAST_NAME, EXPECTED_RESULTS, MIN_RESULTS };
+        API, LAST_NAME, ID, EXPECTED_RESULTS, MIN_RESULTS };
     
     /**
      * @param apiFacade
@@ -127,6 +128,10 @@ public class ExperimentalContactTestSuite extends SearchByExampleTestSuite
             Person person = new Person();
             person.setLastName(input[headerIndexMap.get(LAST_NAME)].trim());
             example.setPerson(person);
+        }
+        if (headerIndexMap.get(ID) < input.length && !input[headerIndexMap.get(ID)].equals(""))
+        {
+            example.setId(input[headerIndexMap.get(ID)].trim());
         }
             
         

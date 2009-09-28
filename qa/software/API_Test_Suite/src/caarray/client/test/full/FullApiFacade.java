@@ -300,28 +300,28 @@ public class FullApiFacade implements ApiFacade
         return getFacade(api).getQuantitationType(api, name);
     }
 
-    public byte[][] getFileContents(String api,
+    public Integer getFileContents(String api,
             List<CaArrayEntityReference> fileReferences, boolean compressed)
             throws Exception
     {
         return getFacade(api).getFileContents(api, fileReferences, compressed);
     }
 
-    public byte[][] getFileContentsZip(String api,
+    public Integer getFileContentsZip(String api,
             List<CaArrayEntityReference> fileReferences, boolean compressed)
             throws Exception
     {
         return getFacade(api).getFileContentsZip(api, fileReferences, compressed);
     }
 
-    public byte[][] copyFileContentsUtils(String api,
+    public Integer copyFileContentsUtils(String api,
             List<CaArrayEntityReference> fileReferences, boolean compressed)
             throws Exception
     {
        return getFacade(api).copyFileContentsUtils(api, fileReferences, compressed);
     }
 
-    public byte[][] copyFileContentsZipUtils(String api,
+    public Integer copyFileContentsZipUtils(String api,
             List<CaArrayEntityReference> fileReferences, boolean compressed)
             throws Exception
     {
@@ -376,7 +376,7 @@ public class FullApiFacade implements ApiFacade
     /* (non-Javadoc)
      * @see caarray.client.test.ApiFacade#copyMageTabZipToOutputStream(java.lang.String, gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference, boolean)
      */
-    public byte[] copyMageTabZipToOutputStream(String api,
+    public Integer copyMageTabZipToOutputStream(String api,
             CaArrayEntityReference experimentReference, boolean compressed)
             throws Exception
     {
@@ -395,7 +395,7 @@ public class FullApiFacade implements ApiFacade
     /* (non-Javadoc)
      * @see caarray.client.test.ApiFacade#copyMageTabZipApiUtils(java.lang.String, gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference, boolean)
      */
-    public byte[] copyMageTabZipApiUtils(String api,
+    public Integer copyMageTabZipApiUtils(String api,
             CaArrayEntityReference experimentReference, boolean compressed)
             throws Exception
     {

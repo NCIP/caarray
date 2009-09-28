@@ -9,6 +9,7 @@ import gov.nih.nci.caarray.external.v1_0.array.ArrayProvider;
 import gov.nih.nci.caarray.external.v1_0.array.AssayType;
 import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
 import gov.nih.nci.caarray.external.v1_0.experiment.Organism;
+import gov.nih.nci.caarray.external.v1_0.factor.Factor;
 import gov.nih.nci.caarray.external.v1_0.query.MatchMode;
 
 import java.io.File;
@@ -35,11 +36,12 @@ public class ExperimentTestSuite extends SearchByExampleTestSuite
     private static final String ORG_SCI_NAME = "Organism Scientific Name";
     private static final String ARRAY_PROVIDER = "Array Provider";
     private static final String ARRAY_DESIGN_REF = "Array Design Ref";
+    private static final String FACTOR_REF = "Factor Ref";
     private static final String ASSAY_TYPE = "Assay Type";
     private static final String MATCH_MODE = "Match Mode";
 
     private static final String[] COLUMN_HEADERS = new String[] { TEST_CASE, ENUMERATE,
-            API, TITLE, ORG_SCI_NAME, ARRAY_PROVIDER, ARRAY_DESIGN_REF,ASSAY_TYPE,EXPECTED_RESULTS, MIN_RESULTS, PAGES, API_UTILS_SEARCH, MATCH_MODE };
+            API, TITLE, ORG_SCI_NAME, ARRAY_PROVIDER, ARRAY_DESIGN_REF,ASSAY_TYPE,FACTOR_REF,EXPECTED_RESULTS, MIN_RESULTS, PAGES, API_UTILS_SEARCH, MATCH_MODE, MAX_RESULTS };
 
 
     /**
@@ -218,6 +220,17 @@ public class ExperimentTestSuite extends SearchByExampleTestSuite
             ArrayDesign ad = new ArrayDesign();
             ad.setId(ref);
             example.getArrayDesigns().add(ad);         
+        }
+        if (headerIndexMap.get(FACTOR_REF) < input.length && !input[headerIndexMap.get(FACTOR_REF)].equals(""))
+        {
+            String ref = input[headerIndexMap.get(FACTOR_REF)].trim();
+            if (ref.startsWith(VAR_START))
+            {
+                ref = getVariableValue(ref);
+            }
+            Factor factor = new Factor();
+            factor.setId(ref);
+            example.getFactors().add(factor);         
         }
         if (headerIndexMap.get(ASSAY_TYPE) < input.length && !input[headerIndexMap.get(ASSAY_TYPE)].equals(""))
         {

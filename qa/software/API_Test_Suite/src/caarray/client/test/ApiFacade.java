@@ -134,17 +134,17 @@ public interface ApiFacade
     
     public DataSet getDataSet(String api, DataSetRequest dataSetRequest) throws Exception;
     
-    public byte[][] getFileContents(String api, List<CaArrayEntityReference> fileReferences, boolean compressed) throws Exception;
+    public Integer getFileContents(String api, List<CaArrayEntityReference> fileReferences, boolean compressed) throws Exception;
     
-    public byte[][] getFileContentsZip(String api, List<CaArrayEntityReference> fileReferences, boolean compressed) throws Exception;
+    public Integer getFileContentsZip(String api, List<CaArrayEntityReference> fileReferences, boolean compressed) throws Exception;
     
-    public byte[][] copyFileContentsUtils(String api, List<CaArrayEntityReference> fileReferences, boolean compressed) throws Exception;
+    public Integer copyFileContentsUtils(String api, List<CaArrayEntityReference> fileReferences, boolean compressed) throws Exception;
     
-    public byte[][] copyFileContentsZipUtils(String api, List<CaArrayEntityReference> fileReferences, boolean compressed) throws Exception;
+    public Integer copyFileContentsZipUtils(String api, List<CaArrayEntityReference> fileReferences, boolean compressed) throws Exception;
     
     public MageTabFileSet getMageTabExport(String api, CaArrayEntityReference experimentReference) throws Exception;
     
-    public byte[] copyMageTabZipToOutputStream(String api, CaArrayEntityReference experimentReference, boolean compressed) throws Exception;
+    public Integer copyMageTabZipToOutputStream(String api, CaArrayEntityReference experimentReference, boolean compressed) throws Exception;
     
-    public byte[] copyMageTabZipApiUtils(String api, CaArrayEntityReference experimentReference, boolean compressed) throws Exception;
+    public Integer copyMageTabZipApiUtils(String api, CaArrayEntityReference experimentReference, boolean compressed) throws Exception;
 }

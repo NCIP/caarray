@@ -464,21 +464,21 @@ public class GridApiFacade implements ApiFacade
             return quants.getResults().get(0);
         return null;
     }
-    public byte[][] getFileContents(String api,
+    public Integer getFileContents(String api,
             List<CaArrayEntityReference> fileReferences, boolean compressed)
             throws Exception
     {
         if (fileReferences.isEmpty())
-            return new byte[][]{new byte[0]};
+            return 0;
         
-        byte[][] retVal = new byte[fileReferences.size()][];
+        int total = 0;
         InputStream stream = null;
         if (fileReferences.size() == 1)
         {
             TransferServiceContextReference serviceContextRef = gridClient.getFileContentsTransfer(fileReferences.get(0), compressed);
             TransferServiceContextClient transferClient = new TransferServiceContextClient(serviceContextRef.getEndpointReference());
             stream = TransferClientHelper.getData(transferClient.getDataTransferDescriptor());
-            retVal[0] = IOUtils.toByteArray(stream);
+            total += IOUtils.toByteArray(stream).length;
         }
         else
         {
@@ -504,10 +504,10 @@ public class GridApiFacade implements ApiFacade
             return copyFileContentsUtils(api, fileReferences, compressed);
         }
         
-        return retVal;      
+        return total;      
     }
     
-    public byte[][] getFileContentsZip(String api,
+    public Integer getFileContentsZip(String api,
             List<CaArrayEntityReference> fileReferences, boolean compressed)
             throws Exception
     {
@@ -522,24 +522,24 @@ public class GridApiFacade implements ApiFacade
         return copyFileContentsUtils(api, fileReferences, compressed);
     }
     
-    public byte[][] copyFileContentsUtils(String api,
+    public Integer copyFileContentsUtils(String api,
             List<CaArrayEntityReference> fileReferences, boolean compressed)
             throws Exception
     {
         if (fileReferences.isEmpty())
-            return new byte[0][0];
+            return 0;
         
-        byte[][] retVal = new byte[fileReferences.size()][];
+        int total = 0;
         for (int i = 0; i < fileReferences.size(); i++)
         {
           ByteArrayOutputStream stream = new ByteArrayOutputStream();  
-          dataApiUtils.copyFileContentsToOutputStream(fileReferences.get(0), compressed, stream);
-          retVal[i] = stream.toByteArray();
+          dataApiUtils.copyFileContentsToOutputStream(fileReferences.get(i), compressed, stream);
+          total += stream.size();
         }
-       return retVal;
+       return total;
     }
     
-    public byte[][] copyFileContentsZipUtils(String api,
+    public Integer copyFileContentsZipUtils(String api,
             List<CaArrayEntityReference> fileReferences, boolean compressed)
             throws Exception
     {
@@ -709,7 +709,7 @@ public class GridApiFacade implements ApiFacade
     /* (non-Javadoc)
      * @see caarray.client.test.ApiFacade#copyMageTabZipToOutputStream(java.lang.String, gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference, boolean)
      */
-    public byte[] copyMageTabZipToOutputStream(String api,
+    public Integer copyMageTabZipToOutputStream(String api,
             CaArrayEntityReference experimentReference, boolean compressed)
             throws Exception
     {
@@ -733,13 +733,13 @@ public class GridApiFacade implements ApiFacade
     /* (non-Javadoc)
      * @see caarray.client.test.ApiFacade#copyMageTabZipApiUtils(java.lang.String, gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference, boolean)
      */
-    public byte[] copyMageTabZipApiUtils(String api,
+    public Integer copyMageTabZipApiUtils(String api,
             CaArrayEntityReference experimentReference, boolean compressed)
             throws Exception
     {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         dataApiUtils.copyMageTabZipToOutputStream(experimentReference, stream);
-        return stream.toByteArray();
+        return stream.size();
     }
 
 }

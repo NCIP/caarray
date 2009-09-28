@@ -110,14 +110,16 @@ public class ArrayDesignTestSuite extends SearchByExampleTestSuite
             + File.separator + "ArrayDesign.csv";
 
     private static final String NAME = "Name";
+    private static final String LSID = "LSID";
     private static final String PROVIDER = "Associated Provider";
     private static final String ASSAY_TYPE = "Assay Type";
     private static final String EXPECTED_PROVIDER = "Expected Provider";
     private static final String EXPECTED_ORGANISM = "Expected Organism";
+    private static final String NULL = "NULL";
 
     private static final String[] COLUMN_HEADERS = new String[] { TEST_CASE,
-            API, NAME, PROVIDER, ASSAY_TYPE, EXPECTED_PROVIDER, MIN_RESULTS, EXPECTED_RESULTS,
-            EXPECTED_ORGANISM };
+            API, NAME, LSID, PROVIDER, ASSAY_TYPE, EXPECTED_PROVIDER, MIN_RESULTS, EXPECTED_RESULTS,
+            EXPECTED_ORGANISM, NULL };
     
 
     /**
@@ -141,6 +143,8 @@ public class ArrayDesignTestSuite extends SearchByExampleTestSuite
 
         if (headerIndexMap.get(NAME) < input.length && !input[headerIndexMap.get(NAME)].equals(""))
             example.setName(input[headerIndexMap.get(NAME)].trim());
+        if (headerIndexMap.get(LSID) < input.length && !input[headerIndexMap.get(LSID)].equals(""))
+            example.setLsid(input[headerIndexMap.get(LSID)].trim());
         
         if (headerIndexMap.get(PROVIDER) < input.length && !input[headerIndexMap.get(PROVIDER)].equals(""))
         {
@@ -151,6 +155,10 @@ public class ArrayDesignTestSuite extends SearchByExampleTestSuite
         if (headerIndexMap.get(ASSAY_TYPE) < input.length && !input[headerIndexMap.get(ASSAY_TYPE)].equals(""))
         {
             example.getAssayTypes().add(new AssayType(input[headerIndexMap.get(ASSAY_TYPE)]));
+        }
+        if (headerIndexMap.get(NULL) < input.length && !input[headerIndexMap.get(NULL)].equals(""))
+        {
+            example = null;
         }
         search.setArrayDesign(example);
         if (headerIndexMap.get(TEST_CASE) < input.length

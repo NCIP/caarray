@@ -239,7 +239,7 @@ public abstract class SearchByExampleTestSuite extends ConfigurableTestSuite
                         boolean stopResults = search.getStopResults() != null && results.getResults().size() >= search.getStopResults();
                         if (!stopResults)
                         {
-                            while (!fullResults || (offset != null && search.getPages() != null 
+                            while ((!fullResults && results.getResults().size() > 0) || (offset != null && search.getPages() != null 
                                     && results.getResults().size() == search.getPages()))
                             {
                                 offset = new LimitOffset();

@@ -87,6 +87,10 @@ public class FileContentsTestSuite extends SearchByCriteriaTestSuite
                     size += result.length;
             }
         }
+        else if (resultsList instanceof Integer)
+        {
+            size = ((Integer)resultsList).intValue();
+        }
         else if (resultsList instanceof MageTabFileSet)
         {
             MageTabFileSet fileSet = (MageTabFileSet)resultsList;
