@@ -3,3 +3,7 @@ Test Case,API,Hybridization,Quantitation Type,Expected Probe Ids,Expected Data T
 ,,,CHPSignalLogRatio,,,
 389,java,QaApiTestHybridization01,CHPSignal,345,FLOAT,345
 ,,QaApiTestHybridization02,,,,
+390,grid,QaApiTestHybridization01,CHPSignal,345,FLOAT,345
+,,,CHPSignalLogRatio,,,
+391,grid,QaApiTestHybridization01,CHPSignal,345,FLOAT,345
+,,QaApiTestHybridization02,,,,

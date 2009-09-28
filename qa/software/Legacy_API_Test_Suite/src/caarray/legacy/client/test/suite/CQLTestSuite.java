@@ -6,6 +6,8 @@ package caarray.legacy.client.test.suite;
 import gov.nih.nci.cagrid.cqlquery.Association;
 import gov.nih.nci.cagrid.cqlquery.Attribute;
 import gov.nih.nci.cagrid.cqlquery.CQLQuery;
+import gov.nih.nci.cagrid.cqlquery.Group;
+import gov.nih.nci.cagrid.cqlquery.LogicalOperator;
 import gov.nih.nci.cagrid.cqlquery.Object;
 import gov.nih.nci.cagrid.cqlquery.Predicate;
 import gov.nih.nci.cagrid.cqlresultset.CQLQueryResults;
@@ -103,7 +105,7 @@ public class CQLTestSuite extends ConfigurableTestSuite
                     skip = true;
                 if (!skip)
                 {
-                    //TODO: are additional values necessary?
+                    populateAdditionalSearchValues(input, search);
                 }
                 
             }
@@ -206,6 +208,48 @@ public class CQLTestSuite extends ConfigurableTestSuite
         
         cqlQuery.setTarget(target);
         search.setCqlQuery(cqlQuery);
+    }
+    
+    private void populateAdditionalSearchValues(String[] input, CQLSearch search)
+    {
+        CQLQuery query = search.getCqlQuery();
+        Object target = query.getTarget();
+        Association asc_1 = target.getAssociation();
+        
+        Association association = new Association();
+        
+        if (headerIndexMap.get(ASSOCIATION) < input.length
+                && !input[headerIndexMap.get(ASSOCIATION)].equals(""))
+        {
+            association.setName(input[headerIndexMap.get(ASSOCIATION)].trim());
+        }
+        if (headerIndexMap.get(ROLE) < input.length
+                && !input[headerIndexMap.get(ROLE)].equals(""))
+        {
+            association.setRoleName(input[headerIndexMap.get(ROLE)].trim());
+        }
+        Attribute associationAttribute = null;
+        if (headerIndexMap.get(ASSOC_ATTRIBUTE) < input.length
+                && !input[headerIndexMap.get(ASSOC_ATTRIBUTE)].equals(""))
+        {
+            associationAttribute = new Attribute();
+            associationAttribute.setName(input[headerIndexMap.get(ASSOC_ATTRIBUTE)].trim());
+            associationAttribute.setPredicate(Predicate.EQUAL_TO);
+        }
+        if (headerIndexMap.get(ASSOC_ATTRIBUTE_VALUE) < input.length
+                && !input[headerIndexMap.get(ASSOC_ATTRIBUTE_VALUE)].equals(""))
+        {
+            associationAttribute.setValue(input[headerIndexMap.get(ASSOC_ATTRIBUTE_VALUE)].trim());
+        }
+        if (association != null && associationAttribute != null)
+        {
+            association.setAttribute(associationAttribute);
+        }
+        Group group = new Group();
+        group.setAssociation(new Association[]{asc_1,association});
+        group.setLogicRelation(LogicalOperator.AND);
+        target.setAssociation(null);
+        target.setGroup(group);
     }
 
     private void filterSearches()

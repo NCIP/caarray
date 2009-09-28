@@ -5,7 +5,6 @@ package caarray.legacy.client.test.suite;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
-import gov.nih.nci.caarray.domain.sample.Sample;
 
 import java.io.File;
 import java.util.List;
@@ -15,7 +14,6 @@ import caarray.legacy.client.test.TestProperties;
 import caarray.legacy.client.test.TestResult;
 import caarray.legacy.client.test.search.ExampleSearch;
 import caarray.legacy.client.test.search.QuantitationTypeSearch;
-import caarray.legacy.client.test.search.SampleSearch;
 
 /**
  * @author vaughng

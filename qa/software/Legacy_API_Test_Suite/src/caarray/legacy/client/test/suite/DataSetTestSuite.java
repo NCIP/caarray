@@ -20,8 +20,17 @@ import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.data.ShortColumn;
 import gov.nih.nci.caarray.domain.data.StringColumn;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
+import gov.nih.nci.caarray.domain.project.Experiment;
+import gov.nih.nci.cagrid.caarray.client.CaArraySvcClient;
+import gov.nih.nci.cagrid.cqlquery.Attribute;
+import gov.nih.nci.cagrid.cqlquery.CQLQuery;
+import gov.nih.nci.cagrid.cqlquery.Object;
+import gov.nih.nci.cagrid.cqlquery.Predicate;
+import gov.nih.nci.cagrid.cqlresultset.CQLQueryResults;
+import gov.nih.nci.cagrid.data.utilities.CQLQueryResultsIterator;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import caarray.legacy.client.test.ApiFacade;
@@ -177,17 +186,17 @@ public class DataSetTestSuite extends ConfigurableTestSuite
             
             try
             {
-                Hybridization hyb = new Hybridization();
-                hyb.setName(name);
-                List<Hybridization> hybList = apiFacade.searchByExample(search.getApi(), hyb, false);
-                if (!hybList.isEmpty())
+                Hybridization hyb = getHybridization(name, search.getApi());
+                if (hyb != null)
                 {
-                    request.addHybridization(hybList.get(0));
+                    request.addHybridization(hyb);
                 }
                 else
                 {
                     System.out.println("No Hyb found for: " + name);
                 }
+                
+                
             }
             catch (Exception e)
             {
@@ -200,12 +209,10 @@ public class DataSetTestSuite extends ConfigurableTestSuite
             String name = input[headerIndexMap.get(QUANT_TYPE)].trim();
             try
             {
-                QuantitationType quant = new QuantitationType();
-                quant.setName(name);
-                List<QuantitationType> quantList = apiFacade.searchByExample(search.getApi(), quant, false);
-                if (!quantList.isEmpty())
+                QuantitationType quant = getQuantitation(name, search.getApi());
+                if (quant != null)
                 {
-                    request.addQuantitationType(quantList.get(0));
+                    request.addQuantitationType(quant);
                 }
                 else
                 {
@@ -231,17 +238,17 @@ public class DataSetTestSuite extends ConfigurableTestSuite
             
             try
             {
-                Hybridization hyb = new Hybridization();
-                hyb.setName(name);
-                List<Hybridization> hybList = apiFacade.searchByExample(search.getApi(), hyb, false);
-                if (!hybList.isEmpty())
+                Hybridization hyb = getHybridization(name, search.getApi());
+                if (hyb != null)
                 {
-                    request.addHybridization(hybList.get(0));
+                    request.addHybridization(hyb);
                 }
                 else
                 {
                     System.out.println("No Hyb found for: " + name);
                 }
+                
+                
             }
             catch (Exception e)
             {
@@ -254,12 +261,10 @@ public class DataSetTestSuite extends ConfigurableTestSuite
             String name = input[headerIndexMap.get(QUANT_TYPE)].trim();
             try
             {
-                QuantitationType quant = new QuantitationType();
-                quant.setName(name);
-                List<QuantitationType> quantList = apiFacade.searchByExample(search.getApi(), quant, false);
-                if (!quantList.isEmpty())
+                QuantitationType quant = getQuantitation(name, search.getApi());
+                if (quant != null)
                 {
-                    request.addQuantitationType(quantList.get(0));
+                    request.addQuantitationType(quant);
                 }
                 else
                 {
@@ -273,6 +278,65 @@ public class DataSetTestSuite extends ConfigurableTestSuite
         }
          
     }
+    
+    private Hybridization getHybridization(String name, String api) throws Exception
+    {
+        if (api.equalsIgnoreCase("java"))
+        {
+            Hybridization hyb = new Hybridization();
+            hyb.setName(name);
+            List<Hybridization> hybList = apiFacade.searchByExample(api, hyb, false);
+            if (!hybList.isEmpty())
+                return hybList.get(0);
+            return null;
+        }
+        else
+        {
+            CQLQueryResults results = (CQLQueryResults)apiFacade.query(api, getHybridizationQuery(name));
+            if (results.getObjectResult() != null && results.getObjectResult().length > 0)
+            {
+                Iterator iter = new CQLQueryResultsIterator(results, CaArraySvcClient.class
+                        .getResourceAsStream("client-config.wsdd"));
+                if (iter.hasNext()) {
+                    Hybridization hyb = (Hybridization) (iter.next());
+                    return hyb;
+                }
+                
+                   
+            }
+        }
+        return null;
+    }
+    
+    private QuantitationType getQuantitation(String name, String api) throws Exception
+    {
+        if (api.equalsIgnoreCase("java"))
+        {
+            QuantitationType quant = new QuantitationType();
+            quant.setName(name);
+            List<QuantitationType> qList = apiFacade.searchByExample(api, quant, false);
+            if (!qList.isEmpty())
+                return qList.get(0);
+            return null;
+        }
+        else
+        {
+            CQLQueryResults results = (CQLQueryResults)apiFacade.query(api, getQuantitationQuery(name));
+            if (results.getObjectResult() != null && results.getObjectResult().length > 0)
+            {
+                Iterator iter = new CQLQueryResultsIterator(results, CaArraySvcClient.class
+                        .getResourceAsStream("client-config.wsdd"));
+                if (iter.hasNext()) {
+                    QuantitationType hyb = (QuantitationType) (iter.next());
+                    return hyb;
+                }
+                
+                   
+            }
+        }
+        return null;
+    }
+    
     private void filterSearches()
     {
         String api = TestProperties.getTargetApi();
@@ -550,4 +614,31 @@ public class DataSetTestSuite extends ConfigurableTestSuite
         return "DataSet";
     }
 
+    private CQLQuery getHybridizationQuery(String name)
+    {
+        Object target = new Object();
+        target.setName("gov.nih.nci.caarray.domain.hybridization.Hybridization");
+        Attribute att = new Attribute();
+        att.setName("name");
+        att.setValue(name);
+        att.setPredicate(Predicate.EQUAL_TO);
+        target.setAttribute(att);
+        CQLQuery query = new CQLQuery();
+        query.setTarget(target);
+        return query;
+    }
+    
+    private CQLQuery getQuantitationQuery(String name)
+    {
+        Object target = new Object();
+        target.setName("gov.nih.nci.caarray.domain.data.QuantitationType");
+        Attribute att = new Attribute();
+        att.setName("name");
+        att.setValue(name);
+        att.setPredicate(Predicate.EQUAL_TO);
+        target.setAttribute(att);
+        CQLQuery query = new CQLQuery();
+        query.setTarget(target);
+        return query;
+    }
 }
