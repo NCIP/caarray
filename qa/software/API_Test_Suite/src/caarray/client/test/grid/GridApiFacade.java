@@ -589,7 +589,7 @@ public class GridApiFacade implements ApiFacade
                     resultsList.add(biomaterial);
                 }
             } catch (NoSuchElementException e) {
-                break;
+                //break;
             }
         }
         return resultsList;
@@ -611,7 +611,7 @@ public class GridApiFacade implements ApiFacade
                     resultsList.add(entity);
                 }
             } catch (NoSuchElementException e) {
-                break;
+                //break;
             }
         }
         return resultsList;
@@ -633,7 +633,7 @@ public class GridApiFacade implements ApiFacade
                     resultsList.add(entity);
                 }
             } catch (NoSuchElementException e) {
-                break;
+                //break;
             }
         }
         return resultsList;
@@ -655,7 +655,7 @@ public class GridApiFacade implements ApiFacade
                     resultsList.add(entity);
                 }
             } catch (NoSuchElementException e) {
-                break;
+                //break;
             }
         }
         return resultsList;
