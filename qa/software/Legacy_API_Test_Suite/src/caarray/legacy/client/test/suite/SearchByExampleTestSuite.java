@@ -119,6 +119,7 @@ public abstract class SearchByExampleTestSuite extends ConfigurableTestSuite
                 long startTime = System.currentTimeMillis();
                 try
                 {
+                    
                     if (search.isLogin())
                     {
                         List<AbstractCaArrayObject> nonLoginResults = new ArrayList<AbstractCaArrayObject>();

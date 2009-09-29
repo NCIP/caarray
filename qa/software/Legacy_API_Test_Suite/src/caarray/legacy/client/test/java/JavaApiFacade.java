@@ -77,7 +77,8 @@ public class JavaApiFacade implements ApiFacade
             }
             return loginSearchService.search(example);
         }
-        return javaSearchService.search(example);
+        
+        return javaSearchService.search(example,true,true);
     }
 
     /* (non-Javadoc)

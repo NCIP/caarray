@@ -23,6 +23,7 @@ import caarray.legacy.client.test.TestResult;
 import caarray.legacy.client.test.TestResultReport;
 import caarray.legacy.client.test.TestUtils;
 import caarray.legacy.client.test.search.CQLSearch;
+import gov.nih.nci.caarray.domain.sample.AbstractCharacteristic;
 
 /**
  * @author vaughng
@@ -91,7 +92,10 @@ public class CQLTestSuite extends ConfigurableTestSuite
                 {
                     
                     populateSearch(input, search);  
-                }              
+                } 
+                
+                if (search != null)
+                    cqlSearches.add(search);
             }
             else
             {
@@ -110,8 +114,7 @@ public class CQLTestSuite extends ConfigurableTestSuite
                 
             }
     
-            if (search != null)
-                cqlSearches.add(search);
+            
     
             index++;
             if (index < spreadsheetRows.size())
