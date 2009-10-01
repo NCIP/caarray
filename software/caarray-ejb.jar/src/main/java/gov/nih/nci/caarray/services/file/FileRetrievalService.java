@@ -100,7 +100,5 @@ public interface FileRetrievalService {
      * @param file the caArray file to retrieve
      * @return a stream to read the file from
      */
-    // TODO this requires full byte array in memory - need to figure out correct API
     byte[] readFile(CaArrayFile file);
-
 }

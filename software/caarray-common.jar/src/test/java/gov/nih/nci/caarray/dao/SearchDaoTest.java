@@ -107,6 +107,7 @@ import gov.nih.nci.cagrid.cqlquery.CQLQuery;
 import gov.nih.nci.cagrid.cqlquery.Group;
 import gov.nih.nci.cagrid.cqlquery.LogicalOperator;
 import gov.nih.nci.cagrid.cqlquery.Predicate;
+import gov.nih.nci.cagrid.cqlquery.QueryModifier;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -197,13 +198,9 @@ public class SearchDaoTest extends AbstractDaoTest {
         try {
             tx = HibernateUtil.beginTransaction();
             Protocol exampleProtocol = setUpExampleProtocol();
-            Protocol retrievedProtocol = null;
             List<Protocol> matchingProtocols = SEARCH_DAO.query(exampleProtocol);
             assertEquals(1, matchingProtocols.size());
-            if ((matchingProtocols != null) && (matchingProtocols.size() >= 1)) {
-                retrievedProtocol = matchingProtocols.get(0);
-            }
-            assertEquals(DUMMY_PROTOCOL_1.getName(), retrievedProtocol.getName());
+            assertEquals(DUMMY_PROTOCOL_1, matchingProtocols.get(0));
 
             // search by id
             exampleProtocol = new Protocol();
@@ -211,7 +208,7 @@ public class SearchDaoTest extends AbstractDaoTest {
             exampleProtocol.setDescription("differentDescription");
             matchingProtocols = SEARCH_DAO.query(exampleProtocol);
             assertEquals(1, matchingProtocols.size());
-            assertEquals(DUMMY_PROTOCOL_1.getName(), retrievedProtocol.getName());
+            assertEquals(DUMMY_PROTOCOL_1.getName(), matchingProtocols.get(0).getName());
             tx.commit();
         } catch (DAOException e) {
             HibernateUtil.rollbackTransaction(tx);
@@ -434,17 +431,9 @@ public class SearchDaoTest extends AbstractDaoTest {
         Transaction tx = null;
         try {
             tx = HibernateUtil.beginTransaction();
-            Protocol retrievedProtocol = null;
             List<?> matchingProtocols = SEARCH_DAO.query(cqlQuery);
-            if ((matchingProtocols != null) && (matchingProtocols.size() >= 1)) {
-                retrievedProtocol = (Protocol) matchingProtocols.get(0);
-            }
-            if (DUMMY_PROTOCOL_1.equals(retrievedProtocol)) {
-                // The retrieved protocol is the same as the saved protocol. Test passed.
-                assertTrue(true);
-            } else {
-                fail(FAIL_NO_MATCH);
-            }
+            assertEquals(1, matchingProtocols.size());
+            assertEquals(DUMMY_PROTOCOL_1, matchingProtocols.get(0));
             tx.commit();
         } catch (DAOException e) {
             HibernateUtil.rollbackTransaction(tx);
@@ -463,23 +452,61 @@ public class SearchDaoTest extends AbstractDaoTest {
         Transaction tx = null;
         try {
             tx = HibernateUtil.beginTransaction();
-            Protocol retrievedProtocol = null;
             List<?> matchingProtocols = SEARCH_DAO.query(cqlQuery);
-            if ((matchingProtocols != null) && (matchingProtocols.size() >= 1)) {
-                retrievedProtocol = (Protocol) matchingProtocols.get(0);
-            }
-            if (DUMMY_PROTOCOL_1.equals(retrievedProtocol)) {
-                // The retrieved protocol is the same as the saved protocol. Test passed.
-                assertTrue(true);
-            } else {
-                fail(FAIL_NO_MATCH);
-            }
+            assertEquals(1, matchingProtocols.size());
+            assertEquals(DUMMY_PROTOCOL_1, matchingProtocols.get(0));
             tx.commit();
         } catch (DAOException e) {
             HibernateUtil.rollbackTransaction(tx);
             fail("DAO exception during CQL search: " + e.getMessage());
         }
     }
+
+    /**
+     * Tests searching for an entity using CQL, where the search involves associations.
+     */
+    @Test
+    public void testCqlSearchWithManyValuedAssociations() {
+        saveSupportingObjects();
+        CQLQuery cqlQuery = formulateCqlQueryWithManyValuedAssociation();
+
+        Transaction tx = null;
+        try {
+            tx = HibernateUtil.beginTransaction();
+            List<?> matchingProtocols = SEARCH_DAO.query(cqlQuery);
+            assertEquals(1, matchingProtocols.size());
+            assertEquals(DUMMY_PROTOCOL_1, matchingProtocols.get(0));
+            tx.commit();
+        } catch (DAOException e) {
+            HibernateUtil.rollbackTransaction(tx);
+            fail("DAO exception during CQL search: " + e.getMessage());
+        }
+    }
+    
+    /**
+     * Tests searching for an entity using CQL, where the search involves associations.
+     */
+    @Test
+    public void testCqlSearchWithCount() {
+        saveSupportingObjects();
+        CQLQuery cqlQuery = formulateCqlQueryWithAssociations();
+        QueryModifier modifier = new QueryModifier();
+        modifier.setCountOnly(true);
+        cqlQuery.setQueryModifier(modifier);
+
+        Transaction tx = null;
+        try {
+            tx = HibernateUtil.beginTransaction();
+            List<?> results = SEARCH_DAO.query(cqlQuery);
+            assertEquals(1, results.size());
+            assertEquals(1, results.get(0));
+            tx.commit();
+        } catch (DAOException e) {
+            HibernateUtil.rollbackTransaction(tx);
+            fail("DAO exception during CQL search: " + e.getMessage());
+        }
+    }
+
 
     private CQLQuery formulateCqlQuery() {
         CQLQuery cqlQuery = new CQLQuery();
@@ -504,12 +531,35 @@ public class SearchDaoTest extends AbstractDaoTest {
         // Set the protocol's "type" association to a Term with a certain value.
         Association type = new Association();
         type.setName("gov.nih.nci.caarray.domain.vocabulary.Term");
+        type.setRoleName("type");
         Attribute termValue = new Attribute();
         termValue.setName("value");
         termValue.setValue(DUMMY_TERM_1.getValue());
         termValue.setPredicate(Predicate.EQUAL_TO);
         type.setAttribute(termValue);
+        target.setAssociation(type);
+        
+        // Set the target for the query.
+        cqlQuery.setTarget(target);
+        return cqlQuery;
+    }
 
+    private CQLQuery formulateCqlQueryWithManyValuedAssociation() {
+        CQLQuery cqlQuery = new CQLQuery();
+
+        // Set the target object to Protocol.
+        gov.nih.nci.cagrid.cqlquery.Object target = new gov.nih.nci.cagrid.cqlquery.Object();
+        target.setName("gov.nih.nci.caarray.domain.protocol.Protocol");
+
+        Association param = new Association();
+        param.setName("gov.nih.nci.caarray.domain.protocol.Parameter");
+        param.setRoleName("parameters");
+        Attribute paramNotNull = new Attribute();
+        paramNotNull.setName("id");
+        paramNotNull.setPredicate(Predicate.IS_NOT_NULL);
+        param.setAttribute(paramNotNull);
+        target.setAssociation(param);
+        
         // Set the target for the query.
         cqlQuery.setTarget(target);
         return cqlQuery;
