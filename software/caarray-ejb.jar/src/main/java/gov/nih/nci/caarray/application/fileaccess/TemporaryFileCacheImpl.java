@@ -195,7 +195,7 @@ public final class TemporaryFileCacheImpl implements TemporaryFileCache {
     }
 
     private void createSessionWorkingDirectory() {
-        String sessionSubdirectoryName = new UID().toString().replace(':', '_');
+        String sessionSubdirectoryName = new UID().toString().replace(':', '_').replace('-', '_');
         this.sessionWorkingDirectory = new File(getWorkingDirectory(), sessionSubdirectoryName);
         if (!this.sessionWorkingDirectory.mkdirs()) {
             LOG.error("Couldn't create directory: " + this.sessionWorkingDirectory.getAbsolutePath());
@@ -233,10 +233,12 @@ public final class TemporaryFileCacheImpl implements TemporaryFileCache {
         }
         LOG.debug("Cleaning up files for temp file cache in directory " + sessionWorkingDirectory.getAbsolutePath());
 
-        Set<CaArrayFile> filesToClose = new HashSet<CaArrayFile>(this.uncompressedOpenFiles.keySet());
-        filesToClose.addAll(this.compressedOpenFiles.keySet());
-        for (CaArrayFile caarrayFile : filesToClose) {
-            closeFile(caarrayFile);
+        for (CaArrayFile caarrayFile : uncompressedOpenFiles.keySet()) {
+            closeFile(caarrayFile, true);
+        }
+        
+        for (CaArrayFile caarrayFile : compressedOpenFiles.keySet()) {
+            closeFile(caarrayFile, false);
         }
 
         Set<File> createdFilesToClose = new HashSet<File>(createdFiles);
@@ -279,7 +281,8 @@ public final class TemporaryFileCacheImpl implements TemporaryFileCache {
      */
     public void delete(File file) {
         LOG.debug("Deleting file: " + file.getAbsolutePath());
-        if (!file.delete()) {
+                
+        if (file.exists() && !FileUtils.deleteQuietly(file)) {
             LOG.warn("Couldn't delete file: " + file.getAbsolutePath());
             FileCleanupThread.getInstance().addFile(file);
             file.deleteOnExit();

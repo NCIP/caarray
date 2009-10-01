@@ -84,11 +84,12 @@ package gov.nih.nci.caarray.application.fileaccess;
 
 
 import java.io.File;
-
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.TimerTask;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 
 /**
@@ -99,7 +100,7 @@ import org.apache.log4j.Logger;
 public final class FileCleanupThread extends TimerTask {
 
     private static final Logger LOG = Logger.getLogger(FileCleanupThread.class);
-    private final Collection<File> filesToRemove = new ArrayList<File>();
+    private final Collection<File> filesToRemove = Collections.synchronizedList(new ArrayList<File>());
     private static final FileCleanupThread INSTANCE =
       new FileCleanupThread();
 
@@ -124,12 +125,7 @@ public final class FileCleanupThread extends TimerTask {
      */
     public void addFile(File file) {
         if (file != null) {
-            Collection<File> synchedFilesToRemove = null;
-            synchronized (this) {
-                synchedFilesToRemove = this.filesToRemove;
-            }
-            synchedFilesToRemove.add(file);
-
+            filesToRemove.add(file);
             LOG.warn(file.getAbsolutePath()
                     + " added to FileCleanupThread collection");
         }
@@ -144,25 +140,16 @@ public final class FileCleanupThread extends TimerTask {
     public void deleteFiles() {
         LOG.info("Removing " + filesToRemove.size() + " files");
         if (!filesToRemove.isEmpty()) {
-            Collection<File> synchedFilesToRemove = null;
-            synchronized (this) {
-              synchedFilesToRemove = this.filesToRemove;
-            }
             ArrayList<File> filesRemoved = new ArrayList<File>();
-            for (File file : synchedFilesToRemove) {
-                if (!file.delete()) {
-                    if (!file.exists()) {
-                        filesRemoved.add(file);
-                    } else {
-                        LOG.warn("Still unable to delete file: "
-                                + file.getAbsolutePath());
-                    }
+            for (File file : filesToRemove) {
+                if (file.exists() && !FileUtils.deleteQuietly(file)) {
+                    LOG.warn("Still unable to delete file: " + file.getAbsolutePath());
                 } else {
                     filesRemoved.add(file);
                     LOG.info("Deleted file: " + file.getAbsolutePath());
                 }
             }
-            synchedFilesToRemove.removeAll(filesRemoved);
+            filesToRemove.removeAll(filesRemoved);
         }
     }
 
