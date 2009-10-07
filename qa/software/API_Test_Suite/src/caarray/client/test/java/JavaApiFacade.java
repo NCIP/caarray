@@ -50,6 +50,9 @@ import java.util.List;
 
 import javax.security.auth.login.FailedLoginException;
 
+import org.apache.commons.io.output.CountingOutputStream;
+import org.apache.commons.io.output.NullOutputStream;
+
 import caarray.client.test.ApiFacade;
 import caarray.client.test.TestProperties;
 
@@ -530,13 +533,13 @@ public class JavaApiFacade implements ApiFacade
     /* (non-Javadoc)
      * @see caarray.client.test.ApiFacade#copyMageTabZipToOutputStream(java.lang.String, gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference, boolean)
      */
-    public Integer copyMageTabZipToOutputStream(String api,
+    public Long copyMageTabZipToOutputStream(String api,
             CaArrayEntityReference experimentReference, boolean compressed)
             throws Exception
     {
-        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+        CountingOutputStream outStream = new CountingOutputStream(new NullOutputStream());
         dataApiUtils.copyMageTabZipToOutputStream(experimentReference,  outStream);
-        return outStream.size();
+        return outStream.getByteCount();
     }
 
     /* (non-Javadoc)
@@ -551,7 +554,7 @@ public class JavaApiFacade implements ApiFacade
     /* (non-Javadoc)
      * @see caarray.client.test.ApiFacade#copyMageTabZipApiUtils(java.lang.String, gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference, boolean)
      */
-    public Integer copyMageTabZipApiUtils(String api,
+    public Long copyMageTabZipApiUtils(String api,
             CaArrayEntityReference experimentReference, boolean compressed)
             throws Exception
     {

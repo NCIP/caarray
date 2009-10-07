@@ -144,7 +144,7 @@ public interface ApiFacade
     
     public MageTabFileSet getMageTabExport(String api, CaArrayEntityReference experimentReference) throws Exception;
     
-    public Integer copyMageTabZipToOutputStream(String api, CaArrayEntityReference experimentReference, boolean compressed) throws Exception;
+    public Long copyMageTabZipToOutputStream(String api, CaArrayEntityReference experimentReference, boolean compressed) throws Exception;
     
-    public Integer copyMageTabZipApiUtils(String api, CaArrayEntityReference experimentReference, boolean compressed) throws Exception;
+    public Long copyMageTabZipApiUtils(String api, CaArrayEntityReference experimentReference, boolean compressed) throws Exception;
 }

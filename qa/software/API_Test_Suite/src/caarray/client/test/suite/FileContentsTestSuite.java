@@ -91,6 +91,10 @@ public class FileContentsTestSuite extends SearchByCriteriaTestSuite
         {
             size = ((Integer)resultsList).intValue();
         }
+        else if (resultsList instanceof Long)
+        {
+            size = (int)((Long)resultsList).longValue();
+        }
         else if (resultsList instanceof MageTabFileSet)
         {
             MageTabFileSet fileSet = (MageTabFileSet)resultsList;
