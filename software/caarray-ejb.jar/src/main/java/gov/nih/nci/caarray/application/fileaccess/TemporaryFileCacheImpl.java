@@ -105,7 +105,9 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 /**
- * Default implementation of TemporaryFileCache. Stores file data in temporary directory. 
+ * Default implementation of TemporaryFileCache. Stores file data in temporary directory.
+ * Note: This class is not thead safe.
+ * @see TemporaryFileCacheLocator
  * 
  * @author dkokotov
  */
@@ -233,11 +235,11 @@ public final class TemporaryFileCacheImpl implements TemporaryFileCache {
         }
         LOG.debug("Cleaning up files for temp file cache in directory " + sessionWorkingDirectory.getAbsolutePath());
 
-        for (CaArrayFile caarrayFile : uncompressedOpenFiles.keySet()) {
+        // copy files to a temp set to allow closeFile() to modify the maps we are iterating through.
+        for (CaArrayFile caarrayFile : new HashSet<CaArrayFile>(uncompressedOpenFiles.keySet())) {
             closeFile(caarrayFile, true);
         }
-        
-        for (CaArrayFile caarrayFile : compressedOpenFiles.keySet()) {
+        for (CaArrayFile caarrayFile : new HashSet<CaArrayFile>(compressedOpenFiles.keySet())) {
             closeFile(caarrayFile, false);
         }
 
@@ -263,7 +265,7 @@ public final class TemporaryFileCacheImpl implements TemporaryFileCache {
     public void closeFile(CaArrayFile caarrayFile, boolean uncompressed) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Removing session file in directory: " + getSessionWorkingDirectory() + " for caarray file "
-                    + caarrayFile.getName() + " holding " + (uncompressed ? "uncompressed" : "compressed") + "data");
+                    + caarrayFile.getName() + " holding " + (uncompressed ? "uncompressed" : "compressed") + " data");
         }
         if (this.sessionWorkingDirectory == null) {
             return;
