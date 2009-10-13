@@ -98,7 +98,7 @@ public abstract class ExampleSearch
 {
 
     protected Float testCase = null;
-    protected String api = null;
+    protected String api = null, exceptionClass = null;
     protected Integer expectedResults = null;
     protected Integer minResults = null, pages = null, stopResults = null;
     protected List<Integer> pagesReturned = new ArrayList<Integer>();
@@ -247,6 +247,22 @@ public abstract class ExampleSearch
     public void setStopResults(Integer stopResults)
     {
         this.stopResults = stopResults;
+    }
+
+    /**
+     * @return the exceptionClass
+     */
+    public String getExceptionClass()
+    {
+        return exceptionClass;
+    }
+
+    /**
+     * @param exceptionClass the exceptionClass to set
+     */
+    public void setExceptionClass(String exceptionClass)
+    {
+        this.exceptionClass = exceptionClass;
     }
     
 

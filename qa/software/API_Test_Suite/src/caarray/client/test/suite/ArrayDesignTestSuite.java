@@ -86,6 +86,8 @@ import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.external.v1_0.array.ArrayDesign;
 import gov.nih.nci.caarray.external.v1_0.array.ArrayProvider;
 import gov.nih.nci.caarray.external.v1_0.array.AssayType;
+import gov.nih.nci.caarray.services.external.v1_0.InvalidInputException;
+import gov.nih.nci.caarray.services.external.v1_0.grid.stubs.types.InvalidInputFault;
 
 import java.io.File;
 import java.util.List;
@@ -254,7 +256,23 @@ public class ArrayDesignTestSuite extends SearchByExampleTestSuite
                 testResult.addDetail(detail);
             }
         }
-        
+        if (adSearch.getExample() == null)
+        {
+            if (adSearch.getExceptionClass() != null)
+            {
+                if (!adSearch.getExceptionClass().equals(InvalidInputException.class.toString())
+                        && !adSearch.getExceptionClass().equals(InvalidInputFault.class.toString()))
+                {
+                    testResult.setPassed(false);
+                    String detail = "Failed with unexpected exception class: " + adSearch.getExceptionClass();
+                    testResult.addDetail(detail);
+                }
+                else
+                {
+                    testResult.addDetail("Found expected exception " + adSearch.getExceptionClass());
+                }
+            }
+        }
         for (ArrayDesign arrayDesign : adResults)
         {
             if (adSearch.getExpectedProvider() != null)

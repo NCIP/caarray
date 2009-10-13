@@ -263,6 +263,7 @@ public abstract class SearchByExampleTestSuite extends ConfigurableTestSuite
                     + t.getClass() + " " + t.getLocalizedMessage();
                     testResult.addDetail(detail);
                     t.printStackTrace();
+                    search.setExceptionClass(t.getClass().toString());
                 }
                 long elapsedTime = System.currentTimeMillis() - startTime;
 
