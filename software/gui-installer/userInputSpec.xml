@@ -471,7 +471,7 @@
         <field type="staticText" align="left" txt="For detailed descriptions on each of the properties below, see ${upgrade.properties.wiki.page}"/>
         <field type="divider" align="top"/>
         <field type="dir" align="left" variable="existing.installation.home">
-            <spec txt="Select the Previous Installation of Caarray Application" size="25" set="$SYSTEM_user_home"/>
+            <spec txt="Select the Previous Installation of Caarray Application" size="25"/>
             <validator class="com.izforge.izpack.util.ArtifactExistsRelativeToDirValidator" txt="It does not appear that caArray is installed at the specified location as the jboss-4.0.5.GA folder not found." id="jbosshostname.label">
                 <param name="artifactPathRelativeToText" value="jboss-4.0.5.GA"/>
                 <param name="isDir" value="true"/>
@@ -672,9 +672,6 @@
         <field type="staticText" align="left" txt="The information you enter below will connect you to an existing MySQL database. It's highly recommended that 'Database Host Name' NOT be the machine from which you are currently installing. The 'Database User' must have full access to 'Database Name'. It's highly recommended you contact your database administrator to obtain this information. NOTE: All database objects for 'Database Name' will be dropped and recreated during the installation process. For detailed descriptions on each of the properties below, see the Database Settings section at ${installer.properties.wiki.page}"/>
         <field type="divider" align="top"/>
 
-        <variable name="install.path" value="$INSTALL_PATH"/>
-        <variable name="baseDir" value="$INSTALL_PATH"/>
-
         <field type="text" variable="database.server">
             <spec txt="Database Host Name "
                 id="dbhostname.label" size="25" set=""/>
@@ -843,6 +840,8 @@
     </panel>
 
     <panel order="19">
+        <variable name="INSTALL_PATH" value="${UserPathPanelVariable}"/>
+        
         <field type="title" txt="Installation Summary" bold="true" size="1" />
         <field type="staticText" align="left" txt="Below are "/>
         <field type="divider" align="top"/>
@@ -875,6 +874,8 @@
     </panel>
 
     <panel order="20">
+        <variable name="INSTALL_PATH" value="${existing.installation.home}"/>
+        
         <field type="title" txt="Installation Summary" bold="true" size="1" />
         <field type="staticText" align="left" txt="Below are "/>
         <field type="divider" align="top"/>

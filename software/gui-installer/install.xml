@@ -178,8 +178,6 @@
                     <res id="InfoPanel.info" src="@{this.dir}/Readme.txt"/>
                     <res id="userInputSpec.xml" src="@{this.dir}/userInputSpec.xml" />
                     <res id="CustomActionsLang.xml_eng" src="@{this.dir}/custom_eng.xml"/>
-                    <res id="UserPathPanel.dir.windows" src="@{this.dir}/windir.txt"/>
-                    <res id="UserPathPanel.dir.linux" src="@{this.dir}/linuxdir.txt" />
                     <res id="MySQLColumnValueAnalyzerPanel.properties" src="@{this.dir}/MySQLColumnValueAnalyzerPanel.properties" />
                     <res id="MySQLDatabaseInfoExtractionPanel.properties" src="@{this.dir}/MySQLDatabaseInfoExtractionPanel.properties" />
                     <res id="cleanup.xml"  src="@{this.dir}/cleanup.xml"/>
