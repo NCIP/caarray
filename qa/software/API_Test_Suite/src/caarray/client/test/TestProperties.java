@@ -126,6 +126,9 @@ public class TestProperties {
     public static final String TEST_VERSION_SHORT = "short";
     public static final String TEST_VERSION_LONG = "long";
     public static final String TEST_VERSION_ALL = "all";
+    public static final String TEST_CASE_LONG_KEY = "test.long.exclude";
+    public static final String TEST_CASE_LONG = "351,125,133,142,182,183,203,204,294,295,297,299,301,363,365,366,367,368,369,409,410,"
+            + "352,104,107,109,112,114,349,115,119,124,125,350,51,52,318,319";
     
     public static final String NUM_THREADS_KEY = "threads.num";
     
@@ -222,7 +225,7 @@ public class TestProperties {
 	
 	public static List<Float> getExcludedTests()
 	{
-	    return new ArrayList<Float>(excludedTests);
+	    return excludedTests;
 	}
 	
 	public static synchronized void setIncludeOnlyTests(List<Float> tests)
@@ -233,6 +236,34 @@ public class TestProperties {
 	
 	public static List<Float> getIncludeOnlyTests()
 	{
-	    return new ArrayList<Float>(includeOnlyTests);
+	    return includeOnlyTests;
+	}
+	
+	public static void excludeLongTests()
+	{
+	    String tests = System.getProperty(TEST_CASE_LONG_KEY, TEST_CASE_LONG);
+	    if (tests != null)
+	    {
+	        String[] testArray = tests.split(",");
+	        for (String test : testArray)
+	        {
+	            getExcludedTests().add(Float.parseFloat(test));
+	        }
+	        
+	    }
+	}
+	
+	public static void removeExcludedLongTests()
+	{
+	    String tests = System.getProperty(TEST_CASE_LONG_KEY, TEST_CASE_LONG);
+        if (tests != null)
+        {
+            String[] testArray = tests.split(",");
+            for (String test : testArray)
+            {
+                getExcludedTests().remove(Float.parseFloat(test));
+            }
+            
+        }
 	}
 }

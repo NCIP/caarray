@@ -27,6 +27,7 @@
 	<property name="jar.dir" value="${basedir}/gui" />
 	<property name="jar.file" value="${jar.dir}/client_api_test_suite.jar" />
 	<property name="jar.dest.file" value="${basedir}/client_api_test_suite.jar" />
+	<property name="test.long.exclude" value="" />
 	
 	<!-- ******************************************************************* -->
 	<!-- ** TEST SUITE PROPERTIES                                         ** -->

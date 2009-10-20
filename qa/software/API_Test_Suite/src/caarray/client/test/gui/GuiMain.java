@@ -267,6 +267,25 @@ public class GuiMain
         }
         );
         selectionPanel.add(selectAll);
+        JCheckBox excludeLongTests = new JCheckBox("Exclude Long Tests");
+        excludeLongTests.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                JCheckBox box = (JCheckBox)e.getSource();
+                if (box.isSelected())
+                {
+                    TestProperties.excludeLongTests();
+                }
+                else
+                {
+                    TestProperties.removeExcludedLongTests();
+                }
+            } 
+        });
+        TestProperties.excludeLongTests();
+        excludeLongTests.setSelected(true);
+        selectionPanel.add(excludeLongTests);
         initializeTests();
         
         centerPanel.setLayout(new GridLayout(0,1));
