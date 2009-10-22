@@ -15,4 +15,5 @@ Test Case,API,Target Name,Association Name,Attribute Name,Attribute Value,Associ
 400,grid,gov.nih.nci.caarray.domain.vocabulary.Category,,,,,,,,200
 402,grid,gov.nih.nci.caarray.domain.vocabulary.Category,,name,DiseaseState,,,,1,
 404,grid,gov.nih.nci.caarray.domain.project.Factor,,,,,,,,100
-406,grid,gov.nih.nci.caarray.domain.project.Factor,,name,Age,,,,,1
+406.1,grid,gov.nih.nci.caarray.domain.project.Factor,,name,Age,,,,,1
+406.2,grid,gov.nih.nci.caarray.domain.sample.TermBasedCharacteristic,,id,1,,,,,1

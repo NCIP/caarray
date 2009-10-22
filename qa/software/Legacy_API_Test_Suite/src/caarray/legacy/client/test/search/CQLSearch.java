@@ -22,9 +22,7 @@ public class CQLSearch
      * 
      */
     public CQLSearch()
-    {
-        // TODO Auto-generated constructor stub
-    }
+    {}
 
     /**
      * @return the testCase
