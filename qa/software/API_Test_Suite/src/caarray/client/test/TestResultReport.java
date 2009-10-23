@@ -239,6 +239,7 @@ public class TestResultReport {
 	    List<TestResult> resultList = new ArrayList<TestResult>();
 	    resultList.addAll(results);
 	    
+	    // Create a mapping of test case -> a list of the test results for that case
 	    Map<Float, List<Integer>> testCaseIndexMap = new TreeMap<Float, List<Integer>>();
 	    for (int i = 0; i < resultList.size(); i++)
 	    {
@@ -250,18 +251,24 @@ public class TestResultReport {
 	        }
 	        testCaseIndexMap.get(testCase).add(i);
 	    }
-	    
+	     
+	    // For each test case, compare the results for each thread and record any discrepancies
 	    for (float testCase : testCaseIndexMap.keySet())
 	    {
 	        String[] resultRow = null;
 	        List<Integer> indices = testCaseIndexMap.get(testCase);
+	        
+	        //Look for inconsistencies for pass/fail for a single case
 	        List<Integer> passed = new ArrayList<Integer>();
 	        List<Integer> failed = new ArrayList<Integer>();
+	        
+	        //Look for elapsed time inconsistencies (1 minute or more)
 	        long minTime = Long.MAX_VALUE;
             long maxTime = Long.MIN_VALUE;
             int shortThread = -1;
             int longThread = -1;
             long maxDiff = 60000;
+            
 	        for (int i : indices)
 	        {
 	            TestResult result = resultList.get(i);

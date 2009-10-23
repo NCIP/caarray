@@ -32,6 +32,7 @@ import caarray.client.test.TestProperties;
 import caarray.client.test.TestResult;
 import caarray.client.test.search.CriteriaSearch;
 import caarray.client.test.search.DataSetSearch;
+import caarray.client.test.search.TestBean;
 
 /**
  * @author vaughng
@@ -70,7 +71,7 @@ public class DataSetTestSuite extends SearchByCriteriaTestSuite
      * @see caarray.client.test.suite.SearchByCriteriaTestSuite#evaluateResults(java.lang.Object, caarray.client.test.search.CriteriaSearch, caarray.client.test.TestResult)
      */
     @Override
-    protected void evaluateResults(Object resultsList, CriteriaSearch search,
+    protected void evaluateResults(Object resultsList, TestBean search,
             TestResult testResult)
     {
         DataSetSearch dataSearch = (DataSetSearch) search;
@@ -330,6 +331,7 @@ public class DataSetTestSuite extends SearchByCriteriaTestSuite
         {
             System.out.println("Error encountered retrieving data set: " + e.getClass() + (e.getMessage() != null ? e.getMessage() : ""));
             testResult.addDetail("Exception encountered retrieving data set: " + e.getClass() + (e.getMessage() != null ? e.getMessage() : ""));
+            log.error(e);
         } 
         
         
@@ -351,7 +353,7 @@ public class DataSetTestSuite extends SearchByCriteriaTestSuite
      */
     @Override
     protected void populateAdditionalSearchValues(String[] input,
-            CriteriaSearch criteriaSearch) throws Exception
+            TestBean criteriaSearch) throws Exception
     {
         DataSetSearch search = (DataSetSearch)criteriaSearch;
         DataSetRequest criteria = search.getDataSetRequest();
@@ -390,6 +392,7 @@ public class DataSetTestSuite extends SearchByCriteriaTestSuite
             catch (Exception e)
             {
                 System.out.println("Exception occured retrieving files for DataSet test: " + search.getTestCase());
+                log.error(e);
             }
             
             
@@ -418,6 +421,7 @@ public class DataSetTestSuite extends SearchByCriteriaTestSuite
             catch (Exception e)
             {
                 ref = new CaArrayEntityReference(name);
+                log.error(e);
             }
                      
             criteria.getHybridizations().add(ref);
@@ -437,6 +441,7 @@ public class DataSetTestSuite extends SearchByCriteriaTestSuite
             catch (Exception e)
             {
                 ref = new CaArrayEntityReference(name);
+                log.error(e);
             }
                      
             criteria.getQuantitationTypes().add(ref);
@@ -448,7 +453,7 @@ public class DataSetTestSuite extends SearchByCriteriaTestSuite
      * @see caarray.client.test.suite.SearchByCriteriaTestSuite#populateSearch(java.lang.String[], caarray.client.test.search.CriteriaSearch)
      */
     @Override
-    protected void populateSearch(String[] input, CriteriaSearch criteriaSearch)
+    protected void populateSearch(String[] input, TestBean criteriaSearch)
             throws Exception
     {
         DataSetSearch search = (DataSetSearch)criteriaSearch;
@@ -557,6 +562,7 @@ public class DataSetTestSuite extends SearchByCriteriaTestSuite
             catch (Exception e)
             {
                 ref = new CaArrayEntityReference(name);
+                log.error(e);
             }
                      
             criteria.getHybridizations().add(ref);
@@ -576,6 +582,7 @@ public class DataSetTestSuite extends SearchByCriteriaTestSuite
             catch (Exception e)
             {
                 ref = new CaArrayEntityReference(name);
+                log.error(e);
             }
                      
             criteria.getQuantitationTypes().add(ref);

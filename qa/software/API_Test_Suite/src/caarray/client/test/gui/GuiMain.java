@@ -27,6 +27,9 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.text.BadLocationException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import caarray.client.test.ApiFacade;
 import caarray.client.test.TestMain;
 import caarray.client.test.TestProperties;
@@ -35,19 +38,29 @@ import caarray.client.test.full.FullApiFacade;
 import caarray.client.test.suite.ConfigurableTestSuite;
 
 /**
+ * GUI from which the API test suites can configured and run. The interface allows the
+ * user to modify parameters such as urls, ports, number of concurrent test threads, and specific
+ * test cases to be included/excluded, as well as constrain the tests to specific categories
+ * (file download, ArrayDesign search-by-example, etc).
+ * 
  * @author vaughng Jul 18, 2009
  */
 public class GuiMain
 {
-
+    private static final Log log = LogFactory.getLog(GuiMain.class);
+    /*  Corresponds to specific test categories and indicates whether a category should be run */
     private boolean[] runTests;
+    /* Prevents tests from being initiated when tests are currently running */
     private Boolean isRunning = false;
-    //private List<ConfigurableTestSuite> testSuites = new ArrayList<ConfigurableTestSuite>();
+    
+    /* List of available test suite objects */
     private List<List<ConfigurableTestSuite>> testSuiteCollection = new ArrayList<List<ConfigurableTestSuite>>();
+    /* Checkboxes corresponding to test suite objects (test categories)  */
     private List<JCheckBox> testCheckBoxes = new ArrayList<JCheckBox>();
-    //private ApiFacade apiFacade = new FullApiFacade();
+    /* List of ApiFacade objects used for test execution, one per test thread */
     private List<ApiFacade> apiFacades = new ArrayList<ApiFacade>();
-    Thread executionThread;
+    /* Primary test execution thread, prevents gui from locking while tests are running */
+    private Thread executionThread;
     
     private JPanel selectionPanel = new JPanel();
     private JPanel centerPanel = new JPanel();
@@ -62,20 +75,20 @@ public class GuiMain
 
         JPanel topPanel = new JPanel();
 
+        /* ###### Text fields for modifiable parameters ##### */
+        
         final JTextField javaHostText = new JTextField(TestProperties
                 .getJavaServerHostname(),20);
         JLabel javaHostLabel = new JLabel("Java Service Host");
         JButton save = new JButton("Save");
         save.addActionListener(new ActionListener()
         {
-
             public void actionPerformed(ActionEvent arg0)
             {
                 TestProperties.setJavaServerHostname(javaHostText.getText());
             }
             
-        });
-        
+        });     
 
         JLabel javaPortLabel = new JLabel("Java Port");
         final JTextField javaPortText = new JTextField(Integer
@@ -83,7 +96,6 @@ public class GuiMain
         JButton save2 = new JButton("Save");
         save2.addActionListener(new ActionListener()
         {
-
             public void actionPerformed(ActionEvent arg0)
             {
                 try
@@ -94,8 +106,7 @@ public class GuiMain
                 catch (NumberFormatException e)
                 {
                     System.out.println(javaPortText.getText() + " is not a valid port number.");
-                }
-                
+                }              
             }
             
         });
@@ -286,14 +297,14 @@ public class GuiMain
         TestProperties.excludeLongTests();
         excludeLongTests.setSelected(true);
         selectionPanel.add(excludeLongTests);
+        
+        //Initialize check boxes corresponding to test categories
         initializeTests();
         
         centerPanel.setLayout(new GridLayout(0,1));
         centerPanel.add(selectionPanel);
         
-        
-
-        
+        //Redirect System messages to gui     
         JScrollPane textScroll = new JScrollPane();
         textScroll.setViewportView(textDisplay);
         System.setOut(new PrintStream(new JTextAreaOutputStream(textDisplay)));
@@ -317,8 +328,8 @@ public class GuiMain
                     }
                     catch (Exception e)
                     {
-                        System.out.println("An error occured executing the tests: " + e.getClass());
-                        e.printStackTrace();
+                        System.out.println("An error occured executing the tests: " + e.getClass() + ". Check error log for details.");
+                        log.error(e);
                     }
                 }              
            
@@ -333,6 +344,9 @@ public class GuiMain
         frame.setVisible(true);
     }
 
+    /*
+     * Creates check boxes corresponding to each test category (ConfigurableTestSuite).
+     */
     private void initializeTests() throws Exception
     {
         int index = 0;
@@ -366,6 +380,9 @@ public class GuiMain
         apiFacades.add(apiFacade);
     }
     
+    /*
+     * Resets all test suite objects.
+     */
     private void resetTests() throws Exception
     {
         apiFacades.clear();
@@ -380,6 +397,9 @@ public class GuiMain
         apiFacades.add(apiFacade);
     }
     
+    /*
+     * Selects all test suites.
+     */
     private void selectAll(boolean select)
     {
         for (JCheckBox box : testCheckBoxes)
@@ -387,6 +407,10 @@ public class GuiMain
             box.setSelected(select);
         }
     }
+    
+    /*
+     * Initiates selected test suites.
+     */
     private void runTests() throws Exception
     {
         synchronized (isRunning)
@@ -408,6 +432,10 @@ public class GuiMain
         
     }
     
+    /*
+     * Runs a single instance of each test suite object if load testing has
+     * not been specified (default).
+     */
     private void runSingleThreadTest()
     {
 
@@ -416,10 +444,8 @@ public class GuiMain
         final List<ConfigurableTestSuite> testSuites = testSuiteCollection.get(0);
         Runnable runner = new Runnable()
         {
-
             public void run()
-            {
-                
+            {               
                 try
                 {
                     apiFacade.connect();
@@ -442,8 +468,9 @@ public class GuiMain
                 catch (Throwable t)
                 {
                     System.out.println("An exception occured execuitng the tests: " + t.getClass());
-                    System.out.println("Test suite aborted.");
+                    System.out.println("Test suite aborted. Check error log for details.");
                     t.printStackTrace();
+                    log.error(t);
                 }
                 
             }
@@ -460,6 +487,10 @@ public class GuiMain
         executionThread.start();
     }
     
+    /*
+     * Executes test suites in multiple threads, with each thread running one instance of each
+     * selected test suite.
+     */
     class LoadTestExecutor implements Runnable
     {
         private int numThreads;
@@ -527,12 +558,16 @@ public class GuiMain
                 System.out.println("An exception occured execuitng the load tests: " + t.getClass());
                 System.out.println("Test suite aborted.");
                 t.printStackTrace();
+                log.error(t);
             }
             
             
         }       
     }
     
+    /*
+     * A single test thread, used for load testing.
+     */
     class LoadTestThread implements Runnable
     {
         private ApiFacade apiFacade;
@@ -570,6 +605,7 @@ public class GuiMain
                 System.out.println("An exception occured in thread " + thread + ": " + t.getClass());
                 System.out.println("Test suite aborted.");
                 t.printStackTrace();
+                log.error(t);
             }
             
         }
@@ -639,6 +675,7 @@ public class GuiMain
                     {
                         System.out.println("An unexpected error occurred during test execution.");
                         t.printStackTrace();
+                        log.error(t);
                     }
                     
                 }

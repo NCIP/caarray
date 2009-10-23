@@ -145,6 +145,7 @@ public class HybridizationTestSuite extends SearchByExampleTestSuite
             catch (Exception e)
             {
                 System.out.println("Exception retrieving array design: " + e.getClass());
+                log.error(e);
             }
             
         }

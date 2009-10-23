@@ -21,6 +21,7 @@ import caarray.client.test.TestProperties;
 import caarray.client.test.TestResult;
 import caarray.client.test.search.CriteriaSearch;
 import caarray.client.test.search.HybridizationCriteriaSearch;
+import caarray.client.test.search.TestBean;
 
 /**
  * @author vaughng
@@ -57,7 +58,7 @@ public class HybridizationCriteriaTestSuite extends SearchByCriteriaTestSuite
      * @see caarray.client.test.suite.SearchByCriteriaTestSuite#evaluateResults(java.lang.Object, caarray.client.test.search.CriteriaSearch, caarray.client.test.TestResult)
      */
     @Override
-    protected void evaluateResults(Object resultsList, CriteriaSearch search,
+    protected void evaluateResults(Object resultsList, TestBean search,
             TestResult testResult)
     {
         HybridizationCriteriaSearch hybSearch = (HybridizationCriteriaSearch)search;
@@ -147,6 +148,7 @@ public class HybridizationCriteriaTestSuite extends SearchByCriteriaTestSuite
         {
             System.out.println("Error encountered executing search: " + e.getMessage());
             testResult.addDetail("Exception encountered executing search: " + e.getClass() + (e.getMessage() != null ? e.getMessage() : ""));
+            log.error(e);
         } 
         
         
@@ -168,7 +170,7 @@ public class HybridizationCriteriaTestSuite extends SearchByCriteriaTestSuite
      */
     @Override
     protected void populateAdditionalSearchValues(String[] input,
-            CriteriaSearch criteriaSearch) throws Exception
+            TestBean criteriaSearch) throws Exception
     {
         HybridizationCriteriaSearch search = (HybridizationCriteriaSearch)criteriaSearch;
         HybridizationSearchCriteria criteria = search.getSearchCriteria();
@@ -212,7 +214,7 @@ public class HybridizationCriteriaTestSuite extends SearchByCriteriaTestSuite
      * @see caarray.client.test.suite.SearchByCriteriaTestSuite#populateSearch(java.lang.String[], caarray.client.test.search.CriteriaSearch)
      */
     @Override
-    protected void populateSearch(String[] input, CriteriaSearch criteriaSearch)
+    protected void populateSearch(String[] input, TestBean criteriaSearch)
             throws Exception
     {
         HybridizationCriteriaSearch search = (HybridizationCriteriaSearch)criteriaSearch;

@@ -3,6 +3,9 @@
  */
 package caarray.client.test.full;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import caarray.client.test.TestMain;
 
 /**
@@ -13,7 +16,8 @@ import caarray.client.test.TestMain;
  */
 public class FullTest
 {
-
+    private static final Log log = LogFactory.getLog(FullTest.class);
+    
     /**
      * @param args
      */
@@ -28,6 +32,7 @@ public class FullTest
         {
             System.out.println("An unexpected error occurred during test execution.");
             t.printStackTrace();
+            log.error(t);
         }
 
     }

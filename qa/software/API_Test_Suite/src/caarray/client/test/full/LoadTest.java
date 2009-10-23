@@ -6,6 +6,9 @@ package caarray.client.test.full;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import caarray.client.test.ApiFacade;
 import caarray.client.test.TestMain;
 import caarray.client.test.TestProperties;
@@ -13,12 +16,16 @@ import caarray.client.test.TestResultReport;
 import caarray.client.test.suite.ConfigurableTestSuite;
 
 /**
+ * Main class executed when load testing is initiated via the build script.
+ * 
  * @author vaughng
  * Aug 26, 2009
  */
 public class LoadTest
 {
-
+    private static final Log log = LogFactory.getLog(LoadTest.class);
+    
+    private static final int DEFAULT_THREADS = 5;
     /**
      * @param args
      */
@@ -29,8 +36,8 @@ public class LoadTest
         int numThreads = TestProperties.getNumThreads();
         if (numThreads <= 1)
         {
-            System.out.println("Thread count for load test set to 1 - setting to default count of 10.");
-            numThreads = 10;
+            System.out.println("Thread count for load test set to 1 - setting to default count of " + DEFAULT_THREADS);
+            numThreads = DEFAULT_THREADS;
         }
         try
         {
@@ -85,6 +92,7 @@ public class LoadTest
             System.out.println("An exception occured execuitng the load tests: " + t.getClass());
             System.out.println("Test suite aborted.");
             t.printStackTrace();
+            log.error(t);
         }
         
         
@@ -125,6 +133,7 @@ public class LoadTest
                 System.out.println("An exception occured in thread " + thread + ": " + t.getClass());
                 System.out.println("Test suite aborted.");
                 t.printStackTrace();
+                log.error(t);
             }
             
         }

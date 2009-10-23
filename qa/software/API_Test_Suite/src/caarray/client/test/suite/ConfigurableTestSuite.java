@@ -98,10 +98,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import caarray.client.test.ApiFacade;
 import caarray.client.test.TestConfigurationException;
 import caarray.client.test.TestResultReport;
 import caarray.client.test.TestUtils;
+import caarray.client.test.full.FullTest;
 
 /**
  * Encapsulates a collection of test cases, some or all of which may be configured via
@@ -111,7 +115,8 @@ import caarray.client.test.TestUtils;
  */
 public abstract class ConfigurableTestSuite
 {
-
+    protected Log log;
+    
     protected static final String DELIMITER = ",";
     protected static final String TEST_CASE = "Test Case";
     protected static final String ID = "Id";
@@ -143,6 +148,7 @@ public abstract class ConfigurableTestSuite
     protected ConfigurableTestSuite(ApiFacade apiFacade)
     {
         this.apiFacade = apiFacade;
+        log = LogFactory.getLog(this.getClass());
     }
     
     /**
@@ -158,6 +164,8 @@ public abstract class ConfigurableTestSuite
     
         try
         {
+            Log log = LogFactory.getLog(this.getClass());
+            log.debug("Log test ...");
             loadTestsFromFile();
             executeTests(resultReport);
         }
@@ -167,6 +175,7 @@ public abstract class ConfigurableTestSuite
                     + " configuration file: " + e.getMessage();
             resultReport.addErrorMessage(errorMessage);
             e.printStackTrace();
+            log.error(e);
         }
         catch (IOException e)
         {
@@ -174,6 +183,7 @@ public abstract class ConfigurableTestSuite
                     + " test suite: " + e.getMessage();
             resultReport.addErrorMessage(errorMessage);
             e.printStackTrace();
+            log.error(e);
         }
     
         catch (TestConfigurationException e)
@@ -184,6 +194,7 @@ public abstract class ConfigurableTestSuite
                     + "file: " + e.getMessage();
             resultReport.addErrorMessage(errorMessage);
             e.printStackTrace();
+            log.error(e);
         }
         catch (Throwable t)
         {
@@ -191,6 +202,7 @@ public abstract class ConfigurableTestSuite
                 + " : " + t.getLocalizedMessage();
             resultReport.addErrorMessage(errorMessage);
             t.printStackTrace();
+            log.error(t);
         }
     
     }

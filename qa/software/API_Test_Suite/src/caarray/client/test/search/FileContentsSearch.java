@@ -9,13 +9,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Encapsulates a file download test.
+ * 
  * @author vaughng
  * Jul 14, 2009
  */
 public class FileContentsSearch extends CriteriaSearch
 {
 
-    private Integer expectedBytes = null, minBytes = null, maxBytes = null, multiFileNum = null, idfBytes = null, sdrfBytes = null, numFiles = null;
+    private Integer expectedBytes = null, minBytes = null, maxBytes = null, multiFileNum = null, idfBytes = null, sdrfBytes = null, numMageTabFiles = null;
     private boolean compressed = false, zip = false, mage = false;
     private String multiFileType = null;
     private List<CaArrayEntityReference> fileReferences = new ArrayList<CaArrayEntityReference>();
@@ -104,23 +106,38 @@ public class FileContentsSearch extends CriteriaSearch
         this.multiFileType = multiFileType;
     }
 
+    /**
+     * Returns the list of file references used in a file search.
+     * @return the list of file references used in a file search.
+     */
     public List<CaArrayEntityReference> getFileReferences()
     {
         return fileReferences;
     }
 
+    /**
+     * Name of the experiment containing the desired file.
+     * 
+     * @return Name of the experiment containing the desired file.
+     */
     public String getExperimentName()
     {
         return experimentName;
     }
 
+    /**
+     * Name of the experiment containing the desired file.
+     * 
+     * @param experimentName Name of the experiment containing the desired file.
+     */
     public void setExperimentName(String experimentName)
     {
         this.experimentName = experimentName;
     }
 
     /**
-     * @return the experimentRef
+     * Return Experiment reference used in a file search.
+     * @return Experiment reference used in a file search.
      */
     public CaArrayEntityReference getExperimentRef()
     {
@@ -128,7 +145,8 @@ public class FileContentsSearch extends CriteriaSearch
     }
 
     /**
-     * @param experimentRef the experimentRef to set
+     * Experiment reference used in a file search.
+     * @param experimentRef Experiment reference used in a file search.
      */
     public void setExperimentRef(CaArrayEntityReference experimentRef)
     {
@@ -136,7 +154,8 @@ public class FileContentsSearch extends CriteriaSearch
     }
 
     /**
-     * @return the mage
+     * Indicates whether this test is a mage tab download.
+     * @return Indicates whether this test is a mage tab download.
      */
     public boolean isMage()
     {
@@ -144,7 +163,9 @@ public class FileContentsSearch extends CriteriaSearch
     }
 
     /**
-     * @param mage the mage to set
+     * Indicates whether this test is a mage tab download.
+     * 
+     * @param mage Indicates whether this test is a mage tab download.
      */
     public void setMage(boolean mage)
     {
@@ -152,7 +173,9 @@ public class FileContentsSearch extends CriteriaSearch
     }
 
     /**
-     * @return the idfBytes
+     * Return the number of idf bytes returned in a MageTabFileSet.
+     * 
+     * @return the idfBytes the number of idf bytes returned in a MageTabFileSet.
      */
     public Integer getIdfBytes()
     {
@@ -160,7 +183,8 @@ public class FileContentsSearch extends CriteriaSearch
     }
 
     /**
-     * @param idfBytes the idfBytes to set
+     * Set the number of idf bytes returned in a MageTabFileSet.
+     * @param idfBytes the number of idf bytes returned in a MageTabFileSet.
      */
     public void setIdfBytes(Integer idfBytes)
     {
@@ -168,7 +192,8 @@ public class FileContentsSearch extends CriteriaSearch
     }
 
     /**
-     * @return the sdrfBytes
+     * Return the number of sdrf bytes returned in a MageTabFileSet.
+     * @return the number of sdrf bytes returned in a MageTabFileSet.
      */
     public Integer getSdrfBytes()
     {
@@ -176,7 +201,9 @@ public class FileContentsSearch extends CriteriaSearch
     }
 
     /**
-     * @param sdrfBytes the sdrfBytes to set
+     * Set the number of sdrf bytes returned in a MageTabFileSet.
+     * 
+     * @param sdrfBytes the number of sdrf bytes returned in a MageTabFileSet.
      */
     public void setSdrfBytes(Integer sdrfBytes)
     {
@@ -184,18 +211,21 @@ public class FileContentsSearch extends CriteriaSearch
     }
 
     /**
-     * @return the numFiles
+     * Returns the number of files returned in a MageTabFileSet.
+     * 
+     * @return the number of files returned in a MageTabFileSet.
      */
-    public Integer getNumFiles()
+    public Integer getNumMageTabFiles()
     {
-        return numFiles;
+        return numMageTabFiles;
     }
 
     /**
-     * @param numFiles the numFiles to set
+     * Set the number of files returned in a MageTabFileSet.
+     * @param numFiles the number of files returned in a MageTabFileSet.
      */
-    public void setNumFiles(Integer numFiles)
+    public void setNumMageTabFiles(Integer numFiles)
     {
-        this.numFiles = numFiles;
+        this.numMageTabFiles = numFiles;
     }
 }

@@ -43,18 +43,36 @@ A test result report .csv file will be written to the 'report' directory
 upon completion of the test suite.
 
 
+LOAD TESTING
+--------------------------------------------------------------
+
+Load testing can be initiated via the gui by setting 'Number of Threads'
+to the number of concurrent test threads that you wish to run, or by invoking
+the ant target load_test and setting the 'threads.num' build property. Instances
+of each selected test will be run concurrently in separate threads, and the
+results will be written to Load_Tests_API_Test_Results.csv. A simple analysis
+of the load tests will be written to Load_Test_Analysis.csv, indicating
+any discrepancies between threads, for instance if a particular test passes
+in one thread but fails in another, or if a particular test takes significantly
+longer to execute in one thread than another.
+
+
 CONFIGURING THE TEST SUITE
 --------------------------------------------------------------
 
 The caArray server host names and ports can be set in the build.xml
-file in the 'SERVER CONNECTION PROPERTIES' section. The directory
+file in the 'SERVER CONNECTION PROPERTIES' section, or in the gui. The directory
 and files to which the test result report will be written can be
 set in the build.xml file in the 'TEST RESULT REPORT PROPERTIES'
 section.
 
 Parameters for individual tests can be set in .csv files in the 
-'config' directory. Configuration files will be added to the directory
-as the supporting code is added to the test suite.
+'config' directory. Modifications to existing test cases can be
+made by updating parameters in the corresponding configuration
+file, and new tests can be added by adding rows to configuration
+files. However, if additional columns must be added to the configuration
+files to accommodate unanticipated test parameters, the corresponding
+TestSuite object code must be updated appropriately.
 
 General rules for configuring test parameters:
 Parameters for an individual test must be set in one or more rows of

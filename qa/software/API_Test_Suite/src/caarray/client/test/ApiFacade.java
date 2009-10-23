@@ -37,7 +37,7 @@ import java.util.List;
 
 /**
  * Hides the details of the API being used by providing
- * generic search and retrieval methods.
+ * generic search and retrieval methods. Methods correspond directly to API methods.
  * Used for transparent testing of one or both APIs.
  * 
  * @author vaughng
@@ -105,10 +105,6 @@ public interface ApiFacade
     public List<Person> getAllPrincipalInvestigators(String api) throws Exception;
     
     public List<Term> getTermsForCategory(String api, CaArrayEntityReference categoryRef, String valuePrefix) throws Exception;
-    
-    //public AbstractCaArrayEntity getByReference(String api, CaArrayEntityReference reference) throws Exception;
-    
-    //public List<AbstractCaArrayEntity> getByReferences(String api, List<CaArrayEntityReference> references) throws Exception;
     
     public CaArrayEntityReference getCategoryReference(String api, String categoryName) throws Exception;
     

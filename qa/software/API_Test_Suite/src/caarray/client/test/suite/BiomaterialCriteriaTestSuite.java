@@ -21,6 +21,7 @@ import caarray.client.test.TestProperties;
 import caarray.client.test.TestResult;
 import caarray.client.test.search.BiomaterialCriteriaSearch;
 import caarray.client.test.search.CriteriaSearch;
+import caarray.client.test.search.TestBean;
 
 /**
  * @author vaughng
@@ -58,7 +59,7 @@ public class BiomaterialCriteriaTestSuite extends SearchByCriteriaTestSuite
     @Override
     protected void evaluateResults(
             Object resultsList,
-            CriteriaSearch search, TestResult testResult)
+            TestBean search, TestResult testResult)
     {
         BiomaterialCriteriaSearch bioSearch = (BiomaterialCriteriaSearch)search;
         List<Biomaterial> bioResults = (List<Biomaterial>)resultsList;
@@ -148,6 +149,7 @@ public class BiomaterialCriteriaTestSuite extends SearchByCriteriaTestSuite
         {
             System.out.println("Error encountered executing search: " + e.getMessage());
             testResult.addDetail("Exception encountered executing search: " + e.getClass() + (e.getMessage() != null ? e.getMessage() : ""));
+            log.error(e);
         } 
         
         
@@ -169,7 +171,7 @@ public class BiomaterialCriteriaTestSuite extends SearchByCriteriaTestSuite
      */
     @Override
     protected void populateAdditionalSearchValues(String[] input,
-            CriteriaSearch criteriaSearch) throws Exception
+            TestBean criteriaSearch) throws Exception
     {
         BiomaterialCriteriaSearch search = (BiomaterialCriteriaSearch)criteriaSearch;
         BiomaterialSearchCriteria criteria = search.getSearchCriteria();
@@ -203,7 +205,7 @@ public class BiomaterialCriteriaTestSuite extends SearchByCriteriaTestSuite
      * @see caarray.client.test.suite.SearchByCriteriaTestSuite#populateSearch(java.lang.String[], caarray.client.test.search.CriteriaSearch)
      */
     @Override
-    protected void populateSearch(String[] input, CriteriaSearch criteriaSearch)
+    protected void populateSearch(String[] input, TestBean criteriaSearch)
             throws Exception
     {
         BiomaterialCriteriaSearch search = (BiomaterialCriteriaSearch)criteriaSearch;

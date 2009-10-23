@@ -89,15 +89,7 @@ public class FullApiFacade implements ApiFacade
         return getFacade(api).getAllPrincipalInvestigators(api);
     }
 
-    /* (non-Javadoc)
-     * @see caarray.client.test.ApiFacade#getByReference(java.lang.String, gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference)
-     */
-    /*public AbstractCaArrayEntity getByReference(String api,
-            CaArrayEntityReference reference) throws Exception
-    {
-        return getFacade(api).getByReference(api, reference);
-    }*/
-
+    
     /* (non-Javadoc)
      * @see caarray.client.test.ApiFacade#getTermsForCategory(java.lang.String, gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference, java.lang.String)
      */
@@ -106,15 +98,6 @@ public class FullApiFacade implements ApiFacade
     {
         return getFacade(api).getTermsForCategory(api, categoryRef, valuePrefix);
     }
-
-    /* (non-Javadoc)
-     * @see caarray.client.test.ApiFacade#getbyReferences(java.lang.String, java.util.List)
-     */
-    /*public List<AbstractCaArrayEntity> getByReferences(String api,
-            List<CaArrayEntityReference> references) throws Exception
-    {
-        return getFacade(api).getByReferences(api, references);
-    }*/
 
     /* (non-Javadoc)
      * @see caarray.client.test.ApiFacade#searchByExample(java.lang.String, gov.nih.nci.caarray.external.v1_0.query.ExampleSearchCriteria, gov.nih.nci.caarray.external.v1_0.query.LimitOffset)

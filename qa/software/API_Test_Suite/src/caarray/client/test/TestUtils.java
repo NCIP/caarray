@@ -86,6 +86,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
+ * General purpose utility methods.
+ * 
  * @author vaughng
  * Jun 26, 2009
  */

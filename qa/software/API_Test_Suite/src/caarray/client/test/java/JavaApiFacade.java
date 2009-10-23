@@ -42,8 +42,6 @@ import gov.nih.nci.caarray.services.external.v1_0.search.SearchResultIterator;
 import gov.nih.nci.caarray.services.external.v1_0.search.SearchService;
 
 import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
-import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -103,18 +101,6 @@ public class JavaApiFacade implements ApiFacade
     {
         return javaSearchService.getAllPrincipalInvestigators();
     }
-
-    /*public AbstractCaArrayEntity getByReference(String api,
-            CaArrayEntityReference reference) throws Exception
-    {
-        return javaSearchService.getByReference(reference);
-    }
-
-    public List<AbstractCaArrayEntity> getByReferences(String api,
-            List<CaArrayEntityReference> references) throws Exception
-    {
-        return javaSearchService.getByReferences(references);
-    }*/
 
     public List<Term> getTermsForCategory(String api,
             CaArrayEntityReference categoryRef, String valuePrefix)

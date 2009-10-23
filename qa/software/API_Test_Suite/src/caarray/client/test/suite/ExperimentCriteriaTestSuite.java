@@ -24,6 +24,7 @@ import caarray.client.test.TestProperties;
 import caarray.client.test.TestResult;
 import caarray.client.test.search.CriteriaSearch;
 import caarray.client.test.search.ExperimentCriteriaSearch;
+import caarray.client.test.search.TestBean;
 
 /**
  * @author vaughng
@@ -69,7 +70,7 @@ public class ExperimentCriteriaTestSuite extends SearchByCriteriaTestSuite
     @Override
     protected void evaluateResults(
             Object resultsList,
-            CriteriaSearch search, TestResult testResult)
+            TestBean search, TestResult testResult)
     {
         ExperimentCriteriaSearch experimentSearch = (ExperimentCriteriaSearch)search;
         List<Experiment> experimentResults = (List<Experiment>)resultsList;
@@ -243,7 +244,7 @@ public class ExperimentCriteriaTestSuite extends SearchByCriteriaTestSuite
      */
     @Override
     protected void populateAdditionalSearchValues(String[] input,
-            CriteriaSearch criteriaSearch) throws Exception
+            TestBean criteriaSearch) throws Exception
     {
         ExperimentCriteriaSearch search = (ExperimentCriteriaSearch)criteriaSearch;
         addAnnotationCriterion(search, search.getExperimentSearchCriteria(), input);
@@ -253,7 +254,7 @@ public class ExperimentCriteriaTestSuite extends SearchByCriteriaTestSuite
      * @see caarray.client.test.suite.SearchByCriteriaTestSuite#populateSearch(java.lang.String[], caarray.client.test.search.CriteriaSearch)
      */
     @Override
-    protected void populateSearch(String[] input, CriteriaSearch criteriaSearch) throws Exception
+    protected void populateSearch(String[] input, TestBean criteriaSearch) throws Exception
     {
         ExperimentCriteriaSearch search = (ExperimentCriteriaSearch)criteriaSearch;
         ExperimentSearchCriteria criteria = new ExperimentSearchCriteria();
@@ -535,6 +536,7 @@ public class ExperimentCriteriaTestSuite extends SearchByCriteriaTestSuite
         {
             System.out.println("Error encountered executing search: " + e.getClass() + (e.getMessage() != null ? e.getMessage() : ""));
             testResult.addDetail("Exception encountered executing search: " + e.getClass() + (e.getMessage() != null ? e.getMessage() : ""));
+            log.error(e);
         } 
         
         

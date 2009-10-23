@@ -13,6 +13,7 @@ import caarray.client.test.TestResult;
 import caarray.client.test.TestResultReport;
 import caarray.client.test.TestUtils;
 import caarray.client.test.search.CriteriaSearch;
+import caarray.client.test.search.TestBean;
 
 /**
  * @author vaughng
@@ -72,6 +73,7 @@ public abstract class SearchByCriteriaTestSuite extends ConfigurableTestSuite
                     }
                     catch (Exception e)
                     {
+                        log.error(e);
                         throw new TestConfigurationException("Exception constructing test case " + search.getTestCase() + ": "+ e.getClass());
                     }
                 }              
@@ -95,6 +97,7 @@ public abstract class SearchByCriteriaTestSuite extends ConfigurableTestSuite
                 catch (Exception e)
                 {
                     e.printStackTrace();
+                    log.error(e);
                     throw new TestConfigurationException("Expection constructing test case: " + e);
                 }
                     
@@ -153,6 +156,7 @@ public abstract class SearchByCriteriaTestSuite extends ConfigurableTestSuite
                         "An exception occured executing an " + getType() + " search: "
                                 + t.getMessage());
                 t.printStackTrace();
+                log.error(t);
             }
 
             resultReport.addTestResult(testResult);
@@ -206,7 +210,7 @@ public abstract class SearchByCriteriaTestSuite extends ConfigurableTestSuite
      * @param errorMessage
      */
     protected void setTestResultFailure(TestResult testResult,
-            CriteriaSearch search, String errorMessage)
+            TestBean search, String errorMessage)
     {
         testResult.setPassed(false);
         if (search.getTestCase() != null)
@@ -221,7 +225,7 @@ public abstract class SearchByCriteriaTestSuite extends ConfigurableTestSuite
      * @param criteriaSearch CriteriaSearch bean to be populated.
      * @throws Exception TODO
      */
-    protected abstract void populateSearch(String[] input, CriteriaSearch criteriaSearch) throws Exception;
+    protected abstract void populateSearch(String[] input, TestBean criteriaSearch) throws Exception;
     
     /**
      * For test cases configured in multiple rows of a spreadsheet, populates search
@@ -230,7 +234,7 @@ public abstract class SearchByCriteriaTestSuite extends ConfigurableTestSuite
      * @param criteriaSearch CriteriaSearch bean to be populated.
      * @throws Exception TODO
      */
-    protected abstract void populateAdditionalSearchValues(String[] input, CriteriaSearch criteriaSearch) throws Exception;
+    protected abstract void populateAdditionalSearchValues(String[] input, TestBean criteriaSearch) throws Exception;
     
     /**
      * Determines the pass/fail status of a test based on the given search results.
@@ -239,7 +243,7 @@ public abstract class SearchByCriteriaTestSuite extends ConfigurableTestSuite
      * @param search ExampleSearch specifying the expected results of the test search.
      * @param testResult TestResult to which a status will be added.
      */
-    protected abstract void evaluateResults(Object resultsList, CriteriaSearch search, TestResult testResult);
+    protected abstract void evaluateResults(Object resultsList, TestBean search, TestResult testResult);
 
     /**
      * Returns a new, type-specific CriteriaSearch object to be populated.

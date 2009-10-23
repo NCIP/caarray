@@ -94,13 +94,11 @@ import java.util.List;
  * @author vaughng 
  * Jun 27, 2009
  */
-public abstract class ExampleSearch
+public abstract class ExampleSearch extends TestBean
 {
 
-    protected Float testCase = null;
-    protected String api = null, exceptionClass = null;
-    protected Integer expectedResults = null;
-    protected Integer minResults = null, pages = null, stopResults = null;
+    protected String exceptionClass = null;
+    protected Integer pages = null, stopResults = null;
     protected List<Integer> pagesReturned = new ArrayList<Integer>();
     protected MatchMode matchMode;
     protected boolean enumerate = false, apiUtil = false, login = false, excludeZeros = false;
@@ -108,48 +106,8 @@ public abstract class ExampleSearch
     protected ExampleSearch()
     {
     }
-
-    public Float getTestCase()
-    {
-        return testCase;
-    }
-
-    public void setTestCase(Float testCase)
-    {
-        this.testCase = testCase;
-    }
-
-    public String getApi()
-    {
-        return api;
-    }
-
-    public void setApi(String api)
-    {
-        this.api = api;
-    }
     
     public abstract AbstractCaArrayEntity getExample();
-
-    public Integer getExpectedResults()
-    {
-        return expectedResults;
-    }
-
-    public void setExpectedResults(Integer expectedResults)
-    {
-        this.expectedResults = expectedResults;
-    }
-
-    public Integer getMinResults()
-    {
-        return minResults;
-    }
-
-    public void setMinResults(Integer minResults)
-    {
-        this.minResults = minResults;
-    }
 
     public MatchMode getMatchMode()
     {

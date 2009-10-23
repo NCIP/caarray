@@ -21,6 +21,7 @@ import caarray.client.test.TestProperties;
 import caarray.client.test.TestResult;
 import caarray.client.test.search.CriteriaSearch;
 import caarray.client.test.search.PerformanceSearch;
+import caarray.client.test.search.TestBean;
 
 /**
  * @author vaughng
@@ -53,7 +54,7 @@ public class CriteriaPerformanceTestSuite extends SearchByCriteriaTestSuite
      * @see caarray.client.test.suite.SearchByCriteriaTestSuite#evaluateResults(java.lang.Object, caarray.client.test.search.CriteriaSearch, caarray.client.test.TestResult)
      */
     @Override
-    protected void evaluateResults(Object resultsList, CriteriaSearch search,
+    protected void evaluateResults(Object resultsList, TestBean search,
             TestResult testResult)
     {
         CriteriaSearch performanceSearch = (CriteriaSearch)search;
@@ -163,6 +164,7 @@ public class CriteriaPerformanceTestSuite extends SearchByCriteriaTestSuite
             testResult.addDetail("Exception encountered executing search: "
                     + e.getClass()
                     + (e.getMessage() != null ? e.getMessage() : ""));
+            log.error(e);
         }
         if (isResultsEmpty(result))
         {
@@ -202,7 +204,7 @@ public class CriteriaPerformanceTestSuite extends SearchByCriteriaTestSuite
      */
     @Override
     protected void populateAdditionalSearchValues(String[] input,
-            CriteriaSearch criteriaSearch) throws Exception
+            TestBean criteriaSearch) throws Exception
     {
         //NOOP
     }
@@ -211,7 +213,7 @@ public class CriteriaPerformanceTestSuite extends SearchByCriteriaTestSuite
      * @see caarray.client.test.suite.SearchByCriteriaTestSuite#populateSearch(java.lang.String[], caarray.client.test.search.CriteriaSearch)
      */
     @Override
-    protected void populateSearch(String[] input, CriteriaSearch criteriaSearch)
+    protected void populateSearch(String[] input, TestBean criteriaSearch)
             throws Exception
     {
         PerformanceSearch search = (PerformanceSearch)criteriaSearch;

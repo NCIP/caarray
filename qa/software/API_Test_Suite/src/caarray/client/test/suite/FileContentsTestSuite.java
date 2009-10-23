@@ -19,6 +19,7 @@ import caarray.client.test.TestProperties;
 import caarray.client.test.TestResult;
 import caarray.client.test.search.CriteriaSearch;
 import caarray.client.test.search.FileContentsSearch;
+import caarray.client.test.search.TestBean;
 
 /**
  * @author vaughng
@@ -66,7 +67,7 @@ public class FileContentsTestSuite extends SearchByCriteriaTestSuite
      * @see caarray.client.test.suite.SearchByCriteriaTestSuite#evaluateResults(java.lang.Object, caarray.client.test.search.CriteriaSearch, caarray.client.test.TestResult)
      */
     @Override
-    protected void evaluateResults(Object resultsList, CriteriaSearch search,
+    protected void evaluateResults(Object resultsList, TestBean search,
             TestResult testResult)
     {
         FileContentsSearch fileSearch = (FileContentsSearch)search;
@@ -213,13 +214,13 @@ public class FileContentsTestSuite extends SearchByCriteriaTestSuite
                 testResult.addDetail(detail);
             }
         }
-        if (fileSearch.getNumFiles() != null)
+        if (fileSearch.getNumMageTabFiles() != null)
         {
             
-            if (numFiles > fileSearch.getNumFiles())
+            if (numFiles > fileSearch.getNumMageTabFiles())
             {
                 String errorMessage = "Failed with unexpected number of files, expected: "
-                        + fileSearch.getNumFiles()
+                        + fileSearch.getNumMageTabFiles()
                         + ", actual number of files: " + numFiles;
                 setTestResultFailure(testResult, fileSearch, errorMessage);
             }
@@ -274,6 +275,7 @@ public class FileContentsTestSuite extends SearchByCriteriaTestSuite
         {
             System.out.println("Error encountered retrieving file contents set: " + e.getClass() + (e.getMessage() != null ? e.getMessage() : ""));
             testResult.addDetail("Exception encountered retrieving file contents set: " + e.getClass() + (e.getMessage() != null ? e.getMessage() : ""));
+            log.error(e);
         } 
         return null;
     }
@@ -292,7 +294,7 @@ public class FileContentsTestSuite extends SearchByCriteriaTestSuite
      */
     @Override
     protected void populateAdditionalSearchValues(String[] input,
-            CriteriaSearch criteriaSearch) throws Exception
+            TestBean criteriaSearch) throws Exception
     {
         FileContentsSearch search = (FileContentsSearch)criteriaSearch;
         String experimentName = search.getExperimentName();
@@ -330,7 +332,7 @@ public class FileContentsTestSuite extends SearchByCriteriaTestSuite
      * @see caarray.client.test.suite.SearchByCriteriaTestSuite#populateSearch(java.lang.String[], caarray.client.test.search.CriteriaSearch)
      */
     @Override
-    protected void populateSearch(String[] input, CriteriaSearch criteriaSearch)
+    protected void populateSearch(String[] input, TestBean criteriaSearch)
             throws Exception
     {
         FileContentsSearch search = (FileContentsSearch)criteriaSearch;
@@ -366,7 +368,7 @@ public class FileContentsTestSuite extends SearchByCriteriaTestSuite
                     .parseInt(input[headerIndexMap.get(SDRF_BYTES)].trim()));   
         if (headerIndexMap.get(NUM_FILE) < input.length
                 && !input[headerIndexMap.get(NUM_FILE)].equals(""))
-            search.setNumFiles(Integer
+            search.setNumMageTabFiles(Integer
                     .parseInt(input[headerIndexMap.get(NUM_FILE)].trim()));  
         if (headerIndexMap.get(COMPRESSED) < input.length
                 && !input[headerIndexMap.get(COMPRESSED)].equals(""))
@@ -444,6 +446,7 @@ public class FileContentsTestSuite extends SearchByCriteriaTestSuite
             catch (Exception e)
             {
                 System.out.println("Exception occured retrieving file for FileContents test: " + search.getTestCase());
+                log.error(e);
             }
             
         }

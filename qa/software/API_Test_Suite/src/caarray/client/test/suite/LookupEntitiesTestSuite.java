@@ -366,6 +366,7 @@ public class LookupEntitiesTestSuite extends ConfigurableTestSuite
                 testResult.setPassed(false);
                 String detail = "Unexpected error occurred: " + t.getLocalizedMessage();
                 testResult.addDetail(detail);
+                log.error(t);
             }
             
             return testResult;
@@ -432,6 +433,7 @@ public class LookupEntitiesTestSuite extends ConfigurableTestSuite
                 testResult.setPassed(false);
                 String detail = "Unexpected error occurred: " + t.getLocalizedMessage();
                 testResult.addDetail(detail);
+                log.error(t);
             }
             
             return testResult;
@@ -566,6 +568,7 @@ public class LookupEntitiesTestSuite extends ConfigurableTestSuite
                 testResult.setPassed(false);
                 String detail = "Unexpected error occurred: " + t.getLocalizedMessage();
                 testResult.addDetail(detail);
+                log.error(t);
             }
             
             return testResult;

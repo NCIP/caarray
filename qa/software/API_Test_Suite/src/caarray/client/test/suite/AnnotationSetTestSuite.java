@@ -21,6 +21,7 @@ import caarray.client.test.TestProperties;
 import caarray.client.test.TestResult;
 import caarray.client.test.search.AnnotationSetSearch;
 import caarray.client.test.search.CriteriaSearch;
+import caarray.client.test.search.TestBean;
 
 /**
  * @author vaughng
@@ -56,7 +57,7 @@ public class AnnotationSetTestSuite extends SearchByCriteriaTestSuite
     @Override
     protected void evaluateResults(
             Object resultsList,
-            CriteriaSearch search, TestResult testResult)
+            TestBean search, TestResult testResult)
     {
         AnnotationSetSearch annoSearch = (AnnotationSetSearch)search;
         AnnotationSet annoResults = (AnnotationSet)resultsList;
@@ -182,6 +183,7 @@ public class AnnotationSetTestSuite extends SearchByCriteriaTestSuite
         {
             System.out.println("Error encountered retrieving annotation set: " + e.getClass() + (e.getMessage() != null ? e.getMessage() : ""));
             testResult.addDetail("Exception encountered retrieving annotation set: " + e.getClass() + (e.getMessage() != null ? e.getMessage() : ""));
+            log.error(e);
         } 
         
         
@@ -203,7 +205,7 @@ public class AnnotationSetTestSuite extends SearchByCriteriaTestSuite
      */
     @Override
     protected void populateAdditionalSearchValues(String[] input,
-            CriteriaSearch criteriaSearch) throws Exception
+            TestBean criteriaSearch) throws Exception
     {
         AnnotationSetSearch search = (AnnotationSetSearch)criteriaSearch;
         AnnotationSetRequest request = search.getAnnotationSetRequest();
@@ -250,6 +252,7 @@ public class AnnotationSetTestSuite extends SearchByCriteriaTestSuite
             catch (Exception e)
             {
                 System.out.println("No hybrid found for test case: " + search.getTestCase());
+                log.error(e);
             }
                      
             request.getExperimentGraphNodes().add(ref);
@@ -273,6 +276,7 @@ public class AnnotationSetTestSuite extends SearchByCriteriaTestSuite
             catch (Exception e)
             {
                 System.out.println("No sample found for test case: " + search.getTestCase());
+                log.error(e);
             }
                      
             request.getExperimentGraphNodes().add(ref);
@@ -285,7 +289,7 @@ public class AnnotationSetTestSuite extends SearchByCriteriaTestSuite
      * @see caarray.client.test.suite.SearchByCriteriaTestSuite#populateSearch(java.lang.String[], caarray.client.test.search.CriteriaSearch)
      */
     @Override
-    protected void populateSearch(String[] input, CriteriaSearch criteriaSearch)
+    protected void populateSearch(String[] input, TestBean criteriaSearch)
             throws Exception
     {
         AnnotationSetSearch search = (AnnotationSetSearch)criteriaSearch;
@@ -352,6 +356,7 @@ public class AnnotationSetTestSuite extends SearchByCriteriaTestSuite
                 catch (Exception e)
                 {
                     System.out.println("No hybridization found for annotation set test case: " + search.getTestCase());
+                    log.error(e);
                 }
             }
             
@@ -377,6 +382,7 @@ public class AnnotationSetTestSuite extends SearchByCriteriaTestSuite
                 catch (Exception e)
                 {
                     System.out.println("No sample found for annotation set test case: " + search.getTestCase());
+                    log.error(e);
                 } 
             }        
             criteria.getExperimentGraphNodes().add(ref);

@@ -118,7 +118,7 @@ import caarray.client.test.suite.TermTestSuite;
 
 /**
  * Main class for executing a collection of tests against the caArray
- * external API.
+ * external API. Executed by build script test targets.
  * 
  * @author vaughng
  *

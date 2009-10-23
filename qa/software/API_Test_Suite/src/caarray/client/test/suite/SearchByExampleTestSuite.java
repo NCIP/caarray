@@ -264,6 +264,7 @@ public abstract class SearchByExampleTestSuite extends ConfigurableTestSuite
                     testResult.addDetail(detail);
                     t.printStackTrace();
                     search.setExceptionClass(t.getClass().toString());
+                    log.error(t);
                 }
                 long elapsedTime = System.currentTimeMillis() - startTime;
 
@@ -280,6 +281,7 @@ public abstract class SearchByExampleTestSuite extends ConfigurableTestSuite
                         "An exception occured executing an " + getType() + " search-by-example: "
                                 + t.getClass() + " " + t.getLocalizedMessage());
                 t.printStackTrace();
+                log.error(t);
             }
 
             resultReport.addTestResult(testResult);

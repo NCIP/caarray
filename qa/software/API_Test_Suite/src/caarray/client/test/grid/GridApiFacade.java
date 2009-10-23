@@ -54,6 +54,8 @@ import org.apache.axis.types.URI.MalformedURIException;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.CountingOutputStream;
 import org.apache.commons.io.output.NullOutputStream;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.cagrid.transfer.context.client.TransferServiceContextClient;
 import org.cagrid.transfer.context.client.helper.TransferClientHelper;
 import org.cagrid.transfer.context.stubs.types.TransferServiceContextReference;
@@ -62,16 +64,18 @@ import org.globus.wsrf.encoding.ObjectDeserializer;
 
 import caarray.client.test.ApiFacade;
 import caarray.client.test.TestProperties;
+import caarray.client.test.full.FullTest;
 
 /**
- * {@link ApiFacade} implementation that used the grid API.
+ * {@link ApiFacade} implementation that uses the grid API.
  * 
  * @author vaughng
  *
  */
 public class GridApiFacade implements ApiFacade
 {
-
+    private static final Log log = LogFactory.getLog(GridApiFacade.class);
+    
     private CaArraySvc_v1_0Client gridClient = null;
     GridSearchApiUtils apiUtils = null;
     GridDataApiUtils dataApiUtils = null;
@@ -105,15 +109,6 @@ public class GridApiFacade implements ApiFacade
     }
 
     /* (non-Javadoc)
-     * @see caarray.client.test.ApiFacade#getByReference(java.lang.String, gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference)
-     */
-    /*public AbstractCaArrayEntity getByReference(String api,
-            CaArrayEntityReference reference) throws Exception
-    {
-        return gridClient.getByReference(reference);
-    }*/
-
-    /* (non-Javadoc)
      * @see caarray.client.test.ApiFacade#getTermsForCategory(java.lang.String, gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference, java.lang.String)
      */
     public List<Term> getTermsForCategory(String api,
@@ -131,26 +126,7 @@ public class GridApiFacade implements ApiFacade
         return resultsList;
     }
 
-    /* (non-Javadoc)
-     * @see caarray.client.test.ApiFacade#getbyReferences(java.lang.String, java.util.List)
-     */
-    /*public List<AbstractCaArrayEntity> getByReferences(String api,
-            List<CaArrayEntityReference> references) throws Exception
-    {
-        CaArrayEntityReference refs[] = new CaArrayEntityReference[references.size()];
-        for (int i = 0; i < references.size(); i++)
-        {
-            refs[i] = references.get(i);
-        }
-        AbstractCaArrayEntity[] results = gridClient.getByReferences(refs);
-        List<AbstractCaArrayEntity> resultsList = new ArrayList<AbstractCaArrayEntity>();
-        for (AbstractCaArrayEntity result : results)
-        {
-            resultsList.add(result);
-        }
-        return resultsList;
-    }*/
-
+    
     /* (non-Javadoc)
      * @see caarray.client.test.ApiFacade#searchByExample(java.lang.String, gov.nih.nci.caarray.external.v1_0.query.ExampleSearchCriteria, gov.nih.nci.caarray.external.v1_0.query.LimitOffset)
      */
@@ -195,6 +171,7 @@ public class GridApiFacade implements ApiFacade
         catch (UnsupportedCategoryException e)
         {
             System.out.println("Unsupported category: " + e.getMessage());
+            log.error(e);
         }
         
         return null;
@@ -484,25 +461,6 @@ public class GridApiFacade implements ApiFacade
         }
         else
         {
-            /*FileDownloadRequest downloadRequest = new FileDownloadRequest();
-            downloadRequest.setFiles(fileReferences);
-            TransferServiceContextReference[] serviceContextRefs = gridClient
-                    .getFileContentsTransfers(downloadRequest, compressed);
-            //dataApiUtils.cop
-            if (serviceContextRefs == null || serviceContextRefs.length <= 0)
-            {
-                return new byte[][] { new byte[0] };
-            }
-            
-            
-            for (int i = 0; i < serviceContextRefs.length; i++)
-            {
-                TransferServiceContextClient transferClient = new TransferServiceContextClient(
-                        serviceContextRefs[i].getEndpointReference());
-                stream = TransferClientHelper.getData(transferClient
-                        .getDataTransferDescriptor());
-                retVal[i] = IOUtils.toByteArray(stream);
-            }*/
             return copyFileContentsUtils(api, fileReferences, compressed);
         }
         
@@ -513,14 +471,6 @@ public class GridApiFacade implements ApiFacade
             List<CaArrayEntityReference> fileReferences, boolean compressed)
             throws Exception
     {
-        /*FileDownloadRequest downloadRequest = new FileDownloadRequest();
-        downloadRequest.setFiles(fileReferences);
-        TransferServiceContextReference serviceContextRef = gridClient.getFileContentsZipTransfer(downloadRequest,
-                compressed);
-        TransferServiceContextClient transferClient = new TransferServiceContextClient(serviceContextRef
-                .getEndpointReference());
-        InputStream stream = TransferClientHelper.getData(transferClient.getDataTransferDescriptor());
-        return IOUtils.toByteArray(stream);*/
         return copyFileContentsUtils(api, fileReferences, compressed);
     }
     
@@ -545,12 +495,6 @@ public class GridApiFacade implements ApiFacade
             List<CaArrayEntityReference> fileReferences, boolean compressed)
             throws Exception
     {
-        /*FileDownloadRequest downloadRequest = new FileDownloadRequest();
-        downloadRequest.setFiles(fileReferences);
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        dataApiUtils.copyFileContentsZipToOutputStream(downloadRequest,
-                compressed, stream);
-        return stream.toByteArray();*/
         return copyFileContentsUtils(api, fileReferences, compressed);
     }
     public List<Biomaterial> enumerateBiomaterials(String api,
@@ -715,11 +659,6 @@ public class GridApiFacade implements ApiFacade
             CaArrayEntityReference experimentReference, boolean compressed)
             throws Exception
     {
-        /*TransferServiceContextReference serviceContextRef = gridClient.getMageTabZipTransfer(experimentReference, compressed);
-        
-        TransferServiceContextClient transferClient = new TransferServiceContextClient(serviceContextRef.getEndpointReference());
-        InputStream stream = TransferClientHelper.getData(transferClient.getDataTransferDescriptor());
-        return IOUtils.toByteArray(stream);*/
         return copyMageTabZipApiUtils(api, experimentReference, compressed);
     }
 

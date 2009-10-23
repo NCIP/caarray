@@ -14,6 +14,7 @@ import caarray.client.test.TestProperties;
 import caarray.client.test.TestResult;
 import caarray.client.test.search.CriteriaSearch;
 import caarray.client.test.search.ExperimentKeywordSearch;
+import caarray.client.test.search.TestBean;
 
 public class ExperimentKeywordTestSuite extends SearchByCriteriaTestSuite
 {
@@ -34,7 +35,7 @@ public class ExperimentKeywordTestSuite extends SearchByCriteriaTestSuite
     @Override
     protected void evaluateResults(
             Object resultsList,
-            CriteriaSearch search, TestResult testResult)
+            TestBean search, TestResult testResult)
     {
         ExperimentKeywordSearch experimentSearch = (ExperimentKeywordSearch) search;
         List<Experiment> experimentResults = (List<Experiment>) resultsList;
@@ -119,6 +120,7 @@ public class ExperimentKeywordTestSuite extends SearchByCriteriaTestSuite
         {
             System.out.println("Error encountered executing search: " + e.getMessage());
             testResult.addDetail("Exception encountered executing search: " + e.getClass() + (e.getMessage() != null ? e.getMessage() : ""));
+            log.error(e);
         } 
         
         
@@ -134,13 +136,13 @@ public class ExperimentKeywordTestSuite extends SearchByCriteriaTestSuite
 
     @Override
     protected void populateAdditionalSearchValues(String[] input,
-            CriteriaSearch criteriaSearch) throws Exception
+            TestBean criteriaSearch) throws Exception
     {
         //NOOP
     }
 
     @Override
-    protected void populateSearch(String[] input, CriteriaSearch criteriaSearch)
+    protected void populateSearch(String[] input, TestBean criteriaSearch)
             throws Exception
     {
         ExperimentKeywordSearch search = (ExperimentKeywordSearch) criteriaSearch;
