@@ -101,13 +101,14 @@ public class ExperimentTestSuite extends SearchByExampleTestSuite
                 testResult.addDetail(detail);
             }
         }
-        if (experimentSearch.getPages() != null)
+        if (experimentSearch.getResultsPerLimitOffset() != null)
         {
             boolean passed = true;
-            for (Iterator<Integer> iter = experimentSearch.getPagesReturned().iterator(); iter.hasNext();)
+            for (Iterator<Integer> iter = experimentSearch.getResultsReturnedInPage().iterator(); iter.hasNext();)
             {
                 int size = iter.next();
-                if (iter.hasNext() && size != experimentSearch.getPages())
+                // If it's not the last page, and the expected number of results were not returned, fail
+                if (iter.hasNext() && size != experimentSearch.getResultsPerLimitOffset())
                 {
                     String errorMessage = "Failed with unexpected page size: "
                         + size;
@@ -117,7 +118,7 @@ public class ExperimentTestSuite extends SearchByExampleTestSuite
             }
             if (passed)
             {
-                String detail = "Found expected page size: " + experimentSearch.getPages();
+                String detail = "Found expected page size: " + experimentSearch.getResultsPerLimitOffset();
                 testResult.addDetail(detail);
             }
         }
@@ -176,7 +177,7 @@ public class ExperimentTestSuite extends SearchByExampleTestSuite
                     .trim()));
         if (headerIndexMap.get(PAGES) < input.length
                 && !input[headerIndexMap.get(PAGES)].equals(""))
-            search.setPages(Integer.parseInt(input[headerIndexMap.get(PAGES)]
+            search.setResultsPerLimitOffset(Integer.parseInt(input[headerIndexMap.get(PAGES)]
                     .trim()));
         if (headerIndexMap.get(API_UTILS_SEARCH) < input.length
                 && !input[headerIndexMap.get(API_UTILS_SEARCH)].equals(""))

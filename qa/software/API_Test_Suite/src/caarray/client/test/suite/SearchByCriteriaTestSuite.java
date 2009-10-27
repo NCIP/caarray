@@ -165,6 +165,10 @@ public abstract class SearchByCriteriaTestSuite extends ConfigurableTestSuite
         System.out.println(getType() + " tests complete ...");
     }
     
+    /**
+     * Filters the list of tests to be executed to only those either explicitly requested
+     * or only those not explicitly excluded.
+     */
     private void filterSearches()
     {
         String api = TestProperties.getTargetApi();

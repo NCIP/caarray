@@ -105,7 +105,6 @@ import caarray.client.test.ApiFacade;
 import caarray.client.test.TestConfigurationException;
 import caarray.client.test.TestResultReport;
 import caarray.client.test.TestUtils;
-import caarray.client.test.full.FullTest;
 
 /**
  * Encapsulates a collection of test cases, some or all of which may be configured via
@@ -164,8 +163,6 @@ public abstract class ConfigurableTestSuite
     
         try
         {
-            Log log = LogFactory.getLog(this.getClass());
-            log.debug("Log test ...");
             loadTestsFromFile();
             executeTests(resultReport);
         }

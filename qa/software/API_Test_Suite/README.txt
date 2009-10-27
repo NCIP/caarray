@@ -107,4 +107,18 @@ Expected Results: Expected number of results for a search. Only an exact match
 	will count as a successful test.
 Min Results: Minimum number of search results expected, for which any number
 	of results greater than or equal to will be considered successful.
+	
+	
+-----------------------------------------------------------------------------
+
+BUILDING THE CLIENT JAR
+-----------------------------------------------------------------------------
+
+To build a new client jar for an updated version of caArray:
+You can build the client zips by checking out the tag https://gforge.nci.nih.gov/svnroot/caarray2/tags/<release#, e.g. CAARRAY_R2_3_0_RC9>/software 
+and running an ant build:caarray-client.zip from the software/build folder.
+You will also need to have the docs/analysis_and_design/models directory checked out in addition to the software directory.
+Finally, you have to be using Java 5, not Java 6.
+
+
           

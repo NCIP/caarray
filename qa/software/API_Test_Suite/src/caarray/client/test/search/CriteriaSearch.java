@@ -17,38 +17,71 @@ public abstract class CriteriaSearch extends TestBean
     
     protected CriteriaSearch(){}
 
+    /**
+     * Indicates a search should be executed via an ApiUtils method.
+     * 
+     * @return True if a search should be executed via an ApiUtils method.
+     */
     public boolean isApiUtilsSearch()
     {
         return apiUtilsSearch;
     }
 
+    /**
+     * Indicates a search should be executed via an ApiUtils method.
+     * 
+     * @param apiUtilsSearch True if a search should be executed via an ApiUtils method.
+     */
     public void setApiUtilsSearch(boolean apiUtilsSearch)
     {
         this.apiUtilsSearch = apiUtilsSearch;
     }
 
+    /**
+     * Indicates a search is an API enumeration method.
+     * 
+     * @return True if a search is an API enumeration method.
+     */
     public boolean isEnumerate()
     {
         return enumerate;
     }
 
+    /**
+     * Indicates a search is an API enumeration method.
+     * 
+     * @param enumerate True if a search is an API enumeration method.
+     */
     public void setEnumerate(boolean enumerate)
     {
         this.enumerate = enumerate;
     }
 
+    /**
+     * The maximum time in ms a search should take to execute in
+     * order to pass.
+     * 
+     * @return The maximum time in ms a search should take to execute in order to pass.
+     */
     public Long getMaxTime()
     {
         return maxTime;
     }
 
-    public void setMaxTime(Long minTime)
+    /**
+     * The maximum time in ms a search should take to execute in
+     * order to pass. 
+     * @param maxTime The maximum time in ms a search should take to execute in order to pass.
+     */
+    public void setMaxTime(Long maxTime)
     {
-        this.maxTime = minTime;
+        this.maxTime = maxTime;
     }
 
     /**
-     * @return the login
+     * Indicates the test user should be logged in to execute this test.
+     * 
+     * @return True if the test user should be logged in to execute this test.
      */
     public boolean isLogin()
     {
@@ -56,7 +89,9 @@ public abstract class CriteriaSearch extends TestBean
     }
 
     /**
-     * @param login the login to set
+     * Indicates the test user should be logged in to execute this test.
+     * 
+     * @param login True if the test user should be logged in to execute this test.
      */
     public void setLogin(boolean login)
     {

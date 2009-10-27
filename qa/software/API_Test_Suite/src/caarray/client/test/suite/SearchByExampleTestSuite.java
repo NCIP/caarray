@@ -224,10 +224,12 @@ public abstract class SearchByExampleTestSuite extends ConfigurableTestSuite
                     else
                     {
                         LimitOffset offset = null;
-                        if (search.getPages() != null)
+                        // Set either the results desired per page
+                        if (search.getResultsPerLimitOffset() != null)
                         {
-                            offset = new LimitOffset(search.getPages(),0);        
+                            offset = new LimitOffset(search.getResultsPerLimitOffset(),0);        
                         }
+                        // or the point at which the search should be terminated
                         else if (search.getStopResults() != null)
                         {
                             offset = new LimitOffset(search.getStopResults(),0);
@@ -239,18 +241,20 @@ public abstract class SearchByExampleTestSuite extends ConfigurableTestSuite
                         boolean stopResults = search.getStopResults() != null && results.getResults().size() >= search.getStopResults();
                         if (!stopResults)
                         {
-                            while ((!fullResults && results.getResults().size() > 0) || (offset != null && search.getPages() != null 
-                                    && results.getResults().size() == search.getPages()))
+                            // Continue searching while more results remain
+                            while ((!fullResults && results.getResults().size() > 0) || (offset != null && search.getResultsPerLimitOffset() != null 
+                                    && results.getResults().size() == search.getResultsPerLimitOffset()))
                             {
                                 offset = new LimitOffset();
-                                if (search.getPages() != null)
-                                    offset.setLimit(search.getPages());
+                                if (search.getResultsPerLimitOffset() != null)
+                                    offset.setLimit(search.getResultsPerLimitOffset());
                                 offset.setOffset(results.getResults().size()
                                         + results.getFirstResultOffset());
                                 
                                 results = getSearchResults(search.getApi(), criteria, offset);
                                 resultsList.addAll(results.getResults());
-                                search.addPageReturned(results.getResults().size());                         
+                                search.addPageReturned(results.getResults().size());
+                                fullResults = results.isFullResult();
                             }
                         }
                         
@@ -290,6 +294,10 @@ public abstract class SearchByExampleTestSuite extends ConfigurableTestSuite
         System.out.println(getType() + " tests complete ...");
     }
     
+    /**
+     * Filters the list of tests to be executed to only those either explicitly requested
+     * or only those not explicitly excluded.
+     */
     private void filterSearches()
     {
         String api = TestProperties.getTargetApi();

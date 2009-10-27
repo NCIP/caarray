@@ -153,13 +153,13 @@ public class BiomaterialTestSuite extends SearchByExampleTestSuite
                 }
             }
         }
-        if (bioSearch.getPages() != null)
+        if (bioSearch.getResultsPerLimitOffset() != null)
         {
             boolean passed = true;
-            for (Iterator<Integer> iter = bioSearch.getPagesReturned().iterator(); iter.hasNext();)
+            for (Iterator<Integer> iter = bioSearch.getResultsReturnedInPage().iterator(); iter.hasNext();)
             {
                 int size = iter.next();
-                if (iter.hasNext() && size != bioSearch.getPages())
+                if (iter.hasNext() && size != bioSearch.getResultsPerLimitOffset())
                 {
                     String errorMessage = "Failed with unexpected page size: "
                         + size;
@@ -169,7 +169,7 @@ public class BiomaterialTestSuite extends SearchByExampleTestSuite
             }
             if (passed)
             {
-                String detail = "Found expected page size: " + bioSearch.getPages();
+                String detail = "Found expected page size: " + bioSearch.getResultsPerLimitOffset();
                 testResult.addDetail(detail);
             }
         }
@@ -253,7 +253,7 @@ public class BiomaterialTestSuite extends SearchByExampleTestSuite
                     .parseInt(input[headerIndexMap.get(EXPECTED_RESULTS)].trim()));
         if (headerIndexMap.get(PAGES) < input.length
                 && !input[headerIndexMap.get(PAGES)].equals(""))
-            search.setPages(Integer.parseInt(input[headerIndexMap.get(PAGES)]
+            search.setResultsPerLimitOffset(Integer.parseInt(input[headerIndexMap.get(PAGES)]
                     .trim()));
         if (headerIndexMap.get(MIN_RESULTS) < input.length
                 && !input[headerIndexMap.get(MIN_RESULTS)].equals(""))
