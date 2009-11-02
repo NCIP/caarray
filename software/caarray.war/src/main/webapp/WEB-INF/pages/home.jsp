@@ -143,7 +143,7 @@
                         <th colspan="2">
                     <label for="location"><fmt:message key="search.location"/></label>
                     <s:select name="location" theme="simple"
-                              list="#{'NCICB':'NCICB'}"
+                              list="#{'${initParam['nodeName']}':'${initParam['nodeName']}'}"
                               headerKey="" headerValue="(All Locations)"/>
                         </th>
                     </tr>

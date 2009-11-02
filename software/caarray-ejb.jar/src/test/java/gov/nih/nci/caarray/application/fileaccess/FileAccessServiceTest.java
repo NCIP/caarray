@@ -110,6 +110,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
+import gov.nih.nci.caarray.domain.file.FileStatus;
+import gov.nih.nci.caarray.domain.project.Project;
 
 /**
  *
@@ -231,5 +233,24 @@ public class FileAccessServiceTest extends AbstractServiceTest {
         assertEquals(2, uploadFiles.size());
         this.fileAccessService.unzipFiles(uploadFiles, uploadFileNames);
         assertEquals(17, uploadFiles.size());
+    }
+
+    @Test(expected = org.hibernate.ObjectNotFoundException.class)
+    public void testRemove() {
+        MultiPartBlob.setBlobSize(100);
+        File file = MageTabDataFiles.SPECIFICATION_EXAMPLE_SDRF;
+        CaArrayFile caArrayFile = this.fileAccessService.add(file);
+        caArrayFile.setFileStatus(FileStatus.IMPORTED_NOT_PARSED);
+        assertTrue(caArrayFile.isDeletable());
+        HibernateUtil.getCurrentSession().save(caArrayFile);
+        HibernateUtil.getCurrentSession().flush();
+
+        Project p = new Project();
+        p.getFiles().add(caArrayFile);
+        caArrayFile.setProject(p);
+
+        this.fileAccessService.remove(caArrayFile);
+
+        HibernateUtil.getCurrentSession().load(CaArrayFile.class, caArrayFile.getId());
     }
 }

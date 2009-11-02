@@ -190,6 +190,7 @@ public class ArrayDaoTest extends AbstractDaoTest {
         DUMMY_ARRAYDESIGN_1 = new ArrayDesign();
         DUMMY_ARRAYDESIGN_1.setName("DummyTestArrayDesign1");
         DUMMY_ARRAYDESIGN_1.setVersion("2.0");
+        DUMMY_ARRAYDESIGN_1.setGeoAccession("GPL0001");
         DUMMY_ARRAYDESIGN_1.setProvider(DUMMY_ORGANIZATION);
         DUMMY_ARRAYDESIGN_1.setLsidForEntity("authority:namespace:objectId");
         DUMMY_ASSAY_TYPE1 = new AssayType("Gene Expression");
@@ -205,6 +206,7 @@ public class ArrayDaoTest extends AbstractDaoTest {
         DUMMY_ARRAYDESIGN_2 = new ArrayDesign();
         DUMMY_ARRAYDESIGN_2.setName("DummyTestArrayDesign2");
         DUMMY_ARRAYDESIGN_2.setVersion("2.0");
+        DUMMY_ARRAYDESIGN_2.setGeoAccession("GPL0002");
         DUMMY_ARRAYDESIGN_2.setProvider(DUMMY_ORGANIZATION2);
         CaArrayFile file2 = new CaArrayFile();
         file2.setFileStatus(FileStatus.IMPORTING);
@@ -218,6 +220,7 @@ public class ArrayDaoTest extends AbstractDaoTest {
         DUMMY_ARRAYDESIGN_3 = new ArrayDesign();
         DUMMY_ARRAYDESIGN_3.setName("DummyTestArrayDesign3");
         DUMMY_ARRAYDESIGN_3.setVersion("2.0");
+        DUMMY_ARRAYDESIGN_3.setGeoAccession("GPL0003");
         DUMMY_ARRAYDESIGN_3.setProvider(DUMMY_ORGANIZATION2);
         CaArrayFile file3 = new CaArrayFile();
         file3.setFileStatus(FileStatus.IMPORTED);

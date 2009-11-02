@@ -246,7 +246,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
         <copy file="${database.driver.file}" todir="${jboss.home}/server/${jboss.server.name}/lib" overwrite="true" />
     </target>
 
-    <target name="install:jboss:caarray:re-configure" description="Update xml files in meta-inf directory of ear that have deployment attributes">
+    <target name="install:jboss:caarray:re-configure" description="Modify files inside caarray.ear file.">
         <delete dir="${temp.dir}" />
         <mkdir dir="${temp.dir}/caarray.ear.to_deploy" />
         <mkdir dir="${temp.dir}/caarray.ear" />
@@ -297,6 +297,12 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
         <xmltask source="${temp.dir}/caarray.war/WEB-INF/classes/db-migrations.xml" dest="${temp.dir}/caarray.war/WEB-INF/classes/db-migrations.xml">
             <xmlcatalog refid="bda.xml.catalog"/>
             <replace path="//migrator-class/@renameHybridizations" withText="${mergeDuplicateBiomaterialsMigrator.renameHybridizations}"/>
+        </xmltask>
+
+        <!-- set the local node name -->
+        <xmltask source="${temp.dir}/caarray.war/WEB-INF/web.xml" dest="${temp.dir}/caarray.war/WEB-INF/web.xml">
+            <xmlcatalog refid="bda.xml.catalog"/>
+            <replace path="//*[local-name()='param-name'][text()='nodeName']/following-sibling::*/text()" withText="${research.center.shortName}"/>
         </xmltask>
 
         <!-- set the UptUrl value -->
@@ -416,6 +422,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
     <target name="install:validation:pre-install">
         <validate-pre-install />
     </target>
+	
     <target name="install:validation:pre-install:ports">
         <validate-ports-preinstall />
     </target>

@@ -38,7 +38,7 @@
 <div id="infobar">
     <div id="rightinfo">
         <span title="Subversion URL: <c:out value='${initParam["svnUrl"]}'/>, revision: <c:out value='${initParam["svnRevision"]}'/>">Build <c:out value='${initParam["caarrayVersion"]}'/></span>
-        <span class="bar">|</span>  Node: <span>NCICB</span>
+        <span class="bar">|</span>  Node: <span><c:out value='${initParam["nodeName"]}'/></span>
         <c:if test="${pageContext.request.remoteUser != null}">
             <span class="bar">|</span> Welcome, <c:out value='${pageContext.request.remoteUser}'/>
             <span class="bar">|</span> <a href="<c:url value="/logout.action" />"><span>Logout</span></a>

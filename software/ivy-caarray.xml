@@ -95,6 +95,8 @@
         <dependency conf="project" name="commons-logging" org="jakarta" rev="1.0.4"/>
 
         <dependency conf="project" name="commons-fileupload" org="jakarta" rev="1.2.1"/>
+        
+        <dependency conf="project" name="commons-compress" org="apache" rev="1.0"/>
 
         <dependency conf="project" name="javaee" org="javaee" rev="5.0"/>
 

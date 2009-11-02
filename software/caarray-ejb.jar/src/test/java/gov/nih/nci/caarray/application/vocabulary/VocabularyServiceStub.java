@@ -83,7 +83,6 @@
 package gov.nih.nci.caarray.application.vocabulary;
 
 import edu.georgetown.pir.Organism;
-import gov.nih.nci.caarray.application.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.domain.project.ExperimentOntology;
 import gov.nih.nci.caarray.domain.protocol.Protocol;
 import gov.nih.nci.caarray.domain.sample.AbstractCharacteristic;
@@ -92,16 +91,24 @@ import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import net.sf.dozer.util.mapping.vo.deep2.Src;
 
 /**
  * Basic stub for tests.
  */
 @SuppressWarnings("PMD.AvoidDuplicateLiterals")
 public class VocabularyServiceStub implements VocabularyService {
+
+    private long id;
+    private Map<List, Protocol> protocols = new HashMap<List, Protocol>();
+    private Map<List, TermSource> sources = new HashMap<List, TermSource>();
 
     public Set<Term> getTerms(Category category) {
         return getTerms(category, null);
@@ -122,9 +129,15 @@ public class VocabularyServiceStub implements VocabularyService {
      * {@inheritDoc}
      */
     public TermSource getSource(String name, String version) {
-        TermSource source = new TermSource();
-        source.setName(name);
-        source.setVersion(version);
+        List key = Arrays.asList(name, version);
+        TermSource source = sources.get(key);
+        if (source == null) {
+            source = new TermSource();
+            source.setName(name);
+            source.setVersion(version);
+            source.setId(id++);
+            sources.put(key, source);
+        }        
         return source;
     }
 
@@ -245,7 +258,15 @@ public class VocabularyServiceStub implements VocabularyService {
      * {@inheritDoc}
      */
     public Protocol getProtocol(String name, TermSource source) {
-        return null;
+        List key = Arrays.asList(name, source);
+        Protocol p = protocols.get(key);
+        if (p == null) {
+            p = new Protocol(name, null, source);
+            p.setId(id++);
+            protocols.put(key, p);
+        }
+        
+        return p;
     }
 
     public Term findTermInAllTermSourceVersions(TermSource termSource, String value) {

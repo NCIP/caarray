@@ -17,6 +17,10 @@
         <param-value>@caarray.version@</param-value>
     </context-param>
     <context-param>
+        <param-name>nodeName</param-name>
+        <param-value>NCICB</param-value>
+    </context-param>
+    <context-param>
         <param-name>svnUrl</param-name>
         <param-value>@svn.url@</param-value>
     </context-param>

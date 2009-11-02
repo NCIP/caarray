@@ -158,6 +158,7 @@ public class ArrayDesign_HibernateIntegrationTest extends AbstractCaArrayEntity_
         arrayDesign.setAssayTypes(new TreeSet<AssayType>());;
         arrayDesign.getAssayTypes().add(DUMMY_ASSAY_TYPE);
         arrayDesign.setVersion(getUniqueStringValue());
+        arrayDesign.setGeoAccession("GPL0000");
         arrayDesign.setOrganism(new Organism());
         arrayDesign.getOrganism().setScientificName("Homo sapiens");
         arrayDesign.getOrganism().setTermSource(ts);
@@ -204,6 +205,7 @@ public class ArrayDesign_HibernateIntegrationTest extends AbstractCaArrayEntity_
         assertEquals(original.getTechnologyType(), retrieved.getTechnologyType());
         assertEquals(original.getAssayTypes(), retrieved.getAssayTypes());
         assertEquals(original.getVersion(), retrieved.getVersion());
+        assertEquals(original.getGeoAccession(), retrieved.getGeoAccession());
         assertEquals(original.getDesignDetails(), retrieved.getDesignDetails());
         if (original.getDesignDetails() != null) {
             ArrayDesignDetails originalDetails = original.getDesignDetails();

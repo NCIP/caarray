@@ -92,6 +92,8 @@ import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.validator.annotations.CustomValidator;
 import com.opensymphony.xwork2.validator.annotations.Validation;
+import javax.servlet.http.HttpServletRequest;
+import org.apache.struts2.ServletActionContext;
 
 /**
  * Base Action class for all actions dealing with Project lifecycle.
@@ -192,4 +194,28 @@ public abstract class AbstractBaseProjectAction extends ActionSupport implements
     public void setEditMode(boolean editMode) {
         this.editMode = editMode;
     }
+
+    /**
+     * code inspired by outputUrl.tag.
+     * @return the current project's permanent URL.
+     */
+    protected String getProjectPermaLink() {
+        HttpServletRequest request = ServletActionContext.getRequest();
+        StringBuffer sb = new StringBuffer();
+        String scheme = request.getScheme();
+        String host = request.getServerName();
+        int port = request.getServerPort();
+        sb.append(scheme).append("://").append(host);
+        // CHECKSTYLE:OFF port 80 and 443 are not magic numbers
+        if (("http".equalsIgnoreCase(scheme) && port != 80)
+                || ("https".equalsIgnoreCase(scheme) && port != 443)) {
+            sb.append(":").append(port);
+        }
+        // CHECKSTYLE:ON
+        sb.append(request.getContextPath());
+        sb.append("/project/");
+        sb.append(getProject().getExperiment().getPublicIdentifier());
+        return sb.toString();
+    }
+
 }

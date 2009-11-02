@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caArray
+ * source code form and machine readable, binary, object code form. The caarray-ejb-jar
  * Software was developed in conjunction with the National Cancer Institute
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent
  * government employees are authors, any rights in such works shall be subject
  * to Title 17 of the United States Code, section 105.
  *
- * This caArray Software License (the License) is between NCI and You. You (or
+ * This caarray-ejb-jar Software License (the License) is between NCI and You. You (or
  * Your) shall mean a person or an entity, and all other entities that control,
  * are controlled by, or are under common control with the entity. Control for
  * purposes of this definition means (i) the direct or indirect power to cause
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up,
  * no-charge, irrevocable, transferable and royalty-free right and license in
- * its rights in the caArray Software to (i) use, install, access, operate,
+ * its rights in the caarray-ejb-jar Software to (i) use, install, access, operate,
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caArray Software; (ii) distribute and
- * have distributed to and by third parties the caArray Software and any
+ * and prepare derivative works of the caarray-ejb-jar Software; (ii) distribute and
+ * have distributed to and by third parties the caarray-ejb-jar Software and any
  * modifications and derivative works thereof; and (iii) sublicense the
  * foregoing rights set out in (i) and (ii) to third parties, including the
  * right to license such rights to further third parties. For sake of clarity,
@@ -80,93 +80,48 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.domain.array;
+package gov.nih.nci.caarray.application.translation.geosoft;
 
-import static org.junit.Assert.assertEquals;
-import edu.georgetown.pir.Organism;
-import gov.nih.nci.caarray.domain.AbstractCaArrayEntity_HibernateIntegrationTest;
-import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
-import gov.nih.nci.caarray.domain.contact.Organization;
-import gov.nih.nci.caarray.domain.file.CaArrayFile;
-import gov.nih.nci.caarray.domain.file.FileStatus;
-import gov.nih.nci.caarray.domain.project.AssayType;
-import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
-import gov.nih.nci.caarray.domain.vocabulary.Term;
-import gov.nih.nci.caarray.domain.vocabulary.TermSource;
+import gov.nih.nci.caarray.domain.project.Experiment;
+import gov.nih.nci.caarray.domain.project.Project;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.List;
 
-import java.util.SortedSet;
-import java.util.TreeSet;
+/**
+ * Export valid Experiments to a GEO SOFT format.
+ * @author gax
+ * @since 2.3.1
+ */
+public interface GeoSoftExporter {
+/**
+     * The default JNDI name to use to lookup <code>GeoSoftExporter</code>.
+     */
+    String JNDI_NAME = "caarray/GeoSoftExporterBean/local";
 
-import org.junit.Test;
+    /**
+     * Verify if an experiment can be exported into GEO SOFT format.
+     * @param experiment experiment to validate.
+     * @return messages descibing validation errors. An empty list indicates that there were no errors.
+     */
+    List<String> validateForExport(Experiment experiment);
 
-@SuppressWarnings("PMD")
-public class Array_HibernateIntegrationTest extends AbstractCaArrayEntity_HibernateIntegrationTest {
+    /**
+     * Determine how the experiment can be pachaged.
+     * @param experiment the experiment to package.
+     * @return information about the possible packaging formats.
+     */
+    List<Packaginginfo> getAvailablePackagingInfos(Project experiment);
 
-    @Test
-    @Override
-    public void testSave() {
-        super.testSave();
-    }
-
-    @Override
-    protected void setValues(AbstractCaArrayObject caArrayObject) {
-        TermSource ts = new TermSource();
-        ts.setName("TS 1");
-        Term term = new Term();
-        term.setValue("term");
-        term.setSource(ts);
-
-        ArrayDesign design = new ArrayDesign();
-        design.setName(getUniqueStringValue());
-        design.setTechnologyType(term);
-        design.addDesignFile(new CaArrayFile());
-        design.getFirstDesignFile().setName("File 1");
-        design.getFirstDesignFile().setFileStatus(FileStatus.UPLOADED);
-        design.setVersion(getUniqueStringValue());
-        design.setGeoAccession(getUniqueStringValue());
-        design.setProvider(new Organization());
-        SortedSet <AssayType>assayTypes = new TreeSet<AssayType>();
-        AssayType type = new AssayType();
-        save(type);
-        assayTypes.add(type);
-        design.setAssayTypes(assayTypes);
-        design.setOrganism(new Organism());
-        design.getOrganism().setScientificName(getUniqueStringValue());
-        design.getOrganism().setTermSource(ts);
-
-        Array array = (Array) caArrayObject;
-        array.setBatch(getUniqueStringValue());
-        array.setSerialNumber(getUniqueStringValue());
-        array.setProduction(new ProtocolApplication());
-        array.setDesign(design);
-        array.setArrayGroup(new ArrayGroup());
-        save(array.getArrayGroup());
-    }
-
-    @Override
-    protected void compareValues(AbstractCaArrayObject caArrayObject, AbstractCaArrayObject retrievedCaArrayObject) {
-        Array original = (Array) caArrayObject;
-        Array retrieved = (Array) retrievedCaArrayObject;
-        assertEquals(original.getBatch(), retrieved.getBatch());
-        assertEquals(original.getSerialNumber(), retrieved.getSerialNumber());
-        assertEquals(original.getProduction(), retrieved.getProduction());
-        assertEquals(original.getDesign(), retrieved.getDesign());
-        assertEquals(original.getArrayGroup(), retrieved.getArrayGroup());
-    }
-
-    @Override
-    protected void setNullableValuesToNull(AbstractCaArrayObject caArrayObject) {
-        Array array = (Array) caArrayObject;
-        array.setBatch(null);
-        array.setSerialNumber(null);
-        array.setProduction(null);
-        array.setDesign(null);
-        array.setArrayGroup(null);
-    }
-
-    @Override
-    protected AbstractCaArrayObject createTestObject() {
-        return new Array();
-    }
+    /**
+     * Export an to a GEO SOFT format, packaged in an archive.
+     * @param experiment experiment to export.
+     * @param permaLinkUrl permanent URL of the experiment.
+     * @param method packaging method or format.
+     * @param out stream to write to.
+     * @throws IOException if writing to the stream fails.
+     */
+    void export(Project experiment, String permaLinkUrl, Packaginginfo.PackagingMethod method, OutputStream out)
+            throws IOException;
 
 }

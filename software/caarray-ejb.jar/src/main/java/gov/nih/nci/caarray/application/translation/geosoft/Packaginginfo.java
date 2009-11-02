@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caArray
+ * source code form and machine readable, binary, object code form. The caarray-ejb-jar
  * Software was developed in conjunction with the National Cancer Institute
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent
  * government employees are authors, any rights in such works shall be subject
  * to Title 17 of the United States Code, section 105.
  *
- * This caArray Software License (the License) is between NCI and You. You (or
+ * This caarray-ejb-jar Software License (the License) is between NCI and You. You (or
  * Your) shall mean a person or an entity, and all other entities that control,
  * are controlled by, or are under common control with the entity. Control for
  * purposes of this definition means (i) the direct or indirect power to cause
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up,
  * no-charge, irrevocable, transferable and royalty-free right and license in
- * its rights in the caArray Software to (i) use, install, access, operate,
+ * its rights in the caarray-ejb-jar Software to (i) use, install, access, operate,
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caArray Software; (ii) distribute and
- * have distributed to and by third parties the caArray Software and any
+ * and prepare derivative works of the caarray-ejb-jar Software; (ii) distribute and
+ * have distributed to and by third parties the caarray-ejb-jar Software and any
  * modifications and derivative works thereof; and (iii) sublicense the
  * foregoing rights set out in (i) and (ii) to third parties, including the
  * right to license such rights to further third parties. For sake of clarity,
@@ -80,93 +80,86 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.domain.array;
 
-import static org.junit.Assert.assertEquals;
-import edu.georgetown.pir.Organism;
-import gov.nih.nci.caarray.domain.AbstractCaArrayEntity_HibernateIntegrationTest;
-import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
-import gov.nih.nci.caarray.domain.contact.Organization;
-import gov.nih.nci.caarray.domain.file.CaArrayFile;
-import gov.nih.nci.caarray.domain.file.FileStatus;
-import gov.nih.nci.caarray.domain.project.AssayType;
-import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
-import gov.nih.nci.caarray.domain.vocabulary.Term;
-import gov.nih.nci.caarray.domain.vocabulary.TermSource;
+package gov.nih.nci.caarray.application.translation.geosoft;
 
-import java.util.SortedSet;
-import java.util.TreeSet;
+/**
+ *
+ * @author gax
+ */
+public class Packaginginfo {
+    
+    private String name;
+    private PackagingMethod method;
 
-import org.junit.Test;
-
-@SuppressWarnings("PMD")
-public class Array_HibernateIntegrationTest extends AbstractCaArrayEntity_HibernateIntegrationTest {
-
-    @Test
-    @Override
-    public void testSave() {
-        super.testSave();
+    /**
+     * @see GeoSoftExporter#getPackageingInfo(gov.nih.nci.caarray.domain.project.Experiment) 
+     */
+    Packaginginfo(String name, PackagingMethod method) {
+        this.name = name;
+        this.method = method;
     }
 
-    @Override
-    protected void setValues(AbstractCaArrayObject caArrayObject) {
-        TermSource ts = new TermSource();
-        ts.setName("TS 1");
-        Term term = new Term();
-        term.setValue("term");
-        term.setSource(ts);
-
-        ArrayDesign design = new ArrayDesign();
-        design.setName(getUniqueStringValue());
-        design.setTechnologyType(term);
-        design.addDesignFile(new CaArrayFile());
-        design.getFirstDesignFile().setName("File 1");
-        design.getFirstDesignFile().setFileStatus(FileStatus.UPLOADED);
-        design.setVersion(getUniqueStringValue());
-        design.setGeoAccession(getUniqueStringValue());
-        design.setProvider(new Organization());
-        SortedSet <AssayType>assayTypes = new TreeSet<AssayType>();
-        AssayType type = new AssayType();
-        save(type);
-        assayTypes.add(type);
-        design.setAssayTypes(assayTypes);
-        design.setOrganism(new Organism());
-        design.getOrganism().setScientificName(getUniqueStringValue());
-        design.getOrganism().setTermSource(ts);
-
-        Array array = (Array) caArrayObject;
-        array.setBatch(getUniqueStringValue());
-        array.setSerialNumber(getUniqueStringValue());
-        array.setProduction(new ProtocolApplication());
-        array.setDesign(design);
-        array.setArrayGroup(new ArrayGroup());
-        save(array.getArrayGroup());
+    /**
+     * @return packageing method
+     */
+    public PackagingMethod getMethod() {
+        return method;
     }
 
-    @Override
-    protected void compareValues(AbstractCaArrayObject caArrayObject, AbstractCaArrayObject retrievedCaArrayObject) {
-        Array original = (Array) caArrayObject;
-        Array retrieved = (Array) retrievedCaArrayObject;
-        assertEquals(original.getBatch(), retrieved.getBatch());
-        assertEquals(original.getSerialNumber(), retrieved.getSerialNumber());
-        assertEquals(original.getProduction(), retrieved.getProduction());
-        assertEquals(original.getDesign(), retrieved.getDesign());
-        assertEquals(original.getArrayGroup(), retrieved.getArrayGroup());
+    /**
+     * @return file name of the package.
+     */
+    public String getName() {
+        return name;
     }
 
-    @Override
-    protected void setNullableValuesToNull(AbstractCaArrayObject caArrayObject) {
-        Array array = (Array) caArrayObject;
-        array.setBatch(null);
-        array.setSerialNumber(null);
-        array.setProduction(null);
-        array.setDesign(null);
-        array.setArrayGroup(null);
-    }
+    /**
+     * Prefered packaging method for GeoSoftExporter.
+     */
+    public static enum PackagingMethod {
+        /**
+         * GZIP compressed TAR (tape archive).
+         */
+        TGZ("gzip compressed tar", "application/x-tar-gz", ".tgz"),
 
-    @Override
-    protected AbstractCaArrayObject createTestObject() {
-        return new Array();
+        /**
+         * ZIP compressed archive.
+         */
+        ZIP("zip", "application/zip", ".zip");
+
+        private static final long serialVersionUID = -617456696041521359L;
+
+        private String description;
+        private String mimeType;
+        private String extension;
+
+        private PackagingMethod(String description, String mimeType, String extension) {
+            this.description = description;
+            this.mimeType = mimeType;
+            this.extension = extension;
+        }
+
+        /**
+         * @return simple description.
+         */
+        public String getDescription() {
+            return description;
+        }
+
+        /**
+         * @return prefered file name extention.
+         */
+        public String getExtension() {
+            return extension;
+        }
+
+        /**
+         * @return mime type of the archive stream.
+         */
+        public String getMimeType() {
+            return mimeType;
+        }
     }
 
 }

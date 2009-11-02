@@ -154,6 +154,7 @@ public class ArrayDesignServiceIntegrationTest extends AbstractServiceIntegratio
         DUMMY_ARRAY_DESIGN.setId(2L);
         DUMMY_ARRAY_DESIGN.setName("DummyTestArrayDesign1");
         DUMMY_ARRAY_DESIGN.setVersion("2.0");
+        DUMMY_ARRAY_DESIGN.setGeoAccession("GPL0000");
         DUMMY_ARRAY_DESIGN.setProvider(DUMMY_ORGANIZATION);
         DUMMY_ARRAY_DESIGN.setTechnologyType(DUMMY_TERM);
         DUMMY_ARRAY_DESIGN.setOrganism(DUMMY_ORGANISM);

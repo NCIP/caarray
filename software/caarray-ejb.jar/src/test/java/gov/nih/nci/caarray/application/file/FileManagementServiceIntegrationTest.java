@@ -640,6 +640,7 @@ public class FileManagementServiceIntegrationTest extends AbstractServiceIntegra
         ArrayDesign design = new ArrayDesign();
         design.setName(designFile.getName());
         design.setVersion("2.0");
+        design.setGeoAccession("GPL0000");
         design.setProvider(DUMMY_PROVIDER);
         design.setLsidForEntity("authority:namespace:" + designFile.getName());
         design.addDesignFile(this.fileAccessService.add(designFile));

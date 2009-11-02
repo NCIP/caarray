@@ -128,8 +128,8 @@ import org.hibernate.validator.Size;
 @Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "name", "provider" }) })
 @SuppressWarnings("PMD.TooManyFields")
 public class ArrayDesign extends AbstractCaArrayEntity {
-
-    private static final long serialVersionUID = 1234567890L;
+    
+    private static final long serialVersionUID = -7772722455117790401L;
 
     private String name;
     private String description;
@@ -146,6 +146,7 @@ public class ArrayDesign extends AbstractCaArrayEntity {
     private Set<CaArrayFile> designFiles = new HashSet<CaArrayFile>();
     private Organization provider;
     private ArrayDesignDetails designDetails;
+    private String geoAccession;
 
     /**
      * Default constructor.
@@ -520,6 +521,23 @@ public class ArrayDesign extends AbstractCaArrayEntity {
      */
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    /**
+     * GEO accession.
+     *
+     * @return the GEO accession.
+     */
+    @Length(max = DEFAULT_STRING_COLUMN_SIZE)
+    public String getGeoAccession() {
+        return geoAccession;
+    }
+
+    /**
+     * @param geoAccession GEO accession.
+     */
+    public void setGeoAccession(String geoAccession) {
+        this.geoAccession = geoAccession;
     }
 
 }

@@ -91,6 +91,7 @@ import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.application.permissions.PermissionsManagementService;
 import gov.nih.nci.caarray.application.project.ProjectManagementService;
 import gov.nih.nci.caarray.application.registration.RegistrationService;
+import gov.nih.nci.caarray.application.translation.geosoft.GeoSoftExporter;
 import gov.nih.nci.caarray.application.translation.magetab.MageTabExporter;
 import gov.nih.nci.caarray.application.vocabulary.VocabularyService;
 
@@ -218,6 +219,14 @@ public final class ServiceLocatorFactory {
      */
     public static MageTabExporter getMageTabExporter() {
         return (MageTabExporter) getLocator().lookup(MageTabExporter.JNDI_NAME);
+    }
+
+    /**
+     * Convenience method for obtaining the GEO SOFT Exporter singleton service.
+     * @return the GEO SOFT Exporter service
+     */
+    public static GeoSoftExporter getGeoSoftExporter() {
+        return (GeoSoftExporter) getLocator().lookup(GeoSoftExporter.JNDI_NAME);
     }
 
 }

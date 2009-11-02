@@ -192,6 +192,7 @@
 	                        <s:hidden name="arrayDesign.assayType"/>
 	                        <s:hidden name="arrayDesign.provider"/>
 	                        <s:hidden name="arrayDesign.version"/>
+                                <s:hidden name="arrayDesign.geoAccession"/>
 	                        <s:hidden name="arrayDesign.technologyType"/>
 	                        <s:hidden name="arrayDesign.organism"/>
 	                        <s:hidden name="createMode"/>

@@ -88,6 +88,7 @@
                             <s:select required="true" key="arrayDesign.organism" tabindex="8"
                                       list="organisms" listKey="id" listValue="nameAndSource" value="arrayDesign.organism.id"
                                       headerKey="" headerValue="--Please select an Organism--"/>
+                            <s:textfield key="arrayDesign.geoAccession" size="50" tabindex="9"/>
                             <s:hidden name="arrayDesign.id"/>
                             <s:hidden name="createMode"/>
                             <s:hidden name="editMode"/>
