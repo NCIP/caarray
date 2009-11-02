@@ -211,12 +211,12 @@ public class ProjectExportAction extends AbstractBaseProjectAction implements Pr
     }
 
     /**
-     * GEO SOFT export, used the type property to determin the packaging format.
+     * GEO SOFT archive export, used the type property to determin the packaging format.
      * @return success
      * @throws IOException if there is an error writing to the stream
      */
     @SkipValidation
-    public String exportToGeo() throws IOException {
+    public String exportToGeoArchive() throws IOException {
         GeoSoftExporter service = ServiceLocatorFactory.getGeoSoftExporter();
         HttpServletResponse response = ServletActionContext.getResponse();
         String fileName = getExperiment().getPublicIdentifier() + type.getExtension();
@@ -224,6 +224,23 @@ public class ProjectExportAction extends AbstractBaseProjectAction implements Pr
         response.addHeader("Content-disposition", "filename=\"" + fileName + "\"");
         String permaLink = getProjectPermaLink();
         service.export(getProject(), permaLink, type, response.getOutputStream());
+        return Action.SUCCESS;
+    }
+
+    /**
+     * GEO SOFT Info file export.
+     * @return success
+     * @throws IOException if there is an error writing to the stream
+     */
+    @SkipValidation
+    public String exportToGeoInfo() throws IOException {
+        GeoSoftExporter service = ServiceLocatorFactory.getGeoSoftExporter();
+        HttpServletResponse response = ServletActionContext.getResponse();
+        String fileName = getExperiment().getPublicIdentifier() + ".soft.txt";
+        response.setContentType("text/plain");
+        response.addHeader("Content-disposition", "filename=\"" + fileName + "\"");
+        String permaLink = getProjectPermaLink();
+        service.writeGeoSoftFile(getProject(), permaLink, response.getWriter());
         return Action.SUCCESS;
     }
 

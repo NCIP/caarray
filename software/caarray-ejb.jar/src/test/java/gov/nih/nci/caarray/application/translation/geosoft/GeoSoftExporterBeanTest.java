@@ -37,6 +37,7 @@ import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.zip.GZIPInputStream;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
@@ -346,9 +347,8 @@ public class GeoSoftExporterBeanTest {
     }
 
     @Test
-    public void testExportAsZip() throws Exception {
+    public void testExportArchive() throws Exception {
         Project p = makeGoodProject();
-        Experiment experiment = p.getExperiment();
         List<Packaginginfo> infos = bean.getAvailablePackagingInfos(p);
         Packaginginfo zipPi = Iterables.find(infos, new Predicate<Packaginginfo>() {
             public boolean apply(Packaginginfo t) {
@@ -364,24 +364,26 @@ public class GeoSoftExporterBeanTest {
         Set<String> entries = new HashSet<String>();
         entries.addAll(java.util.Arrays.asList("test-exp-id.soft.txt", "raw_file.data", "derived_file.data"));
         while (en.hasMoreElements()) {
-            entries.remove(en.nextElement().getName());
+            ZipArchiveEntry ze = en.nextElement();
+            assertTrue(ze.getName() + " unexpected", entries.remove(ze.getName()));
+            
         }
-        assertTrue(entries.toString(), entries.isEmpty());
+        assertTrue(entries.toString() + " not found", entries.isEmpty());
 
 
         fos = new FileOutputStream(f);
         bean.export(p, "http://example.com/my_experiemnt", Packaginginfo.PackagingMethod.TGZ, fos);
         fos.close();
-        GzipCompressorInputStream in = new GzipCompressorInputStream(new FileInputStream(f));
+        GZIPInputStream in = new GZIPInputStream(new FileInputStream(f));
         TarArchiveInputStream tar = new TarArchiveInputStream(in);
-        TarArchiveEntry e = tar.getNextTarEntry();
+        entries.clear();
         entries.addAll(java.util.Arrays.asList("test-exp-id.soft.txt", "raw_file.data", "derived_file.data", "README.txt"));
+        TarArchiveEntry e = tar.getNextTarEntry();
         while (e != null) {
-            entries.remove(e.getName());
+            assertTrue(e.getName() + " unexpected", entries.remove(e.getName()));
             e = tar.getNextTarEntry();
         }
-        assertTrue(entries.toString(), entries.isEmpty());
-
+        assertTrue(entries.toString() + " not found", entries.isEmpty());
     }
 
 }

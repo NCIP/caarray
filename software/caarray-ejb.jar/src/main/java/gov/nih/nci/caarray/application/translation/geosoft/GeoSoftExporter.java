@@ -86,6 +86,7 @@ import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.Project;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.util.List;
 
 /**
@@ -123,5 +124,14 @@ public interface GeoSoftExporter {
      */
     void export(Project experiment, String permaLinkUrl, Packaginginfo.PackagingMethod method, OutputStream out)
             throws IOException;
+
+    /**
+     * Export an to a GEO SOFT Info file for an experiment.
+     * @param project experiment to export.
+     * @param permaLinkUrl permanent URL of the experiment.
+     * @param out stream to write to.
+     * @throws IOException if writing to the stream fails.
+     */
+    void writeGeoSoftFile(Project project, String permaLinkUrl, PrintWriter out) throws IOException;
 
 }

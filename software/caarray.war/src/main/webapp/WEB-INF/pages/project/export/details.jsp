@@ -13,9 +13,12 @@
             <c:param name="project.id" value="${project.id}" />
             <c:param name="type" value="ZIP" />
         </c:url>
-        <c:url var="exportToGeoTgzUrl" value="/ajax/project/export/exportToGeo.action">
+        <c:url var="exportToGeoTgzUrl" value="/ajax/project/export/exportToGeoArchive.action">
             <c:param name="project.id" value="${project.id}" />
             <c:param name="type" value="TGZ" />
+        </c:url>
+        <c:url var="exportToGeoInfoUrl" value="/ajax/project/export/exportToGeoInfo.action">
+            <c:param name="project.id" value="${project.id}" />
         </c:url>
 
         <table class="form">
@@ -34,6 +37,9 @@
             </td></tr>
             <tr><td>
             <caarray:action url="${exportToGeoTgzUrl}" actionClass="launch_download" text="Download GEO SOFT TAR.GZ ('tarball') Archive" />
+            </td></tr>
+            <tr><td>
+            <caarray:action url="${exportToGeoInfoUrl}" actionClass="launch_download" text="Download GEO SOFT Information File" />
             </td></tr>
         </s:if>
         <s:else>

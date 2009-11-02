@@ -105,6 +105,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.zip.GZIPOutputStream;
 import javax.ejb.Local;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
@@ -116,9 +117,9 @@ import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
-import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
+import org.apache.commons.io.output.CloseShieldOutputStream;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -330,17 +331,28 @@ public class GeoSoftExporterBean implements GeoSoftExporter {
         return infos;
     }
 
-     /**
+    /**
+     * {@inheritDoc}
+     */
+    @TransactionAttribute(TransactionAttributeType.SUPPORTS)
+    public void writeGeoSoftFile(Project project, String permaLinkUrl, PrintWriter out) throws IOException {
+        if (!validateForExport(project.getExperiment()).isEmpty()) {
+            throw new IllegalArgumentException("experiment not valid for export");
+        }
+        GeoSoftFileWriterUtil.writeSoftFile(project.getExperiment(), permaLinkUrl, out);
+    }
+
+    /**
      * {@inheritDoc}
      */
     @TransactionAttribute(TransactionAttributeType.SUPPORTS)
     public void export(Project project, String permaLinkUrl, Packaginginfo.PackagingMethod method,
             OutputStream out) throws IOException {
 
+        OutputStream closeShield = new CloseShieldOutputStream(out);
         Experiment experiment = project.getExperiment();
-        boolean addReadMe = method == Packaginginfo.PackagingMethod.TGZ;
+        boolean addReadMe = (method == Packaginginfo.PackagingMethod.TGZ);
         ArchiveOutputStream arOut;
-
         switch(method) {
             case ZIP:
                 List<Packaginginfo> infos = getAvailablePackagingInfos(project);
@@ -351,10 +363,10 @@ public class GeoSoftExporterBean implements GeoSoftExporter {
                 if (!zip) {
                     throw new IllegalArgumentException("experiment files are too large for a standard ZIP package");
                 }
-                arOut = new ZipArchiveOutputStream(out);
+                arOut = new ZipArchiveOutputStream(closeShield);
                 break;
             case TGZ:
-                GzipCompressorOutputStream gz = new GzipCompressorOutputStream(out);
+                final GZIPOutputStream gz = new GZIPOutputStream(closeShield);
                 arOut = new TarArchiveOutputStream(gz);
                 break;
             default:
@@ -363,7 +375,8 @@ public class GeoSoftExporterBean implements GeoSoftExporter {
         try {
             exportArchive(experiment, permaLinkUrl, addReadMe, arOut);
         } finally {
-            IOUtils.closeQuietly(arOut);
+            // note that the caller's stream is shielded, but this is the only way to finish the archive.
+            arOut.close();
         }
     }
 
@@ -477,7 +490,6 @@ public class GeoSoftExporterBean implements GeoSoftExporter {
             ar.putArchiveEntry(ae);
             bout.writeTo(ar);
             ar.closeArchiveEntry();
-            ar.finish();
         } catch (Exception e) {
             LOG.error(e);
         } finally {
