@@ -150,7 +150,7 @@ public class CaArrayAuditLogProcessor extends DefaultProcessor {
     @SuppressWarnings({"PMD.ExcessiveParameterList", "unchecked", "PMD.NPathComplexity" })
     private void logAccessProfile(AuditLogRecord record, AccessProfile entity, String property, String columnName,
             Object oldVal, Object newVal) {
-        if ("securityLevelInternal".equals(property) && !entity.isHostProfile()) {
+        if ("securityLevelInternal".equals(property)) {
             if (oldVal == null && newVal == SecurityLevel.NONE) {
                 return;
             }

@@ -537,7 +537,7 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
             assertTrue(SecurityUtils.canWrite(DUMMY_SOURCE, UsernameHolder.getCsmUser()));
             assertNotNull(p.getPublicProfile());
             //checkVisible(p);
-            assertEquals(p.getHostProfile().getSecurityLevel(), SecurityLevel.READ_WRITE_SELECTIVE);
+
             //e = SEARCH_DAO.retrieve(Experiment.class, experimentId);
             //assertNotNull(e);
 

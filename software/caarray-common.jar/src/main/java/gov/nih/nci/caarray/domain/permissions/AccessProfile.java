@@ -125,7 +125,6 @@ public class AccessProfile implements PersistentObject, Serializable, Comparable
     private SecurityLevel securityLevel;
     private Map<Sample, SampleSecurityLevel> sampleSecurityLevels = new HashMap<Sample, SampleSecurityLevel>();
     private Project projectForPublicProfile;
-    private Project projectForHostProfile;
     private Project projectForGroupProfile;
     private CollaboratorGroup group;
 
@@ -253,24 +252,6 @@ public class AccessProfile implements PersistentObject, Serializable, Comparable
     }
 
     /**
-     * @return the projectForHostProfile
-     */
-    @OneToOne(mappedBy = "hostProfile", fetch = FetchType.LAZY)
-    private Project getProjectForHostProfile() {
-        return projectForHostProfile;
-    }
-
-    /**
-     * @param projectForHostProfile the projectForHostProfile to set
-     * DEVELOPER NOTE:
-     * This method should not generally never be called. It needs to remain public
-     * as it must be called by Project to establish the symmetric link
-     */
-    public void setProjectForHostProfile(Project projectForHostProfile) {
-        this.projectForHostProfile = projectForHostProfile;
-    }
-
-    /**
      * @return the projectForGroupProfile
      */
     @ManyToOne(fetch = FetchType.LAZY)
@@ -298,14 +279,6 @@ public class AccessProfile implements PersistentObject, Serializable, Comparable
     }
 
     /**
-     * @return whether this is a host profile
-     */
-    @Transient
-    public boolean isHostProfile() {
-        return this.projectForHostProfile != null;
-    }
-
-    /**
      * @return whether this is a group profile
      */
     @Transient
@@ -320,8 +293,6 @@ public class AccessProfile implements PersistentObject, Serializable, Comparable
     public Project getProject() {
         if (isPublicProfile()) {
             return getProjectForPublicProfile();
-        } else if (isHostProfile()) {
-            return getProjectForHostProfile();
         } else {
             return getProjectForGroupProfile();
         }

@@ -100,7 +100,6 @@ import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.security.authorization.domainobjects.User;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -158,7 +157,6 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
     private SortedSet<CaArrayFile> supplementalFiles = new TreeSet<CaArrayFile>();
     private SortedSet<CaArrayFile> unImportedFiles = new TreeSet<CaArrayFile>();
     private AccessProfile publicProfile = new AccessProfile(SecurityLevel.NO_VISIBILITY);
-    private AccessProfile hostProfile = new AccessProfile(SecurityLevel.READ_WRITE_SELECTIVE);
     private Map<CollaboratorGroup, AccessProfile> groupProfiles = new HashMap<CollaboratorGroup, AccessProfile>();
     private transient Set<User> owners;
     private Date lastUpdated = new Date();
@@ -169,7 +167,6 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
     public Project() {
         // hibernate & caster-only constructor
         this.publicProfile.setProjectForPublicProfile(this);
-        this.hostProfile.setProjectForHostProfile(this);
     }
 
     /**
@@ -371,21 +368,6 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
     }
 
     /**
-     * @return host institution access profile
-     */
-    @ManyToOne(cascade = {CascadeType.ALL }, fetch = FetchType.LAZY)
-    @JoinColumn(unique = true)
-    @ForeignKey(name = "project_hostaccess_fk")
-    public AccessProfile getHostProfile() {
-        return this.hostProfile;
-    }
-
-    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
-    private void setHostProfile(AccessProfile profile) {
-        this.hostProfile = profile;
-    }
-
-    /**
      * @return collaborator access profiles
      */
     @OneToMany(fetch = FetchType.LAZY)
@@ -439,8 +421,8 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
      */
     @Transient
     public Collection<AccessProfile> getAllAccessProfiles() {
-        List<AccessProfile> profiles =
-                new ArrayList<AccessProfile>(Arrays.asList(this.publicProfile, this.hostProfile));
+        List<AccessProfile> profiles = new ArrayList<AccessProfile>(this.groupProfiles.size() + 1);
+        profiles.add(this.publicProfile);
         profiles.addAll(this.groupProfiles.values());
         return profiles;
     }

@@ -396,10 +396,7 @@ public final class SecurityUtils {
     }
 
     private static Group getTargetGroup(AccessProfile ap) {
-        if (ap.isHostProfile()) {
-            // not supporting host profiles for now
-            return null;
-        } else if (ap.isPublicProfile()) {
+        if (ap.isPublicProfile()) {
             return getAnonymousGroup();
         } else if (ap.isGroupProfile()) {
             return ap.getGroup().getGroup();
