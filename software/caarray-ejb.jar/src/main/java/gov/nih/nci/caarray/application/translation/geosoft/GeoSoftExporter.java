@@ -112,17 +112,20 @@ public interface GeoSoftExporter {
      * @param experiment the experiment to package.
      * @return information about the possible packaging formats.
      */
-    List<Packaginginfo> getAvailablePackagingInfos(Project experiment);
+    List<PackagingInfo> getAvailablePackagingInfos(Project experiment);
 
     /**
      * Export an to a GEO SOFT format, packaged in an archive.
+     * If an error occures during the wrriting of the archive stream, an attempt will be made to add a final entry
+     * named ERROR.txt that contains detais about the error, and also indicating that the archive is incomplete and/or
+     * malformed.
      * @param experiment experiment to export.
      * @param permaLinkUrl permanent URL of the experiment.
      * @param method packaging method or format.
      * @param out stream to write to.
      * @throws IOException if writing to the stream fails.
      */
-    void export(Project experiment, String permaLinkUrl, Packaginginfo.PackagingMethod method, OutputStream out)
+    void export(Project experiment, String permaLinkUrl, PackagingInfo.PackagingMethod method, OutputStream out)
             throws IOException;
 
     /**

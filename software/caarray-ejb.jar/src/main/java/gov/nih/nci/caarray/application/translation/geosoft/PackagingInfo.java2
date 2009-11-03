@@ -87,7 +87,7 @@ package gov.nih.nci.caarray.application.translation.geosoft;
  *
  * @author gax
  */
-public class Packaginginfo {
+public class PackagingInfo {
     
     private String name;
     private PackagingMethod method;
@@ -95,7 +95,7 @@ public class Packaginginfo {
     /**
      * @see GeoSoftExporter#getPackageingInfo(gov.nih.nci.caarray.domain.project.Experiment) 
      */
-    Packaginginfo(String name, PackagingMethod method) {
+    PackagingInfo(String name, PackagingMethod method) {
         this.name = name;
         this.method = method;
     }

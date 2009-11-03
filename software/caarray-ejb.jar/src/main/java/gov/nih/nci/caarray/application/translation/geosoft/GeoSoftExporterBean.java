@@ -315,18 +315,18 @@ public class GeoSoftExporterBean implements GeoSoftExporter {
      * {@inheritDoc}
      */
     @TransactionAttribute(TransactionAttributeType.SUPPORTS)
-    public List<Packaginginfo> getAvailablePackagingInfos(Project project) {
-        List<Packaginginfo> infos = new ArrayList<Packaginginfo>();
+    public List<PackagingInfo> getAvailablePackagingInfos(Project project) {
+        List<PackagingInfo> infos = new ArrayList<PackagingInfo>();
         Experiment experiment = project.getExperiment();
-        String name = experiment.getPublicIdentifier() + Packaginginfo.PackagingMethod.TGZ.getExtension();
-        Packaginginfo.PackagingMethod method = Packaginginfo.PackagingMethod.TGZ;
-        infos.add(new Packaginginfo(name, method));
+        String name = experiment.getPublicIdentifier() + PackagingInfo.PackagingMethod.TGZ.getExtension();
+        PackagingInfo.PackagingMethod method = PackagingInfo.PackagingMethod.TGZ;
+        infos.add(new PackagingInfo(name, method));
 
         long size = getEstimatedPackageSize(experiment);
         if (size < MAX_ZIP_SIZE) {
-            name = experiment.getPublicIdentifier() + Packaginginfo.PackagingMethod.ZIP.getExtension();
-            method = Packaginginfo.PackagingMethod.ZIP;
-            infos.add(new Packaginginfo(name, method));
+            name = experiment.getPublicIdentifier() + PackagingInfo.PackagingMethod.ZIP.getExtension();
+            method = PackagingInfo.PackagingMethod.ZIP;
+            infos.add(new PackagingInfo(name, method));
         }
         return infos;
     }
@@ -346,12 +346,12 @@ public class GeoSoftExporterBean implements GeoSoftExporter {
      * {@inheritDoc}
      */
     @TransactionAttribute(TransactionAttributeType.SUPPORTS)
-    public void export(Project project, String permaLinkUrl, Packaginginfo.PackagingMethod method,
+    public void export(Project project, String permaLinkUrl, PackagingInfo.PackagingMethod method,
             OutputStream out) throws IOException {
 
         OutputStream closeShield = new CloseShieldOutputStream(out);
         Experiment experiment = project.getExperiment();
-        boolean addReadMe = (method == Packaginginfo.PackagingMethod.TGZ);
+        boolean addReadMe = (method == PackagingInfo.PackagingMethod.TGZ);
         ArchiveOutputStream arOut;
         switch(method) {
             case ZIP:
@@ -375,9 +375,9 @@ public class GeoSoftExporterBean implements GeoSoftExporter {
     }
 
     private void ensureZippable(Project project) {
-        List<Packaginginfo> infos = getAvailablePackagingInfos(project);
-        for (Packaginginfo pi : infos) {
-            if (pi.getMethod() == Packaginginfo.PackagingMethod.ZIP) {
+        List<PackagingInfo> infos = getAvailablePackagingInfos(project);
+        for (PackagingInfo pi : infos) {
+            if (pi.getMethod() == PackagingInfo.PackagingMethod.ZIP) {
                 return;
             }
         }

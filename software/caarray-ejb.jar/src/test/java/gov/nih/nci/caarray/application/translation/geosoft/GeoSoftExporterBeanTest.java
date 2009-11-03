@@ -321,9 +321,9 @@ public class GeoSoftExporterBeanTest {
     public void testGetPackageingInfo() throws Exception {
         Project p = makeGoodProject();
         Experiment experiment = p.getExperiment();
-        List<Packaginginfo> infos = bean.getAvailablePackagingInfos(p);
+        List<PackagingInfo> infos = bean.getAvailablePackagingInfos(p);
         assertEquals(2, infos.size());
-        for (Packaginginfo pi : infos) {
+        for (PackagingInfo pi : infos) {
             switch (pi.getMethod()) {
                 case TGZ:
                     assertEquals("test-exp-id.tgz", pi.getName());
@@ -343,21 +343,21 @@ public class GeoSoftExporterBeanTest {
         infos = bean.getAvailablePackagingInfos(p);
         assertEquals(1, infos.size());
         assertEquals("test-exp-id.tgz", infos.get(0).getName());
-        assertEquals(Packaginginfo.PackagingMethod.TGZ, infos.get(0).getMethod());
+        assertEquals(PackagingInfo.PackagingMethod.TGZ, infos.get(0).getMethod());
     }
 
     @Test
     public void testExportArchive() throws Exception {
         Project p = makeGoodProject();
-        List<Packaginginfo> infos = bean.getAvailablePackagingInfos(p);
-        Packaginginfo zipPi = Iterables.find(infos, new Predicate<Packaginginfo>() {
-            public boolean apply(Packaginginfo t) {
-                return t.getMethod() == Packaginginfo.PackagingMethod.ZIP;
+        List<PackagingInfo> infos = bean.getAvailablePackagingInfos(p);
+        PackagingInfo zipPi = Iterables.find(infos, new Predicate<PackagingInfo>() {
+            public boolean apply(PackagingInfo t) {
+                return t.getMethod() == PackagingInfo.PackagingMethod.ZIP;
             }
         });
         File f = File.createTempFile("test", zipPi.getName());
         FileOutputStream fos = new FileOutputStream(f);
-        bean.export(p, "http://example.com/my_experiemnt", Packaginginfo.PackagingMethod.ZIP, fos);
+        bean.export(p, "http://example.com/my_experiemnt", PackagingInfo.PackagingMethod.ZIP, fos);
         fos.close();
         ZipFile zf = new ZipFile(f);
         Enumeration<ZipArchiveEntry> en = zf.getEntries();
@@ -372,7 +372,7 @@ public class GeoSoftExporterBeanTest {
 
 
         fos = new FileOutputStream(f);
-        bean.export(p, "http://example.com/my_experiemnt", Packaginginfo.PackagingMethod.TGZ, fos);
+        bean.export(p, "http://example.com/my_experiemnt", PackagingInfo.PackagingMethod.TGZ, fos);
         fos.close();
         GZIPInputStream in = new GZIPInputStream(new FileInputStream(f));
         TarArchiveInputStream tar = new TarArchiveInputStream(in);
