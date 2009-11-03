@@ -196,7 +196,19 @@ public interface SearchService {
             throws InvalidReferenceException, UnsupportedCategoryException;
 
     /**
-     * Search for experiments matching the given keyword keyword criteria.
+     * Search for experiments matching the given keyword keyword criteria. The following fields are used to match the
+     * keyword
+     * 
+     * <ul>
+     * <li>Experiment title
+     * <li>Experiment description
+     * <li>Experiment public identifier
+     * <li>Experiment array provider name
+     * <li>Experiment array designs' names
+     * <li>Experiment organism's common and scientific names
+     * <li>Experiment samples' names
+     * <li>Experiment sources' disease state's values
+     * </ul>
      * 
      * @param criteria the keyword criteria to search for.
      * @param limitOffset an optional parameter specifying the number of results to return, and the offset of the first
@@ -227,9 +239,19 @@ public interface SearchService {
             throws InvalidReferenceException, UnsupportedCategoryException;
 
     /**
-     * Search for biomaterials matching the given keyword criteria. 
+     * Search for biomaterials matching the given keyword criteria. The following fields are used to match the keyword
      * 
-     * @param criteria the keyword criteria to search for.
+     * <ul>
+     * <li>Biomaterial name
+     * <li>Biomaterial external id
+     * <li>Biomaterial disease state's value
+     * <li>Biomaterial tissue site's value
+     * <li>Biomaterial organism's common and scientific names
+     * <li>Experiment organism's common and scientific names (if biomaterial organism is not set)
+     * </ul>
+     * 
+     * @param criteria the keyword criteria to search for; this identifies the string to look for, and the types of
+     *            biomaterials to include in the results.
      * @param limitOffset an optional parameter specifying the number of results to return, and the offset of the first
      *            result to return within the overall result set. May be left null to indicate the entire result set is
      *            requested.
