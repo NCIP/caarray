@@ -89,8 +89,8 @@ import gov.nih.nci.caarray.application.fileaccess.FileAccessUtils;
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCache;
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
 import gov.nih.nci.caarray.application.translation.geosoft.GeoSoftExporter;
-import gov.nih.nci.caarray.application.translation.geosoft.Packaginginfo;
-import gov.nih.nci.caarray.application.translation.geosoft.Packaginginfo.PackagingMethod;
+import gov.nih.nci.caarray.application.translation.geosoft.PackagingInfo;
+import gov.nih.nci.caarray.application.translation.geosoft.PackagingInfo.PackagingMethod;
 import gov.nih.nci.caarray.application.translation.magetab.MageTabExporter;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import java.io.File;
@@ -150,9 +150,9 @@ public class ProjectExportAction extends AbstractBaseProjectAction implements Pr
 
         GeoSoftExporter service = ServiceLocatorFactory.getGeoSoftExporter();
         geoValidation = service.validateForExport(getExperiment());
-        List<Packaginginfo> infos = service.getAvailablePackagingInfos(getProject());
+        List<PackagingInfo> infos = service.getAvailablePackagingInfos(getProject());
         geoZipOk = false;
-        for (Packaginginfo pi : infos) {
+        for (PackagingInfo pi : infos) {
             geoZipOk |= pi.getMethod() == PackagingMethod.ZIP;
         }
         return Action.SUCCESS;
