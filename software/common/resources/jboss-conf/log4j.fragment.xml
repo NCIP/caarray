@@ -1,0 +1,34 @@
+    <!-- start caarray custom configuration -->
+    <category name="org.hibernate">
+      <priority value="WARN"/>
+    </category>
+    
+    <category name="net.sf.ehcache">
+      <priority value="ERROR"/>
+    </category>
+
+    <!-- Suppress success logging from InteractiveAuthenticationSuccessEvent -->
+    <category name="org.acegisecurity">
+      <priority value="ERROR"/>
+    </category>
+    
+    <category name="org.apache">
+      <priority value="WARN"/>
+    </category>
+
+    <category name="org.springframework">
+      <priority value="WARN"/>
+    </category>
+
+    <category name="gov.nih">
+      <priority value="DEBUG"/>
+    </category>
+    
+    <category name="net.sf.dozer">
+        <priority value="ERROR"/>
+    </category>
+
+    <category name="org.displaytag">
+        <priority value="ERROR"/>
+    </category>
+    <!-- end caarray custom configuration -->
