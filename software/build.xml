@@ -131,35 +131,39 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
     <!-- Creates the installer distribution used by automated or manual remote installations -->
     <target name="dist:installer" depends="dist:installer:prep">
         <delete file="${dist.dir}/${caarray.install.zip.file}" />
-        <zip destfile="${dist.dir}/${caarray.install.zip.file}" basedir="${caarray.dist.dir}" />
+        <zip destfile="${dist.dir}/${caarray.install.zip.file}" >
+        	<zipfileset dir="${caarray.dist.dir}" prefix="${caarray.install.name}_${caarray.version}"   />
+    </zip>
     </target>
 
 
     <!-- Creates upgrader distribution -->
     <target name="dist:upgrader" depends="dist:upgrader:prep">
         <delete file="${dist.dir}/${caarray.upgrade.zip.file}" />
-        <zip destfile="${dist.dir}/${caarray.upgrade.zip.file}" basedir="${caarray.dist.dir}" />
+        <zip destfile="${dist.dir}/${caarray.upgrade.zip.file}" >
+        	<zipfileset dir="${caarray.dist.dir}" prefix="${caarray.upgrade.name}_${caarray.version}"   />
+    </zip>
     </target>
 
 
     <target name="dist:src">
         <delete file="${dist.dir}/${caarray.src.zip.file}" />
         <zip destfile="${dist.dir}/${caarray.src.zip.file}">
-            <fileset dir="${basedir}" excludes="dist/**, tools/**, bda-utils/**, local-ivy-repo/**, target/**, load-test/**, **/eclipse-out/**, **/.svn/**" />
+            <zipfileset dir="${basedir}" excludes="dist/**, tools/**, bda-utils/**, local-ivy-repo/**, target/**, load-test/**, **/eclipse-out/**, **/.svn/**" prefix="${caarray.src.name}_${caarray.version}"/>
         </zip>
     </target>
 
     <target name="dist:javadoc">
         <delete file="${dist.dir}/${caarray.javadoc.zip.file}" />
         <zip destfile="${dist.dir}/${caarray.javadoc.zip.file}">
-            <fileset dir="${basedir}/caarray-client.jar/target/docs/api"/>
+            <zipfileset dir="${basedir}/caarray-client.jar/target/docs/api" prefix="${caarray.javadoc.name}_${caarray.version}"/>
         </zip>
     </target>
 
     <target name="dist:caarray-client.zip">
         <delete file="${dist.dir}/${caarray.client-zip.zip.file}" />
-        <copy file="${basedir}/caarray-client.jar/target/caarray-client-external-v1_0.zip" tofile="${dist.dir}/${caarray.client-external-zip.zip.file}"/>
-        <copy file="${basedir}/caarray-client.jar/target/caarray-client-legacy.zip" tofile="${dist.dir}/${caarray.client-legacy-zip.zip.file}"/>
+        <copy file="${basedir}/caarray-client.jar/target/${caarray.client-external-zip.zip.file}" tofile="${dist.dir}/${caarray.client-external-zip.zip.file}"/>
+        <copy file="${basedir}/caarray-client.jar/target/${caarray.client-legacy-zip.zip.file}" tofile="${dist.dir}/${caarray.client-legacy-zip.zip.file}"/>
     </target>
 
     <target name="dist:gui-installer" description="Makes Gui-Installer distribution">
