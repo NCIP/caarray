@@ -355,18 +355,11 @@ public class GeoSoftExporterBean implements GeoSoftExporter {
         ArchiveOutputStream arOut;
         switch(method) {
             case ZIP:
-                List<Packaginginfo> infos = getAvailablePackagingInfos(project);
-                boolean zip = false;
-                for (Packaginginfo pi : infos) {
-                    zip |= pi.getMethod() == Packaginginfo.PackagingMethod.ZIP;
-                }
-                if (!zip) {
-                    throw new IllegalArgumentException("experiment files are too large for a standard ZIP package");
-                }
+                ensureZippable(project);
                 arOut = new ZipArchiveOutputStream(closeShield);
                 break;
             case TGZ:
-                final GZIPOutputStream gz = new GZIPOutputStream(closeShield);
+                GZIPOutputStream gz = new GZIPOutputStream(closeShield);
                 arOut = new TarArchiveOutputStream(gz);
                 break;
             default:
@@ -375,9 +368,21 @@ public class GeoSoftExporterBean implements GeoSoftExporter {
         try {
             exportArchive(experiment, permaLinkUrl, addReadMe, arOut);
         } finally {
-            // note that the caller's stream is shielded, but this is the only way to finish the archive.
+            // note that the caller's stream is shielded from the close(),
+            // but this is the only way to finish and flush the (gzip) stream.
             arOut.close();
         }
+    }
+
+    private void ensureZippable(Project project) {
+        List<Packaginginfo> infos = getAvailablePackagingInfos(project);
+        for (Packaginginfo pi : infos) {
+            if (pi.getMethod() == Packaginginfo.PackagingMethod.ZIP) {
+                return;
+            }
+        }
+        throw new IllegalArgumentException("experiment files are too large for a standard ZIP package");
+
     }
 
     private void exportArchive(Experiment experiment, String permaLinkUrl, boolean addReadme, ArchiveOutputStream ar)
