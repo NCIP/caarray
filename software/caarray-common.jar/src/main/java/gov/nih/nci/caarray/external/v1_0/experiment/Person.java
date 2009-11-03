@@ -98,7 +98,7 @@ public class Person extends AbstractCaArrayEntity {
     private String emailAddress;
 
     /**
-     * @return the firstName
+     * @return the Person's first name
      */
     public String getFirstName() {
         return firstName;
@@ -112,7 +112,7 @@ public class Person extends AbstractCaArrayEntity {
     }
 
     /**
-     * @return the lastName
+     * @return the Person's last name
      */
     public String getLastName() {
         return lastName;
@@ -126,7 +126,7 @@ public class Person extends AbstractCaArrayEntity {
     }
 
     /**
-     * @return the middleInitials
+     * @return the Person's middle initials
      */
     public String getMiddleInitials() {
         return middleInitials;
@@ -140,7 +140,7 @@ public class Person extends AbstractCaArrayEntity {
     }
 
     /**
-     * @return the emailAddress
+     * @return the Person's email address
      */
     public String getEmailAddress() {
         return emailAddress;

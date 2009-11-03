@@ -21,6 +21,10 @@
     </category>
 
     <category name="gov.nih">
+      <priority value="INFO"/>
+    </category>
+
+    <category name="gov.nih.nci.caarray">
       <priority value="DEBUG"/>
     </category>
     
@@ -29,6 +33,14 @@
     </category>
 
     <category name="org.displaytag">
+        <priority value="ERROR"/>
+    </category>
+
+    <category name="com.opensymphony">
+        <priority value="ERROR"/>
+    </category>
+
+    <category name="freemarker">
         <priority value="ERROR"/>
     </category>
     <!-- end caarray custom configuration -->
