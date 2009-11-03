@@ -190,11 +190,13 @@ public class FileAccessServiceBean implements FileAccessService {
 
         AbstractArrayData data = this.daoFactory.getArrayDao().getRawArrayData(caArrayFile);
         if (data != null) {
-            this.daoFactory.getArrayDao().remove(data);
+            data.setDataFile(null);
+            this.daoFactory.getArrayDao().save(data);
         }
         data = this.daoFactory.getArrayDao().getDerivedArrayData(caArrayFile);
         if (data != null) {
-            this.daoFactory.getArrayDao().remove(data);
+            data.setDataFile(null);
+            this.daoFactory.getArrayDao().save(data);
         }
         this.daoFactory.getFileDao().remove(caArrayFile);
         LogUtil.logSubsystemExit(LOG);
