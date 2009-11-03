@@ -385,18 +385,26 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
             />
     </target>
 
-    <!-- Configure log4j settings based on contents of caarray/software/resrouces/deploy/log4j.block.xml -->
-    <target name="-install:jboss:configure:log4j" unless="exclude.jboss">
-        <!--
-        <property name="log4j.block.file" value="${resource.dir.target}/log4j.block.xml"/>
-        <loadfile
-            property="xml.content"
-            srcFile="${log4j.block.file}"/>
-
-        <replaceregexp file="${jboss.home}/server/default/conf/log4j.xml" byline="true"
-            match="(^.*\/log4j:configuration.)"
-            replace="${xml.content}${line.separator}\1"/>
-        -->
+    <target name="-install:jboss:configure:log4j" unless="exclude.jboss" description="Configures log4j.xml for caArray JBoss server.">
+		<echo message="Configuring ${jboss.home}/server/${jboss.server.name}/conf/log4j.xml."/>
+        <copy file="${jboss.home}/server/${jboss.server.name}/conf/log4j.xml" tofile="${jboss.home}/server/${jboss.server.name}/conf/log4j.xml.original"/>
+		<loadfile property="log4j.fragment" srcFile="${jboss-conf.dir.target}/log4j.fragment.xml"/>
+		<loadfile property="existing.log4j.contents" srcFile="${jboss.home}/server/${jboss.server.name}/conf/log4j.xml"/>
+		<propertyregex property="caarray.custom.cfg.target.text"
+			input="${existing.log4j.contents}"
+			regexp="&lt;!-- start caarray custom configuration[\d\D]*end caarray custom configuration --&gt;"
+			select="\0"
+			global="true"
+			/>
+		<if>
+			<isset property="caarray.custom.cfg.target.text" />
+			<then>
+			    <replace file="${jboss.home}/server/${jboss.server.name}/conf/log4j.xml" token="${caarray.custom.cfg.target.text}" value="${log4j.fragment}"/>
+			</then>
+			<else>
+				<replace file="${jboss.home}/server/${jboss.server.name}/conf/log4j.xml" token="&lt;/log4j:configuration&gt;" value="${log4j.fragment}${line.separator}&lt;/log4j:configuration&gt;"/>
+			</else>
+		</if>
     </target>
 
     <target name="-install:jboss:configure:secure-console" description="Configure JBoss ports using bindings files" unless="exclude.jboss">
@@ -545,6 +553,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
         -install:jboss:configure:update-runscripts,
         -install:jboss:configure:tomcat,
         -install:jboss:configure:api:streaming:port,
+        -install:jboss:configure:log4j,
         install:jboss:caarray,
         install:jboss:start
         " />

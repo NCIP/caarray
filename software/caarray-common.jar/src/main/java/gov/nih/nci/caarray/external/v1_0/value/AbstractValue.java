@@ -101,7 +101,7 @@ public abstract class AbstractValue implements Serializable {
     private Term unit;
 
     /**
-     * @return the unit
+     * @return the unit for this value
      */
     public Term getUnit() {
         return unit;
