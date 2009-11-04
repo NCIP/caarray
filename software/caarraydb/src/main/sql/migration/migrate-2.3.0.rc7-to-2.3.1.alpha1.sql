@@ -1,5 +1,4 @@
 -- GF 21413, remove Project.hostProfile
-alter table project drop foreign key project_hostaccess_fk;
 alter table project drop column host_profile;
 
 -- GF 20294, add geoAccession field to array design
