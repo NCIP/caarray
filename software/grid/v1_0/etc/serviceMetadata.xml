@@ -271,10 +271,10 @@
   </ns2:Service>
  </ns1:serviceDescription>
  <ns1:hostingResearchCenter>
-  <ns65:ResearchCenter displayName="" shortName="" xmlns:ns65="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.common">
-   <ns65:Address country="" locality="" postalCode="" stateProvince="" street1="" street2=""/>
+  <ns65:ResearchCenter displayName="National Cancer Institute Center for Bioinformatics - NCICB" shortName="NCICB" xmlns:ns65="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.common">
+   <ns65:Address country="US" locality="Rockville" postalCode="20852" stateProvince="MD" street1="2115 E. Jefferson Street"/>
    <ns65:pointOfContactCollection>
-    <ns65:PointOfContact affiliation="" email="" firstName="" lastName="" phoneNumber="" role=""/>
+    <ns65:PointOfContact affiliation="National Cancer Institute Center for Bioinformatics - NCICB" email="duncanmk@mail.nih.gov" firstName="Maki" lastName="Duncan" phoneNumber="301-443-5307" role="Project Manager"/>
    </ns65:pointOfContactCollection>
   </ns65:ResearchCenter>
  </ns1:hostingResearchCenter>
