@@ -99,7 +99,6 @@ import gov.nih.nci.caarray.dao.stub.ArrayDaoStub;
 import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.contact.Organization;
-import gov.nih.nci.caarray.domain.contact.Person;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.DerivedArrayData;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
@@ -161,7 +160,7 @@ import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 @SuppressWarnings("PMD")
 public class MageTabTranslatorTest extends AbstractServiceTest {
 
-    private MageTabTranslator translator;
+    MageTabTranslator translator;
     private final LocalDaoFactoryStub daoFactoryStub = new LocalDaoFactoryStub();
     private final VocabularyServiceStub vocabularyServiceStub = new VocabularyServiceStub();
     private FileAccessServiceStub fileAccessServiceStub;

@@ -132,9 +132,9 @@ import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.magetab.OntologyTerm;
 import gov.nih.nci.caarray.magetab.sdrf.AbstractSampleDataRelationshipNode;
 import gov.nih.nci.caarray.magetab.sdrf.Characteristic;
-import gov.nih.nci.caarray.magetab.sdrf.Normalization;
+import gov.nih.nci.caarray.magetab.sdrf.DerivedArrayDataFile;
+import gov.nih.nci.caarray.magetab.sdrf.DerivedArrayDataMatrixFile;
 import gov.nih.nci.caarray.magetab.sdrf.Provider;
-import gov.nih.nci.caarray.magetab.sdrf.Scan;
 import gov.nih.nci.caarray.magetab.sdrf.SdrfColumnType;
 import gov.nih.nci.caarray.magetab.sdrf.SdrfDocument;
 import gov.nih.nci.caarray.magetab.sdrf.SdrfNodeType;
@@ -453,13 +453,10 @@ final class SdrfTranslator extends AbstractTranslator {
                     hybridization.getFactorValues().add(factorValue);
                     factorValue.setHybridization(hybridization);
                 }
-
-                for (gov.nih.nci.caarray.magetab.ProtocolApplication sdrfProtocolApp : sdrfHybridization
-                        .getProtocolApplications()) {
-                    ProtocolApplication protocolApplication =
-                        getProtocolApplicationFromMageTabProtocolApplication(sdrfProtocolApp);
-                    hybridization.addProtocolApplication(protocolApplication);
-                }
+                associateProtocolApplications(hybridization.getProtocolApplications(),
+                        sdrfHybridization.getProtocolApplications());
+                associateProtocolApplications(hybridization.getProtocolApplications(),
+                        getAllProtocols(sdrfHybridization.getSuccessorScans()));
             }
             this.allHybridizations.add(hybridization);
             this.nodeTranslations.put(sdrfHybridization, hybridization);
@@ -744,20 +741,20 @@ final class SdrfTranslator extends AbstractTranslator {
                 dataFile.setFileType(dataFile.getFileType().getRawType());
             }
             caArrayData.setDataFile(dataFile);
-            // Associate Scan with the raw data.
-            for (Scan scan : sdrfData.getPredecessorScans()) {
-                associateScanWithData(caArrayData, scan);
-            }
-            this.nodeTranslations.put(sdrfData, caArrayData);
-        }
-    }
 
-    private void associateScanWithData(RawArrayData caArrayData, Scan scan) {
-        for (gov.nih.nci.caarray.magetab.ProtocolApplication mageTabProtocolApplication
-                : scan.getProtocolApplications()) {
-            ProtocolApplication protocolApplication =
-                getProtocolApplicationFromMageTabProtocolApplication(mageTabProtocolApplication);
-            caArrayData.getProtocolApplications().add(protocolApplication);
+            Set<gov.nih.nci.caarray.magetab.ProtocolApplication> all =
+                    new HashSet<gov.nih.nci.caarray.magetab.ProtocolApplication>();
+            all.addAll(sdrfData.getProtocolApplications());
+            for (DerivedArrayDataFile df : sdrfData.getSuccessorDerivedArrayDataFiles()) {
+                all.addAll(getAllProtocols(df.getPredecessorNormalizations()));
+            }
+            for (DerivedArrayDataMatrixFile df : sdrfData.getSuccessorDerivedArrayDataMatrixFiles()) {
+                all.addAll(getAllProtocols(df.getPredecessorNormalizations()));
+            }
+            all.addAll(getAllProtocols(sdrfData.getSuccessorNormalizations()));
+            
+            associateProtocolApplications(caArrayData.getProtocolApplications(), all);
+            this.nodeTranslations.put(sdrfData, caArrayData);
         }
     }
 
@@ -785,15 +782,13 @@ final class SdrfTranslator extends AbstractTranslator {
                 dataFile.setFileType(dataFile.getFileType().getDerivedType());
             }
             caArrayData.setDataFile(dataFile);
-            // Associate Normalization with the derived data.
-            for (Normalization normalization : sdrfData.getPredecessorNormalizations()) {
-                associateNormalizationWithData(caArrayData, normalization);
-            }
-
+            
             // Associate array data from which this data was derived
             setDerivedFromData(sdrfData, caArrayData);
 
             this.nodeTranslations.put(sdrfData, caArrayData);
+
+            associateProtocolApplications(caArrayData.getProtocolApplications(), sdrfData.getProtocolApplications());
         }
     }
 
@@ -808,13 +803,25 @@ final class SdrfTranslator extends AbstractTranslator {
         }
     }
 
-    private void associateNormalizationWithData(DerivedArrayData caArrayData, Normalization normalization) {
+    private void associateProtocolApplications(Collection<ProtocolApplication> dest,
+            Collection<gov.nih.nci.caarray.magetab.ProtocolApplication> sdrfProtocolapplications) {
         for (gov.nih.nci.caarray.magetab.ProtocolApplication mageTabProtocolApplication
-                : normalization.getProtocolApplications()) {
+                : sdrfProtocolapplications) {
             ProtocolApplication protocolApplication =
                 getProtocolApplicationFromMageTabProtocolApplication(mageTabProtocolApplication);
-            caArrayData.getProtocolApplications().add(protocolApplication);
+            dest.add(protocolApplication);
+
         }
+    }
+
+    private static Set<gov.nih.nci.caarray.magetab.ProtocolApplication> getAllProtocols(
+            Set<? extends AbstractSampleDataRelationshipNode> nodes) {
+       HashSet<gov.nih.nci.caarray.magetab.ProtocolApplication> all =
+               new HashSet<gov.nih.nci.caarray.magetab.ProtocolApplication>();
+       for (AbstractSampleDataRelationshipNode n : nodes) {
+           all.addAll(n.getProtocolApplications());
+       }
+       return all;
     }
 
     private void linkNodes(SdrfDocument document) {

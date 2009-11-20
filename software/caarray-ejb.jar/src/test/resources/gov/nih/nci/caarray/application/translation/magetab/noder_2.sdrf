@@ -1,0 +1,2 @@
+Source Name	Hybridization Name	Array Design REF	Term Source REF	Protocol REF:Affymetrix:Protocol:	Scan Name	Array Data File	Protocol REF	Factor Value [EF1](genotype)	Term Source REF
+TK6neo replicate 1	H_TK6neo replicate 1	Affymetrix.com:PhysicalArrayDesign:Test3	ArrayExpress	Scan	TK6neo replicate 1	test1.CEL	TRANPRTCL10656	SF91neo oncoretrovirus	MO

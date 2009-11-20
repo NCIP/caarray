@@ -85,8 +85,6 @@ package gov.nih.nci.caarray.domain.protocol;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
-import gov.nih.nci.caarray.domain.data.AbstractArrayData;
-import gov.nih.nci.caarray.domain.data.Image;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -114,8 +112,6 @@ public class ProtocolApplication extends AbstractCaArrayEntity {
     private static final long serialVersionUID = 1234567890L;
 
     private Protocol protocol;
-    private Image image;
-    private AbstractArrayData arrayData;
     private String notes;
     private Set<AbstractParameterValue> values = new HashSet<AbstractParameterValue>();
 
@@ -132,8 +128,6 @@ public class ProtocolApplication extends AbstractCaArrayEntity {
      */
     public ProtocolApplication(ProtocolApplication other) {
         this.protocol = other.protocol;
-        this.image = other.image;
-        this.arrayData = other.arrayData;
         this.notes = other.notes;
         for (AbstractParameterValue pv : other.values) {
             AbstractParameterValue newPv = null;
@@ -171,26 +165,6 @@ public class ProtocolApplication extends AbstractCaArrayEntity {
     }
 
     /**
-     * Gets the image.
-     *
-     * @return the image
-     */
-    @ManyToOne
-    @ForeignKey(name = "protocolapp_image_fk")
-    public Image getImage() {
-        return image;
-    }
-
-    /**
-     * Sets the image.
-     *
-     * @param image the image
-     */
-    public void setImage(final Image image) {
-        this.image = image;
-    }
-
-    /**
      * Gets the values.
      *
      * @return the values
@@ -224,22 +198,6 @@ public class ProtocolApplication extends AbstractCaArrayEntity {
                 return parameterName.equals(fv.getParameter().getName());
             }
         });
-    }
-
-    /**
-     * @return the arrayData
-     */
-    @ManyToOne
-    @ForeignKey(name = "protocolapp_arraydata_fk")
-    public AbstractArrayData getArrayData() {
-        return arrayData;
-    }
-
-    /**
-     * @param arrayData the arrayData to set
-     */
-    public void setArrayData(AbstractArrayData arrayData) {
-        this.arrayData = arrayData;
     }
 
     /**

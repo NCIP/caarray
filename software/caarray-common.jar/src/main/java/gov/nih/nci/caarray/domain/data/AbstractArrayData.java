@@ -98,6 +98,7 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
@@ -175,8 +176,11 @@ public abstract class AbstractArrayData extends AbstractCaArrayEntity {
      *
      * @return the protocolApplications
      */
-    @OneToMany(mappedBy = "arrayData", fetch = FetchType.LAZY)
-    @Cascade({CascadeType.SAVE_UPDATE, CascadeType.DELETE })
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "array_data")
+    @ForeignKey(name = "protocolapp_arraydata_fk")
+    @Cascade({ org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.DELETE,
+            org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<ProtocolApplication> getProtocolApplications() {
         return protocolApplications;
     }

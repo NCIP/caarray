@@ -94,6 +94,7 @@ import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
@@ -139,8 +140,11 @@ public class Image extends AbstractCaArrayEntity {
      *
      * @return the protocolApplications
      */
-    @OneToMany(mappedBy = "image", fetch = FetchType.LAZY)
-    @Cascade(CascadeType.DELETE)
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "image")
+    @ForeignKey(name = "protocolapp_image_fk")
+    @Cascade({ org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.DELETE,
+            org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<ProtocolApplication> getProtocolApplications() {
         return protocolApplications;
     }
