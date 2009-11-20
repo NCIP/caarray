@@ -219,6 +219,7 @@ public class SdrfTranslatorTest {
     }
 
 /*
+ * revisit this test when looking at GF 24439
     // test multiple derived data with no scan or raw data, multiple normalizations.
 
     @Test
