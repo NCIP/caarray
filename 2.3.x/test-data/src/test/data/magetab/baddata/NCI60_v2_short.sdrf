@@ -1,0 +1,11 @@
+#####################################################																																
+# The SDRF section contains all the information linking your samples																																
+# to your data files. Please feel free to add as many new																																
+# Characteristics[] or FactorValue[] columns as necessary to																																
+# completely describe your experiment. See this web page for help with																																
+# supported data file formats:																																
+#   http://tab2mage.sourceforge.net/docs/datafiles.html																																
+#																																
+"# The first line below has been filled in with example terms, where possible:"																																
+Source Name	Material Type	Term Source REF	Characteristics[OrganismPart]	Term Source REF	Characteristics[CellType]	Term Source REF	Characteristics[Organism]	Characteristics[DiseaseState]	Term Source REF	Protocol REF	Sample Name	Characteristics[Sample_ID]	Protocol REF	Characteristics[PlateBarCode]	Factor Value [Compound_NSC_Number]	Factor Value [Dose]	Unit [ConcentrationUnit]	Factor Value [Time]	Unit [TimeUnit]	Extract Name	Material Type	Term Source REF	Protocol REF	Labeled Extract Name	Label	Term Source REF	Hybridization Name	Protocol REF	Array Data File	Protocol REF	Derived Array Data File	Comment[EXP]
+OE21	Cell	MO	Breast	NCI Thesaurus	Epithelium	NCI Thesaurus	Homo sapiens	Carcinoma	NCI Thesaurus	NCI-60_Growth_Protocol	OE21_deoxyrubicin0_0hr	12345_1	QiagenRNaeasy	98765	123345	0	nanoMolar	0	hours	OE21_doxorubicin0_0hr	total_RNA	MO	Affymetrix GeneChip HT_HG-U133 Labeling	OE21_doxorubicin0_0hr	biotin	NCI Thesaurus	OE21_doxorubicin0_0hr_hyb	Affymetrix GeneChip HT_HG-U133 Hybridization Protocol	OE21_doxorubicin0_0hr_U133A.CEL	Mas5_Normalization	OE21_doxorubicin0_0hr_U133A.CHP	OE21_doxorubicin0_0hr_U133A.EXP

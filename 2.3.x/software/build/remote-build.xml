@@ -1,0 +1,206 @@
+<!-- *********************************************************************** -->
+<!-- ** PROJECT:   caArray - remote deployment                            ** -->
+<!-- *********************************************************************** -->
+
+<project name="caarray-remote-deploy" default="all" basedir=".">	
+	
+	<!-- PROPERTIES -->
+	<property file="${envpropertyfile}" />
+	<property file="local.properties" />
+	<property name="lib.dir" value="../lib" />
+	<property name="svn.tags.folder" value="tags" />
+	<property name="svn.trunk.folder" value="trunk" />
+	<property name="mail.host" value="mailfwd.nih.gov" />
+	<property name="mail.port" value="25" />
+	<property name="from.address" value="paul.duvall@stelligent.com" />
+	<property name="to.address" value="paul.duvall@stelligent.com" />
+	<property name="private.key.dev" value="id_dsa" />
+	<property name="private.key.qa" value="id_dsa_qa" />
+
+	<!-- PATHS -->
+    <path id="project.classpath">
+       <fileset dir="${lib.dir}">
+          <include name="**/*.jar" />
+       </fileset>
+    </path>	
+
+   <taskdef name="svn" classpathref="project.classpath" classname="org.tigris.subversion.svnant.SvnTask"/>
+	
+   <property name="jsch.jar" value="jsch-0.1.34.jar"/>
+   <property name="antunit.jar" value="ant-antunit-1.0.jar"/>
+   <property name="jsch.jar.location" value="${ant.home}/lib/${jsch.jar}"/>
+   <property name="antunit.jar.location" value="${ant.home}/lib/${antunit.jar}"/>
+   <available file="${jsch.jar.location}" property="jsch.jar.present"/>
+   <available file="${antunit.jar.location}" property="antunit.jar.present"/>
+
+    <condition property="correct.ant.version">
+	  <and>
+	    <equals arg1="${ant.version}" arg2="Apache Ant version 1.7.0 compiled on December 13 2006" casesensitive="false"/>
+	  </and>
+	</condition>
+
+   	<condition property="no.jsch">
+		<not>
+			<isset property="jsch.jar.present"/>
+		</not>
+	</condition>
+
+	<condition property="no.antunit">
+		<not>
+			<isset property="antunit.jar.present"/>
+		</not>
+	</condition>
+
+	<condition property="no.tag">
+		<and>
+			<not>
+				<isset property="create.tag"/>
+			</not>
+			<not>
+				<isset property="use.tag"/>
+			</not>
+		</and>
+	</condition>
+
+    <condition property="tag.error">
+		<and>
+			<isset property="svn.tag"/>
+			<not>
+				<isset property="use.tag"/>
+			</not>
+			<not>
+				<isset property="create.tag"/>
+			</not>
+		</and>
+	</condition>
+	
+	<!-- TARGETS -->
+	
+	<target name="svn:scorch">
+		<echo message="Scorching local SVN working directory ${svn.local.trunk}..." />
+		<delete dir="${svn.local.trunk}" />
+	</target>
+	
+	<target name="svn:checkout-caarray" unless="use.tag">
+		<echo message="Checking out latest caarray version from ${svn.caarray.url}...(no tag)" />
+		<svn username="anonymous" password="">
+			<checkout url="${svn.caarray.url}/${svn.trunk.folder}/software" revision="HEAD" destPath="${svn.local.trunk}" />
+		</svn>
+	</target>
+	
+	<target name="svn:checkout-caarray-tag" if="use.tag">
+		<echo message="Checking out caarray from ${svn.caarray.url} using SVN tag ${svn.tag}..." />
+		<svn username="anonymous" password="">
+			<checkout url="${svn.caarray.url}${svn.tags.folder}/${svn.tag}/software" revision="HEAD" destPath="${svn.local.trunk}" />
+		</svn>
+	</target>
+	
+	<target name="prepare-remote-properties">
+		<copy todir="${svn.local.trunk}/build" overwrite="true">
+			<fileset dir="." includes="**/*.properties" />
+		</copy>
+	</target>
+	
+   <target name="remote-deployment" unless="create.tag">		
+		<antcall target="svn:scorch" />
+		<antcall target="svn:checkout-caarray" />
+		<antcall target="svn:checkout-caarray-tag" />
+		<antcall target="prepare-remote-properties" />		
+	    <ant inheritAll="false" inheritRefs="true" antfile="${svn.local.trunk}/build/build.xml" target="remote-deploy"/>
+	</target>
+
+	<tstamp prefix="caarray">
+		<format property="TODAY" pattern="MM/dd/yyyy h:mm a" locale="en,US"/>
+	</tstamp>
+
+	<target name="about-application">
+        <tstamp>
+          <format property="touch.time" pattern="MM/dd/yyyy hh:mm aa" unit="hour"/>
+        </tstamp>	    
+		<property name="build.date_time" value="'${touch.time}'" />
+	</target>
+	
+	<target name="remote-deployment-createtag" if="create.tag"> 
+	    <echo> svn.user.name is ${svn.user.name} and svn.user.pwd is ${svn.user.pwd} and touch.time is ${touch.time} </echo>
+	    <echo message="Deploying to ${ssh.server.hostname} and adding SVN tag ${svn.tag}..." />
+	    <antcall target="svn:scorch" />
+		<antcall target="svn:checkout-caarray" />
+		<antcall target="svn:checkout-caarray-tag" />
+		<antcall target="prepare-remote-properties" />
+	    <ant inheritAll="false" inheritRefs="true" antfile="${svn.local.trunk}/build/build.xml" target="remote-deploy"/>
+		
+	    <svn username="${svn.user.name}" password="${svn.user.pwd}">
+            <copy 
+				srcUrl="${svn.caarray.url}/${svn.trunk.folder}"
+				destUrl="${svn.caarray.url}/${svn.tags.folder}/${svn.tag}"
+				message="Tag created by automated build and deployment script - ${caarray.TODAY}" />
+        </svn>
+	</target>
+
+	<target name="help">
+	  <echo>
+        Example usage: ant -f remote-build.xml -Denvpropertyfile=C:/dev/caarray2/software/build/DEV.properties -Dnotest=true -Dnoglobus=true
+        envpropertyfile: Required sets the environment property file. Has to be a fully qualified file
+        notest:  When present, all tests will be skipped (required, temporary)
+        nodbintegration: When present,  skips database integration
+        nodeploy: When present, skips JBoss deployment
+		nocheck: When present skips static analysis checks
+        noglobus When present,  skips Globus deployment and tests (temporary)
+        use.tag: Use the provided tag to build. Mostly needed by QA to deploy a specific tag. Needs svn.tag to work properly
+        create.tag: A new SVN tag will be created. Needs svn.tag to work properly
+        svn.tag: Specifies the tag to be used or created
+      </echo>
+	</target>
+
+	<target name="diagnostics" depends="fail-if-no-antunit, fail-if-no-jsch">
+	  <ant inheritAll="true" inheritRefs="true" antfile="${basedir}/test-build.xml" target="test-remote-build"/>
+	</target>
+
+	<target name="fail-if-no-tag" if="tag.error">
+      <fail>ERROR: When svn.tag property is passed, there must be either a use.tag or create.tag System property</fail>
+	</target>
+
+	 <target name="fail-if-no-jsch" if="no.jsch">
+        <copy todir="${ant.home}/lib" overwrite="true">
+			<fileset dir="${lib.dir}" includes="${jsch.jar}" />
+		</copy>
+		<fail>${jsch.jar} must be in your ${ant.home}/lib directory. This file (${jsch.jar}) has been copied to your ${ant.home}/lib directory. IMPORTANT: You must rerun your build script again.</fail>
+	</target>
+
+	<target name="fail-if-no-antunit" if="no.antunit">
+        <copy todir="${ant.home}/lib" overwrite="true">
+			<fileset dir="${lib.dir}" includes="${antunit.jar}" />
+		</copy>
+		<fail>${antunit.jar} must be in your ${ant.home}/lib directory. This file (${antunit.jar}) has been copied to your ${ant.home}/lib directory. IMPORTANT: You must rerun your build script again.</fail>
+	</target>
+
+	<target name="notify-user" >
+	  <!-- TODO Add activation.jar and mail.jar to Ant classpath -->
+	  <mail mailhost="${mail.host}" mailport="${mail.port}" subject="Test build">
+	    <from address="${from.address}"/>
+	    <to address="${to.address}"/>
+	    <message>Test message</message>
+	  </mail>
+	</target>
+
+	<target name="update-environment-properties" description="Update the DEV and QA environment properties from a private repo">
+	  <echo message="Checking out latest environment values from ${scm.private.repo}" />
+	  <ant inheritAll="true" inheritRefs="true" antfile="${basedir}/test-build.xml" target="testUpdateEnvironmentProperties"/>
+ 	  <delete dir="${svn.local.trunk}/caarray2" />
+	  <svn username="${svn.user.name}" password="${svn.user.pwd}">
+	    <checkout url="${scm.private.repo}" revision="HEAD" destPath="${svn.local.trunk}" />
+	  </svn>
+	  <copy todir="${basedir}" overwrite="true" flatten="true">
+	    <fileset dir="${svn.local.trunk}/trunk/caarray2/properties">
+          <include name="**/*.properties" />
+       </fileset>
+	   <fileset dir="${svn.local.trunk}/trunk/caarray2/keys">
+          <include name="${private.key.dev}" />
+		  <include name="${private.key.qa}" />
+       </fileset>
+	  </copy>
+	</target>
+	
+	<target name="all" depends="diagnostics, about-application, fail-if-no-tag, remote-deployment-createtag, remote-deployment" />	   
+
+</project> 

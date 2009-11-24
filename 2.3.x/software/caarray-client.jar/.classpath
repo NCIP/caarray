@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src/main/java"/>
+	<classpathentry kind="src" path="src/distribution/java"/>
+	<classpathentry kind="src" path="src/main/resources"/>
+	<classpathentry kind="src" output="target/test-classes" path="src/test/java"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/caarray-common-jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/caarray-ejb-jar"/>
+	<classpathentry kind="lib" path="/lib/jboss-ejb3x.jar"/>
+	<classpathentry kind="lib" path="/lib/jbossall-client.jar"/>
+	<classpathentry kind="lib" path="/lib/axis.jar" sourcepath="/lib/src/axis-src.jar"/>
+	<classpathentry kind="lib" path="/lib/commons-collections-3.2.jar"/>
+	<classpathentry kind="lib" path="/lib/commons-lang-2.3.jar"/>
+	<classpathentry kind="lib" path="/lib/csmapi.jar" sourcepath="/lib/src/csmapi-4.0.1-src.jar"/>
+	<classpathentry kind="lib" path="/lib/ejb3-persistence.jar"/>
+	<classpathentry kind="lib" path="/lib/hibernate3.jar" sourcepath="/lib/src/hibernate-3.2.3-src.jar"/>
+	<classpathentry kind="lib" path="/lib/hibernate-annotations.jar" sourcepath="/lib/src/hibernate-annotations-3.3.0.GA-src.jar"/>
+	<classpathentry kind="lib" path="/lib/jboss-aop-jdk50-client.jar"/>
+	<classpathentry kind="lib" path="/lib/jboss-aspect-jdk50-client.jar"/>
+	<classpathentry kind="lib" path="/lib/jboss-ejb3-client.jar"/>
+	<classpathentry kind="lib" path="/lib/log4j-1.2.13.jar" sourcepath="/lib/src/log4j-1.2.13-src.jar"/>
+	<classpathentry kind="lib" path="/lib/wsrf_core_stubs.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/CaArraySvc"/>
+	<classpathentry kind="lib" path="/CaArraySvc/build/classes/gov/nih/nci/cagrid/caarray/client"/>
+	<classpathentry kind="lib" path="/lib/nci-commons-core-1.0.12.jar"/>
+	<classpathentry kind="lib" path="/CaArraySvc/lib/caGrid-data-stubs-1.2.jar"/>
+	<classpathentry kind="lib" path="/CaArraySvc/lib/caGrid-data-utils-1.2.jar"/>
+	<classpathentry kind="output" path="eclipse-out"/>
+</classpath>

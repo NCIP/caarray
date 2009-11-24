@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<projectDescription>
+	<name>caArray Software Development Process</name>
+	<comment></comment>
+	<projects>
+	</projects>
+	<buildSpec>
+	</buildSpec>
+	<natures>
+		<nature>com.ibm.rmc.library.persistence.distributed.project.MethodConfigurationProjectNature</nature>
+	</natures>
+</projectDescription>

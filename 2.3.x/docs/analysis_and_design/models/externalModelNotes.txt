@@ -1,0 +1,34 @@
+Notes re: the External Model and API:
+-------------------------------------
+1. Things to bring up to the Analytical Services Working Group:
+   * Rename AbstractSampleNode to something else. Both Sample and Hybridization extend from it.
+   * We are modelling only Sample and Hybridization (not Source, Extract and Labeled Extract).
+   * A parsed DataSet can now be downloaded in the context of probes only (e.g., from a CHP file),
+     not in the context of features (e.g., from a CEL file).
+   * Sample.getCharacteristics() is intended to return characteristics of the Sample as well as
+     characteristics of the Source/Sources the Sample is associated with. The same applies to getTissueSite()
+     and getDiseaseState(). The complicating factor is that a Sample as well as a Source can have the
+     same category of characteristic. One solution is for caArray to use some heuristics that prefer the
+     Sample's characteristic/tissue-site/disease-state to a Source's characteristic with the same category.
+   * Should we model the Source of a Term? Usually, the API client will not care to specify the Source. If there
+     are multiple Terms with the same category but from different Sources in the database, the System will
+     then have to use heuristics to decide which Term object to use. E.g. "always prefer the MGED Ontology to
+     the caArray Source."
+   * getSampleAnnotations() currently returns the annotations as an array of Strings. Is there a necessity
+     for strong typing (e.g., array of floats, array of ints etc.) or for including units?
+   * getSampleAnnotations(set of Samples) gets all annotations for the given Samples as well as the Sources
+     associated with those Samples.
+     getSampleAnnotations(set of Hybridizations) gets all annotations for the biomaterials associated with
+     those Hybridizations.
+     In other words, the annotations are gathered from all biomaterials to the left of (and including) the
+     requested node.
+
+2. Things to bring up to the caGRID/LS-CAT team:
+   * ArrayProvider, AssayType, FileType and StandardCategory can be modelled as enumerations (caDSR Value Domains).
+     But does this mean that if we add a new file type in the next release it will break existing clients?
+     Should they be modelled as Strings instead?
+   * If user wants to download uncompressed file contents from multiple files, we are returning an array of
+     Grid Transfer service context references.
+
+[45 classes, 17 API methods]
+

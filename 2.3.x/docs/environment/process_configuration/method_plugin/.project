@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<projectDescription>
+	<name>caarray_process_plugin</name>
+	<comment></comment>
+	<projects>
+	</projects>
+	<buildSpec>
+	</buildSpec>
+	<natures>
+		<nature>com.ibm.rmc.library.persistence.distributed.project.MethodPluginProjectNature</nature>
+	</natures>
+</projectDescription>

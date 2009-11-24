@@ -1,0 +1,75 @@
+<!-- *********************************************************************** -->
+<!-- ** SCTR DELEGATING BUILD FILE FOR CRUISECONTROL                      ** -->
+<!-- *********************************************************************** -->
+
+<project name="caarray-cruisecontrol" default="build" basedir="../..">
+
+    <taskdef resource="svntask.properties"/>
+
+    <property name="build.dir" value="${basedir}/software/build" />
+
+    <property file="${build.dir}/local.properties" />
+
+    <target name="build">
+        <svn username="${svn.username}" password="${svn.password}">
+            <update dir="${basedir}" />
+        </svn>
+        <copy todir="${basedir}/../.." file="software/build/cruisecontrol_config.xml" />
+        <ant antfile="build/build.xml"
+            dir="software"
+            target="continuous-integration" />
+        <svn username="${svn.username}" password="${svn.password}">
+            <copy message="Tagging with ${label}"
+                srcurl="http://gforge.nci.nih.gov/svnroot/caarray2/trunk"
+                desturl="http://gforge.nci.nih.gov/svnroot/caarray2/tags/${label}" />
+        </svn>
+    </target>
+
+    <target name="nightly" description="Invoke the nightly build target">
+        <svn username="${svn.username}" password="${svn.password}">
+            <update dir="${basedir}" />
+        </svn>
+        <copy todir="${basedir}/../.." file="software/build/cruisecontrol_config.xml" />
+        <ant antfile="build/hudson-nightly-build.xml"
+            dir="software"
+            target="nightly-build" />
+        <svn username="${svn.username}" password="${svn.password}">
+            <copy message="Tagging with ${label}"
+                srcurl="http://gforge.nci.nih.gov/svnroot/caarray2/trunk"
+                desturl="http://gforge.nci.nih.gov/svnroot/caarray2/tags/${label}" />
+        </svn>
+    </target>
+
+
+    <target name="remove-old-artifacts-publisher-antpublisher" if="cclastgoodbuildtimestamp" description="Experimental (TODO): Use to remove CC build artifacts older than the last successful build">
+    	<!--  CC will pass the following needed property:
+    	cclastgoodbuildtimestamp  	Timestamp that indicates when the last successful build was run, using the format yyyyMMddHHmmss
+    	-->
+
+    	<dirset dir="${jar.path}" includes="*" id="dirs.older.than.lastsuccessfulbuild.dir">
+		    <date datetime="${cclastgoodbuildtimestamp}" when="before" pattern="yyyyMMddHHmmss" checkdirs="true"/>
+		</dirset>
+
+		<delete>
+			<dirset refid="dirs.older.than.lastsuccessfulbuild.dir"/>
+		</delete>
+
+    </target>
+
+
+    <target name="gzip-old-artifacts-publisher-antpublisher" if="cclastgoodbuildtimestamp" description="Experimental (TODO): Use to gzip CC build artifacts dirs older than the last successful build">
+    	<!--  CC will pass the following needed property:
+    	cclastgoodbuildtimestamp  	Timestamp that indicates when the last successful build was run, using the format yyyyMMddHHmmss
+    	-->
+
+    	<dirset dir="${jar.path}" includes="*" id="dirs.older.than.lastsuccessfulbuild.dir">
+		    <date datetime="${cclastgoodbuildtimestamp}" when="before" pattern="yyyyMMddHHmmss" checkdirs="true"/>
+		</dirset>
+
+		<gzip>
+			<dirset refid="dirs.older.than.lastsuccessfulbuild.dir"/>
+		</gzip>
+
+    </target>
+
+</project>

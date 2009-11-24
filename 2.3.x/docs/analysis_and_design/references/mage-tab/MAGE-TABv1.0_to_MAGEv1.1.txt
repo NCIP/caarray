@@ -1,0 +1,82 @@
+MAGE-TAB version 1.0 mapping document.
+--------------------------------------
+
+This document gives a mapping from MAGE-TAB row and column headings to
+MAGE object attributes.
+
+IDF
+===
+MAGE-TAB	MAGE
+--------	----
+Investigation Title	Experiment.name
+Experimental Design	ExperimentDesign.types.value
+Experimental Factor Type	ExperimentalFactor.category.value
+Experimental Factor Type Term Source REF	ExperimentalFactor.category.OntologyReference.Database.name
+Experimental Factor Name (Unique)	ExperimentalFactor.name
+Person Last Name	Person.lastName
+Person First Name	Person.firstName
+Person Email	Person.email
+Person Phone	Person.phone
+Person Address	Person.address
+Person Affiliation	Person.affiliation.Organization
+Person Roles	Contact.roles.value
+Quality Control Types	ExperimentDesign.qualityControlDescription.annotations.value
+Replicate Types	ExperimentDesign.replicateDescription.annotations.value
+Normalization Types	ExperimentDesign.normalizationDescription.annotations.value
+Date of Experiment	arbitrary date: should be specified or removed
+Public Release Date	Experiment.PropertySets.value
+PubMed ID	Experiment.descriptions.bibliographicReferences.accessions.accession	#resolved by adding database identifier
+Publication DOI	Experiment.descriptions.bibliographicReferences.accessions.accession	#resolved by adding database identifier
+Publication Author List	Experiment.descriptions.bibliographicReferences.authors
+Publication Title	Experiment.descriptions.bibliographicReferences.title
+Publication Status	Experiment.descriptions.bibliographicReferences.parameters.value
+Experiment Description	Experiment.Descriptions.text
+Protocol Name	Protocol.title	and Protocol.name
+Protocol Type	Protocol.type.value
+Protocol Type Term Source REF	Protocol.type.ontologyReference.database.name
+Protocol Description	Protocol.text
+Protocol Parameters	Protocol.parameterTypes.name
+SDRF File	file_name	#container sheet for the SDRF; required along with IDF for valid MAGE-ML
+Term Source	Database.name
+Term Source File	Database.URI
+Term Source Version	Database.version
+
+SDRF
+====
+MAGE-TAB	MAGE
+--------	----
+Source Name	BioSource.name
+Characteristics [Ontology class]	BioMaterial.characteristics.value
+Term Source REF	Refers to Term Source from IDF; user_defined if blank
+Provider	BioSource.sourceContact.name
+MaterialType 	BioMaterial.materialType.value
+Term Source REF	Refers to Term Source from IDF; user_defined if blank
+Description	BioMaterial.descriptions.text
+Comment [name of NVT]	implementation specific, prefered use as NVT
+Protocol REF	Refers to Protocol Name from IDF; BioMaterial.treatments.protocolApplications.protocol.name
+Parameter Value [Reference to Protocol Parameter]	ProtocolApplication.parameterValues.value
+Performer	ProtocolApplication.performers.name
+Date	ProtocolApplication.activityDate
+Sample Name	BioSample.name; BioSample.type = 'not_extract' or null (refer to Source for other mappings)
+Extract Name	BioSample.name; requires BioSample.type = 'extract'
+LabeledExtract Name	LabeledExtract.name
+Label	LabeledExtract.labels.name
+Protocol REF	Protocol for hybridization; Hybridization.protocolApplications.protocol.name
+Hybridization Name	Hybridization.name
+ArrayDesign REF	ArrayDesign.name; reference to ADF
+Protocol REF	Protocol for scanning; ImageAcquisition.protocolApplications.protocol.name
+Scan Name	ImageAcquisition.name
+Image File	Image.URI
+Protocol REF	Protocol for FeatureExtraction; FeatureExtraction.protocolApplications.protocol.name
+ArrayData File	MeasuredBioAssayData.bioDataValues.dataExternal.filenameURI (eg. CEL/CHP file)
+Protocol REF	Protocol for Normalization/; DerivedBioAssay.protocolApplications.protocol.name
+Normalization Name	DerivedBioAssay.name
+DerivedArrayData File	DerivedBioAssayData.bioDataValues.dataExternal.filenameURI
+DerivedArrayData Matrix	DerivedBioAssayData.bioDataValues.dataExternal.filenameURI
+FactorValue [ExperimentalFactor name]	one of:
+	FactorValue.measurement.value
+	FactorValue.value.category
+Term Source REF	FactorValue.value.ontologyReference.database.name
+Unit [subclass of Unit, eg MassUnit, TimeUnit]	FactorValue.measurement.value.unit.nameCV
+Term Source REF	There is no direct mapping in MAGEv1.1; to reference an external ontology. Use FactorValue.value.ontologyReference.database.name.
+

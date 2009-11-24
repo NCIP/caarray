@@ -1,0 +1,81 @@
+<ns1:ServiceMetadata xmlns:ns1="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata">
+ <ns1:serviceDescription>
+  <ns2:Service description="This is the caArray grid service." name="CaArraySvc" version="1.1" xmlns:ns2="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.service">
+   <ns2:serviceContextCollection>
+    <ns2:ServiceContext description="" name="CaArraySvc">
+     <ns2:operationCollection>
+      <ns2:Operation description="" name="getServiceSecurityMetadata">
+       <ns2:inputParameterCollection/>
+       <ns2:Output qName="ns3:ServiceSecurityMetadata" dimensionality="1" isArray="false" xmlns:ns3="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.security"/>
+       <ns2:faultCollection/>
+      </ns2:Operation>
+      <ns2:Operation description="" name="query">
+       <ns2:inputParameterCollection>
+        <ns2:InputParameter qName="ns4:CQLQuery" dimensionality="1" index="0" isArray="false" isRequired="false" name="cqlQuery" xmlns:ns4="http://CQL.caBIG/1/gov.nih.nci.cagrid.CQLQuery"/>
+       </ns2:inputParameterCollection>
+       <ns2:Output qName="ns5:CQLQueryResultCollection" dimensionality="1" isArray="false" xmlns:ns5="http://CQL.caBIG/1/gov.nih.nci.cagrid.CQLResultSet"/>
+       <ns2:faultCollection>
+        <ns2:Fault description="Thrown when an error occurs in processing a CQL query" name="QueryProcessingException"/>
+        <ns2:Fault description="Thrown when a query is found to be improperly formed" name="MalformedQueryException"/>
+       </ns2:faultCollection>
+      </ns2:Operation>
+      <ns2:Operation description="" name="getDesignDetails">
+       <ns2:inputParameterCollection>
+        <ns2:InputParameter qName="ns6:ArrayDesign" dimensionality="1" index="0" isArray="false" isRequired="false" name="arrayDesign" xmlns:ns6="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.array"/>
+       </ns2:inputParameterCollection>
+       <ns2:Output qName="ns7:ArrayDesignDetails" dimensionality="1" isArray="false" xmlns:ns7="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.array"/>
+       <ns2:faultCollection/>
+      </ns2:Operation>
+      <ns2:Operation description="" name="readFile">
+       <ns2:inputParameterCollection>
+        <ns2:InputParameter qName="ns8:CaArrayFile" dimensionality="1" index="0" isArray="false" isRequired="false" name="caArrayFile" xmlns:ns8="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.file"/>
+       </ns2:inputParameterCollection>
+       <ns2:Output qName="xsd:byte" dimensionality="1" isArray="true" xmlns:xsd="http://www.w3.org/2001/XMLSchema"/>
+       <ns2:faultCollection/>
+      </ns2:Operation>
+      <ns2:Operation description="" name="getDataSet">
+       <ns2:inputParameterCollection>
+        <ns2:InputParameter qName="ns9:DataRetrievalRequest" dimensionality="1" index="0" isArray="false" isRequired="false" name="dataRetrievalRequest" xmlns:ns9="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.data"/>
+       </ns2:inputParameterCollection>
+       <ns2:Output qName="ns10:DataSet" dimensionality="1" isArray="false" xmlns:ns10="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.data"/>
+       <ns2:faultCollection/>
+      </ns2:Operation>
+      <ns2:Operation description="" name="createFileTransfer">
+       <ns2:inputParameterCollection>
+        <ns2:InputParameter qName="ns11:CaArrayFile" dimensionality="1" index="0" isArray="false" isRequired="false" name="caArrayFile" xmlns:ns11="gme://caArray.caBIG/2.1/gov.nih.nci.caarray.domain.file"/>
+       </ns2:inputParameterCollection>
+       <ns2:Output qName="ns12:TransferServiceContextReference" dimensionality="1" isArray="false" xmlns:ns12="http://transfer.cagrid.org/TransferService/Context/types"/>
+       <ns2:faultCollection/>
+      </ns2:Operation>
+      <ns2:Operation description="" name="GetMultipleResourceProperties">
+       <ns2:inputParameterCollection/>
+       <ns2:faultCollection/>
+      </ns2:Operation>
+      <ns2:Operation description="" name="GetResourceProperty">
+       <ns2:inputParameterCollection/>
+       <ns2:faultCollection/>
+      </ns2:Operation>
+      <ns2:Operation description="" name="QueryResourceProperties">
+       <ns2:inputParameterCollection/>
+       <ns2:faultCollection/>
+      </ns2:Operation>
+     </ns2:operationCollection>
+     <ns2:contextPropertyCollection>
+      <ns2:ContextProperty description="" name="{gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata}ServiceMetadata"/>
+      <ns2:ContextProperty description="" name="{gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.dataservice}DomainModel"/>
+     </ns2:contextPropertyCollection>
+    </ns2:ServiceContext>
+   </ns2:serviceContextCollection>
+   <ns13:SemanticMetadata conceptCode="C63541" conceptDefinition="A service available on a system that coordinates resources that are not subject to central control, using open, general purpose protocols and interfaces to deliver nontrivial qualities of services." conceptName="Grid Service" order="0" xmlns:ns13="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.common"/>
+   <ns14:SemanticMetadata conceptCode="C63544" conceptDefinition="A web service which accepts as input a query targeted at a data resource addressable by the system and returns information to the client in the form of one or more data objects." conceptName="Data Grid Service" order="1" xmlns:ns14="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.common"/>
+  </ns2:Service>
+ </ns1:serviceDescription>
+ <ns1:hostingResearchCenter>
+  <ns15:ResearchCenter displayName="National Cancer Institute Center for Bioinformatics - NCICB" shortName="NCICB" xmlns:ns15="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.common">
+   <ns15:Address country="US" locality="Rockville" postalCode="20852" stateProvince="MD" street1="2115 E. Jefferson Street"/>
+    <ns15:pointOfContactCollection>
+     <ns15:PointOfContact affiliation="National Cancer Institute Center for Bioinformatics - NCICB" email="duncanmk@mail.nih.gov" firstName="Maki" lastName="Duncan" phoneNumber="301-443-5307" role="Project Manager"/>
+    </ns15:pointOfContactCollection>
+  </ns15:ResearchCenter>
+ </ns1:hostingResearchCenter>
+</ns1:ServiceMetadata>

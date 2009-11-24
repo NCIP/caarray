@@ -1,0 +1,111 @@
+<!-- *********************************************************************** -->
+<!-- ** PROJECT:   caArray                                                ** -->
+<!-- *********************************************************************** -->
+
+<!-- KLUDGE!!! - THIS IS UNDER DEVELOPMENT -->
+
+<project name="configure-carray-grid" default="driver" basedir="..">
+
+  <property name="build.dir" value="${basedir}/build" />
+  <property file="${build.dir}/local.properties" />
+  <property name="stelligent.svn.user.name" value="MUST BE SET IN .properties file" />
+  <property name="stelligent.svn.user.pwd" value="MUST BE SET IN .properties file" />
+  <property name="jboss404.server.hostname" value="localhost" />
+  <property name="jboss404.server.jndi.port" value="1099" />
+  <property name="jboss404.server.port" value="18080" />
+  <property name="grid.temp.dir" value="C:/temp/cagrid" />
+  <property name="tools.dir" value="C:/dev/stelligent/projects/5am-nci/tools" />
+  <property name="jboss404.server.instance.home" value="${grid.temp.dir}/jboss-4.0.4.GA" />
+
+  <target name="clean">
+    <delete>
+      <fileset dir="${grid.temp.dir}" includes="**/*"/>
+	  <fileset dir="${build.dir}/target/deploy" includes="**/*"/>
+    </delete>	
+	<copy todir="${grid.temp.dir}" overwrite="true">
+      <fileset file="${tools.dir}/caGrid-1.1.zip"/>
+	  <fileset file="${tools.dir}/jboss-4.0.5.GA.zip"/>
+	  <fileset file="${tools.dir}/jboss-4.0.4.GA.zip"/>
+    </copy>
+  </target>
+
+  <target name="checkout-tools" unless="noscm">
+     <taskdef resource="svntask.properties" classpath="${basedir}/lib/svnant.jar;${basedir}/lib/svnClientAdapter.jar;${basedir}/lib/svnjavahl.jar"/>    
+    <svn username="${stelligent.svn.user.name}" password="${stelligent.svn.user.pwd}">
+	  <checkout url="http://build.jnetdirect.com/svn-repo/main/trunks/corporate/stelligent/projects/5am-nci/tools" revision="HEAD" destPath="${grid.temp.dir}" />
+    </svn>
+  </target>
+
+  <target name="checkout-cagrid" unless="noscm">
+  </target>
+
+  <target name="extract-cagrid">
+  <!-- Extract caArray1.1Grid.zip to a local directory -->
+    <unzip dest="${grid.temp.dir}" overwrite="true" src="${grid.temp.dir}/caGrid-1.1.zip" />
+  </target>
+
+  <target name="checkout-jboss404">
+  </target>
+
+  <target name="extract-jboss404">
+    <unzip dest="${grid.temp.dir}" overwrite="true" src="${grid.temp.dir}/jboss-4.0.4.GA.zip" />
+  </target>
+
+  <target name="apply-globus-to-jboss404">
+   <!-- Run caGrid jboss.xml against the JBoss 4.0.4 -->
+   <exec executable="cmd" dir="${jboss404.server.instance.home}" spawn="true">
+      <arg line="/c ant -f ${grid.temp.dir}\caGrid\antfiles\jboss\jboss.xml deployJBoss -Djboss.dir=${grid.temp.dir}\jboss-4.0.4.GA -DdefaultPort=18080" />
+    </exec>
+  </target>
+
+  <target name="zip-wsrf-war">
+    <!-- Zip the default/deploy/wsrf.sar directory -->
+    <zip file="${build.dir}/target/deploy/zip-wsrf-war.zip">
+	  <fileset dir="${jboss404.server.instance.home}/server/default/deploy">
+	    <include name="**/*.*" />
+      </fileset>
+	</zip>
+  </target>
+
+  <target name="extract-zip-wsrf-war">
+      <!-- (Optionally) software\build\resources\deploy\jboss-globus-serverinstance-config.zip to jboss4.0.4\default\deploy -->
+	  <unzip dest="${jboss404.server.instance.home}/server/default/deploy/wsrf.war" overwrite="true" src="${build.dir}/target/deploy/zip-wsrf-war.zip" />
+  </target>
+
+  <target name="deploy:check-if-jboss-is-running">
+    <condition property="jboss.running">
+      <socket port="${jboss404.server.port}" server="${jboss404.server.hostname}" />
+    </condition>
+  </target>
+  
+  <target name="stop-jboss404" depends="deploy:check-if-jboss-is-running" unless="jboss.running">
+    <java classname="org.jboss.Shutdown" fork="true" spawn="false">
+      <arg line="-s ${jboss404.server.hostname}:${jboss404.server.jndi.port} -S" />
+      <classpath>
+        <pathelement location="${jboss404.server.instance.home}/bin/shutdown.jar" />
+      </classpath>
+    </java>
+  </target>
+
+  <target name="start-jboss404">
+    <exec executable="cmd" dir="${jboss404.server.instance.home}/bin" spawn="true">
+      <env key="NOPAUSE" value="true" />
+      <arg line="/c run.bat" />
+    </exec>
+  </target>
+
+  <target name="driver">
+    <antcall target="clean" />
+    <antcall target="checkout-tools" />
+	<antcall target="checkout-cagrid" />
+	<antcall target="extract-cagrid" />
+	<antcall target="checkout-jboss404" />
+	<antcall target="extract-jboss404" />	
+	<antcall target="apply-globus-to-jboss404" />
+	<antcall target="zip-wsrf-war" />
+	<antcall target="extract-zip-wsrf-war" />
+	<antcall target="stop-jboss404" />
+	<antcall target="start-jboss404" />
+  </target>
+
+</project>

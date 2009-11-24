@@ -1,0 +1,6 @@
+ORGANISM	rat
+ARRAY_PROVIDER	Illumina
+ORGANISM	mouse
+ARRAY_PROVIDER	Affymetrix
+ORGANISM	zebrafish
+ORGANISM	human

@@ -1,0 +1,13 @@
+14. Pointers to CVS or other repository for software code that shows objects input and output from system:
+
+The following location contains the code for the façade seen by the Remote Java API client:
+https://gforge.nci.nih.gov/plugins/scmsvn/viewcvs.php/trunk/software/caarray-client.jar/src/main/java?root=caarray2
+
+The EJB service interfaces are here:
+https://gforge.nci.nih.gov/plugins/scmsvn/viewcvs.php/trunk/software/caarray-ejb.jar/src/main/java/gov/nih/nci/caarray/services?root=caarray2
+
+The code for the domain object model is here:
+https://gforge.nci.nih.gov/plugins/scmsvn/viewcvs.php/trunk/software/caarray-common.jar/src/main/java/gov/nih/nci/caarray/domain?root=caarray2
+
+The CaArray Grid service interface is here:
+https://gforge.nci.nih.gov/plugins/scmsvn/viewcvs.php/trunk/software/CaArraySvc/src/gov/nih/nci/cagrid/caarray/service?root=caarray2
