@@ -119,6 +119,9 @@ import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
+
 /**
  * Responsible for importing parsed MAGE-TAB data into caArray.
  */
@@ -135,14 +138,14 @@ class MageTabImporter {
         this.daoFactory = daoFactory;
     }
 
-    MageTabDocumentSet validateFiles(CaArrayFileSet fileSet, boolean reimportingMagetab) {
+    MageTabDocumentSet validateFiles(Project targetProject, CaArrayFileSet fileSet) {
         LOG.info("Validating MAGE-TAB document set");
         updateFileStatus(fileSet, FileStatus.VALIDATING);
         MageTabDocumentSet documentSet = null;
-        MageTabFileSet inputSet = getInputFileSet(fileSet);
+        MageTabFileSet inputSet = getInputFileSet(targetProject, fileSet);
         try {
             updateFileStatus(fileSet, FileStatus.VALIDATED);
-            documentSet = MageTabParser.INSTANCE.parse(inputSet, reimportingMagetab);
+            documentSet = MageTabParser.INSTANCE.parse(inputSet);
             handleResult(fileSet, translator.validate(documentSet, fileSet));
         } catch (MageTabParsingException e) {
             updateFileStatus(fileSet, FileStatus.VALIDATION_ERRORS);
@@ -153,9 +156,9 @@ class MageTabImporter {
         return documentSet;
     }
 
-    MageTabDocumentSet selectRefFiles(CaArrayFileSet idfFileSet) {
+    MageTabDocumentSet selectRefFiles(Project project, CaArrayFileSet idfFileSet) {
         MageTabDocumentSet documentSet = null;
-        MageTabFileSet inputSet = getInputFileSet(idfFileSet);
+        MageTabFileSet inputSet = getInputFileSet(project, idfFileSet);
         try {
 
             documentSet = MageTabParser.INSTANCE.parseDataFileNames(inputSet);
@@ -177,7 +180,6 @@ class MageTabImporter {
                 // check whether any of the validation errors are other than data file checks
                 saveErrorMessages(fileValidationResult, caArrayFile);
             }
-
         }
     }
 
@@ -212,14 +214,14 @@ class MageTabImporter {
         }
     }
 
-    void importFiles(Project targetProject, CaArrayFileSet fileSet, boolean reimportingMagetab)
+    void importFiles(Project targetProject, CaArrayFileSet fileSet)
             throws MageTabParsingException {
         LOG.info("Importing MAGE-TAB document set");
         updateFileStatus(fileSet, FileStatus.IMPORTING);
-        MageTabFileSet inputSet = getInputFileSet(fileSet);
+        MageTabFileSet inputSet = getInputFileSet(targetProject, fileSet);
         MageTabDocumentSet documentSet;
         try {
-            documentSet = MageTabParser.INSTANCE.parse(inputSet, reimportingMagetab);
+            documentSet = MageTabParser.INSTANCE.parse(inputSet);
             CaArrayTranslationResult translationResult = translator.translate(documentSet, fileSet);
             save(targetProject, translationResult);
             updateFileStatus(fileSet, FileStatus.IMPORTED);
@@ -246,11 +248,19 @@ class MageTabImporter {
         || FileType.MAGE_TAB_SDRF.equals(file.getFileType());
     }
 
-    private MageTabFileSet getInputFileSet(CaArrayFileSet fileSet) {
+    private MageTabFileSet getInputFileSet(Project project, CaArrayFileSet fileSet) {
+        CaArrayFileSet fullSet = new CaArrayFileSet(fileSet);
+        fullSet.addAll(Collections2.filter(project.getImportedFiles(), new Predicate<CaArrayFile>() {
+            public boolean apply(CaArrayFile f) {
+                return f.getFileType().isArrayData() || FileType.MAGE_TAB_DATA_MATRIX.equals(f.getFileType());
+            }
+        }));
+
         MageTabFileSet inputFileSet = new MageTabFileSet();
-        for (CaArrayFile caArrayFile : fileSet.getFiles()) {
+        for (CaArrayFile caArrayFile : fullSet.getFiles()) {
             addInputFile(inputFileSet, caArrayFile);
         }
+        
         return inputFileSet;
     }
 
@@ -324,7 +334,6 @@ class MageTabImporter {
             originalExperiment.getExtracts().add(e);
         }
         getCaArrayDao().save(originalExperiment.getExtracts());
-        CaArrayDaoFactory.INSTANCE.getProjectDao().flushSession();
         for (Sample s : translatedExperiment.getSamples()) {
             s.setExperiment(originalExperiment);
             originalExperiment.getSamples().add(s);

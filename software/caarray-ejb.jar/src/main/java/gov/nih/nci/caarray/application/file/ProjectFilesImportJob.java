@@ -124,7 +124,7 @@ final class ProjectFilesImportJob extends AbstractProjectFilesJob {
 
     private void importAnnotation(CaArrayFileSet fileSet) {
         try {
-            getMageTabImporter().importFiles(getProject(), fileSet, isReimportingMagetab());
+            getMageTabImporter().importFiles(getProject(), fileSet);
         } catch (MageTabParsingException e) {
             LOG.error(e.getMessage(), e);
         }

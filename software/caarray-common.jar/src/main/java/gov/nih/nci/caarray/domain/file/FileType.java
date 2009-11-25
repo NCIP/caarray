@@ -296,7 +296,7 @@ public enum FileType implements Comparable<FileType> {
             AGILENT_DERIVED_TXT, NIMBLEGEN_GFF, NIMBLEGEN_TXT);
 
     /**
-     * The set of parsed array data file types.
+     * The set of mage tab file types.
      */
     public static final Set<FileType> MAGE_TAB_FILE_TYPES = EnumSet.of(MAGE_TAB_ADF, MAGE_TAB_DATA_MATRIX,
             MAGE_TAB_IDF, MAGE_TAB_SDRF);

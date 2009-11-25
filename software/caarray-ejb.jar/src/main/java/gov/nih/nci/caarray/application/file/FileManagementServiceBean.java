@@ -304,7 +304,7 @@ public class FileManagementServiceBean implements FileManagementService {
         MageTabTranslator mtt = (MageTabTranslator)
             ServiceLocatorFactory.getLocator().lookup(MageTabTranslator.JNDI_NAME);
         MageTabImporter mti = new MageTabImporter(mtt, getDaoFactory());
-        MageTabDocumentSet mTabSet = mti.selectRefFiles(inputFiles);
+        MageTabDocumentSet mTabSet = mti.selectRefFiles(project, inputFiles);
         // we only care about the sdrf docs connected to the idf
         for (SdrfDocument sdrfDoc : mTabSet.getIdfDocuments().iterator().next().getSdrfDocuments()) {
             filenames.addAll(getRefFileNames(sdrfDoc));

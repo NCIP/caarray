@@ -432,7 +432,46 @@ public class MageTabDataFiles {
 
     public static final File UPDATE_BIOMATERIAL_CHAIN_NEW_DATA_FILES_SDRF = new File(MageTabDataFiles.class
             .getResource("/magetab/update_chain/update_chain_new_data_files.sdrf").getFile());
-    
+
+    public static final File UPDATE_FILES_DIRECTORY = new File(MageTabDataFiles.class.getResource(
+    "/magetab/update_files").getFile());
+
+    public static final File UPDATE_FILES_BASELINE_ZIP = new File(MageTabDataFiles.class.getResource(
+            "/magetab/update_files/update_files_baseline.zip").getFile());
+
+    public static final File UPDATE_FILES_BASELINE_IDF = new File(MageTabDataFiles.class.getResource(
+            "/magetab/update_files/update_files_baseline.idf").getFile());
+
+    public static final File UPDATE_FILES_BASELINE_SDRF = new File(MageTabDataFiles.class.getResource(
+            "/magetab/update_files/update_files_baseline.sdrf").getFile());
+
+    public static final File UPDATE_FILES_NEW_ZIP = new File(MageTabDataFiles.class.getResource(
+            "/magetab/update_files/update_files_new.zip").getFile());
+
+    public static final File UPDATE_FILES_NEW_IDF = new File(MageTabDataFiles.class.getResource(
+            "/magetab/update_files/update_files_new.idf").getFile());
+
+    public static final File UPDATE_FILES_NEW_SDRF = new File(MageTabDataFiles.class.getResource(
+            "/magetab/update_files/update_files_new.sdrf").getFile());
+
+    public static final File UPDATE_FILES_CEL1 = new File(MageTabDataFiles.class.getResource(
+            "/magetab/update_files/BM1.CEL").getFile());
+
+    public static final File UPDATE_FILES_CEL1A = new File(MageTabDataFiles.class.getResource(
+            "/magetab/update_files/BM1a.CEL").getFile());
+
+    public static final File UPDATE_FILES_CEL2 = new File(MageTabDataFiles.class.getResource(
+            "/magetab/update_files/BM2.CEL").getFile());
+
+    public static final File UPDATE_FILES_EXP1 = new File(MageTabDataFiles.class.getResource(
+            "/magetab/update_files/BM1.EXP").getFile());
+
+    public static final File UPDATE_FILES_EXP2A = new File(MageTabDataFiles.class.getResource(
+            "/magetab/update_files/BM2a.EXP").getFile());
+
+    public static final File UPDATE_FILES_EXP2 = new File(MageTabDataFiles.class.getResource(
+            "/magetab/update_files/BM2.EXP").getFile());
+
     public static final File EXTENDED_FACTOR_VALUES_DIRECTORY = new File(MageTabDataFiles.class
             .getResource("/magetab/extended_factor_values").getFile());
 

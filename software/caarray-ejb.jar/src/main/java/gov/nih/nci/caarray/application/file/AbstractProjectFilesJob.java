@@ -88,7 +88,6 @@ import gov.nih.nci.caarray.application.translation.magetab.MageTabTranslator;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileStatus;
-import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 
@@ -109,24 +108,13 @@ abstract class AbstractProjectFilesJob extends AbstractFileManagementJob {
 
     private final long projectId;
     private final Set<Long> fileIds = new HashSet<Long>();
-    private final boolean reimportingMagetab;
 
     AbstractProjectFilesJob(String username, Project targetProject, CaArrayFileSet fileSet) {
         super(username);
-        boolean isReimporting = false;
         this.projectId = targetProject.getId();
         for (CaArrayFile file : fileSet.getFiles()) {
             this.fileIds.add(file.getId());
-            if (!isReimporting && file.getType().equals(FileType.MAGE_TAB_IDF.name())) {
-                for (CaArrayFile importedFile : targetProject.getImportedFiles()) {
-                    if (importedFile.getType().equals(FileType.MAGE_TAB_IDF.name())) {
-                        isReimporting = true;
-                        break;
-                    }
-                }
-            }
         }
-        this.reimportingMagetab = isReimporting;
     }
 
     Set<Long> getFileIds() {
@@ -163,7 +151,7 @@ abstract class AbstractProjectFilesJob extends AbstractFileManagementJob {
     }
 
     private MageTabDocumentSet validateAnnotation(CaArrayFileSet fileSet) {
-        return getMageTabImporter().validateFiles(fileSet, this.reimportingMagetab);
+        return getMageTabImporter().validateFiles(getProject(), fileSet);
     }
 
     private void validateArrayData(CaArrayFileSet fileSet, MageTabDocumentSet mTabSet) {
@@ -214,11 +202,4 @@ abstract class AbstractProjectFilesJob extends AbstractFileManagementJob {
     }
 
     abstract FileStatus getInProgressStatus();
-
-    /**
-     * @return the reimportingMagetab
-     */
-    public boolean isReimportingMagetab() {
-        return reimportingMagetab;
-    }
 }

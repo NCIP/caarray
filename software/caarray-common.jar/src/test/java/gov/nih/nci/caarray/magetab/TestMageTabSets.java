@@ -84,15 +84,16 @@ package gov.nih.nci.caarray.magetab;
 
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
+import gov.nih.nci.caarray.domain.file.FileExtension;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.magetab.adf.AdfDocument;
 import gov.nih.nci.caarray.magetab.data.DataMatrix;
+import gov.nih.nci.caarray.magetab.data.NativeDataFile;
 import gov.nih.nci.caarray.magetab.idf.IdfDocument;
 import gov.nih.nci.caarray.magetab.sdrf.SdrfDocument;
 import gov.nih.nci.caarray.test.data.arraydata.GenepixArrayDataFiles;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
-import gov.nih.nci.caarray.validation.InvalidDataException;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -160,32 +161,6 @@ public final class TestMageTabSets {
     public static final MageTabFileSet PERFORMANCE_TEST_10_INPUT_SET = getPerformanceTest10InputSet();
 
     /**
-     * Document set parsed from the MAGE-TAB specification example files.
-     */
-    public static final MageTabDocumentSet MAGE_TAB_SPECIFICATION_SET = getSet(MAGE_TAB_SPECIFICATION_INPUT_SET);
-
-    /**
-     * Document set parsed from the MAGE-TAB specification example files modified to test case sensitivity for term and
-     * category import.
-     */
-    public static final MageTabDocumentSet MAGE_TAB_SPECIFICATION_CASE_SENSITIVITY_SET = getSet(MAGE_TAB_SPECIFICATION_CASE_SENSITIVITY_INPUT_SET);
-
-    /**
-     * Document set parsed from the MAGE-TAB specification example files, with no array design references in the SDRF.
-     */
-    public static final MageTabDocumentSet MAGE_TAB_SPECIFICATION_NO_ARRAY_DESIGN_SET = getSet(MAGE_TAB_SPECIFICATION_NO_ARRAY_DESIGN_INPUT_SET);
-
-    /**
-     * Document set parsed from the MAGE-TAB specification example files, with no experiment description in the IDF.
-     */
-    public static final MageTabDocumentSet MAGE_TAB_SPECIFICATION_NO_EXP_DESC_SET = getSet(MAGE_TAB_SPECIFICATION_NO_EXP_DESC_INPUT_SET);
-
-    /**
-     * Document set parsed from the MAGE-TAB specification example files.
-     */
-    public static final MageTabDocumentSet PERFORMANCE_TEST_10_SET = getSet(PERFORMANCE_TEST_10_INPUT_SET);
-
-    /**
      * MAGE-TAB input set from TCGA Broad data.
      */
     public static final MageTabFileSet TCGA_BROAD_INPUT_SET = getTcgaBroadInputSet();
@@ -211,14 +186,9 @@ public final class TestMageTabSets {
     public static final MageTabFileSet DEFECT_12537_ERROR_INPUT_SET = getDefect12537ErrorInputSet();
 
     /**
-     * Document set parsed from TCGA Broad data.
-     */
-    public static final MageTabDocumentSet TCGA_BROAD_SET = getSet(TCGA_BROAD_INPUT_SET);
-
-    /**
      * Example set of MAGE-TAB data.
      */
-    public static final MageTabDocumentSet GSK_TEST_SET = getSet(getGskTestSet());
+    public static final MageTabFileSet GSK_TEST_INPUT_SET = getGskTestSet();
 
     /**
      * MAGE-TAB data set containing data derived from other derived data.
@@ -226,38 +196,20 @@ public final class TestMageTabSets {
     public static final MageTabFileSet DERIVED_DATA_INPUT_SET = getDerivedDataInputSet();
 
     /**
-     * MAGE-TAB data set containing data derived from other derived data.
-     */
-    public static final MageTabDocumentSet DERIVED_DATA_SET = getSet(DERIVED_DATA_INPUT_SET);
-
-    /**
      * MAGE-TAB input set containing valid usage of Characteristics[ExternalSampleId] for Sample(s).
      */
     public static final MageTabFileSet VALID_FEATURE_13141_INPUT_SET = getValidFeature13141InputSet();
 
     /**
-     * Document set parsed ...
-     */
-    public static final MageTabDocumentSet VALID_FEATURE_13141_DATA_SET = getSet(VALID_FEATURE_13141_INPUT_SET);
-    /**
      * MAGE-TAB input set containing valid usage of Characteristics[ExternalSampleId] for Sample(s).
      */
     public static final MageTabFileSet INVALID_FEATURE_13141_INPUT_SET = getInvalidFeature13141InputSet();
-    /**
-     * Document set parsed ...
-     */
-    public static final MageTabDocumentSet INVALID_FEATURE_13141_DATA_SET = getSet(INVALID_FEATURE_13141_INPUT_SET);
-
+    
     /**
      * Invalid MAGE-TAB input set containing multiple IDF files.
      */
     public static final MageTabFileSet INVALID_DUPLICATE_TERM_SOURCES_INPUT_SET = getInvalidDuplicateTermSourcesInputSet();
     
-    /**
-     * Document set parsed...
-     */
-    public static final MageTabDocumentSet INVALID_DUPLICATE_TERM_SOURCES_DATA_SET = getSet(INVALID_DUPLICATE_TERM_SOURCES_INPUT_SET);
-
     /**
      * Document set parsed ...
      */
@@ -277,74 +229,41 @@ public final class TestMageTabSets {
      * MAGE-TAB input set based on the base specification set with some changes.
      */
     public static final MageTabFileSet MAGE_TAB_SPECIFICATION_UPDATE_ANNOTATIONS_INPUT_SET = getSpecificationUpdateAnnotationsInputSet();
-    /**
-     * Parsed MAGE-TAB document set for updating annotations.
-     */
-    public static final MageTabDocumentSet MAGE_TAB_SPECIFICATION_UPDATE_ANNOTATIONS_SET = getSetForReimport(MAGE_TAB_SPECIFICATION_UPDATE_ANNOTATIONS_INPUT_SET);
 
     /**
      * MAGE-TAB input set based on the base specification set with some changes, as well as an additional biomaterial chain.
      */
     public static final MageTabFileSet MAGE_TAB_SPECIFICATION_UPDATE_ANNOTATIONS_ADD_BM_INPUT_SET = getSpecificationUpdateAnnotationsAddBmInputSet();
-    /**
-     * Parsed MAGE-TAB document set for updating annotations and adding a new biomaterial chain.
-     */
-    public static final MageTabDocumentSet MAGE_TAB_SPECIFICATION_UPDATE_ANNOTATIONS_ADD_BM_SET = getSetForReimport(MAGE_TAB_SPECIFICATION_UPDATE_ANNOTATIONS_ADD_BM_INPUT_SET);
 
     /**
      * MAGE-TAB input set to use as the baseline for later changes to the biomaterial chain.
      */
     public static final MageTabFileSet UPDATE_BIO_MATERIAL_CHAIN_BASELINE_INPUT_SET = getUpdateBioMaterialChainBaselineInputSet();
-    /**
-     * Parsed MAGE-TAB document set to use as the baseline for later changes to the biomaterial chain.
-     */
-    public static final MageTabDocumentSet UPDATE_BIO_MATERIAL_CHAIN_BASELINE_SET = getSetForReimport(UPDATE_BIO_MATERIAL_CHAIN_BASELINE_INPUT_SET);
+    
     /**
      * MAGE-TAB input set to use to update the biomaterial chain defined in UPDATE_BIO_MATERIAL_CHAIN_BASELINE_SET.
      */
     public static final MageTabFileSet UPDATE_BIO_MATERIAL_CHAIN_NEW_BIO_MATERIALS_INPUT_SET = getUpdateBioMaterialChainNewBioMaterialsInputSet();
-    /**
-     * Parsed MAGE-TAB document set to use to update the biomaterial chain defined in UPDATE_BIO_MATERIAL_CHAIN_BASELINE_SET.
-     */
-    public static final MageTabDocumentSet UPDATE_BIO_MATERIAL_CHAIN_NEW_BIO_MATERIALS_SET = getSetForReimport(UPDATE_BIO_MATERIAL_CHAIN_NEW_BIO_MATERIALS_INPUT_SET);
+
     /**
      * MAGE-TAB input set to use to add new data files to the biomaterial chain defined in UPDATE_BIO_MATERIAL_CHAIN_BASELINE_SET.
      */
     public static final MageTabFileSet UPDATE_BIO_MATERIAL_CHAIN_NEW_DATA_FILES_INPUT_SET = getUpdateBioMaterialChainNewDataFilesInputSet();
+
     /**
-     * Parsed MAGE-TAB document set to use to add new data files to the biomaterial chain defined in UPDATE_BIO_MATERIAL_CHAIN_BASELINE_SET.
+     * MAGE-TAB input set to use as the baseline for later changes to the files
      */
-    public static final MageTabDocumentSet UPDATE_BIO_MATERIAL_CHAIN_NEW_DATA_FILES_SET = getSetForReimport(UPDATE_BIO_MATERIAL_CHAIN_NEW_DATA_FILES_INPUT_SET);
+    public static final MageTabFileSet UPDATE_FILES_BASELINE_INPUT_SET = getUpdateFilesBaselineInputSet();
     
+    /**
+     * MAGE-TAB input set to use to add new data files to the biomaterial chain defined in UPDATE_BIO_MATERIAL_CHAIN_BASELINE_SET.
+     */
+    public static final MageTabFileSet UPDATE_FILES_NEW_INPUT_SET = getUpdateFilesNewInputSet();
+
     /**
      * MAGE-TAB input set containing valid usage of Characteristics[ExternalSampleId] for Sample(s).
      */
     public static final MageTabFileSet EXTENDED_FACTOR_VALUES_INPUT_SET = getExtendedFactorValuesInputSet();
-
-    /**
-     * Document set parsed ...
-     */
-    public static final MageTabDocumentSet EXTENDED_FACTOR_VALUES_DATA_SET = getSet(EXTENDED_FACTOR_VALUES_INPUT_SET);
-
-    private static MageTabDocumentSet getSet(MageTabFileSet inputSet) {
-        return getSet(inputSet, false);
-    }
-
-    private static MageTabDocumentSet getSetForReimport(MageTabFileSet inputSet) {
-        return getSet(inputSet, true);
-    }
-
-    private static MageTabDocumentSet getSet(MageTabFileSet inputSet, boolean isReimporting) {
-        try {
-            return MageTabParser.INSTANCE.parse(inputSet, isReimporting);
-        } catch (MageTabParsingException e) {
-            e.printStackTrace(System.err);
-            return null;
-        } catch (InvalidDataException e) {
-            e.printStackTrace(System.err);
-            return null;
-        }
-    }
 
     private static MageTabFileSet getValidFeature13141InputSet() {
         MageTabFileSet fileSet = new MageTabFileSet();
@@ -610,6 +529,26 @@ public final class TestMageTabSets {
         return fileSet;
     }
 
+    private static MageTabFileSet getUpdateFilesBaselineInputSet() {
+        MageTabFileSet fileSet = new MageTabFileSet();
+        fileSet.addIdf(MageTabDataFiles.UPDATE_FILES_BASELINE_IDF);
+        fileSet.addSdrf(MageTabDataFiles.UPDATE_FILES_BASELINE_SDRF);
+        fileSet.addNativeData(MageTabDataFiles.UPDATE_FILES_CEL2);
+        fileSet.addNativeData(MageTabDataFiles.UPDATE_FILES_CEL1);
+        fileSet.addNativeData(MageTabDataFiles.UPDATE_FILES_EXP1);
+        fileSet.addNativeData(MageTabDataFiles.UPDATE_FILES_EXP2);
+        return fileSet;
+    }
+
+    private static MageTabFileSet getUpdateFilesNewInputSet() {
+        MageTabFileSet fileSet = new MageTabFileSet();
+        fileSet.addIdf(MageTabDataFiles.UPDATE_FILES_NEW_IDF);
+        fileSet.addSdrf(MageTabDataFiles.UPDATE_FILES_NEW_SDRF);
+        fileSet.addNativeData(MageTabDataFiles.UPDATE_FILES_CEL1A);
+        fileSet.addNativeData(MageTabDataFiles.UPDATE_FILES_EXP2A);
+        return fileSet;
+    }
+
     private static FilenameFilter createExtensionFilter(final String extension) {
         return new FilenameFilter() {
             public boolean accept(File dir, String name) {
@@ -627,39 +566,51 @@ public final class TestMageTabSets {
         addFiles(fileSet, documentSet.getNativeDataFiles());
         return fileSet;
     }
+    
+    public static CaArrayFileSet getFileSet(MageTabFileSet inputSet) {
+        CaArrayFileSet fileSet = new CaArrayFileSet();
+        addFiles(fileSet, inputSet.getIdfFiles(), IdfDocument.class);
+        addFiles(fileSet, inputSet.getSdrfFiles(), SdrfDocument.class);
+        addFiles(fileSet, inputSet.getDataMatrixFiles(), DataMatrix.class);
+        addFiles(fileSet, inputSet.getNativeDataFiles(), NativeDataFile.class);
+        return fileSet;
+    }
 
     private static void addFiles(CaArrayFileSet fileSet, Collection<? extends AbstractMageTabDocument> mageTabDocuments) {
         for (AbstractMageTabDocument mageTabDocument : mageTabDocuments) {
-            addFile(fileSet, mageTabDocument);
+            addFile(fileSet, mageTabDocument.getFile().getName(), mageTabDocument.getClass());
         }
-    }
-
-    private static void addFile(CaArrayFileSet fileSet, AbstractMageTabDocument mageTabDocument) {
-        CaArrayFile caArrayFile = new CaArrayFile();
-        caArrayFile.setFileStatus(FileStatus.UPLOADED);
-        caArrayFile.setName(mageTabDocument.getFile().getName());
-        if (mageTabDocument instanceof IdfDocument) {
-            caArrayFile.setFileType(FileType.MAGE_TAB_IDF);
-        } else if (mageTabDocument instanceof SdrfDocument) {
-            caArrayFile.setFileType(FileType.MAGE_TAB_SDRF);
-        } else if (mageTabDocument instanceof AdfDocument) {
-            caArrayFile.setFileType(FileType.MAGE_TAB_ADF);
-        } else if (mageTabDocument instanceof DataMatrix) {
-            caArrayFile.setFileType(FileType.MAGE_TAB_DATA_MATRIX);
-        } else if (mageTabDocument.getFile().getName().toLowerCase().endsWith(".cel")) {
-            caArrayFile.setFileType(FileType.AFFYMETRIX_CEL);
-        } else if (mageTabDocument.getFile().getName().toLowerCase().endsWith(".exp")) {
-            caArrayFile.setFileType(FileType.AFFYMETRIX_EXP);
-        } else if (mageTabDocument.getFile().getName().toLowerCase().endsWith(".chp")) {
-            caArrayFile.setFileType(FileType.AFFYMETRIX_CHP);
-        } else if (mageTabDocument.getFile().getName().toLowerCase().endsWith(".gpr")) {
-            caArrayFile.setFileType(FileType.GENEPIX_GPR);
-        } else {
-            throw new IllegalArgumentException("Unrecognized document file " + mageTabDocument.getFile());
-        }
-        fileSet.add(caArrayFile);
     }
     
+    private static void addFiles(CaArrayFileSet fileSet, Collection<File> files,
+            Class<? extends AbstractMageTabDocument> documentType) {
+        for (File file : files) {
+            addFile(fileSet, file.getName(), documentType);
+        }
+    }
+    
+    private static FileType guessFileType(String fileName, Class<? extends AbstractMageTabDocument> documentType) {
+        if (IdfDocument.class.equals(documentType)) {
+            return FileType.MAGE_TAB_IDF;
+        } else if (SdrfDocument.class.equals(documentType)) {
+            return FileType.MAGE_TAB_SDRF;
+        } else if (AdfDocument.class.equals(documentType)) {
+            return FileType.MAGE_TAB_ADF;
+        } else if (DataMatrix.class.equals(documentType)) {
+            return FileType.MAGE_TAB_DATA_MATRIX;
+        } else {
+            return FileExtension.getTypeFromExtension(fileName);
+        }         
+    }
+
+    private static void addFile(CaArrayFileSet fileSet, String name, Class<? extends AbstractMageTabDocument> documentType) {
+        CaArrayFile caArrayFile = new CaArrayFile();
+        caArrayFile.setFileStatus(FileStatus.UPLOADED);
+        caArrayFile.setName(name);
+        caArrayFile.setFileType(guessFileType(name, documentType));
+        fileSet.add(caArrayFile);
+    }
+     
     private static MageTabFileSet getExtendedFactorValuesInputSet() {
         MageTabFileSet fileSet = new MageTabFileSet();
         fileSet.addIdf(MageTabDataFiles.EXTENDED_FACTOR_VALUES_IDF);

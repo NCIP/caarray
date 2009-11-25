@@ -109,8 +109,8 @@ public final class NativeDataFile extends AbstractMageTabDocument {
      * {@inheritDoc}
      */
     @Override
-    protected void parse(boolean reimportingMagetab) throws MageTabParsingException {
-        // TODO Auto-generated method stub
+    protected void parse() throws MageTabParsingException {
+        // no-op - native data files are not parsed by this package
     }
 
     /**
@@ -118,6 +118,6 @@ public final class NativeDataFile extends AbstractMageTabDocument {
      */
     @Override
     protected void export() {
-        // unimplemented
+        // no-op
     }
 }

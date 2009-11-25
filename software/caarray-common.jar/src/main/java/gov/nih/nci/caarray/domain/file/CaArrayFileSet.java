@@ -193,7 +193,7 @@ public final class CaArrayFileSet implements Serializable {
      * @return status of the set.
      */
     public FileStatus getStatus() {
-        if (!files.isEmpty() && allStatusesEqual()) {
+        if (!files.isEmpty() && allStatusesEqual(files.iterator().next().getFileStatus())) {
             return files.iterator().next().getFileStatus();
         } else if (allStatusesEqual(FileStatus.IMPORTED, FileStatus.IMPORTED_NOT_PARSED)) {
             return FileStatus.IMPORTED;
@@ -225,17 +225,6 @@ public final class CaArrayFileSet implements Serializable {
             fileSetStatuses.remove(status);
         }
         return fileSetStatuses.isEmpty();
-    }
-
-    /**
-     * @return true if the status of all the files is the same
-     */
-    private boolean allStatusesEqual() {
-        Set<FileStatus> fileSetStatuses = new HashSet<FileStatus>();
-        for (CaArrayFile file : files) {
-            fileSetStatuses.add(file.getFileStatus());
-        }
-        return fileSetStatuses.size() == 1;
     }
 
     /**
@@ -291,6 +280,21 @@ public final class CaArrayFileSet implements Serializable {
     public CaArrayFile getFile(File file) {
         for (CaArrayFile caArrayFile : files) {
             if (caArrayFile.isMatch(file)) {
+                return caArrayFile;
+            }
+        }
+        return null;
+    }
+    
+    /**
+     * Returns the <code>CaArrayFile</code> in the set with the given name or null if no match.
+     *
+     * @param name the name of the file to find
+     * @return the <code>CaArrayFile</code> with given name, or null if no such file exists in this set.
+     */
+    public CaArrayFile getFile(String name) {
+        for (CaArrayFile caArrayFile : getFiles()) {
+            if (name.equals(caArrayFile.getName())) {
                 return caArrayFile;
             }
         }

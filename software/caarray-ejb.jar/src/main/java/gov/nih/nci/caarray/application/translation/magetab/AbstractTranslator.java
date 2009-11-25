@@ -85,7 +85,6 @@ package gov.nih.nci.caarray.application.translation.magetab;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.dao.ProjectDao;
 import gov.nih.nci.caarray.domain.contact.Organization;
-import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
@@ -96,7 +95,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -140,19 +138,6 @@ abstract class AbstractTranslator {
         return fileSet;
     }
 
-    CaArrayFile getFile(String name) {
-        if (fileSet == null) {
-            return null;
-        }
-        Set<CaArrayFile> files = fileSet.getFiles();
-        for (CaArrayFile caArrayFile : files) {
-            if (name.equals(caArrayFile.getName())) {
-                return caArrayFile;
-            }
-        }
-        return null;
-    }
-
     MageTabTranslationResult getTranslationResult() {
         return translationResult;
     }
@@ -182,7 +167,6 @@ abstract class AbstractTranslator {
      * @return the org.
      */
     protected Organization getOrCreateOrganization(String name) {
-
         Organization org = importedOrganizations.get(name);
 
         if (org == null && StringUtils.isNotBlank(name)) {

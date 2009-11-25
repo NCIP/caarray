@@ -128,8 +128,6 @@ public final class MageTabDocumentSet implements Serializable {
     private final Map<String, List<Sample>> samples
         = new HashMap<String, List<Sample>>();
 
-    private final boolean reimportingMagetab;
-
     /**
      * Initialize the MAGE-TAB document set with the given files which will hold the exported contents.
      *
@@ -137,19 +135,6 @@ public final class MageTabDocumentSet implements Serializable {
      */
     public MageTabDocumentSet(MageTabFileSet inputFileSet) {
         initializeFromFileSet(inputFileSet);
-        reimportingMagetab = false;
-    }
-
-    /**
-     * Initialize the MAGE-TAB document set with the given files which will hold the exported contents.
-     *
-     * @param inputFileSet the set of files to hold the exported contents of the documents.
-     * @param reimportingMagetab true if this document set is being used to re-import additional MAGE-TAB documents,
-     *        false if this document set contains the initial MAGE-TAB files for an experiment
-     */
-    public MageTabDocumentSet(MageTabFileSet inputFileSet, boolean reimportingMagetab) {
-        initializeFromFileSet(inputFileSet);
-        this.reimportingMagetab = reimportingMagetab;
     }
 
     /**
@@ -274,16 +259,17 @@ public final class MageTabDocumentSet implements Serializable {
             return;
         }
         parse(idfDocuments);
-        // DEVELOPER NOTE: ADF documents currently not parsed
         parse(sdrfDocuments);
-        // DEVELOPER NOTE: DATA MATRIX documents currently not parsed
 
+        // map sdrfs to the samples and hybridizations they contain
         generateSdrfRefHybs();
         generateSdrfRefSamples();
     }
+    
     /**
      * Special parse method that skips adding validation results to files and does not generate
      * hybs or samples. If More than 1 idf doc is encountered a runtime exception is thrown.
+     * 
      * @throws MageTabParsingException
      */
     void parseNoValidation() throws MageTabParsingException {
@@ -292,7 +278,7 @@ public final class MageTabDocumentSet implements Serializable {
         }
 
         AbstractMageTabDocument idfDoc = idfDocuments.iterator().next();
-        idfDoc.parse(false);
+        idfDoc.parse();
         IdfDocument idf = (IdfDocument) idfDoc;
         for (SdrfDocument document : idf.getSdrfDocuments()) {
                 document.parseNoIdfCheck();
@@ -302,7 +288,7 @@ public final class MageTabDocumentSet implements Serializable {
 
     private void parse(Set<? extends AbstractMageTabDocument> documents) throws MageTabParsingException {
         for (AbstractMageTabDocument document : documents) {
-            document.parse(reimportingMagetab);
+            document.parse();
         }
     }
 
@@ -515,12 +501,4 @@ public final class MageTabDocumentSet implements Serializable {
             document.export();
         }
     }
-
-    /**
-     * @return the reimportingMagetab
-     */
-    public boolean isReimportingMagetab() {
-        return reimportingMagetab;
-    }
-
 }

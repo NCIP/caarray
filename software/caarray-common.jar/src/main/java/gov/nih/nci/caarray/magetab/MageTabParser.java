@@ -97,21 +97,20 @@ public interface MageTabParser {
     MageTabParser INSTANCE = new MageTabParserImplementation();
 
     /**
-     * Parses the content of the documents contained in the MAGE-TAB file set to produce
+     * Parse the content of the documents contained in the MAGE-TAB file set to produce
      * an object model representation of the documents and the entities contained within
      * them.
      *
      * @param fileSet the documents to parse
-     * @param reimportingMagetab true if parsing additional MAGE-TAB files
      * @return the parsed result.
      * @throws InvalidDataException if one or more of the MAGE-TAB documents are invalid.
      * @throws MageTabParsingException if I/O failed reading the MAGE-TAB file.
      */
-    MageTabDocumentSet parse(MageTabFileSet fileSet, boolean reimportingMagetab) throws InvalidDataException,
+    MageTabDocumentSet parse(MageTabFileSet fileSet) throws InvalidDataException,
             MageTabParsingException;
 
     /**
-     * Parses the content of the IDF doc to find the SDRF documents contained in the MAGE-TAB file set to produce
+     * Parse the content of the IDF doc to find the SDRF documents contained in the MAGE-TAB file set to produce
      * an object model representation of the SDRF documents and the entities referenced by
      * them.
      *

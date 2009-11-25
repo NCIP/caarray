@@ -144,7 +144,7 @@ public final class IdfDocument extends AbstractMageTabDocument {
      * {@inheritDoc}
      */
     @Override
-    protected void parse(boolean reimportingMagetab) throws MageTabParsingException {
+    protected void parse() throws MageTabParsingException {
         DelimitedFileReader tabDelimitedReader = createTabDelimitedReader();
         // do two passes. first, process the term sources only, then process the other lines.
         // this is so we can accurately detect invalid term source references

@@ -97,6 +97,7 @@ import gov.nih.nci.caarray.domain.data.Image;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
+import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.AbstractFactorValue;
@@ -143,6 +144,7 @@ import gov.nih.nci.caarray.validation.ValidationMessage.Type;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -153,6 +155,9 @@ import java.util.Set;
 import org.apache.commons.collections.map.MultiKeyMap;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
 
 /**
  * Translates entities in SDRF documents into caArray entities.
@@ -733,9 +738,12 @@ final class SdrfTranslator extends AbstractTranslator {
             gov.nih.nci.caarray.magetab.sdrf.AbstractSampleDataRelationshipNode sdrfData, boolean isMatrix) {
         String fileName = sdrfData.getName();
         CaArrayFile dataFile = getFile(fileName);
-        // if updating existing bio materials, the data files wouldn't be uploaded
-        if (dataFile != null) {
-            RawArrayData caArrayData = new RawArrayData();
+        RawArrayData caArrayData = null;
+        if (EnumSet.of(FileStatus.IMPORTED, FileStatus.IMPORTED_NOT_PARSED).contains(dataFile.getFileStatus())) {
+            caArrayData = getDaoFactory().getArrayDao().getRawArrayData(dataFile);
+        } else {
+            // this is a re-import referencing an existing data file
+            caArrayData = new RawArrayData();
             caArrayData.setName(fileName);
             if (!isMatrix) {
                 dataFile.setFileType(dataFile.getFileType().getRawType());
@@ -756,6 +764,7 @@ final class SdrfTranslator extends AbstractTranslator {
             associateProtocolApplications(caArrayData.getProtocolApplications(), all);
             this.nodeTranslations.put(sdrfData, caArrayData);
         }
+        this.nodeTranslations.put(sdrfData, caArrayData);
     }
 
     private void translateDerivedArrayData(SdrfDocument document) {
@@ -774,22 +783,20 @@ final class SdrfTranslator extends AbstractTranslator {
             gov.nih.nci.caarray.magetab.sdrf.AbstractSampleDataRelationshipNode sdrfData, boolean isDataMatrix) {
         String fileName = sdrfData.getName();
         CaArrayFile dataFile = getFile(fileName);
-        // if updating existing bio materials, the data files wouldn't be uploaded
-        if (dataFile != null) {
-            DerivedArrayData caArrayData = new DerivedArrayData();
+        DerivedArrayData caArrayData = null;
+        if (EnumSet.of(FileStatus.IMPORTED, FileStatus.IMPORTED_NOT_PARSED).contains(dataFile.getFileStatus())) {
+            caArrayData = getDaoFactory().getArrayDao().getDerivedArrayData(dataFile);
+        } else {
+            caArrayData = new DerivedArrayData();
             caArrayData.setName(fileName);
             if (!isDataMatrix) {
                 dataFile.setFileType(dataFile.getFileType().getDerivedType());
             }
             caArrayData.setDataFile(dataFile);
-            
-            // Associate array data from which this data was derived
-            setDerivedFromData(sdrfData, caArrayData);
-
-            this.nodeTranslations.put(sdrfData, caArrayData);
-
             associateProtocolApplications(caArrayData.getProtocolApplications(), sdrfData.getProtocolApplications());
         }
+        setDerivedFromData(sdrfData, caArrayData);
+        this.nodeTranslations.put(sdrfData, caArrayData);        
     }
 
     private void setDerivedFromData(gov.nih.nci.caarray.magetab.sdrf.AbstractSampleDataRelationshipNode sdrfData,
@@ -957,7 +964,6 @@ final class SdrfTranslator extends AbstractTranslator {
     private void linkBioMaterial(AbstractCaArrayObject leftCaArrayNode, AbstractCaArrayObject rightCaArrayNode,
             SdrfNodeType leftNodeType, SdrfNodeType rightNodeType, String baseGeneratedNodeName,
             Collection<ProtocolApplication> protocolApplications) {
-        // TODO Handle case where Extract goes to Extract, as shown in ChIP-chip example in MAGE-TAB spec.
         if (leftNodeType.equals(SdrfNodeType.SOURCE)) {
             if (rightNodeType.equals(SdrfNodeType.SAMPLE)) {
                 linkSourceAndSample((Source) leftCaArrayNode, (Sample) rightCaArrayNode);
@@ -1087,6 +1093,19 @@ final class SdrfTranslator extends AbstractTranslator {
             return true;
         }
         return false;
+    }
+    
+    private CaArrayFile getFile(String name) {
+        // check both files included in import and already imported files
+        CaArrayFileSet fs = new CaArrayFileSet(getFileSet());
+        if (experiment != null) {
+            fs.addAll(Collections2.filter(experiment.getProject().getImportedFiles(), new Predicate<CaArrayFile>() {
+                public boolean apply(CaArrayFile f) {
+                    return f.getFileType().isArrayData() || FileType.MAGE_TAB_DATA_MATRIX.equals(f.getFileType());
+                }
+            }));            
+        }
+        return fs.getFile(name);
     }
 
     @Override

@@ -102,9 +102,7 @@ import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.DerivedArrayData;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
-import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
-import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.ExperimentContact;
@@ -155,7 +153,7 @@ import org.junit.Test;
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 
 /**
- *
+ * Test for MAGE tab translator
  */
 @SuppressWarnings("PMD")
 public class MageTabTranslatorTest extends AbstractServiceTest {
@@ -183,14 +181,12 @@ public class MageTabTranslatorTest extends AbstractServiceTest {
     @Test
     public void testDefect17200() throws InvalidDataException, MageTabParsingException {
         MageTabFileSet mageTabSet = TestMageTabSets.DEFECT_17200;
-        MageTabDocumentSet docSet = MageTabParser.INSTANCE.parse(mageTabSet, false);
-        assertTrue(docSet.getValidationResult().isValid());
-        CaArrayFileSet fileSet = new CaArrayFileSet();
-        for (File file : mageTabSet.getAllFiles()) {
-            CaArrayFile caArrayFile = fileAccessServiceStub.add(file);
-            caArrayFile.setFileStatus(FileStatus.UPLOADED);
-            fileSet.add(caArrayFile);
+        for (File f : mageTabSet.getAllFiles()) {
+            fileAccessServiceStub.add(f);
         }
+        MageTabDocumentSet docSet = MageTabParser.INSTANCE.parse(mageTabSet);
+        assertTrue(docSet.getValidationResult().isValid());
+        CaArrayFileSet fileSet = TestMageTabSets.getFileSet(TestMageTabSets.DEFECT_17200);
         ValidationResult result = this.translator.validate(docSet, fileSet);
         assertFalse(result.isValid());
         FileValidationResult fileResult = result.getFileValidationResult(MageTabDataFiles.DEFECT_17200_GPR);
@@ -208,17 +204,17 @@ public class MageTabTranslatorTest extends AbstractServiceTest {
         mageTabSet.addNativeData(MageTabDataFiles.DEFECT_17200_GPR);
         fileSet = new CaArrayFileSet();
         fileSet.add(fileAccessServiceStub.add(MageTabDataFiles.DEFECT_17200_GPR));
-        docSet = MageTabParser.INSTANCE.parse(mageTabSet, false);
+        docSet = MageTabParser.INSTANCE.parse(mageTabSet);
         assertTrue(docSet.getValidationResult().isValid());
         result = this.translator.validate(docSet, fileSet);
         assertTrue(result.isValid());
     }
 
     @Test
-    public void testSpecificationDocuments() {
-        CaArrayFileSet fileSet = TestMageTabSets.getFileSet(TestMageTabSets.MAGE_TAB_SPECIFICATION_SET);
-        CaArrayTranslationResult result = this.translator
-                .translate(TestMageTabSets.MAGE_TAB_SPECIFICATION_SET, fileSet);
+    public void testSpecificationDocuments() throws Exception {
+        CaArrayFileSet fileSet = TestMageTabSets.getFileSet(TestMageTabSets.MAGE_TAB_SPECIFICATION_INPUT_SET);
+        MageTabDocumentSet docSet = MageTabParser.INSTANCE.parse(TestMageTabSets.MAGE_TAB_SPECIFICATION_INPUT_SET);
+        CaArrayTranslationResult result = this.translator.translate(docSet, fileSet);
         Experiment experiment = result.getInvestigations().iterator().next();
         assertNotNull(experiment.getDescription());
         assertTrue(experiment.getDescription().startsWith("&lt;&gt;Gene expression of TK6"));
@@ -236,14 +232,15 @@ public class MageTabTranslatorTest extends AbstractServiceTest {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Test
-    public void testSpecificationTermCaseSensitivityDocuments() {
+    public void testSpecificationTermCaseSensitivityDocuments() throws Exception {
         CaArrayFileSet fileSet = TestMageTabSets
-                .getFileSet(TestMageTabSets.MAGE_TAB_SPECIFICATION_CASE_SENSITIVITY_SET);
-        MageTabTranslationResult result = (MageTabTranslationResult) this.translator.translate(
-                TestMageTabSets.MAGE_TAB_SPECIFICATION_CASE_SENSITIVITY_SET, fileSet);
+                .getFileSet(TestMageTabSets.MAGE_TAB_SPECIFICATION_CASE_SENSITIVITY_INPUT_SET);
+        MageTabDocumentSet docSet = MageTabParser.INSTANCE
+                .parse(TestMageTabSets.MAGE_TAB_SPECIFICATION_CASE_SENSITIVITY_INPUT_SET);
+        CaArrayTranslationResult result = this.translator.translate(docSet, fileSet);
         Collection<Term> terms = result.getTerms();
+        @SuppressWarnings("unchecked")
         Collection<Term> matchingTerms = CollectionUtils.select(terms, new Predicate() {
             public boolean evaluate(Object o) {
                 Term t = (Term) o;
@@ -258,10 +255,12 @@ public class MageTabTranslatorTest extends AbstractServiceTest {
     }
 
     @Test
-    public void testSpecificationDocumentsNoExpDesc() {
-        CaArrayFileSet fileSet = TestMageTabSets.getFileSet(TestMageTabSets.MAGE_TAB_SPECIFICATION_NO_EXP_DESC_SET);
-        CaArrayTranslationResult result = this.translator.translate(
-                TestMageTabSets.MAGE_TAB_SPECIFICATION_NO_EXP_DESC_SET, fileSet);
+    public void testSpecificationDocumentsNoExpDesc() throws Exception {
+        CaArrayFileSet fileSet = TestMageTabSets
+                .getFileSet(TestMageTabSets.MAGE_TAB_SPECIFICATION_NO_EXP_DESC_INPUT_SET);
+        MageTabDocumentSet docSet = MageTabParser.INSTANCE
+                .parse(TestMageTabSets.MAGE_TAB_SPECIFICATION_NO_EXP_DESC_INPUT_SET);
+        CaArrayTranslationResult result = this.translator.translate(docSet, fileSet);
         Experiment experiment = result.getInvestigations().iterator().next();
         assertNull(experiment.getDescription());
         assertEquals(8, experiment.getExperimentContacts().size());
@@ -278,10 +277,12 @@ public class MageTabTranslatorTest extends AbstractServiceTest {
     }
 
     @Test
-    public void testSpecificationDocumentsNoArrayDesignRef() {
-        CaArrayFileSet fileSet = TestMageTabSets.getFileSet(TestMageTabSets.MAGE_TAB_SPECIFICATION_NO_ARRAY_DESIGN_SET);
-        CaArrayTranslationResult result = this.translator.translate(
-                TestMageTabSets.MAGE_TAB_SPECIFICATION_NO_ARRAY_DESIGN_SET, fileSet);
+    public void testSpecificationDocumentsNoArrayDesignRef() throws Exception {
+        CaArrayFileSet fileSet = TestMageTabSets
+                .getFileSet(TestMageTabSets.MAGE_TAB_SPECIFICATION_NO_ARRAY_DESIGN_INPUT_SET);
+        MageTabDocumentSet docSet = MageTabParser.INSTANCE
+                .parse(TestMageTabSets.MAGE_TAB_SPECIFICATION_NO_ARRAY_DESIGN_INPUT_SET);
+        CaArrayTranslationResult result = this.translator.translate(docSet, fileSet);
         Experiment experiment = result.getInvestigations().iterator().next();
         assertNotNull(experiment.getDescription());
         assertTrue(experiment.getDescription().startsWith("&lt;&gt;Gene expression of TK6"));
@@ -300,9 +301,10 @@ public class MageTabTranslatorTest extends AbstractServiceTest {
     }
 
     @Test
-    public void testSpecificationDocumentsWithDerivedData() {
-        CaArrayFileSet fileSet = TestMageTabSets.getFileSet(TestMageTabSets.DERIVED_DATA_SET);
-        CaArrayTranslationResult result = this.translator.translate(TestMageTabSets.DERIVED_DATA_SET, fileSet);
+    public void testSpecificationDocumentsWithDerivedData() throws Exception {
+        CaArrayFileSet fileSet = TestMageTabSets.getFileSet(TestMageTabSets.DERIVED_DATA_INPUT_SET);
+        MageTabDocumentSet docSet = MageTabParser.INSTANCE.parse(TestMageTabSets.DERIVED_DATA_INPUT_SET);
+        CaArrayTranslationResult result = this.translator.translate(docSet, fileSet);
         Experiment experiment = result.getInvestigations().iterator().next();
         assertNotNull(experiment.getDescription());
         assertTrue(experiment.getDescription().startsWith("Gene expression of TK6"));
@@ -339,20 +341,20 @@ public class MageTabTranslatorTest extends AbstractServiceTest {
     }
 
     @Test
-    public void testTcgaBroadDocuments() {
-        CaArrayFileSet fileSet = TestMageTabSets.getFileSet(TestMageTabSets.TCGA_BROAD_SET);
-        CaArrayTranslationResult result = this.translator.translate(TestMageTabSets.TCGA_BROAD_SET, fileSet);
+    public void testTcgaBroadDocuments() throws Exception {
+        CaArrayFileSet fileSet = TestMageTabSets.getFileSet(TestMageTabSets.TCGA_BROAD_INPUT_SET);
+        MageTabDocumentSet docSet = MageTabParser.INSTANCE.parse(TestMageTabSets.TCGA_BROAD_INPUT_SET);
+        CaArrayTranslationResult result = this.translator.translate(docSet, fileSet);
+
         Set<Term> terms = new HashSet<Term>();
         terms.addAll(result.getTerms());
         assertEquals(10, terms.size());
+
         assertEquals(1, result.getInvestigations().size());
         Experiment investigation = result.getInvestigations().iterator().next();
-        checkTcgaBroadInvestigation(investigation);
-    }
-
-    private void checkTcgaBroadInvestigation(Experiment investigation) {
-        IdfDocument idf = TestMageTabSets.TCGA_BROAD_SET.getIdfDocuments().iterator().next();
+        IdfDocument idf = docSet.getIdfDocuments().iterator().next();
         assertEquals(idf.getInvestigation().getTitle(), investigation.getTitle());
+
         checkTcgaBroadBioMaterials(investigation);
         checkTcgaBroadHybridizations(investigation);
     }
@@ -379,9 +381,10 @@ public class MageTabTranslatorTest extends AbstractServiceTest {
     }
 
     @Test
-    public void testGskTestDocuments() {
-        CaArrayFileSet fileSet = TestMageTabSets.getFileSet(TestMageTabSets.GSK_TEST_SET);
-        CaArrayTranslationResult result = this.translator.translate(TestMageTabSets.GSK_TEST_SET, fileSet);
+    public void testGskTestDocuments() throws Exception {
+        CaArrayFileSet fileSet = TestMageTabSets.getFileSet(TestMageTabSets.GSK_TEST_INPUT_SET);
+        MageTabDocumentSet docSet = MageTabParser.INSTANCE.parse(TestMageTabSets.GSK_TEST_INPUT_SET);
+        CaArrayTranslationResult result = this.translator.translate(docSet, fileSet);
         Experiment experiment = result.getInvestigations().iterator().next();
         assertEquals(6, experiment.getSources().size());
         assertEquals(6, experiment.getSamples().size());
@@ -391,9 +394,10 @@ public class MageTabTranslatorTest extends AbstractServiceTest {
     }
 
     @Test
-    public void testTranslateRawArrayDataWithoutDerivedData() {
-        CaArrayFileSet fileSet = TestMageTabSets.getFileSet(TestMageTabSets.PERFORMANCE_TEST_10_SET);
-        CaArrayTranslationResult result = this.translator.translate(TestMageTabSets.PERFORMANCE_TEST_10_SET, fileSet);
+    public void testTranslateRawArrayDataWithoutDerivedData() throws Exception {
+        CaArrayFileSet fileSet = TestMageTabSets.getFileSet(TestMageTabSets.PERFORMANCE_TEST_10_INPUT_SET);
+        MageTabDocumentSet docSet = MageTabParser.INSTANCE.parse(TestMageTabSets.PERFORMANCE_TEST_10_INPUT_SET);
+        CaArrayTranslationResult result = this.translator.translate(docSet, fileSet);
         assertEquals(1, result.getInvestigations().size());
         Experiment investigation = result.getInvestigations().iterator().next();
         assertEquals(10, investigation.getHybridizations().size());
@@ -401,12 +405,12 @@ public class MageTabTranslatorTest extends AbstractServiceTest {
     }
 
     @Test
-    public void testTranslatePersonsWithNullAffiliation() {
-        CaArrayFileSet fileSet = TestMageTabSets.getFileSet(TestMageTabSets.MAGE_TAB_SPECIFICATION_SET);
-        MageTabDocumentSet documentSet = TestMageTabSets.MAGE_TAB_SPECIFICATION_SET;
-        documentSet.getIdfDocuments().iterator().next().getInvestigation().getPersons().iterator().next()
-                .setAffiliation(null);
-        CaArrayTranslationResult result = this.translator.translate(documentSet, fileSet);
+    public void testTranslatePersonsWithNullAffiliation() throws Exception {
+        CaArrayFileSet fileSet = TestMageTabSets.getFileSet(TestMageTabSets.MAGE_TAB_SPECIFICATION_INPUT_SET);
+        MageTabDocumentSet docSet = MageTabParser.INSTANCE.parse(TestMageTabSets.MAGE_TAB_SPECIFICATION_INPUT_SET);
+        docSet.getIdfDocuments().iterator().next().getInvestigation().getPersons().iterator().next().setAffiliation(
+                null);
+        CaArrayTranslationResult result = this.translator.translate(docSet, fileSet);
         Experiment experiment = result.getInvestigations().iterator().next();
         for (ExperimentContact contact : experiment.getExperimentContacts()) {
             for (Organization organization : contact.getContact().getAffiliations()) {
@@ -416,12 +420,12 @@ public class MageTabTranslatorTest extends AbstractServiceTest {
     }
 
     @Test
-    public void testTranslateBioMaterialSourceDescriptions() {
-        CaArrayFileSet fileSet = TestMageTabSets.getFileSet(TestMageTabSets.MAGE_TAB_SPECIFICATION_SET);
-        MageTabDocumentSet documentSet = TestMageTabSets.MAGE_TAB_SPECIFICATION_SET;
-        SdrfDocument sdrfDocument = documentSet.getSdrfDocuments().iterator().next();
+    public void testTranslateBioMaterialSourceDescriptions() throws Exception {
+        CaArrayFileSet fileSet = TestMageTabSets.getFileSet(TestMageTabSets.MAGE_TAB_SPECIFICATION_INPUT_SET);
+        MageTabDocumentSet docSet = MageTabParser.INSTANCE.parse(TestMageTabSets.MAGE_TAB_SPECIFICATION_INPUT_SET);
+        SdrfDocument sdrfDocument = docSet.getSdrfDocuments().iterator().next();
         addDescriptionToBioMaterials(sdrfDocument);
-        CaArrayTranslationResult result = this.translator.translate(documentSet, fileSet);
+        CaArrayTranslationResult result = this.translator.translate(docSet, fileSet);
         Experiment experiment = result.getInvestigations().iterator().next();
         checkDescription(experiment.getSources(), "Source description");
         checkDescription(experiment.getSamples(), "Sample description");
@@ -457,11 +461,12 @@ public class MageTabTranslatorTest extends AbstractServiceTest {
     }
 
     @Test
-    public void testTranslateValid_Feature13141() {
-        CaArrayFileSet fileSet = TestMageTabSets.getFileSet(TestMageTabSets.VALID_FEATURE_13141_DATA_SET);
-        ValidationResult vResult = this.translator.validate(TestMageTabSets.VALID_FEATURE_13141_DATA_SET, fileSet);
+    public void testTranslateValid_Feature13141() throws Exception {
+        CaArrayFileSet fileSet = TestMageTabSets.getFileSet(TestMageTabSets.VALID_FEATURE_13141_INPUT_SET);
+        MageTabDocumentSet docSet = MageTabParser.INSTANCE.parse(TestMageTabSets.VALID_FEATURE_13141_INPUT_SET);
+        ValidationResult vResult = this.translator.validate(docSet, fileSet);
         assertTrue(vResult.getMessages().isEmpty());
-        CaArrayTranslationResult tResult = this.translator.translate(TestMageTabSets.VALID_FEATURE_13141_DATA_SET, fileSet);
+        CaArrayTranslationResult tResult = this.translator.translate(docSet, fileSet);
         assertEquals(1,tResult.getInvestigations().size());
         Experiment e = tResult.getInvestigations().iterator().next();
         assertEquals(6, e.getSamples().size());
@@ -471,9 +476,10 @@ public class MageTabTranslatorTest extends AbstractServiceTest {
     }
 
     @Test
-    public void testTranslateInvalid_Feature13141() {
-        CaArrayFileSet fileSet = TestMageTabSets.getFileSet(TestMageTabSets.INVALID_FEATURE_13141_DATA_SET);
-        ValidationResult vResult = this.translator.validate(TestMageTabSets.INVALID_FEATURE_13141_DATA_SET, fileSet);
+    public void testTranslateInvalid_Feature13141() throws Exception {
+        CaArrayFileSet fileSet = TestMageTabSets.getFileSet(TestMageTabSets.INVALID_FEATURE_13141_INPUT_SET);
+        MageTabDocumentSet docSet = MageTabParser.INSTANCE.parse(TestMageTabSets.INVALID_FEATURE_13141_INPUT_SET);
+        ValidationResult vResult = this.translator.validate(docSet, fileSet);
         assertFalse(vResult.getMessages().isEmpty());
         assertEquals(3, vResult.getMessages(ValidationMessage.Type.ERROR).size());
         String string = "[ExternalSampleId] value '%s"
@@ -482,7 +488,7 @@ public class MageTabTranslatorTest extends AbstractServiceTest {
         assertEquals(String.format(string, "345"), vResult.getMessages(ValidationMessage.Type.ERROR).get(0).getMessage());
         assertEquals(String.format(string, "234"), vResult.getMessages(ValidationMessage.Type.ERROR).get(1).getMessage());
         assertEquals(String.format(string, "123"), vResult.getMessages(ValidationMessage.Type.ERROR).get(2).getMessage());
-        CaArrayTranslationResult result = this.translator.translate(TestMageTabSets.INVALID_FEATURE_13141_DATA_SET, fileSet);
+        CaArrayTranslationResult result = this.translator.translate(docSet, fileSet);
 
         assertEquals(1,result.getInvestigations().size());
         Experiment e = result.getInvestigations().iterator().next();
@@ -493,9 +499,11 @@ public class MageTabTranslatorTest extends AbstractServiceTest {
     }
 
     @Test
-    public void testValidateInvalidDuplicateTermSources() {
-        CaArrayFileSet caArrayFileSet = TestMageTabSets.getFileSet(TestMageTabSets.INVALID_DUPLICATE_TERM_SOURCES_DATA_SET);
-        ValidationResult validationResult = this.translator.validate(TestMageTabSets.INVALID_DUPLICATE_TERM_SOURCES_DATA_SET, caArrayFileSet);
+    public void testValidateInvalidDuplicateTermSources() throws Exception {
+        CaArrayFileSet fileSet = TestMageTabSets.getFileSet(TestMageTabSets.INVALID_DUPLICATE_TERM_SOURCES_INPUT_SET);
+        MageTabDocumentSet docSet = MageTabParser.INSTANCE
+                .parse(TestMageTabSets.INVALID_DUPLICATE_TERM_SOURCES_INPUT_SET);
+        ValidationResult validationResult = this.translator.validate(docSet, fileSet);
         assertFalse(validationResult.getMessages().isEmpty());
         assertEquals(7, validationResult.getMessages(ValidationMessage.Type.ERROR).size());
         String prototypeString =
@@ -512,10 +520,10 @@ public class MageTabTranslatorTest extends AbstractServiceTest {
     }
     
     @Test
-    public void testExtendedFactorValues() {
-        CaArrayFileSet fileSet = TestMageTabSets.getFileSet(TestMageTabSets.EXTENDED_FACTOR_VALUES_DATA_SET);
-        CaArrayTranslationResult result = this.translator
-                .translate(TestMageTabSets.EXTENDED_FACTOR_VALUES_DATA_SET, fileSet);
+    public void testExtendedFactorValues() throws Exception {
+        CaArrayFileSet fileSet = TestMageTabSets.getFileSet(TestMageTabSets.EXTENDED_FACTOR_VALUES_INPUT_SET);
+        MageTabDocumentSet docSet = MageTabParser.INSTANCE.parse(TestMageTabSets.EXTENDED_FACTOR_VALUES_INPUT_SET);
+        CaArrayTranslationResult result = this.translator.translate(docSet, fileSet);
         Experiment experiment = result.getInvestigations().iterator().next();
         assertEquals(3, experiment.getFactors().size());
         assertEquals(3, experiment.getSamples().size());

@@ -1,39 +1,28 @@
 package gov.nih.nci.caarray.application.translation.magetab;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import gov.nih.nci.caarray.application.translation.CaArrayTranslationResult;
-import gov.nih.nci.caarray.application.vocabulary.VocabularyServiceStub;
-import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.data.DerivedArrayData;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
-import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
-import gov.nih.nci.caarray.domain.file.FileStatus;
-import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
-import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
-import gov.nih.nci.caarray.domain.sample.Source;
-import gov.nih.nci.caarray.magetab.AbstractMageTabDocument;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.magetab.MageTabFileSet;
 import gov.nih.nci.caarray.magetab.MageTabParser;
 import gov.nih.nci.caarray.magetab.TestMageTabSets;
-import gov.nih.nci.caarray.magetab.adf.AdfDocument;
-import gov.nih.nci.caarray.magetab.data.DataMatrix;
-import gov.nih.nci.caarray.magetab.idf.IdfDocument;
 import gov.nih.nci.caarray.magetab.sdrf.AbstractSampleDataRelationshipNode;
-import gov.nih.nci.caarray.magetab.sdrf.SdrfDocument;
+
 import java.io.File;
-import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *
@@ -79,7 +68,7 @@ public class SdrfTranslatorTest {
             mtfs.addNativeData(cel2);
             mtfs.addDataMatrix(data.getCanonicalFile());
             mtfs.addDataMatrix(data2.getCanonicalFile());
-            MageTabDocumentSet mtds = MageTabParser.INSTANCE.parse(mtfs, false);
+            MageTabDocumentSet mtds = MageTabParser.INSTANCE.parse(mtfs);
             return mtds;
         } catch (Exception ex) {
             throw new Error(ex);

@@ -190,8 +190,6 @@ public final class SdrfDocument extends AbstractMageTabDocument {
     private final Map<String, SdrfCharacteristic> allLabeledExtractCharacteristics = 
         new LinkedHashMap<String, SdrfCharacteristic>();
 
-    private boolean reimportingMagetab = false;
-
     /**
      * Creates a new SDRF from an existing file.
      *
@@ -228,9 +226,8 @@ public final class SdrfDocument extends AbstractMageTabDocument {
      * {@inheritDoc}
      */
     @Override
-    protected void parse(boolean isReimportingMagetab) throws MageTabParsingException {
+    protected void parse() throws MageTabParsingException {
         if (checkHasIdf()) {
-            this.reimportingMagetab = isReimportingMagetab;
             parseSdrf();
         } else {
             addErrorMessage("This SDRF file is not referenced by an IDF file.");
@@ -923,7 +920,7 @@ public final class SdrfDocument extends AbstractMageTabDocument {
         handleNode(column, value, getNodeToLinkToForArrayData(derived));
         AbstractNativeFileReference adf = (AbstractNativeFileReference) currentNode;
         adf.setNativeDataFile(getDocumentSet().getNativeDataFile(value));
-        if (adf.getNativeDataFile() == null && !reimportingMagetab) {
+        if (adf.getNativeDataFile() == null) {
             addErrorMessage("Referenced " + (derived ? "Derived " : "") + " Array Data File " + value
                     + " was not found in the document set");
         }
@@ -937,7 +934,7 @@ public final class SdrfDocument extends AbstractMageTabDocument {
         handleNode(column, value, getNodeToLinkToForArrayData(derived));
         AbstractDataMatrixReference admf = (AbstractDataMatrixReference) currentNode;
         admf.setDataMatrix(getDocumentSet().getArrayDataMatrix(value));
-        if (admf.getDataMatrix() == null && !reimportingMagetab) {
+        if (admf.getDataMatrix() == null) {
             addErrorMessage("Referenced " + (derived ? "Derived " : "") + "Array Data Matrix File " + value
                     + " was not found in the document set");
         }

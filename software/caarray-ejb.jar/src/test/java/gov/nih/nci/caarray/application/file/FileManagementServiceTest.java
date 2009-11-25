@@ -81,6 +81,7 @@ import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
+import gov.nih.nci.caarray.magetab.MageTabParser;
 import gov.nih.nci.caarray.magetab.TestMageTabSets;
 import gov.nih.nci.caarray.test.data.arraydata.AffymetrixArrayDataFiles;
 import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
@@ -241,8 +242,8 @@ public class FileManagementServiceTest extends AbstractServiceTest {
     public void testMultidfRefFiles() throws Exception {
         Project project = new Project();
         // combine two sets of idf and ref files
-        addFiles(project, TestMageTabSets.getFileSet(TestMageTabSets.MAGE_TAB_SPECIFICATION_SET).getFiles());
-        addFiles(project, TestMageTabSets.getFileSet(TestMageTabSets.TCGA_BROAD_SET).getFiles());
+        addFiles(project, TestMageTabSets.getFileSet(TestMageTabSets.MAGE_TAB_SPECIFICATION_INPUT_SET).getFiles());
+        addFiles(project, TestMageTabSets.getFileSet(TestMageTabSets.TCGA_BROAD_INPUT_SET).getFiles());
 
         // find the idf related to the spec file set
         CaArrayFile idfFile = null;
@@ -268,8 +269,7 @@ public class FileManagementServiceTest extends AbstractServiceTest {
     @Test
     public void testUpdateAnnotationsFromMageTabFiles() throws Exception {
         Project project = getMageTabSpecProject();
-        CaArrayFileSet newFiles = TestMageTabSets
-            .getFileSet(TestMageTabSets.MAGE_TAB_SPECIFICATION_UPDATE_ANNOTATIONS_SET);
+        CaArrayFileSet newFiles = TestMageTabSets.getFileSet(TestMageTabSets.MAGE_TAB_SPECIFICATION_UPDATE_ANNOTATIONS_INPUT_SET);
         addFiles(project, newFiles.getFiles());
         this.fileManagementService.importFiles(project, newFiles, null);
         // import should fail on update_annotations sdrf, but all original spec files should still be uploaded
@@ -314,7 +314,7 @@ public class FileManagementServiceTest extends AbstractServiceTest {
     private Project getTgaBroadTestProject() {
         Project project = new Project();
         this.daoFactoryStub.searchDaoStub.save(project);
-        addFiles(project, TestMageTabSets.getFileSet(TestMageTabSets.TCGA_BROAD_SET).getFiles());
+        addFiles(project, TestMageTabSets.getFileSet(TestMageTabSets.TCGA_BROAD_INPUT_SET).getFiles());
         saveFiles(project.getFiles());
         assertEquals(29, project.getFiles().size());
         return project;
@@ -326,7 +326,7 @@ public class FileManagementServiceTest extends AbstractServiceTest {
         Project project = new Project();
         project.getExperiment().getArrayDesigns().add(design);
         this.daoFactoryStub.searchDaoStub.save(project);
-        addFiles(project, TestMageTabSets.getFileSet(TestMageTabSets.MAGE_TAB_SPECIFICATION_SET).getFiles());
+        addFiles(project, TestMageTabSets.getFileSet(TestMageTabSets.MAGE_TAB_SPECIFICATION_INPUT_SET).getFiles());
         assertEquals(15, project.getFiles().size());
         return project;
     }

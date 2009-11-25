@@ -114,7 +114,7 @@ public final class AdfDocument extends AbstractMageTabDocument {
      * {@inheritDoc}
      */
     @Override
-    protected void parse(boolean reimportingMagetab) throws MageTabParsingException {
+    protected void parse() throws MageTabParsingException {
         // unimplemented
     }
 

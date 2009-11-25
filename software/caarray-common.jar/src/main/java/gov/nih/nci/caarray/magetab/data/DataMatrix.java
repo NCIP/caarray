@@ -89,10 +89,11 @@ import gov.nih.nci.caarray.magetab.MageTabParsingException;
 import java.io.File;
 
 /**
- * Base class for MAGE-TAB data matrix files.
+ * A MAGE-TAB data matrix files holding raw or derived data.
+ * 
+ * @author dkokotov
  */
 public class DataMatrix extends AbstractMageTabDocument {
-
     private static final long serialVersionUID = 1L;
 
     /**
@@ -106,20 +107,11 @@ public class DataMatrix extends AbstractMageTabDocument {
     }
 
     /**
-     * Returns a reader that can be used to iterate through all of the data in the matrix.
-     *
-     * @return the reader.
-     */
-    public DataMatrixReader getDataReader() {
-        return null;
-    }
-
-    /**
      * {@inheritDoc}
      */
     @Override
-    protected void parse(boolean reimportingMagetab) throws MageTabParsingException {
-        // TODO Implement parsing
+    protected void parse() throws MageTabParsingException {
+        // no-op - currently parsing of data matrices not supported
     }
 
     /**
@@ -127,6 +119,6 @@ public class DataMatrix extends AbstractMageTabDocument {
      */
     @Override
     protected void export() {
-        // unimplemented
+        // no-op - data matrices are not exported
     }
 }
