@@ -38,11 +38,12 @@ public class GeoSoftFileWriterUtilTest {
         final String[] expected =  {
             "^SAMPLE=test-hyb",
             "!Sample_title=test-hyb",
-            "!Sample_description=test-hyb",
+            "!Sample_description=test-sample1, test-sample2",
             "!Sample_supplementary_file=raw_file.data",
             "!Sample_table=derived_file.data",
             "!Sample_source_name=test-source",
-            "!Sample_organism=test Organizm",
+            "!Sample_organism=test Organizm 1",
+            "!Sample_organism=test Organizm 2",
             "!Sample_treatment_protocol=\"some treatment:treatment desc\"; \"another treatment:another treatment desc\"",
             "!Sample_growth_protocol=\"some growth:growth desc\"",
             "!Sample_extract_protocol=\"some extract:extract desc\"",
@@ -72,7 +73,7 @@ public class GeoSoftFileWriterUtilTest {
 
         for (int i = 0; i < expected.length; i++) {
             String result = lines.get(i);
-            assertEquals(expected[i], result);
+            assertEquals("line " + (i+1), expected[i], result);
         }
 
     }

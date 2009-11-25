@@ -83,6 +83,8 @@
 package gov.nih.nci.caarray.util.io;
 
 import java.io.OutputStream;
+import java.io.Writer;
+import java.nio.charset.Charset;
 
 /**
  * A factory that creates a delimited writer.
@@ -95,27 +97,25 @@ public final class DelimitedWriterFactory {
     }
 
     /**
-     * Returns a writer which will write to the specified output stream and use the specified delimiter
-     * and text qualifier.
+     * Returns a writer which will write tab-delimited double-quote-enclosed values to the specified writer.
      *
-     * @param outputStream the output stream to write to.
-     * @param delimiter the character to use to separate two values in the same row or line.
-     * @param textQualifier the character to use to enclose a single value.
-     *
-     * @return a delimited writer
+     * @param writer  the character stream to write to.
+     * @return a tab-delimited writer
+     * @since 3.2.1
      */
-    public static DelimitedWriter getWriter(OutputStream outputStream, char delimiter, char textQualifier) {
-        return new JavaCsvDelimitedWriter(outputStream, delimiter, textQualifier);
+    public static DelimitedWriter getTabDelimitedWriter(Writer writer) {
+        return new JavaCsvDelimitedWriter(writer);
     }
 
     /**
      * Returns a writer which will write tab-delimited double-quote-enclosed values to the specified output stream.
      *
      * @param outputStream the output stream to write to.
-     *
+     * @param encoding encoding charset for the writer.
      * @return a tab-delimited writer
+     * @since 3.2.1
      */
-    public static DelimitedWriter getTabDelimitedWriter(OutputStream outputStream) {
-        return new JavaCsvDelimitedWriter(outputStream);
+    public static DelimitedWriter getTabDelimitedWriter(OutputStream outputStream, Charset encoding) {
+        return new JavaCsvDelimitedWriter(outputStream, encoding);
     }
 }

@@ -62,7 +62,6 @@ import gov.nih.nci.caarray.validation.ValidationMessage.Type;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -71,7 +70,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.output.FileWriterWithEncoding;
 
 /**
  * Base class for all MAGE-TAB documents.
@@ -153,8 +152,8 @@ public abstract class AbstractMageTabDocument implements Serializable {
      */
     protected final DelimitedWriter createTabDelimitedWriter() {
         try {
-            OutputStream outStream = FileUtils.openOutputStream(file);
-            return DelimitedWriterFactory.getTabDelimitedWriter(outStream);
+            FileWriterWithEncoding fw = new FileWriterWithEncoding(file, "UTF-8");
+            return DelimitedWriterFactory.getTabDelimitedWriter(fw);
         } catch (IOException e) {
             throw new MageTabExportException(e);
         }

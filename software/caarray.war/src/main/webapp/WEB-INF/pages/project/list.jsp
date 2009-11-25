@@ -10,7 +10,20 @@
         return false;
     }
 </script>
-
+<style>
+span.level-NONE:after
+{ content: 'No access to project or any samples.'; }
+span.level-VISIBLE:after
+{ content: 'Experiment summary information without access to annotation and array data.'; }
+span.level-READ:after
+{ content: 'Read access to the experiment as a whole, providing a preview into its content.'; }
+span.level-READ_SELECTIVED:after
+{ content: 'Selective access to specific sample annotation and data.'; }
+span.level-READ_WRITE_SELECTIVE:after
+{ content: 'Write access to project. Read access and/or write access to specificed samples.'; }
+span.level-NO_VISIBILITY:after
+{ content: 'No access to project or any samples - public profile version.'; }
+</style>
 <div id="delete_progress" class="confirm_msg" style="display: none; margin: 3px 3px">
 	Experiment deletion is in progress.
 </div>
@@ -60,6 +73,12 @@
                 <c:when test="${row.locked}">Locked</c:when>
                 <c:otherwise>In Progress</c:otherwise>
             </c:choose>
+        </display:column>
+        <display:column title="Public Access" class="centered" headerClass="centered" sortable="true">
+            <div class="tooltip">
+                <fmt:message key="${row.publicProfile.securityLevel.resourceKey}"/>
+                <span class="level-${row.publicProfile.securityLevel}"/></span>
+            </div>
         </display:column>
         <display:column title="Permissions" class="centered" headerClass="centered">
             <c:if test="${caarrayfn:canModifyPermissions(row, caarrayfn:currentUser())}">

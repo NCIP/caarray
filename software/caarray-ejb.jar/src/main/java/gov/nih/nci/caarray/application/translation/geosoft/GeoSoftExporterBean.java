@@ -100,9 +100,12 @@ import gov.nih.nci.caarray.domain.sample.Source;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.zip.GZIPOutputStream;
@@ -110,7 +113,6 @@ import javax.ejb.Local;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
-import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
@@ -148,38 +150,48 @@ public class GeoSoftExporterBean implements GeoSoftExporter {
     public List<String> validateForExport(Experiment experiment) {
 
         List<String> errors = new ArrayList<String>();
-        checkArrayDesigns(errors, experiment);
+        boolean stop = checkArrayDesigns(errors, experiment);
+        if (stop) {
+            return errors;
+        }
 
-        for (Source source : experiment.getSources()) {
-            Hybridization hyb = checkSingleChannel(errors, source);
-            if (hyb == null) {
-                break;
-            }
-            LabeledExtract labeledExtract = hyb.getLabeledExtracts().iterator().next();
-            Extract extract = labeledExtract.getExtracts().iterator().next();
-            Sample sample = extract.getSamples().iterator().next();
-
+        Set<String> protocolErrors = new HashSet<String>();
+        for (Hybridization hyb : experiment.getHybridizations()) {
+            Set<Source> sources = new HashSet<Source>();
+            Set<Sample> samples = new HashSet<Sample>();
+            Set<Extract> extracts = new HashSet<Extract>();
+            Set<LabeledExtract> labeledExtracts = new HashSet<LabeledExtract>();
+            GeoSoftFileWriterUtil.collectBioMaterials(hyb, sources, samples, extracts, labeledExtracts);
+            
             checkRawData(errors, hyb);
             checkDerivedDataFileType(errors, hyb);
 
-            checkProtocol(errors, sample.getProtocolApplications(), "extract", "extraction");
-            checkProtocol(errors, extract.getProtocolApplications(), "labeling");
-            checkProtocol(errors, labeledExtract.getProtocolApplications(), "hybridization");
-            checkProtocol(errors, hyb.getProtocolApplications(), "scan");
-            checkDataProcessionProtocol(errors, hyb.getRawDataCollection());
+            checkBioProtocol(protocolErrors, samples, "nucleic_acid_extraction");
+            checkBioProtocol(protocolErrors, extracts, "labeling");
+            checkBioProtocol(protocolErrors, labeledExtracts, "hybridization");
+            checkProtocol(protocolErrors, hyb.getProtocolApplications(), "scan" , "image_acquisition");
+            checkDataProcessingProtocol(protocolErrors, hyb.getRawDataCollection());
+            checkCharOrFactorValue(errors, hyb, labeledExtracts, extracts, samples, sources);
+            checkLabeledExtract(errors, labeledExtracts, extracts);
 
-            checkCharOrFactorValue(errors, hyb, labeledExtract, extract, sample, source);
-            checkLabeledExtract(errors, labeledExtract, extract);
+
         }
+        errors.addAll(protocolErrors);
 
         return errors;
     }
 
-    private void checkArrayDesigns(List<String> errors, Experiment experiment) {
+    /**
+     * @return true if this experiment's design provider is not Affy (not beed to do more validations).
+     */
+    private boolean checkArrayDesigns(List<String> errors, Experiment experiment) {
         for (ArrayDesign ad : experiment.getArrayDesigns()) {
             //* The array provider should be Affymetrix.
             if (!AFFYMETRIX.equals(ad.getProvider().getName())) {
                 errors.add(AFFYMETRIX + " is not the provider for array design " + ad.getName());
+            }
+            if (!errors.isEmpty()) {
+                return true;
             }
             //* All array designs associated with the experiment must be ones for which the System has the GEO
             //  accession.
@@ -187,29 +199,36 @@ public class GeoSoftExporterBean implements GeoSoftExporter {
                 errors.add("Array design " + ad.getName() + " has no GEO accession");
             }
         }
+        return false;
     }
 
     @SuppressWarnings("PMD.ExcessiveParameterList")
-    private void checkCharOrFactorValue(List<String> errors, Hybridization hyb, LabeledExtract labeledExtract,
-            Extract extract, Sample sample, Source source) {
+    private void checkCharOrFactorValue(List<String> errors, Hybridization hyb, Set<LabeledExtract> labeledExtracts,
+            Set<Extract> extracts, Set<Sample> samples, Set<Source> sources) {
         //* There must be at least 1 characteristic or factor value that is present in every
         //  biomaterial-hybridization chain.
         if (hyb.getFactorValues().isEmpty()
-                && !hasCharacteristics(labeledExtract)
-                && !hasCharacteristics(extract)
-                && !hasCharacteristics(sample)
-                && !hasCharacteristics(source)) {
+                && !hasCharacteristics(labeledExtracts)
+                && !hasCharacteristics(extracts)
+                && !hasCharacteristics(samples)
+                && !hasCharacteristics(sources)) {
             errors.add("Hybridization " + hyb.getName()
                     + " and associated biomaterials must have at least one characteristic or factor value");
         }
     }
 
-    private static boolean hasCharacteristics(AbstractBioMaterial bio) {
-        return !bio.getCharacteristics().isEmpty()
+    @SuppressWarnings("empty-statement")
+    private static boolean hasCharacteristics(Set<? extends AbstractBioMaterial> bios) {
+        for (AbstractBioMaterial bio : bios) {
+            if (!bio.getCharacteristics().isEmpty()
                 || bio.getTissueSite() != null
                 || bio.getDiseaseState() != null
                 || bio.getCellType() != null
-                || StringUtils.isNotBlank(bio.getExternalId());
+                || StringUtils.isNotBlank(bio.getExternalId())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void checkDerivedDataFileType(List<String> errors, Hybridization hyb) {
@@ -223,74 +242,43 @@ public class GeoSoftExporterBean implements GeoSoftExporter {
                         + FileType.AFFYMETRIX_CHP);
     }
 
-    private void checkLabeledExtract(List<String> errors, LabeledExtract labeledExtract, Extract extract) {
+    private void checkLabeledExtract(List<String> errors, Set<LabeledExtract> labeledExtracts, Set<Extract> extracts) {
         //* For every chain, the Material Type of the extract or labeled extract must be present.
-        if (labeledExtract.getMaterialType() == null && extract.getMaterialType() == null) {
-            errors.add("Material Type not set on Labeled Extract " + labeledExtract.getName() + " or Extract "
-                    + extract.getName());
+        boolean foundMaterialType = false;
+        for (LabeledExtract le : labeledExtracts) {
+            if (le.getMaterialType() != null) {
+                foundMaterialType = true;
+            }
+            if (le.getLabel() == null) {
+                errors.add("Labeled Extract " + le.getName() + " must have a label");
+            }
         }
-        if (labeledExtract.getLabel() == null) {
-            errors.add("Labeled Extract " + labeledExtract.getName() + " must have a label");
+        for (Extract e : extracts) {
+            if (e.getMaterialType() != null) {
+                foundMaterialType = true;
+                break;
+            }
+        }
+        if (!foundMaterialType) {
+            errors.add("Material Type not set on Labeled Extract or Extract");
         }
     }
 
     private void checkRawData(List<String> errors, Hybridization hyb) {
         //* Every hybridization must have at least one raw data file.
-        if (hyb.getRawDataCollection().isEmpty()) {
-            errors.add("Hybridization " + hyb.getName() + " must have at least one raw data file");
-        }
-    }
-
-    /**
-     *
-     * @return the end of the link.
-     */
-    @SuppressWarnings("PMD.AvoidThrowingRawExceptionTypes")
-    private Object checkSinglelink(List<String> errors, Object start, String... properties) {
-        try {
-            Object o = start;
-            for (String p : properties) {
-                Set s = (Set) PropertyUtils.getProperty(o, p);
-                if (s.size() != 1) {
-                    errors.add("Not a single-channel experiemnt (" + o.getClass().getSimpleName()
-                          + " " + getName(o) + " must have one " + StringUtils.chop(p) + " but has " + s.size() + ")");
-                    return null;
-                }
-                o = s.iterator().next();
-            }
-            return o;
-        } catch (Exception ex) {
-            LOG.error(ex);
-            throw new RuntimeException(ex);
-        }
-    }
-
-    private static String getName(Object o) {
-        try {
-            return (String) PropertyUtils.getProperty(o, "name");
-        } catch (Exception ex) {
-            return String.valueOf(o);
-        }
-    }
-
-    /**
-     * @return the Hybridization if the link can be verified.
-     */
-    private Hybridization checkSingleChannel(List<String> errors, Source source) {
-        //* It must be a single-channel experiment, i.e., there must be one-to-one links at every point of the
-        //  Source-Sample-Ext-LE-Hyb chain.
-        Hybridization hyb = (Hybridization) checkSinglelink(errors, source,
-                "samples", "extracts", "labeledExtracts", "hybridizations");
-        if (hyb != null) {
-            Object s = checkSinglelink(errors, hyb, "labeledExtracts", "extracts", "samples", "sources");
-            if (s == null) {
-                return null;
+        if (hyb.getRawDataCollection().size() != 1) {
+            errors.add("Not a single-channel experiemnt (Hybridization " + hyb.getName()
+                    + " should have one Raw Data File)");
+        } else {
+            RawArrayData rd = hyb.getRawDataCollection().iterator().next();
+            if (rd.getHybridizations().size() != 1) {
+                errors.add("Not a single-channel experiemnt (Raw Data File " + rd.getName()
+                    + " should have one Hybridization)");
             }
         }
-        return hyb;
     }
 
-    private void checkProtocol(List<String> errors, List<ProtocolApplication> protocolApplications,
+    private void checkProtocol(Set<String> errors, List<ProtocolApplication> protocolApplications,
             String... protocols) {
         for (ProtocolApplication pa : protocolApplications) {
             String pType = pa.getProtocol().getType().getValue();
@@ -303,10 +291,18 @@ public class GeoSoftExporterBean implements GeoSoftExporter {
         errors.add("Missing protocol (one of " + Arrays.asList(protocols) + " needed)");
     }
 
-    private void checkDataProcessionProtocol(List<String> errors, Set<RawArrayData> rawDataCollection) {
+    private void checkBioProtocol(Set<String> errors, Set<? extends AbstractBioMaterial> bios, String... protocols) {
+        List<ProtocolApplication> all = new ArrayList<ProtocolApplication>();
+        for (AbstractBioMaterial bio : bios) {
+            all.addAll(bio.getProtocolApplications());
+        }
+        checkProtocol(errors, all, protocols);
+    }
+
+    private void checkDataProcessingProtocol(Set<String> errors, Set<RawArrayData> rawDataCollection) {
         for (RawArrayData rad : rawDataCollection) {
             if (rad.getProtocolApplications().isEmpty()) {
-                errors.add("Missing data procession protocol for raw array data " + rad.getName());
+                errors.add("Missing data processing protocol");
             }
         }
     }
@@ -405,7 +401,8 @@ public class GeoSoftExporterBean implements GeoSoftExporter {
     private void generateSoftFile(Experiment experiment, String permaLinkUrl, ArchiveOutputStream zout)
             throws IOException {
         ByteArrayOutputStream bout = new ByteArrayOutputStream();
-        PrintWriter out = new PrintWriter(bout);
+        Writer w = new OutputStreamWriter(bout, "UTF-8");
+        PrintWriter out = new PrintWriter(w);
         GeoSoftFileWriterUtil.writeSoftFile(experiment, permaLinkUrl, out);
         out.close();
 
@@ -484,7 +481,8 @@ public class GeoSoftExporterBean implements GeoSoftExporter {
     private void handleException(Exception err, ArchiveOutputStream ar) throws IOException {
         try {
             ByteArrayOutputStream bout = new ByteArrayOutputStream();
-            PrintWriter out = new PrintWriter(bout);
+            Writer w = new OutputStreamWriter(bout, "UTF-8");
+            PrintWriter out = new PrintWriter(w);
             out.println("An error occured during the creation of this archive.");
             out.println("It may be malformed, and unacceptable by GEO SOFT");
             out.println();

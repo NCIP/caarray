@@ -35,6 +35,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.Enumeration;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.zip.GZIPInputStream;
@@ -42,7 +43,6 @@ import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipFile;
-import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -94,40 +94,63 @@ public class GeoSoftExporterBeanTest {
         ad.setProvider(o);
         o.setName("Affymetrix");
         Source source = new Source();
+        source.setId(1L);
         source.getProviders().add(o);
         source.setName("test-source");
         experiment.getSources().add(source);
         Sample sample = new Sample();
-        sample.setName("test-sample");
+        sample.setId(2L);
+        sample.setName("test-sample1");
         Organism ozm = new Organism();
-        ozm.setScientificName("test Organizm");
+        ozm.setId(1L);
+        ozm.setScientificName("test Organizm 1");
         sample.setOrganism(ozm);
         source.getSamples().add(sample);
         sample.getSources().add(source);
         Extract extract = new Extract();
+        extract.setId(3L);
         extract.setName("test-extract");
+        sample.getExtracts().add(extract);
+        extract.getSamples().add(sample);
+
+        sample = new Sample();
+        sample.setId(4L);
+        sample.setName("test-sample2");
+        ozm = new Organism();
+        ozm.setId(2L);
+        ozm.setScientificName("test Organizm 2");
+        sample.setOrganism(ozm);
+        source.getSamples().add(sample);
+        sample.getSources().add(source);
         sample.getExtracts().add(extract);
         extract.getSamples().add(sample);
         
         LabeledExtract lb = new LabeledExtract();
+        lb.setId(5L);
         lb.setLabel(vocab.getTerm(src, "label"));
-        lb.setMaterialType(vocab.getTerm(src, "test-mat"));
+        Term mt = vocab.getTerm(src, "test-mat");
+        mt.setId(1L);
+        mt.setValue("MT val");
+        lb.setMaterialType(mt);
         extract.getLabeledExtracts().add(lb);
         lb.getExtracts().add(extract);
         Hybridization h = new Hybridization();
+        h.setId(6L);
         Array a = new Array();
         a.setDesign(ad);
         h.setArray(a);
         h.setName("test-hyb");
         experiment.getHybridizations().add(h);
         ProtocolApplication pa = new ProtocolApplication();
+        pa.setId(7L);
         Protocol p = vocab.getProtocol("some extract", src);
-        Term type = vocab.getTerm(src, "extract");
+        Term type = vocab.getTerm(src, "nucleic_acid_extraction");
         p.setDescription("extract desc");
         p.setType(type);
         pa.setProtocol(p);
         sample.getProtocolApplications().add(pa);
         pa = new ProtocolApplication();
+        pa.setId(8L);
         type = vocab.getTerm(src, "labeling");
         p = vocab.getProtocol("some label", src);
         p.setDescription("labeling desc");
@@ -135,6 +158,7 @@ public class GeoSoftExporterBeanTest {
         pa.setProtocol(p);
         extract.getProtocolApplications().add(pa);
         pa = new ProtocolApplication();
+        pa.setId(9L);
         p = vocab.getProtocol("some hybridization", src);
         p.setDescription("hybridization desc");
         type = vocab.getTerm(src, "hybridization");        
@@ -142,6 +166,7 @@ public class GeoSoftExporterBeanTest {
         pa.setProtocol(p);
         lb.getProtocolApplications().add(pa);
         pa = new ProtocolApplication();
+        pa.setId(10L);
         p = vocab.getProtocol("some scan", src);
         p.setDescription("scan desc");
         type = vocab.getTerm(src, "scan");        
@@ -149,6 +174,7 @@ public class GeoSoftExporterBeanTest {
         pa.setProtocol(p);
         h.getProtocolApplications().add(pa);
         pa = new ProtocolApplication();
+        pa.setId(11L);
         p = vocab.getProtocol("some treatment", src);
         p.setDescription("treatment desc");
         type = vocab.getTerm(src, "treatment");        
@@ -156,6 +182,7 @@ public class GeoSoftExporterBeanTest {
         pa.setProtocol(p);
         h.getProtocolApplications().add(pa);
         pa = new ProtocolApplication();
+        pa.setId(12L);
         p = vocab.getProtocol("another treatment", src);
         p.setDescription("another treatment desc");
         type = vocab.getTerm(src, "treatment");
@@ -163,6 +190,7 @@ public class GeoSoftExporterBeanTest {
         pa.setProtocol(p);
         h.getProtocolApplications().add(pa);
         pa = new ProtocolApplication();
+        pa.setId(13L);
         p = vocab.getProtocol("some growth", src);
         p.setDescription("growth desc");
         type = vocab.getTerm(src, "growth");        
@@ -173,6 +201,9 @@ public class GeoSoftExporterBeanTest {
         
         RawArrayData rawData = new RawArrayData();
         pa = new ProtocolApplication();
+        pa.setId(14L);
+        rawData.setName("raw-array-data");
+        rawData.getHybridizations().add(h);
         p = vocab.getProtocol("data processing", src);
         p.setDescription("data proc desc");
         pa.setProtocol(p);
@@ -231,26 +262,26 @@ public class GeoSoftExporterBeanTest {
         ad.getProvider().setName("foo");
         ad.setGeoAccession(null);
         List<String> result = bean.validateForExport(experiment);
-        assertEquals(2, result.size());
+        assertEquals(1, result.size());
         assertEquals("Affymetrix is not the provider for array design test-ad", result.get(0));
-        assertEquals("Array design test-ad has no GEO accession", result.get(1));
     }
 
     @Test
     public void testBadSingleChannel() throws Exception {
         Experiment experiment = makeGoodExperiment();
-        Source source = new Source();
-        source.setName("another-source");
-        experiment.getSources().add(source);
+        Hybridization h = experiment.getHybridizations().iterator().next();
+        RawArrayData rawData = new RawArrayData();
+        ProtocolApplication pa = new ProtocolApplication();
+        rawData.setName("raw-array-data2");
+        rawData.getHybridizations().add(h);
+        Protocol p = vocab.getProtocol("data processing", null);
+        p.setDescription("data proc desc");
+        pa.setProtocol(p);
+        rawData.getProtocolApplications().add(pa);
+        h.getRawDataCollection().add(rawData);
         List<String> result = bean.validateForExport(experiment);
-        assertEquals(1, result.size());
-        assertEquals("Not a single-channel experiemnt (Source another-source must have one sample but has 0)", result.get(0));
-
-        experiment = makeGoodExperiment();
-        experiment.getSources().iterator().next().getSamples().iterator().next().getExtracts().clear();
-        result = bean.validateForExport(experiment);
-        assertEquals(1, result.size());
-        assertEquals("Not a single-channel experiemnt (Sample test-sample must have one extract but has 0)", result.get(0));
+        assertEquals(result.toString(), 1, result.size());
+        assertEquals("Not a single-channel experiemnt (Hybridization test-hyb should have one Raw Data File)", result.get(0));
     }
 
     @Test
@@ -264,18 +295,18 @@ public class GeoSoftExporterBeanTest {
                 .iterator().next().getRawDataCollection().clear();
         List<String> result = bean.validateForExport(experiment);
         assertEquals(1, result.size());
-        assertEquals("Hybridization test-hyb must have at least one raw data file", result.get(0));
+        assertEquals("Not a single-channel experiemnt (Hybridization test-hyb should have one Raw Data File)", result.get(0));
     }
 
     @Test
     public void testNoDerivedData() throws Exception {
         Experiment experiment = makeGoodExperiment();
-        experiment.getSources()
-                .iterator().next().getSamples()
-                .iterator().next().getExtracts()
-                .iterator().next().getLabeledExtracts()
-                .iterator().next().getHybridizations()
-                .iterator().next().getDerivedDataCollection().clear();
+        Source source = experiment.getSources().iterator().next();
+        Sample sample1 = source.getSamples().iterator().next();
+        Extract extract = sample1.getExtracts().iterator().next();
+        LabeledExtract lb = extract.getLabeledExtracts().iterator().next();
+        Hybridization hyb = lb.getHybridizations().iterator().next();
+        hyb.getDerivedDataCollection().clear();
         List<String> result = bean.validateForExport(experiment);
         assertEquals(1, result.size());
         assertEquals("Hybridization test-hyb must have a derived data file of type AFFYMETRIX_CHP", result.get(0));
@@ -299,9 +330,11 @@ public class GeoSoftExporterBeanTest {
         Experiment experiment = makeGoodExperiment();
         Source source = experiment.getSources()
                 .iterator().next();
-        
-        Sample sample = source.getSamples().iterator().next();
-        Extract e = sample.getExtracts().iterator().next();
+
+        Iterator<Sample> it = source.getSamples().iterator();
+        Sample sample1 = it.next();
+        Sample sample2 = it.next();
+        Extract e = sample1.getExtracts().iterator().next();
         LabeledExtract le = e.getLabeledExtracts().iterator().next();
 
         source.getCharacteristics().clear();
@@ -309,7 +342,8 @@ public class GeoSoftExporterBeanTest {
         le.setTissueSite(null);
         e.setDiseaseState(null);
         source.setCellType(null);
-        sample.setExternalId(null);
+        sample1.setExternalId(null);
+        sample2.setExternalId(null);
         
 
         List<String> result = bean.validateForExport(experiment);

@@ -97,6 +97,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.util.List;
 import java.util.zip.ZipOutputStream;
 import javax.servlet.http.HttpServletResponse;
@@ -124,10 +125,10 @@ public class ProjectExportAction extends AbstractBaseProjectAction implements Pr
     }
 
     /**
-     * @param type GEO SOFT packaging type.
+     * @param typeStr GEO SOFT packaging type.
      */
-    public void setType(PackagingMethod type) {
-        this.type = type;
+    public void setType(String typeStr) {
+        this.type = PackagingMethod.valueOf(typeStr);
     }
 
     /**
@@ -194,14 +195,14 @@ public class ProjectExportAction extends AbstractBaseProjectAction implements Pr
             tempCache.delete(idfFile);
             tempCache.delete(sdrfFile);
         }
-        return Action.SUCCESS;
+        return Action.NONE;
     }
 
     private void zipAndSendResponse(HttpServletResponse response, String baseFileName, File idfFile, File sdrfFile)
             throws IOException {
         FileInputStream fis;
         response.setContentType("application/zip");
-        response.addHeader("Content-disposition", "filename=\"" + baseFileName + ".magetab.zip" + "\"");
+        response.addHeader("Content-Disposition", "filename=\"" + baseFileName + ".magetab.zip" + "\"");
         OutputStream outStream = response.getOutputStream();
         ZipOutputStream zipOutStream = new ZipOutputStream(outStream);
         FileAccessUtils.writeZipEntry(zipOutStream, idfFile, false);
@@ -221,10 +222,12 @@ public class ProjectExportAction extends AbstractBaseProjectAction implements Pr
         HttpServletResponse response = ServletActionContext.getResponse();
         String fileName = getExperiment().getPublicIdentifier() + type.getExtension();
         response.setContentType(type.getMimeType());
-        response.addHeader("Content-disposition", "filename=\"" + fileName + "\"");
+        response.addHeader("Content-Disposition", "filename=\"" + fileName + "\"");
         String permaLink = getProjectPermaLink();
-        service.export(getProject(), permaLink, type, response.getOutputStream());
-        return Action.SUCCESS;
+        OutputStream out = response.getOutputStream();
+        service.export(getProject(), permaLink, type, out);
+        out.flush();
+        return Action.NONE;
     }
 
     /**
@@ -237,11 +240,13 @@ public class ProjectExportAction extends AbstractBaseProjectAction implements Pr
         GeoSoftExporter service = ServiceLocatorFactory.getGeoSoftExporter();
         HttpServletResponse response = ServletActionContext.getResponse();
         String fileName = getExperiment().getPublicIdentifier() + ".soft.txt";
-        response.setContentType("text/plain");
-        response.addHeader("Content-disposition", "filename=\"" + fileName + "\"");
+        response.setContentType("text/plain; charset=UTF-8");
+        response.addHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
         String permaLink = getProjectPermaLink();
-        service.writeGeoSoftFile(getProject(), permaLink, response.getWriter());
-        return Action.SUCCESS;
+        PrintWriter pw = response.getWriter();
+        service.writeGeoSoftFile(getProject(), permaLink, pw);
+        pw.flush();
+        return Action.NONE;
     }
 
 

@@ -114,7 +114,7 @@ public class JavaCsvDelimitedWriterTest extends AbstractCaarrayTest {
     @Before
     public void setUp() throws IOException {
         // Create a writer with the default delimiter and text qualifier.
-        writer = new JavaCsvDelimitedWriter(outStream);
+        writer = new JavaCsvDelimitedWriter(outStream, Charset.forName("UTF-8"));
     }
 
     @Test

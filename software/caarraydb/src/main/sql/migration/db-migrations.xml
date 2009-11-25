@@ -92,4 +92,7 @@
         <sql-script ignoreErrors="true">migrate-2.3.0.rc7-to-2.3.1.alpha1-drop-fk.sql</sql-script>
         <sql-script>migrate-2.3.0.rc7-to-2.3.1.alpha1.sql</sql-script>
     </migration>
+    <migration fromVersion="2.3.1.alpha1" toVersion="2.3.1.alpha2">
+        <sql-script>migrate-2.3.1.alpha1-to-2.3.1.alpha2.sql</sql-script>
+    </migration>
 </migrations>

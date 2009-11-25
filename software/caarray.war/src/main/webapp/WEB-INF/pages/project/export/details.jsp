@@ -9,7 +9,7 @@
             <c:param name="project.id" value="${project.id}" />
         </c:url>
 
-        <c:url var="exportToGeoZipUrl" value="/ajax/project/export/exportToGeo.action">
+        <c:url var="exportToGeoZipUrl" value="/ajax/project/export/exportToGeoArchive.action">
             <c:param name="project.id" value="${project.id}" />
             <c:param name="type" value="ZIP" />
         </c:url>

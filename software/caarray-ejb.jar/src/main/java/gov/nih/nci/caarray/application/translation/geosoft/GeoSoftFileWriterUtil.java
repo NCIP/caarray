@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.application.translation.geosoft;
 
+import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.collect.Iterables;
@@ -98,6 +99,7 @@ import gov.nih.nci.caarray.domain.project.AbstractFactorValue;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.ExperimentContact;
 import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
+import gov.nih.nci.caarray.domain.protocol.ProtocolApplicable;
 import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
 import gov.nih.nci.caarray.domain.publication.Publication;
 import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
@@ -109,10 +111,16 @@ import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 
 /**
@@ -140,12 +148,24 @@ final class GeoSoftFileWriterUtil {
 
     private static final Predicate<ProtocolApplication> PREDICATE_TREATMENT = new ProtocolPredicate("treatment");
     private static final Predicate<ProtocolApplication> PREDICATE_GROWTH = new ProtocolPredicate("growth");
-    private static final Predicate<ProtocolApplication> PREDICATE_EXTRACT = Predicates.or(
-            new ProtocolPredicate("extract"), new ProtocolPredicate("extraction"));
+    private static final Predicate<ProtocolApplication> PREDICATE_EXTRACT =
+            new ProtocolPredicate("nucleic_acid_extraction");
     private static final Predicate<ProtocolApplication> PREDICATE_LABELING = new ProtocolPredicate("labeling");
-    private static final Predicate<ProtocolApplication> PREDICATE_SCAN = new ProtocolPredicate("scan");
+    private static final Predicate<ProtocolApplication> PREDICATE_SCAN = Predicates.or(
+            new ProtocolPredicate("scan"),
+            new ProtocolPredicate("image_acquisition"));
     private static final Predicate<ProtocolApplication> PREDICATE_HYB = new ProtocolPredicate("hybridization");
 
+    /**
+     * needed to make the output predicable.
+     */
+    private static final Comparator<PersistentObject> ENTITY_COMPARATOR =
+            new Comparator<PersistentObject>() {
+
+        public int compare(PersistentObject o1, PersistentObject o2) {
+            return o1.getId().compareTo(o2.getId());
+        }
+    };
 
     private GeoSoftFileWriterUtil() {
         // no-op
@@ -193,60 +213,139 @@ final class GeoSoftFileWriterUtil {
 
     @SuppressWarnings("PMD.ExcessiveMethodLength")
     private static void writeSampleSection(Hybridization h, PrintWriter out) {
+        Set<Source> sources = new TreeSet<Source>(ENTITY_COMPARATOR);
+        Set<Sample> samples = new TreeSet<Sample>(ENTITY_COMPARATOR);
+        Set<Extract> extracts = new TreeSet<Extract>(ENTITY_COMPARATOR);
+        Set<LabeledExtract> labeledExtracts = new TreeSet<LabeledExtract>(ENTITY_COMPARATOR);
+        GeoSoftFileWriterUtil.collectBioMaterials(h, sources, samples, extracts, labeledExtracts);
+
         out.print("^SAMPLE=");
         out.println(h.getName());
         out.print("!Sample_title=");
         out.println(h.getName());
-        out.print("!Sample_description=");
-        String desc = StringUtils.isNotBlank(h.getDescription()) ? h.getDescription() : h.getName();
-        out.println(desc);
+        writeDescription(out, h, samples);
         writeData(h, out);
+        writeSources(out, sources);
+        writeOrganism(sources, samples, h.getExperiment(), out);
+        Set<ProtocolApplication> pas = new TreeSet<ProtocolApplication>(ENTITY_COMPARATOR);
+        pas.addAll(h.getProtocolApplications());
+        collectAllProtocols(labeledExtracts, pas);
+        collectAllProtocols(extracts, pas);
+        collectAllProtocols(samples, pas);
+        collectAllProtocols(sources, pas);
 
-        LabeledExtract labeledExtract = h.getLabeledExtracts().iterator().next();
-        Extract extract = labeledExtract.getExtracts().iterator().next();
-        Sample sample = extract.getSamples().iterator().next();
-        Source source = sample.getSources().iterator().next();
-        out.print("!Sample_source_name=");
-        out.println(source.getName());
-        writeOrganism(source, sample, out);
-        @SuppressWarnings("unchecked")
-        Iterable<ProtocolApplication> pas = Iterables.concat(h.getProtocolApplications(),
-                labeledExtract.getProtocolApplications(), extract.getProtocolApplications(),
-                sample.getProtocolApplications(), source.getProtocolApplications());
         writeProtocol(pas, "Sample_treatment_protocol", PREDICATE_TREATMENT, out);
         writeProtocol(pas, "Sample_growth_protocol", PREDICATE_GROWTH, out);
-        writeProtocol(sample.getProtocolApplications(), "Sample_extract_protocol", PREDICATE_EXTRACT, out);
-        writeProtocol(extract.getProtocolApplications(), "Sample_label_protocol", PREDICATE_LABELING, out);
-        writeProtocol(labeledExtract.getProtocolApplications(), "Sample_hyb_protocol", PREDICATE_HYB, out);
+        writeProtocol(pas, "Sample_extract_protocol", PREDICATE_EXTRACT, out);
+        writeProtocol(getAllProtocols(extracts), "Sample_label_protocol", PREDICATE_LABELING, out);
+        writeProtocol(getAllProtocols(labeledExtracts), "Sample_hyb_protocol", PREDICATE_HYB, out);
         writeProtocol(h.getProtocolApplications(), "Sample_scan_protocol", PREDICATE_SCAN, out);
         writeProtocolsForData(h.getRawDataCollection(), "Sample_data_processing", out);
 
-        out.print("!Sample_label=");
-        out.println(labeledExtract.getLabel().getValue());
-
-        for (AbstractContact c : source.getProviders()) {
-            out.print("!Sample_biomaterial_provider=");
-            out.println(((Organization) c).getName());
+        for (LabeledExtract labeledExtract : labeledExtracts) {
+            out.print("!Sample_label=");
+            out.println(labeledExtract.getLabel().getValue());
         }
+        writeProviders(sources, out);
 
         out.print("!Sample_platform_id=");
         out.println(h.getArray().getDesign().getGeoAccession());
 
+        Set<String> uniqueEntries = new HashSet<String>();
         for (AbstractFactorValue fv : h.getFactorValues()) {
-            writeCharacteristics(fv.getFactor().getName(), fv.getDisplayValue(), out);
+            writeCharacteristics(fv.getFactor().getName(), fv.getDisplayValue(), out, uniqueEntries);
         }
-        writeCharacteristics(labeledExtract, out);
-        writeCharacteristics(extract, out);
-        writeCharacteristics(sample, out);
-        writeCharacteristics(source, out);
+        writeCharacteristics(labeledExtracts, out, uniqueEntries);
+        writeCharacteristics(extracts, out, uniqueEntries);
+        writeCharacteristics(samples, out, uniqueEntries);
+        writeCharacteristics(sources, out, uniqueEntries);
 
-        out.print("!Sample_molecule=");
-        Term mt = extract.getMaterialType();
-        if (mt == null) {
-            mt = labeledExtract.getMaterialType();
+        writeMaterialTypes(extracts, labeledExtracts, out);
+    }
+
+    private static void writeDescription(PrintWriter out, Hybridization h, Set<Sample> samples) {
+        out.print("!Sample_description=");
+        String desc = h.getDescription();
+        if (StringUtils.isNotBlank(desc)) {
+            out.println(desc);
+        } else {
+            String comma = "";
+            for (Sample s : samples) {
+                out.print(comma);
+                out.print(s.getName());
+                comma = ", ";
+            }
+            out.println();
         }
-        String m = translateMaterial(mt);
-        out.println(m);
+    }
+
+    private static void writeSources(PrintWriter out, Set<Source> sources) {
+        out.print("!Sample_source_name=");
+        String del = "";
+
+        for (Source source : sources) {
+            out.print(del);
+            out.print(source.getName());
+            del = "; ";
+        }
+        out.println();
+    }
+
+    static void collectBioMaterials(Hybridization hyb,  Set<Source> sources, Set<Sample> samples,
+            Set<Extract> extracts, Set<LabeledExtract> labeledExtracts) {
+        for (LabeledExtract le : hyb.getLabeledExtracts()) {
+            labeledExtracts.add(le);
+            for (Extract ex : le.getExtracts()) {
+                extracts.add(ex);
+                for (Sample sa : ex.getSamples()) {
+                    samples.add(sa);
+                    for (Source src : sa.getSources()) {
+                        sources.add(src);
+                    }
+                }
+            }
+        }
+    }
+
+    private static void collectAllProtocols(Set<? extends ProtocolApplicable> nodes,
+            Collection<ProtocolApplication> dest) {
+        for (ProtocolApplicable pa : nodes) {
+            dest.addAll(pa.getProtocolApplications());
+        }
+    }
+
+    private static Iterable<ProtocolApplication> getAllProtocols(Set<? extends ProtocolApplicable> nodes) {
+        List<ProtocolApplication> l = new ArrayList<ProtocolApplication>();
+        collectAllProtocols(nodes, l);
+        return l;
+    }
+
+    private static void writeProviders(Set<Source> sources, PrintWriter out) {
+        Set<AbstractContact> all = new HashSet<AbstractContact>();
+        for (Source source : sources) {
+            all.addAll(source.getProviders());
+        }
+        for (AbstractContact c : all) {
+            out.print("!Sample_biomaterial_provider=");
+            out.println(((Organization) c).getName());
+        }
+    }
+
+    private static void writeMaterialTypes(Set<Extract> extracts, Set<LabeledExtract> les, PrintWriter out) {
+        Set<Term> all = new TreeSet<Term>(ENTITY_COMPARATOR);
+        for (Extract e : extracts) {
+            CollectionUtils.addIgnoreNull(all, e.getMaterialType());
+        }
+        if (all.isEmpty()) {
+            for (LabeledExtract e : les) {
+                CollectionUtils.addIgnoreNull(all, e.getMaterialType());
+            }
+        }
+        for (Term mt : all) {
+            out.print("!Sample_molecule=");
+            String m = translateMaterial(mt);
+            out.println(m);
+        }
     }
 
     private static void writeProtocolsForData(Iterable<? extends AbstractArrayData> data, String label,
@@ -270,12 +369,20 @@ final class GeoSoftFileWriterUtil {
             out.print(label);
             out.print("=");
             String semi = "\"";
+            Set<String> uniqueEntries = new HashSet<String>();
+            StringBuilder sb = new StringBuilder();
             for (ProtocolApplication pa : selected) {
-                out.print(semi);
-                semi = "\"; \"";
-                out.print(pa.getProtocol().getName());
-                out.print(':');
-                out.print(pa.getProtocol().getDescription());
+                sb.setLength(0);
+                sb.append(pa.getProtocol().getName());
+                if (StringUtils.isNotBlank(pa.getProtocol().getDescription())) {
+                    sb.append(':').append(pa.getProtocol().getDescription());
+                }
+                String entry = sb.toString();
+                if (uniqueEntries.add(entry)) {
+                    out.print(semi);
+                    out.print(entry);
+                    semi = "\"; \"";
+                }
             }
             out.println('"');
         }
@@ -289,43 +396,55 @@ final class GeoSoftFileWriterUtil {
         return geoMt;
     }
 
-    private static void writeCharacteristics(AbstractBioMaterial bio, PrintWriter out) {
-        for (AbstractCharacteristic c : bio.getCharacteristics()) {
-            writeCharacteristics(c.getCategory().getName(), c.getDisplayValue(), out);
+    private static void writeCharacteristics(Set<? extends AbstractBioMaterial> bios, PrintWriter out,
+            Set<String> alreadyWritten) {
+        for (AbstractBioMaterial bio : bios) {
+            for (AbstractCharacteristic c : bio.getCharacteristics()) {
+                writeCharacteristics(c.getCategory().getName(), c.getDisplayValue(), out, alreadyWritten);
+            }
+            writeExtraCharacteristics(ExperimentOntologyCategory.ORGANISM_PART, bio.getTissueSite(), out,
+                    alreadyWritten);
+            writeExtraCharacteristics(ExperimentOntologyCategory.DISEASE_STATE, bio.getDiseaseState(), out,
+                    alreadyWritten);
+            writeExtraCharacteristics(ExperimentOntologyCategory.CELL_TYPE, bio.getCellType(), out, alreadyWritten);
+            writeExtraCharacteristics(ExperimentOntologyCategory.EXTERNAL_ID, bio.getExternalId(), out, alreadyWritten);
         }
-        writeExtraCharacteristics(ExperimentOntologyCategory.ORGANISM_PART, bio.getTissueSite(), out);
-        writeExtraCharacteristics(ExperimentOntologyCategory.DISEASE_STATE, bio.getDiseaseState(), out);
-        writeExtraCharacteristics(ExperimentOntologyCategory.CELL_TYPE, bio.getCellType(), out);
-        writeExtraCharacteristics(ExperimentOntologyCategory.EXTERNAL_ID, bio.getExternalId(), out);
     }
 
-    private static void writeExtraCharacteristics(ExperimentOntologyCategory key, Term value, PrintWriter out) {
-        writeExtraCharacteristics(key, value == null ? null : value.getValue(), out);
+    private static void writeExtraCharacteristics(ExperimentOntologyCategory key, Term value, PrintWriter out,
+            Set<String> alreadyWritten) {
+        writeExtraCharacteristics(key, value == null ? null : value.getValue(), out, alreadyWritten);
     }
 
-    private static void writeExtraCharacteristics(ExperimentOntologyCategory key, String value, PrintWriter out) {
-        writeCharacteristics(key.getCategoryName(), value, out);
+    private static void writeExtraCharacteristics(ExperimentOntologyCategory key, String value, PrintWriter out,
+            Set<String> alreadyWritten) {
+        writeCharacteristics(key.getCategoryName(), value, out, alreadyWritten);
     }
     
-    private static void writeCharacteristics(String key, String value, PrintWriter out) {
+    private static void writeCharacteristics(String key, String value, PrintWriter out, Set<String> alreadyWritten) {
         if (StringUtils.isNotBlank(value)) {
-            out.print("!Sample_characteristics=");
-            out.print(key);
-            out.print(':');
-            out.println(value);
+            String entry = "!Sample_characteristics=" + key + ':' + value;
+            if (alreadyWritten.add(entry)) {
+                out.println(entry);
+            }
         }
     }
 
-    private static void writeOrganism(Source source, Sample sample, PrintWriter out) {
-        out.print("!Sample_organism=");
-        Organism o = source.getOrganism();
-        if (o == null) {
-            o = sample.getOrganism();
+    private static void writeOrganism(Set<Source> sources, Set<Sample> samples, Experiment exp, PrintWriter out) {
+        Set<Organism> all = new TreeSet<Organism>(ENTITY_COMPARATOR);
+        for (Source source : sources) {
+            CollectionUtils.addIgnoreNull(all, source.getOrganism());
         }
-        if (o == null) {
-            o = source.getExperiment().getOrganism();
+        for (Sample sample : samples) {
+            CollectionUtils.addIgnoreNull(all, sample.getOrganism());
         }
-        out.println(o.getScientificName());
+        if (all.isEmpty()) {
+            all.add(exp.getOrganism());
+        }
+        for (Organism o : all) {
+            out.print("!Sample_organism=");
+            out.println(o.getScientificName());
+        }
     }
 
     private static void writeData(Hybridization h, PrintWriter out) {

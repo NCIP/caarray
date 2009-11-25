@@ -104,8 +104,4 @@ public interface DelimitedWriter {
      */
     void close();
 
-    /**
-     * Reinitializes the writer, remembering the delimiter, output stream/file etc. that were in use.
-     */
-    void reinit();
 }
