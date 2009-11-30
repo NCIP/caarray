@@ -114,7 +114,12 @@ public enum ProjectSortCriterion implements SortCriterion<Project> {
     /**
      * Last updated.
      */
-    LAST_UPDATED("lastUpdated");
+    LAST_UPDATED("lastUpdated"),
+
+    /**
+     * Public Access profile.
+     */
+    PUBLIC_ACCESS("publicProfile.securityLevelInternal");
 
     private final String orderField;
 

@@ -74,7 +74,7 @@ span.level-NO_VISIBILITY:after
                 <c:otherwise>In Progress</c:otherwise>
             </c:choose>
         </display:column>
-        <display:column title="Public Access" class="centered" headerClass="centered" sortable="true">
+        <display:column title="Public Access" class="centered" headerClass="centered" sortable="true" sortProperty="PUBLIC_ACCESS">
             <div class="tooltip">
                 <fmt:message key="${row.publicProfile.securityLevel.resourceKey}"/>
                 <span class="level-${row.publicProfile.securityLevel}"/></span>
