@@ -95,6 +95,7 @@ import gov.nih.nci.caarray.magetab.sdrf.SdrfDocument;
 import gov.nih.nci.caarray.test.data.arraydata.GenepixArrayDataFiles;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 
+import gov.nih.nci.caarray.test.data.magetab.SdrfTestFiles;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.Collection;
@@ -264,6 +265,18 @@ public final class TestMageTabSets {
      * MAGE-TAB input set containing valid usage of Characteristics[ExternalSampleId] for Sample(s).
      */
     public static final MageTabFileSet EXTENDED_FACTOR_VALUES_INPUT_SET = getExtendedFactorValuesInputSet();
+
+    public static final MageTabFileSet MULTI_DERIVED_1_INPUT_SET = getSdrfTestInputSet(SdrfTestFiles.MULTI_DERIVED_1_IDF, SdrfTestFiles.MULTI_DERIVED_1_SDRF);
+    public static final MageTabFileSet MULTI_NORMALIZATION_1_INPUT_SET = getSdrfTestInputSet(SdrfTestFiles.MULTI_NORMALIZATION_1_IDF, SdrfTestFiles.MULTI_NORMALIZATION_1_SDRF);
+    public static final MageTabFileSet MULTI_NO_SCAN_1_INPUT_SET = getSdrfTestInputSet(SdrfTestFiles.MULTI_NO_SCAN_1_IDF, SdrfTestFiles.MULTI_NO_SCAN_1_SDRF);
+    public static final MageTabFileSet MULTI_NO_SCAN_2_INPUT_SET = getSdrfTestInputSet(SdrfTestFiles.MULTI_NO_SCAN_2_IDF, SdrfTestFiles.MULTI_NO_SCAN_2_SDRF);
+    public static final MageTabFileSet MULTI_NO_SCAN_3_INPUT_SET = getSdrfTestInputSet(SdrfTestFiles.MULTI_NO_SCAN_3_IDF, SdrfTestFiles.MULTI_NO_SCAN_3_SDRF);
+    public static final MageTabFileSet NO_DERIVED_1_INPUT_SET = getSdrfTestInputSet(SdrfTestFiles.NO_DERIVED_1_IDF, SdrfTestFiles.NO_DERIVED_1_SDRF);
+    public static final MageTabFileSet NO_DERIVED_2_INPUT_SET = getSdrfTestInputSet(SdrfTestFiles.NO_DERIVED_2_IDF, SdrfTestFiles.NO_DERIVED_2_SDRF);
+    public static final MageTabFileSet NORMAL_1_INPUT_SET = getSdrfTestInputSet(SdrfTestFiles.NORMAL_1_IDF, SdrfTestFiles.NORMAL_1_SDRF);
+    public static final MageTabFileSet NORMAL_2_INPUT_SET = getSdrfTestInputSet(SdrfTestFiles.NORMAL_2_IDF, SdrfTestFiles.NORMAL_2_SDRF);
+    public static final MageTabFileSet NORMAL_3_INPUT_SET = getSdrfTestInputSet(SdrfTestFiles.NORMAL_3_IDF, SdrfTestFiles.NORMAL_3_SDRF);
+
 
     private static MageTabFileSet getValidFeature13141InputSet() {
         MageTabFileSet fileSet = new MageTabFileSet();
@@ -618,4 +631,17 @@ public final class TestMageTabSets {
         addCelFiles(fileSet, MageTabDataFiles.EXTENDED_FACTOR_VALUES_DIRECTORY);
         return fileSet;
     }
+
+
+    public static MageTabFileSet getSdrfTestInputSet(File idf, File sdrf) {
+        MageTabFileSet mtfs = new MageTabFileSet();
+        mtfs.addIdf(idf);
+        mtfs.addSdrf(sdrf);
+        mtfs.addNativeData(SdrfTestFiles.TEST_1_CEL);
+        mtfs.addNativeData(SdrfTestFiles.TEST_2_CEL);
+        mtfs.addDataMatrix(SdrfTestFiles.TEST_1_DATA);
+        mtfs.addDataMatrix(SdrfTestFiles.TEST_2_DATA);
+        return mtfs;
+    }
+
 }

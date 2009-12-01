@@ -39,35 +39,8 @@ public class SdrfTranslatorTest {
         translator = helper.translator;
     }
 
-    public static CaArrayFileSet getFileSet(MageTabDocumentSet documentSet) {
-        return TestMageTabSets.getFileSet(documentSet);
-    }
-
-    private File getResource(String name) {
+    private MageTabDocumentSet getDocumentSet(MageTabFileSet mtfs) {
         try {
-            return new File(getClass().getResource(name).toURI());
-        } catch (URISyntaxException ex) {
-            throw new Error(ex);
-        }
-    }
-
-
-    private MageTabDocumentSet getDocumentSet(String name) {
-        try {
-            File idf = getResource(name + ".idf");
-            File sdrf = getResource(name + ".sdrf");
-            File cel1 = getResource("test1.CEL");
-            File cel2 = getResource("test2.CEL");
-            File data = getResource("test.data");
-            File data2 = getResource("test2.data");
-
-            MageTabFileSet mtfs = new MageTabFileSet();
-            mtfs.addIdf(idf.getCanonicalFile());
-            mtfs.addSdrf(sdrf.getCanonicalFile());
-            mtfs.addNativeData(cel1);
-            mtfs.addNativeData(cel2);
-            mtfs.addDataMatrix(data.getCanonicalFile());
-            mtfs.addDataMatrix(data2.getCanonicalFile());
             MageTabDocumentSet mtds = MageTabParser.INSTANCE.parse(mtfs);
             return mtds;
         } catch (Exception ex) {
@@ -78,8 +51,8 @@ public class SdrfTranslatorTest {
 
     @Test
     public void testNormal_1() {
-        MageTabDocumentSet ds = getDocumentSet("normal_1");
-        CaArrayFileSet fileSet = getFileSet(ds);
+        MageTabDocumentSet ds = getDocumentSet(TestMageTabSets.NORMAL_1_INPUT_SET);
+        CaArrayFileSet fileSet = TestMageTabSets.getFileSet(ds);
         CaArrayTranslationResult result = this.translator.translate(ds, fileSet);
         Experiment experiment = result.getInvestigations().iterator().next();
         Hybridization hyb = experiment.getHybridizations().iterator().next();
@@ -100,8 +73,8 @@ public class SdrfTranslatorTest {
 
     @Test
     public void testNormal_2() {
-        MageTabDocumentSet ds = getDocumentSet("normal_2");
-        CaArrayFileSet fileSet = getFileSet(ds);
+        MageTabDocumentSet ds = getDocumentSet(TestMageTabSets.NORMAL_2_INPUT_SET);
+        CaArrayFileSet fileSet = TestMageTabSets.getFileSet(ds);
         CaArrayTranslationResult result = this.translator
                 .translate(ds, fileSet);
         Experiment experiment = result.getInvestigations().iterator().next();
@@ -116,8 +89,8 @@ public class SdrfTranslatorTest {
     // test normalization protocols end up in raw data.
     @Test
     public void testNormal_3() {
-        MageTabDocumentSet ds = getDocumentSet("normal_3");
-        CaArrayFileSet fileSet = getFileSet(ds);
+        MageTabDocumentSet ds = getDocumentSet(TestMageTabSets.NORMAL_3_INPUT_SET);
+        CaArrayFileSet fileSet = TestMageTabSets.getFileSet(ds);
         CaArrayTranslationResult result = this.translator
                 .translate(ds, fileSet);
         Experiment experiment = result.getInvestigations().iterator().next();
@@ -131,8 +104,8 @@ public class SdrfTranslatorTest {
     // test multiple normalization protocols ending up in raw data.
     @Test
     public void testMultiNormalization() {
-        MageTabDocumentSet ds = getDocumentSet("multi-normz_1");
-        CaArrayFileSet fileSet = getFileSet(ds);
+        MageTabDocumentSet ds = getDocumentSet(TestMageTabSets.MULTI_NORMALIZATION_1_INPUT_SET);
+        CaArrayFileSet fileSet = TestMageTabSets.getFileSet(ds);
         CaArrayTranslationResult result = this.translator.translate(ds, fileSet);
         Experiment experiment = result.getInvestigations().iterator().next();
         Hybridization hyb = experiment.getHybridizations().iterator().next();
@@ -145,8 +118,8 @@ public class SdrfTranslatorTest {
     // test multiple derived data with protocols ending up in derived data.
     @Test
     public void testMultiDerived() {
-        MageTabDocumentSet ds = getDocumentSet("multi-der_1");
-        CaArrayFileSet fileSet = getFileSet(ds);
+        MageTabDocumentSet ds = getDocumentSet(TestMageTabSets.MULTI_DERIVED_1_INPUT_SET);
+        CaArrayFileSet fileSet = TestMageTabSets.getFileSet(ds);
         CaArrayTranslationResult result = this.translator.translate(ds, fileSet);
         Experiment experiment = result.getInvestigations().iterator().next();
         Hybridization hyb = experiment.getHybridizations().iterator().next();
@@ -165,8 +138,8 @@ public class SdrfTranslatorTest {
     // test multiple derived data with no scan or normalizations ending up in derived data.
     @Test
     public void testNoScanNoNorm() {
-        MageTabDocumentSet ds = getDocumentSet("multi-noscan_1");
-        CaArrayFileSet fileSet = getFileSet(ds);
+        MageTabDocumentSet ds = getDocumentSet(TestMageTabSets.MULTI_NO_SCAN_1_INPUT_SET);
+        CaArrayFileSet fileSet = TestMageTabSets.getFileSet(ds);
         CaArrayTranslationResult result = this.translator.translate(ds, fileSet);
         Experiment experiment = result.getInvestigations().iterator().next();
         Hybridization hyb = experiment.getHybridizations().iterator().next();
@@ -187,8 +160,8 @@ public class SdrfTranslatorTest {
     // test multiple derived data with no scan , multiple normalizations.
     @Test
     public void testNoScanWithNorm() {
-        MageTabDocumentSet ds = getDocumentSet("multi-noscan_2");
-        CaArrayFileSet fileSet = getFileSet(ds);
+        MageTabDocumentSet ds = getDocumentSet(TestMageTabSets.MULTI_NO_SCAN_2_INPUT_SET);
+        CaArrayFileSet fileSet = TestMageTabSets.getFileSet(ds);
         CaArrayTranslationResult result = this.translator.translate(ds, fileSet);
         Experiment experiment = result.getInvestigations().iterator().next();
         Hybridization hyb = experiment.getHybridizations().iterator().next();
@@ -213,9 +186,9 @@ public class SdrfTranslatorTest {
 
     @Test
     public void testNoScanNoRawWithNorm() {
-        MageTabDocumentSet ds = getDocumentSet("multi-noscan_3");
+        MageTabDocumentSet ds = getDocumentSet(TestMageTabSets.MULTI_NO_SCAN_3_INPUT_SET");
 dump(ds.getSdrfDocuments().iterator().next().getAllHybridizations().iterator().next(), "");
-        CaArrayFileSet fileSet = getFileSet(ds);
+        CaArrayFileSet fileSet = TestMageTabSets.getFileSet(ds);
         CaArrayTranslationResult result = this.translator.translate(ds, fileSet);
         Experiment experiment = result.getInvestigations().iterator().next();
         Hybridization hyb = experiment.getHybridizations().iterator().next();
@@ -234,8 +207,8 @@ dump(ds.getSdrfDocuments().iterator().next().getAllHybridizations().iterator().n
 */
     @Test
     public void testNoDerivedData() {
-        MageTabDocumentSet ds = getDocumentSet("noder_1");
-        CaArrayFileSet fileSet = getFileSet(ds);
+        MageTabDocumentSet ds = getDocumentSet(TestMageTabSets.NO_DERIVED_1_INPUT_SET);
+        CaArrayFileSet fileSet = TestMageTabSets.getFileSet(ds);
         CaArrayTranslationResult result = this.translator
                 .translate(ds, fileSet);
         Experiment experiment = result.getInvestigations().iterator().next();
@@ -248,8 +221,8 @@ dump(ds.getSdrfDocuments().iterator().next().getAllHybridizations().iterator().n
 
     @Test
     public void testNoNormNoDerivedData() {
-        MageTabDocumentSet ds = getDocumentSet("noder_2");
-        CaArrayFileSet fileSet = getFileSet(ds);
+        MageTabDocumentSet ds = getDocumentSet(TestMageTabSets.NO_DERIVED_2_INPUT_SET);
+        CaArrayFileSet fileSet = TestMageTabSets.getFileSet(ds);
         CaArrayTranslationResult result = this.translator
                 .translate(ds, fileSet);
         Experiment experiment = result.getInvestigations().iterator().next();

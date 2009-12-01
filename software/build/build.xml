@@ -1063,7 +1063,7 @@
         <path id="external.api.dependencies.path">
             <fileset refid="dozer.jar.fileset"/>
         	<fileset refid="rmiio.jar.fileset"/>
-        	<fileset refid="google-collections.jar.fileset"/>
+            <fileset refid="google-collections.jar.fileset"/>
         </path>
         <pathtofileset name="external.api.dependencies.fileset" pathrefid="external.api.dependencies.path" dir="${project.lib}"/>
 
@@ -1282,7 +1282,7 @@
 
         <path id="caarray-client.external.v1_0.java.dependencies.path">
             <fileset refid="caarray-client.common.java.dependencies.fileset"/>
-            <fileset refid="external.api.dependencies.fileset"/>        	
+            <fileset refid="external.api.dependencies.fileset"/>
             <fileset dir="${project.lib}" includes="${mysql-connector-java.jar}"/>
         </path>
         <pathtofileset name="caarray-client.external.v1_0.java.dependencies.fileset" pathrefid="caarray-client.external.v1_0.java.dependencies.path" dir="${project.lib}"/>
@@ -2154,7 +2154,7 @@
     </target>
 
     <target name="test:junit-caarray-ejb.jar" unless="notest" depends="init:third-party-paths,test:compile:caarray-ejb.test.classes,test:instrument:caarray-ejb.jar,compile:caarray-client.jar,compile:caarray-common.jar,test:functional:compile-tests,test:copy-files-to-target-dir-and-unpack-test-data">
-        <caarray-run-junit-tests test.src.dir="${caarray-ejb.test.src.dir}" xml.output.dir="${caarray-ejb.target.dir}/junit" instrumented.classes="${caarray-ejb.instrumented.classes.dir};${caarray-common.instrumented.classes.dir}" classpath="${caarray-ejb.test.classes.dir};${caarray-common.test.classes.dir};${test.data.target.dir};${test.data.classes.dir};${caarray-ejb.test.resources.dir};${caarray-common.test.files.dir};${caarray-ejb.classes.dir};${caarray-client.classes.dir};${caarray-common.classes.dir};" classpathref.id="ejb.test.dependencies.path" />
+        <caarray-run-junit-tests test.src.dir="${caarray-ejb.test.src.dir}" xml.output.dir="${caarray-ejb.target.dir}/junit" instrumented.classes="${caarray-ejb.instrumented.classes.dir};${caarray-common.instrumented.classes.dir}" classpath="${caarray-ejb.test.classes.dir};${caarray-common.test.classes.dir};${test.data.target.dir};${test.data.classes.dir};${caarray-ejb.test.resources.dir};${caarray-ejb.resources.dir};${caarray-common.test.files.dir};${caarray-ejb.classes.dir};${caarray-client.classes.dir};${caarray-common.classes.dir};" classpathref.id="ejb.test.dependencies.path"/>
     </target>
 
     <!-- caarray.war -->
