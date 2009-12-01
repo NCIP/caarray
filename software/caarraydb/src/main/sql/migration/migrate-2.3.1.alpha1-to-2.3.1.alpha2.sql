@@ -9,4 +9,4 @@ update array_design set geo_accession = 'GPL5188' where name = 'HuEx-1_0-st-v1' 
 update array_design set geo_accession = 'GPL341' where name = 'RAE230A' and provider = (select id from contact where provider = true and name = 'Affymetrix');
 update array_design set geo_accession = 'GPL1355' where name = 'Rat230_2' and provider = (select id from contact where provider = true and name = 'Affymetrix');
 update array_design set geo_accession = 'GPL98' where name = 'Hu35KsubA' and provider = (select id from contact where provider = true and name = 'Affymetrix');
-update array_design set geo_accession = 'Canine_2' where name = 'GPL3738' and provider = (select id from contact where provider = true and name = 'Affymetrix');
+update array_design set geo_accession = 'GPL3738' where name = 'Canine_2' and provider = (select id from contact where provider = true and name = 'Affymetrix');
