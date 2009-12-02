@@ -258,10 +258,16 @@ public class GeoSoftExporterBeanTest {
     @Test
     public void testBadArrayDesign() throws Exception {
         Experiment experiment = makeGoodExperiment();
+        experiment.getArrayDesigns().clear();
+        List<String> result = bean.validateForExport(experiment);
+        assertEquals(1, result.size());
+        assertEquals("No (Affymetrix) array design specified", result.get(0));
+
+        experiment = makeGoodExperiment();
         ArrayDesign ad = experiment.getArrayDesigns().iterator().next();
         ad.getProvider().setName("foo");
         ad.setGeoAccession(null);
-        List<String> result = bean.validateForExport(experiment);
+        result = bean.validateForExport(experiment);
         assertEquals(1, result.size());
         assertEquals("Affymetrix is not the provider for array design test-ad", result.get(0));
     }

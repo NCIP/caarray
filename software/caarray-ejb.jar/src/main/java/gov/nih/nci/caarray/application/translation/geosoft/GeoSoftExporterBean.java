@@ -185,6 +185,10 @@ public class GeoSoftExporterBean implements GeoSoftExporter {
      * @return true if this experiment's design provider is not Affy (not beed to do more validations).
      */
     private boolean checkArrayDesigns(List<String> errors, Experiment experiment) {
+        if (experiment.getArrayDesigns().isEmpty()) {
+            errors.add("No (" + AFFYMETRIX + ") array design specified");
+            return true;
+        }
         for (ArrayDesign ad : experiment.getArrayDesigns()) {
             //* The array provider should be Affymetrix.
             if (!AFFYMETRIX.equals(ad.getProvider().getName())) {
