@@ -271,8 +271,8 @@ public class GeoSoftExporterBean implements GeoSoftExporter {
     private void checkRawData(List<String> errors, Hybridization hyb) {
         //* Every hybridization must have at least one raw data file.
         if (hyb.getRawDataCollection().isEmpty()) {
-            errors.add("Not a single-channel experiemnt (Hybridization " + hyb.getName()
-                    + " should have at least one Raw Data File)");
+            errors.add("Hybridization " + hyb.getName()
+                    + " must have at least one Raw Data File");
         }
     }
 

@@ -320,7 +320,7 @@ public class GeoSoftExporterBeanTest {
                 .iterator().next().getRawDataCollection().clear();
         List<String> result = bean.validateForExport(experiment);
         assertEquals(1, result.size());
-        assertEquals("Not a single-channel experiemnt (Hybridization test-hyb should have at least one Raw Data File)", result.get(0));
+        assertEquals("Hybridization test-hyb must have at least one Raw Data File", result.get(0));
     }
 
     @Test
