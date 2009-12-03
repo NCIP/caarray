@@ -633,7 +633,7 @@ public final class TestMageTabSets {
     }
 
 
-    public static MageTabFileSet getSdrfTestInputSet(File idf, File sdrf) {
+    private static MageTabFileSet getSdrfTestInputSet(File idf, File sdrf) {
         MageTabFileSet mtfs = new MageTabFileSet();
         mtfs.addIdf(idf);
         mtfs.addSdrf(sdrf);

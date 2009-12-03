@@ -33,12 +33,16 @@ import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.zip.GZIPInputStream;
+import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
@@ -63,15 +67,20 @@ public class GeoSoftExporterBeanTest {
     }
 
     Project makeGoodProject() throws Exception {
-        Project p = new Project();
         Experiment e = makeGoodExperiment();
-        p.setExperiment(e);
-        return p;
+        return e.getProject();
     }
 
     Experiment makeGoodExperiment() throws Exception {
-        TermSource src = vocab.getSource("MO", "1.3.1.1");
+        Project prj = new Project();
         Experiment experiment = new Experiment();
+        prj.setExperiment(experiment);
+        Method setter = Experiment.class.getDeclaredMethod("setProject", Project.class);
+        setter.setAccessible(true);
+        setter.invoke(experiment, prj);
+
+        TermSource src = vocab.getSource("MO", "1.3.1.1");
+
         experiment.getExperimentDesignTypes().add(vocab.getTerm(src, "test-design-type1"));
         experiment.getExperimentDesignTypes().add(vocab.getTerm(src, "test-design-type2"));
         experiment.setPublicIdentifier("test-exp-id");
@@ -227,6 +236,17 @@ public class GeoSoftExporterBeanTest {
         d.setDataFile(derFile);
         h.getDerivedDataCollection().add(d);
 
+        CaArrayFile suppFile = new CaArrayFile();
+        suppFile.setFileType(FileType.AFFYMETRIX_CHP);
+        suppFile.setName("supplimental.data");
+        suppFile.setCompressedSize(1024);
+        suppFile.setUncompressedSize(1024*2);
+        suppFile.writeContents(new FileInputStream(data));
+        Field supplementalFilesField = Project.class.getDeclaredField("supplementalFiles");
+        supplementalFilesField.setAccessible(true);
+        SortedSet<CaArrayFile> supplementalFiles = (SortedSet<CaArrayFile>) supplementalFilesField.get(prj);
+        supplementalFiles.add(suppFile);
+
         Category ca = vocab.getCategory(src, "test-cat");
         UserDefinedCharacteristic cha = new UserDefinedCharacteristic(ca, "test-val", type);
         source.getCharacteristics().add(cha);
@@ -286,8 +306,7 @@ public class GeoSoftExporterBeanTest {
         rawData.getProtocolApplications().add(pa);
         h.getRawDataCollection().add(rawData);
         List<String> result = bean.validateForExport(experiment);
-        assertEquals(result.toString(), 1, result.size());
-        assertEquals("Not a single-channel experiemnt (Hybridization test-hyb should have one Raw Data File)", result.get(0));
+        assertEquals(result.toString(), 0, result.size());
     }
 
     @Test
@@ -301,7 +320,7 @@ public class GeoSoftExporterBeanTest {
                 .iterator().next().getRawDataCollection().clear();
         List<String> result = bean.validateForExport(experiment);
         assertEquals(1, result.size());
-        assertEquals("Not a single-channel experiemnt (Hybridization test-hyb should have one Raw Data File)", result.get(0));
+        assertEquals("Not a single-channel experiemnt (Hybridization test-hyb should have at least one Raw Data File)", result.get(0));
     }
 
     @Test
@@ -402,7 +421,7 @@ public class GeoSoftExporterBeanTest {
         ZipFile zf = new ZipFile(f);
         Enumeration<ZipArchiveEntry> en = zf.getEntries();
         Set<String> entries = new HashSet<String>();
-        entries.addAll(java.util.Arrays.asList("test-exp-id.soft.txt", "raw_file.data", "derived_file.data"));
+        entries.addAll(java.util.Arrays.asList("test-exp-id.soft.txt", "raw_file.data", "derived_file.data", "supplimental.data"));
         while (en.hasMoreElements()) {
             ZipArchiveEntry ze = en.nextElement();
             assertTrue(ze.getName() + " unexpected", entries.remove(ze.getName()));
@@ -417,7 +436,7 @@ public class GeoSoftExporterBeanTest {
         GZIPInputStream in = new GZIPInputStream(new FileInputStream(f));
         TarArchiveInputStream tar = new TarArchiveInputStream(in);
         entries.clear();
-        entries.addAll(java.util.Arrays.asList("test-exp-id.soft.txt", "raw_file.data", "derived_file.data", "README.txt"));
+        entries.addAll(java.util.Arrays.asList("test-exp-id.soft.txt", "raw_file.data", "derived_file.data", "supplimental.data", "README.txt"));
         TarArchiveEntry e = tar.getNextTarEntry();
         while (e != null) {
             assertTrue(e.getName() + " unexpected", entries.remove(e.getName()));

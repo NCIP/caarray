@@ -270,15 +270,9 @@ public class GeoSoftExporterBean implements GeoSoftExporter {
 
     private void checkRawData(List<String> errors, Hybridization hyb) {
         //* Every hybridization must have at least one raw data file.
-        if (hyb.getRawDataCollection().size() != 1) {
+        if (hyb.getRawDataCollection().isEmpty()) {
             errors.add("Not a single-channel experiemnt (Hybridization " + hyb.getName()
-                    + " should have one Raw Data File)");
-        } else {
-            RawArrayData rd = hyb.getRawDataCollection().iterator().next();
-            if (rd.getHybridizations().size() != 1) {
-                errors.add("Not a single-channel experiemnt (Raw Data File " + rd.getName()
-                    + " should have one Hybridization)");
-            }
+                    + " should have at least one Raw Data File)");
         }
     }
 
@@ -437,19 +431,26 @@ public class GeoSoftExporterBean implements GeoSoftExporter {
             addDataFiles(h.getRawDataCollection(), zout);
             addDataFiles(h.getDerivedDataCollection(), zout);
         }
+        for (CaArrayFile f : experiment.getProject().getSupplementalFiles()) {
+            addDataFile(f, zout);
+        }
     }
 
     private void addDataFiles(Set<? extends AbstractArrayData> dataCollection, ArchiveOutputStream zout)
             throws IOException {
         for (AbstractArrayData aad : dataCollection) {
             CaArrayFile f = aad.getDataFile();
-            ArchiveEntry ae = createArchiveEntry(zout, f.getName(), f.getUncompressedSize());
-            zout.putArchiveEntry(ae);
-            InputStream is = aad.getDataFile().readContents();
-            IOUtils.copy(is, zout);
-            is.close();
-            zout.closeArchiveEntry();
+            addDataFile(f, zout);
         }
+    }
+
+    private void addDataFile(CaArrayFile f, ArchiveOutputStream zout) throws IOException {
+        ArchiveEntry ae = createArchiveEntry(zout, f.getName(), f.getUncompressedSize());
+        zout.putArchiveEntry(ae);
+        InputStream is = f.readContents();
+        IOUtils.copy(is, zout);
+        is.close();
+        zout.closeArchiveEntry();
     }
 
     /**
