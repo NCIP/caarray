@@ -95,6 +95,7 @@ import gov.nih.nci.caarray.validation.ValidationMessage.Type;
 
 import java.io.File;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -108,15 +109,15 @@ abstract class AbstractArrayDesignHandler {
     private final VocabularyService vocabularyService;
     private final CaArrayDaoFactory daoFactory;
 
-    AbstractArrayDesignHandler(VocabularyService vocabularyService, CaArrayDaoFactory daoFactory,
-            CaArrayFile designFiles) {
+    AbstractArrayDesignHandler(VocabularyService vocabularyService,
+            CaArrayDaoFactory daoFactory, CaArrayFile designFiles) {
         this.designFiles.add(designFiles);
         this.vocabularyService = vocabularyService;
         this.daoFactory = daoFactory;
     }
 
-    AbstractArrayDesignHandler(VocabularyService vocabularyService, CaArrayDaoFactory daoFactory,
-            Set<CaArrayFile> designFiles) {
+    AbstractArrayDesignHandler(VocabularyService vocabularyService,
+            CaArrayDaoFactory daoFactory, Set<CaArrayFile> designFiles) {
         this.designFiles.addAll(designFiles);
         this.vocabularyService = vocabularyService;
         this.daoFactory = daoFactory;
@@ -135,11 +136,32 @@ abstract class AbstractArrayDesignHandler {
     }
 
     final File getFile() {
-        return TemporaryFileCacheLocator.getTemporaryFileCache().getFile(getDesignFile());
+        return TemporaryFileCacheLocator.getTemporaryFileCache().getFile(
+                getDesignFile());
     }
 
     final File getFile(CaArrayFile file) {
         return TemporaryFileCacheLocator.getTemporaryFileCache().getFile(file);
+    }
+
+    final CaArrayFile getDesignFile(String suffix) {
+        for (CaArrayFile designFile : designFiles) {
+            if (designFile.getName().toLowerCase(Locale.getDefault()).endsWith(
+                    suffix.toLowerCase(Locale.getDefault()))) {
+                return designFile;
+            }
+        }
+        return null;
+    }
+
+    final File getFile(String suffix) {
+        CaArrayFile file = getDesignFile(suffix);
+        if (file != null) {
+            return TemporaryFileCacheLocator.getTemporaryFileCache().getFile(
+                    file);
+        } else {
+            return null;
+        }
     }
 
     abstract void load(ArrayDesign arrayDesign);
@@ -152,7 +174,8 @@ abstract class AbstractArrayDesignHandler {
             validate(result);
         } catch (RuntimeException e) {
             getLog().error("Unexpected error validating file", e);
-            result.addMessage(getFile(), Type.ERROR, "Unexpected error validating file: " + e.getMessage());
+            result.addMessage(getFile(), Type.ERROR,
+                    "Unexpected error validating file: " + e.getMessage());
         }
         return result;
     }

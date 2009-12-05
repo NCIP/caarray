@@ -86,26 +86,50 @@ import gov.nih.nci.caarray.business.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
+import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
+import gov.nih.nci.caarray.domain.array.Feature;
+import gov.nih.nci.caarray.domain.array.LogicalProbe;
+import gov.nih.nci.caarray.domain.array.PhysicalProbe;
+import gov.nih.nci.caarray.domain.array.ProbeGroup;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileStatus;
+import gov.nih.nci.caarray.util.io.DelimitedFileReader;
+import gov.nih.nci.caarray.util.io.DelimitedFileReaderFactory;
+import gov.nih.nci.caarray.validation.FileValidationResult;
+import gov.nih.nci.caarray.validation.ValidationMessage;
 import gov.nih.nci.caarray.validation.ValidationResult;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 /**
- * Basic implementation of the NimbleGen NDF array design file handler - only the LSID is set.
- *
- * @author Steve Lustbader
+ * Implementation of NDF parser with NGD and POS file support.
+ * 
+ * @author Jim McCusker
  */
 public class NimbleGenNdfHandler extends AbstractArrayDesignHandler {
     private static final String LSID_AUTHORITY = AbstractCaArrayEntity.CAARRAY_LSID_AUTHORITY;
     private static final String LSID_NAMESPACE = AbstractCaArrayEntity.CAARRAY_LSID_NAMESPACE;
-    private static final Logger LOG = Logger.getLogger(NimbleGenNdfHandler.class);
+    private static final Logger LOG = Logger
+            .getLogger(NimbleGenNdfHandler.class);
 
-    NimbleGenNdfHandler(VocabularyService vocabularyService, CaArrayDaoFactory daoFactory,
-            CaArrayFile designFile) {
-        super(vocabularyService, daoFactory, designFile);
+    private static final int LOGICAL_PROBE_BATCH_SIZE = 1000;
+
+    private Map<String, ProbeGroup> probeGroups = new HashMap<String, ProbeGroup>();
+
+    private Map<String, LogicalProbe> logicalProbes = new HashMap<String, LogicalProbe>();
+
+    NimbleGenNdfHandler(VocabularyService vocabularyService,
+            CaArrayDaoFactory daoFactory, Set<CaArrayFile> designFiles) {
+        super(vocabularyService, daoFactory, designFiles);
     }
 
     /**
@@ -113,7 +137,144 @@ public class NimbleGenNdfHandler extends AbstractArrayDesignHandler {
      */
     @Override
     void createDesignDetails(ArrayDesign arrayDesign) {
-        // no-op for unknown types
+        DelimitedFileReader reader = null;
+        probeGroups = new HashMap<String, ProbeGroup>();
+        logicalProbes = new HashMap<String, LogicalProbe>();
+        Map<String,Map<String,Object>> annotations = buildAnnotations();
+        try {
+            reader = DelimitedFileReaderFactory.INSTANCE
+                    .getTabDelimitedReader(getFile());
+            positionAtAnnotation(reader, ndfColumnNames);
+            ArrayDesignDetails details = new ArrayDesignDetails();
+            arrayDesign.setDesignDetails(details);
+            getArrayDao().save(arrayDesign);
+            getArrayDao().flushSession();
+            int count = 0;
+            while (reader.hasNextLine()) {
+                List<String> values = reader.nextLine();
+                getArrayDao().save(
+                        createPhysicalProbe(details, getValues(values,
+                                ndfColumnNames, ndfColumnTypes)));
+                if (++count % LOGICAL_PROBE_BATCH_SIZE == 0) {
+                    flushAndClearSession();
+                }
+            }
+            flushAndClearSession();
+        } catch (IOException e) {
+            throw new IllegalStateException("Couldn't read file: ", e);
+        } finally {
+            reader.close();
+        }
+    }
+
+    private Map<String, Map<String, Object>> buildAnnotations() {
+        Map<String, Map<String, Object>> result = new HashMap<String, Map<String, Object>>();
+
+        return result;
+    }
+
+    private ProbeGroup getProbeGroup(String feature, ArrayDesignDetails details) {
+        if (!probeGroups.containsKey(feature)) {
+            ProbeGroup pg = new ProbeGroup(details);
+            pg.setName(feature);
+            probeGroups.put(feature, pg);
+            getArrayDao().save(pg);
+            return pg;
+        } else {
+            return probeGroups.get(feature);
+        }
+    }
+
+    private LogicalProbe getLogicalProbe(String feature,
+            ArrayDesignDetails details) {
+        if (!logicalProbes.containsKey(feature)) {
+            LogicalProbe p = new LogicalProbe(details);
+            p.setName(feature);
+            logicalProbes.put(feature, p);
+            getArrayDao().save(p);
+            return p;
+        } else {
+            return logicalProbes.get(feature);
+        }
+    }
+
+    private PhysicalProbe createPhysicalProbe(ArrayDesignDetails details,
+            Map<String, Object> values) {
+        String featureId = (String) values.get("FEATURE_ID");
+        ProbeGroup group = getProbeGroup(featureId, details);
+        LogicalProbe lp = getLogicalProbe(featureId, details);
+        PhysicalProbe p = new PhysicalProbe(details, group);
+        lp.addProbe(p);
+        String probeId = (String) values.get("PROBE_ID");
+        p.setName(probeId);
+
+        Feature f = new Feature(details);
+        f.setColumn(((Integer) values.get("X")).shortValue());
+        f.setRow(((Integer) values.get("Y")).shortValue());
+
+        p.getFeatures().add(f);
+
+        // Add information about QC probes vs experimental probes.
+        // Nimblegen data based on nucleotide ids, not genes.
+        // ExpressionProbeAnnotation annotation = new
+        // ExpressionProbeAnnotation();
+        //        
+        // annotation.setGene(new Gene());
+        // annotation.getGene().set
+        // annotation.getGene().setSymbol(getValue(values, Header.));
+        // annotation.getGene().setFullName(getValue(values,
+        // Header.DEFINITION));
+        // p.setAnnotation(annotation);
+        return p;
+    }
+
+    static Map<String, Object> getValues(List<String> values,
+            String[] colNames, Class<?>[] colTypes) {
+        Map<String, Object> result = new HashMap<String, Object>();
+        for (int i = 0; i < colNames.length; ++i) {
+            if (colTypes[i] == Integer.class) {
+                result.put(colNames[i], getIntegerValue(values.get(i)));
+            } else if (colTypes[i] == Integer.class) {
+                result.put(colNames[i], getLongValue(values.get(i)));
+            } else {
+                result.put(colNames[i], values.get(i));
+            }
+        }
+        return result;
+    }
+
+    static Integer getIntegerValue(String value) {
+        if (StringUtils.isBlank(value)) {
+            return null;
+        } else {
+            return Integer.parseInt(value);
+        }
+    }
+
+    static Long getLongValue(String value) {
+        if (StringUtils.isBlank(value)) {
+            return null;
+        } else {
+            return Long.parseLong(value);
+        }
+    }
+
+    private void positionAtAnnotation(DelimitedFileReader reader,
+            String[] colNames) throws IOException {
+        reset(reader);
+        boolean isHeader = false;
+        while (!isHeader && reader.hasNextLine()) {
+            isHeader = isHeaderLine(reader.nextLine(), colNames);
+        }
+    }
+
+    private void reset(DelimitedFileReader reader) {
+        try {
+            reader.reset();
+        } catch (IOException e) {
+            throw new IllegalStateException("Couldn't reset file "
+                    + getDesignFile().getName(), e);
+        }
     }
 
     /**
@@ -121,8 +282,10 @@ public class NimbleGenNdfHandler extends AbstractArrayDesignHandler {
      */
     @Override
     void load(ArrayDesign arrayDesign) {
-        arrayDesign.setName(FilenameUtils.getBaseName(getDesignFile().getName()));
-        arrayDesign.setLsidForEntity(LSID_AUTHORITY + ":" + LSID_NAMESPACE + ":" + arrayDesign.getName());
+        arrayDesign.setName(FilenameUtils
+                .getBaseName(getDesignFile().getName()));
+        arrayDesign.setLsidForEntity(LSID_AUTHORITY + ":" + LSID_NAMESPACE
+                + ":" + arrayDesign.getName());
     }
 
     /**
@@ -130,7 +293,174 @@ public class NimbleGenNdfHandler extends AbstractArrayDesignHandler {
      */
     @Override
     void validate(ValidationResult result) {
-        // no-op for unknown types
+        File ndfFile = getFile(".ndf");
+        FileValidationResult fileResult = result
+                .getFileValidationResult(ndfFile);
+        if (fileResult == null) {
+            fileResult = new FileValidationResult(ndfFile);
+            result.addFile(ndfFile, fileResult);
+        }
+        doValidation(fileResult, ndfFile, ndfColumnNames, ndfColumnTypes);
+
+        File annotationFile = getFile(".ngd");
+        if (annotationFile != null) {
+            fileResult = result.getFileValidationResult(annotationFile);
+            result.addFile(annotationFile, fileResult);
+            doValidation(fileResult, annotationFile, ngdColumnNames,
+                    ngdColumnTypes);
+        } else {
+            annotationFile = getFile(".pos");
+            if (annotationFile != null) {
+                fileResult = result.getFileValidationResult(annotationFile);
+                result.addFile(annotationFile, fileResult);
+
+                doValidation(fileResult, annotationFile, posColumnNames,
+                        posColumnTypes);
+            }
+        }
+    }
+
+    protected void doValidation(FileValidationResult result, File file,
+            String[] colNames, Class<?>[] colTypes) {
+        DelimitedFileReader reader = null;
+        try {
+            reader = DelimitedFileReaderFactory.INSTANCE
+                    .getTabDelimitedReader(file);
+            if (!reader.hasNextLine()) {
+                result.addMessage(ValidationMessage.Type.ERROR,
+                        "File was empty");
+            }
+            List<String> headers = getHeaders(reader, colNames);
+            validateHeader(headers, result, colNames);
+            if (result.isValid()) {
+                validateContent(reader, result, headers, colNames, colTypes);
+            }
+        } catch (IOException e) {
+            result.addMessage(ValidationMessage.Type.ERROR,
+                    "Unable to read file");
+        } finally {
+            if (reader != null) {
+                reader.close();
+            }
+        }
+    }
+
+    private void validateHeader(List<String> headers,
+            FileValidationResult result, String[] colNames) throws IOException {
+        if (headers.size() != colNames.length) {
+            result
+                    .addMessage(ValidationMessage.Type.ERROR,
+                            "Nimblegen NDF file didn't contain the expected number of columns");
+            return;
+        }
+        for (int i = 0; i < colNames.length; i++) {
+            if (colNames[i] != null
+                    && !headers.get(i).equalsIgnoreCase(colNames[i])) {
+                result.addMessage(ValidationMessage.Type.ERROR,
+                        "Invalid column header in Nimblegen NDF. Expected "
+                                + colNames[i] + " but was " + headers.get(i));
+            }
+        }
+    }
+
+    private void validateContent(DelimitedFileReader reader,
+            FileValidationResult result, List<String> headers,
+            String[] colNames, Class<?>[] colTypes) throws IOException {
+        int expectedNumberOfFields = headers.size();
+        while (reader.hasNextLine()) {
+            List<String> values = reader.nextLine();
+            if (values.size() != expectedNumberOfFields) {
+                ValidationMessage error = result.addMessage(
+                        ValidationMessage.Type.ERROR,
+                        "Invalid number of fields. Expected "
+                                + expectedNumberOfFields + " but contained "
+                                + values.size());
+                error.setLine(reader.getCurrentLineNumber());
+            }
+            if (!validateValues(values, result, reader.getCurrentLineNumber(),
+                    colNames, colTypes)) {
+                return;
+            }
+        }
+    }
+
+    private boolean validateValues(List<String> values,
+            FileValidationResult result, int currentLineNumber,
+            String[] colNames, Class<?>[] colTypes) {
+        boolean passed = true;
+        for (int i = 0; i < colNames.length; ++i) {
+            if (colTypes[i] == String.class) {
+                continue;
+            } else if (colTypes[i] == Integer.class) {
+                try {
+                    Integer.parseInt(values.get(i));
+                } catch (NumberFormatException e) {
+                    ValidationMessage error = result.addMessage(
+                            ValidationMessage.Type.ERROR,
+                            "Expected integer but found " + values.get(i));
+                    error.setLine(currentLineNumber);
+                    passed = false;
+                }
+            }
+        }
+        return passed;
+    }
+
+    boolean isHeaderLine(List<String> values, String[] colNames) {
+        if (values.size() != colNames.length) {
+            return false;
+        }
+        for (int i = 0; i < values.size(); i++) {
+            if (colNames[i] != null
+                    && !values.get(i).equalsIgnoreCase(colNames[i])) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static String[] ndfColumnNames = new String[] { "PROBE_DESIGN_ID",
+            "CONTAINER", "DESIGN_NOTE", "SELECTION_CRITERIA", "SEQ_ID",
+            "PROBE_SEQUENCE", "MISMATCH", "MATCH_INDEX", "FEATURE_ID",
+            "ROW_NUM", "COL_NUM", "PROBE_CLASS", "PROBE_ID", "POSITION",
+            "DESIGN_ID", "X", "Y" };
+
+    private static Class<?>[] ndfColumnTypes = new Class[] { String.class,
+            String.class, String.class, String.class, String.class,
+            String.class, Integer.class, Integer.class, String.class,
+            Integer.class, Integer.class, String.class, String.class,
+            Integer.class, String.class, Integer.class, Integer.class };
+
+    private static String[] ngdColumnNames = new String[] { "SEQ_ID", null };
+
+    private static Class<?>[] ngdColumnTypes = new Class[] {
+            String.class,
+            String.class
+    };
+
+    private static String[] posColumnNames = new String[] {
+        "PROBE_DESIGN_ID",
+            "CONTAINER", "DESIGN_NOTE", "SELECTION_CRITERIA", "SEQ_ID",
+            "PROBE_SEQUENCE", "MISMATCH", "MATCH_INDEX", "FEATURE_ID",
+            "ROW_NUM", "COL_NUM", "PROBE_CLASS", "PROBE_ID", "POSITION",
+            "DESIGN_ID", "X", "Y" };
+
+    private static Class<?>[] posColumnTypes = new Class[] {
+        String.class,
+            String.class, String.class, String.class, String.class,
+            String.class, Integer.class, Integer.class, String.class,
+            Integer.class, Integer.class, String.class, String.class,
+            Integer.class, String.class, Integer.class, Integer.class };
+
+    private List<String> getHeaders(DelimitedFileReader reader,
+            String[] colNames) throws IOException {
+        while (reader.hasNextLine()) {
+            List<String> values = reader.nextLine();
+            if (isHeaderLine(values, colNames)) {
+                return values;
+            }
+        }
+        return null;
     }
 
     FileStatus getValidatedStatus() {
