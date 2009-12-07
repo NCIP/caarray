@@ -790,6 +790,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
         dist:upgrader
         ">
         <deploy-files dist.file="${caarray.upgrade.zip.file}" />
+        <echo message="dfunkt =. .bash_profile;cd ${ssh.dir.temp}; ant -Dproperties.file=./${caarray.upgrade.name}_${caarray.version}/upgrade.properties -Dforce.reinstall=true upgrade:tier:caarray="/>
         <remote-ssh remotesshcommand=". .bash_profile;cd ${ssh.dir.temp}; ant -Dproperties.file=./${caarray.upgrade.name}_${caarray.version}/upgrade.properties -Dforce.reinstall=true upgrade:tier:caarray" />
         <remote-ssh remotesshcommand=". .bash_profile;cd ${ssh.dir.temp}; chmod -R 777 ${ssh.dir.temp}" />
         <remote-ssh remoteSshUser="${ssh.grid.username}" remotesshcommand=". .bash_profile;cd ${ssh.dir.temp}; ant -Dproperties.file=./${caarray.upgrade.name}_${caarray.version}/upgrade.properties -Dforce.reinstall=true upgrade:tier:grid" />
