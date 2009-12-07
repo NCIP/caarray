@@ -1,0 +1,1033 @@
+<project
+		xmlns="http://maven.apache.org/POM/4.0.0"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>org.cruk.cri.caarray</groupId>
+	<artifactId>caarray-ejb</artifactId>
+	<version>1.0-SNAPSHOT</version>
+	<packaging>jar</packaging>
+
+	<name>caarray-ejb</name>
+
+	<build>
+		<plugins>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.5</source>
+					<target>1.5</target>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+						<configuration>
+							<classifier>client</classifier>
+							<excludes>
+								<exclude>**/*Bean.class</exclude>
+							</excludes>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+		</plugins>
+	</build>
+
+	<dependencies>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray</groupId>
+			<artifactId>caarray-common</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray</groupId>
+			<artifactId>caarray-ejb</artifactId>
+			<version>2.2.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-AffxFusion-noversion</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-ApacheJMeter_core-2.3</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-ApacheJMeter_java-2.3</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-acegi-security-1.0.5</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-acegi-security-jboss-1.0.5</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-activation-1.1</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-addressing-1.0</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-ajaxtags-1.3-beta-rc7</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-ant-contrib-1.0b3</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-ant-jmeter-2.3</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-antlr-2.7.6</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-asm-1.5.3</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-asm-attrs-1.5.3</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-asm-tree-2.2.1</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-axis-1.4.2_10</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-backport-util-concurrent-1.0</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-bcel-5.1</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-c3p0-0.9.0</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-caGrid-cql-1.0-1.2</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-caGrid-data-common-1.1</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-caGrid-data-cql-1.1</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-caGrid-data-service-1.1</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-caGrid-data-stubs-1.1</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-caGrid-data-tests-1.1</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-caGrid-data-tools-1.1</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-caGrid-data-utils-1.1</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-caGrid-data-validation-1.1</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-caGrid-sdkQuery32-core-1.1</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-castor-1.0.2</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-cglib-2.1_3</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-checkstyle-4.3</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-checkstyle-optional-4.3</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-clm-4.0</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-cobertura-1.9</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-cog-axis-noversion</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-cog-jglobus-1.2</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-commons-beanutils-1.7.0</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-commons-beanutils-core-1.7.0</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-commons-cli-1.0</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-commons-codec-1.3</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-commons-collections-3.2</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-commons-configuration-1.5</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-commons-dbcp-1.2.1</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-commons-digester-1.6</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-commons-discovery-0.2</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-commons-el-1.0</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-commons-fileupload-1.2.1</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-commons-httpclient-3.0.1</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-commons-io-1.4</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-commons-lang-2.4</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-commons-logging-1.0.4</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-concurrent-1.3.4</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-csmapi-4.0.beta</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-displaytag-1.1.1</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-dom4j-1.6.1</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-ehcache-1.2.4</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-ejb3-persistence-1.0.1</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-ezmorph-1.0.4</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-freemarker-2.3.8</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-hibernate-3.2.0.ga</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-hibernate-annotations-3.2.0.GA</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-hibernate-tools-3.2.0.beta9a</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-ivy-2.0.0-beta2</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-jakarta-oro-2.0.8</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-javacsv-1.0</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-javaee-5.0</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-javassist-3.3</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-jaxen-1.1.1</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-jaxen-core-1.0</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-jaxen-jdom-1.0</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-jaxme-api-0.3</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-jaxrpc-1.1</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-jboss-annotations-ejb3-1.0</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-jboss-aop-client-1.5.2.GA</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-jboss-aspect-client-1.5</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-jboss-cache-1.4.0.SP1</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-jboss-common-1.0.0.GA</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-jboss-ejb3-client-noversion</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-jboss-ejb3x-4.0.5.GA</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-jboss-jmx-4.0.5.GA</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-jboss-system-4.0.5.GA</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-jbossall-client-4.0.5.GA</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-jce-jdk1.3_1.25</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-jdbc-se-2.0</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-jdom-1.1</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-jericho-html-2.4</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-jgroups-all-2.2.9.2</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-json-lib-2.2.2-jdk15</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-jstl-1.1.2</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-jta-1.0.1B</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-junit-4.3.1</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-log4j-1.2.13</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-mail-1.2</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-mysql-connector-java-5.0.5</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-nci-commons-core-1.0.12</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-nci-commons-struts2-1.0.12</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-ncicb-ant-1.0</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-netcdf-2.2.20.07</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-ognl-2.6.11</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-oscache-2.4.1</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-pmd-3.9</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-proxool-0.8.3</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-pull-parser-2</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-relaxngDatatype-20030807</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-saaj-1.2</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-saxpath-1.0</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-selenium-java-client-driver-1.0</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-selenium-java-client-driver-tests-1.0</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-selenium-server-1.0</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-serializer-2.7.1</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-sitemesh-2.3</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-spring-1.2.8</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-spring-mock-1.2.7</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-spring-richclient-full-0.1.0</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-standard-1.1.2</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-stax-api-1.0</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-struts2-codebehind-plugin-2.0.9</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-struts2-core-2.0.9</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-struts2-sitemesh-plugin-2.0.9</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-struts2-spring-plugin-2.0.9</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-svnClientAdapter-1.0</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-svnant-1.0</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-svnjavahl-1.0</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-swarmcache-1.0RC2</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-urlrewrite-2.6.0</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-wsdl4j-1.5.1</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-wsrf_core_enum-4.0.3</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-wsrf_core_stubs_enum-4.0.3</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-wss4j-noversion</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-xalan-2.7.1</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-xerces-J-1.4.0</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-xercesImpl-2.7.1</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-xml-apis-1.3</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-xmlconfig-0.1.9</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-xpp3-1.1.3.3</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-xsdlib-20030807</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-xwork-2.0.4</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nih.nci.caarray.deps</groupId>
+			<artifactId>caarray-yuicompressor-2.3.5</artifactId>
+			<version>2.2.1</version>
+			<optional>true</optional>
+		</dependency>
+
+	</dependencies>
+
+</project>
+
