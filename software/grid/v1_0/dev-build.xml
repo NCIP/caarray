@@ -23,7 +23,7 @@
 	<target name="defineExtendedClasspaths">
     <path id="base.extended.classpath">
       <pathelement location="../../caarray-client.jar/target/caarray-client-external-v1_0.jar"/>
-      <pathelement location="../common/target/caarray-grid-common.jar"/>
+      <pathelement location="${build.lib.dir}/caarray-grid-common.jar"/>
       <pathelement location="${project.lib}/cacore32-client-*.jar"/>
         <fileset dir="${project.lib}" id="extra.jars.fileset">
           <include name="commons-collections-*.jar"/>
