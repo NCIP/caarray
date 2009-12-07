@@ -639,7 +639,6 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
         <copy todir="${caarray.dist.dir}/${db.dist.relative.dir}" overwrite="true">
             <fileset dir="${caarray.sql.src.dir}" includes="*.sql" />
         </copy>
-
         <copy tofile="${caarray.dist.dir}/build-caarray-app.xml" file="${caarray.src.dir}/build/build.xml" overwrite="true" />
         <copy todir="${caarray.dist.dir}" file="${caarray.src.dir}/ivy-caarray.xml" overwrite="true"/>
         <copy todir="${caarray.dist.dir}" file="${caarray.src.dir}/ivy-caarray-settings.xml" overwrite="true"/>
@@ -662,6 +661,12 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
         </copy>
 
         <dist-prep />
+
+        <if>
+        	<isset property="properties.file.name"/>
+            <copy tofile="${caarray.dist.dir}/upgrade.properties" file="${properties.file.name}" overwrite="true" flatten="true"/>
+            <copy tofile="${caarray.dist.dir}/install.properties" file="${properties.file.name}" overwrite="true" flatten="true"/>
+        </if>
     </target>
 
     <target name="install:set-default-target">
@@ -755,7 +760,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
         build:all,
         dist:installer">
         <deploy-files dist.file="${caarray.install.zip.file}" />
-        <remote-ssh remotesshcommand=". .bash_profile;cd ${ssh.dir.temp}; ant -Dproperties.file=${properties.file.name} -Dforce.reinstall=true ${install.target}" />
+        <remote-ssh remotesshcommand=". .bash_profile;cd ${ssh.dir.temp}; ant -Dproperties.file=install.properties -Dforce.reinstall=true ${install.target}" />
     </target>
 
     <!-- Upgrades the application remotely. Depends on above targets to copy and extract distribution. Will use the target from install.xml specified in ${upgrade.target} (defaults to upgrade unless passed in on command line).  Calls ant from sshexec task to ensure properties are do not carry over from current ant runtime and also to emulate a manual install. Requires specifying -Dproperties.file=@file@ on the command line to point upgrader to correct enviornment to upgrade -->
@@ -764,7 +769,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
         dist:upgrader
         ">
         <deploy-files dist.file="${caarray.upgrade.zip.file}" />
-        <remote-ssh remotesshcommand=". .bash_profile;cd ${ssh.dir.temp}; ant -Dproperties.file=${properties.file.name} -Dforce.reinstall=true ${upgrade.target}" />
+        <remote-ssh remotesshcommand=". .bash_profile;cd ${ssh.dir.temp}; ant -Dproperties.file=upgrade.properties -Dforce.reinstall=true ${upgrade.target}" />
     </target>
 
     <!-- Upgrades the application on a NCICB tier remotely. Depends on above targets to copy and extract distribution.  -->
@@ -773,9 +778,9 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
         dist:upgrader
         ">
         <deploy-files dist.file="${caarray.upgrade.zip.file}" />
-        <remote-ssh remotesshcommand=". .bash_profile;cd ${ssh.dir.temp}; ant -Dproperties.file=${properties.file.name} -Dforce.reinstall=true upgrade:tier:caarray" />
+        <remote-ssh remotesshcommand=". .bash_profile;cd ${ssh.dir.temp}; ant -Dproperties.file=upgrade.properties -Dforce.reinstall=true upgrade:tier:caarray" />
         <remote-ssh remotesshcommand=". .bash_profile;cd ${ssh.dir.temp}; chmod -R 777 ${ssh.dir.temp}" />
-        <remote-ssh remoteSshUser="${ssh.grid.username}" remotesshcommand=". .bash_profile;cd ${ssh.dir.temp}; ant -Dproperties.file=${properties.file.name} -Dforce.reinstall=true upgrade:tier:grid" />
+        <remote-ssh remoteSshUser="${ssh.grid.username}" remotesshcommand=". .bash_profile;cd ${ssh.dir.temp}; ant -Dproperties.file=upgrade.properties -Dforce.reinstall=true upgrade:tier:grid" />
         <remote-ssh remoteSshUser="${ssh.grid.username}" remotesshcommand=". .bash_profile;rm -rf ${ssh.dir.temp}" />
     </target>    
     
@@ -790,7 +795,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
             remote.directory.property.name="db.ssh.dir.temp"
             dist.file="${caarray-webapp.install.name}_${caarray-webapp.version}-db.zip"
                />
-        <remote-ssh remotesshcommand=". .bash_profile;cd ${db.ssh.dir.temp}; ant -Dproperties.file=${properties.file.name} -Dforce.reinstall=true -Dexclude.jboss=true -Dexclude.tomcat=true upgrade:database" />
+        <remote-ssh remotesshcommand=". .bash_profile;cd ${db.ssh.dir.temp}; ant -Dproperties.file=upgrade.properties -Dforce.reinstall=true -Dexclude.jboss=true -Dexclude.tomcat=true upgrade:database" />
     </target>
     
     <target name="deploy:remote:upgrade:jboss"
@@ -804,7 +809,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
             remote.directory.property.name="jboss.ssh.dir.temp"
             dist.file="${caarray-webapp.install.name}_${caarray-webapp.version}-jboss.zip"
                />
-        <remote-ssh remotesshcommand=". .bash_profile;cd ${jboss.ssh.dir.temp}; ant -Dproperties.file=${properties.file.name} -Dforce.reinstall=true -Dexclude.tomcat=true -Dexclude.database=true upgrade:jboss" />
+        <remote-ssh remotesshcommand=". .bash_profile;cd ${jboss.ssh.dir.temp}; ant -Dproperties.file=upgrade.properties -Dforce.reinstall=true -Dexclude.tomcat=true -Dexclude.database=true upgrade:jboss" />
     </target>
     
     <target name="deploy:remote:upgrade:tomcat"
@@ -818,7 +823,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
             remote.directory.property.name="tomcat.ssh.dir.temp"
             dist.file="${caarray-webapp.install.name}_${caarray-webapp.version}-tomcat.zip"
                />
-        <remote-ssh remotesshcommand=". .bash_profile;cd ${tomcat.ssh.dir.temp}; ant -Dproperties.file=${properties.file.name} -Dforce.reinstall=true -Dexclude.jboss=true -Dexclude.database=true upgrade:tomcat" />
+        <remote-ssh remotesshcommand=". .bash_profile;cd ${tomcat.ssh.dir.temp}; ant -Dproperties.file=upgrade.properties -Dforce.reinstall=true -Dexclude.jboss=true -Dexclude.database=true upgrade:tomcat" />
     </target>
 
     <target name="report:grand" depends="dist:installer:prep" description="Generates target flow diagrams for build files">
