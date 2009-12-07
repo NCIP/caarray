@@ -193,7 +193,7 @@
                     <panel classname="HelloPanel"/>
                     <panel classname="InfoPanel"/>
                     <panel classname="LicencePanel"/>
-                    <panel classname="UserInputPanel"  id="UserInputPanel.0"/>
+                    <panel classname="UserInputPanel"  id="UserInputPanel.0" />
                     <panel classname="UserInputPanel"  id="UserInputPanel.1" />
                     <panel classname="UserPathPanel" id="UserPathPanelInstallation" condition="install"/>
                     <panel classname="UserInputPanel"  id="UserInputPanel.2" condition="install"/>
@@ -276,10 +276,12 @@
 
                 </packs>
                 <jar src="@{bda-util.dir}/ant-1.7.0.jar" stage="both" />
-                <jar src="@{bda-util.dir}/ant-contrib-1.0b3.jar" stage="both" />
+                <jar src="@{bda-util.dir}/ant-contrib-1.0nci.jar" stage="both" />
                 <jar src="@{bda-util.dir}/ant-launcher-1.7.0.jar" stage="both"/>
                 <jar src="@{bda-util.dir}/ant-nodeps-1.7.0.jar" stage="both"/>
-                <jar src="@{bda-util.dir}/mysql-connector-java-5.0.5.jar" stage="both"/>
+                <jar src="@{bda-util.dir}/mysql-connector-java-5.0.8.jar" stage="both"/>
+                <jar src="@{bda-util.dir}/ojdbc14-10.2.0.3.0.jar" stage="both"/>
+                <jar src="@{bda-util.dir}/postgresql-8.3-603.jdbc3.jar" stage="both"/>
             </installation>
         ]]></config>
         </IzPack>

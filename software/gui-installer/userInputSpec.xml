@@ -10,14 +10,13 @@
         <field type="staticText" align="left" txt="Choose Install if you haven't installed caArray on this machine before. Choose Upgrade if caArray has previously been installed. WARNING: When choosing Install, the installer will remove any previously installed application servers (using caBIG installers) or databases installed based on the information you provide, so be sure to backup your application server and database instance if they exist. For detailed descriptions on each of the properties in this installer, see ${installer.properties.wiki.page} (fresh install), or ${upgrade.properties.wiki.page} (upgrade install)."/>
         <field type="divider" align="top"/>
         <field type="radio" variable="setup.type">
-            <description align="left" txt="Select the type of installation"
-            id="installation.radio"/>
+            <description align="left" txt="Select the type of installation"/>
             <spec>
-                <choice txt="Install" id="setup.type.install" value="install" set="true" />
-                <choice txt="Upgrade" id="setup.type.upgrade" value="upgrade" />
+                <choice txt="Install" value="install" set="true" />
+                <choice txt="Upgrade" value="upgrade" />
             </spec>
         </field>
-        <fileextractor>
+    <fileextractor>
             <extractfile filename="res/cleanup.xml" toDirName="."/>               
         </fileextractor>
         <panelreader classname="res/cleanup.xml" methodname="cleanup" language="ant"/>
@@ -29,11 +28,10 @@
         <field type="staticText" align="left" txt="A Typical install requires you to enter an essential mininum number of values to successfully install the software. A Typical install configures ports and other required values. A Custom install allows you to modify all of the configurable values such as port numbers."/>
         <field type="divider" align="top"/>
         <field type="radio" variable="install.type">
-            <description align="left" txt="Select the type of installation"
-            id="type.radio"/>
+            <description align="left" txt="Select the type of installation"/>
             <spec>
-                <choice txt="Typical" id="install.type.typical" value="typical" set="true" />
-                <choice txt="Custom" id="install.type.custom" value="custom" />
+                <choice txt="Typical" value="typical" set="true" />
+                <choice txt="Custom" value="custom" />
             </spec>
         </field>
     </panel>
@@ -48,20 +46,20 @@
             <spec txt="Application Host Name" size="15" set="$HOST_NAME"/>
 
             <validator
-            class="com.izforge.izpack.util.HostNameValidator" txt="Enter a valid JBoss Host name or the Host is not reachable" id="jbosshostname.label">
+            class="com.izforge.izpack.util.HostNameValidator" txt="Enter a valid JBoss Host name or the Host is not reachable">
             </validator>
         </field>
 
         <field type="text" variable="jboss.server.port">
-            <spec txt="Application HTTP Port Number " id="text.label" size="15" set="38080"/>
+            <spec txt="Application HTTP Port Number " size="15" set="38080"/>
             <validator
-                class="com.izforge.izpack.util.PortValidator" txt="The http port number is already in use" id="error.label">
+                class="com.izforge.izpack.util.PortValidator" txt="The http port number is already in use">
             </validator>
         </field>
         <field type="text" variable="jboss.server.jndi.port">
-            <spec txt="Application JNDI Port Number " id="text.label" size="15" set="31099"/>
+            <spec txt="Application JNDI Port Number " size="15" set="31099"/>
             <validator
-                class="com.izforge.izpack.util.PortValidator" txt="The jndi port number is already in use" id="error.label">
+                class="com.izforge.izpack.util.PortValidator" txt="The jndi port number is already in use">
             </validator>
         </field>
     <field type="password" align="left" variable="jboss.web.password">
@@ -70,53 +68,53 @@
             <pwd txt="Confirm JBoss Web Password " size="15" set=""/>
         </spec>
         <validator
-            class="com.izforge.izpack.util.NotEmptyValidator" txt="JBoss Web Console Passwords are required fields" id="webconsole.label">
+            class="com.izforge.izpack.util.NotEmptyValidator" txt="JBoss Web Console Passwords are required fields">
         </validator>
         <validator class="com.izforge.izpack.util.PasswordEqualityValidator" txt="Passwords do not match. Please re-enter your JBoss Web Console passwords"/>
     </field>
         <field type="text" variable="jboss.server.name">
-            <spec txt="Application Server Name " id="text.label" size="15" set="default"/>
+            <spec txt="Application Server Name " size="15" set="default"/>
         <validator
             class="com.izforge.izpack.util.NotEmptyValidator" txt="Application Server Name is a  required field">
         </validator>
         </field>
         <field type="text" variable="jboss.server.rmi.port">
-            <spec txt="Application RMI Port Number " id="text.label" size="15" set="31098"/>
+            <spec txt="Application RMI Port Number " size="15" set="31098"/>
             <validator
-                class="com.izforge.izpack.util.PortValidator" txt="The jndi port number is already in use" id="error.label">
+                class="com.izforge.izpack.util.PortValidator" txt="The jndi port number is already in use" >
             </validator>
         </field>
         <field type="text" variable="jboss.server.bind.port">
-            <spec txt="Application Bind Port Number " id="text.label" size="15" set="34445"/>
+            <spec txt="Application Bind Port Number " size="15" set="34445"/>
             <validator
-                class="com.izforge.izpack.util.PortValidator" txt="The bind port number is already in use" id="error.label">
+                class="com.izforge.izpack.util.PortValidator" txt="The bind port number is already in use">
             </validator>
         </field>
         <field type="text" variable="jboss.server.redirect.port">
-            <spec txt="Application Redirect Port Number " id="text.label" size="15" set="38443"/>
+            <spec txt="Application Redirect Port Number " size="15" set="38443"/>
             <validator
-                class="com.izforge.izpack.util.PortValidator" txt="The redirect port number is already in use" id="error.label">
+                class="com.izforge.izpack.util.PortValidator" txt="The redirect port number is already in use">
             </validator>
         </field>
 
         <field type="text" variable="jboss.server.ajp.port">
-            <spec txt="Application AJP Port Number " id="text.label" size="15" set="38009"/>
+            <spec txt="Application AJP Port Number " size="15" set="38009"/>
             <validator
-                class="com.izforge.izpack.util.PortValidator" txt="The ajp port number is already in use" id="error.label">
+                class="com.izforge.izpack.util.PortValidator" txt="The ajp port number is already in use">
             </validator>
         </field>
 
         <field type="text" variable="jboss.web.service.port">
-            <spec txt="Application Web Service Port Number " id="text.label" size="15" set="38083"/>
+            <spec txt="Application Web Service Port Number " size="15" set="38083"/>
             <validator
-                class="com.izforge.izpack.util.PortValidator" txt="The web service port number is already in use" id="error.label">
+                class="com.izforge.izpack.util.PortValidator" txt="The web service port number is already in use">
             </validator>
         </field>
 
         <field type="text" variable="jboss.service.rmiobject.port">
-            <spec txt="Application RMIObject Port Number " id="text.label" size="15" set="34444"/>
+            <spec txt="Application RMIObject Port Number " size="15" set="34444"/>
             <validator
-                class="com.izforge.izpack.util.PortValidator" txt="The rmiobject port number is already in use" id="error.label">
+                class="com.izforge.izpack.util.PortValidator" txt="The rmiobject port number is already in use">
             </validator>
         </field>
 
@@ -135,7 +133,7 @@
         <validator
             class="com.izforge.izpack.util.NotEmptyValidator" txt="Application JBoss Web Password are required fields">
         </validator>
-        <validator class="com.izforge.izpack.util.PasswordEqualityValidator" txt="Passwords do not match. Please re-enter your JBoss Web Console passwords." id="key for the error text"/>
+        <validator class="com.izforge.izpack.util.PasswordEqualityValidator" txt="Passwords do not match. Please re-enter your JBoss Web Console passwords."/>
     </field>
     <field type="space" />
     <field type="password" align="left" variable="grid.web.password">
@@ -211,88 +209,88 @@
         <field type="staticText" align="left" txt="For detailed descriptions on each of the properties below, see the Application Settings section at ${installer.properties.wiki.page}"/>
         <field type="divider" align="top"/>
         <field type="text" variable="jboss.hajndi.port">
-            <spec txt="Application hajndi Port Number " id="text.label" size="15" set="31100"/>
+            <spec txt="Application hajndi Port Number " size="15" set="31100"/>
             <validator
-                class="com.izforge.izpack.util.PortValidator" txt="The hajndi port number is already in use" id="error.label">
+                class="com.izforge.izpack.util.PortValidator" txt="The hajndi port number is already in use">
             </validator>
         </field>
 
         <field type="text" variable="jboss.cluster.rmi.port">
-            <spec txt="Application Cluster RMI Port Number " id="text.label" size="15" set="39000"/>
+            <spec txt="Application Cluster RMI Port Number " size="15" set="39000"/>
             <validator
-                class="com.izforge.izpack.util.PortValidator" txt="The cluster rmi port number is already in use" id="error.label">
+                class="com.izforge.izpack.util.PortValidator" txt="The cluster rmi port number is already in use">
             </validator>
         </field>
 
         <field type="text" variable="jboss.jms.port">
-            <spec txt="Application JMS Port Number " id="text.label" size="15" set="38093"/>
+            <spec txt="Application JMS Port Number " size="15" set="38093"/>
             <validator
-                class="com.izforge.izpack.util.PortValidator" txt="The jms port number is already in use" id="error.label">
+                class="com.izforge.izpack.util.PortValidator" txt="The jms port number is already in use">
             </validator>
         </field>
 
 
         <field type="text" variable="jboss.ejbinvoker.port">
-            <spec txt="Application ejbinvoker Port Number " id="text.label" size="15" set="13873"/>
+            <spec txt="Application ejbinvoker Port Number " size="15" set="13873"/>
             <validator
-                class="com.izforge.izpack.util.PortValidator" txt="The ejbinvoker port number is already in use" id="error.label">
+                class="com.izforge.izpack.util.PortValidator" txt="The ejbinvoker port number is already in use">
             </validator>
         </field>
         
         <field type="text" variable="java.api.filestreaming.port">
-            <spec txt="Java API file streaming Port Number " id="text.label" size="15" set="31522"/>
+            <spec txt="Java API file streaming Port Number " size="15" set="31522"/>
             <validator
-                class="com.izforge.izpack.util.PortValidator" txt="Java API file streaming port number is already in use" id="error.label">
+                class="com.izforge.izpack.util.PortValidator" txt="Java API file streaming port number is already in use">
             </validator>
         </field>
 
         <field type="text" variable="jboss.hajrmi.port">
-            <spec txt="Application hajrmi Port Number " id="text.label" size="15" set="31101"/>
+            <spec txt="Application hajrmi Port Number " size="15" set="31101"/>
             <validator
-                class="com.izforge.izpack.util.PortValidator" txt="The hajrmi port number is already in use" id="error.label">
+                class="com.izforge.izpack.util.PortValidator" txt="The hajrmi port number is already in use">
             </validator>
         </field>
 
         <field type="text" variable="jboss.pooledha.port">
-            <spec txt="Application pooledha port number " id="text.label" size="15" set="34448"/>
+            <spec txt="Application pooledha port number " size="15" set="34448"/>
             <validator
-                class="com.izforge.izpack.util.PortValidator" txt="The pooledha port number is already in use" id="error.label">
+                class="com.izforge.izpack.util.PortValidator" txt="The pooledha port number is already in use">
             </validator>
         </field>
         <field type="text" variable="jboss.cobraorb.port">
-            <spec txt="Application cobraorb Port Number " id="text.label" size="15" set="33528"/>
+            <spec txt="Application cobraorb Port Number " size="15" set="33528"/>
             <validator
-                class="com.izforge.izpack.util.PortValidator" txt="The cobraorb port number is already in use" id="error.label">
+                class="com.izforge.izpack.util.PortValidator" txt="The cobraorb port number is already in use">
             </validator>
         </field>
         <field type="text" variable="jboss.jmx-rmi.port">
-            <spec txt="Application JMX-RMI Port Number " id="text.label" size="15" set="39001"/>
+            <spec txt="Application JMX-RMI Port Number " size="15" set="39001"/>
             <validator
-                class="com.izforge.izpack.util.PortValidator" txt="The jmx-rmi port number is already in use" id="error.label">
+                class="com.izforge.izpack.util.PortValidator" txt="The jmx-rmi port number is already in use">
             </validator>
         </field>
         <field type="text" variable="jboss.snmp-trapd.port">
-            <spec txt="Application SNMP-TRAPD port number " id="text.label" size="15" set="31162"/>
+            <spec txt="Application SNMP-TRAPD port number " size="15" set="31162"/>
             <validator
-                class="com.izforge.izpack.util.PortValidator" txt="The snmp-trapd port number is already in use" id="error.label">
+                class="com.izforge.izpack.util.PortValidator" txt="The snmp-trapd port number is already in use" >
             </validator>
         </field>
         <field type="text" variable="jboss.snmp.port">
-            <spec txt="Application SNMP Port Number " id="text.label" size="15" set="31161"/>
+            <spec txt="Application SNMP Port Number " size="15" set="31161"/>
             <validator
-                class="com.izforge.izpack.util.PortValidator" txt="The snmp port number is already in use" id="error.label">
+                class="com.izforge.izpack.util.PortValidator" txt="The snmp port number is already in use">
             </validator>
         </field>
         <field type="text" variable="jboss.remoting.port">
-            <spec txt="Application Remoting Port Number " id="text.label" size="15" set="34446"/>
+            <spec txt="Application Remoting Port Number " size="15" set="34446"/>
             <validator
-                class="com.izforge.izpack.util.PortValidator" txt="The remoting port number is already in use" id="error.label">
+                class="com.izforge.izpack.util.PortValidator" txt="The remoting port number is already in use" >
             </validator>
         </field>
         <field type="text" variable="jboss.messaging.port">
-            <spec txt="Application Messaging Port Number " id="text.label" size="15" set="34457"/>
+            <spec txt="Application Messaging Port Number " size="15" set="34457"/>
             <validator
-                class="com.izforge.izpack.util.PortValidator" txt="The messaging port number is already in use" id="error.label">
+                class="com.izforge.izpack.util.PortValidator" txt="The messaging port number is already in use" >
             </validator>
         </field>
 
@@ -306,19 +304,19 @@
         <field type="text" align="left" variable="grid.server.hostname">
             <spec txt="Grid Server Host Name" size="15" set="$HOST_NAME"/>
             <validator
-                class="com.izforge.izpack.util.HostNameValidator" txt="Enter a valid Grid Host name or the Host is not reachable" id="gridhostname.label">
+                class="com.izforge.izpack.util.HostNameValidator" txt="Enter a valid Grid Host name or the Host is not reachable" >
             </validator>
         </field>
         <field type="text" variable="grid.server.port">
-            <spec txt="Grid Server HTTP Port Number" id="text.label" size="15" set="18080"/>
+            <spec txt="Grid Server HTTP Port Number" size="15" set="18080"/>
             <validator
-                class="com.izforge.izpack.util.PortValidator" txt="The http port number is already in use" id="error.label">
+                class="com.izforge.izpack.util.PortValidator" txt="The http port number is already in use" >
             </validator>
         </field>
         <field type="text" variable="grid.server.jndi.port">
-            <spec txt="Grid Server JNDI port number" id="text.label" size="15" set="11099"/>
+            <spec txt="Grid Server JNDI port number" size="15" set="11099"/>
             <validator
-                class="com.izforge.izpack.util.PortValidator" txt="The jndi port number is already in use" id="error.label">
+                class="com.izforge.izpack.util.PortValidator" txt="The jndi port number is already in use">
             </validator>
         </field>
     <field type="password" align="left" variable="grid.web.password">
@@ -332,48 +330,48 @@
     <validator class="com.izforge.izpack.util.PasswordEqualityValidator" txt="Passwords do not match. Please re-enter your Grid Web Console passwords"/>
     </field>
         <field type="text" variable="grid.server.name">
-            <spec txt="Grid Server Name" id="text.label" size="15" set="default"/>
+            <spec txt="Grid Server Name" size="15" set="default"/>
         <validator
             class="com.izforge.izpack.util.NotEmptyValidator" txt="Grid Server Name is a required field">
         </validator>
         </field>
         <field type="text" variable="grid.server.rmi.port">
-            <spec txt="Grid Server RMI Port Number " id="text.label" size="15" set="11098"/>
+            <spec txt="Grid Server RMI Port Number " size="15" set="11098"/>
             <validator
-                class="com.izforge.izpack.util.PortValidator" txt="The jndi port number is already in use" id="error.label">
+                class="com.izforge.izpack.util.PortValidator" txt="The jndi port number is already in use">
             </validator>
         </field>
         <field type="text" variable="grid.server.bind.port">
-            <spec txt="Grid Server Bind Port Number" id="text.label" size="15" set="14445"/>
+            <spec txt="Grid Server Bind Port Number" size="15" set="14445"/>
             <validator
-                class="com.izforge.izpack.util.PortValidator" txt="The bind port number is already in use" id="error.label">
+                class="com.izforge.izpack.util.PortValidator" txt="The bind port number is already in use">
             </validator>
         </field>
         <field type="text" variable="grid.server.redirect.port">
-            <spec txt="Grid Server Redirect Port Number" id="text.label" size="15" set="18443"/>
+            <spec txt="Grid Server Redirect Port Number" size="15" set="18443"/>
             <validator
-                class="com.izforge.izpack.util.PortValidator" txt="The redirect port number is already in use" id="error.label">
+                class="com.izforge.izpack.util.PortValidator" txt="The redirect port number is already in use">
             </validator>
         </field>
 
         <field type="text" variable="grid.server.ajp.port">
-            <spec txt="Grid Server AJP Port Number " id="text.label" size="15" set="18009"/>
+            <spec txt="Grid Server AJP Port Number " size="15" set="18009"/>
             <validator
-                class="com.izforge.izpack.util.PortValidator" txt="The ajp port number is already in use" id="error.label">
+                class="com.izforge.izpack.util.PortValidator" txt="The ajp port number is already in use" >
             </validator>
         </field>
 
         <field type="text" variable="grid.web.service.port">
-            <spec txt="Grid Server Web Service Port Number " id="text.label" size="15" set="18083"/>
+            <spec txt="Grid Server Web Service Port Number " size="15" set="18083"/>
             <validator
-                class="com.izforge.izpack.util.PortValidator" txt="The web service port number is already in use" id="error.label">
+                class="com.izforge.izpack.util.PortValidator" txt="The web service port number is already in use">
             </validator>
         </field>
 
         <field type="text" variable="grid.service.rmiobject.port">
-            <spec txt="Grid Server RMIObject Port Number " id="text.label" size="15" set="14444"/>
+            <spec txt="Grid Server RMIObject Port Number " size="15" set="14444"/>
             <validator
-                class="com.izforge.izpack.util.PortValidator" txt="The rmiobject port number is already in use" id="error.label">
+                class="com.izforge.izpack.util.PortValidator" txt="The rmiobject port number is already in use">
             </validator>
         </field>
 
@@ -385,81 +383,81 @@
         <field type="staticText" align="left" txt="For detailed descriptions on each of the properties below, see the Grid Settings section at ${installer.properties.wiki.page}"/>
         <field type="divider" align="top"/>
         <field type="text" variable="grid.hajndi.port">
-            <spec txt="Grid Server hajndi Port Number " id="text.label" size="15" set="11100"/>
+            <spec txt="Grid Server hajndi Port Number " size="15" set="11100"/>
             <validator
-                class="com.izforge.izpack.util.PortValidator" txt="The hajndi port number is already in use" id="error.label">
+                class="com.izforge.izpack.util.PortValidator" txt="The hajndi port number is already in use">
             </validator>
         </field>
 
         <field type="text" variable="grid.cluster.rmi.port">
-            <spec txt="Grid Server Cluster RMI Port Number " id="text.label" size="15" set="19000"/>
+            <spec txt="Grid Server Cluster RMI Port Number " size="15" set="19000"/>
             <validator
-                class="com.izforge.izpack.util.PortValidator" txt="The cluster rmi port number is already in use" id="error.label">
+                class="com.izforge.izpack.util.PortValidator" txt="The cluster rmi port number is already in use">
             </validator>
         </field>
 
         <field type="text" variable="grid.jms.port">
-            <spec txt="Grid Server JMS Port Number " id="text.label" size="15" set="18093"/>
+            <spec txt="Grid Server JMS Port Number " size="15" set="18093"/>
             <validator
-                class="com.izforge.izpack.util.PortValidator" txt="The jms port number is already in use" id="error.label">
+                class="com.izforge.izpack.util.PortValidator" txt="The jms port number is already in use">
             </validator>
         </field>
 
 
         <field type="text" variable="grid.ejbinvoker.port">
-            <spec txt="Grid Server ejbinvoker Port Number " id="text.label" size="15" set="13873"/>
+            <spec txt="Grid Server ejbinvoker Port Number " size="15" set="13873"/>
             <validator
-                class="com.izforge.izpack.util.PortValidator" txt="The ejbinvoker port number is already in use" id="error.label">
+                class="com.izforge.izpack.util.PortValidator" txt="The ejbinvoker port number is already in use">
             </validator>
         </field>
 
         <field type="text" variable="grid.hajrmi.port">
-            <spec txt="Grid Server hajrmi Port Number " id="text.label" size="15" set="11101"/>
+            <spec txt="Grid Server hajrmi Port Number " size="15" set="11101"/>
             <validator
-                class="com.izforge.izpack.util.PortValidator" txt="The hajrmi port number is already in use" id="error.label">
+                class="com.izforge.izpack.util.PortValidator" txt="The hajrmi port number is already in use">
             </validator>
         </field>
 
         <field type="text" variable="grid.pooledha.port">
-            <spec txt="Grid Server pooledha Port Number " id="text.label" size="15" set="14448"/>
+            <spec txt="Grid Server pooledha Port Number " size="15" set="14448"/>
             <validator
-                class="com.izforge.izpack.util.PortValidator" txt="The pooledha port number is already in use" id="error.label">
+                class="com.izforge.izpack.util.PortValidator" txt="The pooledha port number is already in use">
             </validator>
         </field>
         <field type="text" variable="grid.cobraorb.port">
-            <spec txt="Grid Server cobraorb Port Number " id="text.label" size="15" set="13528"/>
+            <spec txt="Grid Server cobraorb Port Number " size="15" set="13528"/>
             <validator
-                class="com.izforge.izpack.util.PortValidator" txt="The cobraorb port number is already in use" id="error.label">
+                class="com.izforge.izpack.util.PortValidator" txt="The cobraorb port number is already in use">
             </validator>
         </field>
         <field type="text" variable="grid.jmx-rmi.port">
-            <spec txt="Grid Server JMX-RMI Port Number " id="text.label" size="15" set="19001"/>
+            <spec txt="Grid Server JMX-RMI Port Number " size="15" set="19001"/>
             <validator
-                class="com.izforge.izpack.util.PortValidator" txt="The jmx-rmi port number is already in use" id="error.label">
+                class="com.izforge.izpack.util.PortValidator" txt="The jmx-rmi port number is already in use">
             </validator>
         </field>
         <field type="text" variable="grid.snmp-trapd.port">
-            <spec txt="Grid Server SNMP-TRAPD Port Number " id="text.label" size="15" set="11162"/>
+            <spec txt="Grid Server SNMP-TRAPD Port Number " size="15" set="11162"/>
             <validator
-                class="com.izforge.izpack.util.PortValidator" txt="The snmp-trapd port number is already in use" id="error.label">
+                class="com.izforge.izpack.util.PortValidator" txt="The snmp-trapd port number is already in use">
             </validator>
         </field>
         <field type="text" variable="grid.snmp.port">
-            <spec txt="Grid Server SNMP Port Number" id="text.label" size="15" set="11161"/>
+            <spec txt="Grid Server SNMP Port Number" size="15" set="11161"/>
             <validator
-                class="com.izforge.izpack.util.PortValidator" txt="The snmp port number is already in use" id="error.label">
+                class="com.izforge.izpack.util.PortValidator" txt="The snmp port number is already in use">
             </validator>
         </field>
         <field type="text" variable="grid.remoting.port">
-            <spec txt="Grid Server Remoting Port Number " id="text.label" size="15" set="14446"/>
+            <spec txt="Grid Server Remoting Port Number " size="15" set="14446"/>
             <validator
-                class="com.izforge.izpack.util.PortValidator" txt="The remoting port number is already in use" id="error.label">
+                class="com.izforge.izpack.util.PortValidator" txt="The remoting port number is already in use">
             </validator>
         </field>
         <field type="text" variable="grid.messaging.port">
-            <spec txt="Grid Server Messaging Port Number " id="text.label" size="15" set="14457"/>
+            <spec txt="Grid Server Messaging Port Number " size="15" set="14457"/>
             <validator
-                class="com.izforge.izpack.util.PortValidator" txt="The messaging port number is already in use" id="error.label">
+                class="com.izforge.izpack.util.PortValidator" txt="The messaging port number is already in use">
             </validator>
         </field>
 
@@ -472,7 +470,7 @@
         <field type="divider" align="top"/>
         <field type="dir" align="left" variable="existing.installation.home">
             <spec txt="Select the Previous Installation of Caarray Application" size="25"/>
-            <validator class="com.izforge.izpack.util.ArtifactExistsRelativeToDirValidator" txt="It does not appear that caArray is installed at the specified location as the jboss-4.0.5.GA folder not found." id="jbosshostname.label">
+            <validator class="com.izforge.izpack.util.ArtifactExistsRelativeToDirValidator" txt="It does not appear that caArray is installed at the specified location as the jboss-4.0.5.GA folder not found.">
                 <param name="artifactPathRelativeToText" value="jboss-4.0.5.GA"/>
                 <param name="isDir" value="true"/>
             </validator>
@@ -480,19 +478,19 @@
         <field type="text" align="left" variable="jboss.server.hostname">
             <spec txt="Application Host Name " size="15" set="$HOST_NAME"/>
             <validator
-                class="com.izforge.izpack.util.HostNameValidator" txt="Enter a valid JBoss Host name or the Host is not reachable" id="jbosshostname.label">
+                class="com.izforge.izpack.util.HostNameValidator" txt="Enter a valid JBoss Host name or the Host is not reachable">
             </validator>
         </field>
         <field type="text" variable="jboss.server.port">
-            <spec txt="Application HTTP Port Number " id="text.label" size="15" set="38080"/>
+            <spec txt="Application HTTP Port Number " size="15" set="38080"/>
             <validator
-                class="com.izforge.izpack.util.PortValidator" txt="The http port number is already in use" id="error.label">
+                class="com.izforge.izpack.util.PortValidator" txt="The http port number is already in use">
             </validator>
         </field>
         <field type="text" variable="jboss.server.jndi.port">
-            <spec txt="Application JNDI Port Number " id="text.label" size="15" set="31099"/>
+            <spec txt="Application JNDI Port Number " size="15" set="31099"/>
             <validator
-                class="com.izforge.izpack.util.PortValidator" txt="The jndi port number is already in use" id="error.label">
+                class="com.izforge.izpack.util.PortValidator" txt="The jndi port number is already in use">
             </validator>
         </field>
         <field type="password" align="left" variable="jboss.web.password">
@@ -501,33 +499,34 @@
                 <pwd txt="Confirm JBoss Web Password " size="15" set=""/>
             </spec>
             <validator
-                class="com.izforge.izpack.util.NotEmptyValidator" txt="JBoss Web Console Passwords are required fields" id="webconsole.label">
+                class="com.izforge.izpack.util.NotEmptyValidator" txt="JBoss Web Console Passwords are required fields">
             </validator>
             <validator class="com.izforge.izpack.util.PasswordEqualityValidator" txt="Passwords do not match. Please re-enter your JBoss Web Console passwords"/>
         </field>
         <field type="text" align="left" variable="jboss.server.name">
             <spec txt="Application Server Name " size="15" set="default"/>
         <validator
-            class="com.izforge.izpack.util.NotEmptyValidator" txt="Application Server Name is a required field" id="indexurl.label">
+            class="com.izforge.izpack.util.NotEmptyValidator" txt="Application Server Name is a required field">
         </validator>
         </field>
-        
-        <field type="text" align="left" variable="grid.server.hostname">
+
+
+<field type="text" align="left" variable="grid.server.hostname">
             <spec txt="Grid Server Host Name " size="15" set="$HOST_NAME"/>
             <validator
-                class="com.izforge.izpack.util.HostNameValidator" txt="Enter a valid Grid Host name or the Host is not reachable" id="gridhostname.label">
+                class="com.izforge.izpack.util.HostNameValidator" txt="Enter a valid Grid Host name or the Host is not reachable">
             </validator>
         </field>
         <field type="text" variable="grid.server.port">
-            <spec txt="Grid Server HTTP Port Number " id="text.label" size="15" set="18080"/>
+            <spec txt="Grid Server HTTP Port Number " size="15" set="18080"/>
             <validator
-                class="com.izforge.izpack.util.PortValidator" txt="The grid http port number is already in use" id="error.label">
+                class="com.izforge.izpack.util.PortValidator" txt="The grid http port number is already in use">
             </validator>
         </field>
         <field type="text" variable="grid.server.jndi.port">
-            <spec txt="Grid Server JNDI Port Number " id="text.label" size="15" set="11099"/>
+            <spec txt="Grid Server JNDI Port Number " size="15" set="11099"/>
             <validator
-                class="com.izforge.izpack.util.PortValidator" txt="The grid jndi port number is already in use" id="error.label">
+                class="com.izforge.izpack.util.PortValidator" txt="The grid jndi port number is already in use">
             </validator>
         </field>
         <field type="password" align="left" variable="grid.web.password">
@@ -543,24 +542,24 @@
         <field type="text" align="left" variable="grid.server.name">
             <spec txt="Grid Server Name " size="25" set="default"/>
         <validator
-            class="com.izforge.izpack.util.NotEmptyValidator" txt="Grid Server Name is a required field" id="indexurl.label">
+            class="com.izforge.izpack.util.NotEmptyValidator" txt="Grid Server Name is a required field">
         </validator>
         </field>
 
         <field type="text" variable="grid.static.hostname">
-            <spec txt="Externally Accessible Hostname/IP Address " id="text.label" size="25" set="$IP_ADDRESS"/>
+            <spec txt="Externally Accessible Hostname/IP Address " size="25" set="$IP_ADDRESS"/>
             <validator class="com.izforge.izpack.util.NotEmptyValidator" txt="Externally Accessible Hostname/IP Address is a required field" />
         </field>
         <field type="text" variable="grid.index.url">
-            <spec txt="Index Url" id="text.label" size="35" set="http://cagrid-index.nci.nih.gov:8080/wsrf/services/DefaultIndexService"/>
+            <spec txt="Index Url" size="35" set="http://cagrid-index.nci.nih.gov:8080/wsrf/services/DefaultIndexService"/>
             <validator
-                class="com.izforge.izpack.util.URLCheckValidator" txt="Please enter a valid Grid URL" id="indexurl.label">
+                class="com.izforge.izpack.util.URLCheckValidator" txt="Please enter a valid Grid URL">
             </validator>
         </field>
         <field type="text" variable="upt.url">
-            <spec txt="UPT URL " id="text.label" size="25" set=""/>
+            <spec txt="UPT URL " size="25" set=""/>
         </field>
-        <fileextractor>
+    <fileextractor>
             <extractfile filename="res/filestreamingport.xml" toDirName="."/>               
         </fileextractor>
         <panelreader classname="res/filestreamingport.xml" methodname="set-filestreaming-port-number-as-property" language="ant" shouldExecuteAtPanelValidationTime="true">
@@ -570,12 +569,13 @@
     </panel>
 
 
-    <panel order="9">
+
+<panel order="9">
         <field type="title" txt="Configure your Java API file streaming port on JBoss application server" bold="true" size="1" />
         <field type="text" variable="java.api.filestreaming.port">
-            <spec txt="Java API file streaming Port Number " id="text.label" size="15" set="${java.api.filestreaming.port}"/>
+            <spec txt="Java API file streaming Port Number " size="15" set="${java.api.filestreaming.port}"/>
             <validator
-                class="com.izforge.izpack.util.PortValidator" txt="Java API file streaming port number is already in use" id="error.label">
+                class="com.izforge.izpack.util.PortValidator" txt="Java API file streaming port number is already in use">
             </validator>
         </field>
     </panel>
@@ -585,81 +585,81 @@
         <field type="staticText" align="left" txt="For detailed descriptions on each of the properties below, see Grid Settings section at ${installer.properties.wiki.page} (fresh install), or ${upgrade.properties.wiki.page} (upgrade install)."/>
         <field type="divider" align="top"/>
         <field type="text" variable="research.center.displayName">
-            <spec txt="Research Center Display Name " id="text.label" size="25" set=""/>
+            <spec txt="Research Center Display Name " size="25" set=""/>
             <validator
-                class="com.izforge.izpack.util.NotEmptyValidator" txt="Research Center Display Name is a required field" id="indexurl.label">
+                class="com.izforge.izpack.util.NotEmptyValidator" txt="Research Center Display Name is a required field">
             </validator>
         </field>
         <field type="text" variable="research.center.shortName">
-            <spec txt="Research Center Short Name " id="text.label" size="25" set=""/>
+            <spec txt="Research Center Short Name " size="25" set=""/>
             <validator
-                class="com.izforge.izpack.util.NotEmptyValidator" txt="Research Center Short Name is a required field" id="indexurl.label">
+                class="com.izforge.izpack.util.NotEmptyValidator" txt="Research Center Short Name is a required field">
             </validator>
         </field>
         <field type="text" variable="research.center.address.country">
-            <spec txt="Country of the Research Center " id="text.label" size="25" set=""/>
+            <spec txt="Country of the Research Center " size="25" set=""/>
             <validator
-                class="com.izforge.izpack.util.NotEmptyValidator" txt="Country of the Research Center is a required field" id="indexurl.label">
+                class="com.izforge.izpack.util.NotEmptyValidator" txt="Country of the Research Center is a required field">
             </validator>
         </field>
         <field type="text" variable="research.center.address.locality">
-            <spec txt="Locality or City of the Research Center" id="text.label" size="25" set=""/>
+            <spec txt="Locality or City of the Research Center" size="25" set=""/>
             <validator
-                class="com.izforge.izpack.util.NotEmptyValidator" txt="Locality of the Research Center is a required field" id="indexurl.label">
+                class="com.izforge.izpack.util.NotEmptyValidator" txt="Locality of the Research Center is a required field">
             </validator>
         </field>
         <field type="text" variable="research.center.address.postalCode">
-            <spec txt="Zip Code " id="text.label" size="25" set=""/>
+            <spec txt="Zip Code " size="25" set=""/>
             <validator
-                class="com.izforge.izpack.util.NotEmptyValidator" txt="Zip Code is a required field" id="indexurl.label">
+                class="com.izforge.izpack.util.NotEmptyValidator" txt="Zip Code is a required field">
             </validator>
         </field>
         <field type="text" variable="research.center.address.stateProvince">
-            <spec txt="State " id="text.label" size="25" set=""/>
+            <spec txt="State " size="25" set=""/>
             <validator
-                class="com.izforge.izpack.util.NotEmptyValidator" txt="State is a required field" id="indexurl.label">
+                class="com.izforge.izpack.util.NotEmptyValidator" txt="State is a required field">
             </validator>
         </field>
         <field type="text" variable="research.center.address.street1">
-            <spec txt="Street Address line 1 " id="text.label" size="25" set=""/>
+            <spec txt="Street Address line 1 " size="25" set=""/>
             <validator
-                class="com.izforge.izpack.util.NotEmptyValidator" txt="Street Address line 1 is a required field" id="indexurl.label">
+                class="com.izforge.izpack.util.NotEmptyValidator" txt="Street Address line 1 is a required field">
             </validator>
         </field>
         <field type="text" variable="point.of.contact.affiliation">
-            <spec txt="Affiliation " id="text.label" size="25" set=""/>
+            <spec txt="Affiliation " size="25" set=""/>
             <validator
-                class="com.izforge.izpack.util.NotEmptyValidator" txt="Affiliation is a required field" id="indexurl.label">
+                class="com.izforge.izpack.util.NotEmptyValidator" txt="Affiliation is a required field">
             </validator>
         </field>
         <field type="text" variable="point.of.contact.firstName">
-            <spec txt="Contact Last Name " id="text.label" size="25" set=""/>
+            <spec txt="Contact Last Name " size="25" set=""/>
             <validator
-                class="com.izforge.izpack.util.NotEmptyValidator" txt="Contact Last Name is a required field" id="indexurl.label">
+                class="com.izforge.izpack.util.NotEmptyValidator" txt="Contact Last Name is a required field">
             </validator>
         </field>
         <field type="text" variable="point.of.contact.lastName">
-            <spec txt="Contact First Name " id="text.label" size="25" set=""/>
+            <spec txt="Contact First Name " size="25" set=""/>
             <validator
-                class="com.izforge.izpack.util.NotEmptyValidator" txt="Contact First Name is a required field" id="indexurl.label">
+                class="com.izforge.izpack.util.NotEmptyValidator" txt="Contact First Name is a required field">
             </validator>
         </field>
         <field type="text" variable="point.of.contact.phoneNumber">
-            <spec txt="Phone Number " id="text.label" size="25" set=""/>
+            <spec txt="Phone Number " size="25" set=""/>
             <validator
-                class="com.izforge.izpack.util.NotEmptyValidator" txt="Phone Number is a required field" id="indexurl.label">
+                class="com.izforge.izpack.util.NotEmptyValidator" txt="Phone Number is a required field">
             </validator>
         </field>
         <field type="text" variable="point.of.contact.email">
-            <spec txt="Email Address " id="text.label" size="25" set=""/>
+            <spec txt="Email Address " size="25" set=""/>
             <validator
-                class="com.izforge.izpack.util.NotEmptyValidator" txt="Email Address is a required field" id="indexurl.label">
+                class="com.izforge.izpack.util.NotEmptyValidator" txt="Email Address is a required field">
             </validator>
         </field>
         <field type="text" variable="point.of.contact.role">
-            <spec txt="Role " id="text.label" size="25" set=""/>
+            <spec txt="Role " size="25" set=""/>
             <validator
-                class="com.izforge.izpack.util.NotEmptyValidator" txt="Role is a required field" id="indexurl.label">
+                class="com.izforge.izpack.util.NotEmptyValidator" txt="Role is a required field">
             </validator>
         </field>
     </panel>
@@ -674,32 +674,32 @@
 
         <field type="text" variable="database.server">
             <spec txt="Database Host Name "
-                id="dbhostname.label" size="25" set=""/>
+                size="25" set=""/>
             <validator
-                class="com.izforge.izpack.util.HostNameValidator" txt="Database Server is a required field or the Server is not reachable" id="dbhostname.label">
+                class="com.izforge.izpack.util.HostNameValidator" txt="Database Server is a required field or the Server is not reachable">
             </validator>
         </field>
         <field type="text" variable="database.port">
             <spec txt="Database Port "
-                id="dbport.label" size="25" set="3306"/>
+                size="25" set="3306"/>
         <validator class="com.izforge.izpack.util.NotEmptyValidator" txt=" Database Port is a required field" />
         </field>
         <field type="text" variable="database.name">
             <spec txt="Database Name "
-                id="text.label" size="25" set="caarray_db"/>
+                size="25" set="caarray_db"/>
                 <validator class="com.izforge.izpack.util.NotEmptyValidator" txt=" Database Name is a required field" />
         </field>
         <field type="text" variable="database.user">
-            <spec txt="Database User Name for caArray Application:" id="text.label"
+            <spec txt="Database User Name for caArray Application:"
                 size="25" set="caarrayuser"/>
              <validator class="com.izforge.izpack.util.NotEmptyValidator" txt=" Database Application User is a required field" />
         </field>
         <field type="password" align="left" variable="database.password">
             <spec>
-                 <pwd txt="Password for the above-named user:" id="pwd.label" size="25" set=""/>
+                 <pwd txt="Password for the above-named user:" size="25" set=""/>
             </spec>
             <validator
-                class="com.izforge.izpack.util.DBConnectionValidator" txt="Unable to connect to this database with the Database Application User and Password you have entered." id="error.label">
+                class="com.izforge.izpack.util.DBConnectionValidator" txt="Unable to connect to this database with the Database Application User and Password you have entered.">
             </validator>
         </field>
     </panel>
@@ -709,10 +709,10 @@
         <field type="staticText" align="left" txt="Prior to caArray 2.2.0, it was possible to create two distinct Hybridizations with the same name within a single Experiment. As of 2.2.0, this behavior has been changed, and Hybridization names will now be required to be unique within an Experiment. By default, duplicate Hybridizations in your existing (pre-2.2.0) Experiments will be renamed to be distinct. The naming convention is such that Hybridizations names will have a dash and incrementing integer, starting at 1, appended to the name (e.g., myHybridization-1, myHybridization-2, ... myHybridization-N). If you prefer to override this default strategy, you can choose to merge duplicate Hybridizations into a single Hybridization instead. Please note that if you choose to override the default strategy, you will not be able to undo the change."/>
         <field type="divider" align="top"/>
         <field type="radio" variable="mergeDuplicateBiomaterialsMigrator.renameHybridizations">
-            <description align="left" txt="Duplicate hybridizations behavior preference:" id="duplicate.hybridizations.radio"/>
+            <description align="left" txt="Duplicate hybridizations behavior preference:"/>
             <spec>
-                <choice txt="Rename Duplicates (recommended)" id="rename.duplicates" value="true" set="true" />
-                <choice txt="Merge Duplicates (no undo)" id="merge.duplicates" value="false" />
+                <choice txt="Rename Duplicates (recommended)" value="true" set="true" />
+                <choice txt="Merge Duplicates (no undo)" value="false" />
             </spec>
         </field>
     </panel>
@@ -722,11 +722,10 @@
         <field type="staticText" align="left" txt="There are two types of ways to authenticate users: against database or using an LDAP server. To connect to LDAP, you must have an LDAP server available in your network."/>
         <field type="divider" align="top"/>
         <field type="radio" variable="ldap.authentication.disabled">
-            <description align="left" txt="Type of Authentication:"
-            id="ldap.radio"/>
+            <description align="left" txt="Type of Authentication:"/>
             <spec>
-                <choice txt="Database" id="ldap.install.false" value="true" set="true" />
-                <choice txt="LDAP" id="ldap.install" value="false" />
+                <choice txt="Database" value="true" set="true" />
+                <choice txt="LDAP" value="false" />
             </spec>
         </field>
     </panel>
@@ -736,15 +735,15 @@
         <field type="staticText" align="left" txt="Choose the URL for the LDAP server and the Base DN for authenticating users."/>
         <field type="divider" align="top"/>
         <field type="text" variable="ldap.hostname">
-            <spec txt="LDAP Host Name " id="text.label" size="25" set="ldaps://$HOST_NAME:636"/>
+            <spec txt="LDAP Host Name " size="25" set="ldaps://$HOST_NAME:636"/>
             <validator class="com.izforge.izpack.util.NotEmptyValidator" txt="LDAP Host Name is a required field" />
         </field>
         <field type="text" variable="ldap.search.base">
-            <spec txt="LDAP Search Base" id="text.label" size="25" set=""/>
+            <spec txt="LDAP Search Base" size="25" set=""/>
             <validator class="com.izforge.izpack.util.NotEmptyValidator" txt="LDAP Search Base is a required field" />
         </field>
         <field type="text" variable="ldap.search.prefix">
-            <spec txt="LDAP Search Prefix" id="text.label" size="25" set=""/>
+            <spec txt="LDAP Search Prefix" size="25" set=""/>
             <validator class="com.izforge.izpack.util.NotEmptyValidator" txt="LDAP Search Prefix is a required field" />
         </field>
     </panel>
@@ -754,27 +753,27 @@
         <field type="staticText" align="left" txt="The information you enter below will connect you to an existing Index Server. The Externally Accessible Hostname is the Hostname or the Domain name for the installation machine. This hostname must be accessible by the 'Index URL'. UPT URL is where the UPT application is being installed. For detailed descriptions on each of the properties below, see the Global Settings section at ${installer.properties.wiki.page}"/>
         <field type="divider" align="top"/>
         <field type="text" variable="grid.index.url">
-            <spec txt="Index URL " id="text.label" size="35" set="http://cagrid-index.nci.nih.gov:8080/wsrf/services/DefaultIndexService"/>
+            <spec txt="Index URL " size="35" set="http://cagrid-index.nci.nih.gov:8080/wsrf/services/DefaultIndexService"/>
             <validator
-                class="com.izforge.izpack.util.URLCheckValidator" txt="Index Url is a required field or the Index Server can not be reached. Please check your firewall or the proxy setting" id="indexurl.label">
+                class="com.izforge.izpack.util.URLCheckValidator" txt="Index Url is a required field or the Index Server can not be reached. Please check your firewall or the proxy setting">
             </validator>
         </field>
        <field type="text" variable="grid.static.hostname">
-            <spec txt="Externally Accessible Hostname/IP Address " id="text.label" size="25" set="$IP_ADDRESS"/>
+            <spec txt="Externally Accessible Hostname/IP Address " size="25" set="$IP_ADDRESS"/>
             <validator class="com.izforge.izpack.util.NotEmptyValidator" txt="Externally Accessible Hostname/IP Address is a required field" />
         </field>
        <field type="text" variable="csm.application.name">
-            <spec txt="caArray's UPT Application Name " id="text.label" size="25" set="caarray"/>
+            <spec txt="caArray's UPT Application Name " size="25" set="caarray"/>
             <validator class="com.izforge.izpack.util.NotEmptyValidator" txt="caArray's UPT Application Name is a required field" />
         </field>
         <field type="text" variable="upt.url">
-            <spec txt="UPT URL " id="text.label" size="25" set=""/>
+            <spec txt="UPT URL " size="25" set=""/>
         </field>
        <field type="text" variable="user.admin.email.address.from">
-            <spec txt="UPT Admin Email Address From:" id="text.label" size="25" set=""/>
+            <spec txt="UPT Admin Email Address From:" size="25" set=""/>
         </field>
        <field type="text" variable="user.admin.email.address.to">
-            <spec txt="UPT Admin Email Address To:" id="text.label" size="25" set=""/>
+            <spec txt="UPT Admin Email Address To:" size="25" set=""/>
         </field>
     </panel>
 
@@ -784,13 +783,13 @@
         <field type="staticText" align="left" txt="For detailed descriptions on each of the properties below, see the Database Settings section at ${installer.properties.wiki.page}"/>
         <field type="divider" align="top"/>
         <field type="text" variable="min.pool.size">
-            <spec txt="Minimum Pool Size:" id="text.label" size="15" set="5"/>
+            <spec txt="Minimum Pool Size:" size="15" set="5"/>
         </field>
         <field type="text" variable="max.pool.size">
-            <spec txt="Maximum Pool Size:" id="text.label" size="15" set="30"/>
+            <spec txt="Maximum Pool Size:" size="15" set="30"/>
         </field>
         <field type="text" variable="idle.timeout.minutes">
-            <spec txt="Idle Time Out Mimutes:" id="text.label" size="15" set="300"/>
+            <spec txt="Idle Time Out Mimutes:" size="15" set="300"/>
         </field>
     </panel>
 
@@ -801,24 +800,24 @@
         <field type="divider" align="top"/>
 
         <field type="text" variable="mail.smtp.host">
-            <spec txt="Mail Server Hostname " id="text.label" size="25" set=""/>
+            <spec txt="Mail Server Hostname " size="25" set=""/>
             <validator
-        class="com.izforge.izpack.util.NotEmptyValidator" txt="Mail Server Hostname is a required field" id="indexurl.label">
+        class="com.izforge.izpack.util.NotEmptyValidator" txt="Mail Server Hostname is a required field">
         </validator>
         </field>
         <field type="text" variable="mail.smtp.port">
-            <spec txt="Mail Server Port Number " id="text.label" size="25" set="25"/>
+            <spec txt="Mail Server Port Number " size="25" set="25"/>
         </field>
         <field type="text" variable="mail.smtp.auth">
-            <spec txt="Mail Server Authentication " id="text.label" size="25" set="false"/>
+            <spec txt="Mail Server Authentication " size="25" set="false"/>
         </field>
 
         <field type="text" variable="mail.smtp.starttls.enable">
-            <spec txt="Mail Server starttls:" id="text.label" size="25" set="false"/>
+            <spec txt="Mail Server starttls:" size="25" set="false"/>
         </field>
 
         <field type="text" variable="mail.user">
-            <spec txt="Mail Server User:" id="text.label" size="25" set=""/>
+            <spec txt="Mail Server User:" size="25" set=""/>
         </field>
 
         <field type="password" align="left" variable="mail.password">
@@ -835,12 +834,13 @@
         <field type="staticText" align="left" txt="Please configure the options that will be passed to the caArray JBoss server's JVM."/>
         <field type="divider" align="top"/>
         <field type="text" variable="jboss.java.opts">
-            <spec txt="JBoss Java Opts " id="text.label" size="75" set="-server -Xms2048m -Xmx2048m -XX:ThreadStackSize=128 -XX:SurvivorRatio=10 -XX:PermSize=128m -XX:MaxPermSize=128m -Dsun.rmi.dgc.client.gcInterval=3600000 -Dsun.rmi.dgc.server.gcInterval=3600000 -Djava.awt.headless=true -Dcom.healthmarketscience.rmiio.exporter.port=${java.api.filestreaming.port}"/>
+            <spec txt="JBoss Java Opts " size="75" set="-server -Xms2048m -Xmx2048m -XX:ThreadStackSize=128 -XX:SurvivorRatio=10 -XX:PermSize=128m -XX:MaxPermSize=128m -Dsun.rmi.dgc.client.gcInterval=3600000 -Dsun.rmi.dgc.server.gcInterval=3600000 -Djava.awt.headless=true -Dcom.healthmarketscience.rmiio.exporter.port=${java.api.filestreaming.port}"/>
         </field>
     </panel>
 
     <panel order="19">
-        <variable name="INSTALL_PATH" value="${UserPathPanelVariable}"/>
+
+        <variable name="install.path" value="${UserPathPanelVariable}"/>
         
         <field type="title" txt="Installation Summary" bold="true" size="1" />
         <field type="staticText" align="left" txt="Below are "/>
@@ -874,7 +874,8 @@
     </panel>
 
     <panel order="20">
-        <variable name="INSTALL_PATH" value="${existing.installation.home}"/>
+
+        <variable name="install.path" value="${existing.installation.home}"/>
         
         <field type="title" txt="Installation Summary" bold="true" size="1" />
         <field type="staticText" align="left" txt="Below are "/>
@@ -899,6 +900,7 @@
         <field type="staticText" align="left" txt="Grid URL [http://${grid.server.hostname}:${grid.server.port}/wsrf/services/cagrid/CaArraySvc] - This will be the url the grid index service uses to communicate with your caArray grid service."/>
         <field type="space"/>
         <field type="staticText" align="left" txt="Grid Log Dir [${existing.installation.home}/jboss-4.0.4.GA/server/${jboss.server.name}/log] - This is where the caArray grid service logs can be found."/>
-    </panel>
-    
+
+</panel>
+
 </userInput>

@@ -29,7 +29,7 @@
     <property file="${build.dir}/local.properties" />
     <property file="${build.dir}/default.properties" />
 
-<property file="${basedir}/project.properties" />
+    <property file="${basedir}/master_build/project.properties" />
 
     <!-- Components -->
 
@@ -111,8 +111,7 @@
     <property name="asm.2.2.1.lib" value="${lib.dir}/caarray-asm_2.2.1" />
     <property name="asm.3.0.lib" value="${lib.dir}/caarray-asm_3.0" />
     <property name="project.lib" value="${lib.dir}/caarray-project" />
-    <property name="bda-utils.dir" value="${basedir}/bda-utils" />
-    <property name="bda.version" value="0.10.4" />
+    <property name="bda-utils.dir" value="${basedir}/target/bda-utils" />
     <property name="bda.utils.build.file" value="${bda-utils.dir}/bda-build-utils-${bda.version}.xml"/>
     <property name="local.repo.dir" value="${basedir}/local-ivy-repo"/>
 
@@ -2775,155 +2774,7 @@
     <target name="redeploy" description="Developer undeploy, clean, redeploy" depends="clean, init:third-party-paths, undeploy, database:reinitialize, deploy" />
 
     <target name="redeploy:caarray.ear" description="Developer undeploy, clean, redeploy for the ear only" depends="clean, init:third-party-paths, undeploy:caarray.ear, database:reinitialize, deploy:caarray.ear" />
-
-    <!-- ******************************************************************* -->
-    <!-- ** REMOTE DEPLOY TARGETS                                          ** -->
-    <!-- ******************************************************************* -->
-
-    <property name="property.template.file" value="caarray2-property-template.properties" />
-    <property name="jboss.start.sleep" value="10" />
-    <property name="jboss.stop.sleep" value="30" />
-
-    <target name="validate-properties" depends="init:third-party-paths">
-        <ncitask keyFile="${build.dir}/${property.template.file}" compareFile="${envpropertyfile}" />
-    </target>
-
-    <target name="remote-jboss:stop" unless="nodeploy" depends="init:third-party-paths">
-        <echo message="Stopping jboss server at ${ssh.server.hostname}..." />
-        <remote-ssh remotesshcommand="${jboss.home}/bin/stop_jboss" remoteSshSleep="${jboss.stop.sleep}" />
-    </target>
-
-    <target name="remote-jboss:start" unless="nodeploy" depends="init:third-party-paths">
-        <echo message="Starting jboss server at ${ssh.server.hostname}..." />
-        <remote-ssh remotesshcommand="${jboss.home}/bin/start_jboss" remoteSshSleep="${jboss.start.sleep}" />
-    </target>
-
-    <target name="-remote-jboss:configure-jboss-ds" unless="nodeploy" depends="init:third-party-paths">
-        <echo message="Configuring caarray-mysql database..." />
-        <mkdir dir="${target.dir}" />
-        <copy todir="${target.dir}/deploy/" file="${common.resources.jboss.conf.dir}/${mysql.datasource.file}" />
-        <xmltask source="${target.dir}/deploy/${mysql.datasource.file}" dest="${target.dir}/deploy/${mysql.datasource.file}">
-            <replace path="//datasources/local-tx-datasource/connection-url/text()" withText="jdbc:mysql://${database.server}:${database.port}/${database.name}"/>
-            <replace path="//datasources/local-tx-datasource/user-name/text()" withText="${database.user}"/>
-            <replace path="//datasources/local-tx-datasource/password/text()" withText="${database.password}"/>
-        </xmltask>
-    </target>
-
-    <target name="-remote-jboss:configure-jboss-mailservice" unless="nodeploy" depends="init:third-party-paths">
-        <echo message="Configuring jboss mail service..." />
-        <mkdir dir="${target.dir}" />
-        <copy todir="${target.dir}/deploy/" file="${common.resources.jboss.conf.dir}/${jboss-mail-service.file}">
-            <filterset refid="caarray.filterset" />
-        </copy>
-    </target>
-
-    <target name="-remote-jboss:copy-jboss-config" unless="nodeploy" depends="init:third-party-paths">
-        <echo message="Copying caarray-mysql configuration to jboss server at ${ssh.server.hostname}..." />
-        <remote-scp remoteScpFileToCopy="${target.dir}/deploy/${mysql.datasource.file}" remoteScpToDir="${ssh.server.username}@${ssh.server.hostname}:${jboss.home}/deploy" />
-    </target>
-
-    <target name="remote-jboss:copy-jboss-mailservice" unless="nodeploy" depends="init:third-party-paths">
-        <echo message="Copying mail service configuration to jboss server at ${ssh.server.hostname}..." />
-        <remote-scp remoteScpFileToCopy="${target.dir}/deploy/${jboss-mail-service.file}" remoteScpToDir="${ssh.server.username}@${ssh.server.hostname}:${jboss.home}/deploy" />
-    </target>
-
-    <target name="-remote-jboss:copy-log4j-jar" unless="nodeploy" depends="init:third-party-paths">
-        <echo message="Copying ${project.lib}/${log4j.jar} to jboss lib folder at ${ssh.server.hostname}..." />
-        <remote-scp remoteScpFileToCopy="${project.lib}/${log4j.jar}" remoteScpToDir="${ssh.server.username}@${ssh.server.hostname}:${jboss.home}/lib" />
-        <delete dir="${temp.dir}" />
-    </target>
-
-    <target name="-remote-jboss:deploy-caarray-temp" unless="nodeploy" depends="init:third-party-paths">
-        <echo message="Copying caarray EAR to jboss temp folder ${jboss.temp.dir} at ${ssh.server.hostname}..." />
-        <remote-scp remoteScpFileToCopy="${caarray.ear}" remoteScpToDir="${ssh.server.username}@${ssh.server.hostname}:${jboss.temp.dir}" />
-    </target>
-
-    <target name="remote-jboss:deploy-caarray" unless="nodeploy" depends="init:third-party-paths,-remote-jboss:deploy-caarray-temp">
-        <echo message="Deploying caarray EAR to jboss at http://${jboss.server.hostname}:${jboss.server.port}/caarray" />
-        <remote-ssh remotesshcommand="mv ${jboss.temp.dir}/caarray.ear ${jboss.home}/deploy/" />
-    </target>
-
-    <target name="remote-jboss:undeploy-caarray" unless="nodeploy" depends="init:third-party-paths">
-        <echo message="Undeploying caarray EAR, datasource and mail service config from jboss server at ${ssh.server.hostname}..." />
-        <remote-ssh remotesshcommand="rm -rf ${jboss.home}/deploy/caarray.ear ${jboss.home}/deploy/${mysql.datasource.file} ${jboss.home}/deploy/${jboss-mail-service.file}" />
-    </target>
-
-    <target name="remote-jboss:punt-old-commons-lang" unless="nodeploy" depends="init:third-party-paths">
-        <echo message="Removing older version of commons lang from jboss's embedded tomcat" />
-        <remote-ssh remotesshcommand="rm -rf ${jboss.home}/deploy/jbossweb-tomcat55.sar/jsf-libs/commons-lang*.jar" />
-    </target>
-
-    <target name="remote-jboss:deploy" unless="nodeploy" depends="init:third-party-paths,remote-jboss:stop,remote-jboss:undeploy-caarray,-remote-jboss:configure-jboss-ds,-remote-jboss:configure-jboss-mailservice,remote-jboss:deploy-caarray,-remote-jboss:copy-jboss-config,remote-jboss:copy-jboss-mailservice,-remote-jboss:copy-log4j-jar,remote-jboss:punt-old-commons-lang,remote-jboss:start"/>
-
-    <target name="remote-grid:stop" unless="nodeploy" depends="init:third-party-paths">
-        <echo message="Stopping jboss server at ${ssh.grid.hostname}..." />
-        <remote-ssh remoteSshUser="${ssh.grid.username}" remotesshcommand="${globoss.server.instance.home}/bin/stop_jboss" remoteSshSleep="${jboss.stop.sleep}" />
-    </target>
-
-    <target name="remote-grid:start" unless="nodeploy" depends="init:third-party-paths">
-        <echo message="Starting JBoss/Grid server at ${ssh.grid.hostname}..." />
-        <remote-ssh remoteSshUser="${ssh.grid.username}" remotesshcommand="${globoss.server.instance.home}/bin/start_jboss" remoteSshSleep="${jboss.start.sleep}" />
-    </target>
-
-    <target name="-remote-grid:configure-jboss-with-globus" unless="init:third-party-paths,nodeploy">
-        <echo message="Installing Globus configuration into JBoss Grid server instance" />
-        <remote-scp remoteScpFileToCopy="${jboss-globus-serverinstance-config.zip}" remoteScpKeyFile="${ssh.grid.key.file}" remoteScpToDir="${ssh.grid.username}@${ssh.grid.hostname}:${globoss.temp.dir}" />
-        <remote-ssh remoteSshUser="${ssh.grid.username}" remotesshcommand="unzip -o ${globoss.temp.dir}/jboss-globus-serverinstance-config.zip -d ${globoss.server.instance.home}" />
-        <mkdir dir="${target.dir}" />
-        <unzip src="${jboss-globus-serverinstance-config.zip}" dest="${target.dir}/archFileReplace" />
-        <replace file="${target.dir}/archFileReplace/deploy/wsrf.war/WEB-INF/etc/globus_wsrf_core/server-config.wsdd">
-            <replacefilter token="@LOGICAL_HOST@" value="${grid.static.hostname}" />
-        </replace>
-        <remote-scp remoteScpFileToCopy="${target.dir}/archFileReplace/deploy/wsrf.war/WEB-INF/etc/globus_wsrf_core/server-config.wsdd" remoteScpKeyFile="${ssh.grid.key.file}" remoteScpToDir="${ssh.grid.username}@${ssh.grid.hostname}:${globoss.server.instance.home}/deploy/wsrf.war/WEB-INF/etc/globus_wsrf_core/server-config.wsdd" />
-    </target>
-
-    <target name="remote-grid:deploy-grid" unless="nodeploy" depends="init:third-party-paths">
-        <echo message="Deploying Grid to jboss server at ${ssh.grid.hostname}..." />
-
-        <for param="version" list="${caarray-grid-svc.versions}">
-            <sequential>
-                <if>
-                    <equals arg1="legacy" arg2="@{version}" />
-                    <then>
-                        <var name="version.label" value=""/>
-                    </then>
-                    <else>
-                        <var name="version.label" value="_@{version}"/>
-                    </else>
-                </if>
-
-                <var name="caarraysvc.temp.dir" value="${caarray-grid-svc.base.dir}/@{version}/build/cagrid_CaArraySvc" />
-                <mkdir dir="${caarraysvc.temp.dir}" />
-                <mkdir dir="${caarraysvc.temp.dir}/server/default/deploy/wsrf.war" />
-
-                <ant dir="${caarray-grid-svc.base.dir}/@{version}" target="createDeploymentZip" inheritall="false">
-                    <property name="jboss.dir" value="${caarraysvc.temp.dir}" />
-                    <property name="env.GLOBUS_LOCATION" value="${env.GLOBUS_LOCATION}"/>
-                </ant>
-                <var name="cagrid_CaArraySvc.zip" value="${caarray-grid-svc.base.dir}/@{version}/cagrid_CaArraySvc${version.label}.zip" />
-
-                <!-- SCP create archive to jboss404 server -->
-                <remote-scp remoteScpFileToCopy="${cagrid_CaArraySvc.zip}" remoteScpKeyFile="${ssh.grid.key.file}" remoteScpToDir="${ssh.grid.username}@${ssh.grid.hostname}:${globoss.temp.dir}" />
-
-                <!-- explode archive to ${globoss.server.instance.home}/deploy/wsrf.war -->
-                <remote-ssh remoteSshUser="${ssh.grid.username}" remotesshcommand="unzip -o ${globoss.temp.dir}/cagrid_CaArraySvc${version.label}.zip -d ${globoss.server.instance.home}/deploy/wsrf.war" />
-                <ant dir="${caarray-grid-svc.base.dir}/@{version}" target="jars" inheritall="false">
-                    <property name="jboss.server.hostname" value="${jboss.server.hostname}" />
-                    <property name="jboss.server.jndi.port" value="${jboss.server.jndi.port}" />
-                    <property name="env.GLOBUS_LOCATION" value="${env.GLOBUS_LOCATION}"/>
-                </ant>
-            </sequential>
-        </for>
-        <echo message="Caarray Grid successfully deployed to http://${globoss.server.hostname}:${globoss.server.http.port}/" />
-    </target>
-
-    <target name="remote-grid:undeploy" unless="nodeploy" depends="init:third-party-paths">
-        <echo message="Undeploying Grid instance from jboss server at ${ssh.grid.hostname}..." />
-        <remote-ssh remoteSshUser="${ssh.grid.username}" remotesshcommand="rm -rf ${globoss.server.instance.home}/deploy/wsrf.war ${globoss.server.instance.home}/lib/cog-jglobus.jar ${globoss.server.instance.home}/lib/cog-tomcat.jar ${globoss.server.instance.home}/lib/cryptix32.jar ${globoss.server.instance.home}/lib/cryptix.jar ${globoss.server.instance.home}/lib/cryptix-asn1.jar ${globoss.server.instance.home}/lib/jce-jdk13-125.jar ${globoss.server.instance.home}/lib/log4j-1.2.8.jar ${globoss.server.instance.home}/lib/puretls.jar" />
-    </target>
-
-    <target name="remote-grid:deploy" unless="nodeploy" depends="init:third-party-paths,remote-grid:stop,remote-grid:undeploy,-remote-grid:configure-jboss-with-globus,remote-grid:deploy-grid,remote-grid:start"/>
-
+    
     <!-- Tag property to display on front page -->
     <target name="build-tags" depends="init:third-party-paths,-get-version-info, -command-build-with-tag, -build-with-tag, -build-without-tag" />
 
@@ -2982,8 +2833,6 @@
             <property name="env.GLOBUS_LOCATION" value="${env.GLOBUS_LOCATION}"/>
         </ant>
     </target>
-
-    <target name="remote-deploy" depends="clean,init:third-party-paths,pre-build-checks,validate-properties,continuous-integration,remote-jboss:deploy,remote-grid:deploy,post-build-checks"/>
 
     <!-- ******************************************************************* -->
     <!-- ** DOCUMENATION TARGETS                                          ** -->

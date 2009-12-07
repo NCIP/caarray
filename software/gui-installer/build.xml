@@ -16,7 +16,7 @@
 		<delete dir="${install.path}/${application_installer}" />	
 		<unzip src="${install.path}/${application_installer_zip}" dest="${install.path}/${application_installer}">
 			<mapper type="glob" from="${installer_prefix}/*" to="*"/>
-		</unzip>
+	    </unzip>
 		
 		<copy file="${install.path}/property-template/installer.template.properties" tofile="${install.path}/${application_installer}/install.properties" overwrite="yes"/>
 
@@ -42,7 +42,7 @@
 		
 		<unzip src="${install.path}/${application_upgrader_zip}" dest="${install.path}/${application_installer}">
 			<mapper type="glob" from="${upgrader_prefix}/*" to="*"/>
-		</unzip>
+		</unzip>	
 
 		<copy file="${install.path}/property-template/upgrade.template.properties" tofile="${install.path}/${application_installer}/upgrade.properties" overwrite="yes"/>
 

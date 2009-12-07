@@ -20,7 +20,7 @@
 	<classpathentry kind="src" path="software/test/src/test/java"/>
 	<classpathentry kind="src" path="test-data/src/test/java"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="con" path="org.apache.ivyde.eclipse.cpcontainer.IVYDE_CONTAINER/?ivyXmlPath=software%2Fivy-caarray.xml&amp;confs=project&amp;ivySettingsPath=project%3A%2F%2FcaArray2%2Fsoftware%2Fivy-caarray-settings-eclipse.xml&amp;doRetrieve=false&amp;retrievePattern=lib%2F%5Bconf%5D%2F%5Bartifact%5D.%5Bext%5D&amp;retrieveSync=false&amp;retrieveConfs=*&amp;retrieveTypes=*&amp;acceptedTypes=jar&amp;sourceTypes=source&amp;javadocTypes=javadoc&amp;sourceSuffixes=-source%2C-sources%2C-src&amp;javadocSuffixes=-javadoc%2C-javadocs%2C-doc%2C-docs&amp;alphaOrder=true&amp;resolveInWorkspace=false"/>
+	<classpathentry kind="con" path="org.apache.ivyde.eclipse.cpcontainer.IVYDE_CONTAINER/?ivyXmlPath=software%2Fivy-caarray.xml&amp;confs=project&amp;ivySettingsPath=project%3A%2F%2FcaArray2%2Fsoftware%2Fmaster_build%2Fivy-caarray-settings-eclipse.xml&amp;doRetrieve=false&amp;retrievePattern=lib%2F%5Bconf%5D%2F%5Bartifact%5D.%5Bext%5D&amp;retrieveSync=false&amp;retrieveConfs=*&amp;retrieveTypes=*&amp;acceptedTypes=jar&amp;sourceTypes=source&amp;javadocTypes=javadoc&amp;sourceSuffixes=-source%2C-sources%2C-src&amp;javadocSuffixes=-javadoc%2C-javadocs%2C-doc%2C-docs&amp;alphaOrder=true&amp;resolveInWorkspace=false"/>
 	<classpathentry kind="lib" path="test-data/src/test/data"/>
 	<classpathentry kind="lib" path="software/grid/legacy/lib/caGrid-advertisement-1.2.jar"/>
 	<classpathentry kind="lib" path="software/grid/legacy/lib/caGrid-caDSR-client-1.2.jar"/>

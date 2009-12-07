@@ -26,4 +26,6 @@
 		<nature>com.atlassw.tools.eclipse.checkstyle.CheckstyleNature</nature>
 		<nature>net.sourceforge.pmd.eclipse.plugin.pmdNature</nature>
 	</natures>
+	<linkedResources>
+	</linkedResources>
 </projectDescription>
