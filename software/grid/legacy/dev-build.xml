@@ -70,7 +70,7 @@
       <fileset refid="extra.jars.fileset"/>
     </copy>
     <copy todir="${build.lib.dir}" file="../../caarray-client.jar/target/caarray-client-legacy.jar"/>
-    <copy todir="${build.lib.dir}" file="../common/target/caarray-grid-common.jar"/>
+    <copy todir="${build.lib.dir}" file="${caarray-grid-svc.common.target.dir}/caarray-grid-common.jar"/>
   </target>
 
   <!-- ============================================================== -->
