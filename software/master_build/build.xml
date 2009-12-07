@@ -303,15 +303,23 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
     <!-- Creates the installer distribution used by automated or manual remote installations -->
     <target name="dist:installer" depends="dist:installer:prep">
         <delete file="${dist.dir}/${caarray.install.zip.file}" />
-        <!-- Set environment name to external -->
-        <delete file="${dist.exploded.dir}/upgrade.properties"/>
-        <replaceregexp file="${dist.exploded.dir}/install.properties" byline="true" match="^(env.name)=.*" replace="\1=external" />
-        <obfuscate-properties-file
-            properties.file="${dist.exploded.dir}/install.properties"
-            required.property.list="application.base.path.linux,application.base.path.windows,database.system.user,database.system.password,database.server,database.port,database.name,database.user,database.password,mail.smtp.host,jboss.server.hostname"
-            optional.property.list="ldap.url,ldap.basedn"
-            delete.property.list="exclude.jboss.backup"
-            />        
+        <if>
+        	<isset property="properties.file.name"/>
+        	<then>
+            	<copy tofile="${dist.exploded.dir}/install.properties" file="${properties.file.name}" overwrite="true" flatten="true"/>
+            </then>
+            <else>
+				<!-- Set environment name to external -->
+				<delete file="${dist.exploded.dir}/upgrade.properties"/>
+				<replaceregexp file="${dist.exploded.dir}/install.properties" byline="true" match="^(env.name)=.*" replace="\1=external" />
+				<obfuscate-properties-file
+					properties.file="${dist.exploded.dir}/install.properties"
+					required.property.list="application.base.path.linux,application.base.path.windows,database.system.user,database.system.password,database.server,database.port,database.name,database.user,database.password,mail.smtp.host,jboss.server.hostname"
+					optional.property.list="ldap.url,ldap.basedn"
+					delete.property.list="exclude.jboss.backup"
+					/>
+            </else>
+        </if>
         <zip destfile="${dist.dir}/${caarray.install.zip.file}" prefix="${caarray.install.name}_${caarray.version}">
         	<zipfileset dir="${caarray.dist.dir}" prefix="${caarray.install.name}_${caarray.version}"/>
         </zip>
@@ -321,23 +329,33 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
     <!-- Creates upgrader distribution -->
     <target name="dist:upgrader" depends="dist:upgrader:prep">
         <delete file="${dist.dir}/${caarray.upgrade.zip.file}" />
-        <!-- Set environment name to external -->
-        <copy todir="${dist.exploded.dir}" overwrite="true">
-            <fileset dir="${build.dir}">
-                <include name="upgrade.properties" />
-            </fileset>              
-        </copy>         
-        <delete file="${dist.exploded.dir}/install.properties"/>
-        <replaceregexp file="${dist.exploded.dir}/upgrade.properties" byline="true" match="^(env.name)=.*" replace="\1=external" />
-
-        <obfuscate-properties-file
-            properties.file="${dist.exploded.dir}/upgrade.properties"
-            comment.property.list="application.base.path.windows,application.base.path.linux,tomcat.relative.path"
-            uncomment.property.list="application.base.path,tomcat.home,jboss.home"
-            required.property.list="application.base.path,jboss.home,jboss.server.name,tomcat.home"
-            optional.property.list=""
-            delete.property.list=""
-            />
+        
+        <if>
+        	<isset property="properties.file.name"/>
+        	<then>
+            	<copy tofile="${dist.exploded.dir}/upgrade.properties" file="${properties.file.name}" overwrite="true" flatten="true"/>
+            </then>
+            <else>
+				<!-- Set environment name to external -->
+				<copy todir="${dist.exploded.dir}" overwrite="true">
+					<fileset dir="${build.dir}">
+						<include name="upgrade.properties" />
+					</fileset>              
+				</copy>         
+				<delete file="${dist.exploded.dir}/install.properties"/>
+				<replaceregexp file="${dist.exploded.dir}/upgrade.properties" byline="true" match="^(env.name)=.*" replace="\1=external" />
+		
+				<obfuscate-properties-file
+					properties.file="${dist.exploded.dir}/upgrade.properties"
+					comment.property.list="application.base.path.windows,application.base.path.linux,tomcat.relative.path"
+					uncomment.property.list="application.base.path,tomcat.home,jboss.home"
+					required.property.list="application.base.path,jboss.home,jboss.server.name,tomcat.home"
+					optional.property.list=""
+					delete.property.list=""
+					/>
+            </else>
+        </if>
+        
         <replaceregexp file="${dist.exploded.dir}/build.xml" byline="true" match="(&lt;property name=&quot;properties.file&quot;\s+value=&quot;).*(&quot;\s*\/&gt;)" replace="\1upgrade.properties\2" />
         <zip destfile="${dist.dir}/${caarray.upgrade.zip.file}">
         	<zipfileset dir="${caarray.dist.dir}" prefix="${caarray.upgrade.name}_${caarray.version}"/>
@@ -661,13 +679,6 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
         </copy>
 
         <dist-prep />
-
-        <if>
-        	<isset property="properties.file.name"/>
-        	<then>
-            	<copy tofile="${caarray.dist.dir}/install.properties" file="${properties.file.name}" overwrite="true" flatten="true"/>
-            </then>
-        </if>
     </target>
 
     <target name="install:set-default-target">
@@ -700,13 +711,6 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
             default.target="upgrade"
             />
         -->
-
-        <if>
-        	<isset property="properties.file.name"/>
-        	<then>
-            	<copy tofile="${caarray.dist.dir}/upgrade.properties" file="${properties.file.name}" overwrite="true" flatten="true"/>
-            </then>
-        </if>
     
     </target>
 
