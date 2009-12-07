@@ -664,7 +664,9 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
 
         <if>
         	<isset property="properties.file.name"/>
-            <copy tofile="${caarray.dist.dir}/install.properties" file="${properties.file.name}" overwrite="true" flatten="true"/>
+        	<then>
+            	<copy tofile="${caarray.dist.dir}/install.properties" file="${properties.file.name}" overwrite="true" flatten="true"/>
+            </then>
         </if>
     </target>
 
@@ -701,7 +703,9 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
 
         <if>
         	<isset property="properties.file.name"/>
-            <copy tofile="${caarray.dist.dir}/upgrade.properties" file="${properties.file.name}" overwrite="true" flatten="true"/>
+        	<then>
+            	<copy tofile="${caarray.dist.dir}/upgrade.properties" file="${properties.file.name}" overwrite="true" flatten="true"/>
+            </then>
         </if>
     
     </target>
