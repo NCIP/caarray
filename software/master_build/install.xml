@@ -350,13 +350,13 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
                 <replaceregexp file="${temp.dir}/caarray.ear/META-INF/security-config.xml" match="&amp;" replace="&amp;amp;" byline="false"/>
                 <xmltask source="${temp.dir}/caarray.ear/META-INF/security-config.xml" dest="${temp.dir}/caarray.ear/META-INF/security-config.xml">
                     <xmlcatalog refid="bda.xml.catalog"/>
-                    <replace path="(//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsLDAPLoginModule']/module-option[@name='ldapHost']/text()" withText="${ldap.host}"/>
-                    <replace path="(//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsLDAPLoginModule']/module-option[@name='ldapSearchableBase']/text()" withText="${ldap.searchbase}"/>
-                    <replace path="(//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsLDAPLoginModule']/module-option[@name='ldapUserIdLabel']/text()" withText="${ldap.searchprefix}"/>
-                    <replace path="(//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule']/module-option[@name='url']/text()" withText="${corrected.database.url}"/>
-                    <replace path="(//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule']/module-option[@name='user']/text()" withText="${read.database.user}"/>
-                    <replace path="(//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule']/module-option[@name='passwd']/text()" withText="${read.database.password}"/>
-                    <replace path="(//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule']/module-option[@name='driver']/text()" withText="${read.database.driver}"/>
+                    <replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsLDAPLoginModule']/module-option[@name='ldapHost']/text()" withText="${ldap.host}"/>
+                    <replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsLDAPLoginModule']/module-option[@name='ldapSearchableBase']/text()" withText="${ldap.searchbase}"/>
+                    <replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsLDAPLoginModule']/module-option[@name='ldapUserIdLabel']/text()" withText="${ldap.searchprefix}"/>
+                    <replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule']/module-option[@name='url']/text()" withText="${corrected.database.url}"/>
+                    <replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule']/module-option[@name='user']/text()" withText="${read.database.user}"/>
+                    <replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule']/module-option[@name='passwd']/text()" withText="${read.database.password}"/>
+                    <replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule']/module-option[@name='driver']/text()" withText="${read.database.driver}"/>
                 </xmltask>
             </then>
             <else>
@@ -366,10 +366,10 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
                 <replaceregexp file="${temp.dir}/caarray.ear/META-INF/security-config.xml" match="&amp;" replace="&amp;amp;" byline="false"/>
                 <xmltask source="${temp.dir}/caarray.ear/META-INF/security-config.xml" dest="${temp.dir}/caarray.ear/META-INF/security-config.xml">
                     <xmlcatalog refid="bda.xml.catalog"/>
-                    <replace path="(//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule']/module-option[@name='url']/text()" withText="${corrected.database.url}"/>
-                    <replace path="(//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule']/module-option[@name='user']/text()" withText="${read.database.user}"/>
-                    <replace path="(//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule']/module-option[@name='passwd']/text()" withText="${read.database.password}"/>
-                    <replace path="(//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule']/module-option[@name='driver']/text()" withText="${read.database.driver}"/>
+                    <replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule']/module-option[@name='url']/text()" withText="${corrected.database.url}"/>
+                    <replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule']/module-option[@name='user']/text()" withText="${read.database.user}"/>
+                    <replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule']/module-option[@name='passwd']/text()" withText="${read.database.password}"/>
+                    <replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule']/module-option[@name='driver']/text()" withText="${read.database.driver}"/>
                 </xmltask>
             </else>
         </if>
