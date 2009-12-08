@@ -1426,7 +1426,9 @@
     <target name="clean:caarray-grid-svc">
         <for param="version" list="${caarray-grid-svc.versions}">
             <sequential>
-                <ant dir="${caarray-grid-svc.base.dir}/@{version}" target="clean" inheritall="false" />
+                <ant dir="${caarray-grid-svc.base.dir}/@{version}" target="clean" inheritall="false">
+                	<property name="caarray-grid-svc.common.target.dir" value="${caarray-grid-svc.common.target.dir}"/>
+                </ant>
             </sequential>
         </for>
     </target>
@@ -1579,6 +1581,7 @@
                     <property name="jboss.server.hostname" value="${jboss.server.hostname}" />
                     <property name="jboss.server.jndi.port" value="${jboss.server.jndi.port}" />
                     <property name="env.GLOBUS_LOCATION" value="${env.GLOBUS_LOCATION}"/>
+                	<property name="caarray-grid-svc.common.target.dir" value="${caarray-grid-svc.common.target.dir}"/>
                 </ant>
             </sequential>
         </for>
@@ -1996,6 +1999,7 @@
                     <property name="jboss.server.hostname" value="${jboss.server.hostname}" />
                     <property name="jboss.server.jndi.port" value="${jboss.server.jndi.port}" />
                     <property name="env.GLOBUS_LOCATION" value="${env.GLOBUS_LOCATION}"/>
+                	<property name="caarray-grid-svc.common.target.dir" value="${caarray-grid-svc.common.target.dir}"/>
                 </ant>
             </sequential>
         </for>
@@ -2673,6 +2677,7 @@
             <sequential>
                 <ant dir="${caarray-grid-svc.base.dir}/@{version}" target="deployGlobus" inheritall="false">
                     <property name="env.GLOBUS_LOCATION" value="${env.GLOBUS_LOCATION}"/>
+                	<property name="caarray-grid-svc.common.target.dir" value="${caarray-grid-svc.common.target.dir}"/>
                 </ant>
             </sequential>
         </for>
@@ -2688,6 +2693,7 @@
                 <ant dir="${caarray-grid-svc.base.dir}/@{version}" target="deployJBoss" inheritall="false">
                     <property name="jboss.dir" value="${globoss.home}"/>
                     <property name="env.GLOBUS_LOCATION" value="${env.GLOBUS_LOCATION}"/>
+                	<property name="caarray-grid-svc.common.target.dir" value="${caarray-grid-svc.common.target.dir}"/>
                 </ant>
             </sequential>
         </for>
@@ -2709,6 +2715,7 @@
                 <ant dir="${caarray-grid-svc.base.dir}/@{version}" target="undeployJBoss" inheritall="false">
                     <property name="jboss.dir" value="${globoss.home}"/>
                     <property name="env.GLOBUS_LOCATION" value="${env.GLOBUS_LOCATION}"/>
+                	<property name="caarray-grid-svc.common.target.dir" value="${caarray-grid-svc.common.target.dir}"/>
                 </ant>
             </sequential>
         </for>
@@ -2718,7 +2725,8 @@
         <ant dir="${caarray-grid-svc.base.dir}/@{version}" target="undeployJBoss" inheritall="false">
             <property name="jboss.dir" value="${globoss.home}"/>
             <property name="env.GLOBUS_LOCATION" value="${env.GLOBUS_LOCATION}"/>
-        </ant>
+			<property name="caarray-grid-svc.common.target.dir" value="${caarray-grid-svc.common.target.dir}"/>
+		</ant>
     </target>
 
     <target name="deploy:stop-jboss" depends="init:third-party-paths">
@@ -2767,6 +2775,7 @@
                 <ant dir="${caarray-grid-svc.base.dir}/@{version}" target="createDeploymentZip" inheritall="false">
                     <property name="jboss.dir" value="${caarraysvc.temp.dir}" />
                     <property name="env.GLOBUS_LOCATION" value="${env.GLOBUS_LOCATION}"/>
+                	<property name="caarray-grid-svc.common.target.dir" value="${caarray-grid-svc.common.target.dir}"/>
                 </ant>
             </sequential>
         </for>
