@@ -339,7 +339,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
         <move file="${temp.dir}/caarray-common.jar/csm/caarray.csm.new.hibernate.cfg.xml" tofile="${temp.dir}/caarray-common.jar/csm/${csm.application.name}.csm.new.hibernate.cfg.xml"/>
         <jar destfile="${temp.dir}/caarray.ear/caarray-common.jar" basedir="${temp.dir}/caarray-common.jar" update="false" manifest="${temp.dir}/caarray-common.jar/META-INF/MANIFEST.MF"/>
 
-        <propertyregex property="corrected.database.url" input="${read.database.url}" regexp="(.*)\?" select="\1"/>
+        <propertyregex property="corrected.database.url" input="${read.database.url}" regexp="(.*)\?" select="\1" defaultValue="${read.database.url}"/>
 
         <if>
             <equals arg1="${ldap.authentication.disabled}" arg2="false" />
