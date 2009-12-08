@@ -706,6 +706,7 @@
             </fileset>
         </path>
         <property name="mysql-connector-java.jar" refid="mysql-connector-java.jar.fileset" />
+        <pathconvert property="database.driver.file" refid="mysql-connector-java.jar.path"/>
 
         <path id="pmd.jar.path">
             <fileset dir="${project.lib}" id="pmd.jar.fileset">
