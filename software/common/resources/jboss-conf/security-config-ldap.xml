@@ -6,7 +6,7 @@
 <policy>
     <application-policy name="caarray">
         <authentication>
-            <login-module code="com.fiveamsolutions.nci.commons.authentication.SessionFixatioProtectionnLoginModule" flag="required"/>
+            <login-module code="com.fiveamsolutions.nci.commons.authentication.SessionFixationProtectionLoginModule" flag="required"/>
             
             <!--
                  Notes on the policy here:
