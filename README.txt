@@ -82,13 +82,7 @@ where the JDK is installed.
 	- when installing, ensure the root user has the password defined in software/build/default.properties under the key "database.system.password" 
   	- copy $CAARRAY_HOME/software/build/resources/my.cnf to the location from where MySQL reads its option files. This varies depending on
       OS, refer to http://dev.mysql.com/doc/refman/5.0/en/option-files.html.
-      Alternatively, if you already have a MySQL my.cnf file, add the lines in the file above to it.  
-- JBoss 4.0.5 GA. Use the JEMS distribution v. 1.2.0GA, which you can obtain from 
-  http://gforge.nci.nih.gov/svnroot/commonlibrary/trunk/techstack-2007/os-independent/jems-installer-1.2.0.GA.jar
-  The JBOSS_HOME environment variable should be set to the location where Jboss is installed
-- Globus 4.0.3 with WS-Enum modifications. This can be obtained from 
-  http://gforge.nci.nih.gov/svnroot/commonlibrary/trunk/techstack-2006/os-independent/ws-core-enum-4.0.3.zip.
-  The GLOBUS_LOCATION environment variable should be set to the location where Globus is installed
+      Alternatively, if you already have a MySQL my.cnf file, add the lines in the file above to it.
 - caGrid 1.2. This is needed if you intend to work on grid services. This can be obtained from http://cagrid.org/display/downloads/caGrid+1.2.
   You can use either the installer or the source code distribution and build it.
 
@@ -98,23 +92,25 @@ Getting Started
 - Make sure you have installed and configured all of the prerequisites as described above.
 - Check out caArray. Most likely, you will check out the trunk - see the Source Control section for URL locations.
   Below, we use $CAARRAY_HOME to refer to the location of the caArray checkout. 
-- Create a file "$CAARRAY_HOME/software/build/local.properties". Add the following line to it:
-  jboss.home=<location of your JBoss> 
+- Copy the file "$CAARRAY_HOME/software/build/default.properties" to "$CAARRAY_HOME/software/build/local.properties". Configure the "$CAARRAY_HOME/software/build/local.properties" file for your desired deployment.
+- Configure the "$CAARRAY_HOME/software/master_build/install.properties" file to fit your desired deployment (set idenntical values for properties with same same name in "$CAARRAY_HOME/software/build/local.properties" file.
 - Open a command prompt and from $CAARRAY_HOME/software/build, execute
-  ant database:recreate-database database:reinitialize deploy
-- start JBoss
+  ant database:recreate-database
+- cd to $CAARRAY_HOME/software/master_build, execute
+  ant deploy:local:install
+- caArray will be installed locally and both caArray JBoss and grid service JBoss will be started automatically.
 
-You can now access the application at http://localhost:8080/caarray (assuming a standard JBoss configuration). The Grid services
-will be available at http://localhost:8080/wsrf/services/cagrid/CaArraySvc (Legacy) and 
-http://localhost:8080/wsrf/services/cagrid/CaArraySvc_v1_0 (External v. 1.0)
+You can now access the application at http://${jboss.server.hostname}:${jboss.server.port}/caarray. The Grid services
+will be available at http://${grid.server.hostname}:${18080}/wsrf/services/cagrid/CaArraySvc (Legacy) and 
+http://${grid.server.hostname}:${18080}/wsrf/services/cagrid/CaArraySvc_v1_0 (External v. 1.0)
 
 Build Management
 -----------------------
 
 caArray uses Ant for builds. There are two separate build scripts:
 
-software/build/build.xml is used for local (development) builds, and remote builds to the NCI tiers.
-software/build.xml is used for creating the GUI and command-line installers.
+software/build/build.xml is used for local (development) builds.
+software/master_build/build.xml is used for creating the GUI and command-line installers, and deploying to the NCIA tiers as well as remote and local installs and upgrades.
 
 The local build script is documented here. The installer build script is documented in a separate "Installers" section.
 
