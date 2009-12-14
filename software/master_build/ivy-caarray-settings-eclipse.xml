@@ -6,7 +6,7 @@ For this to work, you must create a local.properties file in your build director
 -->
 
 <ivysettings>
-    <properties file="${ivy.settings.dir}/build/local.properties" override="false"/>
-    <properties file="${ivy.settings.dir}/build/default.properties" override="false"/>
+    <properties file="${ivy.settings.dir}/../build/local.properties" override="false"/>
+    <properties file="${ivy.settings.dir}/../build/default.properties" override="false"/>
     <include file="${ivy.settings.dir}/ivy-caarray-settings.xml"/>
 </ivysettings>
