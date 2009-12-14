@@ -202,6 +202,10 @@
         <servlet-name>dwr</servlet-name>
         <url-pattern>/dwr/*</url-pattern>
     </servlet-mapping>
+    
+    <session-config>
+      <session-timeout>30</session-timeout>
+    </session-config>   
 
     <welcome-file-list>
         <welcome-file>index.jsp</welcome-file>
