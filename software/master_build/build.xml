@@ -376,7 +376,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
     <target name="dist:javadoc">
         <delete file="${dist.dir}/${caarray.javadoc.zip.file}" />
         <zip destfile="${dist.dir}/${caarray.javadoc.zip.file}">
-            <zipfileset dir="${basedir}/caarray-client.jar/target/docs/api" prefix="${caarray.javadoc.name}_${caarray.version}"/>
+            <zipfileset dir="${software.dir}/caarray-client.jar/target/docs/api" prefix="${caarray.javadoc.name}_${caarray.version}"/>
         </zip>
     </target>
 
