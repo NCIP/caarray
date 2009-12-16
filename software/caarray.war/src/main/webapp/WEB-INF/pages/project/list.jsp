@@ -17,7 +17,7 @@ span.level-VISIBLE:after
 { content: 'Experiment summary information without access to annotation and array data.'; }
 span.level-READ:after
 { content: 'Read access to the experiment as a whole, providing a preview into its content.'; }
-span.level-READ_SELECTIVED:after
+span.level-READ_SELECTIVE:after
 { content: 'Selective access to specific sample annotation and data.'; }
 span.level-READ_WRITE_SELECTIVE:after
 { content: 'Write access to project. Read access and/or write access to specificed samples.'; }
