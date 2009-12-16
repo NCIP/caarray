@@ -110,6 +110,7 @@ import com.opensymphony.xwork2.validator.annotations.CustomValidator;
 import com.opensymphony.xwork2.validator.annotations.FieldExpressionValidator;
 import com.opensymphony.xwork2.validator.annotations.Validation;
 import com.opensymphony.xwork2.validator.annotations.ValidationParameter;
+import gov.nih.nci.caarray.web.helper.DownloadHelper;
 
 /**
  * Action implementing the samples tab.
@@ -179,9 +180,9 @@ public class ProjectHybridizationsAction extends AbstractProjectAssociatedAnnota
             ActionHelper.saveMessage(getText("experiment.hybridizations.noDataToDownload"));
             return "noHybData";
         }
-        setDownloadFileGroups(ProjectFilesAction.computeDownloadGroups(files));
-        return ProjectFilesAction.downloadByGroup(getProject(), files,
-                getDownloadGroupNumber(), getDownloadFileGroups());
+        String baseName = ProjectFilesAction.determineDownloadFileName(getProject()).toString();
+        DownloadHelper.downloadFiles(files, baseName);
+        return null;
     }
 
     /**

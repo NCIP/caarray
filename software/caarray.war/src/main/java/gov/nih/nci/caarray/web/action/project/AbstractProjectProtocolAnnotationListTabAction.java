@@ -135,11 +135,9 @@ public abstract class AbstractProjectProtocolAnnotationListTabAction extends Abs
     private List<Protocol> selectedProtocols = new ArrayList<Protocol>();
     private List<Protocol> protocols = new ArrayList<Protocol>();
     private String protocolName;
-    private List<DownloadGroup> downloadFileGroups = new ArrayList<DownloadGroup>();
     private Set<String> fileTypes = new TreeSet<String>();
     private List<String> fileStatuses = new ArrayList<String>();
     private String fileType;
-    private int downloadGroupNumber = -1;
 
 
     private Set<CaArrayFile> files = new HashSet<CaArrayFile>();
@@ -407,35 +405,6 @@ public abstract class AbstractProjectProtocolAnnotationListTabAction extends Abs
     }
 
     /**
-     * @return the downloadFileGroups
-     */
-    public List<DownloadGroup> getDownloadFileGroups() {
-        return downloadFileGroups;
-    }
-
-    /**
-     * @param downloadFileGroups the downloadFileGroups to set
-     */
-    protected void setDownloadFileGroups(List<DownloadGroup> downloadFileGroups) {
-        this.downloadFileGroups = downloadFileGroups;
-    }
-
-    /**
-     * @return the downloadGroupNumber
-     */
-    public int getDownloadGroupNumber() {
-        return downloadGroupNumber;
-    }
-
-    /**
-     * @param downloadGroupNumber the downloadGroupNumber to set
-     */
-    public void setDownloadGroupNumber(int downloadGroupNumber) {
-        this.downloadGroupNumber = downloadGroupNumber;
-    }
-
-
-    /**
      * @return files to show for download
      */
     public Set<CaArrayFile> getFiles() {
@@ -543,19 +512,6 @@ public abstract class AbstractProjectProtocolAnnotationListTabAction extends Abs
      */
     protected String getDownloadFileTableListSortActionUrl(BioMaterialTypes type) {
         return "/ajax/project/listTab/" + type.getType() + "/downloadFilesListTable.action";
-    }
-
-    /**
-     * Used to render the proper action for the download all files for a Annotation
-     * (ref:projectListTabDownloadColumn.tag).
-     *
-     * @param files all the files for the item in question
-     * @return true if the all files to download for the current item (source, sample, etc..) should use the download
-     *         groups mechanism
-     */
-    public static boolean isWillPerformDownloadByGroups(Collection<CaArrayFile> files) {
-        List<DownloadGroup> computeDownloadGroups = ProjectFilesAction.computeDownloadGroups(files);
-        return computeDownloadGroups.size() > 1 ? true : false;
     }
 
     /**

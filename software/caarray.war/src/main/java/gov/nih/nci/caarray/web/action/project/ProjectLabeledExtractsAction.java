@@ -103,6 +103,7 @@ import com.fiveamsolutions.nci.commons.web.struts2.action.ActionHelper;
 import com.opensymphony.xwork2.validator.annotations.CustomValidator;
 import com.opensymphony.xwork2.validator.annotations.Validation;
 import com.opensymphony.xwork2.validator.annotations.ValidationParameter;
+import gov.nih.nci.caarray.web.helper.DownloadHelper;
 
 /**
  * Action implementing the samples tab.
@@ -258,9 +259,9 @@ public class ProjectLabeledExtractsAction extends AbstractProjectAssociatedAnnot
             ActionHelper.saveMessage(getText("experiment.labeledExtracts.noDataToDownload"));
             return "noLabeledExtractData";
         }
-        setDownloadFileGroups(ProjectFilesAction.computeDownloadGroups(files));
-        return ProjectFilesAction.downloadByGroup(getProject(), files,
-                getDownloadGroupNumber(), getDownloadFileGroups());
+        String baseName = ProjectFilesAction.determineDownloadFileName(getProject()).toString();
+        DownloadHelper.downloadFiles(files, baseName);
+        return null;
     }
 
     /**

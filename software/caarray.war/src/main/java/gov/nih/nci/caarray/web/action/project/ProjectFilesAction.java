@@ -106,7 +106,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -134,6 +133,7 @@ import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.validator.annotations.ExpressionValidator;
 import com.opensymphony.xwork2.validator.annotations.Validation;
 import com.opensymphony.xwork2.validator.annotations.Validations;
+import java.util.Iterator;
 
 /**
  * @author Scott Miller
@@ -201,8 +201,6 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
     private List<String> uploadFileNames = new ArrayList<String>();
     private List<CaArrayFile> selectedFiles = new ArrayList<CaArrayFile>();
     private Set<Long> selectedFileIds = new HashSet<Long>();
-    private List<DownloadGroup> downloadFileGroups = new ArrayList<DownloadGroup>();
-    private int downloadGroupNumber = -1;
     private Set<CaArrayFile> files = new HashSet<CaArrayFile>();
     private String listAction;
     private String fileType;
@@ -253,6 +251,29 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
     public String downloadFiles() {
         setFilesMatchingTypeAndStatus(getProject().getFiles());
         setFileTypeNamesAndStatuses(getProject().getFiles());
+        return Action.SUCCESS;
+    }
+
+    /**
+     * display dowload options.
+     *
+     * @return the string matching the result to follow
+     */
+    @SkipValidation
+    public String downloadOptions() {
+        downloadFiles();
+        Iterator<String> it = getFileTypes().iterator();
+        while (it.hasNext()) {
+            String type = it.next();
+            try {
+                FileType t = FileType.valueOf(type);
+                if (!t.isDerivedArrayData() && !t.isRawArrayData()) {
+                    it.remove();
+                }
+            } catch (IllegalArgumentException e) {
+                it.remove();
+            }
+        }
         return Action.SUCCESS;
     }
 
@@ -829,8 +850,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
             return "denied";
         }
 
-        this.downloadFileGroups = computeDownloadGroups(getSelectedFiles());
-        return downloadByGroup(getProject(), getSelectedFiles(), this.downloadGroupNumber, this.downloadFileGroups);
+        return downloadArchive(getProject(), getSelectedFiles());
     }
 
     /**
@@ -838,74 +858,34 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
      * group.
      *
      * @param project the project
-     * @param files all selected files
-     * @param groupNumber identifies the group to download
-     * @param downloadGroups list of all download groups
+     * @param contentFiles all selected files
      * @return downloadGroups if no group number is specified and there are multiple groups
      * @throws IOException if there is an error writing to the stream
      */
-    protected static String downloadByGroup(Project project, Collection<CaArrayFile> files, int groupNumber,
-            List<DownloadGroup> downloadGroups) throws IOException {
-        if (downloadGroups.size() == 1) {
-            DownloadHelper.downloadFiles(files, determineDownloadFileName(project));
-            return null;
-        } else if (groupNumber > 0) {
-            DownloadGroup group = downloadGroups.get(groupNumber - 1);
-            List<CaArrayFile> groupFiles = new ArrayList<CaArrayFile>();
-            for (CaArrayFile file : files) {
-                if (group.getFileIds().contains(file.getId())) {
-                    groupFiles.add(file);
-                }
-            }
-            DownloadHelper.downloadFiles(groupFiles,
-                    determineDownloadFileName(project, groupNumber, downloadGroups.size()));
-            return null;
-        } else {
-            return "downloadGroups";
+    protected String downloadArchive(Project project, Collection<CaArrayFile> contentFiles) throws IOException {
+        StringBuilder baseName = determineDownloadFileName(project);
+        if (getFileType() != null) {
+            baseName.append('-').append(getFileType());
         }
+        if (getFileStatus() != null) {
+            baseName.append('-').append(getFileStatus());
+        }
+        DownloadHelper.downloadFiles(contentFiles, baseName.toString());
+        return null;
+
     }
 
     /**
-     * Divides the files into download groups.
-     *
-     * @param files the files to put into download groups
-     * @return a list of download file groups
+     * Download an archive containg files filterd by fileType property.
+     * @return null
+     * @throws IOException if there is an error writing to the stream.
      */
-    protected static List<DownloadGroup> computeDownloadGroups(Collection<CaArrayFile> files) {
-        List<DownloadGroup> downloadGroups = new ArrayList<DownloadGroup>();
-        List<CaArrayFile> sortedFiles = new ArrayList<CaArrayFile>(files);
-        Collections.sort(sortedFiles, DownloadHelper.CAARRAYFILE_NAME_COMPARATOR_INSTANCE);
-        for (CaArrayFile file : sortedFiles) {
-            addToDownloadGroups(file, downloadGroups);
-        }
-        return downloadGroups;
+    @SkipValidation
+    public String downloadByType() throws IOException {
+        downloadFiles();
+        getSelectedFiles().addAll(getFiles());
+        return downloadArchive(getProject(), getSelectedFiles());
     }
-
-    /**
-     * Add given file to the download groups. The goal is to find the best possible group to put it, such that the total
-     * number of groups will be minimized. the algorithm is to put it in the group which will then have the closest to
-     * max allowable size without going over
-     *
-     * @param file the file to add
-     */
-    private static void addToDownloadGroups(CaArrayFile file, List<DownloadGroup> downloadGroups) {
-        DownloadGroup bestGroup = null;
-        long maxNewSize = -1;
-        for (DownloadGroup group : downloadGroups) {
-            long newGroupSize = group.getTotalCompressedSize() + file.getCompressedSize();
-            if (newGroupSize < MAX_DOWNLOAD_SIZE && newGroupSize > maxNewSize) {
-                maxNewSize = newGroupSize;
-                bestGroup = group;
-            }
-        }
-        if (bestGroup == null) {
-            bestGroup = new DownloadGroup();
-            downloadGroups.add(bestGroup);
-        }
-        bestGroup.addFile(file);
-    }
-
-
 
     /**
      * Returns the filename for a zip of files for the given project, assuming that the download will not be grouped.
@@ -913,10 +893,10 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
      * @param project the project whose files are downloaded
      * @return the filename
      */
-    public static String determineDownloadFileName(Project project) {
+    public static StringBuilder determineDownloadFileName(Project project) {
         StringBuilder name = new StringBuilder("caArray_").append(project.getExperiment().getPublicIdentifier())
-                .append("_files.zip");
-        return name.toString();
+                .append("_files");
+        return name;
     }
 
     /**
@@ -952,20 +932,6 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
             return false;
         }
         return true;
-    }
-
-    /**
-     * Returns the filename for a zip of files for the given project, when the download is grouped.
-     *
-     * @param project the project whose files are downloaded
-     * @param groupNumber the number of the group whose files are downloaded
-     * @param numberOfGroups the total number of groups
-     * @return the filename
-     */
-    public static String determineDownloadFileName(Project project, int groupNumber, int numberOfGroups) {
-        StringBuilder name = new StringBuilder("caArray_").append(project.getExperiment().getPublicIdentifier());
-        name.append("_").append(groupNumber).append("_of_").append(numberOfGroups).append("_files.zip");
-        return name.toString();
     }
 
     /**
@@ -1282,27 +1248,6 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
      */
     public void setFileTypes(Set<String> fileTypes) {
         this.fileTypes = fileTypes;
-    }
-
-    /**
-     * @return the downloadFileGroups
-     */
-    public List<DownloadGroup> getDownloadFileGroups() {
-        return downloadFileGroups;
-    }
-
-    /**
-     * @return the downloadGroupNumber
-     */
-    public int getDownloadGroupNumber() {
-        return downloadGroupNumber;
-    }
-
-    /**
-     * @param downloadGroupNumber the downloadGroupNumber to set
-     */
-    public void setDownloadGroupNumber(int downloadGroupNumber) {
-        this.downloadGroupNumber = downloadGroupNumber;
     }
 
     /**

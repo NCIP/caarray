@@ -167,19 +167,18 @@
             <result name="noExtractData" type="redirect-action">${editMode ? '/protected/' : ''}project/${editMode ? 'edit' : 'details'}?project.id=${project.id}&amp;initialTab=annotations&amp;initialTab2=extracts</result>
             <result name="noLabeledExtractData" type="redirect-action">${editMode ? '/protected/' : ''}project/${editMode ? 'edit' : 'details'}?project.id=${project.id}&amp;initialTab=annotations&amp;initialTab2=labeledExtracts</result>
             <result name="noHybData" type="redirect-action">${editMode ? '/protected/' : ''}project/${editMode ? 'edit' : 'details'}?project.id=${project.id}&amp;initialTab=annotations&amp;initialTab2=hybridizations</result>
-            <result name="downloadGroups">/WEB-INF/pages/project/annotationAssociatedDownload.jsp?tab={1}</result>
             <result name="downloadFiles">/WEB-INF/pages/project/tabCommon/downloadFiles.jsp</result>
             <result name="downloadFilesList">/WEB-INF/pages/project/tabCommon/downloadFilesList.jsp</result>
             <result name="downloadFilesListTable">/WEB-INF/pages/project/tabCommon/downloadFilesListTable.jsp</result>
             <result name="generateAssayList">/WEB-INF/pages/project/generateAssayList.jsp</result>
             <result name="factorValuesList">/WEB-INF/pages/project/tab{1}/factorValuesList.jsp</result>
+            <result name="downloadOptions">/WEB-INF/pages/project/tabCommon/downloadOptions.jsp</result>
         </action>
 
         <action name="project/files/*" class="gov.nih.nci.caarray.web.action.project.ProjectFilesAction" method="{1}">
             <result name="upload">/WEB-INF/pages/project/files/uploadComplete.jsp</result>
             <result name="input">/error.jsp</result>
             <result name="denied" type="chain">project/details</result>
-            <result name="downloadGroups">/WEB-INF/pages/project/files/downloadFileGroups.jsp</result>
         </action>
 
         <action name="ajax/project/files/deleteSupplementalFiles" class="gov.nih.nci.caarray.web.action.project.ProjectFilesAction" method="deleteSupplementalFiles">
@@ -201,7 +200,6 @@
             <result name="listImportedForm">/WEB-INF/pages/project/files/listImportedForm.jsp</result>
             <result name="uploadInBackground">/WEB-INF/pages/project/files/uploadBackground.jsp</result>
             <result name="table">/WEB-INF/pages/project/files/listTable.jsp</result>
-            <result name="downloadGroups">/WEB-INF/pages/project/files/downloadFileGroups.jsp</result>
             <result name="success">/WEB-INF/pages/project/files/{1}.jsp</result>
         </action>
 

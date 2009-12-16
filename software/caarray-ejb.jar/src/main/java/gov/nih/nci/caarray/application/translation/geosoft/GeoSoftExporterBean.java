@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.application.translation.geosoft;
 
+import gov.nih.nci.caarray.application.fileaccess.FileAccessUtils;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.DerivedArrayData;
@@ -108,17 +109,12 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.zip.GZIPOutputStream;
 import javax.ejb.Local;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
-import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
-import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
-import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
-import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.io.output.CloseShieldOutputStream;
@@ -139,7 +135,6 @@ public class GeoSoftExporterBean implements GeoSoftExporter {
     private static final Logger LOG = Logger.getLogger(GeoSoftExporterBean.class);
     private static final String AFFYMETRIX = "Affymetrix";
     // CHECKSTYLE:OFF magic numbers
-    private static final long MAX_ZIP_SIZE = 1024L * 1024L * (768L + 1024L); // ~ 1.8GB
     private static final int ONE_KB = 1024;
     // CHECKSTYLE:ON
 
@@ -317,7 +312,7 @@ public class GeoSoftExporterBean implements GeoSoftExporter {
         infos.add(new PackagingInfo(name, method));
 
         long size = getEstimatedPackageSize(experiment);
-        if (size < MAX_ZIP_SIZE) {
+        if (size < PackagingInfo.MAX_ZIP_SIZE) {
             name = experiment.getPublicIdentifier() + PackagingInfo.PackagingMethod.ZIP.getExtension();
             method = PackagingInfo.PackagingMethod.ZIP;
             infos.add(new PackagingInfo(name, method));
@@ -345,20 +340,14 @@ public class GeoSoftExporterBean implements GeoSoftExporter {
 
         OutputStream closeShield = new CloseShieldOutputStream(out);
         Experiment experiment = project.getExperiment();
-        boolean addReadMe = (method == PackagingInfo.PackagingMethod.TGZ);
-        ArchiveOutputStream arOut;
-        switch(method) {
-            case ZIP:
-                ensureZippable(project);
-                arOut = new ZipArchiveOutputStream(closeShield);
-                break;
-            case TGZ:
-                GZIPOutputStream gz = new GZIPOutputStream(closeShield);
-                arOut = new TarArchiveOutputStream(gz);
-                break;
-            default:
-                throw new UnsupportedOperationException(method.name());
+        boolean addReadMe = false;
+        if (method == PackagingInfo.PackagingMethod.TGZ) {
+            addReadMe = true;
+        } else {
+            ensureZippable(project);
         }
+        
+        ArchiveOutputStream arOut = method.createArchiveOutputStream(closeShield);
         try {
             exportArchive(experiment, permaLinkUrl, addReadMe, arOut);
         } finally {
@@ -379,20 +368,17 @@ public class GeoSoftExporterBean implements GeoSoftExporter {
 
     }
 
+    @SuppressWarnings({ "PMD.AvoidInstanceofChecksInCatchClause", "PMD.AvoidThrowingRawExceptionTypes" })
     private void exportArchive(Experiment experiment, String permaLinkUrl, boolean addReadme, ArchiveOutputStream ar)
             throws IOException {
         if (!validateForExport(experiment).isEmpty()) {
             throw new IllegalArgumentException("experiment not valid for export");
         }
-        try {
-            generateSoftFile(experiment, permaLinkUrl, ar);
-            addDataFiles(experiment, ar);
-            if (addReadme) {
-                addReadmeFile(ar);
-            }
-        } catch (Exception err) {
-            LOG.error("failed to create archive", err);
-            handleException(err, ar);
+
+        generateSoftFile(experiment, permaLinkUrl, ar);
+        addDataFiles(experiment, ar);
+        if (addReadme) {
+            addReadmeFile(ar);
         }
     }
 
@@ -404,7 +390,8 @@ public class GeoSoftExporterBean implements GeoSoftExporter {
         GeoSoftFileWriterUtil.writeSoftFile(experiment, permaLinkUrl, out);
         out.close();
 
-        ArchiveEntry ae = createArchiveEntry(zout, experiment.getPublicIdentifier() + ".soft.txt", bout.size());
+        ArchiveEntry ae = FileAccessUtils.createArchiveEntry(zout, experiment.getPublicIdentifier() + ".soft.txt",
+                bout.size());
         zout.putArchiveEntry(ae);        
         bout.writeTo(zout);
         zout.closeArchiveEntry();
@@ -421,6 +408,10 @@ public class GeoSoftExporterBean implements GeoSoftExporter {
                 size += dad.getDataFile().getCompressedSize();
             }
         }
+        for (CaArrayFile f : experiment.getProject().getSupplementalFiles()) {
+            size += f.getCompressedSize();
+        }
+
         // estimate GEO SOFT file size and zip entry overhead.
         size += experiment.getHybridizations().size() * ONE_KB;
         return size;
@@ -432,7 +423,8 @@ public class GeoSoftExporterBean implements GeoSoftExporter {
             addDataFiles(h.getDerivedDataCollection(), zout);
         }
         for (CaArrayFile f : experiment.getProject().getSupplementalFiles()) {
-            addDataFile(f, zout);
+            FileAccessUtils.addFileToArchive(f, zout);
+            f.clearAndEvictContents();
         }
     }
 
@@ -440,34 +432,9 @@ public class GeoSoftExporterBean implements GeoSoftExporter {
             throws IOException {
         for (AbstractArrayData aad : dataCollection) {
             CaArrayFile f = aad.getDataFile();
-            addDataFile(f, zout);
+            FileAccessUtils.addFileToArchive(f, zout);
+            f.clearAndEvictContents();
         }
-    }
-
-    private void addDataFile(CaArrayFile f, ArchiveOutputStream zout) throws IOException {
-        ArchiveEntry ae = createArchiveEntry(zout, f.getName(), f.getUncompressedSize());
-        zout.putArchiveEntry(ae);
-        InputStream is = f.readContents();
-        IOUtils.copy(is, zout);
-        is.close();
-        zout.closeArchiveEntry();
-    }
-
-    /**
-     * This method creates an ArchiveEntry w/o the need of a File required by
-     * ArchiveOutputStream.createArchiveEntry(File inputFile, String entryName).
-     */
-    private static ArchiveEntry createArchiveEntry(ArchiveOutputStream aos, String name, long size) {
-        if (aos instanceof TarArchiveOutputStream) {
-            TarArchiveEntry te = new TarArchiveEntry(name);
-            te.setSize(size);
-            return te;
-        } else if (aos instanceof ZipArchiveOutputStream) {
-            ZipArchiveEntry ze = new ZipArchiveEntry(name);
-            ze.setSize(size);
-            return ze;
-        }
-        throw new UnsupportedOperationException("unsupported archive " + aos.getClass());
     }
 
     private void addReadmeFile(ArchiveOutputStream ar) throws IOException {
@@ -476,38 +443,9 @@ public class GeoSoftExporterBean implements GeoSoftExporter {
         IOUtils.copy(is, baos);
         is.close();
 
-        ArchiveEntry ae = createArchiveEntry(ar, "README.txt", baos.size());
+        ArchiveEntry ae = FileAccessUtils.createArchiveEntry(ar, "README.txt", baos.size());
         ar.putArchiveEntry(ae);
         baos.writeTo(ar);
         ar.closeArchiveEntry();
-    }
-
-    @SuppressWarnings("PMD.AvoidThrowingRawExceptionTypes")
-    private void handleException(Exception err, ArchiveOutputStream ar) throws IOException {
-        try {
-            ByteArrayOutputStream bout = new ByteArrayOutputStream();
-            Writer w = new OutputStreamWriter(bout, "UTF-8");
-            PrintWriter out = new PrintWriter(w);
-            out.println("An error occured during the creation of this archive.");
-            out.println("It may be malformed, and unacceptable by GEO SOFT");
-            out.println();
-            err.printStackTrace(out);
-            out.close();
-
-            ArchiveEntry ae = createArchiveEntry(ar, "ERROR.txt", bout.size());
-            ar.putArchiveEntry(ae);
-            bout.writeTo(ar);
-            ar.closeArchiveEntry();
-        } catch (Exception e) {
-            LOG.error(e);
-        } finally {
-            if (err instanceof IOException) {
-                throw (IOException) err;
-            } else if (err instanceof RuntimeException) {
-                throw (RuntimeException) err;
-            } else {
-                throw new RuntimeException("failed to create archive", err);
-            }
-        }
     }
 }

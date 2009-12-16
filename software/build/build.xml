@@ -1051,7 +1051,6 @@
                 <include name="${google-collections.jar}"/>
                 <include name="${commons-logging.jar}"/>
                 <include name="${commons-io.jar}"/>
-                <include name="${json-lib.jar}"/>
                 <include name="${log4j.jar}"/>
                 <include name="${spring.jar}"/>
                 <include name="${castor.jar}"/>
@@ -1093,20 +1092,30 @@
         </path>
         <pathtofileset name="grid.compile.dependencies.fileset" pathrefid="grid.compile.dependencies.path" dir="${project.lib}"/>
 
-        <path id="war.outside.app.server.dependencies.path">
+
+        <!-- all jars that should go in the caarray.ear!/lib/ -->
+        <path id="war.compile.ear-provided.depenendencies.path">
+            <fileset id="war.compile.ear-provided.depenendencies.fileset" dir="${project.lib}">
+                <include name="${commons-compress.jar}"/>
+            </fileset>
             <fileset refid="common.compile.dependencies.fileset"/>
-            <fileset id="war.outside.app.server.partial.dependencies.fileset" dir="${project.lib}">
-                <include name="${acegi-security.jar}"/>
-                <include name="${acegi-security-jboss.jar}"/>
-                <include name="${spring-mock.jar}"/>
-                <include name="${commons-discovery.jar}"/>
-                <include name="${commons-el.jar}"/>
-                <include name="${commons-fileupload.jar}"/>
+            <path refid="ejb.compile.dependencies.path"/>
+        </path>
+        <pathtofileset name="war.compile.ear-provided.depenendencies.fileset" pathrefid="war.compile.ear-provided.depenendencies.path" dir="${project.lib}"/>
+
+        <!-- all jars that are provided by the container -->
+        <path id="war.compile.container-provided.depenendencies.path" >
+            <fileset refid="xerces-J.jar.fileset"/>
+            <fileset refid="xercesImpl.jar.fileset"/>
+        </path>
+        <pathtofileset name="war.compile.container-provided.depenendencies.fileset" pathrefid="war.compile.container-provided.depenendencies.path" dir="${project.lib}"/>
+
+        <path id="war.compile.dependencies.path">
+            <!-- all jars that should go in caarray.war!/WEB-INF/lib/ -->
+            <fileset id="war.compile.war-provided.depenendencies.fileset" dir="${project.lib}">
                 <include name="${displaytag.jar}"/>
                 <include name="${freemarker.jar}"/>
-                <include name="${jstl.jar}"/>
-                <include name="${standard.jar}"/>
-                <include name="${junit.jar}"/>
+                <include name="${commons-fileupload.jar}"/>
                 <include name="${oscache.jar}"/>
                 <include name="${sitemesh.jar}"/>
                 <include name="${urlrewrite.jar}"/>
@@ -1118,23 +1127,18 @@
                 <include name="${ezmorph.jar}"/>
                 <include name="${nci-commons-struts2.jar}"/>
                 <include name="${struts2-core.jar}"/>
+                <include name="${jstl.jar}"/>
+                <include name="${standard.jar}"/>
             </fileset>
-        </path>
 
-        <pathtofileset name="war.outside.app.server.dependencies.fileset" pathrefid="war.outside.app.server.dependencies.path" dir="${project.lib}"/>
+            <!-- all jars that should go in the caarray.ear!/lib/ -->
+            <fileset refid="war.compile.ear-provided.depenendencies.fileset"/>
 
-        <path id="war.inside.app.server.dependencies.path">
-            <fileset refid="war.outside.app.server.partial.dependencies.fileset"/>
-            <fileset id="war.inside.app.server.partial.dependencies.fileset" dir="${project.lib}">
-                <include name="${commons-codec.jar}"/>
-                <include name="${commons-collections.jar}"/>
-                <include name="${commons-digester.jar}"/>
-                <include name="${struts2-codebehind-plugin.jar}"/>
-                <include name="${struts2-sitemesh-plugin.jar}"/>
-                <include name="${struts2-spring-plugin.jar}"/>
-            </fileset>
+            <!-- all jars that are provided by the container -->
+            <fileset refid="war.compile.container-provided.depenendencies.fileset" />
+                
         </path>
-        <pathtofileset name="war.inside.app.server.dependencies.fileset" dir="${project.lib}" pathrefid="war.inside.app.server.dependencies.path"/>
+        <pathtofileset name="war.compile.dependencies.fileset" pathrefid="war.compile.dependencies.path" dir="${project.lib}"/>
 
         <path id="pmd.dependencies.path">
             <fileset refid="asm.3.0.jar.fileset"/>
@@ -1204,12 +1208,13 @@
         </path>
 
         <path id="war.test.dependencies.path">
-            <fileset refid="common.compile.dependencies.fileset"/>
-            <fileset refid="war.outside.app.server.dependencies.fileset"/>
-            <fileset refid="jboss.dependencies.fileset"/>
+            <fileset refid="war.compile.dependencies.fileset"/>
             <fileset refid="test.dependencies.fileset"/>
+             <fileset dir="${project.lib}">
+                <include name="${spring-mock.jar}"/>
+            </fileset>
         </path>
-
+        
         <path id="test.grid.dependencies.path">
             <fileset refid="grid.compile.dependencies.fileset"/>
             <fileset refid="jboss.dependencies.fileset"/>
@@ -1557,7 +1562,7 @@
                 <pathelement location="${caarray-common.classes.dir}" />
                 <pathelement location="${caarray-ejb.classes.dir}" />
             </classpath>
-            <classpath refid="war.outside.app.server.dependencies.path" />
+            <classpath refid="war.compile.dependencies.path" />
         </javac>
     </target>
 
@@ -1893,7 +1898,7 @@
                     <attribute name="Implementation-Vendor" value="5AM Solutions" />
                 </section>
             </manifest>
-            <lib refid="war.inside.app.server.dependencies.fileset"/>
+            <lib refid="war.compile.war-provided.depenendencies.fileset"/>
             <zipfileset dir="${caarray-war.target.dir}/help/caArray Online Help/Output/WebWorks Help 5.0/caArray Online Help" prefix="help" />
         </war>
     </target>
@@ -1928,9 +1933,29 @@
             </copy>
             <copy todir="${caarray-ear.target.dir}/lib" flatten="true">
                 <path refid="ejb.compile.dependencies.path" />
-                <path refid="war.outside.app.server.dependencies.path" />
+                <path refid="war.compile.ear-provided.depenendencies.path" />
             </copy>
-            <ear destfile="${caarray.ear}" appxml="${caarray-ear.resources.dir}/application.xml" duplicate="preserve">
+            <pathconvert pathsep="|" property="flattened.ear.lib.dependencies">
+                <fileset dir="${caarray-ear.target.dir}/lib"/>
+                <flattenmapper />
+            </pathconvert>
+            <property name="application.xml.fragment.file" location="${caarray-ear.target.dir}/application.xml.fragment"/>
+            <echo append="false" file="${application.xml.fragment.file}"><![CDATA[
+            <!-- dependency jars -->]]></echo>
+            <for param="file" list="${flattened.ear.lib.dependencies}" delimiter="|">
+                <sequential>
+                    <echo append="true" file="${application.xml.fragment.file}"><![CDATA[
+    <module xmlns="http://java.sun.com/xml/ns/j2ee">
+        <java>lib/@{file}</java>
+    </module>]]></echo>
+                </sequential>
+            </for>
+            <echo append="true" file="${application.xml.fragment.file}"><![CDATA[
+            <!-- end dependency jars -->]]></echo>
+            <xmltask source="${caarray-ear.resources.dir}/application.xml" dest="${caarray-ear.target.dir}/application.xml">
+                <insert path="//*[local-name()='module'][last()]" file="${application.xml.fragment.file}" position="after"/>
+            </xmltask>
+            <ear destfile="${caarray.ear}" appxml="${caarray-ear.target.dir}/application.xml" duplicate="preserve">
                 <metainf dir="${caarray-ear.target.dir}/xml" includes="*.xml" excludes="jboss-service.xml" />
                 <manifest>
                     <section name="gov/nih/nci/caarray/">

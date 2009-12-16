@@ -82,10 +82,12 @@
  */
 package gov.nih.nci.caarray.web.action.project;
 
+import java.io.IOException;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertSame;
 import gov.nih.nci.caarray.application.GenericDataService;
 import gov.nih.nci.caarray.application.GenericDataServiceStub;
 import gov.nih.nci.caarray.application.file.FileManagementService;
@@ -388,71 +390,6 @@ public class ProjectFilesActionTest extends AbstractDownloadTest {
         assertEquals(5, this.action.getSelectedFiles().size());
     }
 
-    @Test
-    public void testDownloadGroups() throws Exception {
-        FileAccessServiceStub fas = new FileAccessServiceStub();
-        TemporaryFileCacheLocator.setTemporaryFileCacheFactory(new TemporaryFileCacheStubFactory(fas));
-        fas.add(MageTabDataFiles.MISSING_TERMSOURCE_IDF);
-        fas.add(MageTabDataFiles.MISSING_TERMSOURCE_SDRF);
-        fas.add(MageTabDataFiles.CAARRAY1X_IDF);
-
-
-        Project p = new Project();
-        p.getExperiment().setPublicIdentifier("test");
-        CaArrayFile f1 = new CaArrayFile();
-        setCompressedSize(f1, 1024 * 1024 * 1024);
-        setId(f1, 1L);
-        f1.setName("missing_term_source.idf");
-        CaArrayFile f2 = new CaArrayFile();
-        setCompressedSize(f2, 1024 * 1024 * 384);
-        setId(f2, 2L);
-        f2.setName("missing_term_source.sdrf");
-        CaArrayFile f3 = new CaArrayFile();
-        setCompressedSize(f3, 1024 * 1024 * 512);
-        setId(f3, 3L);
-        f3.setName("experiment-id-1015897540503881.idf");
-        Set<Long> l = new HashSet<Long>();
-        l.add(1L);
-        l.add(2L);
-        l.add(3L);
-        // need to catch exception as these are test files and will not be retrieved
-        try {
-            action.setSelectedFileIds(l);
-        } catch(Exception e) {
-            //NOOP
-        }
-        action.setSelectedFiles(Arrays.asList(f1, f2, f3));
-        action.setProject(p);
-
-        String result = action.download();
-        assertEquals("downloadGroups", result);
-        assertEquals(2, action.getDownloadFileGroups().size());
-        assertEquals(1, action.getDownloadFileGroups().get(0).getFileNames().size());
-        assertTrue(action.getDownloadFileGroups().get(0).getFileNames().contains("experiment-id-1015897540503881.idf"));
-               assertEquals(2, action.getDownloadFileGroups().get(1).getFileNames().size());
-        assertTrue(action.getDownloadFileGroups().get(1).getFileNames().contains("missing_term_source.sdrf"));
-        assertTrue(action.getDownloadFileGroups().get(1).getFileNames().contains("missing_term_source.idf"));
-
-        action.setDownloadGroupNumber(2);
-        result = action.download();
-        assertNull(result);
-
-        assertEquals("application/zip", mockResponse.getContentType());
-        assertEquals("filename=\"caArray_test_2_of_2_files.zip\"", mockResponse.getHeader("Content-disposition"));
-
-        ZipInputStream zis = new ZipInputStream(new ByteArrayInputStream(mockResponse.getContentAsByteArray()));
-        ZipEntry ze = zis.getNextEntry();
-        assertNotNull(ze);
-        assertEquals("missing_term_source.idf", ze.getName());
-        ze = zis.getNextEntry();
-        assertNotNull(ze);
-        assertEquals("missing_term_source.sdrf", ze.getName());
-        ze = zis.getNextEntry();
-        assertEquals(null, ze);
-        IOUtils.closeQuietly(zis);
-    }
-
-
     private void setCompressedSize(CaArrayFile f, int size) {
         try {
             Method m = CaArrayFile.class.getDeclaredMethod("setCompressedSize", Integer.TYPE);
@@ -750,10 +687,12 @@ public class ProjectFilesActionTest extends AbstractDownloadTest {
         Project p = new Project();
         p.getExperiment().setPublicIdentifier("test");
         CaArrayFile f1 = new CaArrayFile();
+        f1.writeContents(IOUtils.toInputStream(""));
         setId(f1, 1L);
         setCompressedSize(f1, 1024 * 1024 * 1024);
         f1.setName("missing_term_source.idf");
         CaArrayFile f2 = new CaArrayFile();
+        f2.writeContents(IOUtils.toInputStream(""));
         setId(f2, 2L);
         setCompressedSize(f2, 1024 * 1024 * 384);
         f2.setName("missing_term_source.sdrf");
@@ -800,10 +739,12 @@ public class ProjectFilesActionTest extends AbstractDownloadTest {
         Project p = new Project();
         p.getExperiment().setPublicIdentifier("test");
         CaArrayFile f1 = new CaArrayFile();
+        f1.writeContents(IOUtils.toInputStream(""));
         setId(f1, 1L);
         setCompressedSize(f1, 1024 * 1024 * 1024);
         f1.setName("missing_term_source.idf");
         CaArrayFile f2 = new CaArrayFile();
+        f2.writeContents(IOUtils.toInputStream(""));
         setId(f2, 2L);
         setCompressedSize(f2, 1024 * 1024 * 384);
         f2.setName("missing_term_source.sdrf");
@@ -829,7 +770,7 @@ public class ProjectFilesActionTest extends AbstractDownloadTest {
     }
 
     @Test
-    public void validateDownloadfiles() {
+    public void validateDownloadfiles() throws IOException {
         assertEquals(Action.SUCCESS, this.action.downloadFiles());
         final SortedSet<CaArrayFile> fileSet = getDownloadedFileSet();
 
@@ -869,7 +810,7 @@ public class ProjectFilesActionTest extends AbstractDownloadTest {
     }
 
     @Test
-    public void validateListImportedForm() {
+    public void validateListImportedForm() throws IOException {
         final SortedSet<CaArrayFile> fileSet = getImportedFileSet();
 
         TestProject project = new TestProject();
@@ -1011,7 +952,7 @@ public class ProjectFilesActionTest extends AbstractDownloadTest {
     private static final String KNOWN_FILE_TYPE = "(Supported File Types)";
 
     @Test
-    public void testListUnimported(){
+    public void testListUnimported() throws IOException{
 
         assertEquals(0,action.getFiles().size());
         final SortedSet<CaArrayFile> fileSet = getUnimportedFileSet();
@@ -1062,40 +1003,46 @@ public class ProjectFilesActionTest extends AbstractDownloadTest {
         assertEquals(2,action.getFileStatusCountMap().get(FileStatus.UPLOADED).intValue());
     }
 
-    private SortedSet<CaArrayFile> getUnimportedFileSet() {
+    private SortedSet<CaArrayFile> getUnimportedFileSet() throws IOException {
         SortedSet<CaArrayFile> fileSet = new TreeSet<CaArrayFile>();
 
         CaArrayFile file1 = new CaArrayFile();
+        file1.writeContents(IOUtils.toInputStream(""));
         file1.setName("file1");
         file1.setType(FileType.AFFYMETRIX_CDF.name());
         file1.setFileStatus(FileStatus.IMPORT_FAILED);
         fileSet.add(file1);
 
         CaArrayFile file2 = new CaArrayFile();
+        file2.writeContents(IOUtils.toInputStream(""));
         file2.setName("file2");
         file2.setType(FileType.AFFYMETRIX_CDF.name());
         file2.setFileStatus(FileStatus.IMPORT_FAILED);
         fileSet.add(file2);
 
         CaArrayFile file3 = new CaArrayFile();
+        file3.writeContents(IOUtils.toInputStream(""));
         file3.setName("file3");
         file3.setType(FileType.AGILENT_CSV.name());
         file3.setFileStatus(FileStatus.IMPORT_FAILED);
         fileSet.add(file3);
 
         CaArrayFile file4 = new CaArrayFile();
+        file4.writeContents(IOUtils.toInputStream(""));
         file4.setName("file4");
         file4.setType(FileType.AGILENT_CSV.name());
         file4.setFileStatus(FileStatus.UPLOADED);
         fileSet.add(file4);
 
         CaArrayFile file5 = new CaArrayFile();
+        file5.writeContents(IOUtils.toInputStream(""));
         file5.setName("file5");
         file5.setFileType(FileType.MAGE_TAB_ADF);
         file5.setFileStatus(FileStatus.UPLOADED);
         fileSet.add(file5);
 
         CaArrayFile file6 = new CaArrayFile();
+        file6.writeContents(IOUtils.toInputStream(""));
         file6.setName("file6");
         file6.setFileType(null);
         file6.setFileStatus(FileStatus.UPLOADED);
@@ -1103,22 +1050,25 @@ public class ProjectFilesActionTest extends AbstractDownloadTest {
         return fileSet;
     }
 
-    private SortedSet<CaArrayFile> getImportedFileSet() {
+    private SortedSet<CaArrayFile> getImportedFileSet() throws IOException {
         SortedSet<CaArrayFile> fileSet = new TreeSet<CaArrayFile>();
 
         CaArrayFile file1 = new CaArrayFile();
+        file1.writeContents(IOUtils.toInputStream(""));
         file1.setName("file1");
         file1.setType(FileType.AFFYMETRIX_CDF.name());
         file1.setFileStatus(FileStatus.IMPORTED);
         fileSet.add(file1);
 
         CaArrayFile file2 = new CaArrayFile();
+        file2.writeContents(IOUtils.toInputStream(""));
         file2.setName("file2");
         file2.setType(FileType.AGILENT_CSV.name());
         file2.setFileStatus(FileStatus.VALIDATED);
         fileSet.add(file2);
 
         CaArrayFile file3 = new CaArrayFile();
+        file3.writeContents(IOUtils.toInputStream(""));
         file3.setName("file3");
         file3.setType(null);
         file3.setFileStatus(FileStatus.VALIDATED);
@@ -1126,34 +1076,78 @@ public class ProjectFilesActionTest extends AbstractDownloadTest {
         return fileSet;
     }
 
-    private SortedSet<CaArrayFile> getDownloadedFileSet() {
+    private SortedSet<CaArrayFile> getDownloadedFileSet() throws IOException {
         SortedSet<CaArrayFile> fileSet = new TreeSet<CaArrayFile>();
 
         CaArrayFile file1 = new CaArrayFile();
+        file1.writeContents(IOUtils.toInputStream(""));
         file1.setName("file1");
         file1.setType(FileType.AFFYMETRIX_CDF.name());
         file1.setFileStatus(FileStatus.IMPORTED_NOT_PARSED);
         fileSet.add(file1);
 
         CaArrayFile file2 = new CaArrayFile();
+        file2.writeContents(IOUtils.toInputStream(""));
         file2.setName("file2");
         file2.setType(FileType.AGILENT_CSV.name());
         file2.setFileStatus(FileStatus.IMPORTED);
         fileSet.add(file2);
 
         CaArrayFile file3 = new CaArrayFile();
+        file3.writeContents(IOUtils.toInputStream(""));
         file3.setName("file3");
         file3.setType(null);
         file3.setFileStatus(FileStatus.VALIDATED);
         fileSet.add(file3);
 
         CaArrayFile file4 = new CaArrayFile();
+        file4.writeContents(IOUtils.toInputStream(""));
         file4.setName("file4");
         file4.setType(FileType.GENEPIX_GAL.name());
         file4.setFileStatus(FileStatus.VALIDATED_NOT_PARSED);
         fileSet.add(file4);
         return fileSet;
     }
+
+
+    @Test
+    public void testDownloadOptions() throws IOException {
+        CaArrayFile file = new CaArrayFile();
+        file.writeContents(IOUtils.toInputStream(""));
+        file.setProject(this.action.getProject());
+        file.setFileStatus(FileStatus.IMPORTED);
+        file.setFileType(FileType.GEO_GPL);
+        this.action.getProject().getFiles().add(file);
+
+        file = new CaArrayFile();
+        file.writeContents(IOUtils.toInputStream(""));
+        file.setProject(this.action.getProject());
+        file.setFileStatus(FileStatus.IMPORTED);
+        file.setFileType(FileType.AFFYMETRIX_CEL);
+        this.action.getProject().getFiles().add(file);
+
+        file = new CaArrayFile();
+        file.writeContents(IOUtils.toInputStream(""));
+        file.setProject(this.action.getProject());
+        file.setFileStatus(FileStatus.IMPORTED);
+        file.setFileType(FileType.AFFYMETRIX_CHP);
+        this.action.getProject().getFiles().add(file);
+
+        file = new CaArrayFile();
+        file.writeContents(IOUtils.toInputStream(""));
+        file.setProject(this.action.getProject());
+        file.setFileStatus(FileStatus.IMPORTED);
+        file.setFileType(FileType.MAGE_TAB_IDF);
+        this.action.getProject().getFiles().add(file);
+
+        String result = this.action.downloadOptions();
+        assertEquals("success", result);
+
+        assertEquals(2, this.action.getFileTypes().size());
+        assertTrue(this.action.getFileTypes().contains(FileType.AFFYMETRIX_CEL.name()));
+        assertTrue(this.action.getFileTypes().contains(FileType.AFFYMETRIX_CHP.name()));
+    }
+
 
     private class LocalHttpServletResponse extends MockHttpServletResponse {
         private StringWriter out = new StringWriter();

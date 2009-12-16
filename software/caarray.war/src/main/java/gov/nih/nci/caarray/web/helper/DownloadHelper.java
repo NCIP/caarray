@@ -1,9 +1,9 @@
 package gov.nih.nci.caarray.web.helper;
 
 import gov.nih.nci.caarray.application.fileaccess.FileAccessUtils;
+import gov.nih.nci.caarray.application.translation.geosoft.PackagingInfo;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -14,7 +14,8 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.io.IOUtils;
+import org.apache.commons.compress.archivers.ArchiveOutputStream;
+import org.apache.commons.io.output.CloseShieldOutputStream;
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
@@ -28,6 +29,7 @@ import org.apache.struts2.ServletActionContext;
 public final class DownloadHelper {
     private static final String DOWNLOAD_CONTENT_TYPE = "application/zip";
     private static final Logger LOG = Logger.getLogger(DownloadHelper.class);
+
     /**
      * an instance of a Comparator that compares CaArrayFile instances by name.
      */
@@ -50,25 +52,61 @@ public final class DownloadHelper {
      * disposition appropriately.
      *
      * @param files the files to zip and send
-     * @param filename the filename to use for the zip file. This filename will be set as the Content-disposition header
+     * @param baseFilename the filename w/o the suffix to use for the archive file. This filename will be set as the
+     * Content-disposition header
      * @throws IOException if there is an error writing to the stream
      */
-    public static void downloadFiles(Collection<CaArrayFile> files, String filename)
+    public static void downloadFiles(Collection<CaArrayFile> files, String baseFilename)
             throws IOException {
         HttpServletResponse response = ServletActionContext.getResponse();
-        FileInputStream fis = null;
         try {
-            response.setContentType(DOWNLOAD_CONTENT_TYPE);
-            response.addHeader("Content-disposition", "filename=\"" + filename + "\"");
+            PackagingInfo info = getPreferedPackageInfo(files, baseFilename);
+            response.setContentType(info.getMethod().getMimeType());
+            response.addHeader("Content-disposition", "filename=\"" + info.getName() + "\"");
 
             List<CaArrayFile> sortedFiles = new ArrayList<CaArrayFile>(files);
             Collections.sort(sortedFiles, CAARRAYFILE_NAME_COMPARATOR_INSTANCE);
             OutputStream sos = response.getOutputStream();
-            FileAccessUtils.downloadFiles(sortedFiles, false, sos);
+            OutputStream closeShield = new CloseShieldOutputStream(sos);
+            ArchiveOutputStream arOut = info.getMethod().createArchiveOutputStream(closeShield);
+            try {
+                for (CaArrayFile f : sortedFiles) {
+                    FileAccessUtils.addFileToArchive(f, arOut);
+                    f.clearAndEvictContents();
+                }
+            } finally {
+                // note that the caller's stream is shielded from the close(),
+                // but this is the only way to finish and flush the (gzip) stream.
+                try {
+                    arOut.close();
+                } catch (Exception e) {
+                    LOG.error(e);
+                }
+            }
         } catch (Exception e) {
             LOG.error("Error streaming download", e);
-            IOUtils.closeQuietly(fis);
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
+        }
+    }
+
+    private static long getEstimatedPackageSize(Collection<CaArrayFile> files) {
+        long size = 0L;
+        for (CaArrayFile f : files) {
+            size += f.getCompressedSize();
+        }
+        return size;
+    }
+
+    private static PackagingInfo getPreferedPackageInfo(Collection<CaArrayFile> files, String baseFilename) {
+        long size = getEstimatedPackageSize(files);
+        if (size > PackagingInfo.MAX_ZIP_SIZE) {
+            return new PackagingInfo(
+                    baseFilename + PackagingInfo.PackagingMethod.TGZ.getExtension(),
+                    PackagingInfo.PackagingMethod.TGZ);
+        } else {
+            return new PackagingInfo(
+                    baseFilename + PackagingInfo.PackagingMethod.ZIP.getExtension(),
+                    PackagingInfo.PackagingMethod.ZIP);
         }
     }
 }

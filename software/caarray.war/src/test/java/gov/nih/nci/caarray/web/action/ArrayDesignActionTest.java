@@ -267,6 +267,7 @@ public class ArrayDesignActionTest extends AbstractDownloadTest {
         arrayDesign.setName("Test3");
 
         CaArrayFile rawFile = new CaArrayFile();
+        rawFile.writeContents(IOUtils.toInputStream(""));
         rawFile.setName("Test3.CDF");
         CaArrayFileSet designFileSet = new CaArrayFileSet();
         designFileSet.add(rawFile);

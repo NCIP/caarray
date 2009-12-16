@@ -102,6 +102,7 @@ import com.opensymphony.xwork2.validator.annotations.RequiredFieldValidator;
 import com.opensymphony.xwork2.validator.annotations.Validation;
 import com.opensymphony.xwork2.validator.annotations.ValidationParameter;
 import com.opensymphony.xwork2.validator.annotations.Validations;
+import gov.nih.nci.caarray.web.helper.DownloadHelper;
 
 /**
  * Action implementing the sources tab.
@@ -187,9 +188,9 @@ public class ProjectSourcesAction extends AbstractProjectProtocolAnnotationListT
             ActionHelper.saveMessage(getText("experiment.sources.noDataToDownload"));
             return "noSourceData";
         }
-        setDownloadFileGroups(ProjectFilesAction.computeDownloadGroups(files));
-        return ProjectFilesAction.downloadByGroup(getProject(), files,
-                getDownloadGroupNumber(), getDownloadFileGroups());
+        String baseName = ProjectFilesAction.determineDownloadFileName(getProject()).toString();
+        DownloadHelper.downloadFiles(files, baseName);
+        return null;
     }
 
     /**

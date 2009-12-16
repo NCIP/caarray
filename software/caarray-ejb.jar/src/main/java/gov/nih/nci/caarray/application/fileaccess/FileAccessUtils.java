@@ -87,11 +87,15 @@ import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Collection;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import org.apache.commons.compress.archivers.ArchiveEntry;
+import org.apache.commons.compress.archivers.ArchiveOutputStream;
+import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
+import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
+import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
+import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
@@ -111,50 +115,9 @@ public final class FileAccessUtils {
     }
     
     /**
-     * Zips the selected files and writes the result to the given output stream.
-     * 
-     * @param files the files to put in the zip.
-     * @param out the output stream to write the zip to.
-     * @param compressIndividually if true, then each file will be added to the zip as a STORED entry, but 
-     *            but the file itself will be compressed using GZip. If false, then each file will be added to the
-     *            zip as a DEFLATED entry, but the file itself will be uncompressed.
-     * 
-     * @throws IOException if there is an error writing to the stream
-     */
-    public static void downloadFiles(Collection<CaArrayFile> files, boolean compressIndividually, OutputStream out)
-            throws IOException {
-        ZipOutputStream zos = new ZipOutputStream(out);
-        addToZip(files, compressIndividually, zos);
-        zos.finish();
-    }
-    
-    /**
-     * Adds the selected files the given zip output stream. This method will NOT call finish on the zip output stream
-     * at the end.
-     * 
-     * @param files the files to put in the zip.
-     * @param zos the zip output stream to add the files to. This stream must already be open.
-     * @param compressIndividually if true, then each file will be added to the zip as a STORED entry, but 
-     *            but the file itself will be compressed using GZip. If false, then each file will be added to the
-     *            zip as a DEFLATED entry, but the file itself will be uncompressed.
-     * 
-     * @throws IOException if there is an error writing to the stream
-     */
-    public static void addToZip(Collection<CaArrayFile> files, boolean compressIndividually, ZipOutputStream zos)
-            throws IOException {
-        TemporaryFileCache tempCache = TemporaryFileCacheLocator.getTemporaryFileCache();
-        for (CaArrayFile caf : files) {
-            File f = tempCache.getFile(caf, !compressIndividually);
-            String fileName = compressIndividually ? f.getName() + GZIP_FILE_SUFFIX : f.getName(); 
-            writeZipEntry(zos, f, fileName, compressIndividually);
-            tempCache.closeFile(caf, !compressIndividually);
-        }
-    }
-
-    /**
      * Adds the given file to the given zip output stream, using the file's name as the zip entry name. This method will
      * NOT call finish on the zip output stream at the end.
-     * 
+     *
      * @param zos the zip output stream to add the file to. This stream must already be open.
      * @param file the file to put in the zip.
      * @param addAsStored if true, then the file will be added to the zip as a STORED entry (e.g. without applying
@@ -163,12 +126,12 @@ public final class FileAccessUtils {
      */
     public static void writeZipEntry(ZipOutputStream zos, File file, boolean addAsStored) throws IOException {
         writeZipEntry(zos, file, file.getName(), addAsStored);
-    }
+}
 
     /**
      * Adds the given file to the given zip output stream using the given name as the zip entry name. This method will
      * NOT call finish on the zip output stream at the end.
-     * 
+     *
      * @param zos the zip output stream to add the file to. This stream must already be open.
      * @param file the file to put in the zip.
      * @param name the name to use for this zip entry.
@@ -190,5 +153,41 @@ public final class FileAccessUtils {
         zos.closeEntry();
         zos.flush();
         IOUtils.closeQuietly(is);
+    }
+
+    /**
+     * Add a file to an archive.
+     * @param f the file to add.
+     * @param zout the archive stream. {@link TarArchiveOutputStream} or {@link ZipArchiveOutputStream}
+     * @throws IOException when writeing to the stream fails.
+     */
+    public static void addFileToArchive(CaArrayFile f, ArchiveOutputStream zout) throws IOException {
+        ArchiveEntry ae = createArchiveEntry(zout, f.getName(), f.getUncompressedSize());
+        zout.putArchiveEntry(ae);
+        InputStream is = f.readContents();
+        IOUtils.copy(is, zout);
+        is.close();
+        zout.closeArchiveEntry();
+    }
+
+    /**
+     * This method creates an ArchiveEntry w/o the need of a File required by
+     * ArchiveOutputStream.createArchiveEntry(File inputFile, String entryName).
+     * @param aos archive output stream.
+     * @param name name of entry.
+     * @param size size in bytes of the entry.
+     * @return an archive entry that matches the archive stream.
+     */
+    public static ArchiveEntry createArchiveEntry(ArchiveOutputStream aos, String name, long size) {
+        if (aos instanceof TarArchiveOutputStream) {
+            TarArchiveEntry te = new TarArchiveEntry(name);
+            te.setSize(size);
+            return te;
+        } else if (aos instanceof ZipArchiveOutputStream) {
+            ZipArchiveEntry ze = new ZipArchiveEntry(name);
+            ze.setSize(size);
+            return ze;
+        }
+        throw new UnsupportedOperationException("unsupported archive " + aos.getClass());
     }
 }

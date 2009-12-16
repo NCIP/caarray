@@ -401,7 +401,7 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
     */
    private String determineDownloadFileName() {
        StringBuilder name = new StringBuilder("caArray_").append(arrayDesign.getName())
-               .append("_file.zip");
+               .append("_file");
        return name.toString();
    }
 

@@ -13,11 +13,7 @@
 <c:url value="/ajax/project/files/listSupplemental.action" var="supplementalFilesUrl">
     <c:param name="project.id" value="${project.id}" />
 </c:url>
-<c:url value="/ajax/project/files/downloadFiles.action" var="downloadDataUrl">
-    <c:param name="project.id" value="${project.id}" />
-    <c:param name="editMode" value="${editMode}" />
-</c:url>
-<c:url value="/ajax/project/export/details.action" var="exportUrl">
+<c:url value="/ajax/project/files/downloadOptions.action" var="downloadDataUrl">
     <c:param name="project.id" value="${project.id}" />
     <c:param name="editMode" value="${editMode}" />
 </c:url>
@@ -26,7 +22,6 @@
 <fmt:message key="project.tabs.importedFiles" var="importedDataTitle" />
 <fmt:message key="project.tabs.supplementalFiles" var="supplementalDataTitle" />
 <fmt:message key="project.tabs.downloadData" var="downloadDataTitle" />
-<fmt:message key="project.tabs.export" var="exportTitle" />
 
 <c:choose>
     <c:when test="${!empty param.initialTab2Url}">
@@ -48,9 +43,6 @@
     </c:when>
     <c:when test="${initTab == 'downloadData'}">
         <c:set var="initUrl" value="${downloadDataUrl}"/>
-    </c:when>
-    <c:when test="${initTab == 'export'}">
-        <c:set var="initUrl" value="${exportUrl}"/>
     </c:when>
     <c:when test="${pageContext.request.remoteUser != null}">
         <c:set var="initUrl" value="${unimportedDataUrl}"/>
@@ -74,8 +66,6 @@
     <c:if test="${pageContext.request.remoteUser == null}">
         <caarray:tab caption="${downloadDataTitle}" baseUrl="${downloadDataUrl}" defaultTab="${initTab == null || initTab == 'downloadData'}" />
     </c:if>
-    
-    <caarray:tab caption="${exportTitle}" baseUrl="${exportUrl}" defaultTab="${initTab == 'export'}" />
     
 </ajax:tabPanel>
 

@@ -220,9 +220,11 @@ public class ProjectExtractsActionTest extends AbstractDownloadTest {
         DerivedArrayData derived = new DerivedArrayData();
         h.getDerivedDataCollection().add(derived);
         CaArrayFile rawFile = new CaArrayFile();
+        rawFile.writeContents(IOUtils.toInputStream(""));
         rawFile.setName("missing_term_source.idf");
         raw.setDataFile(rawFile);
         CaArrayFile derivedFile = new CaArrayFile();
+        derivedFile.writeContents(IOUtils.toInputStream(""));
         derivedFile.setName("missing_term_source.sdrf");
         derived.setDataFile(derivedFile);
 

@@ -30,6 +30,7 @@ import gov.nih.nci.caarray.domain.sample.UserDefinedCharacteristic;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
+import gov.nih.nci.caarray.util.HibernateUtil;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -47,6 +48,7 @@ import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipFile;
+import org.hibernate.Transaction;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -416,7 +418,9 @@ public class GeoSoftExporterBeanTest {
         });
         File f = File.createTempFile("test", zipPi.getName());
         FileOutputStream fos = new FileOutputStream(f);
+        Transaction tx = HibernateUtil.beginTransaction();
         bean.export(p, "http://example.com/my_experiemnt", PackagingInfo.PackagingMethod.ZIP, fos);
+        tx.rollback();
         fos.close();
         ZipFile zf = new ZipFile(f);
         Enumeration<ZipArchiveEntry> en = zf.getEntries();
@@ -430,8 +434,11 @@ public class GeoSoftExporterBeanTest {
         assertTrue(entries.toString() + " not found", entries.isEmpty());
 
 
+        p = makeGoodProject();
         fos = new FileOutputStream(f);
+        tx = HibernateUtil.beginTransaction();
         bean.export(p, "http://example.com/my_experiemnt", PackagingInfo.PackagingMethod.TGZ, fos);
+        tx.rollback();
         fos.close();
         GZIPInputStream in = new GZIPInputStream(new FileInputStream(f));
         TarArchiveInputStream tar = new TarArchiveInputStream(in);

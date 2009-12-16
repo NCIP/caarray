@@ -385,7 +385,7 @@ UL#tablevel2 LI A.selected:hover
 /* Other Data Tables */
 
 .tableboxpad
-{ background:#b3ae9c; padding:2px; border:1px solid #fff; height:1%; }
+{ background:#b3ae9c; padding:2px; border:1px solid #fff; }
 .tableboxpad .searchresults
 { margin:0}
 TH.filterrow, TD.filterrow, DIV.filterrow

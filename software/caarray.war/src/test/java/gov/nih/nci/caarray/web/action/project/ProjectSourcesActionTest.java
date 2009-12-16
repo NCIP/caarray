@@ -225,9 +225,11 @@ public class ProjectSourcesActionTest extends AbstractDownloadTest {
         h.getDerivedDataCollection().add(derived);
         CaArrayFile rawFile = new CaArrayFile();
         rawFile.setName("missing_term_source.idf");
+        rawFile.writeContents(IOUtils.toInputStream(""));
         raw.setDataFile(rawFile);
         CaArrayFile derivedFile = new CaArrayFile();
         derivedFile.setName("missing_term_source.sdrf");
+        derivedFile.writeContents(IOUtils.toInputStream(""));
         derived.setDataFile(derivedFile);
 
         action.setCurrentSource(so);
