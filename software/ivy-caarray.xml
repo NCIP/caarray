@@ -154,7 +154,7 @@
 
         <dependency conf="project" name="csm" org="ncicb" rev="4.1.0.2"/>
 
-        <dependency conf="project" name="svnant" org="org.tigris" rev="1.2.1"/>
+        <dependency conf="project" name="svntask" org="com.googlecode" rev="1.0.7"/>
 
         <dependency conf="project" name="clm" org="ncicb" rev="4.0"/>
 

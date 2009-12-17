@@ -9,7 +9,7 @@
     <!-- ******************************************************************* -->
 
     <!-- Main -->
-    <property name="root.dir" value="${basedir}/.." />
+    <property name="root.dir" location="${basedir}/.." />
     <property name="docs.dir" value="${root.dir}/docs" />
     <property name="build.dir" value="${basedir}/build" />
     <property name="lib.dir" value="${basedir}/lib" />
@@ -773,26 +773,19 @@
         </path>
         <property name="csmapi.jar" refid="csmapi.jar.fileset" />
 
-        <path id="svnant.jar.path">
-            <fileset dir="${project.lib}" id="svnant.jar.fileset">
-                <include name="svnant-*.jar"/>
+        <path id="svntask.jar.path">
+            <fileset dir="${project.lib}" id="svntask.jar.fileset">
+                <include name="svntask-*.jar"/>
             </fileset>
         </path>
-        <property name="svnant.jar" refid="svnant.jar.fileset" />
+        <property name="svntask.jar" refid="svntask.jar.fileset" />
 
-        <path id="svnClientAdapter.jar.path">
-            <fileset dir="${project.lib}" id="svnClientAdapter.jar.fileset">
-                <include name="svnClientAdapter-*.jar"/>
+        <path id="svnkit.jar.path">
+            <fileset dir="${project.lib}" id="svnkit.jar.fileset">
+                <include name="svnkit-*.jar"/>
             </fileset>
         </path>
-        <property name="svnClientAdapter.jar" refid="svnClientAdapter.jar.fileset" />
-
-        <path id="svnjavahl.jar.path">
-            <fileset dir="${project.lib}" id="svnjavahl.jar.fileset">
-                <include name="svnjavahl-*.jar"/>
-            </fileset>
-        </path>
-        <property name="svnjavahl.jar" refid="svnjavahl.jar.fileset" />
+        <property name="svnkit.jar" refid="svnkit.jar.fileset" />
 
         <path id="ganymed.jar.path">
             <fileset dir="${project.lib}" id="ganymed.jar.fileset">
@@ -1156,11 +1149,8 @@
         </path>
 
         <path id="svn.dependencies.path">
-            <fileset refid="svnant.jar.fileset"/>
-            <fileset refid="svnClientAdapter.jar.fileset"/>
-            <fileset refid="svnjavahl.jar.fileset"/>
-            <fileset refid="ganymed.jar.fileset"/>
-            <fileset refid="javasvn.jar.fileset"/>
+            <fileset refid="svntask.jar.fileset"/>
+            <fileset refid="svnkit.jar.fileset"/>
         </path>
 
         <path id="unit.test.dependencies.path">
@@ -1324,7 +1314,7 @@
 
         <taskdef name="pmd" classname="net.sourceforge.pmd.ant.PMDTask" classpathref="pmd.dependencies.path" />
 
-        <taskdef resource="svntask.properties" classpathref="svn.dependencies.path" />
+        <typedef resource="com/googlecode/svntask/svntask.xml" classpathref="svn.dependencies.path" />
 
         <taskdef name="ncitask" classname="gov.nih.ncicb.anttasks.PropertyValidator" classpathref="project.jars.path"/>
 
@@ -1596,9 +1586,7 @@
     <!-- ** SVN TARGETS                                                 ** -->
     <!-- ******************************************************************* -->
     <target name="svn:getinfo" description="obtain subversion revision info" unless="nosvn" depends="init:third-party-paths">
-        <svn javahl="false">
-            <status path="${root.dir}" revisionProperty="svn.revision" urlProperty="svn.url" />
-        </svn>
+        <svn failonerror="true"><info path="${root.dir}" revisionProperty="svn.revision" urlProperty="svn.url" /></svn>
         <!--
           Note that if you explicitly define caarray.version it will take
           precedence over the one obtained from SVN
