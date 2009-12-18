@@ -200,7 +200,7 @@
         <variable name="min.pool.size" value="5"/>
         <variable name="max.pool.size" value="30"/>
         <variable name="idle.timeout.minutes" value="300"/>
-        <variable name="ldap.authentication.disabled" value="true"/>
+        <variable name="ldap.authentication.enabled" value="false"/>
 
     </panel>
 
@@ -721,7 +721,7 @@
         <field type="title" txt="Authentication Type" bold="true" size="1" />
         <field type="staticText" align="left" txt="There are two types of ways to authenticate users: against database or using an LDAP server. To connect to LDAP, you must have an LDAP server available in your network."/>
         <field type="divider" align="top"/>
-        <field type="radio" variable="ldap.authentication.disabled">
+        <field type="radio" variable="ldap.authentication.enabled">
             <description align="left" txt="Type of Authentication:"/>
             <spec>
                 <choice txt="Database" value="true" set="true" />
@@ -734,7 +734,7 @@
         <field type="title" txt="LDAP Configuration" bold="true" size="1" />
         <field type="staticText" align="left" txt="Choose the URL for the LDAP server and the Base DN for authenticating users."/>
         <field type="divider" align="top"/>
-        <field type="text" variable="ldap.hostname">
+        <field type="text" variable="ldap.url">
             <spec txt="LDAP Host Name " size="25" set="ldaps://$HOST_NAME:636"/>
             <validator class="com.izforge.izpack.util.NotEmptyValidator" txt="LDAP Host Name is a required field" />
         </field>

@@ -4,8 +4,8 @@
 	<property name="application_installer" value="caarray_installer" />
 	<property name="installer_prefix" value="caarray_install_2_3_0"/>
 	<property name="upgrader_prefix" value="caarray_upgrade_2_3_0"/>
-	<property name="application_installer_zip" value="caarray_install_2_3_0.zip" />
-	<property name="application_upgrader_zip" value="caarray_upgrade_2_3_0.zip" />
+	<property name="application_installer_zip" value="caarray_install_2_3_1.zip" />
+	<property name="application_upgrader_zip" value="caarray_upgrade_2_3_1.zip" />
 	
 	
 	<!-- TARGETS -->

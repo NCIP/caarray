@@ -342,7 +342,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
         <propertyregex property="corrected.database.url" input="${read.database.url}" regexp="(.*)\?" select="\1" defaultValue="${read.database.url}"/>
 
         <if>
-            <equals arg1="${ldap.authentication.disabled}" arg2="false" />
+            <equals arg1="${ldap.authentication.enabled}" arg2="true" />
             <then>
                 <copy filtering="true" file="${jboss-conf.dist.relative.dir}/security-config-ldap.xml" tofile="${temp.dir}/caarray.ear/META-INF/security-config.xml">
                     <filterset refid="embedded.filterset"/>
@@ -350,7 +350,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
                 <replaceregexp file="${temp.dir}/caarray.ear/META-INF/security-config.xml" match="&amp;" replace="&amp;amp;" byline="false"/>
                 <xmltask source="${temp.dir}/caarray.ear/META-INF/security-config.xml" dest="${temp.dir}/caarray.ear/META-INF/security-config.xml">
                     <xmlcatalog refid="bda.xml.catalog"/>
-                    <replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsLDAPLoginModule']/module-option[@name='ldapHost']/text()" withText="${ldap.host}"/>
+                    <replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsLDAPLoginModule']/module-option[@name='ldapHost']/text()" withText="${ldap.url}"/>
                     <replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsLDAPLoginModule']/module-option[@name='ldapSearchableBase']/text()" withText="${ldap.searchbase}"/>
                     <replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsLDAPLoginModule']/module-option[@name='ldapUserIdLabel']/text()" withText="${ldap.searchprefix}"/>
                     <replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule']/module-option[@name='url']/text()" withText="${corrected.database.url}"/>
@@ -384,10 +384,10 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
         <!-- set the UptUrl value -->
         <replaceregexp file="${temp.dir}/caarray.war/WEB-INF/web.xml" match="uptUrl&lt;/param-name&gt;\s{0,}&lt;param-value&gt;(.*)&lt;/param-value&gt;" replace="uptUrl&lt;/param-name&gt;&lt;param-value&gt;${upt.url}&lt;/param-value&gt;" byline="false"/>
 
-        <!-- set the ldap.host value -->
+        <!-- set the ldap.url value -->
         <xmltask source="${temp.dir}/caarray.war/WEB-INF/web.xml" dest="${temp.dir}/caarray.war/WEB-INF/web.xml">
             <xmlcatalog refid="bda.xml.catalog"/>
-            <replace path="//*[local-name()='param-name'][text()='ldapHost']/following-sibling::*/text()" withText="${ldap.host}"/>
+            <replace path="//*[local-name()='param-name'][text()='ldapHost']/following-sibling::*/text()" withText="${ldap.url}"/>
             <replace path="//*[local-name()='param-name'][text()='ldapSearchableBase']/following-sibling::*/text()" withText="${ldap.searchbase}"/>
             <replace path="//*[local-name()='param-name'][text()='ldapUserIdLabel']/following-sibling::*/text()" withText="${ldap.searchprefix}"/>
         </xmltask>

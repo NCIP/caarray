@@ -1591,8 +1591,8 @@
           Note that if you explicitly define caarray.version it will take
           precedence over the one obtained from SVN
           -->
-        <propertyregex property="caarray.version" input="${svn.url}" regexp="\/([^\/]+)$" select="\1" casesensitive="false" />
-        <echo message="found svn info: ${svn.url} ${svn.revision} ${caarray.version}" />
+        <propertyregex property="svn.caarray.version" input="${svn.url}" regexp="\/([^\/]+)$" select="\1" casesensitive="false" />
+        <echo message="found svn info: ${svn.url} ${svn.revision} ${svn.caarray.version}" />
     </target>
 
     <!-- ******************************************************************* -->
@@ -1852,13 +1852,13 @@
         <mkdir dir="${caarray-war.target.dir}" />
         <copy todir="${caarray-war.target.dir}/xml" file="${caarray-war.webapp.dir}/WEB-INF/web.xml" overwrite="true">
             <filterset>
-                <filter token="caarray.version" value="${caarray.version}" />
+                <filter token="svn.caarray.version" value="${svn.caarray.version}" />
                 <filter token="svn.url" value="${svn.url}" />
                 <filter token="svn.revision" value="${svn.revision}" />
                 <filter token="build.time" value="${mili.time}" />
                 <filter token="upt.url" value="${upt.url}" />
                 <filter token="release-notes.url" value="${release-notes.url}" />
-                <filter token="ldap.host" value="${ldap.host}" />
+                <filter token="ldap.url" value="${ldap.url}" />
                 <filter token="ldap.searchbase" value="${ldap.searchbase}" />
                 <filter token="ldap.searchprefix" value="${ldap.searchprefix}" />
                 <filter token="ldap.install" value="${ldap.install}" />
@@ -1902,12 +1902,12 @@
             </copy>
             <var name="security-config-file" />
             <if>
-                <equals arg1="${ldap.authentication.disabled}" arg2="true" />
+                <equals arg1="${ldap.authentication.enabled}" arg2="true" />
                 <then>
-                    <var name="security-config-file" value="security-config-local.xml" />
+                    <var name="security-config-file" value="security-config.xml" />
                 </then>
                 <else>
-                    <var name="security-config-file" value="security-config.xml" />
+                    <var name="security-config-file" value="security-config-local.xml" />
                 </else>
             </if>
             <copy file="${caarray-ear.resources.dir}/${security-config-file}" tofile="${caarray-ear.target.dir}/xml/security-config.xml" overwrite="true">

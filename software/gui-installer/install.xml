@@ -141,8 +141,8 @@
                         <condition type="ref" refid="installonwindows" />
                     </condition>
                     <condition type="variable" id="ldap.setup">
-                        <name>ldap.authentication.disabled</name>
-                        <value>false</value>
+                        <name>ldap.authentication.enabled</name>
+                        <value>true</value>
                     </condition>
                     <condition type="variable" id="custom.installation.type">
                         <name>install.type</name>

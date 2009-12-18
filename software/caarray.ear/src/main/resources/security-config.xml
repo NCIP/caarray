@@ -17,7 +17,7 @@
             <login-module code="com.fiveamsolutions.nci.commons.authentication.SessionFixationProtectionLoginModule" flag="required"/>
 
             <login-module code="com.fiveamsolutions.nci.commons.authentication.CommonsLDAPLoginModule" flag="optional">
-                <module-option name="ldapHost">@ldap.host@</module-option>
+                <module-option name="ldapHost">@ldap.url@</module-option>
                 <module-option name="ldapSearchableBase">@ldap.searchbase@</module-option>
                 <module-option name="ldapUserIdLabel">@ldap.searchprefix@</module-option>
             </login-module>
