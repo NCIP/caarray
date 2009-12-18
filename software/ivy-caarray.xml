@@ -198,7 +198,7 @@
 
         <dependency conf="project" name="concurrent" org="edu.oswego" rev="1.3.4"/>
 
-        <dependency conf="project" name="nci-commons-core" org="ncicb" rev="1.2.3"/>
+        <dependency conf="project" name="nci-commons-core" org="ncicb" rev="1.2.7"/>
 
         <dependency conf="project" name="nci-commons-struts2" org="ncicb" rev="1.1.0"/>
 
