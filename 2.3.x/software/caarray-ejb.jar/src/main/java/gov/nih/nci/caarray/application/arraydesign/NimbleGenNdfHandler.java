@@ -140,7 +140,6 @@ public class NimbleGenNdfHandler extends AbstractArrayDesignHandler {
         DelimitedFileReader reader = null;
         probeGroups = new HashMap<String, ProbeGroup>();
         logicalProbes = new HashMap<String, LogicalProbe>();
-        Map<String,Map<String,Object>> annotations = buildAnnotations();
         try {
             reader = DelimitedFileReaderFactory.INSTANCE
                     .getTabDelimitedReader(getFile());
@@ -165,12 +164,6 @@ public class NimbleGenNdfHandler extends AbstractArrayDesignHandler {
         } finally {
             reader.close();
         }
-    }
-
-    private Map<String, Map<String, Object>> buildAnnotations() {
-        Map<String, Map<String, Object>> result = new HashMap<String, Map<String, Object>>();
-
-        return result;
     }
 
     private ProbeGroup getProbeGroup(String feature, ArrayDesignDetails details) {
@@ -200,13 +193,14 @@ public class NimbleGenNdfHandler extends AbstractArrayDesignHandler {
 
     private PhysicalProbe createPhysicalProbe(ArrayDesignDetails details,
             Map<String, Object> values) {
-        String featureId = (String) values.get("FEATURE_ID");
-        ProbeGroup group = getProbeGroup(featureId, details);
-        LogicalProbe lp = getLogicalProbe(featureId, details);
+        String sequenceId = (String) values.get("SEQ_ID");
+        String container = (String) values.get("CONTAINER");
+        String probeId = (String) values.get("PROBE_ID");
+        ProbeGroup group = getProbeGroup(container, details);
+        LogicalProbe lp = getLogicalProbe(sequenceId, details);
         PhysicalProbe p = new PhysicalProbe(details, group);
         lp.addProbe(p);
-        String probeId = (String) values.get("PROBE_ID");
-        p.setName(probeId);
+        p.setName(container + "|" + sequenceId + "|" + probeId);
 
         Feature f = new Feature(details);
         f.setColumn(((Integer) values.get("X")).shortValue());
@@ -214,17 +208,6 @@ public class NimbleGenNdfHandler extends AbstractArrayDesignHandler {
 
         p.getFeatures().add(f);
 
-        // Add information about QC probes vs experimental probes.
-        // Nimblegen data based on nucleotide ids, not genes.
-        // ExpressionProbeAnnotation annotation = new
-        // ExpressionProbeAnnotation();
-        //        
-        // annotation.setGene(new Gene());
-        // annotation.getGene().set
-        // annotation.getGene().setSymbol(getValue(values, Header.));
-        // annotation.getGene().setFullName(getValue(values,
-        // Header.DEFINITION));
-        // p.setAnnotation(annotation);
         return p;
     }
 
@@ -302,25 +285,9 @@ public class NimbleGenNdfHandler extends AbstractArrayDesignHandler {
         }
         doValidation(fileResult, ndfFile, ndfColumnNames, ndfColumnTypes);
 
-        File annotationFile = getFile(".ngd");
-        if (annotationFile != null) {
-            fileResult = result.getFileValidationResult(annotationFile);
-            result.addFile(annotationFile, fileResult);
-            doValidation(fileResult, annotationFile, ngdColumnNames,
-                    ngdColumnTypes);
-        } else {
-            annotationFile = getFile(".pos");
-            if (annotationFile != null) {
-                fileResult = result.getFileValidationResult(annotationFile);
-                result.addFile(annotationFile, fileResult);
-
-                doValidation(fileResult, annotationFile, posColumnNames,
-                        posColumnTypes);
-            }
-        }
     }
 
-    protected void doValidation(FileValidationResult result, File file,
+    private void doValidation(FileValidationResult result, File file,
             String[] colNames, Class<?>[] colTypes) {
         DelimitedFileReader reader = null;
         try {
@@ -406,7 +373,7 @@ public class NimbleGenNdfHandler extends AbstractArrayDesignHandler {
         return passed;
     }
 
-    boolean isHeaderLine(List<String> values, String[] colNames) {
+    private boolean isHeaderLine(List<String> values, String[] colNames) {
         if (values.size() != colNames.length) {
             return false;
         }
@@ -419,33 +386,15 @@ public class NimbleGenNdfHandler extends AbstractArrayDesignHandler {
         return true;
     }
 
-    private static String[] ndfColumnNames = new String[] { "PROBE_DESIGN_ID",
-            "CONTAINER", "DESIGN_NOTE", "SELECTION_CRITERIA", "SEQ_ID",
-            "PROBE_SEQUENCE", "MISMATCH", "MATCH_INDEX", "FEATURE_ID",
-            "ROW_NUM", "COL_NUM", "PROBE_CLASS", "PROBE_ID", "POSITION",
-            "DESIGN_ID", "X", "Y" };
-
-    private static Class<?>[] ndfColumnTypes = new Class[] { String.class,
-            String.class, String.class, String.class, String.class,
-            String.class, Integer.class, Integer.class, String.class,
-            Integer.class, Integer.class, String.class, String.class,
-            Integer.class, String.class, Integer.class, Integer.class };
-
-    private static String[] ngdColumnNames = new String[] { "SEQ_ID", null };
-
-    private static Class<?>[] ngdColumnTypes = new Class[] {
-            String.class,
-            String.class
-    };
-
-    private static String[] posColumnNames = new String[] {
+    private static String[] ndfColumnNames = new String[] {
         "PROBE_DESIGN_ID",
             "CONTAINER", "DESIGN_NOTE", "SELECTION_CRITERIA", "SEQ_ID",
             "PROBE_SEQUENCE", "MISMATCH", "MATCH_INDEX", "FEATURE_ID",
             "ROW_NUM", "COL_NUM", "PROBE_CLASS", "PROBE_ID", "POSITION",
-            "DESIGN_ID", "X", "Y" };
+            "DESIGN_ID", "X", "Y"
+            };
 
-    private static Class<?>[] posColumnTypes = new Class[] {
+    private static Class<?>[] ndfColumnTypes = new Class[] {
         String.class,
             String.class, String.class, String.class, String.class,
             String.class, Integer.class, Integer.class, String.class,
