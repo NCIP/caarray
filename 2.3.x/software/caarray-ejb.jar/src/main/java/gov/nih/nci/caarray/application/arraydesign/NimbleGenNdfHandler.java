@@ -93,6 +93,7 @@ import gov.nih.nci.caarray.domain.array.PhysicalProbe;
 import gov.nih.nci.caarray.domain.array.ProbeGroup;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileStatus;
+import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.caarray.util.io.DelimitedFileReader;
 import gov.nih.nci.caarray.util.io.DelimitedFileReaderFactory;
 import gov.nih.nci.caarray.validation.FileValidationResult;
@@ -101,7 +102,10 @@ import gov.nih.nci.caarray.validation.ValidationResult;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -140,26 +144,50 @@ public class NimbleGenNdfHandler extends AbstractArrayDesignHandler {
         DelimitedFileReader reader = null;
         probeGroups = new HashMap<String, ProbeGroup>();
         logicalProbes = new HashMap<String, LogicalProbe>();
+        int count = 0;
         try {
             reader = DelimitedFileReaderFactory.INSTANCE
                     .getTabDelimitedReader(getFile());
-            positionAtAnnotation(reader, ndfColumnNames);
+            Map<String,Integer> header = getHeaders(reader);
             ArrayDesignDetails details = new ArrayDesignDetails();
             arrayDesign.setDesignDetails(details);
             getArrayDao().save(arrayDesign);
             getArrayDao().flushSession();
-            int count = 0;
+            count = 0;
             while (reader.hasNextLine()) {
                 List<String> values = reader.nextLine();
-                getArrayDao().save(
-                        createPhysicalProbe(details, getValues(values,
-                                ndfColumnNames, ndfColumnTypes)));
+                PhysicalProbe p = createPhysicalProbe(details, getValues(values, header)); 
+                getArrayDao().save(p);
                 if (++count % LOGICAL_PROBE_BATCH_SIZE == 0) {
-                    flushAndClearSession();
+                    // Yeah, I know, this is not good. But there's a bug 
+                    // (http://opensource.atlassian.com/projects/hibernate/browse/HHH-511) 
+                    // in the Hibernate clear() code that makes large long running transactions 
+                    // problematic. The only way that seems to work is to break up the transactions.
+                    // Hopefully, since we've validated the array design file, this shouldn't be a problem.
+                    HibernateUtil.getCurrentSession().getTransaction().commit();
+                    HibernateUtil.getCurrentSession().beginTransaction();
+//                    for (ProbeGroup pg : probeGroups.values()) {
+//                        HibernateUtil.getCurrentSession().evict(pg);
+//                    }
+//                    for (LogicalProbe lp : logicalProbes.values()) {
+//                        HibernateUtil.getCurrentSession().evict(lp);
+//                    }
+//                    for (PhysicalProbe pr : probes) {
+//                        HibernateUtil.getCurrentSession().evict(pr);
+//                    }
+//                    probes.clear();
+//                    HibernateUtil.getCurrentSession().evict(details);
+//                    HibernateUtil.getCurrentSession().evict(arrayDesign);
+//                    HibernateUtil.getCurrentSession().clear();
                 }
             }
-            flushAndClearSession();
+            arrayDesign.setNumberOfFeatures(count);
+            // Make sure there's something in the new transaction.
+            getArrayDao().save(details);
+            //getArrayDao().save(arrayDesign);
+            //flushAndClearSession();
         } catch (IOException e) {
+            LOG.error("Error processing line "+count);
             throw new IllegalStateException("Couldn't read file: ", e);
         } finally {
             reader.close();
@@ -211,16 +239,16 @@ public class NimbleGenNdfHandler extends AbstractArrayDesignHandler {
         return p;
     }
 
-    static Map<String, Object> getValues(List<String> values,
-            String[] colNames, Class<?>[] colTypes) {
+    static Map<String, Object> getValues(List<String> values, Map<String,Integer> header) {
         Map<String, Object> result = new HashMap<String, Object>();
-        for (int i = 0; i < colNames.length; ++i) {
-            if (colTypes[i] == Integer.class) {
-                result.put(colNames[i], getIntegerValue(values.get(i)));
-            } else if (colTypes[i] == Integer.class) {
-                result.put(colNames[i], getLongValue(values.get(i)));
+        for (String column : ndfColumnMapping.keySet()) {
+            String value = values.get(header.get(column));
+            if (ndfColumnMapping.get(column) == Integer.class) {
+                result.put(column, getIntegerValue(value));
+            } else if (ndfColumnMapping.get(column)  == Long.class) {
+                result.put(column, getLongValue(value));
             } else {
-                result.put(colNames[i], values.get(i));
+                result.put(column, value);
             }
         }
         return result;
@@ -242,12 +270,11 @@ public class NimbleGenNdfHandler extends AbstractArrayDesignHandler {
         }
     }
 
-    private void positionAtAnnotation(DelimitedFileReader reader,
-            String[] colNames) throws IOException {
+    private void positionAtAnnotation(DelimitedFileReader reader) throws IOException {
         reset(reader);
         boolean isHeader = false;
         while (!isHeader && reader.hasNextLine()) {
-            isHeader = isHeaderLine(reader.nextLine(), colNames);
+            isHeader = isHeaderLine(reader.nextLine());
         }
     }
 
@@ -283,12 +310,11 @@ public class NimbleGenNdfHandler extends AbstractArrayDesignHandler {
             fileResult = new FileValidationResult(ndfFile);
             result.addFile(ndfFile, fileResult);
         }
-        doValidation(fileResult, ndfFile, ndfColumnNames, ndfColumnTypes);
+        doValidation(fileResult, ndfFile);
 
     }
 
-    private void doValidation(FileValidationResult result, File file,
-            String[] colNames, Class<?>[] colTypes) {
+    private void doValidation(FileValidationResult result, File file) {
         DelimitedFileReader reader = null;
         try {
             reader = DelimitedFileReaderFactory.INSTANCE
@@ -297,10 +323,10 @@ public class NimbleGenNdfHandler extends AbstractArrayDesignHandler {
                 result.addMessage(ValidationMessage.Type.ERROR,
                         "File was empty");
             }
-            List<String> headers = getHeaders(reader, colNames);
-            validateHeader(headers, result, colNames);
+            Map<String,Integer> headers = getHeaders(reader);
+            validateHeader(headers, result);
             if (result.isValid()) {
-                validateContent(reader, result, headers, colNames, colTypes);
+                validateContent(reader, result, headers);
             }
         } catch (IOException e) {
             result.addMessage(ValidationMessage.Type.ERROR,
@@ -312,101 +338,88 @@ public class NimbleGenNdfHandler extends AbstractArrayDesignHandler {
         }
     }
 
-    private void validateHeader(List<String> headers,
-            FileValidationResult result, String[] colNames) throws IOException {
-        if (headers.size() != colNames.length) {
-            result
-                    .addMessage(ValidationMessage.Type.ERROR,
-                            "Nimblegen NDF file didn't contain the expected number of columns");
-            return;
-        }
-        for (int i = 0; i < colNames.length; i++) {
-            if (colNames[i] != null
-                    && !headers.get(i).equalsIgnoreCase(colNames[i])) {
-                result.addMessage(ValidationMessage.Type.ERROR,
-                        "Invalid column header in Nimblegen NDF. Expected "
-                                + colNames[i] + " but was " + headers.get(i));
-            }
+    private void validateHeader(Map<String,Integer> headers,
+            FileValidationResult result) throws IOException {
+        Set<String> missing = new HashSet<String>(ndfColumnMapping.keySet());
+        missing.removeAll(headers.keySet());
+        
+        for (String col : missing) {
+            result.addMessage(ValidationMessage.Type.ERROR,
+                    "Invalid column header in Nimblegen NDF. Missing " + col + ".");
         }
     }
 
     private void validateContent(DelimitedFileReader reader,
-            FileValidationResult result, List<String> headers,
-            String[] colNames, Class<?>[] colTypes) throws IOException {
-        int expectedNumberOfFields = headers.size();
+            FileValidationResult result, Map<String,Integer> header) throws IOException {
+        int expectedNumberOfFields = header.size();
         while (reader.hasNextLine()) {
             List<String> values = reader.nextLine();
-            if (values.size() != expectedNumberOfFields) {
+            if (values.size() < expectedNumberOfFields) {
                 ValidationMessage error = result.addMessage(
                         ValidationMessage.Type.ERROR,
-                        "Invalid number of fields. Expected "
+                        "Invalid number of fields. Expected at least "
                                 + expectedNumberOfFields + " but contained "
                                 + values.size());
                 error.setLine(reader.getCurrentLineNumber());
             }
-            if (!validateValues(values, result, reader.getCurrentLineNumber(),
-                    colNames, colTypes)) {
+            if (!validateValues(values, result, reader.getCurrentLineNumber(), header)) {
                 return;
             }
         }
     }
 
     private boolean validateValues(List<String> values,
-            FileValidationResult result, int currentLineNumber,
-            String[] colNames, Class<?>[] colTypes) {
+            FileValidationResult result, int currentLineNumber, Map<String,Integer> header) {
         boolean passed = true;
-        for (int i = 0; i < colNames.length; ++i) {
-            if (colTypes[i] == String.class) {
-                continue;
-            } else if (colTypes[i] == Integer.class) {
-                try {
-                    Integer.parseInt(values.get(i));
-                } catch (NumberFormatException e) {
+        for (String column : header.keySet()) {
+            if (ndfColumnMapping.containsKey(column)) {
+                String value = values.get(header.get(column));
+                if (value == null && value.trim().length() == 0) {
                     ValidationMessage error = result.addMessage(
                             ValidationMessage.Type.ERROR,
-                            "Expected integer but found " + values.get(i));
-                    error.setLine(currentLineNumber);
-                    passed = false;
+                            "Missing required value at ["+currentLineNumber+","+column+"].");
+                } else if (ndfColumnMapping.get(column) == String.class) {
+                    continue;
+                } else if (ndfColumnMapping.get(column) == Integer.class) {
+                    try {
+                        Integer.parseInt(value);
+                    } catch (NumberFormatException e) {
+                        ValidationMessage error = result.addMessage(
+                                ValidationMessage.Type.ERROR,
+                                "Expected integer value at ["+currentLineNumber+","+column+
+                                "] but found " + value);
+                        error.setLine(currentLineNumber);
+                        passed = false;
+                    }
                 }
             }
         }
         return passed;
     }
 
-    private boolean isHeaderLine(List<String> values, String[] colNames) {
-        if (values.size() != colNames.length) {
-            return false;
-        }
-        for (int i = 0; i < values.size(); i++) {
-            if (colNames[i] != null
-                    && !values.get(i).equalsIgnoreCase(colNames[i])) {
-                return false;
-            }
-        }
-        return true;
+    private boolean isHeaderLine(List<String> values) {
+        return values.containsAll(ndfColumnMapping.keySet());
     }
 
-    private static String[] ndfColumnNames = new String[] {
-        "PROBE_DESIGN_ID",
-            "CONTAINER", "DESIGN_NOTE", "SELECTION_CRITERIA", "SEQ_ID",
-            "PROBE_SEQUENCE", "MISMATCH", "MATCH_INDEX", "FEATURE_ID",
-            "ROW_NUM", "COL_NUM", "PROBE_CLASS", "PROBE_ID", "POSITION",
-            "DESIGN_ID", "X", "Y"
-            };
-
-    private static Class<?>[] ndfColumnTypes = new Class[] {
-        String.class,
-            String.class, String.class, String.class, String.class,
-            String.class, Integer.class, Integer.class, String.class,
-            Integer.class, Integer.class, String.class, String.class,
-            Integer.class, String.class, Integer.class, Integer.class };
-
-    private List<String> getHeaders(DelimitedFileReader reader,
-            String[] colNames) throws IOException {
+    private static Map<String,Class<?>> ndfColumnMapping = new HashMap<String,Class<?>>();
+    static {
+        ndfColumnMapping.put("CONTAINER", String.class);
+        ndfColumnMapping.put("SEQ_ID", String.class);
+        ndfColumnMapping.put("PROBE_ID", String.class);
+        ndfColumnMapping.put("X", Integer.class);
+        ndfColumnMapping.put("Y", Integer.class);       
+    }
+    
+    private Map<String, Integer> getHeaders(DelimitedFileReader reader) throws IOException {
         while (reader.hasNextLine()) {
             List<String> values = reader.nextLine();
-            if (isHeaderLine(values, colNames)) {
-                return values;
+            if (isHeaderLine(values)) {
+                int index = 0;
+                Map<String,Integer> result = new HashMap<String,Integer>();
+                for (String value : values) {
+                    result.put(value.toUpperCase(), index++);
+                }
+                return result;
             }
         }
         return null;

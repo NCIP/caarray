@@ -216,6 +216,31 @@ public class NimblegenArrayDesignServiceIntegrationTest extends AbstractCaarrayT
     @Test
     public void testDeleteArrayDesign() throws Exception {
         Transaction t = HibernateUtil.beginTransaction();
+        ArrayDesign design = setupAndSaveDesign(NimblegenArrayDesignFiles.SHORT_EXPRESSION_DESIGN);
+        this.arrayDesignService.importDesign(design);
+        this.arrayDesignService.importDesignDetails(design);
+        Long id = design.getId();
+        t.commit();
+
+        t = HibernateUtil.beginTransaction();
+        int size = HibernateUtil.getCurrentSession().createCriteria(ArrayDesign.class).list().size();
+        design = this.arrayDesignService.getArrayDesign(id);
+        Long detailsId = design.getDesignDetails().getId();
+        this.arrayDesignService.deleteArrayDesign(design);
+        t.commit();
+
+        t = HibernateUtil.beginTransaction();
+        assertEquals(size - 1, HibernateUtil.getCurrentSession().createCriteria(ArrayDesign.class).list().size());
+        ArrayDesignDetails details = (ArrayDesignDetails) HibernateUtil.getCurrentSession().get(
+                ArrayDesignDetails.class, detailsId);
+        assertNull(details);
+        assertTrue(HibernateUtil.getCurrentSession().createCriteria(CaArrayFile.class).list().isEmpty());
+        t.commit();
+    }
+
+    @Test
+    public void testDeleteLargeArrayDesign() throws Exception {
+        Transaction t = HibernateUtil.beginTransaction();
         ArrayDesign design = setupAndSaveDesign(NimblegenArrayDesignFiles.EXPRESSION_DESIGN[0]);
         this.arrayDesignService.importDesign(design);
         this.arrayDesignService.importDesignDetails(design);
@@ -238,18 +263,46 @@ public class NimblegenArrayDesignServiceIntegrationTest extends AbstractCaarrayT
         t.commit();
     }
 
-    @Test(expected = ArrayDesignDeleteException.class)
-    public void testDeleteArrayDesignLocked() throws ArrayDesignDeleteException {
-       ArrayDesignService arrayDesignService = new ArrayDesignServiceLocal();
-       ArrayDesign design = DUMMY_ARRAY_DESIGN;
-       arrayDesignService.deleteArrayDesign(design);
+    @Test(expected = IllegalArgumentException.class)
+    public void testMissingHeader() throws Exception {
+        Transaction t = null;
+        try {
+            t = HibernateUtil.beginTransaction();
+            ArrayDesign design = setupAndSaveDesign(NimblegenArrayDesignFiles.MISSING_HEADER_NDF);
+            t.commit();
+
+            t = HibernateUtil.beginTransaction();
+            this.arrayDesignService.importDesign(design);
+            this.arrayDesignService.importDesignDetails(design);
+            t.commit();
+
+        } catch (Exception e) {
+            if (t != null && t.isActive()) {
+                t.rollback();
+            }
+            throw e;
+        }
     }
 
-    @Test(expected = ArrayDesignDeleteException.class)
-    public void testDeleteArrayDesignImporting() throws ArrayDesignDeleteException {
-        ArrayDesignService arrayDesignService = new ArrayDesignServiceLocal();
-        DUMMY_ARRAY_DESIGN.getFirstDesignFile().setFileStatus(FileStatus.IMPORTING);
-        arrayDesignService.deleteArrayDesign(DUMMY_ARRAY_DESIGN);
+    @Test(expected = IllegalArgumentException.class)
+    public void testMissingColumns() throws Exception {
+        Transaction t = null;
+        try {
+            t = HibernateUtil.beginTransaction();
+            ArrayDesign design = setupAndSaveDesign(NimblegenArrayDesignFiles.MISSING_COLUMNS_NDF);
+            t.commit();
+
+            t = HibernateUtil.beginTransaction();
+            this.arrayDesignService.importDesign(design);
+            this.arrayDesignService.importDesignDetails(design);
+            t.commit();
+
+        } catch (Exception e) {
+            if (t != null && t.isActive()) {
+                t.rollback();
+            }
+            throw e;
+        }
     }
 
     private class ArrayDesignServiceLocal extends ArrayDesignServiceBean {
@@ -264,7 +317,7 @@ public class NimblegenArrayDesignServiceIntegrationTest extends AbstractCaarrayT
         Transaction t = null;
         try {
             t = HibernateUtil.beginTransaction();
-            ArrayDesign design = setupAndSaveDesign(NimblegenArrayDesignFiles.EXPRESSION_DESIGN[0]);
+            ArrayDesign design = setupAndSaveDesign(NimblegenArrayDesignFiles.SHORT_EXPRESSION_DESIGN);
             t.commit();
 
             t = HibernateUtil.beginTransaction();
@@ -274,10 +327,10 @@ public class NimblegenArrayDesignServiceIntegrationTest extends AbstractCaarrayT
 
             t = HibernateUtil.beginTransaction();
             design = arrayDesignService.getArrayDesign(design.getId());
-            assertEquals("Test3", design.getName());
-            //assertEquals("nimblegen.com", design.getLsidAuthority());
-            assertEquals("PhysicalArrayDesign", design.getLsidNamespace());
-            assertEquals("Test3", design.getLsidObjectId());
+            assertEquals("2006-08-03_HG18_60mer_expr-short", design.getName());
+            assertEquals("caarray.nci.nih.gov", design.getLsidAuthority());
+            assertEquals("domain", design.getLsidNamespace());
+            assertEquals("2006-08-03_HG18_60mer_expr-short", design.getLsidObjectId());
             assertEquals(FileStatus.IMPORTED, design.getDesignFileSet().getStatus());
             t.commit();
 
@@ -286,7 +339,7 @@ public class NimblegenArrayDesignServiceIntegrationTest extends AbstractCaarrayT
                 AbstractAffymetrixChpDesignElementListUtility.getDesignElementList(design, arrayDesignService);
             //checkDesignElementList(designElementList, NimblegenArrayDesignFiles.EXPRESSION_DESIGN);
             t.commit();
-            assertEquals(15876, design.getNumberOfFeatures());
+            assertEquals(99, design.getNumberOfFeatures());
 
             // now try to re-import the design over itself
             // this only works when the delete array design details has been hooked up!
@@ -297,10 +350,10 @@ public class NimblegenArrayDesignServiceIntegrationTest extends AbstractCaarrayT
 
             t = HibernateUtil.beginTransaction();
             design = arrayDesignService.getArrayDesign(design.getId());
-            assertEquals("Test3", design.getName());
-            assertEquals("Affymetrix.com", design.getLsidAuthority());
-            assertEquals("PhysicalArrayDesign", design.getLsidNamespace());
-            assertEquals("Test3", design.getLsidObjectId());
+            assertEquals("2006-08-03_HG18_60mer_expr-short", design.getName());
+            assertEquals("caarray.nci.nih.gov", design.getLsidAuthority());
+            assertEquals("domain", design.getLsidNamespace());
+            assertEquals("2006-08-03_HG18_60mer_expr-short", design.getLsidObjectId());
             assertEquals(FileStatus.IMPORTED, design.getDesignFileSet().getStatus());
             t.commit();
 
@@ -308,7 +361,7 @@ public class NimblegenArrayDesignServiceIntegrationTest extends AbstractCaarrayT
             designElementList = AbstractAffymetrixChpDesignElementListUtility.getDesignElementList(design, arrayDesignService);
             //checkDesignElementList(designElementList, NimblegenArrayDesignFiles.EXPRESSION_DESIGN[0]);
             t.commit();
-            assertEquals(15876, design.getNumberOfFeatures());
+            assertEquals(99, design.getNumberOfFeatures());
         } catch (Exception e) {
             if (t != null && t.isActive()) {
                 t.rollback();
@@ -337,7 +390,7 @@ public class NimblegenArrayDesignServiceIntegrationTest extends AbstractCaarrayT
         Transaction t = null;
         try {
             t = HibernateUtil.beginTransaction();
-            ArrayDesign design = setupAndSaveDesign(NimblegenArrayDesignFiles.PROMOTER_DESIGN[0]);
+            ArrayDesign design = setupAndSaveDesign(NimblegenArrayDesignFiles.SHORT_PROMOTER_DESIGN);
             t.commit();
 
             t = HibernateUtil.beginTransaction();
@@ -345,39 +398,85 @@ public class NimblegenArrayDesignServiceIntegrationTest extends AbstractCaarrayT
             this.arrayDesignService.importDesignDetails(design);
             HibernateUtil.getCurrentSession().getTransaction().commit();
 
-            assertEquals("HuEx-1_0-st-v1-test", design.getName());
-            assertEquals("Affymetrix.com", design.getLsidAuthority());
-            assertEquals("PhysicalArrayDesign", design.getLsidNamespace());
-            assertEquals("HuEx-1_0-st-v1-test", design.getLsidObjectId());
+            assertEquals("HG18_Deluxe_Promoter_HX1-short", design.getName());
+            assertEquals("caarray.nci.nih.gov", design.getLsidAuthority());
+            assertEquals("domain", design.getLsidNamespace());
+            assertEquals("HG18_Deluxe_Promoter_HX1-short", design.getLsidObjectId());
 
             t = HibernateUtil.beginTransaction();
-            DesignElementList designElementList = AbstractAffymetrixChpDesignElementListUtility.getDesignElementList(
-                    design, arrayDesignService);
-            assertEquals(DesignElementType.LOGICAL_PROBE, designElementList.getDesignElementTypeEnum());
-            assertEquals(94, designElementList.getDesignElements().size());
+            design = this.arrayDesignService.getArrayDesign(design.getId());
+            assertEquals(999, design.getNumberOfFeatures());
+            assertEquals(797, design.getDesignDetails().getLogicalProbes().size());
+            assertEquals(999, design.getDesignDetails().getProbes().size());
+            assertEquals(999, design.getDesignDetails().getFeatures().size());
             t.commit();
 
             t = HibernateUtil.beginTransaction();
             design = this.arrayDesignService.getArrayDesign(design.getId());
-            assertEquals(1024, design.getNumberOfFeatures());
-            assertEquals(94, design.getDesignDetails().getLogicalProbes().size());
-            assertEquals(364, design.getDesignDetails().getProbes().size());
-            assertEquals(1024, design.getDesignDetails().getFeatures().size());
+            ArrayDesign otherDesign = this.arrayDesignService.getArrayDesign("caarray.nci.nih.gov", "domain",
+                    "HG18_Deluxe_Promoter_HX1-short");
+            assertEquals("HG18_Deluxe_Promoter_HX1-short", otherDesign.getName());
+            assertEquals("caarray.nci.nih.gov", otherDesign.getLsidAuthority());
+            assertEquals("domain", otherDesign.getLsidNamespace());
+            assertEquals("HG18_Deluxe_Promoter_HX1-short", otherDesign.getLsidObjectId());
+            assertEquals(999, otherDesign.getNumberOfFeatures());
+            assertEquals(797, otherDesign.getDesignDetails().getLogicalProbes().size());
+            assertEquals(999, otherDesign.getDesignDetails().getProbes().size());
+            assertEquals(999, otherDesign.getDesignDetails().getFeatures().size());
+            assertEquals(1, otherDesign.getDesignFiles().size());
+            for (CaArrayFile designFile : design.getDesignFiles()) {
+                assertTrue(otherDesign.getDesignFiles().contains(designFile));
+            }
+            t.commit();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (t != null && t.isActive()) {
+                t.rollback();
+            }
+            throw e;
+        }
+    }
+
+    @Test
+    public void testImportDesignDetails_NimblegenCGH() throws Exception {
+        Transaction t = null;
+        try {
+            t = HibernateUtil.beginTransaction();
+            ArrayDesign design = setupAndSaveDesign(NimblegenArrayDesignFiles.SHORT_CGH_DESIGN);
+            t.commit();
+
+            t = HibernateUtil.beginTransaction();
+            this.arrayDesignService.importDesign(design);
+            this.arrayDesignService.importDesignDetails(design);
+            HibernateUtil.getCurrentSession().getTransaction().commit();
+
+            assertEquals("090210_HG18_WG_CGH_v3.1_HX3-short", design.getName());
+            assertEquals("caarray.nci.nih.gov", design.getLsidAuthority());
+            assertEquals("domain", design.getLsidNamespace());
+            assertEquals("090210_HG18_WG_CGH_v3.1_HX3-short", design.getLsidObjectId());
+
+            t = HibernateUtil.beginTransaction();
+            design = this.arrayDesignService.getArrayDesign(design.getId());
+            assertEquals(4999, design.getNumberOfFeatures());
+            assertEquals(41, design.getDesignDetails().getLogicalProbes().size());
+            assertEquals(4999, design.getDesignDetails().getProbes().size());
+            assertEquals(4999, design.getDesignDetails().getFeatures().size());
             t.commit();
 
             t = HibernateUtil.beginTransaction();
             design = this.arrayDesignService.getArrayDesign(design.getId());
-            ArrayDesign otherDesign = this.arrayDesignService.getArrayDesign("Affymetrix.com", "PhysicalArrayDesign",
-                    "HG18_Deluxe_Promoter_HX1");
-            assertEquals("HG18_Deluxe_Promoter_HX1", otherDesign.getName());
-            assertEquals("nimblegen.com", otherDesign.getLsidAuthority());
-            assertEquals("PhysicalArrayDesign", otherDesign.getLsidNamespace());
-            assertEquals("HG18_Deluxe_Promoter_HX1", otherDesign.getLsidObjectId());
-            assertEquals(1024, otherDesign.getNumberOfFeatures());
-            assertEquals(94, otherDesign.getDesignDetails().getLogicalProbes().size());
-            assertEquals(364, otherDesign.getDesignDetails().getProbes().size());
-            assertEquals(1024, otherDesign.getDesignDetails().getFeatures().size());
-            assertEquals(2, otherDesign.getDesignFiles().size());
+            ArrayDesign otherDesign = this.arrayDesignService.getArrayDesign("caarray.nci.nih.gov", "domain",
+                    "090210_HG18_WG_CGH_v3.1_HX3-short");
+            assertEquals("090210_HG18_WG_CGH_v3.1_HX3-short", otherDesign.getName());
+            assertEquals("caarray.nci.nih.gov", otherDesign.getLsidAuthority());
+            assertEquals("domain", otherDesign.getLsidNamespace());
+            assertEquals("090210_HG18_WG_CGH_v3.1_HX3-short", otherDesign.getLsidObjectId());
+            assertEquals(4999, otherDesign.getNumberOfFeatures());
+            assertEquals(41, otherDesign.getDesignDetails().getLogicalProbes().size());
+            assertEquals(4999, otherDesign.getDesignDetails().getProbes().size());
+            assertEquals(4999, otherDesign.getDesignDetails().getFeatures().size());
+            assertEquals(1, otherDesign.getDesignFiles().size());
             for (CaArrayFile designFile : design.getDesignFiles()) {
                 assertTrue(otherDesign.getDesignFiles().contains(designFile));
             }

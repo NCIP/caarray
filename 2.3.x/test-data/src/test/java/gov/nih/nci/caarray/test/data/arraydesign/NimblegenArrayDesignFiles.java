@@ -86,9 +86,9 @@ import java.io.File;
 
 public class NimblegenArrayDesignFiles {
 
-    public static final File[] EXPRESSION_DESIGN = new File[] {
+    public static final File[] CGH_DESIGN = new File[] {
         new File(NimblegenArrayDesignFiles.class.getResource("/arraydesign/nimblegen/090210_HG18_WG_CGH_v3.1_HX3.ndf").getFile()),
-        new File(NimblegenArrayDesignFiles.class.getResource("/arraydesign/nimblegen/090210_HG18_WG_CGH_v3.1_HX3.ngd").getFile()),
+        new File(NimblegenArrayDesignFiles.class.getResource("/arraydesign/nimblegen/090210_HG18_WG_CGH_v3.1_HX3.pos").getFile()),
     };
 
     public static final File[] PROMOTER_DESIGN = new File[] {
@@ -96,11 +96,20 @@ public class NimblegenArrayDesignFiles {
         new File(NimblegenArrayDesignFiles.class.getResource("/arraydesign/nimblegen/HG18_Deluxe_Promoter_HX1.pos").getFile()),
     };
 
-    public static final File[] CGH_DESIGN = new File[] {
+    public static final File[] EXPRESSION_DESIGN = new File[] {
         new File(NimblegenArrayDesignFiles.class.getResource("/arraydesign/nimblegen/2006-08-03_HG18_60mer_expr.ndf").getFile()),
-        new File(NimblegenArrayDesignFiles.class.getResource("/arraydesign/nimblegen/2006-08-03_HG18_60mer_expr.pos").getFile()),
+        new File(NimblegenArrayDesignFiles.class.getResource("/arraydesign/nimblegen/2006-08-03_HG18_60mer_expr.ngd").getFile()),
     };
 
+    public static final File SHORT_EXPRESSION_DESIGN = 
+        new File(NimblegenArrayDesignFiles.class.getResource("/arraydesign/nimblegen/2006-08-03_HG18_60mer_expr-short.ndf").getFile());
+
+    public static final File SHORT_PROMOTER_DESIGN = 
+        new File(NimblegenArrayDesignFiles.class.getResource("/arraydesign/nimblegen/HG18_Deluxe_Promoter_HX1-short.ndf").getFile());
+
+    public static final File SHORT_CGH_DESIGN =
+        new File(NimblegenArrayDesignFiles.class.getResource("/arraydesign/nimblegen/090210_HG18_WG_CGH_v3.1_HX3-short.ndf").getFile());
+        
     public static final File MISSING_HEADER_NDF 
         = new File(NimblegenArrayDesignFiles.class.getResource("/arraydesign/nimblegen/missing-header.ndf").getFile());
 
