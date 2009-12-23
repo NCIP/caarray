@@ -152,20 +152,22 @@ public class NimbleGenNdfHandler extends AbstractArrayDesignHandler {
             ArrayDesignDetails details = new ArrayDesignDetails();
             arrayDesign.setDesignDetails(details);
             getArrayDao().save(arrayDesign);
-            getArrayDao().flushSession();
+            getArrayDao().save(details);
+            //getArrayDao().flushSession();
             count = 0;
             while (reader.hasNextLine()) {
                 List<String> values = reader.nextLine();
                 PhysicalProbe p = createPhysicalProbe(details, getValues(values, header)); 
                 getArrayDao().save(p);
                 if (++count % LOGICAL_PROBE_BATCH_SIZE == 0) {
+		    flushAndClearSession();
                     // Yeah, I know, this is not good. But there's a bug 
                     // (http://opensource.atlassian.com/projects/hibernate/browse/HHH-511) 
                     // in the Hibernate clear() code that makes large long running transactions 
                     // problematic. The only way that seems to work is to break up the transactions.
                     // Hopefully, since we've validated the array design file, this shouldn't be a problem.
-                    HibernateUtil.getCurrentSession().getTransaction().commit();
-                    HibernateUtil.getCurrentSession().beginTransaction();
+                    //HibernateUtil.getCurrentSession().getTransaction().commit();
+                    //HibernateUtil.getCurrentSession().beginTransaction();
 //                    for (ProbeGroup pg : probeGroups.values()) {
 //                        HibernateUtil.getCurrentSession().evict(pg);
 //                    }
@@ -183,7 +185,7 @@ public class NimbleGenNdfHandler extends AbstractArrayDesignHandler {
             }
             arrayDesign.setNumberOfFeatures(count);
             // Make sure there's something in the new transaction.
-            getArrayDao().save(details);
+            //getArrayDao().save(details);
             //getArrayDao().save(arrayDesign);
             //flushAndClearSession();
         } catch (IOException e) {
