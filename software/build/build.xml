@@ -375,26 +375,12 @@
         </path>
         <property name="commons-beanutils.jar" refid="commons-beanutils.jar.fileset" />
 
-        <path id="commons-codec.jar.path">
-            <fileset dir="${project.lib}" id="commons-codec.jar.fileset">
-                <include name="commons-codec-*.jar"/>
-            </fileset>
-        </path>
-        <property name="commons-codec.jar" refid="commons-codec.jar.fileset" />
-
         <path id="commons-collections.jar.path">
             <fileset dir="${project.lib}" id="commons-collections.jar.fileset">
                 <include name="commons-collections-*.jar"/>
             </fileset>
         </path>
         <property name="commons-collections.jar" refid="commons-collections.jar.fileset" />
-
-        <path id="commons-digester.jar.path">
-            <fileset dir="${project.lib}" id="commons-digester.jar.fileset">
-                <include name="commons-digester-*.jar"/>
-            </fileset>
-        </path>
-        <property name="commons-digester.jar" refid="commons-digester.jar.fileset" />
 
         <path id="commons-discovery.jar.path">
             <fileset dir="${project.lib}" id="commons-discovery.jar.fileset">
@@ -665,27 +651,6 @@
         </path>
         <property name="sitemesh.jar" refid="sitemesh.jar.fileset" />
 
-        <path id="struts2-spring-plugin.jar.path">
-            <fileset dir="${project.lib}" id="struts2-spring-plugin.jar.fileset">
-                <include name="struts2-spring-plugin-*.jar"/>
-            </fileset>
-        </path>
-        <property name="struts2-spring-plugin.jar" refid="struts2-spring-plugin.jar.fileset" />
-
-        <path id="struts2-sitemesh-plugin.jar.path">
-            <fileset dir="${project.lib}" id="struts2-sitemesh-plugin.jar.fileset">
-                <include name="struts2-sitemesh-plugin-*.jar"/>
-            </fileset>
-        </path>
-        <property name="struts2-sitemesh-plugin.jar" refid="struts2-sitemesh-plugin.jar.fileset" />
-
-        <path id="struts2-codebehind-plugin.jar.path">
-            <fileset dir="${project.lib}" id="struts2-codebehind-plugin.jar.fileset">
-                <include name="struts2-codebehind-plugin-*.jar"/>
-            </fileset>
-        </path>
-        <property name="struts2-codebehind-plugin.jar" refid="struts2-codebehind-plugin.jar.fileset" />
-
         <path id="log4j.jar.path">
             <fileset dir="${project.lib}" id="log4j.jar.fileset">
                 <include name="log4j-*.jar"/>
@@ -751,13 +716,6 @@
             </fileset>
         </path>
         <property name="spring-mock.jar" refid="spring-mock.jar.fileset" />
-
-        <path id="netcdf.jar.path">
-            <fileset dir="${project.lib}" id="netcdf.jar.fileset">
-                <include name="netcdf-*.jar"/>
-            </fileset>
-        </path>
-        <property name="netcdf.jar" refid="netcdf.jar.fileset" />
 
         <path id="javacsv.jar.path">
             <fileset dir="${project.lib}" id="javacsv.jar.fileset">
@@ -1021,7 +979,6 @@
             <fileset refid="clm.jar.fileset"/>
             <fileset refid="javacsv.jar.fileset"/>
             <fileset refid="mysql-connector-java.jar.fileset"/>
-            <fileset refid="netcdf.jar.fileset"/>
             <fileset refid="rmiio.jar.fileset"/>
             <fileset refid="xerces-J.jar.fileset"/>
             <fileset refid="xercesImpl.jar.fileset"/>
