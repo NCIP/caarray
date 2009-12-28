@@ -783,12 +783,12 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
         <remote-ssh remotesshcommand=". .bash_profile;mkdir ${ssh.dir.temp}" />
         <remote-ssh remotesshcommand=". .bash_profile;chmod -R 777 ${ssh.dir.temp}" />
         <deploy-files dist.file="${caarray.upgrade.zip.file}" />
-        <remote-ssh remotesshcommand=". .bash_profile;cd ${ssh.dir.temp}/${caarray.upgrade.name}_${caarray.version}; ant -Dproperties.file=upgrade.properties -Dforce.reinstall=true upgrade:tier:caarray" />
+        <remote-ssh remotesshcommand=". .bash_profile;cd ${ssh.dir.temp}/${caarray.upgrade.name}_${caarray.version}; ant -Dforce.reinstall=true upgrade:tier:caarray" />
         <remote-ssh remotesshcommand=". .bash_profile;rm -rf ${ssh.dir.temp}" />
         <remote-ssh remotesshcommand=". .bash_profile;mkdir ${ssh.dir.temp}" />
         <remote-ssh remotesshcommand=". .bash_profile;chmod -R 777 ${ssh.dir.temp}" />
         <deploy-files ssh.user="${ssh.grid.username}" dist.file="${caarray.upgrade.zip.file}" />
-        <remote-ssh remoteSshUser="${ssh.grid.username}" remotesshcommand=". .bash_profile;cd ${ssh.dir.temp}/${caarray.upgrade.name}_${caarray.version}; ant -Dproperties.file=upgrade.properties -Dforce.reinstall=true upgrade:tier:grid" />
+        <remote-ssh remoteSshUser="${ssh.grid.username}" remotesshcommand=". .bash_profile;cd ${ssh.dir.temp}/${caarray.upgrade.name}_${caarray.version}; ant -Dforce.reinstall=true upgrade:tier:grid" />
         <remote-ssh remoteSshUser="${ssh.grid.username}" remotesshcommand=". .bash_profile;rm -rf ${ssh.dir.temp}/*" />
     </target>    
     
