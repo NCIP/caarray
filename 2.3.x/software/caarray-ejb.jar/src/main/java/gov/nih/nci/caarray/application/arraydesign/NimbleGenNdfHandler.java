@@ -113,6 +113,8 @@ import java.util.Set;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.hibernate.SQLQuery;
+import org.hibernate.ScrollableResults;
 
 /**
  * Implementation of NDF parser with NGD and POS file support.
@@ -124,18 +126,52 @@ public class NimbleGenNdfHandler extends AbstractArrayDesignHandler {
     private static final String LSID_NAMESPACE = AbstractCaArrayEntity.CAARRAY_LSID_NAMESPACE;
     private static final Logger LOG = Logger
             .getLogger(NimbleGenNdfHandler.class);
+    
+    private static final String TEMP_TABLE_NAME = "NGImporterTempTable";
+    private static final String CREATE_TEMP_TABLE_STMT = "CREATE TEMPORARY TABLE " + TEMP_TABLE_NAME +
+                                                         " ( PROBE_ID varchar(100), " +
+                                                         "SEQ_ID varchar(100), " +
+                                                         "CONTAINER varchar(100), " +
+                                                         "X int, " +
+                                                         "Y int, " +
+                                                         "INDEX(SEQ_ID));";
 
     private static final int LOGICAL_PROBE_BATCH_SIZE = 1000;
 
     private Map<String, ProbeGroup> probeGroups = new HashMap<String, ProbeGroup>();
 
     private Map<String, LogicalProbe> logicalProbes = new HashMap<String, LogicalProbe>();
+    
 
     NimbleGenNdfHandler(VocabularyService vocabularyService,
             CaArrayDaoFactory daoFactory, Set<CaArrayFile> designFiles) {
         super(vocabularyService, daoFactory, designFiles);
     }
 
+    private void loadRows(DelimitedFileReader reader) throws IOException {
+        Map<String,Integer> header = getHeaders(reader);
+        int i = 0;
+        while (reader.hasNextLine()) {
+            SQLQuery q = HibernateUtil.getCurrentSession().createSQLQuery("insert into " + 
+                    TEMP_TABLE_NAME + " values (?, ?, ?, ?, ?);");
+            List<String> values = reader.nextLine();
+            Map<String, Object> vals = getValues(values,header);
+            q.setParameter(0, vals.get("PROBE_ID"));
+            q.setParameter(1, vals.get("SEQ_ID"));
+            q.setParameter(2, vals.get("CONTAINER"));
+            q.setParameter(3, vals.get("X"));
+            q.setParameter(4, vals.get("Y"));
+            q.executeUpdate();
+        }
+
+    }
+    
+    ScrollableResults getProbes() {
+        SQLQuery q = HibernateUtil.getCurrentSession().createSQLQuery("select * from " +
+                TEMP_TABLE_NAME + " order by SEQ_ID asc");
+        return q.scroll();
+    }
+    
     /**
      * {@inheritDoc}
      */
@@ -148,46 +184,41 @@ public class NimbleGenNdfHandler extends AbstractArrayDesignHandler {
         try {
             reader = DelimitedFileReaderFactory.INSTANCE
                     .getTabDelimitedReader(getFile());
-            Map<String,Integer> header = getHeaders(reader);
             ArrayDesignDetails details = new ArrayDesignDetails();
             arrayDesign.setDesignDetails(details);
             getArrayDao().save(arrayDesign);
             getArrayDao().save(details);
-            //getArrayDao().flushSession();
+            //flushAndClearSession();
+            
+            HibernateUtil.getCurrentSession().createSQLQuery(CREATE_TEMP_TABLE_STMT).executeUpdate();
+            HibernateUtil.getCurrentSession().createSQLQuery("LOCK TABLE " + TEMP_TABLE_NAME + " WRITE;").executeUpdate();
+            loadRows(reader);
+            HibernateUtil.getCurrentSession().createSQLQuery("UNLOCK TABLES;").executeUpdate();
+            ScrollableResults results = getProbes();
             count = 0;
-            while (reader.hasNextLine()) {
-                List<String> values = reader.nextLine();
-                PhysicalProbe p = createPhysicalProbe(details, getValues(values, header)); 
-                getArrayDao().save(p);
-                if (++count % LOGICAL_PROBE_BATCH_SIZE == 0) {
-		    flushAndClearSession();
-                    // Yeah, I know, this is not good. But there's a bug 
-                    // (http://opensource.atlassian.com/projects/hibernate/browse/HHH-511) 
-                    // in the Hibernate clear() code that makes large long running transactions 
-                    // problematic. The only way that seems to work is to break up the transactions.
-                    // Hopefully, since we've validated the array design file, this shouldn't be a problem.
-                    //HibernateUtil.getCurrentSession().getTransaction().commit();
-                    //HibernateUtil.getCurrentSession().beginTransaction();
-//                    for (ProbeGroup pg : probeGroups.values()) {
-//                        HibernateUtil.getCurrentSession().evict(pg);
-//                    }
-//                    for (LogicalProbe lp : logicalProbes.values()) {
-//                        HibernateUtil.getCurrentSession().evict(lp);
-//                    }
-//                    for (PhysicalProbe pr : probes) {
-//                        HibernateUtil.getCurrentSession().evict(pr);
-//                    }
-//                    probes.clear();
-//                    HibernateUtil.getCurrentSession().evict(details);
-//                    HibernateUtil.getCurrentSession().evict(arrayDesign);
-//                    HibernateUtil.getCurrentSession().clear();
+            results.beforeFirst();
+            String lastSeqId = null;
+            while (results.next()) {
+                Object[] values = results.get();
+                Map<String,Object> vals = new HashMap<String,Object>();
+                vals.put("PROBE_ID",values[0]);
+                vals.put("SEQ_ID",values[1]);
+                vals.put("CONTAINER",values[2]);
+                vals.put("X",values[3]);
+                vals.put("Y",values[4]);
+
+                if (lastSeqId != null && !vals.get("SEQ_ID").equals(lastSeqId)) {
+                    logicalProbes.clear();
+                    flushAndClearSession();
                 }
+                lastSeqId = (String)vals.get("SEQ_ID");
+                
+                PhysicalProbe p = createPhysicalProbe(details, vals); 
+                getArrayDao().save(p);
+                ++count;
             }
             arrayDesign.setNumberOfFeatures(count);
-            // Make sure there's something in the new transaction.
-            //getArrayDao().save(details);
-            //getArrayDao().save(arrayDesign);
-            //flushAndClearSession();
+            HibernateUtil.getCurrentSession().createSQLQuery("DROP TABLE " + TEMP_TABLE_NAME + ";").executeUpdate();
         } catch (IOException e) {
             LOG.error("Error processing line "+count);
             throw new IllegalStateException("Couldn't read file: ", e);
@@ -195,6 +226,14 @@ public class NimbleGenNdfHandler extends AbstractArrayDesignHandler {
             reader.close();
         }
     }
+
+//    @Override
+//    void flushAndClearSession() {
+//        for (ProbeGroup pg : probeGroups.values()) {
+//            HibernateUtil.getCurrentSession().evict(pg);
+//        }
+//        super.flushAndClearSession();
+//    }
 
     private ProbeGroup getProbeGroup(String feature, ArrayDesignDetails details) {
         if (!probeGroups.containsKey(feature)) {
@@ -226,9 +265,9 @@ public class NimbleGenNdfHandler extends AbstractArrayDesignHandler {
         String sequenceId = (String) values.get("SEQ_ID");
         String container = (String) values.get("CONTAINER");
         String probeId = (String) values.get("PROBE_ID");
-        ProbeGroup group = getProbeGroup(container, details);
+        //ProbeGroup group = getProbeGroup(container, details);
         LogicalProbe lp = getLogicalProbe(sequenceId, details);
-        PhysicalProbe p = new PhysicalProbe(details, group);
+        PhysicalProbe p = new PhysicalProbe(details, null);
         lp.addProbe(p);
         p.setName(container + "|" + sequenceId + "|" + probeId);
 

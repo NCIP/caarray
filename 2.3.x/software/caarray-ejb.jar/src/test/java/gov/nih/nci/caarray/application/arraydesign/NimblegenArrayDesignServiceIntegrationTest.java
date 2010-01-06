@@ -324,7 +324,7 @@ public class NimblegenArrayDesignServiceIntegrationTest extends AbstractCaarrayT
             this.arrayDesignService.importDesign(design);
             this.arrayDesignService.importDesignDetails(design);
             t.commit();
-
+            
             t = HibernateUtil.beginTransaction();
             design = arrayDesignService.getArrayDesign(design.getId());
             assertEquals("2006-08-03_HG18_60mer_expr-short", design.getName());
