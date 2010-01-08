@@ -95,7 +95,6 @@ import java.sql.Statement;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.hibernate.engine.SessionFactoryImplementor;
 import org.w3c.dom.Element;
 
 /**
@@ -121,8 +120,7 @@ final class SqlScriptMigrationStep extends AbstractMigrationStep {
         BufferedReader in = new BufferedReader(new InputStreamReader(instream));
         Connection connection = null;
         try {
-            connection =
-                ((SessionFactoryImplementor) HibernateUtil.getSessionFactory()).getConnectionProvider().getConnection();
+            connection = HibernateUtil.getNewConnection();
             String line = null;
             StringBuffer sqlStatement = new StringBuffer();
             Statement s = connection.createStatement();

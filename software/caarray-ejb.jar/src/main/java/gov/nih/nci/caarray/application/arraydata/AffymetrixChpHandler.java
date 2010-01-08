@@ -376,8 +376,11 @@ final class AffymetrixChpHandler extends AbstractDataFileHandler {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    ArrayDesign getArrayDesign(ArrayDesignService arrayDesignService, File file) {
+    public ArrayDesign getArrayDesign(ArrayDesignService arrayDesignService, File file) {
         return getArrayDesign(arrayDesignService, getChpData(file));
     }
 

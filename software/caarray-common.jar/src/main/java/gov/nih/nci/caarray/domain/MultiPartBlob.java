@@ -90,6 +90,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.SequenceInputStream;
 import java.io.Serializable;
+import java.sql.Blob;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -258,6 +259,16 @@ public class MultiPartBlob implements Serializable {
     private void addBlob(byte[] buffer) {
         BlobHolder bh = new BlobHolder();
         bh.setContents(Hibernate.createBlob(buffer));
+        getBlobParts().add(bh);
+    }
+
+    /**
+     * Add a blob part.
+     * @param blob blob data
+     */
+    public void addBlob(Blob blob) {
+        BlobHolder bh = new BlobHolder();
+        bh.setContents(blob);
         getBlobParts().add(bh);
     }
 

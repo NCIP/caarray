@@ -94,7 +94,6 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 import org.apache.log4j.Logger;
-import org.hibernate.engine.SessionFactoryImplementor;
 
 /**
  * Base class for file handling jobs.
@@ -145,8 +144,7 @@ abstract class AbstractFileManagementJob implements Serializable {
         Connection con = null;
         PreparedStatement ps = null;
         try {
-            con = ((SessionFactoryImplementor) HibernateUtil.getSessionFactory()).
-                getConnectionProvider().getConnection();
+            con = HibernateUtil.getNewConnection();
             con.setAutoCommit(false);
             ps = getUnexpectedErrorPreparedStatement(con);
             ps.executeUpdate();

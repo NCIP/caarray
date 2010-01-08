@@ -85,18 +85,28 @@ package gov.nih.nci.caarray.application.arraydata;
 import gov.nih.nci.caarray.domain.file.FileType;
 
 /**
- * Provides access to an appropriate <code>AbstractDataHandler</code> for a given <code>AbstractArrayData</code>
+ * Provides access to an appropriate <code>AbstractDataHandler</code> for a given <code>FileType</code>
  * instance.
  */
-final class ArrayDataHandlerFactory {
+public final class ArrayDataHandlerFactory {
 
     private static final ArrayDataHandlerFactory INSTANCE = new ArrayDataHandlerFactory();
 
-    static ArrayDataHandlerFactory getInstance() {
+    /**
+     * @return the singleton factory instance
+     */
+    public static ArrayDataHandlerFactory getInstance() {
         return INSTANCE;
     }
 
-    AbstractDataFileHandler getHandler(FileType type) {
+    /**
+     * get the correct handler for given file type.
+     * 
+     * @param type the type of file for which a handler is needed.
+     * @return The AbstractDataFileHandler that knows how to parse this file type 
+     * 
+     */
+    public AbstractDataFileHandler getHandler(FileType type) {
         if (FileType.AFFYMETRIX_CEL.equals(type)) {
             return new AffymetrixCelHandler();
         } else if (FileType.AFFYMETRIX_CHP.equals(type)) {

@@ -115,7 +115,7 @@ import org.apache.log4j.Logger;
  * Base class for array data file handlers.
  */
 @SuppressWarnings("PMD.CyclomaticComplexity") // switch-like statement
-abstract class AbstractDataFileHandler {
+public abstract class AbstractDataFileHandler {
 
     static final String READ_FILE_ERROR_MESSAGE = "Couldn't read file";
 
@@ -146,8 +146,14 @@ abstract class AbstractDataFileHandler {
                     + ") is not associated with this experiment");
         }
     }
-
-    abstract ArrayDesign getArrayDesign(ArrayDesignService arrayDesignService, File file);
+    
+    /**
+     * get the array design for the array from which data in the given file comes.
+     * @param arrayDesignService the ArrayDesignService instance
+     * @param file the data file
+     * @return the ArrayDesign 
+     */
+    public abstract ArrayDesign getArrayDesign(ArrayDesignService arrayDesignService, File file);
 
     abstract void validate(CaArrayFile caArrayFile, File file, MageTabDocumentSet mTabSet, FileValidationResult result,
             ArrayDesignService arrayDesignService);
@@ -184,6 +190,12 @@ abstract class AbstractDataFileHandler {
         return Collections.singletonList(hybridizationName);
     }
 
+    /**
+     * Set value at given row of the given column to the given value.
+     * @param column the column 
+     * @param rowIndex the index of the row in the column
+     * @param value the value 
+     */
     @SuppressWarnings("PMD.CyclomaticComplexity") // switch-like statement
     protected void setValue(AbstractDataColumn column, int rowIndex, String value) {
         Class<?> columnTypeClass = column.getQuantitationType().getTypeClass();

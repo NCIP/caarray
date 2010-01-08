@@ -568,8 +568,11 @@ final class GenepixGprHandler extends AbstractDataFileHandler {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    ArrayDesign getArrayDesign(ArrayDesignService arrayDesignService, File file) {
+    public ArrayDesign getArrayDesign(ArrayDesignService arrayDesignService, File file) {
         DelimitedFileReader reader = getReader(file);
         try {
             return getArrayDesign(arrayDesignService, reader);

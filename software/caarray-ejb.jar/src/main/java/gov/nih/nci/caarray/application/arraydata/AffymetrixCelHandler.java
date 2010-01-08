@@ -295,8 +295,11 @@ class AffymetrixCelHandler extends AbstractDataFileHandler {
         return AffymetrixArrayDataTypes.AFFYMETRIX_CEL;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    ArrayDesign getArrayDesign(ArrayDesignService arrayDesignService, File file) {
+    public ArrayDesign getArrayDesign(ArrayDesignService arrayDesignService, File file) {
         String objectId = null;
         try {
             celData = new FusionCELData();

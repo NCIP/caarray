@@ -540,8 +540,11 @@ class IlluminaDataHandler extends AbstractDataFileHandler {
         return arrayDesignService.getArrayDesign(LSID_AUTHORITY, LSID_NAMESPACE, designName);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    ArrayDesign getArrayDesign(ArrayDesignService arrayDesignService, File file) {
+    public ArrayDesign getArrayDesign(ArrayDesignService arrayDesignService, File file) {
         DelimitedFileReader reader = getReader(file);
         try {
             return getArrayDesign(arrayDesignService, reader);

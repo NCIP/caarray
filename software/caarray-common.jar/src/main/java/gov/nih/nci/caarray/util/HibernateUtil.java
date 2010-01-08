@@ -87,6 +87,8 @@ import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.security.authorization.instancelevel.InstanceLevelSecurityHelper;
 
 import java.io.Serializable;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -98,6 +100,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.engine.FilterDefinition;
+import org.hibernate.engine.SessionFactoryImplementor;
 import org.hibernate.proxy.HibernateProxy;
 
 import com.fiveamsolutions.nci.commons.audit.AuditLogInterceptor;
@@ -247,6 +250,14 @@ public final class HibernateUtil {
         return getHibernateHelper().getSessionFactory();
     }
 
+    /**
+     * @return a new Connection from the data source underlying the hibernate session factory
+     * @throws SQLException if an error occurs obtaining the connection
+     */
+    public static Connection getNewConnection() throws SQLException {
+        return ((SessionFactoryImplementor) HibernateUtil.getSessionFactory()).getConnectionProvider().getConnection();
+    }
+    
     /**
      * Do something in an unfiltered session.
      * @param uc callback class

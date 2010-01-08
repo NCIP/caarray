@@ -145,8 +145,11 @@ class UnsupportedDataFormatHandler extends AbstractDataFileHandler {
         return FileStatus.VALIDATED_NOT_PARSED;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    ArrayDesign getArrayDesign(ArrayDesignService arrayDesignService, File file) {
+    public ArrayDesign getArrayDesign(ArrayDesignService arrayDesignService, File file) {
         // data parsing not supported for the current type
         return null;
     }
