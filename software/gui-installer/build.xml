@@ -2,8 +2,10 @@
 
 	<!-- Generic properties -->
 	<property name="application_installer" value="caarray_installer" />
-	<property name="installer_prefix" value="caarray_install_2_3_0"/>
-	<property name="upgrader_prefix" value="caarray_upgrade_2_3_0"/>
+
+<property name="caarray.version.label" value="2_3_1"/>
+	<property name="installer_prefix" value="caarray_install_${caarray.version.label}"/>
+	<property name="upgrader_prefix" value="caarray_upgrade_${caarray.version.label}"/>
 	<property name="application_installer_zip" value="caarray_install_2_3_1.zip" />
 	<property name="application_upgrader_zip" value="caarray_upgrade_2_3_1.zip" />
 	
@@ -27,10 +29,7 @@
 			<include name="**/*.properties" />
 		</replace>
 
-		<replace file="${install.path}/${application_installer}/build.xml" token="project.properties" value="${install.path}/${application_installer}/project.properties"/>
-		<replace file="${install.path}/${application_installer}/build.xml" token="${properties.file}" value="${install.path}/${application_installer}/${properties.file}"/>
-		
-	</target>
+		</target>
 
 
 	<target name="update" >
@@ -51,9 +50,7 @@
 			<include name="**/*.properties" />
 		</replace>
 
-		<replace file="${install.path}/${application_installer}/build.xml" token="project.properties" value="${install.path}/${application_installer}/project.properties"/>
-		<replace file="${install.path}/${application_installer}/build.xml" token="${properties.file}" value="${install.path}/${application_installer}/${properties.file}"/>
-	</target>
+</target>
 	
 	
 	<target name="convert-install-path" >

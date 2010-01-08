@@ -6,6 +6,11 @@
     </panel>
     
     <panel order="1">
+    
+		<variable name="ldap.url" value=""/>
+		<variable name="ldap.search.base" value=""/>
+		<variable name="ldap.search.prefix" value=""/>
+		
         <field type="title" txt="Installation Mode" bold="true" size="1" />
         <field type="staticText" align="left" txt="Choose Install if you haven't installed caArray on this machine before. Choose Upgrade if caArray has previously been installed. WARNING: When choosing Install, the installer will remove any previously installed application servers (using caBIG installers) or databases installed based on the information you provide, so be sure to backup your application server and database instance if they exist. For detailed descriptions on each of the properties in this installer, see ${installer.properties.wiki.page} (fresh install), or ${upgrade.properties.wiki.page} (upgrade install)."/>
         <field type="divider" align="top"/>
@@ -718,14 +723,15 @@
     </panel>
 
     <panel order="13">
+    
         <field type="title" txt="Authentication Type" bold="true" size="1" />
         <field type="staticText" align="left" txt="There are two types of ways to authenticate users: against database or using an LDAP server. To connect to LDAP, you must have an LDAP server available in your network."/>
         <field type="divider" align="top"/>
         <field type="radio" variable="ldap.authentication.enabled">
             <description align="left" txt="Type of Authentication:"/>
             <spec>
-                <choice txt="Database" value="true" set="true" />
-                <choice txt="LDAP" value="false" />
+                <choice txt="Database" value="false" set="false" />
+                <choice txt="LDAP" value="true" />
             </spec>
         </field>
     </panel>
