@@ -11,18 +11,10 @@
     }
 </script>
 <style>
-span.level-NONE:after
-{ content: 'No access to project or any samples.'; }
-span.level-VISIBLE:after
-{ content: 'Experiment summary information without access to annotation and array data.'; }
-span.level-READ:after
-{ content: 'Read access to the experiment as a whole, providing a preview into its content.'; }
-span.level-READ_SELECTIVE:after
-{ content: 'Selective access to specific sample annotation and data.'; }
-span.level-READ_WRITE_SELECTIVE:after
-{ content: 'Write access to project. Read access and/or write access to specificed samples.'; }
-span.level-NO_VISIBILITY:after
-{ content: 'No access to project or any samples - public profile version.'; }
+    <s:iterator value="@gov.nih.nci.caarray.domain.permissions.SecurityLevel@values()" id="secLevel">
+    span.level-${secLevel}:after
+    { content: '<fmt:message key="${secLevel.resourceKey}.description"/>.'; }
+    </s:iterator>
 </style>
 <div id="delete_progress" class="confirm_msg" style="display: none; margin: 3px 3px">
 	Experiment deletion is in progress.

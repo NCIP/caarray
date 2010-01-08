@@ -65,22 +65,12 @@
                                         and/or contents of an experiment prior to its publication. The profiles are:
                                         </p>
                                         <ul id="profile_legend">
+                                            <s:iterator value="@gov.nih.nci.caarray.domain.permissions.SecurityLevel@publicLevels()" id="publicLevel">
                                             <li>
-                                                <span class="bigbold"><fmt:message><s:property value="@gov.nih.nci.caarray.domain.permissions.SecurityLevel@NO_VISIBILITY.resourceKey"/></fmt:message></span>
-                                                - Applied by default to each experiment upon creation, this profile completely removes the experiment summary information from view.
-                                            </li>
-                                            <li>
-                                                <span class="bigbold"><fmt:message><s:property value="@gov.nih.nci.caarray.domain.permissions.SecurityLevel@VISIBLE.resourceKey"/></fmt:message></span>
-                                                - Exposes experiment summary information without access to annotation and array data.
-                                             </li>
-                                            <li>
-                                                <span class="bigbold"><fmt:message><s:property value="@gov.nih.nci.caarray.domain.permissions.SecurityLevel@READ.resourceKey"/></fmt:message></span>
-                                                - Grants read access to the experiment as a whole, providing a preview into its content.
-                                            </li>
-                                            <li>
-                                                <span class="bigbold"><fmt:message><s:property value="@gov.nih.nci.caarray.domain.permissions.SecurityLevel@READ_SELECTIVE.resourceKey"/></fmt:message></span>
-                                                - Grants selective access to specific sample annotation and data.
-                                            </li>
+                                                <span class="bigbold"><fmt:message key="${publicLevel.resourceKey}"/></span>
+                                                - <fmt:message key="${publicLevel.resourceKey}.description"/>
+                                            </li>                                            
+                                            </s:iterator>
                                         </ul>
                                         <br/>
                                     </td>
