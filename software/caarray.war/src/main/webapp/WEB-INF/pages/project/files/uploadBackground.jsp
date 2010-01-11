@@ -95,7 +95,7 @@
         newFile = newRow.down('input');
         newFile.value = '';
         newFile.id = 'upload'+fileCount;
-        newCheckbox = newFile.next('input');
+        newCheckbox = newFile.nextElementSibling;
         newCheckbox.value = fileCount;
         newCheckbox.checked=false;
         newCheckbox.id = 'checkbox'+fileCount;
