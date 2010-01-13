@@ -115,6 +115,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.SQLQuery;
 import org.hibernate.ScrollableResults;
+import org.hibernate.Session;
 
 /**
  * Implementation of NDF parser with NGD and POS file support.
@@ -135,35 +136,28 @@ public class NimbleGenNdfHandler extends AbstractArrayDesignHandler {
                                                          "X int, " +
                                                          "Y int, " +
                                                          "INDEX(SEQ_ID));";
-
+    
     private static final int LOGICAL_PROBE_BATCH_SIZE = 1000;
 
     private Map<String, ProbeGroup> probeGroups = new HashMap<String, ProbeGroup>();
 
     private Map<String, LogicalProbe> logicalProbes = new HashMap<String, LogicalProbe>();
     
+    private Session tempSession = null;
 
     NimbleGenNdfHandler(VocabularyService vocabularyService,
             CaArrayDaoFactory daoFactory, Set<CaArrayFile> designFiles) {
         super(vocabularyService, daoFactory, designFiles);
     }
 
-    private void loadRows(DelimitedFileReader reader) throws IOException {
-        Map<String,Integer> header = getHeaders(reader);
-        int i = 0;
-        while (reader.hasNextLine()) {
-            SQLQuery q = HibernateUtil.getCurrentSession().createSQLQuery("insert into " + 
-                    TEMP_TABLE_NAME + " values (?, ?, ?, ?, ?);");
-            List<String> values = reader.nextLine();
-            Map<String, Object> vals = getValues(values,header);
-            q.setParameter(0, vals.get("PROBE_ID"));
-            q.setParameter(1, vals.get("SEQ_ID"));
-            q.setParameter(2, vals.get("CONTAINER"));
-            q.setParameter(3, vals.get("X"));
-            q.setParameter(4, vals.get("Y"));
-            q.executeUpdate();
-        }
+    private void loadRows(File file) throws IOException {
+        String loadQuery = "load data local infile '" + file.getAbsolutePath() +
+                           "' into table " + TEMP_TABLE_NAME + 
+                           " fields terminated by '\t' ignore 1 lines " +
+                           "(@c1,CONTAINER,@c3,@c4,SEQ_ID,@c6,@c7,@c8,@c9,@c10,@c11,@c12,PROBE_ID,@c14,@c15,X,Y);";
 
+        SQLQuery q = HibernateUtil.getCurrentSession().createSQLQuery(loadQuery);
+        q.executeUpdate();
     }
     
     ScrollableResults getProbes() {
@@ -190,9 +184,10 @@ public class NimbleGenNdfHandler extends AbstractArrayDesignHandler {
             getArrayDao().save(details);
             //flushAndClearSession();
             
+            
             HibernateUtil.getCurrentSession().createSQLQuery(CREATE_TEMP_TABLE_STMT).executeUpdate();
             HibernateUtil.getCurrentSession().createSQLQuery("LOCK TABLE " + TEMP_TABLE_NAME + " WRITE;").executeUpdate();
-            loadRows(reader);
+            loadRows(getFile());
             HibernateUtil.getCurrentSession().createSQLQuery("UNLOCK TABLES;").executeUpdate();
             ScrollableResults results = getProbes();
             count = 0;
