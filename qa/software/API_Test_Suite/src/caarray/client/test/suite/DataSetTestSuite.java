@@ -331,7 +331,7 @@ public class DataSetTestSuite extends SearchByCriteriaTestSuite
         {
             System.out.println("Error encountered retrieving data set: " + e.getClass() + (e.getMessage() != null ? e.getMessage() : ""));
             testResult.addDetail("Exception encountered retrieving data set: " + e.getClass() + (e.getMessage() != null ? e.getMessage() : ""));
-            log.error(e);
+            log.error("Exception encountered:",e);
         } 
         
         
@@ -392,7 +392,7 @@ public class DataSetTestSuite extends SearchByCriteriaTestSuite
             catch (Exception e)
             {
                 System.out.println("Exception occured retrieving files for DataSet test: " + search.getTestCase());
-                log.error(e);
+                log.error("Exception encountered:",e);
             }
             
             
@@ -421,7 +421,7 @@ public class DataSetTestSuite extends SearchByCriteriaTestSuite
             catch (Exception e)
             {
                 ref = new CaArrayEntityReference(name);
-                log.error(e);
+                log.error("Exception encountered:",e);
             }
                      
             criteria.getHybridizations().add(ref);
@@ -441,7 +441,7 @@ public class DataSetTestSuite extends SearchByCriteriaTestSuite
             catch (Exception e)
             {
                 ref = new CaArrayEntityReference(name);
-                log.error(e);
+                log.error("Exception encountered:",e);
             }
                      
             criteria.getQuantitationTypes().add(ref);
@@ -562,7 +562,7 @@ public class DataSetTestSuite extends SearchByCriteriaTestSuite
             catch (Exception e)
             {
                 ref = new CaArrayEntityReference(name);
-                log.error(e);
+                log.error("Exception encountered:",e);
             }
                      
             criteria.getHybridizations().add(ref);
@@ -582,7 +582,7 @@ public class DataSetTestSuite extends SearchByCriteriaTestSuite
             catch (Exception e)
             {
                 ref = new CaArrayEntityReference(name);
-                log.error(e);
+                log.error("Exception encountered:",e);
             }
                      
             criteria.getQuantitationTypes().add(ref);

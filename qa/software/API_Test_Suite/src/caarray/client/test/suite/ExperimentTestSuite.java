@@ -152,7 +152,7 @@ public class ExperimentTestSuite extends SearchByExampleTestSuite
             catch (Throwable t)
             {
                 System.out.println("AssayType for Experiement test case: " + search.getTestCase() + " could not be found.");
-                log.error(t);
+                log.error("Exception encountered:",t);
             }
             
         }
@@ -196,7 +196,7 @@ public class ExperimentTestSuite extends SearchByExampleTestSuite
             catch (Throwable t)
             {
                 System.out.println("Organism for Experiement test case: " + search.getTestCase() + " could not be found.");
-                log.error(t);
+                log.error("Exception encountered:",t);
             }
             
         }
@@ -210,7 +210,7 @@ public class ExperimentTestSuite extends SearchByExampleTestSuite
             catch (Throwable t)
             {
                 System.out.println("ArrayProvider for Experiement test case: " + search.getTestCase() + " could not be found.");
-                log.error(t);
+                log.error("Exception encountered:",t);
                 }
             
         }
@@ -246,7 +246,7 @@ public class ExperimentTestSuite extends SearchByExampleTestSuite
             catch (Throwable t)
             {
                 System.out.println("AssayType for Experiement test case: " + search.getTestCase() + " could not be found.");
-                log.error(t);
+                log.error("Exception encountered:",t);
             }
             
         }

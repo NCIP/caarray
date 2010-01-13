@@ -111,7 +111,7 @@ public class QuantitationTypeCriteriaTestSuite extends
         {
             System.out.println("Error encountered executing search: " + e.getMessage());
             testResult.addDetail("Exception encountered executing search: " + e.getClass() + (e.getMessage() != null ? e.getMessage() : ""));
-            log.error(e);
+            log.error("Exception encountered:",e);
         } 
         
         

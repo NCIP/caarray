@@ -73,7 +73,7 @@ public abstract class SearchByCriteriaTestSuite extends ConfigurableTestSuite
                     }
                     catch (Exception e)
                     {
-                        log.error(e);
+                        log.error("Exception encountered:",e);
                         throw new TestConfigurationException("Exception constructing test case " + search.getTestCase() + ": "+ e.getClass());
                     }
                 }              
@@ -97,7 +97,7 @@ public abstract class SearchByCriteriaTestSuite extends ConfigurableTestSuite
                 catch (Exception e)
                 {
                     e.printStackTrace();
-                    log.error(e);
+                    log.error("Exception encountered:",e);
                     throw new TestConfigurationException("Expection constructing test case: " + e);
                 }
                     
@@ -156,7 +156,7 @@ public abstract class SearchByCriteriaTestSuite extends ConfigurableTestSuite
                         "An exception occured executing an " + getType() + " search: "
                                 + t.getMessage());
                 t.printStackTrace();
-                log.error(t);
+                log.error("Exception encountered:",t);
             }
 
             resultReport.addTestResult(testResult);

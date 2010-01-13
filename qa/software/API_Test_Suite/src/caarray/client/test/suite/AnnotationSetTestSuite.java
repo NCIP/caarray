@@ -183,7 +183,7 @@ public class AnnotationSetTestSuite extends SearchByCriteriaTestSuite
         {
             System.out.println("Error encountered retrieving annotation set: " + e.getClass() + (e.getMessage() != null ? e.getMessage() : ""));
             testResult.addDetail("Exception encountered retrieving annotation set: " + e.getClass() + (e.getMessage() != null ? e.getMessage() : ""));
-            log.error(e);
+            log.error("Exception encountered:",e);
         } 
         
         
@@ -252,7 +252,7 @@ public class AnnotationSetTestSuite extends SearchByCriteriaTestSuite
             catch (Exception e)
             {
                 System.out.println("No hybrid found for test case: " + search.getTestCase());
-                log.error(e);
+                log.error("Exception encountered:",e);
             }
                      
             request.getExperimentGraphNodes().add(ref);
@@ -276,7 +276,7 @@ public class AnnotationSetTestSuite extends SearchByCriteriaTestSuite
             catch (Exception e)
             {
                 System.out.println("No sample found for test case: " + search.getTestCase());
-                log.error(e);
+                log.error("Exception encountered:",e);
             }
                      
             request.getExperimentGraphNodes().add(ref);
@@ -356,7 +356,7 @@ public class AnnotationSetTestSuite extends SearchByCriteriaTestSuite
                 catch (Exception e)
                 {
                     System.out.println("No hybridization found for annotation set test case: " + search.getTestCase());
-                    log.error(e);
+                    log.error("Exception encountered:",e);
                 }
             }
             
@@ -382,7 +382,7 @@ public class AnnotationSetTestSuite extends SearchByCriteriaTestSuite
                 catch (Exception e)
                 {
                     System.out.println("No sample found for annotation set test case: " + search.getTestCase());
-                    log.error(e);
+                    log.error("Exception encountered:",e);
                 } 
             }        
             criteria.getExperimentGraphNodes().add(ref);

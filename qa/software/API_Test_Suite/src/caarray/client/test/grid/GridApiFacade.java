@@ -171,7 +171,7 @@ public class GridApiFacade implements ApiFacade
         catch (UnsupportedCategoryException e)
         {
             System.out.println("Unsupported category: " + e.getMessage());
-            log.error(e);
+            log.error("Exception encountered:",e);
         }
         
         return null;

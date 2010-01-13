@@ -35,7 +35,7 @@ public class GridTest
         {
             System.out.println("An unexpected error occurred during test execution.");
             t.printStackTrace();
-            log.error(t);
+            log.error("Exception encountered:",t);
         }
         
     }

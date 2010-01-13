@@ -92,7 +92,7 @@ public class LoadTest
             System.out.println("An exception occured execuitng the load tests: " + t.getClass());
             System.out.println("Test suite aborted.");
             t.printStackTrace();
-            log.error(t);
+            log.error("Exception encountered:",t);
         }
         
         
@@ -133,7 +133,7 @@ public class LoadTest
                 System.out.println("An exception occured in thread " + thread + ": " + t.getClass());
                 System.out.println("Test suite aborted.");
                 t.printStackTrace();
-                log.error(t);
+                log.error("Exception encountered:",t);
             }
             
         }

@@ -172,7 +172,7 @@ public abstract class ConfigurableTestSuite
                     + " configuration file: " + e.getMessage();
             resultReport.addErrorMessage(errorMessage);
             e.printStackTrace();
-            log.error(e);
+            log.error("Exception encountered:",e);
         }
         catch (IOException e)
         {
@@ -180,7 +180,7 @@ public abstract class ConfigurableTestSuite
                     + " test suite: " + e.getMessage();
             resultReport.addErrorMessage(errorMessage);
             e.printStackTrace();
-            log.error(e);
+            log.error("Exception encountered:",e);
         }
     
         catch (TestConfigurationException e)
@@ -191,7 +191,7 @@ public abstract class ConfigurableTestSuite
                     + "file: " + e.getMessage();
             resultReport.addErrorMessage(errorMessage);
             e.printStackTrace();
-            log.error(e);
+            log.error("Exception encountered:",e);
         }
         catch (Throwable t)
         {
@@ -199,7 +199,7 @@ public abstract class ConfigurableTestSuite
                 + " : " + t.getLocalizedMessage();
             resultReport.addErrorMessage(errorMessage);
             t.printStackTrace();
-            log.error(t);
+            log.error("Exception encountered:",t);
         }
     
     }

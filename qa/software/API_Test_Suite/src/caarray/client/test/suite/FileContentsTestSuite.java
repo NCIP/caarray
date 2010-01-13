@@ -275,7 +275,7 @@ public class FileContentsTestSuite extends SearchByCriteriaTestSuite
         {
             System.out.println("Error encountered retrieving file contents set: " + e.getClass() + (e.getMessage() != null ? e.getMessage() : ""));
             testResult.addDetail("Exception encountered retrieving file contents set: " + e.getClass() + (e.getMessage() != null ? e.getMessage() : ""));
-            log.error(e);
+            log.error("Exception encountered:",e);
         } 
         return null;
     }
@@ -446,7 +446,7 @@ public class FileContentsTestSuite extends SearchByCriteriaTestSuite
             catch (Exception e)
             {
                 System.out.println("Exception occured retrieving file for FileContents test: " + search.getTestCase());
-                log.error(e);
+                log.error("Exception encountered:",e);
             }
             
         }

@@ -329,7 +329,7 @@ public class GuiMain
                     catch (Exception e)
                     {
                         System.out.println("An error occured executing the tests: " + e.getClass() + ". Check error log for details.");
-                        log.error(e);
+                        log.error("Exception encountered:",e);
                     }
                 }              
            
@@ -470,7 +470,7 @@ public class GuiMain
                     System.out.println("An exception occured execuitng the tests: " + t.getClass());
                     System.out.println("Test suite aborted. Check error log for details.");
                     t.printStackTrace();
-                    log.error(t);
+                    log.error("Exception encountered:",t);
                 }
                 
             }
@@ -558,7 +558,7 @@ public class GuiMain
                 System.out.println("An exception occured execuitng the load tests: " + t.getClass());
                 System.out.println("Test suite aborted.");
                 t.printStackTrace();
-                log.error(t);
+                log.error("Exception encountered:",t);
             }
             
             
@@ -605,7 +605,7 @@ public class GuiMain
                 System.out.println("An exception occured in thread " + thread + ": " + t.getClass());
                 System.out.println("Test suite aborted.");
                 t.printStackTrace();
-                log.error(t);
+                log.error("Exception encountered:",t);
             }
             
         }
@@ -675,7 +675,7 @@ public class GuiMain
                     {
                         System.out.println("An unexpected error occurred during test execution.");
                         t.printStackTrace();
-                        log.error(t);
+                        log.error("Exception encountered:",t);
                     }
                     
                 }
