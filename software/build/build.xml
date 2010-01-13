@@ -1881,7 +1881,7 @@
 					<if>
 						<equals arg1="${remove.ldap.login.config.from.ear}" arg2="true"/>
 						<then>
-							<xmltask source="${temp.dir}/caarray.ear/META-INF/security-config.xml" dest="${temp.dir}/caarray.ear/META-INF/security-config.xml">
+							<xmltask source="${caarray-ear.target.dir}/xml/security-config.xml" dest="${caarray-ear.target.dir}/xml/security-config.xml">
 								<xmlcatalog refid="bda.xml.catalog"/>
 								<remove path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsLDAPLoginModule']"/>
                     			<replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule']/@flag" withText="required"/>
