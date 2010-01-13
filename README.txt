@@ -83,7 +83,7 @@ where the JDK is installed.
   	- copy $CAARRAY_HOME/software/build/resources/my.cnf to the location from where MySQL reads its option files. This varies depending on
       OS, refer to http://dev.mysql.com/doc/refman/5.0/en/option-files.html.
       Alternatively, if you already have a MySQL my.cnf file, add the lines in the file above to it.
-- caGrid 1.2. This is needed if you intend to work on grid services. This can be obtained from http://cagrid.org/display/downloads/caGrid+1.2.
+- caGrid 1.2. This is optional, as it is needed only if you are working on grid services. This can be obtained from http://cagrid.org/display/downloads/caGrid+1.2.
   You can use either the installer or the source code distribution and build it.
 
 Getting Started
@@ -91,28 +91,37 @@ Getting Started
 
 - Make sure you have installed and configured all of the prerequisites as described above.
 - Check out caArray. Most likely, you will check out the trunk - see the Source Control section for URL locations.
-  Below, we use $CAARRAY_HOME to refer to the location of the caArray checkout. 
-- Copy the file "$CAARRAY_HOME/software/build/default.properties" to "$CAARRAY_HOME/software/build/local.properties". Configure the "$CAARRAY_HOME/software/build/local.properties" file for your desired deployment.
-- Configure the "$CAARRAY_HOME/software/master_build/install.properties" file to fit your desired deployment (set idenntical values for properties with same same name in "$CAARRAY_HOME/software/build/local.properties" file.
-- Open a command prompt and from $CAARRAY_HOME/software/build, execute
+  Below, we use $CAARRAY_HOME to refer to the location of the caArray checkout.
+- Copy the "$CAARRAY_HOME/software/master_build/install.properties" file, rename it to whatever you wish, and configure it with values appropriate for your desired local deployment.
+- Create and configure a "$CAARRAY_HOME/software/build/local.properties" file so that it contains properties and values for the following at least (values should be same as in install.properties
+  copy above): database.system.user, database.system.password, database.server, database.port, database.name, database.user, database.password. Also, add the jboss.home property and
+  set its value to be what is set for application.base.path in the install.properties file copy above, with jboss-4.0.5.GA appended (e.g., application.base.path set to /usr/local/caarray,
+  so jboss.home is set to /usr/local/caarray/jboss-4.0.5.GA). The purpose of the $CAARRAY_HOME/software/build/local.properties file is to allow developers to override property values from
+  $CAARRAY_HOME/software/build/default.properties file and thus prevent accidental check-in of $CAARRAY_HOME/software/build/default.properties, so localize your environment in
+  $CAARRAY_HOME/software/build/local.properties rather than $CAARRAY_HOME/software/build/default.properties.
+- To create the caArray DB schema (prerequisite for installation) open a command prompt and from $CAARRAY_HOME/software/build, execute
   ant database:recreate-database
-- cd to $CAARRAY_HOME/software/master_build, execute
-  ant deploy:local:install
+- Then, to install caArray application, cd to $CAARRAY_HOME/software/master_build, execute (replace "<absolute path to install.properties file copy>" with actual path)
+  ant -Dproperties.file=<absolute path to install.properties file copy> deploy:local:install
 - caArray will be installed locally and both caArray JBoss and grid service JBoss will be started automatically.
 
 You can now access the application at http://${jboss.server.hostname}:${jboss.server.port}/caarray. The Grid services
 will be available at http://${grid.server.hostname}:${18080}/wsrf/services/cagrid/CaArraySvc (Legacy) and 
 http://${grid.server.hostname}:${18080}/wsrf/services/cagrid/CaArraySvc_v1_0 (External v. 1.0)
 
+During your iterative development process for working on an issue, you can just deploy modified code to the caArray installation by opening a command prompt at
+$CAARRAY_HOME/software/build and executing ant deploy, which will build the caarray.ear file, and copy it to your caArray JBoss server (defined by jboss.home property
+in $CAARRAY_HOME/software/build/local.properties" file).
+
 Build Management
 -----------------------
 
 caArray uses Ant for builds. There are two separate build scripts:
 
-software/build/build.xml is used for local (development) builds.
-software/master_build/build.xml is used for creating the GUI and command-line installers, and deploying to the NCIA tiers as well as remote and local installs and upgrades.
+software/build/build.xml is used for local (development) builds, and deploying code while doing iterative development on an issue.
+software/master_build/build.xml is used for creating the GUI and command-line installers, and deploying to the NCIA tiers, as well as remote and local installs and upgrades.
 
-The local build script is documented here. The installer build script is documented in a separate "Installers" section.
+The local build script is documented here.
 
 You can execute "ant -p" for a full list of ant targets to run. A few of the key ones are:
 
@@ -128,9 +137,9 @@ You can execute "ant -p" for a full list of ant targets to run. A few of the key
   to the caArray schema are made, because otherwise the database:reinitialize command may fail.
 * test - runs the JUnit test suite.
 * check - runs static analysis tools on the code base (currently, Checkstyle and FindBugs).
-* continuous-integration - target invoked by the CI build. Cleans and builds the application, 
-  runs the static analysis checks and the JUnit test suite.
-* nightly-build - target invoked by the nightly build. Cleans and builds the application and runs the selenium and API test suite.
+* continuous-integration - the defult target, it is invoked by jsut running ant without specifying a target from the software/build directory. Execution of this target cleans and builds the application, 
+  runs the static analysis checks, and runs the JUnit test suite.
+* nightly-build - this target cleans and builds the application and runs the selenium and API test suite.
 
 There are a number of build properties used by the build script. Some are defined in software/build/build.xml, and others in 
 software/build/default.properties. As a rule, those build properties which may need to be overridden are put in the latter.
