@@ -6,28 +6,30 @@
 <policy>
     <application-policy name="caarray">
         <authentication>
+
             <login-module code="com.fiveamsolutions.nci.commons.authentication.SessionFixationProtectionLoginModule" flag="required"/>
-            
-            <!--
-                 Notes on the policy here:
-                 - Designed to work for local installers that won't be connecting to LDAP.
-                 - Last module only adds roles information from CSM.
-                 - The CaArrayLoginModule uses CSM and integrates with the JBoss password stacking
-                   mechanism.
-             -->
-            <login-module code="com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule" flag="required" >
-                <module-option name="driver">@database.driver@</module-option>
-                <module-option name="url">@database.url@</module-option>
-                <module-option name="user">@database.user@</module-option>
-                <module-option name="passwd">@database.password@</module-option>
+
+            <login-module code="com.fiveamsolutions.nci.commons.authentication.CommonsLDAPLoginModule" flag="optional">
+                <module-option name="ldapHost">placeholder do not remove</module-option>
+                <module-option name="ldapSearchableBase">placeholder do not remove</module-option>
+                <module-option name="ldapUserIdLabel">placeholder do not remove</module-option>
+            </login-module>
+
+            <login-module code="com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule" flag="optional" >
+                <module-option name="driver">placeholder do not remove</module-option>
+                <module-option name="url">placeholder do not remove</module-option>
+                <module-option name="user">placeholder do not remove</module-option>
+                <module-option name="passwd">placeholder do not remove</module-option>
                 <module-option name="query">SELECT * FROM csm_user WHERE login_name=? and password=?</module-option>
                 <module-option name="encryption-enabled">YES</module-option>
             </login-module>
+            
             <login-module code="org.jboss.security.auth.spi.DatabaseServerLoginModule" flag="required">
-              <module-option name="password-stacking">useFirstPass</module-option>
-              <module-option name="dsJndiName">java:jdbc/CaArrayDataSource</module-option>
-              <module-option name="rolesQuery">SELECT cg.group_name, 'Roles' FROM csm_group cg, csm_user_group cug, csm_user cu WHERE cg.group_id = cug.group_id AND cug.user_id = cu.user_id AND cu.login_name = ?</module-option>
+                <module-option name="password-stacking">useFirstPass</module-option>
+                <module-option name="dsJndiName">java:jdbc/CaArrayDataSource</module-option>
+                <module-option name="rolesQuery">SELECT cg.group_name, 'Roles' FROM csm_group cg, csm_user_group cug, csm_user cu WHERE cg.group_id = cug.group_id AND cug.user_id = cu.user_id AND cu.login_name = ?</module-option>
             </login-module>
+
         </authentication>
     </application-policy>
 </policy>

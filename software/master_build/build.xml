@@ -551,6 +551,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
              <property name="local.globoss.home" value="${loc.globoss.home}"/>
              <property name="caarray-ear.target.dir" value="${caarray.ear.target.dir}"/>
              <property name="caarray-grid-svc.common.target.dir" value="${caarray.grid.dir}"/>
+             <property name="remove.ldap.login.config.from.ear" value="false"/>
         </ant>
     </target>
 
