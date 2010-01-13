@@ -85,10 +85,13 @@ package gov.nih.nci.caarray.application.fileaccess;
 import gov.nih.nci.caarray.application.ExceptionLoggingInterceptor;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
+import gov.nih.nci.caarray.domain.data.DerivedArrayData;
+import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileExtension;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
+import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
 
 import java.io.File;
@@ -191,10 +194,16 @@ public class FileAccessServiceBean implements FileAccessService {
 
         AbstractArrayData data = this.daoFactory.getArrayDao().getRawArrayData(caArrayFile);
         if (data != null) {
+            for (Hybridization h : data.getHybridizations()) {
+                h.getRawDataCollection().remove((RawArrayData) data);
+            }
             this.daoFactory.getArrayDao().remove(data);
         }
         data = this.daoFactory.getArrayDao().getDerivedArrayData(caArrayFile);
         if (data != null) {
+            for (Hybridization h : data.getHybridizations()) {
+                h.getDerivedDataCollection().remove((DerivedArrayData) data);
+            }
             this.daoFactory.getArrayDao().remove(data);
         }
         this.daoFactory.getFileDao().remove(caArrayFile);

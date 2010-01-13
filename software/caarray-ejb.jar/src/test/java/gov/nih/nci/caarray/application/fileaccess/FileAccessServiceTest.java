@@ -82,10 +82,8 @@
  */
 package gov.nih.nci.caarray.application.fileaccess;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import java.sql.SQLException;
+import static org.junit.Assert.*;
 import gov.nih.nci.caarray.application.AbstractServiceTest;
 import gov.nih.nci.caarray.domain.MultiPartBlob;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
@@ -93,7 +91,6 @@ import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.test.data.arraydata.GenepixArrayDataFiles;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 import gov.nih.nci.caarray.util.HibernateUtil;
-import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -104,14 +101,18 @@ import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 import org.hibernate.Transaction;
-import org.hibernate.cfg.Configuration;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
+import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
+import gov.nih.nci.caarray.domain.data.DerivedArrayData;
 import gov.nih.nci.caarray.domain.file.FileStatus;
+import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.domain.sample.Extract;
+import gov.nih.nci.caarray.domain.sample.LabeledExtract;
+import gov.nih.nci.caarray.domain.sample.Sample;
 
 /**
  *
@@ -124,16 +125,10 @@ public class FileAccessServiceTest extends AbstractServiceTest {
 
     @Before
     public void setUp() {
-        MysqlDataSource ds = new MysqlDataSource();
-        Configuration config = HibernateUtil.getConfiguration();
-        ds.setUrl(config.getProperty("hibernate.connection.url"));
-        ds.setUser(config.getProperty("hibernate.connection.username"));
-        ds.setPassword(config.getProperty("hibernate.connection.password"));
-        ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
-        locatorStub.addLookup("java:jdbc/CaArrayDataSource", ds);
         this.fileAccessService = new FileAccessServiceBean();
-        HibernateUtil.setFiltersEnabled(false);
-        this.transaction = HibernateUtil.beginTransaction();
+        HibernateUtil.getHibernateHelper().unbindAndCleanupSession();
+        HibernateUtil.getHibernateHelper().openAndBindSession();
+        
         TemporaryFileCacheLocator.resetTemporaryFileCache();
         TemporaryFileCacheLocator.setTemporaryFileCacheFactory(TemporaryFileCacheLocator.DEFAULT);
     }
@@ -169,6 +164,7 @@ public class FileAccessServiceTest extends AbstractServiceTest {
      */
     @Test
     public void testGetFile() throws Exception {
+        this.transaction = HibernateUtil.beginTransaction();
         MultiPartBlob.setBlobSize(100);
         File file = MageTabDataFiles.SPECIFICATION_EXAMPLE_SDRF;
         CaArrayFile caArrayFile = this.fileAccessService.add(file);
@@ -194,6 +190,8 @@ public class FileAccessServiceTest extends AbstractServiceTest {
 
         TemporaryFileCacheLocator.getTemporaryFileCache().closeFile(caArrayFile);
         assertFalse(retrievedFile.exists());
+        transaction.rollback();
+        transaction = null;
     }
 
     /**
@@ -237,6 +235,7 @@ public class FileAccessServiceTest extends AbstractServiceTest {
 
     @Test(expected = org.hibernate.ObjectNotFoundException.class)
     public void testRemove() {
+        this.transaction = HibernateUtil.beginTransaction();
         MultiPartBlob.setBlobSize(100);
         File file = MageTabDataFiles.SPECIFICATION_EXAMPLE_SDRF;
         CaArrayFile caArrayFile = this.fileAccessService.add(file);
@@ -251,6 +250,93 @@ public class FileAccessServiceTest extends AbstractServiceTest {
 
         this.fileAccessService.remove(caArrayFile);
 
-        HibernateUtil.getCurrentSession().load(CaArrayFile.class, caArrayFile.getId());
+        caArrayFile = (CaArrayFile) HibernateUtil.getCurrentSession().load(CaArrayFile.class, caArrayFile.getId());
+        caArrayFile.toString();
+        transaction.rollback();
+        transaction = null;
+    }
+
+    @Test
+    public void testRemoveWithArrayData() throws SQLException {
+        MultiPartBlob.setBlobSize(100);
+        this.transaction = HibernateUtil.beginTransaction();
+        // SDRF
+        File file = MageTabDataFiles.SPECIFICATION_EXAMPLE_SDRF;
+        CaArrayFile caArrayFile = this.fileAccessService.add(file);
+        caArrayFile.setFileStatus(FileStatus.IMPORTED_NOT_PARSED);
+        assertTrue(caArrayFile.isDeletable());
+        HibernateUtil.getCurrentSession().save(caArrayFile);
+        // derived data file
+        File file2 = MageTabDataFiles.SPECIFICATION_DERIVED_DATA_EXAMPLE_DATA_FILE;
+        CaArrayFile caArrayFile2 = this.fileAccessService.add(file2);
+        caArrayFile2.setFileStatus(FileStatus.IMPORTED_NOT_PARSED);
+        assertTrue(caArrayFile2.isDeletable());
+        HibernateUtil.getCurrentSession().save(caArrayFile2);
+        DerivedArrayData der = new DerivedArrayData();
+        der.setDataFile(caArrayFile2);
+        Hybridization hyb = new Hybridization();
+        hyb.setName("foo");
+        hyb.getDerivedDataCollection().add(der);
+        der.getHybridizations().add(hyb);
+        Sample sample = new Sample();
+        sample.setName("sample");
+        Extract extract = new Extract();
+        extract.setName("extract");
+        sample.getExtracts().add(extract);
+        LabeledExtract le = new LabeledExtract();
+        le.setName("label");
+        extract.getLabeledExtracts().add(le);
+        le.getHybridizations().add(hyb);
+        hyb.getLabeledExtracts().add(le);
+        le.getExtracts().add(extract);
+        extract.getSamples().add(sample);
+        HibernateUtil.getCurrentSession().save(sample);
+        HibernateUtil.getCurrentSession().saveOrUpdate(extract);
+        HibernateUtil.getCurrentSession().saveOrUpdate(le);
+        HibernateUtil.getCurrentSession().saveOrUpdate(sample);
+        HibernateUtil.getCurrentSession().saveOrUpdate(hyb);
+        HibernateUtil.getCurrentSession().saveOrUpdate(der);
+        HibernateUtil.getCurrentSession().saveOrUpdate(caArrayFile2);
+        HibernateUtil.getCurrentSession().flush();
+
+        this.transaction.commit();
+        this.transaction = HibernateUtil.beginTransaction();
+        caArrayFile = (CaArrayFile) HibernateUtil.getCurrentSession().load(CaArrayFile.class, caArrayFile.getId());
+        caArrayFile2 = (CaArrayFile) HibernateUtil.getCurrentSession().load(CaArrayFile.class, caArrayFile2.getId());
+        der = (DerivedArrayData) HibernateUtil.getCurrentSession().load(DerivedArrayData.class, der.getId());
+        assertEquals(der.getDataFile(), caArrayFile2);
+        der = CaArrayDaoFactory.INSTANCE.getArrayDao().getDerivedArrayData(caArrayFile2);
+        assertEquals(der.getDataFile(), caArrayFile2);
+        
+        Project p = new Project();
+        p.getFiles().add(caArrayFile);
+        p.getFiles().add(caArrayFile2);
+        caArrayFile.setProject(p);
+        caArrayFile2.setProject(p);
+
+        this.fileAccessService.remove(caArrayFile);
+        this.fileAccessService.remove(caArrayFile2);
+
+        this.transaction.commit();
+        this.transaction = HibernateUtil.beginTransaction();
+
+        try {
+            caArrayFile = (CaArrayFile) HibernateUtil.getCurrentSession().load(CaArrayFile.class, caArrayFile.getId());
+            fail("file " + caArrayFile + " not deleted");
+        } catch (org.hibernate.ObjectNotFoundException e) {
+        }
+
+        try {
+            caArrayFile2 = (CaArrayFile) HibernateUtil.getCurrentSession().load(CaArrayFile.class, caArrayFile2.getId());
+            fail("file " + caArrayFile2 + " not deleted");
+        } catch (org.hibernate.ObjectNotFoundException e) {
+        }
+        try {
+            der = (DerivedArrayData) HibernateUtil.getCurrentSession().load(DerivedArrayData.class, der.getId());
+            fail("raw array data not deleted " + der);
+        } catch (org.hibernate.ObjectNotFoundException e) {
+        }
+        hyb = (Hybridization) HibernateUtil.getCurrentSession().load(Hybridization.class, hyb.getId());
+        assertTrue(hyb.getDerivedDataCollection().isEmpty());
     }
 }
