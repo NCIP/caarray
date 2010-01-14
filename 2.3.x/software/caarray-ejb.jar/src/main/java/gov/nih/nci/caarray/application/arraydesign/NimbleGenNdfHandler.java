@@ -150,12 +150,13 @@ public class NimbleGenNdfHandler extends AbstractArrayDesignHandler {
     private static boolean isBlank(String s) {
         return s.matches("^\\s$");
     }
-    
+
     private ScrollableResults loadRows(File file) throws IOException {
-        HibernateUtil.getCurrentSession()
-                .createSQLQuery(CREATE_TEMP_TABLE_STMT).executeUpdate();
         HibernateUtil.getCurrentSession().createSQLQuery(
-                "LOCK TABLE " + TEMP_TABLE_NAME + " WRITE;").executeUpdate();
+                CREATE_TEMP_TABLE_STMT).executeUpdate();
+        HibernateUtil.getCurrentSession().createSQLQuery(
+                "LOCK TABLE " + TEMP_TABLE_NAME + " WRITE;")
+                .executeUpdate();
         String loadQuery = "load data local infile '"
                 + file.getAbsolutePath()
                 + "' into table "
@@ -193,7 +194,6 @@ public class NimbleGenNdfHandler extends AbstractArrayDesignHandler {
             getArrayDao().save(arrayDesign);
             getArrayDao().save(details);
 
-            loadRows(getFile());
             ScrollableResults results = loadRows(getFile());
             count = loadProbes(details, results);
             arrayDesign.setNumberOfFeatures(count);
@@ -391,8 +391,9 @@ public class NimbleGenNdfHandler extends AbstractArrayDesignHandler {
             if (!ndfColumnMapping.containsKey(column)) {
                 continue;
             }
-            passed = passed & validateValue(result, currentLineNumber, column,
-                    values.get(header.get(column)));
+            passed = passed
+                    & validateValue(result, currentLineNumber, column, values
+                            .get(header.get(column)));
         }
         return passed;
     }
