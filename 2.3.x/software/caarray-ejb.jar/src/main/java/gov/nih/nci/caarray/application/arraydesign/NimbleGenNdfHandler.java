@@ -90,7 +90,6 @@ import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
 import gov.nih.nci.caarray.domain.array.Feature;
 import gov.nih.nci.caarray.domain.array.LogicalProbe;
 import gov.nih.nci.caarray.domain.array.PhysicalProbe;
-import gov.nih.nci.caarray.domain.array.ProbeGroup;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.util.HibernateUtil;
@@ -105,6 +104,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -113,7 +113,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.SQLQuery;
 import org.hibernate.ScrollableResults;
-import org.hibernate.Session;
 
 /**
  * Implementation of NDF parser with NGD and POS file support.
@@ -135,20 +134,28 @@ public class NimbleGenNdfHandler extends AbstractArrayDesignHandler {
             + "X int, "
             + "Y int, " + "INDEX(SEQ_ID));";
 
-    private static final int LOGICAL_PROBE_BATCH_SIZE = 1000;
-
-    private Map<String, ProbeGroup> probeGroups = new HashMap<String, ProbeGroup>();
+    private static final String Y = "Y";
+    private static final String X = "X";
+    private static final String PROBE_ID = "PROBE_ID";
+    private static final String CONTAINER2 = "CONTAINER";
+    private static final String SEQ_ID = "SEQ_ID";
 
     private Map<String, LogicalProbe> logicalProbes = new HashMap<String, LogicalProbe>();
-
-    private Session tempSession = null;
 
     NimbleGenNdfHandler(VocabularyService vocabularyService,
             CaArrayDaoFactory daoFactory, Set<CaArrayFile> designFiles) {
         super(vocabularyService, daoFactory, designFiles);
     }
 
-    private void loadRows(File file) throws IOException {
+    private static boolean isBlank(String s) {
+        return s.matches("^\\s$");
+    }
+    
+    private ScrollableResults loadRows(File file) throws IOException {
+        HibernateUtil.getCurrentSession()
+                .createSQLQuery(CREATE_TEMP_TABLE_STMT).executeUpdate();
+        HibernateUtil.getCurrentSession().createSQLQuery(
+                "LOCK TABLE " + TEMP_TABLE_NAME + " WRITE;").executeUpdate();
         String loadQuery = "load data local infile '"
                 + file.getAbsolutePath()
                 + "' into table "
@@ -159,6 +166,9 @@ public class NimbleGenNdfHandler extends AbstractArrayDesignHandler {
         SQLQuery q = HibernateUtil.getCurrentSession()
                 .createSQLQuery(loadQuery);
         q.executeUpdate();
+        HibernateUtil.getCurrentSession().createSQLQuery("UNLOCK TABLES;")
+                .executeUpdate();
+        return getProbes();
     }
 
     ScrollableResults getProbes() {
@@ -173,7 +183,6 @@ public class NimbleGenNdfHandler extends AbstractArrayDesignHandler {
     @Override
     void createDesignDetails(ArrayDesign arrayDesign) {
         DelimitedFileReader reader = null;
-        probeGroups = new HashMap<String, ProbeGroup>();
         logicalProbes = new HashMap<String, LogicalProbe>();
         int count = 0;
         try {
@@ -183,39 +192,10 @@ public class NimbleGenNdfHandler extends AbstractArrayDesignHandler {
             arrayDesign.setDesignDetails(details);
             getArrayDao().save(arrayDesign);
             getArrayDao().save(details);
-            // flushAndClearSession();
 
-            HibernateUtil.getCurrentSession().createSQLQuery(
-                    CREATE_TEMP_TABLE_STMT).executeUpdate();
-            HibernateUtil.getCurrentSession().createSQLQuery(
-                    "LOCK TABLE " + TEMP_TABLE_NAME + " WRITE;")
-                    .executeUpdate();
             loadRows(getFile());
-            HibernateUtil.getCurrentSession().createSQLQuery("UNLOCK TABLES;")
-                    .executeUpdate();
-            ScrollableResults results = getProbes();
-            count = 0;
-            results.beforeFirst();
-            String lastSeqId = null;
-            while (results.next()) {
-                Object[] values = results.get();
-                Map<String, Object> vals = new HashMap<String, Object>();
-                vals.put("PROBE_ID", values[0]);
-                vals.put("SEQ_ID", values[1]);
-                vals.put("CONTAINER", values[2]);
-                vals.put("X", values[3]);
-                vals.put("Y", values[4]);
-
-                if (lastSeqId != null && !vals.get("SEQ_ID").equals(lastSeqId)) {
-                    logicalProbes.clear();
-                    flushAndClearSession();
-                }
-                lastSeqId = (String) vals.get("SEQ_ID");
-
-                PhysicalProbe p = createPhysicalProbe(details, vals);
-                getArrayDao().save(p);
-                ++count;
-            }
+            ScrollableResults results = loadRows(getFile());
+            count = loadProbes(details, results);
             arrayDesign.setNumberOfFeatures(count);
             HibernateUtil.getCurrentSession().createSQLQuery(
                     "DROP TABLE " + TEMP_TABLE_NAME + ";").executeUpdate();
@@ -227,24 +207,31 @@ public class NimbleGenNdfHandler extends AbstractArrayDesignHandler {
         }
     }
 
-    // @Override
-    // void flushAndClearSession() {
-    // for (ProbeGroup pg : probeGroups.values()) {
-    // HibernateUtil.getCurrentSession().evict(pg);
-    // }
-    // super.flushAndClearSession();
-    // }
+    private int loadProbes(ArrayDesignDetails details, ScrollableResults results)
+            throws IOException {
+        int count = 0;
+        results.beforeFirst();
+        String lastSeqId = null;
+        while (results.next()) {
+            Object[] values = results.get();
+            Map<String, Object> vals = new HashMap<String, Object>();
+            vals.put(PROBE_ID, values[0]);
+            vals.put(SEQ_ID, values[1]);
+            vals.put(CONTAINER2, values[2]);
+            vals.put(X, values[3]);
+            vals.put(Y, values[4]);
 
-    private ProbeGroup getProbeGroup(String feature, ArrayDesignDetails details) {
-        if (!probeGroups.containsKey(feature)) {
-            ProbeGroup pg = new ProbeGroup(details);
-            pg.setName(feature);
-            probeGroups.put(feature, pg);
-            getArrayDao().save(pg);
-            return pg;
-        } else {
-            return probeGroups.get(feature);
+            if (lastSeqId != null && !vals.get(SEQ_ID).equals(lastSeqId)) {
+                logicalProbes.clear();
+                flushAndClearSession();
+            }
+            lastSeqId = (String) vals.get(SEQ_ID);
+
+            PhysicalProbe p = createPhysicalProbe(details, vals);
+            getArrayDao().save(p);
+            ++count;
         }
+        return count;
     }
 
     private LogicalProbe getLogicalProbe(String feature,
@@ -262,9 +249,9 @@ public class NimbleGenNdfHandler extends AbstractArrayDesignHandler {
 
     private PhysicalProbe createPhysicalProbe(ArrayDesignDetails details,
             Map<String, Object> values) {
-        String sequenceId = (String) values.get("SEQ_ID");
-        String container = (String) values.get("CONTAINER");
-        String probeId = (String) values.get("PROBE_ID");
+        String sequenceId = (String) values.get(SEQ_ID);
+        String container = (String) values.get(CONTAINER2);
+        String probeId = (String) values.get(PROBE_ID);
         // ProbeGroup group = getProbeGroup(container, details);
         LogicalProbe lp = getLogicalProbe(sequenceId, details);
         PhysicalProbe p = new PhysicalProbe(details, null);
@@ -272,8 +259,8 @@ public class NimbleGenNdfHandler extends AbstractArrayDesignHandler {
         p.setName(container + "|" + sequenceId + "|" + probeId);
 
         Feature f = new Feature(details);
-        f.setColumn(((Integer) values.get("X")).shortValue());
-        f.setRow(((Integer) values.get("Y")).shortValue());
+        f.setColumn(((Integer) values.get(X)).shortValue());
+        f.setRow(((Integer) values.get(Y)).shortValue());
 
         p.getFeatures().add(f);
 
@@ -309,24 +296,6 @@ public class NimbleGenNdfHandler extends AbstractArrayDesignHandler {
             return null;
         } else {
             return Long.parseLong(value);
-        }
-    }
-
-    private void positionAtAnnotation(DelimitedFileReader reader)
-            throws IOException {
-        reset(reader);
-        boolean isHeader = false;
-        while (!isHeader && reader.hasNextLine()) {
-            isHeader = isHeaderLine(reader.nextLine());
-        }
-    }
-
-    private void reset(DelimitedFileReader reader) {
-        try {
-            reader.reset();
-        } catch (IOException e) {
-            throw new IllegalStateException("Couldn't reset file "
-                    + getDesignFile().getName(), e);
         }
     }
 
@@ -419,31 +388,34 @@ public class NimbleGenNdfHandler extends AbstractArrayDesignHandler {
             Map<String, Integer> header) {
         boolean passed = true;
         for (String column : header.keySet()) {
-            if (ndfColumnMapping.containsKey(column)) {
-                String value = values.get(header.get(column));
-                if (value == null && value.trim().length() == 0) {
-                    ValidationMessage error = result.addMessage(
-                            ValidationMessage.Type.ERROR,
-                            "Missing required value at [" + currentLineNumber
-                                    + "," + column + "].");
-                } else if (ndfColumnMapping.get(column) == String.class) {
-                    continue;
-                } else if (ndfColumnMapping.get(column) == Integer.class) {
-                    try {
-                        Integer.parseInt(value);
-                    } catch (NumberFormatException e) {
-                        ValidationMessage error = result.addMessage(
-                                ValidationMessage.Type.ERROR,
-                                "Expected integer value at ["
-                                        + currentLineNumber + "," + column
-                                        + "] but found " + value);
-                        error.setLine(currentLineNumber);
-                        passed = false;
-                    }
-                }
+            if (!ndfColumnMapping.containsKey(column)) {
+                continue;
             }
+            passed = passed & validateValue(result, currentLineNumber, column,
+                    values.get(header.get(column)));
         }
         return passed;
+    }
+
+    private boolean validateValue(FileValidationResult result,
+            int currentLineNumber, String column, String value) {
+        if (value == null || isBlank(value)) {
+            result.addMessage(ValidationMessage.Type.ERROR,
+                    "Missing required value at [" + currentLineNumber + ","
+                            + column + "].");
+        } else if (ndfColumnMapping.get(column) == Integer.class) {
+            try {
+                Integer.parseInt(value);
+            } catch (NumberFormatException e) {
+                ValidationMessage error = result.addMessage(
+                        ValidationMessage.Type.ERROR,
+                        "Expected integer value at [" + currentLineNumber + ","
+                                + column + "] but found " + value);
+                error.setLine(currentLineNumber);
+                return false;
+            }
+        }
+        return true;
     }
 
     private boolean isHeaderLine(List<String> values) {
@@ -452,11 +424,11 @@ public class NimbleGenNdfHandler extends AbstractArrayDesignHandler {
 
     private static Map<String, Class<?>> ndfColumnMapping = new HashMap<String, Class<?>>();
     static {
-        ndfColumnMapping.put("CONTAINER", String.class);
-        ndfColumnMapping.put("SEQ_ID", String.class);
-        ndfColumnMapping.put("PROBE_ID", String.class);
-        ndfColumnMapping.put("X", Integer.class);
-        ndfColumnMapping.put("Y", Integer.class);
+        ndfColumnMapping.put(CONTAINER2, String.class);
+        ndfColumnMapping.put(SEQ_ID, String.class);
+        ndfColumnMapping.put(PROBE_ID, String.class);
+        ndfColumnMapping.put(X, Integer.class);
+        ndfColumnMapping.put(Y, Integer.class);
     }
 
     private Map<String, Integer> getHeaders(DelimitedFileReader reader)
@@ -467,7 +439,7 @@ public class NimbleGenNdfHandler extends AbstractArrayDesignHandler {
                 int index = 0;
                 Map<String, Integer> result = new HashMap<String, Integer>();
                 for (String value : values) {
-                    result.put(value.toUpperCase(), index++);
+                    result.put(value.toUpperCase(Locale.getDefault()), index++);
                 }
                 return result;
             }
