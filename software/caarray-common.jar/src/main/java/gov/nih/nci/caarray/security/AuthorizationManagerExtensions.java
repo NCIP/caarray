@@ -245,7 +245,7 @@ public final class AuthorizationManagerExtensions {
             Map<String, List<? extends Serializable>> idBlocks = new HashMap<String, List<? extends Serializable>>();
             String inClause = HibernateHelper.buildInClause(protectionElementIds, "protectionElement.id", idBlocks);
             String queryString = "update " + UserProtectionElement.class.getName()
-                    + " set user = :newOwner where user = :oldOwner and " + inClause;
+                    + " set user = :newOwner where user = :oldOwner and (" + inClause + ")";
             Query q = s.createQuery(queryString);
             q.setParameter("newOwner", newOwner);
             q.setParameter("oldOwner", oldOwner);
@@ -305,7 +305,8 @@ public final class AuthorizationManagerExtensions {
             String inClause = HibernateHelper.buildInClause(protectionGroupIds,
                     "ugrpg.protectionGroup.protectionGroupId", idBlocks);
             String queryString = "update " + UserGroupRoleProtectionGroup.class.getName()
-                    + " ugrpg set ugrpg.group = :newOwnerGroup where ugrpg.group = :oldOwnerGroup and " + inClause;
+                    + " ugrpg set ugrpg.group = :newOwnerGroup where ugrpg.group = :oldOwnerGroup and (" + inClause
+                    + ")";
             Query q = s.createQuery(queryString);
             q.setParameter("newOwnerGroup", newOwnerGroup);
             q.setParameter("oldOwnerGroup", oldOwnerGroup);

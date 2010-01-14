@@ -380,7 +380,7 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
         if (!values.isEmpty()) {            
             from.append(" INNER JOIN e.biomaterials ").append(bmAlias);
             from.append(" INNER JOIN ").append(bmAlias).append(".").append(assocPath).append(" ").append(alias);
-            where.append(" AND ").append(HibernateUtil.buildInClause(values, alias + ".value", blocks));
+            where.append(" AND (").append(HibernateUtil.buildInClause(values, alias + ".value", blocks)).append(")");
         }
     }
 
