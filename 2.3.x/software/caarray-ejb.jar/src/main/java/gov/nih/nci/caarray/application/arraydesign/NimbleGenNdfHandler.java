@@ -102,10 +102,8 @@ import gov.nih.nci.caarray.validation.ValidationResult;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -127,22 +125,22 @@ public class NimbleGenNdfHandler extends AbstractArrayDesignHandler {
     private static final String LSID_NAMESPACE = AbstractCaArrayEntity.CAARRAY_LSID_NAMESPACE;
     private static final Logger LOG = Logger
             .getLogger(NimbleGenNdfHandler.class);
-    
+
     private static final String TEMP_TABLE_NAME = "NGImporterTempTable";
-    private static final String CREATE_TEMP_TABLE_STMT = "CREATE TEMPORARY TABLE " + TEMP_TABLE_NAME +
-                                                         " ( PROBE_ID varchar(100), " +
-                                                         "SEQ_ID varchar(100), " +
-                                                         "CONTAINER varchar(100), " +
-                                                         "X int, " +
-                                                         "Y int, " +
-                                                         "INDEX(SEQ_ID));";
-    
+    private static final String CREATE_TEMP_TABLE_STMT = "CREATE TEMPORARY TABLE "
+            + TEMP_TABLE_NAME
+            + " ( PROBE_ID varchar(100), "
+            + "SEQ_ID varchar(100), "
+            + "CONTAINER varchar(100), "
+            + "X int, "
+            + "Y int, " + "INDEX(SEQ_ID));";
+
     private static final int LOGICAL_PROBE_BATCH_SIZE = 1000;
 
     private Map<String, ProbeGroup> probeGroups = new HashMap<String, ProbeGroup>();
 
     private Map<String, LogicalProbe> logicalProbes = new HashMap<String, LogicalProbe>();
-    
+
     private Session tempSession = null;
 
     NimbleGenNdfHandler(VocabularyService vocabularyService,
@@ -151,21 +149,24 @@ public class NimbleGenNdfHandler extends AbstractArrayDesignHandler {
     }
 
     private void loadRows(File file) throws IOException {
-        String loadQuery = "load data local infile '" + file.getAbsolutePath() +
-                           "' into table " + TEMP_TABLE_NAME + 
-                           " fields terminated by '\t' ignore 1 lines " +
-                           "(@c1,CONTAINER,@c3,@c4,SEQ_ID,@c6,@c7,@c8,@c9,@c10,@c11,@c12,PROBE_ID,@c14,@c15,X,Y);";
+        String loadQuery = "load data local infile '"
+                + file.getAbsolutePath()
+                + "' into table "
+                + TEMP_TABLE_NAME
+                + " fields terminated by '\t' ignore 1 lines "
+                + "(@c1,CONTAINER,@c3,@c4,SEQ_ID,@c6,@c7,@c8,@c9,@c10,@c11,@c12,PROBE_ID,@c14,@c15,X,Y);";
 
-        SQLQuery q = HibernateUtil.getCurrentSession().createSQLQuery(loadQuery);
+        SQLQuery q = HibernateUtil.getCurrentSession()
+                .createSQLQuery(loadQuery);
         q.executeUpdate();
     }
-    
+
     ScrollableResults getProbes() {
-        SQLQuery q = HibernateUtil.getCurrentSession().createSQLQuery("select * from " +
-                TEMP_TABLE_NAME + " order by SEQ_ID asc");
+        SQLQuery q = HibernateUtil.getCurrentSession().createSQLQuery(
+                "select * from " + TEMP_TABLE_NAME + " order by SEQ_ID asc");
         return q.scroll();
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -182,53 +183,57 @@ public class NimbleGenNdfHandler extends AbstractArrayDesignHandler {
             arrayDesign.setDesignDetails(details);
             getArrayDao().save(arrayDesign);
             getArrayDao().save(details);
-            //flushAndClearSession();
-            
-            
-            HibernateUtil.getCurrentSession().createSQLQuery(CREATE_TEMP_TABLE_STMT).executeUpdate();
-            HibernateUtil.getCurrentSession().createSQLQuery("LOCK TABLE " + TEMP_TABLE_NAME + " WRITE;").executeUpdate();
+            // flushAndClearSession();
+
+            HibernateUtil.getCurrentSession().createSQLQuery(
+                    CREATE_TEMP_TABLE_STMT).executeUpdate();
+            HibernateUtil.getCurrentSession().createSQLQuery(
+                    "LOCK TABLE " + TEMP_TABLE_NAME + " WRITE;")
+                    .executeUpdate();
             loadRows(getFile());
-            HibernateUtil.getCurrentSession().createSQLQuery("UNLOCK TABLES;").executeUpdate();
+            HibernateUtil.getCurrentSession().createSQLQuery("UNLOCK TABLES;")
+                    .executeUpdate();
             ScrollableResults results = getProbes();
             count = 0;
             results.beforeFirst();
             String lastSeqId = null;
             while (results.next()) {
                 Object[] values = results.get();
-                Map<String,Object> vals = new HashMap<String,Object>();
-                vals.put("PROBE_ID",values[0]);
-                vals.put("SEQ_ID",values[1]);
-                vals.put("CONTAINER",values[2]);
-                vals.put("X",values[3]);
-                vals.put("Y",values[4]);
+                Map<String, Object> vals = new HashMap<String, Object>();
+                vals.put("PROBE_ID", values[0]);
+                vals.put("SEQ_ID", values[1]);
+                vals.put("CONTAINER", values[2]);
+                vals.put("X", values[3]);
+                vals.put("Y", values[4]);
 
                 if (lastSeqId != null && !vals.get("SEQ_ID").equals(lastSeqId)) {
                     logicalProbes.clear();
                     flushAndClearSession();
                 }
-                lastSeqId = (String)vals.get("SEQ_ID");
-                
-                PhysicalProbe p = createPhysicalProbe(details, vals); 
+                lastSeqId = (String) vals.get("SEQ_ID");
+
+                PhysicalProbe p = createPhysicalProbe(details, vals);
                 getArrayDao().save(p);
                 ++count;
             }
             arrayDesign.setNumberOfFeatures(count);
-            HibernateUtil.getCurrentSession().createSQLQuery("DROP TABLE " + TEMP_TABLE_NAME + ";").executeUpdate();
+            HibernateUtil.getCurrentSession().createSQLQuery(
+                    "DROP TABLE " + TEMP_TABLE_NAME + ";").executeUpdate();
         } catch (IOException e) {
-            LOG.error("Error processing line "+count);
+            LOG.error("Error processing line " + count);
             throw new IllegalStateException("Couldn't read file: ", e);
         } finally {
             reader.close();
         }
     }
 
-//    @Override
-//    void flushAndClearSession() {
-//        for (ProbeGroup pg : probeGroups.values()) {
-//            HibernateUtil.getCurrentSession().evict(pg);
-//        }
-//        super.flushAndClearSession();
-//    }
+    // @Override
+    // void flushAndClearSession() {
+    // for (ProbeGroup pg : probeGroups.values()) {
+    // HibernateUtil.getCurrentSession().evict(pg);
+    // }
+    // super.flushAndClearSession();
+    // }
 
     private ProbeGroup getProbeGroup(String feature, ArrayDesignDetails details) {
         if (!probeGroups.containsKey(feature)) {
@@ -260,7 +265,7 @@ public class NimbleGenNdfHandler extends AbstractArrayDesignHandler {
         String sequenceId = (String) values.get("SEQ_ID");
         String container = (String) values.get("CONTAINER");
         String probeId = (String) values.get("PROBE_ID");
-        //ProbeGroup group = getProbeGroup(container, details);
+        // ProbeGroup group = getProbeGroup(container, details);
         LogicalProbe lp = getLogicalProbe(sequenceId, details);
         PhysicalProbe p = new PhysicalProbe(details, null);
         lp.addProbe(p);
@@ -275,13 +280,14 @@ public class NimbleGenNdfHandler extends AbstractArrayDesignHandler {
         return p;
     }
 
-    static Map<String, Object> getValues(List<String> values, Map<String,Integer> header) {
+    static Map<String, Object> getValues(List<String> values,
+            Map<String, Integer> header) {
         Map<String, Object> result = new HashMap<String, Object>();
         for (String column : ndfColumnMapping.keySet()) {
             String value = values.get(header.get(column));
             if (ndfColumnMapping.get(column) == Integer.class) {
                 result.put(column, getIntegerValue(value));
-            } else if (ndfColumnMapping.get(column)  == Long.class) {
+            } else if (ndfColumnMapping.get(column) == Long.class) {
                 result.put(column, getLongValue(value));
             } else {
                 result.put(column, value);
@@ -306,7 +312,8 @@ public class NimbleGenNdfHandler extends AbstractArrayDesignHandler {
         }
     }
 
-    private void positionAtAnnotation(DelimitedFileReader reader) throws IOException {
+    private void positionAtAnnotation(DelimitedFileReader reader)
+            throws IOException {
         reset(reader);
         boolean isHeader = false;
         while (!isHeader && reader.hasNextLine()) {
@@ -359,7 +366,7 @@ public class NimbleGenNdfHandler extends AbstractArrayDesignHandler {
                 result.addMessage(ValidationMessage.Type.ERROR,
                         "File was empty");
             }
-            Map<String,Integer> headers = getHeaders(reader);
+            Map<String, Integer> headers = getHeaders(reader);
             validateHeader(headers, result);
             if (result.isValid()) {
                 validateContent(reader, result, headers);
@@ -374,19 +381,21 @@ public class NimbleGenNdfHandler extends AbstractArrayDesignHandler {
         }
     }
 
-    private void validateHeader(Map<String,Integer> headers,
+    private void validateHeader(Map<String, Integer> headers,
             FileValidationResult result) throws IOException {
         Set<String> missing = new HashSet<String>(ndfColumnMapping.keySet());
         missing.removeAll(headers.keySet());
-        
+
         for (String col : missing) {
             result.addMessage(ValidationMessage.Type.ERROR,
-                    "Invalid column header in Nimblegen NDF. Missing " + col + ".");
+                    "Invalid column header in Nimblegen NDF. Missing " + col
+                            + ".");
         }
     }
 
     private void validateContent(DelimitedFileReader reader,
-            FileValidationResult result, Map<String,Integer> header) throws IOException {
+            FileValidationResult result, Map<String, Integer> header)
+            throws IOException {
         int expectedNumberOfFields = header.size();
         while (reader.hasNextLine()) {
             List<String> values = reader.nextLine();
@@ -398,14 +407,16 @@ public class NimbleGenNdfHandler extends AbstractArrayDesignHandler {
                                 + values.size());
                 error.setLine(reader.getCurrentLineNumber());
             }
-            if (!validateValues(values, result, reader.getCurrentLineNumber(), header)) {
+            if (!validateValues(values, result, reader.getCurrentLineNumber(),
+                    header)) {
                 return;
             }
         }
     }
 
     private boolean validateValues(List<String> values,
-            FileValidationResult result, int currentLineNumber, Map<String,Integer> header) {
+            FileValidationResult result, int currentLineNumber,
+            Map<String, Integer> header) {
         boolean passed = true;
         for (String column : header.keySet()) {
             if (ndfColumnMapping.containsKey(column)) {
@@ -413,7 +424,8 @@ public class NimbleGenNdfHandler extends AbstractArrayDesignHandler {
                 if (value == null && value.trim().length() == 0) {
                     ValidationMessage error = result.addMessage(
                             ValidationMessage.Type.ERROR,
-                            "Missing required value at ["+currentLineNumber+","+column+"].");
+                            "Missing required value at [" + currentLineNumber
+                                    + "," + column + "].");
                 } else if (ndfColumnMapping.get(column) == String.class) {
                     continue;
                 } else if (ndfColumnMapping.get(column) == Integer.class) {
@@ -422,8 +434,9 @@ public class NimbleGenNdfHandler extends AbstractArrayDesignHandler {
                     } catch (NumberFormatException e) {
                         ValidationMessage error = result.addMessage(
                                 ValidationMessage.Type.ERROR,
-                                "Expected integer value at ["+currentLineNumber+","+column+
-                                "] but found " + value);
+                                "Expected integer value at ["
+                                        + currentLineNumber + "," + column
+                                        + "] but found " + value);
                         error.setLine(currentLineNumber);
                         passed = false;
                     }
@@ -437,21 +450,22 @@ public class NimbleGenNdfHandler extends AbstractArrayDesignHandler {
         return values.containsAll(ndfColumnMapping.keySet());
     }
 
-    private static Map<String,Class<?>> ndfColumnMapping = new HashMap<String,Class<?>>();
+    private static Map<String, Class<?>> ndfColumnMapping = new HashMap<String, Class<?>>();
     static {
         ndfColumnMapping.put("CONTAINER", String.class);
         ndfColumnMapping.put("SEQ_ID", String.class);
         ndfColumnMapping.put("PROBE_ID", String.class);
         ndfColumnMapping.put("X", Integer.class);
-        ndfColumnMapping.put("Y", Integer.class);       
+        ndfColumnMapping.put("Y", Integer.class);
     }
-    
-    private Map<String, Integer> getHeaders(DelimitedFileReader reader) throws IOException {
+
+    private Map<String, Integer> getHeaders(DelimitedFileReader reader)
+            throws IOException {
         while (reader.hasNextLine()) {
             List<String> values = reader.nextLine();
             if (isHeaderLine(values)) {
                 int index = 0;
-                Map<String,Integer> result = new HashMap<String,Integer>();
+                Map<String, Integer> result = new HashMap<String, Integer>();
                 for (String value : values) {
                     result.put(value.toUpperCase(), index++);
                 }
