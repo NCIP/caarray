@@ -92,14 +92,14 @@
    function moreUploads() {
         formTable = $('uploadFileDiv').getElementsByTagName('table')[0];
         newRow = $(formTable.rows[0].cloneNode(true));
+        formTable.tBodies[0].appendChild(newRow);
         newFile = newRow.down('input');
         newFile.value = '';
         newFile.id = 'upload'+fileCount;
-        newCheckbox = newFile.nextElementSibling;
+        newCheckbox = newFile.next('input');
         newCheckbox.value = fileCount;
         newCheckbox.checked=false;
         newCheckbox.id = 'checkbox'+fileCount;
-        formTable.tBodies[0].appendChild(newRow);
         fileCount++;
     }
 
