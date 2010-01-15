@@ -1,0 +1,5 @@
+Test Case,Test Status,Elapsed Time,Details
+
+382,passed,2172 ms,Found expected number of results: 11
+
+383,passed,2438 ms,Found expected number of results: 9

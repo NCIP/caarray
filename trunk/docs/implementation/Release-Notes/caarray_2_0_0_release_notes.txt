@@ -1,0 +1,211 @@
+Release Notes
+=============
+ 
+  #Product:#	caArray
+  #Version:#	2.0.0
+  #Date:#	February 2008
+
+Contents
+--------
+
+   1. Introduction
+   2. Release History
+   3. Anticipated Releases
+   4. Features
+   5. Known Issues/Defects
+   6. Bug Reports, Feature Requests, and Support
+   7. Documentation and Files
+   8. NCICB Web Pages
+
+Introduction
+---------------------------
+ 
+caArray is an open-source, web and programmatically
+ accessible array data management system. caArray guides the 
+annotation and exchange of array data using a federated 
+model of local installations whose results are shareable 
+across the cancer Biomedical Informatics Grid (caBIG™). 
+caArray furthers translational cancer research through 
+acquisition, dissemination and aggregation of semantically 
+interoperable array data to support subsequent analysis by 
+tools and services on and off the Grid. As array technology 
+advances and matures, caArray will extend its logical 
+library of assay management.
+
+* https://array.nci.nih.gov/
+
+Release History
+------------------------
+ 
+    * caArray v2.0.0		-- February 2008
+    * caArray v1.6		-- November 2007
+    * caArray v1.5.0.2		-- August 2007
+    * caArray v1.5.0.1		-- July 2007
+    * caArray v1.5		-- June 2007
+    * caArray v1.4		-- October 2006
+    * caArray v1.3.1		-- March 2006
+
+Anticipated Releases
+------------------------
+ 
+    * caArray v2.0.1		-- March 2008 (bug fixes)
+    * caArray v2.1.0		-- May 2008 (new features)
+
+Features
+------------------------
+
+This release represents a new generation of the caArray 
+software. caArray 2.0 builds from previous the 1.x line by 
+organizing the application around the natural workflow 
+between investigators and the array labs that serve them, 
+enhancing the user experience for storing and retrieving the 
+data produced, and providing a simplified API for 
+programmatic data query and access.
+
+
+Highlights of caArray 2.0 include:
+
+
+* New User Interface and Navigation
+
+The graphical user interface and the navigation through the 
+system has been completely revised for caArray 2.0. Users 
+have the ability to:
+
+
+o Browse and Search through the repository for Experiments 
+of interest. The search mechanisms lead to actionable 
+results that are clear to the end user and incorporate their 
+specific rights for the experiments.
+
+
+o Submit and access array data and annotations based on a 
+role-based workflow designed to support collaboration 
+between Principle Investigators, Lab Administrators, 
+Scientists and Statisticians. Serving as an foundation from 
+which discrete workflow features will be added, 2.0 allows
+the definition of the experiment, submission to a 
+PI-directed and determined set of collaborators, and 
+entry of the information. The end-to-end states of an 
+experiment are: Draft, In Progress, and Public.
+
+
+o Upload, validate, and import single files or a set of 
+zipped files. The workflow allows for the effort to be 
+spread over time and in synch with the way work is performed 
+in the lab but also offers the ability to perform bulk 
+uploads of annotation and experiment data.
+
+
+o Control the public visibility of an experiment. One can 
+make Public the entire contents of an Experiment or limit 
+public visibility to a defined set of Samples within an 
+Experiment.
+
+
+* Java API and Grid Service
+
+The caArray Java API and corresponding caGrid service have 
+been significantly modified for Version 2.0, based on 
+feedback from the caArray API users. Both interfaces provide 
+access to the following services: the caArray Search 
+Service, the Data Retrieval Service, the Array Design 
+Details Service and the File Retrieval Service. In addition, 
+client applications can access data via domain objects 
+packaged in the client.jar.
+
+
+* MAGE-TAB support
+
+MAGE-TAB files – IDF, SDRF, ADF – can be imported to allow 
+bulk upload of experiment annotations and associated array 
+data files. The original MAGE-TAB files are stored in the 
+system intact and are available for download.
+
+
+* Installation
+
+caArray 2.0 provides a simplified approach to installation 
+on Linux and Windows platforms. Much of the installation 
+process has been automated such that, if you accept the 
+default values, you can install caArray by typing a single 
+command. With the exception of the database, all supporting 
+tools are automatically installed and configured as part of 
+the installation. The installation provides additional 
+diagnostics to better ensure the efficacy of the 
+installation.
+
+Known Issues/Defects
+------------------------
+  
+See the GForge tracker for the latest use cases (implemented 
+and deferred), existing open defects, community requests, 
+resolutions and feature requests. The following issues are 
+highlighted. 
+
+
+https://gforge.nci.nih.gov/tracker/?group_id=305
+
+*12161 "Retract Public Experiment" doesn't remove ability to download
+ data -- work around is that when the experiment is retracted
+ from public visibility and becomes editable, a user can click 
+"Permissions" and change the visibility from "Read" to
+"Visible" 
+
+*12119 Allow files greater than 1 GB to be uploaded -- the ability to 
+upload files is restricted to files (raw or compressed) of 2 GB or less.
+It is highly encouraged that upload jobs are no larger that 1 GB.  
+
+*12107  Valid Illumina SNP design files fail validation -- a defect 
+exists in the Illumina SNP design file parser that prevents design
+files from being imported.
+
+*11756	Grid Service DataSet Retrieval Slower than 
+Remote Java API -- due to XML serialization via castor.
+
+*11780	SDRF file does not validate if data files are 
+uploaded first -- currently unable to validate SDRF's that 
+reference data already uploaded or imported. Remove references to such 
+data from the SDRF, or delete referenced uploaded or imported data, 
+and it should import smoothly.
+
+
+*11790	Importing IDF, SDRF, and data files without defining 
+Array Design in Experiment Overview -- for ALL Affymetrix, 
+Illumina and Genepix experiments where you want to validate 
+and import MAGE-TAB data, you must select the array design 
+to go with it or add the array design and then select it in 
+order for validation and import to be successful. 
+
+
+*11922	Provide graceful validation failure for unsupported 
+Affymetrix CDF files -- currently Affymetrix Human Exon 1.0 
+ST array can not be read by the AffxFusion jar (see: 
+http://www.affymetrix.com/support/technical/byproduct.affx?product=huexon-st 
+for more details).
+
+
+Bug Reports, Feature Requests, And Support
+------------------------------------------
+
+Send email to ncicb@pop.nci.nih.gov to request support or 
+report a bug or request a new feature. Existing requests and
+resolution may be viewed at the caArray GForge URL:
+
+    * https://gforge.nci.nih.gov/tracker/?group_id=305
+
+
+Documentation And Files
+-----------------------
+
+Links to all documentation and files can be found at: 
+
+http://caarray.nci.nih.gov/
+
+
+NCICB Web Pages
+---------------
+
+    * The NCI Center for Bioinformatics, http://ncicb.nci.nih.gov/
+    * NCICB Application Support, http://ncicb.nci.nih.gov/NCICB/support
+    * NCICB Download Center, http://ncicb.nci.nih.gov/download/

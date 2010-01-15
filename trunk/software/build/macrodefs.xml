@@ -1,0 +1,58 @@
+<project name="macrodefs">
+
+    <macrodef name="caarray-run-junit-tests">
+        <attribute name="test.src.dir" />
+        <attribute name="xml.output.dir" />
+        <attribute name="classpath" default="" />
+        <attribute name="instrumented.classes" default="" />
+        <attribute name="classpathref.id" default="no.dependencies.path" />
+        <attribute name="source.include" default="**/*Test.java" />
+        <attribute name="source.exclude" default="**/Abstract*Test.java" />
+        <element name="extentions" optional="yes"/>
+
+        <sequential>
+            <mkdir dir="@{xml.output.dir}" />
+            <property name="jdwp.port" value="8000"/>
+            <property name="should.suspend.vm.for.debugging" value="n"/>
+            <junit printsummary="on" failureproperty="junit.failure" fork="true" forkmode="once" maxmemory="1024m">
+                <jvmarg value="-Xdebug"/>
+                <jvmarg value="-Xrunjdwp:transport=dt_socket,address=${jdwp.port},server=y,suspend=${should.suspend.vm.for.debugging}"/>
+                <sysproperty key="net.sourceforge.cobertura.datafile" file="${cobertura.file}" />
+                <sysproperty key="server.hostname" value="${jboss.server.hostname}" />
+                <sysproperty key="server.port" value="${jboss.server.port}" />
+                <sysproperty key="server.jndi.port" value="${jboss.server.jndi.port}" />
+                <sysproperty key="globoss.server.hostname" value="${globoss.server.hostname}" />
+                <sysproperty key="globoss.server.http.port" value="${globoss.server.http.port}" />
+                <sysproperty key="selenium.server.port" value="${selenium.server.port}" />
+
+                <classpath>
+                    <pathelement path="@{instrumented.classes}" />
+                    <pathelement path="@{classpath}" />
+                </classpath>
+                <classpath refid="@{classpathref.id}" />
+                <classpath refid="cobertura.dependencies.path" />
+                <formatter type="xml" />
+                <batchtest todir="@{xml.output.dir}">
+                    <fileset dir="@{test.src.dir}">
+                        <include name="@{source.include}" />
+                        <exclude name="@{source.exclude}" />
+                    </fileset>
+                </batchtest>
+
+                <extentions/>
+            </junit>
+        </sequential>
+    </macrodef>
+
+    <macrodef name="display-properties">
+        <attribute name="v" default="NOT SET" />
+        <element name="some-tasks" optional="yes" />
+        <sequential>
+            <echo>database.url=${database.url}</echo>
+            <echo>database.user=${database.user}</echo>
+            <echo>database.password=${database.password}</echo>
+            <some-tasks />
+        </sequential>
+    </macrodef>
+
+</project>

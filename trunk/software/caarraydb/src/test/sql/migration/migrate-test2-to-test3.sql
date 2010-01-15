@@ -1,0 +1,1 @@
+update config_parameter set raw_value = 'param2' where param = 'TEST_PARAM';

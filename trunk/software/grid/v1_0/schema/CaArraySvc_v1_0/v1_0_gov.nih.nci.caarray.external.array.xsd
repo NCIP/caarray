@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:arr="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.array"
+    xmlns:car="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external"
+    xmlns:voc="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.vocabulary"
+    xmlns:exp="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.experiment"
+    xmlns:dat="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.data"
+    targetNamespace="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.array" elementFormDefault="qualified">
+    <xs:import namespace="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external"
+        schemaLocation="v1_0_gov.nih.nci.caarray.external.xsd" />
+    <xs:import namespace="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.vocabulary"
+        schemaLocation="v1_0_gov.nih.nci.caarray.external.vocabulary.xsd" />
+    <xs:import namespace="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.experiment"
+        schemaLocation="v1_0_gov.nih.nci.caarray.external.experiment.xsd" />
+    <xs:import namespace="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.data"
+        schemaLocation="v1_0_gov.nih.nci.caarray.external.data.xsd" />
+
+    <xs:element name="ArrayProvider" type="arr:ArrayProvider" />
+    <xs:complexType name="ArrayProvider">
+        <xs:complexContent>
+            <xs:extension base="car:AbstractCaArrayEntity">
+                <xs:attribute name="name" type="xs:string" />
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:element name="AssayType" type="arr:AssayType" />
+    <xs:complexType name="AssayType">
+        <xs:complexContent>
+            <xs:extension base="car:AbstractCaArrayEntity">
+                <xs:attribute name="name" type="xs:string" />
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:element name="ArrayDesign" type="arr:ArrayDesign" />
+    <xs:complexType name="ArrayDesign">
+        <xs:complexContent>
+            <xs:extension base="car:AbstractCaArrayEntity">
+                <xs:sequence>
+                    <xs:element name="assayTypes">
+                        <xs:complexType>
+                            <xs:sequence>
+                                <xs:element ref="arr:AssayType" minOccurs="0" maxOccurs="unbounded" />
+                            </xs:sequence>
+                        </xs:complexType>
+                    </xs:element>
+                    <xs:element name="arrayProvider" minOccurs="1" maxOccurs="1" type="arr:ArrayProvider" />
+                    <xs:element name="technologyType" minOccurs="1" maxOccurs="1" type="voc:Term" />
+                    <xs:element name="organism" minOccurs="1" maxOccurs="1" type="exp:Organism" />
+                    <xs:element name="files">
+                        <xs:complexType>
+                            <xs:sequence>
+                                <xs:element ref="dat:File" minOccurs="0" maxOccurs="unbounded" />
+                            </xs:sequence>
+                        </xs:complexType>
+                    </xs:element>
+                </xs:sequence>
+                <xs:attribute name="name" type="xs:string" />
+                <xs:attribute name="version" type="xs:string" />
+                <xs:attribute name="lsid" type="xs:string" />
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+</xs:schema>

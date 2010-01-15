@@ -1,0 +1,288 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+	<head>
+		<title>caArray - Import Array Designs</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+		<link rel="address bar icon" href="favicon.ico" />
+		<link rel="icon" href="favicon.ico" type="image/x-icon" />
+		<link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+		<link rel="stylesheet" type="text/css" href="common/style.css" />
+		
+		<script type="text/javascript" src="common/scripts/prototype.js"></script>		
+		<script type="text/javascript" src="common/scripts/control.tabs.js"></script>
+		<script type="text/javascript" src="common/scripts/showhide.js"></script>
+		<script type="text/javascript" src="common/scripts/checklist.js"></script>
+		
+	</head>
+	
+	<body id="twocol"><div id="wrapper">
+		
+		<a href="#content" id="navskip">Skip to Page Content</a>	
+			
+		<!--NCI/NIH Header-->
+		
+		<div id="nciheader">		
+			
+			<div id="ncilogo"><a href="http://www.cancer.gov"><img src="images/logotype.gif" width="283" height="37" alt="Logo: National Cancer Institute" /></a></div>	
+			<div id="nihtag"><a href="http://www.cancer.gov"><img src="images/tagline.gif" width="295" height="37" alt="Logo: U.S. National Institutes of Health | www.cancer.gov" /></a></div>
+			
+		</div>
+		
+		<!--/NCI/NIH Header-->
+		
+		<!--caArray Header-->			
+		
+		<div id="caarrayheader">
+		
+			<div id="caarraylogo"><a href="./"><img src="images/logo_caarray.gif" width="172" height="46" alt="Logo: caArray - Array Data Management System" /></a></div>
+			
+			<!--Top Search-->
+			
+			<div id="topsearch">
+				<table>
+					<tr>
+						<td colspan="3" class="alignright"><a href="search_advanced.htm">advanced search</a></td>
+					</tr>
+					<tr>
+						<td><input type="text" name="keyw" id="keyw" /></td>
+						<td>
+							<select name="searchcat" id="searchcat">
+								<option>(All Categories) </option>
+								<option>Experiment ID</option>
+								<option>Experiment Name</option>
+								<option>Manufacturer</option>
+								<option>Source Organism</option>
+								<option>Sample ID</option>
+								<option>Disease State</option>								
+							</select>
+						</td>
+						<td><input type="image" src="images/btn_search_top.gif" alt="Search" onclick="window.location='searchresults_loggedin.htm';"  /></td>
+					</tr>
+				</table>
+				
+			</div>
+			
+			<!--/Top Search-->
+			
+			
+		</div>
+		
+		<!--/caArray Header-->
+		
+		<!--caArray Infobar-->			
+		
+		<div id="infobar">
+		
+			<div id="rightinfo">caArray v2.0: NCICB <span class="bar">|</span> Welcome, Matt <span class="bar">|</span> <a href="account.htm">Account</a>  <span class="bar">|</span><a href="logout.htm">Logout</a></div>
+		
+		</div>
+		
+		<!--/caArray Infobar-->
+	
+		<!--Work Area-->
+	
+		<div id="workarea">
+		
+			<div id="mainwrapper">
+			
+				<div id="main">
+				
+					<div id="leftnavandcontent">			
+					
+						<div id="leftnav">
+							
+							<!--caArray Menu-->
+							
+							<div class="navheader">caArray Actions</div>
+							
+							<ul class="caarraymenu">
+																			
+								<li class="liheader">Experiments</li>
+								<li><a href="experiment_workspace.htm">My Experiment Workspace</a></li>
+								<li><a href="experiment_create.htm">Create/Propose Experiment</a></li>
+								<!--<li><a href="search_advanced.htm">Advanced Search</a></li>-->
+								
+								<li class="liheader">Users &amp; Groups</li>
+								<li><a href="manage_users.htm">Manage Users</a></li>
+								<!--<li><a href="manage_groups.htm">Manage Institutional Groups</a></li>-->
+								<li><a href="manage_collaboration_groups.htm">Manage Collaboration Groups</a></li>			
+								
+								<li class="liheader">Curation</li>
+								<li><a href="import_array_designs.htm" class="selected">Import Array Designs</a></li>
+								
+							</ul>
+							
+							<!--/caArray Menu-->								
+							
+							<!--caArray Home-->
+							
+							<ul class="welcomemenu">
+								<li class="liheader">Welcome to caArray</li>
+								<li><a href="./">Public Home</a></li>
+							</ul>
+							
+							<!--/caArray Home-->		
+							
+							<!--About Menu-->
+							
+							<ul class="aboutmenu">
+								<li class="liheader">About caArray</li>
+								<li><a href="about.htm">What is caArray?</a></li>
+								<li><a href="install.htm">Install caArray</a></li>
+								<li><a href="userguide.htm">User Guide</a></li>
+								<li><a href="releasenotes.htm">Release Notes</a></li>
+								<li><a href="techdocs.htm">Technical Documentation</a></li>		
+							</ul>
+							
+							<!--/About Menu-->
+						
+							<!--Quicklinks Menu-->
+							
+							<ul class="quicklinks">
+								<li class="liheader">Global Quick Links</li>
+								<li><a href="http://www.cancer.gov/" class="external">National Cancer Institute (NCI)</a></li>
+								<li><a href="http://ncicb.nci.nih.gov/" class="external">NCI Center for Bioinformatics (NCICB)</a></li>
+								<li><a href="https://cabig.nci.nih.gov/" class="external">caBIG&trade; - Cancer Biomedical Informatics Grid&trade;</a></li>
+							</ul>
+						
+							<!--/Quicklinks Menu-->
+							
+						</div>
+						
+						<!--Content-->
+						
+						<div id="content">
+							
+							<!--ADD CONTENT HERE-->
+							
+							<h1>Import Array Designs</h1>
+							
+							<div class="pagehelp">
+								<a href="#" class="help">Help</a>
+								<a href="#" class="print">Print</a>
+							</div>
+							
+							<div class="padme">								
+													
+							<!--Results-->
+								
+								<div id="tabboxwrapper_notabs">								
+									
+									<div class="boxpad2">
+								
+										<h3>
+											<a href="import_array_designs.htm">Array Designs</a> &gt; 
+											<span class="dark">Import Array Design</span>
+										</h3>
+										
+									</div>
+									
+									<div class="boxpad">
+									
+										<form name="editform" id="idform" action="">
+										
+											<table class="form">
+												<tr>
+													<th colspan="2">Array Design Details</th>
+												</tr>												
+												<tr>
+													<td class="label">Array Design Name:</td>
+													<td class="value"><input type="text" name="adn" id="adn" value="Array Design Name XYZ" style="width:50%;" /></td>
+												</tr>
+												<tr>
+													<td class="label">Manufacturer:</td>
+													<td class="value">Affymetrix
+													</td>
+												</tr>
+												<tr>
+													<td class="label">Version Number:</td>
+													<td class="value">1.1</td>
+													</td>
+												</tr>
+												<tr>
+													<td class="label">Feature Type:</td>
+													<td class="value">Feature ABC</td>
+												</tr>	
+												<tr>
+													<td class="label">Organism(s):</td>
+													<td class="value">Mouse
+													</td>
+												</tr>
+												<tr>
+													<th colspan="2">Upload Array Design File</th>
+												</tr>
+												<tr>
+													<td class="label">Current File:</td>
+													<td class="value">sample_affy_file.fil</td>
+												</tr>
+											</table>
+											
+											<div class="actions">												
+												
+												<del class="btnwrapper">
+													<ul id="btnrow">
+														<li><a href="import_array_designs.htm" class="btn" onclick="this.blur();"><span class="btn_img"><span class="cancel">Cancel</span></span></a></li>
+														<li><a href="array_designs_edit.htm" class="btn" onclick="this.blur();"><span class="btn_img"><span class="edit">Edit</span></span></a></li>
+													</ul>
+												</del>												
+												
+											</div>
+											
+										</form>
+										
+									</div>
+									
+								
+								</div>
+									
+								<!--/Results-->
+								
+								
+								</div>
+							
+							<!--/ADD CONTENT HERE-->							
+							
+							<div class="clear"></div>							
+							
+						</div>
+						
+						<!--/Content-->
+						
+					</div>
+					
+				</div>
+				
+				
+		
+		</div>
+		
+		<!--Footer-->
+		
+		<div id="footerwrapper">
+			
+			<div id="footernavwrapper">		
+				<div id="footernav">				
+					<a href="contact.htm">Contact Us</a>
+					<a href="http://www.nih.gov/about/privacy.htm">Privacy Notice</a>
+					<a href="http://www.nih.gov/about/disclaim.htm">Disclaimer</a>
+					<a href="http://www3.cancer.gov/accessibility/nci508.htm">Accessibility</a>
+					<a href="help.htm" class="last">caArray Support</a>	
+				</div>
+			</div>
+
+			<div id="partnerlogos">				
+				<a href="http://www.cancer.gov"><img src="images/footer_nci.gif" width="63" height="31" alt="Logo: National Cancer Institute" /></a>
+				<a href="http://www.dhhs.gov"><img src="images/footer_hhs.gif" width="39" height="31" alt="Logo: Department of Health and Human Services" /></a>
+				<a href="http://www.nih.gov"><img src="images/footer_nih.gif" width="46" height="31" alt="Logo: National Institutes of Health" /></a>
+				<a href="http://www.usa.gov"><img src="images/footer_usagov.gif" width="91" height="31" alt="Logo: USA.gov" /></a>
+			</div>
+
+		</div>
+		
+		<!--/Footer-->
+	
+	</div></body>
+	
+</html>

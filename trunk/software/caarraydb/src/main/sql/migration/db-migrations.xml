@@ -1,0 +1,102 @@
+<migrations>
+    <migration fromVersion="2.0" toVersion="2.0.1.rc1">
+        <sql-script>migrate-2.0-to-2.0.1.alpha1.sql</sql-script>
+        <sql-script>migrate-2.0.1.alpha1-to-2.0.1.alpha2.sql</sql-script>
+        <sql-script>migrate-2.0.1.alpha2-to-2.0.1.rc1.sql</sql-script>
+        <migrator-class>gov.nih.nci.caarray.web.upgrade.AffymetrixChpDesignElementListFixer</migrator-class>
+    </migration>
+    <migration fromVersion="2.0.1.alpha2" toVersion="2.0.1.rc1">
+        <sql-script>migrate-2.0.1.alpha2-to-2.0.1.rc1.sql</sql-script>
+    </migration>
+    <migration fromVersion="2.0.1.rc1" toVersion="2.0.1.rc2">
+        <sql-script>migrate-2.0.1.rc1-to-2.0.1.rc2.sql</sql-script>
+        <migrator-class>gov.nih.nci.caarray.web.upgrade.IlluminaExpressionDesignFixer</migrator-class>
+    </migration>
+    <migration fromVersion="2.0.1.rc2" toVersion="2.0.1.rc3" />
+    <migration fromVersion="2.0.1.rc3" toVersion="2.0.1.rc4" />
+    <migration fromVersion="2.0.1.rc4" toVersion="2.0.2.patch1">
+        <sql-script>migrate-2.0.1.rc4-to-2.0.2.patch1.sql</sql-script>
+    </migration>
+    <migration fromVersion="2.0.2.patch1" toVersion="2.1.0.alpha1">
+        <sql-script ignoreErrors="true">migrate-2.0.2.patch1-to-2.1.0.alpha1-drop-fk.sql</sql-script>
+        <sql-script>migrate-2.0.2.patch1-to-2.1.0.alpha1.sql</sql-script>
+        <migrator-class>gov.nih.nci.caarray.web.upgrade.CsmFilterMigrator</migrator-class>
+    </migration>
+    <migration fromVersion="2.1.0.alpha1" toVersion="2.1.0.alpha2">
+        <sql-script>migrate-2.1.0.alpha1-to-2.1.0.alpha2.sql</sql-script>
+    </migration>
+    <migration fromVersion="2.1.0.alpha2" toVersion="2.1.0.alpha3" />
+    <migration fromVersion="2.1.0.alpha3" toVersion="2.1.0.alpha4">
+        <sql-script ignoreErrors="true">migrate-2.1.0.alpha3-to-2.1.0.alpha4-drop-fk.sql</sql-script>
+        <sql-script>migrate-2.1.0.alpha3-to-2.1.0.alpha4.sql</sql-script>
+    </migration>
+    <migration fromVersion="2.1.0.alpha4" toVersion="2.1.0.rc1">
+        <sql-script ignoreErrors="true">migrate-2.1.0.alpha4-to-2.1.0.rc1-drop-fk.sql</sql-script>
+        <sql-script ignoreErrors="true">migrate-2.1.0.alpha4-to-2.1.0.rc1.sql</sql-script>
+    </migration>
+    <migration fromVersion="2.1.0.rc1" toVersion="2.1.0.rc2">
+        <sql-script>migrate-2.1.0.rc1-to-2.1.0.rc2.sql</sql-script>
+    </migration>
+    <migration fromVersion="2.1.0.rc2" toVersion="2.1.1.rc1">
+        <sql-script>migrate-2.1.0.rc2-to-2.1.1.rc1.sql</sql-script>
+        <sql-script delimiter="//">migrate-2.1.0.rc2-to-2.1.1.rc1-procedure.sql</sql-script>
+    </migration>
+    <migration fromVersion="2.1.1.rc1" toVersion="2.2.0.alpha1">
+        <sql-script ignoreErrors="true">migrate-2.1.1.rc1-to-2.2.0.alpha1-drop-fk.sql</sql-script>
+        <sql-script>migrate-2.1.1.rc1-to-2.2.0.alpha1.sql</sql-script>
+    </migration>
+    <migration fromVersion="2.2.0.alpha1" toVersion="2.2.0.rc1">
+        <migrator-class renameHybridizations="true">gov.nih.nci.caarray.web.upgrade.MergeDuplicateBiomaterialsMigrator</migrator-class>
+    </migration>
+    <migration fromVersion="2.2.0.rc1" toVersion="2.2.0.rc2">
+        <sql-script>migrate-2.2.0.rc1-to-2.2.0.rc2.sql</sql-script>
+    </migration>
+    <migration fromVersion="2.2.0.rc2" toVersion="2.3.0.alpha1">
+        <sql-script ignoreErrors="true">migrate-2.2.0.rc2-to-2.3.0.alpha1-drop-fk.sql</sql-script>
+        <sql-script>migrate-2.2.0.rc2-to-2.3.0.alpha1.sql</sql-script>
+    </migration>
+    <migration fromVersion="2.2.0.rc3" toVersion="2.3.0.alpha1">
+        <sql-script ignoreErrors="true">migrate-2.2.0.rc2-to-2.3.0.alpha1-drop-fk.sql</sql-script>
+        <sql-script>migrate-2.2.0.rc2-to-2.3.0.alpha1.sql</sql-script>
+    </migration>
+    <migration fromVersion="2.3.0.alpha1" toVersion="2.3.0.alpha2">
+        <sql-script>MigrationScript4.1MySQL.sql</sql-script>
+        <migrator-class>gov.nih.nci.caarray.web.upgrade.CsmFilterMigrator</migrator-class>
+    </migration>
+    <migration fromVersion="2.3.0.alpha2" toVersion="2.3.0.rc1">
+        <sql-script>migrate-2.3.0.alpha2-to-2.3.0.rc1.sql</sql-script>
+        <migrator-class>gov.nih.nci.caarray.web.upgrade.CsmFilterMigrator</migrator-class>
+    </migration>
+    <migration fromVersion="2.3.0.rc1" toVersion="2.3.0.alpha5">
+        <sql-script>migrate-2.3.0.rc1-to-2.3.0.alpha5.sql</sql-script>
+        <migrator-class>gov.nih.nci.caarray.web.upgrade.CsmFilterMigrator</migrator-class>
+    </migration>
+    <migration fromVersion="2.3.0.alpha5" toVersion="2.3.0.rc2">
+        <migrator-class>gov.nih.nci.caarray.web.upgrade.FixHybridizationsWithMissingArraysMigrator</migrator-class>
+        <sql-script>migrate-2.3.0.alpha5-to-2.3.0.rc2.sql</sql-script>
+        <migrator-class>gov.nih.nci.caarray.web.upgrade.CsmFilterMigrator</migrator-class>
+    </migration>
+    <migration fromVersion="2.3.0.rc2" toVersion="2.3.0.rc3">
+        <sql-script>migrate-2.3.0.rc2-to-2.3.0.rc3.sql</sql-script>
+    </migration>
+    <migration fromVersion="2.3.0.rc3" toVersion="2.3.0.rc4">
+        <sql-script>migrate-2.3.0.rc3-to-2.3.0.rc4.sql</sql-script>
+    </migration>
+    <migration fromVersion="2.3.0.rc4" toVersion="2.3.0.rc5">
+        <sql-script>migrate-2.3.0.rc4-to-2.3.0.rc5.sql</sql-script>
+    </migration>
+    <migration fromVersion="2.3.0.rc5" toVersion="2.3.0.rc7">
+        <sql-script>migrate-2.3.0.rc5-to-2.3.0.rc7.sql</sql-script>
+    </migration>
+    <migration fromVersion="2.3.0.rc7" toVersion="2.3.1.alpha1">
+        <sql-script ignoreErrors="true">migrate-2.3.0.rc7-to-2.3.1.alpha1-drop-fk.sql</sql-script>
+        <sql-script>migrate-2.3.0.rc7-to-2.3.1.alpha1.sql</sql-script>
+    </migration>
+    <migration fromVersion="2.3.1.alpha1" toVersion="2.3.1.alpha2">
+        <sql-script>migrate-2.3.1.alpha1-to-2.3.1.alpha2.sql</sql-script>
+    </migration>
+    <migration fromVersion="2.3.1.alpha2" toVersion="2.3.1.alpha2-20295">
+        <sql-script>migrate-2.3.1.alpha2-to-2.3.1.alpha2-20295.sql</sql-script>
+    </migration>
+
+</migrations>

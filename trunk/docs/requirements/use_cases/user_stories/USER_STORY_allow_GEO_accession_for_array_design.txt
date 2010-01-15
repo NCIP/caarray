@@ -1,0 +1,17 @@
+USER STORY: Allow GEO accession for array design
+
+As a Data Owner, I want to map a new or existing array design to the corresponding GEO platform so that any experiments that use that array design can be submitted to the GEO repository in the future.
+
+1. Flow:
+
+* While adding a new array design, or while editing an existing array design, the user specifies the GEO accession for the GEO platform that corresponds to that array design. The user saves the array design.
+* The System stores the GEO platform accession as part of the information associated with the array design.
+Note: There is no requirement to expose an array design's GEO accession via programmatic APIs or to expose it in the caDSR.
+
+2. Deferred Flows:
+2.1 Calling GEO programmatic APIs to validate the accession is deferred.
+2.2 Showing the user available platform accessions by pulling them programmatically from GEO is deferred.
+
+3. References:
+
+The accompanying spreadsheet caArray_GEO_platforms_reviewed.xls has the caArray-to-GEO mappings and has been validated by the GEO curation team.

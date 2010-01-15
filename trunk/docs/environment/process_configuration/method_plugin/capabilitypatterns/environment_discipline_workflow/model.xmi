@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:org.eclipse.epf.uma="http://www.eclipse.org/epf/uma/1.0.4/uma.ecore" xmlns:org.eclipse.epf.uma.resourcemanager="http:///org/eclipse/epf/uma/resourcemanager.ecore"
+    xmlns:epf="http://www.eclipse.org/epf" epf:version="1.2.0" xmlns:rmc="http://www.ibm.com/rmc"
+    rmc:version="7.2.0">
+  <org.eclipse.epf.uma.resourcemanager:ResourceManager xmi:id="_R7ZXYQG6Ed28r8TwSmvtJw"
+      guid="_R7ZXYQG6Ed28r8TwSmvtJw">
+    <resourceDescriptors xmi:id="_R7ZXYgG6Ed28r8TwSmvtJw" id="-ukh0AzBNZpZp3tJhmmDFkg"
+        uri="content.xmi"/>
+  </org.eclipse.epf.uma.resourcemanager:ResourceManager>
+  <org.eclipse.epf.uma:ProcessComponent xmi:id="_R6f_gAG6Ed28r8TwSmvtJw" name="environment_discipline_workflow"
+      guid="_R6f_gAG6Ed28r8TwSmvtJw">
+    <childPackages xsi:type="org.eclipse.epf.uma:ProcessPackage" xmi:id="_oA-HYAG6Ed28r8TwSmvtJw"
+        name="Support Development Process" guid="_oA-HYAG6Ed28r8TwSmvtJw">
+      <processElements xsi:type="org.eclipse.epf.uma:Activity" xmi:id="_oA-HYQG6Ed28r8TwSmvtJw"
+          name="Support Development Process" guid="_oA-HYQG6Ed28r8TwSmvtJw" presentationName="Support Development Process"
+          isPlanned="false" hasMultipleOccurrences="true" isOptional="true" superActivities="_R6f_gQG6Ed28r8TwSmvtJw"
+          isEventDriven="true" breakdownElements="_iZJJ8AG_Ed28r8TwSmvtJw _iZJJ8QG_Ed28r8TwSmvtJw _iZl14AG_Ed28r8TwSmvtJw _qwHb8AG_Ed28r8TwSmvtJw"/>
+      <processElements xsi:type="org.eclipse.epf.uma:TaskDescriptor" xmi:id="_iZJJ8AG_Ed28r8TwSmvtJw"
+          name="submit_process_issue" guid="_iZJJ8AG_Ed28r8TwSmvtJw" presentationName="Submit Process Issue"
+          superActivities="_oA-HYQG6Ed28r8TwSmvtJw" output="_iZl14AG_Ed28r8TwSmvtJw"
+          performedPrimarilyBy="_iZJJ8QG_Ed28r8TwSmvtJw">
+        <Task href="uma://_dtrvIAG5Ed2DoeL8fl8HsQ#_lJUS4AG8Ed28r8TwSmvtJw"/>
+      </processElements>
+      <processElements xsi:type="org.eclipse.epf.uma:RoleDescriptor" xmi:id="_iZJJ8QG_Ed28r8TwSmvtJw"
+          name="any_role" guid="_iZJJ8QG_Ed28r8TwSmvtJw" presentationName="Any Role"
+          isPlanned="false" superActivities="_oA-HYQG6Ed28r8TwSmvtJw">
+        <Role href="uma://_dtrvIAG5Ed2DoeL8fl8HsQ#_JikZUAG8Ed28r8TwSmvtJw"/>
+      </processElements>
+      <processElements xsi:type="org.eclipse.epf.uma:WorkProductDescriptor" xmi:id="_iZl14AG_Ed28r8TwSmvtJw"
+          name="process_issue" guid="_iZl14AG_Ed28r8TwSmvtJw" presentationName="Process Issue"
+          isPlanned="false" superActivities="_oA-HYQG6Ed28r8TwSmvtJw">
+        <WorkProduct xsi:type="org.eclipse.epf.uma:Artifact" href="uma://_dtrvIAG5Ed2DoeL8fl8HsQ#_bA-7gAG9Ed28r8TwSmvtJw"/>
+      </processElements>
+      <processElements xsi:type="org.eclipse.epf.uma:TaskDescriptor" xmi:id="_qwHb8AG_Ed28r8TwSmvtJw"
+          name="update_process" guid="_qwHb8AG_Ed28r8TwSmvtJw" presentationName="Update Process"
+          superActivities="_oA-HYQG6Ed28r8TwSmvtJw">
+        <Task href="uma://_dtrvIAG5Ed2DoeL8fl8HsQ#_1VIaMAG8Ed28r8TwSmvtJw"/>
+      </processElements>
+    </childPackages>
+    <childPackages xsi:type="org.eclipse.epf.uma:ProcessPackage" xmi:id="_vIEs8AG6Ed28r8TwSmvtJw"
+        name="Evaluate Development Process" guid="_vIEs8AG6Ed28r8TwSmvtJw">
+      <processElements xsi:type="org.eclipse.epf.uma:Activity" xmi:id="_vIEs8QG6Ed28r8TwSmvtJw"
+          name="Evaluate Development Process" guid="_vIEs8QG6Ed28r8TwSmvtJw" presentationName="Evaluate Development Process"
+          superActivities="_R6f_gQG6Ed28r8TwSmvtJw" linkToPredecessor="_j_NssQG7Ed28r8TwSmvtJw"
+          breakdownElements="_p9Te8AG_Ed28r8TwSmvtJw"/>
+      <processElements xsi:type="org.eclipse.epf.uma:WorkOrder" xmi:id="_j_NssQG7Ed28r8TwSmvtJw"
+          guid="_j_NssQG7Ed28r8TwSmvtJw" pred="_oA-HYQG6Ed28r8TwSmvtJw"/>
+      <processElements xsi:type="org.eclipse.epf.uma:TaskDescriptor" xmi:id="_p9Te8AG_Ed28r8TwSmvtJw"
+          name="evaluate_process" guid="_p9Te8AG_Ed28r8TwSmvtJw" presentationName="Evaluate Process"
+          superActivities="_vIEs8QG6Ed28r8TwSmvtJw">
+        <Task href="uma://_dtrvIAG5Ed2DoeL8fl8HsQ#_N1r-4AG9Ed28r8TwSmvtJw"/>
+      </processElements>
+    </childPackages>
+    <process xsi:type="org.eclipse.epf.uma:CapabilityPattern" xmi:id="_R6f_gQG6Ed28r8TwSmvtJw"
+        name="environment_discipline_workflow" guid="_R6f_gQG6Ed28r8TwSmvtJw" presentationName="Environment"
+        breakdownElements="_oA-HYQG6Ed28r8TwSmvtJw _vIEs8QG6Ed28r8TwSmvtJw">
+      <presentation xmi:id="-ukh0AzBNZpZp3tJhmmDFkg" href="uma://-ukh0AzBNZpZp3tJhmmDFkg#-ukh0AzBNZpZp3tJhmmDFkg"/>
+      <defaultContext href="uma://_qxEtawG5Ed28r8TwSmvtJw#_CaDJYAG6Ed28r8TwSmvtJw"/>
+      <validContext href="uma://_qxEtawG5Ed28r8TwSmvtJw#_CaDJYAG6Ed28r8TwSmvtJw"/>
+    </process>
+  </org.eclipse.epf.uma:ProcessComponent>
+</xmi:XMI>

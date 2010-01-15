@@ -1,0 +1,11 @@
+Test Case,API,Name,Type,Expected Results,Min Results
+73,java,,,,100
+74,grid,,,,100
+75,java,Age,,,1
+76,grid,Age,,,1
+243,java,invalid#%!,,0,
+244,grid,invalid#%!,,0,
+245,java,,disease_state,,1
+246,grid,,disease_state,,1
+326,java,GBM,disease_state,1,
+327,grid,GBM,disease_state,1,

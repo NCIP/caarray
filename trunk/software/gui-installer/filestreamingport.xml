@@ -1,0 +1,25 @@
+<project name="filestreamingport" default="set-filestreaming-port-number-as-property" basedir=".">
+
+    <typedef resource="net/sf/antcontrib/antlib.xml" onerror="failall"/>
+
+    <target name="set-file-to-search-through">
+        <property name="jboss.bin.dir" value="${existing.installation.home}/jboss-4.0.5.GA/bin"/>
+        <osfamily property="os.family"/>
+        <switch value="${os.family}">
+            <case value="unix">
+                <loadfile srcFile="${jboss.bin.dir}/run.conf" property="file.to.search.through"/>
+            </case>
+            <case value="mac">
+                <loadfile srcFile="${jboss.bin.dir}/run.conf" property="file.to.search.through"/>
+            </case>
+            <case value="windows">
+                <loadfile srcFile="${jboss.bin.dir}/run.bat" property="file.to.search.through"/>
+            </case>
+        </switch>
+    </target>
+
+    <target name="set-filestreaming-port-number-as-property" depends="set-file-to-search-through">
+        <propertyregex defaultValue="31522" property="java.api.filestreaming.port" input="${file.to.search.through}" regexp="com.healthmarketscience.rmiio.exporter.port=(\d{1,})" select="\1" />
+    </target>
+    
+</project>

@@ -1,0 +1,9 @@
+Test Case,API,Common Name,Scientific Name,Id,Min Results,Expected Results,Expected Scientific Name,Expected Common Name
+81,java,,,,23,,,
+82,grid,,,,23,,,
+83,java,house mouse,,,,,Mus musculus,house mouse
+84,grid,house mouse,,,,,Mus musculus,house mouse
+255,java,,invalid#%!,,,0,,
+256,grid,,invalid#%!,,,0,,
+281.1,java,,,URN:LSID:gov.nih.nci.caarray.external.v1_0.experiment.Organism:5,,1,,
+281.2,grid,,,URN:LSID:gov.nih.nci.caarray.external.v1_0.experiment.Organism:5,,1,,

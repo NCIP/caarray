@@ -1,0 +1,26 @@
+Interview with UAMS
+October 23, 2009
+
+Rinku Saha (UAMS)
+Umit Topaloglu (UAMS)
+Juli Klemm (NCI)
+Rashmi Srinivasa (5AM Solutions)
+Nitin Kanaskar (UAMS)
+
+* UAMS has caTissue since December 2008. They also have a caArray instance and are researching how to integrate the 2 systems.
+* They're loading Affy and Illumina data from two studies:
+  - Saliva collection from a 10K women cohort, stored in caTissue.  Data will be analyzed with microarrays and stored in caArray
+  - Myeloma study, collecting bone marrow and other samples from clinical trials participants
+* Java auto-uploaders from Affy directories to caArray instances. (They're happy to share their code and experience. ACTION: FOLLOW UP to share this group's customizations with the community.) They manually import in caArray later. 
+* After auto-upload, caArray sample needs to be linked to caTissue specimen. (externalId needs to be populated). ACTION: HELP THEM WITH THIS.
+* When specimens are entered into caTissue, they don't know if they will be submitted to the Affy genomics facility at that point.
+* caArray samples will be "virtual" specimens in caTissue. Same Participant in caTissue can have physical aliquots in caTissue and virtual aliquots in caTissue (that go to the array lab).
+* When specimen arrives at the array lab, their system looks up specimen's bar number in caTissue and proposes a file name based on participant ID, experiment #, bar number and chip ID. (They've developed a web page to do this, but don't mind replacing it with a different workflow - e.g., people in array lab could go to caTissue instead of to their web page and update the location and amount of the aliquot.) ACTION: FOLLOW UP TO GET THE WEB PAGE THEIR ARRAY LAB TECHNICIAN USES. RINKU WILL EMAIL SCREENSHOTS.
+* One experiment per chip type (e.g., all patients run on HG_U195).
+* When specimen comes in to array lab, existing ongoing experiment needs to be updated.
+* Don't want to replicate data - no pulling annotations from caTissue to caArray. Use caB2B or something like that instead.
+* Array lab technician ideally interacts with caTissue alone, not with caArray. Researcher will use caB2B to pull data from caArray, caTissue, clinical systems etc.
+* Proposed workflow: Get caTissue to generate file name. Technician cuts and pastes file name into Affy system (or prints out bar code from caTissue and sticks it on the aliquot; Affy system then reads this bar code and generates the appropriate file name). The Java uploader could still be used as it is currently.
+* More customization: Paying $5 per file on SAN file system, but $31 per file for DB. (They store metadata only in database.) ACTION: FOLLOW UP to share customizations with the community.
+
+They have volunteered to pilot our caTissue-caArray integration implementation.

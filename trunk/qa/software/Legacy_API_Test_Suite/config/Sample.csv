@@ -1,0 +1,3 @@
+Test Case,API,Name,Expected Results,Min Results,Expected External Id
+370,java,,,5000,
+372,java,QaApiTestSample01,1,,QA_API_TEST_EXTERNAL_ID_01

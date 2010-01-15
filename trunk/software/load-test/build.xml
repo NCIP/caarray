@@ -1,0 +1,345 @@
+<!-- *********************************************************************** -->
+<!-- ** PROJECT:   caArray Load Testing                                   ** -->
+<!-- *********************************************************************** -->
+
+<project name="caarrayLoadTesting" default="samplers:jar" basedir=".">
+    <!-- ******************************************************************* -->
+    <!-- ** PROPERTIES                                                    ** -->
+    <!-- ******************************************************************* -->
+    <property environment="env" />
+    <property file="default.properties" />
+    <property name="java.src.dir" value="${basedir}/src/java" />
+    <property name="target.dir" value="${basedir}/target" />
+    <property name="java.classes.dir" value="${target.dir}/classes" />
+    <property name="filtered.tests.src.dir" value="${target.dir}/filtered/src/tests" />
+    <property name="tests.src.dir" value="${basedir}/src/tests" />
+    <property name="tests.out.dir" value="${target.dir}/tests" />
+    <property name="jmeter.dir" value="${env.JMETER_HOME}" />
+    <property name="jmeter.lib.ext.dir" value="${jmeter.dir}/lib/ext" />
+    <property name="ant.lib.dir" value="${env.ANT_HOME}/lib" />
+    <property name="load-testing.lib.dir" value="../lib/load-testing" />
+    <property name="grid.service.lib.dir" value="../CaArraySvc/build/lib" />
+    <property name="caarray.jmeter.samplers.jar" value="${target.dir}/caarray-jmeter-samplers.jar" />
+    <property name="caarray.client.jar" value="../caarray-client.jar/target/caarray-client.jar" />
+
+    <!-- ******************************************************************* -->
+    <!-- ** DEPENDENCIES PATH                                                      ** -->
+    <!-- ******************************************************************* -->
+    <path id="load-testing.dependencies.path">
+        <fileset dir="${load-testing.lib.dir}">
+            <include name="*.jar" />
+        </fileset>
+    </path>
+
+    <!-- ******************************************************************* -->
+    <!-- ** TASKDEFS                                                      ** -->
+    <!-- ******************************************************************* -->
+    <taskdef name="jmeter" classname="org.programmerplanet.ant.taskdefs.jmeter.JMeterTask" classpathrefid="load-test.dependencies.path" />
+
+    <!-- ******************************************************************* -->
+    <!-- ** CLEAN ALL                                                     ** -->
+    <!-- ******************************************************************* -->
+    <target name="clean">
+        <delete dir="${target.dir}" />
+    </target>
+
+    <!-- ******************************************************************* -->
+    <!-- ** BUILD AND DEPLOY CAARRAY JMETER SAMPLERS                      ** -->
+    <!-- ******************************************************************* -->
+    <target name="samplers:clean">
+        <delete dir="${java.classes.dir}" />
+        <delete file="${caarray.jmeter.samplers.jar}" />
+    </target>
+
+    <target name="samplers:compile">
+        <mkdir dir="${java.classes.dir}" />
+        <javac srcdir="${java.src.dir}" destdir="${java.classes.dir}" debug="true">
+            <classpath refid="load-testing.dependencies.path"/>
+            <classpath>
+                <fileset dir="${grid.service.lib.dir}" includes="*.jar" />
+                <pathelement location="${caarray.client.jar}" />
+            </classpath>
+        </javac>
+        <copy todir="${java.classes.dir}" overwrite="true">
+            <fileset dir="${java.src.dir}" includes="**/*.properties" />
+        </copy>
+    </target>
+
+    <target name="samplers:jar" depends="samplers:compile">
+        <jar destfile="${caarray.jmeter.samplers.jar}">
+            <fileset dir="${java.classes.dir}" />
+        </jar>
+    </target>
+
+    <target name="samplers:deploy" depends="samplers:jar">
+        <copy file="${caarray.jmeter.samplers.jar}" todir="${jmeter.lib.ext.dir}" overwrite="true" />
+        <copy todir="${jmeter.lib.ext.dir}" overwrite="true">
+            <fileset dir="${grid.service.lib.dir}">
+                <include name="*.jar" />
+            </fileset>
+        </copy>
+        <copy file="${caarray.client.jar}" todir="${jmeter.lib.ext.dir}" overwrite="true" />
+    </target>
+
+    <!-- ******************************************************************* -->
+    <!-- ** RUN JMETER TESTS                                              ** -->
+    <!-- ******************************************************************* -->
+    <target name="tests:clean">
+        <delete dir="${tests.out.dir}" />
+    </target>
+
+    <target name="test:setup-filter-files">
+        <property name="loadtest.data.dir" value="${basedir}/data" />
+        <path id="loadtest.data.dir.path" location="${loadtest.data.dir}${file.separator}" />
+        <property name="loadtest.data.dir.path.prop.base" refid="loadtest.data.dir.path" />
+        <property name="loadtest.data.dir.path.prop" value="${loadtest.data.dir.path.prop.base}${file.separator}" />
+        <echo>
+            loadtest.data.dir.path.prop=${loadtest.data.dir.path.prop}
+        </echo>
+
+        <mkdir dir="${filtered.tests.src.dir}" />
+        <copy todir="${filtered.tests.src.dir}" filtering="true" overwrite="true">
+            <fileset dir="${tests.src.dir}">
+            </fileset>
+            <filterset>
+                <filter token="loadtest.data.dir.path" value="${loadtest.data.dir.path.prop}" />
+            </filterset>
+        </copy>
+    </target>
+
+    <target name="tests:run" depends="test:setup-filter-files">
+        <mkdir dir="${tests.out.dir}" />
+
+        <!-- ******************************************************************* -->
+        <!-- ** LOAD DATA FOR TESTS TO USE                                    ** -->
+        <!-- ** Note: After running ArrayDesignImporter, check if designs     ** -->
+        <!-- ** finished importing before running the ExperimentDataImporter. ** -->
+        <!-- ******************************************************************* -->
+        <!--
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${filtered.tests.src.dir}/setup/ArrayDesignImporter.jmx" resultlog="${tests.out.dir}/setup/ArrayDesignImporter.jtl">
+            <jvmarg value="-Xms512m" />
+            <jvmarg value="-Xmx1024m" />
+            <property name="server.host.name" value="${server.host.name}" />
+            <property name="server.jboss.port" value="${server.jboss.port}" />
+        </jmeter>
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${filtered.tests.src.dir}/setup/ExperimentDataImporter.jmx" resultlog="${tests.out.dir}/setup/ExperimentDataImporter.jtl">
+            <jvmarg value="-Xms512m" />
+            <jvmarg value="-Xmx1024m" />
+            <property name="server.host.name" value="${server.host.name}" />
+            <property name="server.jboss.port" value="${server.jboss.port}" />
+        </jmeter>
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${filtered.tests.src.dir}/setup/HundredExperimentLoader.jmx" resultlog="${tests.out.dir}/setup/HundredExperimentLoader.jtl">
+            <property name="server.host.name" value="${server.host.name}" />
+            <property name="server.jboss.port" value="${server.jboss.port}" />
+        </jmeter>
+  -->
+
+        <!-- ******************************************************************* -->
+        <!-- ** RUN API FUNCTIONAL TESTS                                      ** -->
+        <!-- ******************************************************************* -->
+  <!--
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${filtered.tests.src.dir}/apitest/SearchByExampleTest.jmx" resultlog="${tests.out.dir}/apitest/SearchByExampleTest.jtl">
+            <property name="server.host.name" value="${server.host.name}" />
+            <property name="server.jndi.port" value="${server.jndi.port}" />
+        </jmeter>
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${filtered.tests.src.dir}/apitest/CQLSearchTest.jmx" resultlog="${tests.out.dir}/apitest/CQLSearchTest.jtl">
+            <property name="server.host.name" value="${server.host.name}" />
+            <property name="server.jndi.port" value="${server.jndi.port}" />
+        </jmeter>
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${filtered.tests.src.dir}/apitest/DataSetDownloadTest.jmx" resultlog="${tests.out.dir}/apitest/DataSetDownloadTest.jtl">
+            <jvmarg value="-Xms512m" />
+            <jvmarg value="-Xmx1024m" />
+            <property name="server.host.name" value="${server.host.name}" />
+            <property name="server.jndi.port" value="${server.jndi.port}" />
+        </jmeter>
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${filtered.tests.src.dir}/apitest/OneFileDataSetDownloadTest.jmx" resultlog="${tests.out.dir}/apitest/OneFileDataSetDownloadTest.jtl">
+            <jvmarg value="-Xms512m" />
+            <jvmarg value="-Xmx1024m" />
+            <property name="server.host.name" value="${server.host.name}" />
+            <property name="server.jndi.port" value="${server.jndi.port}" />
+        </jmeter>
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${filtered.tests.src.dir}/apitest/FileDownloadTest.jmx" resultlog="${tests.out.dir}/apitest/FileDownloadTest.jtl">
+            <jvmarg value="-Xms512m" />
+            <jvmarg value="-Xmx1024m" />
+            <property name="server.host.name" value="${server.host.name}" />
+            <property name="server.jndi.port" value="${server.jndi.port}" />
+        </jmeter>
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${filtered.tests.src.dir}/apitest/ArrayDesignDownloadTest.jmx" resultlog="${tests.out.dir}/apitest/ArrayDesignDownloadTest.jtl">
+            <jvmarg value="-Xms512m" />
+            <jvmarg value="-Xmx1024m" />
+            <property name="server.host.name" value="${server.host.name}" />
+            <property name="server.jndi.port" value="${server.jndi.port}" />
+        </jmeter>
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${filtered.tests.src.dir}/apitest/GridCQLSearchTest.jmx" resultlog="${tests.out.dir}/apitest/GridCQLSearchTest.jtl">
+            <property name="server.host.name" value="${server.host.name}" />
+            <property name="grid.service.port" value="${grid.service.port}" />
+        </jmeter>
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${filtered.tests.src.dir}/apitest/GridDataSetDownloadTest.jmx" resultlog="${tests.out.dir}/apitest/GridDataSetDownloadTest.jtl">
+            <jvmarg value="-Xms512m" />
+            <jvmarg value="-Xmx1024m" />
+            <property name="server.host.name" value="${server.host.name}" />
+            <property name="server.jndi.port" value="${server.jndi.port}" />
+            <property name="grid.service.port" value="${grid.service.port}" />
+        </jmeter>
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${filtered.tests.src.dir}/apitest/GridFileDownloadTest.jmx" resultlog="${tests.out.dir}/apitest/GridFileDownloadTest.jtl">
+            <jvmarg value="-Xms512m" />
+            <jvmarg value="-Xmx1024m" />
+            <property name="server.host.name" value="${server.host.name}" />
+            <property name="grid.service.port" value="${grid.service.port}" />
+        </jmeter>
+  -->
+
+
+        <!-- ******************************************************************* -->
+        <!-- ** RUN WEB FUNCTIONAL TESTS                                      ** -->
+        <!-- ******************************************************************* -->
+        <!--
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${filtered.tests.src.dir}/browse/AnonymousBrowseTest_Basic.jmx" resultlog="${tests.out.dir}/browse/AnonymousBrowseTest_Basic.jtl">
+            <property name="server.host.name" value="${server.host.name}" />
+            <property name="server.jboss.port" value="${server.jboss.port}" />
+            <property name="concurrent.users" value="1" />
+            <property name="number.of.iterations" value="1" />
+        </jmeter>
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${filtered.tests.src.dir}/browse/BrowseTest_Basic.jmx" resultlog="${tests.out.dir}/browse/BrowseTest_Basic.jtl">
+            <property name="server.host.name" value="${server.host.name}" />
+            <property name="server.jboss.port" value="${server.jboss.port}" />
+            <property name="concurrent.users" value="1" />
+            <property name="number.of.iterations" value="1" />
+        </jmeter>
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${filtered.tests.src.dir}/browse/BrowseExperimentTest_Basic.jmx" resultlog="${tests.out.dir}/browse/BrowseExperimentTest_Basic.jtl">
+            <property name="server.host.name" value="${server.host.name}" />
+            <property name="server.jboss.port" value="${server.jboss.port}" />
+            <property name="concurrent.users" value="1" />
+            <property name="number.of.iterations" value="1" />
+        </jmeter>
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${filtered.tests.src.dir}/search/SearchTest_Basic.jmx" resultlog="${tests.out.dir}/search/SearchTest_Basic.jtl">
+            <property name="server.host.name" value="${server.host.name}" />
+            <property name="server.jboss.port" value="${server.jboss.port}" />
+            <property name="concurrent.users" value="1" />
+            <property name="number.of.iterations" value="1" />
+        </jmeter>
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${filtered.tests.src.dir}/import/UploadTest_Basic.jmx" resultlog="${tests.out.dir}/import/UploadTest_Basic.jtl">
+            <jvmarg value="-Xms512m" />
+            <jvmarg value="-Xmx1024m" />
+            <property name="server.host.name" value="${server.host.name}" />
+            <property name="server.jboss.port" value="${server.jboss.port}" />
+            <property name="concurrent.users" value="1" />
+            <property name="number.of.iterations" value="1" />
+        </jmeter>
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${filtered.tests.src.dir}/import/ImportTest_Basic.jmx" resultlog="${tests.out.dir}/import/ImportTest_Basic.jtl">
+            <jvmarg value="-Xms512m" />
+            <jvmarg value="-Xmx1024m" />
+            <property name="server.host.name" value="${server.host.name}" />
+            <property name="server.jboss.port" value="${server.jboss.port}" />
+            <property name="concurrent.users" value="1" />
+            <property name="number.of.iterations" value="1" />
+        </jmeter>
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${filtered.tests.src.dir}/download/FileDownloadUITest_Basic.jmx" resultlog="${tests.out.dir}/download/FileDownloadUITest_Basic.jtl">
+            <jvmarg value="-Xms512m" />
+            <jvmarg value="-Xmx1024m" />
+            <property name="server.host.name" value="${server.host.name}" />
+            <property name="server.jboss.port" value="${server.jboss.port}" />
+            <property name="concurrent.users" value="1" />
+            <property name="number.of.iterations" value="1" />
+        </jmeter>
+        -->
+
+        <!-- ******************************************************************* -->
+        <!-- ** RUN LOAD TESTS                                                ** -->
+        <!-- ******************************************************************* -->
+        <!--
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${filtered.tests.src.dir}/browse/AnonymousBrowseTest_Basic.jmx" resultlog="${tests.out.dir}/browse/AnonymousBrowseTest_Basic.jtl">
+            <property name="server.host.name" value="${server.host.name}" />
+            <property name="server.jboss.port" value="${server.jboss.port}" />
+            <property name="concurrent.users" value="10" />
+            <property name="number.of.iterations" value="10" />
+        </jmeter>
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${filtered.tests.src.dir}/browse/BrowseTest_Basic.jmx" resultlog="${tests.out.dir}/browse/BrowseTest_Basic.jtl">
+            <property name="server.host.name" value="${server.host.name}" />
+            <property name="server.jboss.port" value="${server.jboss.port}" />
+            <property name="concurrent.users" value="10" />
+            <property name="number.of.iterations" value="10" />
+        </jmeter>
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${filtered.tests.src.dir}/browse/BrowseExperimentTest_Basic.jmx" resultlog="${tests.out.dir}/browse/BrowseExperimentTest_Basic.jtl">
+            <property name="server.host.name" value="${server.host.name}" />
+            <property name="server.jboss.port" value="${server.jboss.port}" />
+            <property name="concurrent.users" value="10" />
+            <property name="number.of.iterations" value="10" />
+        </jmeter>
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${filtered.tests.src.dir}/search/SearchTest_Basic.jmx" resultlog="${tests.out.dir}/search/SearchTest_Basic.jtl">
+            <property name="server.host.name" value="${server.host.name}" />
+            <property name="server.jboss.port" value="${server.jboss.port}" />
+            <property name="concurrent.users" value="10" />
+            <property name="number.of.iterations" value="10" />
+        </jmeter>
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${filtered.tests.src.dir}/search/SearchByExampleAPITest_Basic.jmx" resultlog="${tests.out.dir}/search/SearchByExampleAPITest_Basic.jtl">
+            <property name="server.host.name" value="${server.host.name}" />
+            <property name="server.jndi.port" value="${server.jndi.port}" />
+            <property name="concurrent.users" value="10" />
+            <property name="number.of.iterations" value="10" />
+        </jmeter>
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${filtered.tests.src.dir}/search/CQLSearchAPITest_Basic.jmx" resultlog="${tests.out.dir}/search/CQLSearchAPITest_Basic.jtl">
+            <property name="server.host.name" value="${server.host.name}" />
+            <property name="server.jndi.port" value="${server.jndi.port}" />
+            <property name="concurrent.users" value="10" />
+            <property name="number.of.iterations" value="10" />
+        </jmeter>
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${filtered.tests.src.dir}/import/UploadTest_Basic.jmx" resultlog="${tests.out.dir}/import/UploadTest_Basic.jtl">
+            <jvmarg value="-Xms512m" />
+            <jvmarg value="-Xmx1024m" />
+            <property name="server.host.name" value="${server.host.name}" />
+            <property name="server.jboss.port" value="${server.jboss.port}" />
+            <property name="concurrent.users" value="5" />
+            <property name="number.of.iterations" value="2" />
+        </jmeter>
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${filtered.tests.src.dir}/import/ImportTest_Basic.jmx" resultlog="${tests.out.dir}/import/ImportTest_Basic.jtl">
+            <jvmarg value="-Xms512m" />
+            <jvmarg value="-Xmx1024m" />
+            <property name="server.host.name" value="${server.host.name}" />
+            <property name="server.jboss.port" value="${server.jboss.port}" />
+            <property name="concurrent.users" value="5" />
+            <property name="number.of.iterations" value="2" />
+        </jmeter>
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${filtered.tests.src.dir}/download/DataDownloadAPITest_Basic.jmx" resultlog="${tests.out.dir}/download/DataDownloadAPITest_Basic.jtl">
+            <jvmarg value="-Xms512m" />
+            <jvmarg value="-Xmx1024m" />
+            <property name="server.host.name" value="${server.host.name}" />
+            <property name="server.jndi.port" value="${server.jndi.port}" />
+            <property name="concurrent.users" value="5" />
+            <property name="number.of.iterations" value="2" />
+        </jmeter>
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${filtered.tests.src.dir}/download/FileDownloadUITest_Basic.jmx" resultlog="${tests.out.dir}/download/FileDownloadUITest_Basic.jtl">
+            <jvmarg value="-Xms512m" />
+            <jvmarg value="-Xmx1024m" />
+            <property name="server.host.name" value="${server.host.name}" />
+            <property name="server.jboss.port" value="${server.jboss.port}" />
+            <property name="concurrent.users" value="5" />
+            <property name="number.of.iterations" value="2" />
+        </jmeter>
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${filtered.tests.src.dir}/heterogeneous/HeterogeneousTest.jmx" resultlog="${tests.out.dir}/heterogeneous/HeterogeneousTest.jtl">
+            <jvmarg value="-Xms512m" />
+            <jvmarg value="-Xmx1024m" />
+            <property name="server.host.name" value="${server.host.name}" />
+            <property name="server.jboss.port" value="${server.jboss.port}" />
+            <property name="server.jndi.port" value="${server.jndi.port}" />
+            <property name="concurrent.users" value="5" />
+            <property name="number.of.iterations" value="1" />
+        </jmeter>
+        -->
+
+        <!-- REPLACE HundredExperimentLoader WITH ONE OF THE FOLLOWING TO RUN TESTS WITH BIGGER DATABASE SIZES.
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${filtered.tests.src.dir}/setup/FiveHundredExperimentLoader.jmx" resultlog="${tests.out.dir}/setup/FiveHundredExperimentLoader.jtl">
+            <property name="server.host.name" value="${server.host.name}" />
+            <property name="server.jboss.port" value="${server.jboss.port}" />
+        </jmeter>
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${filtered.tests.src.dir}/setup/ThousandExperimentLoader.jmx" resultlog="${tests.out.dir}/setup/ThousandExperimentLoader.jtl">
+            <property name="server.host.name" value="${server.host.name}" />
+            <property name="server.jboss.port" value="${server.jboss.port}" />
+        </jmeter>
+        <jmeter jmeterhome="${jmeter.dir}" testplan="${filtered.tests.src.dir}/setup/TwoThousandExperimentLoader.jmx" resultlog="${tests.out.dir}/setup/TwoThousandExperimentLoader.jtl">
+            <property name="server.host.name" value="${server.host.name}" />
+            <property name="server.jboss.port" value="${server.jboss.port}" />
+        </jmeter>
+        -->
+    </target>
+</project>

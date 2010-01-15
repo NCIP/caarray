@@ -1,0 +1,45 @@
+#####################################################
+#[IDF]
+#
+# MAGE-TAB Submission
+#
+#
+# Please see http://tab2mage.sourceforge.net/docs/magetab_subs.html for tips on filling in the sections below.
+# See http://mged.sourceforge.net/ontologies/MGEDontology.php
+# or http://nciterms.nci.nih.gov/NCIBrowser/Dictionary.do
+# for ontology terms you may need in order to fill in the sections below.
+# All lines beginning with the '#' character are treated as comments and ignored.
+
+
+# This section contains the top-level information for your experiment.
+Investigation Title	SNPs Genotyping for Cancer Cell Line Project
+Experiment Description	Multiple genome-wide microarray 500K SNP studies performed to measure the genotype profile of various cancer cell lines
+Experimental Design	disease_state_design
+Experimental Design Term Source REF	MO
+
+# Please create as many Experimental Factors as you need, to describe the variables investigated by your experiment.
+Experimental Factor Name	DISEASESTATE
+Experimental Factor Type	disease_state
+Experimental Factor Term Source REF	MO
+
+"# Please list contact details in columns, below:"	
+Person Last Name	MyLastName
+Person Mid Initials	F
+Person First Name	MyFirstName
+Person Email	MyUserName@MyInstitution.gov
+Person Phone	xxx-xxx-xxxx
+Person Address	"MyStreet, PO Box nnnn, MD nnnnn"
+Person Affiliation	MyInstitution
+Person Roles	PI
+
+"# Please list all publications associated with this submission, in columns:"
+
+# The next section describes the protocols used in your experiment.
+# Please select your own Protocol Names (e.g. 'GROWTH') for use within this spreadsheet.
+Protocol Name	Plated and digested cell lines	Ligation and amplification	Affymetrix GeneChip Mapping 500K Biotin Labeling Protocol	Affymetrix GeneChip Mapping 500K Hybridization Protocol	Affymetrix GeneChip Mapping 500K Scanning Protocol	Referenced normal CEPH population
+Protocol Type	grow	nucleic_acid_extraction	labeling	hybridization	image_acquisition	bioassay_data_transformation
+Protocol Description	Cell Lines were plated and digested with restriction enzyme Sty or NSP	"Digested DNA was ligated to an adaptor and amplified by PCR using Platinum Pfx DNA Polymerase, yeilding a product of 250-2000bp"	Genechip DNA Labeling biotin-labeled reagent for end-labeling fragmented PCR amplicons - https://www.affymetrix.com/support/downloads/manuals/500k_assay_manual.pdf	standard Affymetrix hybridization protocol - https://www.affymetrix.com/support/downloads/manuals/500k_assay_manual.pdf	standard Affymetrix scanning protocol - https://www.affymetrix.com/support/downloads/manuals/500k_assay_manual.pdf	Referenced normal CEPH population
+Protocol Term Source REF	MO	MO	MO	MO	MO	MO
+SDRF File	affy_snp.sdrf					
+Term Source Name	MO	caArray	NCI Thesaurus	ncbitax		
+Term Source File	http://mged.sourceforge.net/ontologies/MGEDontology.php	https://array.nci.nih.gov	http://nciterms.nci.nih.gov/NCIBrowser/Connect.do?dictionary=NCI_Thesaurus&bookmarktag=1	http://www.ncbi.nlm.nih.gov/Taxonomy/

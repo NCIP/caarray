@@ -1,0 +1,110 @@
+USER STORY: Export experiment to GEO SOFT format
+
+As a caArray user, I want to export my experiment to a SOFT submission package format in preparation for submitting it to the GEO repository.
+
+1. Prerequisite:
+
+The experiment must pass the validation routine that makes sure that all the information necessary for GEO SOFT export is present. (See User Story: Validate for GEO SOFT export.)
+
+2. Flow:
+
+* In the context of an experiment, the user chooses to export to GEO SOFT format.
+* The system validates that the experiment is suitable for GEO SOFT export.
+* The system generates a text file in SOFT format containing overall experiment information as well as sample-data relationships and annotations as described below.
+* The system zips up the generated SOFT file along with the data files (CHP data files referenced in the !Sample_table sections as well as other files referenced in the !Sample_supplementary_file sections of the SOFT file).
+* The system allows the user to save the zipped-up package to the user's local machine.
+
+3. The GEO SOFT file format:
+
+The generated GEO SOFT text file (e.g., expt_public_identifier.soft.txt) will have several Sample sections (one per hybridization) followed by one Series section (for overall experiment information). The following sections describe how to translate a caArray experiment into these sections.
+
+4. Translating caArray information into GEO SOFT:
+(Note: GEO interprets text as UTF-8.)
+
+4.1 the Series section: Overall experiment information
+
+^SERIES=<experiment public identifier from caArray>
+   E.g., ^SERIES=golub-00155
+!Series_title = <experiment title from caArray>
+   E.g., !Series_title = GBM Copy Number Analysis
+!Series_summary = <experiment description from caArray> (if description doesn't exist, use experiment title)
+   E.g., !Series_summary = My Analysis for Copy Number for GBM using Agilent Human Genome CGH Microarray Kit 24K
+!Series_overall_design = <experimental design Term values from caArray, separated by semicolon, each including term source in paranthesis> (if experimental design doesn't exist, use experiment description)
+   E.g., !Series_overall_design = comparative_genome_hybridization_design (MGED Ontology); disease_state_design (MGED Ontology)
+!Series_pubmed_id = <publication.pubmedId from caArray> (if no publications, omit this row altogether; if multiple publications, add multiple !Series_pubmed_id rows)
+   E.g., !Series_pubmed_id = 16210585
+!Series_contributor = <firstName,[middleInitials],lastName for an experimentalContact in caArray> (if no contacts, omit this row altogether; if multiple contacts, add multiple !Series_contributor rows)
+   E.g., !Series_contributor = Jane,Doe Jr
+         !Series_contributor = Hans,AJ,van Elton
+!Series_web_link = <permaURL based on publicIdentifier from caArray>
+!Series_sample_id = <hybridization name in caArray> (must have at least 1 hybridization; use 1 row per hybridization)
+   E.g., !Series_sample_id = Drosophila_T0-1
+         !Series_sample_id = Drosophila_T0-2
+         !Series_sample_id = Drosophila_T1-1
+
+4.2 The Sample section: Sample-data relationships
+(Use one ^SAMPLE section per hybridization.)
+
+^SAMPLE=<hybridization name from caArray>
+   E.g., ^SAMPLE=TCGA-00134-22
+!Sample_title = <hybridization name from caArray>
+   E.g., !Sample_title = TCGA-00134-22
+!Sample_description = <hybridization description from caArray> (use corresponding Sample name or names if hybridization description doesn't exist)
+   E.g., !Sample_description = TCGA-Sample-00134, TCGA-Sample-00135
+!Sample_supplementary_file = <name of raw or non-CHP derived data file associated with this hyb from caArray> (if multiple files, use multiple !Sample_supplementary_file rows)
+   E.g., !Sample_supplementary_file = TCGA-00134-22.CEL
+         !Sample_supplementary_file = TCGA-00134-22_copy_number.txt
+!Sample_table = <name of CHP derived data file associated with this hyb from caArray> (mandatory)
+   E.g., !Sample_table = TCGA-00134-22.CHP
+!Sample_source_name = <name of associated source in caArray> (In the case of pooling, there may be multiple Sources, and all the names must be specified in a semi-colon-delimited list.)
+   E.g., !Sample_source_name = TCGA-00134
+!Sample_organism = <organism scientific name associated with the Source or Sample for this hyb> (first try Source's organism, if null, try Sample's organism, if null use experiment's organism)
+   E.g., !Sample_organism = Mus musculus
+   Note: In case of pooling, there may be multiple organisms. Use multiple !Sample_organism rows in this case.
+!Sample_treatment_protocol = <protocol name : protocol description from caArray> (look at all protocols in the Source...Hybridization chain for one that has type (Term.value) = "treatment"; if there is none, omit this row; if there are multiple treatment protocols, include them all separated by semicolon)
+   E.g., !Sample_treatment_protocol = mskcc.org:split:HG-CGH-244A:01 : Promega reference genomic DNA was aliquoted at full concentrations into separate tubes
+!Sample_growth_protocol = <protocol name : protocol description from caArray> (look at all protocols in the Source...Hybridization chain for one that has type (Term.value) = "growth"; if there is none, omit this row; if there are multiple growth protocols, include them all separated by semicolon)
+!Sample_extract_protocol = <protocol name : protocol description from caArray> (look at the protocols in the Source...Hybridization chain for one that has type (Term.value) = "nucleic_acid_extraction"; mandatory; if there are multiple extract protocols, include them all separated by semicolon)
+!Sample_label_protocol = <protocol name : protocol description from caArray> (look at the protocols in the Source...Hybridization chain for one that has type (Term.value) = "labeling"; mandatory; if there are multiple labeling protocols, include them all separated by semicolon)
+!Sample_hyb_protocol = <protocol name : protocol description from caArray> (look at the protocols in the Source...Hybridization chain for one that has type (Term.value) = "hybridization"; mandatory; if there are multiple hybridization protocols, include them all separated by semicolon)
+!Sample_scan_protocol = <protocol name : protocol description from caArray> (look at the protocols associated with the Hybridization for one that has type (Term.value) = "scan" or "image_acquisition"; mandatory; if there are multiple hybridization protocols, include them all separated by semicolon)
+!Sample_data_processing = <protocol name : protocol description from caArray> (look at the protocols associated with the raw ArrayData objects in the chain; mandatory; if there are multiple such protocols, include them all separated by semicolon)
+!Sample_label = <label of the LabeledExtract associated with this hyb> (mandatory)
+   E.g., !Sample_label = biotin
+!Sample_biomaterial_provider = <Source.provider.name associated with this hyb> (omit this row if a provider doesn't exist; if multiple providers, add multiple !Sample_biomaterial_provider rows)
+   E.g., !Sample_biomaterial_provider = TJU
+!Sample_platform_id = <GEO accession of array design associated with this hyb>
+!Sample_characteristics = <factor name>: <factor value> OR <characteristic category name>: <characteristic value> (mandatory; Include all factor values for hyb and all characteristics of all biomaterials associated with hyb, one per !Sample_characteristics row; 'Tag: Value' format)
+   Note: Special characteristics (disease state, tissue site, cell type and external ID) must also be included if present.
+   E.g., !Sample_characteristics = Age: 30-40
+         !Sample_characteristics = Tumor Grading: 2
+         !Sample_characteristics = Histologic Diagnosis: Acute Myeloid Leukemia
+(In case of pooling, it is possible to have multiple values for the same characteristic category. Include multiple rows in this case.
+   E.g., !Sample_characteristics = OrganismPart: Liver
+         !Sample_characteristics = OrganismPart: Kidney
+)
+!Sample_molecule = <materialType of the corresponding Extract (or of the LabeledExtract if Extract doesn't have a materialType), but translated to GEO material type> (mandatory; GEO allowed values are: total RNA, genomic DNA, polyA RNA, cytoplasmic RNA, nuclear RNA, protein, and other.)
+   E.g., !Sample_molecule = total RNA
+   Note: See file caArray-GEO_material_type_mappings.xls for mapping between caArray and GEO material types. (Please ignore case while matching.)
+   Note: This is unlikely, but in the pooling case, if there are multiple extracts associated with the same hyb, and if they have different material types, use multiple !Sample_molecule rows.
+
+4.3 Data and supplementary files
+In addition to the SOFT file generated as described above, all CHP files as well as all files referenced in any !Sample_supplementary_file section must be included in the overall zip.
+However, if there are many large files, this zip may exceed the limit of 2GB. In this case, caArray should create a tar.gz package instead, and include a text file in the package, instructing the user to submit to GEO using their "FTP deposit" feature rather than the "direct deposit" feature.
+Note that all of the following files must be included:
+* raw files
+* derived data files other than CHP (e.g., level 3 copy number files)
+* caArray supplementary files (associated with experiment as a whole and not associated with any sample)
+
+5. References:
+
+Specifications and examples of GEO formats:
+http://www.ncbi.nlm.nih.gov/projects/geo/info/soft2.html
+
+You can test your SOFT files using the following page:
+http://www.ncbi.nlm.nih.gov/geo/submission/depslip.cgi?subm=0
+(You will need to be logged in to your GEO account.)
+
+6. Example:
+
+The accompanying example SOFT file (example_experiment_soft.txt) shows the Sample and Series sections for an experiment with 3 samples.

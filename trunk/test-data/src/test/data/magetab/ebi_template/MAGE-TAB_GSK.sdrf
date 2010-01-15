@@ -1,0 +1,12 @@
+#####################################################																									
+# The SDRF section contains all the information linking your samples																									
+# to your data files. Please feel free to add as many new																									
+# Characteristics[] or FactorValue[] columns as necessary to																									
+# completely describe your experiment. See this web page for help with																									
+# supported data file formats:																									
+#   http://tab2mage.sourceforge.net/docs/datafiles.html																									
+#																									
+"# The first line below has been filled in with example terms, where possible:"																									
+Source Name	Description	Material Type	Term Source REF	Characteristics[Organism]	Characteristics[Histology]	Characteristics[CellLine]	Characteristics[BioSourceType]	Characteristics[DiseaseState]	Characteristics[CellType]	Characteristics[BioSourceProvider]	Protocol REF	Protocol REF	Protocol REF	Labeled Extract Name	Label	Protocol REF	Hybridization Name	Array Design REF	Protocol REF	Scan Name	Array Data File	Comment[EXP]	Protocol REF	Derived Array Data File	Factor Value[DISEASESTATE]
+# Unique IDs for biosources (experimental starting materials)		# MaterialType term from MGED ontology	# Source of Material Type term	# Sample latin species name	# Sample Histology	# Sample CellLine value	"# Sample BioSourceType value:fresh_sample, frozen_sample"	# Sample DiseaseState value	"# Sample CellType value: epithelial, glial etc"	# Sample BioSourceProvider value	"# Growth protocol, where applicable"	# RNA/DNA extraction	# RNA/DNA labeling	# Unique IDs for labeled extracts	"# Labeling dye, e.g. Cy3, biotin, 33P"	# Hyb protocol	# Unique IDs for hybs	"# ArrayExpress array accession, e.g. A-MEXP-27"	# Image acquisition	# Unique IDs for scans	"# Unprocessed data file, e.g. CEL, GPR"	# EXP file where available	# Data normalization	"# Normalized data, chp file"	# Value for DISEASESTATE Experimental Factor
+Cell culture 1		cell	MO	Homo sapiens							GROWTH	EXTRACTION	LABELING	Labeled Extract 1.biotin	biotin	HYBRIDIZATION	Hybridization 1	test	SCANNING	Scan 1			NORMALIZATION		

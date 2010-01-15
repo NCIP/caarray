@@ -1,0 +1,18 @@
+USER STORY: Map popular array designs to GEO platforms
+
+As a caArray user, I want to map popular array designs currently in my repository to the corresponding GEO platforms so that any experiments that use those array designs can be submitted to the GEO repository if necessary.
+
+1. Prerequisite:
+
+An array design has a new attribute that can store a GEO platform accession. This should have been done as part of the user story: Allow GEO accession for array design.
+
+2. Flow:
+
+* As part of the upgrade to caArray 2.3.1, an upgrade script is run.
+* This upgrade script stores the GEO accession for each of the array designs listed in the spreadsheet caArray_GEO_platforms_reviewed.xls.
+Array designs not in the list will have no pre-populated GEO accessions.
+* This upgrade script will run on the NCI CBIIT caArray tiers as well as on local installations of caArray when upgraded to 2.3.1.
+
+3. References:
+
+The accompanying spreadsheet caArray_GEO_platforms_reviewed.xls has the caArray-to-GEO mappings and has been validated by the GEO curation team.

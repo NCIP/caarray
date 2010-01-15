@@ -1,0 +1,13 @@
+Test Case,API,Name,File Type,Expected Results,Min Results,Exclude Zero
+59,java,,,,9000,TRUE
+60,grid,,,,9000,TRUE
+61,java,MiaPaCa_panc_SS110885_HG-U133_Plus_2_HCHP-63400_.mas5.txt,,1,,TRUE
+62,grid,MiaPaCa_panc_SS110885_HG-U133_Plus_2_HCHP-63400_.mas5.txt,,1,,TRUE
+231,java,invalid#%!,,0,,
+232,grid,invalid#%!,,0,,
+233,java,,AFFYMETRIX_CEL,,0,
+234,grid,,AFFYMETRIX_CEL,,0,
+322,java,MiaPaCa_panc_SS110885_HG-U133_Plus_2_HCHP-63400_.mas5.txt,AFFYMETRIX_TXT,1,,TRUE
+323,grid,MiaPaCa_panc_SS110885_HG-U133_Plus_2_HCHP-63400_.mas5.txt,AFFYMETRIX_TXT,1,,TRUE
+1,java,MiaPaCa_panc_SS110885_HG-U133_Plus_2_HCHP-63400_.CEL,,1,,TRUE
+2,grid,MiaPaCa_panc_SS110885_HG-U133_Plus_2_HCHP-63400_.CEL,,1,,TRUE

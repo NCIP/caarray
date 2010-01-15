@@ -1,0 +1,28 @@
+USER STORY: Validate for GEO export
+
+As a caArray user, I want to validate my experiment to make sure it is eligible for submission to the GEO repository.
+
+1. Flow:
+
+* In the context of an experiment, the user chooses to validate for GEO export.
+* The System validates that the experiment is suitable for GEO SOFT export, according to the following rules:
+  + The experiment must have at least one array design and the provider for the array designs must be Affymetrix.
+  + All array designs associated with the experiment must be ones for which the System has the GEO accession.
+  + Every hybridization must have at least one raw data file.
+  + Every hybridization must have a derived data file of type AFFYMETRIX_CHP.
+  + The following protocols must be present: extract, label, hybridization, scan and data processing. (The following section explains how to test for these protocols.)
+  + There must be at least 1 characteristic or factor value that is present for every hybridization somewhere in its biomaterial chain. Note that "characteristic" includes the special characteristics tissueSite, diseaseState, cellType and externalId.
+  + For every chain, the Material Type of the extract or labeled extract must be present.
+  + For every chain, the label of the LabeledExtract must have a non-empty non-null value.
+  (Note that pooling, splitting or both are allowed in the rest of the biomaterial chain.
+  E.g., one Source going to 2 Samples, each of which eventually goes to one Hybridization. (Splitting.)
+  Or two Samples going to 1 Extract, which eventually goes to one Hybridization. (Pooling.)
+* The System informs the user of the result of the validation, and provides the list of errors if the validation did not succeed.
+
+3. Validating protocols:
+
+EXTRACT = Traverse up the biomaterial chain from the Hybridization, looking for a protocol with type (Term.value) = "nucleic_acid_extraction". Note that if there is pooling, you may find multiple samples, each of which has an extraction protocol. In this case, list all the unique protocols (unique names) in the export.
+LABEL = Traverse up the biomaterial chain from the Hybridization, looking for a protocol with type (Term.value) = "labeling". Note that if there is pooling, you may find multiple labeling protocols. In this case, list all the unique protocols (unique names) in the export.
+HYBRIDIZATION = Traverse up the biomaterial chain from the Hybridization, looking for a protocol with type (Term.value) = "hybridization". Note that if there is pooling, you may find multiple hybridization protocols. In this case, list all the unique protocols (unique names) in the export.
+SCAN = Look at the protocols associated with the Hybridization for one that has type (Term.value) = "scan" or "image_acquisition"
+DATA PROCESSING = Look at the protocols associated with the raw ArrayData objects in the chain; there must be at least 1 protocol (of any type) present.

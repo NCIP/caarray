@@ -1,0 +1,84 @@
+jboss.home=/usr/local/jboss405/server/ncicb-caarray
+jboss.temp.dir=/tmp
+jboss.server.hostname=cbapp-p1001.nci.nih.gov
+jboss.server.port=19280
+jboss.server.jndi.port=8080
+jboss.server.name=ncicb-caarray
+
+#################
+#  DATABASE SETTINGS
+#
+#  The database properties are used to build and run the application.
+#################
+database.system.url=jdbc:mysql://${database.server}:${database.port}/
+database.system.user=caaryadmin
+database.system.password=xxxxxxxxxx
+database.server=cbiodb560.nci.nih.gov
+database.port=3630
+database.name=caarraydbprod
+database.user=caarrayopnew
+database.password=xxxxxxxxx
+database.driver=com.mysql.jdbc.Driver
+database.url=jdbc:mysql://${database.server}:${database.port}/${database.name}
+
+####################
+# SVN SETTINGS
+####################
+svn.caarray.url=http://gforge.nci.nih.gov/svnroot/caarray2/
+svn.user.name=
+svn.user.pwd=
+svn.local.trunk=
+
+####################
+# JBOSS-GLOBUS SETTINGS (GRID INSTANCE DEPLOYMENT) 
+#################### 
+globoss.server.instance.home=/usr/local/jboss404/server/ncicb-59580
+globoss.server.http.port=59580
+globoss.temp.dir=/tmp
+globoss.server.hostname=cbapp-p1001.nci.nih.gov
+globoss.server.jndi.port=51599
+
+####################
+# SSH SETTINGS
+####################
+ssh.server.hostname=cbapp-p1001.nci.nih.gov
+ssh.server.username=jboss45b
+ssh.key.file=${user.home}/.ssh/id_dsa
+ssh.port=22
+
+####################
+# SELENIUM SETTINGS
+####################
+selenium.server.port=8081
+test.hostname=cbvapp-d1002.nci.nih.gov
+test.port=19280
+
+#################### 
+# GLOBOSS SSH SETTINGS (GRID INSTANCE DEPLOYMENT) 
+#################### 
+ssh.grid.hostname=cbapp-p1001.nci.nih.gov
+ssh.grid.username=jboss44e
+ssh.grid.key.file=${user.home}/.ssh/id_dsa
+ssh.grid.port=22
+
+####################
+# GRID SETTINGS
+####################
+# Introduce escapes colons ':' in the properties file, so we escape here
+grid.index.url=http\\://cagrid-index-stage.nci.nih.gov\\:8080/wsrf/services/DefaultIndexService
+
+upt.url=http://upt-stage.nci.nih.gov
+domain.name=array-stage.nci.nih.gov
+config.sql.file=update-config-param-stage.sql
+
+#################
+#  LDAP SETTINGS
+#################
+ldap.host=ldaps://cbioweb.nci.nih.gov:636/
+
+#################
+#  DEBUG SETTINGS
+#################
+#shrinks java script files by removing whiet space;
+# minify=true
+

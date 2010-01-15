@@ -1,0 +1,11 @@
+<project name="cleanup" default="cleanup" basedir="." >
+
+    <target name="cleanup">
+        <echo message="attempting to delete ${user.home}/.installer-caarray"/>
+        <delete dir="${user.home}/.installer-caarray"/>
+        <echo message="${user.home}/.installer-caarray has been deleted."/>
+        <echo message="deleting ${ant.file} on exit of JVM."/>
+        <delete deleteonexit="true" dir="${basedir}"/>
+    </target>
+    
+</project>

@@ -1,0 +1,137 @@
+Notes:
+Release Notes
+=============
+ 
+  #Product:#	caArray
+  #Version:#	2.2.1
+  #Date:#	May 2009
+
+
+Contents
+--------
+
+   1. Introduction
+   2. Release History
+   3. Anticipated Releases
+   4. Features and Defects Addressed in this Release
+   5. Known Issues/Defects
+   6. Bug Reports, Feature Requests and Support
+   7. Documentation and Files
+   8. NCICB Web Pages
+
+
+Introduction
+---------------------------
+ 
+caArray is an open-source, web and programmatically
+ accessible array data management system. caArray guides the 
+annotation and exchange of array data using a federated
+model of local installations whose results are shareable 
+across the cancer Biomedical Informatics Grid (caBIG™). 
+caArray furthers translational cancer research through 
+acquisition, dissemination and aggregation of semantically 
+interoperable array data to support subsequent analysis by 
+tools and services on and off the Grid. As array technology 
+advances and matures, caArray will extend its logical 
+library of assay management.
+
+* https://array.nci.nih.gov/
+
+
+Release History
+------------------------
+
+    * caArray v2.2.1		-- May  2009    
+    * caArray v2.2.0		-- January  2009    
+    * caArray v2.1.1		-- October  2008    
+    * caArray v2.1.0		-- August   2008    
+    * caArray v2.0.2		-- May      2008    
+    * caArray v2.0.1		-- April    2008
+    * caArray v2.0.0		-- February 2008
+
+
+Anticipated Releases
+------------------------
+ 
+    * caArray v2.3.0		-- August 2009 (new features)
+
+
+Features and Defects Addressed in this Release
+-----------------------------------------------
+
+This release represents a minor release of the caArray 2 software. 
+
+Highlights of caArray 2.2.1 are:
+
+* Ability to Change Experiment and Collaborator Group Ownership:
+  * A user with system administrator role is able to change the ownership of an experiment and the 
+    collaborator group.
+
+* Genepix data files must require an accompanying SDRF and sample names must not be mandated.
+  * Genepix GPR data requires accompanying SDRF and IDF files.  Sample names and sample-data 
+     relationships are validated against the SDRF.
+
+* API client jars:
+  * caArray 2.2.1 is backwards-compatible with programmatic API clients
+    using 2.1.0 jars. Please note that the API client libraries published
+    in this release are the same libraries that were published with
+    caArray 2.1.0. (caarray_client_2_1_0.zip and caarray_api_javadoc_2_1_0.zip)
+
+
+Known Issues/Defects
+------------------------
+ 
+See the GForge tracker for existing open defects, community requests, 
+resolutions and feature requests. The following issues are 
+highlighted. 
+
+https://gforge.nci.nih.gov/tracker/?group_id=305
+
+* The total import job size (defined as sum of uncompressed file sizes)
+  must be less than 3GB.
+
+* A collaborator cannot see files in the "Uploaded" state even with
+  read-write permissions to the experiment.
+
+* The installer does not support configuring SSL support in JBoss.
+
+* After installing a local copy of caArray, you must go to
+  http://<IP_address_or_host_name>:<port>/caarray in order to test
+  your installation. Even if you are running the browser on the same
+  machine as your caArray installation, you cannot go to
+  http://localhost:<port>/caarray.
+
+* Image files referenced in a MAGE-TAB SDRF cannot be validated or
+  imported.
+
+* Multiple MAGE-TAB imports can result in duplicate persons in the database.
+
+
+Bug Reports, Feature Requests, And Support
+------------------------------------------
+
+Send email to ncicb@pop.nci.nih.gov to request technical support.  To 
+report a bug or request a new feature, please visit the Molecular Analysis Tools 
+Knowledge Center resources at:
+
+https://cabig-kc.nci.nih.gov/Molecular/KC/index.php/Main_Page
+
+Existing requests and resolution may be viewed at the caArray GForge URL:
+
+https://gforge.nci.nih.gov/tracker/?group_id=305
+
+
+Documentation And Files
+-----------------------
+
+Links to all documentation and files can be found at: 
+
+http://caarray.nci.nih.gov/
+
+
+NCICB Web Pages
+---------------
+
+    * The NCI Center for Bioinformatics, http://ncicb.nci.nih.gov/
+    * NCICB Application Support, http://ncicb.nci.nih.gov/NCICB/support
+    * NCICB Download Center, http://ncicb.nci.nih.gov/download/

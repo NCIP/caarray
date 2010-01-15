@@ -1,0 +1,15 @@
+USER STORY: User interface for export
+
+As a caArray user, I want to export my experiment to GEO SOFT or MAGE-TAB format.
+
+1. Flow:
+
+* In the context of an experiment, the user chooses to export to some format.
+* The system allows the user to export the experiment annotations to GEO SOFT, or to export the experiment annotations and data to a GEO SOFT archive, or to export the experiment annotations into MAGE-TAB format.
+* The user chooses to export to GEO SOFT format, and picks either the annotations-only option (only the GEO SOFT file) or the annotations-plus-data option (entire GEO submission package including the GEO SOFT annotations and the data files).
+* The system validates the experiment for GEO export.
+* If the validation fails, the System provides the list of errors to the user.
+* If the validation succeeds, the Systems performs the GEO translation and provides the GEO SOFT annotations file or archive for download.
+* The user saves the download to his/her local machine.
+
+Note: the MAGE-TAB export functionality works the same way as it currently does.
