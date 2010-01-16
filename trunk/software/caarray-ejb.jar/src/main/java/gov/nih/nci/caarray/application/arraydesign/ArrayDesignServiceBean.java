@@ -334,9 +334,11 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
         } else if (FileType.UCSF_SPOT_SPT.equals(type)
             && throwInvalidNumOfArgsExc(FileType.IMAGENE_TPL.toString(), designFiles.size(), 1)) {
             return new UcsfSpotSptHandler(getVocabularyService(), daoFactory, designFile);
-        } else if (FileType.NIMBLEGEN_NDF.equals(type)
-            && throwInvalidNumOfArgsExc(FileType.UCSF_SPOT_SPT.toString(), designFiles.size(), 1)) {
-            return new NimbleGenNdfHandler(getVocabularyService(), daoFactory, designFile);
+        } else if (FileType.NIMBLEGEN_NDF.equals(type)) {
+            return new NimbleGenNdfHandler(getVocabularyService(), daoFactory, designFiles);
+        } else if (FileType.UCSF_SPOT_SPT.equals(type)
+                && throwInvalidNumOfArgsExc(FileType.UCSF_SPOT_SPT.toString(), designFiles.size(), 1)) {
+                return new UcsfSpotSptHandler(getVocabularyService(), daoFactory, designFile);
         } else if (FileType.MAGE_TAB_ADF.equals(type)
             && throwInvalidNumOfArgsExc(FileType.MAGE_TAB_ADF.toString(), designFiles.size(), 1)) {
             return new MageTabAdfHandler(getVocabularyService(), daoFactory, designFile);

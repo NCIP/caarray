@@ -552,13 +552,14 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
         assertEquals("domain", arrayDesign.getLsidNamespace());
         assertEquals("HumanHap300v2_A", arrayDesign.getLsidObjectId());
 
-        designFile = getCaArrayFile(IlluminaArrayDesignFiles.HUMAN_HAP_300_CSV, FileType.NIMBLEGEN_NDF);
-        arrayDesign = createDesign(null, null, null, designFile);
-        arrayDesignService.importDesign(arrayDesign);
-        assertEquals("HumanHap300v2_A", arrayDesign.getName());
-        assertEquals("caarray.nci.nih.gov", arrayDesign.getLsidAuthority());
-        assertEquals("domain", arrayDesign.getLsidNamespace());
-        assertEquals("HumanHap300v2_A", arrayDesign.getLsidObjectId());
+	// Now supported.
+        //designFile = getCaArrayFile(IlluminaArrayDesignFiles.HUMAN_HAP_300_CSV, FileType.NIMBLEGEN_NDF);
+        //arrayDesign = createDesign(null, null, null, designFile);
+        //arrayDesignService.importDesign(arrayDesign);
+        //assertEquals("HumanHap300v2_A", arrayDesign.getName());
+        //assertEquals("caarray.nci.nih.gov", arrayDesign.getLsidAuthority());
+        //assertEquals("domain", arrayDesign.getLsidNamespace());
+        //assertEquals("HumanHap300v2_A", arrayDesign.getLsidObjectId());
 
         designFile = getCaArrayFile(IlluminaArrayDesignFiles.HUMAN_HAP_300_CSV, FileType.UCSF_SPOT_SPT);
         arrayDesign = createDesign(null, null, null, designFile);
