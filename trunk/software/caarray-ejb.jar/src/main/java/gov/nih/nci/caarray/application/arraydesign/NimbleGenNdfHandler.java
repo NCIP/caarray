@@ -157,8 +157,9 @@ public class NimbleGenNdfHandler extends AbstractArrayDesignHandler {
         HibernateUtil.getCurrentSession().createSQLQuery(
                 "LOCK TABLE " + TEMP_TABLE_NAME + " WRITE;")
                 .executeUpdate();
+        String filePath = file.getAbsolutePath().replace('\\', '/');
         String loadQuery = "load data local infile '"
-                + file.getAbsolutePath()
+                + filePath
                 + "' into table "
                 + TEMP_TABLE_NAME
                 + " fields terminated by '\t' ignore 1 lines "
