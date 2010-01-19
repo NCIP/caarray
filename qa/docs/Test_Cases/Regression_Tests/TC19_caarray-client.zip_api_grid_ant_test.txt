@@ -3,19 +3,19 @@ This is a test of the distribution artifact, caarray_client_XXX.zip
 1. Check out the released tag to SVN.
 E.g.,  Check out CAARRAY_XXX to C:\NCICB_CVS\CAARRAY_XXX (where "XXX" stands for the actual tag name).
 
-2. Run "ant dist" on C:\NCICB_SVN\CAARRAY_XXX\software
+2. Run "ant dist" on C:\NCICB_SVN\CAARRAY_XXX\software\master_build
 
-3. We now have C:\NCICB_SVN\CAARRAY_XXX\software\dist\caarray_client_XXX.zip
+3. We now have C:\NCICB_SVN\CAARRAY_XXX\software\target\dist\caarray_client_XXX.zip
 
 4. This is the caArray Client, which will be supplied to the community, and which should allow them to connect to caArray instances.
    
-5. Unzip caarray_client_XXX.zip, e.g., to directory C:\NCICB_SVN\CAARRAY_XXX\software\dist\caarray_client_XXX_zip
+5. Unzip caarray_client_XXX.zip, e.g., to directory C:\NCICB_SVN\CAARRAY_XXX\software\target\dist\caarray_client_XXX_zip
 
 6. There is documentation on how to use the client here: 
 
-   C:\NCICB_SVN\CAARRAY_XXX\software\dist\caarray_client_XXX_zip\README.txt
+   C:\NCICB_SVN\CAARRAY_XXX\software\target\dist\caarray_client_XXX_zip\README.txt
 
-7. cd C:\NCICB_SVN\CAARRAY_XXX\software\dist\caarray_client_XXX_zip
+7. cd C:\NCICB_SVN\CAARRAY_XXX\software\target\dist\caarray_client_XXX_zip
 
 8. At the coommand prompt, run one or more of the following ant targets:
 
