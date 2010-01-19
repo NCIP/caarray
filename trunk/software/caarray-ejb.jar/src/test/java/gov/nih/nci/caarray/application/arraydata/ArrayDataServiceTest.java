@@ -125,6 +125,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.application.AbstractServiceTest;
 import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixArrayDataTypes;
 import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixCelQuantitationType;
@@ -153,6 +154,7 @@ import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
 import gov.nih.nci.caarray.domain.array.Feature;
 import gov.nih.nci.caarray.domain.array.LogicalProbe;
+import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.ArrayDataType;
 import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
@@ -172,18 +174,23 @@ import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
+import gov.nih.nci.caarray.domain.project.AssayType;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.ExperimentDesignNodeType;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.sample.Source;
+import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.magetab.MageTabFileSet;
 import gov.nih.nci.caarray.test.data.arraydata.AffymetrixArrayDataFiles;
 import gov.nih.nci.caarray.test.data.arraydata.GenepixArrayDataFiles;
 import gov.nih.nci.caarray.test.data.arraydata.IlluminaArrayDataFiles;
+import gov.nih.nci.caarray.test.data.arraydata.NimblegenArrayDataFiles;
 import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
 import gov.nih.nci.caarray.test.data.arraydesign.IlluminaArrayDesignFiles;
+import gov.nih.nci.caarray.test.data.arraydesign.NimblegenArrayDesignFiles;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
+import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import gov.nih.nci.caarray.validation.InvalidDataFileException;
 
@@ -193,6 +200,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -217,6 +226,7 @@ public class ArrayDataServiceTest extends AbstractServiceTest {
     private static final String AFFY_TEN_K_LSID_OBJECT_ID = "Mapping10K_Xba131";
     private static final String HG_FOCUS_LSID_OBJECT_ID = "HG-Focus";
     private static final String ILLUMINA_HUMAN_WG_6_LSID_OBJECT_ID = "Human_WG-6";
+    private static final String NIMBLEGEN_2006_08_03_HG18_60mer_expr_LSID_OBJECT_ID = "2006-08-03_HG18_60mer_expr";
     private static final DataImportOptions DEFAULT_IMPORT_OPTIONS = DataImportOptions.getAutoCreatePerFileOptions();
 
     private ArrayDataService arrayDataService;
@@ -642,6 +652,7 @@ public class ArrayDataServiceTest extends AbstractServiceTest {
         testSnpChpData();
         testIlluminaData();
         testGenepixData();
+        testNimblegenData();
         // The following test is commented out due to the change to parse on import.
         // It may be re-incorporated when parse on demand is re-instituted.
         // testCelDataForSelectedQuantitationTypes();
@@ -699,6 +710,25 @@ public class ArrayDataServiceTest extends AbstractServiceTest {
         assertEquals(4, hybridizationData.getColumns().size());
         assertNotNull(hybridizationData.getHybridization().getArray());
         assertEquals(47293, illuminaData.getDataSet().getDesignElementList().getDesignElements().size());
+    }
+
+    private void testNimblegenData() throws InvalidDataFileException {
+        testNimblegenDataFull();
+    }
+
+    private void testNimblegenDataFull() throws InvalidDataFileException {
+        CaArrayFile nimblegenFile = getNimblegenCaArrayFile(NimblegenArrayDataFiles.HUMAN_EXPRESSION,
+                this.NIMBLEGEN_2006_08_03_HG18_60mer_expr_LSID_OBJECT_ID);
+        this.arrayDataService.importData(nimblegenFile, true, DEFAULT_IMPORT_OPTIONS);
+        DerivedArrayData nimblegenData = this.daoFactoryStub.getArrayDao().getDerivedArrayData(nimblegenFile);
+        assertEquals(19, nimblegenData.getHybridizations().size());
+        DataSet dataSet = this.arrayDataService.getData(nimblegenData);
+        assertNotNull(dataSet.getDesignElementList());
+        assertEquals(19, dataSet.getHybridizationDataList().size());
+        HybridizationData hybridizationData = dataSet.getHybridizationDataList().get(0);
+        assertEquals(1, hybridizationData.getColumns().size());
+        assertNotNull(hybridizationData.getHybridization().getArray());
+        assertEquals(47293, nimblegenData.getDataSet().getDesignElementList().getDesignElements().size());
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -871,6 +901,13 @@ public class ArrayDataServiceTest extends AbstractServiceTest {
         return caArrayFile;
     }
 
+    private CaArrayFile getNimblegenCaArrayFile(File file, String lsidObjectId) {
+        CaArrayFile caArrayFile = getDataCaArrayFile(file, FileType.NIMBLEGEN_PAIR);
+        ArrayDesign arrayDesign = daoFactoryStub.getArrayDao().getArrayDesign(null, null, lsidObjectId);
+        caArrayFile.getProject().getExperiment().getArrayDesigns().add(arrayDesign);
+        return caArrayFile;
+    }
+
     private CaArrayFile getDataCaArrayFile(File file, FileType type) {
         CaArrayFile caArrayFile = this.fileAccessServiceStub.add(file);
         caArrayFile.setFileType(type);
@@ -901,6 +938,15 @@ public class ArrayDataServiceTest extends AbstractServiceTest {
     }
 
     private final class LocalDaoFactoryStub extends DaoFactoryStub {
+        
+        private Organization DUMMY_ORGANIZATION = new Organization();
+        private Organism DUMMY_ORGANISM = new Organism();
+        private Term DUMMY_TERM = new Term();
+        private ArrayDesign DUMMY_ARRAY_DESIGN = new ArrayDesign();
+        private AssayType DUMMY_ASSAY_TYPE = new AssayType("Gene Expression");
+        private ArrayDesignService arrayDesignService = createArrayDesignService(this.fileAccessServiceStub);
+        private final FileAccessServiceStub fileAccessServiceStub = new FileAccessServiceStub();
+
 
         private final Map<ArrayDataTypeDescriptor, ArrayDataType> dataTypeMap =
             new HashMap<ArrayDataTypeDescriptor, ArrayDataType>();
@@ -911,6 +957,16 @@ public class ArrayDataServiceTest extends AbstractServiceTest {
         private final Map<CaArrayFile, AbstractArrayData> fileDataMap = new HashMap<CaArrayFile, AbstractArrayData>();
 
         private Map<String, ArrayDesign> arrayDesignMap = new HashMap<String, ArrayDesign>();
+
+        private ArrayDesignService createArrayDesignService(final FileAccessServiceStub fileAccessServiceStub) {
+            ArrayDesignServiceBean bean = new ArrayDesignServiceBean();
+            ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
+            locatorStub.addLookup(FileAccessService.JNDI_NAME, fileAccessServiceStub);
+            TemporaryFileCacheLocator.setTemporaryFileCacheFactory(new TemporaryFileCacheStubFactory(fileAccessServiceStub));
+            TemporaryFileCacheLocator.resetTemporaryFileCache();
+
+            return bean;
+        }
 
         @Override
         public SearchDao getSearchDao() {
@@ -938,9 +994,36 @@ public class ArrayDataServiceTest extends AbstractServiceTest {
                         return createArrayDesign(lsidObjectId, 126, 126, null);
                     } else if (HG_FOCUS_LSID_OBJECT_ID.equals(lsidObjectId)) {
                         return createArrayDesign(lsidObjectId, 448, 448, AffymetrixArrayDesignFiles.HG_FOCUS_CDF);
+                    } else if (NIMBLEGEN_2006_08_03_HG18_60mer_expr_LSID_OBJECT_ID.equals(lsidObjectId)) {
+                        try {
+                            return setupAndSaveDesign(NimblegenArrayDesignFiles.EXPRESSION_DESIGN[0]);
+                        } catch (Exception e) {
+                            return new ArrayDesign();
+                        }
                     } else {
                         return new ArrayDesign();
                     }
+                }
+
+                private ArrayDesign setupAndSaveDesign(File... designFiles) throws IllegalAccessException, InvalidDataFileException {
+                    HibernateUtil.getCurrentSession().save(DUMMY_ORGANIZATION);
+                    HibernateUtil.getCurrentSession().save(DUMMY_ORGANISM);
+                    HibernateUtil.getCurrentSession().save(DUMMY_TERM);
+
+                    ArrayDesign design = new ArrayDesign();
+                    design.setName("DummyTestArrayDesign1");
+                    design.setVersion("2.0");
+                    design.setProvider(DUMMY_ORGANIZATION);
+                    design.setLsidForEntity("authority:namespace:" + designFiles[0].getName());
+                    Set <AssayType>assayTypes = new TreeSet<AssayType>();
+                    assayTypes.add(DUMMY_ASSAY_TYPE);
+                    for (File designFile : designFiles) {
+                        design.addDesignFile(fileAccessServiceStub.add(designFile));
+                    }
+                    design.setTechnologyType(DUMMY_TERM);
+                    design.setOrganism(DUMMY_ORGANISM);
+                    arrayDesignService.saveArrayDesign(design);
+                    return design;
                 }
 
                 @SuppressWarnings("deprecation")

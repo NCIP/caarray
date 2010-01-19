@@ -115,6 +115,10 @@ public final class ArrayDataHandlerFactory {
             return new GenepixGprHandler();
         } else if (FileType.ILLUMINA_DATA_CSV.equals(type)) {
             return new IlluminaDataHandler();
+        } else if (FileType.NIMBLEGEN_PAIR.equals(type)) {
+            return new NimblegenPairDataHandler();
+        } else if (FileType.NIMBLEGEN_TXT.equals(type)) {
+            return new NimblegenPairDataHandler();
         } else if (type.isArrayData()) {
             return new UnsupportedDataFormatHandler();
         } else {

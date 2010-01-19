@@ -225,6 +225,11 @@ public enum FileType implements Comparable<FileType> {
     NIMBLEGEN_NDF,
 
     /**
+     * Nimblegen NDF format.
+     */
+    NIMBLEGEN_PAIR,
+
+    /**
      * The MAGE_TAB Array Design Format file type.
      */
     MAGE_TAB_ADF,
@@ -273,7 +278,7 @@ public enum FileType implements Comparable<FileType> {
      * The set of array design file types that the caArray can parse.
      */    
     public static final Set<FileType> PARSEABLE_ARRAY_DESIGN_FILE_TYPES = EnumSet.of(AFFYMETRIX_CDF, AFFYMETRIX_CLF,
-            AFFYMETRIX_PGF, ILLUMINA_DESIGN_CSV, GENEPIX_GAL);
+            AFFYMETRIX_PGF, ILLUMINA_DESIGN_CSV, GENEPIX_GAL, NIMBLEGEN_NDF);
 
     /**
      * The set of array design file types.
@@ -286,14 +291,14 @@ public enum FileType implements Comparable<FileType> {
      * The set of raw array data file types.
      */
     public static final Set<FileType> RAW_ARRAY_DATA_FILE_TYPES = EnumSet.of(ILLUMINA_IDAT, AFFYMETRIX_CEL,
-            AGILENT_RAW_TXT, AFFYMETRIX_DAT, AGILENT_TSV, IMAGENE_TIF, GEO_SOFT, GEO_GSM, SCANARRAY_CSV);
+            AGILENT_RAW_TXT, AFFYMETRIX_DAT, AGILENT_TSV, IMAGENE_TIF, GEO_SOFT, GEO_GSM, SCANARRAY_CSV, NIMBLEGEN_TXT, NIMBLEGEN_PAIR);
 
     /**
      * The set of parsed array data file types.
      */
     public static final Set<FileType> DERIVED_ARRAY_DATA_FILE_TYPES = EnumSet.of(AFFYMETRIX_CHP, AFFYMETRIX_EXP,
             AFFYMETRIX_TXT, AFFYMETRIX_RPT, ILLUMINA_DATA_CSV, ILLUMINA_DATA_TXT, GENEPIX_GPR, IMAGENE_TXT,
-            AGILENT_DERIVED_TXT, NIMBLEGEN_GFF, NIMBLEGEN_TXT);
+            AGILENT_DERIVED_TXT, NIMBLEGEN_GFF, NIMBLEGEN_TXT, NIMBLEGEN_PAIR);
 
     /**
      * The set of mage tab file types.
@@ -305,7 +310,7 @@ public enum FileType implements Comparable<FileType> {
      * The set of array data file types that caArray can parse.
      */
     public static final Set<FileType> PARSEABLE_ARRAY_DATA_FILE_TYPES = EnumSet.of(AFFYMETRIX_CEL, AFFYMETRIX_CHP,
-            ILLUMINA_DATA_CSV, GENEPIX_GPR);
+            ILLUMINA_DATA_CSV, GENEPIX_GPR, NIMBLEGEN_TXT, NIMBLEGEN_PAIR);
 
     private static final Map<FileType, FileType> RAW_TO_DERIVED_MAP = new HashMap<FileType, FileType>();
     private static final Map<FileType, FileType> DERIVED_TO_RAW_MAP = new HashMap<FileType, FileType>();
