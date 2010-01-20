@@ -647,12 +647,12 @@ public class ArrayDataServiceTest extends AbstractServiceTest {
 
     @Test
     public void testGetData() throws InvalidDataFileException {
+        //testNimblegenData();
         testCelData();
         testExpressionChpData();
         testSnpChpData();
         testIlluminaData();
         testGenepixData();
-        testNimblegenData();
         // The following test is commented out due to the change to parse on import.
         // It may be re-incorporated when parse on demand is re-instituted.
         // testCelDataForSelectedQuantitationTypes();
