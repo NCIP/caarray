@@ -203,6 +203,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import javax.transaction.Transaction;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -647,7 +649,7 @@ public class ArrayDataServiceTest extends AbstractServiceTest {
 
     @Test
     public void testGetData() throws InvalidDataFileException {
-        //testNimblegenData();
+        testNimblegenData();
         testCelData();
         testExpressionChpData();
         testSnpChpData();
@@ -720,15 +722,15 @@ public class ArrayDataServiceTest extends AbstractServiceTest {
         CaArrayFile nimblegenFile = getNimblegenCaArrayFile(NimblegenArrayDataFiles.HUMAN_EXPRESSION,
                 this.NIMBLEGEN_2006_08_03_HG18_60mer_expr_LSID_OBJECT_ID);
         this.arrayDataService.importData(nimblegenFile, true, DEFAULT_IMPORT_OPTIONS);
-        DerivedArrayData nimblegenData = this.daoFactoryStub.getArrayDao().getDerivedArrayData(nimblegenFile);
-        assertEquals(19, nimblegenData.getHybridizations().size());
+        RawArrayData nimblegenData = this.daoFactoryStub.getArrayDao().getRawArrayData(nimblegenFile);
+        assertEquals(1, nimblegenData.getHybridizations().size());
         DataSet dataSet = this.arrayDataService.getData(nimblegenData);
         assertNotNull(dataSet.getDesignElementList());
-        assertEquals(19, dataSet.getHybridizationDataList().size());
+        assertEquals(1, dataSet.getHybridizationDataList().size());
         HybridizationData hybridizationData = dataSet.getHybridizationDataList().get(0);
-        assertEquals(1, hybridizationData.getColumns().size());
+        assertEquals(5, hybridizationData.getColumns().size());
         assertNotNull(hybridizationData.getHybridization().getArray());
-        assertEquals(47293, nimblegenData.getDataSet().getDesignElementList().getDesignElements().size());
+        assertEquals(388502, nimblegenData.getDataSet().getDesignElementList().getDesignElements().size());
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -995,21 +997,13 @@ public class ArrayDataServiceTest extends AbstractServiceTest {
                     } else if (HG_FOCUS_LSID_OBJECT_ID.equals(lsidObjectId)) {
                         return createArrayDesign(lsidObjectId, 448, 448, AffymetrixArrayDesignFiles.HG_FOCUS_CDF);
                     } else if (NIMBLEGEN_2006_08_03_HG18_60mer_expr_LSID_OBJECT_ID.equals(lsidObjectId)) {
-                        try {
-                            return setupAndSaveDesign(NimblegenArrayDesignFiles.EXPRESSION_DESIGN[0]);
-                        } catch (Exception e) {
-                            return new ArrayDesign();
-                        }
+                        return createArrayDesign(lsidObjectId, 885, 448, AffymetrixArrayDesignFiles.HG_FOCUS_CDF);
                     } else {
                         return new ArrayDesign();
                     }
                 }
 
                 private ArrayDesign setupAndSaveDesign(File... designFiles) throws IllegalAccessException, InvalidDataFileException {
-                    HibernateUtil.getCurrentSession().save(DUMMY_ORGANIZATION);
-                    HibernateUtil.getCurrentSession().save(DUMMY_ORGANISM);
-                    HibernateUtil.getCurrentSession().save(DUMMY_TERM);
-
                     ArrayDesign design = new ArrayDesign();
                     design.setName("DummyTestArrayDesign1");
                     design.setVersion("2.0");
@@ -1017,12 +1011,13 @@ public class ArrayDataServiceTest extends AbstractServiceTest {
                     design.setLsidForEntity("authority:namespace:" + designFiles[0].getName());
                     Set <AssayType>assayTypes = new TreeSet<AssayType>();
                     assayTypes.add(DUMMY_ASSAY_TYPE);
+                    
                     for (File designFile : designFiles) {
                         design.addDesignFile(fileAccessServiceStub.add(designFile));
                     }
                     design.setTechnologyType(DUMMY_TERM);
                     design.setOrganism(DUMMY_ORGANISM);
-                    arrayDesignService.saveArrayDesign(design);
+                    arrayDesignService.importDesignDetails(design);
                     return design;
                 }
 

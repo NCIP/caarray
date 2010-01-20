@@ -291,7 +291,8 @@ public enum FileType implements Comparable<FileType> {
      * The set of raw array data file types.
      */
     public static final Set<FileType> RAW_ARRAY_DATA_FILE_TYPES = EnumSet.of(ILLUMINA_IDAT, AFFYMETRIX_CEL,
-            AGILENT_RAW_TXT, AFFYMETRIX_DAT, AGILENT_TSV, IMAGENE_TIF, GEO_SOFT, GEO_GSM, SCANARRAY_CSV, NIMBLEGEN_TXT, NIMBLEGEN_PAIR);
+            AGILENT_RAW_TXT, AFFYMETRIX_DAT, AGILENT_TSV, IMAGENE_TIF, GEO_SOFT, GEO_GSM, SCANARRAY_CSV,
+            NIMBLEGEN_TXT, NIMBLEGEN_PAIR);
 
     /**
      * The set of parsed array data file types.

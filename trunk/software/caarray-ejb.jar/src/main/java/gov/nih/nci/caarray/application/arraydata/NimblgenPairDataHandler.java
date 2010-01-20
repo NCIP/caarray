@@ -87,7 +87,6 @@ import gov.nih.nci.caarray.application.arraydata.nimblegen.NimblegenQuantitation
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
-import gov.nih.nci.caarray.domain.data.AbstractDataColumn;
 import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
 import gov.nih.nci.caarray.domain.data.DataSet;
 import gov.nih.nci.caarray.domain.data.DesignElementList;
@@ -97,11 +96,9 @@ import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
-import gov.nih.nci.caarray.magetab.sdrf.Hybridization;
 import gov.nih.nci.caarray.util.io.DelimitedFileReader;
 import gov.nih.nci.caarray.util.io.DelimitedFileReaderFactory;
 import gov.nih.nci.caarray.validation.FileValidationResult;
-import gov.nih.nci.caarray.validation.ValidationMessage;
 import gov.nih.nci.caarray.validation.ValidationMessage.Type;
 
 import java.io.File;
@@ -111,11 +108,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -123,36 +118,32 @@ import org.apache.log4j.Logger;
  * Handles reading of nimblegen data.
  */
 class NimblegenPairDataHandler extends AbstractDataFileHandler {
-    private static final String TARGET_ID = "TargetID";
-    private static final String ARRAY_CONTENT_HEADER = "Array Content";
     private static final String LSID_AUTHORITY = "nimblegen.com";
     private static final String LSID_NAMESPACE = "PhysicalArrayDesign";
-    private static final String GROUP_ID_HEADER = "GroupID";
     private static final Map<String, NimblegenQuantitationType> TYPE_MAP =
         new HashMap<String, NimblegenQuantitationType>();
-    private static final Logger LOG = Logger.getLogger(NimblegenPairDataHandler.class);
+    private static final Logger LOG = Logger
+            .getLogger(NimblegenPairDataHandler.class);
     private static final String ERROR_INDICATOR = "Error";
 
     private static final String SEQ_ID_HEADER = "SEQ_ID";
     private static final String PROBE_ID_HEADER = "PROBE_ID";
-    private static final String CONTAINER_HEADER = "CONTAINER";
+    private static final String CONTAINER_HEADER = "GENE_EXPR_OPTION";
     private static final String X_HEADER = "X";
     private static final String Y_HEADER = "Y";
 
-    private static final List<String> STANDARD_HEADERS = Arrays.asList(new String[]{
-            SEQ_ID_HEADER,
-            PROBE_ID_HEADER,
-            CONTAINER_HEADER,
-            X_HEADER,
-            Y_HEADER,
-    });
-    
+    private static final List<String> STANDARD_HEADERS = Arrays
+            .asList(new String[] {
+                    SEQ_ID_HEADER, PROBE_ID_HEADER,
+                    CONTAINER_HEADER, X_HEADER, Y_HEADER, });
+
     static {
         initializeTypeMap();
     }
 
     private static void initializeTypeMap() {
-        for (NimblegenQuantitationType descriptor : NimblegenQuantitationType.values()) {
+        for (NimblegenQuantitationType descriptor : NimblegenQuantitationType
+                .values()) {
             TYPE_MAP.put(descriptor.getName(), descriptor);
         }
     }
@@ -174,11 +165,13 @@ class NimblegenPairDataHandler extends AbstractDataFileHandler {
         }
     }
 
-    private QuantitationTypeDescriptor[] getQuantitationTypeDescriptors(DelimitedFileReader reader) throws IOException {
+    private QuantitationTypeDescriptor[] getQuantitationTypeDescriptors(
+            DelimitedFileReader reader) throws IOException {
         return getQuantitationTypeDescriptors(getHeaders(reader));
     }
 
-    private QuantitationTypeDescriptor[] getQuantitationTypeDescriptors(List<String> headers) {
+    private QuantitationTypeDescriptor[] getQuantitationTypeDescriptors(
+            List<String> headers) {
         List<QuantitationTypeDescriptor> descriptorList = new ArrayList<QuantitationTypeDescriptor>();
         for (String header : headers) {
             if (TYPE_MAP.containsKey(header)) {
@@ -188,7 +181,8 @@ class NimblegenPairDataHandler extends AbstractDataFileHandler {
         return descriptorList.toArray(new QuantitationTypeDescriptor[] {});
     }
 
-    private List<String> getHeaders(DelimitedFileReader reader) throws IOException {
+    private List<String> getHeaders(DelimitedFileReader reader)
+            throws IOException {
         reset(reader);
         while (reader.hasNextLine()) {
             List<String> values = reader.nextLine();
@@ -212,9 +206,11 @@ class NimblegenPairDataHandler extends AbstractDataFileHandler {
 
     private DelimitedFileReader getReader(File dataFile) {
         try {
-            return DelimitedFileReaderFactory.INSTANCE.getTabDelimitedReader(dataFile);
+            return DelimitedFileReaderFactory.INSTANCE
+                    .getTabDelimitedReader(dataFile);
         } catch (IOException e) {
-            throw new IllegalStateException("File " + dataFile.getName() + " could not be read", e);
+            throw new IllegalStateException("File " + dataFile.getName()
+                    + " could not be read", e);
         }
 
     }
@@ -225,7 +221,8 @@ class NimblegenPairDataHandler extends AbstractDataFileHandler {
     }
 
     @Override
-    void loadData(DataSet dataSet, List<QuantitationType> types, File file, ArrayDesignService arrayDesignService) {
+    void loadData(DataSet dataSet, List<QuantitationType> types, File file,
+            ArrayDesignService arrayDesignService) {
         DelimitedFileReader reader = getReader(file);
         try {
             prepareColumns(dataSet, types, getNumberOfDataRows(reader));
@@ -233,7 +230,8 @@ class NimblegenPairDataHandler extends AbstractDataFileHandler {
                 loadDesignElementList(dataSet, reader, arrayDesignService);
             }
             Set<QuantitationTypeDescriptor> descriptorSet = getDescriptorSet(types);
-            for (HybridizationData hybridizationData : dataSet.getHybridizationDataList()) {
+            for (HybridizationData hybridizationData : dataSet
+                    .getHybridizationDataList()) {
                 loadData(hybridizationData, descriptorSet, reader);
             }
         } catch (IOException e) {
@@ -243,12 +241,14 @@ class NimblegenPairDataHandler extends AbstractDataFileHandler {
         }
     }
 
-    private void loadDesignElementList(DataSet dataSet, DelimitedFileReader reader,
-            ArrayDesignService arrayDesignService) throws IOException {
+    private void loadDesignElementList(DataSet dataSet,
+            DelimitedFileReader reader, ArrayDesignService arrayDesignService)
+            throws IOException {
         DesignElementList probeList = new DesignElementList();
         probeList.setDesignElementTypeEnum(DesignElementType.PHYSICAL_PROBE);
         dataSet.setDesignElementList(probeList);
-        ArrayDesignDetails designDetails = getArrayDesign(arrayDesignService, reader).getDesignDetails();
+        ArrayDesignDetails designDetails = getArrayDesign(arrayDesignService,
+                reader).getDesignDetails();
         ProbeLookup probeLookup = new ProbeLookup(designDetails.getProbes());
         List<String> headers = getHeaders(reader);
         int seqIdIndex = headers.indexOf(SEQ_ID_HEADER);
@@ -264,7 +264,8 @@ class NimblegenPairDataHandler extends AbstractDataFileHandler {
         }
     }
 
-    private Set<QuantitationTypeDescriptor> getDescriptorSet(List<QuantitationType> types) {
+    private Set<QuantitationTypeDescriptor> getDescriptorSet(
+            List<QuantitationType> types) {
         Set<QuantitationTypeDescriptor> descriptors = new HashSet<QuantitationTypeDescriptor>();
         for (QuantitationType type : types) {
             descriptors.add(TYPE_MAP.get(type.getName()));
@@ -272,27 +273,33 @@ class NimblegenPairDataHandler extends AbstractDataFileHandler {
         return descriptors;
     }
 
-    private void loadData(HybridizationData hybridizationData, Set<QuantitationTypeDescriptor> descriptors,
+    private void loadData(HybridizationData hybridizationData,
+            Set<QuantitationTypeDescriptor> descriptors,
             DelimitedFileReader reader) throws IOException {
         List<String> headers = getHeaders(reader);
         int rowIndex = 0;
         while (reader.hasNextLine()) {
             List<String> values = reader.nextLine();
-            loadData(hybridizationData, descriptors, values, headers, rowIndex++);
+            loadData(hybridizationData, descriptors, values, headers,
+                    rowIndex++);
         }
     }
 
-    private void loadData(HybridizationData hybridizationData, Set<QuantitationTypeDescriptor> descriptors,
-            List<String> values, List<String> headers, int rowIndex) {
+    private void loadData(HybridizationData hybridizationData,
+            Set<QuantitationTypeDescriptor> descriptors, List<String> values,
+            List<String> headers, int rowIndex) {
         for (int valueIndex = 0; valueIndex < values.size(); valueIndex++) {
-            QuantitationTypeDescriptor valueType = TYPE_MAP.get(headers.get(valueIndex));
+            QuantitationTypeDescriptor valueType = TYPE_MAP.get(headers
+                    .get(valueIndex));
             if (descriptors.contains(valueType)) {
-               setValue(hybridizationData.getColumn(valueType), rowIndex, values.get(valueIndex));
+                setValue(hybridizationData.getColumn(valueType), rowIndex,
+                        values.get(valueIndex));
             }
         }
     }
 
-    private int getNumberOfDataRows(DelimitedFileReader reader) throws IOException {
+    private int getNumberOfDataRows(DelimitedFileReader reader)
+            throws IOException {
         int numberOfDataRows = 0;
         getHeaders(reader);
         while (reader.hasNextLine()) {
@@ -303,10 +310,14 @@ class NimblegenPairDataHandler extends AbstractDataFileHandler {
     }
 
     @Override
-    void validate(CaArrayFile caArrayFile, File file, MageTabDocumentSet mTabSet, FileValidationResult result,
+    void validate(CaArrayFile caArrayFile, File file,
+            MageTabDocumentSet mTabSet, FileValidationResult result,
             ArrayDesignService arrayDesignService) {
-        if (mTabSet == null || mTabSet.getIdfDocuments().isEmpty() || mTabSet.getSdrfDocuments().isEmpty()) {
-            result.addMessage(Type.ERROR, "An IDF and SDRF must be provided for this data file type.");
+        if (mTabSet == null || mTabSet.getIdfDocuments().isEmpty()
+                || mTabSet.getSdrfDocuments().isEmpty()) {
+            result
+                    .addMessage(Type.ERROR,
+                            "An IDF and SDRF must be provided for this data file type.");
         } else {
             DelimitedFileReader reader = getReader(file);
             try {
@@ -322,7 +333,8 @@ class NimblegenPairDataHandler extends AbstractDataFileHandler {
         }
     }
 
-    private Map<String, QuantitationTypeDescriptor> getHeaderToDescriptorMap(List<String> headers) {
+    private Map<String, QuantitationTypeDescriptor> getHeaderToDescriptorMap(
+            List<String> headers) {
         Map<String, QuantitationTypeDescriptor> headerDescriptorMap = new HashMap<String, QuantitationTypeDescriptor>();
         for (String header : headers) {
             headerDescriptorMap.put(header, TYPE_MAP.get(header));
@@ -330,33 +342,39 @@ class NimblegenPairDataHandler extends AbstractDataFileHandler {
         return headerDescriptorMap;
     }
 
-    private void validateData(DelimitedFileReader reader, FileValidationResult result) throws IOException {
+    private void validateData(DelimitedFileReader reader,
+            FileValidationResult result) throws IOException {
         List<String> headers = getHeaders(reader);
         Map<String, QuantitationTypeDescriptor> headerToDescriptorMap = getHeaderToDescriptorMap(headers);
         while (reader.hasNextLine()) {
             List<String> values = reader.nextLine();
-            validateValues(values, headers, headerToDescriptorMap, result, reader.getCurrentLineNumber());
+            validateValues(values, headers, headerToDescriptorMap, result,
+                    reader.getCurrentLineNumber());
         }
     }
 
     private void validateValues(List<String> values, List<String> headers,
-            Map<String, QuantitationTypeDescriptor> headerToDescriptorMap, FileValidationResult result, int line) {
+            Map<String, QuantitationTypeDescriptor> headerToDescriptorMap,
+            FileValidationResult result, int line) {
         for (int columnIndex = 0; columnIndex < values.size(); columnIndex++) {
             if (isQuantitation(headers.get(columnIndex), headerToDescriptorMap)) {
                 validateQuantitation(values.get(columnIndex),
-                        headerToDescriptorMap.get(headers.get(columnIndex)), result, line, columnIndex + 1);
+                        headerToDescriptorMap.get(headers.get(columnIndex)),
+                        result, line, columnIndex + 1);
             } else if (isStandardColumn(headers.get(columnIndex))) {
-                validateStandardColumn(values.get(columnIndex), headers.get(columnIndex), result, line,
-                        columnIndex + 1);
+                validateStandardColumn(values.get(columnIndex), headers
+                        .get(columnIndex), result, line, columnIndex + 1);
             }
         }
     }
 
-    private boolean isQuantitation(String header, Map<String, QuantitationTypeDescriptor> headerToDescriptorMap) {
+    private boolean isQuantitation(String header,
+            Map<String, QuantitationTypeDescriptor> headerToDescriptorMap) {
         return headerToDescriptorMap.get(header) != null;
     }
 
-    private void validateQuantitation(String value, QuantitationTypeDescriptor descriptor, FileValidationResult result,
+    private void validateQuantitation(String value,
+            QuantitationTypeDescriptor descriptor, FileValidationResult result,
             int line, int column) {
         switch (descriptor.getDataType()) {
         case BOOLEAN:
@@ -380,40 +398,47 @@ class NimblegenPairDataHandler extends AbstractDataFileHandler {
         case STRING:
             break; // all values are legal
         default:
-            throw new IllegalArgumentException("Invalid data type: " + descriptor.getDataType());
+            throw new IllegalArgumentException("Invalid data type: "
+                    + descriptor.getDataType());
         }
     }
 
-    private void validateBoolean(String value, FileValidationResult result, int line, int column) {
+    private void validateBoolean(String value, FileValidationResult result,
+            int line, int column) {
         if (!"0".equals(value) && !"1".equals(value)) {
-            result.addMessage(Type.ERROR,
-                    "Invalid boolean value: " + value + ". Legal values are 0 or 1.", line, column);
+            result.addMessage(Type.ERROR, "Invalid boolean value: " + value
+                    + ". Legal values are 0 or 1.", line, column);
         }
     }
 
-    private void validateDouble(String value, FileValidationResult result, int line, int column) {
+    private void validateDouble(String value, FileValidationResult result,
+            int line, int column) {
         if (!ERROR_INDICATOR.equals(value)) {
             try {
                 Double.parseDouble(value);
             } catch (NumberFormatException e) {
                 result.addMessage(Type.ERROR, "Invalid double value: " + value
-                        + ". Must be a valid floating point number.", line, column);
+                        + ". Must be a valid floating point number.", line,
+                        column);
             }
         }
     }
 
-    private void validateFloat(String value, FileValidationResult result, int line, int column) {
+    private void validateFloat(String value, FileValidationResult result,
+            int line, int column) {
         if (!ERROR_INDICATOR.equals(value)) {
             try {
                 Float.parseFloat(value);
             } catch (NumberFormatException e) {
                 result.addMessage(Type.ERROR, "Invalid float value: " + value
-                        + ". Must be a valid floating point number.", line, column);
+                        + ". Must be a valid floating point number.", line,
+                        column);
             }
         }
     }
 
-    private void validateInteger(String value, FileValidationResult result, int line, int column) {
+    private void validateInteger(String value, FileValidationResult result,
+            int line, int column) {
         try {
             Integer.parseInt(value);
         } catch (NumberFormatException e) {
@@ -422,7 +447,8 @@ class NimblegenPairDataHandler extends AbstractDataFileHandler {
         }
     }
 
-    private void validateLong(String value, FileValidationResult result, int line, int column) {
+    private void validateLong(String value, FileValidationResult result,
+            int line, int column) {
         try {
             Integer.parseInt(value);
         } catch (NumberFormatException e) {
@@ -431,7 +457,8 @@ class NimblegenPairDataHandler extends AbstractDataFileHandler {
         }
     }
 
-    private void validateShort(String value, FileValidationResult result, int line, int column) {
+    private void validateShort(String value, FileValidationResult result,
+            int line, int column) {
         try {
             Integer.parseInt(value);
         } catch (NumberFormatException e) {
@@ -444,8 +471,8 @@ class NimblegenPairDataHandler extends AbstractDataFileHandler {
         return STANDARD_HEADERS.contains(header);
     }
 
-    private void validateStandardColumn(String value, String header, FileValidationResult result, int line,
-            int column) {
+    private void validateStandardColumn(String value, String header,
+            FileValidationResult result, int line, int column) {
         if (X_HEADER.equals(header)) {
             validateInteger(value, result, line, column);
         } else if (Y_HEADER.equals(header)) {
@@ -453,9 +480,11 @@ class NimblegenPairDataHandler extends AbstractDataFileHandler {
         }
     }
 
-    private void validateHeader(DelimitedFileReader reader, FileValidationResult result) throws IOException {
+    private void validateHeader(DelimitedFileReader reader,
+            FileValidationResult result) throws IOException {
         if (getHeaders(reader) == null) {
-            result.addMessage(Type.ERROR, "The Pair file doesn't contain a valid header line.");
+            result.addMessage(Type.ERROR,
+                    "The Pair file doesn't contain a valid header line.");
         }
     }
 
@@ -477,7 +506,8 @@ class NimblegenPairDataHandler extends AbstractDataFileHandler {
      * {@inheritDoc}
      */
     @Override
-    public ArrayDesign getArrayDesign(ArrayDesignService arrayDesignService, File file) {
+    public ArrayDesign getArrayDesign(ArrayDesignService arrayDesignService,
+            File file) {
         DelimitedFileReader reader = getReader(file);
         try {
             return getArrayDesign(arrayDesignService, reader);
@@ -488,9 +518,10 @@ class NimblegenPairDataHandler extends AbstractDataFileHandler {
         }
     }
 
-    private Map<String,String> getHeaderMetadata(DelimitedFileReader reader) throws IOException {
+    private Map<String, String> getHeaderMetadata(DelimitedFileReader reader)
+            throws IOException {
         reset(reader);
-        Map<String,String> result = new HashMap<String,String>();
+        Map<String, String> result = new HashMap<String, String>();
         List<String> line = reader.nextLine();
         line.set(0, line.get(0).substring(2));
         for (String value : line) {
@@ -502,12 +533,13 @@ class NimblegenPairDataHandler extends AbstractDataFileHandler {
         }
         return result;
     }
-    
-    private ArrayDesign getArrayDesign(ArrayDesignService arrayDesignService, DelimitedFileReader reader)
-    throws IOException {
-        Map<String,String> metadata = getHeaderMetadata(reader);
+
+    private ArrayDesign getArrayDesign(ArrayDesignService arrayDesignService,
+            DelimitedFileReader reader) throws IOException {
+        Map<String, String> metadata = getHeaderMetadata(reader);
         String designName = metadata.get("designname");
-        return arrayDesignService.getArrayDesign(LSID_AUTHORITY, LSID_NAMESPACE, designName);
+        return arrayDesignService.getArrayDesign(LSID_AUTHORITY,
+                LSID_NAMESPACE, designName);
     }
 
 }

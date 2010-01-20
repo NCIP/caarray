@@ -85,7 +85,6 @@ package gov.nih.nci.caarray.application.arraydata.nimblegen;
 import java.util.ArrayList;
 import java.util.List;
 
-import gov.nih.nci.caarray.application.arraydata.illumina.IlluminaExpressionQuantitationType;
 import gov.nih.nci.caarray.domain.data.DataType;
 import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
 
