@@ -1379,7 +1379,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
             />
         -->
         <grid-read-poc
-            grid.service.name="CaArraySvc_v1_0"
+            grid.service.name="CaArraySvc"
             grid.wsrf.dir="${grid.home}/server/${grid.server.name}/deploy/wsrf.war"
             />                      
 

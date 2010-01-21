@@ -67,6 +67,7 @@
                     <url>http://www.cancer.org/</url>
                     <javaversion>1.5</javaversion>
                     <uninstaller write="no"/>
+                    <writeinstallationinformation>no</writeinstallationinformation>
                 </info>
 
                 <!--
@@ -205,7 +206,7 @@
                     <panel classname="UserInputPanel"  id="UserInputPanel.8" condition="upgrade"/>
                     <panel classname="UserInputPanel"  id="UserInputPanel.9" condition="upgrade"/>
                     <panel classname="MySQLDatabaseInfoExtractionPanel"  id="MySQLDatabaseInfoExtractionPanel.1" condition="upgrade"/>
-                    <panel classname="UserInputPanel"  id="UserInputPanel.10" />
+                    <panel classname="UserInputPanel"  id="UserInputPanel.10" condition="install"/>
                     <panel classname="UserInputPanel"  id="UserInputPanel.11" condition="install"/>
                     <panel classname="MySQLColumnValueAnalyzerPanel"  id="MySQLColumnValueAnalyzerPanel.1" condition="upgrade"/>
                     <panel classname="UserInputPanel"  id="UserInputPanel.12" condition="should.show.duplicate.hybridization.details.panel.condition"/>

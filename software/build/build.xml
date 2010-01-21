@@ -1197,11 +1197,14 @@
         <path id="caarray-client.common.grid.dependencies.path">
             <fileset refid="caarray-client.common.dependencies.fileset"/>
             <fileset refid="grid.dependencies.lib.fileset"/>
+            <fileset refid="xercesImpl.jar.fileset"/>
             <fileset dir="${project.lib}">
                 <include name="${axis.jar}" />
                 <include name="${javaee.jar}"/>
                 <include name="${wsdl4j.jar}"/>
                 <include name="${google-collections.jar}"/>
+                <include name="${nci-commons-core.jar}"/>
+                <include name="${caGrid-cql.jar}"/>
             </fileset>
         </path>
         <pathtofileset name="caarray-client.common.grid.dependencies.fileset" pathrefid="caarray-client.common.grid.dependencies.path" dir="${project.lib}"/>
@@ -1236,6 +1239,7 @@
             <fileset refid="caarray-client.common.java.dependencies.fileset"/>
             <fileset refid="external.api.dependencies.fileset"/>
             <fileset dir="${project.lib}" includes="${mysql-connector-java.jar}"/>
+            <fileset refid="xercesImpl.jar.fileset"/>
         </path>
         <pathtofileset name="caarray-client.external.v1_0.java.dependencies.fileset" pathrefid="caarray-client.external.v1_0.java.dependencies.path" dir="${project.lib}"/>
 
