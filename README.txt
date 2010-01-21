@@ -77,7 +77,9 @@ The following tools are needed for working on caArray2 code:
 
 - JDK 1.5.0_14 (or the latest 1.5 release). The Java binaries should be on your PATH and JAVA_HOME variable should be set to the location
 where the JDK is installed.
-- Ant 1.7.0 or later. ant should be on your PATH and ANT_HOME environment variable should be set to the location where Ant is installed.
+- Ant 1.7.0 or later. ant should be on your PATH and ANT_HOME environment variable should be set to the location where Ant is installed. 
+  - You should also set the ANT_OPTS variable to "-Xmx256m"; otherwise, you may get an OutOfMemoryException when when running unit tests during
+    report generation
 - MySQL 5.0.45 (or the latest 5.0.x release). Should be downloaded and installed from the MySQL download site.
 	- when installing, ensure the root user has the password defined in software/build/default.properties under the key "database.system.password" 
   	- copy $CAARRAY_HOME/software/build/resources/my.cnf to the location from where MySQL reads its option files. This varies depending on
