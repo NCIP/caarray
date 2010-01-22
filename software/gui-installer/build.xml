@@ -50,6 +50,10 @@
 			<include name="**/*.properties" />
 		</replace>
 
+		<replace dir="${install.path}/${application_installer}" token="&quot;upgrade.properties&quot;" value="&quot;${install.path}/${application_installer}/upgrade.properties&quot;">
+			<include name="**/*.xml" />
+		</replace>
+
 </target>
 	
 	

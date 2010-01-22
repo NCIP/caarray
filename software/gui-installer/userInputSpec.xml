@@ -564,6 +564,10 @@
         <field type="text" variable="upt.url">
             <spec txt="UPT URL " size="25" set=""/>
         </field>
+       <field type="text" variable="csm.application.name">
+            <spec txt="caArray's UPT Application Name " size="25" set="caarray"/>
+            <validator class="com.izforge.izpack.util.NotEmptyValidator" txt="caArray's UPT Application Name is a required field" />
+        </field>
     <fileextractor>
             <extractfile filename="res/filestreamingport.xml" toDirName="."/>               
         </fileextractor>
