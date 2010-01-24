@@ -213,7 +213,7 @@ Continuous Integration
 ------------------------
 
 caArray uses the Hudson CI server. Two types of builds exist: the continuous-integration build is run after every commit and the nightly build
-is run every night just after midnight. Builds are set up for the trunk and each active branch.
+is run every night just after midnight. Builds are set up for the trunk and each active release branch.
 
 The continuous integration build does a clean build, and runs the static analysis and junit tests. The nightly build also runs the selenium
 and API tests.
