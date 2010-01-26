@@ -309,8 +309,13 @@ var TabUtils = {
     },
 
     hideLoadingText : function() {
-        document.getElementsByClassName('loadingText').each(function(elt) { $(elt).hide(); });
-        document.getElementsByClassName('message').each(function(elt) { $(elt).hide(); });
+        debugger
+        var tmp = document.getElementsByClassName('loadingText');
+        for(var i = 0; i < tmp.length; i++)
+            tmp[i].hide();
+        tmp = document.getElementsByClassName('message');
+        for(var i = 0; i < tmp.length; i++)
+            tmp[i].hide();
     },
 
     submitTabForm : function(formId, tabDivId) {
