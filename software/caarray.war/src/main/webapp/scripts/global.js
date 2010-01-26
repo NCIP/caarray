@@ -310,7 +310,7 @@ var TabUtils = {
 
     hideLoadingText : function() {
         var tmp = document.getElementsByClassName('loadingText');
-        for(var i = 0; i < tmp.length; i++){
+        for(var i = 0; i < tmp.length; i++) {
             tmp[i].hide();
         }
         tmp = document.getElementsByClassName('message');
