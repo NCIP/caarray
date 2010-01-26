@@ -129,7 +129,7 @@ import org.hibernate.validator.Size;
 @SuppressWarnings("PMD.TooManyFields")
 public class ArrayDesign extends AbstractCaArrayEntity {
     
-    private static final long serialVersionUID = -7772722455117790401L;
+    private static final long serialVersionUID = 1234567890L;
 
     private String name;
     private String description;
