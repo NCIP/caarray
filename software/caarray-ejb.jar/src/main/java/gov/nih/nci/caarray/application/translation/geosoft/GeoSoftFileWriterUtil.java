@@ -120,7 +120,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 
 /**
@@ -334,11 +333,11 @@ final class GeoSoftFileWriterUtil {
     private static void writeMaterialTypes(Set<Extract> extracts, Set<LabeledExtract> les, PrintWriter out) {
         Set<Term> all = new TreeSet<Term>(ENTITY_COMPARATOR);
         for (Extract e : extracts) {
-            CollectionUtils.addIgnoreNull(all, e.getMaterialType());
+            addIgnoreNull(all, e.getMaterialType());
         }
         if (all.isEmpty()) {
             for (LabeledExtract e : les) {
-                CollectionUtils.addIgnoreNull(all, e.getMaterialType());
+                addIgnoreNull(all, e.getMaterialType());
             }
         }
         for (Term mt : all) {
@@ -433,10 +432,10 @@ final class GeoSoftFileWriterUtil {
     private static void writeOrganism(Set<Source> sources, Set<Sample> samples, Experiment exp, PrintWriter out) {
         Set<Organism> all = new TreeSet<Organism>(ENTITY_COMPARATOR);
         for (Source source : sources) {
-            CollectionUtils.addIgnoreNull(all, source.getOrganism());
+            addIgnoreNull(all, source.getOrganism());
         }
         for (Sample sample : samples) {
-            CollectionUtils.addIgnoreNull(all, sample.getOrganism());
+            addIgnoreNull(all, sample.getOrganism());
         }
         if (all.isEmpty()) {
             all.add(exp.getOrganism());
@@ -491,6 +490,21 @@ final class GeoSoftFileWriterUtil {
             }
             out.println('"');
         }
+    }
+
+    /**
+     * From Apache commons-collection.
+     * 
+     * Adds an element to the collection unless the element is null.
+     *
+     * @param collection  the collection to add to, must not be null
+     * @param object  the object to add, if null it will not be added
+     * @return true if the collection changed
+     * @throws NullPointerException if the collection is null
+     * @since Commons Collections 3.2
+     */
+    private static <T> boolean addIgnoreNull(Collection<? super T> collection, T object) {
+        return (object == null ? false : collection.add(object));
     }
 
     /**

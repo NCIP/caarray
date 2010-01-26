@@ -218,16 +218,24 @@ public class ProjectExportAction extends AbstractBaseProjectAction implements Pr
      */
     @SkipValidation
     public String exportToGeoArchive() throws IOException {
-        GeoSoftExporter service = ServiceLocatorFactory.getGeoSoftExporter();
-        HttpServletResponse response = ServletActionContext.getResponse();
-        String fileName = getExperiment().getPublicIdentifier() + type.getExtension();
-        response.setContentType(type.getMimeType());
-        response.addHeader("Content-Disposition", "filename=\"" + fileName + "\"");
-        String permaLink = getProjectPermaLink();
-        OutputStream out = response.getOutputStream();
-        service.export(getProject(), permaLink, type, out);
-        out.flush();
-        return Action.NONE;
+        try {
+            GeoSoftExporter service = ServiceLocatorFactory.getGeoSoftExporter();
+            HttpServletResponse response = ServletActionContext.getResponse();
+            String fileName = getExperiment().getPublicIdentifier() + type.getExtension();
+            response.setContentType(type.getMimeType());
+            response.addHeader("Content-Disposition", "filename=\"" + fileName + "\"");
+            String permaLink = getProjectPermaLink();
+            OutputStream out = response.getOutputStream();
+            service.export(getProject(), permaLink, type, out);
+            out.flush();
+            return Action.NONE;
+        } catch (IOException e) {
+            LOG.error(e);
+            throw e;
+        } catch (RuntimeException e) {
+            LOG.error(e);
+            throw e;
+        }
     }
 
     /**
@@ -237,16 +245,24 @@ public class ProjectExportAction extends AbstractBaseProjectAction implements Pr
      */
     @SkipValidation
     public String exportToGeoInfo() throws IOException {
-        GeoSoftExporter service = ServiceLocatorFactory.getGeoSoftExporter();
-        HttpServletResponse response = ServletActionContext.getResponse();
-        String fileName = getExperiment().getPublicIdentifier() + ".soft.txt";
-        response.setContentType("text/plain; charset=UTF-8");
-        response.addHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
-        String permaLink = getProjectPermaLink();
-        PrintWriter pw = response.getWriter();
-        service.writeGeoSoftFile(getProject(), permaLink, pw);
-        pw.flush();
-        return Action.NONE;
+        try {
+            GeoSoftExporter service = ServiceLocatorFactory.getGeoSoftExporter();
+            HttpServletResponse response = ServletActionContext.getResponse();
+            String fileName = getExperiment().getPublicIdentifier() + ".soft.txt";
+            response.setContentType("text/plain; charset=UTF-8");
+            response.addHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
+            String permaLink = getProjectPermaLink();
+            PrintWriter pw = response.getWriter();
+            service.writeGeoSoftFile(getProject(), permaLink, pw);
+            pw.flush();
+            return Action.NONE;
+        } catch (IOException e) {
+            LOG.error(e);
+            throw e;
+        } catch (RuntimeException e) {
+            LOG.error(e);
+            throw e;
+        }
     }
 
 

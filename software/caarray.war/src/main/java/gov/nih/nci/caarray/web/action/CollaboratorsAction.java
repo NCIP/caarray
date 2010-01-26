@@ -196,7 +196,7 @@ public class CollaboratorsAction extends ActionSupport {
     @SuppressWarnings({"unchecked", "PMD" })
     @SkipValidation
     public String addUsers() throws CSTransactionException, CSObjectNotFoundException {
-        if (CollectionUtils.isNotEmpty(getUsers())) {
+        if (getUsers() != null && !getUsers().isEmpty()) {
             ServiceLocatorFactory.getPermissionsManagementService().addUsers(getTargetGroup(), getUsers());
             String s = "Users";
             if (getUsers().size() == 1) {
@@ -226,7 +226,7 @@ public class CollaboratorsAction extends ActionSupport {
      */
     @SkipValidation
     public String removeUsers() throws CSTransactionException, CSObjectNotFoundException {
-        if (CollectionUtils.isNotEmpty(getUsers())) {
+        if (getUsers() != null && !getUsers().isEmpty()) {
             ServiceLocatorFactory.getPermissionsManagementService().removeUsers(getTargetGroup(), getUsers());
             String s = "Users";
             if (getUsers().size() == 1) {
