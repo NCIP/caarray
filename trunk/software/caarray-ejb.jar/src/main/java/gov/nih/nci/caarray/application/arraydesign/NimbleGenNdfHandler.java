@@ -450,7 +450,7 @@ public class NimbleGenNdfHandler extends AbstractArrayDesignHandler {
     }
 
     FileStatus getValidatedStatus() {
-        return FileStatus.IMPORTED_NOT_PARSED;
+        return FileStatus.IMPORTED;
     }
 
     /**
