@@ -84,7 +84,6 @@ package gov.nih.nci.caarray.application.arraydesign;
 
 import gov.nih.nci.caarray.application.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
-import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
 import gov.nih.nci.caarray.domain.array.Feature;
@@ -120,8 +119,8 @@ import org.hibernate.ScrollableResults;
  * @author Jim McCusker
  */
 public class NimbleGenNdfHandler extends AbstractArrayDesignHandler {
-    private static final String LSID_AUTHORITY = AbstractCaArrayEntity.CAARRAY_LSID_AUTHORITY;
-    private static final String LSID_NAMESPACE = AbstractCaArrayEntity.CAARRAY_LSID_NAMESPACE;
+    private static final String LSID_AUTHORITY = "nimblegen.com";
+    private static final String LSID_NAMESPACE = "PhysicalArrayDesign";
     private static final Logger LOG = Logger
             .getLogger(NimbleGenNdfHandler.class);
 
