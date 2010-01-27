@@ -313,23 +313,16 @@ class NimblegenPairDataHandler extends AbstractDataFileHandler {
     void validate(CaArrayFile caArrayFile, File file,
             MageTabDocumentSet mTabSet, FileValidationResult result,
             ArrayDesignService arrayDesignService) {
-        if (mTabSet == null || mTabSet.getIdfDocuments().isEmpty()
-                || mTabSet.getSdrfDocuments().isEmpty()) {
-            result
-                    .addMessage(Type.ERROR,
-                            "An IDF and SDRF must be provided for this data file type.");
-        } else {
-            DelimitedFileReader reader = getReader(file);
-            try {
-                validateHeader(reader, result);
-                if (result.isValid()) {
-                    validateData(reader, result);
-                }
-            } catch (IOException e) {
-                throw new IllegalStateException(READ_FILE_ERROR_MESSAGE, e);
-            } finally {
-                reader.close();
+        DelimitedFileReader reader = getReader(file);
+        try {
+            validateHeader(reader, result);
+            if (result.isValid()) {
+                validateData(reader, result);
             }
+        } catch (IOException e) {
+            throw new IllegalStateException(READ_FILE_ERROR_MESSAGE, e);
+        } finally {
+            reader.close();
         }
     }
 
