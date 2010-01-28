@@ -546,6 +546,10 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
         </if>
     </target>
 
+    <target name="-install:jboss:start-with-config" description="Starts jboss" unless="exclude.jboss" depends="common:jboss:init,common:init,-install:jboss:configure:tomcat ">
+        <antcall target="install:jboss:start"/>
+    </target>
+
     <target name="install:jboss:start" description="Starts jboss" unless="exclude.jboss" depends="common:jboss:init,common:init">
         <if>
             <not>
@@ -737,7 +741,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
     <!-- Generic targets to call appropriate upgrade path targets, just change the depends to use alternate ugprade path -->
     <target name="upgrade:jboss" description="Wrapper target to call all targets required to upgrade jboss container." unless="exclude.jboss" depends="upgrade:jboss:init,common:init,upgrade-ncm:jboss,-install:jboss:configure:tomcat,-install:jboss:configure:log4j,-install:jboss:configure:api:streaming:port">
     </target>
-    
+
     <target name="upgrade:tier:caarray" description="Upgrades caArray installation on NCICB tier."
         depends="
 		upgrade:jboss:init,
@@ -750,7 +754,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
 		install:jboss:caarray:re-configure,
 		-install:jboss:configure:tomcat,
 		install:jboss:caarray,
-		install:jboss:start,
+		-install:jboss:start-with-config,
 		install:post:jboss
 		"/>
 
@@ -764,7 +768,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
         install:grid:start,
         install:jboss:validation:post-install
         "/>
-    
+
     <target name="upgrade" description="Upgrades JBoss and Database" depends="upgrade:common:init,common:init,upgrade-ncm">
     </target>
 
@@ -790,7 +794,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
         -install:jboss:configure:update-runscripts,
         upgrade:post:jboss,
         install:post:jboss,
-        install:jboss:start,
+        -install:jboss:start-with-config,
         install:jboss:validation:post-install
         ">
     </target>
@@ -844,7 +848,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
         -install:jboss:configure:update-runscripts,
         upgrade:post:jboss,
         install:post:jboss,
-        install:jboss:start,
+        -install:jboss:start-with-config,
 	install:jboss:validation:post-install        
         ">
     </target>
@@ -892,7 +896,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
         install:jboss:caarray,                
         install:post:jboss,
         upgrade:carray-grid,
-        install:jboss:start,
+        -install:jboss:start-with-config,
         install:grid:start,
         install:jboss:validation:post-install
         ">
