@@ -1663,8 +1663,6 @@
             <zipfileset prefix="${caarray.client-zip.name}_legacy_${caarray.version}/lib/java" refid="caarray-client.legacy.java.dependencies.fileset" />
             <zipfileset prefix="${caarray.client-zip.name}_legacy_${caarray.version}/docs/api" dir="${caarray-client.target.dir}" includes="docs/api/legacy/**" />
             <zipfileset prefix="${caarray.client-zip.name}_legacy_${caarray.version}/docs/model" dir="${docs.dir}/analysis_and_design/models" includes="caarray_client_model.eap" />
-            <zipfileset prefix="${caarray.client-zip.name}_legacy_${caarray.version}/example/java/src" dir="${caarray-client.dir}/src/distribution/java" includes="**/legacy/java/**/*.java"/>
-            <zipfileset prefix="${caarray.client-zip.name}_legacy_${caarray.version}/example/grid/src" dir="${caarray-client.dir}/src/distribution/java" includes="**/legacy/grid/**/*.java"/>
             <zipfileset prefix="${caarray.client-zip.name}_legacy_${caarray.version}/lib/grid" refid="caarray-client.legacy.grid.dependencies.fileset" />
             <zipfileset prefix="${caarray.client-zip.name}_legacy_${caarray.version}/lib/grid" refid="grid.dependencies.caarray-grid-svc.lib.fileset" />
             <zipfileset prefix="${caarray.client-zip.name}_legacy_${caarray.version}/lib/grid" refid="grid.dependencies.caarray-grid-svc.legacy.build.fileset" />
@@ -1683,8 +1681,6 @@
                 <zipfileset prefix="${caarray.client-zip.name}_external_v${caarray.api_version}/lib/java" refid="caarray-client.external.@{version}.java.dependencies.fileset" />
                 <zipfileset prefix="${caarray.client-zip.name}_external_v${caarray.api_version}/docs/api" dir="${caarray-client.target.dir}" includes="docs/api/external/@{version}/**" />
                 <zipfileset prefix="${caarray.client-zip.name}_external_v${caarray.api_version}/docs/model" dir="${docs.dir}/analysis_and_design/models" includes="caarray_external_model.eap" />
-                <zipfileset prefix="${caarray.client-zip.name}_external_v${caarray.api_version}/example/java/src" dir="${caarray-client.dir}/src/distribution/java" includes="**/external/@{version}/java/**/*.java"/>
-                <zipfileset prefix="${caarray.client-zip.name}_external_v${caarray.api_version}/example/grid/src" dir="${caarray-client.dir}/src/distribution/java" includes="**/external/@{version}/grid/**/*.java"/>
                 <zipfileset prefix="${caarray.client-zip.name}_external_v${caarray.api_version}/lib/grid" refid="caarray-client.external.@{version}.grid.dependencies.fileset" />
                 <zipfileset prefix="${caarray.client-zip.name}_external_v${caarray.api_version}/lib/grid" refid="grid.dependencies.caarray-grid-svc.lib.fileset" />
                 <zipfileset prefix="${caarray.client-zip.name}_external_v${caarray.api_version}/lib/grid" refid="grid.dependencies.caarray-grid-svc.@{version}.build.fileset" />

@@ -10,12 +10,11 @@ Java clients to test the caArray Remote Java API and GRID API:
      Jboss installation; but check your Jboss installation's
      server/default/conf/jboss-service.xml for the Port corresponding to
      org.jboss.naming.NamingService.
-2. All jar dependencies including the caArray client jar are in the
-   lib/directory. They are also downloadable from Gforge under the
-   caArray 2 project under the "Files" tab. Look for caarray-client-legacy.zip
-   and extract the following from it:
-   * caarray-client-legacy.jar
-   * lib/
+2. The jar dependencies are copied from an unpacked distribution of the caarray-client-legacy.zip,
+    which is available from Gforge under the caArray 2 project under the "Files" tab.
+    By default this is expected to be in ${user.home}/caarray-client-legacy. If you unpacked this to a 
+    different directory, set the client-zip.unpacked.dir property accordingly in build.xml
+     
 3. ant targets:
    * TO BUILD:
      clean

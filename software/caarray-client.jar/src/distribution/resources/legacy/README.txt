@@ -1,16 +1,16 @@
 Release Notes
 =============
 
-  #Product:#	caArray Client
+  #Product:#	caArray Legacy Service Client
   #Version:#	2.3.0
-  #Date:#       June 2009
+  #Date:#       October 2009
 
 Contents
 --------
 
    1. Introduction
    2. Distribution Contents
-   3. Invoking Examples
+   3. Example Code
    4. Known Issues/Defects
    5. Bug Reports, Feature Requests, and Support
    6. Documentation and Files
@@ -20,7 +20,7 @@ Introduction
 ---------------------------
 
 This distribution contains the resources necessary to connect to either the
-remote Java API or caGrid API of an existing caArray 2.0 server. Also included
+Remote Java Legacy API or caGrid Legacy API of an existing caArray 2.0 server. Also included
 are the XSDs for the caArray grid service as a useful artifact for developers
 using Introduce to generate grid applications that must connect to caArray.
 
@@ -42,9 +42,6 @@ The caArray client distribution includes the following contents:
 /docs/model           Contains Enterprise Architect UML model of the client API
                       (both Java and caGrid)
 
-/example/src          Contains Java examples for connecting to the Java and
-                      grid APIs
-
 /grid/etc             Contains the grid client mapping configuration file
                       (client-config.wsdd). This directory must be on the
                       classpath for any grid clients using the caArray Java
@@ -62,27 +59,12 @@ The caArray client distribution includes the following contents:
                       Java API clients.
 
 
-Invoking Examples
+Example Code
 ------------------------
 
-The distribution includes classes that illustrate connecting to both the caArray
-remote Java API and the grid service API. To invoke the examples, open a command
-prompt or shell in the root of the unpacked distribution and run:
-
-ant
-
-By default, the examples will connect to the caArray 2.0 instance at NCI/CBIIT,
-which has the hostname array.nci.nih.gov. To run these examples against
-other caArray instances, you may invoke ant with the following properties:
-
-ant -Dhostname=<hostname> -Djndi.port=<JNDI port> -Dgrid.port=<grid service port>
-
-You may also create a file named "local.properties" in the root of the unpacked 
-distribution to define these properties. Any properties placed in this file will
-override the defaults.
-
-An existing installation of "ant" is required to run these examples as described
-above.
+Example classes illustrating usage of various methods in the API can be downloaded from the GForge site at https://gforge.nci.nih.gov/frs/?group_id=305.
+There are two relevant artifacts: java_api_client_examples_v1_0.zip has the Remote Java API examples, and grid_api_client_examples_v1_0.zip has the 
+caGrid API examples. Please follow directions in the README files included in those ZIP files.
 
 Known Issues/Defects
 ------------------------
