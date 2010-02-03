@@ -374,6 +374,12 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
             <xmlcatalog refid="bda.xml.catalog"/>
             <replace path="//migrator-class/@renameHybridizations" withText="${mergeDuplicateBiomaterialsMigrator.renameHybridizations}"/>
         </xmltask>
+        
+        <!-- set the local node name -->
+ 	 	<xmltask source="${temp.dir}/caarray.war/WEB-INF/web.xml" dest="${temp.dir}/caarray.war/WEB-INF/web.xml">
+ 	 		<xmlcatalog refid="bda.xml.catalog"/>
+ 	 		<replace path="//*[local-name()='param-name'][text()='nodeName']/following-sibling::*/text()" withText="${grid.poc.tech.researchCenter.shortname}"/>
+ 	 	</xmltask>
 
         <!-- set the UptUrl value -->
         <replaceregexp file="${temp.dir}/caarray.war/WEB-INF/web.xml" match="uptUrl&lt;/param-name&gt;\s{0,}&lt;param-value&gt;(.*)&lt;/param-value&gt;" replace="uptUrl&lt;/param-name&gt;&lt;param-value&gt;${upt.url}&lt;/param-value&gt;" byline="false"/>
@@ -951,7 +957,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
                     jboss.port.http="${grid.server.port}"
                     jboss.hostname="${grid.server.hostname}"
                     jboss.external.http.host="${grid.static.hostname}"
-                    jboss.external.http.port="${grid.static.grid.port}"
+                    jboss.external.http.port="${grid.static.port}"
                     jboss.grid.secure.enable="${grid.secure.enable}"
                     jboss.grid.secure.port="${grid.secure.port}"
                     jboss.grid.secure.key.file="${grid.secure.key.location}"
@@ -980,7 +986,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
                         jboss.port.http="${grid.server.port}"
                         jboss.hostname="${grid.server.hostname}"
                         jboss.external.http.host="${grid.static.hostname}"
-                        jboss.external.http.port="${grid.static.grid.port}"
+                        jboss.external.http.port="${grid.static.port}"
                         jboss.grid.secure.enable="${grid.secure.enable}"
                         jboss.grid.secure.port="${grid.secure.port}"
                         jboss.grid.secure.key.file="${grid.secure.key.location}"
