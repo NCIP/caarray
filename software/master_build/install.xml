@@ -760,6 +760,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
 		install:jboss:caarray:re-configure,
 		-install:jboss:configure:tomcat,
 		install:jboss:caarray,
+		-install:jboss:configure:log4j,
 		-install:jboss:start-with-config,
 		install:post:jboss
 		"/>
