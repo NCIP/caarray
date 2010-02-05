@@ -101,22 +101,22 @@ public enum NimblegenQuantitationType implements QuantitationTypeDescriptor {
     /**
      * X.
      */
-    PM("PM", DataType.FLOAT),
+	PM("PM", DataType.fromTypeClass(Float.class)),
 
     /**
      * X.
      */
-    MM("MM", DataType.FLOAT),
+	MM("MM", DataType.FLOAT),
 
     /**
      * X.
      */
-    X("X", DataType.INTEGER),
+	X("X", DataType.INTEGER),
 
     /**
      * Y.
      */
-    Y("Y", DataType.INTEGER);
+	Y("Y", DataType.INTEGER);
 
     private final String name;
     private final DataType type;
