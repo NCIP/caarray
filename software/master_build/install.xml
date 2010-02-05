@@ -514,9 +514,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
 		<if>
 			<equals arg1="${jboss.major.version}" arg2="4"/>
 			<then>
-				<jboss-configure
-					jboss.grid.configure="true"
-					/>
+				<jboss-configure/>
 			</then>
 		</if>
 		<if>
@@ -940,6 +938,39 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
     </target>
         
     <target name="install:carray-grid" description="Grouping of caArray Grid application targets" depends="install:jboss:grid-binaries,install:grid:deploy">
+		<jboss-configure
+			jboss.server.bindingfile.location="${grid.home}/bindings/bindings.xml"
+			jboss.grid.configure="true"
+			jboss.home="${grid.home}"
+			jboss.server.name="${grid.server.name}"
+			jboss.server.ports.name="${grid.server.ports.name}"
+			jboss.web.user="${grid.web.user}"
+			jboss.web.password="${grid.web.password}"
+			jboss.server.jndi.port="${grid.server.jndi.port}"
+			jboss.server.port="${grid.server.port}"
+			jboss.cobraorb.port="${grid.cobraorb.port}"
+			jboss.ejbinvoker.port="${grid.ejbinvoker.port}"
+			jboss.hajndi.port="${grid.hajndi.port}"
+			jboss.hajrmi.port="${grid.hajrmi.port}"
+			jboss.jms.port="${grid.jms.port}"
+			jboss.jmx-rmi.port="${grid.jmx-rmi.port}"
+			jboss.messaging.port="${grid.messaging.port}"
+			jboss.pooledha.port="${grid.pooledha.port}"
+			jboss.remoting.port="${grid.remoting.port}"
+			jboss.server.bind.port="${grid.server.bind.port}"
+			jboss.server.rmi.port="${grid.server.rmi.port}"
+			jboss.service.rmiobject.port="${grid.service.rmiobject.port}"
+			jboss.snmp.port="${grid.snmp.port}"
+			jboss.snmp-trapd.port="${grid.snmp-trapd.port}"
+			jboss.web.service.port="${grid.web.service.port}"
+			jboss.ssl.enable="${grid.ssl.enable}"
+			jboss.ssl.keystore.pass="${grid.ssl.keystore.pass}"
+			jboss.ssl.keystore.alias="${grid.ssl.keystore.alias}"
+			jboss.ssl.fullyqualified.hostname="${grid.ssl.fullyqualified.hostname}"
+			jboss.external.http.host="${grid.static.hostname}"
+			jboss.external.http.port="${grid.static.port}"
+			jboss.grid.secure.enable="${grid.secure.enable}"
+		/>
         <for param="version" list="${caarray-grid-svc.versions}">
             <sequential>
                 <if>
