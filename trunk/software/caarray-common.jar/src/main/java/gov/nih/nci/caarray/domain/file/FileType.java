@@ -210,11 +210,6 @@ public enum FileType implements Comparable<FileType> {
     IMAGENE_TPL,
 
     /**
-     * Nimblegen TXT format.
-     */
-    NIMBLEGEN_TXT,
-
-    /**
      * Nimblegen GFF format.
      */
     NIMBLEGEN_GFF,
@@ -225,9 +220,14 @@ public enum FileType implements Comparable<FileType> {
     NIMBLEGEN_NDF,
 
     /**
-     * Nimblegen NDF format.
+     * Nimblegen raw Pair format.
      */
-    NIMBLEGEN_PAIR,
+    NIMBLEGEN_RAW_PAIR,
+
+    /**
+     * Nimblegen normalized Pair format.
+     */
+    NIMBLEGEN_NORM_PAIR,
 
     /**
      * The MAGE_TAB Array Design Format file type.
@@ -291,15 +291,14 @@ public enum FileType implements Comparable<FileType> {
      * The set of raw array data file types.
      */
     public static final Set<FileType> RAW_ARRAY_DATA_FILE_TYPES = EnumSet.of(ILLUMINA_IDAT, AFFYMETRIX_CEL,
-            AGILENT_RAW_TXT, AFFYMETRIX_DAT, AGILENT_TSV, IMAGENE_TIF, GEO_SOFT, GEO_GSM, SCANARRAY_CSV,
-            NIMBLEGEN_TXT, NIMBLEGEN_PAIR);
+            AGILENT_RAW_TXT, AFFYMETRIX_DAT, AGILENT_TSV, IMAGENE_TIF, GEO_SOFT, GEO_GSM, SCANARRAY_CSV, NIMBLEGEN_RAW_PAIR);
 
     /**
      * The set of parsed array data file types.
      */
     public static final Set<FileType> DERIVED_ARRAY_DATA_FILE_TYPES = EnumSet.of(AFFYMETRIX_CHP, AFFYMETRIX_EXP,
             AFFYMETRIX_TXT, AFFYMETRIX_RPT, ILLUMINA_DATA_CSV, ILLUMINA_DATA_TXT, GENEPIX_GPR, IMAGENE_TXT,
-            AGILENT_DERIVED_TXT, NIMBLEGEN_GFF, NIMBLEGEN_TXT, NIMBLEGEN_PAIR);
+            AGILENT_DERIVED_TXT, NIMBLEGEN_GFF, NIMBLEGEN_NORM_PAIR);
 
     /**
      * The set of mage tab file types.
@@ -311,7 +310,7 @@ public enum FileType implements Comparable<FileType> {
      * The set of array data file types that caArray can parse.
      */
     public static final Set<FileType> PARSEABLE_ARRAY_DATA_FILE_TYPES = EnumSet.of(AFFYMETRIX_CEL, AFFYMETRIX_CHP,
-            ILLUMINA_DATA_CSV, GENEPIX_GPR, NIMBLEGEN_TXT, NIMBLEGEN_PAIR);
+            ILLUMINA_DATA_CSV, GENEPIX_GPR, NIMBLEGEN_NORM_PAIR, NIMBLEGEN_RAW_PAIR);
 
     private static final Map<FileType, FileType> RAW_TO_DERIVED_MAP = new HashMap<FileType, FileType>();
     private static final Map<FileType, FileType> DERIVED_TO_RAW_MAP = new HashMap<FileType, FileType>();
@@ -319,6 +318,8 @@ public enum FileType implements Comparable<FileType> {
     static {
         RAW_TO_DERIVED_MAP.put(AGILENT_RAW_TXT, AGILENT_DERIVED_TXT);
         DERIVED_TO_RAW_MAP.put(AGILENT_DERIVED_TXT, AGILENT_RAW_TXT);
+        RAW_TO_DERIVED_MAP.put(NIMBLEGEN_RAW_PAIR, NIMBLEGEN_NORM_PAIR);
+        DERIVED_TO_RAW_MAP.put(NIMBLEGEN_NORM_PAIR, NIMBLEGEN_RAW_PAIR);
     }
 
     /**

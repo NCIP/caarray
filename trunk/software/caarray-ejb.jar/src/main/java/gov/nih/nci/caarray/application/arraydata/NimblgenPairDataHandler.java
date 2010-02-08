@@ -153,7 +153,12 @@ class NimblegenPairDataHandler extends AbstractDataFileHandler {
 
     @Override
     ArrayDataTypeDescriptor getArrayDataTypeDescriptor(File dataFile) {
-        return NimblegenArrayDataTypes.NIMBLEGEN;
+	String fileName = dataFile.getName();
+	if (fileName.matches("_norm_")) {
+	    return NimblegenArrayDataTypes.NIMBLEGEN_NORM;
+	} else {
+	    return NimblegenArrayDataTypes.NIMBLEGEN_RAW;
+	}
     }
 
     @Override
@@ -258,7 +263,8 @@ class NimblegenPairDataHandler extends AbstractDataFileHandler {
         dataSet.setDesignElementList(probeList);
         ArrayDesign design = getArrayDesign(arrayDesignService,reader);
         if (design == null) {
-            design = getArrayDesign(experiment);
+	    design = getArrayDesign(dataFile.getProject().getExperiment());
+	    design = getArrayDesign(experiment);
             if (design == null) {
                 throw new IllegalStateException("Could not find array design for file.");
             }

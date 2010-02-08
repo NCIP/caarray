@@ -95,9 +95,15 @@ import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
 public enum NimblegenArrayDataTypes implements ArrayDataTypeDescriptor {
 
     /**
-     * Genepix GPR format.
+     * Nimblegen raw pair format.
      */
-    NIMBLEGEN("Nimblegen Pair", NimblegenQuantitationType.values());
+    NIMBLEGEN_RAW("Nimblegen Raw Pair", NimblegenQuantitationType.values()),
+
+
+    /**
+     * Nimblegen raw pair format.
+     */
+    NIMBLEGEN_NORM("Nimblegen Normalized Pair", NimblegenQuantitationType.values());
 
 
     private final String name;
