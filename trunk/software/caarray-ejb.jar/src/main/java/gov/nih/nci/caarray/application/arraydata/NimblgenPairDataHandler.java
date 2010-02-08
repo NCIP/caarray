@@ -263,7 +263,6 @@ class NimblegenPairDataHandler extends AbstractDataFileHandler {
         dataSet.setDesignElementList(probeList);
         ArrayDesign design = getArrayDesign(arrayDesignService,reader);
         if (design == null) {
-	    design = getArrayDesign(dataFile.getProject().getExperiment());
 	    design = getArrayDesign(experiment);
             if (design == null) {
                 throw new IllegalStateException("Could not find array design for file.");
