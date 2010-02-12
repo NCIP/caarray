@@ -83,13 +83,22 @@
 package gov.nih.nci.caarray.magetab.sdrf;
 
 /**
- * Comment class.
+ * Represents a MAGE-TAB SDRF Comment column.
  * 
+ * @author dkokotov
  */
-public class Comment extends AbstractSampleDataRelationshipNode {
-
+public class Comment {
     private static final long serialVersionUID = 8963454780738369441L;
+
     private String value;
+
+    /**
+     * Create a new Comment with given value.
+     * @param value the value of this Comment column
+     */
+    public Comment(String value) {
+        this.value = value;
+    }
 
     /**
      * 
@@ -106,18 +115,4 @@ public class Comment extends AbstractSampleDataRelationshipNode {
     public void setValue(String value) {
         this.value = value;
     }
-
-    @Override
-    void addToSdrfList(SdrfDocument document) {
-        document.getAllComments().add(this);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public SdrfNodeType getNodeType() {
-        return SdrfNodeType.COMMENT;
-    }
-
 }

@@ -82,12 +82,14 @@
  */
 package gov.nih.nci.caarray.application.arraydesign;
 
+import com.google.common.collect.ImmutableSet;
 import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
-import gov.nih.nci.caarray.domain.array.LogicalProbe;
+import gov.nih.nci.caarray.domain.array.PhysicalProbe;
 import gov.nih.nci.caarray.domain.array.SNPProbeAnnotation;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -102,13 +104,18 @@ final class IlluminaGenotypingCsvDesignHandler extends AbstractIlluminaDesignHan
     private static final int SNP_ALLELE_A_POSITION = 1;
     private static final int SNP_ALLELE_B_POSITION = 3;
 
+    private static final Set<Header> REQUIRED_COLUMNS = ImmutableSet.of(
+            Header.SNP, Header.MAPINFO, Header.SOURCE, Header.NAME);
+    
+
     IlluminaGenotypingCsvDesignHandler() {
-        super();
+        super(Header.class, REQUIRED_COLUMNS);
     }
 
-    LogicalProbe createLogicalProbe(ArrayDesignDetails details, List<String> values) {
+    @Override
+    PhysicalProbe createProbe(ArrayDesignDetails details, List<String> values) {
         String name = getValue(values, Header.NAME);
-        LogicalProbe logicalProbe = new LogicalProbe(details);
+        PhysicalProbe logicalProbe = new PhysicalProbe(details, null);
         logicalProbe.setName(name);
         SNPProbeAnnotation annotation = new SNPProbeAnnotation();
         if (isInteger(getValue(values, Header.CHR))) {
@@ -133,21 +140,26 @@ final class IlluminaGenotypingCsvDesignHandler extends AbstractIlluminaDesignHan
 
     @Override
     void validateValues(List<String> values, FileValidationResult result, int lineNumber) {
-        validateFieldLength(values, Header.SNP, result, lineNumber, SNP_FIELD_LENGTH);
-        validateLongField(values, Header.MAPINFO, result, lineNumber);
+        int colIdx = indexOf(Header.SNP);
+        IlluminaCsvDesignHandler.validateFieldLength(values.get(colIdx), Header.SNP, result, lineNumber,
+                SNP_FIELD_LENGTH, colIdx + 1);
+        colIdx = indexOf(Header.MAPINFO);
+        IlluminaCsvDesignHandler.validateLongField(values.get(colIdx), Header.MAPINFO, result, lineNumber, colIdx + 1);
         if (isDbSnpEntry(values)) {
-            validateIntegerField(values, Header.SOURCEVERSION, result, lineNumber);
+            colIdx = indexOf(Header.SOURCEVERSION);
+            IlluminaCsvDesignHandler.validateIntegerField(values.get(colIdx), Header.SOURCEVERSION, result, lineNumber,
+                    colIdx + 1);
         }
     }
 
-    @Override
-    Enum[] getExpectedHeaders(List<String> headers) {
-        if (headers.size() == Header.values().length) {
-            return Header.values();
-        } else {
-            return Header.ALTERNATE_HEADER_LIST;
-        }
-    }
+//    @Override
+//    Enum[] getExpectedHeaders(List<String> headers) {
+//        if (headers.size() == Header.values().length) {
+//            return Header.values();
+//        } else {
+//            return Header.ALTERNATE_HEADER_LIST;
+//        }
+//    }
 
     @Override
     @SuppressWarnings("PMD.PositionLiteralsFirstInComparisons") // false positive
@@ -155,18 +167,28 @@ final class IlluminaGenotypingCsvDesignHandler extends AbstractIlluminaDesignHan
         return !values.isEmpty() && CONTROLS_SECTION_HEADER.equals(values.get(0));
     }
 
-    @Override
-    boolean isHeaderLine(List<String> values) {
-        if (values.size() != Header.values().length && values.size() != Header.ALTERNATE_HEADER_LIST.length) {
-            return false;
-        }
-        for (int i = 0; i < values.size(); i++) {
-            if (!values.get(i).equalsIgnoreCase(Header.values()[i].name())) {
-                return false;
-            }
-        }
-        return true;
-    }
+//    @Override
+//    boolean isHeaderLine(List<String> values) {
+//        Enum[] requiredColumns = {
+//            Header.SNP,
+//            Header.MAPINFO,
+//            Header.SOURCE,
+//            Header.NAME
+//        };
+//        if (values.size() != Header.values().length && values.size() != Header.ALTERNATE_HEADER_LIST.length) {
+//            return false;
+//        }
+//        Set<Enum<Header>> headers = new HashSet<Enum<Header>>(values.size());
+//        try {
+//            for (String v : values) {
+//                headers.add(Header.valueOf(v.toUpperCase(Locale.getDefault())));
+//            }
+//        } catch (IllegalArgumentException e) {
+//            return false;
+//        }
+//
+//        return EnumSet.allOf(Header.class).containsAll(headers);
+//    }
 
     /**
      * Enumeration of expected headers in Illumina genoytyping CSV descriptor.
@@ -194,27 +216,5 @@ final class IlluminaGenotypingCsvDesignHandler extends AbstractIlluminaDesignHan
         CNV_PROBE,
         INTENSITY_ONLY,
         EXP_CLUSTERS;
-
-        private static final Header[] ALTERNATE_HEADER_LIST = new Header[] {
-            ILMNID,
-            NAME,
-            ILMNSTRAND,
-            SNP,
-            ADDRESSA_ID,
-            ALLELEA_PROBESEQ,
-            ADDRESSB_ID,
-            ALLELEB_PROBESEQ,
-            GENOMEBUILD,
-            CHR,
-            MAPINFO,
-            PLOIDY,
-            SPECIES,
-            SOURCE,
-            SOURCEVERSION,
-            SOURCESTRAND,
-            SOURCESEQ,
-            TOPGENOMICSEQ,
-            BEADSETID
-        };
     }
 }

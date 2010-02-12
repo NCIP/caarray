@@ -83,19 +83,22 @@
 package gov.nih.nci.caarray.magetab;
 
 /**
- * @author Bill Mason
+ * Interface to be implemented by classes representing SDRF columns which can be followed by a TermSource column. 
+ * These would be columns specifying an item coming from an ontology, and the TermSource column would specify
+ * the ontology.
  * 
+ * @author Bill Mason
  */
 public interface TermSourceable {
     /**
      * 
-     * @return TermSource a term source
+     * @return the term source specifying the ontology for the preceding column.
      */
     TermSource getTermSource();
 
     /**
      * 
-     * @param termSource termsources
+     * @param termSource the term source specifying the ontology for the preceding column.
      */
     void setTermSource(TermSource termSource);
 }

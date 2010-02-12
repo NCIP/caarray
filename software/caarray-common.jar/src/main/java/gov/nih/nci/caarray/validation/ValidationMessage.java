@@ -115,10 +115,29 @@ public final class ValidationMessage implements Serializable, Comparable<Validat
         super();
     }
 
-    ValidationMessage(Type type, String message) {
+    /**
+     * Create a new ValidationMessage of given type and content.
+     * @param type the type of the message (info, warning, level)
+     * @param message the message content.
+     */
+    public ValidationMessage(Type type, String message) {
         super();
         setType(type);
         setMessage(message);
+    }
+
+    /**
+     * Create a new ValidationMessage of given type and content, referencing the location of the issue.
+     * 
+     * @param line the line at which the issue occurred, 0-based
+     * @param column the column at which the issue occurred, 0-based
+     * @param type the type of the message (info, warning, level)
+     * @param message the message content.
+     */
+    public ValidationMessage(int line, int column, Type type, String message) {
+        this(type, message);
+        this.line = line;
+        this.column = column;        
     }
 
     /**

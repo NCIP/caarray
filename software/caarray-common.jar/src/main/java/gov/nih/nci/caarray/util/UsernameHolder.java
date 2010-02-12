@@ -92,7 +92,6 @@ import gov.nih.nci.security.authorization.domainobjects.User;
  * @see gov.nih.nci.caarray.security.SecurityUtils#ANONYMOUS_USERNAME
  */
 public final class UsernameHolder extends com.fiveamsolutions.nci.commons.util.UsernameHolder {
-
     private static ThreadLocal<User> userThreadLocal = new ThreadLocal<User>();
 
     private UsernameHolder() {

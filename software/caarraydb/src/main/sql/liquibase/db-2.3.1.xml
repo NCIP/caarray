@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+    <preConditions>
+        <dbms type="mysql" />
+    </preConditions>
+    
+    <!--  2.3.1 changes -->
+    <changeSet id="21413-fk" author="dkokotov" failOnError="false">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="2.3.0.rc7">SELECT raw_value from config_parameter where param='SCHEMA_VERSION'</sqlCheck>
+        </preConditions>
+       <comment>GF 21413 - drop project.hostProfile - foreign keys</comment>
+       <sqlFile path="db-upgrade/mysql/2.3.1/21413-fk.sql"/>
+    </changeSet>
+    <changeSet id="21413-fk-capitalized" author="dkokotov" failOnError="false">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="2.3.0.rc7">SELECT raw_value from config_parameter where param='SCHEMA_VERSION'</sqlCheck>
+        </preConditions>
+       <comment>GF 21413 - drop project.hostProfile - foreign keys, capitalized</comment>
+       <sqlFile path="db-upgrade/mysql/2.3.1/21413-fk-capitalized.sql"/>
+    </changeSet>
+    <changeSet id="21413" author="dkokotov">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="2.3.0.rc7">SELECT raw_value from config_parameter where param='SCHEMA_VERSION'</sqlCheck>
+        </preConditions>
+       <comment>GF 21413 - drop project.hostProfile</comment>
+       <sqlFile path="db-upgrade/mysql/2.3.1/21413.sql"/>
+    </changeSet>
+    <changeSet id="20294" author="dkokotov">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="2.3.0.rc7">SELECT raw_value from config_parameter where param='SCHEMA_VERSION'</sqlCheck>
+        </preConditions>
+       <comment>GF 20294 - geo accession field</comment>
+       <sqlFile path="db-upgrade/mysql/2.3.1/20294.sql"/>
+    </changeSet>
+    <changeSet id="20295" author="dkokotov">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="2.3.0.rc7">SELECT raw_value from config_parameter where param='SCHEMA_VERSION'</sqlCheck>
+        </preConditions>
+       <comment>GF 20295 - populate geoaccessions</comment>
+       <sqlFile path="db-upgrade/mysql/2.3.1/20295.sql"/>
+    </changeSet>
+    <changeSet id="update-schema-2.3.1" author="dkokotov">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="2.3.0.rc7">SELECT raw_value from config_parameter where param='SCHEMA_VERSION'</sqlCheck>
+        </preConditions>
+       <comment>Legacy upgrade - update schema to 2.3.1.alpha2-20295</comment>
+       <update tableName="config_parameter">
+           <column name="raw_value" value="2.3.1.alpha2-20295"/>
+           <where>param='SCHEMA_VERSION'</where>
+       </update>
+    </changeSet>
+ </databaseChangeLog>

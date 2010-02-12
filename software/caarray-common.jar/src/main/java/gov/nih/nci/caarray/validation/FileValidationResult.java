@@ -220,7 +220,7 @@ public class FileValidationResult implements Serializable, Comparable<FileValida
      */
     public ValidationMessage addMessage(Type type, String message) {
         ValidationMessage validationMessage = new ValidationMessage(type, message);
-        add(validationMessage);
+        addMessage(validationMessage);
         return validationMessage;
     }
 
@@ -240,8 +240,13 @@ public class FileValidationResult implements Serializable, Comparable<FileValida
         return validationMessage;
     }
 
-    private void add(ValidationMessage validationMessage) {
-        this.messageSet.add(validationMessage);
+    /**
+     * Adds a new validation message to the result.
+     *
+     * @param message the message to add
+     */
+    public void addMessage(ValidationMessage message) {
+        this.messageSet.add(message);
     }
 
     /**

@@ -190,9 +190,19 @@ public enum FileType implements Comparable<FileType> {
     ILLUMINA_DESIGN_CSV,
 
     /**
-     * Illumina array data TXT file.
+     * Illumina array design BGX (gziped TSV) file.
      */
-    ILLUMINA_DATA_TXT,
+    ILLUMINA_DESIGN_BGX,
+
+    /**
+     * Illumina raw array data TXT file.
+     */
+    ILLUMINA_RAW_TXT,
+
+    /**
+     * Illumina derived array data TXT file.
+     */
+    ILLUMINA_DERIVED_TXT,
 
     /**
      * Imagene TXT format.
@@ -273,26 +283,27 @@ public enum FileType implements Comparable<FileType> {
      * The set of array design file types that the caArray can parse.
      */    
     public static final Set<FileType> PARSEABLE_ARRAY_DESIGN_FILE_TYPES = EnumSet.of(AFFYMETRIX_CDF, AFFYMETRIX_CLF,
-            AFFYMETRIX_PGF, ILLUMINA_DESIGN_CSV, GENEPIX_GAL);
+            AFFYMETRIX_PGF, ILLUMINA_DESIGN_CSV, ILLUMINA_DESIGN_BGX, GENEPIX_GAL);
 
     /**
      * The set of array design file types.
      */
     public static final Set<FileType> ARRAY_DESIGN_FILE_TYPES = EnumSet.of(AFFYMETRIX_CDF, AFFYMETRIX_CLF,
-            AFFYMETRIX_PGF, ILLUMINA_DESIGN_CSV, GENEPIX_GAL, AGILENT_CSV, AGILENT_XML, IMAGENE_TPL, NIMBLEGEN_NDF,
-            UCSF_SPOT_SPT, MAGE_TAB_ADF, GEO_GPL);
+            AFFYMETRIX_PGF, ILLUMINA_DESIGN_CSV, ILLUMINA_DESIGN_BGX, GENEPIX_GAL, AGILENT_CSV,
+            AGILENT_XML, IMAGENE_TPL, NIMBLEGEN_NDF, UCSF_SPOT_SPT, MAGE_TAB_ADF, GEO_GPL);
     
     /**
      * The set of raw array data file types.
      */
     public static final Set<FileType> RAW_ARRAY_DATA_FILE_TYPES = EnumSet.of(ILLUMINA_IDAT, AFFYMETRIX_CEL,
-            AGILENT_RAW_TXT, AFFYMETRIX_DAT, AGILENT_TSV, IMAGENE_TIF, GEO_SOFT, GEO_GSM, SCANARRAY_CSV);
+            AGILENT_RAW_TXT, AFFYMETRIX_DAT, AGILENT_TSV, IMAGENE_TIF, GEO_SOFT, GEO_GSM, SCANARRAY_CSV,
+            ILLUMINA_RAW_TXT);
 
     /**
      * The set of parsed array data file types.
      */
     public static final Set<FileType> DERIVED_ARRAY_DATA_FILE_TYPES = EnumSet.of(AFFYMETRIX_CHP, AFFYMETRIX_EXP,
-            AFFYMETRIX_TXT, AFFYMETRIX_RPT, ILLUMINA_DATA_CSV, ILLUMINA_DATA_TXT, GENEPIX_GPR, IMAGENE_TXT,
+            AFFYMETRIX_TXT, AFFYMETRIX_RPT, ILLUMINA_DATA_CSV, ILLUMINA_DERIVED_TXT, GENEPIX_GPR, IMAGENE_TXT,
             AGILENT_DERIVED_TXT, NIMBLEGEN_GFF, NIMBLEGEN_TXT);
 
     /**
@@ -311,8 +322,13 @@ public enum FileType implements Comparable<FileType> {
     private static final Map<FileType, FileType> DERIVED_TO_RAW_MAP = new HashMap<FileType, FileType>();
 
     static {
-        RAW_TO_DERIVED_MAP.put(AGILENT_RAW_TXT, AGILENT_DERIVED_TXT);
-        DERIVED_TO_RAW_MAP.put(AGILENT_DERIVED_TXT, AGILENT_RAW_TXT);
+        mapRawAndDerivedFileTypes(AGILENT_RAW_TXT, AGILENT_DERIVED_TXT);
+        mapRawAndDerivedFileTypes(ILLUMINA_RAW_TXT, ILLUMINA_DERIVED_TXT);
+    }
+
+    private static void mapRawAndDerivedFileTypes(final FileType rawFileType, final FileType derivedFileType) {
+        RAW_TO_DERIVED_MAP.put(rawFileType, derivedFileType);
+        DERIVED_TO_RAW_MAP.put(derivedFileType, rawFileType);
     }
 
     /**

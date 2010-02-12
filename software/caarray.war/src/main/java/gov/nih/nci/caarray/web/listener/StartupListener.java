@@ -86,30 +86,40 @@ import gov.nih.nci.caarray.application.ServiceLocatorFactory;
 import gov.nih.nci.caarray.application.arraydata.ArrayDataService;
 import gov.nih.nci.caarray.application.fileaccess.FileCleanupThread;
 import gov.nih.nci.caarray.security.SecurityUtils;
+import gov.nih.nci.caarray.util.HibernateUtil;
 
 import java.util.Timer;
 
 import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
 
 /**
  * Performs initialization operations required at startup of the caArray application.
  */
-public class StartupListener extends AbstractHibernateSessionScopeListener {
-
+public class StartupListener implements ServletContextListener {
     private static final int TIMER_INTERVAL_FIFTEEN_MINS = 900000;
+
     /**
      * Creates connection to DataService as well as sets configuration in
      * application scope. Initiates scheduled task to cleanup files every 15 mins
      * @param event ServletContextEvent
      */
-    @Override
-    public void doContextInitialized(ServletContextEvent event) {
+    public void contextInitialized(ServletContextEvent event) {
+        HibernateUtil.openAndBindSession();
         ArrayDataService arrayDataService =
             (ArrayDataService) ServiceLocatorFactory.getLocator().lookup(ArrayDataService.JNDI_NAME);
         arrayDataService.initialize();
-
         SecurityUtils.init();
+        HibernateUtil.unbindAndCleanupSession();
+        
         Timer timer = new Timer();
         timer.schedule(FileCleanupThread.getInstance(), TIMER_INTERVAL_FIFTEEN_MINS, TIMER_INTERVAL_FIFTEEN_MINS);
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public void contextDestroyed(ServletContextEvent arg0) {
+        // do nothing - subclasses can override if needed
     }
 }

@@ -87,21 +87,31 @@ import gov.nih.nci.caarray.magetab.EntryHeading;
 /**
  * A single column in an SDRF file.
  */
-class SdrfColumn {
+public class SdrfColumn {
 
     private final EntryHeading heading;
     private final SdrfColumnType type;
 
-    SdrfColumn(EntryHeading heading) {
+    /**
+     * Create a new SdrfColumn for given heading.
+     * @param heading the column header for this column
+     */
+    public SdrfColumn(EntryHeading heading) {
         this.heading = heading;
         type = SdrfColumnType.get(heading.getTypeName());
     }
 
-    SdrfColumnType getType() {
+    /**
+     * @return the type of this column
+     */
+    public SdrfColumnType getType() {
         return type;
     }
 
-    EntryHeading getHeading() {
+    /**
+     * @return the heading for this column
+     */
+    public EntryHeading getHeading() {
         return heading;
     }
     
@@ -112,5 +122,4 @@ class SdrfColumn {
     public String toString() {
         return heading.toString();
     }
-
 }

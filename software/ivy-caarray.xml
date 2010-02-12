@@ -148,7 +148,7 @@
 
         <dependency conf="project" name="javacsv" org="javacsv" rev="1.0"/>
 
-        <dependency conf="project" name="csm" org="ncicb" rev="4.1.0.2"/>
+        <dependency conf="project" name="csm" org="ncicb" rev="4.2"/>
 
         <dependency conf="project" name="svntask" org="com.googlecode" rev="1.0.7"/>
 
@@ -188,17 +188,13 @@
 
         <dependency conf="project" name="concurrent" org="edu.oswego" rev="1.3.4"/>
 
-        <dependency conf="project" name="nci-commons-core" org="ncicb" rev="1.2.7"/>
+        <dependency conf="project" name="nci-commons-core" org="ncicb" rev="1.2.10"/>
 
         <dependency conf="project" name="nci-commons-struts2" org="ncicb" rev="1.1.0"/>
 
         <dependency conf="project" name="ezmorph" org="ezmorph" rev="1.0.4"/>
 
         <dependency conf="project" name="json-lib" org="json-lib" rev="2.2.2-jdk15"/>
-
-        <!--dependency conf="project" name="cargo-core-uberjar" org="cargo" rev="0.9"/>
-
-        <dependency conf="project" name="cargo-ant" org="cargo" rev="0.9"/-->
 
         <dependency conf="project" name="xalan" org="apache" rev="2.7.1"/>
 
@@ -243,6 +239,8 @@
         <dependency conf="project" name="rmiio" org="com.healthmarketscience" rev="2.0.2"/>
 
         <dependency conf="project" name="google-collections" org="google" rev="1.0-rc1"/>
+        
+        <dependency conf="project" name="liquibase" org="liquibase" rev="1.9.3"/>
     </dependencies>
 
 </ivy-module>

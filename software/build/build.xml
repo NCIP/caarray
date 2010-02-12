@@ -955,7 +955,13 @@
         </path>
         <property name="google-collections.jar" refid="google-collections.jar.fileset" />
 
-
+        <path id="liquibase.jar.path">
+            <fileset dir="${project.lib}" id="liquibase.jar.fileset">
+        		<include name="liquibase-*.jar"/>
+            </fileset>
+        </path>
+        <property name="liquibase.jar" refid="liquibase.jar.fileset" />
+        	
         <path id="jboss.dependencies.path">
             <fileset id="jboss.dependencies.fileset" dir="${project.lib}">
                 <include name="${jboss-annotations-ejb3.jar}"/>
@@ -980,8 +986,8 @@
             <fileset refid="javacsv.jar.fileset"/>
             <fileset refid="mysql-connector-java.jar.fileset"/>
             <fileset refid="rmiio.jar.fileset"/>
-            <fileset refid="xerces-J.jar.fileset"/>
-            <fileset refid="xercesImpl.jar.fileset"/>
+        	<fileset refid="xerces-J.jar.fileset"/>
+        	<fileset refid="xercesImpl.jar.fileset"/>
             <fileset refid="commons-configuration.jar.fileset"/>
             <fileset id="common.grid.dependencies.fileset" dir="${project.lib}">
                 <include name="${axis.jar}"/>
@@ -990,7 +996,7 @@
                 <include name="${caGrid-sdkQuery32-core.jar}"/>
                 <include name="${caGrid-data-stubs.jar}"/>
                 <include name="${caGrid-cql.jar}"/>
-                <include name="${ejb3-persistence.jar}"/>
+            	<include name="${ejb3-persistence.jar}"/>
                 <include name="${hibernate.jar}"/>
                 <include name="${hibernate-annotations.jar}"/>
                 <include name="${nci-commons-core.jar}"/>
@@ -1023,6 +1029,7 @@
             <fileset refid="ejb3-persistence.jar.fileset"/>
             <fileset refid="javassist.jar.fileset"/>
             <fileset refid="commons-compress.jar.fileset"/>
+        	<fileset refid="liquibase.jar.fileset"/>
         </path>
 
         <path id="grid.compile.dependencies.path">
@@ -1079,6 +1086,7 @@
                 <include name="${struts2-core.jar}"/>
                 <include name="${jstl.jar}"/>
                 <include name="${standard.jar}"/>
+                <include name="${liquibase.jar}"/>
             </fileset>
 
             <!-- all jars that should go in the caarray.ear!/lib/ -->
@@ -1269,6 +1277,7 @@
             <classpath refid="antlr.jar.path"/>
             <classpath refid="commons-collections.jar.path"/>
             <classpath refid="commons-logging.jar.path"/>
+            <classpath refid="liquibase.jar.path"/>
         </taskdef>
 
         <taskdef resource="tasks.properties" classpathref="cobertura.dependencies.path" />
@@ -1398,7 +1407,7 @@
     <!-- ** MAIN TARGETS                                                  ** -->
     <!-- ******************************************************************* -->
 
-    <target name="continuous-integration" depends="clean,init:third-party-paths,build-tags,database:recreate-database,database:reinitialize,build,check,test,javadoc"/>
+    <target name="continuous-integration" depends="clean,init:third-party-paths,build-tags,build,check,database:recreate-database,database:reinitialize,test,javadoc"/>
 
 
     <target name="nightly-build" depends="continuous-integration,
@@ -1823,7 +1832,6 @@
         </copy>
         <copy todir="${caarray-war.classes.dir}">
             <fileset dir="${caarray-war.src.dir}" includes="*.xml,*.properties, template/**/*" />
-            <fileset dir="${caarraydb.sql.src.dir}/migration" includes="*.sql, *.xml" />
         </copy>
         <war destfile="${caarray.war}" webxml="${caarray-war.target.dir}/xml/web.xml">
             <fileset dir="${caarray-war.target.webapp.dir}">
@@ -2178,9 +2186,6 @@
             </classpath>
             <classpath refid="war.test.dependencies.path" />
         </javac>
-        <copy todir="${caarray-war.test.classes.dir}">
-            <fileset dir="${caarraydb.sql.test.dir}/migration" includes="*.sql,*.xml" />
-        </copy>
     </target>
 
     <target name="test:junit-caarray.war" unless="notest" depends="init:third-party-paths,test:compile:caarray-war.test.classes,test:instrument:caarray.war,compile:caarray-ejb.jar,compile:caarray-common.jar,test:compile:caarray-ejb.test.classes,configure-datasource-for-test,test:copy-files-to-target-dir-and-unpack-test-data">
@@ -2260,7 +2265,7 @@
         -test:functional:setup,
         test:api:run-tests,
         test:grid:run-tests,
-        database:execute-sql,
+        database:reinitialize,
         test:functional:run-tests,
         deploy:stop-jboss,
         test:functional:report,
@@ -2606,26 +2611,52 @@
 
     <target name="database:initialize-schema" depends="init:third-party-paths,database:drop-schema,database:create-schema" description="Drop &amp; Create DB schema" />
 
-    <target name="database:populate" unless="nodbintegration" depends="init:third-party-paths,database:generate-mged-sql" description="populates db with initial data">
-        <run-sql-script database.url="${database.url}" database.user="${database.user}" database.password="${database.password}" sql.file="${caarraydb.sql.dir}/populate-csm.sql" />
-        <run-sql-script database.url="${database.url}" database.user="${database.user}" database.password="${database.password}" sql.file="${caarraydb.sql.dir}/populate-csm2.sql" />
-        <run-sql-script database.url="${database.url}" database.user="${database.user}" database.password="${database.password}" sql.file="${caarraydb.sql.dir}/populate-mged.sql" />
-        <run-sql-script database.url="${database.url}" database.user="${database.user}" database.password="${database.password}" sql.file="${caarraydb.sql.dir}/populate-caarray.sql" />
-        <run-sql-script database.url="${database.url}" database.user="${database.user}" database.password="${database.password}" sql.file="${caarraydb.sql.dir}/populate-caarray-procedures.sql" sql.delimiter="//" />
-    </target>
-
-    <target name="database:env-specific-sql" unless="nodbintegration" description="populates db with initial data" depends="init:third-party-paths">
-        <run-sql-script database.url="${database.url}" database.user="${database.user}" database.password="${database.password}" sql.file="${caarraydb.sql.dir}/${config.sql.file}" />
-    </target>
-
-    <target name="database:reinitialize" depends="init:third-party-paths,database:init-sql,database:execute-sql" unless="nodbintegration" description="Completely reset caarraydb by dropping database, recreating, and creating schema, and populating with initial data"/>
-
-    <target name="database:execute-sql" unless="nodbintegration" depends="init:third-party-paths,database:drop-schema,database:create-schema,database:populate,database:env-specific-sql" description="Run SQL scripts, skipping Hibernate code generation"/>
-
     <target name="database:recreate-database" unless="nodbintegration" description="Drops and recreates caarraydb database" depends="init:third-party-paths,database:init-sql">
         <run-sql-script database.url="${database.system.url}" database.user="${database.system.user}" database.password="${database.system.password}" sql.file="${caarraydb.sql.dir}/create_database_and_user.sql" />
     </target>
 
+	<target name="database:reinitialize" depends="init:third-party-paths,database:dropAll,database:update" unless="nodbintegration" description="Completely reset caarraydb by dropping database, recreating, and creating schema, and populating with initial data"/>
+
+    <target name="database:liquibase-taskdef" depends="init:third-party-paths">
+        <path id="liquibase.dependencies.path">
+            <pathelement location="${caarray-common.classes.dir}" />
+            <pathelement location="${caarray-ejb.classes.dir}" />
+        	<fileset refid="liquibase.jar.fileset"/>
+        	<fileset refid="mysql-connector-java.jar.fileset"/>
+        	<fileset refid="log4j.jar.fileset"/>
+        	<fileset refid="nci-commons-core.jar.fileset"/>
+        	<fileset refid="javaee.jar.fileset"/>
+        	<fileset refid="affxfusion.jar.fileset"/>
+        	<fileset refid="commons-io.jar.fileset"/>
+            <pathelement path="${caarraydb.sql.src.dir}/liquibase" />
+		</path>
+		
+		<taskdef resource="liquibasetasks.properties">
+		    <classpath refid="liquibase.dependencies.path"/>	 
+		</taskdef>
+    </target>
+	
+	<target name="database:update" depends="init:third-party-paths,build:caarray-common.jar,build:caarray-ejb.jar,database:liquibase-taskdef" unless="nodbintegration" description="Run all needed schema creation, population and updates scripts to get database to correct state">
+		<updateDatabase
+			driver="${database.driver}"
+			url="${database.url}"
+			username="${database.user}"
+			password="${database.password}"
+			classpathref="liquibase.dependencies.path"
+			changeLogFile="db-upgrade.xml">			
+			<changeLogProperty name="csm.application.name" value="${csm.application.name}"/>
+			<changeLogProperty name="environment" value="${environment}"/>
+    	</updateDatabase>
+	</target>
+
+	<target name="database:dropAll" depends="database:liquibase-taskdef,init:third-party-paths" unless="nodbintegration" description="Drop all database tables and other objects">
+		<dropAllDatabaseObjects
+			driver="${database.driver}"
+			url="${database.url}"
+			username="${database.user}"
+			password="${database.password}"
+			classpathref="liquibase.dependencies.path"/>
+	</target>
 
     <!-- ******************************************************************* -->
     <!-- ** LOCAL DEPLOY TARGETS                                                ** -->

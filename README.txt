@@ -6,11 +6,12 @@ Contents
    3. Prerequisites
    4. Getting Started
    5. Build Management
-   6. Source Control
-   7. Issue Tracking
-   8. Developing with Eclipse
-   9. Static Analysis
-   10. Continuous Integration
+   6. Database
+   7. Source Control
+   8. Issue Tracking
+   9. Developing with Eclipse
+   10. Static Analysis
+   11. Continuous Integration
 
 Introduction
 ---------------------------
@@ -133,8 +134,10 @@ You can execute "ant -p" for a full list of ant targets to run. A few of the key
   the "grid.useJBoss" build property, the grid services are deployed to either JBoss or Globus.
 * deploy:copy-jsp - copies JSPs and other web assets (CSS, Javascript, etc) to the caArray deployment inside JBoss, without
   redeploying the overall webapp.
-* database:reinitialize - drops all the tables in the caArray database, reruns the schema generation, recreates the tables,
-  and populates them with the initial set of data.  
+* database:dropAll - cleans out the database by dropping all tables and data
+* database:update - brings the database up to date by running any necessary schema, population and update scripts. Can be
+run on a database in any state, including a blank one
+* database:reinitialize - resets the database to the initial state (up-to-date schema and initial dataset) by calling database:dropAll and database:update
 * database:recreate-database - drops the caArray database and user and then creates them again. Should be run when changes
   to the caArray schema are made, because otherwise the database:reinitialize command may fail.
 * test - runs the JUnit test suite.
@@ -158,6 +161,29 @@ It is recommended, for quicker builds, to check out this ivy repository to a loc
 Then, set the "local.repo.dir" build property to point to this directory. This will make the build fetch dependencies from your local copy first,
 but will fall back upon the canonical repository if it cannot find it there. Doing this (and ensuring your local copy is up to date) is required
 in order to be able to build caArray without Internet connectivity.
+
+Database 
+------------------------
+We use MySQL as the database for caArray, Hibernate as the ORM tool to persist our domain model in the database, and 
+Liquibase to manage database upgrades.
+
+The Liquibase paradigm is that database population always proceeds by starting from a baseline schema, and then applying
+a set of upgrade scripts corresponding to changes made to the domain model and/or initial population scripts. The ant target
+"database:update" will bring a database in any state up-to-date. Liquibase maintains a set of which upgrade scripts have been
+run, so this target can be run multiple times and upgrade scripts will not be run twice.
+
+The database upgrade scripts are under software/caarraydb/liquibase, organized by version. The db-upgrade.xml is the master
+changelog file, which then references db-*.xml files for each version, which in turn reference individual changesets. 
+A changeset should correspond to a single GForge issue and should be named for that issue.
+
+So, whenever making changes to the data model that will result in changes to the database schema, the process to do so is:
+- make appropriate changes to the hibernate-annotated domain classes
+- optionally, run "ant:generate-schema-sql". This will use hibernate to generate a schema creation script corresponding to the 
+  current data model. This is not necessary but will probly make it easier to write the upgrade script
+- create an upgrade script, named for the gforge issue, in the appropriate directory, and add a changeset to the appropriate
+db-*.xml file referencing the script. You can use the schema file from the previous step to help with writing the script.
+- run ant database:update to apply the script.
+- deploy and run your code / unit tests as appropriate.
 
 Source Control
 ------------------------

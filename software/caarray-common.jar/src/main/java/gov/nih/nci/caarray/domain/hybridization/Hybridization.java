@@ -371,7 +371,7 @@ public class Hybridization extends AbstractExperimentDesignNode implements Prote
      * @return the labeledExtract
      */
     @ManyToMany(mappedBy = "hybridizations", fetch = FetchType.LAZY)
-    @Filter(name = "Project1", condition = Experiment.LABELED_EXTRACTS_FILTER)
+    @Filter(name = Experiment.SECURITY_FILTER_NAME, condition = Experiment.LABELED_EXTRACTS_FILTER)
     public Set<LabeledExtract> getLabeledExtracts() {
         return this.labeledExtract;
     }

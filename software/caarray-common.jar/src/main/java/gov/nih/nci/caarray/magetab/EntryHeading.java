@@ -102,8 +102,11 @@ public final class EntryHeading implements Serializable {
     private String typeName;
     private final String headingString;
 
-    EntryHeading(final String headingString) {
-        super();
+    /**
+     * Create a new EntryHeading based on the given column header text.
+     * @param headingString the column header as found in the SDRF or IDF
+     */
+    public EntryHeading(final String headingString) {
         this.headingString = headingString;
         parseName();
         parseQualifier();

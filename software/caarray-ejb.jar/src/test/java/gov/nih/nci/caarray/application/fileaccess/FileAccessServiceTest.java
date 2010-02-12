@@ -84,13 +84,6 @@ package gov.nih.nci.caarray.application.fileaccess;
 
 import java.sql.SQLException;
 import static org.junit.Assert.*;
-import gov.nih.nci.caarray.application.AbstractServiceTest;
-import gov.nih.nci.caarray.domain.MultiPartBlob;
-import gov.nih.nci.caarray.domain.file.CaArrayFile;
-import gov.nih.nci.caarray.domain.file.FileType;
-import gov.nih.nci.caarray.test.data.arraydata.GenepixArrayDataFiles;
-import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
-import gov.nih.nci.caarray.util.HibernateUtil;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -105,14 +98,21 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import gov.nih.nci.caarray.application.AbstractServiceTest;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
+import gov.nih.nci.caarray.domain.MultiPartBlob;
 import gov.nih.nci.caarray.domain.data.DerivedArrayData;
+import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileStatus;
+import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.sample.Extract;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 import gov.nih.nci.caarray.domain.sample.Sample;
+import gov.nih.nci.caarray.test.data.arraydata.GenepixArrayDataFiles;
+import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
+import gov.nih.nci.caarray.util.HibernateUtil;
 
 /**
  *

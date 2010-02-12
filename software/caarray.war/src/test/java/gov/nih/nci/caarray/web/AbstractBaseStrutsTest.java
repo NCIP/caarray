@@ -82,6 +82,8 @@
  */
 package gov.nih.nci.caarray.web;
 
+import gov.nih.nci.caarray.AbstractCaarrayTest;
+
 import java.util.Map;
 
 import org.apache.struts2.dispatcher.Dispatcher;
@@ -99,7 +101,7 @@ import com.opensymphony.xwork2.util.XWorkTestCaseHelper;
  * Test case that sets up some struts framework stuff.
  * @author Scott Miller
  */
-public abstract class AbstractBaseStrutsTest {
+public abstract class AbstractBaseStrutsTest extends AbstractCaarrayTest {
 
     protected ConfigurationManager configurationManager;
     protected Configuration configuration;

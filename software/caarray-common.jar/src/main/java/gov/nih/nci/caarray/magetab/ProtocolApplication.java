@@ -82,8 +82,8 @@
  */
 package gov.nih.nci.caarray.magetab;
 
+import gov.nih.nci.caarray.magetab.sdrf.AbstractCommentable;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -91,7 +91,7 @@ import java.util.List;
 /**
  * The use of a protocol with the requisite parameters.
  */
-public final class ProtocolApplication implements Serializable {
+public final class ProtocolApplication extends AbstractCommentable {
 
     private static final long serialVersionUID = -3273047341277478014L;
 

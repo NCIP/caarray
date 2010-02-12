@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+    <preConditions>
+        <dbms type="mysql" />
+    </preConditions>
+
+    <!-- 2.4.0 changes -->    
+    <changeSet id="20803" author="dkokotov">
+       <comment>GF 20803 - liquibase upgrade - finalize by getting rid of schema_version</comment>
+       <delete tableName="config_parameter">
+           <where>param='SCHEMA_VERSION'</where>
+       </delete>
+    </changeSet>
+    
+   <changeSet id="25621" author="jscott">
+      <comment>GF 25621 - Illumina: Retrofit already-imported Illumina TXT data files</comment>
+      <update tableName="caarrayfile">
+         <column name="type" value="ILLUMINA_DERIVED_TXT"/>
+         <where>type = 'ILLUMINA_DATA_TXT'</where>
+      </update>
+   </changeSet>
+    
+    <changeSet id="26037" author="dkokotov">
+       <comment>GF 26037 - upgrade to CSM 4.2</comment>
+       <sqlFile path="db-upgrade/mysql/2.4.0/26037.sql"/>
+    </changeSet>    
+ </databaseChangeLog>

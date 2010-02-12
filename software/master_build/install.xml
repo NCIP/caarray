@@ -285,28 +285,36 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
         <delete dir="${jboss.home}"/>
     </target>
    
-    <!-- do we need this dependency (i was removed)???  install:database:prep -->
     <target name="install:database" description="Re-creates database and users from baseline and applys incremental database changes." unless="exclude.database"
         depends="
 		common:init,
 		install:database:validation:pre-install
         ">
-        <property name="caarraydb.sql.dir" value="${db.dir.dest}/tmp" />
-        <copy todir="${caarraydb.sql.dir}" filtering="true">
-            <fileset dir="${db.dir.dest}">
-                <include name="**/*"/>
-            </fileset>
-            <filterset>
-                <filtersfile file="${properties.file}"/>
-                <filtersfile file="project.properties"/>
-            </filterset>
-        </copy>
-        <ant antfile="${this.dir}/build-caarray-app.xml" target="database:execute-sql">
-            <property name="no.ivy" value="true" />
-            <property name="schema.sql.exists" value="true" />
-            <property name="env.GLOBUS_LOCATION" value="${env.GLOBUS_LOCATION}"/>
-        </ant>
-        <delete dir="${caarraydb.sql.dir}"/>
+ 
+        <delete dir="${temp.dir}" />
+        <mkdir dir="${temp.dir}/caarray.ear" />
+        <unzip src="${caarray.dir.dist}/${caarray.ear.file}" dest="${temp.dir}/caarray.ear/" />
+
+        <path id="liquibase.dependencies.path">
+            <fileset dir="${lib.dir}/caarray-project" includes="*.jar"/>
+            <fileset dir="${temp.dir}/caarray.ear" includes="caarray-*.jar"/>
+			<pathelement path="${db.dir.src}" />
+		</path>
+
+		<taskdef resource="liquibasetasks.properties">
+		    <classpath refid="liquibase.dependencies.path"/>	 
+		</taskdef>
+    	
+		<updateDatabase
+			driver="${database.driver}"
+			url="${database.url}"
+			username="${database.user}"
+			password="${database.password}"
+			classpathref="liquibase.dependencies.path"
+			changeLogFile="db-upgrade.xml">			
+			<changeLogProperty name="csm.application.name" value="${csm.application.name}"/>
+			<changeLogProperty name="environment" value="${environment}"/>
+    	</updateDatabase>
     </target>
 
     <target name="install:jboss:binaries" description="Unzip JBoss binary" unless="exclude.jboss" depends="common:jboss:init, common:init">
@@ -368,19 +376,6 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
             </else>
         </if>
 
-        <!-- set the mergeDuplicateBiomaterialsMigrator.renameHybridizations value (default it to false as it is not set in GUI "fresh" install, upgrade installer sets the value so) -->
-        <property name="mergeDuplicateBiomaterialsMigrator.renameHybridizations" value="true"/>
-        <xmltask source="${temp.dir}/caarray.war/WEB-INF/classes/db-migrations.xml" dest="${temp.dir}/caarray.war/WEB-INF/classes/db-migrations.xml">
-            <xmlcatalog refid="bda.xml.catalog"/>
-            <replace path="//migrator-class/@renameHybridizations" withText="${mergeDuplicateBiomaterialsMigrator.renameHybridizations}"/>
-        </xmltask>
-        
-        <!-- set the local node name -->
- 	 	<xmltask source="${temp.dir}/caarray.war/WEB-INF/web.xml" dest="${temp.dir}/caarray.war/WEB-INF/web.xml">
- 	 		<xmlcatalog refid="bda.xml.catalog"/>
- 	 		<replace path="//*[local-name()='param-name'][text()='nodeName']/following-sibling::*/text()" withText="${grid.poc.tech.researchCenter.shortname}"/>
- 	 	</xmltask>
-
         <!-- set the UptUrl value -->
         <replaceregexp file="${temp.dir}/caarray.war/WEB-INF/web.xml" match="uptUrl&lt;/param-name&gt;\s{0,}&lt;param-value&gt;(.*)&lt;/param-value&gt;" replace="uptUrl&lt;/param-name&gt;&lt;param-value&gt;${upt.url}&lt;/param-value&gt;" byline="false"/>
 
@@ -391,23 +386,6 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
             <replace path="//*[local-name()='param-name'][text()='ldapSearchableBase']/following-sibling::*/text()" withText="${ldap.searchbase}"/>
             <replace path="//*[local-name()='param-name'][text()='ldapUserIdLabel']/following-sibling::*/text()" withText="${ldap.searchprefix}"/>
         </xmltask>
-
-        <!-- make sure migration sql scripts get filtered to get property values (insert registration email, etc.) -->
-        <copy todir="${temp.dir}/caarray.war/WEB-INF/classes/temp" filtering="true" overwrite="true">
-            <fileset dir="${temp.dir}/caarray.war/WEB-INF/classes">
-                <include name="*.sql"/>
-            </fileset>
-            <filterset>
-                <filtersfile file="${properties.file}"/>
-                <filtersfile file="project.properties"/>
-            </filterset>
-        </copy>
-        <copy todir="${temp.dir}/caarray.war/WEB-INF/classes" overwrite="true">
-            <fileset dir="${temp.dir}/caarray.war/WEB-INF/classes/temp">
-                <include name="*.sql"/>
-            </fileset>
-        </copy>
-        <delete dir="${temp.dir}/caarray.war/WEB-INF/classes/temp"/>
 
         <war destfile="${temp.dir}/caarray.ear/caarray.war">
             <fileset dir="${temp.dir}/caarray.war"/>
@@ -819,8 +797,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
         ">
     </target>
     
-    <target name="upgrade:database" description="this is a bda template target placeholder as it is not currently needed.">
-    </target>
+    <target name="upgrade:database" depends="install:database" description="Upgrading and installing db is the same"/>
 
     <target name="upgrade-dac:with-dbinstall" description="Upgrades JBoss and Database"
         depends="

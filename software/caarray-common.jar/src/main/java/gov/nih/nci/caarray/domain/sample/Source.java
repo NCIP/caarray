@@ -137,7 +137,7 @@ public class Source extends AbstractBioMaterial {
     )
     @ForeignKey(name = "sourcesample_source_fk", inverseName = "sourcesample_sample_fk")
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    @Filter(name = "Project1", condition = Experiment.SAMPLES_FILTER)
+    @Filter(name = Experiment.SECURITY_FILTER_NAME, condition = Experiment.SAMPLES_FILTER)
     public Set<Sample> getSamples() {
         return samples;
     }

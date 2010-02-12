@@ -88,6 +88,8 @@ import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.security.authorization.domainobjects.User;
+import gov.nih.nci.security.exceptions.CSDataAccessException;
+import gov.nih.nci.security.exceptions.CSObjectNotFoundException;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -96,6 +98,7 @@ import java.util.Iterator;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.hibernate.CallbackException;
 import org.hibernate.EmptyInterceptor;
 import org.hibernate.collection.PersistentCollection;
@@ -116,6 +119,8 @@ public class SecurityInterceptor extends EmptyInterceptor {
     //
 
     private static final long serialVersionUID = -2071964672876972370L;
+
+    private static final Logger LOG = Logger.getLogger(SecurityInterceptor.class);
 
     // Indicates that some activity of interest occurred
     private static final ThreadLocal<Object> MARKER = new ThreadLocal<Object>();
@@ -301,6 +306,15 @@ public class SecurityInterceptor extends EmptyInterceptor {
             SecurityUtils.handleBiomaterialChanges(BIOMATERIAL_CHANGES.get(), NEWOBJS.get());
             SecurityUtils.handleDeleted(DELETEDOBJS.get());
             SecurityUtils.handleAccessProfiles(PROFILES.get());
+            
+            try {
+                AuthorizationManagerExtensions.refreshInstanceTables(SecurityUtils.getApplication());
+            } catch (CSObjectNotFoundException e) {
+                LOG.warn("Unable to refresh temp instance tables: " + e.getMessage(), e);
+            } catch (CSDataAccessException e) {
+                LOG.warn("Unable to refresh temp instance tables: " + e.getMessage(), e);
+            }        
+
         } finally {
             clear();
         }

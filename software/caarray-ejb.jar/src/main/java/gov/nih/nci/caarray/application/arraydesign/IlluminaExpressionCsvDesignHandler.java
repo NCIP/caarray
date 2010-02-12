@@ -82,26 +82,34 @@
  */
 package gov.nih.nci.caarray.application.arraydesign;
 
+import com.google.common.collect.ImmutableSet;
 import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
 import gov.nih.nci.caarray.domain.array.ExpressionProbeAnnotation;
 import gov.nih.nci.caarray.domain.array.Gene;
-import gov.nih.nci.caarray.domain.array.LogicalProbe;
+import gov.nih.nci.caarray.domain.array.PhysicalProbe;
 import gov.nih.nci.caarray.validation.FileValidationResult;
+import gov.nih.nci.caarray.validation.ValidationMessage;
 
 import java.util.List;
+import java.util.Set;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * Reads Illumina genotyping and gene expression array description files.
  */
 final class IlluminaExpressionCsvDesignHandler extends AbstractIlluminaDesignHandler {
 
+    private static final Set<Header> REQUIRED_COLUMNS = ImmutableSet.of(
+        Header.TARGET, Header.SYMBOL, Header.DEFINITION, Header.PROBEID);
+    
     IlluminaExpressionCsvDesignHandler() {
-        super();
+        super(Header.class, REQUIRED_COLUMNS);
     }
 
-    LogicalProbe createLogicalProbe(ArrayDesignDetails details, List<String> values) {
+    @Override
+    PhysicalProbe createProbe(ArrayDesignDetails details, List<String> values) {
         String target = getValue(values, Header.TARGET);
-        LogicalProbe logicalProbe = new LogicalProbe(details);
+        PhysicalProbe logicalProbe = new PhysicalProbe(details, null);
         logicalProbe.setName(target);
         ExpressionProbeAnnotation annotation = new ExpressionProbeAnnotation();
         annotation.setGene(new Gene());
@@ -112,26 +120,13 @@ final class IlluminaExpressionCsvDesignHandler extends AbstractIlluminaDesignHan
     }
 
     @Override
-    Enum[] getExpectedHeaders(List<String> headers) {
-        return Header.values();
-    }
-
-    @Override
     void validateValues(List<String> values, FileValidationResult result, int lineNumber) {
-        validateIntegerField(values, Header.PROBEID, result, lineNumber);
-    }
-
-    @Override
-    boolean isHeaderLine(List<String> values) {
-        if (values.size() != Header.values().length) {
-            return false;
+        String probeId = getValue(values, Header.PROBEID);
+        if (StringUtils.isBlank(probeId)) {
+            ValidationMessage error = result.addMessage(ValidationMessage.Type.ERROR, "Missing or blank PROBEID");
+            error.setLine(lineNumber);
+            error.setColumn(indexOf(Header.PROBEID) + 1);
         }
-        for (int i = 0; i < values.size(); i++) {
-            if (!values.get(i).equalsIgnoreCase(Header.values()[i].name())) {
-                return false;
-            }
-        }
-        return true;
     }
 
     @Override
@@ -142,7 +137,7 @@ final class IlluminaExpressionCsvDesignHandler extends AbstractIlluminaDesignHan
     /**
      * Enumeration of expected headers in Illumina expression CSV descriptor.
      */
-    private static enum Header {
+    static enum Header {
         SEARCH_KEY,
         TARGET,
         PROBEID,

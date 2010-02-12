@@ -178,6 +178,7 @@ import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.magetab.MageTabFileSet;
+import gov.nih.nci.caarray.magetab.MageTabParserImplementation;
 import gov.nih.nci.caarray.test.data.arraydata.AffymetrixArrayDataFiles;
 import gov.nih.nci.caarray.test.data.arraydata.GenepixArrayDataFiles;
 import gov.nih.nci.caarray.test.data.arraydata.IlluminaArrayDataFiles;
@@ -579,7 +580,7 @@ public class ArrayDataServiceTest extends AbstractServiceTest {
                 mTabFiles.addNativeData(f);
             }
         }
-        MageTabDocumentSet mTabSet = new MageTabDocumentSet(mTabFiles);
+        MageTabDocumentSet mTabSet = new MageTabDocumentSet(mTabFiles, MageTabParserImplementation.CAARRAY_VALIDATION_SET);
         return mTabSet;
     }
 

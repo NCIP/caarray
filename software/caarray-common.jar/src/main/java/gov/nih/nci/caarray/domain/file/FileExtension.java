@@ -143,6 +143,10 @@ public enum FileExtension {
      */
     IDAT(FileType.ILLUMINA_IDAT),
     /**
+     * ILLUMINA_DESIGN_BGX.
+     */
+    BGX(FileType.ILLUMINA_DESIGN_BGX, "BGX.TXT"),
+    /**
      * MAGE_TAB_IDF.
      */
     IDF(FileType.MAGE_TAB_IDF, "IDF.TXT"),

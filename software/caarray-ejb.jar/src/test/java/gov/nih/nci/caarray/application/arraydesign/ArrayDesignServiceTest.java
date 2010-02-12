@@ -154,6 +154,8 @@ import org.junit.Test;
 
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
+import gov.nih.nci.caarray.domain.array.ExpressionProbeAnnotation;
+import gov.nih.nci.caarray.domain.array.Gene;
 
 /**
  * Test class for ArrayDesignService subsystem.
@@ -191,7 +193,7 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
         this.transaction = HibernateUtil.beginTransaction();
     }
 
-    private static ArrayDesignService createArrayDesignService(DaoFactoryStub caArrayDaoFactoryStub,
+    public static ArrayDesignService createArrayDesignService(DaoFactoryStub caArrayDaoFactoryStub,
             final FileAccessServiceStub fileAccessServiceStub, VocabularyServiceStub vocabularyServiceStub) {
         ArrayDesignServiceBean bean = new ArrayDesignServiceBean();
         bean.setDaoFactory(caArrayDaoFactoryStub);
@@ -486,7 +488,7 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
         arrayDesign.addDesignFile(designFile);
         arrayDesignService.importDesign(arrayDesign);
         arrayDesignService.importDesignDetails(arrayDesign);
-        assertEquals(47296, arrayDesign.getDesignDetails().getLogicalProbes().size());
+        assertEquals(47296, arrayDesign.getDesignDetails().getProbes().size());
     }
 
     @Test
@@ -509,7 +511,7 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
         arrayDesign.addDesignFile(designFile);
         arrayDesignService.importDesign(arrayDesign);
         arrayDesignService.importDesignDetails(arrayDesign);
-        assertEquals(318237, arrayDesign.getDesignDetails().getLogicalProbes().size());
+        assertEquals(318237, arrayDesign.getDesignDetails().getProbes().size());
         for (LogicalProbe probe : arrayDesign.getDesignDetails().getLogicalProbes()) {
             assertNotNull(probe);
             assertNotNull(probe.getAnnotation());
@@ -671,7 +673,7 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
         assertTrue(result.getMessages().iterator().next().getMessage().contains("design already exists with the name"));
     }
 
-    private ArrayDesign createDesign(Organization provider, Organism organism, SortedSet<AssayType> assayTypes,
+    public static ArrayDesign createDesign(Organization provider, Organism organism, SortedSet<AssayType> assayTypes,
             CaArrayFile caArrayFile) {
         ArrayDesign arrayDesign = new ArrayDesign();
         arrayDesign.setName("Dummy Design");
@@ -749,7 +751,7 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
         }
     }
 
-    private static class LocalDaoFactoryStub extends DaoFactoryStub {
+    public static class LocalDaoFactoryStub extends DaoFactoryStub {
         private final Map<String, AbstractCaArrayEntity> lsidEntityMap = new HashMap<String, AbstractCaArrayEntity>();
         private final Map<Long, PersistentObject> objectMap = new HashMap<Long, PersistentObject>();
         private static long nextId = 0;

@@ -99,7 +99,6 @@ import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.security.AttributePolicy;
 import gov.nih.nci.caarray.security.SecurityPolicy;
-import gov.nih.nci.caarray.util.CaarrayInnoDBDialect;
 import gov.nih.nci.caarray.validation.UniqueConstraint;
 import gov.nih.nci.caarray.validation.UniqueConstraintField;
 import gov.nih.nci.security.authorization.domainobjects.User;
@@ -159,36 +158,20 @@ public class Experiment extends AbstractCaArrayEntity {
     private static final String TERM_FK_NAME = "term_id";
     private static final String EXPERIMENT_REF = "experiment";
 
-    private static final String READABLE_PROJECT_CLAUSE = "(select pe.attribute_value from csm_protection_group pg, "
-        + "csm_protection_element pe, csm_pg_pe pgpe, csm_user_group_role_pg ugrpg, csm_user u, csm_role_privilege rp, "
-        + "csm_role r, csm_privilege p, csm_user_group ug where "
-        + "pe.object_id= 'gov.nih.nci.caarray.domain.project.Project' and pe.attribute='id' and "
-        + "u.login_name=:USER_NAME and pe.application_id=:APPLICATION_ID and ugrpg.role_id=r.role_id "
-        + "and ugrpg.group_id = ug.group_id and ug.user_id = u.user_id and "
-        + "ugrpg.protection_group_id = pg.protection_group_id and pg.protection_group_id = pgpe.protection_group_id "
-        + "and pgpe.protection_element_id = pe.protection_element_id and r.role_id = rp.role_id and rp.privilege_id = "
-        + "p.privilege_id and p.privilege_name='READ')";
+    private static final String READABLE_PROJECT_CLAUSE = "(select t.attribute_value from csm_project_id_group t " 
+        + "where t.group_id IN (:GROUP_NAMES) and t.privilege_id=3)";
 
-    private static final String PROJECT_OWNER_CLAUSE = "(select " + CaarrayInnoDBDialect.FILTER_ALIAS
-        + ".attribute_value from (select pe.attribute_value from csm_user_pe upe, "
-        + "csm_protection_element pe, csm_user u "
-        + "where pe.object_id= 'gov.nih.nci.caarray.domain.project.Project' and "
-        + "pe.attribute='id' and u.login_name=:USER_NAME and pe.application_id=:APPLICATION_ID and "
-        + "upe.protection_element_id = pe.protection_element_id and upe.user_id = u.user_id) "
-        + CaarrayInnoDBDialect.FILTER_ALIAS + ")";
+    private static final String PROJECT_OWNER_CLAUSE = "(select t.attribute_value from csm_project_id_group t "
+        + "join csm_group g on t.group_id = g.group_id "
+        + "where t.group_id IN (:GROUP_NAMES) and g.group_name like '__selfgroup__%' and t.privilege_id = 3)";
 
-    private static final String READABLE_SAMPLE_CLAUSE = "(select pe.attribute_value from csm_protection_group pg, "
-        + "csm_protection_element pe, csm_pg_pe pgpe, csm_user_group_role_pg ugrpg, csm_user u, csm_role_privilege rp, "
-        + "csm_role r, csm_privilege p, csm_user_group ug where "
-        + "pe.object_id= 'gov.nih.nci.caarray.domain.sample.Sample' and pe.attribute='id' and "
-        + "u.login_name=:USER_NAME and pe.application_id=:APPLICATION_ID and ugrpg.role_id=r.role_id "
-        + "and ugrpg.group_id = ug.group_id and ug.user_id = u.user_id and "
-        + "ugrpg.protection_group_id = pg.protection_group_id and pg.protection_group_id = pgpe.protection_group_id "
-        + "and pgpe.protection_element_id = pe.protection_element_id and r.role_id = rp.role_id and rp.privilege_id = "
-        + "p.privilege_id and p.privilege_name='READ')";
+    private static final String READABLE_SAMPLE_CLAUSE = "(select t.attribute_value from csm_sample_id_group t "
+        + "where t.group_id IN (:GROUP_NAMES) and t.privilege_id=3)";
 
-    private static final String READABLE_SAMPLE_ALIAS_CLAUSE = "(select " + CaarrayInnoDBDialect.FILTER_ALIAS
-        + ".attribute_value from " + READABLE_SAMPLE_CLAUSE + " " + CaarrayInnoDBDialect.FILTER_ALIAS + ")";
+    private static final String READABLE_SAMPLE_ALIAS_CLAUSE = READABLE_SAMPLE_CLAUSE;
+    
+    /** Filter name used for instance level security filters. */
+    public static final String SECURITY_FILTER_NAME = "Project1";
 
     /** @Where filter for biomaterials */
     public static final String BIOMATERIALS_ALIAS_FILTER = "id in (select b.ID from biomaterial b "
@@ -610,7 +593,7 @@ public class Experiment extends AbstractCaArrayEntity {
      * @return the biomaterials
      */
     @OneToMany(mappedBy = "experiment", fetch = FetchType.LAZY)
-    @Filter(name = "Project1", condition = BIOMATERIALS_ALIAS_FILTER)
+    @Filter(name = SECURITY_FILTER_NAME, condition = BIOMATERIALS_ALIAS_FILTER)
     @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
     private Set<AbstractBioMaterial> getBiomaterials() {
         return this.biomaterials;
@@ -658,7 +641,7 @@ public class Experiment extends AbstractCaArrayEntity {
     @OneToMany(mappedBy = "experiment", targetEntity = AbstractBioMaterial.class, fetch = FetchType.LAZY)
     @Filters({
         @Filter(name = "BiomaterialFilter", condition = "discriminator = '" + Sample.DISCRIMINATOR + "'"),              
-        @Filter(name = "Project1", condition = SAMPLES_ALIAS_FILTER)
+        @Filter(name = SECURITY_FILTER_NAME, condition = SAMPLES_ALIAS_FILTER)
     }
     )
     @Cascade({ org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.DELETE,
@@ -692,7 +675,7 @@ public class Experiment extends AbstractCaArrayEntity {
      */
     @OneToMany(mappedBy = "experiment", targetEntity = AbstractBioMaterial.class, fetch = FetchType.LAZY)
     @Where(clause = "discriminator = '" + Extract.DISCRIMINATOR + "'")
-    @Filter(name = "Project1", condition = EXTRACTS_ALIAS_FILTER)
+    @Filter(name = SECURITY_FILTER_NAME, condition = EXTRACTS_ALIAS_FILTER)
     @Cascade({ org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.DELETE,
             org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<Extract> getExtracts() {
@@ -716,7 +699,7 @@ public class Experiment extends AbstractCaArrayEntity {
      */
     @OneToMany(mappedBy = "experiment", targetEntity = AbstractBioMaterial.class, fetch = FetchType.LAZY)
     @Where(clause = "discriminator = '" + LabeledExtract.DISCRIMINATOR + "'")
-    @Filter(name = "Project1", condition = LABELED_EXTRACTS_ALIAS_FILTER)
+    @Filter(name = SECURITY_FILTER_NAME, condition = LABELED_EXTRACTS_ALIAS_FILTER)
     @Cascade({ org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.DELETE,
             org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<LabeledExtract> getLabeledExtracts() {
@@ -921,7 +904,7 @@ public class Experiment extends AbstractCaArrayEntity {
     @ForeignKey(name = "hybridization_expr_fk")
     @Cascade({ org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.DELETE,
             org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    @Filter(name = "Project1", condition = HYBRIDIZATIONS_ALIAS_FILTER)
+    @Filter(name = SECURITY_FILTER_NAME, condition = HYBRIDIZATIONS_ALIAS_FILTER)
     public Set<Hybridization> getHybridizations() {
         return this.hybridizations;
     }

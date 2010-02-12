@@ -86,23 +86,30 @@ import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.logging.api.logger.hibernate.HibernateSessionFactoryHelper;
 import gov.nih.nci.security.authorization.domainobjects.Application;
 import gov.nih.nci.security.authorization.domainobjects.Group;
+import gov.nih.nci.security.authorization.domainobjects.InstanceLevelMappingElement;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionElement;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
 import gov.nih.nci.security.authorization.domainobjects.Role;
 import gov.nih.nci.security.authorization.domainobjects.User;
 import gov.nih.nci.security.authorization.domainobjects.UserGroupRoleProtectionGroup;
 import gov.nih.nci.security.authorization.domainobjects.UserProtectionElement;
+import gov.nih.nci.security.dao.InstanceLevelMappingElementSearchCriteria;
+import gov.nih.nci.security.exceptions.CSDataAccessException;
 import gov.nih.nci.security.exceptions.CSException;
+import gov.nih.nci.security.exceptions.CSObjectNotFoundException;
 import gov.nih.nci.security.exceptions.CSTransactionException;
 import gov.nih.nci.security.system.ApplicationSessionFactory;
 import gov.nih.nci.security.util.StringUtilities;
 
 import java.io.Serializable;
+import java.sql.Connection;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -617,6 +624,161 @@ public final class AuthorizationManagerExtensions {
             LOG.debug("Authorization|||assignGroupRoleToProtectionGroup|Success|Successful in assigning Roles "
                     + StringUtilities.stringArrayToString(roleIds) + " to Group "
                     + group.getGroupId() + " and Protection Group" + protectionGroup.getProtectionGroupId() + "|");
+        }
+    }
+
+    /**
+     * Refresh instance tables.
+     * @param application the caarray application
+     * @throws CSObjectNotFoundException on error
+     * @throws CSDataAccessException on error
+     */
+    public static void refreshInstanceTables(Application application) throws CSObjectNotFoundException,
+            CSDataAccessException {
+        // Get Mapping Table Entries for Instance Level Security performance.
+        InstanceLevelMappingElement mappingElement = new InstanceLevelMappingElement();
+        List<InstanceLevelMappingElement> mappingElements = SecurityUtils.getAuthorizationManager().getObjects(
+                new InstanceLevelMappingElementSearchCriteria(mappingElement));
+        if (mappingElements == null || mappingElements.size() == 0) {
+            throw new CSObjectNotFoundException("Instance Level Mapping Elements do not exist.");
+        }
+
+        Statement statement = null;
+        Transaction transaction = null;
+        Session session = null;
+        Connection connection = null;
+
+        try {
+            session = HibernateSessionFactoryHelper.getAuditSession(ApplicationSessionFactory
+                    .getSessionFactory(application.getApplicationName()));
+            transaction = session.beginTransaction();
+            // transaction.setTimeout(10000);
+            connection = session.connection();
+            statement = connection.createStatement();
+
+            Iterator<InstanceLevelMappingElement> mappingElementsIterator = mappingElements.iterator();
+            while (mappingElementsIterator.hasNext()) {
+                InstanceLevelMappingElement instanceLevelMappingEntry = mappingElementsIterator.next();
+                if (instanceLevelMappingEntry != null) {
+                    if (instanceLevelMappingEntry.getActiveFlag() == 0) {
+                        // Not active, so ignore this Object + Attribute from refresh logic.
+                        continue;
+                    }
+                    if (!StringUtilities.isAlphaNumeric(instanceLevelMappingEntry.getAttributeName())
+                            || !StringUtilities.isAlphaNumeric(instanceLevelMappingEntry.getObjectName())) {
+                        // Mapping Entry is invalid.
+                        throw new CSObjectNotFoundException(
+                                "Invalid Instance Level Mapping Element. Instance Level Security breach is possible.");
+                    }
+                } else {
+                    // Mapping Entry is invalid.
+                    continue;
+                }
+                // get the Table Name and View Name for each object.
+
+                String applicationID = application.getApplicationId().toString();
+                String peiTableName, tableNameUser, viewNameUser, tableNameGroup, viewNameGroup = null;
+                String peiObjectId = null;
+                if (StringUtilities.isBlank(instanceLevelMappingEntry.getObjectPackageName())) {
+                    peiObjectId = instanceLevelMappingEntry.getObjectName().trim();
+                } else {
+                    peiObjectId = instanceLevelMappingEntry.getObjectPackageName().trim() + "."
+                            + instanceLevelMappingEntry.getObjectName().trim();
+                }
+
+                String peiAttribute = instanceLevelMappingEntry.getAttributeName().trim();
+
+                if (StringUtilities.isBlank(instanceLevelMappingEntry.getTableName())) {
+                    peiTableName = "CSM_PEI_" + instanceLevelMappingEntry.getObjectName() + "_"
+                            + instanceLevelMappingEntry.getAttributeName();
+                } else {
+                    peiTableName = instanceLevelMappingEntry.getTableName();
+                }
+
+                if (StringUtilities.isBlank(instanceLevelMappingEntry.getTableNameForUser())) {
+                    tableNameUser = "CSM_" + instanceLevelMappingEntry.getObjectName() + "_"
+                            + instanceLevelMappingEntry.getAttributeName() + "_USER";
+                } else {
+                    tableNameUser = instanceLevelMappingEntry.getTableNameForUser();
+                }
+                if (StringUtilities.isBlank(instanceLevelMappingEntry.getViewNameForUser())) {
+                    viewNameUser = "CSM_VW_" + instanceLevelMappingEntry.getObjectName() + "_"
+                            + instanceLevelMappingEntry.getAttributeName() + "_USER";
+                } else {
+                    viewNameUser = instanceLevelMappingEntry.getViewNameForUser();
+                }
+                if (StringUtilities.isBlank(instanceLevelMappingEntry.getTableNameForGroup())) {
+                    tableNameGroup = "CSM_" + instanceLevelMappingEntry.getObjectName() + "_"
+                            + instanceLevelMappingEntry.getAttributeName() + "_GROUP";
+                } else {
+                    tableNameGroup = instanceLevelMappingEntry.getTableNameForGroup();
+                }
+                if (StringUtilities.isBlank(instanceLevelMappingEntry.getViewNameForGroup())) {
+                    viewNameGroup = "CSM_VW_" + instanceLevelMappingEntry.getObjectName() + "_"
+                            + instanceLevelMappingEntry.getAttributeName() + "_GROUP";
+                } else {
+                    viewNameGroup = instanceLevelMappingEntry.getViewNameForGroup();
+                }
+
+                byte activeFlag = instanceLevelMappingEntry.getActiveFlag();
+                if (activeFlag == 1) {
+
+                    // refresh PEI Table
+                    statement.addBatch("alter table " + peiTableName + " disable keys");
+                    statement.addBatch("truncate " + peiTableName);
+
+                    statement.executeBatch();
+                    statement
+                            .addBatch("insert into "
+                                    + peiTableName
+                                    + " (protection_element_id, attribute_value) "
+                                    + "   select protection_element_id, attribute_value from csm_protection_element pe"
+                                    + "   where  pe.object_id = '" + peiObjectId + "' and  pe.attribute = '"
+                                    + peiAttribute + "' and pe.application_id = " + applicationID
+                                    + "        and pe.attribute_value is not null ");
+                    statement.addBatch("alter table " + peiTableName + " enable keys");
+                    statement.executeBatch();
+
+                    statement.addBatch("alter table " + tableNameGroup + " disable keys");
+                    statement.addBatch("truncate " + tableNameGroup);
+                    statement
+                            .addBatch("insert into " + tableNameGroup + " (group_id, privilege_id, attribute_value) "
+                                    + "select distinct group_id, privilege_id, attribute_value from " + viewNameGroup);
+                    statement.addBatch("alter table " + tableNameGroup + " enable keys");
+                    statement.executeBatch();
+                }
+            }
+
+            transaction.commit();
+            statement.close();
+        } catch (CSObjectNotFoundException e1) {
+            if (transaction != null) {
+                try {
+                    transaction.rollback();
+                } catch (Exception ex3) {
+                }
+            }
+            throw e1;
+        } catch (Exception e) {
+            if (transaction != null) {
+                try {
+                    transaction.rollback();
+                } catch (Exception ex3) {
+                }
+            }
+            throw new CSDataAccessException("Unable to perform data refresh for instance level security.", e);
+        } finally {
+            try {
+                connection.close();
+            } catch (Exception ex2) {
+            }
+            try {
+                session.close();
+            } catch (Exception ex2) {
+                LOG
+                        .debug("Authorization|||refreshInstanceTables|Failure|Error in Closing Session |"
+                                + ex2.getMessage());
+            }
         }
     }
 }

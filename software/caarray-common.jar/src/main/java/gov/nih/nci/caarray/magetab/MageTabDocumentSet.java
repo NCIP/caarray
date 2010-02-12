@@ -90,6 +90,7 @@ import gov.nih.nci.caarray.magetab.sdrf.ArrayDesign;
 import gov.nih.nci.caarray.magetab.sdrf.Hybridization;
 import gov.nih.nci.caarray.magetab.sdrf.Sample;
 import gov.nih.nci.caarray.magetab.sdrf.SdrfDocument;
+import gov.nih.nci.caarray.magetab.validator.ValidatorSet;
 import gov.nih.nci.caarray.util.io.FileUtility;
 import gov.nih.nci.caarray.validation.ValidationMessage;
 import gov.nih.nci.caarray.validation.ValidationResult;
@@ -127,14 +128,36 @@ public final class MageTabDocumentSet implements Serializable {
         = new HashMap<String, List<Hybridization>>();
     private final Map<String, List<Sample>> samples
         = new HashMap<String, List<Sample>>();
+    private final ValidatorSet validatorSet;
 
     /**
-     * Initialize the MAGE-TAB document set with the given files which will hold the exported contents.
+     * Create a new MAGE-TAB document set based on the given set of input files, using
+     * no validations.
      *
      * @param inputFileSet the set of files to hold the exported contents of the documents.
      */
     public MageTabDocumentSet(MageTabFileSet inputFileSet) {
+        this(inputFileSet, ValidatorSet.NO_VALIDATION);
+    }
+
+    /**
+     * Create a new MAGE-TAB document set based on the given set of input files, using
+     * the given set of validations.
+     *
+     * @param inputFileSet the set of files to hold the exported contents of the documents.
+     * @param validatorSet the ValidatorSet to use to validate the input files.
+     */
+    public MageTabDocumentSet(MageTabFileSet inputFileSet, ValidatorSet validatorSet) {
         initializeFromFileSet(inputFileSet);
+        this.validatorSet = validatorSet;
+    }
+
+    
+    /**
+     * @return the validatorSet
+     */
+    public ValidatorSet getValidatorSet() {
+        return validatorSet;
     }
 
     /**
@@ -362,7 +385,7 @@ public final class MageTabDocumentSet implements Serializable {
         ArrayDesign arrayDesign = arrayDesignCache.get(name);
         if (arrayDesign == null) {
             arrayDesign = new ArrayDesign();
-            arrayDesign.setName(name);
+            arrayDesign.setValue(name);
             arrayDesignCache.put(name, arrayDesign);
         }
         return arrayDesign;

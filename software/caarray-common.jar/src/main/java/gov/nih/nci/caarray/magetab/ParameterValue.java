@@ -82,13 +82,12 @@
  */
 package gov.nih.nci.caarray.magetab;
 
-import java.io.Serializable;
+import gov.nih.nci.caarray.magetab.sdrf.AbstractCommentable;
 
 /**
  * The value supplied for a parameter to a protocol.
  */
-public final class ParameterValue implements Serializable, Unitable {
-
+public final class ParameterValue extends AbstractCommentable implements Unitable {
     private static final long serialVersionUID = -7063719478977989712L;
 
     private Parameter parameter;

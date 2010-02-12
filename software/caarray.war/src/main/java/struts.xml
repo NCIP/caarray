@@ -207,11 +207,6 @@
             <result name="input">/WEB-INF/pages/project/export/details.jsp</result>
             <result name="success">/WEB-INF/pages/project/export/{1}.jsp</result>
         </action>
-
-        <action name="upgradeStatus" class="gov.nih.nci.caarray.web.action.UpgradeStatusAction">
-            <result name="success">/upgradeStatus.jsp</result>
-        </action>
-
     </package>
 
     <package name="protected" namespace="/protected" extends="default">

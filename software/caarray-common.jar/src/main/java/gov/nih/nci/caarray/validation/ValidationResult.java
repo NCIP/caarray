@@ -172,6 +172,16 @@ public final class ValidationResult implements Serializable {
         return getOrCreateFileValidationResult(file).addMessage(type, message);
     }
 
+    /**
+     * Adds a new validation message to the result.
+     *
+     * @param file validation message is associated with this file
+     * @param message the validation message
+     */
+    public void addMessage(File file, ValidationMessage message) {
+        getOrCreateFileValidationResult(file).addMessage(message);
+    }
+
     private FileValidationResult getOrCreateFileValidationResult(File file) {
         if (!fileValidationResults.containsKey(file)) {
             fileValidationResults.put(file, new FileValidationResult(file));

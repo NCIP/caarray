@@ -85,8 +85,10 @@ package gov.nih.nci.caarray.web.validator;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import gov.nih.nci.caarray.AbstractCaarrayTest;
 import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.util.HibernateUtil;
+import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.web.AbstractBaseStrutsTest;
 
 import java.util.ArrayList;
@@ -126,6 +128,8 @@ public class HibernateValidatorTest extends AbstractBaseStrutsTest {
 
         this.action.setSource(s1);
         this.action.setSource2(s2);
+        
+        UsernameHolder.setUser(AbstractCaarrayTest.STANDARD_USER);
         tx = HibernateUtil.beginTransaction();
     }
     

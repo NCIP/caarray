@@ -83,19 +83,22 @@
 package gov.nih.nci.caarray.magetab;
 
 /**
+ * Interface to be implemented by classes representing SDRF columns which can be followed by a Unit column. These
+ * would be columns containing a numeric value, and the Unit would specify the unit for that value, as a 
+ * term from an ontology.
+ * 
  * @author Bill Mason
- *
  */
 public interface Unitable {
     /**
      * 
-     * @return OntologyTerm term
+     * @return the term specifying the unit
      */
     OntologyTerm getUnit();
 
     /**
      * 
-     * @param unit OntologyTerm
+     * @param unit the term specifying the unit
      */
     void setUnit(OntologyTerm unit);
 

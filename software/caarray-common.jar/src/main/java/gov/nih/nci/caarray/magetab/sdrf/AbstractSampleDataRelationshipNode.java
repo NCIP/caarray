@@ -84,7 +84,6 @@ package gov.nih.nci.caarray.magetab.sdrf;
 
 import gov.nih.nci.caarray.magetab.ProtocolApplication;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -94,8 +93,7 @@ import java.util.Set;
  * An entity within an SDRF document -- may be a bio material, hybridization, or
  * data object.
  */
-public abstract class AbstractSampleDataRelationshipNode implements Serializable {
-
+public abstract class AbstractSampleDataRelationshipNode extends AbstractCommentable {
     private static final long serialVersionUID = -2710483246399354549L;
 
     private final List<ProtocolApplication> protocolApplications =
@@ -120,7 +118,7 @@ public abstract class AbstractSampleDataRelationshipNode implements Serializable
     public final void setName(String name) {
         this.name = name;
     }
-
+    
     /**
      * @return the protocolApplications
      */
@@ -250,20 +248,6 @@ public abstract class AbstractSampleDataRelationshipNode implements Serializable
         HashSet<Hybridization> result = new HashSet<Hybridization>(nodes.size());
         for (AbstractSampleDataRelationshipNode node : nodes) {
             result.add((Hybridization) node);
-        }
-        return result;
-    }
-
-    /**
-     * Returns all <code>ArrayDesigns</code> that originate from this node (searched recursively).
-     *
-     * @return the originating <code>Scans</code>.
-     */
-    public Set<ArrayDesign> getSuccessorArrayDesigns() {
-        Set<AbstractSampleDataRelationshipNode> nodes = getSuccessorsOfType(SdrfNodeType.ARRAY_DESIGN, true);
-        HashSet<ArrayDesign> result = new HashSet<ArrayDesign>(nodes.size());
-        for (AbstractSampleDataRelationshipNode node : nodes) {
-            result.add((ArrayDesign) node);
         }
         return result;
     }

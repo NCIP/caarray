@@ -152,7 +152,7 @@ public class LabeledExtract extends AbstractBioMaterial implements ProtectableDe
      * @return the extracts
      */
     @ManyToMany(mappedBy = "labeledExtracts")
-    @Filter(name = "Project1", condition = Experiment.EXTRACTS_FILTER)
+    @Filter(name = Experiment.SECURITY_FILTER_NAME, condition = Experiment.EXTRACTS_FILTER)
     public Set<Extract> getExtracts() {
         return extracts;
     }

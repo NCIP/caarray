@@ -227,6 +227,27 @@ public final class TestMageTabSets {
     public static final MageTabFileSet DEFECT_16421_2 = getDefect16421ErrorInputSet2();
 
     /**
+     * MAGE-TAB input set for testing node column order validation
+     */
+    public static final MageTabFileSet INVALID_NODE_ORDER_SET = getInvalidNodeOrderSet();
+
+    /**
+     * MAGE-TAB input set for testing missing biomaterial columns validation
+     */
+    public static final MageTabFileSet NO_BIOMATERIAL_SET = getNoBiomaterialSet();
+
+    /**
+     * MAGE-TAB input set for testing missing hyb columns validation
+     */
+    public static final MageTabFileSet NO_HYBRIDIZATION_SET = getNoHybridizationSet();
+
+    /**
+     * MAGE-TAB input set for testing missing data file columns validation
+     */
+    public static final MageTabFileSet NO_DATA_FILE_SET = getNoDataFileSet();
+
+    
+    /**
      * MAGE-TAB input set based on the base specification set with some changes.
      */
     public static final MageTabFileSet MAGE_TAB_SPECIFICATION_UPDATE_ANNOTATIONS_INPUT_SET = getSpecificationUpdateAnnotationsInputSet();
@@ -512,7 +533,39 @@ public final class TestMageTabSets {
         MageTabFileSet fileSet = new MageTabFileSet();
         fileSet.addIdf(MageTabDataFiles.DEFECT_16421_2_IDF);
         fileSet.addSdrf(MageTabDataFiles.DEFECT_16421_2_SDRF);
-        addCelFiles(fileSet, MageTabDataFiles.DEFECT_16421_2_CEL);
+        addCelFiles(fileSet, MageTabDataFiles.INVALID_COLUMN_ORDER_DIRECTORY);
+        return fileSet;
+    }
+
+    private static MageTabFileSet getInvalidNodeOrderSet() {
+        MageTabFileSet fileSet = new MageTabFileSet();
+        fileSet.addIdf(MageTabDataFiles.INVALID_NODE_ORDER_IDF);
+        fileSet.addSdrf(MageTabDataFiles.INVALID_NODE_ORDER_SDRF);
+        addCelFiles(fileSet, MageTabDataFiles.INVALID_COLUMN_ORDER_DIRECTORY);
+        return fileSet;
+    }
+
+    private static MageTabFileSet getNoBiomaterialSet() {
+        MageTabFileSet fileSet = new MageTabFileSet();
+        fileSet.addIdf(MageTabDataFiles.NO_BIOMATERIAL_IDF);
+        fileSet.addSdrf(MageTabDataFiles.NO_BIOMATERIAL_SDRF);
+        addCelFiles(fileSet, MageTabDataFiles.MISSING_COLUMNS_DIRECTORY);
+        return fileSet;
+    }
+
+    private static MageTabFileSet getNoHybridizationSet() {
+        MageTabFileSet fileSet = new MageTabFileSet();
+        fileSet.addIdf(MageTabDataFiles.NO_HYBRIDIZATION_IDF);
+        fileSet.addSdrf(MageTabDataFiles.NO_HYBRIDIZATION_SDRF);
+        addCelFiles(fileSet, MageTabDataFiles.MISSING_COLUMNS_DIRECTORY);
+        return fileSet;
+    }
+
+    private static MageTabFileSet getNoDataFileSet() {
+        MageTabFileSet fileSet = new MageTabFileSet();
+        fileSet.addIdf(MageTabDataFiles.NO_DATA_FILE_IDF);
+        fileSet.addSdrf(MageTabDataFiles.NO_DATA_FILE_SDRF);
+        addCelFiles(fileSet, MageTabDataFiles.MISSING_COLUMNS_DIRECTORY);
         return fileSet;
     }
 

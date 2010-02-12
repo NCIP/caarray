@@ -106,6 +106,7 @@ public abstract class AbstractHibernateTest extends AbstractCaarrayTest {
     @Before
     public void baseIntegrationSetUp() {
         UsernameHolder.setUser(AbstractCaarrayTest.STANDARD_USER);
+        
         HibernateUtil.setFiltersEnabled(enableFilters);
         HibernateUtil.openAndBindSession();
     }

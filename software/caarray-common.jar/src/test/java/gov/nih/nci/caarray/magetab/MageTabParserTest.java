@@ -102,6 +102,7 @@ import gov.nih.nci.caarray.magetab.sdrf.DerivedArrayDataFile;
 import gov.nih.nci.caarray.magetab.sdrf.Hybridization;
 import gov.nih.nci.caarray.magetab.sdrf.LabeledExtract;
 import gov.nih.nci.caarray.magetab.sdrf.Sample;
+import gov.nih.nci.caarray.magetab.sdrf.SdrfColumnType;
 import gov.nih.nci.caarray.magetab.sdrf.SdrfDocument;
 import gov.nih.nci.caarray.magetab.sdrf.Source;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
@@ -109,7 +110,9 @@ import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.InvalidDataException;
 import gov.nih.nci.caarray.validation.ValidationMessage;
 import gov.nih.nci.caarray.validation.ValidationResult;
+import gov.nih.nci.caarray.validation.ValidationMessage.Type;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -318,7 +321,7 @@ public class MageTabParserTest extends AbstractCaarrayTest {
         ValidationResult result = validate(fileSet);
         System.out.println("testValidate result: " + result);
         assertFalse(result.isValid());
-        assertEquals(100, result.getMessages().size());
+        assertEquals(93, result.getMessages().size());
         // check for the fix to gforge defect 12541
         assertTrue(result.getMessages().toString().contains("ERROR: Referenced Factor Name EF1 was not found in the IDF"));
         assertTrue(result.getMessages().toString().contains("ERROR: Experimental Factors must have a non-empty name"));
@@ -388,7 +391,7 @@ public class MageTabParserTest extends AbstractCaarrayTest {
         inputFileSet.addIdf(MageTabDataFiles.MISSING_TERMSOURCE_IDF);
         inputFileSet.addSdrf(MageTabDataFiles.MISSING_TERMSOURCE_SDRF);
         ValidationResult result = validate(inputFileSet);
-        System.out.println(result);
+        System.out.println("Missing term sources check:\n" + result);
         assertTrue(result.toString().contains("Term Source not-in-IDF is not defined in the IDF document"));
     }
 
@@ -633,7 +636,7 @@ public class MageTabParserTest extends AbstractCaarrayTest {
         assertNotNull(arrayDataFile);
         assertEquals("8kNew111_14_4601_m84.gpr", arrayDataFile.getName());
         assertEquals(12, hyb.getFactorValues().size());
-        assertEquals("URN:LSID:caarray.nci.nih.gov:domain:Mm-Incyte-v1px_16Bx24Cx23R", hyb.getArrayDesign().getName());
+        assertEquals("URN:LSID:caarray.nci.nih.gov:domain:Mm-Incyte-v1px_16Bx24Cx23R", hyb.getArrayDesign().getValue());
     }
 
     private void checkCarray1xIdfDocument(IdfDocument idfDoc) {
@@ -851,7 +854,37 @@ public class MageTabParserTest extends AbstractCaarrayTest {
             assertTrue(error.getMessage().contains("Term Source Ref is not preceded by valid data type"));
         }
     }
+
+    @Test
+    public void testInvalidNodeOrder() throws Exception {
+        MageTabFileSet fs = TestMageTabSets.INVALID_NODE_ORDER_SET;
+        ValidationResult vr = validate(fs);
+        List<ValidationMessage> errors = vr.getMessages(ValidationMessage.Type.ERROR);
+        assertEquals(2, errors.size());
+        checkInvalidNodeOrderMessage(errors.get(0), SdrfColumnType.SOURCE_NAME, 4);
+        checkInvalidNodeOrderMessage(errors.get(1), SdrfColumnType.ARRAY_DATA_FILE, 9);
+    }
     
+    private void checkInvalidNodeOrderMessage(ValidationMessage message, SdrfColumnType type, int column) {
+        assertEquals("Column " + type.getDisplayName() + " is not valid at this location", message.getMessage());
+        assertEquals(Type.ERROR, message.getType());
+        assertEquals(0, message.getLine());
+        assertEquals(column, message.getColumn());        
+    }
+
+    @Test
+    public void testMissingColumns() throws Exception {
+        for (MageTabFileSet fs : Arrays.asList(TestMageTabSets.NO_BIOMATERIAL_SET,
+                TestMageTabSets.NO_HYBRIDIZATION_SET, TestMageTabSets.NO_DATA_FILE_SET)) {
+            ValidationResult vr = validate(fs);
+            List<ValidationMessage> errors = vr.getMessages(ValidationMessage.Type.ERROR);
+            assertEquals(1, errors.size());
+            assertEquals(
+                    "SDRF file does not have the minimum number of columns (a biomaterial, Hybridization, and a data file)",
+                    errors.get(0).getMessage());
+        }
+    }
+
     /**
      * Tests for the refactored factor value / parameter value / characteristic data model.
      */

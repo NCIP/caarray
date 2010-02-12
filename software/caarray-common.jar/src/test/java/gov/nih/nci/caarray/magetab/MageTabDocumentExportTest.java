@@ -122,7 +122,7 @@ import org.junit.Test;
  * @author Rashmi Srinivasa
  */
 @SuppressWarnings("PMD")
-public class MageTabDocumentExportTest extends AbstractCaarrayTest {
+public class MageTabDocumentExportTest {
     private MageTabDocumentSet documentSet;
     private File idfFile;
     private File sdrfFile;

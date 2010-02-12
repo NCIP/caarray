@@ -352,8 +352,35 @@ public class MageTabDataFiles {
     public static final File DEFECT_16421_2_IDF = new File(MageTabDataFiles.class.getResource(
             "/magetab/baddata/invalidColumnOrder/rembrandr_snp_NOB_batch5.idf").getFile());
 
-    public static final File DEFECT_16421_2_CEL = new File(MageTabDataFiles.class.getResource(
+    public static final File INVALID_COLUMN_ORDER_DIRECTORY = new File(MageTabDataFiles.class.getResource(
             "/magetab/baddata/invalidColumnOrder").getFile());
+
+    public static final File INVALID_NODE_ORDER_SDRF = new File(MageTabDataFiles.class.getResource(
+            "/magetab/baddata/invalidColumnOrder/invalid_node_order.sdrf.txt").getFile());
+
+    public static final File INVALID_NODE_ORDER_IDF = new File(MageTabDataFiles.class.getResource(
+            "/magetab/baddata/invalidColumnOrder/invalid_node_order.idf.txt").getFile());
+
+    public static final File MISSING_COLUMNS_DIRECTORY = new File(MageTabDataFiles.class.getResource(
+            "/magetab/baddata/missing_columns").getFile());
+
+    public static final File NO_BIOMATERIAL_SDRF = new File(MageTabDataFiles.class.getResource(
+            "/magetab/baddata/missing_columns/no_biomaterial.sdrf.txt").getFile());
+
+    public static final File NO_BIOMATERIAL_IDF = new File(MageTabDataFiles.class.getResource(
+            "/magetab/baddata/missing_columns/no_biomaterial.idf.txt").getFile());
+
+    public static final File NO_HYBRIDIZATION_SDRF = new File(MageTabDataFiles.class.getResource(
+            "/magetab/baddata/missing_columns/no_hyb.sdrf.txt").getFile());
+
+    public static final File NO_HYBRIDIZATION_IDF = new File(MageTabDataFiles.class.getResource(
+            "/magetab/baddata/missing_columns/no_hyb.idf.txt").getFile());
+
+    public static final File NO_DATA_FILE_SDRF = new File(MageTabDataFiles.class.getResource(
+            "/magetab/baddata/missing_columns/no_data_file.sdrf.txt").getFile());
+
+    public static final File NO_DATA_FILE_IDF = new File(MageTabDataFiles.class.getResource(
+            "/magetab/baddata/missing_columns/no_data_file.idf.txt").getFile());
 
     public static final File SPECIFICATION_UPDATE_ANNOTATIONS_DIRECTORY = new File(MageTabDataFiles.class
             .getResource("/magetab/specification_update_annotations").getFile());

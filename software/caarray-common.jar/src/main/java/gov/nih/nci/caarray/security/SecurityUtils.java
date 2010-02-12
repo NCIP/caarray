@@ -124,16 +124,16 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
+import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
 
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 import com.fiveamsolutions.nci.commons.util.HibernateHelper;
-import org.hibernate.HibernateException;
-import org.hibernate.criterion.Restrictions;
 
 /**
  * Utility class containing methods for synchronizing our security data model with CSM, as well as a facade for querying
@@ -260,20 +260,20 @@ public final class SecurityUtils {
             return;
         }
 
-        for (Project p : projects) {
-            LOG.debug("Modifying biomaterial collections for project: " + p.getId());
-            try {
+        try {
+            for (Project p : projects) {
+                LOG.debug("Modifying biomaterial collections for project: " + p.getId());
                 for (Sample s : p.getExperiment().getSamples()) {
                     if (protectables != null && protectables.contains(s)) {
                         handleNewSample(s, p);
                     }
                 }
-            } catch (CSTransactionException e) {
-                LOG.warn("Unable to update biomaterial collections: " + e.getMessage(), e);
-            } catch (CSObjectNotFoundException e) {
-                LOG.warn("Unable to update biomaterial collections: " + e.getMessage(), e);
             }
-        }
+        } catch (CSTransactionException e) {
+            LOG.warn("Unable to update biomaterial collections: " + e.getMessage(), e);
+        } catch (CSObjectNotFoundException e) {
+            LOG.warn("Unable to update biomaterial collections: " + e.getMessage(), e);
+        }        
     }
 
     @SuppressWarnings({ "PMD.ExcessiveMethodLength", "unchecked" })
@@ -282,19 +282,19 @@ public final class SecurityUtils {
             return;
         }
 
-        for (Protectable p : deletedInstances) {
-            LOG.debug("Deleting records for obj of type: " + p.getClass().getName() + " for user "
-                    + UsernameHolder.getUser());
-            try {
+        try {
+            for (Protectable p : deletedInstances) {
+                LOG.debug("Deleting records for obj of type: " + p.getClass().getName() + " for user "
+                        + UsernameHolder.getUser());
                 List<UserGroupRoleProtectionGroup> l = getUserGroupRoleProtectionGroups(p);
                 for (UserGroupRoleProtectionGroup ugrpg : l) {
                     if (ugrpg.getGroup() != null) {
                         authMgr.removeGroupRoleFromProtectionGroup(ugrpg.getProtectionGroup().getProtectionGroupId()
-                                .toString(), ugrpg.getGroup().getGroupId().toString(), new String[]{ugrpg.getRole()
+                                .toString(), ugrpg.getGroup().getGroupId().toString(), new String[] {ugrpg.getRole()
                                 .getId().toString() });
                     } else {
                         authMgr.removeUserRoleFromProtectionGroup(ugrpg.getProtectionGroup().getProtectionGroupId()
-                                .toString(), ugrpg.getUser().getUserId().toString(), new String[]{ugrpg.getRole()
+                                .toString(), ugrpg.getUser().getUserId().toString(), new String[] {ugrpg.getRole()
                                 .getId().toString() });
                     }
                 }
@@ -304,10 +304,9 @@ public final class SecurityUtils {
                 ProtectionElement pe = protElements.iterator().next();
                 authMgr.removeProtectionGroup(pg.getProtectionGroupId().toString());
                 authMgr.removeProtectionElement(pe.getProtectionElementId().toString());
-
-            } catch (CSTransactionException e) {
-                LOG.warn("Unable to remove CSM elements from deleted object: " + e.getMessage(), e);
             }
+        } catch (CSTransactionException e) {
+            LOG.warn("Unable to remove CSM elements from deleted object: " + e.getMessage(), e);
         }
     }
 
@@ -321,21 +320,22 @@ public final class SecurityUtils {
         }
 
         User csmUser = UsernameHolder.getCsmUser();
-        for (Protectable p : protectables) {
-            LOG.debug("Creating access record for obj of type: " + p.getClass().getName() + " for user "
-                    + csmUser.getLoginName());
 
-            try {
+
+        try {
+            for (Protectable p : protectables) {
+                LOG.debug("Creating access record for obj of type: " + p.getClass().getName() + " for user "
+                        + csmUser.getLoginName());
                 ProtectionGroup pg = createProtectionGroup(p, csmUser);
 
                 if (p instanceof Project) {
                     handleNewProject((Project) p, pg);
                 }
-            } catch (CSObjectNotFoundException e) {
-                LOG.warn("Could not find the " + caarrayAppName + " application: " + e.getMessage(), e);
-            } catch (CSTransactionException e) {
-                LOG.warn("Could not save new protection element: " + e.getMessage(), e);
             }
+        } catch (CSObjectNotFoundException e) {
+            LOG.warn("Could not find the " + caarrayAppName + " application: " + e.getMessage(), e);
+        } catch (CSTransactionException e) {
+            LOG.warn("Could not save new protection element: " + e.getMessage(), e);
         }
     }
 
@@ -349,7 +349,7 @@ public final class SecurityUtils {
 
         for (AccessProfile ap : profiles) {
             handleAccessProfile(ap);
-        }
+        }        
     }
 
     @SuppressWarnings("PMD.ExcessiveMethodLength")

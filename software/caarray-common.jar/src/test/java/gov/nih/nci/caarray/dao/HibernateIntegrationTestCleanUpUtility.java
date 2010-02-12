@@ -113,6 +113,7 @@ public final class HibernateIntegrationTestCleanUpUtility {
 
     private static final Logger LOG = Logger.getLogger(HibernateIntegrationTestCleanUpUtility.class);
     private static List<Class<?>> classesToRemove;
+    private static List<Class<?>> collsToRemove;
     private static final String SELF_GROUP_PATTERN = "'" + SecurityUtils.SELF_GROUP_PREFIX + "%'";
     private static final Map<Class<?>, String> CLASS_DELETE_CONSTRAINTS = new HashMap<Class<?>, String>();
     static {
@@ -198,13 +199,14 @@ public final class HibernateIntegrationTestCleanUpUtility {
     @SuppressWarnings("unchecked")
     private static void retrieveClassMetadata() {
         Map<String, ClassMetadata> classMetadataMap = HibernateUtil.getSessionFactory().getAllClassMetadata();
+
         classesToRemove = new LinkedList<Class<?>>();
         for (ClassMetadata classMetadata : classMetadataMap.values()) {
             Class<?> persistentClass = classMetadata.getMappedClass(EntityMode.POJO);
             if (!ArrayUtils.contains(CSM_CLASSES_NOT_TO_REMOVE, persistentClass)) {
                 classesToRemove.add(persistentClass);
             }
-        }
+        }        
     }
 
     private static Session getSession() {

@@ -82,9 +82,13 @@
  */
 package gov.nih.nci.caarray.util;
 
+import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.security.SecurityInterceptor;
 import gov.nih.nci.caarray.security.SecurityUtils;
+import gov.nih.nci.security.authorization.domainobjects.Group;
+import gov.nih.nci.security.authorization.domainobjects.User;
 import gov.nih.nci.security.authorization.instancelevel.InstanceLevelSecurityHelper;
+import gov.nih.nci.security.exceptions.CSObjectNotFoundException;
 
 import java.io.Serializable;
 import java.sql.Connection;
@@ -94,6 +98,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.ArrayUtils;
+import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -101,6 +107,7 @@ import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.engine.FilterDefinition;
 import org.hibernate.engine.SessionFactoryImplementor;
+import org.hibernate.engine.SessionImplementor;
 import org.hibernate.proxy.HibernateProxy;
 
 import com.fiveamsolutions.nci.commons.audit.AuditLogInterceptor;
@@ -115,11 +122,12 @@ import com.fiveamsolutions.nci.commons.util.HibernateHelper;
  */
 @SuppressWarnings("unchecked")
 public final class HibernateUtil {
+    private static final Logger LOG = Logger.getLogger(HibernateUtil.class);
 
     private static final AuditLogInterceptor AUDIT_LOG_INTERCEPTOR = new AuditLogInterceptor();
     private static final CaArrayAuditLogProcessor AUDIT_LOG_PROCESSOR = new CaArrayAuditLogProcessor();
     private static final HibernateHelper HIBERNATE_HELPER = new HibernateHelper(SecurityUtils.getAuthorizationManager(),
-            new NamingStrategy(), new CompositeInterceptor(new SecurityInterceptor(), AUDIT_LOG_INTERCEPTOR));
+            new NamingStrategy(), new CompositeInterceptor(new SecurityInterceptor(), AUDIT_LOG_INTERCEPTOR), false);
     static {
         AUDIT_LOG_INTERCEPTOR.setHibernateHelper(HIBERNATE_HELPER);
         AUDIT_LOG_INTERCEPTOR.setProcessor(AUDIT_LOG_PROCESSOR);
@@ -177,12 +185,28 @@ public final class HibernateUtil {
      */
     public static Session getCurrentSession() {
         Session result = getHibernateHelper().getCurrentSession();
-        if (filtersEnabled) {
-            InstanceLevelSecurityHelper.initializeFilters(UsernameHolder.getUser(), result, SecurityUtils
-                    .getAuthorizationManager());
+        if (filtersEnabled && !securityFiltersEnabledInSession(result)) {
+            InstanceLevelSecurityHelper.initializeFiltersForGroups(getGroupNames(), result,
+                    SecurityUtils.getAuthorizationManager());
         }
         result.enableFilter("BiomaterialFilter");
         return result;
+    }
+    
+    private static String[] getGroupNames() {
+        User user = UsernameHolder.getCsmUser();
+        try {
+            Set<Group> groups = SecurityUtils.getAuthorizationManager().getGroups(user.getUserId().toString());
+            String[] groupNames = new String[groups.size()];
+            int i = 0;
+            for (Group g : groups) {
+                groupNames[i++] = String.valueOf(g.getGroupId());
+            }
+            return groupNames;
+        } catch (CSObjectNotFoundException e) {
+            LOG.error("Could not retrieve group names", e);
+            return ArrayUtils.EMPTY_STRING_ARRAY;
+        }
     }
 
     /**
@@ -284,19 +308,23 @@ public final class HibernateUtil {
         Set<String> filters = session.getSessionFactory().getDefinedFilterNames();
         for (String filterName : filters) {
             // we only want to disable the security filters. assume security filters are ones
-            // with USER_NAME and APPLICATION_ID parameters
+            // with GROUP_NAMES and APPLICATION_ID parameters
             FilterDefinition fd = session.getSessionFactory().getFilterDefinition(filterName);
-            if (fd.getParameterNames().contains("USER_NAME") && fd.getParameterNames().contains("APPLICATION_ID")) {
+            if (fd.getParameterNames().contains("GROUP_NAMES") && fd.getParameterNames().contains("APPLICATION_ID")) {
                 session.disableFilter(filterName);                
             }
         }
     }
 
     private static void enableFilters(Session session) {
-        if (filtersEnabled) {
-            InstanceLevelSecurityHelper.initializeFilters(UsernameHolder.getUser(), session, SecurityUtils
-                    .getAuthorizationManager());
+        if (filtersEnabled && !securityFiltersEnabledInSession(session)) {
+            InstanceLevelSecurityHelper.initializeFiltersForGroups(getGroupNames(), session,
+                    SecurityUtils.getAuthorizationManager());
         }
+    }
+    
+    private static boolean securityFiltersEnabledInSession(Session session) {
+        return ((SessionImplementor) session).getEnabledFilters().containsKey(Experiment.SECURITY_FILTER_NAME);
     }
 
     /**

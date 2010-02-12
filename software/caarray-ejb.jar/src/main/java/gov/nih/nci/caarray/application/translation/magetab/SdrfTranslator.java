@@ -305,7 +305,7 @@ final class SdrfTranslator extends AbstractTranslator {
 
     private void validateArrayDesigns(SdrfDocument document) {
         for (gov.nih.nci.caarray.magetab.sdrf.ArrayDesign sdrfArrayDesign : document.getAllArrayDesigns()) {
-            String arrayDesignName = sdrfArrayDesign.getName();
+            String arrayDesignName = sdrfArrayDesign.getValue();
                 ArrayDesign arrayDesign = new ArrayDesign();
                 arrayDesign.setLsidForEntity(arrayDesignName);
                 if (getDaoFactory().getArrayDao().queryEntityByExample(arrayDesign).isEmpty()) {
@@ -695,7 +695,7 @@ final class SdrfTranslator extends AbstractTranslator {
      * @param sdrfArrayDesign MAGETAB array design - must not be null
      */
     private ArrayDesign getArrayDesign(gov.nih.nci.caarray.magetab.sdrf.ArrayDesign sdrfArrayDesign) {
-        return processArrayDesignRef(sdrfArrayDesign.getName());
+        return processArrayDesignRef(sdrfArrayDesign.getValue());
     }
 
     // Process a reference to an array design in the caArray or in an external database.

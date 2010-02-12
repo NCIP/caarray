@@ -90,7 +90,6 @@ import gov.nih.nci.caarray.validation.InvalidDataException;
  * @author tavelae
  */
 public interface MageTabParser {
-
     /**
      * Instance of the MAGE-TAB parsing subsystem.
      */

@@ -89,28 +89,27 @@ import java.io.File;
 
 /**
  * An Array Design and Array Design Ref as defined by the SDRF file.
- *
+ * @author dkokotov
  */
-public class ArrayDesign extends AbstractSampleDataRelationshipNode implements TermSourceable {
-
+public class ArrayDesign extends AbstractCommentable implements TermSourceable {
     private static final long serialVersionUID = -5219974664880778410L;
+    
     private TermSource termSource;
     private File file;
+    private String value;
 
-    @Override
-    void addToSdrfList(SdrfDocument document) {
-        if (!document.getAllArrayDesigns().contains(this)) {
-            document.getAllArrayDesigns().add(this);
-        }
-
+    /**
+     * @return the value of this array design column.
+     */
+    public String getValue() {
+        return value;
     }
 
     /**
-     * @return SdrfNodeType the node thype
+     * @param value the value to set for this column. 
      */
-    @Override
-    public SdrfNodeType getNodeType() {
-        return SdrfNodeType.ARRAY_DESIGN;
+    public void setValue(String value) {
+        this.value = value;
     }
 
     /**

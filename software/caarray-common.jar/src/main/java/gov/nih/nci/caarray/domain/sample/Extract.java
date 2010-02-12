@@ -129,7 +129,7 @@ public class Extract extends AbstractBioMaterial implements ProtectableDescenden
      * @return the samples
      */
     @ManyToMany(mappedBy = "extracts")
-    @Filter(name = "Project1", condition = Experiment.SAMPLES_FILTER)
+    @Filter(name = Experiment.SECURITY_FILTER_NAME, condition = Experiment.SAMPLES_FILTER)
     public Set<Sample> getSamples() {
         return samples;
     }

@@ -83,21 +83,25 @@
 
 package gov.nih.nci.caarray.web.action;
 
-import com.fiveamsolutions.nci.commons.web.struts2.action.ActionHelper;
-import com.opensymphony.xwork2.ActionSupport;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import gov.nih.nci.caarray.AbstractCaarrayTest;
 import gov.nih.nci.caarray.application.permissions.PermissionsManagementService;
 import gov.nih.nci.caarray.application.permissions.PermissionsManagementServiceStub;
 import gov.nih.nci.caarray.application.project.ProjectManagementService;
 import gov.nih.nci.caarray.application.project.ProjectManagementServiceStub;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
-import java.util.Arrays;
-import org.junit.Before;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import gov.nih.nci.security.authorization.domainobjects.User;
 import gov.nih.nci.security.exceptions.CSException;
 import gov.nih.nci.security.exceptions.CSObjectNotFoundException;
-import gov.nih.nci.security.authorization.domainobjects.User;
+
+import java.util.Arrays;
+
+import org.junit.Before;
+import org.junit.Test;
+
+import com.fiveamsolutions.nci.commons.web.struts2.action.ActionHelper;
+import com.opensymphony.xwork2.ActionSupport;
 
 /**
  *

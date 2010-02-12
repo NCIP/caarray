@@ -82,11 +82,11 @@
  */
 package gov.nih.nci.caarray.magetab.sdrf;
 
-import java.util.EnumSet;
-
 import gov.nih.nci.caarray.magetab.OntologyTerm;
 import gov.nih.nci.caarray.magetab.ParameterValue;
 import gov.nih.nci.caarray.magetab.TermSource;
+
+import java.util.EnumSet;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -230,6 +230,16 @@ public enum SdrfColumnType {
      */
     COMMENT (Comment.class, "Comment");
 
+    private static final EnumSet<SdrfColumnType> BIOMATERIAL_NODES = EnumSet.of(SOURCE_NAME, SAMPLE_NAME, EXTRACT_NAME,
+            LABELED_EXTRACT_NAME);
+
+    private static final EnumSet<SdrfColumnType> DATA_FILE_NODES = EnumSet.of(ARRAY_DATA_FILE, ARRAY_DATA_MATRIX_FILE,
+            DERIVED_ARRAY_DATA_FILE, DERIVED_ARRAY_DATA_MATRIX_FILE);
+
+    private static final EnumSet<SdrfColumnType> NODES = EnumSet.of(SOURCE_NAME, SAMPLE_NAME, EXTRACT_NAME,
+            LABELED_EXTRACT_NAME, HYBRIDIZATION_NAME, SCAN_NAME, IMAGE_FILE, ARRAY_DATA_FILE, ARRAY_DATA_MATRIX_FILE,
+            NORMALIZATION_NAME, DERIVED_ARRAY_DATA_FILE, DERIVED_ARRAY_DATA_MATRIX_FILE);
+    
     private static final EnumSet<SdrfColumnType> TERM_SOURCEABLES = EnumSet.of(PROTOCOL_REF, CHARACTERISTICS, 
             MATERIAL_TYPE, UNIT, LABEL, ARRAY_DESIGN_REF, PARAMETER_VALUE, FACTOR_VALUE);
 
@@ -270,6 +280,28 @@ public enum SdrfColumnType {
      */
     public boolean isTermSourceable() {
         return TERM_SOURCEABLES.contains(this);
+    }
+
+    /**
+     * @return whether a column of this type is a sample-relationship graph node (a biomaterial, hybridization or data
+     *         product column)
+     */
+    public boolean isNode() {
+        return NODES.contains(this);
+    }
+
+    /**
+     * @return whether a column of this type is a biomaterial graph node
+     */
+    public boolean isBiomaterialNode() {
+        return BIOMATERIAL_NODES.contains(this);
+    }
+
+    /**
+     * @return whether a column of this type is a data file graph node
+     */
+    public boolean isDataFileNode() {
+        return DATA_FILE_NODES.contains(this);
     }
 
     /**

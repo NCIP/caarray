@@ -97,10 +97,11 @@ import gov.nih.nci.caarray.validation.ValidationMessage.Type;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 /**
@@ -110,8 +111,8 @@ final class IlluminaCsvDesignHandler extends AbstractArrayDesignHandler {
 
     private static final Logger LOG = Logger.getLogger(IlluminaCsvDesignHandler.class);
 
-    private static final String LSID_AUTHORITY = "illumina.com";
-    private static final String LSID_NAMESPACE = "PhysicalArrayDesign";
+    static final String LSID_AUTHORITY = "illumina.com";
+    static final String LSID_NAMESPACE = "PhysicalArrayDesign";
     private static final int LOGICAL_PROBE_BATCH_SIZE = 1000;
 
     private AbstractIlluminaDesignHandler handler;
@@ -136,7 +137,7 @@ final class IlluminaCsvDesignHandler extends AbstractArrayDesignHandler {
                 if (getHandler().isLineFollowingAnnotation(values)) {
                     break;
                 }
-                getArrayDao().save(getHandler().createLogicalProbe(details, values));
+                getArrayDao().save(getHandler().createProbe(details, values));
                 if (++count % LOGICAL_PROBE_BATCH_SIZE == 0) {
                     flushAndClearSession();
                 }
@@ -190,51 +191,70 @@ final class IlluminaCsvDesignHandler extends AbstractArrayDesignHandler {
     }
 
     private void validateContent(DelimitedFileReader reader, FileValidationResult result, List<String> headers)
-    throws IOException {
-        int expectedNumberOfFields = headers.size();
+            throws IOException {
         while (reader.hasNextLine()) {
             List<String> values = reader.nextLine();
             if (getHandler().isLineFollowingAnnotation(values)) {
                 break;
             }
-            if (values.size() != expectedNumberOfFields) {
+            if (values.size() != headers.size()) {
                 ValidationMessage error = result.addMessage(ValidationMessage.Type.ERROR,
                         "Invalid number of fields. Expected "
-                        + expectedNumberOfFields + " but contained " + values.size());
+                        + headers.size() + " but contained " + values.size());
                 error.setLine(reader.getCurrentLineNumber());
             }
             getHandler().validateValues(values, result, reader.getCurrentLineNumber());
         }
     }
 
-    static void validateFieldLength(List<String> values, Enum header, FileValidationResult result,
-            int lineNumber, int expectedLength) {
-        if (getValue(values, header).length() != expectedLength) {
+    void validateFieldLength(List<String> values, Enum header, FileValidationResult result,
+            int lineNumber, int expectedLength) throws IOException {
+        int colIdx = getHandler().indexOf(header);
+        String val = values.get(colIdx);
+        validateFieldLength(val, header, result, lineNumber, expectedLength, colIdx + 1);
+    }
+
+    @SuppressWarnings("PMD.ExcessiveParameterList")
+    static void validateFieldLength(String value, Enum header, FileValidationResult result, int lineNumber,
+            int expectedLength, int col) {
+        if (value.length() != expectedLength) {
             ValidationMessage error = result.addMessage(ValidationMessage.Type.ERROR,
-                    "Expected size of field for " + header.name() + "to be " + expectedLength
-                    + " but was " + getValue(values, header).length());
+                    "Expected size of field for " + header.name() + " to be " + expectedLength
+                    + " but was " + value.length());
             error.setLine(lineNumber);
-            error.setColumn(header.ordinal() + 1);
+            error.setColumn(col);
         }
     }
 
-    static void validateIntegerField(List<String> values, Enum header, FileValidationResult result,
-            int lineNumber) {
-        if (!isInteger(values.get(header.ordinal()))) {
+    void validateIntegerField(List<String> values, Enum[] headers, Enum header, FileValidationResult result,
+            int lineNumber) throws IOException {
+        int colIdx = getHandler().indexOf(header);
+        String val = values.get(colIdx);
+        validateIntegerField(val, header, result, lineNumber, colIdx + 1);
+    }
+
+    static void validateIntegerField(String value, Enum header, FileValidationResult result, int lineNumber, int col) {
+        if (!isInteger(value)) {
             ValidationMessage error = result.addMessage(ValidationMessage.Type.ERROR,
-                    "Expected integer value for " + header.name() + ", but was " +  values.get(header.ordinal()));
+                    "Expected integer value for " + header.name() + ", but was " +  value);
             error.setLine(lineNumber);
-            error.setColumn(header.ordinal() + 1);
+            error.setColumn(col);
         }
     }
 
-    static void validateLongField(List<String> values, Enum header, FileValidationResult result,
-            int lineNumber) {
-        if (!isLong(values.get(header.ordinal()))) {
+    void validateLongField(List<String> values, Enum header, FileValidationResult result,
+            int lineNumber) throws IOException {
+        int colIdx = getHandler().indexOf(header);
+        String val = values.get(colIdx);
+        validateLongField(val, header, result, lineNumber, colIdx + 1);
+    }
+
+    static void validateLongField(String value, Enum header, FileValidationResult result, int lineNumber, int col) {
+        if (!isLong(value)) {
             ValidationMessage error = result.addMessage(ValidationMessage.Type.ERROR,
-                    "Expected long integral value for " + header.name() + ", but was " +  values.get(header.ordinal()));
+                    "Expected long integral value for " + header.name() + ", but was " +  value);
             error.setLine(lineNumber);
-            error.setColumn(header.ordinal() + 1);
+            error.setColumn(col);
         }
     }
 
@@ -257,17 +277,18 @@ final class IlluminaCsvDesignHandler extends AbstractArrayDesignHandler {
     }
 
     private void validateHeader(List<String> headers, FileValidationResult result) throws IOException {
-        Enum[] expectedHeaders = getHandler().getExpectedHeaders(headers);
-        if (headers.size() != expectedHeaders.length) {
-            result.addMessage(ValidationMessage.Type.ERROR,
-                    "Illumina CSV file didn't contain the expected number of columns");
-            return;
-        }
-        for (int i = 0; i < expectedHeaders.length; i++) {
-            if (!headers.get(i).equalsIgnoreCase(expectedHeaders[i].name())) {
-                result.addMessage(ValidationMessage.Type.ERROR, "Invalid column header in Illumina CSV. Expected "
-                        + expectedHeaders[i] + " but was " + headers.get(i));
+        Set<? extends Enum> requiredHeaders = getHandler().getRequiredColumns();
+        Set<Enum> tmp = new HashSet<Enum>(requiredHeaders);
+        for (String v : headers) {
+            for (Enum h : requiredHeaders) {
+                if (h.name().equalsIgnoreCase(v)) {
+                    tmp.remove(h);
+                }
             }
+        }
+        if (!tmp.isEmpty()) {
+            result.addMessage(ValidationMessage.Type.ERROR,
+                    "Illumina CSV file didn't contain the expected columns " + tmp.toString());
         }
     }
 
@@ -275,6 +296,7 @@ final class IlluminaCsvDesignHandler extends AbstractArrayDesignHandler {
         while (reader.hasNextLine()) {
             List<String> values = reader.nextLine();
             if (getHandler().isHeaderLine(values)) {
+                getHandler().initHeaderIndex(values);
                 return values;
             }
         }
@@ -311,9 +333,12 @@ final class IlluminaCsvDesignHandler extends AbstractArrayDesignHandler {
 
     private void positionAtAnnotation(DelimitedFileReader reader) throws IOException {
         reset(reader);
-        boolean isHeader = false;
-        while (!isHeader && reader.hasNextLine()) {
-            isHeader = getHandler().isHeaderLine(reader.nextLine());
+        while (reader.hasNextLine()) {
+            List<String> line = reader.nextLine();
+            if (getHandler().isHeaderLine(line)) {
+                getHandler().initHeaderIndex(line);
+                return;
+            }
         }
     }
 
@@ -322,28 +347,6 @@ final class IlluminaCsvDesignHandler extends AbstractArrayDesignHandler {
             reader.reset();
         } catch (IOException e) {
             throw new IllegalStateException("Couldn't reset file " + getDesignFile().getName(), e);
-        }
-    }
-
-    static String getValue(List<String> values, Enum header) {
-        return values.get(header.ordinal());
-    }
-
-    static Integer getIntegerValue(List<String> values, Enum header) {
-        String stringValue = getValue(values, header);
-        if (StringUtils.isBlank(stringValue)) {
-            return null;
-        } else {
-            return Integer.parseInt(stringValue);
-        }
-    }
-
-    static Long getLongValue(List<String> values, Enum header) {
-        String stringValue = getValue(values, header);
-        if (StringUtils.isBlank(stringValue)) {
-            return null;
-        } else {
-            return Long.parseLong(stringValue);
         }
     }
 
@@ -396,5 +399,4 @@ final class IlluminaCsvDesignHandler extends AbstractArrayDesignHandler {
         }
 
     }
-
 }

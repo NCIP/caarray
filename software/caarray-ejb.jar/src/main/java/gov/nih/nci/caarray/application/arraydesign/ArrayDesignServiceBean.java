@@ -319,6 +319,9 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
         } else if (FileType.ILLUMINA_DESIGN_CSV.equals(type)
                 && throwInvalidNumOfArgsExc(FileType.ILLUMINA_DESIGN_CSV.toString(), designFiles.size(), 1)) {
             return new IlluminaCsvDesignHandler(getVocabularyService(), daoFactory, designFile);
+        } else if (FileType.ILLUMINA_DESIGN_BGX.equals(type)
+                && throwInvalidNumOfArgsExc(FileType.ILLUMINA_DESIGN_BGX.toString(), designFiles.size(), 1)) {
+            return new IlluminaBgxDesignHandler(getVocabularyService(), daoFactory, designFile);
         } else if (FileType.GENEPIX_GAL.equals(type)
                 && throwInvalidNumOfArgsExc(FileType.GENEPIX_GAL.toString(), designFiles.size(), 1)) {
             return new GenepixGalDesignHandler(getVocabularyService(), daoFactory, designFile);
