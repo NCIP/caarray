@@ -670,6 +670,12 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
         <copy todir="${caarray.dist.dir}/${db.dist.relative.dir}" overwrite="true">
             <fileset dir="${caarray.sql.src.dir}/liquibase" includes="**/*.sql, **/*.xml" />
         </copy>
+
+        <copy todir="${caarray.dist.dir}/lib" overwrite="true">
+            <fileset dir="${caarray.src.dir}/lib">
+                <include name="**/*.jar" />
+            </fileset>
+        </copy>
     	
         <dist-prep
             copy.tools.flag="N"
