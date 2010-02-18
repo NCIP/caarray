@@ -27,7 +27,9 @@
         <display:setProperty name="pagination.sortdirection.param" value="projects.sortDirection" />
         <display:setProperty name="pagination.pagenumber.param" value="projects.pageNumber" />
         <display:column sortProperty="PUBLIC_ID" title="Experiment ID" sortable="true" >
-            <c:set var="canReadRow" value="${caarrayfn:canRead(row, caarrayfn:currentUser())}"/>
+            <c:set var="canReadRow" value="${projectPrivileges[row.id].read}"/>
+            <c:set var="canWriteRow" value="${projectPrivileges[row.id].write}"/>
+            <c:set var="canModifyPermissionsRow" value="${projectPrivileges[row.id].permissions}"/>
             <c:choose>
                 <c:when test="${canReadRow}">
                     <c:url var="viewUrl" value="/project/details.action">
@@ -73,7 +75,7 @@
             </div>
         </display:column>
         <display:column title="Permissions" class="centered" headerClass="centered">
-            <c:if test="${caarrayfn:canModifyPermissions(row, caarrayfn:currentUser())}">
+            <c:if test="${canModifyPermissionsRow}">
                 <c:url value="/protected/project/permissions/editPermissions.action" var="editProjectPermissionsUrl">
                     <c:param name="project.id" value="${row.id}" />
                 </c:url>
@@ -81,7 +83,7 @@
             </c:if>
         </display:column>
         <display:column titleKey="button.edit" class="centered" headerClass="centered">
-            <c:if test="${caarrayfn:canWrite(row, caarrayfn:currentUser()) && !row.locked}">
+            <c:if test="${canWriteRow && !row.locked}">
                 <c:url value="/protected/project/edit.action" var="editProjectUrl">
                     <c:param name="project.id" value="${row.id}" />
                 </c:url>
@@ -89,7 +91,7 @@
             </c:if>
         </display:column>
         <display:column titleKey="button.delete" class="centered" headerClass="centered">
-            <c:if test="${caarrayfn:canWrite(row, caarrayfn:currentUser()) && !row.locked}">
+            <c:if test="${canWriteRow && !row.locked}">
                 <c:url value="/protected/project/delete.action" var="deleteProjectUrl">
                     <c:param name="project.id" value="${row.id}" />
                 </c:url>

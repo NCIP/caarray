@@ -82,10 +82,7 @@
  */
 package gov.nih.nci.caarray.web.filter;
 
-import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.HibernateUtil;
-import gov.nih.nci.security.authorization.domainobjects.User;
-import gov.nih.nci.security.exceptions.CSObjectNotFoundException;
 
 import java.io.IOException;
 
@@ -95,7 +92,6 @@ import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * A Filter that enables OpenSessionInView behavior. It leverages the contextual session facility
@@ -120,24 +116,10 @@ public class OpenSessionInViewFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
             ServletException {
         // set up a new session at beginning of request and close it afterwards
-        boolean isSysAdmin = false;
         try {
             HibernateUtil.openAndBindSession();
-            try {
-                User csmUser = SecurityUtils.getAuthorizationManager().getUser(
-                        ((HttpServletRequest) request).getRemoteUser());
-                isSysAdmin = SecurityUtils.isSystemAdministrator(csmUser);
-            } catch (CSObjectNotFoundException e) {
-                // assume the user is not a sys admin
-                isSysAdmin = false;
-            }
-            if (isSysAdmin) {
-                HibernateUtil.setFiltersEnabled(false);
-                HibernateUtil.disableFilters();
-            }
             chain.doFilter(request, response);
         } finally {
-            HibernateUtil.setFiltersEnabled(true);
             HibernateUtil.unbindAndCleanupSession();
         }
     }

@@ -29,4 +29,9 @@
        <comment>GF 26037 - upgrade to CSM 4.2</comment>
        <sqlFile path="db-upgrade/mysql/2.4.0/26037.sql"/>
     </changeSet>    
+
+    <changeSet id="26323" author="dkokotov">
+       <comment>GF 26323 - improve workspace page performance</comment>
+       <sqlFile path="db-upgrade/mysql/2.4.0/26323.sql"/>
+    </changeSet>    
  </databaseChangeLog>

@@ -82,7 +82,7 @@
  */
 package gov.nih.nci.caarray.dao;
 
-import static org.junit.Assert.assertEquals;
+ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -97,6 +97,7 @@ import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.permissions.AccessProfile;
 import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
+import gov.nih.nci.caarray.domain.permissions.Privileges;
 import gov.nih.nci.caarray.domain.permissions.SampleSecurityLevel;
 import gov.nih.nci.caarray.domain.permissions.SecurityLevel;
 import gov.nih.nci.caarray.domain.project.AssayType;
@@ -134,9 +135,11 @@ import gov.nih.nci.security.dao.SearchCriteria;
 import gov.nih.nci.security.exceptions.CSTransactionException;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -289,6 +292,43 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
             tx = HibernateUtil.beginTransaction();
             assertEquals(0, DAO_OBJECT.getProjectsForCurrentUser(ALL_BY_ID).size());
             tx.commit();
+            
+            UsernameHolder.setUser("caarrayadmin");
+            tx = HibernateUtil.beginTransaction();
+            Map<Long, Privileges> privilegeMap = SecurityUtils.getPrivileges(Arrays.asList(DUMMY_PROJECT_1), UsernameHolder.getCsmUser());
+            assertEquals(1, privilegeMap.size());
+            Privileges privileges = privilegeMap.get(DUMMY_PROJECT_1.getId());
+            assertNotNull(privileges);
+            assertTrue(privileges.isBrowse());
+            assertTrue(privileges.isRead());
+            assertTrue(privileges.isWrite());
+            assertTrue(privileges.isPermissions());
+            tx.commit();
+
+            UsernameHolder.setUser("systemadministrator");
+            tx = HibernateUtil.beginTransaction();
+            privilegeMap = SecurityUtils.getPrivileges(Arrays.asList(DUMMY_PROJECT_1), UsernameHolder.getCsmUser());
+            assertEquals(1, privilegeMap.size());
+            privileges = privilegeMap.get(DUMMY_PROJECT_1.getId());
+            assertNotNull(privileges);
+            assertTrue(privileges.isBrowse());
+            assertTrue(privileges.isRead());
+            assertTrue(privileges.isWrite());
+            assertTrue(privileges.isPermissions());
+            tx.commit();
+
+            UsernameHolder.setUser("caarrayuser");
+            tx = HibernateUtil.beginTransaction();
+            privilegeMap = SecurityUtils.getPrivileges(Arrays.asList(DUMMY_PROJECT_1), UsernameHolder.getCsmUser());
+            assertEquals(1, privilegeMap.size());
+            privileges = privilegeMap.get(DUMMY_PROJECT_1.getId());
+            assertNotNull(privileges);
+            assertTrue(privileges.isBrowse());
+            assertTrue(privileges.isRead());
+            assertFalse(privileges.isWrite());
+            assertFalse(privileges.isPermissions());
+            tx.commit();
+            
         } catch (DAOException e) {
             HibernateUtil.rollbackTransaction(tx);
             throw e;
@@ -797,7 +837,7 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
         tx = HibernateUtil.beginTransaction();
         Project p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
         List<UserGroupRoleProtectionGroup> list = SecurityUtils.getUserGroupRoleProtectionGroups(p);
-        assertEquals(4, list.size()); // expect the user-only ones only
+        assertEquals(8, list.size()); // expect the user-only ones only
         assertTrue(CollectionUtils.exists(list, new AndPredicate(new IsGroupPredicate(), new HasRolePredicate(
                 SecurityUtils.READ_ROLE))));
         assertTrue(CollectionUtils.exists(list, new AndPredicate(new IsGroupPredicate(), new HasRolePredicate(
@@ -812,7 +852,7 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
         // check that after changing to visible, the role is reflected.
         tx = HibernateUtil.beginTransaction();
         list = SecurityUtils.getUserGroupRoleProtectionGroups(p);
-        assertEquals(5, list.size()); // expect the user-only ones and the anonymous access one
+        assertEquals(9, list.size()); // expect the user-only ones and the anonymous access one
         assertTrue(CollectionUtils.exists(list, new AndPredicate(new IsGroupPredicate(), new HasRolePredicate(
                 SecurityUtils.READ_ROLE))));
         assertTrue(CollectionUtils.exists(list, new AndPredicate(new IsGroupPredicate(), new HasRolePredicate(

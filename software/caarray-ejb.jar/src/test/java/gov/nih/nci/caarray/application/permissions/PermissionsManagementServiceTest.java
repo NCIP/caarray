@@ -272,7 +272,8 @@ public class PermissionsManagementServiceTest extends AbstractServiceTest {
                 return ((User) o).getLoginName().equals(SecurityUtils.ANONYMOUS_USERNAME);
             }
          };
-         Group g = (Group) HibernateUtil.getCurrentSession().load(Group.class, SecurityUtils.getAnonymousGroup().getGroupId());
+        Group g = (Group) HibernateUtil.getCurrentSession().load(Group.class,
+                SecurityUtils.findGroupByName(SecurityUtils.ANONYMOUS_GROUP).getGroupId());
          assertTrue(CollectionUtils.exists(g.getUsers(), anonUserExists));
          this.permissionsManagementService.addUsers(SecurityUtils.ANONYMOUS_GROUP, "biostatistician");
          HibernateUtil.getCurrentSession().refresh(g);

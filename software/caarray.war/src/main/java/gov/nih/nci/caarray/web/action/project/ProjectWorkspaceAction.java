@@ -82,9 +82,15 @@
  */
 package gov.nih.nci.caarray.web.action.project;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import gov.nih.nci.caarray.application.ServiceLocatorFactory;
+import gov.nih.nci.caarray.domain.permissions.Privileges;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.search.ProjectSortCriterion;
+import gov.nih.nci.caarray.security.SecurityUtils;
+import gov.nih.nci.caarray.util.UsernameHolder;
 
 import org.apache.struts2.interceptor.validation.SkipValidation;
 
@@ -102,6 +108,8 @@ public class ProjectWorkspaceAction {
     private final SortablePaginatedList<Project, ProjectSortCriterion> projects =
             new SortablePaginatedList<Project, ProjectSortCriterion>(PAGE_SIZE, ProjectSortCriterion.PUBLIC_ID.name(),
                     ProjectSortCriterion.class);
+    private Map<Long, Privileges> projectPrivileges = new HashMap<Long, Privileges>();
+    
 
     /**
      * Renders the workspace page, with the list of all the users projects.
@@ -113,7 +121,15 @@ public class ProjectWorkspaceAction {
         this.projects.setList(ServiceLocatorFactory.getProjectManagementService().getMyProjects(
                 this.projects.getPageSortParams()));
         this.projects.setFullListSize(ServiceLocatorFactory.getProjectManagementService().getMyProjectCount());
+        this.projectPrivileges = SecurityUtils.getPrivileges(this.projects.getList(), UsernameHolder.getCsmUser());
         return Action.SUCCESS;
+    }
+
+    /**
+     * @return the map of project id to its privileges
+     */
+    public Map<Long, Privileges> getProjectPrivileges() {
+        return projectPrivileges;
     }
 
     /**

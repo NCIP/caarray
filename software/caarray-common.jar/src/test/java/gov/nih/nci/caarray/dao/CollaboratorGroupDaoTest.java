@@ -137,7 +137,7 @@ public class CollaboratorGroupDaoTest extends AbstractDaoTest {
 
         tx = HibernateUtil.beginTransaction();
         s = HibernateUtil.getCurrentSession();
-        assertEquals(1, DAO_OBJECT.getAll().size());
+        assertEquals(2, DAO_OBJECT.getAll().size());
         tx.commit();
 
         UsernameHolder.setUser(STANDARD_USER);

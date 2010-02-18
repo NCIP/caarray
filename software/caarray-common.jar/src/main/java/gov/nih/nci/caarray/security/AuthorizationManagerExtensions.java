@@ -384,39 +384,22 @@ public final class AuthorizationManagerExtensions {
             throw new CSException("objectId can't be null!");
         }
 
-        if (checkOwnership(userName, className, attributeName, value, application.getApplicationName())) {
-            return true;
-        }
-
         if (attributeName == null || privilegeName == null) {
             return false;
         }
 
         Session s = null;
         try {
-            s = HibernateUtil.getSessionFactory().openSession();
-
-            String sql = " select pe.protection_element_id from csm_protection_element pe "
-                    + "inner join csm_pg_pe pgpe on pe.protection_element_id = pgpe.protection_element_id "
-                    + "inner join csm_user_group_role_pg ugrpg on pgpe.protection_group_id = ugrpg.protection_group_id "
-                    + "inner join csm_role r on ugrpg.role_id = r.role_id "
-                    + "inner join csm_user_group ug on ugrpg.group_id = ug.group_id "
-                    + "inner join csm_role_privilege rp on r.role_id = rp.role_id "
-                    + "inner join csm_privilege p on rp.privilege_id = p.privilege_id "
-                    + "inner join csm_user u on ug.user_id = u.user_id "
-                    + "where pe.object_id = ? and pe.attribute= ? and pe.attribute_value = ? and u.login_name = ? "
-                    + "and p.privilege_name= ? and pe.application_id = ?";
-            SQLQuery query = s.createSQLQuery(sql);
-            int i = 0;
-            query.setString(i++, className);
-            query.setString(i++, attributeName);
-            query.setString(i++, value);
-            query.setString(i++, userName);
-            query.setString(i++, privilegeName);
-            query.setLong(i++, application.getApplicationId());
-
-            List<?> results = query.list();
-            return !results.isEmpty();
+            InstanceLevelMappingElement mappingElt = SecurityUtils.findMappingElement(className, attributeName);
+            
+            s = HibernateUtil.getSessionFactory().openSession();            
+            if (mappingElt != null) {
+                return checkPermissionWithMappingTable(mappingElt.getTableNameForGroup(), userName, value,
+                        privilegeName, s);
+            } else {
+                return checkPermissionWithCanonicalTable(userName, className, attributeName, value, privilegeName,
+                        application, s);
+            }
         } catch (Exception ex) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Failed to get privileges for " + userName + "|" + ex.getMessage());
@@ -426,54 +409,52 @@ public final class AuthorizationManagerExtensions {
             try {
                 s.close();
             } catch (Exception ex2) {
-                LOG.debug("Authorization|||clearProtectionGroupRoles|Failure|Error in Closing Session |"
+                LOG.debug("Authorization|||checkPermission|Failure|Error in Closing Session |"
                         + ex2.getMessage());
             }
         }
     }
+     
+    private static boolean checkPermissionWithCanonicalTable(String userName, String className, String attributeName,
+            String value, String privilegeName, Application application, Session s) throws CSException {
+        String sql = " select pe.protection_element_id from csm_protection_element pe "
+                + "inner join csm_pg_pe pgpe on pe.protection_element_id = pgpe.protection_element_id "
+                + "inner join csm_user_group_role_pg ugrpg on pgpe.protection_group_id = ugrpg.protection_group_id "
+                + "inner join csm_role r on ugrpg.role_id = r.role_id "
+                + "inner join csm_user_group ug on ugrpg.group_id = ug.group_id "
+                + "inner join csm_role_privilege rp on r.role_id = rp.role_id "
+                + "inner join csm_privilege p on rp.privilege_id = p.privilege_id "
+                + "inner join csm_user u on ug.user_id = u.user_id "
+                + "where pe.object_id = :class_name and pe.attribute = :attr_name "
+                + "and pe.attribute_value = :attr_value and u.login_name = :login_name "
+                + "and p.privilege_name= :priv_name and pe.application_id = :app_id";
+        SQLQuery query = s.createSQLQuery(sql);
+        query.setString("class_name", className);
+        query.setString("attr_name", attributeName);
+        query.setString("attr_value", value);
+        query.setString("login_name", userName);
+        query.setString("priv_name", privilegeName);
+        query.setLong("app_id", application.getApplicationId());
 
-    @SuppressWarnings("PMD")
-    // adapted from CSM code
-    private static boolean checkOwnership(String userName, String className, String attribute,
-            String value, String appName) throws CSException {
-        Session s = null;
-        try {
-            s = HibernateUtil.getSessionFactory().openSession();
-            String sql = "select pe.protection_element_id from csm_protection_element pe "
-                    + "inner join csm_user_pe upe on pe.protection_element_id = upe.protection_element_id "
-                    + "inner join csm_user u on upe.user_id = u.user_id "
-                    + "where pe.object_id = ? and pe.attribute= ? and pe.attribute_value = ? and u.login_name = ?";
-            SQLQuery query = s.createSQLQuery(sql);
-            int i = 0;
-            query.setString(i++, className);
-            query.setString(i++, attribute);
-            query.setString(i++, value);
-            query.setString(i++, userName);
+        List<?> results = query.list();
+        return !results.isEmpty();
+    }
 
-            List<?> results = query.list();
-            
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Authorization||" + userName
-                        + "|checkOwnerShip|Success|Successful in checking ownership for user " + userName
-                        + " and Protection Element " + className + "|");
-            }
-            
-            return !results.isEmpty();
-        } catch (Exception ex) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Authorization||" + userName
-                        + "|checkOwnerShip|Failure|Error in checking ownership for user " + userName
-                        + " and Protection Element " + className + "|" + ex.getMessage());
-            }
-            throw new CSException("Failed to get check ownership " + userName + "|" + ex.getMessage(), ex);
-        } finally {
-            try {
-                s.close();
-            } catch (Exception ex2) {
-                LOG.debug("Authorization|||clearProtectionGroupRoles|Failure|Error in Closing Session |"
-                        + ex2.getMessage());
-            }
-        }
+    private static boolean checkPermissionWithMappingTable(String groupTableName, String userName, String value,
+            String privilegeName, Session s) throws CSException {
+        String sql = " select pe.attribute_value from " + groupTableName + " pe "
+                + "inner join csm_user_group ug on pe.group_id = ug.group_id "
+                + "inner join csm_privilege p on pe.privilege_id = p.privilege_id "
+                + "inner join csm_user u on ug.user_id = u.user_id "
+                + "where pe.attribute_value = :attr_value and u.login_name = :login_name " 
+                + "and p.privilege_name= :priv_name";
+        SQLQuery query = s.createSQLQuery(sql);
+        query.setString("attr_value", value);
+        query.setString("login_name", userName);
+        query.setString("priv_name", privilegeName);
+
+        List<?> results = query.list();
+        return !results.isEmpty();
     }
 
     /**
@@ -637,6 +618,7 @@ public final class AuthorizationManagerExtensions {
             CSDataAccessException {
         // Get Mapping Table Entries for Instance Level Security performance.
         InstanceLevelMappingElement mappingElement = new InstanceLevelMappingElement();
+        @SuppressWarnings("unchecked")
         List<InstanceLevelMappingElement> mappingElements = SecurityUtils.getAuthorizationManager().getObjects(
                 new InstanceLevelMappingElementSearchCriteria(mappingElement));
         if (mappingElements == null || mappingElements.size() == 0) {
@@ -677,7 +659,7 @@ public final class AuthorizationManagerExtensions {
                 // get the Table Name and View Name for each object.
 
                 String applicationID = application.getApplicationId().toString();
-                String peiTableName, tableNameUser, viewNameUser, tableNameGroup, viewNameGroup = null;
+                String peiTableName, tableNameGroup, viewNameGroup = null;
                 String peiObjectId = null;
                 if (StringUtilities.isBlank(instanceLevelMappingEntry.getObjectPackageName())) {
                     peiObjectId = instanceLevelMappingEntry.getObjectName().trim();
@@ -695,18 +677,6 @@ public final class AuthorizationManagerExtensions {
                     peiTableName = instanceLevelMappingEntry.getTableName();
                 }
 
-                if (StringUtilities.isBlank(instanceLevelMappingEntry.getTableNameForUser())) {
-                    tableNameUser = "CSM_" + instanceLevelMappingEntry.getObjectName() + "_"
-                            + instanceLevelMappingEntry.getAttributeName() + "_USER";
-                } else {
-                    tableNameUser = instanceLevelMappingEntry.getTableNameForUser();
-                }
-                if (StringUtilities.isBlank(instanceLevelMappingEntry.getViewNameForUser())) {
-                    viewNameUser = "CSM_VW_" + instanceLevelMappingEntry.getObjectName() + "_"
-                            + instanceLevelMappingEntry.getAttributeName() + "_USER";
-                } else {
-                    viewNameUser = instanceLevelMappingEntry.getViewNameForUser();
-                }
                 if (StringUtilities.isBlank(instanceLevelMappingEntry.getTableNameForGroup())) {
                     tableNameGroup = "CSM_" + instanceLevelMappingEntry.getObjectName() + "_"
                             + instanceLevelMappingEntry.getAttributeName() + "_GROUP";
