@@ -2426,6 +2426,8 @@
             classpathref.id="client.test.dependencies.path"
             source.include="**/api/**/java/**/*ServiceTest.java" source.exclude="**/Abstract*.java" />
     </target>
+    
+    <target name="test:api-wrapper" depends="test:api:init-data, test:api"/>
 
     <target name="test:api:init-data" unless="notest" depends="init:third-party-paths,database:recreate-database">
         <!--
