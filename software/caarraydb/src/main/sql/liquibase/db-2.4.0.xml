@@ -34,4 +34,9 @@
        <comment>GF 26323 - improve workspace page performance</comment>
        <sqlFile path="db-upgrade/mysql/2.4.0/26323.sql"/>
     </changeSet>    
+
+    <changeSet id="26558" author="dkokotov">
+       <comment>GF 26558 - fix existing illumina CSV designs to use physical probes</comment>
+       <sqlFile path="db-upgrade/mysql/2.4.0/26558.sql"/>
+    </changeSet>    
  </databaseChangeLog>
