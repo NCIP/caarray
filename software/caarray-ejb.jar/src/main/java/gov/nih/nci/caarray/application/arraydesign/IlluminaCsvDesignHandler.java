@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.application.arraydesign;
 
+import gov.nih.nci.caarray.application.util.Utils;
 import gov.nih.nci.caarray.application.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
@@ -234,7 +235,7 @@ final class IlluminaCsvDesignHandler extends AbstractArrayDesignHandler {
     }
 
     static void validateIntegerField(String value, Enum header, FileValidationResult result, int lineNumber, int col) {
-        if (!isInteger(value)) {
+        if (!Utils.isInteger(value)) {
             ValidationMessage error = result.addMessage(ValidationMessage.Type.ERROR,
                     "Expected integer value for " + header.name() + ", but was " +  value);
             error.setLine(lineNumber);
@@ -250,29 +251,11 @@ final class IlluminaCsvDesignHandler extends AbstractArrayDesignHandler {
     }
 
     static void validateLongField(String value, Enum header, FileValidationResult result, int lineNumber, int col) {
-        if (!isLong(value)) {
+        if (!Utils.isLong(value)) {
             ValidationMessage error = result.addMessage(ValidationMessage.Type.ERROR,
                     "Expected long integral value for " + header.name() + ", but was " +  value);
             error.setLine(lineNumber);
             error.setColumn(col);
-        }
-    }
-
-    static boolean isInteger(String value) {
-        try {
-            Integer.parseInt(value);
-            return true;
-        } catch (NumberFormatException e) {
-            return false;
-        }
-    }
-
-    static boolean isLong(String value) {
-        try {
-            Long.parseLong(value);
-            return true;
-        } catch (NumberFormatException e) {
-            return false;
         }
     }
 

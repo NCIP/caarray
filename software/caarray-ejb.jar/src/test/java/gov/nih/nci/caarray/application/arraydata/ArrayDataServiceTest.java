@@ -220,7 +220,7 @@ public class ArrayDataServiceTest extends AbstractServiceTest {
     private static final String ILLUMINA_HUMAN_WG_6_LSID_OBJECT_ID = "Human_WG-6";
     private static final DataImportOptions DEFAULT_IMPORT_OPTIONS = DataImportOptions.getAutoCreatePerFileOptions();
 
-    private ArrayDataService arrayDataService;
+    public ArrayDataService arrayDataService;
     FileAccessServiceStub fileAccessServiceStub = new FileAccessServiceStub();
     LocalDaoFactoryStub daoFactoryStub = new LocalDaoFactoryStub();
     LocalSearchDaoStub searchDaoStub = new LocalSearchDaoStub();
@@ -872,7 +872,7 @@ public class ArrayDataServiceTest extends AbstractServiceTest {
         return caArrayFile;
     }
 
-    private CaArrayFile getDataCaArrayFile(File file, FileType type) {
+    public CaArrayFile getDataCaArrayFile(File file, FileType type) {
         CaArrayFile caArrayFile = this.fileAccessServiceStub.add(file);
         caArrayFile.setFileType(type);
         caArrayFile.setProject(new Project());
@@ -901,7 +901,7 @@ public class ArrayDataServiceTest extends AbstractServiceTest {
         }
     }
 
-    private final class LocalDaoFactoryStub extends DaoFactoryStub {
+    public final class LocalDaoFactoryStub extends DaoFactoryStub {
 
         private final Map<ArrayDataTypeDescriptor, ArrayDataType> dataTypeMap =
             new HashMap<ArrayDataTypeDescriptor, ArrayDataType>();

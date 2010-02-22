@@ -80,139 +80,52 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.application.arraydesign.illumina;
+package gov.nih.nci.caarray.application.arraydata.illumina;
 
-import gov.nih.nci.caarray.application.arraydesign.IlluminaBgxDesignHandler;
-import gov.nih.nci.caarray.dao.ArrayDao;
-import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
-import gov.nih.nci.caarray.domain.array.ExpressionProbeAnnotation;
-import gov.nih.nci.caarray.domain.array.Gene;
-import gov.nih.nci.caarray.domain.array.PhysicalProbe;
-import gov.nih.nci.caarray.domain.array.ProbeGroup;
-import gov.nih.nci.caarray.util.HibernateUtil;
-import java.util.Arrays;
-import java.util.Locale;
+import gov.nih.nci.caarray.application.arraydata.IlluminaGenotypingProcessedMatrixHandler;
+import gov.nih.nci.caarray.application.arraydata.ProbeLookup;
+import gov.nih.nci.caarray.domain.array.AbstractDesignElement;
+import gov.nih.nci.caarray.domain.array.ArrayDesign;
+import gov.nih.nci.caarray.domain.data.DataSet;
+import gov.nih.nci.caarray.domain.data.DesignElementList;
+import gov.nih.nci.caarray.domain.data.DesignElementType;
+import java.util.List;
 
 /**
- * Create Probes for rows in a Probes or Controls section.
+ * Build Design Element List for each row. Aso used to count rows.
  * @author gax
+ * @since 3.4.0
+ * @see IlluminaGenotypingProcessedMatrixHandler
  */
-public class ProbeHandler extends LineCountHandler {
-    private static final int LOGICAL_PROBE_BATCH_SIZE = 1000;
-    
-    private int[] colIndex;
-    private ArrayDesignDetails details;
-    private ProbeGroup group;
-    private final ArrayDao dao;
-    private boolean visitedProbes;
-    private boolean visitedControls;
+public class DesignElementBuilderProcessor implements IlluminaGenotypingProcessedMatrixHandler.RowProcessor {
 
+    private final List<AbstractDesignElement> list;
+    private final ProbeLookup probeLookup;
 
     /**
-     * @param details the array design details to add the probes and groups to.
-     * @param dao DAO used by the importer.
+     * @param dataSet the dataset to populate with a {@link DesignElementList}
+     * @param design the design that defines the probes.
      */
-    public ProbeHandler(ArrayDesignDetails details, ArrayDao dao) {
-        this.details = details;
-        this.dao = dao;
+    public DesignElementBuilderProcessor(DataSet dataSet, ArrayDesign design) {
+        DesignElementList probeList = new DesignElementList();
+        probeList.setDesignElementTypeEnum(DesignElementType.PHYSICAL_PROBE);
+        dataSet.setDesignElementList(probeList);
+        this.list = probeList.getDesignElements();
+        this.probeLookup = new ProbeLookup(design.getDesignDetails().getProbes());
     }
 
     /**
      * {@inheritDoc}
      */
-    @Override
-    public boolean startSection(String sectionName, int lineNumber) {
-        String groupName;
-        try {
-            switch (IlluminaBgxDesignHandler.Section.valueOf(sectionName.toUpperCase(Locale.getDefault()))) {
-                case PROBES :
-                    groupName = "Main"; 
-                    visitedProbes = true;
-                    break;
-                case CONTROLS:
-                    groupName = "Control"; 
-                    visitedControls = true;
-                    break;
-                default:
-                    return false;
-            }
-        } catch (IllegalArgumentException e) {
-            return false;
-        }
-        group = new ProbeGroup(details);
-        group.setName(groupName);
-        HibernateUtil.getCurrentSession().save(group);
+    public boolean parseRow(List<String> row, int lineNum) {
+        list.add(probeLookup.getProbe(row.get(0)));
         return true;
     }
 
     /**
-     * {@inheritDoc}
+     * @return list of the created design elements.
      */
-    @Override
-    public boolean endSection(String sectionName, int lineNumber) {
-        return !(visitedProbes && visitedControls);
+    public List<AbstractDesignElement> getList() {
+        return list;
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    @SuppressWarnings("PMD.EmptyCatchBlock")
-    public void parseFirstRow(String[] values, int lineNumber) {
-        colIndex = new int[IlluminaBgxDesignHandler.Header.values().length];
-        Arrays.fill(colIndex, -1);
-        for (int i = 0; i < values.length; i++) {
-            String col = values[i].toUpperCase(Locale.getDefault());
-            try {
-                IlluminaBgxDesignHandler.Header h =
-                        IlluminaBgxDesignHandler.Header.valueOf(col);
-                colIndex[h.ordinal()] = i;
-            } catch (IllegalArgumentException e) {
-                // unknown column
-            }
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void parseRow(String[] values, int lineNumber) {
-        super.parseRow(values, lineNumber);
-        PhysicalProbe p = createProbe(values);
-        dao.save(p);
-        if (getCount() % LOGICAL_PROBE_BATCH_SIZE == 0) {
-                flushAndClear();
-            }
-    }
-
-    private PhysicalProbe createProbe(String[] line) {
-        PhysicalProbe probe = new PhysicalProbe(details, group);
-        String probeId = getValue(IlluminaBgxDesignHandler.Header.PROBE_ID, line);
-        probe.setName(probeId);
-        ExpressionProbeAnnotation annotation = new ExpressionProbeAnnotation();
-        annotation.setGene(new Gene());
-        annotation.getGene().setSymbol(getValue(IlluminaBgxDesignHandler.Header.SYMBOL, line));
-        annotation.getGene().setFullName(getValue(IlluminaBgxDesignHandler.Header.DEFINITION, line));
-        annotation.getGene().setGenbankAccession(getValue(IlluminaBgxDesignHandler.Header.ACCESSION, line));
-        annotation.getGene().setEntrezgeneID(getValue(IlluminaBgxDesignHandler.Header.ENTREZ_GENE_ID, line));
-        annotation.getGene().setUnigeneclusterID(getValue(IlluminaBgxDesignHandler.Header.UNIGENE_ID, line));
-        probe.setAnnotation(annotation);
-        return probe;
-    }
-
-    private String getValue(IlluminaBgxDesignHandler.Header column, String[] line) {
-        int idx = colIndex[column.ordinal()];
-        return idx == -1 ? null : line[idx];
-    }
-
-    private void flushAndClear() {
-        dao.flushSession();
-        dao.clearSession();
-        details = (ArrayDesignDetails) HibernateUtil.getCurrentSession().load(ArrayDesignDetails.class,
-                details.getId());
-        group = (ProbeGroup) HibernateUtil.getCurrentSession().load(ProbeGroup.class, group.getId());
-    }
-
-
 }

@@ -85,6 +85,7 @@ package gov.nih.nci.caarray.application.arraydesign.illumina;
 import gov.nih.nci.caarray.application.arraydesign.IlluminaBgxDesignHandler;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.ValidationMessage;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
@@ -206,9 +207,7 @@ public class IlluminaBgxValidator implements ContentHandler {
         @Override
         public void parseFirstRow(String[] values, int lineNumber) {
             colIndex = new int[IlluminaBgxDesignHandler.Header.values().length];
-            for (int i = 0; i < colIndex.length; i++) {
-                colIndex[i] = -1;
-            }
+            Arrays.fill(colIndex, -1);
             for (int i = 0; i < values.length; i++) {
                 String col = values[i].toUpperCase(Locale.getDefault());
                 try {

@@ -196,49 +196,79 @@ public abstract class AbstractDataFileHandler {
      * @param rowIndex the index of the row in the column
      * @param value the value 
      */
-    @SuppressWarnings("PMD.CyclomaticComplexity") // switch-like statement
-    protected void setValue(AbstractDataColumn column, int rowIndex, String value) {
-        Class<?> columnTypeClass = column.getQuantitationType().getTypeClass();
-        if (columnTypeClass.equals(Boolean.class)) {
-            ((BooleanColumn) column).getValues()[rowIndex] = parseBoolean(value);
-        } else if (columnTypeClass.equals(Short.class)) {
-            ((ShortColumn) column).getValues()[rowIndex] = parseShort(value);
-        } else if (columnTypeClass.equals(Integer.class)) {
-            ((IntegerColumn) column).getValues()[rowIndex] = parseInt(value);
-        } else if (columnTypeClass.equals(Long.class)) {
-            ((LongColumn) column).getValues()[rowIndex] = parseLong(value);
-        } else if (columnTypeClass.equals(Float.class)) {
-            ((FloatColumn) column).getValues()[rowIndex] = parseFloat(value);
-        } else if (columnTypeClass.equals(Double.class)) {
-            ((DoubleColumn) column).getValues()[rowIndex] = parseDouble(value);
-        } else if (columnTypeClass.equals(String.class)) {
-            ((StringColumn) column).getValues()[rowIndex] = value;
-        } else {
-            throw new IllegalArgumentException("Unsupported type class " + columnTypeClass.getCanonicalName());
+    public void setValue(AbstractDataColumn column, int rowIndex, String value) {
+        switch (column.getQuantitationType().getDataType()) {
+            case BOOLEAN :
+                ((BooleanColumn) column).getValues()[rowIndex] = parseBoolean(value); break;
+            case SHORT :
+                ((ShortColumn) column).getValues()[rowIndex] = parseShort(value); break;
+            case INTEGER :
+                ((IntegerColumn) column).getValues()[rowIndex] = parseInt(value); break;
+            case LONG :
+                ((LongColumn) column).getValues()[rowIndex] = parseLong(value); break;
+            case FLOAT :
+                ((FloatColumn) column).getValues()[rowIndex] = parseFloat(value); break;
+            case DOUBLE :
+                ((DoubleColumn) column).getValues()[rowIndex] = parseDouble(value);
+            case STRING :
+                ((StringColumn) column).getValues()[rowIndex] = value; break;
+            default :
+                throw new IllegalArgumentException("Unsupported type class "
+                        + column.getQuantitationType().getDataType());
         }
     }
 
-    boolean parseBoolean(String value) {
+    /**
+     * Parse a String value into a boolean.
+     * @param value the value to parse.
+     * @return the boolean equivalent of the String value.
+     */
+    protected boolean parseBoolean(String value) {
         return Boolean.parseBoolean(value);
     }
 
-    short parseShort(String value) {
+    /**
+     * Parse a String value into a short.
+     * @param value the value to parse.
+     * @return the short equivalent of the String value.
+     */
+    protected short parseShort(String value) {
         return Short.parseShort(value);
     }
 
-    int parseInt(String value) {
+    /**
+     * Parse a String value into a integer.
+     * @param value the value to parse.
+     * @return the integer equivalent of the String value.
+     */
+    protected int parseInt(String value) {
         return Integer.parseInt(value);
     }
 
-    long parseLong(String value) {
+    /**
+     * Parse a String value into a long.
+     * @param value the value to parse.
+     * @return the long equivalent of the String value.
+     */
+    protected long parseLong(String value) {
         return Long.parseLong(value);
     }
 
-    float parseFloat(String value) {
+    /**
+     * Parse a String value into a float.
+     * @param value the value to parse.
+     * @return the float equivalent of the String value.
+     */
+    protected float parseFloat(String value) {
         return Float.parseFloat(value);
     }
 
-    double parseDouble(String value) {
+    /**
+     * Parse a String value into a double.
+     * @param value the value to parse.
+     * @return the double equivalent of the String value.
+     */
+    protected double parseDouble(String value) {
         return Double.parseDouble(value);
     }
 

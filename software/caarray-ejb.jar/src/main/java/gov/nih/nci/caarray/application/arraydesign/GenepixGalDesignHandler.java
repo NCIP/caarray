@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.application.arraydesign;
 
+import gov.nih.nci.caarray.application.util.Utils;
 import gov.nih.nci.caarray.application.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
@@ -414,29 +415,11 @@ final class GenepixGalDesignHandler extends AbstractArrayDesignHandler {
 
     private void validateShortField(List<String> values, String header, FileValidationResult result, int line) {
         int column = headerToPositionMap.get(header);
-        if (!isShort(values.get(column))) {
+        if (!Utils.isShort(values.get(column))) {
             ValidationMessage message =
                 result.addMessage(Type.ERROR, "Illegal (non-numeric) value for field " + header + " on line " + line);
             message.setLine(line);
             message.setColumn(column);
-        }
-    }
-
-    private boolean isShort(String value) {
-        try {
-            Short.parseShort(value);
-            return true;
-        } catch (NumberFormatException e) {
-            return false;
-        }
-    }
-
-    private boolean isInteger(String value) {
-        try {
-            Integer.parseInt(value);
-            return true;
-        } catch (NumberFormatException e) {
-            return false;
         }
     }
 
@@ -541,7 +524,7 @@ final class GenepixGalDesignHandler extends AbstractArrayDesignHandler {
         String[] parts = headerField.split("=");
         String name = parts[0];
         String information = parts[1];
-        if (!isShort(name.substring(BLOCK_INDICATOR.length()))) {
+        if (!Utils.isShort(name.substring(BLOCK_INDICATOR.length()))) {
             result.addMessage(Type.ERROR, "Illegal block header name: " + name);
             return;
         }
@@ -550,7 +533,7 @@ final class GenepixGalDesignHandler extends AbstractArrayDesignHandler {
 
     private void validateBlockInformationFields(String[] values, int line, FileValidationResult result) {
         if (values.length != NUMBER_OF_BLOCK_INFORMATION_FIELDS
-                || !isInteger(values[0].trim()) || !isInteger(values[1].trim())) {
+                || !Utils.isInteger(values[0].trim()) || !Utils.isInteger(values[1].trim())) {
             ValidationMessage message =
                 result.addMessage(Type.ERROR,
                         "Block information must consist of exactly 7 comma-separated numeric values");

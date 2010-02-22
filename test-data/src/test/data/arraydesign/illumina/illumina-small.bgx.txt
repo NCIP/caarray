@@ -1,0 +1,12 @@
+? Illumina, Inc.
+[Heading]
+Date	7/5/2008
+ContentVersion	2.0
+FormatVersion	1.0.0
+Number of Probes	3
+Number of Controls	0
+[Probes]
+Species	Source	Search_Key	Transcript	ILMN_Gene	Source_Reference_ID	RefSeq_ID	Unigene_ID	Entrez_Gene_ID	GI	Accession	Symbol	Protein_Product	Probe_Id	Array_Address_Id	Probe_Type	Probe_Start	Probe_Sequence	Chromosome	Probe_Chr_Orientation	Probe_Coordinates	Cytoband	Definition	Ontology_Component	Ontology_Process	Ontology_Function	Synonyms	Obsolete_Probe_Id
+Homo sapiens	RefSeq	ILMN_44919	ILMN_44919	LOC23117	XM_933824.1	XM_933824.1		23117	89040007	XM_933824.1	LOC23117	XP_938917.1	ILMN_1725881	0002000349	I	122	GGCTCCTCTTTGGGCTCCTACTGGAATTTATCAGCCATCAGTGCATCTCT	16	-	21766363-21766363:21769901-21769949	16p12.2a	PREDICTED: Homo sapiens KIAA0220-like protein, transcript variant 11 (LOC23117), mRNA.					
+Homo sapiens	Unigene	ILMN_127219	ILMN_127219	HS.575038	Hs.575038		Hs.575038		10437021	AK024680			ILMN_1910180	0002100682	S	1409	ACACCTTCAGGAGGGAAGCCCTTATTTCTGGGTTGAACTCCCCTTCCATG					Homo sapiens cDNA: FLJ21027 fis, clone CAE07110					
+Homo sapiens	RefSeq	ILMN_139282	ILMN_139282	FCGR2B	XM_938851.1	XM_938851.1		2213	88952550	XM_938851.1	FCGR2B	XP_943944.1	ILMN_1804174	0001500347	I	1643	TAGGGGCAATAGGCTATACGCTACAGCCTAGGTGTGTAGTAGGCCACACC				1q23.3b	PREDICTED: Homo sapiens Fc fragment of IgG, low affinity IIb, receptor (CD32) (FCGR2B), mRNA.					

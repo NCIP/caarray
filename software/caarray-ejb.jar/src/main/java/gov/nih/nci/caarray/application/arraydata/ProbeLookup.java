@@ -91,11 +91,14 @@ import java.util.Map;
 /**
  * Provides lookup of array design <code>AbstractProbe</code> by location information.
  */
-final class ProbeLookup {
+public final class ProbeLookup {
 
     private final Map<String, AbstractProbe> probeMap;
 
-    ProbeLookup(Collection<? extends AbstractProbe> probes) {
+    /**
+     * @param probes the probes to map by name.
+     */
+    public ProbeLookup(Collection<? extends AbstractProbe> probes) {
         probeMap = new HashMap<String, AbstractProbe>(probes.size());
         for (AbstractProbe probe : probes) {
             addProbe(probe);
@@ -106,7 +109,11 @@ final class ProbeLookup {
         probeMap.put(probe.getName(), probe);
     }
 
-    AbstractProbe getProbe(String probeName) {
+    /**
+     * @param probeName name of prob to lookup.
+     * @return the probe by that name.
+     */
+    public AbstractProbe getProbe(String probeName) {
         return probeMap.get(probeName);
     }
 

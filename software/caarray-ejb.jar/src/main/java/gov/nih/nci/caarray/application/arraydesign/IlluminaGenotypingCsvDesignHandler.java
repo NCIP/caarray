@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.application.arraydesign;
 
 import com.google.common.collect.ImmutableSet;
+import gov.nih.nci.caarray.application.util.Utils;
 import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
 import gov.nih.nci.caarray.domain.array.PhysicalProbe;
 import gov.nih.nci.caarray.domain.array.SNPProbeAnnotation;
@@ -118,7 +119,7 @@ final class IlluminaGenotypingCsvDesignHandler extends AbstractIlluminaDesignHan
         PhysicalProbe logicalProbe = new PhysicalProbe(details, null);
         logicalProbe.setName(name);
         SNPProbeAnnotation annotation = new SNPProbeAnnotation();
-        if (isInteger(getValue(values, Header.CHR))) {
+        if (Utils.isInteger(getValue(values, Header.CHR))) {
             annotation.setChromosome(getIntegerValue(values, Header.CHR));
         }
         if (!StringUtils.isBlank(getValue(values, Header.SNP))) {

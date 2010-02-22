@@ -80,139 +80,82 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.application.arraydesign.illumina;
 
-import gov.nih.nci.caarray.application.arraydesign.IlluminaBgxDesignHandler;
-import gov.nih.nci.caarray.dao.ArrayDao;
-import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
-import gov.nih.nci.caarray.domain.array.ExpressionProbeAnnotation;
-import gov.nih.nci.caarray.domain.array.Gene;
-import gov.nih.nci.caarray.domain.array.PhysicalProbe;
-import gov.nih.nci.caarray.domain.array.ProbeGroup;
-import gov.nih.nci.caarray.util.HibernateUtil;
-import java.util.Arrays;
-import java.util.Locale;
+package gov.nih.nci.caarray.application.util;
 
 /**
- * Create Probes for rows in a Probes or Controls section.
+ * Commonly used utility methods.
  * @author gax
+ * @since 3.4.0
  */
-public class ProbeHandler extends LineCountHandler {
-    private static final int LOGICAL_PROBE_BATCH_SIZE = 1000;
-    
-    private int[] colIndex;
-    private ArrayDesignDetails details;
-    private ProbeGroup group;
-    private final ArrayDao dao;
-    private boolean visitedProbes;
-    private boolean visitedControls;
+public final class Utils {
 
-
-    /**
-     * @param details the array design details to add the probes and groups to.
-     * @param dao DAO used by the importer.
-     */
-    public ProbeHandler(ArrayDesignDetails details, ArrayDao dao) {
-        this.details = details;
-        this.dao = dao;
+    private Utils() {
+        //
     }
 
     /**
-     * {@inheritDoc}
+     * @param value the value to test.
+     * @return true is the value can be parsed as an Integer.
      */
-    @Override
-    public boolean startSection(String sectionName, int lineNumber) {
-        String groupName;
+    public static boolean isInteger(String value) {
         try {
-            switch (IlluminaBgxDesignHandler.Section.valueOf(sectionName.toUpperCase(Locale.getDefault()))) {
-                case PROBES :
-                    groupName = "Main"; 
-                    visitedProbes = true;
-                    break;
-                case CONTROLS:
-                    groupName = "Control"; 
-                    visitedControls = true;
-                    break;
-                default:
-                    return false;
-            }
-        } catch (IllegalArgumentException e) {
+            Integer.parseInt(value);
+            return true;
+        } catch (NumberFormatException e) {
             return false;
         }
-        group = new ProbeGroup(details);
-        group.setName(groupName);
-        HibernateUtil.getCurrentSession().save(group);
-        return true;
     }
 
     /**
-     * {@inheritDoc}
+     * @param value the value to test.
+     * @return true is the value can be parsed as an Long.
      */
-    @Override
-    public boolean endSection(String sectionName, int lineNumber) {
-        return !(visitedProbes && visitedControls);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    @SuppressWarnings("PMD.EmptyCatchBlock")
-    public void parseFirstRow(String[] values, int lineNumber) {
-        colIndex = new int[IlluminaBgxDesignHandler.Header.values().length];
-        Arrays.fill(colIndex, -1);
-        for (int i = 0; i < values.length; i++) {
-            String col = values[i].toUpperCase(Locale.getDefault());
-            try {
-                IlluminaBgxDesignHandler.Header h =
-                        IlluminaBgxDesignHandler.Header.valueOf(col);
-                colIndex[h.ordinal()] = i;
-            } catch (IllegalArgumentException e) {
-                // unknown column
-            }
+    public static boolean isLong(String value) {
+        try {
+            Long.parseLong(value);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
         }
     }
 
     /**
-     * {@inheritDoc}
+     * @param value the value to test.
+     * @return true is the value can be parsed as an Short.
      */
-    @Override
-    public void parseRow(String[] values, int lineNumber) {
-        super.parseRow(values, lineNumber);
-        PhysicalProbe p = createProbe(values);
-        dao.save(p);
-        if (getCount() % LOGICAL_PROBE_BATCH_SIZE == 0) {
-                flushAndClear();
-            }
+    public static boolean isShort(String value) {
+        try {
+            Short.parseShort(value);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
     }
 
-    private PhysicalProbe createProbe(String[] line) {
-        PhysicalProbe probe = new PhysicalProbe(details, group);
-        String probeId = getValue(IlluminaBgxDesignHandler.Header.PROBE_ID, line);
-        probe.setName(probeId);
-        ExpressionProbeAnnotation annotation = new ExpressionProbeAnnotation();
-        annotation.setGene(new Gene());
-        annotation.getGene().setSymbol(getValue(IlluminaBgxDesignHandler.Header.SYMBOL, line));
-        annotation.getGene().setFullName(getValue(IlluminaBgxDesignHandler.Header.DEFINITION, line));
-        annotation.getGene().setGenbankAccession(getValue(IlluminaBgxDesignHandler.Header.ACCESSION, line));
-        annotation.getGene().setEntrezgeneID(getValue(IlluminaBgxDesignHandler.Header.ENTREZ_GENE_ID, line));
-        annotation.getGene().setUnigeneclusterID(getValue(IlluminaBgxDesignHandler.Header.UNIGENE_ID, line));
-        probe.setAnnotation(annotation);
-        return probe;
+    /**
+     * @param value the value to test.
+     * @return true is the value can be parsed as an Float.
+     */
+    public static boolean isFloat(String value) {
+        try {
+            Float.parseFloat(value);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
     }
 
-    private String getValue(IlluminaBgxDesignHandler.Header column, String[] line) {
-        int idx = colIndex[column.ordinal()];
-        return idx == -1 ? null : line[idx];
+    /**
+     * @param value the value to test.
+     * @return true is the value can be parsed as an Double.
+     */
+    public static boolean isDouble(String value) {
+        try {
+            Double.parseDouble(value);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
     }
-
-    private void flushAndClear() {
-        dao.flushSession();
-        dao.clearSession();
-        details = (ArrayDesignDetails) HibernateUtil.getCurrentSession().load(ArrayDesignDetails.class,
-                details.getId());
-        group = (ProbeGroup) HibernateUtil.getCurrentSession().load(ProbeGroup.class, group.getId());
-    }
-
-
 }

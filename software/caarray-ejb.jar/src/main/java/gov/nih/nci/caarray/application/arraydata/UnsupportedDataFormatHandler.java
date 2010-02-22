@@ -103,7 +103,7 @@ import org.apache.log4j.Logger;
  */
 class UnsupportedDataFormatHandler extends AbstractDataFileHandler {
 
-    private static final Logger LOG = Logger.getLogger(IlluminaDataHandler.class);
+    private static final Logger LOG = Logger.getLogger(UnsupportedDataFormatHandler.class);
 
     UnsupportedDataFormatHandler() {
         super();

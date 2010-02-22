@@ -379,7 +379,7 @@ class IlluminaDataHandler extends AbstractDataFileHandler {
         probeList.setDesignElementTypeEnum(DesignElementType.PHYSICAL_PROBE);
         dataSet.setDesignElementList(probeList);
         ArrayDesignDetails designDetails = getArrayDesign(arrayDesignService, reader).getDesignDetails();
-        ProbeLookup probeLookup = new ProbeLookup(designDetails.getLogicalProbes());
+        ProbeLookup probeLookup = new ProbeLookup(designDetails.getProbes());
         positionAtData(reader);
         while (reader.hasNextLine()) {
             List<String> values = reader.nextLine();

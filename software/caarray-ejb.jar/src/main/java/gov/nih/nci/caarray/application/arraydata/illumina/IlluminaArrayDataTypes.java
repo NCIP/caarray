@@ -100,9 +100,16 @@ public enum IlluminaArrayDataTypes implements ArrayDataTypeDescriptor {
     ILLUMINA_EXPRESSION("Illumina CSV (Gene Expression)", IlluminaExpressionQuantitationType.values()),
 
     /**
-     * Illumina Gene Expression CSV format.
+     * Illumina Genotyping CSV format.
      */
-    ILLUMINA_GENOTYPING("Illumina CSV (Genotyping)", IlluminaGenotypingQuantitationType.values());
+    ILLUMINA_GENOTYPING("Illumina CSV (Genotyping)", IlluminaGenotypingQuantitationType.values()),
+
+    /**
+     * Illumina Genotyping TSV format.
+     * @since 2.4.0
+     */
+    ILLUMINA_GENOTYPING_PROCESSED_MATRIX("Illumina TSV (Genotyping Processed Matrix)",
+        IlluminaGenotypingProcessedMatrixQuantitationType.values());
 
 
     private final String name;

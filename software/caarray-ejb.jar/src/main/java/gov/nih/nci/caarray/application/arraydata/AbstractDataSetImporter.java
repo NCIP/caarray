@@ -328,12 +328,17 @@ abstract class AbstractDataSetImporter<ARRAYDATA extends AbstractArrayData> {
     private ArrayDesign getArrayDesignFromFileOrExperiment() {
         ArrayDesign ad = getDataFileHandler().getArrayDesign(getArrayDesignService(), getFile());
         if (ad == null) {
-            Set<ArrayDesign> experimentDesigns = getExperiment().getArrayDesigns();
-            if (experimentDesigns.size() == 1) {
-                ad = experimentDesigns.iterator().next();
-            } 
+            ad = findArrayDesignFromExperiment(getExperiment());
         }
         return ad;
+    }
+
+    static ArrayDesign findArrayDesignFromExperiment(Experiment exp) {
+        Set<ArrayDesign> experimentDesigns = exp.getArrayDesigns();
+        if (experimentDesigns.size() == 1) {
+            return experimentDesigns.iterator().next();
+        }
+        return null;
     }
 
     Hybridization lookupOrCreateHybridization(String hybridizationName, boolean createAnnotation) {

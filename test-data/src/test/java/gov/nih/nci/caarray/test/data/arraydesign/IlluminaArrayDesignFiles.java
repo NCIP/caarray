@@ -101,4 +101,7 @@ public class IlluminaArrayDesignFiles {
     public static final File HUMANWG_6_V2_0_R3_11223189_A_BGX =
         new File(IlluminaArrayDesignFiles.class.getResource("/arraydesign/illumina/HumanWG-6_V2_0_R3_11223189_A.bgx").getFile());
 
+    public static final File ILLUMINA_SMALL_BGX_TXT =
+        new File(IlluminaArrayDesignFiles.class.getResource("/arraydesign/illumina/illumina-small.bgx.txt").getFile());
+
 }

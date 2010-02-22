@@ -549,12 +549,12 @@ final class GenepixGprHandler extends AbstractDataFileHandler {
     }
 
     @Override
-    boolean parseBoolean(String value) {
+    protected boolean parseBoolean(String value) {
         return !"0".equals(value);
     }
 
     @Override
-    float parseFloat(String value) {
+    protected float parseFloat(String value) {
         if ("Error".equals(value)) {
             return Float.NaN;
         } else {

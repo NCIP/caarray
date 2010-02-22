@@ -162,10 +162,6 @@ abstract class AbstractIlluminaDesignHandler {
         return values.get(indexOf(header));
     }
 
-    final boolean isInteger(String value) {
-        return IlluminaCsvDesignHandler.isInteger(value);
-    }
-
     final Long getLongValue(List<String> values, Enum header) {
         String stringValue = getValue(values, header);
         if (StringUtils.isBlank(stringValue)) {

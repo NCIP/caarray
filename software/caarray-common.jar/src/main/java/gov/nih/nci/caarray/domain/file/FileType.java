@@ -316,7 +316,7 @@ public enum FileType implements Comparable<FileType> {
      * The set of array data file types that caArray can parse.
      */
     public static final Set<FileType> PARSEABLE_ARRAY_DATA_FILE_TYPES = EnumSet.of(AFFYMETRIX_CEL, AFFYMETRIX_CHP,
-            ILLUMINA_DATA_CSV, GENEPIX_GPR);
+            ILLUMINA_DATA_CSV, ILLUMINA_DERIVED_TXT, GENEPIX_GPR);
 
     private static final Map<FileType, FileType> RAW_TO_DERIVED_MAP = new HashMap<FileType, FileType>();
     private static final Map<FileType, FileType> DERIVED_TO_RAW_MAP = new HashMap<FileType, FileType>();

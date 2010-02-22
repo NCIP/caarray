@@ -80,139 +80,78 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.application.arraydesign.illumina;
+package gov.nih.nci.caarray.application.arraydata.illumina;
 
-import gov.nih.nci.caarray.application.arraydesign.IlluminaBgxDesignHandler;
-import gov.nih.nci.caarray.dao.ArrayDao;
-import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
-import gov.nih.nci.caarray.domain.array.ExpressionProbeAnnotation;
-import gov.nih.nci.caarray.domain.array.Gene;
-import gov.nih.nci.caarray.domain.array.PhysicalProbe;
-import gov.nih.nci.caarray.domain.array.ProbeGroup;
-import gov.nih.nci.caarray.util.HibernateUtil;
-import java.util.Arrays;
-import java.util.Locale;
+import gov.nih.nci.caarray.validation.FileValidationResult;
+import gov.nih.nci.caarray.validation.ValidationMessage.Type;
+import java.util.List;
+import java.util.Set;
 
 /**
- * Create Probes for rows in a Probes or Controls section.
+ * Parse the header and collect validation messages.
  * @author gax
+ * @since 3.4.0
+ * @see gov.nih.nci.caarray.application.arraydata.IlluminaGenotypingProcessedMatrixHandler
  */
-public class ProbeHandler extends LineCountHandler {
-    private static final int LOGICAL_PROBE_BATCH_SIZE = 1000;
-    
-    private int[] colIndex;
-    private ArrayDesignDetails details;
-    private ProbeGroup group;
-    private final ArrayDao dao;
-    private boolean visitedProbes;
-    private boolean visitedControls;
+public class ValidatingHeaderProcessor extends DefaultHeaderProcessor {
 
+    private final FileValidationResult result;
+    private final Set<String> sdrfHybNames;
 
     /**
-     * @param details the array design details to add the probes and groups to.
-     * @param dao DAO used by the importer.
+     * @param result used to collect validation messages.
+     * @param sdrfHybNames hyb names in SDRF doc, if any.
      */
-    public ProbeHandler(ArrayDesignDetails details, ArrayDao dao) {
-        this.details = details;
-        this.dao = dao;
+    public ValidatingHeaderProcessor(FileValidationResult result, Set<String> sdrfHybNames) {
+        super();
+        this.result = result;
+        this.sdrfHybNames = sdrfHybNames;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public boolean startSection(String sectionName, int lineNumber) {
-        String groupName;
-        try {
-            switch (IlluminaBgxDesignHandler.Section.valueOf(sectionName.toUpperCase(Locale.getDefault()))) {
-                case PROBES :
-                    groupName = "Main"; 
-                    visitedProbes = true;
-                    break;
-                case CONTROLS:
-                    groupName = "Control"; 
-                    visitedControls = true;
-                    break;
-                default:
-                    return false;
-            }
-        } catch (IllegalArgumentException e) {
-            return false;
+    public boolean parseHeader(List<String> row, int lineNum) {
+        boolean ok = super.parseHeader(row, lineNum);
+        if (ok) {
+            checkSdrfNames(sdrfHybNames, getHybBlocks(), result);
         }
-        group = new ProbeGroup(details);
-        group.setName(groupName);
-        HibernateUtil.getCurrentSession().save(group);
-        return true;
+        return ok;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public boolean endSection(String sectionName, int lineNumber) {
-        return !(visitedProbes && visitedControls);
+    protected void error(String msg, int line, int col) {
+        result.addMessage(Type.ERROR, msg, line, col);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    @SuppressWarnings("PMD.EmptyCatchBlock")
-    public void parseFirstRow(String[] values, int lineNumber) {
-        colIndex = new int[IlluminaBgxDesignHandler.Header.values().length];
-        Arrays.fill(colIndex, -1);
-        for (int i = 0; i < values.length; i++) {
-            String col = values[i].toUpperCase(Locale.getDefault());
-            try {
-                IlluminaBgxDesignHandler.Header h =
-                        IlluminaBgxDesignHandler.Header.valueOf(col);
-                colIndex[h.ordinal()] = i;
-            } catch (IllegalArgumentException e) {
-                // unknown column
+    protected void warn(String msg, int line, int col) {
+        result.addMessage(Type.WARNING, msg, line, col);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void info(String msg, int line, int col) {
+        result.addMessage(Type.INFO, msg, line, col);
+    }
+
+    private static void checkSdrfNames(Set<String> sdrfNames, DefaultHeaderProcessor.HybBlock[] hybs,
+            FileValidationResult result) {
+        for (DefaultHeaderProcessor.HybBlock h : hybs) {
+            String hybName = h.getQTypeColNames()[0];
+            if (sdrfNames != null && !sdrfNames.contains(hybName)) {
+                result.addMessage(Type.ERROR, "Hybridization " + hybName + " is not referenced in SDRF",
+                        1, h.getStartCol() + 1);
             }
         }
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void parseRow(String[] values, int lineNumber) {
-        super.parseRow(values, lineNumber);
-        PhysicalProbe p = createProbe(values);
-        dao.save(p);
-        if (getCount() % LOGICAL_PROBE_BATCH_SIZE == 0) {
-                flushAndClear();
-            }
-    }
-
-    private PhysicalProbe createProbe(String[] line) {
-        PhysicalProbe probe = new PhysicalProbe(details, group);
-        String probeId = getValue(IlluminaBgxDesignHandler.Header.PROBE_ID, line);
-        probe.setName(probeId);
-        ExpressionProbeAnnotation annotation = new ExpressionProbeAnnotation();
-        annotation.setGene(new Gene());
-        annotation.getGene().setSymbol(getValue(IlluminaBgxDesignHandler.Header.SYMBOL, line));
-        annotation.getGene().setFullName(getValue(IlluminaBgxDesignHandler.Header.DEFINITION, line));
-        annotation.getGene().setGenbankAccession(getValue(IlluminaBgxDesignHandler.Header.ACCESSION, line));
-        annotation.getGene().setEntrezgeneID(getValue(IlluminaBgxDesignHandler.Header.ENTREZ_GENE_ID, line));
-        annotation.getGene().setUnigeneclusterID(getValue(IlluminaBgxDesignHandler.Header.UNIGENE_ID, line));
-        probe.setAnnotation(annotation);
-        return probe;
-    }
-
-    private String getValue(IlluminaBgxDesignHandler.Header column, String[] line) {
-        int idx = colIndex[column.ordinal()];
-        return idx == -1 ? null : line[idx];
-    }
-
-    private void flushAndClear() {
-        dao.flushSession();
-        dao.clearSession();
-        details = (ArrayDesignDetails) HibernateUtil.getCurrentSession().load(ArrayDesignDetails.class,
-                details.getId());
-        group = (ProbeGroup) HibernateUtil.getCurrentSession().load(ProbeGroup.class, group.getId());
-    }
-
-
 }
