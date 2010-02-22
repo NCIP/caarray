@@ -2681,7 +2681,7 @@
     <!-- ** LOCAL DEPLOY TARGETS                                                ** -->
     <!-- ******************************************************************* -->
 
-    <target name="deploy" depends="init:third-party-paths,deploy:caarray.ear,deploy:caarray-grid-svc" description="Deploy the application and grid services" />
+    <target name="deploy" depends="init:third-party-paths,deploy:caarray.ear,deploy:caarray-grid-svc,database:update" description="Deploy the application and grid services" />
 
     <target name="deploy:caarray.ear-dependencies" depends="init:third-party-paths,prepare:create-local.properties">
         <copy file="${common.resources.jboss.conf.dir}/${mysql.datasource.file}" todir="${jboss.deploy.dir}" overwrite="true">
