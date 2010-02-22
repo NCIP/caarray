@@ -115,7 +115,7 @@
     <property name="bda.utils.build.file" value="${bda-utils.dir}/bda-build-utils-${bda.version}.xml"/>
     <property name="local.repo.dir" value="${basedir}/local-ivy-repo"/>
 
-    <ant antfile="caarray-ivy-build.xml" dir="${basedir}" inheritAll="true" inheritRefs="true" target="retrieve-bda-dependencies">
+    <ant antfile="caarray-ivy-build.xml" dir="${basedir}/master_build" inheritAll="true" inheritRefs="true" target="retrieve-bda-dependencies">
         <property name="no.ivy" value="${no.ivy}"/>
         <property name="clean.bootstrap.libs.and.ivy.cache" value="${clean.bootstrap.libs.and.ivy.cache}"/>
         <property name="local.repo.dir" value="${local.repo.dir}"/>
@@ -181,7 +181,7 @@
     </fileset>
 
     <target name="init:third-party-paths">
-        <ant antfile="caarray-ivy-build.xml" dir="${basedir}" inheritAll="true" inheritRefs="true" target="retrieve-app-dependencies">
+        <ant antfile="caarray-ivy-build.xml" dir="${basedir}/master_build" inheritAll="true" inheritRefs="true" target="retrieve-app-dependencies">
             <property name="no.ivy" value="${no.ivy}"/>
             <property name="psuedo_override.clean.bootstrap.libs.and.ivy.cache" value="false"/>
             <property name="local.repo.dir" value="${local.repo.dir}"/>

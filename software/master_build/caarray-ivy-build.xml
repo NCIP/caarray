@@ -1,4 +1,4 @@
-<project name="caarray-ivy" default="retrieve-bda-dependencies" basedir="." xmlns:ivy="antlib:org.apache.ivy.ant">
+<project name="caarray-ivy" default="retrieve-bda-dependencies" basedir=".." xmlns:ivy="antlib:org.apache.ivy.ant">
 
     <property name="ivy.jar.file" value="ivy-2.0.0.jar"/>
     <property name="ivy.src.url" value="http://gforge.nci.nih.gov/svnroot/commonlibrary/trunk/ivy-repo/apache/ivy/2.0.0/${ivy.jar.file}"/>
