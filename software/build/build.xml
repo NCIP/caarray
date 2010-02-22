@@ -2440,7 +2440,7 @@
             source.include="**/api/**/java/**/*ServiceTest.java" source.exclude="**/Abstract*.java" />
     </target>
     
-    <target name="test:api-wrapper" depends="test:api:init-data, test:api"/>
+    <target name="test:api-wrapper" depends="test:api:init-data, test:api, deploy:stop-jboss-servers"/>
     
     <target name="deploy:cleaup-testing-installation" depends="deploy:stop-jboss-servers">
     	<delete dir="${application.base.path}"/>
@@ -2771,7 +2771,7 @@
     </target>
 
     <target name="deploy:stop-grid-jboss" depends="init:third-party-paths">
-        <jboss-stop-jboss jboss.home="${grid.home}" jboss.server.hostname="${grid.server.hostname}" jboss.server.jndi.port="${grid.server.jndi.port}" jboss.server.name="${grid.server.name}" jboss.web.password="${grid.web.password}"/>
+        <jboss-stop-jboss jboss.home="${application.base.path}/${grid.relative.path}" jboss.server.hostname="${grid.server.hostname}" jboss.server.jndi.port="${grid.server.jndi.port}" jboss.server.name="${grid.server.name}" jboss.web.password="${grid.web.password}"/>
     </target>
 
     <target name="deploy:start-jboss" depends="init:third-party-paths,deploy:check-if-jboss-is-running" unless="jboss.running">
