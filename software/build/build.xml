@@ -2249,8 +2249,7 @@
 
     <target name="test:api" depends="
         init:third-party-paths,
-        test:functional:prepare,
-        -test:functional:setup,
+        test:functional,
         test:api:run-tests,
         test:grid:run-tests,
         deploy:stop-jboss,
@@ -2396,16 +2395,30 @@
     <target name="test:functional:run-tests" unless="notest" depends="init:third-party-paths,test:selenium:run-tests" />
 
     <target name="test:functional:report" unless="notest" depends="init:third-party-paths">
+    	<mkdir dir="${site.dir}/junit/selenium" />
         <mkdir dir="${site.dir}/junit/functional" />
-        <junitreport todir="${site.dir}/junit/functional">
-            <fileset dir="${test.target.dir}/junit/selenium">
-                <include name="TEST-*.xml" />
-            </fileset>
-            <fileset dir="${test.target.dir}/junit/api/java">
-                <include name="TEST-*.xml" />
-            </fileset>
-            <report format="frames" todir="${site.dir}/junit/functional" />
-        </junitreport>
+        <if>
+            <available file="${test.target.dir}/junit/selenium" type="dir"/>
+            <then>
+            	<junitreport todir="${site.dir}/junit/selenium">
+				<fileset dir="${test.target.dir}/junit/selenium">
+					<include name="TEST-*.xml" />
+				</fileset>
+				<report format="frames" todir="${site.dir}/junit/selenium" />
+			</junitreport>
+            </then>
+        </if>
+        <if>
+            <available file="${test.target.dir}/junit/api/java" type="dir"/>
+            <then>
+            	<junitreport todir="${site.dir}/junit/functional">
+				<fileset dir="${test.target.dir}/junit/api/java">
+					<include name="TEST-*.xml" />
+				</fileset>
+				<report format="frames" todir="${site.dir}/junit/functional" />
+			</junitreport>
+            </then>
+        </if>
     </target>
 
     <target name="test:selenium:run-tests:do-run" unless="notest" depends="init:third-party-paths">
