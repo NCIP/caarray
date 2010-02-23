@@ -2027,6 +2027,8 @@
             </sequential>
         </outofdate>
     </target>
+    
+    <target name="test:instrument-functional" depends=""/>
 
     <target name="test:compile:test-data-classes" unless="notest" depends="init:third-party-paths">
         <mkdir dir="${test.data.classes.dir}" />
@@ -2037,6 +2039,7 @@
     <!-- JUnit Test Targets -->
 
     <target name="test:unit" unless="notest" depends="init:third-party-paths,test:junit-caarray-client.jar,
+      test:instrument,
       test:junit-caarray-common.jar,
       test:junit-caarray-ejb.jar,
       test:junit-caarray.war,
@@ -2246,9 +2249,18 @@
             <http url="http://${jboss.server.hostname}:${jboss.server.port}/wsrf"/>
         </waitfor>
     </target>
-
+    
+    <target
+    	name="test:instrument"
+    	depends="
+    		test:instrument:caarray-client.jar,
+			test:instrument:caarray-common.jar,
+			test:instrument:caarray-ejb.jar,
+			test:instrument:caarray.war"/>
+    
     <target name="test:api" depends="
         init:third-party-paths,
+        test:instrument,
         test:functional,
         test:api:run-tests,
         test:grid:run-tests,
@@ -2271,13 +2283,15 @@
         test:functional:cobertura-report">
         <fail if="junit.failure" message="There were functional test failures." />
     </target>
-
-    <target name="test:functional:instrument" unless="notest" depends="init:third-party-paths,test:instrument-functional:caarray-client.jar,
+    
+    <target name="test:functional:instrument" unless="notest" depends="
+    	init:third-party-paths,
+    	test:instrument-functional:caarray-client.jar,
         test:instrument-functional:caarray-common.jar,
         test:instrument-functional:caarray-ejb.jar,
         test:instrument-functional:caarray.war"/>
 
-    <target name="test:functional:prepare" unless="notest" depends="init:third-party-paths,test:functional:instrument">
+    <target name="test:functional:prepare" unless="notest" depends="init:third-party-paths,test:instrument,test:functional:instrument">
         <copy tofile="${build.dir}/cobertura.ser" file="${cobertura-functional.file}" />
         <copy todir="${jboss.lib.dir}" overwrite="true" flatten="true">
             <fileset refid="cobertura.jar.fileset"/>
