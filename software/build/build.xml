@@ -2795,7 +2795,7 @@
     </target>
 
     <target name="deploy:start-grid-jboss" depends="init:third-party-paths">    
-        <jboss-start-jboss jboss.home="${application.base.path}/${grid.relative.path}" jboss.server.hostname="${grid.server.hostname}" jboss.server.jndi.port="${grid.server.jndi.port}" jboss.server.name="${grid.server.name}" jboss.web.user="${grid.web.user}" jboss.web.password="${grid.web.password}"/>
+        <jboss-start-jboss jboss.home="${application.base.path}/${grid.relative.path}" jboss.server.name="${grid.server.name}"/>
     </target>
 
     <target name="deploy:start-jboss-and-deploy" depends="init:third-party-paths,deploy:stop-jboss,deploy:caarray.ear,deploy:start-jboss"/>
