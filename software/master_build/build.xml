@@ -299,7 +299,8 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
             dist:src,
             dist:javadoc,
             dist:caarray-client.zip,
-            dist:gui-installer
+            dist:gui-installer,
+            dist:example-api-zips
         "/>
 
 
@@ -354,6 +355,21 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
         <delete file="${dist.dir}/${caarray.src.zip.file}" />
         <zip destfile="${dist.dir}/${caarray.src.zip.file}">
             <zipfileset dir="${software.dir}" excludes="dist/**, tools/**, bda-utils/**, local-ivy-repo/**, target/**, load-test/**, **/eclipse-out/**, **/.svn/**" prefix="${caarray.src.name}_${caarray.version}"/>
+        </zip>
+    </target>
+    
+    <target name="dist:example-api-zips">
+        <delete file="${dist.dir}/grid_api_client_examples_v1_0.zip" />
+        <zip destfile="${dist.dir}/grid_api_client_examples_v1_0.zip">
+            <zipfileset dir="${software.dir}/../api_client_examples/grid_api_client_examples_v1_0" excludes="dist/**, tools/**, bda-utils/**, local-ivy-repo/**, target/**, load-test/**, **/eclipse-out/**, **/.svn/**" prefix="grid_api_client_examples_v1_0"/>
+        </zip>
+        <delete file="${dist.dir}/java_api_client_examples_v1_0.zip" />
+        <zip destfile="${dist.dir}/java_api_client_examples_v1_0.zip">
+            <zipfileset dir="${software.dir}/../api_client_examples/java_api_client_examples_v1_0" excludes="dist/**, tools/**, bda-utils/**, local-ivy-repo/**, target/**, load-test/**, **/eclipse-out/**, **/.svn/**" prefix="java_api_client_examples_v1_0"/>
+        </zip>
+        <delete file="${dist.dir}/legacy_api_client_examples.zip" />
+        <zip destfile="${dist.dir}/legacy_api_client_examples.zip">
+            <zipfileset dir="${software.dir}/../api_client_examples/legacy_api_client_examples" excludes="dist/**, tools/**, bda-utils/**, local-ivy-repo/**, target/**, load-test/**, **/eclipse-out/**, **/.svn/**" prefix="legacy_api_client_examples"/>
         </zip>
     </target>
 
