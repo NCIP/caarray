@@ -72,6 +72,6 @@
 	<classpathentry kind="lib" path="software/grid/legacy/lib/mobius_tools-1.1.jar"/>
 	<classpathentry kind="lib" path="software/grid/v1_0/lib/caGrid-wsEnum-1.2.jar"/>
 	<classpathentry kind="lib" path="software/grid/v1_0/lib/caGrid-wsEnum-stubs-1.2.jar"/>
-	<classpathentry kind="con" path="org.apache.ivyde.eclipse.cpcontainer.IVYDE_CONTAINER/?ivyXmlPath=software%2Fivy-caarray.xml&amp;confs=project&amp;ivySettingsPath=file%3A%2FUsers%2Fdkokotov%2Fdev%2Fcheckouts%2Fcaarray2%2Fsoftware%2Fivy-caarray-settings-eclipse.xml&amp;loadSettingsOnDemand=false&amp;propertyFiles="/>
+	<classpathentry kind="con" path="org.apache.ivyde.eclipse.cpcontainer.IVYDE_CONTAINER/?ivyXmlPath=software%2Fmaster_build%2Fivy-caarray.xml&amp;confs=project&amp;ivySettingsPath=file%3A.%2Fsoftware%2Fmaster_build%2Fivy-caarray-settings-eclipse.xml&amp;loadSettingsOnDemand=false&amp;propertyFiles="/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

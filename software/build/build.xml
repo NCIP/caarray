@@ -190,7 +190,7 @@
             <property name="bda-utils.dir" value="${bda-utils.dir}"/>
             <property name="bda.utils.build.file" value="${bda.utils.build.file}"/>
         </ant>
-
+		<mkdir dir="${download.dir}"/> <!-- working around BDA bug -->
         <validate-pre-build application.base.path="${basedir}/tools" wscore.relative.dir="ws-core-4.0.3"/>
 
         <!-- paths and filesets to define needed dependencies, which have been retrieved by ivy above -->
