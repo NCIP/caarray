@@ -80,53 +80,55 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 package gov.nih.nci.caarray.application.arraydata.illumina;
 
-import gov.nih.nci.caarray.application.arraydata.IlluminaGenotypingProcessedMatrixHandler;
+import gov.nih.nci.caarray.application.arraydata.AbstractDataFileHandler;
 import gov.nih.nci.caarray.domain.data.DataSet;
 import gov.nih.nci.caarray.domain.data.HybridizationData;
+import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
 import java.util.List;
 
 /**
- * load Quantitation types per hyb, per type, and per probe.
+ * Populates the hyb data from earch row in the data table.
+ * @param <QT> QuantitationTypeDescriptor
  * @author gax
  * @since 3.4.0
- * @see IlluminaGenotypingProcessedMatrixHandler
  */
-public class LoadingProcessor implements IlluminaGenotypingProcessedMatrixHandler.RowProcessor {
+public class HybDataBuilder <QT extends Enum<QT> & QuantitationTypeDescriptor> extends AbstractParser {
 
     private int rowIndex;
     private final DataSet dataSet;
-    private final IlluminaGenotypingProcessedMatrixHandler handler;
-    private final DefaultHeaderProcessor.HybBlock[] header;
+    private final AbstractHeaderParser<QT> header;
+    private final AbstractDataFileHandler handler;
 
     /**
-     * @param header the hyb block to build HybridizationData with.
-     * @param dataSet dataSet to add HybridizationData to.
-     * @param handler the handler using this loader.
+     * @param dataSet the data set to add the values to.
+     * @param header parser contructed from the table header.
+     * @param handler the data hander loading the file (since it knows hos to parse and set column values)
      */
-    public LoadingProcessor(DefaultHeaderProcessor.HybBlock[] header, DataSet dataSet,
-            IlluminaGenotypingProcessedMatrixHandler handler) {
-        this.handler = handler;
+    public HybDataBuilder(DataSet dataSet, AbstractHeaderParser<QT> header, AbstractDataFileHandler handler) {
+        this.rowIndex = 0;
         this.dataSet = dataSet;
         this.header = header;
+        this.handler = handler;
     }
 
     /**
      * {@inheritDoc}
      */
-    public boolean parseRow(List<String> row, int lineNum) {
-        for (int i = 0; i < header.length; i++) {
-            DefaultHeaderProcessor.HybBlock hb = header[i];
-            HybridizationData d = dataSet.getHybridizationDataList().get(i);
-            for (IlluminaGenotypingProcessedMatrixQuantitationType qt : hb.getQTypes()) {
-                if (qt != null) {
-                    String val = hb.getValue(qt, row);
-                    handler.setValue(d.getColumn(qt), rowIndex, val);
-                }
+    @Override
+    public boolean parse(List<String> row, int lineNum) {
+        int i = 0;
+        for (AbstractHeaderParser<QT>.ValueLoader vl : header.getLoaders()) {
+            HybridizationData d = dataSet.getHybridizationDataList().get(i++);
+            for (QT qt : vl.getQTypes()) {
+                String val = vl.getValue(qt, row);
+                handler.setValue(d.getColumn(qt), rowIndex, val);
             }
-        }
+        }        
         rowIndex++;
         return true;
     }
+
 }

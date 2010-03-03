@@ -108,21 +108,36 @@ import org.apache.log4j.Logger;
 /**
  * Reads Illumina genotyping and gene expression array description files.
  */
-final class IlluminaCsvDesignHandler extends AbstractArrayDesignHandler {
+public final class IlluminaCsvDesignHandler extends AbstractArrayDesignHandler {
 
     private static final Logger LOG = Logger.getLogger(IlluminaCsvDesignHandler.class);
 
-    static final String LSID_AUTHORITY = "illumina.com";
-    static final String LSID_NAMESPACE = "PhysicalArrayDesign";
+    /**
+     * {@value}.
+     */
+    public static final String LSID_AUTHORITY = "illumina.com";
+    /**
+     * {@value}.
+     */
+    public static final String LSID_NAMESPACE = "PhysicalArrayDesign";
     private static final int LOGICAL_PROBE_BATCH_SIZE = 1000;
 
     private AbstractIlluminaDesignHandler handler;
 
+    /**
+     * @see AbstractArrayDesignHandler#AbstractArrayDesignHandler(
+     * gov.nih.nci.caarray.application.vocabulary.VocabularyService,
+     * gov.nih.nci.caarray.dao.CaArrayDaoFactory,
+     * gov.nih.nci.caarray.domain.file.CaArrayFile).
+     */
     IlluminaCsvDesignHandler(VocabularyService vocabularyService, CaArrayDaoFactory daoFactory,
             CaArrayFile designFile) {
         super(vocabularyService, daoFactory, designFile);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     void createDesignDetails(ArrayDesign arrayDesign) {
         DelimitedFileReader reader = getReader();
@@ -151,6 +166,9 @@ final class IlluminaCsvDesignHandler extends AbstractArrayDesignHandler {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     void validate(ValidationResult result) {
         try {

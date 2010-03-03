@@ -80,52 +80,98 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 package gov.nih.nci.caarray.application.arraydata.illumina;
 
-import gov.nih.nci.caarray.application.arraydata.IlluminaGenotypingProcessedMatrixHandler;
 import gov.nih.nci.caarray.application.arraydata.ProbeLookup;
-import gov.nih.nci.caarray.domain.array.AbstractDesignElement;
+import gov.nih.nci.caarray.application.util.Utils;
+import gov.nih.nci.caarray.domain.array.AbstractProbe;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
-import gov.nih.nci.caarray.domain.data.DataSet;
-import gov.nih.nci.caarray.domain.data.DesignElementList;
-import gov.nih.nci.caarray.domain.data.DesignElementType;
+import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
+import gov.nih.nci.caarray.validation.FileValidationResult;
 import java.util.List;
 
 /**
- * Build Design Element List for each row. Aso used to count rows.
+ * Validates values in the table.
+ * @param <QT> QuantitationTypeDescriptor
  * @author gax
  * @since 3.4.0
- * @see IlluminaGenotypingProcessedMatrixHandler
  */
-public class DesignElementBuilderProcessor implements IlluminaGenotypingProcessedMatrixHandler.RowProcessor {
+public class HybDataValidator <QT extends Enum<QT> & QuantitationTypeDescriptor> extends AbstractParser {
+    private static final int MAX_ERROR_MESSAGES = 1000;
 
-    private final List<AbstractDesignElement> list;
+    private int errorCount;
+    private final ArrayDesign design;
     private final ProbeLookup probeLookup;
+    private final AbstractHeaderParser<QT> header;
 
     /**
-     * @param dataSet the dataset to populate with a {@link DesignElementList}
-     * @param design the design that defines the probes.
+     * @param header header info.
+     * @param result collector for of validation messages.
+     * @param design design associated with the data file we are parsing..
      */
-    public DesignElementBuilderProcessor(DataSet dataSet, ArrayDesign design) {
-        DesignElementList probeList = new DesignElementList();
-        probeList.setDesignElementTypeEnum(DesignElementType.PHYSICAL_PROBE);
-        dataSet.setDesignElementList(probeList);
-        this.list = probeList.getDesignElements();
-        this.probeLookup = new ProbeLookup(design.getDesignDetails().getProbes());
+    @SuppressWarnings("unchecked")
+    public HybDataValidator(AbstractHeaderParser<QT> header, FileValidationResult result, ArrayDesign design) {
+        super(result);
+        this.header = header;
+        this.design = design;
+        if (design == null) {
+            throw new IllegalArgumentException("No array design found in experiment");
+        } else {
+            this.probeLookup = new ProbeLookup(design.getDesignDetails().getProbes());
+        }
     }
 
     /**
      * {@inheritDoc}
      */
-    public boolean parseRow(List<String> row, int lineNum) {
-        list.add(probeLookup.getProbe(row.get(0)));
-        return true;
+    public boolean parse(List<String> row, int lineNum) {
+        if (row.size() != header.getRowWidth()) {
+            error("Expected " + header.getRowWidth() + " columns, but found " + row.size(), lineNum, 0);
+        }
+        String probeName = header.parseProbeId(row, lineNum);
+        AbstractProbe p = probeLookup.getProbe(probeName);
+        if (p == null && design != null) {
+            error("Probe " + probeName + " not found in design " + design.getName() + " ver. " + design.getVersion(),
+                    lineNum, 0);
+        }
+        checkDataFormats(row, lineNum);
+        // stop processing before we have too many messages to deal with.
+        return errorCount < MAX_ERROR_MESSAGES;
+    }
+
+    private void checkDataFormats(List<String> row, int lineNum) {
+        int col = 1;
+        for (AbstractHeaderParser<QT>.ValueLoader h : header.getLoaders()) {
+            for (QT qt : h.getQTypes()) {
+                if (qt != null) {
+                    boolean malformed = false;
+                    String val = h.getValue(qt, row);
+                    switch (qt.getDataType()) {
+                        case FLOAT:
+                            malformed = !Utils.isFloat(val);
+                            break;
+                        case STRING:
+                            break;
+                        default:
+                            // add a new case:{} for this new type and validated it.
+                    }
+                    if (malformed) {
+                        error("Malformed value " + val + " for Quantitation Type " + qt + " (expected a "
+                                + qt.getDataType() + ")", lineNum, col + 1);
+                    }
+                }
+                col++;
+            }
+        }
     }
 
     /**
-     * @return list of the created design elements.
+     * {@inheritDoc}
      */
-    public List<AbstractDesignElement> getList() {
-        return list;
+    @Override
+    protected void error(String msg, int line, int col) {
+        errorCount++;
+        super.error(msg, line, col);
     }
 }

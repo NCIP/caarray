@@ -83,61 +83,52 @@
 
 package gov.nih.nci.caarray.application.arraydata.illumina;
 
-import gov.nih.nci.caarray.domain.data.DataType;
-import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
+import gov.nih.nci.caarray.application.arraydata.ProbeLookup;
+import gov.nih.nci.caarray.domain.array.AbstractDesignElement;
+import gov.nih.nci.caarray.domain.array.ArrayDesign;
+import gov.nih.nci.caarray.domain.data.DataSet;
+import gov.nih.nci.caarray.domain.data.DesignElementList;
+import gov.nih.nci.caarray.domain.data.DesignElementType;
+import java.util.List;
 
 /**
- * Quantitation Types for Illumina Genotyping Processed Matrix data.
- * 
+ * Builds a design element list.
  * @author gax
- * @since 2.4.0
+ * @since 3.4.0
  */
-public enum IlluminaGenotypingProcessedMatrixQuantitationType implements QuantitationTypeDescriptor {
-    /**
-     * Allele.
-     */
-    ALLELE("Allele", DataType.STRING),
-    /**
-     * GC_SCORE.
-     */
-    GC_SCORE("GC_SCORE", DataType.FLOAT),
-    /**
-     * Theta.
-     */
-    THETA("Theta", DataType.FLOAT),
-    /**
-     * R.
-     */
-    R("R", DataType.FLOAT),
-    /**
-     * B_Allele_Freq.
-     */
-    B_ALLELE_FREQ("B_Allele_Freq", DataType.FLOAT),
-    /**
-     * Log_R_Ratio.
-     */
-    LOG_R_RATIO("Log_R_Ratio", DataType.FLOAT);
+public class DesignElementBuilder extends AbstractParser {
+    private final List<AbstractDesignElement> list;
+    private final ProbeLookup probeLookup;
+    private final AbstractHeaderParser header;
 
-
-    private final String name;
-    private final DataType type;
-
-    IlluminaGenotypingProcessedMatrixQuantitationType(String name, DataType type) {
-        this.name = name;
-        this.type = type;
+    /**
+     * @param header table header info.
+     * @param dataSet the dataset to populate with a {@link DesignElementList}
+     * @param design the design that defines the probes.
+     */
+    public DesignElementBuilder(AbstractHeaderParser header, DataSet dataSet, ArrayDesign design) {
+        this.header = header;
+        DesignElementList probeList = new DesignElementList();
+        probeList.setDesignElementTypeEnum(DesignElementType.PHYSICAL_PROBE);
+        dataSet.setDesignElementList(probeList);
+        this.list = probeList.getDesignElements();
+        this.probeLookup = new ProbeLookup(design.getDesignDetails().getProbes());
     }
 
     /**
      * {@inheritDoc}
      */
-    public String getName() {
-        return name;
+    public boolean parse(List<String> row, int lineNum) {
+        @SuppressWarnings("unchecked")
+        String probeId = header.parseProbeId(row, lineNum);
+        list.add(probeLookup.getProbe(probeId));
+        return true;
     }
 
     /**
-     * {@inheritDoc}
+     * @return list of the created design elements.
      */
-    public DataType getDataType() {
-        return type;
+    public List<AbstractDesignElement> getList() {
+        return list;
     }
 }

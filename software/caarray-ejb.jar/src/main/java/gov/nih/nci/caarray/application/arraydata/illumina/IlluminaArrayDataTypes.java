@@ -109,7 +109,13 @@ public enum IlluminaArrayDataTypes implements ArrayDataTypeDescriptor {
      * @since 2.4.0
      */
     ILLUMINA_GENOTYPING_PROCESSED_MATRIX("Illumina TSV (Genotyping Processed Matrix)",
-        IlluminaGenotypingProcessedMatrixQuantitationType.values());
+        IlluminaGenotypingProcessedMatrixQuantitationType.values()),
+
+    /**
+     * Illumina Sample Probe Profile TSV format.
+     * @since 2.4.0
+     */
+    ILLUMINA_SAMPLE_PROBE_PROFILE("Illumina Sample Probe Profile", SampleProbeProfileQuantitationType.values());
 
 
     private final String name;

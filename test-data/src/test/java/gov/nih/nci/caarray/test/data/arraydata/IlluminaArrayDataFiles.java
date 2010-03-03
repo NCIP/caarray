@@ -103,4 +103,7 @@ public class IlluminaArrayDataFiles {
 
     public static final File ILLUMINA_DERIVED_2_HYB =
         new File(IlluminaArrayDataFiles.class.getResource("/arraydata/illumina/illumina-der-2.txt").getFile());
+
+    public static final File SAMPLE_PROBE_PROFILE =
+        new File(IlluminaArrayDataFiles.class.getResource("/arraydata/illumina/Sample_Probe_Profile.txt").getFile());
 }

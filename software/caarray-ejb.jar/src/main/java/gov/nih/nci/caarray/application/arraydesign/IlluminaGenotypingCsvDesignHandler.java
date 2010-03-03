@@ -153,43 +153,12 @@ final class IlluminaGenotypingCsvDesignHandler extends AbstractIlluminaDesignHan
         }
     }
 
-//    @Override
-//    Enum[] getExpectedHeaders(List<String> headers) {
-//        if (headers.size() == Header.values().length) {
-//            return Header.values();
-//        } else {
-//            return Header.ALTERNATE_HEADER_LIST;
-//        }
-//    }
 
     @Override
     @SuppressWarnings("PMD.PositionLiteralsFirstInComparisons") // false positive
     boolean isLineFollowingAnnotation(List<String> values) {
         return !values.isEmpty() && CONTROLS_SECTION_HEADER.equals(values.get(0));
     }
-
-//    @Override
-//    boolean isHeaderLine(List<String> values) {
-//        Enum[] requiredColumns = {
-//            Header.SNP,
-//            Header.MAPINFO,
-//            Header.SOURCE,
-//            Header.NAME
-//        };
-//        if (values.size() != Header.values().length && values.size() != Header.ALTERNATE_HEADER_LIST.length) {
-//            return false;
-//        }
-//        Set<Enum<Header>> headers = new HashSet<Enum<Header>>(values.size());
-//        try {
-//            for (String v : values) {
-//                headers.add(Header.valueOf(v.toUpperCase(Locale.getDefault())));
-//            }
-//        } catch (IllegalArgumentException e) {
-//            return false;
-//        }
-//
-//        return EnumSet.allOf(Header.class).containsAll(headers);
-//    }
 
     /**
      * Enumeration of expected headers in Illumina genoytyping CSV descriptor.

@@ -80,64 +80,105 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package gov.nih.nci.caarray.application.arraydata.illumina;
 
-import gov.nih.nci.caarray.domain.data.DataType;
-import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
+import gov.nih.nci.caarray.validation.FileValidationResult;
+import gov.nih.nci.caarray.validation.ValidationMessage.Type;
 
 /**
- * Quantitation Types for Illumina Genotyping Processed Matrix data.
- * 
+ *  Allows diffent ways of hadeling error and other messages generated dunring the parsing and verification of the data
+ *  file.
  * @author gax
- * @since 2.4.0
+ * @since 3.4.0
  */
-public enum IlluminaGenotypingProcessedMatrixQuantitationType implements QuantitationTypeDescriptor {
-    /**
-     * Allele.
-     */
-    ALLELE("Allele", DataType.STRING),
-    /**
-     * GC_SCORE.
-     */
-    GC_SCORE("GC_SCORE", DataType.FLOAT),
-    /**
-     * Theta.
-     */
-    THETA("Theta", DataType.FLOAT),
-    /**
-     * R.
-     */
-    R("R", DataType.FLOAT),
-    /**
-     * B_Allele_Freq.
-     */
-    B_ALLELE_FREQ("B_Allele_Freq", DataType.FLOAT),
-    /**
-     * Log_R_Ratio.
-     */
-    LOG_R_RATIO("Log_R_Ratio", DataType.FLOAT);
+public interface MessageHandler {
 
+    /**
+     * called when an error is detected while parsing the header.
+     * @param msg error message.
+     * @param line the responsible line.
+     * @param col the responsible column.
+     */
+    void error(String msg, int line, int col);
 
-    private final String name;
-    private final DataType type;
+    /**
+     * called when an warning is detected while parsing the header.
+     * @param msg warning message.
+     * @param line the responsible line.
+     * @param col the responsible column.
+     */
+    void warn(String msg, int line, int col);
 
-    IlluminaGenotypingProcessedMatrixQuantitationType(String name, DataType type) {
-        this.name = name;
-        this.type = type;
+    /**
+     * called when an info is detected while parsing the header.
+     * @param msg info message.
+     * @param line the responsible line.
+     * @param col the responsible column.
+     */
+    void info(String msg, int line, int col);
+
+    /**
+     * Throws an IllegalStateException on error, does nothing otherwise.
+     */
+    public static class DefaultMessageHandler implements MessageHandler {
+
+        /**
+         * {@inheritDoc}
+         */
+        public void error(String msg, int line, int col) {
+            throw new IllegalStateException(msg);
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        public void warn(String msg, int line, int col) {
+            //
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        public void info(String msg, int line, int col) {
+            //
+        }
     }
 
     /**
-     * {@inheritDoc}
+     * Collects validation messages.
      */
-    public String getName() {
-        return name;
+    public static class ValidationMessageHander implements MessageHandler {
+
+        private final FileValidationResult result;
+
+        /**
+         * @param result where to collect validation messages.
+         */
+        public ValidationMessageHander(FileValidationResult result) {
+            this.result = result;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        
+        public void error(String msg, int line, int col) {
+            result.addMessage(Type.ERROR, msg, line, col);
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        public void warn(String msg, int line, int col) {
+            result.addMessage(Type.WARNING, msg, line, col);
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        public void info(String msg, int line, int col) {
+            result.addMessage(Type.INFO, msg, line, col);
+        }
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public DataType getDataType() {
-        return type;
-    }
 }

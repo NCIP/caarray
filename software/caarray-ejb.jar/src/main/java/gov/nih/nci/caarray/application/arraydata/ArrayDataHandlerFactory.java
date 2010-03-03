@@ -117,6 +117,8 @@ public final class ArrayDataHandlerFactory {
             return new IlluminaDataHandler();
         } else if (FileType.ILLUMINA_DERIVED_TXT.equals(type)) {
             return new IlluminaGenotypingProcessedMatrixHandler();
+        } else if (FileType.ILLUMINA_SAMPLE_PROBE_PROFILE_TXT.equals(type)) {
+            return new IlluminaSampleProbeProfileHandler();
         } else if (type.isArrayData()) {
             return new UnsupportedDataFormatHandler();
         } else {

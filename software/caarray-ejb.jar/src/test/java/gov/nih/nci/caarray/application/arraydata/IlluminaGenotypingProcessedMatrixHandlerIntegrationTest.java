@@ -1,10 +1,9 @@
 package gov.nih.nci.caarray.application.arraydata;
 
-import gov.nih.nci.caarray.application.arraydata.illumina.ValidatingProcessor;
+import gov.nih.nci.caarray.application.AbstractServiceIntegrationTest;
 import gov.nih.nci.caarray.application.AbstractServiceTest;
-import gov.nih.nci.caarray.application.arraydata.illumina.DefaultHeaderProcessor;
+import gov.nih.nci.caarray.application.arraydata.illumina.AbstractHeaderParser;
 import gov.nih.nci.caarray.application.arraydata.illumina.IlluminaGenotypingProcessedMatrixQuantitationType;
-import gov.nih.nci.caarray.application.arraydata.illumina.ValidatingHeaderProcessor;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.array.AbstractDesignElement;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
@@ -19,7 +18,11 @@ import gov.nih.nci.caarray.domain.data.StringColumn;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
+import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
+import gov.nih.nci.caarray.magetab.MageTabFileSet;
+import gov.nih.nci.caarray.magetab.sdrf.SdrfDocument;
 import gov.nih.nci.caarray.test.data.arraydata.IlluminaArrayDataFiles;
+import gov.nih.nci.caarray.test.data.magetab.SdrfTestFiles;
 import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.ValidationMessage;
@@ -38,7 +41,7 @@ import static org.junit.Assert.*;
  *
  * @author gax
  */
-public class IlluminaGenotypingProcessedMatrixHandlerTest extends AbstractServiceTest {
+public class IlluminaGenotypingProcessedMatrixHandlerIntegrationTest extends AbstractServiceIntegrationTest  {
 
     ArrayDataServiceTest helper = new ArrayDataServiceTest();
 
@@ -50,14 +53,14 @@ public class IlluminaGenotypingProcessedMatrixHandlerTest extends AbstractServic
         for (IlluminaGenotypingProcessedMatrixQuantitationType t : IlluminaGenotypingProcessedMatrixQuantitationType.values()) {
             assertTrue("you'll need code to validate columns of type" + t.getDataType(), supportedTypes.contains(t.getDataType()));
             try {
-                DefaultHeaderProcessor.Header.valueOf(t.name());
+                IlluminaGenotypingProcessedMatrixHandler.DefaultHeaderProcessor.Header.valueOf(t.name());
             } catch (IllegalArgumentException e) {
                 fail("expects all IlluminaGenotypingProcessedMatrixQuantitationType s to come from a column by the same name" + t.name());
             }
         }        
     }
 
-    private static ArrayDesign buildArrayDesign() {
+    static ArrayDesign buildArrayDesign() {
         ArrayDesign design = new ArrayDesign();
         design.setName("foo");
         design.setVersion("99");
@@ -108,7 +111,6 @@ public class IlluminaGenotypingProcessedMatrixHandlerTest extends AbstractServic
             catch (ClassCastException e) { rows = ((FloatColumn)c).getValues().length;  }
             assertEquals(3, rows);
         }
-        tx.rollback();
     }
 
     @Test
@@ -133,7 +135,8 @@ public class IlluminaGenotypingProcessedMatrixHandlerTest extends AbstractServic
         List<HybridizationData> hdl2 = hyb2.getDerivedDataCollection().iterator().next().getDataSet().getHybridizationDataList();
         assertEquals(hdl2.size(), hdl1.size());
         assertEquals(hdl2.get(0).getColumns().size(), hdl1.get(0).getColumns().size());
-        tx.rollback();
+
+
     }
 
     @Test
@@ -183,7 +186,6 @@ public class IlluminaGenotypingProcessedMatrixHandlerTest extends AbstractServic
         String [] messages = {
             "Unsupported Column Foo",
             "Unsupported Column Bar",
-            "Column name Baz breaks pattern",
             "Unsupported Column Foo",
             "Unsupported Column Baz"};
         processHeader(header, messages, null, design);
@@ -194,8 +196,8 @@ public class IlluminaGenotypingProcessedMatrixHandlerTest extends AbstractServic
         ArrayDesign design = buildArrayDesign();
         String[] header = {"ID_REF", "Hyb-1", "Hyb-1.Foo", "Hyb-1.R", "Hyb-2", "Hyb-2.Foo", "Hyb-2.R"};
         String [] messages = {"Unsupported Column Foo", "Unsupported Column Foo"};
-        DefaultHeaderProcessor proc = processHeader(header, messages, null, design);
-        assertEquals(2, proc.getHybBlocks().length);
+        IlluminaGenotypingProcessedMatrixHandler.DefaultHeaderProcessor proc = processHeader(header, messages, null, design);
+        assertEquals(2, proc.getLoaders().size());
     }
 
     @Test
@@ -203,14 +205,29 @@ public class IlluminaGenotypingProcessedMatrixHandlerTest extends AbstractServic
         ArrayDesign design = buildArrayDesign();
         Set<String> sdrf = Collections.singleton("Hyb-1");
         String[] header = {"ID_REF", "Hyb-1", "Hyb-1.Foo", "Hyb-1.R", "Hyb-2", "Hyb-2.Foo", "Hyb-2.R"};
-        String [] messages = {"Unsupported Column Foo", "Unsupported Column Foo", "Hybridization Hyb-2 is not referenced in SDRF"};
-        DefaultHeaderProcessor proc = processHeader(header, messages, sdrf, design);
+        String [] messages = {"Unsupported Column Foo", "Unsupported Column Foo"
+               , "Hybridization Hyb-2 is not referenced in SDRF"
+        };
+        AbstractHeaderParser proc = processHeader(header, messages, sdrf, design);
     }
 
-    private DefaultHeaderProcessor processHeader(String[] headerColumns, String[] messages, Set<String> sdrf, ArrayDesign design) {
+    static private IlluminaGenotypingProcessedMatrixHandler.DefaultHeaderProcessor processHeader(String[] headerColumns, String[] messages, Set<String> sdrf, ArrayDesign design) {
         FileValidationResult result = new FileValidationResult(null);
-        ValidatingHeaderProcessor proc = new ValidatingHeaderProcessor(result, sdrf);
-        proc.parseHeader(Arrays.asList(headerColumns), 1);
+        MageTabDocumentSet docSet = null;
+        if (sdrf != null){
+            MageTabFileSet fset = new MageTabFileSet();
+            docSet = new MageTabDocumentSet(fset);
+            SdrfDocument doc = new SdrfDocument(docSet, SdrfTestFiles.MULTI_DERIVED_1_IDF);
+            for (String hn : sdrf) {
+                gov.nih.nci.caarray.magetab.sdrf.Hybridization h = new gov.nih.nci.caarray.magetab.sdrf.Hybridization();
+                h.setName(hn);
+                docSet.getSdrfHybridizations().put(hn, Collections.singletonList(h));
+            }
+            docSet.getSdrfDocuments().add(doc);
+        }
+        IlluminaGenotypingProcessedMatrixHandler.ValidatingHeaderParser proc 
+                = new IlluminaGenotypingProcessedMatrixHandler.ValidatingHeaderParser(result, docSet);
+        proc.parse(Arrays.asList(headerColumns), 1);
         List<String> l = new ArrayList<String>(Arrays.asList(messages));
         for (ValidationMessage m : result.getMessages()) {
             assertTrue("unexpected message " + m.getMessage(), l.remove(m.getMessage()));

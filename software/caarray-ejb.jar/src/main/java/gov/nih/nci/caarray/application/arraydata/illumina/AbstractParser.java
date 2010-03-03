@@ -80,99 +80,81 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 package gov.nih.nci.caarray.application.arraydata.illumina;
 
-import gov.nih.nci.caarray.application.arraydata.IlluminaGenotypingProcessedMatrixHandler;
-import gov.nih.nci.caarray.application.arraydata.ProbeLookup;
-import gov.nih.nci.caarray.application.util.Utils;
-import gov.nih.nci.caarray.domain.array.AbstractProbe;
-import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.validation.FileValidationResult;
-import gov.nih.nci.caarray.validation.ValidationMessage.Type;
-import java.util.Collections;
 import java.util.List;
 
 /**
- * validate header, and data formats.
+ * Parse tabular data.
+ * NOTE: The parsers are generally for a single pass through the data file, and cannot be reused or reset after one
+ * pass.
  * @author gax
  * @since 3.4.0
- * @see IlluminaGenotypingProcessedMatrixHandler
  */
-public class ValidatingProcessor implements IlluminaGenotypingProcessedMatrixHandler.RowProcessor {
-
-    private static final int MAX_ERROR_MESSAGES = 1000;
-    
-    private final FileValidationResult result;
-    private int errorCount;
-    private final ArrayDesign design;
-    private final ProbeLookup probeLookup;
-    private final DefaultHeaderProcessor header;
+public abstract class AbstractParser {
+    private final MessageHandler messages;
 
     /**
-     * @param header header info.
-     * @param result collector for of validation messages.
-     * @param design design associated with the data file we are parsing..
+     * @param messages where the parser should send error or validation messages.
      */
-    @SuppressWarnings("unchecked")
-    public ValidatingProcessor(DefaultHeaderProcessor header, FileValidationResult result, ArrayDesign design) {
-        super();
-        this.header = header;
-        this.result = result;
-        this.design = design;
-        if (design == null) {
-            error("No array design found in experiment", 0, 0);
-            this.probeLookup = new ProbeLookup(Collections.EMPTY_LIST);
-        } else {
-            this.probeLookup = new ProbeLookup(design.getDesignDetails().getProbes());
-        }
+    protected AbstractParser(MessageHandler messages) {
+        this.messages = messages;
     }
 
     /**
-     * {@inheritDoc}
+     * @param result where the paser should collect validation messages
+     * (using {@link MessageHandler.ValidationMessageHander})
      */
-    public boolean parseRow(List<String> row, int lineNum) {
-        if (row.size() != header.getRowWidth()) {
-            error("Expected " + header.getRowWidth() + " columns, but found " + row.size(), lineNum, 0);
-        }
-        String probeName = row.get(0);
-        AbstractProbe p = probeLookup.getProbe(probeName);
-        if (p == null && design != null) {
-            error("Probe " + probeName + " not found in design " + design.getName() + " ver. " + design.getVersion(),
-                    lineNum, header.getPeriod());
-        }
-        checkDataFormats(row, lineNum);
-        // stop processing before we have too many messages to deal with.
-        return errorCount < MAX_ERROR_MESSAGES;
+    protected AbstractParser(FileValidationResult result) {
+        this(new MessageHandler.ValidationMessageHander(result));
     }
 
-    private void checkDataFormats(List<String> row, int lineNum) {
-        int col = 1;
-        for (DefaultHeaderProcessor.HybBlock h : header.getHybBlocks()) {
-            for (IlluminaGenotypingProcessedMatrixQuantitationType qt : h.getQTypes()) {
-                if (qt != null) {
-                    boolean malformed = false;
-                    String val = h.getValue(qt, row);
-                    switch (qt.getDataType()) {
-                        case FLOAT:
-                            malformed = !Utils.isFloat(val);
-                            break;
-                        case STRING:
-                            break;
-                        default:
-                    // add a new case:{} for this new type and validated it.
-                    }
-                    if (malformed) {
-                        error("Malformed value " + val + " for Quantitation Type " + qt + " (expected a "
-                                + qt.getDataType() + ")", lineNum, col + 1);
-                    }
-                }
-                col++;
-            }
-        }
+    /**
+     * Default ctor.
+     * @see MessageHandler.DefaultMessageHandler
+     */
+    protected AbstractParser() {
+        this(new MessageHandler.DefaultMessageHandler());
     }
 
-    private void error(String msg, int line, int col) {
-        errorCount++;
-        result.addMessage(Type.ERROR, msg, line, col);
+    /**
+     * Parse one row of the data table.
+     * @param row the content of the row.
+     * @param lineNum the line number in the file.
+     * @return true when the line was parsed correctly, or the rest of the file can be read.
+     */
+    public abstract boolean parse(List<String> row, int lineNum);
+
+    /**
+     * called when an error is detected while parsing the header.
+     * @param msg error message.
+     * @param line the responsible line.
+     * @param col the responsible column.
+     */
+    protected void error(String msg, int line, int col) {
+        messages.error(msg, line, col);
     }
+
+    /**
+     * called when an warning is detected while parsing the header.
+     * @param msg warning message.
+     * @param line the responsible line.
+     * @param col the responsible column.
+     */
+    protected void warn(String msg, int line, int col) {
+        messages.warn(msg, line, col);
+    }
+
+    /**
+     * called when an info is detected while parsing the header.
+     * @param msg info message.
+     * @param line the responsible line.
+     * @param col the responsible column.
+     */
+    protected void info(String msg, int line, int col) {
+        messages.info(msg, line, col);
+    }
+
 }

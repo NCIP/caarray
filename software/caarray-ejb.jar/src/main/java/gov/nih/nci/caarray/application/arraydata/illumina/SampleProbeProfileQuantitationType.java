@@ -80,78 +80,70 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 package gov.nih.nci.caarray.application.arraydata.illumina;
 
-import gov.nih.nci.caarray.validation.FileValidationResult;
-import gov.nih.nci.caarray.validation.ValidationMessage.Type;
-import java.util.List;
-import java.util.Set;
+import gov.nih.nci.caarray.domain.data.DataType;
+import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
 
 /**
- * Parse the header and collect validation messages.
+ * Quatitation types that will be read from a SampleProbeProfile file.
  * @author gax
  * @since 3.4.0
- * @see gov.nih.nci.caarray.application.arraydata.IlluminaGenotypingProcessedMatrixHandler
  */
-public class ValidatingHeaderProcessor extends DefaultHeaderProcessor {
-
-    private final FileValidationResult result;
-    private final Set<String> sdrfHybNames;
-
+public enum SampleProbeProfileQuantitationType implements QuantitationTypeDescriptor {
     /**
-     * @param result used to collect validation messages.
-     * @param sdrfHybNames hyb names in SDRF doc, if any.
+     * MIN_Signal.
      */
-    public ValidatingHeaderProcessor(FileValidationResult result, Set<String> sdrfHybNames) {
-        super();
-        this.result = result;
-        this.sdrfHybNames = sdrfHybNames;
+    MIN_SIGNAL("MIN_Signal", DataType.FLOAT),
+    /**
+     * AVG_Signal.
+     */
+    AVG_SIGNAL("AVG_Signal", DataType.FLOAT),
+    /**
+     * MAX_Signal.
+     */
+    MAX_SIGNAL("MAX_Signal", DataType.FLOAT),
+    /**
+     * NARRAYS.
+     */
+    NARRAYS("NARRAYS", DataType.FLOAT),
+    /**
+     * ARRAY_STDEV.
+     */
+    ARRAY_STDEV("ARRAY_STDEV", DataType.FLOAT),
+    /**
+     * BEAD_STDEV.
+     */
+    BEAD_STDEV("BEAD_STDEV", DataType.FLOAT),
+    /**
+     * Avg_NBEADS.
+     */
+    AVG_NBEADS("Avg_NBEADS", DataType.FLOAT),
+    /**
+     * Detection, aka Detection Pval or DetectionPval.
+     */
+    DETECTION("Detection", DataType.FLOAT);
+  
+    private final String name;
+    private final DataType type;
+
+    private SampleProbeProfileQuantitationType(String name, DataType type) {
+        this.name = name;
+        this.type = type;
     }
 
     /**
      * {@inheritDoc}
      */
-    @Override
-    public boolean parseHeader(List<String> row, int lineNum) {
-        boolean ok = super.parseHeader(row, lineNum);
-        if (ok) {
-            checkSdrfNames(sdrfHybNames, getHybBlocks(), result);
-        }
-        return ok;
+    public String getName() {
+        return name;
     }
 
     /**
      * {@inheritDoc}
      */
-    @Override
-    protected void error(String msg, int line, int col) {
-        result.addMessage(Type.ERROR, msg, line, col);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void warn(String msg, int line, int col) {
-        result.addMessage(Type.WARNING, msg, line, col);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void info(String msg, int line, int col) {
-        result.addMessage(Type.INFO, msg, line, col);
-    }
-
-    private static void checkSdrfNames(Set<String> sdrfNames, DefaultHeaderProcessor.HybBlock[] hybs,
-            FileValidationResult result) {
-        for (DefaultHeaderProcessor.HybBlock h : hybs) {
-            String hybName = h.getQTypeColNames()[0];
-            if (sdrfNames != null && !sdrfNames.contains(hybName)) {
-                result.addMessage(Type.ERROR, "Hybridization " + hybName + " is not referenced in SDRF",
-                        1, h.getStartCol() + 1);
-            }
-        }
+    public DataType getDataType() {
+        return type;
     }
 }
