@@ -104,6 +104,7 @@ import gov.nih.nci.caarray.validation.ValidationMessage;
 import gov.nih.nci.caarray.validation.ValidationMessage.Type;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -111,6 +112,7 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import affymetrix.calvin.exception.UnsignedOutOfLimitsException;
 import affymetrix.fusion.cel.FusionCELData;
 import affymetrix.fusion.cel.FusionCELFileEntryType;
 
@@ -128,13 +130,13 @@ class AffymetrixCelHandler extends AbstractDataFileHandler {
     private FusionCELData celData = new FusionCELData();
 
     @Override
-    QuantitationTypeDescriptor[] getQuantitationTypeDescriptors(File celFile) {
+    QuantitationTypeDescriptor[] getQuantitationTypeDescriptors(final File celFile) {
         return AffymetrixCelQuantitationType.values();
     }
 
     @Override
-    void validate(CaArrayFile caArrayFile, File file, MageTabDocumentSet mTabSet, FileValidationResult result,
-            ArrayDesignService arrayDesignService) {
+    void validate(final CaArrayFile caArrayFile, final File file, final MageTabDocumentSet mTabSet,
+            final FileValidationResult result, final ArrayDesignService arrayDesignService) {
         try {
             String celDataFileName;
             celData.setFileName(file.getAbsolutePath());
@@ -151,14 +153,14 @@ class AffymetrixCelHandler extends AbstractDataFileHandler {
         }
     }
 
-    private void validateAgainstDesign(FileValidationResult result, ArrayDesignService arrayDesignService) {
+    private void validateAgainstDesign(final FileValidationResult result, final ArrayDesignService arrayDesignService) {
         validateDesignExists(result, arrayDesignService);
         if (result.isValid()) {
             validateFeatures(result, arrayDesignService);
         }
     }
 
-    private void validateDesignExists(FileValidationResult result, ArrayDesignService arrayDesignService) {
+    private void validateDesignExists(final FileValidationResult result, final ArrayDesignService arrayDesignService) {
         if (arrayDesignService.getArrayDesign(LSID_AUTHORITY, LSID_NAMESPACE, getLsidObjectId()) == null) {
             result.addMessage(Type.ERROR, "The system doesn't contain the required Affymetrix array design: "
                     + getLsidObjectId());
@@ -169,8 +171,8 @@ class AffymetrixCelHandler extends AbstractDataFileHandler {
         return celData.getChipType();
     }
 
-    private void validateFeatures(FileValidationResult result, ArrayDesignService arrayDesignService) {
-        ArrayDesign arrayDesign = getDesign(arrayDesignService);
+    private void validateFeatures(final FileValidationResult result, final ArrayDesignService arrayDesignService) {
+        final ArrayDesign arrayDesign = getDesign(arrayDesignService);
         if (celData.getCells() != arrayDesign.getNumberOfFeatures()) {
             result.addMessage(Type.ERROR, "The CEL file is inconsistent with the array design: "
                     + "the CEL file contains data for " + celData.getCells() + " features, but the "
@@ -178,11 +180,11 @@ class AffymetrixCelHandler extends AbstractDataFileHandler {
         }
     }
 
-    private ArrayDesign getDesign(ArrayDesignService arrayDesignService) {
+    private ArrayDesign getDesign(final ArrayDesignService arrayDesignService) {
         return arrayDesignService.getArrayDesign(LSID_AUTHORITY, LSID_NAMESPACE, getLsidObjectId());
     }
 
-    private void validateHeader(FileValidationResult result) {
+    private void validateHeader(final FileValidationResult result) {
         if (celData.getRows() == 0) {
             result.addMessage(Type.ERROR, "Invalid CEL file: header specified 0 rows.");
         }
@@ -198,7 +200,8 @@ class AffymetrixCelHandler extends AbstractDataFileHandler {
     }
 
     @Override
-    void loadData(DataSet dataSet, List<QuantitationType> types, File celFile, ArrayDesignService arrayDesignService) {
+    void loadData(final DataSet dataSet, final List<QuantitationType> types, final File celFile,
+            final ArrayDesignService arrayDesignService) {
         try {
             LOG.debug("Started loadData for file: " + celFile.getName());
             readCelData(celFile.getAbsolutePath());
@@ -213,16 +216,16 @@ class AffymetrixCelHandler extends AbstractDataFileHandler {
         LOG.debug("Completed loadData for file: " + celFile.getName());
     }
 
-    private void loadDesignElementList(DataSet dataSet) {
-        DesignElementList probeList = new DesignElementList();
+    private void loadDesignElementList(final DataSet dataSet) {
+        final DesignElementList probeList = new DesignElementList();
         probeList.setDesignElementTypeEnum(DesignElementType.PHYSICAL_PROBE);
         dataSet.setDesignElementList(probeList);
     }
 
     /**
-     * @param celFile
+     * @param filename
      */
-    private boolean readCelData(String filename) {
+    private boolean readCelData(final String filename) {
         celData.setFileName(filename);
         boolean success = celData.read();
         if (!success) {
@@ -243,20 +246,30 @@ class AffymetrixCelHandler extends AbstractDataFileHandler {
         System.gc();
     }
 
-    private void loadDataIntoColumns(HybridizationData hybridizationData, List<QuantitationType> types) {
-        Set<QuantitationType> typeSet = new HashSet<QuantitationType>();
+    private void loadDataIntoColumns(final HybridizationData hybridizationData, final List<QuantitationType> types) {
+        final Set<QuantitationType> typeSet = new HashSet<QuantitationType>();
         typeSet.addAll(types);
-        FusionCELFileEntryType entry = new FusionCELFileEntryType();
-        int numberOfCells = celData.getCells();
+        final FusionCELFileEntryType entry = new FusionCELFileEntryType();
+        final int numberOfCells = celData.getCells();
         for (int cellIndex = 0; cellIndex < numberOfCells; cellIndex++) {
-            celData.getEntry(cellIndex, entry);
+            getCelDataEntry(entry, cellIndex);
             handleEntry(hybridizationData, entry, cellIndex, typeSet);
         }
     }
 
-    private void handleEntry(HybridizationData hybridizationData, FusionCELFileEntryType entry,
-            int cellIndex, Set<QuantitationType> typeSet) {
-        for (AbstractDataColumn column : hybridizationData.getColumns()) {
+    private void getCelDataEntry(final FusionCELFileEntryType entry, final int cellIndex) {
+        try {
+            celData.getEntry(cellIndex, entry);
+        } catch (final IOException e) {
+            throw new ArrayDataIOException(e);
+        } catch (final UnsignedOutOfLimitsException e) {
+            throw new ArrayDataException(e);
+        }
+    }
+
+    private void handleEntry(final HybridizationData hybridizationData, final FusionCELFileEntryType entry,
+            final int cellIndex, final Set<QuantitationType> typeSet) {
+        for (final AbstractDataColumn column : hybridizationData.getColumns()) {
             if (typeSet.contains(column.getQuantitationType())) {
                 setValue(column, cellIndex, entry);
             }
@@ -264,8 +277,8 @@ class AffymetrixCelHandler extends AbstractDataFileHandler {
     }
 
     @SuppressWarnings("PMD.CyclomaticComplexity") // Switch-like statement
-    private void setValue(AbstractDataColumn column, int cellIndex, FusionCELFileEntryType entry) {
-        QuantitationType quantitationType = column.getQuantitationType();
+    private void setValue(final AbstractDataColumn column, final int cellIndex, final FusionCELFileEntryType entry) {
+        final QuantitationType quantitationType = column.getQuantitationType();
         if (AffymetrixCelQuantitationType.CEL_X.isEquivalent(quantitationType)) {
             ((ShortColumn) column).getValues()[cellIndex] = (short) celData.indexToX(cellIndex);
         } else if (AffymetrixCelQuantitationType.CEL_Y.isEquivalent(quantitationType)) {
@@ -291,7 +304,7 @@ class AffymetrixCelHandler extends AbstractDataFileHandler {
     }
 
     @Override
-    ArrayDataTypeDescriptor getArrayDataTypeDescriptor(File dataFile) {
+    ArrayDataTypeDescriptor getArrayDataTypeDescriptor(final File dataFile) {
         return AffymetrixArrayDataTypes.AFFYMETRIX_CEL;
     }
 
@@ -299,7 +312,7 @@ class AffymetrixCelHandler extends AbstractDataFileHandler {
      * {@inheritDoc}
      */
     @Override
-    public ArrayDesign getArrayDesign(ArrayDesignService arrayDesignService, File file) {
+    public ArrayDesign getArrayDesign(final ArrayDesignService arrayDesignService, final File file) {
         String objectId = null;
         try {
             celData = new FusionCELData();

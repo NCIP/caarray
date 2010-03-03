@@ -127,4 +127,10 @@ public class AffymetrixArrayDataFiles {
 
     public static final File TEST3_SPECIFICATION_ZIP =
         new File(AffymetrixArrayDataFiles.class.getResource("/magetab/specification/specification.zip").getFile());
+    
+    public static final File GSM428956_CEL = 
+        new File(AffymetrixArrayDataFiles.class.getResource("/arraydata/affymetrix/GSM428956.CEL").getFile());
+    
+    public static final File U133_Plus_Ivt_Breast_A_CEL = 
+        new File(AffymetrixArrayDataFiles.class.getResource("/arraydata/affymetrix/u1332plus_ivt_breast_A.CEL").getFile());
 }

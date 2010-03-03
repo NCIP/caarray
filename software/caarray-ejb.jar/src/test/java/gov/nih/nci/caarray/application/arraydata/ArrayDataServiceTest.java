@@ -189,6 +189,7 @@ import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import gov.nih.nci.caarray.validation.InvalidDataFileException;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -198,6 +199,7 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 
+import affymetrix.calvin.exception.UnsignedOutOfLimitsException;
 import affymetrix.fusion.cel.FusionCELData;
 import affymetrix.fusion.cel.FusionCELFileEntryType;
 import affymetrix.fusion.chp.FusionCHPDataReg;
@@ -727,8 +729,14 @@ public class ArrayDataServiceTest extends AbstractServiceTest {
         FusionExpressionProbeSetResults results = new FusionExpressionProbeSetResults();
         FloatColumn signalColumn = (FloatColumn) hybridizationData.getColumn(AffymetrixExpressionChpQuantitationType.CHP_SIGNAL);
         for (int i = 0; i < chpData.getHeader().getNumProbeSets(); i++) {
-            chpData.getExpressionResults(i, results);
-            assertEquals(results.getSignal(), signalColumn.getValues()[i]);
+            try {
+                chpData.getExpressionResults(i, results);
+            } catch (final UnsignedOutOfLimitsException e) {
+                fail(e.toString());
+            } catch (final IOException e) {
+                fail(e.toString());
+            }
+           assertEquals(results.getSignal(), signalColumn.getValues()[i]);
         }
         assertNotNull(hybridizationData.getHybridization().getArray());
     }
@@ -749,7 +757,13 @@ public class ArrayDataServiceTest extends AbstractServiceTest {
         FusionGenotypeProbeSetResults results = new FusionGenotypeProbeSetResults();
         StringColumn alleleColumn = (StringColumn) hybridizationData.getColumn(AffymetrixSnpChpQuantitationType.CHP_ALLELE);
         for (int i = 0; i < chpData.getHeader().getNumProbeSets(); i++) {
-            chpData.getGenotypingResults(i, results);
+            try {
+                chpData.getGenotypingResults(i, results);
+            } catch (final UnsignedOutOfLimitsException e) {
+                 fail(e.toString());
+            } catch (final IOException e) {
+                fail(e.toString());
+            }
             assertEquals(results.getAlleleCallString(), alleleColumn.getValues()[i]);
         }
         assertNotNull(hybridizationData.getHybridization().getArray());
@@ -780,7 +794,13 @@ public class ArrayDataServiceTest extends AbstractServiceTest {
         ShortColumn numPixelsColumn = (ShortColumn) hybridizationData.getColumns().get(6);
         assertNotNull(hybridizationData.getHybridization().getArray());
         for (int rowIndex = 0; rowIndex < fusionCelData.getCells(); rowIndex++) {
-            fusionCelData.getEntry(rowIndex, fusionCelEntry);
+            try {
+                fusionCelData.getEntry(rowIndex, fusionCelEntry);
+            } catch (final UnsignedOutOfLimitsException e) {
+                fail(e.toString());
+            } catch (final IOException e) {
+                fail(e.toString());
+            }
             assertEquals(fusionCelData.indexToX(rowIndex), xColumn.getValues()[rowIndex]);
             assertEquals(fusionCelData.indexToY(rowIndex), yColumn.getValues()[rowIndex]);
             assertEquals(fusionCelEntry.getIntensity(), intensityColumn.getValues()[rowIndex]);

@@ -94,9 +94,9 @@ import gov.nih.nci.caarray.domain.data.DataSet;
 import gov.nih.nci.caarray.domain.data.DesignElementList;
 import gov.nih.nci.caarray.domain.data.FloatColumn;
 import gov.nih.nci.caarray.domain.data.HybridizationData;
+import gov.nih.nci.caarray.domain.data.IntegerColumn;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
-import gov.nih.nci.caarray.domain.data.ShortColumn;
 import gov.nih.nci.caarray.domain.data.StringColumn;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
@@ -104,6 +104,7 @@ import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.ValidationMessage.Type;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -112,6 +113,7 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
+import affymetrix.calvin.exception.UnsignedOutOfLimitsException;
 import affymetrix.fusion.chp.FusionCHPDataReg;
 import affymetrix.fusion.chp.FusionCHPGenericData;
 import affymetrix.fusion.chp.FusionCHPHeader;
@@ -147,9 +149,9 @@ final class AffymetrixChpHandler extends AbstractDataFileHandler {
     }
 
     @Override
-    QuantitationTypeDescriptor[] getQuantitationTypeDescriptors(File chpFile) {
-        FusionCHPLegacyData chpData = getChpData(chpFile);
-        int assayType = chpData.getHeader().getAssayType();
+    QuantitationTypeDescriptor[] getQuantitationTypeDescriptors(final File chpFile) {
+        final FusionCHPLegacyData chpData = getChpData(chpFile);
+        final int assayType = chpData.getHeader().getAssayType();
         switch (assayType) {
         case FusionCHPHeader.EXPRESSION_ASSAY:
             return AffymetrixExpressionChpQuantitationType.values();
@@ -161,16 +163,17 @@ final class AffymetrixChpHandler extends AbstractDataFileHandler {
     }
 
     @Override
-    void loadData(DataSet dataSet, List<QuantitationType> types, File file, ArrayDesignService arrayDesignService) {
-        Set<QuantitationType> typeSet = new HashSet<QuantitationType>();
+    void loadData(final DataSet dataSet, final List<QuantitationType> types, final File file,
+            final ArrayDesignService arrayDesignService) {
+        final Set<QuantitationType> typeSet = new HashSet<QuantitationType>();
         typeSet.addAll(types);
         if (dataSet.getDesignElementList() == null) {
             getDesignElementList(dataSet, file, arrayDesignService);
         }
-        FusionCHPLegacyData chpData = getChpData(file);
+        final FusionCHPLegacyData chpData = getChpData(file);
         prepareColumns(dataSet, types, chpData.getHeader().getNumProbeSets());
-        HybridizationData hybridizationData = dataSet.getHybridizationDataList().get(0);
-        int assayType = chpData.getHeader().getAssayType();
+        final HybridizationData hybridizationData = dataSet.getHybridizationDataList().get(0);
+        final int assayType = chpData.getHeader().getAssayType();
         switch (assayType) {
         case FusionCHPHeader.EXPRESSION_ASSAY:
             loadExpressionData(hybridizationData, typeSet, chpData);
@@ -183,26 +186,34 @@ final class AffymetrixChpHandler extends AbstractDataFileHandler {
         }
     }
 
-    private void getDesignElementList(DataSet dataSet, File file, ArrayDesignService arrayDesignService) {
-        ArrayDesign design = getArrayDesign(arrayDesignService, file);
-        DesignElementList probeList =
+    private void getDesignElementList(final DataSet dataSet, final File file,
+            final ArrayDesignService arrayDesignService) {
+        final ArrayDesign design = getArrayDesign(arrayDesignService, file);
+        final DesignElementList probeList =
             AbstractAffymetrixChpDesignElementListUtility.getDesignElementList(design, arrayDesignService);
         dataSet.setDesignElementList(probeList);
     }
 
-    private void loadExpressionData(HybridizationData hybridizationData, Set<QuantitationType> typeSet,
-            FusionCHPLegacyData chpData) {
-        int numberOfProbeSets = chpData.getHeader().getNumProbeSets();
-        FusionExpressionProbeSetResults entry = new FusionExpressionProbeSetResults();
+    private void loadExpressionData(final HybridizationData hybridizationData, final Set<QuantitationType> typeSet,
+            final FusionCHPLegacyData chpData) {
+        final int numberOfProbeSets = chpData.getHeader().getNumProbeSets();
+        final FusionExpressionProbeSetResults entry = new FusionExpressionProbeSetResults();
         for (int probeSetIndex = 0; probeSetIndex < numberOfProbeSets; probeSetIndex++) {
-            chpData.getExpressionResults(probeSetIndex, entry);
+            try {
+                chpData.getExpressionResults(probeSetIndex, entry);
+            } catch (final IOException e) {
+                throw new ArrayDataIOException(e);
+           } catch (final UnsignedOutOfLimitsException e) {
+                throw new ArrayDataException(e);
+            }
             handleExpresionEntry(hybridizationData, entry, typeSet, probeSetIndex);
         }
     }
 
-    private void handleExpresionEntry(HybridizationData hybridizationData, FusionExpressionProbeSetResults entry,
-            Set<QuantitationType> typeSet, int probeSetIndex) {
-        for (AbstractDataColumn column : hybridizationData.getColumns()) {
+    private void handleExpresionEntry(final HybridizationData hybridizationData,
+            final FusionExpressionProbeSetResults entry, final Set<QuantitationType> typeSet,
+            final int probeSetIndex) {
+        for (final AbstractDataColumn column : hybridizationData.getColumns()) {
             if (typeSet.contains(column.getQuantitationType())) {
                 setExpressionValue(column, probeSetIndex, entry);
             }
@@ -210,15 +221,16 @@ final class AffymetrixChpHandler extends AbstractDataFileHandler {
     }
 
     @SuppressWarnings({ "PMD.CyclomaticComplexity", "PMD.ExcessiveMethodLength" }) // long switch statement
-    private void setExpressionValue(AbstractDataColumn column, int index, FusionExpressionProbeSetResults entry) {
-        QuantitationType quantitationType = column.getQuantitationType();
-        AffymetrixExpressionChpQuantitationType typeDescriptor = getExpressionTypeDescriptor(quantitationType);
+    private void setExpressionValue(final AbstractDataColumn column, final int index,
+            final FusionExpressionProbeSetResults entry) {
+        final QuantitationType quantitationType = column.getQuantitationType();
+        final AffymetrixExpressionChpQuantitationType typeDescriptor = getExpressionTypeDescriptor(quantitationType);
         switch (typeDescriptor) {
         case CHP_CHANGE:
             ((StringColumn) column).getValues()[index] = entry.getChangeString();
             break;
         case CHP_COMMON_PAIRS:
-            ((ShortColumn) column).getValues()[index] = entry.getNumCommonPairs();
+            ((IntegerColumn) column).getValues()[index] = entry.getNumCommonPairs().toInt();
             break;
         case CHP_CHANGE_PVALUE:
             ((FloatColumn) column).getValues()[index] = entry.getChangePValue();
@@ -230,10 +242,10 @@ final class AffymetrixChpHandler extends AbstractDataFileHandler {
             ((FloatColumn) column).getValues()[index] = entry.getDetectionPValue();
             break;
         case CHP_PAIRS:
-            ((ShortColumn) column).getValues()[index] = entry.getNumPairs();
+            ((IntegerColumn) column).getValues()[index] = entry.getNumPairs().toInt();
             break;
         case CHP_PAIRS_USED:
-            ((ShortColumn) column).getValues()[index] = entry.getNumUsedPairs();
+            ((IntegerColumn) column).getValues()[index] = entry.getNumUsedPairs().toInt();
             break;
         case CHP_SIGNAL:
             ((FloatColumn) column).getValues()[index] = entry.getSignal();
@@ -253,39 +265,47 @@ final class AffymetrixChpHandler extends AbstractDataFileHandler {
         }
     }
 
-    private AffymetrixExpressionChpQuantitationType getExpressionTypeDescriptor(QuantitationType quantitationType) {
+    private AffymetrixExpressionChpQuantitationType getExpressionTypeDescriptor(
+            final QuantitationType quantitationType) {
         return EXPRESSION_TYPE_MAP.get(quantitationType.getName());
     }
 
     private static void initializeExpressionTypeMap() {
-        for (AffymetrixExpressionChpQuantitationType descriptor : AffymetrixExpressionChpQuantitationType.values()) {
+        for (final AffymetrixExpressionChpQuantitationType descriptor
+               : AffymetrixExpressionChpQuantitationType.values()) {
             EXPRESSION_TYPE_MAP.put(descriptor.getName(), descriptor);
         }
     }
 
     private static void initializeSnpTypeMap() {
-        for (AffymetrixSnpChpQuantitationType descriptor : AffymetrixSnpChpQuantitationType.values()) {
+        for (final AffymetrixSnpChpQuantitationType descriptor : AffymetrixSnpChpQuantitationType.values()) {
             SNP_TYPE_MAP.put(descriptor.getName(), descriptor);
         }
     }
 
-    private AffymetrixSnpChpQuantitationType getSnpTypeDescriptor(QuantitationType quantitationType) {
+    private AffymetrixSnpChpQuantitationType getSnpTypeDescriptor(final QuantitationType quantitationType) {
         return SNP_TYPE_MAP.get(quantitationType.getName());
     }
 
-    private void loadSnpData(HybridizationData hybridizationData, Set<QuantitationType> typeSet,
-            FusionCHPLegacyData chpData) {
-        int numberOfProbeSets = chpData.getHeader().getNumProbeSets();
-        FusionGenotypeProbeSetResults entry = new FusionGenotypeProbeSetResults();
+    private void loadSnpData(final HybridizationData hybridizationData, final Set<QuantitationType> typeSet,
+            final FusionCHPLegacyData chpData) {
+        final int numberOfProbeSets = chpData.getHeader().getNumProbeSets();
+        final FusionGenotypeProbeSetResults entry = new FusionGenotypeProbeSetResults();
         for (int probeSetIndex = 0; probeSetIndex < numberOfProbeSets; probeSetIndex++) {
-            chpData.getGenotypingResults(probeSetIndex, entry);
+            try {
+                chpData.getGenotypingResults(probeSetIndex, entry);
+            } catch (final UnsignedOutOfLimitsException e) {
+                throw new ArrayDataException(e);
+            } catch (final IOException e) {
+                throw new ArrayDataIOException(e);
+            }
             handleSnpEntry(hybridizationData, entry, typeSet, probeSetIndex);
         }
     }
 
-    private void handleSnpEntry(HybridizationData hybridizationData, FusionGenotypeProbeSetResults entry,
-            Set<QuantitationType> typeSet, int probeSetIndex) {
-        for (AbstractDataColumn column : hybridizationData.getColumns()) {
+    private void handleSnpEntry(final HybridizationData hybridizationData, final FusionGenotypeProbeSetResults entry,
+            final Set<QuantitationType> typeSet, final int probeSetIndex) {
+        for (final AbstractDataColumn column : hybridizationData.getColumns()) {
             if (typeSet.contains(column.getQuantitationType())) {
                 setSnpValue(column, probeSetIndex, entry);
             }
@@ -293,9 +313,10 @@ final class AffymetrixChpHandler extends AbstractDataFileHandler {
     }
 
     @SuppressWarnings({ "PMD.CyclomaticComplexity", "PMD.ExcessiveMethodLength" }) // long switch statement
-    private void setSnpValue(AbstractDataColumn column, int probeSetIndex, FusionGenotypeProbeSetResults entry) {
-        QuantitationType quantitationType = column.getQuantitationType();
-        AffymetrixSnpChpQuantitationType typeDescriptor = getSnpTypeDescriptor(quantitationType);
+    private void setSnpValue(final AbstractDataColumn column, final int probeSetIndex,
+            final FusionGenotypeProbeSetResults entry) {
+        final QuantitationType quantitationType = column.getQuantitationType();
+        final AffymetrixSnpChpQuantitationType typeDescriptor = getSnpTypeDescriptor(quantitationType);
         switch (typeDescriptor) {
         case CHP_ALLELE:
             ((StringColumn) column).getValues()[probeSetIndex] = entry.getAlleleCallString();
@@ -314,7 +335,7 @@ final class AffymetrixChpHandler extends AbstractDataFileHandler {
         }
     }
 
-    private float getAllelePValue(FusionGenotypeProbeSetResults entry) {
+    private float getAllelePValue(final FusionGenotypeProbeSetResults entry) {
         switch (entry.getAlleleCall()) {
         case FusionGenotypeProbeSetResults.ALLELE_A_CALL:
             return entry.getPValue_AA();
@@ -328,9 +349,9 @@ final class AffymetrixChpHandler extends AbstractDataFileHandler {
     }
 
     @Override
-    void validate(CaArrayFile caArrayFile, File file, MageTabDocumentSet mTabSet, FileValidationResult result,
-            ArrayDesignService arrayDesignService) {
-        FusionCHPLegacyData chpData = getChpData(file);
+    void validate(final CaArrayFile caArrayFile, final File file, final MageTabDocumentSet mTabSet,
+            final FileValidationResult result, final ArrayDesignService arrayDesignService) {
+        final FusionCHPLegacyData chpData = getChpData(file);
         if (chpData == null) {
             result.addMessage(Type.ERROR, "Couldn't read Affymetrix CHP file: " + file.getName());
         } else {
@@ -338,14 +359,14 @@ final class AffymetrixChpHandler extends AbstractDataFileHandler {
         }
     }
 
-    private void validateAgainstDesign(FusionCHPLegacyData chpData, FileValidationResult result,
-            ArrayDesignService arrayDesignService) {
+    private void validateAgainstDesign(final FusionCHPLegacyData chpData, final FileValidationResult result,
+            final ArrayDesignService arrayDesignService) {
         validateDesignExists(chpData, result, arrayDesignService);
     }
 
-    private void validateDesignExists(FusionCHPLegacyData chpData, FileValidationResult result,
-            ArrayDesignService arrayDesignService) {
-        String lsidObjectId = chpData.getHeader().getChipType();
+    private void validateDesignExists(final FusionCHPLegacyData chpData, final FileValidationResult result,
+            final ArrayDesignService arrayDesignService) {
+        final String lsidObjectId = chpData.getHeader().getChipType();
         if (arrayDesignService.getArrayDesign(LSID_AUTHORITY, LSID_NAMESPACE_DESIGN, lsidObjectId) == null) {
             result.addMessage(Type.ERROR, "The system doesn't contain the required Affymetrix array design: "
                     + lsidObjectId);
@@ -353,7 +374,7 @@ final class AffymetrixChpHandler extends AbstractDataFileHandler {
     }
 
 
-    private FusionCHPLegacyData getChpData(File file) {
+    private FusionCHPLegacyData getChpData(final File file) {
         return FusionCHPLegacyData.fromBase(FusionCHPDataReg.read(file.getAbsolutePath()));
     }
 
@@ -363,9 +384,9 @@ final class AffymetrixChpHandler extends AbstractDataFileHandler {
     }
 
     @Override
-    ArrayDataTypeDescriptor getArrayDataTypeDescriptor(File dataFile) {
-        FusionCHPLegacyData chpData = getChpData(dataFile);
-        int assayType = chpData.getHeader().getAssayType();
+    ArrayDataTypeDescriptor getArrayDataTypeDescriptor(final File dataFile) {
+        final FusionCHPLegacyData chpData = getChpData(dataFile);
+        final int assayType = chpData.getHeader().getAssayType();
         switch (assayType) {
         case FusionCHPHeader.EXPRESSION_ASSAY:
             return AffymetrixArrayDataTypes.AFFYMETRIX_EXPRESSION_CHP;
@@ -380,12 +401,12 @@ final class AffymetrixChpHandler extends AbstractDataFileHandler {
      * {@inheritDoc}
      */
     @Override
-    public ArrayDesign getArrayDesign(ArrayDesignService arrayDesignService, File file) {
+    public ArrayDesign getArrayDesign(final ArrayDesignService arrayDesignService, final File file) {
         return getArrayDesign(arrayDesignService, getChpData(file));
     }
 
-    private ArrayDesign getArrayDesign(ArrayDesignService arrayDesignService, FusionCHPLegacyData chpData) {
-        String lsidObjectId = chpData.getHeader().getChipType();
+    private ArrayDesign getArrayDesign(final ArrayDesignService arrayDesignService, final FusionCHPLegacyData chpData) {
+        final String lsidObjectId = chpData.getHeader().getChipType();
         return arrayDesignService.getArrayDesign(LSID_AUTHORITY, LSID_NAMESPACE_DESIGN, lsidObjectId);
     }
 

@@ -459,6 +459,13 @@
         </path>
         <property name="jce.jar" refid="jce.jar.fileset" />
 
+        <path id="ledatastream.jar.path">
+            <fileset dir="${project.lib}" id="ledatastream.jar.fileset">
+                <include name="ledatastream-*.jar"/>
+            </fileset>
+        </path>
+        <property name="ledatastream.jar" refid="ledatastream.jar.fileset" />
+
         <path id="wsrf_core_enum.jar.path">
             <fileset dir="${project.lib}" id="wsrf_core_enum.jar.fileset">
                 <include name="wsrf_core_enum-*.jar"/>
@@ -1127,6 +1134,7 @@
                 <include name="${concurrent.jar}"/>
                 <include name="${jgroups.jar}"/>
                 <include name="${junit.jar}"/>
+                <include name="${ledatastream.jar}"/>
             </fileset>
         </path>
 

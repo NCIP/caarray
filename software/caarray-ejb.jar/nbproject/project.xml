@@ -16,7 +16,7 @@
             <included-library>file.reference.jboss-jmx-4.0.5.GA.jar</included-library>
             <included-library>file.reference.jboss-system-4.0.5.GA.jar</included-library>
             <included-library>file.reference.jbossall-client-4.0.5.GA.jar</included-library>
-            <included-library>file.reference.AffxFusion-noversion.jar</included-library>
+            <included-library>file.reference.AffxFusion-1.1.jar</included-library>
             <included-library>file.reference.axis-1.4.2_10.jar</included-library>
             <included-library>file.reference.caGrid-core-1.2.jar</included-library>
             <included-library>file.reference.caGrid-cql-1.0-1.2.jar</included-library>

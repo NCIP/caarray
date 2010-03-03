@@ -26,7 +26,7 @@
 
         <dependency conf="project" name="acegi-security-jboss" org="acegisecurity" rev="1.0.5"/>
 
-        <dependency conf="project" name="AffxFusion" org="affymetrix" rev="noversion"/>
+        <dependency conf="project" name="AffxFusion" org="affymetrix" rev="1.1"/>
 
         <dependency conf="project" name="addressing" org="apache" rev="1.0"/>
 
@@ -241,5 +241,7 @@
         <dependency conf="project" name="google-collections" org="google" rev="1.0-rc1"/>
         
         <dependency conf="project" name="liquibase" org="liquibase" rev="1.9.3"/>
+
+        <dependency conf="project" name="ledatastream" org="mindprod" rev="1.8"/>
     </dependencies>
 </ivy-module>
