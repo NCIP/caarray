@@ -113,4 +113,12 @@ public class AffymetrixArrayDesignFiles {
     public static final File HUEX_TEST_CLF  =
         new File(AffymetrixArrayDesignFiles.class.getResource("/arraydesign/affymetrix/HuEx-test.clf").getFile());
 
+    public static final File AGCC_2_X_TEST_CDF  =
+        new File(AffymetrixArrayDesignFiles.class.getResource("/arraydesign/affymetrix/AGCC_2.x_Test_Truncated.cdf").getFile());
+
+    public static final File AGCC_3_X_TEST_CDF  =
+        new File(AffymetrixArrayDesignFiles.class.getResource("/arraydesign/affymetrix/AGCC_3.x_Test_Truncated.cdf").getFile());
+
+    public static final File AGCC_GCOS_TEST_CDF  =
+        new File(AffymetrixArrayDesignFiles.class.getResource("/arraydesign/affymetrix/AGCC_GCOS_Test_Truncated.cdf").getFile());
 }
