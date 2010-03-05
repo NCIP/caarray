@@ -82,6 +82,8 @@
  */
 package gov.nih.nci.caarray.test.functional;
 
+import java.util.Date;
+
 import gov.nih.nci.caarray.test.base.AbstractSeleniumTest;
 import gov.nih.nci.caarray.test.base.TestProperties;
 import gov.nih.nci.caarray.test.data.arraydata.AffymetrixArrayDataFiles;

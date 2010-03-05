@@ -690,6 +690,9 @@
         <path id="selenium-server.jar.path">
             <fileset dir="${project.lib}" id="selenium-server.jar.fileset">
                 <include name="selenium-server-*.jar"/>
+                <exclude name="selenium-server-coreless-*.jar"/>
+                <exclude name="selenium-server-sources-*.jar"/>
+                <exclude name="selenium-server-tests-*.jar"/>
             </fileset>
         </path>
         <property name="selenium-server.jar" refid="selenium-server.jar.fileset" />
@@ -697,6 +700,8 @@
         <path id="selenium-java-client-driver.jar.path">
             <fileset dir="${project.lib}" id="selenium-java-client-driver.jar.fileset">
                 <include name="selenium-java-client-driver-*.jar"/>
+                <exclude name="selenium-java-client-driver-sources-*.jar"/>
+                <exclude name="selenium-java-client-driver-tests-*.jar"/>
             </fileset>
         </path>
         <property name="selenium-java-client-driver.jar" refid="selenium-java-client-driver.jar.fileset" />
@@ -1458,7 +1463,7 @@
                 toFile="${caarray-common.classes.dir}/csm/${csm.application.name}.csm.new.hibernate.cfg.xml"/>
     </target>
 
-    <target name="configure-datasource-for-test" unless="schema.sql.exists">
+    <target name="configure-datasource-for-test">
         <copy todir="${caarray-common.test.classes.dir}" overwrite="true">
             <fileset dir="${caarray-common.resources.dir}" includes="*hibernate*,treecache.xml,MGEDOntology.owl,ValidatorMessages.properties" />
         </copy>
@@ -1502,7 +1507,7 @@
         </javac>
     </target>
 
-    <target name="compile:caarray-common.jar" unless="schema.sql.exists" depends="init:third-party-paths">
+    <target name="compile:caarray-common.jar" depends="init:third-party-paths">
         <mkdir dir="${caarray-common.classes.dir}" />
         <javac srcdir="${caarray-common.src.dir}" destdir="${caarray-common.classes.dir}" debug="true">
             <classpath>
@@ -2036,8 +2041,6 @@
         </outofdate>
     </target>
     
-    <target name="test:instrument-functional" depends=""/>
-
     <target name="test:compile:test-data-classes" unless="notest" depends="init:third-party-paths">
         <mkdir dir="${test.data.classes.dir}" />
         <javac srcdir="${test.data.src.dir}" destdir="${test.data.classes.dir}" debug="true">
@@ -2355,14 +2358,12 @@
 
     <target name="test:selenium:start-server" unless="notest" depends="init:third-party-paths">
         <echo message="Starting Selenium RC server on port ${selenium.server.port}" />
-        <property name="firefox.2x.executable.path" value="${env.ProgramFiles}\Mozilla Firefox\firefox.exe"/>
         <java jar="${project.lib}/${selenium-server.jar}" fork="true" spawn="true">
-            <jvmarg value="-DfirefoxDefaultPath=${firefox.2x.executable.path}"/>
             <arg value="-port" />
             <arg value="${selenium.server.port}" />
             <arg value="-debug" />
             <arg value="-log" />
-            <arg value="${basedir}/selenium.log" />
+            <arg value="selenium.log" />
         </java>
     </target>
 
@@ -2444,7 +2445,7 @@
     </target>
 
     <target name="test:selenium:run-tests:do-run" unless="notest" depends="init:third-party-paths">
-        <caarray-run-junit-tests test.src.dir="${test.src.dir}" xml.output.dir="${test.target.dir}/junit/selenium" classpath="${test.classes.dir};${test.data.classes.dir};${test.data.target.dir};" classpathref.id="selenium.dependencies.path" />
+        <caarray-run-junit-tests test.src.dir="${test.src.dir}" xml.output.dir="${test.target.dir}/junit/selenium" classpath="${test.classes.dir};${test.data.classes.dir};${test.data.target.dir};" classpathref.id="selenium.dependencies.path"/>
     </target>
 
     <target name="test:selenium:run-tests" unless="notest" depends="init:third-party-paths,test:selenium:compile-tests,test:copy-files-to-target-dir-and-unpack-test-data,build:caarray-client.jar,test:selenium:start-server,test:selenium:run-tests:do-run,test:selenium:stop-server"/>
@@ -2462,13 +2463,39 @@
             source.include="**/api/**/java/**/*ServiceTest.java" source.exclude="**/Abstract*.java" />
     </target>
     
-    <target name="test:api-wrapper" depends="test:api:init-data, test:api, deploy:stop-jboss-servers"/>
+    <target name="test:api-wrapper" depends="deploy:stop-jboss-servers, test:api:init-data, deploy:start-jboss-servers, test:api"/>
     
     <target name="deploy:cleaup-testing-installation" depends="deploy:stop-jboss-servers">
     	<delete dir="${application.base.path}"/>
     </target>
 
-    <target name="test:api:init-data" unless="notest" depends="init:third-party-paths,database:recreate-database">
+	<target name="test:api:init-data" unless="notest" depends="init:third-party-paths">
+		<antcall target="database:recreate-database"/>
+		<delete file="/Users/dharley/workspaces/trunk_installer/software/build/sql.log"/>
+		<echo append="true" file="/Users/dharley/workspaces/trunk_installer/software/build/sql.log" message="dfunkt database:recreate-database"/>
+		<echo append="true" file="/Users/dharley/workspaces/trunk_installer/software/build/sql.log" message="dfunkt show tables:"/>
+		<sql
+			append="yes"
+			output="/Users/dharley/workspaces/trunk_installer/software/build/sql.log"
+			print="yes"
+			onerror="continue"
+			driver="${database.driver}"
+			url="${database.url}"
+			userid="${database.user}"
+			password="${database.password}"
+			classpathref="liquibase.dependencies.path">show tables;</sql>
+		<echo append="true" file="/Users/dharley/workspaces/trunk_installer/software/build/sql.log" message="dfunkt here is contents of csm_application:"/>
+		<sql
+			append="yes"
+			output="/Users/dharley/workspaces/trunk_installer/software/build/sql.log"
+			print="yes"
+			onerror="continue"
+			driver="${database.driver}"
+			url="${database.url}"
+			userid="${database.user}"
+			password="${database.password}"
+			classpathref="liquibase.dependencies.path">select * from csm_application</sql>
+
         <!--
         the dump file was created with :
         mysqldump -compact -add-drop-table -u root caarraydb | gzip > caarraydb.sql.gz
@@ -2484,6 +2511,67 @@
             <arg value="-P"/><arg value="${database.port}"/>
             <arg value="${database.name}"/>
         </exec>
+		<echo append="true" file="/Users/dharley/workspaces/trunk_installer/software/build/sql.log" message="dfunkt post-exec"/>
+		<echo append="true" file="/Users/dharley/workspaces/trunk_installer/software/build/sql.log" message="dfunkt show tables:"/>
+		<sql
+			append="yes"
+			output="/Users/dharley/workspaces/trunk_installer/software/build/sql.log"
+			print="yes"
+			onerror="continue"
+			driver="${database.driver}"
+			url="${database.url}"
+			userid="${database.user}"
+			password="${database.password}"
+			classpathref="liquibase.dependencies.path">show tables;</sql>
+		<echo message="dfunkt here is contents of csm_application:"/>
+		<sql
+			append="yes"
+			output="/Users/dharley/workspaces/trunk_installer/software/build/sql.log"
+			print="yes"
+			onerror="continue"
+			driver="${database.driver}"
+			url="${database.url}"
+			userid="${database.user}"
+			password="${database.password}"
+			classpathref="liquibase.dependencies.path">select * from csm_application</sql>
+		<!--sql
+			append="yes"
+			output="/Users/dharley/workspaces/trunk_installer/software/build/sql.log"
+			print="yes"
+			onerror="stop"
+			driver="${database.driver}"
+			url="${database.url}"
+			userid="${database.user}"
+			password="${database.password}"
+			classpathref="liquibase.dependencies.path">
+				drop table DATABASECHANGELOG;
+				drop table DATABASECHANGELOGLOCK;
+			</sql>
+		<echo message="dfunkt just dropped changelog-related tables"/-->
+        <antcall target="database:update"/>
+		<echo append="true" file="/Users/dharley/workspaces/trunk_installer/software/build/sql.log" message="dfunkt database:update"/>
+		<echo append="true" file="/Users/dharley/workspaces/trunk_installer/software/build/sql.log" message="dfunkt show tables:"/>
+		<sql
+			append="yes"
+			output="/Users/dharley/workspaces/trunk_installer/software/build/sql.log"
+			print="yes"
+			onerror="continue"
+			driver="${database.driver}"
+			url="${database.url}"
+			userid="${database.user}"
+			password="${database.password}"
+			classpathref="liquibase.dependencies.path">show tables;</sql>
+		<echo message="dfunkt here is contents of csm_application:"/>
+		<sql
+			append="yes"
+			output="/Users/dharley/workspaces/trunk_installer/software/build/sql.log"
+			print="yes"
+			onerror="continue"
+			driver="${database.driver}"
+			url="${database.url}"
+			userid="${database.user}"
+			password="${database.password}"
+			classpathref="liquibase.dependencies.path">select * from csm_application</sql>
         <!--run-sql-script database.url="${database.url}" database.user="${database.user}" database.password="${database.password}"
             sql.file="${test.target.dir}/caarraydb.sql" /-->
     </target>
@@ -2494,7 +2582,7 @@
             classpathref.id="test.grid.dependencies.path"
             source.include="**/api/**/grid/**/*ApiTest.java" source.exclude="**/Abstract*.java" >
                 <extentions>
-                    <sysproperty key="globoss.server.http.port" value="${jboss.server.port}" /><!-- same server, same port -->
+                    <sysproperty key="globoss.server.http.port" value="${grid.server.port}" /><!-- same server, same port -->
                 </extentions>
             </caarray-run-junit-tests>
     </target>
@@ -2577,7 +2665,8 @@
     <!-- ** SQL TARGETS                                                   ** -->
     <!-- ******************************************************************* -->
 
-    <target name="database:init-sql" unless="schema.sql.exists" depends="init:third-party-paths">
+    <target name="database:init-sql" depends="init:third-party-paths">
+    	<delete dir="${caarraydb.sql.dir}"/>
         <mkdir dir="${caarraydb.sql.dir}" />
         <dependset>
             <srcfileset dir="${caarray-common.src.dir}">
@@ -2594,7 +2683,6 @@
             <filterset refid="caarray.filterset" />
             <fileset dir="${caarraydb.sql.src.dir}" includes="**/*.sql" />
         </copy>
-        <available property="schema.sql.exists" file="${caarraydb.sql.dir}/sql/drop_schema.sql" />
     </target>
 
     <target name="database:init-hibernatetool-taskdef" depends="init:third-party-paths">
@@ -2606,14 +2694,14 @@
         </taskdef>
     </target>
 
-    <target name="database:generate-drop-schema-sql" unless="schema.sql.exists" depends="init:third-party-paths,compile:caarray-common.jar,configure-datasource-for-test,database:init-sql,database:init-hibernatetool-taskdef">
+    <target name="database:generate-drop-schema-sql" depends="init:third-party-paths,compile:caarray-common.jar,configure-datasource-for-test,database:init-sql,database:init-hibernatetool-taskdef">
         <hibernatetool destdir="${caarraydb.sql.dir}">
             <annotationconfiguration configurationfile="${caarray-common.test.classes.dir}/hibernate.cfg.xml" propertyfile="${caarray-common.test.classes.dir}/hibernate.properties" namingstrategy="gov.nih.nci.caarray.util.NamingStrategy" />
             <hbm2ddl drop="true" create="false" export="false" outputfilename="drop_schema.sql" />
         </hibernatetool>
     </target>
 
-    <target name="database:generate-create-schema-sql" unless="schema.sql.exists" depends="init:third-party-paths,configure-datasource-for-test,compile:caarray-common.jar,database:init-sql,database:init-hibernatetool-taskdef">
+    <target name="database:generate-create-schema-sql" depends="init:third-party-paths,configure-datasource-for-test,compile:caarray-common.jar,database:init-sql,database:init-hibernatetool-taskdef">
         <hibernatetool destdir="${caarraydb.sql.dir}">
             <annotationconfiguration configurationfile="${caarray-common.test.classes.dir}/hibernate.cfg.xml" propertyfile="${caarray-common.test.classes.dir}/hibernate.properties" namingstrategy="gov.nih.nci.caarray.util.NamingStrategy" />
             <hbm2ddl drop="false" create="true" export="false" outputfilename="create_schema.sql" />
@@ -2627,7 +2715,7 @@
 
     <target name="database:generate-schema-sql" depends="init:third-party-paths,database:generate-drop-schema-sql, database:generate-create-schema-sql" />
 
-    <target name="database:generate-mged-sql" unless="schema.sql.exists" depends="init:third-party-paths,compile:caarray-common.jar,database:init-sql">
+    <target name="database:generate-mged-sql" depends="init:third-party-paths,compile:caarray-common.jar,database:init-sql">
         <java classname="gov.nih.nci.caarray.util.owlparser.ParseMgedOntology" failonerror="true">
             <arg value="${caarraydb.sql.dir}" />
             <classpath>
@@ -2802,7 +2890,7 @@
         <jboss-start-jboss jboss.home="${jboss.home}" jboss.server.name="${jboss.server.name}"/>
     </target>
 
-    <target name="deploy:start-grid-jboss" depends="init:third-party-paths">    
+    <target name="deploy:start-grid-jboss" depends="init:third-party-paths">
         <jboss-start-jboss jboss.home="${application.base.path}/${grid.relative.path}" jboss.server.name="${grid.server.name}"/>
     </target>
 

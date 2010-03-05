@@ -86,6 +86,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -99,10 +100,11 @@ import com.thoughtworks.selenium.SeleneseTestCase;
 public abstract class AbstractSeleniumTest extends SeleneseTestCase {
 
     protected DecimalFormat df = new DecimalFormat("0.##");
-    private static final int PAGE_TIMEOUT_SECONDS = 180;
+    //private static final int PAGE_TIMEOUT_SECONDS = 180;
+    private static final int PAGE_TIMEOUT_SECONDS = 5;
     private static final String LOGIN_BUTTON = "//div[2]/form/table/tbody/tr[4]/td/del/ul/li/a/span/span";
     protected static final String TAB_KEY = "\\009";
-    protected static int RECORD_TIMEOUT_SECONDS = 240;
+    protected static int RECORD_TIMEOUT_SECONDS = 5;
     protected static int FIFTEEN_MINUTES = 900;
     protected static final int PAGE_SIZE = 20;
     private static final String UPLOAD_BUTTON = "//ul/a[3]/span/span";
@@ -125,7 +127,7 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
         System.setProperty("selenium.port", "" + TestProperties.getSeleniumServerPort());
         String hostname = TestProperties.getServerHostname();
         int port = TestProperties.getServerPort();
-        String browser = System.getProperty("test.browser", "*chrome");
+        String browser = System.getProperty("test.browser", "*firefox");
         if (port == 0) {
             super.setUp("http://" + hostname, browser);
         } else {

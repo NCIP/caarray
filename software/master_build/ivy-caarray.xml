@@ -136,11 +136,11 @@
 
         <dependency conf="project" name="pmd" org="pmd" rev="3.9"/>
 
-        <dependency conf="project" name="selenium-server" org="openqa" rev="1.0"/>
+        <dependency conf="project" name="selenium-server" org="openqa" rev="1.0.3"/>
 
-        <dependency conf="project" name="selenium-java-client-driver" org="openqa" rev="1.0"/>
+        <dependency conf="project" name="selenium-java-client-driver" org="openqa" rev="1.0.1"/>
 
-        <dependency conf="project" name="selenium-java-client-driver-tests" org="openqa" rev="1.0"/>
+        <dependency conf="project" name="selenium-java-client-driver-tests" org="openqa" rev="1.0.1"/>
 
         <dependency conf="project" force="true" name="spring" org="springsource" rev="1.2.7"/>
 

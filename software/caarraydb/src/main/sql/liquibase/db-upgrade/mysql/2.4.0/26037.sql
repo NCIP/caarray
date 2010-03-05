@@ -29,7 +29,7 @@ ALTER TABLE csm_mapping
 ALTER TABLE csm_protection_element ADD INDEX idx_obj_attr_app (OBJECT_ID, ATTRIBUTE, APPLICATION_ID)
 ;
 
-ALTER TABLE csm_application add column CSM_VERSION varchar(20);
+ALTER TABLE csm_application add column csm_version varchar(20);
 
 -- our security caching tables
 

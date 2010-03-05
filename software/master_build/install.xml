@@ -922,6 +922,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
 			jboss.home="${grid.home}"
 			jboss.server.name="${grid.server.name}"
 			jboss.server.ports.name="${grid.server.ports.name}"
+            jboss.server-xml.file="${grid.home}/server/${grid.server.name}/deploy/jbossweb-tomcat55.sar/server.xml"
 			jboss.web.user="${grid.web.user}"
 			jboss.web.password="${grid.web.password}"
 			jboss.server.jndi.port="${grid.server.jndi.port}"
@@ -961,6 +962,8 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
                     </else>
                 </if>
                 <jboss-configure-grid
+                	jboss.home="${grid.home}"
+                	jboss.server.name="${grid.server.name}"
                     jboss.conf.dir="${grid.home}/server/${grid.server.name}/conf"
                     jboss.webapp.dir="${grid.home}/server/${grid.server.name}/deploy"
                     jboss.server-xml.file="${grid.home}/server/${grid.server.name}/deploy/jbossweb-tomcat55.sar/server.xml"
