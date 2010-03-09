@@ -101,7 +101,7 @@ import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.IndexColumn;
 
 /**
- * Value holder for all the data values associated with a specific hybridization and design element.
+ * Value holder for all the data values associated with a specific hybridization.
  */
 @Entity
 public final class HybridizationData extends AbstractCaArrayObject {
@@ -169,7 +169,7 @@ public final class HybridizationData extends AbstractCaArrayObject {
      * @return the dataSet
      */
     @ManyToOne
-    @JoinColumn(updatable = false, nullable = false)
+    @JoinColumn(insertable = false, updatable = false, name = "data_set")
     @ForeignKey(name = "hybridizationdata_dataset_fk")
     public DataSet getDataSet() {
         return dataSet;

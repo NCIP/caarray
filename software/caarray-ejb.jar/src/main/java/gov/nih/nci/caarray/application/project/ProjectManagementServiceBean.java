@@ -175,16 +175,6 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     /**
      * {@inheritDoc}
      */
-    public Project getProject(long id) {
-        LogUtil.logSubsystemEntry(LOG, id);
-        Project project = getDaoFactory().getSearchDao().retrieve(Project.class, id);
-        LogUtil.logSubsystemExit(LOG);
-        return project;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public Project getProjectByPublicId(String publicId) {
         LogUtil.logSubsystemEntry(LOG, publicId);
         Project project = getProjectDao().getProjectByPublicId(publicId);
@@ -326,7 +316,7 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
         getFileDao().deleteHqlBlobsByProjectId(project.getId());
 
         // refresh project
-        Project freshProject = this.getProject(project.getId());
+        Project freshProject = getSearchDao().retrieve(Project.class, project.getId());
         // both hybridizations and project are trying to delete the save files via cascades, so explicitly
         //delete hybridizations (and their files) first
 
@@ -661,15 +651,22 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     /**
      * {@inheritDoc}
      */
+    public List<CaArrayFile> getDeletableFiles(Long projectId) {
+        return getFileDao().getDeletableFiles(projectId);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public <T extends AbstractBioMaterial> T getBiomaterialByExternalId(Project project, String externalId,
             Class<T> biomaterialClass) {
         T bm;
         try {
             bm = biomaterialClass.newInstance();
         } catch (InstantiationException e) {
-            throw new IllegalArgumentException("Could not create new instance of class " + biomaterialClass);
+            throw new IllegalArgumentException("Could not create new instance of class " + biomaterialClass, e);
         } catch (IllegalAccessException e) {
-            throw new IllegalArgumentException("Could not create new instance of class " + biomaterialClass);
+            throw new IllegalArgumentException("Could not create new instance of class " + biomaterialClass, e);
         }
         bm.setExternalId(externalId);
         bm.setExperiment(project.getExperiment());

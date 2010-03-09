@@ -120,7 +120,7 @@ public class ProjectOverviewActionTest extends AbstractCaarrayTest {
     private final ProjectOverviewAction action = new ProjectOverviewAction();
     private static final LocalArrayDesignServiceStub arrayDesignServiceStub = new LocalArrayDesignServiceStub();
     private static final LocalGenericDataServiceStub genericDataServiceStub = new LocalGenericDataServiceStub();
-    private static final LocalProjectManagementServiceStub projectManagementServiceStub = new LocalProjectManagementServiceStub();
+    private static final ProjectManagementServiceStub projectManagementServiceStub = new ProjectManagementServiceStub();
     private static final VocabularyServiceStub vocabularyServiceStub = new VocabularyServiceStub();
 
     @Before
@@ -236,24 +236,7 @@ public class ProjectOverviewActionTest extends AbstractCaarrayTest {
             return null;
         }
     }
-    @SuppressWarnings("deprecation")
-    private static class LocalProjectManagementServiceStub extends ProjectManagementServiceStub {
-        @Override
-        public Project getProject(long id) {
-            Project p = new Project();
-            p.setId(id);
-            p.getExperiment().setId(1L);
-            if (2L == id) {
-                Organization o = new Organization();
-                o.setId(1L);
-                p.getExperiment().setManufacturer(o);
-                SortedSet <AssayType>assayTypes = new TreeSet<AssayType>();
-                assayTypes.add(new AssayType("Gene Expression"));
-                p.getExperiment().setAssayTypes(assayTypes);
-            }
-            return p;
-        }
-    }
+
     @SuppressWarnings("deprecation")
     private static class LocalGenericDataServiceStub extends GenericDataServiceStub {
         @Override
@@ -264,6 +247,21 @@ public class ProjectOverviewActionTest extends AbstractCaarrayTest {
                 o.setId(1L);
                 return (T) o;
             }
+            if (Project.class.equals(entityClass)) {
+                Project p = new Project();
+                p.setId(entityId);
+                p.getExperiment().setId(1L);
+                if (2L == entityId) {
+                    Organization o = new Organization();
+                    o.setId(1L);
+                    p.getExperiment().setManufacturer(o);
+                    SortedSet <AssayType>assayTypes = new TreeSet<AssayType>();
+                    assayTypes.add(new AssayType("Gene Expression"));
+                    p.getExperiment().setAssayTypes(assayTypes);
+                }
+                return (T) p;                
+            }
+            
             return null;
         }
     }

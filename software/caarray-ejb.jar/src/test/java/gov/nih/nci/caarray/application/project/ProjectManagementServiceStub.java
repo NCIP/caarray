@@ -126,12 +126,10 @@ import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
 public class ProjectManagementServiceStub implements ProjectManagementService {
 
     private int filesAddedCount = 0;
-    private int projectByIdCount = 0;
     private int changeWorkflowStatusCount = 0;
 
     public void reset() {
         this.filesAddedCount = 0;
-        this.projectByIdCount = 0;
         this.changeWorkflowStatusCount = 0;
     }
 
@@ -140,13 +138,6 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
      */
     public int getFilesAddedCount() {
         return this.filesAddedCount;
-    }
-
-    /**
-     * @return the number of times getProjectByID was called.
-     */
-    public int getProjectByIdCount() {
-        return this.projectByIdCount;
     }
 
     /**
@@ -179,15 +170,6 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
      */
     public List<Project> getProjectsForOwner(User user) {
         return Collections.emptyList();
-    }
-
-
-    @SuppressWarnings("deprecation")
-    public Project getProject(long id) {
-        this.projectByIdCount++;
-        Project p = new Project();
-        p.setId(id);
-        return p;
     }
 
     public Project getProjectByPublicId(String publicId) {
@@ -488,4 +470,8 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
     public List<CaArrayFile> searchFiles(PageSortParams<CaArrayFile> params, FileSearchCriteria criteria) {
         return Collections.emptyList();
     }
-  }
+    
+    public List<CaArrayFile> getDeletableFiles(Long projectId) {
+        return Collections.emptyList();
+    }
+}

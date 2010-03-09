@@ -26,7 +26,7 @@
                 <c:set var="boxvalue" value="true"/>
               </c:if>
             </c:forEach>
-            <s:checkbox id="chk${row.id}" name="selectedFileIds" disabled="${!(row.importable || row.validatable || row.deletable)}"
+            <s:checkbox id="chk${row.id}" name="selectedFileIds" disabled="${!(row.importable || row.validatable || deletableFiles[row] == true)}"
                    fieldValue="${row.id}" value="${boxvalue}" theme="simple"
                    onclick="toggleFileInJob(this.checked, this.value);"/>
 

@@ -125,11 +125,13 @@ public interface FileAccessService {
     CaArrayFile add(InputStream stream, String filename);
 
     /**
-     * Removes a file from caArray file storage.
+     * Removes a file from caArray file storage if it is legal for it to be removed. Returns true
+     * if the file was actually removed.
      *
      * @param caArrayFile the caArrayFile to remove
+     * @return true if the file was removed, false if the file could not be removed. 
      */
-    void remove(CaArrayFile caArrayFile);
+    boolean remove(CaArrayFile caArrayFile);
 
     /**
      * Saves a file to the caArray file storage.

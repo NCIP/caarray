@@ -82,12 +82,10 @@
  */
 package gov.nih.nci.caarray.web.action.project;
 
-import java.io.IOException;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertSame;
 import gov.nih.nci.caarray.application.GenericDataService;
 import gov.nih.nci.caarray.application.GenericDataServiceStub;
 import gov.nih.nci.caarray.application.file.FileManagementService;
@@ -98,11 +96,9 @@ import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheStubFactory;
 import gov.nih.nci.caarray.application.project.ProjectManagementService;
 import gov.nih.nci.caarray.application.project.ProjectManagementServiceStub;
-import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
-import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.sample.Sample;
@@ -116,6 +112,7 @@ import gov.nih.nci.caarray.web.AbstractDownloadTest;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
@@ -513,49 +510,6 @@ public class ProjectFilesActionTest extends AbstractDownloadTest {
     }
 
     @Test
-    public void testDelete() throws Exception {
-        List<CaArrayFile> selectedFiles = new ArrayList<CaArrayFile>();
-        this.action.setSelectedFiles(selectedFiles);
-        assertEquals(LIST_UNIMPORTED, this.action.deleteFiles());
-        assertEquals(LIST_UNIMPORTED, this.action.getListAction());
-        assertEquals(0, fileManagementServiceStub.getValidatedFileCount());
-
-        CaArrayFile file = new CaArrayFile();
-        file.setProject(this.action.getProject());
-        file.setFileStatus(FileStatus.VALIDATING);
-        selectedFiles.add(file);
-
-        file = new CaArrayFile();
-        file.setProject(this.action.getProject());
-        file.setFileStatus(FileStatus.VALIDATED);
-        selectedFiles.add(file);
-
-        file = new CaArrayFile();
-        file.setProject(this.action.getProject());
-        file.setFileStatus(FileStatus.IMPORTING);
-        selectedFiles.add(file);
-
-        file = new CaArrayFile();
-        file.setProject(this.action.getProject());
-        file.setFileStatus(FileStatus.IMPORTED);
-        selectedFiles.add(file);
-
-        file = new CaArrayFile();
-        file.setProject(this.action.getProject());
-        file.setFileStatus(FileStatus.UPLOADED);
-        selectedFiles.add(file);
-
-        file = new CaArrayFile();
-        file.setProject(this.action.getProject());
-        file.setFileStatus(FileStatus.VALIDATION_ERRORS);
-        selectedFiles.add(file);
-
-        assertEquals(LIST_UNIMPORTED, this.action.deleteFiles());
-        assertEquals(LIST_UNIMPORTED, this.action.getListAction());
-        assertEquals(4, fileAccessServiceStub.getRemovedFileCount());
-    }
-
-    @Test
     public void testDeleteImported() throws Exception {
         List<CaArrayFile> selectedFiles = new ArrayList<CaArrayFile>();
         this.action.setSelectedFiles(selectedFiles);
@@ -564,18 +518,8 @@ public class ProjectFilesActionTest extends AbstractDownloadTest {
 
         // make this file associated with a hyb
         CaArrayFile celFile = fileAccessServiceStub.add(AffymetrixArrayDataFiles.TEST3_CEL);
-        celFile.setFileType(FileType.AFFYMETRIX_CEL);
-        celFile.setProject(this.action.getProject());
-        celFile.setFileStatus(FileStatus.IMPORTED);
-        RawArrayData celData = new RawArrayData();
-        celData.setDataFile(celFile);
-        Hybridization hybridization = new Hybridization();
-        hybridization.addRawArrayData(celData);
-        celFile.getProject().getExperiment().getHybridizations().add(hybridization);
-        selectedFiles.add(celFile);
-
+        fileAccessServiceStub.setDeletableStatus(celFile, false);
         assertEquals(LIST_IMPORTED, this.action.deleteImportedFiles());
-
         assertEquals(0, fileAccessServiceStub.getRemovedFileCount());
     }
 
@@ -590,10 +534,14 @@ public class ProjectFilesActionTest extends AbstractDownloadTest {
         file.setProject(this.action.getProject());
         file.setFileStatus(FileStatus.SUPPLEMENTAL);
         selectedFiles.add(file);
+        fileAccessServiceStub.setDeletableStatus(file, true);
         file = new CaArrayFile();
         file.setProject(this.action.getProject());
         file.setFileStatus(FileStatus.SUPPLEMENTAL);
         selectedFiles.add(file);
+        fileAccessServiceStub.setDeletableStatus(file, true);
+        
+        
         assertEquals(LIST_SUPPLEMENTAL, this.action.deleteSupplementalFiles());
         assertEquals(LIST_SUPPLEMENTAL, this.action.getListAction());
         assertEquals(2, fileAccessServiceStub.getRemovedFileCount());

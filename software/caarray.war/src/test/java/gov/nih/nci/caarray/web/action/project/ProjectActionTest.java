@@ -87,6 +87,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import gov.nih.nci.caarray.AbstractCaarrayTest;
+import gov.nih.nci.caarray.application.GenericDataService;
+import gov.nih.nci.caarray.application.GenericDataServiceStub;
 import gov.nih.nci.caarray.application.project.ProjectManagementService;
 import gov.nih.nci.caarray.application.project.ProjectManagementServiceStub;
 import gov.nih.nci.caarray.application.project.ProposalWorkflowException;
@@ -103,6 +105,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 
+import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 import com.fiveamsolutions.nci.commons.web.struts2.action.ActionHelper;
 import com.opensymphony.xwork2.Action;
 
@@ -114,12 +117,14 @@ public class ProjectActionTest extends AbstractCaarrayTest {
     private static final String WORKSPACE = "workspace";
     ProjectAction action = new ProjectAction();
     private static final ProjectManagementServiceStub projectManagementServiceStub = new LocalProjectManagementServiceStub();
+    private static final GenericDataServiceStub genericDataServiceStub = new LocalGenericDataServiceStub();
 
     @BeforeClass
     @SuppressWarnings("PMD")
     public static void beforeClass() {
         ServiceLocatorStub stub = ServiceLocatorStub.registerEmptyLocator();
         stub.addLookup(ProjectManagementService.JNDI_NAME, projectManagementServiceStub);
+        stub.addLookup(GenericDataService.JNDI_NAME, genericDataServiceStub);
     }
 
     @Before
@@ -158,14 +163,8 @@ public class ProjectActionTest extends AbstractCaarrayTest {
 
     @Test
     public void testPrepare() throws Exception {
-        this.action.prepare();
-        assertEquals(0, projectManagementServiceStub.getProjectByIdCount());
-        this.action.setProject(this.getTestProject(null));
-        this.action.prepare();
-        assertEquals(0, projectManagementServiceStub.getProjectByIdCount());
         this.action.setProject(this.getTestProject(1l));
         this.action.prepare();
-        assertEquals(1, projectManagementServiceStub.getProjectByIdCount());
         assertNotNull(this.action.getExperiment());
     }
 
@@ -252,6 +251,18 @@ public class ProjectActionTest extends AbstractCaarrayTest {
             }
             // assume success if the checks pass
         }
-
+    }
+    
+    private static class LocalGenericDataServiceStub extends GenericDataServiceStub {
+        @Override
+        public <T extends PersistentObject> T getPersistentObject(Class<T> entityClass, Long entityId) {
+            if (Project.class.equals(entityClass)) {
+                Project project = new Project();
+                project.setId(entityId);
+                return (T) project;
+            } else {
+                return super.getPersistentObject(entityClass, entityId);
+            }
+        }
     }
 }

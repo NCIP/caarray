@@ -134,6 +134,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
+import java.util.SortedSet;
 
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
@@ -143,6 +144,8 @@ import org.junit.Test;
 
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Sets;
 import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
 
 @SuppressWarnings("PMD")
@@ -201,15 +204,8 @@ public class ProjectManagementServiceTest extends AbstractServiceTest {
     }
 
     @Test
-    public void testGetProject() {
-        Project project = this.projectManagementService.getProject(123L);
-        assertNotNull(project);
-        assertEquals(123L, project.getId().longValue());
-    }
-
-    @Test
     public void testAddFile() throws Exception {
-        Project project = this.projectManagementService.getProject(123L);
+        Project project = this.daoFactoryStub.getSearchDao().retrieve(Project.class, 123L);
         CaArrayFile file = this.projectManagementService.addFile(project, MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF);
         assertEquals(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF.getName(), file.getName());
         assertEquals(1, project.getFiles().size());
@@ -220,7 +216,7 @@ public class ProjectManagementServiceTest extends AbstractServiceTest {
 
     @Test
     public void testUploadFiles() throws Exception {
-        Project project = this.projectManagementService.getProject(123L);
+        Project project = this.daoFactoryStub.getSearchDao().retrieve(Project.class, 123L);
         List<String> fileNames = new ArrayList<String>();
         List<File> files = new ArrayList<File>();
         List<String> filesToUnpack = new ArrayList<String>();
@@ -266,7 +262,7 @@ public class ProjectManagementServiceTest extends AbstractServiceTest {
         // testing upload of a zip file and a txt file in that order
         // the zip file does not contain the txt file.
         // the txt file should be unknown.
-        Project project = this.projectManagementService.getProject(123L);
+        Project project = this.daoFactoryStub.getSearchDao().retrieve(Project.class, 123L);
         List<String> fileNames = new ArrayList<String>();
         List<File> files = new ArrayList<File>();
         files.add(MageTabDataFiles.SPECIFICATION_ZIP);
@@ -290,8 +286,9 @@ public class ProjectManagementServiceTest extends AbstractServiceTest {
     public void testUnpackFiles() throws Exception {
         // testing unpacking of a file already in the project
         // add a file
-        Project project = this.projectManagementService.getProject(123L);
+        Project project = this.daoFactoryStub.getSearchDao().retrieve(Project.class, 123L);
         CaArrayFile file = this.projectManagementService.addFile(project, MageTabDataFiles.SPECIFICATION_ZIP);
+        this.fileAccessService.setDeletableStatus(file, true);
         assertEquals(MageTabDataFiles.SPECIFICATION_ZIP.getName(), file.getName());
         assertEquals(1, project.getFiles().size());
         assertNotNull(project.getFiles().iterator().next().getProject());
@@ -391,7 +388,17 @@ public class ProjectManagementServiceTest extends AbstractServiceTest {
     @Test
     @SuppressWarnings("deprecation")
     public void testSaveProjectWithImportingFiles() throws Exception {
-        Project project = new Project();
+        Project project = new Project() {
+            @Override
+            public boolean isImportingData() {
+                for (CaArrayFile f : this.getFiles()) {
+                    if (f.getFileStatus() == FileStatus.IMPORTING) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+        };
         CaArrayFile file1 = new CaArrayFile();
         file1.setName("File1");
         file1.setFileStatus(FileStatus.UPLOADED);

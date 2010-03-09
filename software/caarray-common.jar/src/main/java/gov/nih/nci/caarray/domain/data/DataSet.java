@@ -136,6 +136,7 @@ public final class DataSet extends AbstractCaArrayObject {
      * @return the hybridizationDatas
      */
     @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "data_set")
     @IndexColumn(name = "HYBRIDIZATION_INDEX")
     @Cascade(CascadeType.ALL)
     public List<HybridizationData> getHybridizationDataList() {

@@ -95,7 +95,6 @@ import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.data.ArrayDataType;
 import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
 import gov.nih.nci.caarray.domain.data.DataType;
-import gov.nih.nci.caarray.domain.data.DerivedArrayData;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
@@ -298,38 +297,35 @@ public class ArrayDaoTest extends AbstractDaoTest {
             throw e;
         }
     }
-
-    /**
-     * Tests retrieving array design providers and array designs by provider
-     */
+    
     @Test
-    public void testArrayDesignProviders() throws Exception {
-        Transaction tx = null;
+    public void testGetArrayData() {
+        // normally arraydata would be associated with samples, but in this it is not
+        // so disable the security filters
         HibernateUtil.setFiltersEnabled(false);
-        try {
-            tx = HibernateUtil.beginTransaction();
-            List<Organization> providers = DAO_OBJECT.getArrayDesignProviders();
-            List<ArrayDesign> org1Designs = DAO_OBJECT.getArrayDesigns(DUMMY_ORGANIZATION, null, false);
-            List<ArrayDesign> org2Designs = DAO_OBJECT.getArrayDesigns(DUMMY_ORGANIZATION2, null, false);
-            List<ArrayDesign> org3Designs = DAO_OBJECT.getArrayDesigns(DUMMY_ORGANIZATION3, null, false);
-            List<ArrayDesign> org2ImportedDesigns = DAO_OBJECT.getArrayDesigns(DUMMY_ORGANIZATION2, null, true);
-            assertNotNull(providers);
-            assertEquals(2, providers.size());
-            assertNotNull(org1Designs);
-            assertEquals(1, org1Designs.size());
-            assertNotNull(org2Designs);
-            assertEquals(2, org2Designs.size());
-            assertNotNull(org3Designs);
-            assertEquals(0, org3Designs.size());
-            assertNotNull(org2ImportedDesigns);
-            assertEquals(1, org2ImportedDesigns.size());
-            assertEquals(DUMMY_ARRAYDESIGN_3, org2ImportedDesigns.get(0));
-            tx.commit();
-        } catch (DAOException e) {
-            HibernateUtil.rollbackTransaction(tx);
-            throw e;
-        }
+        Transaction tx = null;
+        CaArrayFile file = new CaArrayFile();
+        file.setFileStatus(FileStatus.UPLOADED);
+        RawArrayData rawData = new RawArrayData();
+        rawData.setDataFile(file);
+        rawData.setName("test" + System.currentTimeMillis());
+
+        tx = HibernateUtil.beginTransaction();
+        DAO_OBJECT.save(rawData);
+        tx.commit();
+        tx = HibernateUtil.beginTransaction();
+        RawArrayData retrievedArrayData = (RawArrayData) DAO_OBJECT.getArrayData(file.getId());
+        assertEquals(rawData, retrievedArrayData);
+        file = new CaArrayFile();
+        file.setFileStatus(FileStatus.UPLOADED);
+        DAO_OBJECT.save(file);
+        tx.commit();
+        tx = HibernateUtil.beginTransaction();
+        retrievedArrayData = (RawArrayData) DAO_OBJECT.getArrayData(file.getId());
+        assertNull(retrievedArrayData);
+        tx.commit();
     }
+
 
     /**
      * Tests retrieving array design providers and array designs by provider
@@ -367,68 +363,6 @@ public class ArrayDaoTest extends AbstractDaoTest {
         } catch (DAOException e) {
             HibernateUtil.rollbackTransaction(tx);
             fail("DAO exception during save and retrieve of arraydesign: " + e.getMessage());
-        }
-    }
-
-    @Test
-    public void testGetRawArrayData() {
-        // normally arraydata would be associated with samples, but in this it is not
-        // so disable the security filters
-        HibernateUtil.setFiltersEnabled(false);
-        Transaction tx = null;
-        CaArrayFile file = new CaArrayFile();
-        file.setFileStatus(FileStatus.UPLOADED);
-        RawArrayData rawData = new RawArrayData();
-        rawData.setDataFile(file);
-        rawData.setName("test" + System.currentTimeMillis());
-        try {
-            tx = HibernateUtil.beginTransaction();
-            DAO_OBJECT.save(rawData);
-            RawArrayData retrievedArrayData = DAO_OBJECT.getRawArrayData(file);
-            assertEquals(rawData, retrievedArrayData);
-            tx.commit();
-            tx = HibernateUtil.beginTransaction();
-            retrievedArrayData = DAO_OBJECT.getRawArrayData(file);
-            assertEquals(rawData, retrievedArrayData);
-            file = new CaArrayFile();
-            file.setFileStatus(FileStatus.UPLOADED);
-            DAO_OBJECT.save(file);
-            retrievedArrayData = DAO_OBJECT.getRawArrayData(file);
-            assertNull(retrievedArrayData);
-            tx.commit();
-        } catch (DAOException e) {
-            HibernateUtil.rollbackTransaction(tx);
-            fail("DAO exception during save and retrieve of array data: " + e.getMessage());
-        }
-    }
-
-    @Test
-    public void testGetDerivedArrayData() {
-        // normally arraydata would be associated with samples, but in this it is not
-        // so disable the security filters
-        HibernateUtil.setFiltersEnabled(false);
-        Transaction tx = null;
-        CaArrayFile file = new CaArrayFile();
-        file.setFileStatus(FileStatus.UPLOADED);
-        DerivedArrayData derivedArrayData = new DerivedArrayData();
-        derivedArrayData.setDataFile(file);
-        derivedArrayData.setName("test" + System.currentTimeMillis());
-        try {
-            tx = HibernateUtil.beginTransaction();
-            DAO_OBJECT.save(derivedArrayData);
-            tx.commit();
-            tx = HibernateUtil.beginTransaction();
-            DerivedArrayData retrievedArrayData = DAO_OBJECT.getDerivedArrayData(file);
-            assertEquals(derivedArrayData, retrievedArrayData);
-            file = new CaArrayFile();
-            file.setFileStatus(FileStatus.UPLOADED);
-            DAO_OBJECT.save(file);
-            retrievedArrayData = DAO_OBJECT.getDerivedArrayData(file);
-            assertNull(retrievedArrayData);
-            tx.commit();
-        } catch (DAOException e) {
-            HibernateUtil.rollbackTransaction(tx);
-            fail("DAO exception during save and retrieve of array data: " + e.getMessage());
         }
     }
 

@@ -89,13 +89,9 @@ import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.ArrayDataType;
 import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
-import gov.nih.nci.caarray.domain.data.DerivedArrayData;
 import gov.nih.nci.caarray.domain.data.DesignElementList;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
-import gov.nih.nci.caarray.domain.data.RawArrayData;
-import gov.nih.nci.caarray.domain.file.CaArrayFile;
-import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.AssayType;
 import gov.nih.nci.caarray.domain.search.QuantitationTypeSearchCriteria;
 
@@ -130,12 +126,6 @@ public interface ArrayDao extends CaArrayDao {
     ArrayDesign getArrayDesign(String lsidAuthority, String lsidNamespace, String lsidObjectId);
 
     /**
-     * Returns the list of all ArrayDesigns.
-     * @return the List&lt;ArrayDesign&gt; of the array designs
-     */
-    List<ArrayDesign> getArrayDesigns();
-
-    /**
      * Returns the list of ArrayDesigns with at least one of the given assay types and the provider.  Either the
      * provider or the list of assayTypes is required.  If the list of assay types is null or empty, the function
      * will return the list of array designs for the given provider.  If the provider is null, the function will
@@ -150,39 +140,6 @@ public interface ArrayDao extends CaArrayDao {
     List<ArrayDesign> getArrayDesigns(Organization provider, Set<AssayType> assayTypes, boolean importedOnly);
 
     /**
-     * Returns the list of Organizations that are a provider for at least
-     * one ArrayDesign in the system.
-     * @return the List&lt;Organization&gt; of Organizations where for each
-     * organization in the list there exists at least one ArrayDesign for which
-     * that Organization is the provider
-     */
-    List<Organization> getArrayDesignProviders();
-
-    /**
-     * Returns the array data object for the id given.
-     *
-     * @param id get <code>AbstractArrayData</code> matching this id
-     * @return the associated data.
-     */
-    AbstractArrayData getArrayData(long id);
-
-    /**
-     * Returns the <code>RawArrayData</code> object associated with the file provided.
-     *
-     * @param file find data for this file.
-     * @return the associated data or null.
-     */
-    RawArrayData getRawArrayData(CaArrayFile file);
-
-    /**
-     * Returns the <code>DerivedArrayData</code> object associated with the file provided.
-     *
-     * @param file find data for this file.
-     * @return the associated data or null.
-     */
-    DerivedArrayData getDerivedArrayData(CaArrayFile file);
-
-    /**
      * Returns the array data type corresponding to the given descriptor, if one
      * exists.
      *
@@ -190,6 +147,14 @@ public interface ArrayDao extends CaArrayDao {
      * @return the matching type, or null if not in the database.
      */
     ArrayDataType getArrayDataType(ArrayDataTypeDescriptor descriptor);
+    
+    /**
+     * Returns the array data object for the file with given id.
+     *
+     * @param fileId id of file for which to retrieve data
+     * @return the associated data.
+     */
+    AbstractArrayData getArrayData(Long fileId);
 
     /**
      * Returns the quantitation type corresponding to the given descriptor, if one
@@ -199,13 +164,6 @@ public interface ArrayDao extends CaArrayDao {
      * @return the matching type, or null if not in the database.
      */
     QuantitationType getQuantitationType(QuantitationTypeDescriptor descriptor);
-    /**
-     * Returns the hybridization matching the given id.
-     *
-     * @param id id to retrieve
-     * @return the matching hybridization.
-     */
-    Hybridization getHybridization(Long id);
 
     /**
      * Returns true if an array design is associated with an existing experiment.

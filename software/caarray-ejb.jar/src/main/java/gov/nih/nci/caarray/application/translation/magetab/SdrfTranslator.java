@@ -740,7 +740,7 @@ final class SdrfTranslator extends AbstractTranslator {
         CaArrayFile dataFile = getFile(fileName);
         RawArrayData caArrayData = null;
         if (EnumSet.of(FileStatus.IMPORTED, FileStatus.IMPORTED_NOT_PARSED).contains(dataFile.getFileStatus())) {
-            caArrayData = getDaoFactory().getArrayDao().getRawArrayData(dataFile);
+            caArrayData = (RawArrayData) getDaoFactory().getArrayDao().getArrayData(dataFile.getId());
         } else {
             // this is a re-import referencing an existing data file
             caArrayData = new RawArrayData();
@@ -785,7 +785,7 @@ final class SdrfTranslator extends AbstractTranslator {
         CaArrayFile dataFile = getFile(fileName);
         DerivedArrayData caArrayData = null;
         if (EnumSet.of(FileStatus.IMPORTED, FileStatus.IMPORTED_NOT_PARSED).contains(dataFile.getFileStatus())) {
-            caArrayData = getDaoFactory().getArrayDao().getDerivedArrayData(dataFile);
+            caArrayData = (DerivedArrayData) getDaoFactory().getArrayDao().getArrayData(dataFile.getId());
         } else {
             caArrayData = new DerivedArrayData();
             caArrayData.setName(fileName);
@@ -922,7 +922,7 @@ final class SdrfTranslator extends AbstractTranslator {
             RawArrayData arrayData = (RawArrayData) this.nodeTranslations.get(sdrfArrayData);
             if (arrayData != null) {
                 arrayData.addHybridization(hybridization);
-                hybridization.addRawArrayData(arrayData);
+                hybridization.getRawDataCollection().add(arrayData);
             }
         }
         for (gov.nih.nci.caarray.magetab.sdrf.ArrayDataMatrixFile sdrfArrayData
@@ -930,7 +930,7 @@ final class SdrfTranslator extends AbstractTranslator {
             RawArrayData arrayData = (RawArrayData) this.nodeTranslations.get(sdrfArrayData);
             if (arrayData != null) {
                 arrayData.addHybridization(hybridization);
-                hybridization.addRawArrayData(arrayData);
+                hybridization.getRawDataCollection().add(arrayData);
             }
         }
         // Link derived array data

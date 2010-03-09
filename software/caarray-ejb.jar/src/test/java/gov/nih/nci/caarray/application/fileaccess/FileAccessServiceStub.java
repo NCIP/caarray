@@ -96,12 +96,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.BooleanUtils;
+
 /**
  * Stub implementation for testing.
  */
 public class FileAccessServiceStub implements FileAccessService, TemporaryFileCache {
 
     private final Map<String, File> nameToFile = new HashMap<String, File>();
+    private final Map<String, Boolean> deletables = new HashMap<String, Boolean>();
     private int savedFileCount = 0;
     private int removedFileCount = 0;
 
@@ -153,10 +156,11 @@ public class FileAccessServiceStub implements FileAccessService, TemporaryFileCa
         return caArrayFile;
     }
 
-    public void remove(CaArrayFile caArrayFile) {
-        if (caArrayFile.isDeletable()) {
+    public boolean remove(CaArrayFile caArrayFile) {
+        if (BooleanUtils.isTrue(this.deletables.get(caArrayFile.getName()))) {
             this.removedFileCount++;
         }
+        return false;
     }
 
     public void save(CaArrayFile caArrayFile) {
@@ -169,8 +173,13 @@ public class FileAccessServiceStub implements FileAccessService, TemporaryFileCa
 
     public void reset() {
         this.nameToFile.clear();
+        this.deletables.clear();
         this.savedFileCount = 0;
         this.removedFileCount = 0;
+    }
+    
+    public void setDeletableStatus(CaArrayFile file, boolean deletable) {
+        this.deletables.put(file.getName(), deletable);
     }
 
     /**

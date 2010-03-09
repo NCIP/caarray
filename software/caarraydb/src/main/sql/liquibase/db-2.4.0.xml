@@ -39,4 +39,9 @@
        <comment>GF 26558 - fix existing illumina CSV designs to use physical probes</comment>
        <sqlFile path="db-upgrade/mysql/2.4.0/26558.sql"/>
     </changeSet>    
+
+    <changeSet id="26324" author="dkokotov">
+       <comment>GF 26324 - improve performance of imported files</comment>
+       <sqlFile path="db-upgrade/mysql/2.4.0/26324.sql"/>
+    </changeSet>        
  </databaseChangeLog>

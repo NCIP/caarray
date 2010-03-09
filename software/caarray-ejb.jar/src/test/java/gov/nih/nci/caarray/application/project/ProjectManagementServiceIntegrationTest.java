@@ -88,7 +88,7 @@ import static org.junit.Assert.assertNull;
 import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.application.AbstractServiceIntegrationTest;
 import gov.nih.nci.caarray.application.GenericDataService;
-import gov.nih.nci.caarray.application.GenericDataServiceStub;
+import gov.nih.nci.caarray.application.GenericDataServiceBean;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
@@ -132,7 +132,7 @@ import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
 public class ProjectManagementServiceIntegrationTest extends AbstractServiceIntegrationTest {
     private ProjectManagementService projectManagementService;
     private final FileAccessServiceStub fileAccessService = new FileAccessServiceStub();
-    private final GenericDataService genericDataService = new GenericDataServiceStub();
+    private final GenericDataService genericDataService = new GenericDataServiceBean();
     private static Organism DUMMY_ORGANISM = new Organism();
     private static Organization DUMMY_PROVIDER = new Organization();
     private static Project DUMMY_PROJECT_1 = new Project();
@@ -285,7 +285,7 @@ public class ProjectManagementServiceIntegrationTest extends AbstractServiceInte
             t.commit();
 
             t = HibernateUtil.beginTransaction();
-            Project retrieved = this.projectManagementService.getProject(DUMMY_PROJECT_1.getId());
+            Project retrieved = this.genericDataService.getPersistentObject(Project.class, DUMMY_PROJECT_1.getId());
             t.commit();
             assertNull(retrieved);
 
@@ -318,7 +318,7 @@ public class ProjectManagementServiceIntegrationTest extends AbstractServiceInte
         tx = HibernateUtil.beginTransaction();
         HibernateUtil.getCurrentSession().clear();
         UsernameHolder.setUser("caarrayuser");
-        Project retrieved = this.projectManagementService.getProject(DUMMY_PROJECT_1.getId());
+        Project retrieved = this.genericDataService.getPersistentObject(Project.class, DUMMY_PROJECT_1.getId());
         assertNotNull(retrieved);
         assertNotNull(retrieved.getExperiment());
         assertEquals(DUMMY_PROJECT_1.getExperiment().getTitle(), retrieved.getExperiment().getTitle());

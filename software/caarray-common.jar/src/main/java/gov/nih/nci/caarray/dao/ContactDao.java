@@ -94,7 +94,7 @@ import java.util.List;
  */
 public interface ContactDao extends CaArrayDao {
     /**
-     * @return all Organizations in system.
+     * @return all Organizations in system that are array providers.
      */
     List<Organization> getAllProviders();
 

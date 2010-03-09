@@ -88,12 +88,14 @@ import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.security.authorization.domainobjects.User;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.struts2.ServletActionContext;
+
 import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.validator.annotations.CustomValidator;
 import com.opensymphony.xwork2.validator.annotations.Validation;
-import javax.servlet.http.HttpServletRequest;
-import org.apache.struts2.ServletActionContext;
 
 /**
  * Base Action class for all actions dealing with Project lifecycle.
@@ -140,7 +142,8 @@ public abstract class AbstractBaseProjectAction extends ActionSupport implements
     public void prepare() {
         Project retrieved = null;
         if (this.project.getId() != null) {
-            retrieved = ServiceLocatorFactory.getProjectManagementService().getProject(this.project.getId());
+            retrieved = ServiceLocatorFactory.getGenericDataService().getPersistentObject(Project.class,
+                    this.project.getId());
         } else if (this.project.getExperiment().getPublicIdentifier() != null) {
             retrieved = ServiceLocatorFactory.getProjectManagementService().getProjectByPublicId(
                     this.project.getExperiment().getPublicIdentifier());

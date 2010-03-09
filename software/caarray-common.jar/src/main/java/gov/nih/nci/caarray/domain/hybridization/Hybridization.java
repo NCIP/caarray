@@ -85,6 +85,7 @@ package gov.nih.nci.caarray.domain.hybridization;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.domain.array.Array;
+import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.DerivedArrayData;
 import gov.nih.nci.caarray.domain.data.HybridizationData;
 import gov.nih.nci.caarray.domain.data.Image;
@@ -128,6 +129,7 @@ import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.IndexColumn;
+import org.hibernate.annotations.Where;
 import org.hibernate.validator.Length;
 import org.hibernate.validator.NotNull;
 
@@ -219,7 +221,8 @@ public class Hybridization extends AbstractExperimentDesignNode implements Prote
      *
      * @return the derivedDatas
      */
-    @ManyToMany(mappedBy = "hybridizations", fetch = FetchType.LAZY)
+    @ManyToMany(mappedBy = "hybridizations", targetEntity = AbstractArrayData.class, fetch = FetchType.LAZY)
+    @Where(clause = "discriminator = '" + DerivedArrayData.DISCRIMINATOR + "'")
     @Cascade({ CascadeType.DELETE, CascadeType.SAVE_UPDATE })
     public Set<DerivedArrayData> getDerivedDataCollection() {
         return this.derivedDataCollection;
@@ -261,7 +264,8 @@ public class Hybridization extends AbstractExperimentDesignNode implements Prote
      * Gets the rawArrayDatas.
      * @return the rawArrayData
      */
-    @ManyToMany(mappedBy = "hybridizations", fetch = FetchType.LAZY)
+    @ManyToMany(mappedBy = "hybridizations", targetEntity = AbstractArrayData.class, fetch = FetchType.LAZY)
+    @Where(clause = "discriminator = '" + RawArrayData.DISCRIMINATOR + "'")
     @Cascade({CascadeType.SAVE_UPDATE, CascadeType.DELETE })
     public Set<RawArrayData> getRawDataCollection() {
         return this.rawDataCollection;
@@ -277,11 +281,29 @@ public class Hybridization extends AbstractExperimentDesignNode implements Prote
     }
 
     /**
-     * Add a new raw array data to this hybridization.
-     * @param rawArrayData the raw array data to add
+     * Add a new array data to this hybridization. This will add the array data
+     * to the appropriate collection, depending on whether it is raw or derived.
+     * @param arrayData the array data to add
      */
-    public void addRawArrayData(RawArrayData rawArrayData) {
-        this.rawDataCollection.add(rawArrayData);
+    public void addArrayData(AbstractArrayData arrayData) {
+        if (arrayData instanceof RawArrayData) {
+            this.rawDataCollection.add((RawArrayData) arrayData);
+        } else {
+            this.derivedDataCollection.add((DerivedArrayData) arrayData);
+        }
+    }
+
+    /**
+     * Remove an array data from this hybridization. This will remove the array data
+     * from the appropriate collection, depending on whether it is raw or derived.
+     * @param arrayData the array data to remove
+     */
+    public void removeArrayData(AbstractArrayData arrayData) {
+        if (arrayData instanceof RawArrayData) {
+            this.rawDataCollection.remove(arrayData);
+        } else {
+            this.derivedDataCollection.remove(arrayData);
+        }
     }
 
     /**

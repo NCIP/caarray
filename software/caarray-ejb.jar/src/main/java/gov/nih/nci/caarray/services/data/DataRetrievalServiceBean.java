@@ -264,7 +264,7 @@ public class DataRetrievalServiceBean implements DataRetrievalService {
     private List<Hybridization> getHybridizations(DataRetrievalRequest request) {
         List<Hybridization> hybridizations = new ArrayList<Hybridization>(request.getHybridizations().size());
         for (Hybridization hybridization : request.getHybridizations()) {
-            hybridizations.add(getDaoFactory().getArrayDao().getHybridization(hybridization.getId()));
+            hybridizations.add(getDaoFactory().getSearchDao().retrieve(Hybridization.class, hybridization.getId()));
         }
         return hybridizations;
     }

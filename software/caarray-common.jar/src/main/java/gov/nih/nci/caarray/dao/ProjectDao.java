@@ -93,8 +93,8 @@ import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.domain.search.ExperimentSearchCriteria;
 import gov.nih.nci.caarray.domain.search.SearchCategory;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
-
 import gov.nih.nci.security.authorization.domainobjects.User;
+
 import java.util.List;
 import java.util.Set;
 

@@ -99,11 +99,12 @@ import javax.persistence.FetchType;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
@@ -129,13 +130,15 @@ public abstract class AbstractArrayData extends AbstractCaArrayEntity {
     private ArrayDataType type;
     private Set<ProtocolApplication> protocolApplications = new HashSet<ProtocolApplication>();
     private DataSet dataSet;
+    private Set<Hybridization> hybridizations = new HashSet<Hybridization>();
 
     /**
      * Gets the dataFile.
      *
      * @return the dataFile
      */
-    @ManyToOne
+    @OneToOne
+    @JoinColumn(name = "data_file", unique = true)
     @NotNull
     @Cascade({CascadeType.SAVE_UPDATE, CascadeType.DELETE })
     @ForeignKey(name = "arraydata_file_fk")
@@ -237,8 +240,36 @@ public abstract class AbstractArrayData extends AbstractCaArrayEntity {
     }
     
     /**
-     * @return the set of hybridizations associated with this array data.
+     * @return the hybridizations
      */
-    @Transient
-    public abstract Set<Hybridization> getHybridizations();
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "arraydata_hybridizations",
+            joinColumns = { @javax.persistence.JoinColumn(name = "arraydata_id") },
+            inverseJoinColumns = { @javax.persistence.JoinColumn(name = "hybridization_id") }
+    )
+    @ForeignKey(name = "arraydata_hybridizations_hybridization_fk",
+            inverseName = "arraydata_hybridizations_arraydata_fk")
+    public Set<Hybridization> getHybridizations() {
+        return hybridizations;
+    }
+
+    /**
+     * Add a new hybridization to the collection of associated hybridizations.
+     * @param hybridization hybridization to add
+     */
+    public void addHybridization(Hybridization hybridization) {
+        hybridizations.add(hybridization);
+    }
+
+    /**
+     * Sets the hybridizations.
+     *
+     * @param hybridizationsVal the hybridizations
+     */
+    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
+    private void setHybridizations(final Set<Hybridization> hybridizationsVal) {
+        this.hybridizations = hybridizationsVal;
+    }
+
 }

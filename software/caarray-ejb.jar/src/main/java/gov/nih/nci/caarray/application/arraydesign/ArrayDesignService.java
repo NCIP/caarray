@@ -145,18 +145,9 @@ public interface ArrayDesignService {
     void importDesignDetails(ArrayDesign arrayDesign);
 
     /**
-     * @return the list of all providers in the system.
+     * @return the list of all Organizations that are array providers in the system.
      */
     List<Organization> getAllProviders();
-
-    /**
-     * Returns the list of Organizations that are a provider for at least
-     * one ArrayDesign in the system.
-     * @return the List&lt;Organization&gt; of Organizations where for each
-     * organization in the list there exists at least one ArrayDesign for which
-     * that Organization is the provider
-     */
-    List<Organization> getArrayDesignProviders();
 
     /**
      * Returns the list of ArrayDesigns with at least one of the given assay types and the provider.  Either the

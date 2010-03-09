@@ -96,7 +96,7 @@ public class CaArrayFileTest {
         file.setFileStatus(FileStatus.IMPORTED);
         assertEquals(FileStatus.IMPORTED, file.getFileStatus());
         assertEquals("IMPORTED", file.getStatus());
-        assertEquals(true, file.isDeletable());
+        assertEquals(true, file.getFileStatus().isDeletable());
 
         file.setFileStatus(FileStatus.UPLOADED);
         assertEquals(FileStatus.UPLOADED, file.getFileStatus());

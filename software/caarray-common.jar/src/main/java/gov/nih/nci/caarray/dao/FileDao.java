@@ -117,4 +117,12 @@ public interface FileDao extends CaArrayDao {
      * @return a list of matching files
      */
     List<CaArrayFile> searchFiles(PageSortParams<CaArrayFile> params, FileSearchCriteria criteria);
+    
+    /**
+     * Find files belonging to given project that can be deleted.
+     *
+     * @param projectId id of the project
+     * @return a list of deletable files in given project
+     */
+    List<CaArrayFile> getDeletableFiles(Long projectId); 
 }

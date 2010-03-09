@@ -94,17 +94,13 @@ import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.ArrayDataType;
 import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
-import gov.nih.nci.caarray.domain.data.DerivedArrayData;
 import gov.nih.nci.caarray.domain.data.DesignElementList;
 import gov.nih.nci.caarray.domain.data.HybridizationData;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
-import gov.nih.nci.caarray.domain.data.RawArrayData;
-import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileCategory;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
-import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.AssayType;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.search.BrowseCategory;
@@ -144,25 +140,6 @@ class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
      */
     public ArrayDesign getArrayDesign(long id) {
         return (ArrayDesign) getCurrentSession().get(ArrayDesign.class, id);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @SuppressWarnings("unchecked")
-    public List<ArrayDesign> getArrayDesigns() {
-        return getCurrentSession().createCriteria(ArrayDesign.class).setResultTransformer(
-                Criteria.DISTINCT_ROOT_ENTITY).list();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @SuppressWarnings("unchecked")
-    public List<Organization> getArrayDesignProviders() {
-        String query = "select distinct ad.provider from " + ArrayDesign.class.getName() + " ad "
-                + " where ad.provider is not null order by ad.provider.name asc";
-        return getCurrentSession().createQuery(query).list();
     }
 
     /**
@@ -223,49 +200,6 @@ class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
     /**
      * {@inheritDoc}
      */
-    public RawArrayData getRawArrayData(CaArrayFile file) {
-        Session session = HibernateUtil.getCurrentSession();
-        session.flush();
-        Query query = session.createQuery("from " + RawArrayData.class.getName()
-                + " arrayData where arrayData.dataFile = :file");
-        query.setEntity("file", file);
-        return (RawArrayData) query.uniqueResult();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public DerivedArrayData getDerivedArrayData(CaArrayFile file) {
-        Session session = HibernateUtil.getCurrentSession();
-        Query query = session.createQuery("from " + DerivedArrayData.class.getName()
-                + " arrayData where arrayData.dataFile = :file");
-        query.setEntity("file", file);
-        return (DerivedArrayData) query.uniqueResult();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public AbstractArrayData getArrayData(long id) {
-        Query q = HibernateUtil.getCurrentSession().createQuery(
-                "from " + AbstractArrayData.class.getName() + " where id = :id");
-        q.setLong("id", id);
-        return (AbstractArrayData) q.uniqueResult();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public Hybridization getHybridization(Long id) {
-        Query q = HibernateUtil.getCurrentSession().createQuery(
-                "from " + Hybridization.class.getName() + " where id = :id");
-        q.setLong("id", id);
-        return (Hybridization) q.uniqueResult();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public ArrayDataType getArrayDataType(ArrayDataTypeDescriptor descriptor) {
         if (descriptor == null) {
             return null;
@@ -281,6 +215,18 @@ class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
         } else {
             throw new IllegalStateException("Duplicate registration of ArrayDataType " + descriptor);
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public AbstractArrayData getArrayData(Long fileId) {
+        Session session = HibernateUtil.getCurrentSession();
+        Query query = session.createQuery("select distinct arrayData from " + AbstractArrayData.class.getName()
+                + " arrayData join arrayData.dataFile f where f.id = :fileId");
+        query.setLong("fileId", fileId);
+        List<AbstractArrayData> results = (List<AbstractArrayData>) query.list();
+        return results.isEmpty() ? null : results.get(0);
     }
 
     /**

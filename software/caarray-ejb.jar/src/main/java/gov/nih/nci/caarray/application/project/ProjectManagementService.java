@@ -115,19 +115,10 @@ import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
  * subsystem.
  */
 public interface ProjectManagementService {
-
     /**
      * The default JNDI name to use to lookup <code>ProjectManagementService</code>.
      */
     String JNDI_NAME = "caarray/ProjectManagementServiceBean/local";
-
-    /**
-     * Returns the project corresponding to the id given.
-     *
-     * @param id the project id
-     * @return the corresponding project, or null if there is no project corresponding to that id
-     */
-    Project getProject(long id);
 
     /**
      * Returns the project with the given public identifier.
@@ -496,4 +487,12 @@ public interface ProjectManagementService {
      * @throws CSException on CSM error
      */
     void changeOwner(Long projectId, String newOwner) throws CSException;
+
+    /**
+     * Find files belonging to given project that can be deleted.
+     *
+     * @param projectId id of the project
+     * @return a list of deletable files in given project
+     */
+    List<CaArrayFile> getDeletableFiles(Long projectId); 
 }

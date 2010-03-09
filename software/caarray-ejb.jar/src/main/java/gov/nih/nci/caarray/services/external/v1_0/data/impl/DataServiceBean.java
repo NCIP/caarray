@@ -305,17 +305,9 @@ public class DataServiceBean extends BaseV1_0ExternalService implements DataServ
 
     private void addArrayDatas(List<AbstractArrayData> arrayDatas, CaArrayFile dataFile,
             List<gov.nih.nci.caarray.domain.data.QuantitationType> quantitationTypes) {
-        if (dataFile.getFileType().isDerivedArrayData()) {
-            AbstractArrayData arrayData = daoFactory.getArrayDao().getDerivedArrayData(dataFile);
-            if (arrayData != null && shouldAddData(arrayDatas, arrayData, quantitationTypes)) {
-                arrayDatas.add(arrayData);
-            }
-        }
-        if (dataFile.getFileType().isRawArrayData()) {
-            AbstractArrayData arrayData = daoFactory.getArrayDao().getRawArrayData(dataFile);
-            if (arrayData != null && shouldAddData(arrayDatas, arrayData, quantitationTypes)) {
-                arrayDatas.add(arrayData);
-            }
+        AbstractArrayData arrayData = daoFactory.getArrayDao().getArrayData(dataFile.getId());
+        if (arrayData != null && shouldAddData(arrayDatas, arrayData, quantitationTypes)) {
+            arrayDatas.add(arrayData);
         }
     }
 

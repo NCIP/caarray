@@ -247,7 +247,7 @@ public class IlluminaGenotypingProcessedMatrixHandler extends AbstractDataFileHa
         if (exp.getArrayDesigns().size() != 1) {
             result.addMessage(Type.ERROR, "Experiment must have exactly one design");
         }
-        ArrayDesign design = AbstractDataSetImporter.findArrayDesignFromExperiment(exp);
+        ArrayDesign design = DataSetImporter.findArrayDesignFromExperiment(exp);
         return design;
     }
 

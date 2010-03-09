@@ -88,9 +88,9 @@ import static org.junit.Assert.fail;
 import gov.nih.nci.caarray.application.AbstractServiceTest;
 import gov.nih.nci.caarray.application.arraydata.ArrayDataService;
 import gov.nih.nci.caarray.application.arraydata.ArrayDataServiceStub;
-import gov.nih.nci.caarray.dao.ArrayDao;
-import gov.nih.nci.caarray.dao.stub.ArrayDaoStub;
+import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
+import gov.nih.nci.caarray.dao.stub.SearchDaoStub;
 import gov.nih.nci.caarray.domain.array.PhysicalProbe;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.DataRetrievalRequest;
@@ -105,6 +105,8 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
+
+import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 
 @SuppressWarnings("deprecation")
 public class DataRetrievalServiceTest extends AbstractServiceTest {
@@ -154,7 +156,7 @@ public class DataRetrievalServiceTest extends AbstractServiceTest {
         dataSet.getDesignElementList().getDesignElements().add(probe1);
         dataSet.getDesignElementList().getDesignElements().add(probe2);
         arrayData.setDataSet(dataSet);
-        hybridization.addRawArrayData(arrayData);
+        hybridization.addArrayData(arrayData);
     }
 
     private void setUpService() {
@@ -199,20 +201,19 @@ public class DataRetrievalServiceTest extends AbstractServiceTest {
 
 
     private class LocalDataFactoryStub extends DaoFactoryStub {
-
         @Override
-        public ArrayDao getArrayDao() {
-            return new ArrayDaoStub() {
-
+        public SearchDao getSearchDao() {
+            return new SearchDaoStub() {
                 @Override
-                public Hybridization getHybridization(Long id) {
-                    if (id == 1L) {
-                        return hybridization1;
-                    } else if (id == 2L) {
-                        return hybridization2;
-                    } else {
-                        throw new IllegalArgumentException();
-                    }
+                public <T extends PersistentObject> T retrieve(Class<T> entityClass, Long entityId) {
+                    if (Hybridization.class.equals(entityClass)) {
+                        if (entityId == 1L) {
+                            return (T) hybridization1;
+                        } else if (entityId == 2L) {
+                            return (T) hybridization2;
+                        }
+                    } 
+                    return super.retrieve(entityClass, entityId);
                 }
             };
         }
@@ -220,7 +221,6 @@ public class DataRetrievalServiceTest extends AbstractServiceTest {
     }
 
     private static class LocalArrayDataServiceStub extends ArrayDataServiceStub {
-
         @Override
         public DataSet getData(AbstractArrayData arrayData, List<QuantitationType> types) {
             return arrayData.getDataSet();

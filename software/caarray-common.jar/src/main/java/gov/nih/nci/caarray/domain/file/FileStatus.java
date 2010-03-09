@@ -82,6 +82,9 @@
  */
 package gov.nih.nci.caarray.domain.file;
 
+import java.util.EnumSet;
+import java.util.Set;
+
 /**
  * Status of a <code>CaArrayFile</code>.
  */
@@ -90,86 +93,94 @@ public enum FileStatus {
     /**
      * Uploaded, but not yet validated.
      */
-    UPLOADED(true, true, true),
+    UPLOADED,
 
     /**
      * In the queue awaiting validation or import.
      */
-    IN_QUEUE(false, false, false),
+    IN_QUEUE,
 
     /**
      * In the process of validating.
      */
-    VALIDATING(false, false, false),
+    VALIDATING,
 
     /**
      * Included non-parsed data format in validation.
      */
-    VALIDATED_NOT_PARSED(true, true, true),
+    VALIDATED_NOT_PARSED,
 
     /**
      * Successfully validated.
      */
-    VALIDATED(true, true, true),
+    VALIDATED,
 
     /**
      * Validation uncovered errors.
      */
-    VALIDATION_ERRORS(true, true, true),
+    VALIDATION_ERRORS,
 
     /**
      * In the process of importing.
      */
-    IMPORTING(false, false, false),
+    IMPORTING,
 
     /**
      * Successfully imported.
      */
-    IMPORTED(true, false, false),
+    IMPORTED,
 
     /**
      * Successfully imported but data not parsed.
      */
-    IMPORTED_NOT_PARSED(true, false, false),
+    IMPORTED_NOT_PARSED,
 
     /**
      * Failed Import.
      */
-    IMPORT_FAILED(true, true, true),
+    IMPORT_FAILED,
 
     /**
      * Arbitrary files associated directly with a project.
      */
-    SUPPLEMENTAL(true, false, false);
+    SUPPLEMENTAL;
 
-    private boolean deletable = true;
-    private boolean validatable = true;
-    private boolean importable = true;
+    /**
+     * The set of FileStatuses in which a file can be deleted.
+     */    
+    public static final Set<FileStatus> DELETABLE_FILE_STATUSES = EnumSet.of(UPLOADED, IMPORTED, IMPORT_FAILED,
+            IMPORTED_NOT_PARSED, VALIDATED, VALIDATED_NOT_PARSED, VALIDATION_ERRORS, SUPPLEMENTAL);
 
-    FileStatus(boolean deletable, boolean validatable, boolean importable) {
-        this.deletable = deletable;
-        this.validatable = validatable;
-        this.importable = importable;
-    }
+    /**
+     * The set of FileStatuses in which a file can be imported.
+     */    
+    public static final Set<FileStatus> IMPORTABLE_FILE_STATUSES = EnumSet.of(UPLOADED, IMPORT_FAILED, VALIDATED,
+            VALIDATED_NOT_PARSED, VALIDATION_ERRORS);
+
+    /**
+     * The set of FileStatuses in which a file can be validated.
+     */    
+    public static final Set<FileStatus> VALIDATABLE_FILE_STATUSES = EnumSet.of(UPLOADED, IMPORT_FAILED, VALIDATED,
+            VALIDATED_NOT_PARSED, VALIDATION_ERRORS);
 
     /**
      * @return the deletable
      */
     public boolean isDeletable() {
-        return this.deletable;
+        return DELETABLE_FILE_STATUSES.contains(this);
     }
 
     /**
      * @return the validatable
      */
     public boolean isValidatable() {
-        return this.validatable;
+        return VALIDATABLE_FILE_STATUSES.contains(this);
     }
 
     /**
      * @return the importable
      */
     public boolean isImportable() {
-        return this.importable;
+        return IMPORTABLE_FILE_STATUSES.contains(this);
     }
 }

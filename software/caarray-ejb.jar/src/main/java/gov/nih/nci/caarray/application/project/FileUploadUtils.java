@@ -201,9 +201,7 @@ public final class FileUploadUtils {
                 TemporaryFileCacheLocator.getTemporaryFileCache().closeFile(caArrayFile);                
             }
 
-            if (caArrayFile.isDeletable()) {
-                getFileAccessService().remove(caArrayFile);
-            }                
+            getFileAccessService().remove(caArrayFile);
         }
 
         return result;

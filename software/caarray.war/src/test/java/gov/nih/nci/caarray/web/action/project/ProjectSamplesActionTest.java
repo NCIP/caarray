@@ -249,7 +249,7 @@ public class ProjectSamplesActionTest extends AbstractDownloadTest {
         Hybridization h = new Hybridization();
         le.getHybridizations().add(h);
         RawArrayData raw = new RawArrayData();
-        h.addRawArrayData(raw);
+        h.addArrayData(raw);
         DerivedArrayData derived = new DerivedArrayData();
         h.getDerivedDataCollection().add(derived);
         CaArrayFile rawFile = new CaArrayFile();

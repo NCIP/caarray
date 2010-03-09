@@ -113,6 +113,7 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 
 import org.apache.log4j.Logger;
+import org.hibernate.criterion.Order;
 import org.jboss.annotation.ejb.TransactionTimeout;
 
 /**
@@ -122,7 +123,7 @@ import org.jboss.annotation.ejb.TransactionTimeout;
 @Stateless
 @TransactionAttribute(TransactionAttributeType.SUPPORTS)
 @TransactionTimeout(ArrayDesignServiceBean.TIMEOUT_SECONDS)
-@SuppressWarnings("PMD.CyclomaticComplexity")
+@SuppressWarnings({"PMD.CyclomaticComplexity", "PMD.TooManyMethods" })
 public class ArrayDesignServiceBean implements ArrayDesignService {
 
     private static final Logger LOG = Logger.getLogger(ArrayDesignServiceBean.class);
@@ -372,16 +373,6 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
     /**
      * {@inheritDoc}
      */
-    public List<Organization> getArrayDesignProviders() {
-        LogUtil.logSubsystemEntry(LOG);
-        List<Organization> orgs = getArrayDao().getArrayDesignProviders();
-        LogUtil.logSubsystemExit(LOG);
-        return orgs;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public List<ArrayDesign> getImportedArrayDesigns(Organization provider, Set<AssayType> assayTypes) {
         LogUtil.logSubsystemEntry(LOG);
         List<ArrayDesign> designs = getArrayDao().getArrayDesigns(provider, assayTypes, true);
@@ -408,7 +399,7 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
      */
     public List<ArrayDesign> getArrayDesigns() {
         LogUtil.logSubsystemEntry(LOG);
-        List<ArrayDesign> designs = getArrayDao().getArrayDesigns();
+        List<ArrayDesign> designs = getDaoFactory().getSearchDao().retrieveAll(ArrayDesign.class, Order.asc("name"));
         LogUtil.logSubsystemExit(LOG);
         return designs;
     }

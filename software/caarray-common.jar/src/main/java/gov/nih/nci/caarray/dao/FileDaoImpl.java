@@ -83,8 +83,10 @@
 package gov.nih.nci.caarray.dao;
 
 import gov.nih.nci.caarray.domain.BlobHolder;
+import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileCategory;
+import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.project.AbstractExperimentDesignNode;
 import gov.nih.nci.caarray.domain.search.FileSearchCriteria;
@@ -262,5 +264,21 @@ class FileDaoImpl extends AbstractCaArrayDaoImpl implements FileDao {
         c.addOrder(toOrder(params));
         
         return c.list();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("unchecked")
+    public List<CaArrayFile> getDeletableFiles(Long projectId) {
+        String hql = "from " + CaArrayFile.class.getName()
+                + " f where f.project.id = :projectId and f.status in (:deletableStatuses) "
+                + " and (f.status <> :importedStatus or not exists (select h from " + AbstractArrayData.class.getName()
+                + " ad join ad.hybridizations h where ad.dataFile = f order by f.name))";
+        Query q = HibernateUtil.getCurrentSession().createQuery(hql);
+        q.setLong("projectId", projectId);
+        q.setParameterList("deletableStatuses", CaArrayUtils.namesForEnums(FileStatus.DELETABLE_FILE_STATUSES));
+        q.setString("importedStatus", FileStatus.IMPORTED.name());
+        return q.list();
     }
 }

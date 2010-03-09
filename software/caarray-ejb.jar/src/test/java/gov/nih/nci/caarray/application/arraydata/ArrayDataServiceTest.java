@@ -226,6 +226,8 @@ public class ArrayDataServiceTest extends AbstractServiceTest {
     FileAccessServiceStub fileAccessServiceStub = new FileAccessServiceStub();
     LocalDaoFactoryStub daoFactoryStub = new LocalDaoFactoryStub();
     LocalSearchDaoStub searchDaoStub = new LocalSearchDaoStub();
+    
+    private long fileIdCounter = 1;
 
     @Before
     public void setUp() throws Exception {
@@ -357,13 +359,13 @@ public class ArrayDataServiceTest extends AbstractServiceTest {
         RawArrayData celData = new RawArrayData();
         Hybridization hybridization = new Hybridization();
         celData.addHybridization(hybridization);
-        hybridization.addRawArrayData(celData);
+        hybridization.addArrayData(celData);
         celData.setDataFile(celFile);
         assertNull(celData.getType());
         this.daoFactoryStub.getArrayDao().save(celData);
         this.arrayDataService.importData(celFile, true, DEFAULT_IMPORT_OPTIONS);
         assertNotNull(celData.getType());
-        assertEquals(celData, this.daoFactoryStub.getArrayDao().getRawArrayData(celFile));
+        assertEquals(celData, this.daoFactoryStub.getArrayDao().getArrayData(celFile.getId()));
         assertEquals(hybridization, celData.getHybridizations().iterator().next());
     }
 
@@ -416,7 +418,8 @@ public class ArrayDataServiceTest extends AbstractServiceTest {
     private void testImportGenepixFile(File gprFile, QuantitationTypeDescriptor[] expectedTypes, int expectedNumberOfSamples) throws InvalidDataFileException {
         CaArrayFile gprCaArrayFile = getGprCaArrayFile(gprFile, GAL_DERISI_LSID_OBJECT_ID);
         this.arrayDataService.importData(gprCaArrayFile, true, DEFAULT_IMPORT_OPTIONS);
-        DerivedArrayData data = this.daoFactoryStub.getArrayDao().getDerivedArrayData(gprCaArrayFile);
+        DerivedArrayData data = (DerivedArrayData) this.daoFactoryStub.getArrayDao().getArrayData(
+                gprCaArrayFile.getId());
         assertNotNull(data);
         checkAnnotation(gprCaArrayFile, expectedNumberOfSamples);
         checkColumnTypes(data.getDataSet(), expectedTypes);
@@ -653,7 +656,7 @@ public class ArrayDataServiceTest extends AbstractServiceTest {
     private void testGenepixData() throws InvalidDataFileException {
         CaArrayFile gprFile = getGprCaArrayFile(GenepixArrayDataFiles.GPR_5_0_1, GAL_DERISI_LSID_OBJECT_ID);
         this.arrayDataService.importData(gprFile, true, DEFAULT_IMPORT_OPTIONS);
-        DerivedArrayData gprData = this.daoFactoryStub.getArrayDao().getDerivedArrayData(gprFile);
+        DerivedArrayData gprData = (DerivedArrayData) this.daoFactoryStub.getArrayDao().getArrayData(gprFile.getId());
         DataSet dataSet = this.arrayDataService.getData(gprData);
         assertNotNull(dataSet.getDesignElementList());
         assertEquals(1, dataSet.getHybridizationDataList().size());
@@ -675,7 +678,8 @@ public class ArrayDataServiceTest extends AbstractServiceTest {
     private void testIlluminaDataSmall() throws InvalidDataFileException {
         CaArrayFile illuminaFile = getIlluminaCaArrayFile(IlluminaArrayDataFiles.HUMAN_WG6_SMALL, ILLUMINA_HUMAN_WG_6_LSID_OBJECT_ID);
         this.arrayDataService.importData(illuminaFile, true, DEFAULT_IMPORT_OPTIONS);
-        DerivedArrayData illuminaData = this.daoFactoryStub.getArrayDao().getDerivedArrayData(illuminaFile);
+        DerivedArrayData illuminaData = (DerivedArrayData) this.daoFactoryStub.getArrayDao().getArrayData(
+                illuminaFile.getId());
         DataSet dataSet = this.arrayDataService.getData(illuminaData);
         assertNotNull(dataSet.getDesignElementList());
         assertEquals(19, dataSet.getHybridizationDataList().size());
@@ -693,7 +697,8 @@ public class ArrayDataServiceTest extends AbstractServiceTest {
     private void testIlluminaDataFull() throws InvalidDataFileException {
         CaArrayFile illuminaFile = getIlluminaCaArrayFile(IlluminaArrayDataFiles.HUMAN_WG6, ILLUMINA_HUMAN_WG_6_LSID_OBJECT_ID);
         this.arrayDataService.importData(illuminaFile, true, DEFAULT_IMPORT_OPTIONS);
-        DerivedArrayData illuminaData = this.daoFactoryStub.getArrayDao().getDerivedArrayData(illuminaFile);
+        DerivedArrayData illuminaData = (DerivedArrayData) this.daoFactoryStub.getArrayDao().getArrayData(
+                illuminaFile.getId());
         assertEquals(19, illuminaData.getHybridizations().size());
         DataSet dataSet = this.arrayDataService.getData(illuminaData);
         assertNotNull(dataSet.getDesignElementList());
@@ -822,7 +827,7 @@ public class ArrayDataServiceTest extends AbstractServiceTest {
         celData.setDataFile(getCelCaArrayFile(cel, getCdfObjectId(cdf)));
         celData.addHybridization(hybridization);
         this.daoFactoryStub.addData(celData);
-        hybridization.addRawArrayData(celData);
+        hybridization.addArrayData(celData);
         return celData;
     }
 
@@ -894,6 +899,7 @@ public class ArrayDataServiceTest extends AbstractServiceTest {
 
     public CaArrayFile getDataCaArrayFile(File file, FileType type) {
         CaArrayFile caArrayFile = this.fileAccessServiceStub.add(file);
+        caArrayFile.setId(fileIdCounter++);
         caArrayFile.setFileType(type);
         caArrayFile.setProject(new Project());
         caArrayFile.getProject().setExperiment(new Experiment());
@@ -929,7 +935,7 @@ public class ArrayDataServiceTest extends AbstractServiceTest {
         private final Map<QuantitationTypeDescriptor, QuantitationType> quantitationTypeMap =
             new HashMap<QuantitationTypeDescriptor, QuantitationType>();
 
-        private final Map<CaArrayFile, AbstractArrayData> fileDataMap = new HashMap<CaArrayFile, AbstractArrayData>();
+        private final Map<Long, AbstractArrayData> fileDataMap = new HashMap<Long, AbstractArrayData>();
 
         private Map<String, ArrayDesign> arrayDesignMap = new HashMap<String, ArrayDesign>();
 
@@ -1037,13 +1043,8 @@ public class ArrayDataServiceTest extends AbstractServiceTest {
                 }
 
                 @Override
-                public RawArrayData getRawArrayData(CaArrayFile file) {
-                    return (RawArrayData) LocalDaoFactoryStub.this.fileDataMap.get(file);
-                }
-
-                @Override
-                public DerivedArrayData getDerivedArrayData(CaArrayFile file) {
-                    return (DerivedArrayData) LocalDaoFactoryStub.this.fileDataMap.get(file);
+                public AbstractArrayData getArrayData(Long fileId) {
+                    return LocalDaoFactoryStub.this.fileDataMap.get(fileId);
                 }
 
                 @Override
@@ -1064,7 +1065,7 @@ public class ArrayDataServiceTest extends AbstractServiceTest {
         }
 
         void addData(AbstractArrayData arrayData) {
-            this.fileDataMap.put(arrayData.getDataFile(), arrayData);
+            this.fileDataMap.put(arrayData.getDataFile().getId(), arrayData);
         }
     }
 

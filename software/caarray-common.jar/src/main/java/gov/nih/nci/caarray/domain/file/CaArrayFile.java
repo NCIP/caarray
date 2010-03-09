@@ -86,7 +86,6 @@ package gov.nih.nci.caarray.domain.file;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.domain.MultiPartBlob;
-import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.security.Protectable;
 import gov.nih.nci.caarray.security.ProtectableDescendent;
@@ -443,33 +442,6 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
     @Transient
     public File getFileToDelete() {
         return this.fileToDelete;
-    }
-
-    /**
-     * Check whether file is associated with any hyb.
-     * @return boolean
-     */
-    @Transient
-    private boolean isAssocToHyb() {
-        boolean associated = false;
-
-        if (getProject() != null && getFileStatus().equals(FileStatus.IMPORTED)) {
-            for (Hybridization hyb : getProject().getExperiment().getHybridizations()) {
-                if (hyb.getAllDataFiles().contains(this)) {
-                    associated = true;
-                }
-            }
-        }
-        return associated;
-    }
-
-    /**
-     * Check whether this file is deletable.
-     * @return boolean
-     */
-    @Transient
-    public boolean isDeletable() {
-        return (this.getFileStatus().isDeletable() && !this.isAssocToHyb());
     }
 
     /**

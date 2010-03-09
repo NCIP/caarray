@@ -110,13 +110,13 @@ import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
-
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -133,13 +133,13 @@ import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.validator.annotations.ExpressionValidator;
 import com.opensymphony.xwork2.validator.annotations.Validation;
 import com.opensymphony.xwork2.validator.annotations.Validations;
-import java.util.Iterator;
 
 /**
  * @author Scott Miller
  *
  */
-@SuppressWarnings({"unchecked", "PMD.ExcessiveClassLength", "PMD.CyclomaticComplexity", "PMD.TooManyFields" })
+@SuppressWarnings({"unchecked", "PMD.ExcessiveClassLength", "PMD.CyclomaticComplexity", "PMD.TooManyFields",
+        "PMD.TooManyMethods" })
 @Validation
 @Validations(expressions = @ExpressionValidator(message = "Files must be selected for this operation.",
         expression = "selectedFiles.size() > 0"))
@@ -215,6 +215,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
     private String newAnnotationName;
     private EnumMap<FileStatus, Integer> fileStatusCountMap = new EnumMap<FileStatus, Integer>(FileStatus.class);
     private boolean clearCheckboxes = true;
+    private final Map<CaArrayFile, Boolean> deletableFiles = new HashMap<CaArrayFile, Boolean>();
 
     private String prepListUnimportedPage() {
         if (clearCheckboxes) {
@@ -224,6 +225,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
         setFilesMatchingTypeAndStatus(getProject().getUnImportedFiles());
         setFileTypeNamesAndStatuses(getProject().getUnImportedFiles());
         setFileStatusCountMap(computeFileStatusCounts());
+        findDeletableFiles();
         return ACTION_UNIMPORTED;
     }
 
@@ -239,7 +241,17 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
             }
         }
         setFileTypeNamesAndStatuses(getProject().getImportedFiles());
+        findDeletableFiles();
         return ACTION_IMPORTED;
+    }
+    
+    private void findDeletableFiles() {
+        List<CaArrayFile> deletables = ServiceLocatorFactory.getProjectManagementService().getDeletableFiles(
+                getProject().getId());
+        this.deletableFiles.clear();
+        for (CaArrayFile f : getFiles()) {
+            this.deletableFiles.put(f, deletables.contains(f));
+        }
     }
 
     /**
@@ -315,6 +327,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
     private String prepListSupplementalPage() {
         setListAction(ACTION_SUPPLEMENTAL);
         setFiles(getProject().getSupplementalFiles());
+        findDeletableFiles();
         return ACTION_SUPPLEMENTAL;
     }
 
@@ -493,8 +506,8 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
         int deletedFiles = 0;
         int skippedFiles = 0;
         for (CaArrayFile caArrayFile : getSelectedFiles()) {
-            if (caArrayFile.isDeletable()) {
-                ServiceLocatorFactory.getFileAccessService().remove(caArrayFile);
+            boolean removed = ServiceLocatorFactory.getFileAccessService().remove(caArrayFile);
+            if (removed) {                
                 deletedFiles++;
             } else {
                 skippedFiles++;
@@ -1449,4 +1462,10 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
         this.fileStatusCountMap = fileStatusCountMap;
     }
 
+    /**
+     * @return the deletableFiles
+     */
+    public Map<CaArrayFile, Boolean> getDeletableFiles() {
+        return deletableFiles;
+    }
 }

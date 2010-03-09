@@ -90,13 +90,9 @@ import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.ArrayDataType;
 import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
-import gov.nih.nci.caarray.domain.data.DerivedArrayData;
 import gov.nih.nci.caarray.domain.data.DesignElementList;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
-import gov.nih.nci.caarray.domain.data.RawArrayData;
-import gov.nih.nci.caarray.domain.file.CaArrayFile;
-import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.AssayType;
 import gov.nih.nci.caarray.domain.search.QuantitationTypeSearchCriteria;
 
@@ -121,20 +117,6 @@ public class ArrayDaoStub extends AbstractDaoStub implements ArrayDao {
     /**
      * {@inheritDoc}
      */
-    public List<ArrayDesign> getArrayDesigns() {
-        return new ArrayList<ArrayDesign>();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public List<Organization> getArrayDesignProviders() {
-        return new ArrayList<Organization>();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public List<ArrayDesign> getArrayDesigns(Organization provider, Set<AssayType> assayTypes, boolean importedOnly) {
         return new ArrayList<ArrayDesign>();
     }
@@ -145,39 +127,18 @@ public class ArrayDaoStub extends AbstractDaoStub implements ArrayDao {
     public ArrayDataType getArrayDataType(ArrayDataTypeDescriptor descriptor) {
         return null;
     }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public AbstractArrayData getArrayData(Long fileId) {
+        return null;
+    }
 
     /**
      * {@inheritDoc}
      */
     public QuantitationType getQuantitationType(QuantitationTypeDescriptor descriptor) {
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public AbstractArrayData getArrayData(long id) {
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public Hybridization getHybridization(Long id) {
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public DerivedArrayData getDerivedArrayData(CaArrayFile file) {
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public RawArrayData getRawArrayData(CaArrayFile file) {
         return null;
     }
 

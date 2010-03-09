@@ -83,20 +83,18 @@
 package gov.nih.nci.caarray.application.arraydata;
 
 import gov.nih.nci.caarray.application.ServiceLocatorFactory;
-import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
 import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.array.Array;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
-import gov.nih.nci.caarray.domain.data.ArrayDataType;
-import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
 import gov.nih.nci.caarray.domain.data.DataSet;
+import gov.nih.nci.caarray.domain.data.DerivedArrayData;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
+import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
-import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.AbstractExperimentDesignNode;
 import gov.nih.nci.caarray.domain.project.Experiment;
@@ -119,53 +117,58 @@ import org.apache.log4j.Logger;
 /**
  * Handles import of array data by creating the associated <code>DataSet</code> and <code>AbstractDataColumn</code>
  * instances.
- * @param <ARRAYDATA> the class of the AbstractArrayData subclass that this importer instance handles
  */
-@SuppressWarnings("PMD.CyclomaticComplexity")
-abstract class AbstractDataSetImporter<ARRAYDATA extends AbstractArrayData> {
-    private static final Logger LOG = Logger.getLogger(AbstractDataSetImporter.class);
+@SuppressWarnings({"PMD.CyclomaticComplexity", "PMD.TooManyMethods" })
+class DataSetImporter {
+    private static final Logger LOG = Logger.getLogger(DataSetImporter.class);
 
     private final CaArrayDaoFactory daoFactory;
     private AbstractDataFileHandler dataFileHandler;
     private final CaArrayFile caArrayFile;
-    private final Class<ARRAYDATA> arrayDataClass;
-    private ARRAYDATA arrayData;
+    private AbstractArrayData arrayData;
     private final DataImportOptions dataImportOptions;
 
-    AbstractDataSetImporter(CaArrayFile caArrayFile, CaArrayDaoFactory daoFactory, Class<ARRAYDATA> arrayDataClass,
+    DataSetImporter(CaArrayFile caArrayFile, CaArrayDaoFactory daoFactory,
             DataImportOptions dataImportOptions) {
+        if (caArrayFile == null) {
+            throw new IllegalArgumentException("arrayData was null");
+        }
+        if (!caArrayFile.getFileType().isRawArrayData() && !caArrayFile.getFileType().isDerivedArrayData()) {
+            throw new IllegalArgumentException("The file " + caArrayFile.getName()
+                    + " does not contain array data. The file type is " + caArrayFile.getFileType().name());
+        }
         this.caArrayFile = caArrayFile;
         this.daoFactory = daoFactory;
-        this.arrayDataClass = arrayDataClass;
         this.dataImportOptions = dataImportOptions;
     }
 
     AbstractArrayData importData(boolean createAnnnotation) {
         lookupOrCreateArrayData(createAnnnotation);
         setArrayDataType();
-        getArrayData().setDataSet(new DataSet());
+        arrayData.setDataSet(new DataSet());
         addHybridizationDatas();
         addColumns();
-        getArrayData().getDataFile().setFileStatus(getDataFileHandler().getImportedStatus());
-        if (StringUtils.isBlank(getArrayData().getName())) {
-            getArrayData().setName(getCaArrayFile().getName());
+        arrayData.getDataFile().setFileStatus(getDataFileHandler().getImportedStatus());
+        if (StringUtils.isBlank(arrayData.getName())) {
+            arrayData.setName(getCaArrayFile().getName());
         }
-        return getArrayData();
+        return arrayData;
     }
 
     private void setArrayDataType() {
-        if (getArrayData().getType() == null) {
-            getArrayData().setType(getArrayDataType(getDataFileHandler().getArrayDataTypeDescriptor(getFile())));
-            getArrayDao().save(getArrayData());
+        if (arrayData.getType() == null) {
+            arrayData.setType(getArrayDao()
+                    .getArrayDataType(getDataFileHandler().getArrayDataTypeDescriptor(getFile())));
+            getArrayDao().save(arrayData);
         }
     }
 
     private void lookupOrCreateArrayData(boolean createAnnnotation) {
-        lookupArrayData();
-        if (getArrayData() == null) {
+        arrayData = getArrayDao().getArrayData(this.caArrayFile.getId());
+        if (arrayData == null) {
             createArrayData(createAnnnotation);
         } else {
-            for (Hybridization h : getArrayData().getHybridizations()) {
+            for (Hybridization h : arrayData.getHybridizations()) {
                 ensureArrayDesignSetForHyb(h);
             }
         }
@@ -185,18 +188,10 @@ abstract class AbstractDataSetImporter<ARRAYDATA extends AbstractArrayData> {
         }
     }
 
-    abstract void lookupArrayData();
-
     @SuppressWarnings("PMD.CyclomaticComplexity")
     void createArrayData(boolean createAnnnotation) {
-        try {
-            arrayData = arrayDataClass.newInstance();
-        } catch (InstantiationException e) {
-            throw new IllegalStateException("Could not instantiate array data class", e);
-        } catch (IllegalAccessException e) {
-            throw new IllegalStateException("Could not instantiate array data class", e);
-        }
-        arrayData.setDataFile(getCaArrayFile());
+        arrayData = caArrayFile.getFileType().isRawArrayData() ? new RawArrayData() : new DerivedArrayData();
+        arrayData.setDataFile(caArrayFile);
         File dataFile = getFile();
 
         List<Hybridization> hybs = null;
@@ -224,12 +219,20 @@ abstract class AbstractDataSetImporter<ARRAYDATA extends AbstractArrayData> {
         for (Hybridization hybridization : hybs) {
             associateToHybridization(hybridization);
         }
+        
         getArrayDao().save(arrayData);
     }
 
-    abstract void associateToHybridization(Hybridization hyb);
+    private void associateToHybridization(Hybridization hyb) {
+        arrayData.addHybridization(hyb);
+        hyb.addArrayData(arrayData);        
+    }
 
-    abstract void addHybridizationDatas();
+    private void addHybridizationDatas() {
+        for (Hybridization hybridization : arrayData.getHybridizations()) {
+            getDataSet().addHybridizationData(hybridization);
+        }
+    }
 
     private void addColumns() {
         List<QuantitationType> quantitationTypes = getQuantitationTypes();
@@ -239,21 +242,17 @@ abstract class AbstractDataSetImporter<ARRAYDATA extends AbstractArrayData> {
     }
 
     final DataSet getDataSet() {
-        return getArrayData().getDataSet();
-    }
-
-    final QuantitationType getQuantitationType(QuantitationTypeDescriptor descriptor) {
-        return getArrayDao().getQuantitationType(descriptor);
+        return arrayData.getDataSet();
     }
 
     private List<QuantitationType> getQuantitationTypes() {
         List<QuantitationType> quantitationTypes = new ArrayList<QuantitationType>();
         for (QuantitationTypeDescriptor descriptor : getDataFileHandler().getQuantitationTypeDescriptors(getFile())) {
-            QuantitationType quantitationType = getQuantitationType(descriptor);
+            QuantitationType quantitationType = getArrayDao().getQuantitationType(descriptor);
             if (quantitationType == null) {
                 LOG.info("Reloading QuantitationTypes.  Descriptor was: " + descriptor);
                 new TypeRegistrationManager(getArrayDao()).registerNewTypes();
-                quantitationType = getQuantitationType(descriptor);
+                quantitationType = getArrayDao().getQuantitationType(descriptor);
             }
             quantitationTypes.add(quantitationType);
         }
@@ -280,31 +279,11 @@ abstract class AbstractDataSetImporter<ARRAYDATA extends AbstractArrayData> {
         return getDaoFactory().getArrayDao();
     }
 
-    static AbstractDataSetImporter<? extends AbstractArrayData> create(CaArrayFile caArrayFile,
-            CaArrayDaoFactory daoFactory, DataImportOptions dataImportOptions) {
-        if (caArrayFile == null) {
-            throw new IllegalArgumentException("arrayData was null");
-        }
-        FileType fileType = caArrayFile.getFileType();
-        if (fileType.isRawArrayData()) {
-            return new RawArrayDataImporter(caArrayFile, daoFactory, dataImportOptions);
-        } else if (fileType.isDerivedArrayData()) {
-            return new DerivedArrayDataImporter(caArrayFile, daoFactory, dataImportOptions);
-        } else {
-            throw new IllegalArgumentException("The file " + caArrayFile.getName()
-                    + " does not contain array data. The file type is " + caArrayFile.getFileType().name());
-        }
-    }
-
     AbstractDataFileHandler getDataFileHandler() {
         if (dataFileHandler == null) {
             dataFileHandler = ArrayDataHandlerFactory.getInstance().getHandler(getCaArrayFile().getFileType());
         }
         return dataFileHandler;
-    }
-
-    ArrayDataType getArrayDataType(ArrayDataTypeDescriptor descriptor) {
-        return getArrayDao().getArrayDataType(descriptor);
     }
 
     private Hybridization lookupHybridization(String hybridizationName) {
@@ -326,7 +305,7 @@ abstract class AbstractDataSetImporter<ARRAYDATA extends AbstractArrayData> {
     }
 
     private ArrayDesign getArrayDesignFromFileOrExperiment() {
-        ArrayDesign ad = getDataFileHandler().getArrayDesign(getArrayDesignService(), getFile());
+        ArrayDesign ad = getDataFileHandler().getArrayDesign(ServiceLocatorFactory.getArrayDesignService(), getFile());
         if (ad == null) {
             ad = findArrayDesignFromExperiment(getExperiment());
         }
@@ -464,23 +443,5 @@ abstract class AbstractDataSetImporter<ARRAYDATA extends AbstractArrayData> {
             AbstractBioMaterial nextNode = createAnnotationChain(hybridization, nextNodeType, newAnnotationName);
             target.addDirectSuccessor(nextNode);
         }
-    }
-
-    private ArrayDesignService getArrayDesignService() {
-        return (ArrayDesignService) ServiceLocatorFactory.getLocator().lookup(ArrayDesignService.JNDI_NAME);
-    }
-
-    /**
-     * @param arrayData the arrayData to set
-     */
-    protected void setArrayData(ARRAYDATA arrayData) {
-        this.arrayData = arrayData;
-    }
-
-    /**
-     * @return
-     */
-    protected ARRAYDATA getArrayData() {
-        return this.arrayData;
     }
 }

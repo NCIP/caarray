@@ -88,7 +88,6 @@ import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.domain.contact.Person;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
-import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.permissions.AccessProfile;
 import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
 import gov.nih.nci.caarray.domain.permissions.SecurityLevel;
@@ -122,8 +121,6 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.CharSetUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.CompareToBuilder;
@@ -135,6 +132,7 @@ import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.MapKeyManyToMany;
 import org.hibernate.annotations.Sort;
 import org.hibernate.annotations.SortType;
+import org.hibernate.annotations.Where;
 import org.hibernate.validator.NotNull;
 import org.hibernate.validator.Valid;
 
@@ -154,6 +152,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
     private Experiment experiment = new Experiment();
     private SortedSet<CaArrayFile> files = new TreeSet<CaArrayFile>();
     private SortedSet<CaArrayFile> importedFiles = new TreeSet<CaArrayFile>();
+    private SortedSet<CaArrayFile> importingFiles = new TreeSet<CaArrayFile>();
     private SortedSet<CaArrayFile> supplementalFiles = new TreeSet<CaArrayFile>();
     private SortedSet<CaArrayFile> unImportedFiles = new TreeSet<CaArrayFile>();
     private AccessProfile publicProfile = new AccessProfile(SecurityLevel.NO_VISIBILITY);
@@ -195,12 +194,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
      */
     @Transient
     public boolean isImportingData() {
-        return CollectionUtils.exists(getFiles(), new Predicate() {
-            public boolean evaluate(Object o) {
-                CaArrayFile file = (CaArrayFile) o;
-                return file.getFileStatus().equals(FileStatus.IMPORTING);
-            }
-        });
+        return !getImportingFiles().isEmpty();
     }
 
     /**
@@ -228,7 +222,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
     }
 
     /**
-     * Gets the files.
+     * Gets all the files.
      *
      * @return the files
      */
@@ -261,10 +255,43 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
      */
     @OneToMany(mappedBy = "project", fetch = FetchType.LAZY)
     @Sort(type = SortType.NATURAL)
-    @Filter(name = Experiment.SECURITY_FILTER_NAME, 
-            condition = "(status = 'IMPORTED' or status = 'IMPORTED_NOT_PARSED') and " + Experiment.FILES_FILTER)
+    @Where(clause = "(status = 'IMPORTED' or status = 'IMPORTED_NOT_PARSED')")
+    @Filter(name = Experiment.SECURITY_FILTER_NAME, condition = Experiment.FILES_FILTER)
     private SortedSet<CaArrayFile> getImportedFileSet() {
         return this.importedFiles;
+    }
+
+    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
+    private void setImportedFileSet(final SortedSet<CaArrayFile> filesVal) {
+        this.importedFiles = filesVal;
+    }
+
+    /**
+     * Get the files.
+     *
+     * @return the files.
+     */
+    @Transient
+    public SortedSet<CaArrayFile> getImportingFiles() {
+        return Collections.unmodifiableSortedSet(getImportingFileSet());
+    }
+
+    /**
+     * Gets the files.
+     *
+     * @return the files
+     */
+    @OneToMany(mappedBy = "project", fetch = FetchType.LAZY)
+    @Sort(type = SortType.NATURAL)
+    @Where(clause = "status = 'IMPORTING'")
+    @Filter(name = Experiment.SECURITY_FILTER_NAME, condition = Experiment.FILES_FILTER)
+    private SortedSet<CaArrayFile> getImportingFileSet() {
+        return this.importingFiles;
+    }
+
+    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
+    private void setImportingFileSet(final SortedSet<CaArrayFile> filesVal) {
+        this.importingFiles = filesVal;
     }
 
     /**
@@ -295,11 +322,6 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
         this.supplementalFiles = filesVal;
     }
 
-    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
-    private void setImportedFileSet(final SortedSet<CaArrayFile> filesVal) {
-        this.importedFiles = filesVal;
-    }
-
     /**
      * Get the files.
      *
@@ -317,9 +339,8 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
      */
     @OneToMany(mappedBy = "project", fetch = FetchType.LAZY)
     @Sort(type = SortType.NATURAL)
-    @Filter(name = Experiment.SECURITY_FILTER_NAME, 
-            condition = "status != 'IMPORTED' and status != 'IMPORTED_NOT_PARSED' and status != 'SUPPLEMENTAL' and " 
-                + Experiment.FILES_FILTER)
+    @Where(clause = "status != 'IMPORTED' and status != 'IMPORTED_NOT_PARSED' and status != 'SUPPLEMENTAL'")
+    @Filter(name = Experiment.SECURITY_FILTER_NAME, condition = Experiment.FILES_FILTER)
     private SortedSet<CaArrayFile> getUnImportedFileSet() {
         return this.unImportedFiles;
     }

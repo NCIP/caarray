@@ -85,8 +85,6 @@ package gov.nih.nci.caarray.application.fileaccess;
 import gov.nih.nci.caarray.application.ExceptionLoggingInterceptor;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
-import gov.nih.nci.caarray.domain.data.DerivedArrayData;
-import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileExtension;
 import gov.nih.nci.caarray.domain.file.FileStatus;
@@ -181,35 +179,30 @@ public class FileAccessServiceBean implements FileAccessService {
     /**
      * {@inheritDoc}
      */
-    public void remove(CaArrayFile caArrayFile) {
+    public boolean remove(CaArrayFile caArrayFile) {
         LogUtil.logSubsystemEntry(LOG, caArrayFile);
-        // special condition must be addressed if this file has import status
-        // if imported the file must not be associated with a hyb
-        if (!caArrayFile.isDeletable()) {
-            throw new IllegalArgumentException("Illegal attempt to delete " + caArrayFile.getName()
-                    + ", status is " + caArrayFile.getFileStatus());
+
+        AbstractArrayData data = this.daoFactory.getArrayDao().getArrayData(caArrayFile.getId());
+        if (caArrayFile.getProject() != null
+                && !this.daoFactory.getFileDao().getDeletableFiles(caArrayFile.getProject().getId()).contains(
+                        caArrayFile)) {
+            return false;
         }
 
+        if (data != null) {
+            for (Hybridization h : data.getHybridizations()) {
+                h.removeArrayData(data);
+            }
+            this.daoFactory.getArrayDao().remove(data);
+        }
+        
         caArrayFile.getProject().getFiles().remove(caArrayFile);
-
-        AbstractArrayData data = this.daoFactory.getArrayDao().getRawArrayData(caArrayFile);
-        if (data != null) {
-            for (Hybridization h : data.getHybridizations()) {
-                h.getRawDataCollection().remove((RawArrayData) data);
-            }
-            this.daoFactory.getArrayDao().remove(data);
-        }
-        data = this.daoFactory.getArrayDao().getDerivedArrayData(caArrayFile);
-        if (data != null) {
-            for (Hybridization h : data.getHybridizations()) {
-                h.getDerivedDataCollection().remove((DerivedArrayData) data);
-            }
-            this.daoFactory.getArrayDao().remove(data);
-        }
         this.daoFactory.getFileDao().remove(caArrayFile);
-        LogUtil.logSubsystemExit(LOG);
-    }
 
+        LogUtil.logSubsystemExit(LOG);
+        return true;
+    }
+    
     /**
      * {@inheritDoc}
      */

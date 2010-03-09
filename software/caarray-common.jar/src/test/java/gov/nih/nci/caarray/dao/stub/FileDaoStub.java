@@ -124,4 +124,10 @@ public class FileDaoStub extends AbstractDaoStub implements FileDao {
         return Collections.emptyList();
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    public List<CaArrayFile> getDeletableFiles(Long projectId) {
+        return Collections.emptyList();
+    }
 }
