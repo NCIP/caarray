@@ -361,23 +361,31 @@ public class IlluminaSampleProbeProfileHandler extends AbstractDataFileHandler {
             if (hybNames.isEmpty()) {
                 return false;
             }
-
+            // start out with all columns, and remove the ones that are processed/used.
+            List<String> unusedCols = new ArrayList<String>(line);
             for (String hybName : hybNames) {
                 ValueLoader hyb = addValueLoader(hybName);
-                loadQTypeMap(hyb, line, lineNum);
+                loadQTypeMap(hyb, line, lineNum, unusedCols);
             }
 
-            loadCommonColMap(line, lineNum);
+            loadCommonColMap(line, lineNum, unusedCols);
             RowHeader probeIdCol = findProbeIdColumn(lineNum);
             if (probeIdCol == null) {
                 return false;
             } else {
                 setProbIdColumn(rowHeaderindexes[probeIdCol.ordinal()]);
             }
+
+            for (String col : unusedCols) {
+                warn("Ignored column " + col, lineNum, line.indexOf(col) + 1);
+            }
             return true;
         }
 
-        void loadQTypeMap(ValueLoader hyb, List<String> line, int lineNum) {
+        /**
+         * @param unusedCols used/processed columns should be removed from this list.
+         */
+        void loadQTypeMap(ValueLoader hyb, List<String> line, int lineNum, List<String> unusedCols) {
             EnumSet<SampleProbeProfileQuantitationType> mandatory = EnumSet.of(
                     SampleProbeProfileQuantitationType.DETECTION,
                     SampleProbeProfileQuantitationType.AVG_SIGNAL); // always present, but ckeck anyway.
@@ -392,6 +400,7 @@ public class IlluminaSampleProbeProfileHandler extends AbstractDataFileHandler {
                 if (hdr != null) {
                     hyb.addMapping(hdr.getQType(), i, lineNum);
                     mandatory.remove(hdr.getQType());
+                    unusedCols.remove(line.get(i));
                 } else {
                     warn("Unsupported column " + compositeName, lineNum, i + 1);
                 }
@@ -431,7 +440,10 @@ public class IlluminaSampleProbeProfileHandler extends AbstractDataFileHandler {
             return l;
         }
 
-        private void loadCommonColMap(List<String> line, int lineNum) {
+        /**
+         * @param unusedCols used/processed columns should be removed from this list.
+         */
+        private void loadCommonColMap(List<String> line, int lineNum, List<String> unusedCols) {
             for (int i = 0; i < line.size(); i++) {
                 try {
                     RowHeader h = RowHeader.valueOf(line.get(i).toUpperCase(Locale.getDefault()));
@@ -440,6 +452,7 @@ public class IlluminaSampleProbeProfileHandler extends AbstractDataFileHandler {
                                 lineNum, i + 1);
                     } else {
                         rowHeaderindexes[h.ordinal()] = i;
+                        unusedCols.remove(line.get(i));
                     }
                 } catch (IllegalArgumentException e) {
                     continue;

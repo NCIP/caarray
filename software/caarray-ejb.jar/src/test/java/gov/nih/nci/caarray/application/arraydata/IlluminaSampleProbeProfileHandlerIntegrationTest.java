@@ -154,7 +154,8 @@ public class IlluminaSampleProbeProfileHandlerIntegrationTest extends AbstractSe
         String[] header = {"Probe_Id", "Foo", "Hyb1.MIN_Signal", "Hyb1.AVG_Signal"};
         String [] messages = {
             "Missing quantitation type(s) [DETECTION] for sample Hyb1",
-            "Using column PROBE_ID with design type ILLUMINA_DESIGN_CSV"
+            "Using column PROBE_ID with design type ILLUMINA_DESIGN_CSV",
+            "Ignored column Foo"
         };
         processHeader(header, messages, null, FileType.ILLUMINA_DESIGN_CSV);
     }
@@ -162,7 +163,7 @@ public class IlluminaSampleProbeProfileHandlerIntegrationTest extends AbstractSe
     @Test
     public void testValidationErrors_2() {
         String[] header = {"TargetId", "Foo", "Hyb1.DETECTION PVAL", "Hyb1.AVG_Signal"};
-        String [] messages = {"Using column TARGETID with design type ILLUMINA_DESIGN_BGX"};
+        String [] messages = {"Using column TARGETID with design type ILLUMINA_DESIGN_BGX", "Ignored column Foo"};
         processHeader(header, messages, null, FileType.ILLUMINA_DESIGN_BGX);
     }
 
@@ -172,14 +173,16 @@ public class IlluminaSampleProbeProfileHandlerIntegrationTest extends AbstractSe
         String [] messages = {
             "Mixed column name formats",
             "Inconsistent quantitation type column between samples Hyb1 and Hyb2",
-            "Missing quantitation type(s) [AVG_SIGNAL, DETECTION] for sample Hyb2"};
+            "Missing quantitation type(s) [AVG_SIGNAL, DETECTION] for sample Hyb2",
+            "Ignored column DETECTION PVAL-Hyb2",
+            "Ignored column AVG_Signal-Hyb2"};
         processHeader(header, messages, null, FileType.ILLUMINA_DESIGN_BGX);
     }
 
     @Test
     public void testValidationErrors_4() {
         String[] header = {"ID_REF", "Hyb1.DETECTION PVAL", "Hyb1.AVG_Signal", "Hyb2.DETECTION PVAL", "Hyb2.AVG_Signal", "Hyb2.Foo"};
-        String [] messages = { "Unsupported column Hyb2.Foo" };
+        String [] messages = { "Unsupported column Hyb2.Foo", "Ignored column Hyb2.Foo" };
         IlluminaSampleProbeProfileHandler.ValidatingHeaderParser p = processHeader(header, messages, null, FileType.ILLUMINA_DESIGN_BGX);
         assertEquals(2, p.getHybNames().size());
         assertTrue(p.getHybNames().contains("Hyb1"));
