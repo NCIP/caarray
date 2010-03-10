@@ -2471,30 +2471,6 @@
 
 	<target name="test:api:init-data" unless="notest" depends="init:third-party-paths">
 		<antcall target="database:recreate-database"/>
-		<delete file="/Users/dharley/workspaces/trunk_installer/software/build/sql.log"/>
-		<echo append="true" file="/Users/dharley/workspaces/trunk_installer/software/build/sql.log" message="dfunkt database:recreate-database"/>
-		<echo append="true" file="/Users/dharley/workspaces/trunk_installer/software/build/sql.log" message="dfunkt show tables:"/>
-		<sql
-			append="yes"
-			output="/Users/dharley/workspaces/trunk_installer/software/build/sql.log"
-			print="yes"
-			onerror="continue"
-			driver="${database.driver}"
-			url="${database.url}"
-			userid="${database.user}"
-			password="${database.password}"
-			classpathref="liquibase.dependencies.path">show tables;</sql>
-		<echo append="true" file="/Users/dharley/workspaces/trunk_installer/software/build/sql.log" message="dfunkt here is contents of csm_application:"/>
-		<sql
-			append="yes"
-			output="/Users/dharley/workspaces/trunk_installer/software/build/sql.log"
-			print="yes"
-			onerror="continue"
-			driver="${database.driver}"
-			url="${database.url}"
-			userid="${database.user}"
-			password="${database.password}"
-			classpathref="liquibase.dependencies.path">select * from csm_application</sql>
 
         <!--
         the dump file was created with :
@@ -2511,67 +2487,7 @@
             <arg value="-P"/><arg value="${database.port}"/>
             <arg value="${database.name}"/>
         </exec>
-		<echo append="true" file="/Users/dharley/workspaces/trunk_installer/software/build/sql.log" message="dfunkt post-exec"/>
-		<echo append="true" file="/Users/dharley/workspaces/trunk_installer/software/build/sql.log" message="dfunkt show tables:"/>
-		<sql
-			append="yes"
-			output="/Users/dharley/workspaces/trunk_installer/software/build/sql.log"
-			print="yes"
-			onerror="continue"
-			driver="${database.driver}"
-			url="${database.url}"
-			userid="${database.user}"
-			password="${database.password}"
-			classpathref="liquibase.dependencies.path">show tables;</sql>
-		<echo message="dfunkt here is contents of csm_application:"/>
-		<sql
-			append="yes"
-			output="/Users/dharley/workspaces/trunk_installer/software/build/sql.log"
-			print="yes"
-			onerror="continue"
-			driver="${database.driver}"
-			url="${database.url}"
-			userid="${database.user}"
-			password="${database.password}"
-			classpathref="liquibase.dependencies.path">select * from csm_application</sql>
-		<!--sql
-			append="yes"
-			output="/Users/dharley/workspaces/trunk_installer/software/build/sql.log"
-			print="yes"
-			onerror="stop"
-			driver="${database.driver}"
-			url="${database.url}"
-			userid="${database.user}"
-			password="${database.password}"
-			classpathref="liquibase.dependencies.path">
-				drop table DATABASECHANGELOG;
-				drop table DATABASECHANGELOGLOCK;
-			</sql>
-		<echo message="dfunkt just dropped changelog-related tables"/-->
         <antcall target="database:update"/>
-		<echo append="true" file="/Users/dharley/workspaces/trunk_installer/software/build/sql.log" message="dfunkt database:update"/>
-		<echo append="true" file="/Users/dharley/workspaces/trunk_installer/software/build/sql.log" message="dfunkt show tables:"/>
-		<sql
-			append="yes"
-			output="/Users/dharley/workspaces/trunk_installer/software/build/sql.log"
-			print="yes"
-			onerror="continue"
-			driver="${database.driver}"
-			url="${database.url}"
-			userid="${database.user}"
-			password="${database.password}"
-			classpathref="liquibase.dependencies.path">show tables;</sql>
-		<echo message="dfunkt here is contents of csm_application:"/>
-		<sql
-			append="yes"
-			output="/Users/dharley/workspaces/trunk_installer/software/build/sql.log"
-			print="yes"
-			onerror="continue"
-			driver="${database.driver}"
-			url="${database.url}"
-			userid="${database.user}"
-			password="${database.password}"
-			classpathref="liquibase.dependencies.path">select * from csm_application</sql>
         <!--run-sql-script database.url="${database.url}" database.user="${database.user}" database.password="${database.password}"
             sql.file="${test.target.dir}/caarraydb.sql" /-->
     </target>
