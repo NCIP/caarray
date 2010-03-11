@@ -14,6 +14,7 @@
             <mkdir dir="@{xml.output.dir}" />
             <property name="jdwp.port" value="8000"/>
             <property name="should.suspend.vm.for.debugging" value="n"/>
+            <property name="test.browser" value="*firefox"/>
             <junit printsummary="on" failureproperty="junit.failure" fork="true" forkmode="once" maxmemory="1024m">
                 <jvmarg value="-Xdebug"/>
                 <jvmarg value="-Xrunjdwp:transport=dt_socket,address=${jdwp.port},server=y,suspend=${should.suspend.vm.for.debugging}"/>
@@ -24,6 +25,7 @@
                 <sysproperty key="globoss.server.hostname" value="${globoss.server.hostname}" />
                 <sysproperty key="globoss.server.http.port" value="${globoss.server.http.port}" />
                 <sysproperty key="selenium.server.port" value="${selenium.server.port}" />
+                <sysproperty key="test.browser" value="${test.browser}" />
 
                 <classpath>
                     <pathelement path="@{instrumented.classes}" />
