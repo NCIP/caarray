@@ -153,9 +153,6 @@ public class NimbleGenNdfHandler extends AbstractArrayDesignHandler {
     private ScrollableResults loadRows(File file) throws IOException {
         HibernateUtil.getCurrentSession().createSQLQuery(
                 CREATE_TEMP_TABLE_STMT).executeUpdate();
-        HibernateUtil.getCurrentSession().createSQLQuery(
-                "LOCK TABLE " + TEMP_TABLE_NAME + " WRITE;")
-                .executeUpdate();
         String filePath = file.getAbsolutePath().replace('\\', '/');
         String loadQuery = "load data local infile '"
                 + filePath
@@ -167,8 +164,6 @@ public class NimbleGenNdfHandler extends AbstractArrayDesignHandler {
         SQLQuery q = HibernateUtil.getCurrentSession()
                 .createSQLQuery(loadQuery);
         q.executeUpdate();
-        HibernateUtil.getCurrentSession().createSQLQuery("UNLOCK TABLES;")
-                .executeUpdate();
         return getProbes();
     }
 
@@ -197,12 +192,12 @@ public class NimbleGenNdfHandler extends AbstractArrayDesignHandler {
             ScrollableResults results = loadRows(getFile());
             count = loadProbes(details, results);
             arrayDesign.setNumberOfFeatures(count);
-            HibernateUtil.getCurrentSession().createSQLQuery(
-                    "DROP TABLE " + TEMP_TABLE_NAME + ";").executeUpdate();
         } catch (IOException e) {
             LOG.error("Error processing line " + count);
             throw new IllegalStateException("Couldn't read file: ", e);
         } finally {
+            HibernateUtil.getCurrentSession().createSQLQuery(
+                    "DROP TABLE " + TEMP_TABLE_NAME + ";").executeUpdate();
             reader.close();
         }
     }
@@ -337,9 +332,6 @@ public class NimbleGenNdfHandler extends AbstractArrayDesignHandler {
             }
             Map<String, Integer> headers = getHeaders(reader);
             validateHeader(headers, result);
-            if (result.isValid()) {
-                validateContent(reader, result, headers);
-            }
         } catch (IOException e) {
             result.addMessage(ValidationMessage.Type.ERROR,
                     "Unable to read file");
@@ -360,63 +352,6 @@ public class NimbleGenNdfHandler extends AbstractArrayDesignHandler {
                     "Invalid column header in Nimblegen NDF. Missing " + col
                             + ".");
         }
-    }
-
-    private void validateContent(DelimitedFileReader reader,
-            FileValidationResult result, Map<String, Integer> header)
-            throws IOException {
-        int expectedNumberOfFields = header.size();
-        while (reader.hasNextLine()) {
-            List<String> values = reader.nextLine();
-            if (values.size() < expectedNumberOfFields) {
-                ValidationMessage error = result.addMessage(
-                        ValidationMessage.Type.ERROR,
-                        "Invalid number of fields. Expected at least "
-                                + expectedNumberOfFields + " but contained "
-                                + values.size());
-                error.setLine(reader.getCurrentLineNumber());
-            }
-            if (!validateValues(values, result, reader.getCurrentLineNumber(),
-                    header)) {
-                return;
-            }
-        }
-    }
-
-    private boolean validateValues(List<String> values,
-            FileValidationResult result, int currentLineNumber,
-            Map<String, Integer> header) {
-        boolean passed = true;
-        for (String column : header.keySet()) {
-            if (!ndfColumnMapping.containsKey(column)) {
-                continue;
-            }
-            passed = passed
-                    & validateValue(result, currentLineNumber, column, values
-                            .get(header.get(column)));
-        }
-        return passed;
-    }
-
-    private boolean validateValue(FileValidationResult result,
-            int currentLineNumber, String column, String value) {
-        if (value == null || isBlank(value)) {
-            result.addMessage(ValidationMessage.Type.ERROR,
-                    "Missing required value at [" + currentLineNumber + ","
-                            + column + "].");
-        } else if (ndfColumnMapping.get(column) == Integer.class) {
-            try {
-                Integer.parseInt(value);
-            } catch (NumberFormatException e) {
-                ValidationMessage error = result.addMessage(
-                        ValidationMessage.Type.ERROR,
-                        "Expected integer value at [" + currentLineNumber + ","
-                                + column + "] but found " + value);
-                error.setLine(currentLineNumber);
-                return false;
-            }
-        }
-        return true;
     }
 
     private boolean isHeaderLine(List<String> values) {

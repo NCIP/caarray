@@ -83,6 +83,9 @@
 package gov.nih.nci.caarray.application.arraydata;
 
 import gov.nih.nci.caarray.domain.file.FileType;
+import java.util.Map;
+import java.util.HashMap;
+
 
 /**
  * Provides access to an appropriate <code>AbstractDataHandler</code> for a given <code>FileType</code>
@@ -91,6 +94,18 @@ import gov.nih.nci.caarray.domain.file.FileType;
 public final class ArrayDataHandlerFactory {
 
     private static final ArrayDataHandlerFactory INSTANCE = new ArrayDataHandlerFactory();
+
+    private final Map<FileType, Class> registry
+        = new HashMap<FileType, Class>();
+
+    private ArrayDataHandlerFactory() {
+        registry.put(FileType.AFFYMETRIX_CEL, AffymetrixCelHandler.class);
+        registry.put(FileType.AFFYMETRIX_CHP, AffymetrixChpHandler.class);
+        registry.put(FileType.GENEPIX_GPR, GenepixGprHandler.class);
+        registry.put(FileType.ILLUMINA_DATA_CSV, IlluminaDataHandler.class);
+        registry.put(FileType.NIMBLEGEN_RAW_PAIR, NimblegenPairDataHandler.class);
+        registry.put(FileType.NIMBLEGEN_NORMALIZED_PAIR, NimblegenPairDataHandler.class);
+    }
 
     /**
      * @return the singleton factory instance
@@ -107,18 +122,12 @@ public final class ArrayDataHandlerFactory {
      * 
      */
     public AbstractDataFileHandler getHandler(FileType type) {
-        if (FileType.AFFYMETRIX_CEL.equals(type)) {
-            return new AffymetrixCelHandler();
-        } else if (FileType.AFFYMETRIX_CHP.equals(type)) {
-            return new AffymetrixChpHandler();
-        } else if (FileType.GENEPIX_GPR.equals(type)) {
-            return new GenepixGprHandler();
-        } else if (FileType.ILLUMINA_DATA_CSV.equals(type)) {
-            return new IlluminaDataHandler();
-        } else if (FileType.NIMBLEGEN_RAW_PAIR.equals(type)) {
-            return new NimblegenPairDataHandler();
-        } else if (FileType.NIMBLEGEN_NORM_PAIR.equals(type)) {
-            return new NimblegenPairDataHandler();
+        if (registry.containsKey(type)) {
+            try {
+                return (AbstractDataFileHandler) registry.get(type).newInstance();
+            } catch (Exception e) {
+                throw new IllegalArgumentException("Unsupported type " + type, e);
+            }
         } else if (type.isArrayData()) {
             return new UnsupportedDataFormatHandler();
         } else {

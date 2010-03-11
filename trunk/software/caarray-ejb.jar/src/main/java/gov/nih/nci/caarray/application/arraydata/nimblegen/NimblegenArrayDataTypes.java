@@ -97,14 +97,7 @@ public enum NimblegenArrayDataTypes implements ArrayDataTypeDescriptor {
     /**
      * Nimblegen raw pair format.
      */
-    NIMBLEGEN_RAW("Nimblegen Raw Pair", NimblegenQuantitationType.values()),
-
-
-    /**
-     * Nimblegen raw pair format.
-     */
-    NIMBLEGEN_NORM("Nimblegen Normalized Pair", NimblegenQuantitationType.values());
-
+    NIMBLEGEN("Nimblegen Pair", NimblegenQuantitationType.values());
 
     private final String name;
     private final List<QuantitationTypeDescriptor> quantitationTypes;

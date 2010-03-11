@@ -904,7 +904,7 @@ public class ArrayDataServiceTest extends AbstractServiceTest {
     }
 
     private CaArrayFile getNimblegenCaArrayFile(File file, String lsidObjectId) {
-        CaArrayFile caArrayFile = getDataCaArrayFile(file, FileType.NIMBLEGEN_PAIR);
+        CaArrayFile caArrayFile = getDataCaArrayFile(file, FileType.NIMBLEGEN_RAW_PAIR);
         ArrayDesign arrayDesign = daoFactoryStub.getArrayDao().getArrayDesign(null, null, lsidObjectId);
         caArrayFile.getProject().getExperiment().getArrayDesigns().add(arrayDesign);
         return caArrayFile;

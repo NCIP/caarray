@@ -322,7 +322,7 @@ abstract class AbstractDataSetImporter<ARRAYDATA extends AbstractArrayData> {
             hybridization.setArray(array);
         } 
         getExperiment().getHybridizations().add(hybridization);
-	hybridization.setExperiment(getExperiment());
+        hybridization.setExperiment(getExperiment());
         return hybridization;
     }
 

@@ -94,35 +94,33 @@ import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
 public enum NimblegenQuantitationType implements QuantitationTypeDescriptor {
 
     /**
-     * X.
+     * MATCH_INDEX.
      */
-    MATCH_INDEX("MATCH_INDEX", DataType.FLOAT),
+    MATCH_INDEX(DataType.FLOAT),
+
+    /**
+     * Perfect Match.
+     */
+    PM(DataType.FLOAT),
+
+    /**
+     * Mismatch.
+     */
+    MM(DataType.FLOAT),
 
     /**
      * X.
      */
-	PM("PM", DataType.fromTypeClass(Float.class)),
-
-    /**
-     * X.
-     */
-	MM("MM", DataType.FLOAT),
-
-    /**
-     * X.
-     */
-	X("X", DataType.INTEGER),
+    X(DataType.INTEGER),
 
     /**
      * Y.
      */
-	Y("Y", DataType.INTEGER);
+    Y(DataType.INTEGER);
 
-    private final String name;
     private final DataType type;
 
-    NimblegenQuantitationType(String name, DataType type) {
-        this.name = name;
+    NimblegenQuantitationType(DataType type) {
         this.type = type;
     }
 
@@ -137,7 +135,7 @@ public enum NimblegenQuantitationType implements QuantitationTypeDescriptor {
      * {@inheritDoc}
      */
     public String getName() {
-        return name;
+        return name();
     }
 
     /**
@@ -146,9 +144,9 @@ public enum NimblegenQuantitationType implements QuantitationTypeDescriptor {
      * @return the list of names.
      */
     public static List<String> getTypeNames() {
-        List<String> names = new ArrayList<String>(values().length);
+        List<String> names = new ArrayList<String>();
         for (NimblegenQuantitationType type : values()) {
-            names.add(type.getName());
+            names.add(type.name());
         }
         return names;
     }
