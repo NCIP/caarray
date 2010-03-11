@@ -2463,7 +2463,12 @@
             source.include="**/api/**/java/**/*ServiceTest.java" source.exclude="**/Abstract*.java" />
     </target>
     
-    <target name="test:api-wrapper" depends="deploy:stop-jboss-servers, test:api:init-data, deploy:start-jboss-servers, test:api"/>
+    <target name="test:api-wrapper">
+    	<antcall target="deploy:stop-jboss-servers"/>
+    	<antcall target="test:api:init-data"/>
+    	<antcall target="deploy:start-jboss-servers"/>
+    	<antcall target="test:api"/>
+    </target>
     
     <target name="deploy:cleaup-testing-installation" depends="deploy:stop-jboss-servers">
     	<delete dir="${application.base.path}"/>
@@ -2480,6 +2485,7 @@
         -->
         <mkdir dir="${test.target.dir}"/>
         <gunzip src="${test.dir}/src/test/sql/caarraydb.sql.gz" dest="${test.target.dir}/caarraydb.sql"/>
+        <echo message="about to import the DB dump..."/>
         <exec executable="${mysql.executable}" input="${test.target.dir}/caarraydb.sql">
             <arg value="-u"/><arg value="${database.user}"/>
             <arg value="-p${database.password}"/>
@@ -2487,6 +2493,7 @@
             <arg value="-P"/><arg value="${database.port}"/>
             <arg value="${database.name}"/>
         </exec>
+        <echo message="done importing the DB dump."/>
         <antcall target="database:update"/>
         <!--run-sql-script database.url="${database.url}" database.user="${database.user}" database.password="${database.password}"
             sql.file="${test.target.dir}/caarraydb.sql" /-->
