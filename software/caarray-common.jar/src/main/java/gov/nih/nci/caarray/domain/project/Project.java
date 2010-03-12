@@ -85,7 +85,6 @@ package gov.nih.nci.caarray.domain.project;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
-import gov.nih.nci.caarray.domain.contact.Person;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.permissions.AccessProfile;
@@ -121,8 +120,6 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
-import org.apache.commons.lang.CharSetUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.BatchSize;
@@ -146,7 +143,7 @@ import org.hibernate.validator.Valid;
 public class Project extends AbstractCaArrayEntity implements Comparable<Project>, Protectable {
     private static final long serialVersionUID = 1234567890L;
 
-    private static final int PUBLIC_ID_COMPONENT_LENGTH = 5;
+    
 
     private boolean locked;
     private Experiment experiment = new Experiment();
@@ -539,30 +536,6 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
      */
     public void setLastUpdated(final Date lastUpdated) {
         this.lastUpdated = lastUpdated;
-    }
-
-    /**
-     * If the public id has not been locked, recalculate the experiment's public id value based on the
-     * algorithm specified in @see getPublicId from the current values of the PI and persistent identifier.
-     * If the public id has been locked, then this method is a no-op.
-     */
-    public void recalculatePublicId() {
-        if (isLocked()) {
-            return;
-        }
-        if (getExperiment().getId() == null) {
-            return;
-        }
-        String lastName = "anonymous";
-        final ExperimentContact primaryInvestigator = getExperiment().getPrimaryInvestigator();
-        if (primaryInvestigator != null) {
-            Person pi = primaryInvestigator.getContact();
-            lastName = StringUtils.lowerCase(pi.getLastName());
-        }        
-        String piComponent = StringUtils.substring(
-                CharSetUtils.keep(lastName, "A-Za-z"), 0, PUBLIC_ID_COMPONENT_LENGTH);
-        String idComponent = StringUtils.leftPad(getExperiment().getId().toString(), PUBLIC_ID_COMPONENT_LENGTH, "0");
-        getExperiment().setPublicIdentifier(piComponent + "-" + idComponent);
     }
 
     /**

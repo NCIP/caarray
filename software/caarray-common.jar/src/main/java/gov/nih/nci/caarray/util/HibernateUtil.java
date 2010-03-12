@@ -113,6 +113,7 @@ import org.hibernate.proxy.HibernateProxy;
 import com.fiveamsolutions.nci.commons.audit.AuditLogInterceptor;
 import com.fiveamsolutions.nci.commons.util.CompositeInterceptor;
 import com.fiveamsolutions.nci.commons.util.HibernateHelper;
+import gov.nih.nci.caarray.domain.AutoPropertiesInterceptor;
 
 /**
  * Utility class to create and retrieve Hibernate sessions.  Most methods are pass-throughs to {@link HibernateHelper},
@@ -124,10 +125,14 @@ import com.fiveamsolutions.nci.commons.util.HibernateHelper;
 public final class HibernateUtil {
     private static final Logger LOG = Logger.getLogger(HibernateUtil.class);
 
+    private static final AutoPropertiesInterceptor AUTO_PROPERTIES_INTERCEPTOR = new AutoPropertiesInterceptor();
     private static final AuditLogInterceptor AUDIT_LOG_INTERCEPTOR = new AuditLogInterceptor();
     private static final CaArrayAuditLogProcessor AUDIT_LOG_PROCESSOR = new CaArrayAuditLogProcessor();
     private static final HibernateHelper HIBERNATE_HELPER = new HibernateHelper(SecurityUtils.getAuthorizationManager(),
-            new NamingStrategy(), new CompositeInterceptor(new SecurityInterceptor(), AUDIT_LOG_INTERCEPTOR), false);
+            new NamingStrategy(), new CompositeInterceptor(
+                new SecurityInterceptor(),
+                AUDIT_LOG_INTERCEPTOR,
+                AUTO_PROPERTIES_INTERCEPTOR), false);
     static {
         AUDIT_LOG_INTERCEPTOR.setHibernateHelper(HIBERNATE_HELPER);
         AUDIT_LOG_INTERCEPTOR.setProcessor(AUDIT_LOG_PROCESSOR);

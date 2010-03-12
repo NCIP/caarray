@@ -281,13 +281,6 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
             throw new PermissionDeniedException(project, SecurityUtils.WRITE_PRIVILEGE, UsernameHolder.getUser());
         }
 
-        if (project.getId() == null) {
-            // for the initial save, we will need to save experiment first since we need to assign a public
-            // identifier, which requires the id to be set
-            getProjectDao().save(project.getExperiment());
-        }
-        // need to save twice, since we need to update the public
-        project.recalculatePublicId();
         getProjectDao().save(project);
         for (PersistentObject obj : orphansToDelete) {
             if (obj != null) {
