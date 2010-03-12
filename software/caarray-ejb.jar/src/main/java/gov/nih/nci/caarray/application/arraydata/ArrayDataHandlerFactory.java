@@ -115,7 +115,7 @@ public final class ArrayDataHandlerFactory {
             return new GenepixGprHandler();
         } else if (FileType.ILLUMINA_DATA_CSV.equals(type)) {
             return new IlluminaDataHandler();
-        } else if (FileType.ILLUMINA_DERIVED_TXT.equals(type)) {
+        } else if (FileType.ILLUMINA_GENOTYPING_PROCESSED_MATRIX_TXT.equals(type)) {
             return new IlluminaGenotypingProcessedMatrixHandler();
         } else if (FileType.ILLUMINA_SAMPLE_PROBE_PROFILE_TXT.equals(type)) {
             return new IlluminaSampleProbeProfileHandler();

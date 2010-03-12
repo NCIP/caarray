@@ -205,6 +205,11 @@ public enum FileType implements Comparable<FileType> {
     ILLUMINA_DERIVED_TXT,
 
     /**
+     * Illumina derived array data TXT file.
+     */
+    ILLUMINA_GENOTYPING_PROCESSED_MATRIX_TXT,
+
+    /**
      * Illumina Sample Probe Profile TXT.
      */
     ILLUMINA_SAMPLE_PROBE_PROFILE_TXT,
@@ -308,8 +313,9 @@ public enum FileType implements Comparable<FileType> {
      * The set of parsed array data file types.
      */
     public static final Set<FileType> DERIVED_ARRAY_DATA_FILE_TYPES = EnumSet.of(AFFYMETRIX_CHP, AFFYMETRIX_EXP,
-            AFFYMETRIX_TXT, AFFYMETRIX_RPT, ILLUMINA_DATA_CSV, ILLUMINA_DERIVED_TXT, ILLUMINA_SAMPLE_PROBE_PROFILE_TXT,
-            GENEPIX_GPR, IMAGENE_TXT, AGILENT_DERIVED_TXT, NIMBLEGEN_GFF, NIMBLEGEN_TXT);
+            AFFYMETRIX_TXT, AFFYMETRIX_RPT, ILLUMINA_DATA_CSV, ILLUMINA_GENOTYPING_PROCESSED_MATRIX_TXT,
+            ILLUMINA_SAMPLE_PROBE_PROFILE_TXT, ILLUMINA_DERIVED_TXT, GENEPIX_GPR, IMAGENE_TXT, AGILENT_DERIVED_TXT,
+            NIMBLEGEN_GFF, NIMBLEGEN_TXT);
 
     /**
      * The set of mage tab file types.
@@ -321,7 +327,8 @@ public enum FileType implements Comparable<FileType> {
      * The set of array data file types that caArray can parse.
      */
     public static final Set<FileType> PARSEABLE_ARRAY_DATA_FILE_TYPES = EnumSet.of(AFFYMETRIX_CEL, AFFYMETRIX_CHP,
-            ILLUMINA_DATA_CSV, ILLUMINA_DERIVED_TXT, ILLUMINA_SAMPLE_PROBE_PROFILE_TXT, GENEPIX_GPR);
+            ILLUMINA_DATA_CSV, ILLUMINA_GENOTYPING_PROCESSED_MATRIX_TXT,
+            ILLUMINA_SAMPLE_PROBE_PROFILE_TXT, GENEPIX_GPR);
 
     private static final Map<FileType, FileType> RAW_TO_DERIVED_MAP = new HashMap<FileType, FileType>();
     private static final Map<FileType, FileType> DERIVED_TO_RAW_MAP = new HashMap<FileType, FileType>();

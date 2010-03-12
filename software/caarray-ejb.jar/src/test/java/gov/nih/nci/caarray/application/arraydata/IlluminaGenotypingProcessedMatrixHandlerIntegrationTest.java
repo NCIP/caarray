@@ -90,7 +90,7 @@ public class IlluminaGenotypingProcessedMatrixHandlerIntegrationTest extends Abs
         Transaction tx = HibernateUtil.beginTransaction();
         setup();
 
-        CaArrayFile f = helper.getDataCaArrayFile(IlluminaArrayDataFiles.ILLUMINA_DERIVED_1_HYB, FileType.ILLUMINA_DERIVED_TXT);
+        CaArrayFile f = helper.getDataCaArrayFile(IlluminaArrayDataFiles.ILLUMINA_DERIVED_1_HYB, FileType.ILLUMINA_GENOTYPING_PROCESSED_MATRIX_TXT);
         f.setId(1L);
         ArrayDesign design = buildArrayDesign();
         f.getProject().getExperiment().getArrayDesigns().add(design);
@@ -118,7 +118,7 @@ public class IlluminaGenotypingProcessedMatrixHandlerIntegrationTest extends Abs
         Transaction tx = HibernateUtil.beginTransaction();
         setup();
 
-        CaArrayFile f = helper.getDataCaArrayFile(IlluminaArrayDataFiles.ILLUMINA_DERIVED_2_HYB, FileType.ILLUMINA_DERIVED_TXT);
+        CaArrayFile f = helper.getDataCaArrayFile(IlluminaArrayDataFiles.ILLUMINA_DERIVED_2_HYB, FileType.ILLUMINA_GENOTYPING_PROCESSED_MATRIX_TXT);
         f.setId(2L);
         ArrayDesign design = buildArrayDesign();
         f.getProject().getExperiment().getArrayDesigns().add(design);
