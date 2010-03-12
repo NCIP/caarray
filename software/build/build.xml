@@ -2468,6 +2468,7 @@
     	<antcall target="deploy:stop-jboss-servers"/>
     	<antcall target="test:api:init-data"/>
     	<antcall target="deploy:start-jboss-servers"/>
+    	<sleep minutes="10"/>
     	<antcall target="test:api"/>
     </target>
     
