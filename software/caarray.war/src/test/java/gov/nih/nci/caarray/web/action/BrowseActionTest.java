@@ -83,13 +83,13 @@
 package gov.nih.nci.caarray.web.action;
 
 import static org.junit.Assert.assertEquals;
-import gov.nih.nci.caarray.AbstractCaarrayTest;
 import gov.nih.nci.caarray.application.browse.BrowseService;
 import gov.nih.nci.caarray.application.browse.BrowseServiceStub;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.search.BrowseCategory;
 import gov.nih.nci.caarray.domain.search.ProjectSortCriterion;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
+import gov.nih.nci.caarray.web.AbstractBaseStrutsTest;
 import gov.nih.nci.caarray.web.ui.BrowseTab;
 
 import java.util.ArrayList;
@@ -107,7 +107,7 @@ import com.opensymphony.xwork2.Action;
  * @author Winston Cheng
  *
  */
-public class BrowseActionTest extends AbstractCaarrayTest {
+public class BrowseActionTest extends AbstractBaseStrutsTest {
     private final BrowseAction browseAction = new BrowseAction();
     private final LocalBrowseServiceStub projectServiceStub = new LocalBrowseServiceStub();
     private static final int NUM_TABS = 3;

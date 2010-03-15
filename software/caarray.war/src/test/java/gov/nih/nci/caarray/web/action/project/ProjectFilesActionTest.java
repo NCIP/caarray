@@ -136,7 +136,6 @@ import org.apache.struts2.ServletActionContext;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
@@ -163,7 +162,6 @@ public class ProjectFilesActionTest extends AbstractDownloadTest {
     private static final FileAccessServiceStub fileAccessServiceStub = new FileAccessServiceStub();
     private static final GenericDataServiceStub dataServiceStub = new LocalGenericDataServiceStub();
     ProjectFilesAction action = new ProjectFilesAction();
-    private MockHttpServletResponse mockResponse;
 
     @BeforeClass
     public static void beforeClass() {
@@ -199,9 +197,6 @@ public class ProjectFilesActionTest extends AbstractDownloadTest {
         file.setProject(project);
         project.getFiles().add(file);
         this.action.setProject(project);
-        ServletActionContext.setRequest(new MockHttpServletRequest());
-        mockResponse = new MockHttpServletResponse();
-        ServletActionContext.setResponse(mockResponse);
     }
 
     @Test

@@ -86,7 +86,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import gov.nih.nci.caarray.AbstractCaarrayTest;
 import gov.nih.nci.caarray.application.GenericDataService;
 import gov.nih.nci.caarray.application.GenericDataServiceStub;
 import gov.nih.nci.caarray.application.project.ProjectManagementService;
@@ -97,6 +96,7 @@ import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
+import gov.nih.nci.caarray.web.AbstractBaseStrutsTest;
 import gov.nih.nci.security.authorization.domainobjects.User;
 
 import org.apache.struts2.ServletActionContext;
@@ -112,7 +112,7 @@ import com.opensymphony.xwork2.Action;
 /**
  * @author Scott Miller
  */
-public class ProjectActionTest extends AbstractCaarrayTest {
+public class ProjectActionTest extends AbstractBaseStrutsTest {
 
     private static final String WORKSPACE = "workspace";
     ProjectAction action = new ProjectAction();
@@ -138,7 +138,6 @@ public class ProjectActionTest extends AbstractCaarrayTest {
             }
         };
         projectManagementServiceStub.reset();
-        ServletActionContext.setRequest(new MockHttpServletRequest());
     }
 
     @SuppressWarnings("deprecation")

@@ -22,8 +22,8 @@ function clearFilter() {
             </p>
             <div id="searchboxwrapper">
             <s:form action="/protected/audit/logs.action" cssClass="form" id="filterForm">
-                <s:textfield id="criteria.username" name="criteria.username" label="Username" size="30" tabindex="1" value="${criteria.username}"/>
-                <s:textfield id="criteria.message" name="criteria.message" label="Activity" size="30" tabindex="1" value="${criteria.message}"/>
+                <s:textfield id="criteria.username" name="criteria.username" label="Username" size="30" tabindex="1" value="%{criteria.username}"/>
+                <s:textfield id="criteria.message" name="criteria.message" label="Activity" size="30" tabindex="1" value="%{criteria.message}"/>
                 <input type="submit" class="enableEnterSubmit"/>
             </s:form>
             <caarray:focusFirstElement formId="filterForm"/>

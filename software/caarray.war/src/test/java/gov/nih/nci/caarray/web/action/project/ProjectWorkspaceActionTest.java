@@ -84,7 +84,6 @@ package gov.nih.nci.caarray.web.action.project;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import gov.nih.nci.caarray.AbstractCaarrayTest;
 import gov.nih.nci.caarray.application.GenericDataService;
 import gov.nih.nci.caarray.application.GenericDataServiceStub;
 import gov.nih.nci.caarray.application.file.FileManagementService;
@@ -96,14 +95,13 @@ import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
+import gov.nih.nci.caarray.web.AbstractBaseStrutsTest;
 
 import java.util.ArrayList;
 
 import org.apache.struts2.ServletActionContext;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.mock.web.MockHttpSession;
 
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 import com.opensymphony.xwork2.Action;
@@ -112,7 +110,7 @@ import com.opensymphony.xwork2.Action;
  * @author Winston Cheng
  *
  */
-public class ProjectWorkspaceActionTest extends AbstractCaarrayTest {
+public class ProjectWorkspaceActionTest extends AbstractBaseStrutsTest {
     private final ProjectWorkspaceAction action = new ProjectWorkspaceAction();
 
     private static final int WORK_QUEUE_COUNT = 5;
@@ -164,22 +162,10 @@ public class ProjectWorkspaceActionTest extends AbstractCaarrayTest {
 
     @Test
     public void testList() throws Exception {
-        MockHttpSession session = new MockHttpSession ();
-        MockHttpServletRequest request = new MockHttpServletRequest();
-        session.setAttribute("messages", null);
-        request.setSession(session);
-        ServletActionContext.setRequest(request);
+        ServletActionContext.getRequest().getSession().setAttribute("messages", null);
         assertNotNull(this.action.getProjects());
         String result = this.action.workspace();
         assertEquals(Action.SUCCESS, result);
-    }
-
-    @Test
-    public void testFileUtility() throws Exception {
-        MockHttpSession session = new MockHttpSession ();
-        MockHttpServletRequest request = new MockHttpServletRequest();
-        request.setSession(session);
-        ServletActionContext.setRequest(request);
     }
 
     private static class LocalProjectManagementService extends ProjectManagementServiceStub {

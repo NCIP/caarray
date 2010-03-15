@@ -93,6 +93,7 @@ import gov.nih.nci.caarray.application.vocabulary.VocabularyServiceStub;
 import gov.nih.nci.caarray.domain.publication.Publication;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
+import gov.nih.nci.caarray.web.AbstractBaseStrutsTest;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.junit.Before;
@@ -104,7 +105,7 @@ import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
  * @author Winston Cheng
  *
  */
-public class ProjectPublicationsActionTest extends AbstractCaarrayTest {
+public class ProjectPublicationsActionTest extends AbstractBaseStrutsTest {
     private final ProjectPublicationsAction action = new ProjectPublicationsAction();
     private static Publication DUMMY_PUBLICATION = new Publication();
 

@@ -1,5 +1,6 @@
 <%@ include file="/WEB-INF/pages/common/taglibs.jsp"%>
 <%@page import="gov.nih.nci.caarray.domain.file.FileStatus"%>
+
 <c:url value="/protected/ajax/arrayDesign/create.action" var="importInBackgroundUrl">
     <c:param name="project.id" value="${project.id}"/>
 </c:url>
@@ -53,13 +54,14 @@
                         <display:column property="name" titleKey="arrayDesign.name" sortable="true" url="/protected/arrayDesign/view.action" paramId="arrayDesign.id" paramProperty="id" maxLength="30"/>
                         <display:column property="provider.name" titleKey="arrayDesign.provider" sortable="true"/>
                         <display:column titleKey="arrayDesign.assayTypes" >
-                            <s:if test="${row.assayTypes != null}">
-                                <c:forEach items="${row.assayTypes}" var="currType" varStatus="status">
-                                    <c:if test="${!status.first}">, </c:if>${currType.name}
-                                </c:forEach>
-                            </s:if>
-                            <s:else>&nbsp;
-                            </s:else>
+                            <c:choose>
+                                <c:when test="${row.assayTypes != null}">
+                                    <c:forEach items="${row.assayTypes}" var="currType" varStatus="status">
+                                        <c:if test="${!status.first}">, </c:if>${currType.name}
+                                    </c:forEach>                                
+                                </c:when>
+                                <c:otherwise>&nbsp;</c:otherwise>
+                            </c:choose>
                         </display:column>
                         <display:column property="version" titleKey="arrayDesign.version" sortable="true"/>
                         <display:column property="technologyType.value" titleKey="arrayDesign.technologyType" sortable="true"/>

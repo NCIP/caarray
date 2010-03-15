@@ -85,7 +85,6 @@ package gov.nih.nci.caarray.web.action.project;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
-import gov.nih.nci.caarray.AbstractCaarrayTest;
 import gov.nih.nci.caarray.application.GenericDataService;
 import gov.nih.nci.caarray.application.GenericDataServiceStub;
 import gov.nih.nci.caarray.application.permissions.PermissionsManagementService;
@@ -100,6 +99,7 @@ import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
+import gov.nih.nci.caarray.web.AbstractBaseStrutsTest;
 
 import org.apache.struts2.ServletActionContext;
 import org.junit.Before;
@@ -113,7 +113,7 @@ import com.opensymphony.xwork2.Action;
  * @author Winston Cheng
  *
  */
-public class ProjectPermissionsActionTest extends AbstractCaarrayTest {
+public class ProjectPermissionsActionTest extends AbstractBaseStrutsTest {
     private final ProjectPermissionsAction action = new ProjectPermissionsAction();
     private static Project DUMMY_PROJECT = new Project();
     private static CollaboratorGroup DUMMY_GROUP = new CollaboratorGroup();
@@ -132,7 +132,6 @@ public class ProjectPermissionsActionTest extends AbstractCaarrayTest {
         DUMMY_PROFILE.setId(1L);
         DUMMY_SAMPLE.setId(1L);
         action.setProject(DUMMY_PROJECT);
-        ServletActionContext.setRequest(new MockHttpServletRequest());
     }
 
     @SuppressWarnings("deprecation")

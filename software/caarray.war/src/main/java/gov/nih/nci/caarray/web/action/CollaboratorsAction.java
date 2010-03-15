@@ -105,13 +105,11 @@ import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.validator.annotations.RequiredFieldValidator;
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 import com.opensymphony.xwork2.validator.annotations.StringLengthFieldValidator;
-import com.opensymphony.xwork2.validator.annotations.Validation;
 import com.opensymphony.xwork2.validator.annotations.Validations;
 
 /**
  * Collaborator group management action.
  */
-@Validation
 @Validations(
         requiredFields = @RequiredFieldValidator(
                 fieldName = "groupName", key = "struts.validator.requiredString", message = ""),

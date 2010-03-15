@@ -131,7 +131,6 @@ import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.validator.annotations.ExpressionValidator;
-import com.opensymphony.xwork2.validator.annotations.Validation;
 import com.opensymphony.xwork2.validator.annotations.Validations;
 
 /**
@@ -140,7 +139,6 @@ import com.opensymphony.xwork2.validator.annotations.Validations;
  */
 @SuppressWarnings({"unchecked", "PMD.ExcessiveClassLength", "PMD.CyclomaticComplexity", "PMD.TooManyFields",
         "PMD.TooManyMethods" })
-@Validation
 @Validations(expressions = @ExpressionValidator(message = "Files must be selected for this operation.",
         expression = "selectedFiles.size() > 0"))
 public class ProjectFilesAction extends AbstractBaseProjectAction implements Preparable {

@@ -1,14 +1,19 @@
 <%@ include file="/WEB-INF/pages/common/taglibs.jsp"%>
 <%@page import="gov.nih.nci.caarray.domain.file.FileStatus"%>
-<s:if test="${!editMode}">
+
+<c:if test="${!editMode}">
     <c:set var="theme" value="readonly" scope="request"/>
-</s:if>
-<s:if test="${locked || !editMode}">
-    <c:set var="lockedTheme" value="readonly"/>
-</s:if>
-<s:else>
-    <c:set var="lockedTheme" value="xhtml"/>
-</s:else>
+</c:if>
+
+
+<c:choose>
+    <c:when test="${locked || !editMode}">
+        <c:set var="lockedTheme" value="readonly"/>
+    </c:when>
+    <c:otherwise>
+        <c:set var="lockedTheme" value="xhtml"/>
+    </c:otherwise>
+</c:choose>
 
 <jsp:useBean id="currentTime" class="java.util.Date"/>
 <c:set var="uploadId" value="${currentTime.time}"/>
@@ -148,6 +153,7 @@
 </script>
 <html>
 <head>
+<s:set var="fileTypes" value=""/>
     <title>Manage Array Designs</title>
 </head>
 <body>
@@ -158,12 +164,14 @@
             <div class="boxpad2">
                 <h3>
                     <span class="dark">
-                        <s:if test="${empty arrayDesign.id}">
-                            New Array Design (Step 2)
-                        </s:if>
-                        <s:else>
-                            ${arrayDesign.name}
-                        </s:else>
+                        <c:choose>
+                            <c:when test="${empty arrayDesign.id}">
+                                New Array Design (Step 2)
+                            </c:when>
+                            <c:otherwise>
+                                ${arrayDesign.name}
+                            </c:otherwise>
+                        </c:choose>
                     </span>
                 </h3>
                 <caarray:successMessages />
@@ -173,53 +181,53 @@
                     <div><img alt="Indicator" align="absmiddle" src="<c:url value="/images/indicator.gif"/>" />
                     <fmt:message key="arraydesign.file.upload.inProgress" /></div>
                 </div>
-                <s:if test="${locked}">
+                <c:if test="${locked}">
                     <div class="instructions">
                        The file of this array design may not be modified because it is already associated with an existing experiment.
                        If uploading a zipped file, only the first entry in the zip will be processed as an array design.
                     </div>
-                </s:if>
+                </c:if>
 
                 <div id="arrayFileDiv">
                     <s:form action="/protected/ajax/arrayDesign/save" cssClass="form" enctype="multipart/form-data" method="post" id="arrayDesignForm">
                         <tbody>
                             <tr><th colspan="2">Upload Array Design File</th></tr>
-                            <s:if test="${!empty arrayDesign.designFiles}">
+                            <c:if test="${!empty arrayDesign.designFiles}">
                                 <s:select theme="readonly" list="arrayDesign.designFiles" value="arrayDesign.designFiles" listValue="name" label="Current File" multiple="true"/>
-                            </s:if>
+                            </c:if>
 							<s:hidden name="arrayDesign.id"/>
 	                        <s:hidden name="arrayDesign.description"/>
 	                        <s:hidden name="arrayDesign.assayType"/>
 	                        <s:hidden name="arrayDesign.provider"/>
 	                        <s:hidden name="arrayDesign.version"/>
-                                <s:hidden name="arrayDesign.geoAccession"/>
+                            <s:hidden name="arrayDesign.geoAccession"/>
 	                        <s:hidden name="arrayDesign.technologyType"/>
 	                        <s:hidden name="arrayDesign.organism"/>
 	                        <s:hidden name="createMode"/>
 	                        <s:hidden name="editMode"/>
                             <s:hidden name="arrayDesign.assayTypes"/>
                             <c:forEach items="${arrayDesign.assayTypes}" var="currAssayType">
-                                <input name="arrayDesign.assayTypes" type="hidden" value="<s:property value='#attr.currAssayType.id'/>"/>
+                                <input name="arrayDesign.assayTypes" type="hidden" value="${currAssayType.id}"/>
                             </c:forEach>
-                            <s:if test="${editMode && !locked}">
-                                <s:file id="upload0" required="${empty arrayDesign.id}" name="upload" label="Browse to File" tabindex="9"/>
+                            <c:if test="${editMode && !locked}">
+                                <s:file id="upload0" required="%{arrayDesign.id != null}" name="upload" label="Browse to File" tabindex="9"/>
                                 <s:select id="fileFormatType0" name="fileFormatType" key="arrayDesign.designFile.fileType" tabindex="10"
-                                          list="@gov.nih.nci.caarray.domain.file.FileType@ARRAY_DESIGN_FILE_TYPES"
+                                          list="@gov.nih.nci.caarray.web.action.ArrayDesignAction@arrayDesignTypes()"
                                           listValue="%{getText('experiment.files.filetype.' + name)}"
-                                          listKey="name" headerKey="" headerValue="Automatic"/>
-                            </s:if>
+                                          listKey="name" headerKey="" headerValue="Automatic"/>                                
+                            </c:if>
                         </tbody>
                         <input type="submit" class="enableEnterSubmit"/>
                     </s:form>
                     <caarray:actions>
                         <caarray:linkButton actionClass="cancel" text="Cancel" onclick="window.close()"/>
                         <c:set var="importingStatus" value="<%= FileStatus.IMPORTING.name() %>"/>
-                         <s:if test="${arrayDesign.designFileSet.status != importingStatus && !locked}">
+                         <c:if test="${arrayDesign.designFileSet.status != importingStatus && !locked}">
                             <caarray:action onclick="beginUpload();" actionClass="save" text="Save" tabindex="10"/>
-                            <s:if test="${editMode && !locked}">
+                            <c:if test="${editMode && !locked}">
                             	<caarray:linkButton actionClass="add" text="Add More Files" onclick="moreUploads(1);"/>
-                            </s:if>
-                        </s:if>
+                            </c:if>
+                        </c:if>
                     </caarray:actions>
                 </div>
             </div>

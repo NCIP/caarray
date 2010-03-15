@@ -109,6 +109,7 @@ import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
+import gov.nih.nci.caarray.web.AbstractBaseStrutsTest;
 import gov.nih.nci.caarray.web.AbstractDownloadTest;
 import gov.nih.nci.caarray.web.helper.DownloadHelper;
 
@@ -125,7 +126,6 @@ import org.apache.struts2.ServletActionContext;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.mock.web.MockHttpServletResponse;
 
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 import com.fiveamsolutions.nci.commons.web.struts2.action.ActionHelper;
@@ -139,8 +139,6 @@ public class ProjectSourcesActionTest extends AbstractDownloadTest {
     private static Source DUMMY_SOURCE;
     private static int NUM_SOURCES = 2;
 
-    private MockHttpServletResponse mockResponse;
-
     @Before
     @SuppressWarnings("deprecation")
     public void setUp() throws Exception {
@@ -150,8 +148,6 @@ public class ProjectSourcesActionTest extends AbstractDownloadTest {
         locatorStub.addLookup(VocabularyService.JNDI_NAME, new VocabularyServiceStub());
         DUMMY_SOURCE = new Source();
         DUMMY_SOURCE.setId(1L);
-        mockResponse = new MockHttpServletResponse();
-        ServletActionContext.setResponse(mockResponse);
     }
 
     @Test
@@ -186,10 +182,7 @@ public class ProjectSourcesActionTest extends AbstractDownloadTest {
 
     @Test
     public void testDelete() {
-        ServletActionContext.setRequest(new MockHttpServletRequest());
         assertEquals("list", action.delete());
-
-        ServletActionContext.setRequest(new MockHttpServletRequest());
         DUMMY_SOURCE.getSamples().add(new Sample());
         action.setCurrentSource(DUMMY_SOURCE);
         assertEquals("list", action.delete());

@@ -24,9 +24,9 @@
       </td>
     </tr>
   </table>
-    <s:hidden name="project.id" value="${project.id}" />
+    <s:hidden name="project.id" value="%{project.id}" />
 
-  <table class="searchresults">
+    <table class="searchresults">
     <tr>
       <td width="80%"><%@ include
         file="/WEB-INF/pages/project/files/listTable.jsp"%></td>
@@ -39,7 +39,7 @@
         </tr>
         <c:forEach items="${fileStatusCountMap}" var="item"
           varStatus="itemStatus">
-          <s:if test="${item.value > 0}">
+          <c:if test="${item.value > 0}">
             <c:set var="statusVal" value="${item.key}"/>
             <jsp:useBean id="statusVal" type="gov.nih.nci.caarray.domain.file.FileStatus" />
             <tr>
@@ -51,7 +51,7 @@
               </fmt:message> ${statusLabel}</td>
               <td>${item.value}</td>
             </tr>
-          </s:if>
+          </c:if>
         </c:forEach>
       </table>
 

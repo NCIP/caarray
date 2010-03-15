@@ -105,6 +105,7 @@ import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
+import gov.nih.nci.caarray.web.AbstractBaseStrutsTest;
 import gov.nih.nci.security.authorization.domainobjects.User;
 
 import java.util.Collection;
@@ -124,12 +125,11 @@ import com.opensymphony.xwork2.Action;
  *
  */
 @SuppressWarnings("PMD")
-public class ProjectExperimentContactsActionTest extends AbstractCaarrayTest {
+public class ProjectExperimentContactsActionTest extends AbstractBaseStrutsTest {
 
     private final ProjectExperimentContactsAction action = new ProjectExperimentContactsAction();
     private static ExperimentContact DUMMY_EXPERIMENT_CONTACT = new ExperimentContact();
     private static int NUM_EXPERIMENT_CONTACTS = 2;
-    private MockHttpServletResponse mockResponse;
     private static final LocalProjectManagementServiceStub projectManagementServiceStub = new LocalProjectManagementServiceStub();
     private static User STANDARD_USER;
 
@@ -142,10 +142,6 @@ public class ProjectExperimentContactsActionTest extends AbstractCaarrayTest {
          locatorStub.addLookup(VocabularyService.JNDI_NAME, new VocabularyServiceStub());
          locatorStub.addLookup(ProjectManagementService.JNDI_NAME, projectManagementServiceStub);
          DUMMY_EXPERIMENT_CONTACT.setId(1L);
-
-         ServletActionContext.setRequest(new MockHttpServletRequest());
-         mockResponse = new MockHttpServletResponse();
-         ServletActionContext.setResponse(mockResponse);
 
          UsernameHolder.setUser("caarrayadmin");
          STANDARD_USER = UsernameHolder.getCsmUser();
@@ -195,7 +191,6 @@ public class ProjectExperimentContactsActionTest extends AbstractCaarrayTest {
 
     @Test
     public void testSave() {
-        ServletActionContext.setRequest(new MockHttpServletRequest());
         assertEquals(1,action.getProject().getOwners().size());
         ProjectExperimentContactsAction action = new ProjectExperimentContactsAction();
         action.setCurrentExperimentContact(new ExperimentContact());

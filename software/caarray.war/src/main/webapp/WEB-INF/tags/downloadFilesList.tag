@@ -8,7 +8,7 @@
 <%@ attribute name="fileStatuses" required="true" type="java.util.List"%>
 
 <span id="downloadFilesList">
-  <s:form action="${actionDownloadFilesList}" id="fileTypeForm" theme="simple">
+  <s:form action="%{#attr.actionDownloadFilesList}" id="fileTypeForm" theme="simple">
   <fmt:message key="experiment.files.filterby.fileType" var="filterByTypeLabel" />
   <fmt:message key="experiment.files.filterby.status" var="filterByStatusLabel" />
     <table class="searchresults">
@@ -31,7 +31,7 @@
             </td>
         </tr>
     </table>
-    <s:hidden name="project.id" value="${project.id}" />
+    <s:hidden name="project.id" value="%{project.id}" />
     <s:hidden name="currentSource.id" />
     <s:hidden name="currentSample.id" />
     <s:hidden name="currentExtract.id" />

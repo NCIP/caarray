@@ -94,14 +94,12 @@ import org.apache.struts2.interceptor.validation.SkipValidation;
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 import com.fiveamsolutions.nci.commons.web.displaytag.SortablePaginatedList;
 import com.opensymphony.xwork2.validator.annotations.FieldExpressionValidator;
-import com.opensymphony.xwork2.validator.annotations.Validation;
 
 /**
  * Class that manages the annotation tabs.
  * @author Scott Miller
  * @param <T> the class of the annotations are being managed.
  */
-@Validation
 @SuppressWarnings("PMD.AvoidDuplicateLiterals")
 public abstract class AbstractProjectAssociatedAnnotationsListTabAction<T extends AbstractBioMaterial> extends
         AbstractProjectProtocolAnnotationListTabAction {

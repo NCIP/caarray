@@ -33,8 +33,8 @@
         <input type="submit" class="enableEnterSubmit"/>
     </caarray:projectListTabItemForm>
 
-    <s:if test="${!editMode}">
-    <div id="tabHeader" class="boxpad2"><h3>Download Data</h3></div>
-    <%@ include file="/WEB-INF/pages/project/tabCommon/downloadFiles.jsp" %>
-    </s:if>
+    <c:if test="${!editMode}">
+        <div id="tabHeader" class="boxpad2"><h3>Download Data</h3></div>
+        <%@ include file="/WEB-INF/pages/project/tabCommon/downloadFiles.jsp" %>
+    </c:if>
 </caarray:tabPane>

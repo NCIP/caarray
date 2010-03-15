@@ -24,8 +24,8 @@
 
 <div class="boxpad">
     <p class="instructions"><c:out value="${instructions}" escapeXml="false"/></p>
-    <s:form action="ajax/project/listTab/${plural}/save" cssClass="form" id="projectForm"
-            onsubmit="TabUtils.submitTabForm('projectForm', '${tabAnchor}'); return false;">
+    <s:form action="ajax/project/listTab/%{#attr.plural}/save" cssClass="form" id="projectForm"
+            onsubmit="TabUtils.submitTabForm('projectForm', '%{@attr.tabAnchor}'); return false;">
         <jsp:doBody/>
     </s:form>
     <caarray:focusFirstElement formId="projectForm"/>

@@ -31,7 +31,7 @@ function toggleAll(/*boolean*/checked, /*div*/div) {
                 </p>
                 <div id="theForm">
                     <s:form action="/protected/ownership/newOwner.action" cssClass="form" method="post" id="reassignForm" theme="simple">
-                        <s:hidden name="targetUserId" value="${ownerId}"/>
+                        <s:hidden name="targetUserId" value="%{ownerId}"/>
                         <h4>Experiments</h4>
                             
 <ajax:displayTag id="pdatatable" tableClass="searchresults" preFunction="TabUtils.showLoadingTextKeepMainContent" postFunction="TabUtils.hideLoadingText">
@@ -46,13 +46,14 @@ function toggleAll(/*boolean*/checked, /*div*/div) {
         </display:column>
         <display:column property="experiment.title" title="Experiment Title" escapeXml="true" maxLength="30"/>
         <display:column title="Assay Type" >
-            <s:if test="${row.experiment.assayTypes != null}">
-                <c:forEach items="${row.experiment.assayTypes}" var="currType" varStatus="status">
-                    <c:if test="${!status.first}">, </c:if>${currType.name}
-                </c:forEach>
-           </s:if>
-            <s:else>&nbsp;
-            </s:else>
+            <c:choose>
+                <c:when test="${row.experiment.assayTypes != null}">
+                    <c:forEach items="${row.experiment.assayTypes}" var="currType" varStatus="status">
+                        <c:if test="${!status.first}">, </c:if>${currType.name}
+                    </c:forEach>
+                </c:when>
+                <c:otherwise>&nbsp;</c:otherwise>
+            </c:choose>
         </display:column>
     </display:table>
 </ajax:displayTag>

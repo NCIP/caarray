@@ -25,17 +25,17 @@
 </c:url>
 <c:url var="autocompleteUrl" value="/ajax/project/tab/Samples/retrieveXmlProtocolList.action" />
 
-<s:if test="${editMode}">
+<c:if test="${editMode}">
     <script type="text/javascript">
         var protocolPicker;
     </script>
-    <s:select key="protocolType" tabindex="${tabIndex1}" list="protocolTypes" listValue="value" listKey="id" cssStyle="width: 300px;"
+    <s:select key="protocolType" tabindex="%{#attr.tabIndex1}" list="protocolTypes" listValue="value" listKey="id" cssStyle="width: 300px;"
         headerKey="" headerValue="--Select a Protocol Type--" value="protocolType.id" onchange="ListPickerUtils.updateParams(protocolPicker, 'protocolType', $('projectForm_protocolType').value); ListPickerUtils.forceUpdate(protocolPicker);">
         <s:param name="after">
             <span id="progressMsg" style="display:none;"><img alt="Indicator" src="<c:url value="/images/indicator.gif"/>" /> Loading... </span>
         </s:param>
     </s:select>
-</s:if>
+</c:if>
 
 
 <caarray:listSelector baseId="protocol" listLabel="${listLabel}" listField="${selectedProtocols}"

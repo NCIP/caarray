@@ -99,7 +99,6 @@ import org.apache.struts2.interceptor.validation.SkipValidation;
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 import com.fiveamsolutions.nci.commons.web.displaytag.SortablePaginatedList;
 import com.fiveamsolutions.nci.commons.web.struts2.action.ActionHelper;
-import com.opensymphony.xwork2.validator.annotations.Validation;
 
 /**
  * Base class for project tab actions that implement list-type tabs, ie Factors, Sources, etc,
@@ -107,7 +106,6 @@ import com.opensymphony.xwork2.validator.annotations.Validation;
  *
  * @author Dan Kokotov
  */
-@Validation
 public abstract class AbstractProjectListTabAction extends ProjectTabAction {
     private static final long serialVersionUID = 1L;
 
@@ -224,7 +222,7 @@ public abstract class AbstractProjectListTabAction extends ProjectTabAction {
                     if (bio.getName().equals(abm.getName())
                             && bio.getId() != abm.getId()) {
                         String errorField = "current" + getBioMaterialType(bio) + ".name";
-                        List<String> strList = new ArrayList<String>();
+                        List<Object> strList = new ArrayList<Object>();
                         strList.add(getBioMaterialType(bio));
                         strList.add(bio.getName());
                         addFieldError(errorField, getText("experiment.annotations.bioname.duplicate", strList));

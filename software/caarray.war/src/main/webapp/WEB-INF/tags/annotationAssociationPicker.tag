@@ -18,11 +18,13 @@
 <tr>
     <td class="tdLabel"><label class="label">${associatedEntityName}s<span class="required">*</span>:</label></td>
     <td>
-        <s:if test="${editMode}">
+        <c:choose>        
+        <c:when test="${editMode}">
             <div class="selectListWrapper">
                 <div class="selectListSide">
                     <div class="selectListHeader">
-                        <span class="selectListFilterLabel">Filter:</span> <s:textfield id="${baseId}AssociatedValueName" name="associatedValueName" theme="simple" size="20" tabindex="${tabIndex}" cssStyle="align:left;" />
+                        <span class="selectListFilterLabel">Filter:</span> 
+                        <s:textfield id="%{#attr.baseId}AssociatedValueName" name="associatedValueName" theme="simple" size="20" tabindex="%{#attr.tabIndex}" cssStyle="align:left;" />
                         <span id="${baseId}ProgressMsg" style="display:none;"><img alt="Indicator" src="<c:url value="/images/indicator.gif"/>" /> Loading...</span>
                     </div>
                     <div id="${baseId}AutocompleteDiv"></div>
@@ -50,11 +52,12 @@
             <script type="text/javascript">
                 var ${baseId}Picker = AssociationPickerUtils.createAutoUpdater('${baseId}', '${autocompleteUrl}', '${project.id}', '${entityName}', '${itemId}',  '${associatedEntityName}');
             </script>
-        </s:if>
-        <s:else>
+        </c:when>
+        <c:otherwise>
             <c:forEach items="${currentAssociationsCollection}" var="currentItem" varStatus="status">
                 <c:if test="${!status.first}">, </c:if>${currentItem.name}
             </c:forEach>
-        </s:else>
+        </c:otherwise>        
+        </c:choose>
     </td>
 </tr>

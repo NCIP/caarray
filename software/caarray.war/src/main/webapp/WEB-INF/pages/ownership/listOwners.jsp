@@ -27,9 +27,9 @@
     </div>
     <div id="searchboxwrapper">
       <s:form action="/protected/ownership/listOwners.action" cssClass="form" id="filterForm">
-        <s:textfield name="user.lastName" key="label.lastName" size="30" tabindex="1" value="${user.lastName}" id="targetUserLastName"/>
-        <s:textfield name="user.firstName" key="label.firstName" size="30" tabindex="2" value="${user.firstName}" id="targetUserFirstName"/>
-        <s:textfield name="user.organization" key="label.institution" size="30" tabindex="3" value="${user.organization}" id="targetUserOrganization"/>
+        <s:textfield name="user.lastName" key="label.lastName" size="30" tabindex="1" value="%{user.lastName}" id="targetUserLastName"/>
+        <s:textfield name="user.firstName" key="label.firstName" size="30" tabindex="2" value="%{user.firstName}" id="targetUserFirstName"/>
+        <s:textfield name="user.organization" key="label.institution" size="30" tabindex="3" value="%{user.organization}" id="targetUserOrganization"/>
         <input type="submit" class="enableEnterSubmit"/>
       </s:form>
       <caarray:focusFirstElement formId="filterForm"/>

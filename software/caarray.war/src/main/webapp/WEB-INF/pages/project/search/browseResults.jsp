@@ -7,7 +7,7 @@
     <h1>Browse caArray</h1>
     <caarray:helpPrint/>
     <div class="padme">
-        <h2>Browse by: "<strong><s:text name="${category.resourceKey}"/></strong>"</h2>
+        <h2>Browse by: "<strong><fmt:message key="${category.resourceKey}"/></strong>"</h2>
         <ajax:tabPanel panelStyleId="tabs" panelStyleClass="tabs2" currentStyleClass="active" contentStyleId="tabboxwrapper" contentStyleClass="tabboxwrapper"
                 postFunction="TabUtils.setSelectedTab" preFunction="TabUtils.showLoadingText">
             <c:forEach var="tab" items="${tabs}" varStatus="myStatus">

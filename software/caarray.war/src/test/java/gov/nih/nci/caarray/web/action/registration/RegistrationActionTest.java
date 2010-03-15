@@ -92,6 +92,7 @@ import gov.nih.nci.caarray.domain.country.Country;
 import gov.nih.nci.caarray.domain.register.RegistrationRequest;
 import gov.nih.nci.caarray.domain.state.State;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
+import gov.nih.nci.caarray.web.AbstractBaseStrutsTest;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -108,9 +109,8 @@ import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 
 /**
  * @author Winston Cheng
- *
  */
-public class RegistrationActionTest extends AbstractCaarrayTest {
+public class RegistrationActionTest extends AbstractBaseStrutsTest {
     private final RegistrationAction registrationAction = new RegistrationAction();
 
     @Before

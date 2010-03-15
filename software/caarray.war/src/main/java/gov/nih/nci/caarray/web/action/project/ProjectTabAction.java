@@ -20,14 +20,12 @@ import org.apache.struts2.interceptor.validation.SkipValidation;
 
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 import com.fiveamsolutions.nci.commons.web.struts2.action.ActionHelper;
-import com.opensymphony.xwork2.validator.annotations.Validation;
 
 /**
  * Base Action for implementing a single tab of the Project management ui.
  *
  * @author John Hedden, Dan Kokotov, Scott Miller
  */
-@Validation
 public class ProjectTabAction extends AbstractBaseProjectAction {
     private static final long serialVersionUID = 1L;
     private final List<PersistentObject> orphans = new ArrayList<PersistentObject>();;
@@ -86,9 +84,8 @@ public class ProjectTabAction extends AbstractBaseProjectAction {
         List<String> args = new ArrayList<String>();
         args.add(StringUtils.abbreviate(getProject().getExperiment().getTitle(), TRUNCATED_TITLE_WIDTH));
         if (e.getReason() == Reason.INCONSISTENT_ARRAY_DESIGNS) {
-            args.add(StringUtils.join(e.getArguments(), ", "));
             addFieldError("project.experiment.arrayDesigns", getText("project.inconsistentState."
-                    + e.getReason().name().toLowerCase(), args));
+                    + e.getReason().name().toLowerCase(), new String[] {StringUtils.join(e.getArguments(), ", ") }));
         } else if (e.getReason() == Reason.ARRAY_DESIGNS_DONT_MATCH_MANUF_OR_TYPE) {
             addFieldError("project.experiment.arrayDesigns", getText("project.inconsistentState."
                     + e.getReason().name().toLowerCase()));
@@ -103,9 +100,8 @@ public class ProjectTabAction extends AbstractBaseProjectAction {
      * write operation on a project causes a workflow exception.
      */
     protected void handleWorkflowError() {
-        List<String> args = new ArrayList<String>();
-        args.add(StringUtils.abbreviate(getProject().getExperiment().getTitle(), TRUNCATED_TITLE_WIDTH));
-        ActionHelper.saveMessage(getText("project.saveProblem", args));
+        ActionHelper.saveMessage(getText("project.saveProblem", new String[] {StringUtils.abbreviate(getProject()
+                .getExperiment().getTitle(), TRUNCATED_TITLE_WIDTH) }));
     }
 
     /**
@@ -134,9 +130,7 @@ public class ProjectTabAction extends AbstractBaseProjectAction {
         if (UsernameHolder.getUser().equals(SecurityUtils.ANONYMOUS_USERNAME)) {
             return ProjectTabAction.RELOAD_PROJECT_RESULT;
         } else {
-            List<String> args = new ArrayList<String>();
-            args.add(getText(roleKey));
-            ActionHelper.saveMessage(getText("project.permissionDenied", args));
+            ActionHelper.saveMessage(getText("project.permissionDenied", new String[] {getText(roleKey) }));
             return WORKSPACE_RESULT;
         }
     }

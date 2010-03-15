@@ -16,6 +16,10 @@
       <priority value="WARN"/>
     </category>
 
+    <category name="org.apache.struts2.util.TextProviderHelper">
+      <priority value="WARN"/>
+    </category>
+
     <category name="org.springframework">
       <priority value="WARN"/>
     </category>
@@ -40,6 +44,10 @@
         <priority value="ERROR"/>
     </category>
 
+    <category name="com.opensymphony.xwork2.ObjectFactory">
+        <priority value="fatal"/>
+    </category>
+    
     <category name="freemarker">
         <priority value="ERROR"/>
     </category>

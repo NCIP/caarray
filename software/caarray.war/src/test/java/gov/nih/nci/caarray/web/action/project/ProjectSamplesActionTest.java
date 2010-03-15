@@ -115,6 +115,7 @@ import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
+import gov.nih.nci.caarray.web.AbstractBaseStrutsTest;
 import gov.nih.nci.caarray.web.AbstractDownloadTest;
 import gov.nih.nci.caarray.web.helper.DownloadHelper;
 
@@ -128,11 +129,8 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.struts2.ServletActionContext;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.mock.web.MockHttpServletResponse;
 
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 import com.fiveamsolutions.nci.commons.web.struts2.action.ActionHelper;
@@ -148,8 +146,6 @@ public class ProjectSamplesActionTest extends AbstractDownloadTest {
     private static Sample DUMMY_SAMPLE = new Sample();
     private static Source DUMMY_SOURCE = new Source();
 
-    private MockHttpServletResponse mockResponse;
-
     @Before
     @SuppressWarnings("deprecation")
     public void setUp() throws Exception {
@@ -162,9 +158,6 @@ public class ProjectSamplesActionTest extends AbstractDownloadTest {
         DUMMY_SAMPLE.setName("Dummy Sample");
         DUMMY_SOURCE = new Source();
         DUMMY_SOURCE.setName("Dummy Source");
-        ServletActionContext.setRequest(new MockHttpServletRequest());
-        mockResponse = new MockHttpServletResponse();
-        ServletActionContext.setResponse(mockResponse);
     }
 
     @Test

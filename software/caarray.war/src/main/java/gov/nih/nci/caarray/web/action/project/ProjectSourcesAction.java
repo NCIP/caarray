@@ -89,6 +89,7 @@ import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.domain.search.SourceSortCriterion;
+import gov.nih.nci.caarray.web.helper.DownloadHelper;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -99,16 +100,13 @@ import com.fiveamsolutions.nci.commons.web.displaytag.SortablePaginatedList;
 import com.fiveamsolutions.nci.commons.web.struts2.action.ActionHelper;
 import com.opensymphony.xwork2.validator.annotations.CustomValidator;
 import com.opensymphony.xwork2.validator.annotations.RequiredFieldValidator;
-import com.opensymphony.xwork2.validator.annotations.Validation;
 import com.opensymphony.xwork2.validator.annotations.ValidationParameter;
 import com.opensymphony.xwork2.validator.annotations.Validations;
-import gov.nih.nci.caarray.web.helper.DownloadHelper;
 
 /**
  * Action implementing the sources tab.
  * @author Dan Kokotov
  */
-@Validation
 @Validations(
     requiredFields = @RequiredFieldValidator(fieldName = "currentSource.tissueSite",
             key = "struts.validator.requiredString", message = "")

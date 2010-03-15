@@ -85,42 +85,28 @@ package gov.nih.nci.caarray.web.filter;
 import gov.nih.nci.caarray.application.ConfigurationHelper;
 import gov.nih.nci.caarray.domain.ConfigParamEnum;
 
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.servlet.FilterConfig;
 
 import org.apache.commons.configuration.DataConfiguration;
 import org.apache.commons.lang.StringUtils;
-import org.apache.struts2.StrutsConstants;
 import org.apache.struts2.dispatcher.Dispatcher;
-import org.apache.struts2.dispatcher.FilterDispatcher;
+import org.apache.struts2.dispatcher.ng.filter.StrutsPrepareAndExecuteFilter;
 
 /**
  * filter to initialize struts 2 of caarray 2.
  * @author Scott Miller
  */
-public class CaarrayStruts2FilterDispatcher extends FilterDispatcher {
-
+public class CaarrayStruts2FilterDispatcher extends StrutsPrepareAndExecuteFilter {
     /**
+     * set the upload temporary directory based on our config.
      * {@inheritDoc}
      */
-    @SuppressWarnings("unchecked")
     @Override
-    protected Dispatcher createDispatcher(FilterConfig filterConfig) {
-        Map<String, String> params = new HashMap<String, String>();
-        for (Enumeration e = filterConfig.getInitParameterNames(); e.hasMoreElements();) {
-            String name = (String) e.nextElement();
-            String value = filterConfig.getInitParameter(name);
-            params.put(name, value);
-        }
-
+    protected void postInit(Dispatcher dispatcher, FilterConfig filterConfig) {
         DataConfiguration config = ConfigurationHelper.getConfiguration();
         String multiPartSaveDir = config.getString(ConfigParamEnum.STRUTS_MULTIPART_SAVEDIR.name());
         if (StringUtils.isNotBlank(multiPartSaveDir)) {
-            params.put(StrutsConstants.STRUTS_MULTIPART_SAVEDIR, multiPartSaveDir);
+            dispatcher.setMultipartSaveDir(multiPartSaveDir);
         }
-        return new Dispatcher(filterConfig.getServletContext(), params);
     }
 }

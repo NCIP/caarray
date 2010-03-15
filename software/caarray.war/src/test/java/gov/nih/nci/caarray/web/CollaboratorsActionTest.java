@@ -112,7 +112,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 /**
  * Test cases for struts action.
  */
-public class CollaboratorsActionTest extends AbstractCaarrayTest {
+public class CollaboratorsActionTest extends AbstractBaseStrutsTest {
 
     private final CollaboratorsAction action = new CollaboratorsAction();
     private static final PermissionsManagementServiceStub pstub = new PermissionsManagementServiceStub();
@@ -126,7 +126,6 @@ public class CollaboratorsActionTest extends AbstractCaarrayTest {
     @Before
     public void before() {
         pstub.reset();
-        ServletActionContext.setRequest(new MockHttpServletRequest());
     }
 
     @Test

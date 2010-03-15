@@ -108,7 +108,6 @@ import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.validator.annotations.CustomValidator;
 import com.opensymphony.xwork2.validator.annotations.UrlValidator;
-import com.opensymphony.xwork2.validator.annotations.Validation;
 import com.opensymphony.xwork2.validator.annotations.ValidationParameter;
 import com.opensymphony.xwork2.validator.annotations.Validations;
 
@@ -117,7 +116,6 @@ import com.opensymphony.xwork2.validator.annotations.Validations;
  *
  * @author Scott Miller
  */
-@Validation
 public class VocabularyAction extends ActionSupport implements Preparable {
     private static final long serialVersionUID = 1L;
     private Set<Term> terms = new HashSet<Term>();

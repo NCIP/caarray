@@ -1,4 +1,6 @@
 <%@ include file="/WEB-INF/pages/common/taglibs.jsp"%>
+<%@ taglib uri="/struts-tags" prefix="s" %>
+
 <page:applyDecorator name="default">
 <html>
     <head>

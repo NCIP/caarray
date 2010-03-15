@@ -94,6 +94,7 @@ import gov.nih.nci.caarray.domain.search.HybridizationSortCriterion;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.UsernameHolder;
+import gov.nih.nci.caarray.web.helper.DownloadHelper;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -108,15 +109,12 @@ import com.fiveamsolutions.nci.commons.web.displaytag.SortablePaginatedList;
 import com.fiveamsolutions.nci.commons.web.struts2.action.ActionHelper;
 import com.opensymphony.xwork2.validator.annotations.CustomValidator;
 import com.opensymphony.xwork2.validator.annotations.FieldExpressionValidator;
-import com.opensymphony.xwork2.validator.annotations.Validation;
 import com.opensymphony.xwork2.validator.annotations.ValidationParameter;
-import gov.nih.nci.caarray.web.helper.DownloadHelper;
 
 /**
  * Action implementing the samples tab.
  * @author Dan Kokotov
  */
-@Validation
 public class ProjectHybridizationsAction extends AbstractProjectAssociatedAnnotationsListTabAction<LabeledExtract> {
     private static final long serialVersionUID = 1L;
 

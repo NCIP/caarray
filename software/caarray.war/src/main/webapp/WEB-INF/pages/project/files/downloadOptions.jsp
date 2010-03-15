@@ -42,51 +42,53 @@ div.accordion-content div.tableboxpad
         <!--Data Sets-->
         <div class="accordion-toggle top">Download Experiment File Packages</div>
         <div class="accordion-content">
-            <s:if test="${empty files}">
-            <div class="row_disabled">
-                <div class="export_type_icon"><img src="<c:url value="/images/ico_zip_disabled.png"/>" alt="Zip (Disabled)" /></div>
-                <h5>No Experiment Files</h5>
-                <div class="descr">There are no experiment files to download in a .ZIP</div>
-                <div class="clear"></div>
-            </div>
-            </s:if>
-            <s:else>
-                <c:url var="downloadAllUrl" value="/project/files/downloadByType.action">
-                    <c:param name="project.id" value="${project.id}" />
-                </c:url>
-                <div class="row">
-                    <div class="export_type_icon"><a href="${downloadAllUrl}"><img src="<c:url value="/images/ico_zip.png"/>" alt="Zip" /></a></div>
-                    <h5><a href="${downloadAllUrl}">All Experiment Files</a></h5>
-                    <div class="descr">Download all experiment files in a .ZIP</div>
-                    <div class="clear"></div>
-                </div>
-
-                <s:iterator id="type" value="fileTypes">
-                    <c:url var="downloadUrl" value="/project/files/downloadByType.action">
-                        <c:param name="project.id" value="${project.id}" />
-                        <c:param name="fileType" value="${type}" />
-                    </c:url>
-                    <div class="row">
-                        <div class="export_type_icon"><a href="${downloadUrl}"><img src="<c:url value="/images/ico_zip.png"/>" alt="Zip" /></a></div>
-                        <h5><a href="${downloadUrl}">All ${type} Files</a></h5>
-                        <div class="descr">Download all ${type} files in a .ZIP</div>
+            <c:choose>
+                <c:when test="${empty files}">
+                    <div class="row_disabled">
+                        <div class="export_type_icon"><img src="<c:url value="/images/ico_zip_disabled.png"/>" alt="Zip (Disabled)" /></div>
+                        <h5>No Experiment Files</h5>
+                        <div class="descr">There are no experiment files to download in a .ZIP</div>
                         <div class="clear"></div>
                     </div>
-                </s:iterator>
+                </c:when>
+                <c:otherwise>
+                    <c:url var="downloadAllUrl" value="/project/files/downloadByType.action">
+                        <c:param name="project.id" value="${project.id}" />
+                    </c:url>
+                    <div class="row">
+                        <div class="export_type_icon"><a href="${downloadAllUrl}"><img src="<c:url value="/images/ico_zip.png"/>" alt="Zip" /></a></div>
+                        <h5><a href="${downloadAllUrl}">All Experiment Files</a></h5>
+                        <div class="descr">Download all experiment files in a .ZIP</div>
+                        <div class="clear"></div>
+                    </div>
 
-                <s:if test="${not empty project.supplementalFiles}">
-                <c:url var="downloadUrl" value="/project/files/downloadByType.action">
-                    <c:param name="project.id" value="${project.id}" />
-                    <c:param name="fileStatus" value="SUPPLEMENTAL" />
-                </c:url>
-                <div class="row">
-                    <div class="export_type_icon"><a href="${downloadUrl}"><img src="<c:url value="/images/ico_zip.png"/>" alt="Zip" /></a></div>
-                    <h5><a href="${downloadUrl}">All SUPPLEMENTAL Files</a></h5>
-                    <div class="descr">Download all SUPPLEMENTAL files in a .ZIP</div>
-                    <div class="clear"></div>
-                </div>
-                </s:if>
-            </s:else>
+                    <s:iterator id="type" value="fileTypes">
+                        <c:url var="downloadUrl" value="/project/files/downloadByType.action">
+                            <c:param name="project.id" value="${project.id}" />
+                            <c:param name="fileType" value="${type}" />
+                        </c:url>
+                        <div class="row">
+                            <div class="export_type_icon"><a href="${downloadUrl}"><img src="<c:url value="/images/ico_zip.png"/>" alt="Zip" /></a></div>
+                            <h5><a href="${downloadUrl}">All ${type} Files</a></h5>
+                            <div class="descr">Download all ${type} files in a .ZIP</div>
+                            <div class="clear"></div>
+                        </div>
+                    </s:iterator>
+
+                    <c:if test="${!empty project.supplementalFiles}">
+                        <c:url var="downloadUrl" value="/project/files/downloadByType.action">
+                            <c:param name="project.id" value="${project.id}" />
+                            <c:param name="fileStatus" value="SUPPLEMENTAL" />
+                        </c:url>
+                        <div class="row">
+                            <div class="export_type_icon"><a href="${downloadUrl}"><img src="<c:url value="/images/ico_zip.png"/>" alt="Zip" /></a></div>
+                            <h5><a href="${downloadUrl}">All SUPPLEMENTAL Files</a></h5>
+                            <div class="descr">Download all SUPPLEMENTAL files in a .ZIP</div>
+                            <div class="clear"></div>
+                        </div>
+                    </c:if>
+                </c:otherwise>
+            </c:choose>
         </div>
         <!--/Data Sets-->
         <!--Individual Files-->

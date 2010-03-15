@@ -14,7 +14,7 @@
                 </td>
             </tr>
         </table>
-        <s:hidden name="project.id" value="${project.id}" />
+        <s:hidden name="project.id" value="%{project.id}" />
         <table class="searchresults">
             <tr>
                 <td>

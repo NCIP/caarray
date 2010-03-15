@@ -90,6 +90,7 @@ import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.sample.Extract;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 import gov.nih.nci.caarray.domain.search.LabeledExtractSortCriterion;
+import gov.nih.nci.caarray.web.helper.DownloadHelper;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -101,15 +102,12 @@ import org.apache.struts2.interceptor.validation.SkipValidation;
 import com.fiveamsolutions.nci.commons.web.displaytag.SortablePaginatedList;
 import com.fiveamsolutions.nci.commons.web.struts2.action.ActionHelper;
 import com.opensymphony.xwork2.validator.annotations.CustomValidator;
-import com.opensymphony.xwork2.validator.annotations.Validation;
 import com.opensymphony.xwork2.validator.annotations.ValidationParameter;
-import gov.nih.nci.caarray.web.helper.DownloadHelper;
 
 /**
  * Action implementing the samples tab.
  * @author Dan Kokotov
  */
-@Validation
 public class ProjectLabeledExtractsAction extends AbstractProjectAssociatedAnnotationsListTabAction<Extract> {
     private static final long serialVersionUID = 1L;
 

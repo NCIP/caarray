@@ -118,11 +118,8 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.struts2.ServletActionContext;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.mock.web.MockHttpServletResponse;
 
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 import com.fiveamsolutions.nci.commons.web.struts2.action.ActionHelper;
@@ -137,8 +134,6 @@ public class ProjectLabeledExtractsActionTest extends AbstractDownloadTest {
     private static LabeledExtract DUMMY_LABELED_EXTRACT = new LabeledExtract();
     private static Extract DUMMY_EXTRACT = new Extract();
 
-    private MockHttpServletResponse mockResponse;
-
     @SuppressWarnings("deprecation")
     @Before
     public void setUp() throws Exception {
@@ -147,9 +142,6 @@ public class ProjectLabeledExtractsActionTest extends AbstractDownloadTest {
         locatorStub.addLookup(ProjectManagementService.JNDI_NAME, new ProjectManagementServiceStub());
         locatorStub.addLookup(VocabularyService.JNDI_NAME, new VocabularyServiceStub());
         DUMMY_LABELED_EXTRACT.setId(1L);
-        ServletActionContext.setRequest(new MockHttpServletRequest());
-        mockResponse = new MockHttpServletResponse();
-        ServletActionContext.setResponse(mockResponse);
     }
 
     @SuppressWarnings("deprecation")

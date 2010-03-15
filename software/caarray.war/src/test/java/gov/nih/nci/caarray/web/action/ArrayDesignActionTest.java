@@ -131,7 +131,6 @@ import com.opensymphony.xwork2.Action;
 
 /**
  * @author Winston Cheng
- *
  */
 @SuppressWarnings("PMD")
 public class ArrayDesignActionTest extends AbstractDownloadTest {
@@ -140,7 +139,6 @@ public class ArrayDesignActionTest extends AbstractDownloadTest {
     private final LocalVocabularyServiceStub vocabularyServiceStub = new LocalVocabularyServiceStub();
     private final LocalFileAccessServiceStub fileAccessServiceStub = new LocalFileAccessServiceStub();
     private final LocalFileManagementServiceStub fileManagementServiceStub = new LocalFileManagementServiceStub();
-    private MockHttpServletResponse mockResponse;
     private static final int NUM_DESIGNS = 3;
     private static final Long DESIGN_ID = 1L;
 
@@ -151,9 +149,6 @@ public class ArrayDesignActionTest extends AbstractDownloadTest {
         locatorStub.addLookup(VocabularyService.JNDI_NAME, this.vocabularyServiceStub);
         locatorStub.addLookup(FileAccessService.JNDI_NAME, this.fileAccessServiceStub);
         locatorStub.addLookup(FileManagementService.JNDI_NAME, this.fileManagementServiceStub);
-        ServletActionContext.setRequest(new MockHttpServletRequest());
-        mockResponse = new MockHttpServletResponse();
-        ServletActionContext.setResponse(mockResponse);
     }
 
     @SuppressWarnings("deprecation")
@@ -240,7 +235,6 @@ public class ArrayDesignActionTest extends AbstractDownloadTest {
 
     @Test
     public void testSaveMeta() throws Exception {
-        ServletActionContext.setRequest(new MockHttpServletRequest());
         ArrayDesign arrD = new ArrayDesign();
         arrD.setName("name");
         Organization org = new Organization();
@@ -290,7 +284,6 @@ public class ArrayDesignActionTest extends AbstractDownloadTest {
 
     @Test
     public void testSaveDuplicateMeta() throws Exception {
-        ServletActionContext.setRequest(new MockHttpServletRequest());
         ArrayDesign arrD = new ArrayDesign();
         arrD.setName("name");
         Organization org = new Organization();
@@ -324,7 +317,6 @@ public class ArrayDesignActionTest extends AbstractDownloadTest {
 
     @Test
     public void testDelete() throws Exception {
-        ServletActionContext.setRequest(new MockHttpServletRequest());
         arrayDesignAction.setArrayDesign(new ArrayDesign());
         arrayDesignServiceStub.throwArrayDesignDeleteException = true;
         assertEquals(arrayDesignAction.SUCCESS, arrayDesignAction.delete());

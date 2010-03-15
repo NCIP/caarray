@@ -7,9 +7,6 @@
     <!-- Configuration for the default package. -->
     <package name="default" extends="struts-default">
         <interceptors>
-            <interceptor name="caarrayParams"
-                class="com.fiveamsolutions.nci.commons.web.struts2.interceptor.DisplayTagParametersInterceptor" />
-
             <interceptor name="nullCollectionElements"
                 class="com.fiveamsolutions.nci.commons.web.struts2.interceptor.NullCollectionElementInterceptor" />
 
@@ -22,7 +19,14 @@
             <interceptor-stack name="caarrayParamsPrepareParamsStack">
                 <interceptor-ref name="exception" />
                 <interceptor-ref name="alias" />
-                <interceptor-ref name="caarrayParams" />
+                <interceptor-ref name="params">
+                    <!--
+                        Excludes the jQuery no-cache _ parameter and the Displaytag d-#-X parameter(s)
+                    -->
+                    <param name="excludeParams">
+                        _,d-\d+?-[sop]
+                    </param>
+                </interceptor-ref>
                 <interceptor-ref name="servletConfig" />
                 <interceptor-ref name="prepare" />
                 <interceptor-ref name="i18n" />
@@ -31,7 +35,14 @@
                 <interceptor-ref name="fileUpload" />
                 <interceptor-ref name="checkbox" />
                 <interceptor-ref name="staticParams" />
-                <interceptor-ref name="caarrayParams" />
+                <interceptor-ref name="params">
+                    <!--
+                        Excludes the jQuery no-cache _ parameter and the Displaytag d-#-X parameter(s)
+                    -->
+                    <param name="excludeParams">
+                        _,d-\d+?-[sop]
+                    </param>
+                </interceptor-ref>
                 <interceptor-ref name="conversionError" />
                 <interceptor-ref name="nullCollectionElements" />
                 <interceptor-ref name="maliciousInput" />
@@ -60,8 +71,13 @@
                 <interceptor-ref name="fileUpload" />
                 <interceptor-ref name="checkbox" />
                 <interceptor-ref name="staticParams" />
-                <interceptor-ref name="caarrayParams">
-                    <param name="excludeParams">dojo\..*</param>
+                <interceptor-ref name="params">
+                    <!--
+                        Excludes the jQuery no-cache _ parameter and the Displaytag d-#-X parameter(s)
+                    -->
+                    <param name="excludeParams">
+                        _,d-\d+?-[sop]
+                    </param>
                 </interceptor-ref>
                 <interceptor-ref name="conversionError" />
                 <interceptor-ref name="nullCollectionElements" />
@@ -103,7 +119,7 @@
             <result name="input">/WEB-INF/pages/home.jsp</result>
         </action>
         <action name="logout" class="com.fiveamsolutions.nci.commons.web.struts2.action.LogoutAction" method="logout">
-            <result name="success" type="redirect-action">
+            <result name="success" type="redirectAction">
                 <param name="namespace">/</param>
                 <param name="actionName">home</param>
             </result>
@@ -128,14 +144,14 @@
         </action>
 
         <action name="project/details" class="gov.nih.nci.caarray.web.action.project.ProjectAction" method="details">
-            <result name="login-details-id" type="redirect-action">protected/project/details${requestParameters}</result>
-            <result name="login-details-publicid" type="redirect-action">protected/project/details${requestParameters}</result>
-            <result name="workspace" type="redirect-action">protected/project/workspace</result>
+            <result name="login-details-id" type="redirectAction">protected/project/details${requestParameters}</result>
+            <result name="login-details-publicid" type="redirectAction">protected/project/details${requestParameters}</result>
+            <result name="workspace" type="redirectAction">protected/project/workspace</result>
             <result name="input">/WEB-INF/pages/project/form.jsp</result>
         </action>
 
         <action name="project/browse" class="gov.nih.nci.caarray.web.action.project.ProjectAction" method="browse">
-            <result name="workspace" type="redirect-action">/protected/project/workspace</result>
+            <result name="workspace" type="redirectAction">/protected/project/workspace</result>
             <result name="input">/WEB-INF/pages/project/form.jsp</result>
             <result name="browse">/WEB-INF/pages/project/browse.jsp</result>
         </action>
@@ -162,11 +178,11 @@
             <result name="workspace">/WEB-INF/pages/project/backToWorkspace.jsp</result>
             <result name="reload-project">/WEB-INF/pages/project/reloadProject.jsp</result>
             <result name="associationValues">/WEB-INF/pages/project/annotationAssociatedValues.jsp</result>
-            <result name="noSourceData" type="redirect-action">${editMode ? '/protected/' : ''}project/${editMode ? 'edit' : 'details'}?project.id=${project.id}&amp;initialTab=annotations&amp;initialTab2=sources</result>
-            <result name="noSampleData" type="redirect-action">${editMode ? '/protected/' : ''}project/${editMode ? 'edit' : 'details'}?project.id=${project.id}&amp;initialTab=annotations&amp;initialTab2=samples</result>
-            <result name="noExtractData" type="redirect-action">${editMode ? '/protected/' : ''}project/${editMode ? 'edit' : 'details'}?project.id=${project.id}&amp;initialTab=annotations&amp;initialTab2=extracts</result>
-            <result name="noLabeledExtractData" type="redirect-action">${editMode ? '/protected/' : ''}project/${editMode ? 'edit' : 'details'}?project.id=${project.id}&amp;initialTab=annotations&amp;initialTab2=labeledExtracts</result>
-            <result name="noHybData" type="redirect-action">${editMode ? '/protected/' : ''}project/${editMode ? 'edit' : 'details'}?project.id=${project.id}&amp;initialTab=annotations&amp;initialTab2=hybridizations</result>
+            <result name="noSourceData" type="redirectAction">${editMode ? '/protected/' : ''}project/${editMode ? 'edit' : 'details'}?project.id=${project.id}&amp;initialTab=annotations&amp;initialTab2=sources</result>
+            <result name="noSampleData" type="redirectAction">${editMode ? '/protected/' : ''}project/${editMode ? 'edit' : 'details'}?project.id=${project.id}&amp;initialTab=annotations&amp;initialTab2=samples</result>
+            <result name="noExtractData" type="redirectAction">${editMode ? '/protected/' : ''}project/${editMode ? 'edit' : 'details'}?project.id=${project.id}&amp;initialTab=annotations&amp;initialTab2=extracts</result>
+            <result name="noLabeledExtractData" type="redirectAction">${editMode ? '/protected/' : ''}project/${editMode ? 'edit' : 'details'}?project.id=${project.id}&amp;initialTab=annotations&amp;initialTab2=labeledExtracts</result>
+            <result name="noHybData" type="redirectAction">${editMode ? '/protected/' : ''}project/${editMode ? 'edit' : 'details'}?project.id=${project.id}&amp;initialTab=annotations&amp;initialTab2=hybridizations</result>
             <result name="downloadFiles">/WEB-INF/pages/project/tabCommon/downloadFiles.jsp</result>
             <result name="downloadFilesList">/WEB-INF/pages/project/tabCommon/downloadFilesList.jsp</result>
             <result name="downloadFilesListTable">/WEB-INF/pages/project/tabCommon/downloadFilesListTable.jsp</result>
@@ -211,7 +227,7 @@
 
     <package name="protected" namespace="/protected" extends="default">
         <action name="project/details" class="gov.nih.nci.caarray.web.action.project.ProjectAction" method="details">
-            <result name="workspace" type="redirect-action">project/workspace</result>
+            <result name="workspace" type="redirectAction">project/workspace</result>
             <result name="input">/WEB-INF/pages/project/form.jsp</result>
         </action>
 
@@ -228,16 +244,16 @@
         </action>
 
         <action name="project/edit" class="gov.nih.nci.caarray.web.action.project.ProjectAction" method="edit">
-            <result name="workspace" type="redirect-action">project/workspace</result>
+            <result name="workspace" type="redirectAction">project/workspace</result>
             <result name="input">/WEB-INF/pages/project/form.jsp</result>
         </action>
 
         <action name="project/delete" class="gov.nih.nci.caarray.web.action.project.ProjectAction" method="delete">
-            <result name="workspace" type="redirect-action">project/workspace</result>
+            <result name="workspace" type="redirectAction">project/workspace</result>
         </action>
 
         <action name="project/changeWorkflowStatus" class="gov.nih.nci.caarray.web.action.project.ProjectAction" method="changeWorkflowStatus">
-            <result name="workspace" type="redirect-action">project/workspace</result>
+            <result name="workspace" type="redirectAction">project/workspace</result>
             <result name="input">/WEB-INF/pages/project/form.jsp</result>
         </action>
 
@@ -271,7 +287,7 @@
             <result name="input">/WEB-INF/pages/arrayDesign/edit.jsp</result>
             <result name="metaValid">/WEB-INF/pages/arrayDesign/fileEdit.jsp</result>
             <result name="importComplete">/WEB-INF/pages/arrayDesign/importComplete.jsp</result>
-            <result name="success" type="redirect-action">arrayDesign/list</result>
+            <result name="success" type="redirectAction">arrayDesign/list</result>
         </action>
 
         <action name="ajax/arrayDesign/*" class="gov.nih.nci.caarray.web.action.ArrayDesignAction" method="{1}">
@@ -304,7 +320,7 @@
         </action>
         <action name="ownership/*" class="gov.nih.nci.caarray.web.action.OwnershipAction" method="{1}">
             <result name="success">/WEB-INF/pages/ownership/{1}.jsp</result>
-            <result name="listOwners" type="redirect-action">ownership/listOwners</result>
+            <result name="listOwners" type="redirectAction">ownership/listOwners</result>
             <result name="assets">/WEB-INF/pages/ownership/assets.jsp</result>
             <result name="newOwner">/WEB-INF/pages/ownership/newOwner.jsp</result>
         </action>

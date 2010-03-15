@@ -97,7 +97,6 @@ import com.fiveamsolutions.nci.commons.web.struts2.action.ActionHelper;
 import com.opensymphony.xwork2.ActionSupport;
 
 /**
- *
  * @author gax
  */
 public class OwnershipAction extends ActionSupport {

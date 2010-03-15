@@ -10,7 +10,7 @@
 </c:url>
 <c:url value="/ajax/project/listTab/Hybridizations/jsonList.action" var="hybsJsonListUrl">
     <c:param name="project.id" value="${project.id}"/>
-</c:url>
+</c:url> 
 
 <c:url value="/ajax/project/files/importTreeNodesJson.action" var="nodesJsonUrl"/>
 <c:url value="/protected/ajax/project/files/validateSelectedImportFiles.action" var="validateImportFilesUrl"/>

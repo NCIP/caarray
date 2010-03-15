@@ -83,7 +83,6 @@
 package gov.nih.nci.caarray.web.action;
 
 import static org.junit.Assert.assertEquals;
-import gov.nih.nci.caarray.AbstractCaarrayTest;
 import gov.nih.nci.caarray.application.project.ProjectManagementService;
 import gov.nih.nci.caarray.application.project.ProjectManagementServiceStub;
 import gov.nih.nci.caarray.application.vocabulary.VocabularyService;
@@ -100,6 +99,7 @@ import gov.nih.nci.caarray.domain.search.SearchSourceCategory;
 import gov.nih.nci.caarray.domain.search.SearchTypeSelection;
 import gov.nih.nci.caarray.domain.search.SourceJoinableSortCriterion;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
+import gov.nih.nci.caarray.web.AbstractBaseStrutsTest;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -113,10 +113,9 @@ import com.opensymphony.xwork2.Action;
 
 /**
  * @author Winston Cheng
- *
  */
 @SuppressWarnings("PMD")
-public class SearchActionTest extends AbstractCaarrayTest {
+public class SearchActionTest extends AbstractBaseStrutsTest {
     private final SearchAction searchAction = new SearchAction();
     private final LocalProjectManagementServiceStub projectServiceStub = new LocalProjectManagementServiceStub();
     private final VocabularyService vocabServiceStub = new VocabularyServiceStub();

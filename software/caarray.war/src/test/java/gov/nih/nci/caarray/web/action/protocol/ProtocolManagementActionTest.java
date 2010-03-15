@@ -87,7 +87,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import gov.nih.nci.caarray.AbstractCaarrayTest;
 import gov.nih.nci.caarray.application.GenericDataService;
 import gov.nih.nci.caarray.application.GenericDataServiceStub;
 import gov.nih.nci.caarray.application.vocabulary.VocabularyService;
@@ -96,12 +95,14 @@ import gov.nih.nci.caarray.domain.protocol.Protocol;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
+import gov.nih.nci.caarray.web.AbstractBaseStrutsTest;
 
 import org.apache.struts2.ServletActionContext;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.web.struts.ActionServletAwareProcessor;
 
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 import com.opensymphony.xwork2.Action;
@@ -111,7 +112,7 @@ import com.opensymphony.xwork2.Action;
  *
  */
 @SuppressWarnings("PMD.AvoidDuplicateLiterals")
-public class ProtocolManagementActionTest extends AbstractCaarrayTest {
+public class ProtocolManagementActionTest extends AbstractBaseStrutsTest {
 
     private static GenericDataService genericDataService;
     private static VocabularyService vocabularyService;
@@ -149,7 +150,6 @@ public class ProtocolManagementActionTest extends AbstractCaarrayTest {
     @Before
     public void before() {
         this.action = new ProtocolManagementAction();
-        ServletActionContext.setRequest(new MockHttpServletRequest());
     }
 
     @Test(expected = PermissionDeniedException.class)
@@ -189,7 +189,7 @@ public class ProtocolManagementActionTest extends AbstractCaarrayTest {
 
     @Test
     public void testStartOnEditPage() throws Exception {
-        MockHttpServletRequest mockRequest = new MockHttpServletRequest();
+        MockHttpServletRequest mockRequest = (MockHttpServletRequest) ServletActionContext.getRequest();
         mockRequest.addParameter("startWithEdit", "true");
         ServletActionContext.setRequest(mockRequest);
         this.action.setReturnInitialTab1("test1");

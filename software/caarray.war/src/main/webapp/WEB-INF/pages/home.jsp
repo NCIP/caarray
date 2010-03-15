@@ -3,7 +3,6 @@
 <head>
     <meta name="showLoginSidebar" content="true"/>
     <script type="text/javascript">
-
             populateCategory = function() {
                 if ($('searchTypeSEARCH_BY_SAMPLE').checked == true) {
                     $('selectSampleCat').show();
@@ -142,30 +141,37 @@
                     <tr>
                         <th colspan="2">
                     <label for="location"><fmt:message key="search.location"/></label>
+                    <c:set var="nodeName" value="${initParam.nodeName}"/>
                     <s:select name="location" theme="simple"
-                              list="#{'${initParam['nodeName']}':'${initParam['nodeName']}'}"
+                              list="#{#attr.nodeName:#attr.nodeName}"
                               headerKey="" headerValue="(All Locations)"/>
                         </th>
                     </tr>
                     <c:forEach items="${browseItems}" var="row" varStatus="rowStatus">
                         <tr class="${rowStatus.count % 2 == 0 ? 'even' : 'odd'}">
                             <td>
-                                <s:if test="${!empty row.category}">
-                                    <c:url value="/browse.action" var="browseLink">
-                                        <c:param name="category" value="${row.category}"/>
-                                    </c:url>
-                                    <a href="${browseLink}"><s:text name="${row.category.resourceKey}"/></a>
-                                </s:if><s:else>
-                                    <s:text name="${row.resourceKey}"/>
-                                </s:else>
+                                <c:choose>
+                                    <c:when test="${!empty row.category}">
+                                        <c:url value="/browse.action" var="browseLink">
+                                            <c:param name="category" value="${row.category}"/>
+                                        </c:url>
+                                    <a href="${browseLink}"><fmt:message key="${row.category.resourceKey}"/></a>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <fmt:message key="${row.resourceKey}"/>
+                                    </c:otherwise>
+                                </c:choose>
                             </td>
                             <td>
-                                <s:if test="${!empty row.category}">
-                                    <c:url value="/browse.action" var="browseLink">
-                                        <c:param name="category" value="${row.category}"/>
-                                    </c:url>
-                                    <a href="${browseLink}">${row.count}</a>
-                                </s:if><s:else>${row.count}</s:else>
+                                <c:choose>
+                                    <c:when test="${!empty row.category}">
+                                        <c:url value="/browse.action" var="browseLink">
+                                            <c:param name="category" value="${row.category}"/>
+                                        </c:url>
+                                        <a href="${browseLink}">${row.count}</a>
+                                    </c:when>
+                                    <c:otherwise>${row.count}</c:otherwise>                                
+                                </c:choose>
                             </td>
                         </tr>
                     </c:forEach>

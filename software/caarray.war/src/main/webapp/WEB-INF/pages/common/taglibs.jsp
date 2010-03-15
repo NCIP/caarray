@@ -7,8 +7,8 @@
 <%@ taglib uri="http://www.opensymphony.com/oscache" prefix="cache" %>
 <%@ taglib uri="http://www.opensymphony.com/sitemesh/decorator" prefix="decorator"%>
 <%@ taglib uri="http://www.opensymphony.com/sitemesh/page" prefix="page"%>
-<%@ taglib uri="/struts-tags" prefix="s" %>
 <%@ taglib uri="http://ajaxtags.org/tags/ajax" prefix="ajax" %>
+<%@ taglib uri="/struts-tags" prefix="s" %>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="caarray" %>
 <%@ taglib uri="/WEB-INF/caarray-functions.tld" prefix="caarrayfn" %>
 

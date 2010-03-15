@@ -6,7 +6,7 @@
             <caarray:displayTagProperties/>
             <display:setProperty name="paging.banner.group_size" value="3"/>
             <display:column title="${checkboxAll}">
-                <s:checkbox id="chk${row.id}" name="sampleSecurityLevels" fieldValue="${row.id}" value="false" theme="simple" />
+                <s:checkbox id="chk%{#attr.row.id}" name="sampleSecurityLevels" fieldValue="%{#attr.row.id}" value="false" theme="simple" />
             </display:column>
             <display:column titleKey="experiment.samples.name" >
                          <c:url var="sampleUrl" value="/ajax/project/listTab/Samples/view.action">

@@ -110,13 +110,10 @@ import java.util.regex.Pattern;
 import com.fiveamsolutions.nci.commons.web.displaytag.SortablePaginatedList;
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionSupport;
-import com.opensymphony.xwork2.validator.annotations.Validation;
 
 /**
  * @author Winston Cheng
- *
  */
-@Validation
 @SuppressWarnings({"PMD.ExcessiveClassLength", "PMD.TooManyFields", "PMD.CyclomaticComplexity" })
 public class SearchAction extends ActionSupport {
     private static final long serialVersionUID = -6250359716714235444L;

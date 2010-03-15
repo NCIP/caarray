@@ -128,14 +128,12 @@ import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.validator.annotations.FieldExpressionValidator;
 import com.opensymphony.xwork2.validator.annotations.RequiredFieldValidator;
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
-import com.opensymphony.xwork2.validator.annotations.Validation;
 import com.opensymphony.xwork2.validator.annotations.Validations;
 
 /**
  * @author Winston Cheng
  *
  */
-@Validation
 @SuppressWarnings({"PMD.CyclomaticComplexity", "PMD.ExcessiveClassLength" })
 public class ArrayDesignAction extends ActionSupport implements Preparable {
     private static final String UPLOAD_FIELD_NAME = "upload";
@@ -359,14 +357,12 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
         if (!createMode && editMode) {
 
             if (ServiceLocatorFactory.getArrayDesignService().isDuplicate(arrayDesign)) {
-                List<String> args = new ArrayList<String>();
-                args.add(getArrayDesign().getName());
-                ActionHelper.saveMessage(getText("arraydesign.duplicate", args));
+                ActionHelper.saveMessage(getText("arraydesign.duplicate", new String[] {getArrayDesign().getName() }));
                 return Action.INPUT;
             }
 
             saveImportFile();
-            List<String> args = new ArrayList<String>();
+            List<Object> args = new ArrayList<Object>();
             args.add(getArrayDesign().getName());
             args.add(getArrayDesign().getProvider().getName());
             ActionHelper.saveMessage(getText("arraydesign.saved", args));
@@ -517,7 +513,8 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
         } catch (RuntimeException re) {
             if (re.getCause() instanceof InvalidNumberOfArgsException) {
                 InvalidNumberOfArgsException inv = (InvalidNumberOfArgsException) re.getCause();
-                addFieldError(UPLOAD_FIELD_NAME, getText("arrayDesign.error." + inv.getMessage(), inv.getArguments()));
+                addFieldError(UPLOAD_FIELD_NAME, getText("arrayDesign.error." + inv.getMessage(), 
+                        inv.getArguments().toArray(new String[inv.getArguments().size()])));
             } else {
                 addFieldError(UPLOAD_FIELD_NAME, getText("arrayDesign.error.importingFile"));
             }
@@ -664,5 +661,12 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
            }
 
          }
+    }
+    
+    /**
+     * @return the set of array design file types to display in UI.  
+     */
+    public static Set<FileType> arrayDesignTypes() {
+        return FileType.ARRAY_DESIGN_FILE_TYPES;
     }
 }

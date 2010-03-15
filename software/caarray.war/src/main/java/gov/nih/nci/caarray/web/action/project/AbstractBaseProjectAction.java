@@ -95,14 +95,12 @@ import org.apache.struts2.ServletActionContext;
 import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.validator.annotations.CustomValidator;
-import com.opensymphony.xwork2.validator.annotations.Validation;
 
 /**
  * Base Action class for all actions dealing with Project lifecycle.
  *
  * @author Dan Kokotov
  */
-@Validation
 public abstract class AbstractBaseProjectAction extends ActionSupport implements Preparable {
     private static final long serialVersionUID = 1L;
 

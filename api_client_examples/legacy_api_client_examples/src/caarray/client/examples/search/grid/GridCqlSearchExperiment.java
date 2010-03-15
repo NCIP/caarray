@@ -89,6 +89,7 @@ import gov.nih.nci.cagrid.cqlquery.Attribute;
 import gov.nih.nci.cagrid.cqlquery.CQLQuery;
 import gov.nih.nci.cagrid.cqlquery.Object;
 import gov.nih.nci.cagrid.cqlquery.Predicate;
+import gov.nih.nci.cagrid.cqlquery.QueryModifier;
 import gov.nih.nci.cagrid.cqlresultset.CQLQueryResults;
 import gov.nih.nci.cagrid.data.utilities.CQLQueryResultsIterator;
 import caarray.client.examples.BaseProperties;
@@ -107,6 +108,8 @@ public class GridCqlSearchExperiment {
     public static void main(String[] args) {
         GridCqlSearchExperiment gridClient = new GridCqlSearchExperiment();
         try {
+            System.out
+            .println("Using grid service url: " + BaseProperties.getGridServiceUrl());
             CaArraySvcClient client = new CaArraySvcClient(BaseProperties.getGridServiceUrl());
             System.out
                     .println("Grid-CQL-Searching for experiments using the array design " + ARRAY_DESIGN_NAME + "...");
@@ -129,25 +132,47 @@ public class GridCqlSearchExperiment {
     private CQLQuery createCqlQuery(String arrayDesignName) {
         CQLQuery cqlQuery = new CQLQuery();
         Object target = new Object();
-        target.setName("gov.nih.nci.caarray.domain.project.Experiment");
+        target.setName("gov.nih.nci.caarray.domain.data.HybridizationData");
+
+        Association hybAssociation = new Association();
+        hybAssociation.setName("gov.nih.nci.caarray.domain.hybridization.Hybridization");
+        hybAssociation.setRoleName("hybridization");
+        target.setAssociation(hybAssociation);
+
+        Association arrayAssociation = new Association();
+        arrayAssociation.setName("gov.nih.nci.caarray.domain.array.Array");
+        arrayAssociation.setRoleName("array");
+        hybAssociation.setAssociation(arrayAssociation);
 
         Association arrayDesignAssociation = new Association();
         arrayDesignAssociation.setName("gov.nih.nci.caarray.domain.array.ArrayDesign");
+        arrayDesignAssociation.setRoleName("design");
+        arrayAssociation.setAssociation(arrayDesignAssociation);
+        
+        Association orgAssociation = new Association();
+        orgAssociation.setName("edu.georgetown.pir.Organism");
+        orgAssociation.setRoleName("organism");
+        arrayDesignAssociation.setAssociation(orgAssociation);
+
         Attribute nameAttribute = new Attribute();
-        nameAttribute.setName("name");
-        nameAttribute.setValue(arrayDesignName);
+        nameAttribute.setName("scientificName");
+        nameAttribute.setValue("Homo sapiens");
         nameAttribute.setPredicate(Predicate.EQUAL_TO);
-        arrayDesignAssociation.setAttribute(nameAttribute);
-        arrayDesignAssociation.setRoleName("arrayDesigns");
-
-        target.setAssociation(arrayDesignAssociation);
-
+        orgAssociation.setAttribute(nameAttribute);
+        
         cqlQuery.setTarget(target);
+        QueryModifier qm = new QueryModifier();
+        qm.setCountOnly(true);
+        cqlQuery.setQueryModifier(qm);
         return cqlQuery;
     }
 
     // Deserialize the results and retrieve the matching experiments.
     private void parseResults(CQLQueryResults cqlResults) {
+        if (cqlResults.getCountResult() != null) {
+            System.out.println("Count was " + cqlResults.getCountResult().getCount());
+            return;
+        }        
         if (cqlResults.getObjectResult() == null) {
             System.out.println("Result was null.");
             return;

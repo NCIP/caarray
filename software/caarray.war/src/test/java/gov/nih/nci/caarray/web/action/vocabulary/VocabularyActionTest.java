@@ -86,13 +86,16 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import gov.nih.nci.caarray.AbstractCaarrayTest;
+
+import javax.servlet.http.HttpSession;
+
 import gov.nih.nci.caarray.application.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.application.vocabulary.VocabularyServiceStub;
 import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
+import gov.nih.nci.caarray.web.AbstractBaseStrutsTest;
 
 import org.apache.struts2.ServletActionContext;
 import org.junit.Before;
@@ -105,9 +108,8 @@ import com.opensymphony.xwork2.Action;
 
 /**
  * @author Scott Miller
- *
  */
-public class VocabularyActionTest extends AbstractCaarrayTest {
+public class VocabularyActionTest extends AbstractBaseStrutsTest {
     private static final String START_WITH_EDIT = "startWithEdit";
     private static final String RETURN_PROJECT_ID = "returnProjectId";
     private static final String RETURN_INITIAL_TAB1 = "returnInitialTab1";
@@ -145,7 +147,6 @@ public class VocabularyActionTest extends AbstractCaarrayTest {
     @Before
     public void before() {
         this.action = new VocabularyAction();
-        ServletActionContext.setRequest(new MockHttpServletRequest());
     }
 
     @Test(expected = PermissionDeniedException.class)
@@ -167,15 +168,12 @@ public class VocabularyActionTest extends AbstractCaarrayTest {
         this.action.setCategory(ExperimentOntologyCategory.ORGANISM_PART);
         assertEquals(Action.SUCCESS, this.action.list());
 
-        MockHttpSession session = new MockHttpSession ();
+        HttpSession session = ServletActionContext.getRequest().getSession();
         session.setAttribute(START_WITH_EDIT, "true");
         session.setAttribute(RETURN_PROJECT_ID, "1");
         session.setAttribute(RETURN_INITIAL_TAB1, RETURN_INITIAL_TAB1);
         session.setAttribute(RETURN_INITIAL_TAB2, RETURN_INITIAL_TAB2);
         session.setAttribute(RETURN_INITIAL_TAB2_URL, RETURN_INITIAL_TAB2_URL);
-        MockHttpServletRequest request = new MockHttpServletRequest();
-        request.setSession(session);
-        ServletActionContext.setRequest(request);
 
         assertEquals(Action.INPUT, this.action.list());
         assertTrue(this.action.isEditMode());

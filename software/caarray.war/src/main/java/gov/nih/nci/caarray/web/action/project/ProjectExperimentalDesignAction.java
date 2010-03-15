@@ -90,14 +90,12 @@ import java.util.Set;
 
 import com.opensymphony.xwork2.validator.annotations.FieldExpressionValidator;
 import com.opensymphony.xwork2.validator.annotations.RequiredFieldValidator;
-import com.opensymphony.xwork2.validator.annotations.Validation;
 import com.opensymphony.xwork2.validator.annotations.Validations;
 
 /**
  * Action implementing the experimental design tab.
  * @author Dan Kokotov
  */
-@Validation
 public class ProjectExperimentalDesignAction extends ProjectTabAction {
     private static final long serialVersionUID = 1L;
 

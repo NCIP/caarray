@@ -20,12 +20,14 @@
             <div class="boxpad2">
                 <h3>
                     <span class="dark">
-                        <s:if test="${empty arrayDesign.id}">
-                            New Array Design
-                        </s:if>
-                        <s:else>
-                            ${arrayDesign.name}
-                        </s:else>
+                        <c:choose>
+                            <c:when test="${empty arrayDesign.id}">
+                                New Array Design
+                            </c:when>
+                            <c:otherwise>
+                                ${arrayDesign.name}
+                            </c:otherwise>
+                        </c:choose>
                     </span>
                 </h3>
                 <caarray:successMessages />

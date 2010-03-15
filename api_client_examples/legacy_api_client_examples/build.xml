@@ -90,7 +90,7 @@
     </target>
 
     <target name="run_search_grid" depends="build">
-        <run-java-example classname="caarray.client.examples.search.grid.GridCqlSearchExperiment"/>
+        <run-grid-example classname="caarray.client.examples.search.grid.GridCqlSearchExperiment"/>
     </target>
 
     <target name="run_search_using_credentials_java" depends="build">

@@ -1,4 +1,6 @@
 <%@ include file="/WEB-INF/pages/common/taglibs.jsp"%>
+<%@ taglib uri="/struts-tags" prefix="s" %>
+
 <c:set var="projectTitle"><c:out value="${project.experiment.title}" default="New Experiment"/></c:set>
 
 <script type="text/javascript">
@@ -8,6 +10,7 @@ setExperimentTitleHeader('${caarrayfn:escapeJavaScript(projectTitle)}');
 <c:if test="${!editMode}">
     <c:set var="theme" value="readonly" scope="request"/>
 </c:if>
+
 <caarray:tabPane paneTitleKey="experiment.overview">
     <div class="boxpad">
         <p class="instructions">

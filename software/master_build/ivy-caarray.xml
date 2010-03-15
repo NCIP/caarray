@@ -158,15 +158,15 @@
 
         <dependency conf="project" name="sitemesh" org="opensymphony" rev="2.3"/>
 
-        <dependency conf="project" name="xwork" org="opensymphony" rev="2.0.4"/>
+        <dependency conf="project" name="xwork" org="opensymphony" rev="2.1.6"/>
 
-        <dependency conf="project" name="freemarker" org="freemarker" rev="2.3.8"/>
+        <dependency conf="project" name="freemarker" org="freemarker" rev="2.3.15"/>
 
         <dependency conf="project" name="jstl" org="sun" rev="1.1.2"/>
 
         <dependency conf="project" name="taglibs-standard" org="apache" rev="1.1.2"/>
 
-        <dependency conf="project" name="ognl" org="ognl" rev="2.6.11"/>
+        <dependency conf="project" name="ognl" org="ognl" rev="2.7.3"/>
 
         <dependency conf="project" name="displaytag" org="org.displaytag" rev="1.1.1"/>
 
@@ -174,7 +174,7 @@
 
         <dependency conf="project" name="axis" org="apache" rev="1.4.2_10"/>
 
-        <dependency conf="project" name="struts2-core" org="apache" rev="2.0.9"/>
+        <dependency conf="project" name="struts2-core" org="apache" rev="2.1.8"/>
 
         <dependency conf="project" name="jboss-cache" org="jboss" rev="1.4.0.SP1"/>
 
@@ -190,7 +190,7 @@
 
         <dependency conf="project" name="nci-commons-core" org="ncicb" rev="1.2.10"/>
 
-        <dependency conf="project" name="nci-commons-struts2" org="ncicb" rev="1.1.0"/>
+        <dependency conf="project" name="nci-commons-struts2" org="ncicb" rev="1.2.10"/>
 
         <dependency conf="project" name="ezmorph" org="ezmorph" rev="1.0.4"/>
 

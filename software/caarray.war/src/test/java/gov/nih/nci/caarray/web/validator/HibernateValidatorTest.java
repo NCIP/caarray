@@ -99,12 +99,12 @@ import org.hibernate.Transaction;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.opensymphony.xwork2.Action;
+import com.fiveamsolutions.nci.commons.web.struts2.validator.HibernateValidator;
+import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
-import com.opensymphony.xwork2.validator.ActionValidatorManager;
-import com.opensymphony.xwork2.validator.ActionValidatorManagerFactory;
-import com.opensymphony.xwork2.validator.annotations.CustomValidator;
-import com.opensymphony.xwork2.validator.annotations.ValidationParameter;
+import com.opensymphony.xwork2.util.ValueStack;
+import com.opensymphony.xwork2.validator.DelegatingValidatorContext;
+import com.opensymphony.xwork2.validator.ValidatorContext;
 
 /**
  * Note: the actual HibernateValidator class has been moved to nci-commons, but the test remains here because
@@ -116,21 +116,20 @@ public class HibernateValidatorTest extends AbstractBaseStrutsTest {
 
     private TestAction action;
     private Transaction tx;
-
+    
+    private ValidatorContext validatorContext;
+    private HibernateValidator validator;
+     
     @Before
     public void onSetUp() {
         this.action = new TestAction();
-        Source s1 = new Source();
-        s1.setName("test name 1");
-
-        Source s2 = new Source();
-        s2.setName("test name 2");
-
-        this.action.setSource(s1);
-        this.action.setSource2(s2);
+        this.validatorContext = new DelegatingValidatorContext(this.action);
+        validator = new HibernateValidator();
+        validator.setValidatorContext(validatorContext);        
         
         UsernameHolder.setUser(AbstractCaarrayTest.STANDARD_USER);
         tx = HibernateUtil.beginTransaction();
+        
     }
     
     public void teardown() {
@@ -139,59 +138,75 @@ public class HibernateValidatorTest extends AbstractBaseStrutsTest {
 
     @Test
     public void testHibernateValidatorWithNullObject() throws Exception {
-        this.action.setSource(null);
-        ActionValidatorManager avm = ActionValidatorManagerFactory.getInstance();
-        avm.validate(this.action, null);
-        Map<?, ?> fieldErrors = this.action.getFieldErrors();
-
-        assertFalse(this.action.hasErrors());
-        assertEquals(0, fieldErrors.size());
+        ValueStack valueStack = ActionContext.getContext().getValueStack();
+        valueStack.set("source", null);
+        validator.setValueStack(valueStack);
+        validator.setFieldName("source");
+        validator.validate(null);
+        assertFalse(validatorContext.hasActionErrors());
+        assertFalse(validatorContext.hasFieldErrors());
     }
 
     @Test
     public void testHibernateValidatorWithInvalidObject() throws Exception {
-        this.action.setSource(new Source());
-        ActionValidatorManager avm = ActionValidatorManagerFactory.getInstance();
-        avm.validate(this.action, null);
-        Map<?, ?> fieldErrors = this.action.getFieldErrors();
-
-        assertTrue(this.action.hasErrors());
-        assertEquals(1, fieldErrors.size());
-        assertTrue(fieldErrors.containsKey("source.name"));
+        Source source = new Source();
+        
+        ValueStack valueStack = ActionContext.getContext().getValueStack();
+        valueStack.set("source", source);
+        validator.setValueStack(valueStack);
+        validator.setFieldName("source");
+        validator.validate(null);
+        assertFalse(validatorContext.hasActionErrors());
+        assertTrue(validatorContext.hasFieldErrors());
+        assertEquals(1, validatorContext.getFieldErrors().size());
+        Map.Entry<String, List<String>> error = validatorContext.getFieldErrors().entrySet().iterator().next();
+        assertEquals("source.name", error.getKey());
+        assertEquals(1, error.getValue().size());
+        assertEquals("source.name must be set", error.getValue().get(0));                
     }
 
     @Test
     public void testHibernateValidatorWithValidObject() throws Exception {
-        ActionValidatorManager avm = ActionValidatorManagerFactory.getInstance();
-        avm.validate(this.action, null);
-        Map<?, ?> fieldErrors = this.action.getFieldErrors();
-
-        assertFalse(this.action.hasErrors());
-        assertEquals(0, fieldErrors.size());
+        Source source = new Source();
+        source.setName("test name 1");
+        
+        ValueStack valueStack = ActionContext.getContext().getValueStack();
+        valueStack.set("source", source);
+        validator.setValueStack(valueStack);
+        validator.setFieldName("source");
+        validator.validate(null);
+        assertFalse(validatorContext.hasActionErrors());
     }
 
     @Test
     public void testHibernateValidatorListProcessing() throws Exception {
+        List<Source> sources = new ArrayList<Source>();
         Source s = new Source();
         s.setName("test name 3");
-        this.action.getSourceList().add(s);
+        sources.add(s);
 
         s = new Source();
-        this.action.getSourceList().add(s);
+        sources.add(s);
 
-        this.action.getSourceList().add(null);
+        sources.add(null);
 
         s = new Source();
         s.setName("test name 4");
-        this.action.getSourceList().add(s);
+        sources.add(s);
 
-        ActionValidatorManager avm = ActionValidatorManagerFactory.getInstance();
-        avm.validate(this.action, null);
-        Map<?, ?> fieldErrors = this.action.getFieldErrors();
+        ValueStack valueStack = ActionContext.getContext().getValueStack();
+        valueStack.set("sourceList", sources);
+        validator.setValueStack(valueStack);
+        validator.setFieldName("sourceList");
+        validator.validate(null);
 
-        assertTrue(this.action.hasErrors());
-        assertEquals(1, fieldErrors.size());
-        assertTrue(fieldErrors.containsKey("sourceList[1].name"));
+        assertFalse(validatorContext.hasActionErrors());
+        assertTrue(validatorContext.hasFieldErrors());
+        assertEquals(1, validatorContext.getFieldErrors().size());
+        Map.Entry<String, List<String>> error = validatorContext.getFieldErrors().entrySet().iterator().next();
+        assertEquals("sourceList[1].name", error.getKey());
+        assertEquals(1, error.getValue().size());
+        assertEquals("sourceList[1].name must be set", error.getValue().get(0));                
     }
 
     @Test
@@ -200,77 +215,25 @@ public class HibernateValidatorTest extends AbstractBaseStrutsTest {
         s1.setName("test name 3");
         Source s2 = new Source();
         s2.setName("test name 4");
-        this.action.setSourceArray(new Source[] { s1, new Source(), null, s2 });
+        Source[] sources = { s1, new Source(), null, s2 };
 
-        ActionValidatorManager avm = ActionValidatorManagerFactory.getInstance();
-        avm.validate(this.action, null);
-        Map<?, ?> fieldErrors = this.action.getFieldErrors();
+        ValueStack valueStack = ActionContext.getContext().getValueStack();
+        valueStack.set("sourceList", sources);
+        validator.setValueStack(valueStack);
+        validator.setFieldName("sourceList");
+        validator.validate(null);
 
-        assertTrue(this.action.hasErrors());
-        assertEquals(1, fieldErrors.size());
-        assertTrue(fieldErrors.containsKey("sourceArray[1].name"));
+        assertFalse(validatorContext.hasActionErrors());
+        assertTrue(validatorContext.hasFieldErrors());
+        assertEquals(1, validatorContext.getFieldErrors().size());
+        Map.Entry<String, List<String>> error = validatorContext.getFieldErrors().entrySet().iterator().next();
+        assertEquals("sourceList[1].name", error.getKey());
+        assertEquals(1, error.getValue().size());
+        assertEquals("sourceList[1].name must be set", error.getValue().get(0));                
     }
 
     /**
      * The action for this test case.
      */
-    private class TestAction extends ActionSupport {
-        private static final long serialVersionUID = 1L;
-
-        private Source source = new Source();
-        private Source source2 = new Source();
-        private Source[] sourceArray = null;
-        private List<Source> sourceList = new ArrayList<Source>();
-
-        /**
-         * Test action does nothing.
-         *
-         * @return the directive for the next action / page to be directed to
-         */
-        @Override
-        public String execute() {
-            return Action.SUCCESS;
-        }
-
-        @CustomValidator(type = "hibernate", parameters = { @ValidationParameter(name = "resourceKeyBase", value = "experiment.sources") })
-        public Source getSource() {
-            return this.source;
-        }
-
-        public void setSource(Source source) {
-            this.source = source;
-        }
-
-        @CustomValidator(type = "hibernate", parameters = { @ValidationParameter(name = "resourceKeyBase", value = "experiment.sources"), @ValidationParameter(name = "appendPrefix", value = "false") })
-        public Source getSource2() {
-            return this.source2;
-        }
-
-        public void setSource2(Source source2) {
-            this.source2 = source2;
-        }
-
-        @SuppressWarnings("PMD.MethodReturnsInternalArray")
-        @CustomValidator(type = "hibernate", parameters = @ValidationParameter(name = "resourceKeyBase", value = "experiment.sources"))
-        public Source[] getSourceArray() {
-            return this.sourceArray;
-        }
-
-        @SuppressWarnings("PMD.ArrayIsStoredDirectly")
-        public void setSourceArray(Source[] sourceArray) {
-            this.sourceArray = sourceArray;
-        }
-
-        /**
-         * @return the protocolList
-         */
-        @CustomValidator(type = "hibernate", parameters = @ValidationParameter(name = "resourceKeyBase", value = "experiment.sources"))
-        public List<Source> getSourceList() {
-            return this.sourceList;
-        }
-
-        public void setSourceList(List<Source> sourceList) {
-            this.sourceList = sourceList;
-        }
-    }
+    private class TestAction extends ActionSupport { }
 }

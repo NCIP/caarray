@@ -6,7 +6,6 @@ import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.UsernameHolder;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.struts2.ServletActionContext;
@@ -14,7 +13,6 @@ import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.apache.struts2.views.util.UrlHelper;
 
 import com.fiveamsolutions.nci.commons.web.struts2.action.ActionHelper;
-import com.opensymphony.xwork2.validator.annotations.Validation;
 
 /**
  * Action class for performing actions on project as a whole (ie create, edit, etc) Actions for individual tabs in
@@ -22,7 +20,6 @@ import com.opensymphony.xwork2.validator.annotations.Validation;
  *
  * @author John Hedden, Dan Kokotov, Scott Miller
  */
-@Validation
 public class ProjectAction extends AbstractBaseProjectAction {
     private static final long serialVersionUID = 1L;
 
@@ -95,9 +92,7 @@ public class ProjectAction extends AbstractBaseProjectAction {
         if (UsernameHolder.getUser().equals(SecurityUtils.ANONYMOUS_USERNAME)) {
             return loggedinDetails();
         } else {
-            List<String> args = new ArrayList<String>();
-            args.add(getText(roleKey));
-            ActionHelper.saveMessage(getText("project.permissionDenied", args));
+            ActionHelper.saveMessage(getText("project.permissionDenied", new String[] {getText(roleKey) }));
             return WORKSPACE_RESULT;
         }
     }
@@ -117,7 +112,7 @@ public class ProjectAction extends AbstractBaseProjectAction {
      * @return a dynamic action result which includes all request parameters from the originating request
      */
     public String getRequestParameters() {
-        StringBuffer link = new StringBuffer();
+        StringBuilder link = new StringBuilder();
         UrlHelper.buildParametersString(ServletActionContext.getRequest().getParameterMap(), link, "&");
         return link.toString();
     }
@@ -132,11 +127,10 @@ public class ProjectAction extends AbstractBaseProjectAction {
             ServiceLocatorFactory.getProjectManagementService().changeProjectLockStatus(getProject().getId(),
                     workflowStatus);
             String msgKey = "project.workflowStatusUpdated." + (getProject().isLocked() ? "locked" : "unlocked");
-            List<String> arg = Collections.singletonList(getProject().getExperiment().getTitle());
-            ActionHelper.saveMessage(getText(msgKey, arg));
+            ActionHelper.saveMessage(getText(msgKey, new String[] {getProject().getExperiment().getTitle() }));
             return WORKSPACE_RESULT;
         } catch (ProposalWorkflowException e) {
-            List<String> args = new ArrayList<String>();
+            List<Object> args = new ArrayList<Object>();
             args.add(getProject().getExperiment().getTitle());
             args.add(workflowStatus ? "Locked" : "In Progress");
             ActionHelper.saveMessage(getText("project.workflowProblem", args));
@@ -156,9 +150,7 @@ public class ProjectAction extends AbstractBaseProjectAction {
             ServiceLocatorFactory.getProjectManagementService().deleteProject(getProject());
             ActionHelper.saveMessage(getText("project.deleted"));
         } catch (ProposalWorkflowException e) {
-            List<String> args = new ArrayList<String>();
-            args.add("Unlocked");
-            ActionHelper.saveMessage(getText("project.deleteOnlyDrafts", args));
+            ActionHelper.saveMessage(getText("project.deleteOnlyDrafts", new String[] {"Unlocked" }));
         }
         return WORKSPACE_RESULT;
     }

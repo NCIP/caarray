@@ -90,7 +90,6 @@ import org.junit.Test;
 
 /**
  * @author John Hedden
- *
  */
 public class LabelValueTest extends AbstractCaarrayTest {
 

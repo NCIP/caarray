@@ -110,7 +110,6 @@ import com.opensymphony.xwork2.validator.annotations.Validations;
  * @author Scott Miller
  */
 public class ProtocolManagementAction extends ActionSupport implements Preparable {
-
     private static final String RETURN_INITIAL_TAB2_URL = "returnInitialTab2Url";
     private static final String RETURN_INITIAL_TAB2 = "returnInitialTab2";
     private static final String RETURN_INITIAL_TAB1 = "returnInitialTab1";
@@ -202,9 +201,7 @@ public class ProtocolManagementAction extends ActionSupport implements Preparabl
     )
     public String save() throws InstantiationException, IllegalAccessException {
         ServiceLocatorFactory.getGenericDataService().save(getProtocol());
-        List<String> args = new ArrayList<String>();
-        args.add(getProtocol().getName());
-        ActionHelper.saveMessage(getText("protocol.saved", args));
+        ActionHelper.saveMessage(getText("protocol.saved", new String[] {getProtocol().getName() }));
         if (isReturnToProjectOnCompletion()) {
             return "projectEdit";
         }

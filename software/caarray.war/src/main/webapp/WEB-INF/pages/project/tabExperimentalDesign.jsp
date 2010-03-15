@@ -1,4 +1,5 @@
 <%@ include file="/WEB-INF/pages/common/taglibs.jsp"%>
+<%@ taglib uri="/struts-tags" prefix="s" %>
 <%@page import="gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory"%>
 
 <c:if test="${!editMode}">

@@ -91,6 +91,7 @@ import gov.nih.nci.caarray.domain.permissions.AccessProfile;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.domain.search.SampleSortCriterion;
+import gov.nih.nci.caarray.web.helper.DownloadHelper;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -102,15 +103,12 @@ import org.apache.struts2.interceptor.validation.SkipValidation;
 import com.fiveamsolutions.nci.commons.web.displaytag.SortablePaginatedList;
 import com.fiveamsolutions.nci.commons.web.struts2.action.ActionHelper;
 import com.opensymphony.xwork2.validator.annotations.CustomValidator;
-import com.opensymphony.xwork2.validator.annotations.Validation;
 import com.opensymphony.xwork2.validator.annotations.ValidationParameter;
-import gov.nih.nci.caarray.web.helper.DownloadHelper;
 
 /**
  * Action implementing the samples tab.
  * @author Dan Kokotov
  */
-@Validation
 @SuppressWarnings("PMD.CyclomaticComplexity")
 public class ProjectSamplesAction extends AbstractProjectAssociatedAnnotationsListTabAction<Source> {
     private static final long serialVersionUID = 1L;

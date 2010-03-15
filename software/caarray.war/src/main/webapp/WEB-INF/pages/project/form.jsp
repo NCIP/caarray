@@ -66,7 +66,7 @@
             <c:if test="${!empty newWorkflowStatus}">
                 <s:form namespace="/protected" action="project/changeWorkflowStatus" id="workflowForm" cssStyle="display: inline">
                     <s:hidden name="project.id"/>
-                    <s:hidden name="workflowStatus" value="${newWorkflowStatus}"/>
+                    <s:hidden name="workflowStatus" value="%{#attr.newWorkflowStatus}"/>
                 </s:form>
                 <caarray:linkButton onclick="this.blur(); submitWorkflowForm();"
                         actionClass="submit_experiment" text="${buttonTitle}" style="float: right; padding-top: 0px; margin-top: -0.3em"/>

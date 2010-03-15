@@ -28,33 +28,33 @@
     </div>
     <div id="searchboxwrapper">
       <s:form action="/protected/ownership/newOwner.action" cssClass="form" id="filterForm">
-        <s:textfield name="user.lastName" key="label.lastName" size="30" tabindex="1" value="${user.lastName}" id="targetUserLastName"/>
-        <s:textfield name="user.firstName" key="label.firstName" size="30" tabindex="2" value="${user.firstName}" id="targetUserFirstName"/>
-        <s:textfield name="user.organization" key="label.institution" size="30" tabindex="3" value="${user.organization}" id="targetUserOrganization"/>
+        <s:textfield name="user.lastName" key="label.lastName" size="30" tabindex="1" value="%{user.lastName}" id="targetUserLastName"/>
+        <s:textfield name="user.firstName" key="label.firstName" size="30" tabindex="2" value="%{user.firstName}" id="targetUserFirstName"/>
+        <s:textfield name="user.organization" key="label.institution" size="30" tabindex="3" value="%{user.organization}" id="targetUserOrganization"/>
         <input type="submit" class="enableEnterSubmit"/>
-        <s:hidden name="targetUserId" value="${targetUserId}"/>
+        <s:hidden name="targetUserId" value="%{targetUserId}"/>
         <s:iterator value="projectIds" id="id">
-            <s:hidden name="projectIds" value="${id}"/>
+            <s:hidden name="projectIds" value="%{id}"/>
         </s:iterator>
         <s:iterator value="groupIds" id="id">
-            <s:hidden name="groupIds" value="${id}"/>
+            <s:hidden name="groupIds" value="%{id}"/>
         </s:iterator>
       </s:form>
       <caarray:focusFirstElement formId="filterForm"/>
-       <caarray:actions>
+      <caarray:actions>
             <caarray:action onclick="clearFilter();" actionClass="cancel" text="Clear" />
             <caarray:action onclick="document.getElementById('filterForm').submit();" actionClass="filter" text="Filter" />
-        </caarray:actions>
+      </caarray:actions>
     </div>
      <s:form action="/protected/ownership/reassign.action" theme="simple">
         <%@ include file="/WEB-INF/pages/ownership/usersTable.jsp" %>
         <s:iterator value="projectIds" id="id">
-            <s:hidden name="projectIds" value="${id}"/>
+            <s:hidden name="projectIds" value="%{id}"/>
         </s:iterator>
         <s:iterator value="groupIds" id="id">
-            <s:hidden name="groupIds" value="${id}"/>
+            <s:hidden name="groupIds" value="%{id}"/>
         </s:iterator>
-        <s:hidden name="targetUserId" value="${targetUserId}"/>
+        <s:hidden name="targetUserId" value="%{targetUserId}"/>
         <s:submit value="Assign" />
     </s:form>
   </div>

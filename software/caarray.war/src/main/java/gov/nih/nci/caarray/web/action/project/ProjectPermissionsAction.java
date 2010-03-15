@@ -26,14 +26,12 @@ import java.util.TreeSet;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 
 import com.fiveamsolutions.nci.commons.web.struts2.action.ActionHelper;
-import com.opensymphony.xwork2.validator.annotations.Validation;
 
 /**
  * Base Action for implementing a single tab of the Project management ui.
  *
  * @author John Hedden, Dan Kokotov, Scott Miller
  */
-@Validation
 public class ProjectPermissionsAction extends AbstractBaseProjectAction {
     private static final long serialVersionUID = 1L;
 
@@ -190,9 +188,8 @@ public class ProjectPermissionsAction extends AbstractBaseProjectAction {
                 ActionHelper.saveMessage(getText("project.permissionsSaved"));
                 return SUCCESS;
             } catch (ProposalWorkflowException e) {
-                List<String> args = new ArrayList<String>();
-                args.add(getProject().getExperiment().getTitle());
-                ActionHelper.saveMessage(getText("project.permissionsSaveProblem", args));
+                ActionHelper.saveMessage(getText("project.permissionsSaveProblem", new String[] {getProject()
+                        .getExperiment().getTitle() }));
                 return INPUT;
             }
         } else {

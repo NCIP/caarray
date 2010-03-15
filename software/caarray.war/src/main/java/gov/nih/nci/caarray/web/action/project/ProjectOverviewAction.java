@@ -107,14 +107,12 @@ import org.ajaxtags.xml.AjaxXmlBuilder;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 
 import com.opensymphony.xwork2.validator.annotations.FieldExpressionValidator;
-import com.opensymphony.xwork2.validator.annotations.Validation;
 import com.opensymphony.xwork2.validator.annotations.Validations;
 
 /**
  * Action implementing the overview tab.
  * @author Dan Kokotov
  */
-@Validation
 public class ProjectOverviewAction extends ProjectTabAction {
     private static final long serialVersionUID = 1L;
 

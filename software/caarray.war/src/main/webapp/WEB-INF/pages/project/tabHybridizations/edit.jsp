@@ -33,9 +33,9 @@
         <input type="submit" class="enableEnterSubmit"/>
     </caarray:projectListTabItemForm>
 
-    <s:if test="${!editMode}">
-    <%@ include file="/WEB-INF/pages/project/tabHybridizations/factorValuesList.jsp" %>
-    <div id="tabHeader" class="boxpad2"><h3>Download Data</h3></div>
-    <%@ include file="/WEB-INF/pages/project/tabCommon/downloadFiles.jsp" %>
-    </s:if>
+    <c:if test="${!editMode}">
+        <%@ include file="/WEB-INF/pages/project/tabHybridizations/factorValuesList.jsp" %>
+        <div id="tabHeader" class="boxpad2"><h3>Download Data</h3></div>
+        <%@ include file="/WEB-INF/pages/project/tabCommon/downloadFiles.jsp" %>
+    </c:if>
 </caarray:tabPane>
