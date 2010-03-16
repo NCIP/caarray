@@ -2356,7 +2356,7 @@
         <fail if="junit.failure" message="There were functional test failures." />
     </target>
 
-    <target name="test:selenium:start-server" unless="notest" depends="init:third-party-paths">
+    <target name="test:selenium:start-server" unless="notest" depends="init:third-party-paths,test:selenium:stop-server">
         <echo message="Starting Selenium RC server on port ${selenium.server.port}" />
         <java jar="${project.lib}/${selenium-server.jar}" fork="true" spawn="true">
             <arg value="-port" />
