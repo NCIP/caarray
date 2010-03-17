@@ -2466,6 +2466,7 @@
     <target name="test:api-wrapper">
     	<sleep minutes="10"/>
     	<antcall target="deploy:stop-jboss-servers"/>
+        <antcall target="deploy:functional:caarray.ear"/>
     	<antcall target="test:api:init-data"/>
     	<antcall target="deploy:start-jboss-servers"/>
     	<sleep minutes="10"/>
