@@ -205,7 +205,7 @@ public enum FileType implements Comparable<FileType> {
     ILLUMINA_DERIVED_TXT,
 
     /**
-     * Illumina derived array data TXT file.
+     * Illumina Genotyping Processed Matrix TXT file.
      */
     ILLUMINA_GENOTYPING_PROCESSED_MATRIX_TXT,
 
