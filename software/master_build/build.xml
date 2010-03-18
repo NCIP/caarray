@@ -318,7 +318,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
 			delete.property.list="exclude.jboss.backup,application.base.path.linux,application.base.path.windows,database.system.user,database.system.password"
 			/>
         <zip destfile="${dist.dir}/${caarray.install.zip.file}" >
-        	<zipfileset dir="${caarray.dist.dir}" prefix="${caarray.install.name}_${caarray.version}"/>
+        	<zipfileset dir="${caarray.dist.dir}" prefix="${caarray.install.name}_${caarray.version}" excludes="tools/cagrid-wscore-4.0.3*, tools/ws-core-enum*"/>
         </zip>
     </target>
 
@@ -347,14 +347,15 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
         
         <replaceregexp file="${dist.exploded.dir}/build.xml" byline="true" match="(&lt;property name=&quot;properties.file&quot;\s+value=&quot;).*(&quot;\s*\/&gt;)" replace="\1upgrade.properties\2" />
         <zip destfile="${dist.dir}/${caarray.upgrade.zip.file}">
-        	<zipfileset dir="${caarray.dist.dir}" prefix="${caarray.upgrade.name}_${caarray.version}"/>
+        	<zipfileset dir="${caarray.dist.dir}" prefix="${caarray.upgrade.name}_${caarray.version}" excludes="tools/**/*"
+/>
         </zip>
     </target>
 
     <target name="dist:src">
         <delete file="${dist.dir}/${caarray.src.zip.file}" />
         <zip destfile="${dist.dir}/${caarray.src.zip.file}">
-            <zipfileset dir="${software.dir}" excludes="dist/**, tools/**, bda-utils/**, local-ivy-repo/**, target/**, load-test/**, **/eclipse-out/**, **/.svn/**" prefix="${caarray.src.name}_${caarray.version}"/>
+            <zipfileset dir="${software.dir}" excludes="lib/**, *download.dir*/**, *env.GLOBOSS_HOME*/**, dist/**, tools/**, bda-utils/**, local-ivy-repo/**, target/**, load-test/**, **/eclipse-out/**, **/.svn/**" prefix="${caarray.src.name}_${caarray.version}"/>
         </zip>
     </target>
     

@@ -94,6 +94,16 @@
                     <variable name="upgrade.properties.wiki.page" value="@{upgrade.properties.wiki.page}"/>
                     <variable name="mergeDuplicateBiomaterialsMigrator.renameHybridizations" value=""/>
                 </variables>
+                
+                <!-- dynamic variables to determine which target to call -->
+                <dynamicvariables>
+                    <variable name="build.file.target" value="install" condition="install" />
+                    <variable name="properties.file.target" value="$SYSTEM_user_home/${installer.dir}/caarray_installer/install.properties" condition="install" />
+                    <variable name="application.base.path.target" value="$UserPathPanelVariable" condition="install" />
+                    <variable name="build.file.target" value="upgrade" condition="upgrade" />
+                    <variable name="properties.file.target" value="$SYSTEM_user_home/${installer.dir}/caarray_installer/upgrade.properties" condition="upgrade" />
+                    <variable name="application.base.path.target" value="${existing.installation.home}" condition="upgrade" />
+                </dynamicvariables>
 
                 <!--
                 The locale section.
@@ -239,39 +249,28 @@
                 We specify here our packs.
                 -->
                 <packs>
-                    <pack name="download_install" id="download_install" required="no" installGroups="caarray"  condition="install">
+                    <pack name="download_install" id="download_install" required="no" installGroups="caarray">
                         <description>The base files</description>
                         <file src="@{dist.location}/@{install.zip.file}" targetdir="$SYSTEM_user_home/@{installer.dir}"/>
                         <file src="@{this.dir}/build.xml" targetdir="$SYSTEM_user_home/@{installer.dir}"/>
                         <file src="@{this.dir}/property-template" defaultexcludes="yes" targetdir="$SYSTEM_user_home/@{installer.dir}"/>
                     </pack>
 
-                    <pack name="download_update" id="download_update" required="no" installGroups="caarray"  condition="upgrade">
-                        <description>The base files</description>
-                        <file src="@{dist.location}/@{upgrade.zip.file}" targetdir="$SYSTEM_user_home/@{installer.dir}"/>
-                        <file src="@{this.dir}/property-template" targetdir="$SYSTEM_user_home/@{installer.dir}"/>
-                        <file src="@{this.dir}/build.xml" defaultexcludes="yes" targetdir="$SYSTEM_user_home/@{installer.dir}"/>
-                    </pack>
-
-                    <pack name="parse-install" required="no" preselected="no" condition="install">
+                    <pack name="parse-install" required="no" preselected="no" installGroups="caarray">
                         <description>parse the input values</description>
                         <parsable targetfile="$SYSTEM_user_home/@{installer.dir}/@{application_installer}/install.properties" type="plain" />
                     </pack>
 
-                    <pack name="parse-update" required="no" preselected="no" condition="upgrade">
+                    <pack name="parse-update" required="no" preselected="no" installGroups="caarray">
                         <description>parse the input values</description>
                         <parsable targetfile="$SYSTEM_user_home/@{installer.dir}/@{application_installer}/upgrade.properties" type="plain" />
                     </pack>
 
-                    <pack name="convert-install-path" required="no" preselected="no" condition="install">
+                    <pack name="convert-install-path" required="no" preselected="no" installGroups="caarray">
                         <description>installation base path</description>
                     </pack>
 
-                    <pack name="convert-update-path" required="no" preselected="no" condition="upgrade">
-                        <description>Upgrade base path</description>
-                    </pack>
-
-                    <pack name="install-application" required="no" preselected="no" >
+                    <pack name="install-application" required="no" preselected="no" installGroups="caarray">
                         <description>install the application</description>
                     </pack>
 

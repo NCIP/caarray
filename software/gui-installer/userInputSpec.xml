@@ -850,7 +850,7 @@
 
     <panel order="19">
 
-        <variable name="install.path" value="${UserPathPanelVariable}"/>
+        <variable name="INSTALL_PATH" value="${UserPathPanelVariable}"/>
         
         <field type="title" txt="Installation Summary" bold="true" size="1" />
         <field type="staticText" align="left" txt="Below are "/>
@@ -885,7 +885,7 @@
 
     <panel order="20">
 
-        <variable name="install.path" value="${existing.installation.home}"/>
+        <variable name="INSTALL_PATH" value="${existing.installation.home}"/>
         
         <field type="title" txt="Installation Summary" bold="true" size="1" />
         <field type="staticText" align="left" txt="Below are "/>
