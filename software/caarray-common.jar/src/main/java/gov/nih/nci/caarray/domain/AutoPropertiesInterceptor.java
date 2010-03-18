@@ -125,6 +125,8 @@ public class AutoPropertiesInterceptor extends EmptyInterceptor {
     }
     // CHECKSTYLE:OFF
     // magic numbers.
+    // Make sure that you update the regex patterns in software/caarray.war/src/main/webapp/WEB-INF/urlrewrite.xml
+    // to also match the generated IDs.
     private static String generatePublicId() {
         long t = System.currentTimeMillis();
         long rand = RAND.nextInt(0x10000); // 2^16

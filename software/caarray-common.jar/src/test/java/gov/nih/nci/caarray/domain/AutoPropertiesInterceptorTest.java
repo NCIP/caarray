@@ -85,6 +85,7 @@ package gov.nih.nci.caarray.domain;
 import gov.nih.nci.caarray.dao.AbstractProjectDaoTest;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.util.HibernateUtil;
+import java.util.regex.Pattern;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.junit.Test;
@@ -105,6 +106,10 @@ public class AutoPropertiesInterceptorTest extends AbstractProjectDaoTest {
         exp.setPublicIdentifier(null);
         session.save(exp);
         assertNotNull(exp.getPublicIdentifier());
+
+        // make sure it matches the pattern in software/caarray.war/src/main/webapp/WEB-INF/urlrewrite.xml
+        String pattern = "(.{1,5}-\\d{5}|[a-z2-7]{13})";
+        assertTrue("doesn't match " + pattern, exp.getPublicIdentifier().matches(pattern));
         tx.rollback();
     }
 
