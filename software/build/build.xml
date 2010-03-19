@@ -2250,16 +2250,7 @@
     </target>
 
     <!-- Functional (Selenium) and API Test Targets -->
-    <target name="-test:functional:setup" depends="deploy:caarray.ear, deploy:caarray-grid-svc-jboss, test:api:init-data, deploy:start-jboss">
-
-        <waitfor maxwait="3" maxwaitunit="minute" checkevery="500">
-            <http url="http://${jboss.server.hostname}:${jboss.server.port}/caarray"/>
-        </waitfor>
-
-        <waitfor maxwait="3" maxwaitunit="minute" checkevery="500">
-            <http url="http://${jboss.server.hostname}:${jboss.server.port}/wsrf"/>
-        </waitfor>
-    </target>
+    <target name="-test:functional:setup" depends="deploy:functional:caarray.ear, deploy:caarray-grid-svc-jboss, test:api:init-data, deploy:start-jboss-servers, test:wait-for-jboss-servers"/>
     
     <target
     	name="test:instrument"
@@ -2419,7 +2410,8 @@
 
     <target name="test:functional:report" unless="notest" depends="init:third-party-paths">
     	<mkdir dir="${site.dir}/junit/selenium" />
-        <mkdir dir="${site.dir}/junit/functional" />
+        <mkdir dir="${site.dir}/junit/api/java" />
+        <mkdir dir="${site.dir}/junit/api/grid" />
         <if>
             <available file="${test.target.dir}/junit/selenium" type="dir"/>
             <then>
@@ -2434,11 +2426,22 @@
         <if>
             <available file="${test.target.dir}/junit/api/java" type="dir"/>
             <then>
-            	<junitreport todir="${site.dir}/junit/functional">
+            	<junitreport todir="${site.dir}/junit/api/java">
 				<fileset dir="${test.target.dir}/junit/api/java">
 					<include name="TEST-*.xml" />
 				</fileset>
-				<report format="frames" todir="${site.dir}/junit/functional" />
+				<report format="frames" todir="${site.dir}/junit/api/java" />
+			</junitreport>
+            </then>
+        </if>
+        <if>
+            <available file="${test.target.dir}/junit/api/grid" type="dir"/>
+            <then>
+            	<junitreport todir="${site.dir}/junit/api/grid">
+				<fileset dir="${test.target.dir}/junit/api/grid">
+					<include name="TEST-*.xml" />
+				</fileset>
+				<report format="frames" todir="${site.dir}/junit/api/grid" />
 			</junitreport>
             </then>
         </if>
@@ -2463,14 +2466,23 @@
             source.include="**/api/**/java/**/*ServiceTest.java" source.exclude="**/Abstract*.java" />
     </target>
     
+    <target name="test:wait-for-jboss-servers">
+    	<waitfor maxwait="8" maxwaitunit="minute" checkevery="500">
+            <http url="http://${jboss.server.hostname}:${jboss.server.port}/caarray/home.action"/>
+        </waitfor>
+
+        <waitfor maxwait="8" maxwaitunit="minute" checkevery="500">
+            <http url="http://${jboss.server.hostname}:${jboss.server.port}/wsrf/services/cagrid/CaArraySvc"/>
+        </waitfor>
+    </target>
+    
     <target name="test:api-wrapper">
-    	<sleep minutes="10"/>
+    	<antcall target="test:wait-for-jboss-servers">
     	<antcall target="deploy:stop-jboss-servers"/>
-        <antcall target="deploy:functional:caarray.ear"/>
     	<antcall target="test:api:init-data"/>
-    	<antcall target="deploy:start-jboss-servers"/>
-    	<sleep minutes="10"/>
     	<antcall target="test:api"/>
+    	<antcall target="deploy:stop-jboss-servers"/>
+    	<antcall target="test:selenium:stop-server"/>
     </target>
     
     <target name="deploy:cleaup-testing-installation" depends="deploy:stop-jboss-servers">
