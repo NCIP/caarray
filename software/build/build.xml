@@ -2470,10 +2470,12 @@
     	<waitfor maxwait="8" maxwaitunit="minute" checkevery="500">
             <http url="http://${jboss.server.hostname}:${jboss.server.port}/caarray/home.action"/>
         </waitfor>
+        <echo message="carray JBoss started properly."/>
 
         <waitfor maxwait="8" maxwaitunit="minute" checkevery="500">
-            <http url="http://${jboss.server.hostname}:${jboss.server.port}/wsrf/services/cagrid/CaArraySvc"/>
+            <http url="http://${grid.server.hostname}:${grid.server.port}/wsrf/services/cagrid/CaArraySvc"/>
         </waitfor>
+        <echo message="grid services JBoss started properly."/>
     </target>
     
     <target name="test:api-wrapper">
