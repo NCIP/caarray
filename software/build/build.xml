@@ -2477,7 +2477,7 @@
     </target>
     
     <target name="test:api-wrapper">
-    	<antcall target="test:wait-for-jboss-servers">
+    	<antcall target="test:wait-for-jboss-servers"/>
     	<antcall target="deploy:stop-jboss-servers"/>
     	<antcall target="test:api:init-data"/>
     	<antcall target="test:api"/>
