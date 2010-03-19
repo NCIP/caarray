@@ -2448,7 +2448,12 @@
     </target>
 
     <target name="test:selenium:run-tests:do-run" unless="notest" depends="init:third-party-paths">
-        <caarray-run-junit-tests test.src.dir="${test.src.dir}" xml.output.dir="${test.target.dir}/junit/selenium" classpath="${test.classes.dir};${test.data.classes.dir};${test.data.target.dir};" classpathref.id="selenium.dependencies.path"/>
+        <caarray-run-junit-tests
+        	test.src.dir="${test.src.dir}"
+        	source.include="**/api/**/java/**/functional/**/*Test.java"
+        	xml.output.dir="${test.target.dir}/junit/selenium"
+        	classpath="${test.classes.dir};${test.data.classes.dir};${test.data.target.dir};"
+        	classpathref.id="selenium.dependencies.path"/>
     </target>
 
     <target name="test:selenium:run-tests" unless="notest" depends="init:third-party-paths,test:selenium:compile-tests,test:copy-files-to-target-dir-and-unpack-test-data,build:caarray-client.jar,test:selenium:start-server,test:selenium:run-tests:do-run,test:selenium:stop-server"/>
