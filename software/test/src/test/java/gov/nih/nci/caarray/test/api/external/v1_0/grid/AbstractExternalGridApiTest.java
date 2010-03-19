@@ -103,7 +103,9 @@ public class AbstractExternalGridApiTest extends AbstractApiTest {
     @BeforeClass
     public static void connectToServer() {
         try {
-            gridClient = new CaArraySvc_v1_0Client(TestProperties.getBaseGridServiceUrl() + SERVICE_NAME);
+        	String serviceUrl = TestProperties.getBaseGridServiceUrl() + SERVICE_NAME;
+        	System.out.println("serviceUrl = " + serviceUrl + "=");
+            gridClient = new CaArraySvc_v1_0Client(serviceUrl);
         } catch (RemoteException e) {
             StringBuilder trace = buildStackTrace(e);
             logForSilverCompatibility(TEST_OUTPUT, "Remote exception: " + e + "\nTrace: " + trace);
