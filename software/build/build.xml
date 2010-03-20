@@ -2450,7 +2450,7 @@
     <target name="test:selenium:run-tests:do-run" unless="notest" depends="init:third-party-paths">
         <caarray-run-junit-tests
         	test.src.dir="${test.src.dir}"
-        	source.include="**/api/**/java/**/functional/**/*Test.java"
+        	source.include="**/gov/nih/nci/caarray/test/functional/*Test.java"
         	xml.output.dir="${test.target.dir}/junit/selenium"
         	classpath="${test.classes.dir};${test.data.classes.dir};${test.data.target.dir};"
         	classpathref.id="selenium.dependencies.path"/>
