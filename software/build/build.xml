@@ -2853,19 +2853,15 @@
         </if>
     </target>
 
-    <target name="deploy:start-jboss" depends="init:third-party-paths,deploy:check-if-jboss-is-running" unless="jboss.running">
+    <target name="deploy:start-jboss" depends="init:third-party-paths,deploy:stop-jboss">
         <jboss-start-jboss jboss.home="${jboss.home}" jboss.server.name="${jboss.server.name}"/>
     </target>
 
-    <target name="deploy:start-grid-jboss" depends="init:third-party-paths">
+    <target name="deploy:start-grid-jboss" depends="init:third-party-paths,deploy:stop-grid-jboss">
         <jboss-start-jboss jboss.home="${application.base.path}/${grid.relative.path}" jboss.server.name="${grid.server.name}"/>
     </target>
 
     <target name="deploy:start-jboss-and-deploy" depends="init:third-party-paths,deploy:stop-jboss,deploy:caarray.ear,deploy:start-jboss"/>
-
-    <target name="deploy:check-if-jboss-is-running" depends="init:third-party-paths">
-        <jboss-check-if-jboss-is-running jboss.server.port="${jboss.server.port}" jboss.server.hostname="${jboss.server.hostname}"/>
-    </target>
 
     <target name="deploy:copy-jsp" description="Copies the jsp's over to the unpacked war directory in jboss" depends="init:third-party-paths">
         <for param="toDir">
