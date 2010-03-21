@@ -2787,13 +2787,13 @@
                 </ant>
 				<delete dir=".carray_deploy_temp"/>
 				<mkdir dir=".carray_deploy_temp"/>
-				<unzip src="${globoss.server.instance.home}/deploy/wsrf.war/WEB-INF/lib/CaArraySvc${version.label}-common.jar" dest=".carray_deploy_temp" />
+				<unzip src="${globoss.server.instance.home}/deploy/wsrf.war/WEB-INF/lib/CaArraySvc@{version}-common.jar" dest=".carray_deploy_temp" />
 				<replaceregexp byline="true" match="^(java.naming.provider.url)=(.*)" replace="\1=jnp://${jboss.server.hostname}:${jboss.server.jndi.port}">
 					<fileset dir=".carray_deploy_temp">
 						<include name="**/jndi.properties"/>
 					</fileset>
 				</replaceregexp>
-				<jar jarfile="${globoss.server.instance.home}/deploy/wsrf.war/WEB-INF/lib/CaArraySvc${version.label}-common.jar" compress="false" update="true">
+				<jar jarfile="${globoss.server.instance.home}/deploy/wsrf.war/WEB-INF/lib/CaArraySvc@{version}-common.jar" compress="false" update="true">
 					<fileset dir=".carray_deploy_temp">
 						<include name="*/**" />
 					</fileset>
