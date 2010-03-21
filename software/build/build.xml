@@ -2784,6 +2784,7 @@
                     <property name="jboss.dir" value="${globoss.home}"/>
                     <property name="env.GLOBUS_LOCATION" value="${env.GLOBUS_LOCATION}"/>
                 	<property name="caarray-grid-svc.common.target.dir" value="${caarray-grid-svc.common.target.dir}"/>
+                	<property name="index.service.url" value="${grid.index.url}"/>
                 </ant>
                 <if>
                 	<equals arg1="@{version}" arg2="legacy"/>
