@@ -2789,10 +2789,10 @@
                 <if>
                 	<equals arg1="@{version}" arg2="legacy"/>
                 	<then>
-                		<property name="version.label" value=""/>
+						<var name="version.label" value=""/>
                 	</then>
                 	<else>
-                		<property name="version.label" value="_@{version}"/>
+						<var name="version.label" value="_@{version}"/>
                 	</else>
                 </if>
 				<delete dir=".carray_deploy_temp"/>
