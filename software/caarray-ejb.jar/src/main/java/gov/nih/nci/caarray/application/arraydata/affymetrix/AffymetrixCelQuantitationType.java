@@ -153,7 +153,7 @@ public enum AffymetrixCelQuantitationType implements QuantitationTypeDescriptor 
 
 
     /**
-     * Indicates whether this enumeration value is equivalent to the persistenct
+     * Indicates whether this enumeration value is equivalent to the persistent
      * <code>QuantitationType</code> object.
      * 
      * @param quantitationType type to compare to

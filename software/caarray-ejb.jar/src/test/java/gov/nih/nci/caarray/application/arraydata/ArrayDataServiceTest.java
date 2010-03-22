@@ -129,6 +129,9 @@ import gov.nih.nci.caarray.application.AbstractServiceTest;
 import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixArrayDataTypes;
 import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixCelQuantitationType;
 import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixExpressionChpQuantitationType;
+import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixSnpAxiomGTChpQuantitationType;
+import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixSnpBirdseedChpQuantitationType;
+import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixSnpBrlmmChpQuantitationType;
 import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixSnpChpQuantitationType;
 import gov.nih.nci.caarray.application.arraydata.genepix.GenepixQuantitationType;
 import gov.nih.nci.caarray.application.arraydata.illumina.IlluminaExpressionQuantitationType;
@@ -470,11 +473,18 @@ public class ArrayDataServiceTest extends AbstractServiceTest {
 
     @Test
     public void testImportSnpChp() throws InvalidDataFileException, AffymetrixArrayDesignReadException {
-        testImportSnpChp(AffymetrixArrayDesignFiles.TEN_K_CDF, AffymetrixArrayDataFiles.TEN_K_1_CHP);
-        testImportSnpChp(AffymetrixArrayDesignFiles.TEN_K_CDF, AffymetrixArrayDataFiles.TEN_K_1_CALVIN_CHP);
+        testImportSnpChp(AffymetrixArrayDesignFiles.TEN_K_CDF, AffymetrixArrayDataFiles.TEN_K_1_CHP, AffymetrixSnpChpQuantitationType.values());
+        testImportSnpChp(AffymetrixArrayDesignFiles.TEN_K_CDF, AffymetrixArrayDataFiles.TEN_K_1_CALVIN_CHP, AffymetrixSnpChpQuantitationType.values());
+        testImportSnpChp(AffymetrixArrayDesignFiles.BIRDSEED_SNP_TEST_CDF, AffymetrixArrayDataFiles.BIRDSEED_SNP_TEST_CHP,
+                AffymetrixSnpBirdseedChpQuantitationType.values());
+//        testImportSnpChp(AffymetrixArrayDesignFiles.BRLMM_SNP_TEST_CDF, AffymetrixArrayDataFiles.BRLMM_SNP_TEST_CHP,
+//                AffymetrixSnpBrlmmChpQuantitationType.values());
+//        testImportSnpChp(AffymetrixArrayDesignFiles.AXIOMGT_SNP_TEST_CDF, AffymetrixArrayDataFiles.AXIOMGT_SNP_TEST_CHP,
+//                AffymetrixSnpAxiomGTChpQuantitationType.values());
     }
 
-    private void testImportSnpChp(File cdfFile, File chpFile) throws InvalidDataFileException, AffymetrixArrayDesignReadException {
+    private void testImportSnpChp(File cdfFile, File chpFile, QuantitationTypeDescriptor[] quantitationTypeDescriptors)
+            throws InvalidDataFileException, AffymetrixArrayDesignReadException {
         DerivedArrayData chpData = getChpData(cdfFile, chpFile);
         assertEquals(FileStatus.UPLOADED, chpData.getDataFile().getFileStatus());
         assertNull(chpData.getDataSet());
@@ -486,15 +496,13 @@ public class ArrayDataServiceTest extends AbstractServiceTest {
         assertEquals(1, dataSet.getHybridizationDataList().size());
         HybridizationData hybridizationData = dataSet.getHybridizationDataList().get(0);
         assertEquals(chpData.getHybridizations().iterator().next(), hybridizationData.getHybridization());
-        assertEquals(AffymetrixSnpChpQuantitationType.values().length,
-                hybridizationData.getColumns().size());
-        assertEquals(AffymetrixSnpChpQuantitationType.values().length,
-                dataSet.getQuantitationTypes().size());
-        checkChpSnpColumnTypes(dataSet);
+        assertEquals(quantitationTypeDescriptors.length, hybridizationData.getColumns().size());
+        assertEquals(quantitationTypeDescriptors.length, dataSet.getQuantitationTypes().size());
+        checkChpSnpColumnTypes(dataSet, quantitationTypeDescriptors);
     }
 
-    private void checkChpSnpColumnTypes(DataSet dataSet) {
-        checkColumnTypes(dataSet, AffymetrixSnpChpQuantitationType.values());
+    private void checkChpSnpColumnTypes(DataSet dataSet, QuantitationTypeDescriptor[] descriptors) {
+        checkColumnTypes(dataSet, descriptors);
     }
 
     @Test

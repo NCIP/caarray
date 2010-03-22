@@ -82,12 +82,12 @@
  */
 package gov.nih.nci.caarray.application.arraydata.affymetrix;
 
-import java.util.Arrays;
-import java.util.List;
-
 import gov.nih.nci.caarray.domain.data.ArrayDataType;
 import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
 import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * The array data types supported for Affymetrix.
@@ -107,7 +107,27 @@ public enum AffymetrixArrayDataTypes implements ArrayDataTypeDescriptor {
     /**
      * Affymetrix CEL format.
      */
-    AFFYMETRIX_CEL("Affymetrix CEL", AffymetrixCelQuantitationType.values());
+    AFFYMETRIX_CEL("Affymetrix CEL", AffymetrixCelQuantitationType.values()),
+    
+    /**
+     * Affymetrix CHP format (Expression Signal).
+     */    
+    AFFYMETRIX_SIGNAL_CHP("Affymetrix CHP (Expression Signal)", AffymetrixExpressionSignalChpQuantitationType.values()),
+       
+    /**
+     * Affymetrix CHP format (SNP BRLMM).
+     */
+    AFFYMETRIX_SNP_BRLMM_CHP("Affymetrix CHP (SNP BRLMM)", AffymetrixSnpBrlmmChpQuantitationType.values()),
+
+    /**
+     * Affymetrix CHP format (SNP Birdseed).
+     */
+    AFFYMETRIX_SNP_BIRDSEED_CHP("Affymetrix CHP (SNP Birdseed)", AffymetrixSnpBirdseedChpQuantitationType.values()),
+
+    /**
+     * Affymetrix CHP format (SNP AxiomGT).
+     */
+    AFFYMETRIX_SNP_AXIOMGT_CHP("Affymetrix CHP (SNP AxiomGT)", AffymetrixSnpAxiomGTChpQuantitationType.values());
     
     private final String name;
     private final List<QuantitationTypeDescriptor> quantitationTypes;

@@ -121,4 +121,13 @@ public class AffymetrixArrayDesignFiles {
 
     public static final File AGCC_GCOS_TEST_CDF  =
         new File(AffymetrixArrayDesignFiles.class.getResource("/arraydesign/affymetrix/AGCC_GCOS_Test_Truncated.cdf").getFile());
+
+    public static final File BIRDSEED_SNP_TEST_CDF  =
+        new File(AffymetrixArrayDesignFiles.class.getResource("/arraydesign/affymetrix/BirdseedSNPTest.cdf").getFile());
+
+    public static final File BRLMM_SNP_TEST_CDF  =
+        new File(AffymetrixArrayDesignFiles.class.getResource("/arraydesign/affymetrix/BrlmmSNPTest001.cdf").getFile());
+
+    public static final File AXIOMGT_SNP_TEST_CDF  =
+        new File(AffymetrixArrayDesignFiles.class.getResource("/arraydesign/affymetrix/AxiomGtSNPTest1.cdf").getFile());
 }

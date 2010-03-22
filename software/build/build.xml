@@ -2989,7 +2989,7 @@
     </target>
 
     <!-- ******************************************************************* -->
-    <!-- ** DOCUMENATION TARGETS                                          ** -->
+    <!-- ** DOCUMENTATION TARGETS                                         ** -->
     <!-- ******************************************************************* -->
 
     <target name="javadoc" depends="init:third-party-paths,javadoc:all" description="Generates javadoc for all source code" />

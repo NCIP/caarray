@@ -130,7 +130,16 @@ public class AffymetrixArrayDataFiles {
     
     public static final File GSM428956_CEL = 
         new File(AffymetrixArrayDataFiles.class.getResource("/arraydata/affymetrix/GSM428956.CEL").getFile());
-    
-    public static final File U133_Plus_Ivt_Breast_A_CEL = 
+
+    public static final File U133_Plus_Ivt_Breast_A_CEL =
         new File(AffymetrixArrayDataFiles.class.getResource("/arraydata/affymetrix/u1332plus_ivt_breast_A.CEL").getFile());
+
+    public static final File BIRDSEED_SNP_TEST_CHP = 
+        new File(AffymetrixArrayDataFiles.class.getResource("/arraydata/affymetrix/BirdseedSNPTest.chp").getFile());
+
+    public static final File BRLMM_SNP_TEST_CHP = 
+        new File(AffymetrixArrayDataFiles.class.getResource("/arraydata/affymetrix/BrlmmSNPTest001.chp").getFile());
+
+    public static final File AXIOMGT_SNP_TEST_CHP = 
+        new File(AffymetrixArrayDataFiles.class.getResource("/arraydata/affymetrix/AxiomgtSNPTest1.chp").getFile());
 }
