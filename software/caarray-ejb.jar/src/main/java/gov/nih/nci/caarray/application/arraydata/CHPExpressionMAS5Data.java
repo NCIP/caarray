@@ -90,14 +90,16 @@ import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixExpression
 import gov.nih.nci.caarray.domain.data.AbstractDataColumn;
 import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
 import gov.nih.nci.caarray.domain.data.FloatColumn;
-import gov.nih.nci.caarray.domain.data.IntegerColumn;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
+import gov.nih.nci.caarray.domain.data.ShortColumn;
 import gov.nih.nci.caarray.domain.data.StringColumn;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.apache.log4j.Logger;
 
 /**
  * Supports expression data in legacy Affymetrix CHP file formats.
@@ -105,6 +107,9 @@ import java.util.Map;
  */
 @SuppressWarnings("PMD.CyclomaticComplexity") // long switch statements
 class CHPExpressionMAS5Data extends AbstractCHPLegacyData<FusionExpressionProbeSetResults> {
+    
+    private static final Logger LOG = Logger.getLogger(DataSetImporter.class);
+    
     /**
      * @param data
      */
@@ -132,12 +137,17 @@ class CHPExpressionMAS5Data extends AbstractCHPLegacyData<FusionExpressionProbeS
                                       final FusionExpressionProbeSetResults entry) {
         final QuantitationType quantitationType = column.getQuantitationType();
         final AffymetrixExpressionChpQuantitationType typeDescriptor = getExpressionTypeDescriptor(quantitationType);
+        int intValue = Integer.MIN_VALUE;
         switch (typeDescriptor) {
             case CHP_CHANGE:
                 ((StringColumn) column).getValues()[index] = entry.getChangeString();
                 break;
             case CHP_COMMON_PAIRS:
-                ((IntegerColumn) column).getValues()[index] = entry.getNumCommonPairs().toInt();
+                intValue = entry.getNumCommonPairs().toInt();
+                if (Short.MAX_VALUE < intValue) {
+                    LOG.warn("Truncating int value '" + intValue + "' into short value '" + (short)intValue + "' for FusionExpressionProbeSetResult entry.");
+                }
+                ((ShortColumn) column).getValues()[index] = (short)intValue;
                 break;
             case CHP_CHANGE_PVALUE:
                 ((FloatColumn) column).getValues()[index] = entry.getChangePValue();
@@ -149,10 +159,18 @@ class CHPExpressionMAS5Data extends AbstractCHPLegacyData<FusionExpressionProbeS
                 ((FloatColumn) column).getValues()[index] = entry.getDetectionPValue();
                 break;
             case CHP_PAIRS:
-                ((IntegerColumn) column).getValues()[index] = entry.getNumPairs().toInt();
+                intValue = entry.getNumCommonPairs().toInt();
+                if (Short.MAX_VALUE < intValue) {
+                    LOG.warn("Truncating int value '" + intValue + "' into short value '" + (short)intValue + "' for FusionExpressionProbeSetResult entry '" + entry.toString() + "'.");
+                }
+                ((ShortColumn) column).getValues()[index] = (short)intValue;
                 break;
             case CHP_PAIRS_USED:
-                ((IntegerColumn) column).getValues()[index] = entry.getNumUsedPairs().toInt();
+                intValue = entry.getNumCommonPairs().toInt();
+                if (Short.MAX_VALUE < intValue) {
+                    LOG.warn("Truncating int value '" + intValue + "' into short value '" + (short)intValue + "' for FusionExpressionProbeSetResult entry '" + entry.toString() + "'.");
+                }
+                ((ShortColumn) column).getValues()[index] = (short)intValue;
                 break;
             case CHP_SIGNAL:
                 ((FloatColumn) column).getValues()[index] = entry.getSignal();

@@ -103,12 +103,12 @@ public enum AffymetrixExpressionChpQuantitationType implements QuantitationTypeD
     /**
      * CHPPairs.
      */
-    CHP_PAIRS("CHPPairs", DataType.INTEGER),
+    CHP_PAIRS("CHPPairs", DataType.SHORT),
 
     /**
      * CHPPairsUsed.
      */
-    CHP_PAIRS_USED("CHPPairsUsed", DataType.INTEGER),
+    CHP_PAIRS_USED("CHPPairsUsed", DataType.SHORT),
 
     /**
      * CHPSignal.
@@ -143,7 +143,7 @@ public enum AffymetrixExpressionChpQuantitationType implements QuantitationTypeD
     /**
      * CHPCommonPairs.
      */
-    CHP_COMMON_PAIRS("CHPCommonPairs", DataType.INTEGER);
+    CHP_COMMON_PAIRS("CHPCommonPairs", DataType.SHORT);
 
     private final String name;
     private final DataType type;
