@@ -145,9 +145,10 @@ class CHPExpressionMAS5Data extends AbstractCHPLegacyData<FusionExpressionProbeS
             case CHP_COMMON_PAIRS:
                 intValue = entry.getNumCommonPairs().toInt();
                 if (Short.MAX_VALUE < intValue) {
-                    LOG.warn("Truncating int value '" + intValue + "' into short value '" + (short)intValue + "' for FusionExpressionProbeSetResult entry.");
+                    LOG.warn("Truncating int value '" + intValue + "' into short value '" + (short) intValue
+                            + "' for FusionExpressionProbeSetResult entry.");
                 }
-                ((ShortColumn) column).getValues()[index] = (short)intValue;
+                ((ShortColumn) column).getValues()[index] = (short) intValue;
                 break;
             case CHP_CHANGE_PVALUE:
                 ((FloatColumn) column).getValues()[index] = entry.getChangePValue();
@@ -161,16 +162,18 @@ class CHPExpressionMAS5Data extends AbstractCHPLegacyData<FusionExpressionProbeS
             case CHP_PAIRS:
                 intValue = entry.getNumCommonPairs().toInt();
                 if (Short.MAX_VALUE < intValue) {
-                    LOG.warn("Truncating int value '" + intValue + "' into short value '" + (short)intValue + "' for FusionExpressionProbeSetResult entry '" + entry.toString() + "'.");
+                    LOG.warn("Truncating int value '" + intValue + "' into short value '" + (short) intValue
+                            + "' for FusionExpressionProbeSetResult entry '" + entry.toString() + "'.");
                 }
-                ((ShortColumn) column).getValues()[index] = (short)intValue;
+                ((ShortColumn) column).getValues()[index] = (short) intValue;
                 break;
             case CHP_PAIRS_USED:
                 intValue = entry.getNumCommonPairs().toInt();
                 if (Short.MAX_VALUE < intValue) {
-                    LOG.warn("Truncating int value '" + intValue + "' into short value '" + (short)intValue + "' for FusionExpressionProbeSetResult entry '" + entry.toString() + "'.");
+                    LOG.warn("Truncating int value '" + intValue + "' into short value '" + (short) intValue
+                            + "' for FusionExpressionProbeSetResult entry '" + entry.toString() + "'.");
                 }
-                ((ShortColumn) column).getValues()[index] = (short)intValue;
+                ((ShortColumn) column).getValues()[index] = (short) intValue;
                 break;
             case CHP_SIGNAL:
                 ((FloatColumn) column).getValues()[index] = entry.getSignal();
