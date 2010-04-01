@@ -129,5 +129,5 @@ public class AffymetrixArrayDesignFiles {
         new File(AffymetrixArrayDesignFiles.class.getResource("/arraydesign/affymetrix/BrlmmSNPTest001.cdf").getFile());
 
     public static final File AXIOMGT_SNP_TEST_CDF  =
-        new File(AffymetrixArrayDesignFiles.class.getResource("/arraydesign/affymetrix/AxiomGtSNPTest1.cdf").getFile());
+        new File(AffymetrixArrayDesignFiles.class.getResource("/arraydesign/affymetrix/AxiomgtSNPTest1.cdf").getFile());
 }
