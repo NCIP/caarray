@@ -1420,7 +1420,7 @@
     <!-- ** MAIN TARGETS                                                  ** -->
     <!-- ******************************************************************* -->
 
-    <target name="continuous-integration" depends="clean,init:third-party-paths,build-tags,build,check,database:recreate-database,database:reinitialize,test,javadoc"/>
+    <target name="continuous-integration" depends="clean,init:third-party-paths,build-tags,build,check,database:reinitialize,test,javadoc"/>
 
 
     <target name="nightly-build" depends="continuous-integration,
@@ -2497,7 +2497,7 @@
     </target>
 
 	<target name="test:api:init-data" unless="notest" depends="init:third-party-paths">
-		<antcall target="database:recreate-database"/>
+		<antcall target="database:reinitialize"/>
 
         <!--
         the dump file was created with :
@@ -2671,24 +2671,6 @@
         </java>
     </target>
 
-    <target name="database:drop-schema" unless="nodbintegration" depends="init:third-party-paths,database:generate-drop-schema-sql" description="Drop DB schema">
-        <run-sql-script database.user="${database.user}" database.password="${database.password}" onerror="continue" sql.file="${caarraydb.sql.dir}/drop_schema.sql" />
-        <run-sql-script database.user="${database.user}" database.password="${database.password}" sql.file="${caarraydb.sql.dir}/drop-caarray-schema.sql" />
-        <run-sql-script database.user="${database.user}" database.password="${database.password}" sql.file="${caarraydb.sql.dir}/drop-csm-schema.sql" />
-    </target>
-
-    <target name="database:create-schema" unless="nodbintegration" depends="init:third-party-paths,database:generate-create-schema-sql" description="Create DB schema">
-        <run-sql-script database.url="${database.url}" database.user="${database.user}" database.password="${database.password}" sql.file="${caarraydb.sql.dir}/create_schema.sql" />
-        <run-sql-script database.url="${database.url}" database.user="${database.user}" database.password="${database.password}" sql.file="${caarraydb.sql.dir}/init-caarray-schema.sql" />
-        <run-sql-script database.url="${database.url}" database.user="${database.user}" database.password="${database.password}" sql.file="${caarraydb.sql.dir}/init-csm-schema.sql" />
-    </target>
-
-    <target name="database:initialize-schema" depends="init:third-party-paths,database:drop-schema,database:create-schema" description="Drop &amp; Create DB schema" />
-
-    <target name="database:recreate-database" unless="nodbintegration" description="Drops and recreates caarraydb database" depends="init:third-party-paths,database:init-sql">
-        <run-sql-script database.url="${database.system.url}" database.user="${database.system.user}" database.password="${database.system.password}" sql.file="${caarraydb.sql.dir}/create_database_and_user.sql" />
-    </target>
-
 	<target name="database:reinitialize" depends="init:third-party-paths,database:dropAll,database:update" unless="nodbintegration" description="Completely reset caarraydb by dropping database, recreating, and creating schema, and populating with initial data"/>
 
     <target name="database:liquibase-taskdef" depends="init:third-party-paths">
@@ -2723,7 +2705,7 @@
     	</updateDatabase>
 	</target>
 
-	<target name="database:dropAll" depends="database:liquibase-taskdef,init:third-party-paths" unless="nodbintegration" description="Drop all database tables and other objects">
+	<target name="database:dropAll" depends="init:third-party-paths,build:caarray-ejb.jar,database:liquibase-taskdef" unless="nodbintegration" description="Drop all database tables and other objects">
 		<dropAllDatabaseObjects
 			driver="${database.driver}"
 			url="${database.url}"
