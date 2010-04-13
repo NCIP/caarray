@@ -151,6 +151,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
+import gov.nih.nci.caarray.magetab.io.FileRef;
+import gov.nih.nci.caarray.magetab.io.JavaIOFileRef;
 
 /**
  * Test for MAGE tab translator
@@ -181,8 +183,8 @@ public class MageTabTranslatorTest extends AbstractServiceTest {
     @Test
     public void testDefect17200() throws InvalidDataException, MageTabParsingException {
         MageTabFileSet mageTabSet = TestMageTabSets.DEFECT_17200;
-        for (File f : mageTabSet.getAllFiles()) {
-            fileAccessServiceStub.add(f);
+        for (FileRef f : mageTabSet.getAllFiles()) {
+            fileAccessServiceStub.add(f.getAsFile());
         }
         MageTabDocumentSet docSet = MageTabParser.INSTANCE.parse(mageTabSet);
         assertTrue(docSet.getValidationResult().isValid());
@@ -201,7 +203,7 @@ public class MageTabTranslatorTest extends AbstractServiceTest {
         assertTrue(fileResult.getMessages().get(0).getMessage().startsWith("This data file is not referenced from "));
 
         mageTabSet = new MageTabFileSet();
-        mageTabSet.addNativeData(MageTabDataFiles.DEFECT_17200_GPR);
+        mageTabSet.addNativeData(new JavaIOFileRef(MageTabDataFiles.DEFECT_17200_GPR));
         fileSet = new CaArrayFileSet();
         fileSet.add(fileAccessServiceStub.add(MageTabDataFiles.DEFECT_17200_GPR));
         docSet = MageTabParser.INSTANCE.parse(mageTabSet);

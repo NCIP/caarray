@@ -110,6 +110,7 @@ import gov.nih.nci.caarray.magetab.OntologyTerm;
 import gov.nih.nci.caarray.magetab.TermSource;
 import gov.nih.nci.caarray.magetab.idf.IdfDocument;
 import gov.nih.nci.caarray.magetab.idf.Investigation;
+import gov.nih.nci.caarray.magetab.io.JavaIOFileRef;
 import gov.nih.nci.caarray.magetab.sdrf.AbstractSampleDataRelationshipNode;
 import gov.nih.nci.caarray.magetab.sdrf.ArrayDataFile;
 import gov.nih.nci.caarray.magetab.sdrf.ArrayDataMatrixFile;
@@ -178,10 +179,10 @@ public class MageTabExporterBean implements MageTabExporter {
         LogUtil.logSubsystemEntry(LOG, experiment);
 
         MageTabFileSet fileSet = new MageTabFileSet();
-        fileSet.addIdf(idfFile);
-        fileSet.addSdrf(sdrfFile);
+        fileSet.addIdf(new JavaIOFileRef(idfFile));
+        fileSet.addSdrf(new JavaIOFileRef(sdrfFile));
 
-        // Translate caArray domain object graph into MAGE-TAB object graph, and create MAGE-TAB documents.
+        // Translate caArray domain object graph into MAGE-TAB object graph, and new_JavaIOFileRef MAGE-TAB documents.
         MageTabDocumentSet mageTabDocumentSet = translateToMageTab(experiment, fileSet);
 
         // Ask the MAGE-TAB documents to export themselves into their respective files.

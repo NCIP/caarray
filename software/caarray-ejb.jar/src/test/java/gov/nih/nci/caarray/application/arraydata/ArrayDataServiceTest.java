@@ -211,6 +211,7 @@ import affymetrix.fusion.chp.FusionExpressionProbeSetResults;
 import affymetrix.fusion.chp.FusionGenotypeProbeSetResults;
 
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
+import gov.nih.nci.caarray.magetab.io.JavaIOFileRef;
 
 /**
  * Tests the ArrayDataService subsystem
@@ -586,11 +587,11 @@ public class ArrayDataServiceTest extends AbstractServiceTest {
         MageTabFileSet mTabFiles = new MageTabFileSet();
         for (File f : fl) {
             if (f.getName().contains(".idf")) {
-                mTabFiles.addIdf(f);
+                mTabFiles.addIdf(new JavaIOFileRef(f));
             } else if (f.getName().contains(".sdrf")) {
-                mTabFiles.addSdrf(f);
+                mTabFiles.addSdrf(new JavaIOFileRef(f));
             } else {
-                mTabFiles.addNativeData(f);
+                mTabFiles.addNativeData(new JavaIOFileRef(f));
             }
         }
         MageTabDocumentSet mTabSet = new MageTabDocumentSet(mTabFiles, MageTabParserImplementation.CAARRAY_VALIDATION_SET);

@@ -85,8 +85,8 @@ package gov.nih.nci.caarray.magetab.data;
 import gov.nih.nci.caarray.magetab.AbstractMageTabDocument;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.magetab.MageTabParsingException;
+import gov.nih.nci.caarray.magetab.io.FileRef;
 
-import java.io.File;
 
 /**
  * A raw or derived data file in original, native format.
@@ -101,7 +101,7 @@ public final class NativeDataFile extends AbstractMageTabDocument {
      * @param documentSet document set containing the file
      * @param file the file
      */
-    public NativeDataFile(MageTabDocumentSet documentSet, File file) {
+    public NativeDataFile(MageTabDocumentSet documentSet, FileRef file) {
         super(documentSet, file);
     }
 

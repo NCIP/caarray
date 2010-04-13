@@ -129,6 +129,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 import com.fiveamsolutions.nci.commons.web.struts2.action.ActionHelper;
+import gov.nih.nci.caarray.dao.FileDaoTest;
 
 /**
  * @author Winston Cheng
@@ -218,11 +219,11 @@ public class ProjectSourcesActionTest extends AbstractDownloadTest {
         h.getDerivedDataCollection().add(derived);
         CaArrayFile rawFile = new CaArrayFile();
         rawFile.setName("missing_term_source.idf");
-        rawFile.writeContents(IOUtils.toInputStream(""));
+        FileDaoTest.writeContents(rawFile, "");
         raw.setDataFile(rawFile);
         CaArrayFile derivedFile = new CaArrayFile();
         derivedFile.setName("missing_term_source.sdrf");
-        derivedFile.writeContents(IOUtils.toInputStream(""));
+        FileDaoTest.writeContents(derivedFile, "");
         derived.setDataFile(derivedFile);
 
         action.setCurrentSource(so);

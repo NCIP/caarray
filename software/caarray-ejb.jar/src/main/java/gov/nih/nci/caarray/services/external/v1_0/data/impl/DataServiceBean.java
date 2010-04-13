@@ -394,9 +394,9 @@ public class DataServiceBean extends BaseV1_0ExternalService implements DataServ
         try {
             MageTabFileSet mageTabSet = new MageTabFileSet();
             MageTabDocumentSet docSet = exportToMageTab(experiment);
-            mageTabSet.setIdf(toFileContents(docSet.getIdfDocuments().iterator().next().getFile(),
+            mageTabSet.setIdf(toFileContents(docSet.getIdfDocuments().iterator().next().getFile().getAsFile(),
                     FileType.MAGE_TAB_IDF));
-            mageTabSet.setSdrf(toFileContents(docSet.getSdrfDocuments().iterator().next().getFile(),
+            mageTabSet.setSdrf(toFileContents(docSet.getSdrfDocuments().iterator().next().getFile().getAsFile(),
                     FileType.MAGE_TAB_SDRF));
 
             List<CaArrayFile> dataFiles = getDataFilesReferencedByMageTab(docSet, experiment);

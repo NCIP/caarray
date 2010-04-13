@@ -88,6 +88,7 @@ import gov.nih.nci.caarray.AbstractCaarrayTest;
 import gov.nih.nci.caarray.magetab.idf.IdfDocument;
 import gov.nih.nci.caarray.magetab.idf.IdfRowType;
 import gov.nih.nci.caarray.magetab.idf.Investigation;
+import gov.nih.nci.caarray.magetab.io.JavaIOFileRef;
 import gov.nih.nci.caarray.magetab.sdrf.ArrayDataFile;
 import gov.nih.nci.caarray.magetab.sdrf.ArrayDataMatrixFile;
 import gov.nih.nci.caarray.magetab.sdrf.Characteristic;
@@ -177,8 +178,8 @@ public class MageTabDocumentExportTest {
         idfFile.deleteOnExit();
         sdrfFile.deleteOnExit();
         MageTabFileSet fileSet = new MageTabFileSet();
-        fileSet.addIdf(idfFile);
-        fileSet.addSdrf(sdrfFile);
+        fileSet.addIdf(new JavaIOFileRef(idfFile));
+        fileSet.addSdrf(new JavaIOFileRef(sdrfFile));
         documentSet = new MageTabDocumentSet(fileSet);
     }
 

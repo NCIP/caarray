@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caarray-common-jar
+ * source code form and machine readable, binary, object code form. The caarray-ejb-jar
  * Software was developed in conjunction with the National Cancer Institute
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent
  * government employees are authors, any rights in such works shall be subject
  * to Title 17 of the United States Code, section 105.
  *
- * This caarray-common-jar Software License (the License) is between NCI and You. You (or
+ * This caarray-ejb-jar Software License (the License) is between NCI and You. You (or
  * Your) shall mean a person or an entity, and all other entities that control,
  * are controlled by, or are under common control with the entity. Control for
  * purposes of this definition means (i) the direct or indirect power to cause
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up,
  * no-charge, irrevocable, transferable and royalty-free right and license in
- * its rights in the caarray-common-jar Software to (i) use, install, access, operate,
+ * its rights in the caarray-ejb-jar Software to (i) use, install, access, operate,
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caarray-common-jar Software; (ii) distribute and
- * have distributed to and by third parties the caarray-common-jar Software and any
+ * and prepare derivative works of the caarray-ejb-jar Software; (ii) distribute and
+ * have distributed to and by third parties the caarray-ejb-jar Software and any
  * modifications and derivative works thereof; and (iii) sublicense the
  * foregoing rights set out in (i) and (ii) to third parties, including the
  * right to license such rights to further third parties. For sake of clarity,
@@ -80,76 +80,28 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.domain;
+package gov.nih.nci.caarray.magetab.io;
 
-import gov.nih.nci.caarray.domain.project.Experiment;
-import java.io.Serializable;
-import java.util.Random;
-import org.apache.commons.lang.ArrayUtils;
-
-import org.hibernate.EmptyInterceptor;
-import org.hibernate.type.Type;
+import java.io.File;
 
 /**
- * Correct or populate persisted domain object.
+ * Interface for file wrapper, mostly to deffer the conversion of non-traditional files into {@link java.io.File}.
  * @author gax
  * @since 2.4.0
  */
-public class AutoPropertiesInterceptor extends EmptyInterceptor {
-
-    private static final Random RAND = new Random();
-    private static final char[] BASE32_CHARS = "abcdefghijklmnopqrstuvwxyz234567".toCharArray();
+public interface FileRef {
+    /**
+     * @return file name as it would appear in a magetab document entry.
+     */
+    String getName();
 
     /**
-     * {@inheritDoc}
+     * @return convert the reference into an actual java file.
      */
-    @Override
-    public boolean onSave(Object entity, Serializable id, Object[] state, String[] propertyNames, Type[] types) {
-        boolean modified = false;
-        if (entity instanceof Experiment) {
-            setExperimentPublicId((Experiment) entity, state, propertyNames);
-            modified = true;
-        }
-        return modified;
-    }
-
-    private static void setProperty(String[] propertyNames, Object[] values, String propertyName, Object newValue) {
-        int idx = ArrayUtils.indexOf(propertyNames, propertyName);
-        values[idx] = newValue;
-    }
-
-    private void setExperimentPublicId(Experiment exp, Object[] values, String[] propertyNames) {
-        if (exp.getPublicIdentifier() == null) {
-            setProperty(propertyNames, values, "publicIdentifier", generatePublicId());
-        }
-    }
-    // CHECKSTYLE:OFF
-    // magic numbers.
-    // Make sure that you update the regex patterns in software/caarray.war/src/main/webapp/WEB-INF/urlrewrite.xml
-    // to also match the generated IDs.
-    private static String generatePublicId() {
-        long t = System.currentTimeMillis();
-        long rand = RAND.nextInt(0x10000); // 2^16
-        // the first 16 bits are usually 0's. shift them out left to make room for random 16 bit number.
-        t <<= 16;
-        t |= rand;
-        String id = base32Encode(t);
-        return id;
-    }
+    File getAsFile();
 
     /**
-     * encode a long in base 32, low bits first.
+     * @return true if this reference actually points to data.
      */
-    static String base32Encode(long l) {
-        StringBuilder sb = new StringBuilder(13);
-        long data = l;
-        for (int i = 0; i < 13; i++) { // for as many 5 bits are in a long (64/5=13)
-            int low5 = (int) (data & 0x1FL); // use lower 5 bits as index
-            sb.append(BASE32_CHARS[low5]);
-            data >>= 5;
-        }
-        return sb.toString();
-    }
-    // CHECKSTYLE:ON
-    
+    boolean exists();
 }

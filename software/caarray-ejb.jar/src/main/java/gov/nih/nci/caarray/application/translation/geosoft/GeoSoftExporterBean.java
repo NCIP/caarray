@@ -424,7 +424,6 @@ public class GeoSoftExporterBean implements GeoSoftExporter {
         }
         for (CaArrayFile f : experiment.getProject().getSupplementalFiles()) {
             FileAccessUtils.addFileToArchive(f, zout);
-            f.clearAndEvictContents();
         }
     }
 
@@ -433,7 +432,6 @@ public class GeoSoftExporterBean implements GeoSoftExporter {
         for (AbstractArrayData aad : dataCollection) {
             CaArrayFile f = aad.getDataFile();
             FileAccessUtils.addFileToArchive(f, zout);
-            f.clearAndEvictContents();
         }
     }
 

@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.application.fileaccess;
 
+import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 
 import java.io.File;
@@ -164,9 +165,7 @@ public final class FileAccessUtils {
     public static void addFileToArchive(CaArrayFile f, ArchiveOutputStream zout) throws IOException {
         ArchiveEntry ae = createArchiveEntry(zout, f.getName(), f.getUncompressedSize());
         zout.putArchiveEntry(ae);
-        InputStream is = f.readContents();
-        IOUtils.copy(is, zout);
-        is.close();
+        CaArrayDaoFactory.INSTANCE.getFileDao().copyContentsToStream(f, zout);
         zout.closeArchiveEntry();
     }
 

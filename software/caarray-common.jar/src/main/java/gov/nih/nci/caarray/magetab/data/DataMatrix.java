@@ -85,8 +85,8 @@ package gov.nih.nci.caarray.magetab.data;
 import gov.nih.nci.caarray.magetab.AbstractMageTabDocument;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.magetab.MageTabParsingException;
+import gov.nih.nci.caarray.magetab.io.FileRef;
 
-import java.io.File;
 
 /**
  * A MAGE-TAB data matrix files holding raw or derived data.
@@ -102,7 +102,7 @@ public class DataMatrix extends AbstractMageTabDocument {
      * @param documentSet the MAGE-TAB document set the Data Matrix belongs to.
      * @param file the file containing the Data Matrix content.
      */
-    public DataMatrix(MageTabDocumentSet documentSet, File file) {
+    public DataMatrix(MageTabDocumentSet documentSet, FileRef file) {
         super(documentSet, file);
     }
 

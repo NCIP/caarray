@@ -107,7 +107,6 @@ import javax.ejb.Local;
 import javax.ejb.Stateless;
 import javax.interceptor.Interceptors;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 
@@ -148,7 +147,7 @@ public class FileAccessServiceBean implements FileAccessService {
     public CaArrayFile add(InputStream stream, String filename) {
         CaArrayFile caArrayFile = createCaArrayFile(filename);
         try {
-            caArrayFile.writeContents(stream);
+            daoFactory.getFileDao().writeContents(caArrayFile, stream);
         } catch (IOException e) {
             throw new FileAccessException("Stream " + filename + " couldn't be written", e);
         }
@@ -159,9 +158,7 @@ public class FileAccessServiceBean implements FileAccessService {
     private CaArrayFile doAddFile(File file, String filename) {
         CaArrayFile caArrayFile = createCaArrayFile(filename);
         try {
-            InputStream inputStream = FileUtils.openInputStream(file);
-            caArrayFile.writeContents(inputStream);
-            IOUtils.closeQuietly(inputStream);
+            daoFactory.getFileDao().writeContents(caArrayFile, file);
         } catch (IOException e) {
             throw new FileAccessException("File " + file.getAbsolutePath() + " couldn't be written", e);
         }
@@ -208,7 +205,7 @@ public class FileAccessServiceBean implements FileAccessService {
      */
     public void save(CaArrayFile caArrayFile) {
         LogUtil.logSubsystemEntry(LOG, caArrayFile);
-        this.daoFactory.getFileDao().save(caArrayFile);
+        this.daoFactory.getFileDao().saveAndEvict(caArrayFile);
         LogUtil.logSubsystemExit(LOG);
     }
 

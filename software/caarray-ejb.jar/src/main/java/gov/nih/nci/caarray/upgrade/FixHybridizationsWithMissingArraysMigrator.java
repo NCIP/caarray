@@ -272,7 +272,7 @@ public class FixHybridizationsWithMissingArraysMigrator extends AbstractCustomCh
         }
         
         File f = File.createTempFile("datafile", null);
-        InputStream is = mpb.readCompressedContents();
+        InputStream is = mpb.readUncompressedContents();
         FileOutputStream fos = FileUtils.openOutputStream(f); 
         IOUtils.copy(is, fos);
         IOUtils.closeQuietly(is);

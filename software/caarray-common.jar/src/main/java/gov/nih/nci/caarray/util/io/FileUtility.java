@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.util.io;
 
+import gov.nih.nci.caarray.magetab.io.FileRef;
 import java.io.File;
 
 /**
@@ -106,6 +107,20 @@ public final class FileUtility {
             throw new IllegalArgumentException("File argument was null.");
         } else if (!file.exists()) {
             throw new IllegalArgumentException("File " + file.getAbsolutePath() + " does not exist.");
+        }
+    }
+
+    /**
+     * Simple file argument checker to check that a file is not null and exists.
+     *
+     * @param file the file to check.
+     * @since 2.4.0
+     */
+    public static void checkFileExists(FileRef file) {
+        if (file == null) {
+            throw new IllegalArgumentException("File argument was null.");
+        } else if (!file.exists()) {
+            throw new IllegalArgumentException("File " + file + " does not exist.");
         }
     }
     

@@ -83,14 +83,13 @@
 package gov.nih.nci.caarray.application.fileaccess;
 
 import gov.nih.nci.caarray.application.ConfigurationHelper;
+import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.ConfigParamEnum;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
-import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.rmi.server.UID;
 import java.util.HashMap;
@@ -150,15 +149,9 @@ public final class TemporaryFileCacheImpl implements TemporaryFileCache {
     private File openFile(CaArrayFile caArrayFile, boolean uncompress) {
         File file = new File(getSessionWorkingDirectory(), caArrayFile.getName());
         try {
-            // re-fetch the CaArrayFile instance to ensure that its blob contents are loaded
-            HibernateUtil.getCurrentSession().refresh(caArrayFile);
-
-            InputStream inputStream = uncompress ? caArrayFile.readContents() : caArrayFile.readCompressedContents();
             OutputStream outputStream = FileUtils.openOutputStream(file);
-            IOUtils.copy(inputStream, outputStream);
-            IOUtils.closeQuietly(inputStream);
+            CaArrayDaoFactory.INSTANCE.getFileDao().copyContentsToStream(caArrayFile, outputStream);
             IOUtils.closeQuietly(outputStream);
-            caArrayFile.clearAndEvictContents();
         } catch (IOException e) {
             throw new FileAccessException("Couldn't access file contents " + caArrayFile.getName(), e);
         }

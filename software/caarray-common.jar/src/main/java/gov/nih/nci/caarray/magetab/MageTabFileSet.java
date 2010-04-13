@@ -82,9 +82,9 @@
  */
 package gov.nih.nci.caarray.magetab;
 
+import gov.nih.nci.caarray.magetab.io.FileRef;
 import gov.nih.nci.caarray.util.io.FileUtility;
 
-import java.io.File;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
@@ -96,18 +96,18 @@ public final class MageTabFileSet implements Serializable {
 
     private static final long serialVersionUID = 7824150081647257549L;
 
-    private final Set<File> idfFiles = new HashSet<File>();
-    private final Set<File> adfFiles = new HashSet<File>();
-    private final Set<File> sdrfFiles = new HashSet<File>();
-    private final Set<File> dataMatrixFiles = new HashSet<File>();
-    private final Set<File> nativeDataFiles = new HashSet<File>();
+    private final Set<FileRef> idfFiles = new HashSet<FileRef>();
+    private final Set<FileRef> adfFiles = new HashSet<FileRef>();
+    private final Set<FileRef> sdrfFiles = new HashSet<FileRef>();
+    private final Set<FileRef> dataMatrixFiles = new HashSet<FileRef>();
+    private final Set<FileRef> nativeDataFiles = new HashSet<FileRef>();
 
     /**
      * Adds the file as an IDF to the document set to be parsed.
      *
      * @param file the IDF
      */
-    public void addIdf(File file) {
+    public void addIdf(FileRef file) {
         checkFile(file);
         idfFiles.add(file);
     }
@@ -117,7 +117,7 @@ public final class MageTabFileSet implements Serializable {
      *
      * @param file the ADF
      */
-    public void addAdf(File file) {
+    public void addAdf(FileRef file) {
         checkFile(file);
         adfFiles.add(file);
     }
@@ -127,7 +127,7 @@ public final class MageTabFileSet implements Serializable {
      *
      * @param file the SDRF
      */
-    public void addSdrf(File file) {
+    public void addSdrf(FileRef file) {
         checkFile(file);
         sdrfFiles.add(file);
     }
@@ -137,7 +137,7 @@ public final class MageTabFileSet implements Serializable {
      *
      * @param file the data matrix file
      */
-    public void addDataMatrix(File file) {
+    public void addDataMatrix(FileRef file) {
         checkFile(file);
         dataMatrixFiles.add(file);
     }
@@ -147,32 +147,32 @@ public final class MageTabFileSet implements Serializable {
      *
      * @param file the native data file
      */
-    public void addNativeData(File file) {
+    public void addNativeData(FileRef file) {
         checkFile(file);
         nativeDataFiles.add(file);
     }
 
-    private void checkFile(File file) {
+    private void checkFile(FileRef file) {
         FileUtility.checkFileExists(file);
     }
 
-    Set<File> getAdfFiles() {
+    Set<FileRef> getAdfFiles() {
         return this.adfFiles;
     }
 
-    Set<File> getDataMatrixFiles() {
+    Set<FileRef> getDataMatrixFiles() {
         return this.dataMatrixFiles;
     }
 
-    Set<File> getIdfFiles() {
+    Set<FileRef> getIdfFiles() {
         return this.idfFiles;
     }
 
-    Set<File> getNativeDataFiles() {
+    Set<FileRef> getNativeDataFiles() {
         return this.nativeDataFiles;
     }
 
-    Set<File> getSdrfFiles() {
+    Set<FileRef> getSdrfFiles() {
         return this.sdrfFiles;
     }
 
@@ -180,8 +180,8 @@ public final class MageTabFileSet implements Serializable {
      * Get all the files in this file set.
      * @return all files
      */
-    public Set<File> getAllFiles() {
-        Set<File> files = new HashSet<File>();
+    public Set<FileRef> getAllFiles() {
+        Set<FileRef> files = new HashSet<FileRef>();
         files.addAll(this.adfFiles);
         files.addAll(this.dataMatrixFiles);
         files.addAll(this.idfFiles);

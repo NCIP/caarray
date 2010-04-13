@@ -124,6 +124,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
+import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 
 /**
  * Integration Test class for ProjectManagementService subsystem.
@@ -250,7 +251,7 @@ public class ProjectManagementServiceIntegrationTest extends AbstractServiceInte
         caArrayFile1.setFileType(FileType.AFFYMETRIX_CDF);
         caArrayFile1.setFileStatus(FileStatus.UPLOADED);
         ByteArrayInputStream in1 = new ByteArrayInputStream(caArrayFile1.getName().getBytes());
-        caArrayFile1.writeContents(in1);
+        CaArrayDaoFactory.INSTANCE.getFileDao().writeContents(caArrayFile1, in1);
 
         File file2 = File.createTempFile("blob2", ".ext");
         file2.deleteOnExit();
@@ -259,7 +260,7 @@ public class ProjectManagementServiceIntegrationTest extends AbstractServiceInte
         caArrayFile2.setFileType(FileType.AFFYMETRIX_CDF);
         caArrayFile2.setFileStatus(FileStatus.UPLOADED);
         ByteArrayInputStream in2 = new ByteArrayInputStream(caArrayFile2.getName().getBytes());
-        caArrayFile2.writeContents(in2);
+        CaArrayDaoFactory.INSTANCE.getFileDao().writeContents(caArrayFile2, in2);
 
         DUMMY_PROJECT_1.getFiles().add(caArrayFile1);
         DUMMY_PROJECT_1.getFiles().add(caArrayFile2);

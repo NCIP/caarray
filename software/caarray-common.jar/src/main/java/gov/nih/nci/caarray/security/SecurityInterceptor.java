@@ -82,7 +82,6 @@
  */
 package gov.nih.nci.caarray.security;
 
-import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.permissions.AccessProfile;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.Project;
@@ -96,8 +95,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.CallbackException;
 import org.hibernate.EmptyInterceptor;
@@ -136,8 +133,6 @@ public class SecurityInterceptor extends EmptyInterceptor {
     private static final ThreadLocal<Collection<AccessProfile>> PROFILES =
             new ThreadLocal<Collection<AccessProfile>>();
 
-    private static final ThreadLocal<Collection<CaArrayFile>> FILES = new ThreadLocal<Collection<CaArrayFile>>();
-
     /**
      * {@inheritDoc}
      */
@@ -170,13 +165,13 @@ public class SecurityInterceptor extends EmptyInterceptor {
                 saveEntityForProcessing(PROFILES, new ArrayList<AccessProfile>(), (AccessProfile) pc.getOwner());
             }
 
-            if (pc.getOwner() instanceof Experiment && pc.getRole() != null
-                    && StringUtils.substringAfterLast(pc.getRole(), ".").equals("samples")) {
+            if (pc.getOwner() instanceof Experiment && pc.getRole() != null && pc.getRole().endsWith(".samples")) {
                 // inefficient but seems to be the cleanest way possible: force an update of all the
                 // access profiles associated with the project to make sure new or removed samples
                 // are appropriately updated for
                 Experiment experiment = (Experiment) pc.getOwner();
-                saveEntityForProcessing(BIOMATERIAL_CHANGES, new ArrayList<Project>(), experiment.getProject());
+                Project proj = experiment.getProject();
+                saveEntityForProcessing(BIOMATERIAL_CHANGES, new ArrayList<Project>(), proj);
             }
         }
     }
@@ -195,10 +190,6 @@ public class SecurityInterceptor extends EmptyInterceptor {
 
         if (entity instanceof AccessProfile) {
             saveEntityForProcessing(PROFILES, new ArrayList<AccessProfile>(), (AccessProfile) entity);
-        }
-
-        if (entity instanceof CaArrayFile) {
-            saveEntityForProcessing(FILES, new ArrayList<CaArrayFile>(), (CaArrayFile) entity);
         }
 
         return false;
@@ -254,7 +245,7 @@ public class SecurityInterceptor extends EmptyInterceptor {
             T entity) {
         if (threadLocal.get() == null) {
             threadLocal.set(emptyCollection);
-            MARKER.set(new Object());
+            MARKER.set(Boolean.TRUE);
         }
         threadLocal.get().add(entity);
     }
@@ -282,7 +273,6 @@ public class SecurityInterceptor extends EmptyInterceptor {
     @Override
     public void postFlush(Iterator entities) {
         if (MARKER.get() == null) {
-            MARKER.set(null);
             return;
         }
 
@@ -294,11 +284,6 @@ public class SecurityInterceptor extends EmptyInterceptor {
                     if (DELETEDOBJS.get().contains(ap.getProject()) || DELETEDOBJS.get().contains(ap.getGroup())) {
                         it.remove();
                     }
-                }
-            }
-            if (FILES.get() != null) {
-                for (CaArrayFile caArrayFile : FILES.get()) {
-                    cleanupFile(caArrayFile);
                 }
             }
 
@@ -320,16 +305,6 @@ public class SecurityInterceptor extends EmptyInterceptor {
         }
     }
 
-    private void cleanupFile(CaArrayFile caArrayFile) {
-        if (caArrayFile.getInputStreamToClose() != null) {
-            IOUtils.closeQuietly(caArrayFile.getInputStreamToClose());
-        }
-
-        if (caArrayFile.getFileToDelete() != null) {
-            caArrayFile.getFileToDelete().delete();
-        }
-    }
-
     /**
      * Clear the current thread's lists of entities awaiting processing.
      * To be called when a session is first opened, to prevent any stale entities from sticking around.
@@ -340,7 +315,6 @@ public class SecurityInterceptor extends EmptyInterceptor {
         BIOMATERIAL_CHANGES.set(null);
         DELETEDOBJS.set(null);
         PROFILES.set(null);
-        FILES.set(null);
     }
 
     private static boolean isEnabled() {

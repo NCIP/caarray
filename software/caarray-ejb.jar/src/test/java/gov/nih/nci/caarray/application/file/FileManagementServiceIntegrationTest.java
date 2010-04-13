@@ -119,6 +119,7 @@ import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.magetab.MageTabFileSet;
 import gov.nih.nci.caarray.magetab.MageTabParser;
 import gov.nih.nci.caarray.magetab.TestMageTabSets;
+import gov.nih.nci.caarray.magetab.io.FileRef;
 import gov.nih.nci.caarray.test.data.arraydata.IlluminaArrayDataFiles;
 import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
 import gov.nih.nci.caarray.test.data.arraydesign.IlluminaArrayDesignFiles;
@@ -402,7 +403,7 @@ public class FileManagementServiceIntegrationTest extends AbstractServiceIntegra
         tx.commit();
 
         MageTabFileSet inputFiles = new MageTabFileSet();
-        for (File f : TestMageTabSets.EXTENDED_FACTOR_VALUES_INPUT_SET.getAllFiles()) {
+        for (FileRef f : TestMageTabSets.EXTENDED_FACTOR_VALUES_INPUT_SET.getAllFiles()) {
             if (f.getName().endsWith("CEL")) {
                 inputFiles.addNativeData(f);
             }
@@ -640,8 +641,8 @@ public class FileManagementServiceIntegrationTest extends AbstractServiceIntegra
      * @return
      */
     private CaArrayFileSet uploadFiles(Project project, MageTabFileSet fileSet) {
-        for (File file : fileSet.getAllFiles()) {
-            this.fileAccessService.add(file);
+        for (FileRef file : fileSet.getAllFiles()) {
+            this.fileAccessService.add(file.getAsFile());
         }
         CaArrayFileSet caarrayFileSet = TestMageTabSets.getFileSet(fileSet);
         for (CaArrayFile file : caarrayFileSet.getFiles()) {

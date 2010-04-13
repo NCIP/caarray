@@ -20,6 +20,7 @@ import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.magetab.MageTabFileSet;
+import gov.nih.nci.caarray.magetab.io.JavaIOFileRef;
 import gov.nih.nci.caarray.magetab.sdrf.SdrfDocument;
 import gov.nih.nci.caarray.test.data.arraydata.IlluminaArrayDataFiles;
 import gov.nih.nci.caarray.test.data.magetab.SdrfTestFiles;
@@ -217,7 +218,7 @@ public class IlluminaGenotypingProcessedMatrixHandlerIntegrationTest extends Abs
         if (sdrf != null){
             MageTabFileSet fset = new MageTabFileSet();
             docSet = new MageTabDocumentSet(fset);
-            SdrfDocument doc = new SdrfDocument(docSet, SdrfTestFiles.MULTI_DERIVED_1_IDF);
+            SdrfDocument doc = new SdrfDocument(docSet, new JavaIOFileRef(SdrfTestFiles.MULTI_DERIVED_1_IDF));
             for (String hn : sdrf) {
                 gov.nih.nci.caarray.magetab.sdrf.Hybridization h = new gov.nih.nci.caarray.magetab.sdrf.Hybridization();
                 h.setName(hn);

@@ -95,6 +95,7 @@ import gov.nih.nci.caarray.magetab.idf.IdfDocument;
 import gov.nih.nci.caarray.magetab.idf.Investigation;
 import gov.nih.nci.caarray.magetab.idf.Person;
 import gov.nih.nci.caarray.magetab.idf.Publication;
+import gov.nih.nci.caarray.magetab.io.JavaIOFileRef;
 import gov.nih.nci.caarray.magetab.sdrf.AbstractBioMaterial;
 import gov.nih.nci.caarray.magetab.sdrf.ArrayDataFile;
 import gov.nih.nci.caarray.magetab.sdrf.ArrayDesign;
@@ -355,7 +356,7 @@ public class MageTabParserTest extends AbstractCaarrayTest {
     @Test
     public void testValidateMissingSdrf() throws MageTabParsingException {
         MageTabFileSet inputFileSet = new MageTabFileSet();
-        inputFileSet.addIdf(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF);
+        inputFileSet.addIdf(new JavaIOFileRef(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF));
         ValidationResult result = validate(inputFileSet);
         assertNotNull(result);
         assertFalse(result.isValid());
@@ -373,7 +374,7 @@ public class MageTabParserTest extends AbstractCaarrayTest {
     @Test
     public void testValidateMissingIdf() throws MageTabParsingException {
         MageTabFileSet inputFileSet = new MageTabFileSet();
-        inputFileSet.addSdrf(MageTabDataFiles.SPECIFICATION_EXAMPLE_SDRF);
+        inputFileSet.addSdrf(new JavaIOFileRef(MageTabDataFiles.SPECIFICATION_EXAMPLE_SDRF));
         ValidationResult result = validate(inputFileSet);
         assertNotNull(result);
         assertFalse(result.isValid());
@@ -388,8 +389,8 @@ public class MageTabParserTest extends AbstractCaarrayTest {
     @Test
     public void testValidateMissingTermSources() throws MageTabParsingException {
         MageTabFileSet inputFileSet = new MageTabFileSet();
-        inputFileSet.addIdf(MageTabDataFiles.MISSING_TERMSOURCE_IDF);
-        inputFileSet.addSdrf(MageTabDataFiles.MISSING_TERMSOURCE_SDRF);
+        inputFileSet.addIdf(new JavaIOFileRef(MageTabDataFiles.MISSING_TERMSOURCE_IDF));
+        inputFileSet.addSdrf(new JavaIOFileRef(MageTabDataFiles.MISSING_TERMSOURCE_SDRF));
         ValidationResult result = validate(inputFileSet);
         System.out.println("Missing term sources check:\n" + result);
         assertTrue(result.toString().contains("Term Source not-in-IDF is not defined in the IDF document"));
@@ -398,9 +399,9 @@ public class MageTabParserTest extends AbstractCaarrayTest {
     @Test
     public void testValidateMultipleIdfs() throws MageTabParsingException {
         MageTabFileSet inputFileSet = new MageTabFileSet();
-        inputFileSet.addIdf(MageTabDataFiles.MISSING_TERMSOURCE_IDF);
-        inputFileSet.addSdrf(MageTabDataFiles.MISSING_TERMSOURCE_SDRF);
-        inputFileSet.addIdf(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF);
+        inputFileSet.addIdf(new JavaIOFileRef(MageTabDataFiles.MISSING_TERMSOURCE_IDF));
+        inputFileSet.addSdrf(new JavaIOFileRef(MageTabDataFiles.MISSING_TERMSOURCE_SDRF));
+        inputFileSet.addIdf(new JavaIOFileRef(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF));
         ValidationResult result = validate(inputFileSet);
         System.out.println(result);
         assertTrue(result.toString().contains("At most one IDF document can be present in an import"));
@@ -409,8 +410,8 @@ public class MageTabParserTest extends AbstractCaarrayTest {
     @Test
     public void testValidateMissingDataFiles() throws MageTabParsingException {
         MageTabFileSet inputFileSet = new MageTabFileSet();
-        inputFileSet.addIdf(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF);
-        inputFileSet.addSdrf(MageTabDataFiles.SPECIFICATION_EXAMPLE_SDRF);
+        inputFileSet.addIdf(new JavaIOFileRef(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF));
+        inputFileSet.addSdrf(new JavaIOFileRef(MageTabDataFiles.SPECIFICATION_EXAMPLE_SDRF));
         ValidationResult result = validate(inputFileSet);
         assertNotNull(result);
         assertFalse(result.isValid());

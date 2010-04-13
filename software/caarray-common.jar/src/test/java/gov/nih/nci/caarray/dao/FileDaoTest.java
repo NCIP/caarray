@@ -82,7 +82,11 @@
  */
 package gov.nih.nci.caarray.dao;
 
+import java.io.IOException;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertNotNull;
 import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.data.DerivedArrayData;
@@ -108,7 +112,6 @@ import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.caarray.util.UsernameHolder;
 
-import java.io.ByteArrayInputStream;
 import java.util.Date;
 import java.util.List;
 
@@ -118,6 +121,12 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
+import gov.nih.nci.caarray.AbstractHibernateTest;
+import gov.nih.nci.caarray.domain.BlobHolder;
+import gov.nih.nci.caarray.domain.MultiPartBlob;
+import java.io.InputStream;
+import java.lang.reflect.Method;
+import org.apache.commons.io.IOUtils;
 
 /**
  * @author Scott Miller
@@ -220,6 +229,12 @@ public class FileDaoTest extends AbstractDaoTest {
         VOCABULARY_DAO.save(DUMMY_QUALITY_CTRL_TYPE);
         VOCABULARY_DAO.save(DUMMY_NORMALIZATION_TYPE);
         DAO_OBJECT.save(DUMMY_PROJECT_1);
+        assertTrue(HibernateUtil.getCurrentSession().contains(DUMMY_EXPERIMENT_1));
+        DAO_OBJECT.flushSession();
+//        HibernateUtil.getCurrentSession().evict(DUMMY_EXPERIMENT_1);
+//        DUMMY_EXPERIMENT_1 = (Experiment) HibernateUtil.getCurrentSession().load(Experiment.class, DUMMY_EXPERIMENT_1.getId());
+        HibernateUtil.getCurrentSession().refresh(DUMMY_EXPERIMENT_1);
+        assertNotNull(DUMMY_EXPERIMENT_1.getProject());
     }
 
     @Test
@@ -231,9 +246,7 @@ public class FileDaoTest extends AbstractDaoTest {
         DUMMY_FILE_1.setName(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF.getName());
         DUMMY_FILE_1.setFileType(FileType.MAGE_TAB_IDF);
         DUMMY_FILE_1.setFileStatus(FileStatus.UPLOADED);
-        ByteArrayInputStream in1 = new ByteArrayInputStream("test blob".getBytes());
-        DUMMY_FILE_1.writeContents(in1);
-
+        writeContents(DUMMY_FILE_1, "test blob");
         DUMMY_FILE_1.setProject(DUMMY_PROJECT_1);
         DUMMY_PROJECT_1.getFiles().add(DUMMY_FILE_1);
         DAO_OBJECT.save(DUMMY_FILE_1);
@@ -242,6 +255,14 @@ public class FileDaoTest extends AbstractDaoTest {
         tx = HibernateUtil.beginTransaction();
         DAO_OBJECT.deleteHqlBlobsByProjectId(DUMMY_PROJECT_1.getId());
         tx.commit();
+    }
+
+    public static void writeContents(CaArrayFile file, InputStream data) throws IOException {
+        DAO_OBJECT.writeContents(file, data);
+    }
+
+    public static void writeContents(CaArrayFile file, String data) throws IOException {
+        writeContents(file, IOUtils.toInputStream(data));
     }
 
     @Test
@@ -258,13 +279,12 @@ public class FileDaoTest extends AbstractDaoTest {
 
         saveSupportingObjects();
         
-        
+
         CaArrayFile file1 = new CaArrayFile();
         file1.setName("file1.idf");
         file1.setFileType(FileType.MAGE_TAB_IDF);
         file1.setFileStatus(FileStatus.UPLOADED);
-        ByteArrayInputStream in1 = new ByteArrayInputStream("test idf".getBytes());
-        file1.writeContents(in1);
+        writeContents(file1, "test idf");
         file1.setProject(DUMMY_PROJECT_1);
         DUMMY_PROJECT_1.getFiles().add(file1);
         DAO_OBJECT.save(file1);
@@ -281,8 +301,7 @@ public class FileDaoTest extends AbstractDaoTest {
         file2.setName("file2.cel");
         file2.setFileType(FileType.AFFYMETRIX_CEL);
         file2.setFileStatus(FileStatus.UPLOADED);
-        in1 = new ByteArrayInputStream("test cel".getBytes());
-        file2.writeContents(in1);
+        writeContents(file2, "test cel");
         file2.setProject(DUMMY_PROJECT_1);
         rawArrayData.setDataFile(file2);
         DUMMY_PROJECT_1.getFiles().add(file2);
@@ -300,12 +319,11 @@ public class FileDaoTest extends AbstractDaoTest {
         file3.setName("file3.chp");
         file3.setFileType(FileType.AFFYMETRIX_CHP);
         file3.setFileStatus(FileStatus.UPLOADED);
-        in1 = new ByteArrayInputStream("test chp".getBytes());
-        file3.writeContents(in1);
+        writeContents(file3, "test chp");
         file3.setProject(DUMMY_PROJECT_1);
         derivedArrayData.setDataFile(file3);
         DUMMY_PROJECT_1.getFiles().add(file3);
-        DAO_OBJECT.save(file3);
+        DAO_OBJECT.save(file3);        
         DAO_OBJECT.save(derivedArrayData);
 
         Source so1 = new Source();
@@ -354,20 +372,19 @@ public class FileDaoTest extends AbstractDaoTest {
         h2.getLabeledExtracts().add(le3);
         DUMMY_EXPERIMENT_1.getLabeledExtracts().add(le3);
         le3.setExperiment(DUMMY_EXPERIMENT_1);
+        DAO_OBJECT.save(DUMMY_EXPERIMENT_1);
 
         CaArrayFile file4 = new CaArrayFile();
         file4.setName("file4.cdf");
         file4.setFileType(FileType.AFFYMETRIX_CDF);
         file4.setFileStatus(FileStatus.UPLOADED);
-        in1 = new ByteArrayInputStream("test ad".getBytes());
-        file4.writeContents(in1);
+        writeContents(file4, "test ad");
         DAO_OBJECT.save(file4);
 
         CaArrayFile file5 = new CaArrayFile();
         file5.setName("file5.txt");
         file5.setFileStatus(FileStatus.SUPPLEMENTAL);
-        ByteArrayInputStream in5 = new ByteArrayInputStream("blah blah".getBytes());
-        file5.writeContents(in5);
+        writeContents(file5, "blah blah");
         file5.setProject(DUMMY_PROJECT_1);
         DUMMY_PROJECT_1.getFiles().add(file5);
         DAO_OBJECT.save(file5);
@@ -386,9 +403,8 @@ public class FileDaoTest extends AbstractDaoTest {
         file6.setName("file6.chp");
         file6.setFileType(FileType.AFFYMETRIX_CHP);
         file6.setFileStatus(FileStatus.UPLOADED);
-        in1 = new ByteArrayInputStream("test chp2".getBytes());
-        file6.writeContents(in1);
-        DAO_OBJECT.save(file6);
+        writeContents(file6, "test chp2");
+        DAO_OBJECT.save(file6);        
 
 
         tx.commit();
@@ -529,8 +545,7 @@ public class FileDaoTest extends AbstractDaoTest {
         file1.setName("file1");
         file1.setFileType(FileType.MAGE_TAB_IDF);
         file1.setFileStatus(FileStatus.UPLOADED);
-        ByteArrayInputStream in1 = new ByteArrayInputStream("test idf".getBytes());
-        file1.writeContents(in1);
+        writeContents(file1, "test idf");
         file1.setProject(DUMMY_PROJECT_1);
         DUMMY_PROJECT_1.getFiles().add(file1);
         DAO_OBJECT.save(file1);
@@ -539,16 +554,14 @@ public class FileDaoTest extends AbstractDaoTest {
         file2.setName("file2");
         file2.setFileType(FileType.AFFYMETRIX_CDF);
         file2.setFileStatus(FileStatus.UPLOADED);
-        in1 = new ByteArrayInputStream("test cdf".getBytes());
-        file2.writeContents(in1);
+        writeContents(file2, "test cdf");
         DAO_OBJECT.save(file2);
 
         CaArrayFile file3 = new CaArrayFile();
         file3.setName("file3");
         file3.setFileType(FileType.AFFYMETRIX_CDF);
         file3.setFileStatus(FileStatus.IMPORTED);
-        in1 = new ByteArrayInputStream("test cdf".getBytes());
-        file3.writeContents(in1);
+        writeContents(file3, "test cdf");
         DAO_OBJECT.save(file3);
 
         tx.commit();
@@ -648,5 +661,43 @@ public class FileDaoTest extends AbstractDaoTest {
         assertEquals(f5, files.get(3));
         tx.commit();
         
+    }
+
+    @Test
+    public void testClearAndEvictionOnSave() throws IOException {
+        Transaction tx = HibernateUtil.beginTransaction();
+
+        CaArrayFile f1 = new CaArrayFile();
+        f1.setName("dummy1");
+        f1.setFileType(FileType.MAGE_TAB_IDF);
+        f1.setFileStatus(FileStatus.UPLOADED);
+
+        writeContents(f1, "test cdf");
+
+        List<BlobHolder> blobs = getBlobs(f1);
+        for (BlobHolder bh : blobs) {
+            assertNotNull(bh.getContents());
+        }
+        DAO_OBJECT.saveAndEvict(f1);
+
+        boolean cleared = false;
+        for (BlobHolder bh : blobs) {
+            assertNull(bh.getContents());
+            cleared = true;
+        }
+        assertTrue(cleared);
+        tx.rollback();
+    }
+
+    private static List<BlobHolder> getBlobs(CaArrayFile file) {
+        try {
+            Method getBlobParts = MultiPartBlob.class.getDeclaredMethod("getBlobParts");
+            getBlobParts.setAccessible(true);
+            Method getMultiPartBlob = CaArrayFile.class.getDeclaredMethod("getMultiPartBlob");
+            getMultiPartBlob.setAccessible(true);
+            return (List<BlobHolder>) getBlobParts.invoke(getMultiPartBlob.invoke(file));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

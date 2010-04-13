@@ -86,6 +86,7 @@ import gov.nih.nci.caarray.magetab.adf.AdfDocument;
 import gov.nih.nci.caarray.magetab.data.DataMatrix;
 import gov.nih.nci.caarray.magetab.data.NativeDataFile;
 import gov.nih.nci.caarray.magetab.idf.IdfDocument;
+import gov.nih.nci.caarray.magetab.io.FileRef;
 import gov.nih.nci.caarray.magetab.sdrf.ArrayDesign;
 import gov.nih.nci.caarray.magetab.sdrf.Hybridization;
 import gov.nih.nci.caarray.magetab.sdrf.Sample;
@@ -95,7 +96,6 @@ import gov.nih.nci.caarray.util.io.FileUtility;
 import gov.nih.nci.caarray.validation.ValidationMessage;
 import gov.nih.nci.caarray.validation.ValidationResult;
 
-import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -240,32 +240,32 @@ public final class MageTabDocumentSet implements Serializable {
     }
 
     private void initializeIdfs(MageTabFileSet inputFileSet) {
-        for (File file : inputFileSet.getIdfFiles()) {
+        for (FileRef file : inputFileSet.getIdfFiles()) {
             idfDocuments.add(new IdfDocument(this, file));
         }
     }
 
     private void initializeAdfs(MageTabFileSet inputFileSet) {
-        for (File file : inputFileSet.getAdfFiles()) {
+        for (FileRef file : inputFileSet.getAdfFiles()) {
             // TODO Implement initializeAdfs and remove placeholder line below
             FileUtility.checkFileExists(file);
         }
     }
 
     private void initializeSdrfs(MageTabFileSet inputFileSet) {
-        for (File file : inputFileSet.getSdrfFiles()) {
+        for (FileRef file : inputFileSet.getSdrfFiles()) {
             sdrfDocuments.add(new SdrfDocument(this, file));
         }
     }
 
     private void initializeDataMatrixes(MageTabFileSet inputFileSet) {
-        for (File file : inputFileSet.getDataMatrixFiles()) {
+        for (FileRef file : inputFileSet.getDataMatrixFiles()) {
             dataMatrixes.add(new DataMatrix(this, file));
         }
     }
 
     private void initializeNativeDataFiles(MageTabFileSet inputFileSet) {
-        for (File file : inputFileSet.getNativeDataFiles()) {
+        for (FileRef file : inputFileSet.getNativeDataFiles()) {
             nativeDataFiles.add(new NativeDataFile(this, file));
         }
     }
@@ -276,7 +276,7 @@ public final class MageTabDocumentSet implements Serializable {
         // to support this, so the object model will continue to support it
         if (idfDocuments.size() > 1) {
             for (IdfDocument idfDocument : idfDocuments) {
-                getValidationResult().addMessage(idfDocument.getFile(), ValidationMessage.Type.ERROR,
+                getValidationResult().addMessage(idfDocument.getFile().getAsFile(), ValidationMessage.Type.ERROR,
                         "At most one IDF document can be present in an import");
             }
             return;
@@ -495,8 +495,8 @@ public final class MageTabDocumentSet implements Serializable {
         return validationResult;
     }
 
-    ValidationMessage createValidationMessage(File file, ValidationMessage.Type type, String message) {
-        return getValidationResult().addMessage(file, type, message);
+    ValidationMessage createValidationMessage(FileRef file, ValidationMessage.Type type, String message) {
+        return getValidationResult().addMessage(file.getAsFile(), type, message);
     }
 
     private void generateSdrfRefHybs() {

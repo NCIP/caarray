@@ -91,6 +91,8 @@ import gov.nih.nci.caarray.magetab.adf.AdfDocument;
 import gov.nih.nci.caarray.magetab.data.DataMatrix;
 import gov.nih.nci.caarray.magetab.data.NativeDataFile;
 import gov.nih.nci.caarray.magetab.idf.IdfDocument;
+import gov.nih.nci.caarray.magetab.io.FileRef;
+import gov.nih.nci.caarray.magetab.io.JavaIOFileRef;
 import gov.nih.nci.caarray.magetab.sdrf.SdrfDocument;
 import gov.nih.nci.caarray.test.data.arraydata.GenepixArrayDataFiles;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
@@ -301,25 +303,25 @@ public final class TestMageTabSets {
 
     private static MageTabFileSet getValidFeature13141InputSet() {
         MageTabFileSet fileSet = new MageTabFileSet();
-        fileSet.addIdf(MageTabDataFiles.FEATURE_13141_IDF);
-        fileSet.addSdrf(MageTabDataFiles.FEATURE_13141_SDRF);
-        fileSet.addSdrf(MageTabDataFiles.FEATURE_13141_SDRF2);
+        fileSet.addIdf(new JavaIOFileRef(MageTabDataFiles.FEATURE_13141_IDF));
+        fileSet.addSdrf(new JavaIOFileRef(MageTabDataFiles.FEATURE_13141_SDRF));
+        fileSet.addSdrf(new JavaIOFileRef(MageTabDataFiles.FEATURE_13141_SDRF2));
         addCelFiles(fileSet, MageTabDataFiles.FEATURE_13141_DIRECTORY);
         return fileSet;
     }
     private static MageTabFileSet getInvalidFeature13141InputSet() {
         MageTabFileSet fileSet = new MageTabFileSet();
-        fileSet.addIdf(MageTabDataFiles.FEATURE_13141_INVALID_IDF);
-        fileSet.addSdrf(MageTabDataFiles.FEATURE_13141_INVALID_SDRF);
-        fileSet.addSdrf(MageTabDataFiles.FEATURE_13141_INVALID_SDRF2);
+        fileSet.addIdf(new JavaIOFileRef(MageTabDataFiles.FEATURE_13141_INVALID_IDF));
+        fileSet.addSdrf(new JavaIOFileRef(MageTabDataFiles.FEATURE_13141_INVALID_SDRF));
+        fileSet.addSdrf(new JavaIOFileRef(MageTabDataFiles.FEATURE_13141_INVALID_SDRF2));
         addCelFiles(fileSet, MageTabDataFiles.FEATURE_13141_DIRECTORY);
         return fileSet;
     }
 
     private static MageTabFileSet getInvalidDuplicateTermSourcesInputSet() {
         MageTabFileSet mageTabFileSet = new MageTabFileSet();
-        mageTabFileSet.addIdf(MageTabDataFiles.DUPLICATE_TERM_SOURCES_INVALID_IDF);
-        mageTabFileSet.addSdrf(MageTabDataFiles.DUPLICATE_TERM_SOURCES_INVALID_SDRF);
+        mageTabFileSet.addIdf(new JavaIOFileRef(MageTabDataFiles.DUPLICATE_TERM_SOURCES_INVALID_IDF));
+        mageTabFileSet.addSdrf(new JavaIOFileRef(MageTabDataFiles.DUPLICATE_TERM_SOURCES_INVALID_SDRF));
         addCelFiles(mageTabFileSet, MageTabDataFiles.DUPLICATE_TERM_SOURCES_DIRECTORY);
         addChpFiles(mageTabFileSet, MageTabDataFiles.DUPLICATE_TERM_SOURCES_DIRECTORY);
         return mageTabFileSet;
@@ -327,23 +329,23 @@ public final class TestMageTabSets {
 
     private static MageTabFileSet getMisplacedFactorValuesInputSet() {
         MageTabFileSet fileSet = new MageTabFileSet();
-        fileSet.addIdf(MageTabDataFiles.MISPLACED_FACTOR_VALUES_IDF);
-        fileSet.addSdrf(MageTabDataFiles.MISPLACED_FACTOR_VALUES_SDRF);
+        fileSet.addIdf(new JavaIOFileRef(MageTabDataFiles.MISPLACED_FACTOR_VALUES_IDF));
+        fileSet.addSdrf(new JavaIOFileRef(MageTabDataFiles.MISPLACED_FACTOR_VALUES_SDRF));
         return fileSet;
     }
 
     private static MageTabFileSet getEbiTemplateInputSet() {
         MageTabFileSet fileSet = new MageTabFileSet();
-        fileSet.addIdf(MageTabDataFiles.EBI_TEMPLATE_IDF);
-        fileSet.addSdrf(MageTabDataFiles.EBI_TEMPLATE_SDRF);
+        fileSet.addIdf(new JavaIOFileRef(MageTabDataFiles.EBI_TEMPLATE_IDF));
+        fileSet.addSdrf(new JavaIOFileRef(MageTabDataFiles.EBI_TEMPLATE_SDRF));
         return fileSet;
     }
 
     private static MageTabFileSet getTcgaBroadInputSet() {
         MageTabFileSet fileSet = new MageTabFileSet();
-        fileSet.addIdf(MageTabDataFiles.TCGA_BROAD_IDF);
-        fileSet.addSdrf(MageTabDataFiles.TCGA_BROAD_SDRF);
-        fileSet.addDataMatrix(MageTabDataFiles.TCGA_BROAD_DATA_MATRIX);
+        fileSet.addIdf(new JavaIOFileRef(MageTabDataFiles.TCGA_BROAD_IDF));
+        fileSet.addSdrf(new JavaIOFileRef(MageTabDataFiles.TCGA_BROAD_SDRF));
+        fileSet.addDataMatrix(new JavaIOFileRef(MageTabDataFiles.TCGA_BROAD_DATA_MATRIX));
         addCelFiles(fileSet, MageTabDataFiles.TCGA_BROAD_DATA_DIRECTORY);
         return fileSet;
     }
@@ -364,103 +366,103 @@ public final class TestMageTabSets {
         FilenameFilter filter = createExtensionFilter(extension);
         File[] celFiles = dataFileDirectory.listFiles(filter);
         for (File file : celFiles) {
-            fileSet.addNativeData(file);
+            fileSet.addNativeData(new JavaIOFileRef(file));
         }
     }
 
     private static MageTabFileSet getPerformanceTest10InputSet() {
         MageTabFileSet fileSet = new MageTabFileSet();
-        fileSet.addIdf(MageTabDataFiles.PERFORMANCE_10_IDF);
-        fileSet.addSdrf(MageTabDataFiles.PERFORMANCE_10_SDRF);
+        fileSet.addIdf(new JavaIOFileRef(MageTabDataFiles.PERFORMANCE_10_IDF));
+        fileSet.addSdrf(new JavaIOFileRef(MageTabDataFiles.PERFORMANCE_10_SDRF));
         addCelFiles(fileSet, MageTabDataFiles.PERFORMANCE_DIRECTORY);
         return fileSet;
     }
 
     private static MageTabFileSet getSpecificationInputSet() {
         MageTabFileSet fileSet = new MageTabFileSet();
-        fileSet.addIdf(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF);
-        fileSet.addSdrf(MageTabDataFiles.SPECIFICATION_EXAMPLE_SDRF);
-        fileSet.addAdf(MageTabDataFiles.SPECIFICATION_EXAMPLE_ADF);
-        fileSet.addDataMatrix(MageTabDataFiles.SPECIFICATION_EXAMPLE_DATA_MATRIX);
+        fileSet.addIdf(new JavaIOFileRef(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF));
+        fileSet.addSdrf(new JavaIOFileRef(MageTabDataFiles.SPECIFICATION_EXAMPLE_SDRF));
+        fileSet.addAdf(new JavaIOFileRef(MageTabDataFiles.SPECIFICATION_EXAMPLE_ADF));
+        fileSet.addDataMatrix(new JavaIOFileRef(MageTabDataFiles.SPECIFICATION_EXAMPLE_DATA_MATRIX));
         addCelFiles(fileSet, MageTabDataFiles.SPECIFICATION_EXAMPLE_DIRECTORY);
         return fileSet;
     }
 
     private static MageTabFileSet getSpecificationCaseSensitivityInputSet() {
         MageTabFileSet fileSet = new MageTabFileSet();
-        fileSet.addIdf(MageTabDataFiles.SPECIFICATION_CASE_SENSITIVITY_IDF);
-        fileSet.addSdrf(MageTabDataFiles.SPECIFICATION_CASE_SENSITIVITY_SDRF);
-        fileSet.addDataMatrix(MageTabDataFiles.SPECIFICATION_CASE_SENSITIVITY_DATA_MATRIX);
+        fileSet.addIdf(new JavaIOFileRef(MageTabDataFiles.SPECIFICATION_CASE_SENSITIVITY_IDF));
+        fileSet.addSdrf(new JavaIOFileRef(MageTabDataFiles.SPECIFICATION_CASE_SENSITIVITY_SDRF));
+        fileSet.addDataMatrix(new JavaIOFileRef(MageTabDataFiles.SPECIFICATION_CASE_SENSITIVITY_DATA_MATRIX));
         addCelFiles(fileSet, MageTabDataFiles.SPECIFICATION_CASE_SENSITIVITY_DIRECTORY);
         return fileSet;
     }
 
     private static MageTabFileSet getSpecificationNoArrayDesignInputSet() {
         MageTabFileSet fileSet = new MageTabFileSet();
-        fileSet.addIdf(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF);
-        fileSet.addSdrf(MageTabDataFiles.SPECIFICATION_EXAMPLE_NO_ARRAY_DESIGN_SDRF);
-        fileSet.addAdf(MageTabDataFiles.SPECIFICATION_EXAMPLE_ADF);
-        fileSet.addDataMatrix(MageTabDataFiles.SPECIFICATION_EXAMPLE_DATA_MATRIX);
+        fileSet.addIdf(new JavaIOFileRef(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF));
+        fileSet.addSdrf(new JavaIOFileRef(MageTabDataFiles.SPECIFICATION_EXAMPLE_NO_ARRAY_DESIGN_SDRF));
+        fileSet.addAdf(new JavaIOFileRef(MageTabDataFiles.SPECIFICATION_EXAMPLE_ADF));
+        fileSet.addDataMatrix(new JavaIOFileRef(MageTabDataFiles.SPECIFICATION_EXAMPLE_DATA_MATRIX));
         addCelFiles(fileSet, MageTabDataFiles.SPECIFICATION_EXAMPLE_DIRECTORY);
         return fileSet;
     }
 
     private static MageTabFileSet getSpecificationNoExpDescInputSet() {
         MageTabFileSet fileSet = new MageTabFileSet();
-        fileSet.addIdf(MageTabDataFiles.SPECIFICATION_EXAMPLE_NO_EXP_DESC_IDF);
-        fileSet.addSdrf(MageTabDataFiles.SPECIFICATION_EXAMPLE_SDRF);
-        fileSet.addAdf(MageTabDataFiles.SPECIFICATION_EXAMPLE_ADF);
-        fileSet.addDataMatrix(MageTabDataFiles.SPECIFICATION_EXAMPLE_DATA_MATRIX);
+        fileSet.addIdf(new JavaIOFileRef(MageTabDataFiles.SPECIFICATION_EXAMPLE_NO_EXP_DESC_IDF));
+        fileSet.addSdrf(new JavaIOFileRef(MageTabDataFiles.SPECIFICATION_EXAMPLE_SDRF));
+        fileSet.addAdf(new JavaIOFileRef(MageTabDataFiles.SPECIFICATION_EXAMPLE_ADF));
+        fileSet.addDataMatrix(new JavaIOFileRef(MageTabDataFiles.SPECIFICATION_EXAMPLE_DATA_MATRIX));
         addCelFiles(fileSet, MageTabDataFiles.SPECIFICATION_EXAMPLE_DIRECTORY);
         return fileSet;
     }
 
     private static MageTabFileSet getSpecificationWithoutDataMatrixInputSet() {
         MageTabFileSet fileSet = new MageTabFileSet();
-        fileSet.addIdf(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF);
-        fileSet.addSdrf(MageTabDataFiles.SPECIFICATION_EXAMPLE_SDRF);
-        fileSet.addAdf(MageTabDataFiles.SPECIFICATION_EXAMPLE_ADF);
+        fileSet.addIdf(new JavaIOFileRef(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF));
+        fileSet.addSdrf(new JavaIOFileRef(MageTabDataFiles.SPECIFICATION_EXAMPLE_SDRF));
+        fileSet.addAdf(new JavaIOFileRef(MageTabDataFiles.SPECIFICATION_EXAMPLE_ADF));
         addCelFiles(fileSet, MageTabDataFiles.SPECIFICATION_EXAMPLE_DIRECTORY);
         return fileSet;
     }
 
     private static MageTabFileSet getUnsupportedDataInputSet() {
         MageTabFileSet fileSet = new MageTabFileSet();
-        fileSet.addIdf(MageTabDataFiles.UNSUPPORTED_DATA_EXAMPLE_IDF);
-        fileSet.addSdrf(MageTabDataFiles.UNSUPPORTED_DATA_EXAMPLE_SDRF);
-        fileSet.addAdf(MageTabDataFiles.UNSUPPORTED_DATA_EXAMPLE_ADF);
-        fileSet.addDataMatrix(MageTabDataFiles.UNSUPPORTED_DATA_EXAMPLE_DATA_MATRIX);
+        fileSet.addIdf(new JavaIOFileRef(MageTabDataFiles.UNSUPPORTED_DATA_EXAMPLE_IDF));
+        fileSet.addSdrf(new JavaIOFileRef(MageTabDataFiles.UNSUPPORTED_DATA_EXAMPLE_SDRF));
+        fileSet.addAdf(new JavaIOFileRef(MageTabDataFiles.UNSUPPORTED_DATA_EXAMPLE_ADF));
+        fileSet.addDataMatrix(new JavaIOFileRef(MageTabDataFiles.UNSUPPORTED_DATA_EXAMPLE_DATA_MATRIX));
         addCelFiles(fileSet, MageTabDataFiles.UNSUPPORTED_DATA_EXAMPLE_DIRECTORY);
-        fileSet.addNativeData(new File(MageTabDataFiles.UNSUPPORTED_DATA_EXAMPLE_DIRECTORY, "unsupported.mas5.exp"));
+        fileSet.addNativeData(new JavaIOFileRef(new File(MageTabDataFiles.UNSUPPORTED_DATA_EXAMPLE_DIRECTORY, "unsupported.mas5.exp")));
         return fileSet;
     }
 
     private static MageTabFileSet getGedpSpecificationInputSet() {
         MageTabFileSet fileSet = new MageTabFileSet();
-        fileSet.addIdf(MageTabDataFiles.GEDP_IDF);
-        fileSet.addSdrf(MageTabDataFiles.GEDP_SDRF);
+        fileSet.addIdf(new JavaIOFileRef(MageTabDataFiles.GEDP_IDF));
+        fileSet.addSdrf(new JavaIOFileRef(MageTabDataFiles.GEDP_SDRF));
         return fileSet;
     }
 
     private static MageTabFileSet getErrorSpecificationInputSet() {
         MageTabFileSet fileSet = new MageTabFileSet();
-        fileSet.addIdf(MageTabDataFiles.SPECIFICATION_ERROR_EXAMPLE_IDF);
-        fileSet.addSdrf(MageTabDataFiles.SPECIFICATION_ERROR_EXAMPLE_SDRF);
+        fileSet.addIdf(new JavaIOFileRef(MageTabDataFiles.SPECIFICATION_ERROR_EXAMPLE_IDF));
+        fileSet.addSdrf(new JavaIOFileRef(MageTabDataFiles.SPECIFICATION_ERROR_EXAMPLE_SDRF));
         return fileSet;
     }
 
     private static MageTabFileSet getCaarray1xInputSet() {
         MageTabFileSet fileSet = new MageTabFileSet();
-        fileSet.addIdf(MageTabDataFiles.CAARRAY1X_IDF);
-        fileSet.addSdrf(MageTabDataFiles.CAARRAY1X_SDRF);
+        fileSet.addIdf(new JavaIOFileRef(MageTabDataFiles.CAARRAY1X_IDF));
+        fileSet.addSdrf(new JavaIOFileRef(MageTabDataFiles.CAARRAY1X_SDRF));
         addDataFiles(fileSet, MageTabDataFiles.CAARRAY1X_DIRECTORY, "gpr");
         return fileSet;
     }
 
     private static MageTabFileSet getGskTestSet() {
         MageTabFileSet fileSet = new MageTabFileSet();
-        fileSet.addIdf(MageTabDataFiles.GSK_TEST_IDF);
-        fileSet.addSdrf(MageTabDataFiles.GSK_TEST_SDRF);
+        fileSet.addIdf(new JavaIOFileRef(MageTabDataFiles.GSK_TEST_IDF));
+        fileSet.addSdrf(new JavaIOFileRef(MageTabDataFiles.GSK_TEST_SDRF));
         addCelFiles(fileSet, MageTabDataFiles.GSK_TEST_DIRECTORY);
         addExpFiles(fileSet, MageTabDataFiles.GSK_TEST_DIRECTORY);
         return fileSet;
@@ -468,29 +470,29 @@ public final class TestMageTabSets {
 
     private static MageTabFileSet getDefect12537InputSet() {
         MageTabFileSet fileSet = new MageTabFileSet();
-        fileSet.addIdf(MageTabDataFiles.DEFECT_12537_IDF);
-        fileSet.addSdrf(MageTabDataFiles.DEFECT_12537_SDRF);
-        fileSet.addDataMatrix(MageTabDataFiles.DEFECT_12537_ABSOLUTE_DATA_MATRIX);
-        fileSet.addDataMatrix(MageTabDataFiles.DEFECT_12537_RMA_DATA_MATRIX);
+        fileSet.addIdf(new JavaIOFileRef(MageTabDataFiles.DEFECT_12537_IDF));
+        fileSet.addSdrf(new JavaIOFileRef(MageTabDataFiles.DEFECT_12537_SDRF));
+        fileSet.addDataMatrix(new JavaIOFileRef(MageTabDataFiles.DEFECT_12537_ABSOLUTE_DATA_MATRIX));
+        fileSet.addDataMatrix(new JavaIOFileRef(MageTabDataFiles.DEFECT_12537_RMA_DATA_MATRIX));
         addCelFiles(fileSet, MageTabDataFiles.DEFECT_12537_DATA_DIRECTORY);
         return fileSet;
     }
 
     private static MageTabFileSet getDefect12537ErrorInputSet() {
         MageTabFileSet fileSet = new MageTabFileSet();
-        fileSet.addIdf(MageTabDataFiles.DEFECT_12537_ERROR__IDF);
-        fileSet.addSdrf(MageTabDataFiles.DEFECT_12537_ERROR_SDRF);
-        fileSet.addDataMatrix(MageTabDataFiles.DEFECT_12537_ERROR_ABSOLUTE_DATA_MATRIX);
-        fileSet.addDataMatrix(MageTabDataFiles.DEFECT_12537_ERROR_RMA_DATA_MATRIX);
+        fileSet.addIdf(new JavaIOFileRef(MageTabDataFiles.DEFECT_12537_ERROR__IDF));
+        fileSet.addSdrf(new JavaIOFileRef(MageTabDataFiles.DEFECT_12537_ERROR_SDRF));
+        fileSet.addDataMatrix(new JavaIOFileRef(MageTabDataFiles.DEFECT_12537_ERROR_ABSOLUTE_DATA_MATRIX));
+        fileSet.addDataMatrix(new JavaIOFileRef(MageTabDataFiles.DEFECT_12537_ERROR_RMA_DATA_MATRIX));
         addCelFiles(fileSet, MageTabDataFiles.DEFECT_12537_ERROR_DATA_DIRECTORY);
         return fileSet;
     }
 
     private static MageTabFileSet getDerivedDataInputSet() {
         MageTabFileSet fileSet = new MageTabFileSet();
-        fileSet.addIdf(MageTabDataFiles.SPECIFICATION_DERIVED_DATA_EXAMPLE_IDF);
-        fileSet.addSdrf(MageTabDataFiles.SPECIFICATION_DERIVED_DATA_EXAMPLE_SDRF);
-        fileSet.addAdf(MageTabDataFiles.SPECIFICATION_DERIVED_DATA_EXAMPLE_ADF);
+        fileSet.addIdf(new JavaIOFileRef(MageTabDataFiles.SPECIFICATION_DERIVED_DATA_EXAMPLE_IDF));
+        fileSet.addSdrf(new JavaIOFileRef(MageTabDataFiles.SPECIFICATION_DERIVED_DATA_EXAMPLE_SDRF));
+        fileSet.addAdf(new JavaIOFileRef(MageTabDataFiles.SPECIFICATION_DERIVED_DATA_EXAMPLE_ADF));
         addCelFiles(fileSet, MageTabDataFiles.SPECIFICATION_DERIVED_DATA_EXAMPLE_DIRECTORY);
         addChpFiles(fileSet, MageTabDataFiles.SPECIFICATION_DERIVED_DATA_EXAMPLE_DIRECTORY);
         return fileSet;
@@ -498,120 +500,120 @@ public final class TestMageTabSets {
 
     private static MageTabFileSet getSpecificationUpdateAnnotationsInputSet() {
         MageTabFileSet fileSet = new MageTabFileSet();
-        fileSet.addIdf(MageTabDataFiles.SPECIFICATION_UPDATE_ANNOTATIONS_IDF);
-        fileSet.addSdrf(MageTabDataFiles.SPECIFICATION_UPDATE_ANNOTATIONS_SDRF);
+        fileSet.addIdf(new JavaIOFileRef(MageTabDataFiles.SPECIFICATION_UPDATE_ANNOTATIONS_IDF));
+        fileSet.addSdrf(new JavaIOFileRef(MageTabDataFiles.SPECIFICATION_UPDATE_ANNOTATIONS_SDRF));
         return fileSet;
     }
 
     private static MageTabFileSet getSpecificationUpdateAnnotationsAddBmInputSet() {
         MageTabFileSet fileSet = new MageTabFileSet();
-        fileSet.addIdf(MageTabDataFiles.SPECIFICATION_UPDATE_ANNOTATIONS_ADD_NEW_BM_IDF);
-        fileSet.addSdrf(MageTabDataFiles.SPECIFICATION_UPDATE_ANNOTATIONS_ADD_NEW_BM_SDRF);
+        fileSet.addIdf(new JavaIOFileRef(MageTabDataFiles.SPECIFICATION_UPDATE_ANNOTATIONS_ADD_NEW_BM_IDF));
+        fileSet.addSdrf(new JavaIOFileRef(MageTabDataFiles.SPECIFICATION_UPDATE_ANNOTATIONS_ADD_NEW_BM_SDRF));
         addCelFiles(fileSet, MageTabDataFiles.SPECIFICATION_UPDATE_ANNOTATIONS_ADD_NEW_BM_DIRECTORY);
-        fileSet.addDataMatrix(MageTabDataFiles.SPECIFICATION_UPDATE_ANNOTATIONS_ADD_NEW_BM_DATA_MATRIX_FILE);
+        fileSet.addDataMatrix(new JavaIOFileRef(MageTabDataFiles.SPECIFICATION_UPDATE_ANNOTATIONS_ADD_NEW_BM_DATA_MATRIX_FILE));
         return fileSet;
     }
 
     private static MageTabFileSet getDefect16421ErrorInputSet() {
         MageTabFileSet fileSet = new MageTabFileSet();
-        fileSet.addIdf(MageTabDataFiles.DEFECT_16421_IDF);
-        fileSet.addSdrf(MageTabDataFiles.DEFECT_16421_SDRF);
+        fileSet.addIdf(new JavaIOFileRef(MageTabDataFiles.DEFECT_16421_IDF));
+        fileSet.addSdrf(new JavaIOFileRef(MageTabDataFiles.DEFECT_16421_SDRF));
         addCelFiles(fileSet, MageTabDataFiles.DEFECT_16421_CEL);
         return fileSet;
     }
 
     private static MageTabFileSet getDefect17200InputSet() {
         MageTabFileSet fileSet = new MageTabFileSet();
-        fileSet.addIdf(MageTabDataFiles.DEFECT_17200_IDF);
-        fileSet.addSdrf(MageTabDataFiles.DEFECT_17200_SDRF);
-        fileSet.addNativeData(MageTabDataFiles.DEFECT_17200_GPR);
-        fileSet.addNativeData(GenepixArrayDataFiles.GPR_3_0_6);
+        fileSet.addIdf(new JavaIOFileRef(MageTabDataFiles.DEFECT_17200_IDF));
+        fileSet.addSdrf(new JavaIOFileRef(MageTabDataFiles.DEFECT_17200_SDRF));
+        fileSet.addNativeData(new JavaIOFileRef(MageTabDataFiles.DEFECT_17200_GPR));
+        fileSet.addNativeData(new JavaIOFileRef(GenepixArrayDataFiles.GPR_3_0_6));
         return fileSet;
     }
 
     private static MageTabFileSet getDefect16421ErrorInputSet2() {
         MageTabFileSet fileSet = new MageTabFileSet();
-        fileSet.addIdf(MageTabDataFiles.DEFECT_16421_2_IDF);
-        fileSet.addSdrf(MageTabDataFiles.DEFECT_16421_2_SDRF);
+        fileSet.addIdf(new JavaIOFileRef(MageTabDataFiles.DEFECT_16421_2_IDF));
+        fileSet.addSdrf(new JavaIOFileRef(MageTabDataFiles.DEFECT_16421_2_SDRF));
         addCelFiles(fileSet, MageTabDataFiles.INVALID_COLUMN_ORDER_DIRECTORY);
         return fileSet;
     }
 
     private static MageTabFileSet getInvalidNodeOrderSet() {
         MageTabFileSet fileSet = new MageTabFileSet();
-        fileSet.addIdf(MageTabDataFiles.INVALID_NODE_ORDER_IDF);
-        fileSet.addSdrf(MageTabDataFiles.INVALID_NODE_ORDER_SDRF);
+        fileSet.addIdf(new JavaIOFileRef(MageTabDataFiles.INVALID_NODE_ORDER_IDF));
+        fileSet.addSdrf(new JavaIOFileRef(MageTabDataFiles.INVALID_NODE_ORDER_SDRF));
         addCelFiles(fileSet, MageTabDataFiles.INVALID_COLUMN_ORDER_DIRECTORY);
         return fileSet;
     }
 
     private static MageTabFileSet getNoBiomaterialSet() {
         MageTabFileSet fileSet = new MageTabFileSet();
-        fileSet.addIdf(MageTabDataFiles.NO_BIOMATERIAL_IDF);
-        fileSet.addSdrf(MageTabDataFiles.NO_BIOMATERIAL_SDRF);
+        fileSet.addIdf(new JavaIOFileRef(MageTabDataFiles.NO_BIOMATERIAL_IDF));
+        fileSet.addSdrf(new JavaIOFileRef(MageTabDataFiles.NO_BIOMATERIAL_SDRF));
         addCelFiles(fileSet, MageTabDataFiles.MISSING_COLUMNS_DIRECTORY);
         return fileSet;
     }
 
     private static MageTabFileSet getNoHybridizationSet() {
         MageTabFileSet fileSet = new MageTabFileSet();
-        fileSet.addIdf(MageTabDataFiles.NO_HYBRIDIZATION_IDF);
-        fileSet.addSdrf(MageTabDataFiles.NO_HYBRIDIZATION_SDRF);
+        fileSet.addIdf(new JavaIOFileRef(MageTabDataFiles.NO_HYBRIDIZATION_IDF));
+        fileSet.addSdrf(new JavaIOFileRef(MageTabDataFiles.NO_HYBRIDIZATION_SDRF));
         addCelFiles(fileSet, MageTabDataFiles.MISSING_COLUMNS_DIRECTORY);
         return fileSet;
     }
 
     private static MageTabFileSet getNoDataFileSet() {
         MageTabFileSet fileSet = new MageTabFileSet();
-        fileSet.addIdf(MageTabDataFiles.NO_DATA_FILE_IDF);
-        fileSet.addSdrf(MageTabDataFiles.NO_DATA_FILE_SDRF);
+        fileSet.addIdf(new JavaIOFileRef(MageTabDataFiles.NO_DATA_FILE_IDF));
+        fileSet.addSdrf(new JavaIOFileRef(MageTabDataFiles.NO_DATA_FILE_SDRF));
         addCelFiles(fileSet, MageTabDataFiles.MISSING_COLUMNS_DIRECTORY);
         return fileSet;
     }
 
     private static MageTabFileSet getUpdateBioMaterialChainBaselineInputSet() {
         MageTabFileSet fileSet = new MageTabFileSet();
-        fileSet.addIdf(MageTabDataFiles.UPDATE_BIOMATERIAL_CHAIN_BASELINE_IDF);
-        fileSet.addSdrf(MageTabDataFiles.UPDATE_BIOMATERIAL_CHAIN_BASELINE_SDRF);
-        fileSet.addNativeData(MageTabDataFiles.UPDATE_BIOMATERIAL_CHAIN_DATA_FILE_2);
-        fileSet.addNativeData(MageTabDataFiles.UPDATE_BIOMATERIAL_CHAIN_DATA_FILE_1);
+        fileSet.addIdf(new JavaIOFileRef(MageTabDataFiles.UPDATE_BIOMATERIAL_CHAIN_BASELINE_IDF));
+        fileSet.addSdrf(new JavaIOFileRef(MageTabDataFiles.UPDATE_BIOMATERIAL_CHAIN_BASELINE_SDRF));
+        fileSet.addNativeData(new JavaIOFileRef(MageTabDataFiles.UPDATE_BIOMATERIAL_CHAIN_DATA_FILE_2));
+        fileSet.addNativeData(new JavaIOFileRef(MageTabDataFiles.UPDATE_BIOMATERIAL_CHAIN_DATA_FILE_1));
         return fileSet;
     }
 
     private static MageTabFileSet getUpdateBioMaterialChainNewBioMaterialsInputSet() {
         MageTabFileSet fileSet = new MageTabFileSet();
-        fileSet.addIdf(MageTabDataFiles.UPDATE_BIOMATERIAL_CHAIN_NEW_BIOMATERIALS_IDF);
-        fileSet.addSdrf(MageTabDataFiles.UPDATE_BIOMATERIAL_CHAIN_NEW_BIOMATERIALS_SDRF);
-        fileSet.addNativeData(MageTabDataFiles.UPDATE_BIOMATERIAL_CHAIN_DATA_FILE_3);
-        fileSet.addNativeData(MageTabDataFiles.UPDATE_BIOMATERIAL_CHAIN_DATA_FILE_4);
+        fileSet.addIdf(new JavaIOFileRef(MageTabDataFiles.UPDATE_BIOMATERIAL_CHAIN_NEW_BIOMATERIALS_IDF));
+        fileSet.addSdrf(new JavaIOFileRef(MageTabDataFiles.UPDATE_BIOMATERIAL_CHAIN_NEW_BIOMATERIALS_SDRF));
+        fileSet.addNativeData(new JavaIOFileRef(MageTabDataFiles.UPDATE_BIOMATERIAL_CHAIN_DATA_FILE_3));
+        fileSet.addNativeData(new JavaIOFileRef(MageTabDataFiles.UPDATE_BIOMATERIAL_CHAIN_DATA_FILE_4));
         return fileSet;
     }
 
     private static MageTabFileSet getUpdateBioMaterialChainNewDataFilesInputSet() {
         MageTabFileSet fileSet = new MageTabFileSet();
-        fileSet.addIdf(MageTabDataFiles.UPDATE_BIOMATERIAL_CHAIN_NEW_DATA_FILES_IDF);
-        fileSet.addSdrf(MageTabDataFiles.UPDATE_BIOMATERIAL_CHAIN_NEW_DATA_FILES_SDRF);
-        fileSet.addNativeData(MageTabDataFiles.UPDATE_BIOMATERIAL_CHAIN_DATA_FILE_1A);
+        fileSet.addIdf(new JavaIOFileRef(MageTabDataFiles.UPDATE_BIOMATERIAL_CHAIN_NEW_DATA_FILES_IDF));
+        fileSet.addSdrf(new JavaIOFileRef(MageTabDataFiles.UPDATE_BIOMATERIAL_CHAIN_NEW_DATA_FILES_SDRF));
+        fileSet.addNativeData(new JavaIOFileRef(MageTabDataFiles.UPDATE_BIOMATERIAL_CHAIN_DATA_FILE_1A));
         return fileSet;
     }
 
     private static MageTabFileSet getUpdateFilesBaselineInputSet() {
         MageTabFileSet fileSet = new MageTabFileSet();
-        fileSet.addIdf(MageTabDataFiles.UPDATE_FILES_BASELINE_IDF);
-        fileSet.addSdrf(MageTabDataFiles.UPDATE_FILES_BASELINE_SDRF);
-        fileSet.addNativeData(MageTabDataFiles.UPDATE_FILES_CEL2);
-        fileSet.addNativeData(MageTabDataFiles.UPDATE_FILES_CEL1);
-        fileSet.addNativeData(MageTabDataFiles.UPDATE_FILES_EXP1);
-        fileSet.addNativeData(MageTabDataFiles.UPDATE_FILES_EXP2);
+        fileSet.addIdf(new JavaIOFileRef(MageTabDataFiles.UPDATE_FILES_BASELINE_IDF));
+        fileSet.addSdrf(new JavaIOFileRef(MageTabDataFiles.UPDATE_FILES_BASELINE_SDRF));
+        fileSet.addNativeData(new JavaIOFileRef(MageTabDataFiles.UPDATE_FILES_CEL2));
+        fileSet.addNativeData(new JavaIOFileRef(MageTabDataFiles.UPDATE_FILES_CEL1));
+        fileSet.addNativeData(new JavaIOFileRef(MageTabDataFiles.UPDATE_FILES_EXP1));
+        fileSet.addNativeData(new JavaIOFileRef(MageTabDataFiles.UPDATE_FILES_EXP2));
         return fileSet;
     }
 
     private static MageTabFileSet getUpdateFilesNewInputSet() {
         MageTabFileSet fileSet = new MageTabFileSet();
-        fileSet.addIdf(MageTabDataFiles.UPDATE_FILES_NEW_IDF);
-        fileSet.addSdrf(MageTabDataFiles.UPDATE_FILES_NEW_SDRF);
-        fileSet.addNativeData(MageTabDataFiles.UPDATE_FILES_CEL1A);
-        fileSet.addNativeData(MageTabDataFiles.UPDATE_FILES_EXP2A);
+        fileSet.addIdf(new JavaIOFileRef(MageTabDataFiles.UPDATE_FILES_NEW_IDF));
+        fileSet.addSdrf(new JavaIOFileRef(MageTabDataFiles.UPDATE_FILES_NEW_SDRF));
+        fileSet.addNativeData(new JavaIOFileRef(MageTabDataFiles.UPDATE_FILES_CEL1A));
+        fileSet.addNativeData(new JavaIOFileRef(MageTabDataFiles.UPDATE_FILES_EXP2A));
         return fileSet;
     }
 
@@ -648,9 +650,9 @@ public final class TestMageTabSets {
         }
     }
     
-    private static void addFiles(CaArrayFileSet fileSet, Collection<File> files,
+    private static void addFiles(CaArrayFileSet fileSet, Collection<FileRef> files,
             Class<? extends AbstractMageTabDocument> documentType) {
-        for (File file : files) {
+        for (FileRef file : files) {
             addFile(fileSet, file.getName(), documentType);
         }
     }
@@ -679,8 +681,8 @@ public final class TestMageTabSets {
      
     private static MageTabFileSet getExtendedFactorValuesInputSet() {
         MageTabFileSet fileSet = new MageTabFileSet();
-        fileSet.addIdf(MageTabDataFiles.EXTENDED_FACTOR_VALUES_IDF);
-        fileSet.addSdrf(MageTabDataFiles.EXTENDED_FACTOR_VALUES_SDRF);
+        fileSet.addIdf(new JavaIOFileRef(MageTabDataFiles.EXTENDED_FACTOR_VALUES_IDF));
+        fileSet.addSdrf(new JavaIOFileRef(MageTabDataFiles.EXTENDED_FACTOR_VALUES_SDRF));
         addCelFiles(fileSet, MageTabDataFiles.EXTENDED_FACTOR_VALUES_DIRECTORY);
         return fileSet;
     }
@@ -688,12 +690,12 @@ public final class TestMageTabSets {
 
     private static MageTabFileSet getSdrfTestInputSet(File idf, File sdrf) {
         MageTabFileSet mtfs = new MageTabFileSet();
-        mtfs.addIdf(idf);
-        mtfs.addSdrf(sdrf);
-        mtfs.addNativeData(SdrfTestFiles.TEST_1_CEL);
-        mtfs.addNativeData(SdrfTestFiles.TEST_2_CEL);
-        mtfs.addDataMatrix(SdrfTestFiles.TEST_1_DATA);
-        mtfs.addDataMatrix(SdrfTestFiles.TEST_2_DATA);
+        mtfs.addIdf(new JavaIOFileRef(idf));
+        mtfs.addSdrf(new JavaIOFileRef(sdrf));
+        mtfs.addNativeData(new JavaIOFileRef(SdrfTestFiles.TEST_1_CEL));
+        mtfs.addNativeData(new JavaIOFileRef(SdrfTestFiles.TEST_2_CEL));
+        mtfs.addDataMatrix(new JavaIOFileRef(SdrfTestFiles.TEST_1_DATA));
+        mtfs.addDataMatrix(new JavaIOFileRef(SdrfTestFiles.TEST_2_DATA));
         return mtfs;
     }
 

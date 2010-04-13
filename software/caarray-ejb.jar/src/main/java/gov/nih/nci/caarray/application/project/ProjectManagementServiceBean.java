@@ -115,7 +115,6 @@ import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.security.SecurityUtils;
-import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
 import gov.nih.nci.security.AuthorizationManager;
@@ -220,6 +219,7 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
         LogUtil.logSubsystemEntry(LOG, project);
         checkIfProjectSaveAllowed(project);
         CaArrayFile caArrayFile = doAddStream(project, data, filename);
+
         LogUtil.logSubsystemExit(LOG);
         return caArrayFile;
     }
@@ -242,8 +242,6 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
         project.getFiles().add(caArrayFile);
         caArrayFile.setProject(project);
         getFileAccessService().save(caArrayFile);
-        HibernateUtil.getCurrentSession().flush();
-        caArrayFile.clearAndEvictContents();
     }
 
     /**
@@ -310,7 +308,7 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
 
         // refresh project
         Project freshProject = getSearchDao().retrieve(Project.class, project.getId());
-        // both hybridizations and project are trying to delete the save files via cascades, so explicitly
+        // both hybridizations and project are trying to delete the saveAndEvict files via cascades, so explicitly
         //delete hybridizations (and their files) first
 
         for (Hybridization hyb : freshProject.getExperiment().getHybridizations()) {
@@ -376,7 +374,7 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     /**
      * Checks whether the project can be saved. if it can, does nothing, otherwise throws an exception
      *
-     * @param project project to check for being able to save
+     * @param project project to check for being able to saveAndEvict
      * @throws ProposalWorkflowException if the project can't be saved due to workflow state
      * @throws InconsistentProjectStateException if the project can't be saved because its state
      * is inconsistent

@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.util.io;
 
 import gov.nih.nci.caarray.AbstractCaarrayTest;
+import gov.nih.nci.caarray.magetab.io.FileRef;
 
 import java.io.File;
 
@@ -95,7 +96,12 @@ public class FileUtilityTest extends AbstractCaarrayTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testNull() {
-        FileUtility.checkFileExists(null);
+        FileUtility.checkFileExists((File)null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testNull_FileRef() {
+        FileUtility.checkFileExists((FileRef)null);
     }
 
     @Test(expected = IllegalArgumentException.class)

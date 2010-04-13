@@ -82,7 +82,6 @@
  */
 package gov.nih.nci.caarray.domain;
 
-import gov.nih.nci.caarray.util.HibernateUtil;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -273,25 +272,25 @@ public class MultiPartBlob implements Serializable {
     }
 
     /**
-     * Returns an input stream to access the contents of this MultiPartBlob.  The contents will be uncompressed when
-     * read.
-     *
-     * @return the input stream to read.
-     * @throws IOException if the contents couldn't be accessed.
-     */
-    public InputStream readCompressedContents() throws IOException {
-        return readContents(true);
-    }
-
-    /**
      * Returns an input stream to access the contents of this MultiPartBlob.  The contents will <em>not</em> be
      * uncompressed when read.
      *
-     * @return the input stream to read.
+     * @return the raw (gzip) input stream to read.
+     * @throws IOException if the contents couldn't be accessed.
+     */
+    public InputStream readCompressedContents() throws IOException {
+        return readContents(false);
+    }
+
+    /**
+     * Returns an input stream to access the contents of this MultiPartBlob.  The contents will be uncompressed when
+     * read.
+     *
+     * @return the inflated input stream to read.
      * @throws IOException if the contents couldn't be accessed.
      */
     public InputStream readUncompressedContents() throws IOException {
-        return readContents(false);
+        return readContents(true);
     }
 
     /**
@@ -315,16 +314,6 @@ public class MultiPartBlob implements Serializable {
             }
         } catch (SQLException e) {
             throw new IllegalStateException("Couldn't access file contents", e);
-        }
-    }
-
-    /**
-     * Clear the blobParts.
-     */
-    public void clearAndEvictData() {
-        HibernateUtil.getCurrentSession().evict(this);
-        for (BlobHolder bh : getBlobParts()) {
-            bh.setContents(null);
         }
     }
 

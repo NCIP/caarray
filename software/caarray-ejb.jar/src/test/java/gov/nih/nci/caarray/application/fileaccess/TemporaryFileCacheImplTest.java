@@ -2,10 +2,12 @@
 package gov.nih.nci.caarray.application.fileaccess;
 
 import gov.nih.nci.caarray.application.AbstractServiceIntegrationTest;
+import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.util.HibernateUtil;
 import java.io.File;
+import java.io.InputStream;
 import org.hibernate.Transaction;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -24,7 +26,8 @@ public class TemporaryFileCacheImplTest extends AbstractServiceIntegrationTest {
         CaArrayFile caArrayFile = new CaArrayFile();
         caArrayFile.setName("foo");
         caArrayFile.setFileStatus(FileStatus.UPLOADED);
-        caArrayFile.writeContents(TemporaryFileCacheImplTest.class.getProtectionDomain().getCodeSource().getLocation().openStream());
+        InputStream in = TemporaryFileCacheImplTest.class.getProtectionDomain().getCodeSource().getLocation().openStream();
+        CaArrayDaoFactory.INSTANCE.getFileDao().writeContents(caArrayFile, in);
         Transaction tx = HibernateUtil.beginTransaction();
         HibernateUtil.getCurrentSession().save(caArrayFile);
         tx.commit();

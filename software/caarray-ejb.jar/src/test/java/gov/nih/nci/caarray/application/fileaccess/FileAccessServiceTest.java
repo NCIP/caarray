@@ -90,6 +90,8 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.AbstractHibernateTest;
+import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
+import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
 import gov.nih.nci.caarray.domain.MultiPartBlob;
 import gov.nih.nci.caarray.domain.data.DerivedArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
@@ -147,6 +149,7 @@ public class FileAccessServiceTest extends AbstractHibernateTest {
 
     @Test
     public void testAdd() throws IOException, FileAccessException {
+        Transaction tx = HibernateUtil.beginTransaction();
         File file = File.createTempFile("pre", ".ext");
         file.deleteOnExit();
         CaArrayFile caArrayFile = this.fileAccessService.add(file);
@@ -160,6 +163,7 @@ public class FileAccessServiceTest extends AbstractHibernateTest {
 
         caArrayFile = this.fileAccessService.add(GenepixArrayDataFiles.GPR_3_0_6);
         assertEquals(FileType.GENEPIX_GPR, caArrayFile.getFileType());
+        tx.commit();
     }
 
     /**
@@ -168,7 +172,7 @@ public class FileAccessServiceTest extends AbstractHibernateTest {
      */
     @Test
     public void testGetFile() throws Exception {
-        Transaction tx = HibernateUtil.beginTransaction();
+        Transaction tx = HibernateUtil.beginTransaction();        
         MultiPartBlob.setBlobSize(100);
         File file = MageTabDataFiles.SPECIFICATION_EXAMPLE_SDRF;
         CaArrayFile caArrayFile = this.fileAccessService.add(file);

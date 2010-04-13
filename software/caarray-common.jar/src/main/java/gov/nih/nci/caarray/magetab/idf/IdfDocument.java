@@ -96,7 +96,6 @@ import gov.nih.nci.caarray.magetab.sdrf.SdrfDocument;
 import gov.nih.nci.caarray.util.io.DelimitedFileReader;
 import gov.nih.nci.caarray.util.io.DelimitedWriter;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -106,6 +105,7 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 
 import com.fiveamsolutions.nci.commons.util.NCICommonsUtils;
+import gov.nih.nci.caarray.magetab.io.FileRef;
 
 /**
  * Represents an Investigation Description Format (IDF) file - a tab-delimited file providing general information about
@@ -129,7 +129,7 @@ public final class IdfDocument extends AbstractMageTabDocument {
      * @param documentSet the MAGE-TAB document set the IDF belongs to.
      * @param file the file containing the IDF content.
      */
-    public IdfDocument(MageTabDocumentSet documentSet, File file) {
+    public IdfDocument(MageTabDocumentSet documentSet, FileRef file) {
         super(documentSet, file);
     }
 

@@ -92,6 +92,8 @@ import gov.nih.nci.caarray.domain.project.AbstractExperimentDesignNode;
 import gov.nih.nci.caarray.domain.search.FileSearchCriteria;
 import gov.nih.nci.caarray.util.CaArrayUtils;
 import gov.nih.nci.caarray.util.HibernateUtil;
+import java.io.File;
+import java.io.OutputStream;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -106,12 +108,47 @@ import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.Restrictions;
 
 import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
+import gov.nih.nci.caarray.domain.MultiPartBlob;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.log4j.Logger;
+import org.hibernate.Session;
 
 /**
  * DAO to manipulate file objects.
  */
 @SuppressWarnings("PMD.CyclomaticComplexity")
 class FileDaoImpl extends AbstractCaArrayDaoImpl implements FileDao {
+
+    private static final Logger LOG = Logger.getLogger(FileDaoImpl.class);
+    private static final Method GET_MULTI_PART_BLOB;
+    private static final Method SET_MULTI_PART_BLOB;
+    private static final Method GET_BLOB_PARTS;
+
+    static {
+        try {
+            GET_MULTI_PART_BLOB = CaArrayFile.class.getDeclaredMethod("getMultiPartBlob");
+            GET_MULTI_PART_BLOB.setAccessible(true);
+            SET_MULTI_PART_BLOB = CaArrayFile.class.getDeclaredMethod("setMultiPartBlob", MultiPartBlob.class);
+            SET_MULTI_PART_BLOB.setAccessible(true);
+            GET_BLOB_PARTS = MultiPartBlob.class.getDeclaredMethod("getBlobParts");
+            GET_BLOB_PARTS.setAccessible(true);
+        } catch (NoSuchMethodException ex) {
+            throw throwError(ex);
+        } catch (SecurityException ex) {
+            throw throwError(ex);
+        }
+    }
+
+    @SuppressWarnings("PMD.AvoidThrowingRawExceptionTypes")
+    private static Error throwError(Exception ex) {
+        throw new Error(ex);
+    }
+
     @SuppressWarnings("unchecked")
     private List<Long> getBlobPartIdsForProject(long projectId) {
          List<Long> returnVal = new ArrayList<Long>();
@@ -280,5 +317,127 @@ class FileDaoImpl extends AbstractCaArrayDaoImpl implements FileDao {
         q.setParameterList("deletableStatuses", CaArrayUtils.namesForEnums(FileStatus.DELETABLE_FILE_STATUSES));
         q.setString("importedStatus", FileStatus.IMPORTED.name());
         return q.list();
+    }
+
+   private boolean refreshIfCleared(MultiPartBlob blobs) {
+         List<BlobHolder> list = getBlobParts(blobs);
+         Session s = HibernateUtil.getCurrentSession();
+         boolean reloaded = false;
+         for (BlobHolder bh : list) {
+             if (bh.getContents() == null) {
+                 s.refresh(bh);
+                 reloaded = true;
+             }
+         }
+         return reloaded;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void copyContentsToStream(CaArrayFile file, OutputStream dest) throws IOException {
+        copyContentsToStream(file, true, dest);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void copyContentsToStream(CaArrayFile file, boolean inflate, OutputStream dest) throws IOException {
+        MultiPartBlob blobs = getMultiPartBlob(file);
+        if (refreshIfCleared(blobs)) {
+            LOG.info("reloaded blobs for " + file.toString());
+        }
+        InputStream in = inflate ? blobs.readUncompressedContents() : blobs.readCompressedContents();
+        try {
+            IOUtils.copy(in, dest);
+        } finally {
+            IOUtils.closeQuietly(in);
+            clearAndEvictBlobs(blobs);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void writeContents(CaArrayFile ref, File data) throws IOException {
+        InputStream in = FileUtils.openInputStream(data);
+        writeContents(ref, in);
+        IOUtils.closeQuietly(in);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void writeContents(CaArrayFile file, InputStream inputStream) throws IOException {
+        MultiPartBlob multiPartBlob = new MultiPartBlob();
+        MultiPartBlob.MetaData metaData = multiPartBlob.writeDataCompressed(inputStream);
+        file.setUncompressedSize(metaData.getUncompressedBytes());
+        file.setCompressedSize(metaData.getCompressedBytes());
+        setMultiPartBlob(file, multiPartBlob);
+    }
+
+    private void clearAndEvictBlobs(CaArrayFile data) {
+        MultiPartBlob blobs = getMultiPartBlob(data);
+        if (blobs != null) {
+            clearAndEvictBlobs(blobs);
+        }
+    }
+
+    private void clearAndEvictBlobs(MultiPartBlob blobs) {
+        List<BlobHolder> parts = getBlobParts(blobs);
+        if (parts != null) {
+            for (BlobHolder bh : parts) {
+                HibernateUtil.getCurrentSession().evict(bh);
+                bh.setContents(null);
+            }
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private static List<BlobHolder> getBlobParts(MultiPartBlob blobs) {
+        return (List<BlobHolder>) get(blobs, GET_BLOB_PARTS);
+    }
+
+
+    private static MultiPartBlob getMultiPartBlob(CaArrayFile file) {
+        return (MultiPartBlob) get(file, GET_MULTI_PART_BLOB);
+    }
+
+    @SuppressWarnings("PMD.AvoidThrowingRawExceptionTypes")
+    private static void setMultiPartBlob(CaArrayFile file, MultiPartBlob blobs) {
+        if (getMultiPartBlob(file) != null) {
+            throw new IllegalStateException("Can't reset the contents of an existing CaArrayFile");
+        }
+        try {
+            SET_MULTI_PART_BLOB.invoke(file, blobs);
+        } catch (IllegalAccessException ex) {
+            throw new RuntimeException(ex);
+        } catch (IllegalArgumentException ex) {
+            throw new RuntimeException(ex);
+        } catch (InvocationTargetException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    @SuppressWarnings("PMD.AvoidThrowingRawExceptionTypes")
+    private static Object get(Object obj, Method getter) {
+        try {
+            return getter.invoke(obj);
+        } catch (IllegalAccessException ex) {
+            throw new RuntimeException(ex);
+        } catch (IllegalArgumentException ex) {
+            throw new RuntimeException(ex);
+        } catch (InvocationTargetException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void saveAndEvict(CaArrayFile file) {
+        super.save(file);
+        super.flushSession();
+        clearAndEvictBlobs(file);
     }
 }

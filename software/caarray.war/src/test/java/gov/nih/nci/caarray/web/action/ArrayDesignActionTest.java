@@ -128,6 +128,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
 
 import com.fiveamsolutions.nci.commons.web.struts2.action.ActionHelper;
 import com.opensymphony.xwork2.Action;
+import gov.nih.nci.caarray.dao.FileDaoTest;
 
 /**
  * @author Winston Cheng
@@ -261,7 +262,7 @@ public class ArrayDesignActionTest extends AbstractDownloadTest {
         arrayDesign.setName("Test3");
 
         CaArrayFile rawFile = new CaArrayFile();
-        rawFile.writeContents(IOUtils.toInputStream(""));
+        FileDaoTest.writeContents(rawFile, "");
         rawFile.setName("Test3.CDF");
         CaArrayFileSet designFileSet = new CaArrayFileSet();
         designFileSet.add(rawFile);

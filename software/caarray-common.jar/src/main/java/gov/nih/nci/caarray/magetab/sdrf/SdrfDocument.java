@@ -103,7 +103,6 @@ import gov.nih.nci.caarray.util.io.DelimitedWriter;
 import gov.nih.nci.caarray.validation.ValidationMessage;
 import gov.nih.nci.caarray.validation.ValidationMessage.Type;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -122,6 +121,7 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 
 import com.fiveamsolutions.nci.commons.util.NCICommonsUtils;
+import gov.nih.nci.caarray.magetab.io.FileRef;
 
 /**
  * Represents a Sample and Data Relationship Format (SDRF) file - a tab-delimited file describing the relationships
@@ -197,7 +197,7 @@ public final class SdrfDocument extends AbstractMageTabDocument {
      * @param documentSet the MAGE-TAB document set the SDRF belongs to.
      * @param file the file containing the SDRF content.
      */
-    public SdrfDocument(MageTabDocumentSet documentSet, File file) {
+    public SdrfDocument(MageTabDocumentSet documentSet, FileRef file) {
         super(documentSet, file);
     }
 
@@ -645,7 +645,7 @@ public final class SdrfDocument extends AbstractMageTabDocument {
         
         boolean hasError = false;
         for (ValidationMessage message : messages) {
-            getDocumentSet().getValidationResult().addMessage(getFile(), message);
+            getDocumentSet().getValidationResult().addMessage(getFile().getAsFile(), message);
             hasError |= message.getType() == Type.ERROR;
         }
         

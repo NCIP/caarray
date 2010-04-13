@@ -124,6 +124,7 @@ import org.junit.Test;
 
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 import com.fiveamsolutions.nci.commons.web.struts2.action.ActionHelper;
+import gov.nih.nci.caarray.dao.FileDaoTest;
 
 /**
  * @author Winston Cheng
@@ -187,11 +188,11 @@ public class ProjectHybridizationsActionTest extends AbstractDownloadTest {
         DerivedArrayData derived = new DerivedArrayData();
         h2.getDerivedDataCollection().add(derived);
         CaArrayFile rawFile = new CaArrayFile();
-        rawFile.writeContents(IOUtils.toInputStream(""));
+        FileDaoTest.writeContents(rawFile, "");
         rawFile.setName("missing_term_source.idf");
         raw.setDataFile(rawFile);
         CaArrayFile derivedFile = new CaArrayFile();
-        derivedFile.writeContents(IOUtils.toInputStream(""));
+        FileDaoTest.writeContents(derivedFile, "");
         derivedFile.setName("missing_term_source.sdrf");
         derived.setDataFile(derivedFile);
 

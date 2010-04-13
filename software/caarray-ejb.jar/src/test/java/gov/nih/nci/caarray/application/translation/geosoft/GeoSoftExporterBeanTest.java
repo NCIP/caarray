@@ -4,7 +4,9 @@ package gov.nih.nci.caarray.application.translation.geosoft;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import edu.georgetown.pir.Organism;
+import gov.nih.nci.caarray.AbstractHibernateTest;
 import gov.nih.nci.caarray.application.vocabulary.VocabularyServiceStub;
+import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.array.Array;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.contact.Organization;
@@ -12,6 +14,7 @@ import gov.nih.nci.caarray.domain.contact.Person;
 import gov.nih.nci.caarray.domain.data.DerivedArrayData;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Experiment;
@@ -43,12 +46,12 @@ import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.zip.GZIPInputStream;
-import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipFile;
 import org.hibernate.Transaction;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -57,15 +60,28 @@ import static org.junit.Assert.*;
  *
  * @author gax
  */
-public class GeoSoftExporterBeanTest {
+public class GeoSoftExporterBeanTest extends AbstractHibernateTest {
 
     private GeoSoftExporterBean bean;
     VocabularyServiceStub vocab;
-    
+    Transaction tx;
+
+    public GeoSoftExporterBeanTest() {
+        super(false);
+    }
+
+
+
     @Before
     public void setUp() {
         bean = new GeoSoftExporterBean();
         vocab  = new VocabularyServiceStub();
+        tx = HibernateUtil.beginTransaction();
+    }
+
+    @After
+    public void closeTx() {
+        tx.rollback();
     }
 
     Project makeGoodProject() throws Exception {
@@ -225,7 +241,9 @@ public class GeoSoftExporterBeanTest {
         rawFile.setCompressedSize(1024);
         rawFile.setUncompressedSize(1024*2);
         rawFile.setName("raw_file.data");
-        rawFile.writeContents(new FileInputStream(data));
+        rawFile.setFileStatus(FileStatus.IMPORTED);
+        CaArrayDaoFactory.INSTANCE.getFileDao().writeContents(rawFile, new FileInputStream(data));
+        CaArrayDaoFactory.INSTANCE.getFileDao().saveAndEvict(rawFile);
         rawData.setDataFile(rawFile);
         h.getRawDataCollection().add(rawData);
         DerivedArrayData d = new DerivedArrayData();
@@ -234,7 +252,9 @@ public class GeoSoftExporterBeanTest {
         derFile.setName("derived_file.data");
         derFile.setCompressedSize(1024);
         derFile.setUncompressedSize(1024*2);
-        derFile.writeContents(new FileInputStream(data));
+        derFile.setFileStatus(FileStatus.IMPORTED);
+        CaArrayDaoFactory.INSTANCE.getFileDao().writeContents(derFile, new FileInputStream(data));
+        CaArrayDaoFactory.INSTANCE.getFileDao().saveAndEvict(derFile);
         d.setDataFile(derFile);
         h.getDerivedDataCollection().add(d);
 
@@ -243,7 +263,9 @@ public class GeoSoftExporterBeanTest {
         suppFile.setName("supplimental.data");
         suppFile.setCompressedSize(1024);
         suppFile.setUncompressedSize(1024*2);
-        suppFile.writeContents(new FileInputStream(data));
+        suppFile.setFileStatus(FileStatus.IMPORTED);
+        CaArrayDaoFactory.INSTANCE.getFileDao().writeContents(suppFile, new FileInputStream(data));
+        CaArrayDaoFactory.INSTANCE.getFileDao().saveAndEvict(suppFile);
         Field supplementalFilesField = Project.class.getDeclaredField("supplementalFiles");
         supplementalFilesField.setAccessible(true);
         SortedSet<CaArrayFile> supplementalFiles = (SortedSet<CaArrayFile>) supplementalFilesField.get(prj);
@@ -408,7 +430,7 @@ public class GeoSoftExporterBeanTest {
     }
 
     @Test
-    public void testExportArchive() throws Exception {
+    public void testExportArchiveZip() throws Exception {
         Project p = makeGoodProject();
         List<PackagingInfo> infos = bean.getAvailablePackagingInfos(p);
         PackagingInfo zipPi = Iterables.find(infos, new Predicate<PackagingInfo>() {
@@ -418,9 +440,8 @@ public class GeoSoftExporterBeanTest {
         });
         File f = File.createTempFile("test", zipPi.getName());
         FileOutputStream fos = new FileOutputStream(f);
-        Transaction tx = HibernateUtil.beginTransaction();
+        
         bean.export(p, "http://example.com/my_experiemnt", PackagingInfo.PackagingMethod.ZIP, fos);
-        tx.rollback();
         fos.close();
         ZipFile zf = new ZipFile(f);
         Enumeration<ZipArchiveEntry> en = zf.getEntries();
@@ -432,17 +453,25 @@ public class GeoSoftExporterBeanTest {
             
         }
         assertTrue(entries.toString() + " not found", entries.isEmpty());
+    }
+    
+    @Test
+    public void testExportArchiveTar() throws Exception {
 
-
-        p = makeGoodProject();
-        fos = new FileOutputStream(f);
-        tx = HibernateUtil.beginTransaction();
+        Project p = makeGoodProject();
+        List<PackagingInfo> infos = bean.getAvailablePackagingInfos(p);
+        PackagingInfo zipPi = Iterables.find(infos, new Predicate<PackagingInfo>() {
+            public boolean apply(PackagingInfo t) {
+                return t.getMethod() == PackagingInfo.PackagingMethod.ZIP;
+            }
+        });
+        File f = File.createTempFile("test", zipPi.getName());
+        FileOutputStream fos = new FileOutputStream(f);
         bean.export(p, "http://example.com/my_experiemnt", PackagingInfo.PackagingMethod.TGZ, fos);
-        tx.rollback();
         fos.close();
         GZIPInputStream in = new GZIPInputStream(new FileInputStream(f));
         TarArchiveInputStream tar = new TarArchiveInputStream(in);
-        entries.clear();
+        Set<String> entries = new HashSet<String>();
         entries.addAll(java.util.Arrays.asList("test-exp-id.soft.txt", "raw_file.data", "derived_file.data", "supplimental.data", "README.txt"));
         TarArchiveEntry e = tar.getNextTarEntry();
         while (e != null) {

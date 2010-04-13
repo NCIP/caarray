@@ -72,7 +72,6 @@ public final class DownloadHelper {
             try {
                 for (CaArrayFile f : sortedFiles) {
                     FileAccessUtils.addFileToArchive(f, arOut);
-                    f.clearAndEvictContents();
                 }
             } finally {
                 // note that the caller's stream is shielded from the close(),

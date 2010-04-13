@@ -124,7 +124,7 @@ class Serializer implements Serializable {
     byte[] getSerializedValues() {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         try {
-            IOUtils.copy(getSerializedValue().readUncompressedContents(), outputStream);
+            IOUtils.copy(getSerializedValue().readCompressedContents(), outputStream);
         } catch (IOException e) {
             throw new IllegalStateException("Couldn't serialize data", e);
         }

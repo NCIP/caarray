@@ -85,8 +85,8 @@ package gov.nih.nci.caarray.magetab.adf;
 import gov.nih.nci.caarray.magetab.AbstractMageTabDocument;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.magetab.MageTabParsingException;
+import gov.nih.nci.caarray.magetab.io.FileRef;
 
-import java.io.File;
 
 /**
  * Represents an Array Design Format (ADF) file - a tab-delimited file defining each array
@@ -106,7 +106,7 @@ public final class AdfDocument extends AbstractMageTabDocument {
      * @param documentSet the document set the ADF belongs to
      * @param file thd ADF
      */
-    public AdfDocument(MageTabDocumentSet documentSet, File file) {
+    public AdfDocument(MageTabDocumentSet documentSet, FileRef file) {
         super(documentSet, file);
     }
 

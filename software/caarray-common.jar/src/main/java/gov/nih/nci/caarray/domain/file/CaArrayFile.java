@@ -89,12 +89,9 @@ import gov.nih.nci.caarray.domain.MultiPartBlob;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.security.Protectable;
 import gov.nih.nci.caarray.security.ProtectableDescendent;
-import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -135,8 +132,6 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
 
     // transient properties
     private transient MultiPartBlob multiPartBlob;
-    private transient InputStream inputStreamToClose;
-    private transient File fileToDelete;
     
     /**
      * Gets the name.
@@ -348,45 +343,7 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
         return file != null && getName() != null && getName().equals(file.getName());
     }
 
-    /**
-     * Writes the contents of a stream to the storage for this file's contents. Note that the
-     * contents may only be set once (i.e. no overwrites are allowed).
-     *
-     * @param inputStream read the file contents from this input stream.
-     * @throws IOException if there is a problem writing the contents.
-     */
-    public void writeContents(InputStream inputStream) throws IOException {
-        if (this.multiPartBlob == null) {
-            this.multiPartBlob = new MultiPartBlob();
-            MultiPartBlob.MetaData metaData = this.multiPartBlob.writeDataCompressed(inputStream);
-            setUncompressedSize(metaData.getUncompressedBytes());
-            setCompressedSize(metaData.getCompressedBytes());
-        } else {
-            throw new IllegalStateException("Can't reset the contents of an existing CaArrayFile");
-        }
-    }
-
-    /**
-     * Returns an input stream to access the contents of the file.
-     *
-     * @return the input stream to read.
-     * @throws IOException if the contents couldn't be accessed.
-     */
-    public InputStream readContents() throws IOException {
-        return this.multiPartBlob.readCompressedContents();
-    }
-
-    /**
-     * Returns an input stream to access the compressed contents of the file.
-     *
-     * @return the input stream to read. This will return the GZIPed contents of the file
-     * @throws IOException if the contents couldn't be accessed.
-     */
-    public InputStream readCompressedContents() throws IOException {
-        // the appropriate method on multi-part blob is, confusingly, named readUncompressedContents
-        // so the below is not a bug
-        return this.multiPartBlob.readUncompressedContents();
-    }
+    
 
     /**
      * @return the multiPartBlob
@@ -414,34 +371,6 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
         // Protectable. If it does not belong to a project, then protections do not apply to it at all
         // (ie it is an array design file or some such)
         return getProject() != null ? Collections.singleton(getProject()) : null;
-    }
-
-    /**
-     * Clear the file contents from memory.
-     */
-    public void clearAndEvictContents() {
-        HibernateUtil.getCurrentSession().evict(this);
-        if (getMultiPartBlob() != null) {
-            getMultiPartBlob().clearAndEvictData();
-        }
-    }
-
-    /**
-     * Get the input stream that needs to be closed in postflush.
-     * @return the input stream
-     */
-    @Transient
-    public InputStream getInputStreamToClose() {
-        return this.inputStreamToClose;
-    }
-
-    /**
-     * Get the file the needs to be deleted in post flush.
-     * @return the file
-     */
-    @Transient
-    public File getFileToDelete() {
-        return this.fileToDelete;
     }
 
     /**
