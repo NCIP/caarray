@@ -101,7 +101,7 @@ public enum FileExtension {
     /**
      * AFFYMETRIX_CHP.
      */
-    CHP(FileType.AFFYMETRIX_CHP),
+    CHP(FileType.AFFYMETRIX_CHP, "CNCHP"),
     /**
      * AFFYMETRIX_CLF.
      */

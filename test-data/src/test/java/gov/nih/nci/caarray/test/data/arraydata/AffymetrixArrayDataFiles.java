@@ -142,4 +142,7 @@ public class AffymetrixArrayDataFiles {
 
     public static final File AXIOMGT_SNP_TEST_CHP = 
         new File(AffymetrixArrayDataFiles.class.getResource("/arraydata/affymetrix/AxiomgtSNPTest1.chp").getFile());
-}
+
+    public static final File COPY_NUMBER_4_CHP =
+        new File(AffymetrixArrayDataFiles.class.getResource("/arraydata/affymetrix/test.cn4.cnchp").getFile());
+ }

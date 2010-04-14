@@ -214,18 +214,22 @@ final class AffymetrixChpHandler extends AbstractDataFileHandler {
             = FusionCHPMultiDataData.fromBase(fusionCHPData);
         
         final String algorithm = fusionCHPMultiDataData.getAlgName();
-        String dataSetName = fusionCHPMultiDataData.getGenericData().findDataGroupHeader(0).getDataSet(0).getName();
-        
-        boolean algorihmIsBRLMM = algorithm.startsWith("brlmm");
-        boolean algorihmIsBirdseed = algorithm.startsWith("birdseed");
-        boolean algorihmIsAxiomGT = algorithm.startsWith("axiomgt");
+        boolean algorithmIsBRLMM = algorithm.startsWith("brlmm");
+        boolean algorithmIsBirdseed = algorithm.startsWith("birdseed");
+        boolean algorithmIsAxiomGT = algorithm.startsWith("axiomgt");
+        boolean algorithmIsCN4 = "CN4".equals(algorithm);
+        boolean algorithmIsCN5 = "Analyzer Server".equals(algorithm);
 
-        if (algorihmIsBRLMM) {
+        if (algorithmIsBRLMM) {
             return new CHPSnpBrlmmData(fusionCHPMultiDataData);
-        } else if (algorihmIsBirdseed) {
+        } else if (algorithmIsBirdseed) {
             return new CHPSnpBirdseedData(fusionCHPMultiDataData);
-        } else if (algorihmIsAxiomGT) {
+        } else if (algorithmIsAxiomGT) {
             return new CHPSnpAxiomGTData(fusionCHPMultiDataData);
+        } else if (algorithmIsCN4) {
+            return new CnchpData(fusionCHPMultiDataData, CnchpData.CN4_TYPE_MAP);
+        } else if (algorithmIsCN5) {
+            return new CnchpData(fusionCHPMultiDataData, CnchpData.CN5_TYPE_MAP);
         }
 
         return null;

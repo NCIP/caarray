@@ -127,7 +127,12 @@ public enum AffymetrixArrayDataTypes implements ArrayDataTypeDescriptor {
     /**
      * Affymetrix CHP format (SNP AxiomGT).
      */
-    AFFYMETRIX_SNP_AXIOMGT_CHP("Affymetrix CHP (SNP AxiomGT)", AffymetrixSnpAxiomGTChpQuantitationType.values());
+    AFFYMETRIX_SNP_AXIOMGT_CHP("Affymetrix CHP (SNP AxiomGT)", AffymetrixSnpAxiomGTChpQuantitationType.values()),
+
+    /**
+     * Affymetrix CNCHP (Copy Number).
+     */
+    AFFYMETRIX_COPY_NUMBER_CHP("Affymetrix CNCHP (Copy Number)", CopyNumberQuantitationType.values());
     
     private final String name;
     private final List<QuantitationTypeDescriptor> quantitationTypes;

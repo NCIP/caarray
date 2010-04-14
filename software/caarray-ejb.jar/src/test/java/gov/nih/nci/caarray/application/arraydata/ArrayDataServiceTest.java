@@ -129,9 +129,7 @@ import gov.nih.nci.caarray.application.AbstractServiceTest;
 import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixArrayDataTypes;
 import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixCelQuantitationType;
 import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixExpressionChpQuantitationType;
-import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixSnpAxiomGTChpQuantitationType;
 import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixSnpBirdseedChpQuantitationType;
-import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixSnpBrlmmChpQuantitationType;
 import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixSnpChpQuantitationType;
 import gov.nih.nci.caarray.application.arraydata.genepix.GenepixQuantitationType;
 import gov.nih.nci.caarray.application.arraydata.illumina.IlluminaExpressionQuantitationType;
@@ -523,6 +521,51 @@ public class ArrayDataServiceTest extends AbstractServiceTest {
         assertEquals(AffymetrixCelQuantitationType.values().length, hybridizationData.getColumns().size());
         assertEquals(AffymetrixCelQuantitationType.values().length, dataSet.getQuantitationTypes().size());
         checkCelColumnTypes(dataSet);
+    }
+
+    @Test
+    public void testImportCN4Chp() throws InvalidDataFileException {
+        DerivedArrayData chpData = getChpData(AffymetrixArrayDesignFiles.TEST3_CDF, AffymetrixArrayDataFiles.COPY_NUMBER_4_CHP);
+        assertEquals(FileStatus.UPLOADED, chpData.getDataFile().getFileStatus());
+        assertNull(chpData.getDataSet());
+        this.arrayDataService.importData(chpData.getDataFile(), false, DEFAULT_IMPORT_OPTIONS);
+        assertEquals(FileStatus.IMPORTED, chpData.getDataFile().getFileStatus());
+        assertNotNull(chpData.getDataSet());
+        DataSet dataSet = chpData.getDataSet();
+        assertNotNull(dataSet.getHybridizationDataList());
+        assertEquals(1, dataSet.getHybridizationDataList().size());
+        HybridizationData hybridizationData = dataSet.getHybridizationDataList().get(0);
+        assertEquals(chpData.getHybridizations().iterator().next(), hybridizationData.getHybridization());
+        assertEquals(CnchpData.CN4_TYPE_MAP.size(),  hybridizationData.getColumns().size());
+        assertEquals(CnchpData.CN4_TYPE_MAP.size(), dataSet.getQuantitationTypes().size());
+        for (AbstractDesignElement element : dataSet.getDesignElementList().getDesignElements()) {
+            assertNotNull(element);
+        }
+    }
+
+    @Test
+    public void testImportCN5Chp() throws InvalidDataFileException {
+        File f = new File("/path/to/copy-number-5.cn5.cnchp");
+        if (!f.exists()) {
+            System.out.println("Skipping test: no public domain cn5.cnchp files available.  find one and replace the path");
+            return;
+        }
+        DerivedArrayData chpData = getChpData(AffymetrixArrayDesignFiles.TEST3_CDF, f);
+        assertEquals(FileStatus.UPLOADED, chpData.getDataFile().getFileStatus());
+        assertNull(chpData.getDataSet());
+        this.arrayDataService.importData(chpData.getDataFile(), false, DEFAULT_IMPORT_OPTIONS);
+        assertEquals(FileStatus.IMPORTED, chpData.getDataFile().getFileStatus());
+        assertNotNull(chpData.getDataSet());
+        DataSet dataSet = chpData.getDataSet();
+        assertNotNull(dataSet.getHybridizationDataList());
+        assertEquals(1, dataSet.getHybridizationDataList().size());
+        HybridizationData hybridizationData = dataSet.getHybridizationDataList().get(0);
+        assertEquals(chpData.getHybridizations().iterator().next(), hybridizationData.getHybridization());
+        assertEquals(CnchpData.CN5_TYPE_MAP.size(),  hybridizationData.getColumns().size());
+        assertEquals(CnchpData.CN5_TYPE_MAP.size(), dataSet.getQuantitationTypes().size());
+        for (AbstractDesignElement element : dataSet.getDesignElementList().getDesignElements()) {
+            assertNotNull(element);
+        }
     }
 
     // VALIDATION
