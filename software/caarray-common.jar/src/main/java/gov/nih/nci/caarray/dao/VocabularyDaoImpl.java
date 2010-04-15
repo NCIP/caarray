@@ -81,18 +81,6 @@ class VocabularyDaoImpl extends AbstractCaArrayDaoImpl implements VocabularyDao 
      * {@inheritDoc}
      */
     @SuppressWarnings(UNCHECKED)
-    public Set<Term> getTerms(Category category) {
-        Query query = HibernateUtil.getCurrentSession().createQuery(
-                "select distinct t from " + Term.class.getName()
-                        + " t join t.categories cat where cat = :category order by t.value asc");
-        query.setEntity("category", category);
-        return new LinkedHashSet<Term>(query.list());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @SuppressWarnings(UNCHECKED)
     public Set<Term> getTermsRecursive(Category category, String valuePrefix) {
         Set<Category> searchCategories = new HashSet<Category>();
         searchCategories.add(category);

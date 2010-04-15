@@ -193,26 +193,6 @@ class FileDaoImpl extends AbstractCaArrayDaoImpl implements FileDao {
         return q.executeUpdate();
     }
 
-    private int removeBlobHoldersById(List<Long> idList) {
-        String sql = "delete from BLOB_HOLDER where id in (:b_parts)";
-        Query q = HibernateUtil.getCurrentSession().createSQLQuery(sql);
-        q.setParameterList("b_parts", idList);
-        return q.executeUpdate();
-
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void deleteSqlBlobsByProjectId(Long projectId) {
-        List<Long> list = this.getBlobPartIdsForProject(projectId);
-        if (list != null && !list.isEmpty()) {
-            this.removeAssociationsByBlobHolderId(list);
-            this.removeBlobHoldersById(list);
-        }
-        this.flushSession();
-    }
-
     /**
      * {@inheritDoc}
      */

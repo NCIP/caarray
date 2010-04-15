@@ -82,13 +82,19 @@
  */
 package gov.nih.nci.caarray.upgrade;
 
-import gov.nih.nci.caarray.application.arraydata.AbstractDataFileHandler;
-import gov.nih.nci.caarray.application.arraydata.ArrayDataHandlerFactory;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignServiceBean;
+import gov.nih.nci.caarray.dao.DaoModule;
+import gov.nih.nci.caarray.domain.LSID;
 import gov.nih.nci.caarray.domain.MultiPartBlob;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
+import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileType;
+import gov.nih.nci.caarray.platforms.FileManager;
+import gov.nih.nci.caarray.platforms.PlatformModule;
+import gov.nih.nci.caarray.platforms.SessionTransactionManager;
+import gov.nih.nci.caarray.platforms.spi.DataFileHandler;
+import gov.nih.nci.caarray.platforms.spi.PlatformFileReadException;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -98,7 +104,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import liquibase.database.Database;
 import liquibase.exception.CustomChangeException;
@@ -106,27 +115,84 @@ import liquibase.exception.CustomChangeException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
+import com.google.inject.AbstractModule;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+import com.google.inject.Key;
+import com.google.inject.TypeLiteral;
+import com.google.inject.util.Types;
+
 /**
- * Migrator to find hybridizations with missing arrays, and where possible, create them 
- * based on array designs specified in data files or the experiment. 
+ * Migrator to find hybridizations with missing arrays, and where possible, create them based on array designs specified
+ * in data files or the experiment.
  * 
- * The migrator will use the array design for the experiment, if there is only one. Otherwise,
- * it will extract the array design from one of the data files associated with the hybridization, if
- * present. If none of the data files specify the array design, and the experiment has more than one
- * array design specified, then no action will be taken.
- *
+ * The migrator will use the array design for the experiment, if there is only one. Otherwise, it will extract the array
+ * design from one of the data files associated with the hybridization, if present. If none of the data files specify
+ * the array design, and the experiment has more than one array design specified, then no action will be taken.
+ * 
  * @author Dan Kokotov
  */
-@SuppressWarnings({"PMD.TooManyMethods", "PMD.CyclomaticComplexity" })
-public class FixHybridizationsWithMissingArraysMigrator extends AbstractCustomChange {        
+@SuppressWarnings({ "PMD.TooManyMethods", "PMD.CyclomaticComplexity" })
+public class FixHybridizationsWithMissingArraysMigrator extends AbstractCustomChange {
     private Database database;
-            
+    private Set<DataFileHandler> handlers;
+    private final Map<Long, File> openFileMap = new HashMap<Long, File>();
+
     /**
      * {@inheritDoc}
      */
     public void execute(Database db) throws CustomChangeException {
         try {
+            this.openFileMap.clear();
             this.database = db;
+            Injector injector = Guice.createInjector(new DaoModule(), new PlatformModule(), new AbstractModule() {
+                @Override
+                protected void configure() {
+                    bind(FileManager.class).toInstance(new FileManager() {
+                        public File openFile(CaArrayFile caArrayFile) {
+                            try {
+                                File file = getFile(caArrayFile.getId());
+                                openFileMap.put(caArrayFile.getId(), file);
+                                return file;
+                            } catch (SQLException e) {
+                                throw new IllegalStateException("Could not open the file " + caArrayFile);
+                            } catch (IOException e) {
+                                throw new IllegalStateException("Could not open the file " + caArrayFile);
+                            }
+                        }
+
+                        public void closeFile(CaArrayFile caArrayFile) {
+                            File file = openFileMap.get(caArrayFile.getId());
+                            FileUtils.deleteQuietly(file);                            
+                        }
+                    });
+                    
+                    bind(SessionTransactionManager.class).toInstance(new SessionTransactionManager() {
+                        public void rollbackTransaction() {
+                            //no-op
+                        }
+                        
+                        public void flushSession() {
+                            //no-op
+                        }
+                        
+                        public void commitTransaction() {
+                            //no-op
+                        }
+                        
+                        public void clearSession() {
+                            //no-op
+                        }
+                        
+                        public void beginTransaction() {
+                            //no-op
+                        }
+                    });
+                }
+            });
+            this.handlers = (Set<DataFileHandler>) injector.getInstance(Key.get(TypeLiteral.get(Types
+                    .setOf(DataFileHandler.class))));
+
             List<Long> hybIdsWithoutArray = getHybIdsWithNoArrayDesign();
             for (Long hid : hybIdsWithoutArray) {
                 ensureArrayDesignSetForHyb(hid);
@@ -136,7 +202,7 @@ public class FixHybridizationsWithMissingArraysMigrator extends AbstractCustomCh
         } catch (IOException e) {
             throw new CustomChangeException("Could not fix hybridizations", e);
         }
-        
+
     }
 
     private void ensureArrayDesignSetForHyb(Long hid) throws SQLException, IOException {
@@ -148,11 +214,11 @@ public class FixHybridizationsWithMissingArraysMigrator extends AbstractCustomCh
             setArrayDesignForHyb(hid, adid);
         }
     }
-    
+
     private void setArrayDesignForHyb(Long hid, Long adid) throws SQLException {
         Long aid = getArrayFromHybridizationId(hid);
         if (aid == null) {
-            setArrayAndDesign(hid, adid);            
+            setArrayAndDesign(hid, adid);
         } else {
             setArrayDesignForArray(aid, adid);
         }
@@ -171,7 +237,7 @@ public class FixHybridizationsWithMissingArraysMigrator extends AbstractCustomCh
         PreparedStatement ps = database.getConnection().prepareStatement(sql);
         ps.setLong(1, adid);
         ps.executeUpdate();
-        
+
         sql = "select last_insert_id()";
         ps = database.getConnection().prepareStatement(sql);
         ResultSet rs = ps.executeQuery();
@@ -179,14 +245,14 @@ public class FixHybridizationsWithMissingArraysMigrator extends AbstractCustomCh
             throw new SQLException("Could not determine id of just-inserted array row");
         }
         Long aid = rs.getLong(1);
-        
+
         sql = "update hybridization set array = ? where id = ?";
         ps = database.getConnection().prepareStatement(sql);
         ps.setLong(1, aid);
         ps.setLong(2, hid);
-        ps.executeUpdate();        
+        ps.executeUpdate();
     }
-    
+
     private Long getArrayFromHybridizationId(Long hid) throws SQLException {
         String sql = "select h.array from hybridization h where h.id = ?";
         PreparedStatement ps = database.getConnection().prepareStatement(sql);
@@ -209,23 +275,19 @@ public class FixHybridizationsWithMissingArraysMigrator extends AbstractCustomCh
         }
         return null;
     }
-    
+
     private Long getArrayDesignFromFile(Long fileId) throws SQLException, IOException {
         FileType ft = getFileType(fileId);
 
         if (!ft.isArrayData()) {
             return null;
         }
-        
-        AbstractDataFileHandler handler = ArrayDataHandlerFactory.getInstance().getHandler(ft);
-        File file = getFile(fileId);
-        
+
         ArrayDesignService ads = new ArrayDesignServiceBean() {
-            public ArrayDesign getArrayDesign(String lsidAuthority,
-                    String lsidNamesapce, String lsidObjectId) {
+            public ArrayDesign getArrayDesign(String lsidAuthority, String lsidNamesapce, String lsidObjectId) {
                 try {
                     String sql = "select id from array_design where lsid_authority = ? and lsid_namespace = ? "
-                        + " and lsid_object_id = ?";
+                            + " and lsid_object_id = ?";
                     PreparedStatement ps = database.getConnection().prepareStatement(sql);
                     ps.setString(1, lsidAuthority);
                     ps.setString(2, lsidNamesapce);
@@ -241,27 +303,58 @@ public class FixHybridizationsWithMissingArraysMigrator extends AbstractCustomCh
                 }
             }
         };
-        ArrayDesign ad = handler.getArrayDesign(ads, file);
-        
-        FileUtils.deleteQuietly(file);
-        return ad.getId();
+
+        CaArrayFile caArrayFile = new CaArrayFile();
+        caArrayFile.setId(fileId);
+        DataFileHandler handler = null;
+        try {
+            handler = getHandler(caArrayFile);
+            return findArrayDesignFromFile(handler).getId();
+        } finally {
+            if (handler != null) {
+                handler.closeFiles();
+            }
+        }
     }
     
+    private ArrayDesign findArrayDesignFromFile(DataFileHandler handler) {
+        List<LSID> designLsids = handler.getReferencedArrayDesignCandidateIds();
+        for (LSID lsid : designLsids) {
+            try {
+                String sql = "select id from array_design where lsid_authority = ? and lsid_namespace = ? "
+                        + " and lsid_object_id = ?";
+                PreparedStatement ps = database.getConnection().prepareStatement(sql);
+                ps.setString(1, lsid.getAuthority());
+                ps.setString(2, lsid.getNamespace());
+                ps.setString(3, lsid.getObjectId());
+                ResultSet rs = ps.executeQuery();
+                if (rs.first()) {
+                    ArrayDesign ad = new ArrayDesign();
+                    ad.setId(rs.getLong(1));
+                    return ad;
+                }
+            } catch (SQLException e) {
+                throw new IllegalStateException("Could not get array design ", e);
+            }
+        }
+        return new ArrayDesign();
+    }
+
+
     private FileType getFileType(Long fileId) throws SQLException {
         String sql = "select type from caarrayfile where id = ?";
         PreparedStatement ps = database.getConnection().prepareStatement(sql);
         ps.setLong(1, fileId);
         ResultSet rs = ps.executeQuery();
         if (rs.next()) {
-            return FileType.valueOf(rs.getString(1));        
+            return FileType.valueOf(rs.getString(1));
         }
-        return null;        
+        return null;
     }
-
 
     private File getFile(Long fileId) throws SQLException, IOException {
         String sql = "select bh.contents from caarrayfile f join caarrayfile_blob_parts fbp on f.id = fbp.caarrayfile "
-            + " join blob_holder bh on fbp.blob_parts = bh.id where f.id = ? order by fbp.contents_index";
+                + " join blob_holder bh on fbp.blob_parts = bh.id where f.id = ? order by fbp.contents_index";
         PreparedStatement ps = database.getConnection().prepareStatement(sql);
         ps.setLong(1, fileId);
 
@@ -270,23 +363,23 @@ public class FixHybridizationsWithMissingArraysMigrator extends AbstractCustomCh
         while (rs.next()) {
             mpb.addBlob(rs.getBlob(1));
         }
-        
+
         File f = File.createTempFile("datafile", null);
         InputStream is = mpb.readUncompressedContents();
-        FileOutputStream fos = FileUtils.openOutputStream(f); 
+        FileOutputStream fos = FileUtils.openOutputStream(f);
         IOUtils.copy(is, fos);
         IOUtils.closeQuietly(is);
-        IOUtils.closeQuietly(fos);        
-        
-        return f;        
+        IOUtils.closeQuietly(fos);
+
+        return f;
     }
 
     private List<Long> getDataFileIds(Long hid) throws SQLException {
         String sql = "select f.id from caarrayfile f left join arraydata ad on f.id = ad.data_file "
-            + " left join rawarraydata_hybridizations radh on ad.id = radh.rawarraydata_id "
-            + " left join hybridization h on radh.hybridization_id = h.id "
-            + " left join derivedarraydata_hybridizations dadh on ad.id = dadh.derivedarraydata_id "
-            + " left join hybridization h2 on dadh.hybridization_id = h2.id where h.id = ? or h2.id = ?";
+                + " left join rawarraydata_hybridizations radh on ad.id = radh.rawarraydata_id "
+                + " left join hybridization h on radh.hybridization_id = h.id "
+                + " left join derivedarraydata_hybridizations dadh on ad.id = dadh.derivedarraydata_id "
+                + " left join hybridization h2 on dadh.hybridization_id = h2.id where h.id = ? or h2.id = ?";
         PreparedStatement ps = database.getConnection().prepareStatement(sql);
         ps.setLong(1, hid);
         ps.setLong(2, hid);
@@ -311,7 +404,7 @@ public class FixHybridizationsWithMissingArraysMigrator extends AbstractCustomCh
         }
         return id;
     }
-    
+
     private List<Long> getHybIdsWithNoArrayDesign() throws SQLException {
         String sql = "select h.id from hybridization h left join array a on h.array = a.id "
                 + " left join array_design ad on a.design = ad.id where a.id is null or ad.id is null";
@@ -322,5 +415,26 @@ public class FixHybridizationsWithMissingArraysMigrator extends AbstractCustomCh
             ids.add(rs.getLong(1));
         }
         return ids;
+    }
+
+    /**
+     * Find the appropriate data handler for the given data file, and initialize it.
+     * 
+     * @param caArrayFile the data file to be processed
+     * @return the DataFileHandler instance capable of processing that file. That handler will have been initialized
+     *         with this file.
+     */
+    private DataFileHandler getHandler(CaArrayFile caArrayFile) {
+        for (DataFileHandler handler : this.handlers) {
+            try {
+                if (handler.openFile(caArrayFile)) {
+                    return handler;
+                }
+            } catch (PlatformFileReadException e) {
+                handler.closeFiles();
+                throw new IllegalArgumentException("Error reading file " + caArrayFile.getName(), e);
+            }
+        }
+        throw new IllegalArgumentException("Unsupported type " + caArrayFile.getFileType());
     }
 }

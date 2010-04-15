@@ -216,10 +216,6 @@ public class FileAccessServiceBean implements FileAccessService {
         }
     }
 
-    CaArrayDaoFactory getDaoFactory() {
-        return this.daoFactory;
-    }
-
     void setDaoFactory(CaArrayDaoFactory daoFactory) {
         this.daoFactory = daoFactory;
     }

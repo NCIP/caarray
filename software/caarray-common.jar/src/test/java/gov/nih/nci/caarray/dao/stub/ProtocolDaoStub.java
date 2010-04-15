@@ -94,14 +94,6 @@ import java.util.List;
  *
  */
 public class ProtocolDaoStub extends AbstractDaoStub implements ProtocolDao {
-
-    /**
-     * {@inheritDoc}
-     */
-    public Protocol getProtocol(long id) {
-        return null;
-    }
-
     /**
      * {@inheritDoc}
      */

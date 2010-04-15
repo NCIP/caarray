@@ -210,31 +210,6 @@ public class ProtocolDaoTest  extends AbstractDaoTest {
     }
 
     /**
-     * Tests retrieving the <code>Protocol</code> with the given id.
-     * Test encompasses save and delete of a <code>Protocol</code> and its <code>Parameter</code>s.
-     */
-    @Test
-    public void testGetProtocol() {
-        Transaction tx = null;
-
-        try {
-            tx = HibernateUtil.beginTransaction();
-            DAO_OBJECT.save(DUMMY_PROTOCOL_1);
-            Protocol retrievedProtocol = DAO_OBJECT.getProtocol(DUMMY_PROTOCOL_1.getId());
-            tx.commit();
-            if (DUMMY_PROTOCOL_1.equals(retrievedProtocol)) {
-                // The retrieved protocol is the same as the saved protocol. Test passed.
-                assertTrue(true);
-            } else {
-                fail("Retrieved protocol is different from saved protocol.");
-            }
-        } catch (DAOException e) {
-            HibernateUtil.rollbackTransaction(tx);
-            fail("DAO exception during save and retrieve of protocol: " + e.getMessage());
-        }
-    }
-
-    /**
      * Tests saving a <code>Protocol</code> collection.
      */
     @Test

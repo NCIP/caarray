@@ -188,11 +188,14 @@ public enum FileExtension {
         this.altExtensions = altExtensions;
     }
 
-    FileType getType() {
+    /**
+     * @return the FileType indicating expected content of files with this extension.
+     */
+    public FileType getType() {
         return type;
     }
 
-    static FileExtension getByExtension(String extensionString) {
+    private static FileExtension getByExtension(String extensionString) {
         if (extensionString == null) {
             throw new IllegalArgumentException("Null extensionString");
         }

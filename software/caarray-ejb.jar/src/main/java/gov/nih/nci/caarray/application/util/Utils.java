@@ -86,7 +86,7 @@ package gov.nih.nci.caarray.application.util;
 /**
  * Commonly used utility methods.
  * @author gax
- * @since 3.4.0
+ * @since 2.4.0
  */
 public final class Utils {
 

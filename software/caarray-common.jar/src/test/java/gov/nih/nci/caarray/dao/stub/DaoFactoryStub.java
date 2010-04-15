@@ -90,7 +90,6 @@ import gov.nih.nci.caarray.dao.CollaboratorGroupDao;
 import gov.nih.nci.caarray.dao.ContactDao;
 import gov.nih.nci.caarray.dao.FileDao;
 import gov.nih.nci.caarray.dao.HybridizationDao;
-import gov.nih.nci.caarray.dao.OrganismDao;
 import gov.nih.nci.caarray.dao.ProjectDao;
 import gov.nih.nci.caarray.dao.ProtocolDao;
 import gov.nih.nci.caarray.dao.SampleDao;
@@ -154,13 +153,6 @@ public class DaoFactoryStub implements CaArrayDaoFactory {
     /**
      * {@inheritDoc}
      */
-    public OrganismDao getOrganismDao() {
-        return new OrganismDaoStub();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public CollaboratorGroupDao getCollaboratorGroupDao() {
         return new CollaboratorGroupDaoStub();
     }
@@ -183,8 +175,7 @@ public class DaoFactoryStub implements CaArrayDaoFactory {
      * {@inheritDoc}
      */
     public HybridizationDao getHybridizationDao() {
-        // TODO Auto-generated method stub
-        return null;
+        return new HybridizationDaoStub();
     }
 
     /**

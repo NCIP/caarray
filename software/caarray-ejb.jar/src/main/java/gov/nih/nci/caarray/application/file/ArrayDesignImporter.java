@@ -84,25 +84,18 @@ package gov.nih.nci.caarray.application.file;
 
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
-import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 
 /**
  * Responsible for importing all the array designs in a file set.
  */
 class ArrayDesignImporter {
-
     private final ArrayDesignService arrayDesignService;
 
     ArrayDesignImporter(ArrayDesignService arrayDesignService) {
         this.arrayDesignService = arrayDesignService;
     }
 
-    void validateFiles(CaArrayFileSet fileSet) {
-        arrayDesignService.validateDesign(fileSet.getFiles());
-    }
-
     void importArrayDesign(ArrayDesign arrayDesign) {
         arrayDesignService.importDesignDetails(arrayDesign);
     }
-
 }

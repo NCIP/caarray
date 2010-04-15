@@ -107,7 +107,7 @@ public class AuthorizationInterceptor {
      * @throws Exception if invoking the method throws an exception.
      */
     @AroundInvoke
-    @SuppressWarnings("PMD.SignatureDeclareThrowsException") // method invocation wrapper requires throws Exception
+    @SuppressWarnings({"PMD.SignatureDeclareThrowsException", "ucd" }) 
     public Object prepareReturnValue(InvocationContext invContext) throws Exception {
         String username;
         try {

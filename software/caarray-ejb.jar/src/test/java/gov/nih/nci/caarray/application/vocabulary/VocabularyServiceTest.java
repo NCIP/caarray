@@ -56,11 +56,10 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.application.AbstractServiceTest;
-import gov.nih.nci.caarray.dao.DAOException;
-import gov.nih.nci.caarray.dao.OrganismDao;
+import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.dao.VocabularyDao;
 import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
-import gov.nih.nci.caarray.dao.stub.OrganismDaoStub;
+import gov.nih.nci.caarray.dao.stub.SearchDaoStub;
 import gov.nih.nci.caarray.dao.stub.VocabularyDaoStub;
 import gov.nih.nci.caarray.domain.project.ExperimentOntology;
 import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
@@ -193,39 +192,32 @@ public class VocabularyServiceTest extends AbstractServiceTest {
         Organism org1 = new Organism();
         org1.setScientificName("Homo sapiens");
         org1.setTermSource(source);
-        daoFactoryStub.getOrganismDao().save(org1);
+        daoFactoryStub.getVocabularyDao().save(org1);
 
         Organism org2 = new Organism();
         org2.setScientificName("Mus musculus");
         org2.setTermSource(source);
-        daoFactoryStub.getOrganismDao().save(org2);
+        daoFactoryStub.getVocabularyDao().save(org2);
 
         Organism org3 = new Organism();
         org3.setScientificName("Rattus norvegicus");
         org3.setTermSource(source);
-        daoFactoryStub.getOrganismDao().save(org3);
+        daoFactoryStub.getVocabularyDao().save(org3);
 
         Organism org4 = new Organism();
         org4.setScientificName("Rattus rattus");
         org4.setTermSource(source);
-        daoFactoryStub.getOrganismDao().save(org4);
+        daoFactoryStub.getVocabularyDao().save(org4);
 
         Organism org5 = new Organism();
         org5.setScientificName("Drosophila melanogaster");
         org5.setTermSource(source);
-        daoFactoryStub.getOrganismDao().save(org5);
+        daoFactoryStub.getVocabularyDao().save(org5);
 
         orgs = vocabularyService.getOrganisms();
         assertEquals(5, orgs.size());
 
-        Organism org = vocabularyService.getOrganism(org5.getId());
-        assertEquals(org5.getScientificName(), org.getScientificName());
-        assertEquals(org5.getTermSource(), org.getTermSource());
-
-        org = vocabularyService.getOrganism(new Long(1825));
-        assertNull(org);
-
-        org = vocabularyService.getOrganism(null, null);
+        Organism org = vocabularyService.getOrganism(null, null);
         assertNull(org);
         org = vocabularyService.getOrganism(null, "");
         assertNull(org);
@@ -255,16 +247,9 @@ public class VocabularyServiceTest extends AbstractServiceTest {
                 TermBasedCharacteristic.class, null));
     }
 
-
-    @Test
-    public void testSearchForOrganismNames() {
-        assertEquals(Collections.EMPTY_LIST, vocabularyService.searchForOrganismNames("test"));
-    }
-
     // ////// INNER CLASS TEST STUBS///////////////////////
     private static class LocalDaoFactoryStub extends DaoFactoryStub {
         LocalVocabularyDaoStub vocabularyDao = new LocalVocabularyDaoStub();
-        LocalOrganismDaoStub organismDao = new LocalOrganismDaoStub();
 
         /**
          * {@inheritDoc}
@@ -273,31 +258,24 @@ public class VocabularyServiceTest extends AbstractServiceTest {
         public VocabularyDao getVocabularyDao() {
             return vocabularyDao;
         }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public OrganismDao getOrganismDao() {
-            return organismDao;
+        
+        public SearchDao getSearchDao() {
+            return new SearchDaoStub() {
+                @Override
+                public <T extends PersistentObject> List<T> retrieveAll(Class<T> entityClass, Order... orders) {
+                    if (Organism.class.equals(entityClass)) {
+                        return (List<T>) new ArrayList<Organism>(vocabularyDao.orgMap.values());
+                    }
+                    return super.retrieveAll(entityClass, orders);
+                }
+            };
         }
-
     }
 
     private static class LocalVocabularyDaoStub extends VocabularyDaoStub {
         private static long nextId = 1;
         private static Map<Long, Term> termMap = new HashMap<Long, Term>();
-
-        @Override
-        public Set<Term> getTerms(Category category) throws DAOException {
-            Set<Term> terms = new HashSet<Term>();
-            for (Term term : termMap.values()) {
-                if (term.getCategories().contains(category)) {
-                    terms.add(term);
-                }
-            }
-            return terms;
-        }
+        private static Map<Long, Organism> orgMap = new HashMap<Long, Organism>();
 
         @Override
         public Set<Term> getTermsRecursive(Category category, String value) {
@@ -373,8 +351,7 @@ public class VocabularyServiceTest extends AbstractServiceTest {
          */
         @Override
         public Organism getOrganism(TermSource source, String scientificName) {
-            List<Organism> orgs = new LocalDaoFactoryStub().getOrganismDao().getAllOrganisms();
-            for (Organism org : orgs) {
+            for (Organism org : orgMap.values()) {
                 if (org.getTermSource().equals(source) && org.getScientificName().equalsIgnoreCase(scientificName)) {
                     return org;
                 }
@@ -387,36 +364,17 @@ public class VocabularyServiceTest extends AbstractServiceTest {
          */
         @SuppressWarnings("deprecation")
         public void save(PersistentObject object) {
-            Term term = (Term) object;
-            term.setId(nextId++);
-            this.termMap.put(term.getId(), term);
-        }
-    }
-
-    private static class LocalOrganismDaoStub extends OrganismDaoStub {
-        private static long nextId = 1;
-        private static Map<Long, Organism> orgMap = new HashMap<Long, Organism>();
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public Organism getOrganism(long id) {
-            return orgMap.get(id);
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public List<Organism> getAllOrganisms() {
-            return new ArrayList<Organism>(orgMap.values());
-        }
-
-        public void save(PersistentObject object) {
-            Organism org = (Organism) object;
-            org.setId(nextId++);
-            this.orgMap.put(org.getId(), org);
+            if (object instanceof Term) {
+                Term term = (Term) object;
+                term.setId(nextId++);
+                termMap.put(term.getId(), term);                
+            } else if (object instanceof Organism){
+                Organism org = (Organism) object;
+                org.setId(nextId++);
+                orgMap.put(org.getId(), org);                
+            } else {
+                throw new IllegalArgumentException("Unsupported object class: " + object.getClass());
+            }
         }
     }
 }

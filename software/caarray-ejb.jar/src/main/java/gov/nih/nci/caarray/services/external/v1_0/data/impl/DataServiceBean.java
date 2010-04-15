@@ -201,7 +201,7 @@ public class DataServiceBean extends BaseV1_0ExternalService implements DataServ
         List<gov.nih.nci.caarray.domain.data.DataSet> dataSets = new ArrayList<gov.nih.nci.caarray.domain.data.DataSet>(
                 arrayDatas.size());
         for (AbstractArrayData data : arrayDatas) {
-            dataSets.add(ServiceLocatorFactory.getArrayDataService().getData(data, getQuantitationTypes(request)));
+            dataSets.add(data.getDataSet());
         }
         return dataSets;
     }

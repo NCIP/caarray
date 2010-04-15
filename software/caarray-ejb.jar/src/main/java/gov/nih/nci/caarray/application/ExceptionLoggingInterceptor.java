@@ -92,7 +92,6 @@ import org.apache.log4j.Logger;
  * EJB interceptor class that logs any <code>Exceptions</code> thrown by business methods.
  */
 public class ExceptionLoggingInterceptor {
-
     /**
      * Logs any exceptions thrown by the EJB method invoked.
      *
@@ -101,7 +100,7 @@ public class ExceptionLoggingInterceptor {
      * @throws Exception if invoking the method throws an exception.
      */
     @AroundInvoke
-    @SuppressWarnings("PMD.SignatureDeclareThrowsException") // method invocation wrapper requires throws Exception
+    @SuppressWarnings({"PMD.SignatureDeclareThrowsException", "ucd" }) 
     public Object logException(InvocationContext invContext) throws Exception {
         try {
             return invContext.proceed();

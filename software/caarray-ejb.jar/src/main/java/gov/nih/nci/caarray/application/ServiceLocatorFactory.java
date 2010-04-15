@@ -93,6 +93,7 @@ import gov.nih.nci.caarray.application.project.ProjectManagementService;
 import gov.nih.nci.caarray.application.registration.RegistrationService;
 import gov.nih.nci.caarray.application.translation.geosoft.GeoSoftExporter;
 import gov.nih.nci.caarray.application.translation.magetab.MageTabExporter;
+import gov.nih.nci.caarray.application.translation.magetab.MageTabTranslator;
 import gov.nih.nci.caarray.application.vocabulary.VocabularyService;
 
 /**
@@ -229,4 +230,11 @@ public final class ServiceLocatorFactory {
         return (GeoSoftExporter) getLocator().lookup(GeoSoftExporter.JNDI_NAME);
     }
 
+    /**
+     * Convenience method for obtaining the MAGE-TAB Translator singleton service.
+     * @return the MAGE-TAB Exporter service
+     */
+    public static MageTabTranslator getMageTabTranslator() {
+        return (MageTabTranslator) getLocator().lookup(MageTabTranslator.JNDI_NAME);
+    }
 }

@@ -92,7 +92,6 @@ import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
 import gov.nih.nci.caarray.dao.stub.SearchDaoStub;
 import gov.nih.nci.caarray.domain.array.PhysicalProbe;
-import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.DataRetrievalRequest;
 import gov.nih.nci.caarray.domain.data.DataSet;
 import gov.nih.nci.caarray.domain.data.DesignElementList;
@@ -100,8 +99,6 @@ import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
-
-import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -112,7 +109,7 @@ import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 public class DataRetrievalServiceTest extends AbstractServiceTest {
 
     private DataRetrievalService service;
-    private final LocalArrayDataServiceStub arrayDataService = new LocalArrayDataServiceStub();
+    private final ArrayDataServiceStub arrayDataService = new ArrayDataServiceStub();
     private final DaoFactoryStub daoFactory = new LocalDataFactoryStub();
     private final Hybridization hybridization1 = new Hybridization();
     private final Hybridization hybridization2 = new Hybridization();
@@ -217,15 +214,5 @@ public class DataRetrievalServiceTest extends AbstractServiceTest {
                 }
             };
         }
-
     }
-
-    private static class LocalArrayDataServiceStub extends ArrayDataServiceStub {
-        @Override
-        public DataSet getData(AbstractArrayData arrayData, List<QuantitationType> types) {
-            return arrayData.getDataSet();
-        }
-
-    }
-
 }

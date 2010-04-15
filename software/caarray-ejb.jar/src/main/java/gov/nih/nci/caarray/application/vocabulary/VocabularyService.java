@@ -96,7 +96,6 @@ import java.util.Set;
  * Interface to the controlled vocabulary lookup service.
  */
 public interface VocabularyService {
-
     /**
      * The default JNDI name to use to lookup <code>VocabularyService</code>.
      */
@@ -196,14 +195,6 @@ public interface VocabularyService {
     Term getTerm(Long id);
 
     /**
-     * Returns the organism with the given id.
-     *
-     * @param id the id of the desired organism
-     * @return the organism with given id or null if none found.
-     */
-    Organism getOrganism(Long id);
-
-    /**
      * Get the organism with given name in the given term source.
      * @param source the source the organism must have.
      * @param scientificName the scientific name the organism must have (case insensitive)
@@ -262,13 +253,4 @@ public interface VocabularyService {
      */
     <T extends AbstractCharacteristic> List<Category> searchForCharacteristicCategory(Class<T> characteristicClass,
             String keyword);
-
-    /**
-     * Performs a query for organism names.
-     *
-     * @param keyword text to search for
-     * @return a list of matching categores
-     */
-    List<Organism> searchForOrganismNames(String keyword);
-
 }

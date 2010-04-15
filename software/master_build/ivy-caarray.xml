@@ -243,5 +243,13 @@
         <dependency conf="project" name="liquibase" org="liquibase" rev="1.9.3"/>
 
         <dependency conf="project" name="ledatastream" org="mindprod" rev="1.8"/>
+
+        <dependency conf="project" name="guice" org="google" rev="2.0"/>
+
+        <dependency conf="project" name="guice-multibindings" org="google" rev="2.0"/>
+
+        <dependency conf="project" name="guice-assistedinject" org="google" rev="2.0"/>        
+
+        <dependency conf="project" name="aopalliance" org="aopalliance" rev="1.0"/>        
     </dependencies>
 </ivy-module>

@@ -99,10 +99,8 @@ import com.opensymphony.xwork2.ActionSupport;
 
 /**
  * @author Winston Cheng
- *
  */
 public class BrowseAction extends ActionSupport {
-
     private static final long serialVersionUID = 1L;
 
     private static final int BROWSE_PAGE_SIZE = 20;

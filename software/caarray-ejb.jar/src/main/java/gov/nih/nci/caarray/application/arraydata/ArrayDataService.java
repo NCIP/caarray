@@ -82,23 +82,20 @@
  */
 package gov.nih.nci.caarray.application.arraydata;
 
-import gov.nih.nci.caarray.domain.array.ArrayDesign;
-import gov.nih.nci.caarray.domain.data.AbstractArrayData;
-import gov.nih.nci.caarray.domain.data.DataSet;
-import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.InvalidDataFileException;
 
-import java.util.List;
-
 
 /**
- * Provides hybridization data storage and retrieval functionality.
+ * EJB interface for validating and importing array data. This should generally not be used directly from the UI layer;
+ * instead, file import and validation should be done through FileManagementService, which will eventually
+ * make use of this service.
+ * 
+ * @author dkokotov
  */
 public interface ArrayDataService {
-
     /**
      * The default JNDI name to use to lookup <code>ArrayDataService</code>.
      */
@@ -132,32 +129,4 @@ public interface ArrayDataService {
      */
     void importData(CaArrayFile file, boolean createAnnotation, DataImportOptions dataImportOptions)
             throws InvalidDataFileException;
-    
-    /**
-     * Returns the array design referenced by the given data file, if any.
-     * @param file the data file.
-     * @return if the data file explicitly refers to an array design, and that design has been imported,
-     * returns the ArrayDesign corresponding to it. Otherwise (if either the data file does not explicitly
-     * refer to a design, or the design it refers to has not been imported), returns null
-     */
-    ArrayDesign getArrayDesign(CaArrayFile file);
-
-    /**
-     * Returns the complete data content of the provided array data object.
-     *
-     * @param arrayData get data from this data object
-     * @return the data.
-     */
-    DataSet getData(AbstractArrayData arrayData);
-
-    /**
-     * Returns the data content of the provided array data object for only the specified
-     * <code>QuantitationTypes</code>.
-     *
-     * @param arrayData get data from this data object
-     * @param types get data for these types only
-     * @return the data.
-     */
-    DataSet getData(AbstractArrayData arrayData, List<QuantitationType> types);
-
 }

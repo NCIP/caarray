@@ -98,14 +98,6 @@ import java.io.OutputStream;
  *
  */
 public interface FileDao extends CaArrayDao {
-
-    /**
-     * Method to delete associated Blobs from a project in anticipation of project
-     * deletion using native sql.
-     * @param projectId the id of the project being manipulated
-     */
-    void deleteSqlBlobsByProjectId(Long projectId);
-
     /**
      * Method to delete associated Blobs from a project in anticipation of project
      * deletion using hql.

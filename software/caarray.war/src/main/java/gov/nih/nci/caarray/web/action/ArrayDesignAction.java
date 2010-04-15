@@ -110,7 +110,6 @@ import gov.nih.nci.caarray.web.helper.DownloadHelper;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -132,9 +131,8 @@ import com.opensymphony.xwork2.validator.annotations.Validations;
 
 /**
  * @author Winston Cheng
- *
  */
-@SuppressWarnings({"PMD.CyclomaticComplexity", "PMD.ExcessiveClassLength" })
+@SuppressWarnings({ "PMD.CyclomaticComplexity", "PMD.ExcessiveClassLength" })
 public class ArrayDesignAction extends ActionSupport implements Preparable {
     private static final String UPLOAD_FIELD_NAME = "upload";
 
@@ -155,11 +153,19 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
     private boolean createMode;
 
     /**
+     * @return the set of array design file types to display in UI.
+     */
+    public static Set<FileType> arrayDesignTypes() {
+        return FileType.ARRAY_DESIGN_FILE_TYPES;
+    }
+
+    /**
      * @return the array design
      */
     public ArrayDesign getArrayDesign() {
         return arrayDesign;
     }
+
     /**
      * @param arrayDesign the array design to set
      */
@@ -167,10 +173,9 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
         this.arrayDesign = arrayDesign;
     }
 
-
     /**
      * uploaded file.
-     *
+     * 
      * @return uploads uploaded files
      */
     public List<File> getUpload() {
@@ -179,7 +184,7 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
 
     /**
      * sets file uploads.
-     *
+     * 
      * @param inUploads List
      */
     public void setUpload(List<File> inUploads) {
@@ -199,65 +204,110 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
     public void setUploadFileName(List<String> uploadFileNames) {
         this.uploadFileName = uploadFileNames;
     }
+
     /**
      * @return the uploadContentType
      */
     public String getUploadContentType() {
         return uploadContentType;
     }
+
     /**
      * @param uploadContentType the uploadContentType to set
      */
     public void setUploadContentType(String uploadContentType) {
         this.uploadContentType = uploadContentType;
     }
+
     /**
      * @return the uploadFormatType
      */
     public List<String> getFileFormatType() {
         return fileFormatTypes;
     }
+
     /**
      * @param uploadFormatTypes the uploadFormatType to set
      */
     public void setFileFormatType(List<String> uploadFormatTypes) {
         this.fileFormatTypes = uploadFormatTypes;
     }
+
     /**
      * @return the arrayDesigns
      */
     public List<ArrayDesign> getArrayDesigns() {
         return arrayDesigns;
     }
+
     /**
      * @return the manufacturers
      */
     public List<Organization> getProviders() {
         return providers;
     }
+
     /**
      * @return the featureTypes
      */
     public Set<Term> getFeatureTypes() {
         return featureTypes;
     }
+
     /**
      * @return the organisms
      */
     public List<Organism> getOrganisms() {
         return organisms;
     }
+
+    /**
+     * @return the createMode
+     */
+    public boolean isCreateMode() {
+        return createMode;
+    }
+
+    /**
+     * @param createMode the createMode to set
+     */
+    public void setCreateMode(boolean createMode) {
+        this.createMode = createMode;
+    }
+
+    /**
+     * @param editMode the editMode to set
+     */
+    public void setEditMode(boolean editMode) {
+        this.editMode = editMode;
+    }
+
     /**
      * @return the editMode
      */
     public boolean isEditMode() {
         return editMode;
     }
+
     /**
      * @return the locked
      */
     public boolean isLocked() {
         return locked;
+    }
+
+    /**
+     * @return the assayTypes
+     */
+    public Set<AssayType> getAssayTypes() {
+        return assayTypes;
+    }
+
+    /**
+     * @param assayTypes the assayTypes to set
+     */
+    public void setAssayTypes(Set<AssayType> assayTypes) {
+        this.assayTypes = assayTypes;
     }
 
     /**
@@ -270,8 +320,8 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
         if (arrayDesign != null && arrayDesign.getId() != null) {
             ArrayDesign retrieved = ServiceLocatorFactory.getArrayDesignService().getArrayDesign(arrayDesign.getId());
             if (retrieved == null) {
-                throw new PermissionDeniedException(getArrayDesign(),
-                        SecurityUtils.PERMISSIONS_PRIVILEGE, UsernameHolder.getUser());
+                throw new PermissionDeniedException(getArrayDesign(), SecurityUtils.PERMISSIONS_PRIVILEGE,
+                        UsernameHolder.getUser());
             } else {
                 arrayDesign = retrieved;
             }
@@ -281,6 +331,7 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
 
     /**
      * Retrieves the list of all array designs.
+     * 
      * @return list
      */
     @SkipValidation
@@ -291,6 +342,7 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
 
     /**
      * Edit view of an array design.
+     * 
      * @return input
      */
     @SkipValidation
@@ -302,6 +354,7 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
 
     /**
      * Edit view of an import file.
+     * 
      * @return input
      */
     @SkipValidation
@@ -313,6 +366,7 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
 
     /**
      * Read-only view of an array design.
+     * 
      * @return input
      */
     @SkipValidation
@@ -324,6 +378,7 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
 
     /**
      * Creation of a new array design.
+     * 
      * @return input
      */
     @SkipValidation
@@ -335,24 +390,21 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
 
     /**
      * Save a new or existing array design.
+     * 
      * @return success
      */
     @SuppressWarnings("PMD.AvoidDuplicateLiterals")
-    @Validations(
-        fieldExpressions = {
-            @FieldExpressionValidator(fieldName = "arrayDesign.assayTypes",
-                message = "", key = "errors.required",
-                expression = "!arrayDesign.assayTypes.isEmpty")
-        },
-        requiredStrings = {
-            @RequiredStringValidator(fieldName = "arrayDesign.version", key = "errors.required", message = "")
-        },
-        requiredFields = {
+    @Validations(fieldExpressions = { 
+            @FieldExpressionValidator(fieldName = "arrayDesign.assayTypes", message = "", 
+                    key = "errors.required", expression = "!arrayDesign.assayTypes.isEmpty") }, 
+            requiredStrings = { @RequiredStringValidator(fieldName = "arrayDesign.version", 
+                    key = "errors.required", message = "") }, requiredFields = {
             @RequiredFieldValidator(fieldName = "arrayDesign.provider", key = "errors.required", message = ""),
             @RequiredFieldValidator(fieldName = "arrayDesign.technologyType", key = "errors.required", message = ""),
-            @RequiredFieldValidator(fieldName = "arrayDesign.organism", key = "errors.required", message = "")
-        }
-    )
+            @RequiredFieldValidator(fieldName = "arrayDesign.organism", key = "errors.required", message = "") })
+    /**
+     * Save the array design metadata.
+     */
     public String saveMeta() {
         if (!createMode && editMode) {
 
@@ -373,50 +425,35 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
     }
 
     /**
-     * download all of the data for this sample.
+     * download data files for an array design.
+     * 
      * @return download
      * @throws IOException on file error
      */
     @SkipValidation
     public String download() throws IOException {
-        Collection<CaArrayFile> files = getAllDataFiles();
-        if (files.isEmpty()) {
+        if (getArrayDesign() == null || getArrayDesign().getDesignFiles().isEmpty()) {
             ActionHelper.saveMessage(getText("arrayDesign.noDataToDownload"));
             return "list";
         }
 
-        DownloadHelper.downloadFiles(files, determineDownloadFileName());
+        DownloadHelper.downloadFiles(getArrayDesign().getDesignFiles(), determineDownloadFileName());
         return null;
     }
 
-
-   /**
-    * Returns the filename for a zip of files for the given project, assuming that the download will not be grouped.
-    *
-    * @return the filename
-    */
-   private String determineDownloadFileName() {
-       StringBuilder name = new StringBuilder("caArray_").append(arrayDesign.getName())
-               .append("_file");
-       return name.toString();
-   }
-
     /**
-     * {@inheritDoc}
+     * Returns the filename for a zip of files for the given project, assuming that the download will not be grouped.
+     * 
+     * @return the filename
      */
-    protected Collection<CaArrayFile> getAllDataFiles() {
-        Collection<CaArrayFile> returnVal = null;
-        if (getArrayDesign() != null) {
-            returnVal = getArrayDesign().getDesignFiles();
-        } else {
-            returnVal = new ArrayList<CaArrayFile>();
-        }
-
-        return returnVal;
+    private String determineDownloadFileName() {
+        StringBuilder name = new StringBuilder("caArray_").append(arrayDesign.getName()).append("_file");
+        return name.toString();
     }
 
     /**
      * Save/Update file associated with array design.
+     * 
      * @return input
      */
     @SkipValidation
@@ -430,7 +467,7 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
         } else {
             id = arrayDesign.getId();
             if (id == null) {
-              arrayDesign.setName(FilenameUtils.getBaseName(uploadFileName.get(0)));
+                arrayDesign.setName(FilenameUtils.getBaseName(uploadFileName.get(0)));
             }
 
             saveImportFile();
@@ -453,15 +490,15 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
 
     /**
      * Delete an array design.
-     *
+     * 
      * @return input
      */
     @SkipValidation
     public String delete() {
         try {
             ServiceLocatorFactory.getArrayDesignService().deleteArrayDesign(getArrayDesign());
-            ActionHelper.saveMessage(getText("arrayDesign.deletionSuccess",
-                    new String[] {getArrayDesign().getName() }));
+            ActionHelper
+                    .saveMessage(getText("arrayDesign.deletionSuccess", new String[] {getArrayDesign().getName() }));
         } catch (ArrayDesignDeleteException e) {
             ActionHelper.saveMessage(e.getMessage());
         }
@@ -479,24 +516,6 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
             editMode = true;
         }
     }
-    /**
-     * @return the createMode
-     */
-    public boolean isCreateMode() {
-        return createMode;
-    }
-    /**
-     * @param createMode the createMode to set
-     */
-    public void setCreateMode(boolean createMode) {
-        this.createMode = createMode;
-    }
-    /**
-     * @param editMode the editMode to set
-     */
-    public void setEditMode(boolean editMode) {
-        this.editMode = editMode;
-    }
 
     private void saveImportFile() {
         try {
@@ -513,8 +532,8 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
         } catch (RuntimeException re) {
             if (re.getCause() instanceof InvalidNumberOfArgsException) {
                 InvalidNumberOfArgsException inv = (InvalidNumberOfArgsException) re.getCause();
-                addFieldError(UPLOAD_FIELD_NAME, getText("arrayDesign.error." + inv.getMessage(), 
-                        inv.getArguments().toArray(new String[inv.getArguments().size()])));
+                addFieldError(UPLOAD_FIELD_NAME, getText("arrayDesign.error." + inv.getMessage(), inv.getArguments()
+                        .toArray(new String[inv.getArguments().size()])));
             } else {
                 addFieldError(UPLOAD_FIELD_NAME, getText("arrayDesign.error.importingFile"));
             }
@@ -549,7 +568,7 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
 
     /**
      * Action is used for an ajax call by the list generator.
-     *
+     * 
      * @return the string indicating which result to follow.
      */
     @SkipValidation
@@ -557,18 +576,6 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
         setAssayTypes(new TreeSet<AssayType>(ServiceLocatorFactory.getProjectManagementService().getAssayTypes()));
 
         return "generateAssayList";
-    }
-    /**
-     * @return the assayTypes
-     */
-    public Set<AssayType> getAssayTypes() {
-        return assayTypes;
-    }
-    /**
-     * @param assayTypes the assayTypes to set
-     */
-    public void setAssayTypes(Set<AssayType> assayTypes) {
-        this.assayTypes = assayTypes;
     }
 
     private void handleFiles() throws InvalidDataFileException, IllegalAccessException {
@@ -648,25 +655,18 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
                 }
             }
 
-              // add error message for the user if there was an attempt to import non-array design files.
-             if (uploads.size() > designFiles.getFiles().size()) {
-                 ActionHelper.saveMessage(getText("arrayDesign.warning.multiFile"));
-             }
+            // add error message for the user if there was an attempt to import non-array design files.
+            if (uploads.size() > designFiles.getFiles().size()) {
+                ActionHelper.saveMessage(getText("arrayDesign.warning.multiFile"));
+            }
 
-         } else {
-           if (uploads.size() > 1) {
-               addFieldError(UPLOAD_FIELD_NAME, getText("arrayDesign.error.multipleCannotDetermineType"));
-           } else {
-               addFieldError(UPLOAD_FIELD_NAME, getText("arrayDesign.error.cannotDetermineType"));
-           }
+        } else {
+            if (uploads.size() > 1) {
+                addFieldError(UPLOAD_FIELD_NAME, getText("arrayDesign.error.multipleCannotDetermineType"));
+            } else {
+                addFieldError(UPLOAD_FIELD_NAME, getText("arrayDesign.error.cannotDetermineType"));
+            }
 
-         }
-    }
-    
-    /**
-     * @return the set of array design file types to display in UI.  
-     */
-    public static Set<FileType> arrayDesignTypes() {
-        return FileType.ARRAY_DESIGN_FILE_TYPES;
+        }
     }
 }

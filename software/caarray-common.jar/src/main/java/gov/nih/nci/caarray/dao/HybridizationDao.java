@@ -104,10 +104,4 @@ public interface HybridizationDao extends CaArrayDao {
      * @return a list of matching hybridizations
      */
     List<Hybridization> searchByCriteria(PageSortParams<Hybridization> params, HybridizationSearchCriteria criteria);
-    
-    /**
-     * @return a list of hybridizations without an array desugb (e.g. where hybridization.array == null or
-     *         hybridization.array.design is null)
-     */
-    List<Hybridization> getWithNoArrayDesign();
 }

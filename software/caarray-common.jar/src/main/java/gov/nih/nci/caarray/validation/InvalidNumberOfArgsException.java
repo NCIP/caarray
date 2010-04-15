@@ -6,18 +6,13 @@ import java.util.List;
 /**
  * Tracks reason for importer failure.
  * @author mshestopalov
- *
  */
 public final class InvalidNumberOfArgsException extends RuntimeException {
-
     /**
      * Incorrect number of design files passed in.
      */
     public static final String NUMBER_OF_ARGS = "number.of.args";
-    /**
-     * Incorrect combination of files.
-     */
-    public static final String ARRAY_DESIGN_COMBINATION = "combo";
+    
     /**
      * Unsupported array design type.
      */

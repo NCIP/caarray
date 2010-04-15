@@ -158,11 +158,8 @@ public final class SecurityUtils {
     public static final String ANONYMOUS_GROUP = "__anonymous__";
     /** The name of the group for anonymous access permissions. */
     public static final String SELF_GROUP_PREFIX = "__selfgroup__";
-
-    /**
-     * The name of the group for system administrator access permissions.
-     */
-    public static final String SYSTEM_ADMINISTRATOR_GROUP = "SystemAdministrator";
+    /** The name of the group for system administrator access permissions. */
+    private static final String SYSTEM_ADMINISTRATOR_GROUP = "SystemAdministrator";
 
     /** The privilege for Browsing a Protectable. * */
     public static final String BROWSE_PRIVILEGE = "ACCESS";
@@ -261,20 +258,6 @@ public final class SecurityUtils {
      */
     public static User getAnonymousUser() {
         return anonymousUser;
-    }
-
-    /**
-     * @return the CSM instnace mapping element for projects
-     */
-    public static InstanceLevelMappingElement getProjectMapping() {
-        return projectMapping;
-    }
-
-    /**
-     * @return the CSM instnace mapping element for samples
-     */
-    public static InstanceLevelMappingElement getSampleMapping() {
-        return sampleMapping;
     }
     
     static InstanceLevelMappingElement findMappingElement(String className, String attributeName) {        
@@ -951,7 +934,7 @@ public final class SecurityUtils {
         return permissionsMap;       
     }
     
-    static Class<?> getNonGLIBClass(Object o) {
+    private static Class<?> getNonGLIBClass(Object o) {
         Class<?> result = o.getClass();
         if (result.getName().contains("$$EnhancerByCGLIB$$")) {
             result = result.getSuperclass();

@@ -1,0 +1,245 @@
+package gov.nih.nci.caarray.platforms.illumina;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import gov.nih.nci.caarray.application.AbstractServiceIntegrationTest;
+import gov.nih.nci.caarray.application.arraydata.ArrayDataServiceTest;
+import gov.nih.nci.caarray.application.arraydata.DataImportOptions;
+import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
+import gov.nih.nci.caarray.domain.array.AbstractDesignElement;
+import gov.nih.nci.caarray.domain.array.ArrayDesign;
+import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
+import gov.nih.nci.caarray.domain.array.PhysicalProbe;
+import gov.nih.nci.caarray.domain.contact.Organization;
+import gov.nih.nci.caarray.domain.data.AbstractDataColumn;
+import gov.nih.nci.caarray.domain.data.DataType;
+import gov.nih.nci.caarray.domain.data.FloatColumn;
+import gov.nih.nci.caarray.domain.data.HybridizationData;
+import gov.nih.nci.caarray.domain.data.StringColumn;
+import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.file.FileType;
+import gov.nih.nci.caarray.domain.hybridization.Hybridization;
+import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
+import gov.nih.nci.caarray.magetab.MageTabFileSet;
+import gov.nih.nci.caarray.magetab.io.JavaIOFileRef;
+import gov.nih.nci.caarray.magetab.sdrf.SdrfDocument;
+import gov.nih.nci.caarray.platforms.illumina.AbstractHeaderParser;
+import gov.nih.nci.caarray.platforms.illumina.IlluminaGenotypingProcessedMatrixQuantitationType;
+import gov.nih.nci.caarray.test.data.arraydata.IlluminaArrayDataFiles;
+import gov.nih.nci.caarray.test.data.magetab.SdrfTestFiles;
+import gov.nih.nci.caarray.util.HibernateUtil;
+import gov.nih.nci.caarray.validation.FileValidationResult;
+import gov.nih.nci.caarray.validation.ValidationMessage;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+
+import org.hibernate.Transaction;
+import org.junit.Test;
+
+/**
+ *
+ * @author gax
+ */
+public class IlluminaGenotypingProcessedMatrixHandlerIntegrationTest extends AbstractServiceIntegrationTest  {
+
+    ArrayDataServiceTest helper = new ArrayDataServiceTest();
+
+    @Test
+    public void codeAssumption() {
+        assertEquals("new IlluminaGenotypingProcessedMatrixQuantitationType added! revisit validation of this column",
+                6, IlluminaGenotypingProcessedMatrixQuantitationType.values().length);
+        Set<DataType> supportedTypes = new HashSet<DataType>(Arrays.asList(DataType.STRING, DataType.FLOAT));
+        for (IlluminaGenotypingProcessedMatrixQuantitationType t : IlluminaGenotypingProcessedMatrixQuantitationType.values()) {
+            assertTrue("you'll need code to validate columns of type" + t.getDataType(), supportedTypes.contains(t.getDataType()));
+            try {
+                GenotypingProcessedMatrixHandler.DefaultHeaderProcessor.Header.valueOf(t.name());
+            } catch (IllegalArgumentException e) {
+                fail("expects all IlluminaGenotypingProcessedMatrixQuantitationType s to come from a column by the same name" + t.name());
+            }
+        }        
+    }
+
+    static ArrayDesign buildArrayDesign() {
+        ArrayDesign design = new ArrayDesign();
+        design.setName("foo");
+        design.setVersion("99");
+        design.setProvider(new Organization());
+        design.getProvider().setName("Illumina");
+        ArrayDesignDetails detail = new ArrayDesignDetails();
+        design.setDesignDetails(detail);
+        PhysicalProbe p = new PhysicalProbe(detail, null);
+        p.setName("ILMN_1725881");
+        detail.getProbes().add(p);
+        p = new PhysicalProbe(detail, null);
+        p.setName("ILMN_1910180");
+        detail.getProbes().add(p);
+        p = new PhysicalProbe(detail, null);
+        p.setName("ILMN_1804174");
+        detail.getProbes().add(p);
+        return design;
+    }
+
+    private void setup() throws Exception {
+        helper = new ArrayDataServiceTest();
+        helper.setUp();
+    }
+
+    @Test
+    public void test1() throws Exception {
+        Transaction tx = HibernateUtil.beginTransaction();
+        setup();
+
+        CaArrayFile f = helper.getDataCaArrayFile(IlluminaArrayDataFiles.ILLUMINA_DERIVED_1_HYB, FileType.ILLUMINA_GENOTYPING_PROCESSED_MATRIX_TXT);
+        f.setId(1L);
+        ArrayDesign design = buildArrayDesign();
+        f.getProject().getExperiment().getArrayDesigns().add(design);
+        CaArrayDaoFactory.INSTANCE.getSearchDao().save(f);
+        
+        FileValidationResult result = helper.arrayDataService.validate(f, null);
+        assertTrue("validation: "+result.getMessages().toString(), result.isValid());
+        helper.arrayDataService.importData(f, true, DataImportOptions.getAutoCreatePerFileOptions());
+        Hybridization hyb = f.getProject().getExperiment().getHybridizations().iterator().next();
+        List<AbstractDesignElement> l = hyb.getDerivedDataCollection().iterator().next().getDataSet().getDesignElementList().getDesignElements();
+        assertEquals(3, l.size());
+        List<HybridizationData> hdl = hyb.getDerivedDataCollection().iterator().next().getDataSet().getHybridizationDataList();
+        assertEquals(1, hdl.size());
+        assertEquals(6, hdl.get(0).getColumns().size());
+        for (AbstractDataColumn c : hdl.get(0).getColumns()) {
+            int rows;
+            try { rows = ((StringColumn)c).getValues().length; }
+            catch (ClassCastException e) { rows = ((FloatColumn)c).getValues().length;  }
+            assertEquals(3, rows);
+        }
+    }
+
+    @Test
+    public void test2() throws Exception {
+        Transaction tx = HibernateUtil.beginTransaction();
+        setup();
+
+        CaArrayFile f = helper.getDataCaArrayFile(IlluminaArrayDataFiles.ILLUMINA_DERIVED_2_HYB, FileType.ILLUMINA_GENOTYPING_PROCESSED_MATRIX_TXT);
+        f.setId(2L);
+        ArrayDesign design = buildArrayDesign();
+        f.getProject().getExperiment().getArrayDesigns().add(design);
+        CaArrayDaoFactory.INSTANCE.getSearchDao().save(f);
+
+        FileValidationResult result = helper.arrayDataService.validate(f, null);
+        assertTrue("validation: "+result.getMessages().toString(), result.isValid());
+        helper.arrayDataService.importData(f, true, DataImportOptions.getAutoCreatePerFileOptions());
+        Iterator<Hybridization> it = f.getProject().getExperiment().getHybridizations().iterator();
+        Hybridization hyb1 = it.next();
+        Hybridization hyb2 = it.next();
+        assertFalse(it.hasNext());
+        List<HybridizationData> hdl1 = hyb1.getDerivedDataCollection().iterator().next().getDataSet().getHybridizationDataList();
+        List<HybridizationData> hdl2 = hyb2.getDerivedDataCollection().iterator().next().getDataSet().getHybridizationDataList();
+        assertEquals(hdl2.size(), hdl1.size());
+        assertEquals(hdl2.get(0).getColumns().size(), hdl1.get(0).getColumns().size());
+
+
+    }
+
+    @Test
+    public void testValidationErrors_0() {
+        ArrayDesign design = buildArrayDesign();
+        String[] header = {"", "", ""};
+        String [] messages = {"Missing IlmnID, ID_REF, or ID in first column, first line. (Found )"};
+        processHeader(header, messages, null, design);
+    }
+    @Test
+    public void testValidationErrors_1() {
+        ArrayDesign design = buildArrayDesign();
+        String[] header = {"ID"};
+        String [] messages = {"Missing 'Value' (hybridization/sample name) column"};
+        processHeader(header, messages, null, design);
+    }
+    @Test
+    public void testValidationErrors_2() {
+        ArrayDesign design = buildArrayDesign();
+        String[] header = {"ID_REF", "MyHyb"};
+        String [] messages = {"Missing Quantitation Type (measurement) column"};
+        processHeader(header, messages, null, design);
+    }
+
+    @Test
+    public void testValidationErrors_3() {
+        ArrayDesign design = buildArrayDesign();
+        String[] header = {"ID_REF", "Hyb-1", "Foo", "Theta"};
+        String [] messages = {"Unsupported Column Foo", };
+        processHeader(header, messages, null, design);
+    }
+
+    @Test
+    public void testValidationErrors_4() {
+        ArrayDesign design = buildArrayDesign();
+        String[] header = {"ID_REF", "Hyb-1", "Foo", "Hyb-2", "Bar"};
+        String [] messages = {
+            "Unsupported Column Foo", "Unsupported Column Hyb-2", "Unsupported Column Bar"
+        };
+        processHeader(header, messages, null, design);
+    }
+
+    @Test
+    public void testValidationErrors_5() {
+        ArrayDesign design = buildArrayDesign();
+        String[] header = {"ID_REF", "Hyb-1", "Hyb-1.Foo", "Hyb-1.Bar", "Hyb-2", "Hyb-2.Foo", "Hyb-1.Baz"};
+        String [] messages = {
+            "Unsupported Column Foo",
+            "Unsupported Column Bar",
+            "Unsupported Column Foo",
+            "Unsupported Column Baz"};
+        processHeader(header, messages, null, design);
+    }
+
+    @Test
+    public void testValidationErrors_6() {
+        ArrayDesign design = buildArrayDesign();
+        String[] header = {"ID_REF", "Hyb-1", "Hyb-1.Foo", "Hyb-1.R", "Hyb-2", "Hyb-2.Foo", "Hyb-2.R"};
+        String [] messages = {"Unsupported Column Foo", "Unsupported Column Foo"};
+        GenotypingProcessedMatrixHandler.DefaultHeaderProcessor proc = processHeader(header, messages, null, design);
+        assertEquals(2, proc.getLoaders().size());
+    }
+
+    @Test
+    public void testValidationErrors_SDRF() {
+        ArrayDesign design = buildArrayDesign();
+        Set<String> sdrf = Collections.singleton("Hyb-1");
+        String[] header = {"ID_REF", "Hyb-1", "Hyb-1.Foo", "Hyb-1.R", "Hyb-2", "Hyb-2.Foo", "Hyb-2.R"};
+        String [] messages = {"Unsupported Column Foo", "Unsupported Column Foo"
+               , "Hybridization Hyb-2 is not referenced in SDRF"
+        };
+        AbstractHeaderParser proc = processHeader(header, messages, sdrf, design);
+    }
+
+    static private GenotypingProcessedMatrixHandler.DefaultHeaderProcessor processHeader(String[] headerColumns, String[] messages, Set<String> sdrf, ArrayDesign design) {
+        FileValidationResult result = new FileValidationResult(null);
+        MageTabDocumentSet docSet = null;
+        if (sdrf != null){
+            MageTabFileSet fset = new MageTabFileSet();
+            docSet = new MageTabDocumentSet(fset);
+            SdrfDocument doc = new SdrfDocument(docSet, new JavaIOFileRef(SdrfTestFiles.MULTI_DERIVED_1_IDF));
+            for (String hn : sdrf) {
+                gov.nih.nci.caarray.magetab.sdrf.Hybridization h = new gov.nih.nci.caarray.magetab.sdrf.Hybridization();
+                h.setName(hn);
+                docSet.getSdrfHybridizations().put(hn, Collections.singletonList(h));
+            }
+            docSet.getSdrfDocuments().add(doc);
+        }
+        GenotypingProcessedMatrixHandler.ValidatingHeaderParser proc 
+                = new GenotypingProcessedMatrixHandler.ValidatingHeaderParser(result, docSet);
+        proc.parse(Arrays.asList(headerColumns), 1);
+        List<String> l = new ArrayList<String>(Arrays.asList(messages));
+        for (ValidationMessage m : result.getMessages()) {
+            assertTrue("unexpected message " + m.getMessage(), l.remove(m.getMessage()));
+        }
+        assertTrue("expected messages " + l.toString(), l.isEmpty());
+        return proc;
+    }
+}

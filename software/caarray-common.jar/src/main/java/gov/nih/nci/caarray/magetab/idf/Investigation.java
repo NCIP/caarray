@@ -156,34 +156,10 @@ public final class Investigation implements Serializable {
     }
 
     /**
-     * @param term a new or existing term
-     * @param index of the value to create/return
-     * @return the term at the correct index
-     */
-    public OntologyTerm getOrCreateQualityControlType(OntologyTerm term, int index) {
-        while (qualityControlTypes.size() <= index) {
-            qualityControlTypes.add(term);
-        }
-        return qualityControlTypes.get(index);
-    }
-
-    /**
      * @return the replicateTypes
      */
     public List<OntologyTerm> getReplicateTypes() {
         return replicateTypes;
-    }
-
-    /**
-     * @param term a new or existing term
-     * @param index of the value to create/return
-     * @return the term at the correct index
-     */
-    public OntologyTerm getOrCreateReplicateType(OntologyTerm term, int index) {
-        while (replicateTypes.size() <= index) {
-            replicateTypes.add(term);
-        }
-        return replicateTypes.get(index);
     }
 
     /**

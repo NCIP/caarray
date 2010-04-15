@@ -144,13 +144,6 @@ public interface CaArrayDaoFactory {
     ContactDao getContactDao();
 
     /**
-     * Returns a <code>OrganismDao</code>.
-     *
-     * @return a <code>OrganismDao</code>.
-     */
-    OrganismDao getOrganismDao();
-
-    /**
      * @return a <code>CollaboratorGroupDao</code>.
      */
     CollaboratorGroupDao getCollaboratorGroupDao();

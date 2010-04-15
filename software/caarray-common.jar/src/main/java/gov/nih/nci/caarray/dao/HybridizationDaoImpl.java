@@ -139,14 +139,4 @@ public class HybridizationDaoImpl extends AbstractCaArrayDaoImpl implements Hybr
         c.addOrder(toOrder(params));
         return c.list();
     }
-    
-    /**
-     * {@inheritDoc}
-     */
-    @SuppressWarnings("unchecked")
-    public List<Hybridization> getWithNoArrayDesign() {
-        return HibernateUtil.getCurrentSession().createQuery(
-                "select h from " + Hybridization.class.getName()
-                        + " h left join h.array a where a is null or a.design is null order by h.name asc").list();
-    }
 }

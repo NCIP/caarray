@@ -95,10 +95,7 @@ import gov.nih.nci.caarray.application.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.application.vocabulary.VocabularyServiceStub;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
-import gov.nih.nci.caarray.domain.array.LogicalProbe;
 import gov.nih.nci.caarray.domain.contact.Organization;
-import gov.nih.nci.caarray.domain.data.DesignElementList;
-import gov.nih.nci.caarray.domain.data.DesignElementType;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.project.AssayType;
@@ -165,6 +162,7 @@ public class ArrayDesignServiceIntegrationTest extends AbstractServiceIntegratio
     private static ArrayDesignService createArrayDesignService(final FileAccessServiceStub fileAccessServiceStub,
             VocabularyServiceStub vocabularyServiceStub) {
         ArrayDesignServiceBean bean = new ArrayDesignServiceBean();
+        bean.init();
         ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
         locatorStub.addLookup(FileAccessService.JNDI_NAME, fileAccessServiceStub);
         locatorStub.addLookup(VocabularyService.JNDI_NAME, vocabularyServiceStub);
@@ -263,11 +261,6 @@ public class ArrayDesignServiceIntegrationTest extends AbstractServiceIntegratio
             assertEquals(FileStatus.IMPORTED, design.getDesignFileSet().getStatus());
             t.commit();
 
-            t = HibernateUtil.beginTransaction();
-            DesignElementList designElementList =
-                AbstractAffymetrixChpDesignElementListUtility.getDesignElementList(design, arrayDesignService);
-            checkChpDesignElementList(designElementList, AffymetrixArrayDesignFiles.TEST3_CDF);
-            t.commit();
             assertEquals(15876, design.getNumberOfFeatures().intValue());
 
             // now try to re-import the design over itself
@@ -285,10 +278,6 @@ public class ArrayDesignServiceIntegrationTest extends AbstractServiceIntegratio
             assertEquals(FileStatus.IMPORTED, design.getDesignFileSet().getStatus());
             t.commit();
 
-            t = HibernateUtil.beginTransaction();
-            designElementList = AbstractAffymetrixChpDesignElementListUtility.getDesignElementList(design, arrayDesignService);
-            checkChpDesignElementList(designElementList, AffymetrixArrayDesignFiles.TEST3_CDF);
-            t.commit();
             assertEquals(15876, design.getNumberOfFeatures().intValue());
         } catch (Exception e) {
             if (t != null && t.isActive()) {
@@ -301,15 +290,6 @@ public class ArrayDesignServiceIntegrationTest extends AbstractServiceIntegratio
     private CaArrayFile getCaArrayFile(File file) {
         CaArrayFile caArrayFile = this.fileAccessServiceStub.add(file);
         return caArrayFile;
-    }
-
-    private void checkChpDesignElementList(DesignElementList designElementList, File cdfFile) throws AffymetrixArrayDesignReadException {
-        AffymetrixCdfReader cdfReader = AffymetrixCdfReader.create(cdfFile);
-        assertEquals(cdfReader.getCdfData().getHeader().getNumProbeSets(), designElementList.getDesignElements().size());
-        for (int i = 0; i < designElementList.getDesignElements().size(); i++) {
-            LogicalProbe probe = (LogicalProbe) designElementList.getDesignElements().get(i);
-            assertEquals(cdfReader.getCdfData().getProbeSetName(i), probe.getName());
-        }
     }
 
     @Test
@@ -330,13 +310,6 @@ public class ArrayDesignServiceIntegrationTest extends AbstractServiceIntegratio
             assertEquals("Affymetrix.com", design.getLsidAuthority());
             assertEquals("PhysicalArrayDesign", design.getLsidNamespace());
             assertEquals("HuEx-1_0-st-v1-test", design.getLsidObjectId());
-
-            t = HibernateUtil.beginTransaction();
-            DesignElementList designElementList = AbstractAffymetrixChpDesignElementListUtility.getDesignElementList(
-                    design, arrayDesignService);
-            assertEquals(DesignElementType.LOGICAL_PROBE, designElementList.getDesignElementTypeEnum());
-            assertEquals(94, designElementList.getDesignElements().size());
-            t.commit();
 
             t = HibernateUtil.beginTransaction();
             design = this.arrayDesignService.getArrayDesign(design.getId());

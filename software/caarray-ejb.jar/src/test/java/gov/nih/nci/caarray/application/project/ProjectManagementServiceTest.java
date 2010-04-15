@@ -91,7 +91,6 @@ import static org.junit.Assert.fail;
 import gov.nih.nci.caarray.application.AbstractServiceTest;
 import gov.nih.nci.caarray.application.GenericDataService;
 import gov.nih.nci.caarray.application.GenericDataServiceStub;
-import gov.nih.nci.caarray.application.SessionContextStub;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
@@ -128,13 +127,11 @@ import gov.nih.nci.security.authorization.domainobjects.User;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
-import java.util.SortedSet;
 
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
@@ -144,8 +141,6 @@ import org.junit.Test;
 
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
-import com.google.common.base.Predicate;
-import com.google.common.collect.Sets;
 import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
 
 @SuppressWarnings("PMD")
@@ -155,7 +150,6 @@ public class ProjectManagementServiceTest extends AbstractServiceTest {
     private final LocalDaoFactoryStub daoFactoryStub = new LocalDaoFactoryStub();
     private final FileAccessServiceStub fileAccessService = new FileAccessServiceStub();
     private final GenericDataService genericDataService = new GenericDataServiceStub();
-    private final LocalSessionContextStub sessionContextStub = new LocalSessionContextStub();
     private Transaction transaction;
 
     @Before
@@ -172,7 +166,6 @@ public class ProjectManagementServiceTest extends AbstractServiceTest {
         ds.setUser(config.getProperty("hibernate.connection.username"));
         ds.setPassword(config.getProperty("hibernate.connection.password"));
         locatorStub.addLookup("java:jdbc/CaArrayDataSource", ds);
-        projectManagementServiceBean.setSessionContext(this.sessionContextStub);
         this.projectManagementService = projectManagementServiceBean;
         locatorStub.addLookup(ProjectManagementService.JNDI_NAME, this.projectManagementService);
         HibernateUtil.setFiltersEnabled(false);
@@ -771,19 +764,5 @@ public class ProjectManagementServiceTest extends AbstractServiceTest {
             }
             return results;
         }
-    }
-
-    private static class LocalSessionContextStub extends SessionContextStub {
-
-        @Override
-        public Principal getCallerPrincipal() {
-            return new Principal() {
-                public String getName() {
-                    return "testusername";
-                }
-            };
-
-        }
-
     }
 }

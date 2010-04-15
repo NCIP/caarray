@@ -147,7 +147,7 @@ public class DataRetrievalServiceBean implements DataRetrievalService {
         List<AbstractArrayData> arrayDatas = getArrayDatas(request);
         List<DataSet> dataSets = new ArrayList<DataSet>(arrayDatas.size());
         for (AbstractArrayData data : arrayDatas) {
-            dataSets.add(getArrayDataService().getData(data, request.getQuantitationTypes()));
+            dataSets.add(data.getDataSet());
         }
         return dataSets;
     }

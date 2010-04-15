@@ -119,6 +119,7 @@ import gov.nih.nci.caarray.domain.project.AssayType;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
+import gov.nih.nci.caarray.platforms.spi.PlatformFileReadException;
 import gov.nih.nci.caarray.test.data.arraydata.AffymetrixArrayDataFiles;
 import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
 import gov.nih.nci.caarray.test.data.arraydesign.GenepixArrayDesignFiles;
@@ -154,6 +155,11 @@ import org.junit.Test;
 
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
+import com.google.inject.AbstractModule;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+import com.google.inject.Module;
+import com.google.inject.util.Modules;
 
 /**
  * Test class for ArrayDesignService subsystem.
@@ -193,8 +199,22 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
 
     public static ArrayDesignService createArrayDesignService(final DaoFactoryStub caArrayDaoFactoryStub,
             final FileAccessServiceStub fileAccessServiceStub, final VocabularyServiceStub vocabularyServiceStub) {
-        final ArrayDesignServiceBean bean = new ArrayDesignServiceBean();
-        bean.setDaoFactory(caArrayDaoFactoryStub);
+        final Module testArrayDesignModule = Modules.override(new ArrayDesignModule()).with(new AbstractModule() {
+            @Override
+            protected void configure() {
+                bind(ContactDao.class).toInstance(caArrayDaoFactoryStub.getContactDao());
+                bind(SearchDao.class).toInstance(caArrayDaoFactoryStub.getSearchDao());
+                bind(ArrayDao.class).toInstance(caArrayDaoFactoryStub.getArrayDao());
+            }
+        });
+        final ArrayDesignServiceBean bean = new ArrayDesignServiceBean() {
+            @Override
+            protected Injector createInjector() {
+                return Guice.createInjector(testArrayDesignModule);
+            }
+        };
+        bean.init();
+        
         final ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
         locatorStub.addLookup(FileAccessService.JNDI_NAME, fileAccessServiceStub);
         locatorStub.addLookup(VocabularyService.JNDI_NAME, new VocabularyServiceStub());
@@ -378,7 +398,7 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
     }
 
     @Test
-    public void testImportDesignDetails_AffymetrixTest3() throws AffymetrixArrayDesignReadException {
+    public void testImportDesignDetails_AffymetrixTest3() throws PlatformFileReadException {
         final String name = "Test3";
         final File testFile = AffymetrixArrayDesignFiles.TEST3_CDF;
         final int expectedFeatureCount = 15876;
@@ -386,7 +406,7 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
     }
 
     @Test
-    public void testImportDesignDetails_AffymetrixAgcc2() throws AffymetrixArrayDesignReadException {
+    public void testImportDesignDetails_AffymetrixAgcc2() throws PlatformFileReadException {
         final String name = "AGCC_2.x_Test_Truncated";
         final File testFile = AffymetrixArrayDesignFiles.AGCC_2_X_TEST_CDF;
         final int expectedFeatureCount = 553536;
@@ -394,7 +414,7 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
     }
 
     @Test
-    public void testImportDesignDetails_AffymetrixAgcc3() throws AffymetrixArrayDesignReadException {
+    public void testImportDesignDetails_AffymetrixAgcc3() throws PlatformFileReadException {
         final String name = "AGCC_3.x_Test_Truncated";
         final File testFile = AffymetrixArrayDesignFiles.AGCC_3_X_TEST_CDF;
         final int expectedFeatureCount = 553536;
@@ -402,7 +422,7 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
     }
 
     @Test
-    public void testImportDesignDetails_AffymetrixAgccGcos() throws AffymetrixArrayDesignReadException {
+    public void testImportDesignDetails_AffymetrixAgccGcos() throws PlatformFileReadException {
         final String name = "AGCC_GCOS_Test_Truncated";
         final File testFile = AffymetrixArrayDesignFiles.AGCC_GCOS_TEST_CDF;
         final int expectedFeatureCount = 553536;
@@ -453,7 +473,7 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
 
     @Test
     @SuppressWarnings("deprecation")
-    public void testImportDesignDetails_AffymetrixHuEx() throws AffymetrixArrayDesignReadException {
+    public void testImportDesignDetails_AffymetrixHuEx() throws PlatformFileReadException {
         final CaArrayFile clfDesignFile = getCaArrayFile(AffymetrixArrayDesignFiles.HUEX_TEST_CLF);
         final CaArrayFile pgfDesignFile = getCaArrayFile(AffymetrixArrayDesignFiles.HUEX_TEST_PGF);
         final ArrayDesign design = new ArrayDesign();
@@ -611,14 +631,14 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
     @Test
     public void testValidateDesign_AffymetrixTest3() {
         final CaArrayFile designFile = getAffymetrixCdfCaArrayFile(AffymetrixArrayDesignFiles.TEST3_CDF);
-        final ValidationResult result = arrayDesignService.validateDesign(designFile);
+        final ValidationResult result = arrayDesignService.validateDesign(Collections.singleton(designFile));
         assertTrue(result.isValid());
     }
 
     @Test
     public void testValidateDesign_AffymetrixHG_U133_Plus2() {
         final CaArrayFile designFile = getAffymetrixCdfCaArrayFile(AffymetrixArrayDesignFiles.HG_U133_PLUS_2_CDF);
-        final ValidationResult result = arrayDesignService.validateDesign(designFile);
+        final ValidationResult result = arrayDesignService.validateDesign(Collections.singleton(designFile));
         assertTrue(result.isValid());
     }
 
@@ -636,50 +656,58 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
     @Test
     public void testValidateDesign_Genepix() {
         CaArrayFile designFile = getGenepixCaArrayFile(GenepixArrayDesignFiles.DEMO_GAL);
-        ValidationResult result = arrayDesignService.validateDesign(designFile);
+        ValidationResult result = arrayDesignService.validateDesign(Collections.singleton(designFile));
         assertTrue(result.toString(), result.isValid());
         designFile = getGenepixCaArrayFile(GenepixArrayDesignFiles.TWO_K_GAL);
-        result = arrayDesignService.validateDesign(designFile);
+        result = arrayDesignService.validateDesign(Collections.singleton(designFile));
         assertTrue(result.toString(), result.isValid());
         designFile = getGenepixCaArrayFile(GenepixArrayDesignFiles.MEEBO);
-        result = arrayDesignService.validateDesign(designFile);
+        result = arrayDesignService.validateDesign(Collections.singleton(designFile));
         assertTrue(result.toString(), result.isValid());
     }
 
     @Test
     public void testValidateDesign_IlluminaHumanWG6() {
         CaArrayFile designFile = getIlluminaCaArrayFile(IlluminaArrayDesignFiles.HUMAN_WG6_CSV);
-        ValidationResult result = arrayDesignService.validateDesign(designFile);
+        ValidationResult result = arrayDesignService.validateDesign(Collections.singleton(designFile));
         assertTrue(result.isValid());
-        designFile = getIlluminaCaArrayFile(IlluminaArrayDesignFiles.HUMAN_WG6_CSV_INVALID_CONTENT);
-        result = arrayDesignService.validateDesign(designFile);
-        assertFalse(result.isValid());
+        
         designFile = getIlluminaCaArrayFile(IlluminaArrayDesignFiles.HUMAN_WG6_CSV_INVALID_HEADERS);
-        result = arrayDesignService.validateDesign(designFile);
+
+        result = arrayDesignService.validateDesign(Collections.singleton(designFile));
         assertFalse(result.isValid());
+        assertEquals(1, result.getFileValidationResults().size());
+        assertEquals("Unable to read file", result.getFileValidationResults().get(0).getMessages().get(0).getMessage());
+        assertEquals("Unable to read file", designFile.getValidationResult().getMessages().get(0).getMessage());
+
+        designFile = getIlluminaCaArrayFile(IlluminaArrayDesignFiles.HUMAN_WG6_CSV_INVALID_CONTENT);
+        result = arrayDesignService.validateDesign(Collections.singleton(designFile));
+        assertFalse(result.isValid());
+        
+
         designFile = getIlluminaCaArrayFile(AffymetrixArrayDataFiles.TEST3_CEL);
-        result = arrayDesignService.validateDesign(designFile);
+        result = arrayDesignService.validateDesign(Collections.singleton(designFile));
         assertFalse(result.isValid());
     }
 
     @Test
     public void testValidateDesign_IlluminaHumanHap300() {
         final CaArrayFile designFile = getIlluminaCaArrayFile(IlluminaArrayDesignFiles.HUMAN_HAP_300_CSV);
-        final ValidationResult result = arrayDesignService.validateDesign(designFile);
+        final ValidationResult result = arrayDesignService.validateDesign(Collections.singleton(designFile));
         assertTrue(result.isValid());
     }
 
     @Test
     public void testValidateDesign_InvalidFileType() {
         CaArrayFile invalidDesignFile = getCaArrayFile(AffymetrixArrayDataFiles.TEST3_CEL, FileType.AFFYMETRIX_CEL);
-        ValidationResult result = arrayDesignService.validateDesign(invalidDesignFile);
+        ValidationResult result = arrayDesignService.validateDesign(Collections.singleton(invalidDesignFile));
         assertFalse(result.isValid());
         invalidDesignFile = getCaArrayFile(AffymetrixArrayDataFiles.TEST3_CEL, FileType.AGILENT_CSV);
-        result = arrayDesignService.validateDesign(invalidDesignFile);
+        result = arrayDesignService.validateDesign(Collections.singleton(invalidDesignFile));
         assertTrue(result.isValid());
-        assertEquals(FileStatus.IMPORTED_NOT_PARSED, invalidDesignFile.getFileStatus());
+        assertEquals(FileStatus.VALIDATED_NOT_PARSED, invalidDesignFile.getFileStatus());
         invalidDesignFile = getCaArrayFile(AffymetrixArrayDataFiles.TEST3_CEL, null);
-        result = arrayDesignService.validateDesign(invalidDesignFile);
+        result = arrayDesignService.validateDesign(Collections.singleton(invalidDesignFile));
         assertFalse(result.isValid());
     }
 
@@ -769,16 +797,6 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
         caArrayDaoFactoryStub.getSearchDao().save(o);
         assertEquals(1, arrayDesignService.getAllProviders().size());
         assertEquals("Foo", arrayDesignService.getAllProviders().get(0).getName());
-    }
-
-    private void checkChpDesignElementList(final DesignElementList designElementList, final File cdfFile)
-            throws AffymetrixArrayDesignReadException {
-        final AffymetrixCdfReader cdfReader = AffymetrixCdfReader.create(cdfFile);
-        assertEquals(cdfReader.getCdfData().getHeader().getNumProbeSets(), designElementList.getDesignElements().size());
-        for (int i = 0; i < designElementList.getDesignElements().size(); i++) {
-            final LogicalProbe probe = (LogicalProbe) designElementList.getDesignElements().get(i);
-            assertEquals(cdfReader.getCdfData().getProbeSetName(i), probe.getName());
-        }
     }
 
     public static class LocalDaoFactoryStub extends DaoFactoryStub {
@@ -964,5 +982,5 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
             };
         }
 
-    }
+    }    
 }

@@ -167,17 +167,9 @@ public class MageTabTranslatorBean implements MageTabTranslator {
     }
 
     /**
-     * @return the daoFactory
-     */
-    CaArrayDaoFactory getDaoFactory() {
-        return this.daoFactory;
-    }
-
-    /**
      * @param daoFactory the daoFactory to set
      */
     void setDaoFactory(CaArrayDaoFactory daoFactory) {
         this.daoFactory = daoFactory;
     }
-
 }

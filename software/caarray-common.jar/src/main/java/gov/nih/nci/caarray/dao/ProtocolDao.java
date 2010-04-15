@@ -93,15 +93,6 @@ import java.util.List;
  * DAO for entities in the <code>gov.nih.nci.caarray.domain.protocol</code> package.
  */
 public interface ProtocolDao extends CaArrayDao {
-
-    /**
-     * Returns the <code>Protocol</code> with the id given.
-     *
-     * @param id get <code>Protocol</code> matching this id
-     * @return the <code>Protocol</code>.
-     */
-    Protocol getProtocol(long id);
-
     /**
      * Get a protocol based off of the fields in its unique constraint.
      * @param name the name of the protocol.

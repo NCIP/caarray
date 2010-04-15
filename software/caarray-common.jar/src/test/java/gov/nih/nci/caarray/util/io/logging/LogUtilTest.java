@@ -115,23 +115,6 @@ public class LogUtilTest extends AbstractCaarrayTest {
         assertEquals(expectedMessage, testLog.getMessage());
     }
 
-    @Test
-    public void testTraceEntry() {
-        LogUtil.traceEntry(testLog, 1, "two", null);
-        String expectedMessage = "[METHOD ENTRY] testTraceEntry\n\t"
-            + "argument[Integer] = 1\n\targument[String] = two\n\targument[unknown type] = null";
-        assertEquals("TRACE", testLog.getLogLevel());
-        assertEquals(expectedMessage, testLog.getMessage());
-    }
-
-    @Test
-    public void testTraceExit() {
-        LogUtil.traceExit(testLog);
-        String expectedMessage = "[METHOD EXIT] testTraceExit";
-        assertEquals("TRACE", testLog.getLogLevel());
-        assertEquals(expectedMessage, testLog.getMessage());
-    }
-
     /**
      * Logging stub for test.
      */

@@ -83,8 +83,6 @@
 package gov.nih.nci.caarray.application.file;
 
 import gov.nih.nci.caarray.application.ServiceLocatorFactory;
-import gov.nih.nci.caarray.application.arraydata.ArrayDataService;
-import gov.nih.nci.caarray.application.translation.magetab.MageTabTranslator;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileStatus;
@@ -116,23 +114,7 @@ abstract class AbstractProjectFilesJob extends AbstractFileManagementJob {
             this.fileIds.add(file.getId());
         }
     }
-
-    Set<Long> getFileIds() {
-        return this.fileIds;
-    }
-
-    long getProjectId() {
-        return this.projectId;
-    }
-
-    MageTabTranslator getMageTabTranslator() {
-        return (MageTabTranslator) ServiceLocatorFactory.getLocator().lookup(MageTabTranslator.JNDI_NAME);
-    }
-
-    ArrayDataService getArrayDataService() {
-        return (ArrayDataService) ServiceLocatorFactory.getLocator().lookup(ArrayDataService.JNDI_NAME);
-    }
-
+    
     CaArrayFileSet getFileSet(Project project) {
         CaArrayFileSet fileSet = new CaArrayFileSet(project);
         List<CaArrayFile> files = getDaoFactory().getSearchDao().retrieveByIds(CaArrayFile.class,
@@ -159,11 +141,11 @@ abstract class AbstractProjectFilesJob extends AbstractFileManagementJob {
     }
 
     ArrayDataImporter getArrayDataImporter() {
-        return new ArrayDataImporter(getArrayDataService(), getDaoFactory());
+        return new ArrayDataImporter(ServiceLocatorFactory.getArrayDataService(), getDaoFactory());
     }
 
     MageTabImporter getMageTabImporter() {
-        return new MageTabImporter(getMageTabTranslator(), getDaoFactory());
+        return new MageTabImporter(ServiceLocatorFactory.getMageTabTranslator(), getDaoFactory());
     }
 
     @Override
@@ -191,7 +173,7 @@ abstract class AbstractProjectFilesJob extends AbstractFileManagementJob {
         }
         int i = 1;
         s.setString(i++, newStatus.toString());
-        s.setLong(i++, getProjectId());
+        s.setLong(i++, this.projectId);
         s.setString(i++, getInProgressStatus().toString());
         return s;
     }

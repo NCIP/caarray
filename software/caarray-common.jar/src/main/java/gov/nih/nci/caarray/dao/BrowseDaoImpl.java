@@ -98,11 +98,9 @@ import com.fiveamsolutions.nci.commons.data.search.SortCriterion;
 
 /**
  * @author Winston Cheng
- *
  */
 @SuppressWarnings("PMD.CyclomaticComplexity")
 public class BrowseDaoImpl implements BrowseDao {
-
     private final CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
 
     /**
@@ -148,14 +146,6 @@ public class BrowseDaoImpl implements BrowseDao {
         String queryStr = "SELECT COUNT(DISTINCT h) FROM " + Hybridization.class.getName() + " h";
         Query q = HibernateUtil.getCurrentSession().createQuery(queryStr);
         return ((Number) q.uniqueResult()).intValue();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public int institutionCount() {
-        // TODO fill in query when institutions are implemented
-        return 0;
     }
 
     /**
@@ -226,7 +216,7 @@ public class BrowseDaoImpl implements BrowseDao {
         Query q = HibernateUtil.getCurrentSession().createQuery(sb.toString());
         if (!allProjects) {
             if (cat.equals(BrowseCategory.ORGANISMS)) {
-                Organism org = getDaoFactory().getOrganismDao().getOrganism(fieldId.longValue());
+                Organism org = getDaoFactory().getSearchDao().retrieveUnsecured(Organism.class, fieldId.longValue());
                 q.setParameter("name", org.getScientificName());
             } else {
                 q.setParameter("id", fieldId);
@@ -238,7 +228,7 @@ public class BrowseDaoImpl implements BrowseDao {
     /**
      * @return the daoFactory
      */
-    public CaArrayDaoFactory getDaoFactory() {
+    private CaArrayDaoFactory getDaoFactory() {
         return daoFactory;
     }
 }

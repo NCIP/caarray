@@ -125,13 +125,6 @@ public class BrowseServiceStub implements BrowseService {
     /**
      * {@inheritDoc}
      */
-    public int institutionCount() {
-        return 0;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public List<Object[]> tabList(BrowseCategory cat) {
         return null;
     }

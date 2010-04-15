@@ -82,9 +82,6 @@
  */
 package gov.nih.nci.caarray.application.file;
 
-import gov.nih.nci.caarray.application.ServiceLocatorFactory;
-import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
-import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.util.HibernateUtil;
 
@@ -122,18 +119,6 @@ abstract class AbstractFileManagementJob implements Serializable {
 
     void setDaoFactory(CaArrayDaoFactory daoFactory) {
         this.daoFactory = daoFactory;
-    }
-
-    FileAccessService getFileAccessService() {
-        return (FileAccessService) ServiceLocatorFactory.getLocator().lookup(FileAccessService.JNDI_NAME);
-    }
-
-    ArrayDesignService getArrayDesignService() {
-        return (ArrayDesignService) ServiceLocatorFactory.getLocator().lookup(ArrayDesignService.JNDI_NAME);
-    }
-
-    ArrayDesignImporter getArrayDesignImporter() {
-        return new ArrayDesignImporter(getArrayDesignService());
     }
 
     abstract void setInProgressStatus();

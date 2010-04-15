@@ -109,10 +109,7 @@ public class BrowseServiceBean implements BrowseService {
     private BrowseDao getBrowseDao() {
         return this.daoFactory.getBrowseDao();
     }
-    CaArrayDaoFactory getDaoFactory() {
-        return this.daoFactory;
-    }
-
+    
     void setDaoFactory(CaArrayDaoFactory daoFactory) {
         this.daoFactory = daoFactory;
     }
@@ -129,13 +126,6 @@ public class BrowseServiceBean implements BrowseService {
      */
     public int hybridizationCount() {
         return getBrowseDao().hybridizationCount();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public int institutionCount() {
-        return getBrowseDao().institutionCount();
     }
 
     /**
@@ -164,6 +154,4 @@ public class BrowseServiceBean implements BrowseService {
     public int browseCount(BrowseCategory cat, Number fieldId) {
         return getBrowseDao().browseCount(cat, fieldId);
     }
-
-
 }

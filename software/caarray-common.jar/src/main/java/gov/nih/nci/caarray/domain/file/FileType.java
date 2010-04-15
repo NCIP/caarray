@@ -85,7 +85,6 @@ package gov.nih.nci.caarray.domain.file;
 
 import java.util.EnumSet;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -420,18 +419,5 @@ public enum FileType implements Comparable<FileType> {
     public FileType getDerivedType() {
         FileType derivedType = RAW_TO_DERIVED_MAP.get(this);
         return (derivedType == null) ? this : derivedType;
-    }
-
-    /**
-     * Return the names of the given FileTypes.
-     * @param types the FileTypes whose names to return
-     * @return the names, e.g. the set of type.getName() for each type in types 
-     */
-    public static Set<String> namesForTypes(Iterable<FileType> types) {
-        Set<String> names = new HashSet<String>();
-        for (FileType type : types) {
-            names.add(type.getName());
-        }
-        return names;
     }
 }

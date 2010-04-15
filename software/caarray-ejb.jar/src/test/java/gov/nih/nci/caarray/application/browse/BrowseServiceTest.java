@@ -137,11 +137,6 @@ public class BrowseServiceTest extends AbstractServiceTest {
     }
 
     @Test
-    public void testInstitutionCount() {
-        assertEquals(2, browseService.institutionCount());
-    }
-
-    @Test
     public void testUserCount() {
         assertEquals(3, browseService.userCount());
     }
@@ -179,11 +174,6 @@ public class BrowseServiceTest extends AbstractServiceTest {
         }
 
         @Override
-        public int institutionCount() {
-            return 2;
-        }
-
-        @Override
         public int userCount() {
             return 3;
         }
@@ -193,5 +183,4 @@ public class BrowseServiceTest extends AbstractServiceTest {
             return Collections.emptyList();
         }
     }
-
 }

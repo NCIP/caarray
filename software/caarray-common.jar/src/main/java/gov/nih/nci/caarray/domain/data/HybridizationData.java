@@ -87,6 +87,7 @@ import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javax.persistence.Entity;
@@ -182,10 +183,41 @@ public final class HybridizationData extends AbstractCaArrayObject {
         this.dataSet = dataSet;
     }
 
+    /**
+     * Initialize the columns of this HybridizationData with empty value sets of given size.
+     * 
+     * @param types the types of the columns to initialize
+     * @param numberOfRows the number of rows each columnn's array of values should have
+     */
+    public void prepareColumns(List<QuantitationType> types, int numberOfRows) {
+        for (AbstractDataColumn column : columns) {
+            if (!column.isLoaded() && types.contains(column.getQuantitationType())) {
+                column.initializeArray(numberOfRows);
+            }
+        }
+    }
+
     void addColumn(QuantitationType type) {
         AbstractDataColumn column = AbstractDataColumn.create(type);
         column.setHybridizationData(this);
         columns.add(column);
+    }
+
+    /**
+     * Determine whether all columns for the given quantitation types in this HybridizationData have been loaded with
+     * data values.
+     * 
+     * @param types the quantitation types of interest
+     * @return true if each column in this HybridizationData whose type is in the given set of types has been loaded,
+     *         e.g. column.isLoaded is true; false otherwise.
+     */
+    public boolean areColumnsLoaded(Collection<QuantitationType> types) {
+        for (AbstractDataColumn column : columns) {
+            if (types.contains(column.getQuantitationType()) && !column.isLoaded()) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**

@@ -106,11 +106,6 @@ import org.apache.commons.io.IOUtils;
  * @author dkokotov
  */
 public final class FileAccessUtils {
-    /**
-     * Suffix to add to file names when they contain the gzipped contents of another file.
-     */
-    public static final String GZIP_FILE_SUFFIX = ".gz";
-    
     private FileAccessUtils() {
         // empty - utility class
     }

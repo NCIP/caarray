@@ -82,35 +82,32 @@
  */
 package gov.nih.nci.caarray.application.arraydata;
 
-import gov.nih.nci.caarray.application.arraydata.affymetrix.AffymetrixArrayDataTypes;
-import gov.nih.nci.caarray.application.arraydata.genepix.GenepixArrayDataTypes;
-import gov.nih.nci.caarray.application.arraydata.illumina.IlluminaArrayDataTypes;
 import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.domain.data.ArrayDataType;
 import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import com.google.inject.Inject;
+
 /**
  * Responsible for ensuring all known data types are registered in the system at initialization time.
  */
 final class TypeRegistrationManager {
-
     private final ArrayDao arrayDao;
+    private final Set<ArrayDataTypeDescriptor> descriptors;
 
-    TypeRegistrationManager(ArrayDao arrayDao) {
+    @Inject
+    TypeRegistrationManager(ArrayDao arrayDao, Set<ArrayDataTypeDescriptor> descriptors) {
         this.arrayDao = arrayDao;
+        this.descriptors = new HashSet<ArrayDataTypeDescriptor>(descriptors);
     }
 
     public void registerNewTypes() {
-        initialize(AffymetrixArrayDataTypes.values());
-        initialize(GenepixArrayDataTypes.values());
-        initialize(IlluminaArrayDataTypes.values());
-        initialize(UnsupportedDataFormatDescriptor.INSTANCE);
-    }
-
-    private void initialize(ArrayDataTypeDescriptor[] types) {
-        for (ArrayDataTypeDescriptor type : types) {
+        for (ArrayDataTypeDescriptor type : this.descriptors) {
             initialize(type);
         }
     }

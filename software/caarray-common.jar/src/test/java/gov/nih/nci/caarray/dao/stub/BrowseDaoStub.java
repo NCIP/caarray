@@ -95,7 +95,6 @@ import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
  *
  */
 public class BrowseDaoStub extends AbstractDaoStub implements BrowseDao {
-
     /**
      * {@inheritDoc}
      */
@@ -121,13 +120,6 @@ public class BrowseDaoStub extends AbstractDaoStub implements BrowseDao {
      * {@inheritDoc}
      */
     public int hybridizationCount() {
-        return 0;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public int institutionCount() {
         return 0;
     }
 

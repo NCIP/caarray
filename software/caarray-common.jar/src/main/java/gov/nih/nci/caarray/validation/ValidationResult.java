@@ -182,7 +182,14 @@ public final class ValidationResult implements Serializable {
         getOrCreateFileValidationResult(file).addMessage(message);
     }
 
-    private FileValidationResult getOrCreateFileValidationResult(File file) {
+    /**
+     * Returns the <code>FileValidationResult</code> corresponding to the
+     * given file. If one does not exist yet, creates a new one and adds it to this.
+     *
+     * @param file get validation results for this file
+     * @return an existing or new validation result for the file
+     */
+    public FileValidationResult getOrCreateFileValidationResult(File file) {
         if (!fileValidationResults.containsKey(file)) {
             fileValidationResults.put(file, new FileValidationResult(file));
         }
@@ -208,7 +215,7 @@ public final class ValidationResult implements Serializable {
     public FileValidationResult getFileValidationResult(File file) {
         return fileValidationResults.get(file);
     }
-
+    
     /**
      * Returns the <code>FileValidationResult</code> corresponding to the
      * file with given , or null if non exists.

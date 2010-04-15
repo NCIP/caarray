@@ -174,15 +174,4 @@ public class Organization extends AbstractContact {
                 this.name).toHashCode();
         // CHECKSTYLE:ON
     }
-
-    /**
-     * Create a new Organization instance that represents an array provider.
-     * 
-     * @return the new Organization instance 
-     */
-    public static Organization newArrayProvider() {
-        Organization o = new Organization();
-        o.setProvider(true);
-        return o;
-    }
 }

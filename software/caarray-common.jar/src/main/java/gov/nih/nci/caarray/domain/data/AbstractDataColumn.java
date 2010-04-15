@@ -179,7 +179,8 @@ public abstract class AbstractDataColumn extends AbstractCaArrayObject {
     public abstract void initializeArray(int numberOfValues);
 
     /**
-     * Indicates whether this column is already loaded.
+     * Indicates whether this column is already loaded, meaning its populated with an array
+     * of values.
      *
      * @return true if data has been loaded.
      */

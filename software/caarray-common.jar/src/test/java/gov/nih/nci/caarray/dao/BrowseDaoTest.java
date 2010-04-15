@@ -215,13 +215,6 @@ public class BrowseDaoTest extends AbstractDaoTest {
     }
 
     @Test
-    public void testInstitutionCount() {
-        Transaction tx = HibernateUtil.beginTransaction();
-        DAO_OBJECT.institutionCount();
-        tx.commit();
-    }
-
-    @Test
     public void testUserCount() {
         Transaction tx = HibernateUtil.beginTransaction();
         DAO_OBJECT.userCount();

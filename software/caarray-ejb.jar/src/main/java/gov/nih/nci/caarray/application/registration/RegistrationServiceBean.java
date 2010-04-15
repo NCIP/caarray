@@ -99,7 +99,6 @@ import org.apache.log4j.Logger;
 @Local(RegistrationService.class)
 @Stateless
 public class RegistrationServiceBean implements RegistrationService {
-
     private static final Logger LOG = Logger.getLogger(RegistrationServiceBean.class);
     private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
 
@@ -113,7 +112,7 @@ public class RegistrationServiceBean implements RegistrationService {
         LogUtil.logSubsystemExit(LOG);
     }
 
-    CaArrayDaoFactory getDaoFactory() {
+    private CaArrayDaoFactory getDaoFactory() {
         return daoFactory;
     }
 

@@ -117,26 +117,6 @@ public final class LogUtil {
         }
     }
 
-    /**
-     * Logs an entry tracing message (at TRACE level), listing the method and
-     * arguments.
-     *
-     * @param log write to this log.
-     * @param arguments the arguments to the method call.
-     */
-    public static void traceEntry(Logger log, Object... arguments) {
-        logMethodCall(LoggingSource.CLASS, log, arguments, MethodTraceType.ENTRY);
-    }
-
-    /**
-     * Logs an exit tracing message (at TRACE level).
-     *
-     * @param log write to this log.
-     */
-    public static void traceExit(Logger log) {
-        logMethodCall(LoggingSource.CLASS, log, new Object[0], MethodTraceType.EXIT);
-    }
-
     @SuppressWarnings("PMD") // suppressing warning for raw Throwable
     private static void logMethodCall(LoggingSource source, Logger log, Object[] arguments, MethodTraceType type) {
         StringBuffer stringBuffer = new StringBuffer();

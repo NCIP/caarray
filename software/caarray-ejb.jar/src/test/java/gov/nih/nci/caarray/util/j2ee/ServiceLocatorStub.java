@@ -140,8 +140,12 @@ public final class ServiceLocatorStub implements ServiceLocator {
 
     public static ServiceLocatorStub registerActualImplementations() {
         ServiceLocatorStub locatorStub = new ServiceLocatorStub();
-        locatorStub.addLookup(ArrayDataService.JNDI_NAME, new ArrayDataServiceBean());
-        locatorStub.addLookup(ArrayDesignService.JNDI_NAME, new ArrayDesignServiceBean());
+        ArrayDesignServiceBean designService = new ArrayDesignServiceBean();
+        designService.init();
+        locatorStub.addLookup(ArrayDesignService.JNDI_NAME, designService);
+        ArrayDataServiceBean dataService = new ArrayDataServiceBean();
+        dataService.init();
+        locatorStub.addLookup(ArrayDataService.JNDI_NAME, dataService);
         locatorStub.addLookup(FileAccessService.JNDI_NAME, new FileAccessServiceBean());
         locatorStub.addLookup(FileManagementService.JNDI_NAME, new FileManagementServiceBean());
         locatorStub.addLookup(GenericDataService.JNDI_NAME, new GenericDataServiceBean());

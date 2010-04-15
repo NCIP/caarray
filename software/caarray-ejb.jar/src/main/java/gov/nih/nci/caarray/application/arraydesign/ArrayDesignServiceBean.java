@@ -82,31 +82,26 @@
  */
 package gov.nih.nci.caarray.application.arraydesign;
 
-import gov.nih.nci.caarray.application.ServiceLocatorFactory;
-import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
-import gov.nih.nci.caarray.application.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.dao.ArrayDao;
-import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
+import gov.nih.nci.caarray.dao.ContactDao;
+import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.data.DesignElementList;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileStatus;
-import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.project.AssayType;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.InvalidDataFileException;
-import gov.nih.nci.caarray.validation.InvalidNumberOfArgsException;
 import gov.nih.nci.caarray.validation.ValidationResult;
 import gov.nih.nci.caarray.validation.ValidationMessage.Type;
 
-import java.io.File;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.annotation.PostConstruct;
 import javax.ejb.Local;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
@@ -115,6 +110,9 @@ import javax.ejb.TransactionAttributeType;
 import org.apache.log4j.Logger;
 import org.hibernate.criterion.Order;
 import org.jboss.annotation.ejb.TransactionTimeout;
+
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 
 /**
  * Implementation entry point for the ArrayDesign subsystem.
@@ -125,33 +123,53 @@ import org.jboss.annotation.ejb.TransactionTimeout;
 @TransactionTimeout(ArrayDesignServiceBean.TIMEOUT_SECONDS)
 @SuppressWarnings({"PMD.CyclomaticComplexity", "PMD.TooManyMethods" })
 public class ArrayDesignServiceBean implements ArrayDesignService {
-
     private static final Logger LOG = Logger.getLogger(ArrayDesignServiceBean.class);
     static final int TIMEOUT_SECONDS = 1800;
     static final int DELETE_ARRAY_DELETE_TIMEOUT_SECONDS = 7200;
 
-    private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
-
+    private Injector injector;
+    
     /**
-     * {@inheritDoc}
+     * post-construct lifecycle method; intializes the Guice injector that will provide dependencies. 
      */
-    @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public ValidationResult validateDesign(CaArrayFile designFile) {
-        LogUtil.logSubsystemEntry(LOG, designFile);
-        Set<CaArrayFile> files = new HashSet<CaArrayFile>();
-        files.add(designFile);
-        ValidationResult result = validateDesignFiles(files);
-        LogUtil.logSubsystemExit(LOG);
-        return result;
+    @PostConstruct
+    public void init() {
+        this.injector = createInjector();
+    }
+    
+    /**
+     * Subclasses can override this to configure a custom injector, e.g. by overriding some modules with 
+     * stubbed out functionality.
+     * 
+     * @return a Guice injector from which this will obtain dependencies.
+     */
+    protected Injector createInjector() {
+        return Guice.createInjector(new ArrayDesignModule());
+    }
+    
+    private ArrayDao getArrayDao() {
+        return injector.getInstance(ArrayDao.class);
+    }
+    
+    private SearchDao getSearchDao() {
+        return injector.getInstance(SearchDao.class);        
     }
 
+    private ContactDao getContactDao() {
+        return injector.getInstance(ContactDao.class);        
+    }
+
+    private ArrayDesignPlatformFacade getFacade() {
+        return injector.getInstance(ArrayDesignPlatformFacade.class);
+    }
+    
     /**
      * {@inheritDoc}
      */
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public ValidationResult validateDesign(Set<CaArrayFile> designFiles) {
         LogUtil.logSubsystemEntry(LOG, designFiles);
-        ValidationResult result = validateDesignFiles(designFiles);
+        ValidationResult result = getFacade().validateDesignFiles(designFiles);
         LogUtil.logSubsystemExit(LOG);
         return result;
     }
@@ -162,45 +180,13 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public ValidationResult validateDesign(ArrayDesign design) {
         LogUtil.logSubsystemEntry(LOG, design);
-        ValidationResult result = validateDesignFiles(design.getDesignFiles());
+        ValidationResult result = getFacade().validateDesignFiles(design.getDesignFiles());
         FileValidationResult duplicateResult = validateDuplicate(design);
         result.addFile(duplicateResult.getFile(), duplicateResult);
         LogUtil.logSubsystemExit(LOG);
         return result;
     }
 
-    private ValidationResult validateDesignFiles(Set<CaArrayFile> designFiles) {
-        ValidationResult result = new ValidationResult();
-        AbstractArrayDesignHandler handler = null;
-        for (CaArrayFile designFile : designFiles) {
-            if (designFile.getType() == null) {
-                result.addMessage(getFile(designFile), Type.ERROR,
-                        "Array design file type was unrecognized, please select a file format");
-            } else if (!designFile.getFileType().isArrayDesign()) {
-                result.addMessage(getFile(designFile), Type.ERROR, "File type " + designFile.getFileType().getName()
-                        + " is not an array design type.");
-            }
-        }
-        if (result.isValid()) {
-            handler = getHandler(designFiles);
-            result = handler.validate();
-        }
-
-        for (CaArrayFile designFile : designFiles) {
-            FileValidationResult fileResult = result.getFileValidationResult(getFile(designFile));
-            designFile.setValidationResult(fileResult);
-            if (result.isValid()) {
-                designFile.setFileStatus(handler.getValidatedStatus());
-            } else if (handler != null) {
-                designFile.setFileStatus(handler.getValidationErrorStatus());
-            } else {
-                designFile.setFileStatus(FileStatus.VALIDATION_ERRORS);
-            }
-            getArrayDao().save(designFile);
-        }
-        getArrayDao().flushSession();
-        return result;
-    }
 
     private FileValidationResult validateDuplicate(ArrayDesign arrayDesign) {
         CaArrayFile designFile = arrayDesign.getDesignFiles().iterator().next();
@@ -224,7 +210,7 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
      */
     public boolean isDuplicate(ArrayDesign arrayDesign) {
         List<ArrayDesign> providerDesigns =
-            getDaoFactory().getArrayDao().getArrayDesigns(arrayDesign.getProvider(), null, false);
+            getArrayDao().getArrayDesigns(arrayDesign.getProvider(), null, false);
         for (ArrayDesign providerDesign : providerDesigns) {
             if (!arrayDesign.equals(providerDesign)
                     && arrayDesign.getName().equalsIgnoreCase(providerDesign.getName())) {
@@ -232,10 +218,6 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
             }
         }
         return false;
-    }
-
-    private File getFile(CaArrayFile file) {
-        return TemporaryFileCacheLocator.getTemporaryFileCache().getFile(file);
     }
 
     /**
@@ -254,9 +236,9 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
         arrayDesign.setLsidForEntity(tmpLsid);
         getArrayDao().save(arrayDesign);
         getArrayDao().flushSession();
-        if (validateDesignFiles(arrayDesign.getDesignFiles()).isValid()) {
-            AbstractArrayDesignHandler handler = getHandler(arrayDesign.getDesignFiles());
-            handler.load(arrayDesign);
+        ArrayDesignPlatformFacade facade = getFacade();
+        if (facade.validateDesignFiles(arrayDesign.getDesignFiles()).isValid()) {
+            facade.importDesign(arrayDesign);
             if (validateDuplicate(arrayDesign).isValid()) {
                 getArrayDao().save(arrayDesign);
             }
@@ -267,6 +249,7 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
         }
         LogUtil.logSubsystemExit(LOG);
     }
+    
     /**
      * {@inheritDoc}
      */
@@ -289,75 +272,8 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
             getArrayDao().flushSession();
         }
 
-        doImportDesignDetails(arrayDesign);
+        getFacade().importDesignDetails(arrayDesign);
         LogUtil.logSubsystemExit(LOG);
-    }
-
-    @SuppressWarnings("PMD.AvoidReassigningParameters")
-    private void doImportDesignDetails(ArrayDesign arrayDesign) {
-        AbstractArrayDesignHandler handler = getHandler(arrayDesign.getDesignFiles());
-        handler.createDesignDetails(arrayDesign);
-        // the handler cleared the session, so we need to merge before we update the status
-        // See hibernate bug http://opensource.atlassian.com/projects/hibernate/browse/HHH-511
-        // When we upgrade to hibernate 3.2.4+, we can remove the call to merge.
-        arrayDesign = (ArrayDesign) getArrayDao().mergeObject(arrayDesign);
-        arrayDesign.getDesignFileSet().updateStatus(FileStatus.IMPORTED);
-        getArrayDao().save(arrayDesign);
-    }
-
-    @SuppressWarnings("PMD.ExcessiveMethodLength")
-    private AbstractArrayDesignHandler getHandler(Set<CaArrayFile> designFiles) {
-        CaArrayFile designFile = designFiles.iterator().next();
-        FileType type = designFile.getFileType();
-        if (type == null) {
-            throw new IllegalArgumentException("FileType was null");
-        } else if (FileType.AFFYMETRIX_CDF.equals(type)
-                && throwInvalidNumOfArgsExc(FileType.AFFYMETRIX_CDF.toString(), designFiles.size(), 1)) {
-            return new AffymetrixCdfHandler(getVocabularyService(), daoFactory, designFile);
-        } else if (FileType.AFFYMETRIX_CLF.equals(type) || FileType.AFFYMETRIX_PGF.equals(type)
-                && throwInvalidNumOfArgsExc(FileType.AFFYMETRIX_CLF.toString(), designFiles.size(), 2)) {
-            return new AffymetrixPgfClfDesignHandler(getVocabularyService(), daoFactory, designFiles);
-        } else if (FileType.ILLUMINA_DESIGN_CSV.equals(type)
-                && throwInvalidNumOfArgsExc(FileType.ILLUMINA_DESIGN_CSV.toString(), designFiles.size(), 1)) {
-            return new IlluminaCsvDesignHandler(getVocabularyService(), daoFactory, designFile);
-        } else if (FileType.ILLUMINA_DESIGN_BGX.equals(type)
-                && throwInvalidNumOfArgsExc(FileType.ILLUMINA_DESIGN_BGX.toString(), designFiles.size(), 1)) {
-            return new IlluminaBgxDesignHandler(getVocabularyService(), daoFactory, designFile);
-        } else if (FileType.GENEPIX_GAL.equals(type)
-                && throwInvalidNumOfArgsExc(FileType.GENEPIX_GAL.toString(), designFiles.size(), 1)) {
-            return new GenepixGalDesignHandler(getVocabularyService(), daoFactory, designFile);
-        } else if ((FileType.AGILENT_CSV.equals(type) || FileType.AGILENT_XML.equals(type))
-                && throwInvalidNumOfArgsExc(FileType.AGILENT_CSV.toString(), designFiles.size(), 1)) {
-            return new AgilentUnsupportedDesignHandler(getVocabularyService(), daoFactory, designFile);
-        } else if ((FileType.GEO_GPL.equals(type))
-                && throwInvalidNumOfArgsExc(FileType.GEO_GPL.toString(), designFiles.size(), 1)) {
-            return new GeoUnsupportedDesignHandler(getVocabularyService(), daoFactory, designFile);
-        } else if (FileType.IMAGENE_TPL.equals(type)
-                && throwInvalidNumOfArgsExc(FileType.IMAGENE_TPL.toString(), designFiles.size(), 1)) {
-            return new ImageneTplHandler(getVocabularyService(), daoFactory, designFile);
-        } else if (FileType.UCSF_SPOT_SPT.equals(type)
-            && throwInvalidNumOfArgsExc(FileType.IMAGENE_TPL.toString(), designFiles.size(), 1)) {
-            return new UcsfSpotSptHandler(getVocabularyService(), daoFactory, designFile);
-        } else if (FileType.NIMBLEGEN_NDF.equals(type)
-            && throwInvalidNumOfArgsExc(FileType.UCSF_SPOT_SPT.toString(), designFiles.size(), 1)) {
-            return new NimbleGenNdfHandler(getVocabularyService(), daoFactory, designFile);
-        } else if (FileType.MAGE_TAB_ADF.equals(type)
-            && throwInvalidNumOfArgsExc(FileType.MAGE_TAB_ADF.toString(), designFiles.size(), 1)) {
-            return new MageTabAdfHandler(getVocabularyService(), daoFactory, designFile);
-        } else {
-            throw new InvalidNumberOfArgsException(InvalidNumberOfArgsException.UNSUPPORTED_ARRAY_DESIGN);
-        }
-    }
-
-    private boolean throwInvalidNumOfArgsExc(String type, int numberOfDesigns, int numberAllowed) {
-        if (numberOfDesigns != numberAllowed) {
-            InvalidNumberOfArgsException inv =
-                new InvalidNumberOfArgsException(InvalidNumberOfArgsException.NUMBER_OF_ARGS);
-            inv.addArg(type);
-            throw inv;
-        }
-
-        return true;
     }
 
     /**
@@ -365,7 +281,7 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
      */
     public List<Organization> getAllProviders() {
         LogUtil.logSubsystemEntry(LOG);
-        List<Organization> orgs = getDaoFactory().getContactDao().getAllProviders();
+        List<Organization> orgs = getContactDao().getAllProviders();
         LogUtil.logSubsystemExit(LOG);
         return orgs;
     }
@@ -399,7 +315,7 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
      */
     public List<ArrayDesign> getArrayDesigns() {
         LogUtil.logSubsystemEntry(LOG);
-        List<ArrayDesign> designs = getDaoFactory().getSearchDao().retrieveAll(ArrayDesign.class, Order.asc("name"));
+        List<ArrayDesign> designs = getSearchDao().retrieveAll(ArrayDesign.class, Order.asc("name"));
         LogUtil.logSubsystemExit(LOG);
         return designs;
     }
@@ -438,26 +354,6 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
         LogUtil.logSubsystemExit(LOG);
     }
 
-    CaArrayDaoFactory getDaoFactory() {
-        return daoFactory;
-    }
-
-    /**
-     * Sets the DAO factory to use -- test support method.
-     *
-     * @param daoFactory the DAO factory
-     */
-    public void setDaoFactory(CaArrayDaoFactory daoFactory) {
-        this.daoFactory = daoFactory;
-    }
-
-    private ArrayDao getArrayDao() {
-        return getDaoFactory().getArrayDao();
-    }
-
-    private VocabularyService getVocabularyService() {
-        return (VocabularyService) ServiceLocatorFactory.getLocator().lookup(VocabularyService.JNDI_NAME);
-    }
 
     private boolean validateLockedDesign(ArrayDesign arrayDesign) {
         ArrayDesign loadedArrayDesign = getArrayDesign(arrayDesign.getId());

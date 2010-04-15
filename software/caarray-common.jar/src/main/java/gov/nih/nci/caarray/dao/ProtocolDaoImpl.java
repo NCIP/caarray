@@ -106,16 +106,6 @@ class ProtocolDaoImpl extends AbstractCaArrayDaoImpl implements ProtocolDao {
     private static final String NAME_FIELD = "name";
 
     /**
-     * Returns the <code>Protocol</code> with the id given or null if none exists.
-     *
-     * @param id get <code>Protocol</code> matching this id
-     * @return the <code>Protocol</code> or null.
-     */
-    public Protocol getProtocol(long id) {
-        return (Protocol) getCurrentSession().get(Protocol.class, id);
-    }
-
-    /**
      * {@inheritDoc}
      */
     public Protocol getProtocol(String name, TermSource source) {

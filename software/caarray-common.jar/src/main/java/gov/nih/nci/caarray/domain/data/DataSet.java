@@ -213,6 +213,35 @@ public final class DataSet extends AbstractCaArrayObject {
             addQuantitationType(type);
         }
     }
+    /**
+     * Initialize the columns of each HybridizationData in this DataSet with empty value sets of given size.
+     * 
+     * @param types the types of the columns to initialize
+     * @param numberOfRows the number of rows each columnn's array of values should have
+     */    
+    public void prepareColumns(List<QuantitationType> types, int numberOfRows) {
+        for (HybridizationData hybridizationData : hybridizationDataList) {
+            hybridizationData.prepareColumns(types, numberOfRows);
+        }
+    }
+    
+    /**
+     * Determine whether all columns for the given quantitation types in each HybridizationData in this DataSet have
+     * been loaded with data values.
+     * 
+     * @param types the quantitation types of interest
+     * @return true if for each HybridizationData in this DataSet, each column whose type is in the given set of types
+     *         has been loaded, e.g. column.isLoaded is true; false otherwise.
+     */
+    public boolean datasLoaded(List<QuantitationType> types) {
+        for (HybridizationData hybridizationData : hybridizationDataList) {
+            if (!hybridizationData.areColumnsLoaded(types)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
 
     /**
      * @return the designElementList

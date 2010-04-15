@@ -106,7 +106,6 @@ import gov.nih.nci.security.authorization.domainobjects.User;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
@@ -167,65 +166,46 @@ public class Experiment extends AbstractCaArrayEntity {
 
     private static final String READABLE_SAMPLE_CLAUSE = "(select t.attribute_value from csm_sample_id_group t "
         + "where t.group_id IN (:GROUP_NAMES) and t.privilege_id=3)";
-
-    private static final String READABLE_SAMPLE_ALIAS_CLAUSE = READABLE_SAMPLE_CLAUSE;
     
     /** Filter name used for instance level security filters. */
     public static final String SECURITY_FILTER_NAME = "Project1";
 
     /** @Where filter for biomaterials */
-    public static final String BIOMATERIALS_ALIAS_FILTER = "id in (select b.ID from biomaterial b "
+    private static final String BIOMATERIALS_ALIAS_FILTER = "id in (select b.ID from biomaterial b "
         + "left join experiment ex on b.experiment_id = ex.id left join project p on ex.id = p.experiment "
         + "left join sampleextract se on b.id = se.extract_id left join biomaterial b2 on b2.id = se.sample_id "
         + "left join extractlabeledextract ele on b.id = ele.labeledextract_id "
         + "left join sampleextract se2 on ele.extract_id = se2.extract_id "
         + "left join biomaterial b3 on b3.id = se2.sample_id "
         + "where b.discriminator='SO' and p.id in " + READABLE_PROJECT_CLAUSE
-        + " or b.discriminator = 'SA' and b.ID in " + READABLE_SAMPLE_ALIAS_CLAUSE
-        + " or b2.discriminator = 'SA' and b2.ID in " + READABLE_SAMPLE_ALIAS_CLAUSE
-        + " or b3.discriminator = 'SA' and b3.ID in " + READABLE_SAMPLE_ALIAS_CLAUSE + ")";
+        + " or b.discriminator = 'SA' and b.ID in " + READABLE_SAMPLE_CLAUSE
+        + " or b2.discriminator = 'SA' and b2.ID in " + READABLE_SAMPLE_CLAUSE
+        + " or b3.discriminator = 'SA' and b3.ID in " + READABLE_SAMPLE_CLAUSE + ")";
     /** @Where filter for samples */
     public static final String SAMPLES_FILTER = "id in (select s.ID from biomaterial s where s.discriminator = 'SA' "
         + "and s.ID in " + READABLE_SAMPLE_CLAUSE + ")";
-    /** @Where filter for samples - with mysql wrapping table for subselect*/
-    public static final String SAMPLES_ALIAS_FILTER = "id in (select s.ID from biomaterial s "
-        + "where s.discriminator = 'SA' and s.ID in " + READABLE_SAMPLE_ALIAS_CLAUSE + ")";
     /** @Where filter for extracts */
     public static final String EXTRACTS_FILTER = "id in (select e.ID from biomaterial e inner join sampleextract se "
         + " on e.id = se.extract_id inner join biomaterial s on se.sample_id = s.id where e.discriminator = 'EX' and "
         + "s.ID in " + READABLE_SAMPLE_CLAUSE + ")";
-    /** @Where filter for extracts - with mysql wrapping table for subselect */
-    public static final String EXTRACTS_ALIAS_FILTER = "id in (select e.ID from biomaterial e "
-        + "inner join sampleextract se on e.id = se.extract_id inner join biomaterial s on se.sample_id = s.id where "
-        + "e.discriminator = 'EX' and s.ID in " + READABLE_SAMPLE_ALIAS_CLAUSE + ")";
     /** @Where filter for labeled extracts */
     public static final String LABELED_EXTRACTS_FILTER = "id in (select le.ID from biomaterial le inner join "
         + "extractlabeledextract ele on le.id = ele.labeledextract_id inner join sampleextract se on ele.extract_id = "
         + "se.extract_id inner join biomaterial s on se.sample_id = s.id where le.discriminator = 'LA' and s.ID in "
         + READABLE_SAMPLE_CLAUSE + ")";
-    /** @Where filter for labeled extracts - with mysql wrapping table for subselect */
-    public static final String LABELED_EXTRACTS_ALIAS_FILTER = "id in (select le.ID from biomaterial le inner join "
-        + "extractlabeledextract ele on le.id = ele.labeledextract_id inner join sampleextract se on ele.extract_id = "
-        + "se.extract_id inner join biomaterial s on se.sample_id = s.id where le.discriminator = 'LA' and s.ID in "
-        + READABLE_SAMPLE_ALIAS_CLAUSE + ")";
     /** @Where filter for hybs */
-    public static final String HYBRIDIZATIONS_FILTER = "ID in (select h.ID from hybridization h inner join "
+    private static final String HYBRIDIZATIONS_FILTER = "ID in (select h.ID from hybridization h inner join "
         + "labeledextracthybridization leh on h.id = leh.hybridization_id inner join extractlabeledextract ele on "
         + "leh.labeledextract_id = ele.labeledextract_id inner join sampleextract se on ele.extract_id = se.extract_id "
         + "inner join biomaterial s on se.sample_id = s.id where s.ID in " + READABLE_SAMPLE_CLAUSE + ")";
-    /** @Where filter for hybs - with mysql wrapping table for subselect */
-    public static final String HYBRIDIZATIONS_ALIAS_FILTER = "ID in (select h.ID from hybridization h inner join "
-        + "labeledextracthybridization leh on h.id = leh.hybridization_id inner join extractlabeledextract ele on "
-        + "leh.labeledextract_id = ele.labeledextract_id inner join sampleextract se on ele.extract_id = se.extract_id "
-        + "inner join biomaterial s on se.sample_id = s.id where s.ID in " + READABLE_SAMPLE_ALIAS_CLAUSE + ")";
     /** @Where filter for files */
-    public static final String FILES_FILTER = "ID in (select f.id from caarrayfile f left join arraydata ad on f.id = "
+    static final String FILES_FILTER = "ID in (select f.id from caarrayfile f left join arraydata ad on f.id = "
         + "ad.data_file left join project p on f.project = p.id left join arraydata_hybridizations adh "
         + "on ad.id = adh.arraydata_id left join hybridization h on adh.hybridization_id = h.id "
         + "left join labeledextracthybridization leh on h.id = "
         + "leh.hybridization_id left join extractlabeledextract ele on leh.labeledextract_id = ele.labeledextract_id "
         + "left join sampleextract se on ele.extract_id = se.extract_id left join biomaterial s on se.sample_id = s.id "
-        + "where s.id is not null and s.id in " + READABLE_SAMPLE_ALIAS_CLAUSE 
+        + "where s.id is not null and s.id in " + READABLE_SAMPLE_CLAUSE 
         + " or (f.status = " + "'SUPPLEMENTAL' or f.status = 'IMPORTED' or f.status='IMPORTED_NOT_PARSED') "
         + "and s.id is null and p.id in " + READABLE_PROJECT_CLAUSE + " or p.id in "
         + PROJECT_OWNER_CLAUSE + ")";
@@ -427,20 +407,6 @@ public class Experiment extends AbstractCaArrayEntity {
     }
 
     /**
-     * Checks if the set of contacts for this experiment contains a contact with the POC role that does not also have
-     * the PI role, and if such a contact exists, removes it from the set of contacts.
-     */
-    public void removeSeparateMainPointOfContact() {
-        for (Iterator<ExperimentContact> it = this.experimentContacts.iterator(); it.hasNext();) {
-            ExperimentContact contact = it.next();
-            if (contact.isMainPointOfContact() && !contact.isPrimaryInvestigator()) {
-                contact.setExperiment(null);
-                it.remove();
-            }
-        }
-    }
-
-    /**
      * Gets the assay type for this Experiment.
      *
      * @return the assay type
@@ -639,7 +605,7 @@ public class Experiment extends AbstractCaArrayEntity {
     @OneToMany(mappedBy = "experiment", targetEntity = AbstractBioMaterial.class, fetch = FetchType.LAZY)
     @Filters({
         @Filter(name = "BiomaterialFilter", condition = "discriminator = '" + Sample.DISCRIMINATOR + "'"),              
-        @Filter(name = SECURITY_FILTER_NAME, condition = SAMPLES_ALIAS_FILTER)
+        @Filter(name = SECURITY_FILTER_NAME, condition = SAMPLES_FILTER)
     }
     )
     @Cascade({ org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.DELETE,
@@ -673,7 +639,7 @@ public class Experiment extends AbstractCaArrayEntity {
      */
     @OneToMany(mappedBy = "experiment", targetEntity = AbstractBioMaterial.class, fetch = FetchType.LAZY)
     @Where(clause = "discriminator = '" + Extract.DISCRIMINATOR + "'")
-    @Filter(name = SECURITY_FILTER_NAME, condition = EXTRACTS_ALIAS_FILTER)
+    @Filter(name = SECURITY_FILTER_NAME, condition = EXTRACTS_FILTER)
     @Cascade({ org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.DELETE,
             org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<Extract> getExtracts() {
@@ -697,7 +663,7 @@ public class Experiment extends AbstractCaArrayEntity {
      */
     @OneToMany(mappedBy = "experiment", targetEntity = AbstractBioMaterial.class, fetch = FetchType.LAZY)
     @Where(clause = "discriminator = '" + LabeledExtract.DISCRIMINATOR + "'")
-    @Filter(name = SECURITY_FILTER_NAME, condition = LABELED_EXTRACTS_ALIAS_FILTER)
+    @Filter(name = SECURITY_FILTER_NAME, condition = LABELED_EXTRACTS_FILTER)
     @Cascade({ org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.DELETE,
             org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<LabeledExtract> getLabeledExtracts() {
@@ -902,7 +868,7 @@ public class Experiment extends AbstractCaArrayEntity {
     @ForeignKey(name = "hybridization_expr_fk")
     @Cascade({ org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.DELETE,
             org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    @Filter(name = SECURITY_FILTER_NAME, condition = HYBRIDIZATIONS_ALIAS_FILTER)
+    @Filter(name = SECURITY_FILTER_NAME, condition = HYBRIDIZATIONS_FILTER)
     public Set<Hybridization> getHybridizations() {
         return this.hybridizations;
     }

@@ -112,17 +112,11 @@ public interface ArrayDesignService {
     ValidationResult validateDesign(ArrayDesign design);
 
     /**
-     * Validates an array design file in preparation for import.
-     *
-     * @param designFile the native file to validate
-     * @return the validation result.
-     */
-    ValidationResult validateDesign(CaArrayFile designFile);
-
-    /**
-     * Validates an array design files in preparation for import.
-     *
-     * @param designFiles the native files to validate
+     * Validates a set of array design files.
+     * 
+     * @param designFiles the array design files to validate. These should be a set of files representing a single array
+     *            design. Typically only a single file is expected, but some design formats (e.g. Affymetrix PGF/CLF)
+     *            consist of multiple files
      * @return the validation result.
      */
     ValidationResult validateDesign(Set<CaArrayFile> designFiles);
@@ -217,7 +211,7 @@ public interface ArrayDesignService {
      *
      * @param arrayDesign
      *            the array design to delete
-     * @throws ArrayDesignDeleteException TODO
+     * @throws ArrayDesignDeleteException if the array design could not be deleted
      */
     void deleteArrayDesign(ArrayDesign arrayDesign) throws ArrayDesignDeleteException;
 

@@ -138,10 +138,6 @@ public class ProjectExportAction extends AbstractBaseProjectAction implements Pr
         return geoZipOk;
     }
 
-
-
-
-
     /**
      * show export page.
      * @return success

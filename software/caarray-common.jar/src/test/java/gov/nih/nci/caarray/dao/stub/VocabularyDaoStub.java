@@ -99,32 +99,18 @@ import java.util.Set;
  *
  */
 public class VocabularyDaoStub extends AbstractDaoStub implements VocabularyDao {
-
     /**
      * {@inheritDoc}
      */
     public Category getCategory(TermSource source, String name) {
         return null;
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    public Set<Term> getTerms(Category category) {
-        return new HashSet<Term>();
-    }
+    
     /**
      * {@inheritDoc}
      */
     public Set<Term> getTermsRecursive(Category category, String value) {
         return new HashSet<Term>();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void removeTerms(List<Term> termList) {
-        // no-op
     }
 
     /**
@@ -149,8 +135,8 @@ public class VocabularyDaoStub extends AbstractDaoStub implements VocabularyDao 
         return null;
     }
 
-    /* (non-Javadoc)
-     * @see gov.nih.nci.caarray.dao.SampleDao#searchForCharacteristicCategory(java.lang.String)
+    /**
+     * {@inheritDoc}
      */
     public List<Category> searchForCharacteristicCategory(Experiment e,
             Class<? extends AbstractCharacteristic> characteristicClass, String keyword) {

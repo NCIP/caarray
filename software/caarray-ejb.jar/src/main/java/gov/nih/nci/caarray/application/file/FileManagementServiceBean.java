@@ -215,9 +215,10 @@ public class FileManagementServiceBean implements FileManagementService {
         CaArrayFileSet oldFiles = arrayDesign.getDesignFileSet();
         designFiles.updateStatus(FileStatus.VALIDATING);
 
+        ArrayDesignService ads = ServiceLocatorFactory.getArrayDesignService();
         arrayDesign.setDesignFileSet(designFiles);
-        getArrayDesignService().saveArrayDesign(arrayDesign);
-        getArrayDesignService().importDesign(arrayDesign);
+        ads.saveArrayDesign(arrayDesign);
+        ads.importDesign(arrayDesign);
 
         final ArrayDao arrayDao = getDaoFactory().getArrayDao();
         if (FileStatus.VALIDATION_ERRORS.equals(designFiles.getStatus())) {
@@ -256,7 +257,7 @@ public class FileManagementServiceBean implements FileManagementService {
         getSubmitter().submitJob(job);
     }
 
-    CaArrayDaoFactory getDaoFactory() {
+    private CaArrayDaoFactory getDaoFactory() {
         return daoFactory;
     }
 
@@ -280,16 +281,12 @@ public class FileManagementServiceBean implements FileManagementService {
         getDaoFactory().getProjectDao().save(targetProject);
     }
 
-    FileManagementJobSubmitter getSubmitter() {
+    private FileManagementJobSubmitter getSubmitter() {
         return submitter;
     }
 
     void setSubmitter(FileManagementJobSubmitter submitter) {
         this.submitter = submitter;
-    }
-
-    ArrayDesignService getArrayDesignService() {
-        return (ArrayDesignService) ServiceLocatorFactory.getLocator().lookup(ArrayDesignService.JNDI_NAME);
     }
 
     /**

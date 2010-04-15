@@ -97,6 +97,7 @@ import com.opensymphony.xwork2.Action;
 
 /**
  * Action for displaying the home page.
+ * 
  * @author Winston Cheng
  */
 public class HomeAction {

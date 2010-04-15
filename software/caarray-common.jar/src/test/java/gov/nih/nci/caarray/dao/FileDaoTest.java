@@ -269,7 +269,7 @@ public class FileDaoTest extends AbstractDaoTest {
     public void testUnknownProjectIds() {
         Transaction tx = HibernateUtil.beginTransaction();
         DAO_OBJECT.deleteHqlBlobsByProjectId(12345678L);
-        DAO_OBJECT.deleteSqlBlobsByProjectId(12345678L);
+        // we are simply testing that this does not cause an exception. the result is a no-op
         tx.commit();
     }
 

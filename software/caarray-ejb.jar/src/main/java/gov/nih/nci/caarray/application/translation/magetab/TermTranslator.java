@@ -201,7 +201,7 @@ final class TermTranslator extends AbstractTranslator {
         return termCache.get(new TermKey(value, ts));
     }
 
-    void addTermToCache(String value, gov.nih.nci.caarray.domain.vocabulary.TermSource ts, Term term) {
+    private void addTermToCache(String value, gov.nih.nci.caarray.domain.vocabulary.TermSource ts, Term term) {
         termCache.put(new TermKey(value, ts), term);
     }
 

@@ -114,13 +114,10 @@ import org.hibernate.annotations.BatchSize;
 @BatchSize(size = AbstractCaArrayObject.DEFAULT_BATCH_SIZE)
 public class FileValidationResult implements Serializable, Comparable<FileValidationResult> {
     /**
-     * Key for validationProperties for array data file sample names.
-     */
-    public static final String SAMPLE_NAME = "Sample(s)";
-    /**
      * Key for validationProperties for array data file hybridization names.
      */
     public static final String HYB_NAME = "Hybridization(s)";
+    
     private static final long serialVersionUID = -5402207496806890698L;
     private static final String UNUSED = "unused";
 

@@ -291,20 +291,6 @@ public class ExperimentContact extends AbstractCaArrayEntity {
     }
 
     /**
-     * Remove the Main POC role from the list of roles of this
-     * ExperimentContact. If it did not have this role, then this is a no-op.
-     */
-    public void removeMainPointOfContactRole() {
-        for (Iterator<Term> it = roles.iterator(); it.hasNext();) {
-            Term role = it.next();
-            if (MAIN_POC_ROLE.equals(role.getValue())) {
-                it.remove();
-                break;
-            }
-        }
-    }
-
-    /**
      * {@inheritDoc}
      */
     @Override

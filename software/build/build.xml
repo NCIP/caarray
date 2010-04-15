@@ -973,7 +973,35 @@
             </fileset>
         </path>
         <property name="liquibase.jar" refid="liquibase.jar.fileset" />
-        	
+    	
+        <path id="guice.jar.path">
+            <fileset dir="${project.lib}" id="guice.jar.fileset">
+                <include name="guice-*.jar"/>
+            </fileset>
+        </path>
+        <property name="guice.jar" refid="guice.jar.fileset" />
+
+        <path id="aopalliance.jar.path">
+            <fileset dir="${project.lib}" id="aopalliance.jar.fileset">
+                <include name="aopalliance-*.jar"/>
+            </fileset>
+        </path>
+        <property name="aopalliance.jar" refid="aopalliance.jar.fileset" />
+
+        <path id="guice-multibindings.jar.path">
+            <fileset dir="${project.lib}" id="guice-multibindings.jar.fileset">
+                <include name="multibindings-*.jar"/>
+            </fileset>
+        </path>
+        <property name="guice-multibindings.jar" refid="guice-multibindings.jar.fileset" />
+
+        <path id="guice-assistedinject.jar.path">
+            <fileset dir="${project.lib}" id="guice-assistedinject.jar.fileset">
+                <include name="guice-*.jar"/>
+            </fileset>
+        </path>
+        <property name="guice-assistedinject.jar" refid="guice-assistedinject.jar.fileset" />
+
         <path id="jboss.dependencies.path">
             <fileset id="jboss.dependencies.fileset" dir="${project.lib}">
                 <include name="${jboss-annotations-ejb3.jar}"/>
@@ -1001,6 +1029,9 @@
         	<fileset refid="xerces-J.jar.fileset"/>
         	<fileset refid="xercesImpl.jar.fileset"/>
             <fileset refid="commons-configuration.jar.fileset"/>
+        	<fileset refid="guice.jar.fileset"/>
+        	<fileset refid="guice-multibindings.jar.fileset"/>
+        	<fileset refid="guice-assistedinject.jar.fileset"/>
             <fileset id="common.grid.dependencies.fileset" dir="${project.lib}">
                 <include name="${axis.jar}"/>
                 <include name="${caGrid-core.jar}"/>
@@ -2684,6 +2715,14 @@
         	<fileset refid="javaee.jar.fileset"/>
         	<fileset refid="affxfusion.jar.fileset"/>
         	<fileset refid="commons-io.jar.fileset"/>
+        	<fileset refid="guice.jar.fileset"/>
+        	<fileset refid="guice-assistedinject.jar.fileset"/>
+        	<fileset refid="guice-multibindings.jar.fileset"/>
+        	<fileset refid="aopalliance.jar.fileset"/>
+        	<fileset refid="hibernate.jar.fileset"/>
+        	<fileset refid="csmapi.jar.fileset"/>
+        	<fileset refid="common.compile.dependencies.fileset"/>
+
             <pathelement path="${caarraydb.sql.src.dir}/liquibase" />
 		</path>
 		

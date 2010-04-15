@@ -85,7 +85,6 @@ package gov.nih.nci.caarray.application.vocabulary;
 import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.application.ExceptionLoggingInterceptor;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
-import gov.nih.nci.caarray.dao.OrganismDao;
 import gov.nih.nci.caarray.dao.VocabularyDao;
 import gov.nih.nci.caarray.domain.protocol.Protocol;
 import gov.nih.nci.caarray.domain.sample.AbstractCharacteristic;
@@ -155,7 +154,7 @@ public class VocabularyServiceBean implements VocabularyService {
      * {@inheritDoc}
      */
     public List<Organism> getOrganisms() {
-        return getOrganismDao().getAllOrganisms();
+        return this.daoFactory.getSearchDao().retrieveAll(Organism.class, Order.asc("scientificName"));
     }
 
     /**
@@ -244,13 +243,6 @@ public class VocabularyServiceBean implements VocabularyService {
     /**
      * {@inheritDoc}
      */
-    public Organism getOrganism(Long id) {
-        return getOrganismDao().getOrganism(id);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public void saveTerm(Term term) {
         getVocabularyDao().save(term);
@@ -272,32 +264,14 @@ public class VocabularyServiceBean implements VocabularyService {
     }
 
     /**
-     * {@inheritDoc}
-     */
-    public List<Organism> searchForOrganismNames(String keyword) {
-        return getOrganismDao().searchForOrganismNames(keyword);
-    }
-
-    /**
      *
      * @return VocabularyDao
      */
-    protected VocabularyDao getVocabularyDao() {
+    private VocabularyDao getVocabularyDao() {
         return this.daoFactory.getVocabularyDao();
     }
 
-    /**
-     * @return OrganismDao
-     */
-    private OrganismDao getOrganismDao() {
-        return this.daoFactory.getOrganismDao();
-    }
-
-    final CaArrayDaoFactory getDaoFactory() {
-        return this.daoFactory;
-    }
-
-    final void setDaoFactory(CaArrayDaoFactory daoFactory) {
+    void setDaoFactory(CaArrayDaoFactory daoFactory) {
         this.daoFactory = daoFactory;
     }
 }

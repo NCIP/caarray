@@ -151,14 +151,6 @@ class CaArrayDaoFactoryImpl implements CaArrayDaoFactory {
     public ContactDao getContactDao() {
         return new ContactDaoImpl();
     }
-    /**
-     * Returns a <code>OrganismDao</code>.
-     *
-     * @return a <code>OrganismDao</code>.
-     */
-    public OrganismDao getOrganismDao() {
-        return new OrganismDaoImpl();
-    }
 
     /**
      * {@inheritDoc}

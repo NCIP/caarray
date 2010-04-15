@@ -88,8 +88,10 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.application.AbstractServiceIntegrationTest;
+import gov.nih.nci.caarray.application.ServiceLocatorFactory;
+import gov.nih.nci.caarray.application.arraydata.ArrayDataService;
 import gov.nih.nci.caarray.application.arraydata.DataImportOptions;
-import gov.nih.nci.caarray.application.arraydesign.ArrayDesignServiceBean;
+import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
@@ -164,6 +166,12 @@ public class FileManagementServiceIntegrationTest extends AbstractServiceIntegra
     @Before
     public void setUp() {
         this.fileManagementService = createFileManagementService(fileAccessService);
+        
+        Transaction tx = HibernateUtil.beginTransaction();
+        ArrayDataService ads = ServiceLocatorFactory.getArrayDataService();
+        ads.initialize();
+        tx.commit();
+        
         resetData();
     }
     
@@ -708,7 +716,7 @@ public class FileManagementServiceIntegrationTest extends AbstractServiceIntegra
         design.setOrganism(DUMMY_ORGANISM);
         HibernateUtil.getCurrentSession().save(design);
 
-        ArrayDesignServiceBean arrayDesignService = new ArrayDesignServiceBean();
+        ArrayDesignService arrayDesignService = ServiceLocatorFactory.getArrayDesignService();
         arrayDesignService.importDesign(design);
         arrayDesignService.importDesignDetails(design);
 

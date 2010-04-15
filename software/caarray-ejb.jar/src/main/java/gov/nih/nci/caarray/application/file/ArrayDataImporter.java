@@ -106,13 +106,10 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
-
-
 /**
  * Manages import of array data files.
  */
 final class ArrayDataImporter {
-
     private static final Logger LOG = Logger.getLogger(ArrayDataImporter.class);
 
     private final ArrayDataService arrayDataService;
@@ -186,7 +183,6 @@ final class ArrayDataImporter {
         }
 
         return names;
-
     }
 
     private <T extends AbstractSampleDataRelationshipNode>
@@ -226,8 +222,6 @@ final class ArrayDataImporter {
             doAddSdrfErrors(pruneOutDataFileNodeNames(values, dataFileNodeNames),
                     keyName, sdrfFiles);
         }
-
-
     }
 
     private List<String> collectDataRelationshipNodeNames(Set<CaArrayFile> dataFiles, String keyName) {
@@ -262,7 +256,6 @@ final class ArrayDataImporter {
         }
     }
 
-
     private <T extends AbstractSampleDataRelationshipNode> void doAddSdrfError(
             String mtSdrfName, Map<String, List<T>> values, String materialName, Set<CaArrayFile> sdrfFiles) {
         for (CaArrayFile sdrf : sdrfFiles) {
@@ -284,5 +277,4 @@ final class ArrayDataImporter {
             }
         }
     }
-
 }

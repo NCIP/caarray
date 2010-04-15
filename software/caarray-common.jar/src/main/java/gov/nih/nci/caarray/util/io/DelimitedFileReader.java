@@ -89,7 +89,6 @@ import java.util.List;
  * Interface to read text files with delimiters and separators (e.g. CSV or tab delimited files).
  */
 public interface DelimitedFileReader {
-
     /**
      * Returns true if there are more lines to be read in the file.
      *
@@ -124,5 +123,4 @@ public interface DelimitedFileReader {
      * Closes the reader.
      */
     void close();
-
 }

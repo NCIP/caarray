@@ -82,53 +82,82 @@
  */
 package gov.nih.nci.caarray.application.arraydata;
 
-import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
-import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
-import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
+ import gov.nih.nci.caarray.dao.ArrayDao;
+import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
+import gov.nih.nci.caarray.platforms.FileManager;
+import gov.nih.nci.caarray.platforms.spi.DataFileHandler;
+import gov.nih.nci.caarray.platforms.spi.PlatformFileReadException;
 import gov.nih.nci.caarray.validation.FileValidationResult;
+import gov.nih.nci.caarray.validation.ValidationMessage.Type;
 
 import java.io.File;
+import java.util.Set;
+
+import org.apache.log4j.Logger;
+
+import com.google.inject.Inject;
 
 /**
- * Responsible for validation of arbitrary array data files.
+ * Helper class for validating array data files.
+ * 
+ * @author dkokotov
  */
-final class DataFileValidator {
+final class DataFileValidator extends AbstractArrayDataUtility {
+    private static final Logger LOG = Logger.getLogger(DataFileValidator.class);
 
-    private final CaArrayFile arrayDataFile;
-    private final CaArrayDaoFactory daoFactory;
-    private final ArrayDesignService arrayDesignService;
-    private final MageTabDocumentSet mTabSet;
-
-    DataFileValidator(CaArrayFile arrayDataFile, MageTabDocumentSet mTabSet,
-            CaArrayDaoFactory daoFactory, ArrayDesignService arrayDesignService) {
-        this.arrayDataFile = arrayDataFile;
-        this.daoFactory = daoFactory;
-        this.arrayDesignService = arrayDesignService;
-        this.mTabSet = mTabSet;
+    private final FileManager fileManager;
+    
+    @Inject
+    DataFileValidator(ArrayDao arrayDao, Set<DataFileHandler> handlers, FileManager fileManager) {
+        super(arrayDao, handlers);
+        this.fileManager = fileManager;
     }
-
-    void validate() {
-        AbstractDataFileHandler handler =
-            ArrayDataHandlerFactory.getInstance().getHandler(getArrayDataFile().getFileType());
-        File file = TemporaryFileCacheLocator.getTemporaryFileCache().getFile(arrayDataFile);
-        FileValidationResult result = handler.validate(arrayDataFile, file, mTabSet, arrayDesignService);
-        getArrayDataFile().setValidationResult(result);
-        if (result.isValid()) {
-            getArrayDataFile().setFileStatus(handler.getValidatedStatus());
-        } else {
-            getArrayDataFile().setFileStatus(FileStatus.VALIDATION_ERRORS);
+    
+    void validate(CaArrayFile caArrayFile, MageTabDocumentSet mTabSet) {        
+        DataFileHandler handler = null;
+        try {
+            File file = fileManager.openFile(caArrayFile);            
+            FileValidationResult result = new FileValidationResult(file);
+            try {
+                handler = getHandler(caArrayFile);
+                ArrayDesign design = getArrayDesign(caArrayFile, handler);
+                handler.validate(mTabSet, result, design);
+                if (result.isValid()) {
+                    validateArrayDesignInExperiment(caArrayFile, result, handler);
+                }
+            } catch (PlatformFileReadException e) {
+                LOG.error("Error obtaining a data handler for validating data file", e);
+                result.addMessage(Type.ERROR, "File is not a valid file of type " + caArrayFile.getFileType());
+            } catch (RuntimeException e) {
+                LOG.error("Unexpected RuntimeException validating data file", e);
+                result.addMessage(Type.ERROR, "Unexpected error validating data file: " + e.getMessage());
+            }            
+            caArrayFile.setValidationResult(result);
+            if (result.isValid()) {
+                caArrayFile
+                        .setFileStatus(handler.parsesData() ? FileStatus.VALIDATED : FileStatus.VALIDATED_NOT_PARSED);
+            } else {
+                caArrayFile.setFileStatus(FileStatus.VALIDATION_ERRORS);
+            }
+            getArrayDao().save(caArrayFile);            
+        } finally {
+            if (handler != null) {
+                handler.closeFiles();
+            }
         }
-        getDaoFactory().getArrayDao().save(arrayDataFile);
     }
-
-    private CaArrayFile getArrayDataFile() {
-        return arrayDataFile;
-    }
-
-    private CaArrayDaoFactory getDaoFactory() {
-        return daoFactory;
-    }
+    
+    private void validateArrayDesignInExperiment(CaArrayFile caArrayFile, FileValidationResult result,
+            DataFileHandler handler) {
+        ArrayDesign design = getArrayDesign(caArrayFile, handler);
+        if (design == null) {
+            result.addMessage(Type.ERROR, "The array design referenced by this data file could not be found.");
+        } else if (!caArrayFile.getProject().getExperiment().getArrayDesigns().contains(design)) {
+            result.addMessage(Type.ERROR, "The array design referenced by this data file (" + design.getName()
+                    + ") is not associated with this experiment");
+        }
+    }    
 }

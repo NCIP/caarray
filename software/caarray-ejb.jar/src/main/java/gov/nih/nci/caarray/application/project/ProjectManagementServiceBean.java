@@ -127,9 +127,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.annotation.Resource;
 import javax.ejb.Local;
-import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
@@ -155,9 +153,6 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     private static final int UPLOAD_TIMEOUT = 7200;
     private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
     private static final int DELETE_TIMEOUT = 3600;
-
-    @Resource
-    private SessionContext sessionContext;
 
     private ProjectDao getProjectDao() {
         return this.daoFactory.getProjectDao();
@@ -553,24 +548,16 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
         return copy;
     }
 
-    FileAccessService getFileAccessService() {
-        return (FileAccessService) ServiceLocatorFactory.getLocator().lookup(FileAccessService.JNDI_NAME);
+    private FileAccessService getFileAccessService() {
+        return ServiceLocatorFactory.getFileAccessService();
     }
 
-    CaArrayDaoFactory getDaoFactory() {
+    private CaArrayDaoFactory getDaoFactory() {
         return this.daoFactory;
     }
 
     void setDaoFactory(CaArrayDaoFactory daoFactory) {
         this.daoFactory = daoFactory;
-    }
-
-    SessionContext getSessionContext() {
-        return this.sessionContext;
-    }
-
-    void setSessionContext(SessionContext sessionContext) {
-        this.sessionContext = sessionContext;
     }
 
     private GenericDataService getGenericDataService() {

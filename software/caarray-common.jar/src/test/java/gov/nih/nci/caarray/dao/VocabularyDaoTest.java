@@ -203,29 +203,6 @@ public class VocabularyDaoTest extends AbstractDaoTest {
     }
 
     /**
-     * Tests retrieving all <code>Term</code>s in a given <code>Category</code>.
-     */
-    @Test
-    public void testGetTerms() {
-        Transaction tx = null;
-        try {
-            tx = HibernateUtil.beginTransaction();
-            setupTestGetTerms();
-            Set<Term> retrievedTerms = DAO_OBJECT.getTerms(DUMMY_CATEGORY_3);
-            if (retrievedTerms.size() != 2) {
-                fail("Did not retrieve the expected number of terms.");
-            }
-            // Check if we got the expected terms, and accordingly pass or fail the test.
-            checkIfExpectedTerms(retrievedTerms);
-            tx.commit();
-        } catch (DAOException   e) {
-            HibernateUtil.rollbackTransaction(tx);
-            e.printStackTrace();
-            fail("DAO exception while getting terms in a category: " + e.getMessage());
-        }
-    }
-
-    /**
      * Tests retrieving all <code>Term</code>s in a given <code>Category</code> recursively.
      */
     @Test

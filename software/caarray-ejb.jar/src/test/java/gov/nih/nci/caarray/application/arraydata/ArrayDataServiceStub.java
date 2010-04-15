@@ -99,18 +99,6 @@ import java.util.List;
  * Simple stub for array data service.
  */
 public class ArrayDataServiceStub implements ArrayDataService {
-
-    public DataSet getData(AbstractArrayData arrayData) {
-        List<QuantitationType> types = new ArrayList<QuantitationType>();
-        return getData(arrayData, types);
-    }
-
-    public DataSet getData(AbstractArrayData arrayData, List<QuantitationType> types) {
-        DataSet dataSet = new DataSet();
-        dataSet.getQuantitationTypes().addAll(types);
-        return dataSet;
-    }
-
     public void importData(CaArrayFile caArrayFile, boolean createAnnotation, DataImportOptions importOptions)
             throws InvalidDataFileException {
         // no-op

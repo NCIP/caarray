@@ -82,116 +82,72 @@
  */
 package gov.nih.nci.caarray.application.arraydata;
 
-import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
-import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
 import gov.nih.nci.caarray.dao.ArrayDao;
-import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
+import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
-import gov.nih.nci.caarray.domain.data.AbstractDataColumn;
-import gov.nih.nci.caarray.domain.data.DataSet;
-import gov.nih.nci.caarray.domain.data.HybridizationData;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
+import gov.nih.nci.caarray.platforms.spi.DataFileHandler;
+import gov.nih.nci.caarray.platforms.spi.PlatformFileReadException;
+import gov.nih.nci.caarray.validation.FileValidationResult;
+import gov.nih.nci.caarray.validation.InvalidDataFileException;
+import gov.nih.nci.caarray.validation.ValidationMessage.Type;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 
-/**
- * Responsible for ensuring that data columns for a <code>DataSet</code> are loaded. This enables
- * loading of data on demand.
- */
-final class DataSetLoader {
+import com.google.inject.Inject;
 
+
+/**
+ * Helper class for ensuring that data columns for a <code>DataSet</code> are loaded. This enables
+ * loading of data on demand.
+ * 
+ * @author dkokotov
+ */
+final class DataSetLoader extends AbstractArrayDataUtility {
     private static final Logger LOG = Logger.getLogger(DataSetLoader.class);
 
-    private final CaArrayDaoFactory daoFactory;
-    private final AbstractArrayData arrayData;
-    private AbstractDataFileHandler dataFileHandler;
-    private final ArrayDesignService arrayDesignService;
-
-    DataSetLoader(AbstractArrayData arrayData, CaArrayDaoFactory daoFactory,
-            ArrayDesignService arrayDesignService) {
-        this.arrayData = arrayData;
-        this.daoFactory = daoFactory;
-        this.arrayDesignService = arrayDesignService;
+    @Inject
+    DataSetLoader(ArrayDao arrayDao, Set<DataFileHandler> handlers) {
+        super(arrayDao, handlers);
     }
-
-    void load() {
-        List<QuantitationType> types = getQuantitationTypes();
-        load(types);
-    }
-
-    void load(List<QuantitationType> types) {
-        AbstractDataFileHandler handler = getDataFileHandler();
-        if (isLoadRequired(getDataSet(), types)) {
-            LOG.debug("Parsing required for file " + getArrayData().getDataFile().getName());
-            File file = getFile();
-            handler.loadData(getDataSet(), types, file, arrayDesignService);
-            getDaoFactory().getArrayDao().save(getDataSet());
-        } else {
-            LOG.debug("File " + getArrayData().getDataFile().getName() + " has already been parsed");
-        }
-    }
-
-    private File getFile() {
-        return TemporaryFileCacheLocator.getTemporaryFileCache().getFile(getArrayData().getDataFile());
-    }
-
-    private boolean isLoadRequired(DataSet dataSet, List<QuantitationType> types) {
-        for (HybridizationData hybridizationData : dataSet.getHybridizationDataList()) {
-            if (isLoadRequired(hybridizationData, types)) {
-                return true;
+    
+    void load(AbstractArrayData arrayData) throws InvalidDataFileException {
+        DataFileHandler handler = null;
+        try {
+            LOG.debug("Parsing required for file " + arrayData.getDataFile().getName());
+            try {
+                handler = getHandler(arrayData.getDataFile());
+                ArrayDesign design = getArrayDesign(arrayData.getDataFile(), handler);
+                List<QuantitationType> types = getQuantitationTypes(handler);
+                handler.loadData(arrayData.getDataSet(), types, design);
+            } catch (PlatformFileReadException e) {
+                LOG.warn("Error loading data: ", e);
+                FileValidationResult validationResult = arrayData.getDataFile().getValidationResult(); 
+                validationResult.addMessage(Type.ERROR, "Error loading data set: " + e.getMessage());
+                throw new InvalidDataFileException(validationResult, e);
+            }
+            getArrayDao().save(arrayData.getDataSet());
+        } finally {
+            if (handler != null) {
+                handler.closeFiles();
             }
         }
-        return false;
-    }
+    }        
 
-    private boolean isLoadRequired(HybridizationData hybridizationData, List<QuantitationType> types) {
-        for (AbstractDataColumn column : hybridizationData.getColumns()) {
-            if (types.contains(column.getQuantitationType()) && !column.isLoaded()) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private CaArrayDaoFactory getDaoFactory() {
-        return daoFactory;
-    }
-
-    private DataSet getDataSet() {
-        return getArrayData().getDataSet();
-    }
-
-    private AbstractArrayData getArrayData() {
-        return arrayData;
-    }
-
-    QuantitationType getQuantitationType(QuantitationTypeDescriptor descriptor) {
+    private QuantitationType getQuantitationType(QuantitationTypeDescriptor descriptor) {
         return getArrayDao().getQuantitationType(descriptor);
     }
 
-    private ArrayDao getArrayDao() {
-        return getDaoFactory().getArrayDao();
-    }
-
-    private List<QuantitationType> getQuantitationTypes() {
+    private List<QuantitationType> getQuantitationTypes(DataFileHandler handler) {
         List<QuantitationType> quantitationTypes = new ArrayList<QuantitationType>();
-        for (QuantitationTypeDescriptor descriptor : getDataFileHandler().getQuantitationTypeDescriptors(getFile())) {
+        for (QuantitationTypeDescriptor descriptor : handler.getQuantitationTypeDescriptors()) {
             quantitationTypes.add(getQuantitationType(descriptor));
         }
         return quantitationTypes;
     }
-
-    AbstractDataFileHandler getDataFileHandler() {
-        if (dataFileHandler == null) {
-            dataFileHandler =
-                ArrayDataHandlerFactory.getInstance().getHandler(getArrayData().getDataFile().getFileType());
-        }
-        return dataFileHandler;
-    }
-
 }

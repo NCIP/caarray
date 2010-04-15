@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.util;
 
+import gov.nih.nci.caarray.domain.AutoPropertiesInterceptor;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.security.SecurityInterceptor;
 import gov.nih.nci.caarray.security.SecurityUtils;
@@ -113,7 +114,6 @@ import org.hibernate.proxy.HibernateProxy;
 import com.fiveamsolutions.nci.commons.audit.AuditLogInterceptor;
 import com.fiveamsolutions.nci.commons.util.CompositeInterceptor;
 import com.fiveamsolutions.nci.commons.util.HibernateHelper;
-import gov.nih.nci.caarray.domain.AutoPropertiesInterceptor;
 
 /**
  * Utility class to create and retrieve Hibernate sessions.  Most methods are pass-throughs to {@link HibernateHelper},
@@ -152,22 +152,6 @@ public final class HibernateUtil {
      */
     public static HibernateHelper getHibernateHelper() {
         return HIBERNATE_HELPER;
-    }
-
-    /**
-     * Get the audit log processor.
-     * @return AUDIT_LOG_PROCESSOR.
-     */
-    public static CaArrayAuditLogProcessor getAuditLogProcessor() {
-        return AUDIT_LOG_PROCESSOR;
-    }
-
-    /**
-     * Get the audit logger interceptor.
-     * @return AUDIT_LOG_INTERCEPTOR.
-     */
-    public static AuditLogInterceptor getAuditLogInterceptor() {
-        return AUDIT_LOG_INTERCEPTOR;
     }
 
     /**

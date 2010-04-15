@@ -106,11 +106,6 @@ public interface BrowseDao {
     int hybridizationCount();
 
     /**
-     * @return the total number of registered institutions
-     */
-    int institutionCount();
-
-    /**
      * @return the total number of registered users
      */
     int userCount();

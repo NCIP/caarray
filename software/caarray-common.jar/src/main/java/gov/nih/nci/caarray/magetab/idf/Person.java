@@ -225,9 +225,6 @@ public final class Person implements Serializable {
     }
 
     /**
-     *
-     */
-    /**
      * @param role to add
      */
     public void addToRoles(OntologyTerm role) {

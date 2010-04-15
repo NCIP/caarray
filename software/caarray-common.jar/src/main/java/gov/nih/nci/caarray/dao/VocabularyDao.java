@@ -98,16 +98,6 @@ import java.util.Set;
  * @author ETavela
  */
 public interface VocabularyDao extends CaArrayDao {
-
-    /**
-     * Gets all the <code>Terms</code> belonging to the given category only (and not its subcategories).
-     *
-     * @param category the category for which to retrieve terms
-     * @return <code>List&lt;Term></code> of all terms belonging directly to the given category, or an empty
-     * <code>List</code> if no matches.
-     */
-    Set<Term> getTerms(Category category);
-
     /**
      * Gets all the <code>Terms</code> in the given category and all sub-categories (where a category's
      * subcategories are the transitive closure of its children property), optionally retrieving only
