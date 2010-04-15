@@ -82,15 +82,11 @@
  */
 package gov.nih.nci.caarray.platforms.affymetrix;
 
-import affymetrix.calvin.exception.UnsignedOutOfLimitsException;
-import affymetrix.fusion.chp.FusionCHPLegacyData;
-import affymetrix.fusion.chp.FusionExpressionProbeSetResults;
 import gov.nih.nci.caarray.application.arraydata.ArrayDataException;
 import gov.nih.nci.caarray.application.arraydata.ArrayDataIOException;
 import gov.nih.nci.caarray.domain.data.AbstractDataColumn;
 import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
 import gov.nih.nci.caarray.domain.data.FloatColumn;
-import gov.nih.nci.caarray.domain.data.IntegerColumn;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
 import gov.nih.nci.caarray.domain.data.ShortColumn;
@@ -101,6 +97,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+
+import affymetrix.calvin.exception.UnsignedOutOfLimitsException;
+import affymetrix.fusion.chp.FusionCHPLegacyData;
+import affymetrix.fusion.chp.FusionExpressionProbeSetResults;
 
 /**
  * Supports expression data in legacy Affymetrix CHP file formats.

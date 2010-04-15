@@ -86,7 +86,6 @@ import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileStatus;
-import gov.nih.nci.caarray.platforms.FileManager;
 import gov.nih.nci.caarray.platforms.spi.DesignFileHandler;
 import gov.nih.nci.caarray.platforms.spi.PlatformFileReadException;
 import gov.nih.nci.caarray.validation.FileValidationResult;
@@ -106,6 +105,7 @@ import com.google.inject.Inject;
  * 
  * @author dkokotov
  */
+@SuppressWarnings({ "PMD.CyclomaticComplexity" })
 final class ArrayDesignPlatformFacade {
     private final Set<DesignFileHandler> handlers;
     private final ArrayDao arrayDao;
@@ -133,6 +133,7 @@ final class ArrayDesignPlatformFacade {
         throw new InvalidNumberOfArgsException(InvalidNumberOfArgsException.UNSUPPORTED_ARRAY_DESIGN);
     }
     
+    @SuppressWarnings({ "PMD.CyclomaticComplexity", "PMD.NPathComplexity", "PMD.ExcessiveMethodLength" })
     ValidationResult validateDesignFiles(Set<CaArrayFile> designFiles) {
         ValidationResult result = new ValidationResult();
         for (CaArrayFile designFile : designFiles) {

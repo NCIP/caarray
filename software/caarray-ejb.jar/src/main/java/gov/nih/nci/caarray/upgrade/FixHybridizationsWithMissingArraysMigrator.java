@@ -141,6 +141,7 @@ public class FixHybridizationsWithMissingArraysMigrator extends AbstractCustomCh
     /**
      * {@inheritDoc}
      */
+    @SuppressWarnings("PMD.ExcessiveMethodLength")
     public void execute(Database db) throws CustomChangeException {
         try {
             this.openFileMap.clear();
