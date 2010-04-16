@@ -1,7 +1,7 @@
 <%@ include file="/WEB-INF/pages/common/taglibs.jsp"%>
 
 <c:url value="/ajax/project/listTab/Hybridizations/factorValuesList.action" var="sortUrl"/>
-        <ajax:displayTag id="datatable" ajaxFlag="true" tableClass="searchresults" preFunction="TabUtils.showLoadingTextKeepMainContent" postFunction="TabUtils.hideLoadingText">
+<ajax:displayTag id="datatable" ajaxFlag="true" tableClass="searchresults" preFunction="TabUtils.showLoadingTextKeepMainContent" postFunction="TabUtils.hideLoadingText">
 <caarray:tabPane paneTitleKey="project.tabs.factorValues" subtab="true">
     <div class="tableboxpad" style="overflow:auto; max-height:500px">
         <display:table class="searchresults" cellspacing="0" defaultsort="1" list="${currentHybridization.factorValues}"

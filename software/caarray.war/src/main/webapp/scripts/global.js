@@ -650,7 +650,7 @@ DownloadMgr.prototype.addAll = function() {
 }
 
 DownloadMgr.prototype.displayAllRemoveIcons = function() {
-  var icons = document.getElementById('datatable').getElementsByTagName('img');
+  var icons = document.getElementById('datatable_downloadFilesListTable').getElementsByTagName('img');
   for(i=0;i<icons.length;i++) {
     if(icons[i].id.lastIndexOf("rIcon") != -1) {
       icons[i].src = this.removeImageUrl;
