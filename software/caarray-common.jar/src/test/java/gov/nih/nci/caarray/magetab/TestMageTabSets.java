@@ -694,8 +694,8 @@ public final class TestMageTabSets {
      
     private static MageTabFileSet getRenamingTermSourcesInputSet() {
         MageTabFileSet fileSet = new MageTabFileSet();
-        fileSet.addIdf(MageTabDataFiles.RENAMING_TERM_SOURCES_IDF);
-        fileSet.addSdrf(MageTabDataFiles.RENAMING_TERM_SOURCES_SDRF);
+        fileSet.addIdf(new JavaIOFileRef(MageTabDataFiles.RENAMING_TERM_SOURCES_IDF));
+        fileSet.addSdrf(new JavaIOFileRef(MageTabDataFiles.RENAMING_TERM_SOURCES_SDRF));
         addCelFiles(fileSet, MageTabDataFiles.RENAMING_TERM_SOURCES_DIRECTORY);
         addChpFiles(fileSet, MageTabDataFiles.RENAMING_TERM_SOURCES_DIRECTORY);
         return fileSet;
