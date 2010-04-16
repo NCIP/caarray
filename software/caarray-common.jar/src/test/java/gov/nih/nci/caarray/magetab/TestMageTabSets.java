@@ -288,6 +288,11 @@ public final class TestMageTabSets {
      * MAGE-TAB input set containing valid usage of Characteristics[ExternalSampleId] for Sample(s).
      */
     public static final MageTabFileSet EXTENDED_FACTOR_VALUES_INPUT_SET = getExtendedFactorValuesInputSet();
+    
+    /**
+     * MAGE-TAB input set for testing renaming of term sources upon import (GForge 27244)
+     */
+    public static final MageTabFileSet RENAMING_TERM_SOURCES_INPUT_SET = getRenamingTermSourcesInputSet();
 
     public static final MageTabFileSet MULTI_DERIVED_1_INPUT_SET = getSdrfTestInputSet(SdrfTestFiles.MULTI_DERIVED_1_IDF, SdrfTestFiles.MULTI_DERIVED_1_SDRF);
     public static final MageTabFileSet MULTI_NORMALIZATION_1_INPUT_SET = getSdrfTestInputSet(SdrfTestFiles.MULTI_NORMALIZATION_1_IDF, SdrfTestFiles.MULTI_NORMALIZATION_1_SDRF);
@@ -684,6 +689,15 @@ public final class TestMageTabSets {
         fileSet.addIdf(new JavaIOFileRef(MageTabDataFiles.EXTENDED_FACTOR_VALUES_IDF));
         fileSet.addSdrf(new JavaIOFileRef(MageTabDataFiles.EXTENDED_FACTOR_VALUES_SDRF));
         addCelFiles(fileSet, MageTabDataFiles.EXTENDED_FACTOR_VALUES_DIRECTORY);
+        return fileSet;
+    }
+     
+    private static MageTabFileSet getRenamingTermSourcesInputSet() {
+        MageTabFileSet fileSet = new MageTabFileSet();
+        fileSet.addIdf(MageTabDataFiles.RENAMING_TERM_SOURCES_IDF);
+        fileSet.addSdrf(MageTabDataFiles.RENAMING_TERM_SOURCES_SDRF);
+        addCelFiles(fileSet, MageTabDataFiles.RENAMING_TERM_SOURCES_DIRECTORY);
+        addChpFiles(fileSet, MageTabDataFiles.RENAMING_TERM_SOURCES_DIRECTORY);
         return fileSet;
     }
 

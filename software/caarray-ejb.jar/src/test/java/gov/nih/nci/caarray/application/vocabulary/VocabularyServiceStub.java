@@ -146,9 +146,9 @@ public class VocabularyServiceStub implements VocabularyService {
      */
     public TermSource getSourceByUrl(String url, String version) {
         TermSource source = new TermSource();
-        source.setName("Name for " + url);
         source.setUrl(url);
         source.setVersion(version);
+        source.setName("Name for: " + url);
         return source;
     }
 
@@ -167,6 +167,7 @@ public class VocabularyServiceStub implements VocabularyService {
      */
     public Set<TermSource> getSourcesByUrl(String url) {
         TermSource ts = getSourceByUrl(url, null);
+        ts.setName("Name for: " + url);
         Set<TermSource> result = new HashSet<TermSource>();
         result.add(ts);
         return result;

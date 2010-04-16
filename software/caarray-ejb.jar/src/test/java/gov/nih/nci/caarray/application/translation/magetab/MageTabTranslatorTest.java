@@ -120,6 +120,7 @@ import gov.nih.nci.caarray.domain.sample.TermBasedCharacteristic;
 import gov.nih.nci.caarray.domain.sample.UserDefinedCharacteristic;
 import gov.nih.nci.caarray.domain.search.ExampleSearchCriteria;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
+import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.magetab.MageTabFileSet;
 import gov.nih.nci.caarray.magetab.MageTabParser;
@@ -531,23 +532,39 @@ public class MageTabTranslatorTest extends AbstractServiceTest {
         assertEquals(3, experiment.getSamples().size());
         assertEquals(3, experiment.getHybridizations().size());
         verifyExtendedFactorValuesSampleChars(experiment.getSampleByName("Sample A"), "123", 5f, null, "years",
-                "tissue", "MO");
+                "tissue", "Name for: http://mged.sourceforge.net/ontologies/MGEDontology.php");
         verifyExtendedFactorValuesSampleChars(experiment.getSampleByName("Sample B"), "234", null, "a lot", "months",
-                "tissue", "MO");
+                "tissue", "Name for: http://mged.sourceforge.net/ontologies/MGEDontology.php");
         verifyExtendedFactorValuesSampleChars(experiment.getSampleByName("Sample C"), "345", 2.2f, null, "days",
                 "unknown", null);
         verifyExtendedFactorValuesSampleParams(experiment.getSampleByName("Sample A"), "foo", 4f, null, "kg",
-                "planting", "MO");
+                "planting", "Name for: http://mged.sourceforge.net/ontologies/MGEDontology.php");
         verifyExtendedFactorValuesSampleParams(experiment.getSampleByName("Sample B"), "baz", null, "4", null,
-                "planting", "MO");
+                "planting", "Name for: http://mged.sourceforge.net/ontologies/MGEDontology.php");
         verifyExtendedFactorValuesSampleParams(experiment.getSampleByName("Sample C"), "foo", null, "less", "mg",
                 "nothing", null);
         verifyExtendedFactorValuesHyb(experiment.getHybridizationByName("Hyb A"), "123", 5f, null, "years", "tissue",
-                "MO");
+                "Name for: http://mged.sourceforge.net/ontologies/MGEDontology.php");
         verifyExtendedFactorValuesHyb(experiment.getHybridizationByName("Hyb B"), "234", null, "a lot", "months",
-                "tissue", "MO");
+                "tissue", "Name for: http://mged.sourceforge.net/ontologies/MGEDontology.php");
         verifyExtendedFactorValuesHyb(experiment.getHybridizationByName("Hyb C"), "345", null, "2.2", null, "unknown",
                 null);
+    }
+    
+    @Test
+    public void testRenamingTermSources() throws Exception {
+        CaArrayFileSet fileSet = TestMageTabSets.getFileSet(TestMageTabSets.RENAMING_TERM_SOURCES_INPUT_SET);
+        MageTabDocumentSet docSet = MageTabParser.INSTANCE.parse(TestMageTabSets.RENAMING_TERM_SOURCES_INPUT_SET);
+        CaArrayTranslationResult result = this.translator.translate(docSet, fileSet);
+        boolean mgedAliasTermSourceWasFound = false;
+        for (Term term : result.getTerms()) {
+            TermSource termSource = term.getSource();
+            System.out.println("termSource.getName() =" + termSource.getName() + "=");
+            if (termSource.getName().equals("Name for: http://mged.sourceforge.net/ontologies/MGEDontology.php")) {
+                mgedAliasTermSourceWasFound = true;
+            }
+        }
+        assertTrue("The MGED alias TermSource name was not found.", mgedAliasTermSourceWasFound);
     }
 
     private void verifyExtendedFactorValuesHyb(Hybridization hyb, String fv1Value, Float fv2Num,
@@ -561,13 +578,13 @@ public class MageTabTranslatorTest extends AbstractServiceTest {
             assertEquals(fv2Num, fv2.getValue());
             assertEquals(fv2Unit, fv2Unit == null ? fv2.getUnit() : fv2.getUnit().getValue());
             if (fv2Unit != null)
-                assertEquals("MO", fv2.getUnit().getSource().getName());
+                assertEquals("Name for: http://mged.sourceforge.net/ontologies/MGEDontology.php", fv2.getUnit().getSource().getName());
         } else {
             UserDefinedFactorValue fv2 = (UserDefinedFactorValue) hyb.getFactorValue("Age");
             assertEquals(fv2String, fv2.getValue());
             assertEquals(fv2Unit, fv2Unit == null ? fv2.getUnit() : fv2.getUnit().getValue());
             if (fv2Unit != null)
-                assertEquals("MO", fv2.getUnit().getSource().getName());
+                assertEquals("Name for: http://mged.sourceforge.net/ontologies/MGEDontology.php", fv2.getUnit().getSource().getName());
         }
         if (fv3ts != null) {
             TermBasedFactorValue fv3 = (TermBasedFactorValue) hyb.getFactorValue("MaterialType");
@@ -589,12 +606,12 @@ public class MageTabTranslatorTest extends AbstractServiceTest {
             MeasurementCharacteristic c2 = (MeasurementCharacteristic) s.getCharacteristic("Age");            
             assertEquals(c2Num, c2.getValue());
             assertEquals(c2Unit, c2.getUnit().getValue());
-            assertEquals("MO", c2.getUnit().getSource().getName());
+            assertEquals("Name for: http://mged.sourceforge.net/ontologies/MGEDontology.php", c2.getUnit().getSource().getName());
         } else {
             UserDefinedCharacteristic c2 = (UserDefinedCharacteristic) s.getCharacteristic("Age");
             assertEquals(c2String, c2.getValue());
             assertEquals(c2Unit, c2.getUnit().getValue());
-            assertEquals("MO", c2.getUnit().getSource().getName());
+            assertEquals("Name for: http://mged.sourceforge.net/ontologies/MGEDontology.php", c2.getUnit().getSource().getName());
         }
         if (c3ts != null) {            
             TermBasedCharacteristic c3 = (TermBasedCharacteristic) s.getCharacteristic("MaterialType");
@@ -623,13 +640,13 @@ public class MageTabTranslatorTest extends AbstractServiceTest {
             assertEquals(pv2Num, pv2.getValue());
             assertEquals(pv2Unit, pv2Unit == null ? pv2.getUnit() : pv2.getUnit().getValue());
             if (pv2Unit != null)
-                assertEquals("MO", pv2.getUnit().getSource().getName());
+                assertEquals("Name for: http://mged.sourceforge.net/ontologies/MGEDontology.php", pv2.getUnit().getSource().getName());
         } else {
             UserDefinedParameterValue pv2 = (UserDefinedParameterValue) pa.getValue("p3");
             assertEquals(pv2String, pv2.getValue());
             assertEquals(pv2Unit, pv2Unit == null ? pv2.getUnit() : pv2.getUnit().getValue());
             if (pv2Unit != null)
-                assertEquals("MO", pv2.getUnit().getSource().getName());
+                assertEquals("Name for: http://mged.sourceforge.net/ontologies/MGEDontology.php", pv2.getUnit().getSource().getName());
         }
         if (pv3ts != null) {            
             TermBasedParameterValue pv3 = (TermBasedParameterValue) pa.getValue("p2");

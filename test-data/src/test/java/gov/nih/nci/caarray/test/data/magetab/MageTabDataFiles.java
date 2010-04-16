@@ -507,4 +507,13 @@ public class MageTabDataFiles {
 
     public static final File EXTENDED_FACTOR_VALUES_SDRF = new File(MageTabDataFiles.class
             .getResource("/magetab/extended_factor_values/valid1.sdrf").getFile());
+
+    public static final File RENAMING_TERM_SOURCES_IDF = new File(MageTabDataFiles.class
+            .getResource("/magetab/renaming_term_sources/20297.idf").getFile());
+
+    public static final File RENAMING_TERM_SOURCES_SDRF = new File(MageTabDataFiles.class
+            .getResource("/magetab/renaming_term_sources/20297.sdrf").getFile());
+
+    public static final File RENAMING_TERM_SOURCES_DIRECTORY = new File(MageTabDataFiles.class
+            .getResource("/magetab/renaming_term_sources").getFile());
 }

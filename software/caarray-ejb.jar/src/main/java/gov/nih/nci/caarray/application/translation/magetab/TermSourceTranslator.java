@@ -146,7 +146,9 @@ final class TermSourceTranslator extends AbstractTranslator {
     private TermSource lookupSourceByNameUrlAndVersion(String name, String url, String version) {
         TermSource match = vocabularyService.getSourceByUrl(url, version);
         if (match != null) {
-            match.setName(name);
+            if (null == match.getName()) {
+                match.setName(name);
+            }
             return match;
         } else {
             TermSource result = lookupSourceByNameAndVersion(name, version);
