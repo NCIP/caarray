@@ -109,7 +109,7 @@ class UnparsedDataHandler extends AbstractDataFileHandler {
             FileType.AGILENT_RAW_TXT, FileType.AFFYMETRIX_DAT, FileType.AGILENT_TSV, FileType.IMAGENE_TIF,
             FileType.GEO_SOFT, FileType.GEO_GSM, FileType.SCANARRAY_CSV, FileType.ILLUMINA_RAW_TXT,
             FileType.AFFYMETRIX_EXP, FileType.AFFYMETRIX_TXT, FileType.AFFYMETRIX_RPT, FileType.ILLUMINA_DERIVED_TXT,
-            FileType.IMAGENE_TXT, FileType.AGILENT_DERIVED_TXT, FileType.NIMBLEGEN_GFF, FileType.NIMBLEGEN_TXT);
+            FileType.IMAGENE_TXT, FileType.AGILENT_DERIVED_TXT, FileType.NIMBLEGEN_GFF);
 
     @Inject
     UnparsedDataHandler(FileManager fileManager) {

@@ -297,6 +297,7 @@ class DataSetImporter extends AbstractArrayDataUtility {
                 hybridization.setArray(array);
             } 
             caArrayFile.getProject().getExperiment().getHybridizations().add(hybridization);
+            hybridization.setExperiment(caArrayFile.getProject().getExperiment());
             return hybridization;
         }
 

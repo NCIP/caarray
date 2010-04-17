@@ -180,8 +180,7 @@ final class GprHandler extends AbstractDataFileHandler {
     private final ValueParser valueParser = new GenepixValueParser();
     
     /**
-     * @param caArrayFile
-     * @param file
+     * @param fileManager the FileManager to use
      */
     @Inject
     GprHandler(FileManager fileManager) {

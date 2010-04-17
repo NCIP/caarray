@@ -89,7 +89,7 @@ import gov.nih.nci.caarray.platforms.DefaultValueParser;
  * 
  * @author dkokotov
  */
-public class GenepixValueParser extends DefaultValueParser {
+class GenepixValueParser extends DefaultValueParser {
     /**
      * {@inheritDoc}
      */

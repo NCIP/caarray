@@ -107,6 +107,8 @@ public final class TestProperties {
     public static final String GENEPIX_DESIGN = "JoeDeRisi-fix";
     public static final String ILLUMINA_DESIGN = "Human_WG-6";
     public static final String AFFYMETRIX_U133A_DESIGN = "HT_HG-U133A";
+    public static final String NIMBLEGEN_2005_HUMAN_DESIGN = "2005-04-20_Human_60mer_1in2";
+    public static final String NIMBLEGEN_2006_HUMAN_DESIGN = "2006-08-03_HG18_60mer_expr";
 
     public static final String AFFYMETRIX_SPECIFICATION_WITH_DATA_01 = "Affymetrix Specification with Data 01";
     public static final String AFFYMETRIX_HUMAN_WITH_DATA_01 = "Affymetrix Human with Data 01";

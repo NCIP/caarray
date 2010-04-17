@@ -124,6 +124,7 @@ import gov.nih.nci.caarray.test.data.arraydata.AffymetrixArrayDataFiles;
 import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
 import gov.nih.nci.caarray.test.data.arraydesign.GenepixArrayDesignFiles;
 import gov.nih.nci.caarray.test.data.arraydesign.IlluminaArrayDesignFiles;
+import gov.nih.nci.caarray.test.data.arraydesign.NimblegenArrayDesignFiles;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
@@ -576,6 +577,38 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
     }
 
     @Test
+    public void testImportDesign_NimblegenTestExpression() throws Exception {
+        CaArrayFile designFile = getNimblegenCaArrayFile(NimblegenArrayDesignFiles.EXPRESSION_DESIGN);
+        ArrayDesign design = new ArrayDesign();
+        design.addDesignFile(designFile);
+        arrayDesignService.importDesign(design);
+        arrayDesignService.importDesignDetails(design);
+        assertEquals("2006-08-03_HG18_60mer_expr", design.getName());
+        assertEquals("nimblegen.com", design.getLsidAuthority());
+        assertEquals("PhysicalArrayDesign", design.getLsidNamespace());
+        assertEquals("2006-08-03_HG18_60mer_expr", design.getLsidObjectId());
+        assertEquals(FileStatus.IMPORTED, design.getDesignFileSet().getStatus());
+        assertEquals(391973, design.getDesignDetails().getProbes().size());
+        assertEquals(47686, design.getDesignDetails().getLogicalProbes().size());
+    }
+
+    @Test
+    public void testImportDesign_NimblegenTestCGH() throws Exception {
+        CaArrayFile designFile = getNimblegenCaArrayFile(NimblegenArrayDesignFiles.CGH_DESIGN);
+        ArrayDesign design = new ArrayDesign();
+        design.addDesignFile(designFile);
+        arrayDesignService.importDesign(design);
+        arrayDesignService.importDesignDetails(design);
+        assertEquals("090210_HG18_WG_CGH_v3.1_HX3", design.getName());
+        assertEquals("nimblegen.com", design.getLsidAuthority());
+        assertEquals("PhysicalArrayDesign", design.getLsidNamespace());
+        assertEquals("090210_HG18_WG_CGH_v3.1_HX3", design.getLsidObjectId());
+        assertEquals(FileStatus.IMPORTED, design.getDesignFileSet().getStatus());
+        assertEquals(732623, design.getDesignDetails().getProbes().size());
+        assertEquals(70, design.getDesignDetails().getLogicalProbes().size());
+    }
+
+    @Test
     public void testImportDesign_UnsupportedVendors() {
         // The specific file doesn't matter, because the type will determine how the file is handled
         // Once these file types can be properly parsed, they should be pulled out into their own tests
@@ -596,14 +629,6 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
         assertEquals("HumanHap300v2_A", arrayDesign.getLsidObjectId());
 
         designFile = getCaArrayFile(IlluminaArrayDesignFiles.HUMAN_HAP_300_CSV, FileType.IMAGENE_TPL);
-        arrayDesign = createDesign(null, null, null, designFile);
-        arrayDesignService.importDesign(arrayDesign);
-        assertEquals("HumanHap300v2_A", arrayDesign.getName());
-        assertEquals("caarray.nci.nih.gov", arrayDesign.getLsidAuthority());
-        assertEquals("domain", arrayDesign.getLsidNamespace());
-        assertEquals("HumanHap300v2_A", arrayDesign.getLsidObjectId());
-
-        designFile = getCaArrayFile(IlluminaArrayDesignFiles.HUMAN_HAP_300_CSV, FileType.NIMBLEGEN_NDF);
         arrayDesign = createDesign(null, null, null, designFile);
         arrayDesignService.importDesign(arrayDesign);
         assertEquals("HumanHap300v2_A", arrayDesign.getName());
@@ -772,6 +797,10 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
 
     private CaArrayFile getIlluminaCaArrayFile(final File file) {
         return getCaArrayFile(file, FileType.ILLUMINA_DESIGN_CSV);
+    }
+
+    private CaArrayFile getNimblegenCaArrayFile(File file) {
+        return getCaArrayFile(file, FileType.NIMBLEGEN_NDF);
     }
 
     /**

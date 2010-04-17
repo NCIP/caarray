@@ -85,6 +85,7 @@ package gov.nih.nci.caarray.platforms;
 import gov.nih.nci.caarray.platforms.affymetrix.AffymetrixModule;
 import gov.nih.nci.caarray.platforms.genepix.GenepixModule;
 import gov.nih.nci.caarray.platforms.illumina.IlluminaModule;
+import gov.nih.nci.caarray.platforms.nimblegen.NimblegenModule;
 import gov.nih.nci.caarray.platforms.unparsed.UnparsedModule;
 
 import com.google.inject.AbstractModule;
@@ -107,6 +108,7 @@ public class PlatformModule extends AbstractModule {
         install(new GenepixModule());
         install(new AffymetrixModule());
         install(new IlluminaModule());
+        install(new NimblegenModule());
         install(new UnparsedModule());        
     }
 }

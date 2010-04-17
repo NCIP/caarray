@@ -166,3 +166,4 @@ enum AffymetrixExpressionChpQuantitationType implements QuantitationTypeDescript
         return type;
     }
 }
+    

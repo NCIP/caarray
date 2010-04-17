@@ -6,7 +6,7 @@
         <attribute name="classpath" default="" />
         <attribute name="instrumented.classes" default="" />
         <attribute name="classpathref.id" default="no.dependencies.path" />
-        <attribute name="source.include" default="**/*Test.java" />
+        <attribute name="source.include" default="**/Pair*Test.java" />
         <attribute name="source.exclude" default="**/Abstract*Test.java" />
         <element name="extentions" optional="yes"/>
 
