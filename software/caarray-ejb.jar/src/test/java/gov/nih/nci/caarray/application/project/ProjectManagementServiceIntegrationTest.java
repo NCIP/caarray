@@ -341,4 +341,17 @@ public class ProjectManagementServiceIntegrationTest extends AbstractServiceInte
         this.projectManagementService.deleteProject(DUMMY_PROJECT_1);
         tx.commit();
     }
+
+    @Test
+    public void testPublicId() throws Exception {
+        UsernameHolder.setUser(STANDARD_USER);
+        Transaction tx = HibernateUtil.beginTransaction();
+        Experiment exp = DUMMY_PROJECT_1.getExperiment();
+        assertNull(exp.getPublicIdentifier());
+        this.projectManagementService.saveProject(DUMMY_PROJECT_1);
+        String expected = ProjectManagementServiceBean.PUBLIC_ID_PREFIX + exp.getId().toString();
+        assertEquals(expected, exp.getPublicIdentifier());
+
+        tx.rollback();
+    }
 }

@@ -332,8 +332,7 @@ public class Experiment extends AbstractCaArrayEntity {
      * to refer to the project in publications, and would be expected to be a component of a permalink url pointing
      * to the project.
      *
-     * The identifier is randomly generated and automatically assigned when persisted if a custom one is not set.
-     * @see gov.nih.nci.caarray.domain.AutoPropertiesInterceptor
+     * The database ID of the experiment is used to contruct this identifier.
      
      * Prior to version 3.4.0, this value was of the form xxxxx-11111, where xxxxx is the first 5 characters of the PI
      * last name, and 11111 is a 5-digit auto number based on the persistent identifier of the project

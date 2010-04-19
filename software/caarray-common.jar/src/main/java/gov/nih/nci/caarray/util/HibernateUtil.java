@@ -82,7 +82,6 @@
  */
 package gov.nih.nci.caarray.util;
 
-import gov.nih.nci.caarray.domain.AutoPropertiesInterceptor;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.security.SecurityInterceptor;
 import gov.nih.nci.caarray.security.SecurityUtils;
@@ -125,14 +124,12 @@ import com.fiveamsolutions.nci.commons.util.HibernateHelper;
 public final class HibernateUtil {
     private static final Logger LOG = Logger.getLogger(HibernateUtil.class);
 
-    private static final AutoPropertiesInterceptor AUTO_PROPERTIES_INTERCEPTOR = new AutoPropertiesInterceptor();
     private static final AuditLogInterceptor AUDIT_LOG_INTERCEPTOR = new AuditLogInterceptor();
     private static final CaArrayAuditLogProcessor AUDIT_LOG_PROCESSOR = new CaArrayAuditLogProcessor();
     private static final HibernateHelper HIBERNATE_HELPER = new HibernateHelper(SecurityUtils.getAuthorizationManager(),
             new NamingStrategy(), new CompositeInterceptor(
                 new SecurityInterceptor(),
-                AUDIT_LOG_INTERCEPTOR,
-                AUTO_PROPERTIES_INTERCEPTOR), false);
+                AUDIT_LOG_INTERCEPTOR), false);
     static {
         AUDIT_LOG_INTERCEPTOR.setHibernateHelper(HIBERNATE_HELPER);
         AUDIT_LOG_INTERCEPTOR.setProcessor(AUDIT_LOG_PROCESSOR);

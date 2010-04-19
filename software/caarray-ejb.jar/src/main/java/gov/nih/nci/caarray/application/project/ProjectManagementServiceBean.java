@@ -153,6 +153,10 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     private static final int UPLOAD_TIMEOUT = 7200;
     private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
     private static final int DELETE_TIMEOUT = 3600;
+    /**
+     * publci id prefix {@value}.
+     */
+    static final String PUBLIC_ID_PREFIX = "EXP-";
 
     private ProjectDao getProjectDao() {
         return this.daoFactory.getProjectDao();
@@ -274,6 +278,13 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
             throw new PermissionDeniedException(project, SecurityUtils.WRITE_PRIVILEGE, UsernameHolder.getUser());
         }
 
+        if (project.getId() == null) {
+            // for the initial save, we will need to save experiment first since we need to assign a public
+            // identifier, which requires the id to be set
+            Experiment exp = project.getExperiment();
+            getProjectDao().save(exp);
+            exp.setPublicIdentifier(PUBLIC_ID_PREFIX + String.valueOf(exp.getId()));
+        }
         getProjectDao().save(project);
         for (PersistentObject obj : orphansToDelete) {
             if (obj != null) {
