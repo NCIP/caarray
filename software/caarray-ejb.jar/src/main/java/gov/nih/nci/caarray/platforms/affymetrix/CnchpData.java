@@ -237,11 +237,17 @@ class CnchpData extends AbstractCHPMultiData<ProbeSetMultiDataCopyNumberData> {
      */
     @Override
     public String getChipType() {
+        String key;
         FusionCHPMultiDataData d = getData();
+        if ("CN4".equals(d.getAlgName())) {
+            key = "affymetrix-algorithm-param-ChipType1";
+        } else {
+            key = "affymetrix-array-type";
+        }
         FileHeader h = d.getGenericData().getHeader();
         GenericDataHeader gh = h.getGenericDataHdr();
         for (ParameterNameValue nv : gh.getNameValParams()) {
-            if ("affymetrix-algorithm-param-ChipType1".equals(nv.getName())) {
+            if (key.equals(nv.getName())) {
                 return nv.getValueAscii();
             }
         }
