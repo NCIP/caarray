@@ -114,6 +114,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 
 import com.google.inject.Inject;
+import gov.nih.nci.caarray.validation.ValidationMessage.Type;
 
 /**
  * Illumina Sample Probe Profile file loader.
@@ -163,13 +164,16 @@ final class SampleProbeProfileHandler extends AbstractDataFileHandler {
         InfoHeadingParser p = new InfoHeadingParser();
         processFile(getFile(), p);        
         String fileName = p.getValues().get(InfoHeadingParser.KEY_ARRAY_CONTENT);
-        
+        if (fileName == null) {
+            throw new IllegalStateException("Missing header field '" + InfoHeadingParser.KEY_ARRAY_CONTENT + "'");
+        }
         List<LSID> lsids = new ArrayList<LSID>();
         while (!StringUtils.isEmpty(FilenameUtils.getExtension(fileName))) {
             lsids.add(new LSID(CsvDesignHandler.LSID_AUTHORITY, CsvDesignHandler.LSID_NAMESPACE,
                     fileName));
             fileName = FilenameUtils.getBaseName(fileName);
-        } 
+        }
+        lsids.add(new LSID(CsvDesignHandler.LSID_AUTHORITY, CsvDesignHandler.LSID_NAMESPACE, fileName));
         return lsids;
     }
 
@@ -198,6 +202,11 @@ final class SampleProbeProfileHandler extends AbstractDataFileHandler {
         String magic = p.getValues().get(InfoHeadingParser.MAGIC);
         if (magic == null || !magic.startsWith("Illumina Inc. BeadStudio")) {
             LOG.warn("...Not a familiar file format " + magic);
+        }
+
+        if (design == null) {
+           result.addMessage(Type.ERROR, "Array design not found");
+           return;
         }
         
         ValidatingHeaderParser headerValidator = new ValidatingHeaderParser(design.getFirstDesignFile().getFileType(),
@@ -286,10 +295,10 @@ final class SampleProbeProfileHandler extends AbstractDataFileHandler {
         private final Map<String, String> values = new HashMap<String, String>();
 
         void parse(List<String> line, int lineNum) {
-            if (lineNum == 1) {
+            String[] pair = line.get(0).split("=");
+            if (pair.length == 1 && lineNum == 1) {
                 values.put(MAGIC, line.get(0));
-            } else {
-                String[] pair = line.get(0).split("=");
+            } else  if (pair.length == 2) {
                 String n = pair[0].trim().toUpperCase(Locale.getDefault());
                 String v = pair[1].trim();
                 values.put(n, v);
