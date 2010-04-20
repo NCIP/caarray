@@ -102,7 +102,7 @@ import org.hibernate.annotations.ForeignKey;
 @DiscriminatorValue(DerivedArrayData.DISCRIMINATOR)
 public class DerivedArrayData extends AbstractArrayData {
     private static final long serialVersionUID = 1234567890L;
-    
+
     /** the Hibernate discriminator for this ArrayData subclass. */
     public static final String DISCRIMINATOR = "DERIVED";
 

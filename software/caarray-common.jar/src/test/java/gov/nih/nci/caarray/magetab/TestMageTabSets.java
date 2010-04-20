@@ -305,6 +305,11 @@ public final class TestMageTabSets {
     public static final MageTabFileSet NORMAL_2_INPUT_SET = getSdrfTestInputSet(SdrfTestFiles.NORMAL_2_IDF, SdrfTestFiles.NORMAL_2_SDRF);
     public static final MageTabFileSet NORMAL_3_INPUT_SET = getSdrfTestInputSet(SdrfTestFiles.NORMAL_3_IDF, SdrfTestFiles.NORMAL_3_SDRF);
 
+    /**
+     * MAGE-TAB input set producing defect 27306 ("Second-level derived data does not have its derived_from link set...")
+     */
+    public static final MageTabFileSet DEFECT_27306_INPUT_SET = getDefect27306InputSet();
+
 
     private static MageTabFileSet getValidFeature13141InputSet() {
         MageTabFileSet fileSet = new MageTabFileSet();
@@ -619,6 +624,17 @@ public final class TestMageTabSets {
         fileSet.addSdrf(new JavaIOFileRef(MageTabDataFiles.UPDATE_FILES_NEW_SDRF));
         fileSet.addNativeData(new JavaIOFileRef(MageTabDataFiles.UPDATE_FILES_CEL1A));
         fileSet.addNativeData(new JavaIOFileRef(MageTabDataFiles.UPDATE_FILES_EXP2A));
+        return fileSet;
+    }
+
+    private static MageTabFileSet getDefect27306InputSet()
+    {
+        MageTabFileSet fileSet = new MageTabFileSet();
+        fileSet.addIdf(new JavaIOFileRef(MageTabDataFiles.DEFECT_27306_IDF));
+        fileSet.addSdrf(new JavaIOFileRef(MageTabDataFiles.DEFECT_27306_SDRF));
+        fileSet.addNativeData(new JavaIOFileRef(MageTabDataFiles.DEFECT_27306_CEL));
+        fileSet.addDataMatrix(new JavaIOFileRef(MageTabDataFiles.DEFECT_27306_LEVEL_2));
+        fileSet.addDataMatrix(new JavaIOFileRef(MageTabDataFiles.DEFECT_27306_LEVEL_3));
         return fileSet;
     }
 

@@ -368,6 +368,38 @@ public abstract class AbstractSampleDataRelationshipNode extends AbstractComment
     }
 
     /**
+     * Returns all <code>DerivedArrayDataMatrixFiles</code> that this node originated from (only immediate predecessors,
+     * not searched recursively).
+     *
+     * @return the originating <code>DerivedArrayDataMatrixFiles</code>.
+     */
+    public Set<DerivedArrayDataMatrixFile> getPredecessorDerivedArrayDataMatrixFiles() {
+        Set<AbstractSampleDataRelationshipNode> nodes = getPredecessorsOfType(SdrfNodeType.DERIVED_ARRAY_DATA_MATRIX,
+                false);
+        HashSet<DerivedArrayDataMatrixFile> result = new HashSet<DerivedArrayDataMatrixFile>(nodes.size());
+        for (AbstractSampleDataRelationshipNode node : nodes) {
+            result.add((DerivedArrayDataMatrixFile) node);
+        }
+        return result;
+    }
+    
+    /**
+     * Returns all <code>DerivedArrayDataMatrixFiles</code> that this node originated from (only immediate predecessors,
+     * not searched recursively).
+     *
+     * @return the originating <code>DerivedArrayDataMatrixFiles</code>.
+     */
+    public Set<ArrayDataMatrixFile> getPredecessorArrayDataMatrixFiles() {
+        Set<AbstractSampleDataRelationshipNode> nodes = getPredecessorsOfType(SdrfNodeType.ARRAY_DATA_MATRIX,
+                false);
+        HashSet<ArrayDataMatrixFile> result = new HashSet<ArrayDataMatrixFile>(nodes.size());
+        for (AbstractSampleDataRelationshipNode node : nodes) {
+            result.add((ArrayDataMatrixFile) node);
+        }
+        return result;
+    }
+
+    /**
      * Returns all <code>ArrayDataMatrixFiles</code> that originate from this node (searched recursively).
      *
      * @return the originating <code>ArrayDataMatrixFiles</code>.

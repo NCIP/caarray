@@ -127,6 +127,8 @@ import gov.nih.nci.caarray.magetab.MageTabParser;
 import gov.nih.nci.caarray.magetab.MageTabParsingException;
 import gov.nih.nci.caarray.magetab.TestMageTabSets;
 import gov.nih.nci.caarray.magetab.idf.IdfDocument;
+import gov.nih.nci.caarray.magetab.io.FileRef;
+import gov.nih.nci.caarray.magetab.io.JavaIOFileRef;
 import gov.nih.nci.caarray.magetab.sdrf.AbstractBioMaterial;
 import gov.nih.nci.caarray.magetab.sdrf.SdrfDocument;
 import gov.nih.nci.caarray.test.data.arraydata.GenepixArrayDataFiles;
@@ -137,7 +139,6 @@ import gov.nih.nci.caarray.validation.InvalidDataException;
 import gov.nih.nci.caarray.validation.ValidationMessage;
 import gov.nih.nci.caarray.validation.ValidationResult;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -152,8 +153,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
-import gov.nih.nci.caarray.magetab.io.FileRef;
-import gov.nih.nci.caarray.magetab.io.JavaIOFileRef;
 
 /**
  * Test for MAGE tab translator
@@ -211,6 +210,54 @@ public class MageTabTranslatorTest extends AbstractServiceTest {
         assertTrue(docSet.getValidationResult().isValid());
         result = this.translator.validate(docSet, fileSet);
         assertTrue(result.isValid());
+    }
+
+    /**
+     * See @see <a href="https://gforge.nci.nih.gov/tracker/?func=detail&aid=27306&group_id=305&atid=1344">Defect 27306</a>
+     * @throws InvalidDataException
+     * @throws MageTabParsingException
+     */
+    @Test
+    public void testThatSecondDerivedFileGetsLinkedToFirstDerivedFile() throws InvalidDataException, MageTabParsingException {
+        // Prepare the input data
+
+        ((MageTabTranslatorBean) translator).setDaoFactory(new LocalDaoFactoryStub2());
+
+        MageTabFileSet mageTabSet = TestMageTabSets.DEFECT_27306_INPUT_SET;
+        for (FileRef f : mageTabSet.getAllFiles()) {
+            fileAccessServiceStub.add(f.getAsFile());
+        }
+
+        MageTabDocumentSet docSet = MageTabParser.INSTANCE.parse(mageTabSet);
+        CaArrayFileSet caArrayFileSet = TestMageTabSets.getFileSet(mageTabSet);
+
+        // Call the method under test
+
+        CaArrayTranslationResult translationResult = this.translator.translate(docSet, caArrayFileSet);
+
+        // Check the results
+
+        Experiment experiment = translationResult.getInvestigations().iterator().next();
+        Hybridization hybridization = experiment.getHybridizations().iterator().next();
+
+        RawArrayData rawData = hybridization.getRawDataCollection().iterator().next();
+
+        DerivedArrayData level2Data = null;
+        DerivedArrayData level3Data = null;
+        for (DerivedArrayData derivedData : hybridization.getDerivedDataCollection()) {
+            String name = derivedData.getName();
+            if (name.contains("level2")) {
+                level2Data = derivedData;
+            } else if (name.contains("level3")) {
+                level3Data = derivedData;
+            }
+        }
+
+        AbstractArrayData level2Parent = level2Data.getDerivedFromArrayDataCollection().iterator().next();
+        assertEquals(rawData, level2Parent);
+
+        AbstractArrayData level3Parent = level3Data.getDerivedFromArrayDataCollection().iterator().next();
+        assertEquals(level2Data, level3Parent);
     }
 
     @Test
@@ -671,6 +718,17 @@ public class MageTabTranslatorTest extends AbstractServiceTest {
 
     }
 
+    private static class LocalDaoFactoryStub2 extends DaoFactoryStub {
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public ArrayDao getArrayDao() {
+            return new LocalArrayDaoStub2();
+        }
+
+    }
+
     private static class LocalArrayDaoStub extends ArrayDaoStub {
         @SuppressWarnings("unchecked")
         @Override
@@ -680,6 +738,24 @@ public class MageTabTranslatorTest extends AbstractServiceTest {
             if (entityToMatch instanceof ArrayDesign) {
                 ArrayDesign arrayDesign = (ArrayDesign) entityToMatch;
                 if ("URN:LSID:Affymetrix.com:PhysicalArrayDesign:Test3".equals(arrayDesign.getLsid())) {
+                    ArrayList list = new ArrayList();
+                    list.add(arrayDesign);
+                    return list;
+                }
+            }
+            return super.queryEntityByExample(criteria, orders);
+        }
+    }
+
+    private static class LocalArrayDaoStub2 extends ArrayDaoStub {
+        @SuppressWarnings("unchecked")
+        @Override
+        public <T extends PersistentObject> List<T> queryEntityByExample(ExampleSearchCriteria<T> criteria,
+                Order... orders) {
+            T entityToMatch = criteria.getExample();
+            if (entityToMatch instanceof ArrayDesign) {
+                ArrayDesign arrayDesign = (ArrayDesign) entityToMatch;
+                if ("URN:LSID:Affymetrix.com:PhysicalArrayDesign:HT_HG-U133A".equals(arrayDesign.getLsid())) {
                     ArrayList list = new ArrayList();
                     list.add(arrayDesign);
                     return list;

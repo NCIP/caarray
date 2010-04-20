@@ -803,7 +803,11 @@ final class SdrfTranslator extends AbstractTranslator {
             DerivedArrayData caArrayData) {
         List<AbstractSampleDataRelationshipNode> allArrayData =
             new ArrayList<AbstractSampleDataRelationshipNode>(sdrfData.getPredecessorArrayDataFiles());
+
+        allArrayData.addAll(sdrfData.getPredecessorArrayDataMatrixFiles());
         allArrayData.addAll(sdrfData.getPredecessorDerivedArrayDataFiles());
+        allArrayData.addAll(sdrfData.getPredecessorDerivedArrayDataMatrixFiles());
+
         for (AbstractSampleDataRelationshipNode sdrfArrayData : allArrayData) {
             AbstractArrayData arrayData = (AbstractArrayData) this.nodeTranslations.get(sdrfArrayData);
             caArrayData.getDerivedFromArrayDataCollection().add(arrayData);
