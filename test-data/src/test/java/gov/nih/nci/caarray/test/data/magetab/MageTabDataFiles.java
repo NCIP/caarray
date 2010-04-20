@@ -508,6 +508,21 @@ public class MageTabDataFiles {
     public static final File EXTENDED_FACTOR_VALUES_SDRF = new File(MageTabDataFiles.class
             .getResource("/magetab/extended_factor_values/valid1.sdrf").getFile());
 
+    public static final File DEFECT_27306_IDF = new File(MageTabDataFiles.class.getResource(
+            "/magetab/three_level_data/defect-27306/broad.mit.edu_GBM.HT_HG-U133A.5.idf.txt").getFile());
+
+    public static final File DEFECT_27306_SDRF = new File(MageTabDataFiles.class.getResource(
+            "/magetab/three_level_data/defect-27306/broad.mit.edu_GBM.HT_HG-U133A.5.3.0.sdrf.txt").getFile());
+
+    public static final File DEFECT_27306_CEL = new File(MageTabDataFiles.class.getResource(
+            "/magetab/three_level_data/defect-27306/5500024035736031208615.D04.CEL").getFile());
+
+    public static final File DEFECT_27306_LEVEL_2 = new File(MageTabDataFiles.class.getResource(
+            "/magetab/three_level_data/defect-27306/5500024035736031208615.D04.level2.txt").getFile());
+
+    public static final File DEFECT_27306_LEVEL_3 = new File(MageTabDataFiles.class.getResource(
+            "/magetab/three_level_data/defect-27306/5500024035736031208615.D04.level3.txt").getFile());    
+
     public static final File RENAMING_TERM_SOURCES_IDF = new File(MageTabDataFiles.class
             .getResource("/magetab/renaming_term_sources/20297.idf").getFile());
 
