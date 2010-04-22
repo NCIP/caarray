@@ -154,7 +154,9 @@ final class DataFileValidator extends AbstractArrayDataUtility {
             DataFileHandler handler) {
         ArrayDesign design = getArrayDesign(caArrayFile, handler);
         if (design == null) {
-            result.addMessage(Type.ERROR, "The array design referenced by this data file could not be found.");
+            if (caArrayFile.getFileType().isParseableData()) {
+                result.addMessage(Type.ERROR, "The array design referenced by this data file could not be found.");
+            }
         } else if (!caArrayFile.getProject().getExperiment().getArrayDesigns().contains(design)) {
             result.addMessage(Type.ERROR, "The array design referenced by this data file (" + design.getName()
                     + ") is not associated with this experiment");

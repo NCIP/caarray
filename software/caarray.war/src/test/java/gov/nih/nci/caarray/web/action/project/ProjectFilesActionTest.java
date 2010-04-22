@@ -105,6 +105,7 @@ import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.test.data.arraydata.AffymetrixArrayDataFiles;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
+import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.ValidationMessage.Type;
@@ -198,6 +199,7 @@ public class ProjectFilesActionTest extends AbstractDownloadTest {
         file.setProject(project);
         project.getFiles().add(file);
         this.action.setProject(project);
+        UsernameHolder.setUser(STANDARD_USER);
     }
 
     @Test
@@ -423,7 +425,7 @@ public class ProjectFilesActionTest extends AbstractDownloadTest {
         selectedFiles.add(file);
 
         assertEquals(LIST_UNIMPORTED, this.action.validateFiles());
-        assertEquals(0, fileManagementServiceStub.getValidatedFileCount());
+        assertEquals(1, fileManagementServiceStub.getValidatedFileCount());
 
         file = new CaArrayFile();
         file.setProject(this.action.getProject());
@@ -432,7 +434,7 @@ public class ProjectFilesActionTest extends AbstractDownloadTest {
         selectedFiles.add(file);
 
         assertEquals(LIST_UNIMPORTED, this.action.validateFiles());
-        assertEquals(2, fileManagementServiceStub.getValidatedFileCount());
+        assertEquals(3, fileManagementServiceStub.getValidatedFileCount());
     }
 
     @Test

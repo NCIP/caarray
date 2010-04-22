@@ -568,15 +568,12 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
     // validation checks can't be easily refactored to smaller methods.
     public String validateFiles() {
         ErrorCounts errors = new ErrorCounts();
-        boolean includesSdrf = includesType(getSelectedFiles(), FileType.MAGE_TAB_SDRF);
         CaArrayFileSet fileSet = new CaArrayFileSet(getProject());
         for (CaArrayFile file : getSelectedFiles()) {
             if (file.getFileType() == null) {
                 errors.incrementCount("project.fileValidate.error.unknownType");
             } else if (file.getFileType().isArrayDesign()) {
                 errors.incrementCount("project.fileValidate.error.arrayDesign");
-            } else if (!includesSdrf && !file.getFileType().isParseableData()) {
-                errors.incrementCount("project.fileValidate.error.unparseableFiles");
             } else if (file.getFileStatus().isValidatable()) {
                 fileSet.add(file);
             } else {
