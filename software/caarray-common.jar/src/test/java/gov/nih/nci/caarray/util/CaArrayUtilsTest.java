@@ -214,7 +214,7 @@ public class CaArrayUtilsTest extends AbstractCaarrayTest {
         float[] deserialized = (float[]) CaArrayUtils.deserialize(serialized);
         assertEquals(TEST_FLOAT_ARRAY.length, deserialized.length);
         for (int i = 0; i < TEST_FLOAT_ARRAY.length; i++) {
-            assertEquals(TEST_FLOAT_ARRAY[i], deserialized[i]);            
+            assertEquals(TEST_FLOAT_ARRAY[i], deserialized[i], 0);            
         }
     }
     
@@ -239,7 +239,7 @@ public class CaArrayUtilsTest extends AbstractCaarrayTest {
         float[] deserialized = in.getValues();
         assertEquals(TEST_FLOAT_ARRAY.length, deserialized.length);
         for (int i = 0; i < TEST_FLOAT_ARRAY.length; i++) {
-            assertEquals(TEST_FLOAT_ARRAY[i], deserialized[i]);            
+            assertEquals(TEST_FLOAT_ARRAY[i], deserialized[i], 0);            
         }
     }
 

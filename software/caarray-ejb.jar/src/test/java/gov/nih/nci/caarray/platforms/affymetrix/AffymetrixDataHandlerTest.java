@@ -104,7 +104,6 @@ import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.platforms.AbstractHandlerTest;
-import gov.nih.nci.caarray.platforms.affymetrix.AffymetrixCelQuantitationType;
 import gov.nih.nci.caarray.platforms.spi.PlatformFileReadException;
 import gov.nih.nci.caarray.test.data.arraydata.AffymetrixArrayDataFiles;
 import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
@@ -198,7 +197,7 @@ public class AffymetrixDataHandlerTest extends AbstractHandlerTest {
             } catch (final IOException e) {
                 fail(e.toString());
             }
-           assertEquals(results.getSignal(), signalColumn.getValues()[i]);
+           assertEquals(results.getSignal(), signalColumn.getValues()[i], 0);
         }
         assertNotNull(hybridizationData.getHybridization().getArray());
     }
@@ -267,8 +266,8 @@ public class AffymetrixDataHandlerTest extends AbstractHandlerTest {
             }
             assertEquals(fusionCelData.indexToX(rowIndex), xColumn.getValues()[rowIndex]);
             assertEquals(fusionCelData.indexToY(rowIndex), yColumn.getValues()[rowIndex]);
-            assertEquals(fusionCelEntry.getIntensity(), intensityColumn.getValues()[rowIndex]);
-            assertEquals(fusionCelEntry.getStdv(), stdDevColumn.getValues()[rowIndex]);
+            assertEquals(fusionCelEntry.getIntensity(), intensityColumn.getValues()[rowIndex], 0);
+            assertEquals(fusionCelEntry.getStdv(), stdDevColumn.getValues()[rowIndex], 0);
             assertEquals(fusionCelData.isMasked(rowIndex), isMaskedColumn.getValues()[rowIndex]);
             assertEquals(fusionCelData.isOutlier(rowIndex), isOutlierColumn.getValues()[rowIndex]);
             assertEquals(fusionCelEntry.getPixels(), numPixelsColumn.getValues()[rowIndex]);

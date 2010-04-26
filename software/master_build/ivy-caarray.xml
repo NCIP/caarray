@@ -128,7 +128,11 @@
         
         <dependency conf="project" name="jta" org="javax.transaction" rev="1.0.1B"/>
 
-        <dependency conf="project" name="junit" org="junit" rev="4.3.1"/>
+        <dependency conf="project" name="junit" org="junit" rev="4.4"/>
+        
+       <dependency conf="project" name="jmock" org="jmock" rev="2.5.1"/>
+       
+       <dependency conf="project" name="jmock-junit4" org="jmock" rev="2.5.1"/>
 
         <dependency conf="project" name="myfaces-api" org="javax.faces" rev="1.1.5"/>
 
@@ -250,6 +254,8 @@
 
         <dependency conf="project" name="guice-assistedinject" org="google" rev="2.0"/>        
 
-        <dependency conf="project" name="aopalliance" org="aopalliance" rev="1.0"/>        
+        <dependency conf="project" name="aopalliance" org="aopalliance" rev="1.0"/>
+        
+        <dependency conf="project" name="woodstox" org="codehaus" rev="4.0.7"/>        
     </dependencies>
 </ivy-module>

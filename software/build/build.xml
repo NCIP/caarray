@@ -1001,6 +1001,49 @@
             </fileset>
         </path>
         <property name="guice-assistedinject.jar" refid="guice-assistedinject.jar.fileset" />
+        
+        <path id="woodstox.jar.path">
+            <fileset dir="${project.lib}" id="woodstox.jar.fileset">
+                <include name="woodstox-*.jar"/>
+            </fileset>
+        </path>
+        <property name="woodstox.jar" refid="woodstox.jar.fileset" />
+        
+        <path id="stax2-api.jar.path">
+            <fileset dir="${project.lib}" id="stax2-api.jar.fileset">
+                <include name="stax2-api-*.jar"/>
+            </fileset>
+        </path>
+        <property name="stax2-api.jar" refid="stax2-api.jar.fileset" />
+
+        <path id="jmock.jar.path">
+            <fileset dir="${project.lib}" id="jmock.jar.fileset">
+                <include name="jmock-*.jar"/>
+                <exclude name="jmock-junit4-*.jar"/>
+            </fileset>
+        </path>
+        <property name="jmock.jar" refid="jmock.jar.fileset" />
+
+        <path id="jmock-junit4.jar.path">
+            <fileset dir="${project.lib}" id="jmock-junit4.jar.fileset">
+                <include name="jmock-junit4-*.jar"/>
+            </fileset>
+        </path>        
+        <property name="jmock-junit4.jar" refid="jmock-junit4.jar.fileset" />
+
+        <path id="hamcrest-core.jar.path">
+            <fileset dir="${project.lib}" id="hamcrest-core.jar.fileset">
+                <include name="hamcrest-core-*.jar"/>
+            </fileset>
+        </path>
+        <property name="hamcrest-core.jar" refid="hamcrest-core.jar.fileset" />
+
+        <path id="hamcrest-library.jar.path">
+            <fileset dir="${project.lib}" id="hamcrest-library.jar.fileset">
+                <include name="hamcrest-library-*.jar"/>
+            </fileset>
+        </path>
+        <property name="hamcrest-library.jar" refid="hamcrest-library.jar.fileset" />
 
         <path id="jboss.dependencies.path">
             <fileset id="jboss.dependencies.fileset" dir="${project.lib}">
@@ -1032,6 +1075,8 @@
         	<fileset refid="guice.jar.fileset"/>
         	<fileset refid="guice-multibindings.jar.fileset"/>
         	<fileset refid="guice-assistedinject.jar.fileset"/>
+        	<fileset refid="woodstox.jar.fileset"/>
+       	<fileset refid="stax2-api.jar.fileset"/>
             <fileset id="common.grid.dependencies.fileset" dir="${project.lib}">
                 <include name="${axis.jar}"/>
                 <include name="${caGrid-core.jar}"/>
@@ -1170,6 +1215,10 @@
                 <include name="${concurrent.jar}"/>
                 <include name="${jgroups.jar}"/>
                 <include name="${junit.jar}"/>
+                <include name="${jmock.jar}"/>
+                <include name="${jmock-junit4.jar}"/>
+                <include name="${hamcrest-core.jar}"/>
+                <include name="${hamcrest-library.jar}"/>
                 <include name="${ledatastream.jar}"/>
             </fileset>
         </path>
@@ -1416,7 +1465,7 @@
         <delete dir="${test.target.dir}" />
     </target>
 
-    <target name="clean:test-data">
+    <target name="clean:test-data" unless="nocleantestdata">
         <delete dir="${test.data.target.dir}" />
     </target>
 
@@ -2094,7 +2143,17 @@
 
     <!-- caarray-client.jar -->
 
-    <target name="test:instrument:caarray-client.jar" unless="notest" depends="init:third-party-paths,compile:caarray-client.jar">
+    <!-- allows setting the "nocoverage" property to indicate that cobertura should not be invoked -->
+    <target name="init:cobertura-runcheck">
+      <condition property="nocobertura">
+        <or>
+          <isset property="notest"/>
+          <isset property="nocoverage"/>
+        </or>
+      </condition>
+    </target>
+
+    <target name="test:instrument:caarray-client.jar" unless="nocobertura" depends="init:cobertura-runcheck,init:third-party-paths,compile:caarray-client.jar">
         <cobertura-instrument todir="${caarray-client.instrumented.classes.dir}" datafile="${cobertura.file}">
             <fileset dir="${caarray-client.classes.dir}">
                 <include name="gov/nih/nci/caarray/**" />
@@ -2102,7 +2161,7 @@
         </cobertura-instrument>
     </target>
 
-    <target name="test:instrument-functional:caarray-client.jar" unless="notest" depends="init:third-party-paths,compile:caarray-client.jar">
+    <target name="test:instrument-functional:caarray-client.jar" unless="nocobertura" depends="init:cobertura-runcheck,init:third-party-paths,compile:caarray-client.jar">
         <cobertura-instrument todir="${caarray-client.instrumented.classes.dir}" datafile="${cobertura-functional.file}">
             <fileset dir="${caarray-client.classes.dir}">
                 <include name="gov/nih/nci/caarray/**" />
@@ -2131,7 +2190,7 @@
 
     <!-- caarray-common.jar -->
 
-    <target name="test:instrument:caarray-common.jar" unless="notest" depends="init:third-party-paths">
+    <target name="test:instrument:caarray-common.jar" unless="nocobertura" depends="init:cobertura-runcheck,init:third-party-paths">
         <cobertura-instrument todir="${caarray-common.instrumented.classes.dir}" datafile="${cobertura.file}">
             <fileset dir="${caarray-common.classes.dir}">
                 <include name="**/*.class" />
@@ -2140,7 +2199,7 @@
         </cobertura-instrument>
     </target>
 
-    <target name="test:instrument-functional:caarray-common.jar" unless="notest" depends="init:third-party-paths,build:caarray-common.jar">
+    <target name="test:instrument-functional:caarray-common.jar" unless="nocobertura" depends="init:cobertura-runcheck,init:third-party-paths,build:caarray-common.jar">
         <cobertura-instrument datafile="${cobertura-functional.file}">
             <fileset file="${caarray-common.jar}" />
         </cobertura-instrument>
@@ -2165,7 +2224,7 @@
 
 	<!-- caarray-ejb.jar -->
 
-    <target name="test:instrument:caarray-ejb.jar" unless="notest" depends="init:third-party-paths,compile:caarray-ejb.jar">
+    <target name="test:instrument:caarray-ejb.jar" unless="nocobertura" depends="init:cobertura-runcheck,init:third-party-paths,compile:caarray-ejb.jar">
         <cobertura-instrument todir="${caarray-ejb.instrumented.classes.dir}" datafile="${cobertura.file}">
             <fileset dir="${caarray-ejb.classes.dir}">
                 <include name="**/*.class" />
@@ -2174,7 +2233,7 @@
         </cobertura-instrument>
     </target>
 
-    <target name="test:instrument-functional:caarray-ejb.jar" unless="notest" depends="init:third-party-paths,build:caarray-ejb.jar">
+    <target name="test:instrument-functional:caarray-ejb.jar" unless="nocobertura" depends="init:cobertura-runcheck,init:third-party-paths,build:caarray-ejb.jar">
         <cobertura-instrument datafile="${cobertura-functional.file}">
             <fileset file="${caarray-ejb.jar}" />
         </cobertura-instrument>
@@ -2201,7 +2260,7 @@
 
     <!-- caarray.war -->
 
-    <target name="test:instrument:caarray.war" unless="notest" depends="init:third-party-paths,compile:caarray.war">
+    <target name="test:instrument:caarray.war" unless="nocobertura" depends="init:cobertura-runcheck,init:third-party-paths,compile:caarray.war">
         <cobertura-instrument todir="${caarray-war.instrumented.classes.dir}" datafile="${cobertura.file}">
             <!-- do not have good way of testing the upload handler via junit for the time being -->
             <fileset dir="${caarray-war.classes.dir}">
@@ -2211,7 +2270,7 @@
         </cobertura-instrument>
     </target>
 
-    <target name="test:instrument-functional:caarray.war" unless="notest" depends="init:third-party-paths,build:caarray.war">
+    <target name="test:instrument-functional:caarray.war" unless="nocobertura" depends="init:cobertura-runcheck,init:third-party-paths,build:caarray.war">
         <cobertura-instrument datafile="${cobertura-functional.file}">
             <fileset file="${caarray.war}" />
         </cobertura-instrument>
@@ -2261,7 +2320,7 @@
     </target>
 
     <!-- Cobertura Test Targets -->
-    <target name="test:cobertura-report" unless="notest" depends="init:third-party-paths">
+    <target name="test:cobertura-report" unless="nocobertura" depends="init:cobertura-runcheck,init:third-party-paths">
         <cobertura-report format="xml" destdir="${site.dir}/cobertura/unit" datafile="${cobertura.file}">
             <fileset dir="${caarray-client.src.dir}" />
             <fileset dir="${caarray-common.src.dir}" />
@@ -2276,7 +2335,7 @@
         </cobertura-report>
     </target>
 
-    <target name="test:cobertura-check" unless="notest" depends="init:third-party-paths">
+    <target name="test:cobertura-check" unless="nocobertura" depends="init:cobertura-runcheck,init:third-party-paths">
         <cobertura-check failureproperty="cobertura.failure" datafile="${cobertura.file}" haltonfailure="false" linerate="0" packagebranchrate="0" packagelinerate="0" totalbranchrate="70" totallinerate="79" />
     </target>
 
@@ -2331,11 +2390,11 @@
         </copy>
     </target>
 
-    <target name="test:functional:cobertura-report" unless="notest" depends="init:third-party-paths,test:functional:cobertura-report-functional-only,
+    <target name="test:functional:cobertura-report" unless="nocobertura" depends="init:cobertura-runcheck,init:third-party-paths,test:functional:cobertura-report-functional-only,
         test:functional:cobertura-report-check-unit,
         test:functional:cobertura-report-merged" />
 
-    <target name="test:functional:cobertura-report-functional-only" unless="notest" depends="init:third-party-paths">
+    <target name="test:functional:cobertura-report-functional-only" unless="nocobertura" depends="init:cobertura-runcheck,init:third-party-paths">
         <move file="${build.dir}/cobertura.ser" tofile="${cobertura-functional.file}" />
         <cobertura-report format="xml" destdir="${site.dir}/cobertura/functional" datafile="${cobertura-functional.file}">
             <fileset dir="${caarray-client.src.dir}" />
@@ -2351,11 +2410,11 @@
         </cobertura-report>
     </target>
 
-    <target name="test:functional:cobertura-report-check-unit" unless="notest" depends="init:third-party-paths">
+    <target name="test:functional:cobertura-report-check-unit" unless="nocobertura" depends="init:cobertura-runcheck,init:third-party-paths">
         <available file="${cobertura.file}" property="cobertura.unit.exists" />
     </target>
 
-    <target name="test:functional:cobertura-report-merged" if="cobertura.unit.exists" unless="notest" depends="init:third-party-paths">
+    <target name="test:functional:cobertura-report-merged" if="cobertura.unit.exists" unless="nocobertura" depends="init:cobertura-runcheck,init:third-party-paths">
         <cobertura-merge datafile="${cobertura-merged.file}">
             <fileset file="${cobertura-merged.file}" />
             <fileset file="${cobertura.file}" />

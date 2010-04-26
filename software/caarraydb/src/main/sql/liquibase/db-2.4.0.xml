@@ -43,5 +43,20 @@
     <changeSet id="26324" author="dkokotov">
        <comment>GF 26324 - improve performance of imported files</comment>
        <sqlFile path="db-upgrade/mysql/2.4.0/26324.sql"/>
-    </changeSet>        
- </databaseChangeLog>
+    </changeSet>
+    
+    <changeSet id="27274" author="jscott">
+      <comment>GF 27274 - Parse Agilent GEML/xml array designs for aCGH assays.</comment>
+		<addColumn tableName="design_element">
+        <column name="feature_number" type="bigint"/>
+        <column name="feature_x_coordinate" type="double"/>
+        <column name="feature_y_coordinate" type="double"/>
+        <column name="feature_coordinate_units" type="varchar(2)"/>
+    	</addColumn>
+		<addColumn tableName="probeannotation">
+        <column name="chromosome_name" type="varchar(2)"/>
+        <column name="chromosome_start_position" type="bigint"/>
+        <column name="chromosome_end_position" type="bigint"/>
+    	</addColumn>
+   </changeSet>
+</databaseChangeLog>

@@ -121,7 +121,7 @@ public class PhysicalProbe extends AbstractProbe {
      */
     public PhysicalProbe(ArrayDesignDetails details, ProbeGroup probeGroup) {
         super();
-        setProbeGroup(probeGroup);
+        this.probeGroup = probeGroup;
         setArrayDesignDetails(details);
     }
 
@@ -144,7 +144,10 @@ public class PhysicalProbe extends AbstractProbe {
         return probeGroup;
     }
 
-    private void setProbeGroup(ProbeGroup probeGroup) {
+    /**
+     * @param probeGroup the probe group this probe belongs to
+     */
+    public void setProbeGroup(ProbeGroup probeGroup) {
         this.probeGroup = probeGroup;
     }
 

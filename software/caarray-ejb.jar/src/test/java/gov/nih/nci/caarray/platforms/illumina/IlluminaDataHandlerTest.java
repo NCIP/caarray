@@ -93,7 +93,6 @@ import gov.nih.nci.caarray.domain.data.HybridizationData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.platforms.AbstractHandlerTest;
-import gov.nih.nci.caarray.platforms.illumina.IlluminaExpressionQuantitationType;
 import gov.nih.nci.caarray.test.data.arraydata.IlluminaArrayDataFiles;
 import gov.nih.nci.caarray.test.data.arraydesign.IlluminaArrayDesignFiles;
 import gov.nih.nci.caarray.validation.InvalidDataFileException;
@@ -142,8 +141,8 @@ public class IlluminaDataHandlerTest extends AbstractHandlerTest {
         FloatColumn signalColumn = (FloatColumn) hybridizationData.getColumn(IlluminaExpressionQuantitationType.AVG_SIGNAL);
         assertNotNull(signalColumn);
         assertEquals(10, signalColumn.getValues().length);
-        assertEquals(5.8, signalColumn.getValues()[0]);
-        assertEquals(3.6, signalColumn.getValues()[9]);
+        assertEquals(5.8, signalColumn.getValues()[0], 0.00001);
+        assertEquals(3.6, signalColumn.getValues()[9], 0.00001);
         assertNotNull(hybridizationData.getHybridization().getArray());
         assertEquals(10, illuminaData.getDataSet().getDesignElementList().getDesignElements().size());
     }

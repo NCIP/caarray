@@ -297,7 +297,7 @@ public enum FileType implements Comparable<FileType> {
      * The set of array design file types that the caArray can parse.
      */    
     public static final Set<FileType> PARSEABLE_ARRAY_DESIGN_FILE_TYPES = EnumSet.of(AFFYMETRIX_CDF, AFFYMETRIX_CLF,
-            AFFYMETRIX_PGF, ILLUMINA_DESIGN_CSV, ILLUMINA_DESIGN_BGX, GENEPIX_GAL, NIMBLEGEN_NDF);
+            AFFYMETRIX_PGF, ILLUMINA_DESIGN_CSV, ILLUMINA_DESIGN_BGX, GENEPIX_GAL, NIMBLEGEN_NDF, AGILENT_XML);
 
     /**
      * The set of array design file types.

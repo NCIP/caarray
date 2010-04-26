@@ -230,9 +230,9 @@ public class BrowseDaoTest extends AbstractDaoTest {
         Object[] tab1 = tabs.get(0);
         Object[] tab2 = tabs.get(1);
         assertEquals("organism1", tab1[0]);
-        assertEquals(2, tab1[2]);
+        assertEquals(2L, tab1[2]);
         assertEquals("organism2", tab2[0]);
-        assertEquals(1, tab2[2]);
+        assertEquals(1L, tab2[2]);
         tx.commit();
     }
 

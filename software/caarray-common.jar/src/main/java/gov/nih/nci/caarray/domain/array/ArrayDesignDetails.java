@@ -144,8 +144,8 @@ public class ArrayDesignDetails extends AbstractCaArrayObject {
     }
 
     @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
-    private void setProbes(Set<PhysicalProbe> pysicalProbes) {
-        this.probes = pysicalProbes;
+    private void setProbes(Set<PhysicalProbe> physicalProbes) {
+        this.probes = physicalProbes;
     }
 
     /**

@@ -118,8 +118,7 @@ class UnparsedArrayDesignFileHandler implements DesignFileHandler {
         LSID_TEMPLATE_MAP.put(FileType.MAGE_TAB_ADF, CAARRAY_LOCAL_LSID_TEMPLATE);
         LSID_TEMPLATE_MAP.put(FileType.GEO_GPL, CAARRAY_LOCAL_LSID_TEMPLATE);
         LSID_TEMPLATE_MAP.put(FileType.AGILENT_CSV, AGILENT_LSID_TEMPLATE);
-        LSID_TEMPLATE_MAP.put(FileType.AGILENT_XML, AGILENT_LSID_TEMPLATE);
-    }
+     }
     
     private final FileManager fileManager;
     private CaArrayFile designFile;

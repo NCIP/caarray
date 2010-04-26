@@ -499,7 +499,7 @@ public class SearchDaoTest extends AbstractDaoTest {
             tx = HibernateUtil.beginTransaction();
             List<?> results = SEARCH_DAO.query(cqlQuery);
             assertEquals(1, results.size());
-            assertEquals(1, results.get(0));
+            assertEquals(1L, results.get(0));
             tx.commit();
         } catch (DAOException e) {
             HibernateUtil.rollbackTransaction(tx);

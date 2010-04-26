@@ -171,7 +171,7 @@ public class DataSet_HibernateIntegrationTest extends AbstractCaArrayObject_Hibe
         }
         assertEquals(expected.length, actual.length);
         for (int i = 0; i < expected.length; i++) {
-            assertEquals(expected[i], actual[i]);
+            assertEquals(expected[i], actual[i], 0.00001);
         }
     }
 

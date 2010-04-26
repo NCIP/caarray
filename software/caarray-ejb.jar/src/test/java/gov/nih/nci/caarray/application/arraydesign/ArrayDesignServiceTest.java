@@ -122,6 +122,7 @@ import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.platforms.spi.PlatformFileReadException;
 import gov.nih.nci.caarray.test.data.arraydata.AffymetrixArrayDataFiles;
 import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
+import gov.nih.nci.caarray.test.data.arraydesign.AgilentArrayDesignFiles;
 import gov.nih.nci.caarray.test.data.arraydesign.GenepixArrayDesignFiles;
 import gov.nih.nci.caarray.test.data.arraydesign.IlluminaArrayDesignFiles;
 import gov.nih.nci.caarray.test.data.arraydesign.NimblegenArrayDesignFiles;
@@ -152,6 +153,7 @@ import org.hibernate.Transaction;
 import org.hibernate.criterion.Order;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
@@ -497,7 +499,8 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
         for (final PhysicalProbe probe : design.getDesignDetails().getProbes()) {
             assertTrue(probe.getFeatures().size() > 0);
             assertEquals(design.getDesignDetails(), probe.getArrayDesignDetails());
-            for (final Feature feature : probe.getFeatures()) {
+            for (final Feature abstractFeature : probe.getFeatures()) {
+                final Feature feature = abstractFeature;
                 assertTrue(feature.getColumn() >= 0 && feature.getColumn() < 32);
                 assertTrue(feature.getRow() >= 0 && feature.getRow() < 32);
             }
@@ -509,7 +512,8 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
             for (final PhysicalProbe physicalProbe : logicalProbe.getProbes()) {
                 assertEquals(design.getDesignDetails(), physicalProbe.getArrayDesignDetails());
                 assertTrue(physicalProbe.getFeatures().size() > 0);
-                for (final Feature feature : physicalProbe.getFeatures()) {
+                for (final Feature abstractFeature : physicalProbe.getFeatures()) {
+                    final Feature feature = abstractFeature;
                     assertEquals(design.getDesignDetails(), feature.getArrayDesignDetails());
                     assertTrue(feature.getColumn() >= 0 && feature.getColumn() < 32);
                     assertTrue(feature.getRow() >= 0 && feature.getRow() < 32);
@@ -609,19 +613,34 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
     }
 
     @Test
+    public void testImportDesign_AgilentGelm() throws Exception {
+        CaArrayFile designFile = getAgilentGelmCaArrayFile(AgilentArrayDesignFiles.TEST_ACGH_XML);
+        ArrayDesign design = new ArrayDesign();
+        design.addDesignFile(designFile);
+        
+        arrayDesignService.importDesign(design);
+        
+        assertEquals("022522_D_F_20090107", design.getName());
+        assertEquals("Agilent.com", design.getLsidAuthority());
+        assertEquals("PhysicalArrayDesign", design.getLsidNamespace());
+        assertEquals("022522_D_F_20090107", design.getLsidObjectId());
+        assertEquals(180880, design.getNumberOfFeatures().intValue());
+        
+        arrayDesignService.importDesignDetails(design);
+        
+        assertEquals(180880, design.getDesignDetails().getFeatures().size());
+        assertEquals(177071, design.getDesignDetails().getProbes().size());
+        assertEquals(0, design.getDesignDetails().getLogicalProbes().size());
+        
+        assertEquals(FileStatus.IMPORTED, design.getDesignFileSet().getStatus());
+   }
+
+    @Test
     public void testImportDesign_UnsupportedVendors() {
         // The specific file doesn't matter, because the type will determine how the file is handled
         // Once these file types can be properly parsed, they should be pulled out into their own tests
         CaArrayFile designFile = getCaArrayFile(IlluminaArrayDesignFiles.HUMAN_HAP_300_CSV, FileType.AGILENT_CSV);
         ArrayDesign arrayDesign = createDesign(null, null, null, designFile);
-        arrayDesignService.importDesign(arrayDesign);
-        assertEquals("HumanHap300v2_A", arrayDesign.getName());
-        assertEquals("Agilent.com", arrayDesign.getLsidAuthority());
-        assertEquals("PhysicalArrayDesign", arrayDesign.getLsidNamespace());
-        assertEquals("HumanHap300v2_A", arrayDesign.getLsidObjectId());
-
-        designFile = getCaArrayFile(IlluminaArrayDesignFiles.HUMAN_HAP_300_CSV, FileType.AGILENT_XML);
-        arrayDesign = createDesign(null, null, null, designFile);
         arrayDesignService.importDesign(arrayDesign);
         assertEquals("HumanHap300v2_A", arrayDesign.getName());
         assertEquals("Agilent.com", arrayDesign.getLsidAuthority());
@@ -735,6 +754,13 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
         result = arrayDesignService.validateDesign(Collections.singleton(invalidDesignFile));
         assertFalse(result.isValid());
     }
+    
+    @Test
+    public void testValidateDesign_AgilentGelm() {
+        final CaArrayFile designFile = getAgilentGelmCaArrayFile(AgilentArrayDesignFiles.TEST_ACGH_XML);
+        final ValidationResult result = arrayDesignService.validateDesign(Collections.singleton(designFile));
+        assertTrue(result.isValid());
+    }
 
     @Test
     public void testDuplicateArrayDesign() {
@@ -801,6 +827,10 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
 
     private CaArrayFile getNimblegenCaArrayFile(File file) {
         return getCaArrayFile(file, FileType.NIMBLEGEN_NDF);
+    }
+
+    private CaArrayFile getAgilentGelmCaArrayFile(File file) {
+        return getCaArrayFile(file, FileType.AGILENT_XML);
     }
 
     /**
