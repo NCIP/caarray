@@ -232,14 +232,9 @@ var TabUtils = {
         }
     },
     setSelectedTab : function() {
-        tabMenuItems = $('tabbed').getElementsByTagName('li');
+        tabMenuItems = $('tabs').getElementsByTagName('li');
         for(var i = 0; i < tabMenuItems.length; i++) {
             tabLink = tabMenuItems[i].getElementsByTagName('a')[0];
-            if(tabLink.className == 'current') {
-                tabMenuItems[i].className = 'active';
-            } else {
-                tabMenuItems[i].className = '';
-            }
             tabLink.blur();
         }
     },
@@ -248,11 +243,6 @@ var TabUtils = {
         tabMenuItems = $('tablevel2').getElementsByTagName('li');
         for(var i = 0; i < tabMenuItems.length; i++) {
             tabLink = tabMenuItems[i].getElementsByTagName('a')[0];
-            if(tabLink.className == 'current') {
-                tabMenuItems[i].className = 'selected';
-            } else {
-                tabMenuItems[i].className = '';
-            }
             tabLink.blur();
         }
     },
@@ -271,7 +261,7 @@ var TabUtils = {
         }
     },
 
-    showLoadingText : function(keepMainContent) {
+    showLoadingText : function(keepMainContent) {    		
         var elts = document.getElementsByClassName('loadingText');
         var loadingElt = elts.length > 0 ? elts[0] : null;
         if (loadingElt) {
