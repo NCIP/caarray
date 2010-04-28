@@ -6,6 +6,13 @@
  *
  *--------------------------------------------------------------------------*/
 
+/*
+ * Modified from standard 1.6.0.3 by applying a change to Ajax.request method suggested in 
+ * https://prototype.lighthouseapp.com/projects/8886/tickets/12
+ * to fix an intermittent AJAX issue that caused tabs to fail to load.
+ * This looks to be fixed in 1.6.1 but we are holding off on upgrade to that due to compatibility concerns
+ * with other libraries (ajaxtags).
+ */
 var Prototype = {
   Version: '1.6.0.3',
 
@@ -1225,8 +1232,12 @@ Ajax.Request = Class.create(Ajax.Base, {
       this.transport.open(this.method.toUpperCase(), this.url,
         this.options.asynchronous);
 
-      if (this.options.asynchronous) this.respondToReadyState.bind(this).defer(1);
-
+      // originally the line below was
+      // if (this.options.asynchronous) this.respondToReadyState.bind(this).defer(1);
+      // this is modified to address an intermittent AJAX issue as suggested in
+      // https://prototype.lighthouseapp.com/projects/8886/tickets/12
+      if (this.options.asynchronous) this.respondToReadyState.bind(this).delay(0.01, 1);
+      
       this.transport.onreadystatechange = this.onStateChange.bind(this);
       this.setRequestHeaders();
 
@@ -1239,6 +1250,7 @@ Ajax.Request = Class.create(Ajax.Base, {
 
     }
     catch (e) {
+      console.log("ajax request exception");
       this.dispatchException(e);
     }
   },
