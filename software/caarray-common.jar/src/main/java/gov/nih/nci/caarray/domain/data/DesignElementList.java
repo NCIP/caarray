@@ -89,7 +89,7 @@ import gov.nih.nci.caarray.validation.UniqueConstraint;
 import gov.nih.nci.caarray.validation.UniqueConstraintField;
 import gov.nih.nci.caarray.validation.UniqueConstraints;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.persistence.Entity;
@@ -120,7 +120,7 @@ public final class DesignElementList extends AbstractCaArrayEntity {
     private static final int BATCH_SIZE = 200;
     private static final int MAX_SERIALIZABLE_SIZE = 100000;
 
-    private List<AbstractDesignElement> designElements = new ArrayList<AbstractDesignElement>();
+    private List<AbstractDesignElement> designElements = new LinkedList<AbstractDesignElement>();
     private String designElementType;
 
     /**

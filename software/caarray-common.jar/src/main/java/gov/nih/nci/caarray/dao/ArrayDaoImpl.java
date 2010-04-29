@@ -127,6 +127,8 @@ import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.Restrictions;
 
 import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
+import java.io.Serializable;
+import java.util.Collections;
 
 /**
  * DAO for entities in the <code>gov.nih.nci.caarray.domain.array</code> package.
@@ -299,6 +301,27 @@ class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
             namesToIds.put((String) result[0], (Long) result[1]);
         }
         return namesToIds;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public List<PhysicalProbe> getPhysicalProbeByNames(ArrayDesign design, List<String> names) {
+        if (names.isEmpty()) {
+            return Collections.emptyList();
+        }
+        Map<String, List<? extends Serializable>> inParams = new HashMap<String, List<? extends Serializable>>();
+        String inClause = HibernateUtil.buildInClause(names, "pp.name", inParams);
+        String queryString = "select pp from " + PhysicalProbe.class.getName()
+                + " pp where pp.arrayDesignDetails = :details and " + inClause;
+        Query query = getCurrentSession().createQuery(queryString);
+        query.setParameter("details", design.getDesignDetails());
+        for (Map.Entry<String, List<? extends Serializable>> e : inParams.entrySet()) {
+            query.setParameterList(e.getKey(), e.getValue());
+        }
+        @SuppressWarnings("unchecked")
+        List<PhysicalProbe> results = query.list();
+        return results;
     }
 
     /**

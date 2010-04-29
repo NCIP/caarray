@@ -106,7 +106,7 @@ public enum CopyNumberQuantitationType implements QuantitationTypeDescriptor {
     /**
      * CNState. UByte for CN4 algorithm.
      */
-    CN4_CN_STATE("CNState", DataType.SHORT),
+    CN4_CN_STATE("CN4_CNState", DataType.SHORT),
     /**
      * Log2Ratio. float.
      */
@@ -126,7 +126,7 @@ public enum CopyNumberQuantitationType implements QuantitationTypeDescriptor {
     /**
      * CNState. float for CN5 algorithm.
      */
-    CN5_CN_STATE("CNState", DataType.FLOAT),
+    CN5_CN_STATE("CN5_CNState", DataType.FLOAT),
     /**
      * SmoothSignal. float
      */

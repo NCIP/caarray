@@ -114,6 +114,8 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 
 import com.google.inject.Inject;
+import gov.nih.nci.caarray.dao.ArrayDao;
+import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.validation.ValidationMessage.Type;
 
 /**
@@ -126,13 +128,17 @@ final class SampleProbeProfileHandler extends AbstractDataFileHandler {
     private static final Logger LOG = Logger.getLogger(SampleProbeProfileHandler.class);
 
     private final ValueParser valueParser = new DefaultValueParser();
+    private final ArrayDao arrayDao;
+    private final SearchDao searchDao;
 
     /**
      * 
      */
     @Inject
-    SampleProbeProfileHandler(FileManager fileManager) {
+    SampleProbeProfileHandler(FileManager fileManager, ArrayDao arrayDao, SearchDao searchDao) {
         super(fileManager);
+        this.arrayDao = arrayDao;
+        this.searchDao = searchDao;
     }
 
     /**
@@ -182,10 +188,12 @@ final class SampleProbeProfileHandler extends AbstractDataFileHandler {
      */
     public void loadData(DataSet dataSet, List<QuantitationType> types, ArrayDesign design) {
         DataHeaderParser header = new DataHeaderParser(design.getFirstDesignFile().getFileType());
-        DesignElementBuilder designElementBuilder = new DesignElementBuilder(header, dataSet, design);
+        DesignElementBuilder designElementBuilder = new DesignElementBuilder(header, dataSet, design, arrayDao,
+                searchDao);
         processFile(getFile(), null, header, designElementBuilder);
-        dataSet.prepareColumns(types, designElementBuilder.getList().size());
-        LOG.info("Pass 1/2 loaded " + designElementBuilder.getList().size() + " design elements.");
+        designElementBuilder.finish();
+        dataSet.prepareColumns(types, designElementBuilder.getElementCount());
+        LOG.info("Pass 1/2 loaded " + designElementBuilder.getElementCount() + " design elements.");
         header = new DataHeaderParser(design.getFirstDesignFile().getFileType());
         HybDataBuilder<SampleProbeProfileQuantitationType> loader
                 = new HybDataBuilder<SampleProbeProfileQuantitationType>(dataSet, header, this.valueParser);
@@ -208,12 +216,13 @@ final class SampleProbeProfileHandler extends AbstractDataFileHandler {
            result.addMessage(Type.ERROR, "Array design not found");
            return;
         }
-        
+
         ValidatingHeaderParser headerValidator = new ValidatingHeaderParser(design.getFirstDesignFile().getFileType(),
                 result, mTabSet);
         HybDataValidator<SampleProbeProfileQuantitationType> dataValidator
-                = new HybDataValidator<SampleProbeProfileQuantitationType>(headerValidator, result, design);
+                = new HybDataValidator<SampleProbeProfileQuantitationType>(headerValidator, result, design, arrayDao);
         processFile(getFile(), null, headerValidator, dataValidator);
+        dataValidator.finish();
     }
 
     /**
@@ -280,8 +289,11 @@ final class SampleProbeProfileHandler extends AbstractDataFileHandler {
             List<String> line = r.nextLine();
             boolean keepGoing = header.parse(line, r.getCurrentLineNumber());
             // parse rows
+            long ticker = System.currentTimeMillis();
             while (keepGoing && r.hasNextLine() && row != null) {
                 keepGoing = row.parse(r.nextLine(), r.getCurrentLineNumber());
+                ticker = GenotypingProcessedMatrixHandler.tick(ticker, "...still processing around line " 
+                        + r.getCurrentLineNumber() + " with " + row);
             }
         }
     }

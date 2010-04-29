@@ -123,6 +123,8 @@ import affymetrix.fusion.chp.FusionCHPDataReg;
 import affymetrix.fusion.chp.FusionCHPLegacyData;
 import affymetrix.fusion.chp.FusionExpressionProbeSetResults;
 import affymetrix.fusion.chp.FusionGenotypeProbeSetResults;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author dkokotov
@@ -349,8 +351,9 @@ public class AffymetrixDataHandlerTest extends AbstractHandlerTest {
         assertEquals(1, dataSet.getHybridizationDataList().size());
         HybridizationData hybridizationData = dataSet.getHybridizationDataList().get(0);
         assertEquals(chpData.getHybridizations().iterator().next(), hybridizationData.getHybridization());
-        assertEquals(CnchpData.CN4_TYPE_MAP.size(),  hybridizationData.getColumns().size());
-        assertEquals(CnchpData.CN4_TYPE_MAP.size(), dataSet.getQuantitationTypes().size());
+        Set<CopyNumberQuantitationType> expected = new HashSet<CopyNumberQuantitationType>(CnchpData.CN4_TYPE_MAP.values());
+        assertEquals(expected.size(),  hybridizationData.getColumns().size());
+        assertEquals(expected.size(), dataSet.getQuantitationTypes().size());
         for (AbstractDesignElement element : dataSet.getDesignElementList().getDesignElements()) {
             assertNotNull(element);
         }

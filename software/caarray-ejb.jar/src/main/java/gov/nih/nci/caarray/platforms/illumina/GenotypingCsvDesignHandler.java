@@ -114,9 +114,9 @@ final class GenotypingCsvDesignHandler extends AbstractCsvDesignHelper<Genotypin
 
     @Override
     PhysicalProbe createProbe(ArrayDesignDetails details, List<String> values) {
-        String name = getValue(values, Header.NAME);
-        PhysicalProbe logicalProbe = new PhysicalProbe(details, null);
-        logicalProbe.setName(name);
+        String name = getValue(values, Header.ILMNID);
+        PhysicalProbe probe = new PhysicalProbe(details, null);
+        probe.setName(name);
         SNPProbeAnnotation annotation = new SNPProbeAnnotation();
         if (Utils.isInteger(getValue(values, Header.CHR))) {
             annotation.setChromosome(getIntegerValue(values, Header.CHR));
@@ -130,8 +130,8 @@ final class GenotypingCsvDesignHandler extends AbstractCsvDesignHelper<Genotypin
             annotation.setDbSNPId(name);
             annotation.setDbSNPVersion(getIntegerValue(values, Header.SOURCEVERSION));
         }
-        logicalProbe.setAnnotation(annotation);
-        return logicalProbe;
+        probe.setAnnotation(annotation);
+        return probe;
     }
 
     private boolean isDbSnpEntry(List<String> values) {

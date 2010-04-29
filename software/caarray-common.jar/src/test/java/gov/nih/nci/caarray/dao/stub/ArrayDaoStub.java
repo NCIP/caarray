@@ -86,6 +86,7 @@ import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
 import gov.nih.nci.caarray.domain.array.LogicalProbe;
+import gov.nih.nci.caarray.domain.array.PhysicalProbe;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.ArrayDataType;
@@ -194,5 +195,15 @@ public class ArrayDaoStub extends AbstractDaoStub implements ArrayDao {
     public List<QuantitationType> searchForQuantitationTypes(PageSortParams<QuantitationType> params,
             QuantitationTypeSearchCriteria criteria) {
         return new ArrayList<QuantitationType>();
+    }
+
+    public List<PhysicalProbe> getPhysicalProbeByNames(ArrayDesign design, List<String> names) {
+        List<PhysicalProbe> l = new ArrayList<PhysicalProbe>(names.size());
+        for (PhysicalProbe pp : design.getDesignDetails().getProbes()) {
+            if (names.contains(pp.getName())) {
+                l.add(pp);
+            }
+        }        
+        return l;
     }
 }

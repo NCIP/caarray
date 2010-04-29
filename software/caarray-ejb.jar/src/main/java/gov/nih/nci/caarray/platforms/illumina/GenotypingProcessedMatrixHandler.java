@@ -110,6 +110,8 @@ import org.apache.commons.collections.Predicate;
 import org.apache.log4j.Logger;
 
 import com.google.inject.Inject;
+import gov.nih.nci.caarray.dao.ArrayDao;
+import gov.nih.nci.caarray.dao.SearchDao;
 
 /**
  * Illumina Genotyping Processed Matrix importer.
@@ -119,15 +121,20 @@ import com.google.inject.Inject;
  */
 final class GenotypingProcessedMatrixHandler extends AbstractDataFileHandler {
     private static final Logger LOG = Logger.getLogger(GenotypingProcessedMatrixHandler.class);
-
+    private static final long ONE_MINUTE = 1000L * 60L;
+    
     private final ValueParser valueParser = new DefaultValueParser();
+    private final ArrayDao arrayDao;
+    private final SearchDao searchDao;
     
     /**
      * 
      */
     @Inject
-    GenotypingProcessedMatrixHandler(FileManager fileManager) {
+    GenotypingProcessedMatrixHandler(FileManager fileManager, ArrayDao arrayDao, SearchDao searchDao) {
         super(fileManager);
+        this.arrayDao = arrayDao;
+        this.searchDao = searchDao;
     }
 
     /**
@@ -174,8 +181,10 @@ final class GenotypingProcessedMatrixHandler extends AbstractDataFileHandler {
     public void validate(MageTabDocumentSet mTabSet, final FileValidationResult result, ArrayDesign design) {
         ValidatingHeaderParser headerProc = new ValidatingHeaderParser(result, mTabSet);
         HybDataValidator<IlluminaGenotypingProcessedMatrixQuantitationType> proc
-                = new HybDataValidator<IlluminaGenotypingProcessedMatrixQuantitationType>(headerProc, result, design);
+                = new HybDataValidator<IlluminaGenotypingProcessedMatrixQuantitationType>(headerProc, result, design,
+                arrayDao);
         processFile(headerProc, proc, getFile());
+        proc.finish();
     }
 
     /**
@@ -184,10 +193,11 @@ final class GenotypingProcessedMatrixHandler extends AbstractDataFileHandler {
     public void loadData(DataSet dataSet, List<QuantitationType> types, ArrayDesign design) {
         // pass 1: load design element and count row.
         DefaultHeaderProcessor header = new DefaultHeaderProcessor();
-        DesignElementBuilder designElementProc = new DesignElementBuilder(header, dataSet, design);
+        DesignElementBuilder designElementProc = new DesignElementBuilder(header, dataSet, design, arrayDao, searchDao);
         processFile(header, designElementProc, getFile());
-        dataSet.prepareColumns(types, designElementProc.getList().size());
-        LOG.info("Pass 1/2 loaded " + designElementProc.getList().size() + " design elements.");
+        designElementProc.finish();
+        dataSet.prepareColumns(types, designElementProc.getElementCount());
+        LOG.info("Pass 1/2 loaded " + designElementProc.getElementCount() + " design elements.");
         // pass 2: fill columns.
         header = new DefaultHeaderProcessor();
         HybDataBuilder<IlluminaGenotypingProcessedMatrixQuantitationType> loader
@@ -213,10 +223,14 @@ final class GenotypingProcessedMatrixHandler extends AbstractDataFileHandler {
 
     private void processFile(DefaultHeaderProcessor headerProc, AbstractParser rowProc, File file) {
         DelimitedFileReader r = openReader(file);
+        long ticker = System.currentTimeMillis();
         try {
             boolean keepGoing = r.hasNextLine() && headerProc.parse(r.nextLine(), r.getCurrentLineNumber());
             while (rowProc != null && keepGoing && r.hasNextLine()) {
                 keepGoing = rowProc.parse(r.nextLine(), r.getCurrentLineNumber());
+                long now = System.currentTimeMillis();
+                ticker = tick(ticker, "...still processing around line " + r.getCurrentLineNumber()  + " with "
+                        + rowProc);
             }
         } catch (IOException e) {
             throw new IllegalStateException(AbstractDataFileHandler.READ_FILE_ERROR_MESSAGE, e);
@@ -225,6 +239,17 @@ final class GenotypingProcessedMatrixHandler extends AbstractDataFileHandler {
         }
     }
 
+    // CHECKSTYLE:OFF
+    static long tick(long lastTick, String msg) {
+        long now = System.currentTimeMillis();
+        if (lastTick + ONE_MINUTE <= now) {
+            Runtime r = Runtime.getRuntime();
+            LOG.info(msg + " free=" + (r.freeMemory() / 1048576) + "/" + (r.totalMemory()/1048576) + "MB");
+            return now;
+        }
+        return lastTick;
+    }
+ // CHECKSTYLE:ON
     /**
      * matrix header parser with extra validation.
      */
@@ -321,7 +346,7 @@ final class GenotypingProcessedMatrixHandler extends AbstractDataFileHandler {
                         warn("Unsupported Column " + localName, lineNum, col + 1);
                     }
                 }
-                if (hdr != null) {
+                if (hdr != null && hdr.getQType() != null) {
                     loader.addMapping(hdr.getQType(), col, lineNum);
                 }
             }

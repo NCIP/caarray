@@ -84,12 +84,15 @@
 package gov.nih.nci.caarray.platforms.illumina;
 
 import gov.nih.nci.caarray.application.util.Utils;
-import gov.nih.nci.caarray.domain.array.AbstractProbe;
+import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
+import gov.nih.nci.caarray.domain.array.PhysicalProbe;
 import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
-import gov.nih.nci.caarray.platforms.ProbeLookup;
 import gov.nih.nci.caarray.validation.FileValidationResult;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Validates values in the table.
@@ -99,26 +102,31 @@ import java.util.List;
  */
 public class HybDataValidator <QT extends Enum<QT> & QuantitationTypeDescriptor> extends AbstractParser {
     private static final int MAX_ERROR_MESSAGES = 1000;
+    static final int BATCH_SIZE = 1000;
 
     private int errorCount;
     private final ArrayDesign design;
-    private final ProbeLookup probeLookup;
     private final AbstractHeaderParser<QT> header;
-
+    private final List<String> probeNames = new ArrayList<String>(BATCH_SIZE);
+    private int batchLineNumber = 1;
+    private final ArrayDao arrayDao;
+    private final Set<String> lookup = new HashSet<String>(BATCH_SIZE);
+    
     /**
      * @param header header info.
      * @param result collector for of validation messages.
-     * @param design design associated with the data file we are parsing..
+     * @param design design associated with the data file we are parsing.
+     * @param arrayDao dao for probe lookup.
      */
-    public HybDataValidator(AbstractHeaderParser<QT> header, FileValidationResult result, ArrayDesign design) {
+    public HybDataValidator(AbstractHeaderParser<QT> header, FileValidationResult result, ArrayDesign design,
+            ArrayDao arrayDao) {
         super(result);
         this.header = header;
-        this.design = design;
         if (design == null) {
             throw new IllegalArgumentException("No array design found in experiment");
-        } else {
-            this.probeLookup = new ProbeLookup(design.getDesignDetails().getProbes());
         }
+        this.design = design;
+        this.arrayDao = arrayDao;
     }
 
     /**
@@ -129,15 +137,48 @@ public class HybDataValidator <QT extends Enum<QT> & QuantitationTypeDescriptor>
             error("Expected " + header.getRowWidth() + " columns, but found " + row.size(), lineNum, 0);
         }
         String probeName = header.parseProbeId(row, lineNum);
-        AbstractProbe p = probeLookup.getProbe(probeName);
-        if (p == null && design != null) {
-            error("Probe " + probeName + " not found in design " + design.getName() + " ver. " + design.getVersion(),
-                    lineNum, 0);
+        probeNames.add(probeName);
+        if (probeNames.size() == BATCH_SIZE) {
+            batchLineNumber = lineNum - BATCH_SIZE;
+            processBatch();
         }
+        
         checkDataFormats(row, lineNum);
         // stop processing before we have too many messages to deal with.
         return errorCount < MAX_ERROR_MESSAGES;
     }
+
+    private void processBatch() {
+        List<PhysicalProbe> batchProbes = arrayDao.getPhysicalProbeByNames(design, probeNames);
+        ArrayList<PhysicalProbe> tmp = new ArrayList<PhysicalProbe>(batchProbes.size());
+        tmp.addAll(batchProbes);
+        for (PhysicalProbe p : tmp) {
+            lookup.add(p.getName());
+            arrayDao.evictObject(p);
+            arrayDao.evictObject(p.getArrayDesignDetails());
+            arrayDao.evictObject(p.getProbeGroup());
+            arrayDao.evictObject(p.getAnnotation());
+
+        }
+        for (String n : probeNames) {
+            if (!lookup.contains(n)) {
+                error("Probe " + n + " not found in design " + design.getName() + " ver. " + design.getVersion(),
+                    batchLineNumber, 0);
+            }
+            batchLineNumber++;
+        }
+        probeNames.clear();
+        lookup.clear();
+    }
+
+    /**
+     * to be called when all lines are parsed, to flush remaining batch.
+     */
+    void finish() {
+        processBatch();
+    }
+
+
 
     private void checkDataFormats(List<String> row, int lineNum) {
         int col = 1;

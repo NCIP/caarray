@@ -138,6 +138,7 @@ class CnchpData extends AbstractCHPMultiData<ProbeSetMultiDataCopyNumberData> {
         addMap(tmp, CopyNumberQuantitationType.CHROMOSOME);
         addMap(tmp, CopyNumberQuantitationType.POSITION);
         addMap(tmp, CopyNumberQuantitationType.CN4_CN_STATE);
+        tmp.put("CNState", CopyNumberQuantitationType.CN4_CN_STATE);
         addMap(tmp, CopyNumberQuantitationType.LOG2RATIO);
         addMap(tmp, CopyNumberQuantitationType.HMM_MEDIAN_LOG2RATIO);
         addMap(tmp, CopyNumberQuantitationType.NEG_LOG10PVALUE);
@@ -151,6 +152,7 @@ class CnchpData extends AbstractCHPMultiData<ProbeSetMultiDataCopyNumberData> {
         addMap(tmp, CopyNumberQuantitationType.CHROMOSOME);
         addMap(tmp, CopyNumberQuantitationType.POSITION);
         addMap(tmp, CopyNumberQuantitationType.CN5_CN_STATE);
+        tmp.put("CNState", CopyNumberQuantitationType.CN5_CN_STATE);
         addMap(tmp, CopyNumberQuantitationType.LOG2RATIO);
         addMap(tmp, CopyNumberQuantitationType.SMOOTH_SIGNAL);
         addMap(tmp, CopyNumberQuantitationType.LOH);
@@ -190,12 +192,11 @@ class CnchpData extends AbstractCHPMultiData<ProbeSetMultiDataCopyNumberData> {
                     break;
                 case CN4_CN_STATE:
                     ((ShortColumn) column).getValues()[index] = 
-                            metricMap.get(CopyNumberQuantitationType.CN4_CN_STATE.getName()).getValueUInt8().toShort();
-
+                            metricMap.get("CNState").getValueUInt8().toShort();
                     break;
                 case CN5_CN_STATE:
                     ((FloatColumn) column).getValues()[index] 
-                            = metricMap.get(CopyNumberQuantitationType.CN5_CN_STATE.getName()).getValueFloat();
+                            = metricMap.get("CNState").getValueFloat();
                     break;
                 case HMM_MEDIAN_LOG2RATIO:
                     ((FloatColumn) column).getValues()[index] 
@@ -248,7 +249,7 @@ class CnchpData extends AbstractCHPMultiData<ProbeSetMultiDataCopyNumberData> {
         GenericDataHeader gh = h.getGenericDataHdr();
         for (ParameterNameValue nv : gh.getNameValParams()) {
             if (key.equals(nv.getName())) {
-                return nv.getValueAscii();
+                return nv.getValueText();
             }
         }
         return null;
