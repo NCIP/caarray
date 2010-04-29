@@ -226,6 +226,11 @@ public final class TestMageTabSets {
     /**
      * Document set parsed ...
      */
+    public static final MageTabFileSet DEFECT_27959 = getDefect27959InputSet();
+
+    /**
+     * Document set parsed ...
+     */
     public static final MageTabFileSet DEFECT_16421_2 = getDefect16421ErrorInputSet2();
 
     /**
@@ -714,6 +719,14 @@ public final class TestMageTabSets {
         fileSet.addSdrf(new JavaIOFileRef(MageTabDataFiles.RENAMING_TERM_SOURCES_SDRF));
         addCelFiles(fileSet, MageTabDataFiles.RENAMING_TERM_SOURCES_DIRECTORY);
         addChpFiles(fileSet, MageTabDataFiles.RENAMING_TERM_SOURCES_DIRECTORY);
+        return fileSet;
+    }
+     
+    private static MageTabFileSet getDefect27959InputSet() {
+        MageTabFileSet fileSet = new MageTabFileSet();
+        fileSet.addIdf(new JavaIOFileRef(MageTabDataFiles.DEFECT_27959_IDF));
+        fileSet.addSdrf(new JavaIOFileRef(MageTabDataFiles.DEFECT_27959_SDRF));
+        fileSet.addNativeData(new JavaIOFileRef(MageTabDataFiles.DEFECT_27959_DERIVED_DATA_FILE));        
         return fileSet;
     }
 

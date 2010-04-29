@@ -343,6 +343,15 @@ public class MageTabDataFiles {
     public static final File DEFECT_17200_IDF = new File(MageTabDataFiles.class.getResource(
         "/magetab/baddata/invalidFileRef/test_gpr.idf").getFile());
 
+    public static final File DEFECT_27959_IDF = new File(MageTabDataFiles.class.getResource(
+        "/magetab/incorrect_array_data_type/ilmn_test.bad.idf.txt").getFile());
+
+    public static final File DEFECT_27959_SDRF = new File(MageTabDataFiles.class.getResource(
+        "/magetab/incorrect_array_data_type/ilmn_test.bad.sdrf.txt").getFile());
+
+    public static final File DEFECT_27959_DERIVED_DATA_FILE = new File(MageTabDataFiles.class.getResource(
+        "/magetab/incorrect_array_data_type/GEO_GSE12459_processed_data.txt").getFile());
+
     public static final File DEFECT_17200_GPR = new File(MageTabDataFiles.class.getResource(
         "/magetab/baddata/invalidFileRef/18258_wap3.gpr").getFile());
 

@@ -84,8 +84,6 @@
 package gov.nih.nci.caarray.domain.file;
 
 import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -333,21 +331,6 @@ public enum FileType implements Comparable<FileType> {
     public static final Set<FileType> PARSEABLE_ARRAY_DATA_FILE_TYPES = EnumSet.of(AFFYMETRIX_CEL, AFFYMETRIX_CHP,
             ILLUMINA_DATA_CSV, ILLUMINA_GENOTYPING_PROCESSED_MATRIX_TXT,
             ILLUMINA_SAMPLE_PROBE_PROFILE_TXT, GENEPIX_GPR, NIMBLEGEN_NORMALIZED_PAIR, NIMBLEGEN_RAW_PAIR);
-    
-    private static final Map<FileType, FileType> RAW_TO_DERIVED_MAP = new HashMap<FileType, FileType>();
-    private static final Map<FileType, FileType> DERIVED_TO_RAW_MAP = new HashMap<FileType, FileType>();
-
-    static {
-        mapRawAndDerivedFileTypes(AGILENT_RAW_TXT, AGILENT_DERIVED_TXT);
-        mapRawAndDerivedFileTypes(ILLUMINA_RAW_TXT, ILLUMINA_DERIVED_TXT);
-        RAW_TO_DERIVED_MAP.put(NIMBLEGEN_RAW_PAIR, NIMBLEGEN_NORMALIZED_PAIR);
-        DERIVED_TO_RAW_MAP.put(NIMBLEGEN_NORMALIZED_PAIR, NIMBLEGEN_RAW_PAIR);
-    }
-
-    private static void mapRawAndDerivedFileTypes(final FileType rawFileType, final FileType derivedFileType) {
-        RAW_TO_DERIVED_MAP.put(rawFileType, derivedFileType);
-        DERIVED_TO_RAW_MAP.put(derivedFileType, rawFileType);
-    }
 
     /**
      * @return true if this file type is an array design.
@@ -396,35 +379,5 @@ public enum FileType implements Comparable<FileType> {
      */
     public String getName() {
         return name();
-    }
-
-    /**
-     * @return if this file type has a derived variant, false otherwise.
-     */
-    public boolean hasRawVersion() {
-        return DERIVED_TO_RAW_MAP.get(this) != null;
-    }
-
-    /**
-     * @return if this file type has a derived version, false otherwise.
-     */
-    public boolean hasDerivedVersion() {
-        return DERIVED_TO_RAW_MAP.get(this) != null;
-    }
-
-    /**
-     * @return the raw version of this file type
-     */
-    public FileType getRawType() {
-        FileType rawType = DERIVED_TO_RAW_MAP.get(this);
-        return (rawType == null) ? this : rawType;
-    }
-
-    /**
-     * @return the derived version of this file type
-     */
-    public FileType getDerivedType() {
-        FileType derivedType = RAW_TO_DERIVED_MAP.get(this);
-        return (derivedType == null) ? this : derivedType;
     }
 }

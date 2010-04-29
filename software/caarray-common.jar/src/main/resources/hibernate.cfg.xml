@@ -11,6 +11,7 @@
         <property name="hibernate.transaction.factory_class">org.hibernate.transaction.CMTTransactionFactory</property>
         <property name="hibernate.transaction.manager_lookup_class">org.hibernate.transaction.JBossTransactionManagerLookup</property>
         <property name="hibernate.dialect">gov.nih.nci.caarray.util.CaarrayInnoDBDialect</property>
+        <property name="hibernate.connection.isolation">2</property>
         @DATASOURCE_CONFIG_END@ -->
 
         <!-- @HIBERNATE_CONFIG_START@

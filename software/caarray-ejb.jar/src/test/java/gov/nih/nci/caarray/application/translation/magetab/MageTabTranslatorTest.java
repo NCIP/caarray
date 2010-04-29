@@ -102,7 +102,9 @@ import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.DerivedArrayData;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
+import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
+import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.ExperimentContact;
@@ -178,6 +180,27 @@ public class MageTabTranslatorTest extends AbstractServiceTest {
                 .setTemporaryFileCacheFactory(new TemporaryFileCacheStubFactory(fileAccessServiceStub));
         locatorStub.addLookup(VocabularyService.JNDI_NAME, this.vocabularyServiceStub);
         this.translator = mageTabTranslatorBean;
+    }
+    
+    @Test
+    public void testDefect27959() throws InvalidDataException, MageTabParsingException {
+        MageTabFileSet mageTabSet = TestMageTabSets.DEFECT_27959;
+        for (FileRef f : mageTabSet.getAllFiles()) {
+            fileAccessServiceStub.add(f.getAsFile());
+        }
+        MageTabDocumentSet docSet = MageTabParser.INSTANCE.parse(mageTabSet);
+        assertTrue(docSet.getValidationResult().isValid());
+        CaArrayFileSet fileSet = TestMageTabSets.getFileSet(mageTabSet);
+        CaArrayFile dataFile = fileSet.getFile(MageTabDataFiles.DEFECT_27959_DERIVED_DATA_FILE);
+        dataFile.setType(FileType.ILLUMINA_DERIVED_TXT.getName());
+        ValidationResult result = this.translator.validate(docSet, fileSet);
+        assertFalse(result.isValid());
+        FileValidationResult fileResult = result.getFileValidationResult(
+                MageTabDataFiles.DEFECT_27959_DERIVED_DATA_FILE);
+        assertNotNull(fileResult);
+        assertFalse(result.isValid());
+        assertEquals(1, fileResult.getMessages().size());
+        assertTrue(fileResult.getMessages().get(0).getMessage().startsWith("This file is not correctly referenced"));
     }
 
     @Test

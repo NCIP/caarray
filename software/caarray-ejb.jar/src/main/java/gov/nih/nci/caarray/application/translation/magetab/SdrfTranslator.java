@@ -235,18 +235,16 @@ final class SdrfTranslator extends AbstractTranslator {
         for (CaArrayFile file : getFileSet().getFiles()) {
             FileType fileType = file.getFileType();
             boolean isRaw = fileType.isRawArrayData();
-            boolean hasRawVersion = fileType.hasRawVersion();
             boolean referencedAsRaw = referencedRawFiles.contains(file.getName());
             boolean isDerived = fileType.isDerivedArrayData();
-            boolean hasDerivedVersion = fileType.hasDerivedVersion();
             boolean referencedAsDerived = referencedDerivedFiles.contains(file.getName());
             boolean isMatrix = fileType == FileType.MAGE_TAB_DATA_MATRIX;
             boolean referencedAsMatrix = referencedDataMatrixFiles.contains(file.getName());
             boolean referencedAsAny = referencedAsRaw || referencedAsDerived || referencedAsMatrix;
 
-            if (isRaw && !referencedAsRaw && (!hasDerivedVersion || !referencedAsDerived)) {
+            if (isRaw && !referencedAsRaw) {
                 addFileReferenceError(file, referencedAsAny, SdrfColumnType.ARRAY_DATA_FILE.getDisplayName());
-            } else if (isDerived && !referencedAsDerived && (!hasRawVersion || !referencedAsRaw)) {
+            } else if (isDerived && !referencedAsDerived) {
                 addFileReferenceError(file, referencedAsAny, SdrfColumnType.DERIVED_ARRAY_DATA_FILE.getDisplayName());
             } else if (isMatrix && !referencedAsMatrix) {
                 addFileReferenceError(file, referencedAsAny, SdrfColumnType.ARRAY_DATA_MATRIX_FILE.getDisplayName()
@@ -262,9 +260,7 @@ final class SdrfTranslator extends AbstractTranslator {
                 : "This data file is not referenced from an SDRF file.";
         getDocumentSet().getValidationResult().addMessage(file, Type.ERROR, message);
     }
-
-
-
+    
     private void validateSdrf(SdrfDocument document, Set<String> externalIds) {
         validateArrayDesigns(document);
         validateSamples(document, externalIds);
@@ -745,9 +741,6 @@ final class SdrfTranslator extends AbstractTranslator {
             // this is a re-import referencing an existing data file
             caArrayData = new RawArrayData();
             caArrayData.setName(fileName);
-            if (!isMatrix) {
-                dataFile.setFileType(dataFile.getFileType().getRawType());
-            }
             caArrayData.setDataFile(dataFile);
 
             Set<gov.nih.nci.caarray.magetab.ProtocolApplication> all =
@@ -789,9 +782,6 @@ final class SdrfTranslator extends AbstractTranslator {
         } else {
             caArrayData = new DerivedArrayData();
             caArrayData.setName(fileName);
-            if (!isDataMatrix) {
-                dataFile.setFileType(dataFile.getFileType().getDerivedType());
-            }
             caArrayData.setDataFile(dataFile);
             associateProtocolApplications(caArrayData.getProtocolApplications(), sdrfData.getProtocolApplications());
         }
