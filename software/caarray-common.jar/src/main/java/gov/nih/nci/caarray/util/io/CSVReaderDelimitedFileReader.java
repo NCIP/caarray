@@ -161,6 +161,13 @@ final class CSVReaderDelimitedFileReader implements DelimitedFileReader {
     /**
      * {@inheritDoc}
      */
+     public List<String> peek() {
+         return nextValues;
+     }
+     
+    /**
+     * {@inheritDoc}
+     */
     public void reset() throws IOException {
         if (reader != null) {
             reader.close();

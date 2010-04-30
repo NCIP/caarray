@@ -105,6 +105,12 @@ public interface DelimitedFileReader {
     List<String> nextLine() throws IOException;
 
     /**
+     * Returns the line the next call to {@link #nextLine()} will return, w/o advancing to the next line.
+     * @return the upcomming line.
+     */
+    List<String> peek();
+
+    /**
      * Returns the line number of the current line read, i.e. from the last call
      * to <code>nextLine()</code>. If no line has been read yet or reader has been reset, returns 0.
      *

@@ -246,6 +246,9 @@ public abstract class AbstractHeaderParser <QT extends Enum<QT> & QuantitationTy
         for (ValueLoader vl : loaders) {
             if (reference == null) {
                 reference = vl;
+                if (reference.qTypes.isEmpty()) {
+                    error("No quantitation type columns found for samples " + reference.getHybName(), lineNum, 0);
+                }
                 continue;
             }
             List<QT> a = reference.getQTypes();

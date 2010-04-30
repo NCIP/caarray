@@ -27,8 +27,11 @@ public class CSVReaderDelimitedFileReaderTest extends AbstractCaarrayTest {
         assertEquals(0, reader.getCurrentLineNumber());
         for (int line = 1; line <= NUMBER_OF_LINES; line++) {
             assertTrue(reader.hasNextLine());
+            List<String> current = reader.peek();
+            assertEquals(line - 1, reader.getCurrentLineNumber());
             List<String> values = reader.nextLine();
             assertFalse(values.isEmpty());
+            assertEquals(current, values);
             assertNotNull(values);
             assertEquals(line, reader.getCurrentLineNumber());
         }

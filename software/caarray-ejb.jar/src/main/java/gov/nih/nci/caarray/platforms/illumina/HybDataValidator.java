@@ -111,6 +111,7 @@ public class HybDataValidator <QT extends Enum<QT> & QuantitationTypeDescriptor>
     private int batchLineNumber = 1;
     private final ArrayDao arrayDao;
     private final Set<String> lookup = new HashSet<String>(BATCH_SIZE);
+    private int entryCount;
     
     /**
      * @param header header info.
@@ -144,6 +145,7 @@ public class HybDataValidator <QT extends Enum<QT> & QuantitationTypeDescriptor>
         }
         
         checkDataFormats(row, lineNum);
+        entryCount++;
         // stop processing before we have too many messages to deal with.
         return errorCount < MAX_ERROR_MESSAGES;
     }
@@ -175,6 +177,9 @@ public class HybDataValidator <QT extends Enum<QT> & QuantitationTypeDescriptor>
      * to be called when all lines are parsed, to flush remaining batch.
      */
     void finish() {
+        if (entryCount == 0) {
+            error("Not data rows found", 0, 0);
+        }
         processBatch();
     }
 

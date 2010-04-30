@@ -1,8 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package gov.nih.nci.caarray.platforms.illumina;
 
 import static org.junit.Assert.assertEquals;
@@ -142,8 +137,8 @@ public class IlluminaSampleProbeProfileHandlerIntegrationTest extends AbstractSe
     @Test
     public void testValidationErrors_0() {
         String[] header = {"", "", ""};
-        String [] messages = {"" +
-                "No samples with quantitation type AVG_SIGNAL found"
+        String [] messages = {"No samples with quantitation type AVG_SIGNAL found",
+                "No samples found"
         };
         processHeader(header, messages, null, null);
     }
@@ -188,6 +183,15 @@ public class IlluminaSampleProbeProfileHandlerIntegrationTest extends AbstractSe
         assertTrue(p.getHybNames().contains("Hyb2"));
         assertTrue(p.getLoaders().get(0).getQTypes().containsAll(p.getLoaders().get(1).getQTypes()));
         assertTrue(p.getLoaders().get(1).getQTypes().containsAll(p.getLoaders().get(0).getQTypes()));
+    }
+
+    @Test
+    public void testValidationErrors_5() {
+        String[] header = {"ID_REF"};
+        String [] messages = {"No samples found" , "No samples with quantitation type AVG_SIGNAL found"};
+        SampleProbeProfileHandler.ValidatingHeaderParser p = processHeader(header, messages, null, FileType.ILLUMINA_DESIGN_BGX);
+        assertEquals(0, p.getHybNames().size());
+        assertTrue(p.getHybNames().isEmpty());
     }
 
     @Test

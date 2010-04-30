@@ -124,6 +124,7 @@ import gov.nih.nci.caarray.validation.ValidationMessage.Type;
  * @since 2.4.0
  * @author gax
  */
+@SuppressWarnings("PMD.ExcessiveClassLength")
 final class SampleProbeProfileHandler extends AbstractDataFileHandler {
     private static final Logger LOG = Logger.getLogger(SampleProbeProfileHandler.class);
 
@@ -270,14 +271,33 @@ final class SampleProbeProfileHandler extends AbstractDataFileHandler {
 
         }
     }
+
+    private static void skeepBlankLines(DelimitedFileReader r) throws IOException {
+        while (r.hasNextLine() && isBlankLine(r.peek())) {
+            r.nextLine();
+        }
+    }
+
+    private static boolean isBlankLine(List<String> line) {
+        return line.isEmpty() || (line.size() == 1 && line.get(0).length() == 0);
+    }
     
     private void parseHeadingSection(DelimitedFileReader r, InfoHeadingParser info) throws IOException {
+        skeepBlankLines(r);
         while (r.hasNextLine()) {
-            List<String> line = r.nextLine();
-            if (line.isEmpty() || line.get(0).length() == 0) {
+            List<String> line = r.peek();
+            if (isBlankLine(line)) {
+                // end of heading section
+                r.nextLine();
                 break;
-            } else if (info != null) {
-                info.parse(line, r.getCurrentLineNumber());
+            } else if (line.size() > 1) {
+                // probably the table header. there was no newline to mark the end of the heading section.
+                break;
+            } else {
+                line = r.nextLine();
+                if (info != null) {
+                    info.parse(line, r.getCurrentLineNumber());
+                }
             }
         }
     }
@@ -367,6 +387,7 @@ final class SampleProbeProfileHandler extends AbstractDataFileHandler {
         protected boolean parseLoaders(List<String> line, int lineNum) {
             List<String> hybNames = findHybNames(line, lineNum);
             if (hybNames.isEmpty()) {
+                error("No samples found", lineNum, 0);
                 return false;
             }
             // start out with all columns, and remove the ones that are processed/used.
