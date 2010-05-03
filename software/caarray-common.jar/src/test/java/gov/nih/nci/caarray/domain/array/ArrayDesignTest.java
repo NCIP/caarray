@@ -1,13 +1,10 @@
 package gov.nih.nci.caarray.domain.array;
 
 import static org.junit.Assert.assertEquals;
+import gov.nih.nci.caarray.domain.project.AssayType;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
-
-import gov.nih.nci.caarray.domain.project.AssayType;
 
 import org.junit.Test;
 

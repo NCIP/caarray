@@ -1,8 +1,6 @@
 package gov.nih.nci.cagrid.caarray.client;
 
 import gov.nih.nci.caarray.domain.array.AbstractDesignElement;
-import gov.nih.nci.caarray.domain.array.ArrayDesign;
-import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
 import gov.nih.nci.caarray.domain.data.AbstractDataColumn;
 import gov.nih.nci.caarray.domain.data.BooleanColumn;
 import gov.nih.nci.caarray.domain.data.DataRetrievalRequest;
@@ -18,16 +16,8 @@ import gov.nih.nci.caarray.domain.data.ShortColumn;
 import gov.nih.nci.caarray.domain.data.StringColumn;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
-import gov.nih.nci.caarray.domain.project.AbstractFactorValue;
 import gov.nih.nci.caarray.domain.project.Experiment;
-import gov.nih.nci.caarray.domain.project.UserDefinedFactorValue;
-import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
-import gov.nih.nci.caarray.domain.sample.AbstractCharacteristic;
-import gov.nih.nci.caarray.domain.sample.Sample;
-import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.domain.sample.TermBasedCharacteristic;
-import gov.nih.nci.caarray.domain.sample.UserDefinedCharacteristic;
-import gov.nih.nci.caarray.util.CaArrayUtils;
 import gov.nih.nci.cagrid.caarray.util.GridTransferResultHandler;
 import gov.nih.nci.cagrid.cqlquery.Attribute;
 import gov.nih.nci.cagrid.cqlquery.CQLQuery;
@@ -41,8 +31,6 @@ import gov.nih.nci.cagrid.data.utilities.CQLQueryResultsIterator;
 import java.io.IOException;
 import java.io.InputStream;
 import java.rmi.RemoteException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 import java.util.Set;
 

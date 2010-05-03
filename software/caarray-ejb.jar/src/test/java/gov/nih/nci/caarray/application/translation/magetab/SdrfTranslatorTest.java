@@ -16,8 +16,6 @@ import gov.nih.nci.caarray.magetab.MageTabParser;
 import gov.nih.nci.caarray.magetab.TestMageTabSets;
 import gov.nih.nci.caarray.magetab.sdrf.AbstractSampleDataRelationshipNode;
 
-import java.io.File;
-import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.List;
 

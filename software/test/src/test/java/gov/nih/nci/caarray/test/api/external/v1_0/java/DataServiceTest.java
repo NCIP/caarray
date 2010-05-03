@@ -27,8 +27,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.zip.GZIPInputStream;
 
-import javax.ejb.EJBException;
-
 import org.junit.Before;
 import org.junit.Test;
 

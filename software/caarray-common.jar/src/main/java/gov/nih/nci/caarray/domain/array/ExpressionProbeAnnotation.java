@@ -104,7 +104,7 @@ public class ExpressionProbeAnnotation extends AbstractProbeAnnotation {
     private Gene gene;
     private ExpressionArrayReporter expressionArrayReporter;
     private String chromosomeName;
-    private Long chromsomeStartPosition;
+    private Long chromosomeStartPosition;
     private Long chromosomeEndPosition;
 
     /**
@@ -158,7 +158,7 @@ public class ExpressionProbeAnnotation extends AbstractProbeAnnotation {
      * @param chromsomeStartPosition start position on the chromosome
      */
     public void setChromsomeStartPosition(Long chromsomeStartPosition) {
-        this.chromsomeStartPosition = chromsomeStartPosition;
+        this.chromosomeStartPosition = chromsomeStartPosition;
     }
 
     /**
@@ -166,7 +166,7 @@ public class ExpressionProbeAnnotation extends AbstractProbeAnnotation {
      */
     @Column(name = "chromosome_start_position")
     public Long getChromsomeStartPosition() {
-        return chromsomeStartPosition;
+        return chromosomeStartPosition;
     }
 
     /**

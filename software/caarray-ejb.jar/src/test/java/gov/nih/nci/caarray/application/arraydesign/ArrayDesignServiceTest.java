@@ -153,7 +153,6 @@ import org.hibernate.Transaction;
 import org.hibernate.criterion.Order;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;

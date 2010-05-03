@@ -1,20 +1,13 @@
 package gov.nih.nci.caarray.platforms.illumina;
 
-import gov.nih.nci.caarray.application.AbstractServiceTest;
-import gov.nih.nci.caarray.dao.stub.ArrayDaoStub;
-import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
-import gov.nih.nci.caarray.domain.array.ExpressionProbeAnnotation;
-import gov.nih.nci.caarray.domain.array.PhysicalProbe;
-import gov.nih.nci.caarray.platforms.illumina.BgxValidator;
-import gov.nih.nci.caarray.util.HibernateUtil;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.ValidationMessage;
-import org.hibernate.Transaction;
-import org.junit.AfterClass;
+
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *

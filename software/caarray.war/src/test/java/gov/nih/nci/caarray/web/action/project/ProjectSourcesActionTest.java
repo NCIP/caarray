@@ -96,6 +96,7 @@ import gov.nih.nci.caarray.application.project.ProjectManagementService;
 import gov.nih.nci.caarray.application.project.ProjectManagementServiceStub;
 import gov.nih.nci.caarray.application.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.application.vocabulary.VocabularyServiceStub;
+import gov.nih.nci.caarray.dao.FileDaoTest;
 import gov.nih.nci.caarray.domain.data.DerivedArrayData;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
@@ -109,7 +110,6 @@ import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
-import gov.nih.nci.caarray.web.AbstractBaseStrutsTest;
 import gov.nih.nci.caarray.web.AbstractDownloadTest;
 import gov.nih.nci.caarray.web.helper.DownloadHelper;
 
@@ -122,14 +122,11 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.struts2.ServletActionContext;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.mock.web.MockHttpServletRequest;
 
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 import com.fiveamsolutions.nci.commons.web.struts2.action.ActionHelper;
-import gov.nih.nci.caarray.dao.FileDaoTest;
 
 /**
  * @author Winston Cheng

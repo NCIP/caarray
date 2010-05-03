@@ -101,10 +101,8 @@ import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import gov.nih.nci.caarray.web.AbstractBaseStrutsTest;
 
-import org.apache.struts2.ServletActionContext;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.mock.web.MockHttpServletRequest;
 
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 import com.opensymphony.xwork2.Action;

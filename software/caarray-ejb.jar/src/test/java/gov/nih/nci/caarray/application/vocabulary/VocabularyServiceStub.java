@@ -98,7 +98,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import net.sf.dozer.util.mapping.vo.deep2.Src;
 
 /**
  * Basic stub for tests.

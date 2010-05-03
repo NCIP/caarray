@@ -82,7 +82,6 @@
  */
 package gov.nih.nci.caarray.dao;
 
-import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;

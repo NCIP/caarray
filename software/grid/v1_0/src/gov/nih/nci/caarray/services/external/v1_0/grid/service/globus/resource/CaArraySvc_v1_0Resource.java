@@ -1,9 +1,5 @@
 package gov.nih.nci.caarray.services.external.v1_0.grid.service.globus.resource;
 
-import org.globus.wsrf.InvalidResourceKeyException;
-import org.globus.wsrf.NoSuchResourceException;
-import org.globus.wsrf.ResourceException;
-import org.globus.wsrf.ResourceKey;
 
 
 /** 

@@ -84,7 +84,6 @@ package gov.nih.nci.caarray.magetab;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import gov.nih.nci.caarray.AbstractCaarrayTest;
 import gov.nih.nci.caarray.magetab.idf.IdfDocument;
 import gov.nih.nci.caarray.magetab.idf.IdfRowType;
 import gov.nih.nci.caarray.magetab.idf.Investigation;

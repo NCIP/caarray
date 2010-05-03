@@ -90,8 +90,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.AbstractHibernateTest;
-import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
-import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
 import gov.nih.nci.caarray.domain.MultiPartBlob;
 import gov.nih.nci.caarray.domain.data.DerivedArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;

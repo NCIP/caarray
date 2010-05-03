@@ -99,11 +99,9 @@ import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import gov.nih.nci.caarray.web.AbstractBaseStrutsTest;
 import gov.nih.nci.security.authorization.domainobjects.User;
 
-import org.apache.struts2.ServletActionContext;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.springframework.mock.web.MockHttpServletRequest;
 
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 import com.fiveamsolutions.nci.commons.web.struts2.action.ActionHelper;

@@ -1,25 +1,23 @@
 package gov.nih.nci.caarray.security;
 
-import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
-import gov.nih.nci.caarray.domain.permissions.AccessProfile;
-import gov.nih.nci.caarray.domain.project.Project;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import gov.nih.nci.caarray.util.HibernateUtil;
-import gov.nih.nci.security.AuthorizationManager;
-import gov.nih.nci.security.authorization.domainobjects.Application;
 import gov.nih.nci.security.authorization.domainobjects.Group;
 import gov.nih.nci.security.authorization.domainobjects.User;
 import gov.nih.nci.security.exceptions.CSObjectNotFoundException;
+
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+
 import org.hibernate.Transaction;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *

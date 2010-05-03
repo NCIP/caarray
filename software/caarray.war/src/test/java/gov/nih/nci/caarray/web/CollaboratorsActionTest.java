@@ -86,7 +86,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import gov.nih.nci.caarray.AbstractCaarrayTest;
 import gov.nih.nci.caarray.application.permissions.PermissionsManagementService;
 import gov.nih.nci.caarray.application.permissions.PermissionsManagementServiceStub;
 import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
@@ -102,12 +101,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.struts2.ServletActionContext;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.springframework.mock.web.MockHttpServletRequest;
 
 /**
  * Test cases for struts action.

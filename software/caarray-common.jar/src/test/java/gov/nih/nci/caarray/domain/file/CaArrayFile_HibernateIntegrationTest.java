@@ -93,8 +93,6 @@ import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 

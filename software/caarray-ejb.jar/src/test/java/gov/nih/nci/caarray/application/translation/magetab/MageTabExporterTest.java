@@ -2,7 +2,6 @@ package gov.nih.nci.caarray.application.translation.magetab;
 
  import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import gov.nih.nci.caarray.AbstractCaarrayTest;
 import gov.nih.nci.caarray.application.AbstractServiceTest;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;

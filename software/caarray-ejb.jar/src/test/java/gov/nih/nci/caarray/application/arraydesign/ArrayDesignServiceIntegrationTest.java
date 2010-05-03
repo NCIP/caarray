@@ -113,7 +113,6 @@ import java.util.TreeSet;
 
 import org.hibernate.Transaction;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**

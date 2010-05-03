@@ -83,7 +83,6 @@
 package gov.nih.nci.caarray.web.action.registration;
 
 import static org.junit.Assert.assertEquals;
-import gov.nih.nci.caarray.AbstractCaarrayTest;
 import gov.nih.nci.caarray.application.GenericDataService;
 import gov.nih.nci.caarray.application.GenericDataServiceStub;
 import gov.nih.nci.caarray.application.registration.RegistrationService;

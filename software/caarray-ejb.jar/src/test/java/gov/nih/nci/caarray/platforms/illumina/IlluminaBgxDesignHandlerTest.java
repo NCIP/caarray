@@ -24,7 +24,6 @@ import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.platforms.LocalSessionTransactionManager;
 import gov.nih.nci.caarray.platforms.MockFileManager;
-import gov.nih.nci.caarray.platforms.MockSessionTransactionManager;
 import gov.nih.nci.caarray.platforms.spi.PlatformFileReadException;
 import gov.nih.nci.caarray.test.data.arraydesign.IlluminaArrayDesignFiles;
 import gov.nih.nci.caarray.util.HibernateUtil;

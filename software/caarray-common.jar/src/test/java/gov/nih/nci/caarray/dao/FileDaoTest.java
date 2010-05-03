@@ -82,12 +82,13 @@
  */
 package gov.nih.nci.caarray.dao;
 
-import java.io.IOException;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import edu.georgetown.pir.Organism;
+import gov.nih.nci.caarray.domain.BlobHolder;
+import gov.nih.nci.caarray.domain.MultiPartBlob;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.data.DerivedArrayData;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
@@ -112,21 +113,19 @@ import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.caarray.util.UsernameHolder;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.Method;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Order;
 import org.junit.Before;
 import org.junit.Test;
 
 import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
-import gov.nih.nci.caarray.AbstractHibernateTest;
-import gov.nih.nci.caarray.domain.BlobHolder;
-import gov.nih.nci.caarray.domain.MultiPartBlob;
-import java.io.InputStream;
-import java.lang.reflect.Method;
-import org.apache.commons.io.IOUtils;
 
 /**
  * @author Scott Miller

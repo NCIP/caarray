@@ -85,7 +85,6 @@ package gov.nih.nci.caarray.magetab.sdrf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import gov.nih.nci.caarray.magetab.EntryHeading;
-import gov.nih.nci.caarray.magetab.EntryHeadingTest;
 
 import org.junit.Before;
 import org.junit.Test;

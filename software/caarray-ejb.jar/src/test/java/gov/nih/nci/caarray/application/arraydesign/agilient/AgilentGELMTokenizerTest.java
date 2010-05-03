@@ -85,11 +85,6 @@ package gov.nih.nci.caarray.application.arraydesign.agilient;
 import gov.nih.nci.caarray.platforms.agilent.AgilentGELMTokenizer;
 import gov.nih.nci.caarray.platforms.agilent.AgilentGELMToken.Token;
 
-import org.junit.Assert;
-import org.junit.Test;
-
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringReader;
@@ -97,6 +92,9 @@ import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.junit.Assert;
+import org.junit.Test;
 
 public class AgilentGELMTokenizerTest {
 
