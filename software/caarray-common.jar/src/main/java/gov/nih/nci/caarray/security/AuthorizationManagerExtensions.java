@@ -694,10 +694,9 @@ public final class AuthorizationManagerExtensions {
                 if (activeFlag == 1) {
 
                     // refresh PEI Table
-                    statement.addBatch("alter table " + peiTableName + " disable keys");
-                    statement.addBatch("truncate " + peiTableName);
-
+                    statement.addBatch("delete from " + peiTableName);
                     statement.executeBatch();
+                    
                     statement
                             .addBatch("insert into "
                                     + peiTableName
@@ -706,15 +705,12 @@ public final class AuthorizationManagerExtensions {
                                     + "   where  pe.object_id = '" + peiObjectId + "' and  pe.attribute = '"
                                     + peiAttribute + "' and pe.application_id = " + applicationID
                                     + "        and pe.attribute_value is not null ");
-                    statement.addBatch("alter table " + peiTableName + " enable keys");
                     statement.executeBatch();
 
-                    statement.addBatch("alter table " + tableNameGroup + " disable keys");
-                    statement.addBatch("truncate " + tableNameGroup);
+                    statement.addBatch("delete from " + tableNameGroup);
                     statement
                             .addBatch("insert into " + tableNameGroup + " (group_id, privilege_id, attribute_value) "
                                     + "select distinct group_id, privilege_id, attribute_value from " + viewNameGroup);
-                    statement.addBatch("alter table " + tableNameGroup + " enable keys");
                     statement.executeBatch();
                 }
             }
