@@ -1,0 +1,331 @@
+/**
+ * The software subject to this notice and license includes both human readable
+ * source code form and machine readable, binary, object code form. The caArray
+ * Software was developed in conjunction with the National Cancer Institute
+ * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent
+ * government employees are authors, any rights in such works shall be subject
+ * to Title 17 of the United States Code, section 105.
+ *
+ * This caArray Software License (the License) is between NCI and You. You (or
+ * Your) shall mean a person or an entity, and all other entities that control,
+ * are controlled by, or are under common control with the entity. Control for
+ * purposes of this definition means (i) the direct or indirect power to cause
+ * the direction or management of such entity, whether by contract or otherwise,
+ * or (ii) ownership of fifty percent (50%) or more of the outstanding shares,
+ * or (iii) beneficial ownership of such entity.
+ *
+ * This License is granted provided that You agree to the conditions described
+ * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up,
+ * no-charge, irrevocable, transferable and royalty-free right and license in
+ * its rights in the caArray Software to (i) use, install, access, operate,
+ * execute, copy, modify, translate, market, publicly display, publicly perform,
+ * and prepare derivative works of the caArray Software; (ii) distribute and
+ * have distributed to and by third parties the caArray Software and any
+ * modifications and derivative works thereof; and (iii) sublicense the
+ * foregoing rights set out in (i) and (ii) to third parties, including the
+ * right to license such rights to further third parties. For sake of clarity,
+ * and not by way of limitation, NCI shall have no right of accounting or right
+ * of payment from You or Your sub-licensees for the rights granted under this
+ * License. This License is granted at no charge to You.
+ *
+ * Your redistributions of the source code for the Software must retain the
+ * above copyright notice, this list of conditions and the disclaimer and
+ * limitation of liability of Article 6, below. Your redistributions in object
+ * code form must reproduce the above copyright notice, this list of conditions
+ * and the disclaimer of Article 6 in the documentation and/or other materials
+ * provided with the distribution, if any.
+ *
+ * Your end-user documentation included with the redistribution, if any, must
+ * include the following acknowledgment: This product includes software
+ * developed by 5AM and the National Cancer Institute. If You do not include
+ * such end-user documentation, You shall include this acknowledgment in the
+ * Software itself, wherever such third-party acknowledgments normally appear.
+ *
+ * You may not use the names "The National Cancer Institute", "NCI", or "5AM"
+ * to endorse or promote products derived from this Software. This License does
+ * not authorize You to use any trademarks, service marks, trade names, logos or
+ * product names of either NCI or 5AM, except as required to comply with the
+ * terms of this License.
+ *
+ * For sake of clarity, and not by way of limitation, You may incorporate this
+ * Software into Your proprietary programs and into any third party proprietary
+ * programs. However, if You incorporate the Software into third party
+ * proprietary programs, You agree that You are solely responsible for obtaining
+ * any permission from such third parties required to incorporate the Software
+ * into such third party proprietary programs and for informing Your
+ * sub-licensees, including without limitation Your end-users, of their
+ * obligation to secure any required permissions from such third parties before
+ * incorporating the Software into such third party proprietary software
+ * programs. In the event that You fail to obtain such permissions, You agree
+ * to indemnify NCI for any claims against NCI by such third parties, except to
+ * the extent prohibited by law, resulting from Your failure to obtain such
+ * permissions.
+ *
+ * For sake of clarity, and not by way of limitation, You may add Your own
+ * copyright statement to Your modifications and to the derivative works, and
+ * You may provide additional or different license terms and conditions in Your
+ * sublicenses of modifications of the Software, or any derivative works of the
+ * Software as a whole, provided Your use, reproduction, and distribution of the
+ * Work otherwise complies with the conditions stated in this License.
+ *
+ * THIS SOFTWARE IS PROVIDED "AS IS," AND ANY EXPRESSED OR IMPLIED WARRANTIES,
+ * (INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY,
+ * NON-INFRINGEMENT AND FITNESS FOR A PARTICULAR PURPOSE) ARE DISCLAIMED. IN NO
+ * EVENT SHALL THE NATIONAL CANCER INSTITUTE, 5AM SOLUTIONS, INC. OR THEIR
+ * AFFILIATES BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+ * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+ * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+ * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+package gov.nih.nci.caarray.platforms.agilent;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import gov.nih.nci.caarray.application.arraydata.DataImportOptions;
+import gov.nih.nci.caarray.domain.LSID;
+import gov.nih.nci.caarray.domain.array.AbstractDesignElement;
+import gov.nih.nci.caarray.domain.array.AbstractProbe;
+import gov.nih.nci.caarray.domain.array.ArrayDesign;
+import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
+import gov.nih.nci.caarray.domain.array.PhysicalProbe;
+import gov.nih.nci.caarray.domain.data.DataSet;
+import gov.nih.nci.caarray.domain.data.FloatColumn;
+import gov.nih.nci.caarray.domain.data.HybridizationData;
+import gov.nih.nci.caarray.domain.data.RawArrayData;
+import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.file.FileStatus;
+import gov.nih.nci.caarray.domain.file.FileType;
+import gov.nih.nci.caarray.platforms.AbstractHandlerTest;
+import gov.nih.nci.caarray.test.data.arraydata.AgilentArrayDataFiles;
+import gov.nih.nci.caarray.validation.InvalidDataFileException;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.junit.Test;
+
+/**
+ * Tests the AgilentRawTextHandler class
+ */
+public class AgilentRawTextDataHandlerTest extends AbstractHandlerTest {
+    private static final DataImportOptions DEFAULT_IMPORT_OPTIONS = DataImportOptions.getAutoCreatePerFileOptions();
+    private static final LSID DESIGN_LSID = new LSID ("Agilent.com", "PhysicalArrayDesign", "022522_D_F_20090107");
+    private static final LSID TINY_DESIGN = new LSID ("Agilent.com", "PhysicalArrayDesign", "Agilent_Tiny");
+    private ArrayDesign arrayDesign;
+    
+    @Test
+    public void validIfMageTab() {
+        setupArrayDesign(TINY_DESIGN);
+        addProbeToDesign("Agilent_Tiny_1");
+        addProbeToDesign("Agilent_Tiny_2");
+
+        assertValid(
+                TINY_DESIGN, 
+                AgilentArrayDataFiles.TINY_RAW_TEXT,
+                AgilentArrayDataFiles.TINY_IDF, AgilentArrayDataFiles.TINY_SDRF);
+    }
+    
+    @Test
+    public void invalidIfNoMageTab() {
+        setupArrayDesign(TINY_DESIGN);
+        addProbeToDesign("Agilent_Tiny_1");
+        addProbeToDesign("Agilent_Tiny_2");
+
+        assertInvalid(
+                TINY_DESIGN, AgilentArrayDataFiles.TEST_ACGH_RAW_TEXT);
+    }
+    
+    @Test
+    public void invalidIfNoIdf() {
+        setupArrayDesign(TINY_DESIGN);
+        addProbeToDesign("Agilent_Tiny_1");
+        addProbeToDesign("Agilent_Tiny_2");
+
+       assertInvalid(
+               TINY_DESIGN, 
+               AgilentArrayDataFiles.TINY_RAW_TEXT, AgilentArrayDataFiles.TINY_SDRF);
+    }
+    
+    @Test
+    public void invalidIfNoSdrf() {
+        setupArrayDesign(TINY_DESIGN);
+        addProbeToDesign("Agilent_Tiny_1");
+        addProbeToDesign("Agilent_Tiny_2");
+
+        assertInvalid(
+                TINY_DESIGN, 
+               AgilentArrayDataFiles.TINY_RAW_TEXT, AgilentArrayDataFiles.TINY_IDF);
+    }
+    
+    @Test
+    public void invalidIfMissingProbe() {       
+        setupArrayDesign(TINY_DESIGN);
+        addProbeToDesign("Agilent_Tiny_1");
+ 
+        assertInvalid(
+                TINY_DESIGN, 
+                AgilentArrayDataFiles.TINY_RAW_TEXT,
+                AgilentArrayDataFiles.TINY_IDF, AgilentArrayDataFiles.TINY_SDRF);
+    }
+    
+    public void assertValid(LSID designLsid, final File rawTextFile, final File... files) {
+        List<File> fileList = makeFileList(rawTextFile, files);
+       
+        CaArrayFile caArrayFile =
+            getCaArrayFile(rawTextFile, designLsid.getObjectId());
+        
+        testValidFile(caArrayFile, genMageTabDocSet(fileList));
+    }
+    
+    public void assertInvalid(LSID designLsid, final File rawTextFile, final File... files) {
+        List<File> fileList = makeFileList(rawTextFile, files);
+       
+        CaArrayFile caArrayFile =
+            getCaArrayFile(rawTextFile, designLsid.getObjectId());
+        
+        testInvalidFile(caArrayFile, genMageTabDocSet(fileList));
+    }
+    
+    @Test
+    public void parsesFile() throws InvalidDataFileException {
+        setupArrayDesign(DESIGN_LSID);
+        addProbeToDesign("HsCGHBrightCorner");
+        addProbeToDesign("A_16_P37138757");       
+        
+        File rawTextFile = AgilentArrayDataFiles.TEST_ACGH_RAW_TEXT;
+        
+        CaArrayFile caArrayFile =
+            getCaArrayFile(rawTextFile, DESIGN_LSID.getObjectId());
+        
+        this.arrayDataService.importData(caArrayFile, true, DEFAULT_IMPORT_OPTIONS);
+        
+        final int expectedNumberOfProbes = 177071;
+
+        assertEquals(FileStatus.IMPORTED, caArrayFile.getFileStatus());
+        
+        RawArrayData rawArrayData = (RawArrayData) this.daoFactoryStub.getArrayDao().getArrayData(caArrayFile.getId());
+        DataSet dataSet = rawArrayData.getDataSet();
+        assertNotNull(dataSet.getDesignElementList());
+        
+        assertEquals(1, dataSet.getHybridizationDataList().size());
+        HybridizationData hybridizationData = dataSet.getHybridizationDataList().get(0);
+        assertEquals(9, hybridizationData.getColumns().size());
+        
+        List<AbstractDesignElement> designElements = dataSet.getDesignElementList().getDesignElements();       
+        assertEquals(expectedNumberOfProbes, designElements.size());
+        
+        checkColumnLengths(hybridizationData, expectedNumberOfProbes);
+        
+        checkValues(hybridizationData, designElements, 0, "HsCGHBrightCorner", 4838.5f, 670.1065f, 6694.398f, -0.04322179759f, 0.06165362131f, 0.4832766078f, 6834.0f, 607.6589f, 6060.239f);
+        checkValues(hybridizationData, designElements, 6527, "A_16_P37138757", 726.0f, 87.78085f, 837.711f, -0.01558695564f, 0.06633819191f, 0.814238211f, 1218.0f, 89.95938f, 808.1784f);
+    }
+    
+    private void checkValues(HybridizationData hybridizationData, List<AbstractDesignElement> designElements,
+            int index, String expectedProbeName, 
+            float expectedGMedianSignal, float expectedGProcessedSigError, float expectedGProcessedSignal,
+            float expectedLogRatio, float expectedLogRatioError, float expectedPValueLogRatio,
+            float expectedRMedianSignal, float expectedRProcessedSigError, float expectedRProcessedSignal) {
+        
+        checkProbeName(designElements, index, expectedProbeName);
+        
+        checkValue(hybridizationData, index, AgilentAcghQuantitationType.G_MEDIAN_SIGNAL, expectedGMedianSignal);
+        checkValue(hybridizationData, index, AgilentAcghQuantitationType.G_PROCESSED_SIG_ERROR, expectedGProcessedSigError);
+        checkValue(hybridizationData, index, AgilentAcghQuantitationType.G_PROCESSED_SIGNAL, expectedGProcessedSignal);
+        checkValue(hybridizationData, index, AgilentAcghQuantitationType.LOG_RATIO, expectedLogRatio);
+        checkValue(hybridizationData, index, AgilentAcghQuantitationType.LOG_RATIO_ERROR, expectedLogRatioError);
+        checkValue(hybridizationData, index, AgilentAcghQuantitationType.P_VALUE_LOG_RATIO, expectedPValueLogRatio);
+        checkValue(hybridizationData, index, AgilentAcghQuantitationType.R_MEDIAN_SIGNAL, expectedRMedianSignal);
+        checkValue(hybridizationData, index, AgilentAcghQuantitationType.R_PROCESSED_SIG_ERROR, expectedRProcessedSigError);
+        checkValue(hybridizationData, index, AgilentAcghQuantitationType.R_PROCESSED_SIGNAL, expectedRProcessedSignal);
+    }
+
+    private void checkProbeName(List<AbstractDesignElement> designElements, int index, String expectedProbeName) {
+        AbstractProbe probe = (AbstractProbe) designElements.get(index);
+        assertEquals(expectedProbeName, probe.getName());
+    }
+
+    private void checkValue(HybridizationData hybridizationData, int index, AgilentAcghQuantitationType quantitationType,
+            float expected) {
+        final double floatTolerance = 0.00000001;
+        FloatColumn column = (FloatColumn) hybridizationData.getColumn(quantitationType);
+        assertEquals(expected, column.getValues()[index], floatTolerance);
+    }
+
+    private void checkColumnLengths(HybridizationData hybridizationData, int expectedColumnLength) {
+        checkColumnLength(hybridizationData, AgilentAcghQuantitationType.G_MEDIAN_SIGNAL, expectedColumnLength);
+        checkColumnLength(hybridizationData, AgilentAcghQuantitationType.G_PROCESSED_SIG_ERROR, expectedColumnLength);
+        checkColumnLength(hybridizationData, AgilentAcghQuantitationType.G_PROCESSED_SIGNAL, expectedColumnLength);
+        checkColumnLength(hybridizationData, AgilentAcghQuantitationType.LOG_RATIO_ERROR, expectedColumnLength);
+        checkColumnLength(hybridizationData, AgilentAcghQuantitationType.LOG_RATIO, expectedColumnLength);
+        checkColumnLength(hybridizationData, AgilentAcghQuantitationType.P_VALUE_LOG_RATIO, expectedColumnLength);
+        checkColumnLength(hybridizationData, AgilentAcghQuantitationType.R_MEDIAN_SIGNAL, expectedColumnLength);
+        checkColumnLength(hybridizationData, AgilentAcghQuantitationType.R_PROCESSED_SIG_ERROR, expectedColumnLength);
+        checkColumnLength(hybridizationData, AgilentAcghQuantitationType.R_PROCESSED_SIGNAL, expectedColumnLength);
+    }
+
+    private void checkColumnLength(HybridizationData hybridizationData, AgilentAcghQuantitationType quantitationType, int expectedColumnLength) {
+        FloatColumn column = (FloatColumn) hybridizationData.getColumn(quantitationType);
+        assertNotNull(column);
+        assertEquals(expectedColumnLength, column.getValues().length);
+    }
+    
+
+    private List<File> makeFileList(final File rawTextFile, final File... files) {
+        List<File> fileList = new ArrayList<File>();
+        fileList.add(rawTextFile);
+        
+        for (File file : files) {
+            fileList.add(file);
+         }
+        return fileList;
+    }
+
+    
+    private CaArrayFile getCaArrayFile(File file, String designLsidObjectId) {
+        CaArrayFile caArrayFile = getDataCaArrayFile(file, FileType.AGILENT_RAW_TXT);
+        ArrayDesign arrayDesign = daoFactoryStub.getArrayDao().getArrayDesign(null, null, designLsidObjectId);
+        caArrayFile.getProject().getExperiment().getArrayDesigns().add(arrayDesign);
+        return caArrayFile;
+    }
+
+    /* (non-Javadoc)
+     * @see gov.nih.nci.caarray.platforms.AbstractHandlerTest#createArrayDesign(java.lang.String, java.lang.String, java.lang.String)
+     */
+    @Override
+    protected ArrayDesign createArrayDesign(String lsidAuthority, String lsidNamespace, String lsidObjectId) {
+        LSID lsid;
+        
+        if (null == lsidAuthority) {
+            lsid = new LSID ("Agilent.com", "PhysicalArrayDesign", lsidObjectId);
+        } else {
+            lsid = new LSID (lsidAuthority, lsidNamespace, lsidObjectId);
+        }
+        final String lsidString = lsid.toString();
+        final String arrayDesignLsidString = arrayDesign.getLsid().toString();
+        
+        if (arrayDesignLsidString.equals(lsidString)) {
+            return arrayDesign;
+        } else {
+            throw new IllegalArgumentException("Unsupported request design");  
+        }
+    }
+    
+    private void setupArrayDesign(LSID designLsid) {
+        arrayDesign = new ArrayDesign();
+        arrayDesign.setDesignDetails(new ArrayDesignDetails());
+        arrayDesign.setLsid(designLsid);
+    }
+
+    @SuppressWarnings("deprecation")
+    private void addProbeToDesign(String probeName) {
+        PhysicalProbe probe = new PhysicalProbe();
+        probe.setName(probeName);
+        arrayDesign.getDesignDetails().getProbes().add(probe);
+    }
+
+}
