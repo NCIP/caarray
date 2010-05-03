@@ -147,9 +147,11 @@ abstract class AbstractArrayDataUtility {
      * @param handler the handler for the data file
      * @return the array design corresponding to the file, or null if it is not found or could 
      * not be determined uniquely from the file or experiment.
+     * @throws PlatformFileReadException 
      * 
      */
-    protected ArrayDesign getArrayDesign(CaArrayFile caArrayFile, DataFileHandler handler) {
+    protected ArrayDesign getArrayDesign(CaArrayFile caArrayFile, DataFileHandler handler)
+            throws PlatformFileReadException {
         ArrayDesign ad = findArrayDesignFromFile(handler);
         if (ad == null) {
             ad = findArrayDesignFromExperiment(caArrayFile.getProject().getExperiment());
@@ -157,7 +159,7 @@ abstract class AbstractArrayDataUtility {
         return ad;
     }
     
-    private ArrayDesign findArrayDesignFromFile(DataFileHandler handler) {
+    private ArrayDesign findArrayDesignFromFile(DataFileHandler handler) throws PlatformFileReadException {
         List<LSID> designLsids = handler.getReferencedArrayDesignCandidateIds();
         for (LSID lsid : designLsids) {
             ArrayDesign ad = arrayDao.getArrayDesign(lsid.getAuthority(), lsid.getNamespace(), lsid

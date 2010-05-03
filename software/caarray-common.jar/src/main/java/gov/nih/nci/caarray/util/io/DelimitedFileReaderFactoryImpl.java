@@ -82,8 +82,8 @@
  */
 package gov.nih.nci.caarray.util.io;
 
-import java.io.File;
 import java.io.IOException;
+import java.io.Reader;
 
 /**
  * Default implementation of factory.
@@ -91,8 +91,7 @@ import java.io.IOException;
 class DelimitedFileReaderFactoryImpl extends AbstractDelimitedFileReaderFactory {
 
     @Override
-    public DelimitedFileReader getReader(File file, char separator, char delimiter) throws IOException {
-        return new CSVReaderDelimitedFileReader(file, separator, delimiter);
+    public DelimitedFileReader getReader(Reader sourceReader, char separator, char delimiter) throws IOException {
+        return new CSVReaderDelimitedFileReader(sourceReader, separator, delimiter);
     }
-
 }

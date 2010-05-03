@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.util.io;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Reader;
 
 /**
  * Instantiates <code>DelimitedFileReaders</code> on behalf of clients.
@@ -101,13 +102,22 @@ public interface DelimitedFileReaderFactory {
      * and the quote character ('"') as the delimiter. Note that the delimiter is not
      * required for fields in the file (CSV example line: 123,456,"some text",789.
      * 
-     * @param file the file to read.
+     * @param sourceReader the source of the text to read.
      * @param separator the field separator.
      * @param delimiter the field delimiter.
      * @return the reader.
      * @throws IOException if the file couldn't be opened for reading
      */
-    DelimitedFileReader getReader(File file, char separator, char delimiter) throws IOException;
+    DelimitedFileReader getReader(Reader sourceReader, char separator, char delimiter) throws IOException;
+    
+    /**
+     * Returns a reader for standard CSV files.
+     * 
+     * @param sourceReader the source of the CSV text.
+     * @return the reader.
+     * @throws IOException if the file couldn't be opened for reading
+     */
+    DelimitedFileReader getCsvReader(Reader sourceReader) throws IOException;
     
     /**
      * Returns a reader for standard CSV files.
@@ -117,7 +127,16 @@ public interface DelimitedFileReaderFactory {
      * @throws IOException if the file couldn't be opened for reading
      */
     DelimitedFileReader getCsvReader(File file) throws IOException;
-    
+
+    /**
+     * Returns a reader for standard tab-delimited files.
+     * 
+     * @param sourceReader the source of the tab-delimited text.
+     * @return the reader.
+     * @throws IOException if the file couldn't be opened for reading
+     */
+    DelimitedFileReader getTabDelimitedReader(Reader sourceReader) throws IOException;
+  
     /**
      * Returns a reader for standard tab-delimited files.
      * 
@@ -126,5 +145,4 @@ public interface DelimitedFileReaderFactory {
      * @throws IOException if the file couldn't be opened for reading
      */
     DelimitedFileReader getTabDelimitedReader(File file) throws IOException;
-
 }

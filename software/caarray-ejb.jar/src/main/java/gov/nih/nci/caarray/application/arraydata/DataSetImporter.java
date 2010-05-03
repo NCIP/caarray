@@ -174,7 +174,7 @@ class DataSetImporter extends AbstractArrayDataUtility {
             this.handler = handler;
         }
 
-        AbstractArrayData importData(boolean createAnnnotation) {
+        AbstractArrayData importData(boolean createAnnnotation) throws PlatformFileReadException {
             lookupOrCreateArrayData(createAnnnotation);
             if (StringUtils.isBlank(arrayData.getName())) {
                 arrayData.setName(caArrayFile.getName());
@@ -198,7 +198,7 @@ class DataSetImporter extends AbstractArrayDataUtility {
             }
         }
 
-        private void lookupOrCreateArrayData(boolean createAnnnotation) {
+        private void lookupOrCreateArrayData(boolean createAnnnotation) throws PlatformFileReadException {
             arrayData = getArrayDao().getArrayData(this.caArrayFile.getId());
             if (arrayData == null) {
                 createArrayData(createAnnnotation);
@@ -209,7 +209,7 @@ class DataSetImporter extends AbstractArrayDataUtility {
             }
         }
 
-        private void ensureArrayDesignSetForHyb(Hybridization h)  {
+        private void ensureArrayDesignSetForHyb(Hybridization h) throws PlatformFileReadException  {
             // if array was not set for a hybridization via mage-tab, try to look it up
             // from data file or experiment
             if (h.getArray() == null) {
@@ -224,7 +224,7 @@ class DataSetImporter extends AbstractArrayDataUtility {
         }
 
         @SuppressWarnings("PMD.CyclomaticComplexity")
-        private void createArrayData(boolean createAnnnotation) {
+        private void createArrayData(boolean createAnnnotation) throws PlatformFileReadException {
             arrayData = caArrayFile.getFileType().isRawArrayData() ? new RawArrayData() : new DerivedArrayData();
             arrayData.setDataFile(caArrayFile);
 
@@ -287,7 +287,7 @@ class DataSetImporter extends AbstractArrayDataUtility {
             return experiment.getHybridizationByName(hybridizationName);
         }
 
-        private Hybridization createHybridization(String hybridizationName) {
+        private Hybridization createHybridization(String hybridizationName) throws PlatformFileReadException {
             Hybridization hybridization = new Hybridization();
             hybridization.setName(hybridizationName);
             Array array = new Array();
@@ -301,7 +301,8 @@ class DataSetImporter extends AbstractArrayDataUtility {
             return hybridization;
         }
 
-        private Hybridization lookupOrCreateHybridization(String hybridizationName, boolean createAnnotation) {
+        private Hybridization lookupOrCreateHybridization(String hybridizationName, boolean createAnnotation)
+                throws PlatformFileReadException {
             Hybridization hybridization = lookupHybridization(hybridizationName);
             if (hybridization == null) {
                 hybridization = createHybridization(hybridizationName);
@@ -313,7 +314,7 @@ class DataSetImporter extends AbstractArrayDataUtility {
         }
 
         private List<Hybridization> lookupOrCreateHybridizations(List<String> hybridizationNames, 
-                boolean createAnnotation) {
+                boolean createAnnotation) throws PlatformFileReadException {
             List<Hybridization> hybs = new ArrayList<Hybridization>();
             for (String hybName : hybridizationNames) {
                 hybs.add(lookupOrCreateHybridization(hybName, createAnnotation));

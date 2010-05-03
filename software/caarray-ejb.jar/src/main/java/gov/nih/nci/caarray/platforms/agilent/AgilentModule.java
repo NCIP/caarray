@@ -82,6 +82,8 @@
  */
 package gov.nih.nci.caarray.platforms.agilent;
 
+import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
+import gov.nih.nci.caarray.platforms.spi.DataFileHandler;
 import gov.nih.nci.caarray.platforms.spi.DesignFileHandler;
 
 import com.google.inject.AbstractModule;
@@ -97,10 +99,22 @@ public class AgilentModule extends AbstractModule {
      */
     @Override
     protected void configure() {        
-        // design files
+        // data files
+        Multibinder<DataFileHandler> dataFileBinder = Multibinder.newSetBinder(binder(),
+                DataFileHandler.class);
+        dataFileBinder.addBinding().to(AgilentRawTextDataHandler.class);
+         
+       // design files
         Multibinder<DesignFileHandler> designFileBinder = Multibinder.newSetBinder(binder(),
                 DesignFileHandler.class);
         designFileBinder.addBinding().to(AgilentXmlDesignFileHandler.class);
+        
+        //array data descriptors
+        Multibinder<ArrayDataTypeDescriptor> arrayDataDescriptorBinder = Multibinder.newSetBinder(binder(),
+                ArrayDataTypeDescriptor.class);       
+        for (ArrayDataTypeDescriptor desc : AgilentArrayDataTypes.values()) {
+            arrayDataDescriptorBinder.addBinding().toInstance(desc);            
+        }
     }
 
 }

@@ -202,11 +202,13 @@ public class FixHybridizationsWithMissingArraysMigrator extends AbstractCustomCh
             throw new CustomChangeException("Could not fix hybridizations", e);
         } catch (IOException e) {
             throw new CustomChangeException("Could not fix hybridizations", e);
+        } catch (PlatformFileReadException e) {
+            throw new CustomChangeException("Could not fix hybridizations", e);
         }
 
     }
 
-    private void ensureArrayDesignSetForHyb(Long hid) throws SQLException, IOException {
+    private void ensureArrayDesignSetForHyb(Long hid) throws SQLException, IOException, PlatformFileReadException {
         Long adid = getArrayDesignIdFromExperiment(hid);
         if (adid == null) {
             adid = getArrayDesignIdFromFiles(hid);
@@ -266,7 +268,7 @@ public class FixHybridizationsWithMissingArraysMigrator extends AbstractCustomCh
         return id;
     }
 
-    private Long getArrayDesignIdFromFiles(Long hid) throws SQLException, IOException {
+    private Long getArrayDesignIdFromFiles(Long hid) throws SQLException, IOException, PlatformFileReadException {
         List<Long> dataFileIds = getDataFileIds(hid);
         for (Long fileId : dataFileIds) {
             Long adid = getArrayDesignFromFile(fileId);
@@ -311,6 +313,8 @@ public class FixHybridizationsWithMissingArraysMigrator extends AbstractCustomCh
         try {
             handler = getHandler(caArrayFile);
             return findArrayDesignFromFile(handler).getId();
+        } catch (PlatformFileReadException e) {
+            throw new IllegalArgumentException("Error reading file " + caArrayFile.getName(), e);
         } finally {
             if (handler != null) {
                 handler.closeFiles();
@@ -318,7 +322,7 @@ public class FixHybridizationsWithMissingArraysMigrator extends AbstractCustomCh
         }
     }
     
-    private ArrayDesign findArrayDesignFromFile(DataFileHandler handler) {
+    private ArrayDesign findArrayDesignFromFile(DataFileHandler handler) throws PlatformFileReadException {
         List<LSID> designLsids = handler.getReferencedArrayDesignCandidateIds();
         for (LSID lsid : designLsids) {
             try {

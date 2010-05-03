@@ -18,7 +18,8 @@ public class CSVReaderDelimitedFileReaderTest extends AbstractCaarrayTest {
 
     @Before
     public void setUp() throws IOException {
-        reader = new CSVReaderDelimitedFileReader(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF, '\t', '"');
+        ResettableFileReader baseReader = new ResettableFileReader(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF);
+        reader = new CSVReaderDelimitedFileReader(baseReader, '\t', '"');
     }
 
     @Test

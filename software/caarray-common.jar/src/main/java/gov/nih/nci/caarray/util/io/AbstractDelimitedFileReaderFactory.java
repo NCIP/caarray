@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.util.io;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Reader;
 
 /**
  * Base class for all <code>DelimitedFileReader</code> factory classes.
@@ -100,13 +101,25 @@ public abstract class AbstractDelimitedFileReaderFactory implements DelimitedFil
      * and the quote character ('"') as the delimiter. Note that the delimiter is not
      * required for fields in the file (CSV example line: 123,456,"some text",789.
      * 
-     * @param file the file to read.
+     * @param sourceReader source of the text to be read.
      * @param separator the field separator.
      * @param delimiter the field delimiter.
      * @return the reader.
      * @throws IOException if the file couldn't be opened for reading
      */
-    public abstract DelimitedFileReader getReader(File file, char separator, char delimiter) throws IOException;
+    public abstract DelimitedFileReader getReader(Reader sourceReader, char separator, char delimiter)
+            throws IOException;
+    
+    /**
+     * Returns a reader for standard CSV files.
+     * 
+     * @param sourceReader the source of the CSV text.
+     * @return the reader.
+     * @throws IOException if the file couldn't be opened for reading
+     */
+    public final DelimitedFileReader getCsvReader(Reader sourceReader) throws IOException {
+        return getReader(sourceReader, COMMA, QUOTE);
+    }
     
     /**
      * Returns a reader for standard CSV files.
@@ -116,7 +129,18 @@ public abstract class AbstractDelimitedFileReaderFactory implements DelimitedFil
      * @throws IOException if the file couldn't be opened for reading
      */
     public final DelimitedFileReader getCsvReader(File file) throws IOException {
-        return getReader(file, COMMA, QUOTE);
+        return getCsvReader(new ResettableFileReader(file));
+    }
+    
+    /**
+     * Returns a reader for standard tab-delimited files.
+     * 
+     * @param sourceReader the source of the tab-delimited text.
+     * @return the reader.
+     * @throws IOException if the file couldn't be opened for reading
+     */
+    public final DelimitedFileReader getTabDelimitedReader(Reader sourceReader) throws IOException {
+        return getReader(sourceReader, TAB, QUOTE);
     }
     
     /**
@@ -127,7 +151,7 @@ public abstract class AbstractDelimitedFileReaderFactory implements DelimitedFil
      * @throws IOException if the file couldn't be opened for reading
      */
     public final DelimitedFileReader getTabDelimitedReader(File file) throws IOException {
-        return getReader(file, TAB, QUOTE);
+        return getTabDelimitedReader(new ResettableFileReader(file));
     }
 
 }

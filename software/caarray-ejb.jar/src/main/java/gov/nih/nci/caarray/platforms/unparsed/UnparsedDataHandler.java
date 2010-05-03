@@ -106,7 +106,7 @@ import com.google.inject.Inject;
  */
 class UnparsedDataHandler extends AbstractDataFileHandler {    
     private static final Set<FileType> UNPARSED_FILE_TYPES = EnumSet.of(FileType.ILLUMINA_IDAT,
-            FileType.AGILENT_RAW_TXT, FileType.AFFYMETRIX_DAT, FileType.AGILENT_TSV, FileType.IMAGENE_TIF,
+            FileType.AFFYMETRIX_DAT, FileType.AGILENT_TSV, FileType.IMAGENE_TIF,
             FileType.GEO_SOFT, FileType.GEO_GSM, FileType.SCANARRAY_CSV, FileType.ILLUMINA_RAW_TXT,
             FileType.AFFYMETRIX_EXP, FileType.AFFYMETRIX_TXT, FileType.AFFYMETRIX_RPT, FileType.ILLUMINA_DERIVED_TXT,
             FileType.IMAGENE_TXT, FileType.AGILENT_DERIVED_TXT, FileType.NIMBLEGEN_GFF);

@@ -61,8 +61,9 @@ public interface DataFileHandler {
      * If the array design cannot be determined from the file, return an empty list.
      * 
      * @return the list of candidate design LSIDs, in the order they should be tried.
+     * @throws PlatformFileReadException if there is an error processing the file.
      */
-    List<LSID> getReferencedArrayDesignCandidateIds();
+    List<LSID> getReferencedArrayDesignCandidateIds() throws PlatformFileReadException;
 
     /**
      * Validate the contents of the currently open file.

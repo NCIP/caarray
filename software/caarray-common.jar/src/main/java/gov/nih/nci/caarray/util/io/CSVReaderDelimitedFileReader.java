@@ -83,9 +83,8 @@
 package gov.nih.nci.caarray.util.io;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -106,7 +105,7 @@ final class CSVReaderDelimitedFileReader implements DelimitedFileReader {
     private CsvReader reader;
     /** Next values from the <i>client's</i> perspective. */
     private List<String> nextValues;
-    private final File file;
+    private final Reader baseReader;
     private final char separator;
     private final char delimiter;
     private int currentLineNumber = -1;
@@ -114,13 +113,13 @@ final class CSVReaderDelimitedFileReader implements DelimitedFileReader {
     /**
      * Creates a new instance wrapping access to the given <code>File</code>.
      *
-     * @param file the delimited file
+     * @param baseReader the source of the delimited text
      * @param separator the field separator
      * @param delimiter the field delimiter
      * @throws IOException if the file couldn't be opened for reading
      */
-    CSVReaderDelimitedFileReader(File file, char separator, char delimiter) throws IOException {
-        this.file = file;
+    CSVReaderDelimitedFileReader(Reader baseReader, char separator, char delimiter) throws IOException {
+        this.baseReader = baseReader;
         this.separator = separator;
         this.delimiter = delimiter;
         reset();
@@ -172,7 +171,8 @@ final class CSVReaderDelimitedFileReader implements DelimitedFileReader {
         if (reader != null) {
             reader.close();
         }
-        BufferedReader br = new BufferedReader(new FileReader(file));
+        baseReader.reset();
+        BufferedReader br = new BufferedReader(baseReader);
         reader = new CsvReader(br, separator);
         reader.setTextQualifier(delimiter);
         reader.setSkipEmptyRecords(false);

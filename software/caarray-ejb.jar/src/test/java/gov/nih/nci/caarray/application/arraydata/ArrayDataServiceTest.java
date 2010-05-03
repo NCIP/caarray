@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.application.arraydata;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -121,10 +122,13 @@ import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.ExperimentDesignNodeType;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.sample.Source;
+import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.test.data.arraydata.AffymetrixArrayDataFiles;
+import gov.nih.nci.caarray.test.data.arraydata.AgilentArrayDataFiles;
 import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
+import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.InvalidDataFileException;
 
 import java.io.File;
@@ -153,6 +157,7 @@ import com.google.inject.util.Modules;
 public class ArrayDataServiceTest extends AbstractServiceTest {
     private static final String AFFY_TEST3_LSID_OBJECT_ID = "Test3";
     private static final String HG_FOCUS_LSID_OBJECT_ID = "HG-Focus";
+    private static final String AGILENT_ACGH_LSID_OBJECT_ID = "Agilent-aCGH";
     
     private static final DataImportOptions DEFAULT_IMPORT_OPTIONS = DataImportOptions.getAutoCreatePerFileOptions();
 
@@ -332,6 +337,13 @@ public class ArrayDataServiceTest extends AbstractServiceTest {
         assertEquals(hybridization, celData.getHybridizations().iterator().next());
     }
 
+    @Test
+    public void testAgilentRawTextAcghRejectedIfNoMageTab() throws InvalidDataFileException {
+        CaArrayFile expFile = getAgilentRawTextCaArrayFile(AgilentArrayDataFiles.TEST_ACGH_RAW_TEXT, AGILENT_ACGH_LSID_OBJECT_ID);
+        MageTabDocumentSet mTabSet = null;
+        FileValidationResult validationResult = this.arrayDataService.validate(expFile, mTabSet);
+        assertFalse(validationResult.isValid());
+    }
 
     @Test
     public void testUnsupportedDataFile() throws InvalidDataFileException {
@@ -357,6 +369,13 @@ public class ArrayDataServiceTest extends AbstractServiceTest {
 
     private CaArrayFile getCelCaArrayFile(File cel, String lsidObjectId) {
         CaArrayFile caArrayFile = getDataCaArrayFile(cel, FileType.AFFYMETRIX_CEL);
+        ArrayDesign arrayDesign = daoFactoryStub.getArrayDao().getArrayDesign(null, null, lsidObjectId);
+        caArrayFile.getProject().getExperiment().getArrayDesigns().add(arrayDesign);
+        return caArrayFile;
+    }
+
+    private CaArrayFile getAgilentRawTextCaArrayFile(File cel, String lsidObjectId) {
+        CaArrayFile caArrayFile = getDataCaArrayFile(cel, FileType.AGILENT_RAW_TXT);
         ArrayDesign arrayDesign = daoFactoryStub.getArrayDao().getArrayDesign(null, null, lsidObjectId);
         caArrayFile.getProject().getExperiment().getArrayDesigns().add(arrayDesign);
         return caArrayFile;

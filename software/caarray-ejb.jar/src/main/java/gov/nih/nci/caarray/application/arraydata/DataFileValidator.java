@@ -151,7 +151,7 @@ final class DataFileValidator extends AbstractArrayDataUtility {
     }
     
     private void validateArrayDesignInExperiment(CaArrayFile caArrayFile, FileValidationResult result,
-            DataFileHandler handler) {
+            DataFileHandler handler) throws PlatformFileReadException {
         ArrayDesign design = getArrayDesign(caArrayFile, handler);
         if (design == null) {
             if (caArrayFile.getFileType().isParseableData()) {
