@@ -115,6 +115,7 @@ import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
@@ -123,13 +124,21 @@ import gov.nih.nci.caarray.domain.project.ExperimentDesignNodeType;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
+import gov.nih.nci.caarray.magetab.MageTabFileSet;
+import gov.nih.nci.caarray.magetab.MageTabParser;
+import gov.nih.nci.caarray.magetab.MageTabParsingException;
+import gov.nih.nci.caarray.magetab.TestMageTabSets;
+import gov.nih.nci.caarray.magetab.io.FileRef;
 import gov.nih.nci.caarray.test.data.arraydata.AffymetrixArrayDataFiles;
 import gov.nih.nci.caarray.test.data.arraydata.AgilentArrayDataFiles;
+import gov.nih.nci.caarray.test.data.arraydata.NimblegenArrayDataFiles;
 import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import gov.nih.nci.caarray.validation.FileValidationResult;
+import gov.nih.nci.caarray.validation.InvalidDataException;
 import gov.nih.nci.caarray.validation.InvalidDataFileException;
+import gov.nih.nci.caarray.validation.ValidationResult;
 
 import java.io.File;
 import java.util.Arrays;
@@ -350,6 +359,25 @@ public class ArrayDataServiceTest extends AbstractServiceTest {
         CaArrayFile expFile = getDataCaArrayFile(MageTabDataFiles.UNSUPPORTED_DATA_EXAMPLE_EXP, FileType.AFFYMETRIX_EXP);
         this.arrayDataService.importData(expFile, true, DEFAULT_IMPORT_OPTIONS);
         assertEquals(FileStatus.IMPORTED_NOT_PARSED, expFile.getFileStatus());
+    }
+    
+    @Test
+    public void testNimblegenUnparsedDataFiles() throws InvalidDataFileException, MageTabParsingException {
+        // tests that imports of nimblegen raw and derived data files are successful
+        
+        // test derived data...
+        CaArrayFile dummyDerivedDataFile =
+            getDataCaArrayFile(NimblegenArrayDataFiles.DERIVED_TXT_DATA_FILE, FileType.NIMBLEGEN_DERIVED_TXT);
+        arrayDataService.importData(dummyDerivedDataFile, true, DEFAULT_IMPORT_OPTIONS);
+        assertEquals("The number of hybridizations is incorrect.", 1, dummyDerivedDataFile.getProject().getExperiment().getHybridizations().size());
+        assertNotNull("The number of hybridizations is incorrect.", dummyDerivedDataFile.getProject().getExperiment().getHybridizationByName("dummy_nimblegen_derived_data"));
+        
+        // test raw data
+        CaArrayFile dummyRawDataFile =
+            getDataCaArrayFile(NimblegenArrayDataFiles.RAW_TXT_DATA_FILE, FileType.NIMBLEGEN_RAW_TXT);
+        arrayDataService.importData(dummyRawDataFile, true, DEFAULT_IMPORT_OPTIONS);
+        assertEquals("The number of hybridizations is incorrect.", 1, dummyRawDataFile.getProject().getExperiment().getHybridizations().size());
+        assertNotNull("The number of hybridizations is incorrect.", dummyRawDataFile.getProject().getExperiment().getHybridizationByName("dummy_nimblegen_raw_data"));
     }
 
     private void checkAnnotation(CaArrayFile dataFile, int numberOfSamples) {

@@ -88,5 +88,11 @@ public class NimblegenArrayDataFiles {
 
     public static final File HUMAN_EXPRESSION =
         new File(NimblegenArrayDataFiles.class.getResource("/arraydata/nimblegen/100449_532_pair.txt").getFile());
+    
+    public static final File RAW_TXT_DATA_FILE = new File(NimblegenArrayDataFiles.class.getResource(
+            "/arraydata/nimblegen/dummy_nimblegen_raw_data.txt").getFile());
+    
+    public static final File DERIVED_TXT_DATA_FILE = new File(NimblegenArrayDataFiles.class.getResource(
+            "/arraydata/nimblegen/dummy_nimblegen_derived_data.txt").getFile());
 
 }

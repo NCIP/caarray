@@ -242,9 +242,19 @@ public enum FileType implements Comparable<FileType> {
     NIMBLEGEN_RAW_PAIR,
 
     /**
+     * Nimblegen raw txt.
+     */
+    NIMBLEGEN_RAW_TXT,
+
+    /**
      * Nimblegen normalized Pair format.
      */
     NIMBLEGEN_NORMALIZED_PAIR,
+
+    /**
+     * Nimblegen derived txt.
+     */
+    NIMBLEGEN_DERIVED_TXT,
 
     /**
      * The MAGE_TAB Array Design Format file type.
@@ -309,7 +319,7 @@ public enum FileType implements Comparable<FileType> {
      */
     public static final Set<FileType> RAW_ARRAY_DATA_FILE_TYPES = EnumSet.of(ILLUMINA_IDAT, AFFYMETRIX_CEL,
             AGILENT_RAW_TXT, AFFYMETRIX_DAT, AGILENT_TSV, IMAGENE_TIF, GEO_SOFT, GEO_GSM, SCANARRAY_CSV,
-            ILLUMINA_RAW_TXT, NIMBLEGEN_RAW_PAIR);
+            ILLUMINA_RAW_TXT, NIMBLEGEN_RAW_PAIR, NIMBLEGEN_RAW_TXT);
 
     /**
      * The set of derived array data file types.
@@ -317,7 +327,7 @@ public enum FileType implements Comparable<FileType> {
     public static final Set<FileType> DERIVED_ARRAY_DATA_FILE_TYPES = EnumSet.of(AFFYMETRIX_CHP, AFFYMETRIX_EXP,
             AFFYMETRIX_TXT, AFFYMETRIX_RPT, ILLUMINA_DATA_CSV, ILLUMINA_GENOTYPING_PROCESSED_MATRIX_TXT,
             ILLUMINA_SAMPLE_PROBE_PROFILE_TXT, ILLUMINA_DERIVED_TXT, GENEPIX_GPR, IMAGENE_TXT, AGILENT_DERIVED_TXT,
-            NIMBLEGEN_GFF, NIMBLEGEN_NORMALIZED_PAIR);
+            NIMBLEGEN_GFF, NIMBLEGEN_NORMALIZED_PAIR, NIMBLEGEN_DERIVED_TXT);
 
     /**
      * The set of mage tab file types.
