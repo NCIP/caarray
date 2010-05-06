@@ -153,10 +153,10 @@ public class AgilentTextParserTest {
     public void dataTypesTest() {
         final double delta = 0.0001;
         Reader reader = createReader(
-                new String[] { "TYPE", "text", "integer", "float" },
-                new String[] { "SECTION_1", "column1", "column2", "column3"},
-                new String[] { "DATA", "test string1", "1", "123.456"},
-                new String[] { "DATA", "test string2", "2", "654.321"}
+                new String[] { "TYPE", "text", "integer", "float", "boolean" },
+                new String[] { "SECTION_1", "column1", "column2", "column3", "column4"},
+                new String[] { "DATA", "test string1", "1", "123.456", "0"},
+                new String[] { "DATA", "test string2", "2", "654.321", "1"}
                 );
         
         AgilentTextParser parser = new AgilentTextParser(reader);
@@ -166,13 +166,15 @@ public class AgilentTextParserTest {
         assertEquals("test string1", parser.getStringValue("column1"));
         assertEquals(1, parser.getIntValue("column2"));
         assertEquals(123.456, parser.getFloatValue("column3"), delta);
+        assertFalse(parser.getBooleanValue("column4"));
                
         assertTrue(parser.hasNext());
         parser.next();        
         assertEquals("test string2", parser.getStringValue("column1"));
         assertEquals(2, parser.getIntValue("column2"));
         assertEquals(654.321, parser.getFloatValue("column3"), delta);
-       
+        assertTrue(parser.getBooleanValue("column4"));
+
         assertFalse(parser.hasNext());
     }
 

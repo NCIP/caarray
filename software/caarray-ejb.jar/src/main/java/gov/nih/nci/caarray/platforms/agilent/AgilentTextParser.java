@@ -154,15 +154,23 @@ class AgilentTextParser {
      * @return
      */
     public String getStringValue(String columnName) {
-        int columnIndex = this.columnIndexMap.get(columnName.toLowerCase(Locale.ENGLISH));
-        return fields.get(columnIndex);
+        Integer columnIndex = this.columnIndexMap.get(columnName.toLowerCase(Locale.ENGLISH));
+        if (columnIndex == null) {
+            return null;
+        }
+        return fields.get(columnIndex.intValue());
     }
     /**
      * @param string
      * @return
      */
     public int getIntValue(String columnName) {
-         return Integer.parseInt(getStringValue(columnName));
+        String v = getStringValue(columnName);
+        if (v == null) {
+            return 0;
+        }
+        return Integer.parseInt(v);
+
     }
 
     /**
@@ -170,7 +178,19 @@ class AgilentTextParser {
      * @return
      */
     public float getFloatValue(String columnName) {
-        return Float.parseFloat(getStringValue(columnName));
+        String v = getStringValue(columnName);
+        if (v == null) {
+            return 0.0F;
+        }
+        return Float.parseFloat(v);
+    }
+
+    /**
+     * @param columnName name of column.
+     * @return true only if the column's value is "1".
+     */
+    public boolean getBooleanValue(String columnName) {
+        return "1".equals(getStringValue(columnName));
     }
 
     /**

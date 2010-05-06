@@ -96,9 +96,9 @@ import java.util.List;
  */
 enum AgilentArrayDataTypes implements ArrayDataTypeDescriptor {
     /**
-     * Agilent Raw Text (aCGH).
+     * Agilent Raw Text.
      */
-    AGLIENT_RAW_TEXT_ACGH("Agilent Raw Text (aCGH)", AgilentAcghQuantitationType.values());
+    AGLIENT_RAW_TEXT_ACGH("Agilent Raw Text", AgilentTextQuantitationType.values());
 
     private final String name;
     private final List<QuantitationTypeDescriptor> quantitationTypes;

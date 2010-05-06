@@ -83,8 +83,10 @@
 
 package gov.nih.nci.caarray.platforms.agilent;
 
+import java.lang.reflect.InvocationTargetException;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 import gov.nih.nci.caarray.application.arraydata.DataImportOptions;
 import gov.nih.nci.caarray.domain.LSID;
 import gov.nih.nci.caarray.domain.array.AbstractDesignElement;
@@ -92,6 +94,8 @@ import gov.nih.nci.caarray.domain.array.AbstractProbe;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
 import gov.nih.nci.caarray.domain.array.PhysicalProbe;
+import gov.nih.nci.caarray.domain.data.AbstractDataColumn;
+import gov.nih.nci.caarray.domain.data.BooleanColumn;
 import gov.nih.nci.caarray.domain.data.DataSet;
 import gov.nih.nci.caarray.domain.data.FloatColumn;
 import gov.nih.nci.caarray.domain.data.HybridizationData;
@@ -104,8 +108,10 @@ import gov.nih.nci.caarray.test.data.arraydata.AgilentArrayDataFiles;
 import gov.nih.nci.caarray.validation.InvalidDataFileException;
 
 import java.io.File;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.commons.beanutils.PropertyUtils;
 
 import org.junit.Test;
 
@@ -117,6 +123,17 @@ public class AgilentRawTextDataHandlerTest extends AbstractHandlerTest {
     private static final LSID DESIGN_LSID = new LSID ("Agilent.com", "PhysicalArrayDesign", "022522_D_F_20090107");
     private static final LSID TINY_DESIGN = new LSID ("Agilent.com", "PhysicalArrayDesign", "Agilent_Tiny");
     private ArrayDesign arrayDesign;
+
+    private static final AgilentTextQuantitationType[] ACGH_COLS = {AgilentTextQuantitationType.G_MEDIAN_SIGNAL,
+        AgilentTextQuantitationType.G_PROCESSED_SIG_ERROR, AgilentTextQuantitationType.G_PROCESSED_SIGNAL,
+        AgilentTextQuantitationType.LOG_RATIO_ERROR, AgilentTextQuantitationType.LOG_RATIO,
+        AgilentTextQuantitationType.P_VALUE_LOG_RATIO, AgilentTextQuantitationType.R_MEDIAN_SIGNAL,
+        AgilentTextQuantitationType.R_PROCESSED_SIG_ERROR, AgilentTextQuantitationType.R_PROCESSED_SIGNAL};
+    
+    private static final AgilentTextQuantitationType[] GEN_EXPRESSION_COLS = {
+        AgilentTextQuantitationType.G_PROCESSED_SIGNAL,
+        AgilentTextQuantitationType.G_PROCESSED_SIG_ERROR,
+        AgilentTextQuantitationType.G_MEDIAN_SIGNAL};
     
     @Test
     public void validIfMageTab() {
@@ -219,29 +236,21 @@ public class AgilentRawTextDataHandlerTest extends AbstractHandlerTest {
         List<AbstractDesignElement> designElements = dataSet.getDesignElementList().getDesignElements();       
         assertEquals(expectedNumberOfProbes, designElements.size());
         
-        checkColumnLengths(hybridizationData, expectedNumberOfProbes);
+        checkColumnLengths(hybridizationData, expectedNumberOfProbes, ACGH_COLS);
         
-        checkValues(hybridizationData, designElements, 0, "HsCGHBrightCorner", 4838.5f, 670.1065f, 6694.398f, -0.04322179759f, 0.06165362131f, 0.4832766078f, 6834.0f, 607.6589f, 6060.239f);
-        checkValues(hybridizationData, designElements, 6527, "A_16_P37138757", 726.0f, 87.78085f, 837.711f, -0.01558695564f, 0.06633819191f, 0.814238211f, 1218.0f, 89.95938f, 808.1784f);
+        checkValues(hybridizationData, designElements, 0, "HsCGHBrightCorner", ACGH_COLS, 4838.5f, 670.1065f, 6694.398f, 0.06165362131f, -0.04322179759f, 0.4832766078f, 6834.0f, 607.6589f, 6060.239f);
+        checkValues(hybridizationData, designElements, 6527, "A_16_P37138757", ACGH_COLS, 726.0f, 87.78085f, 837.711f, 0.06633819191f, -0.01558695564f, 0.814238211f, 1218.0f, 89.95938f, 808.1784f);
     }
     
     private void checkValues(HybridizationData hybridizationData, List<AbstractDesignElement> designElements,
-            int index, String expectedProbeName, 
-            float expectedGMedianSignal, float expectedGProcessedSigError, float expectedGProcessedSignal,
-            float expectedLogRatio, float expectedLogRatioError, float expectedPValueLogRatio,
-            float expectedRMedianSignal, float expectedRProcessedSigError, float expectedRProcessedSignal) {
-        
+            int index, String expectedProbeName, AgilentTextQuantitationType[] qts, Object... values) {
+
+        assertEquals(qts.length, values.length);
         checkProbeName(designElements, index, expectedProbeName);
-        
-        checkValue(hybridizationData, index, AgilentAcghQuantitationType.G_MEDIAN_SIGNAL, expectedGMedianSignal);
-        checkValue(hybridizationData, index, AgilentAcghQuantitationType.G_PROCESSED_SIG_ERROR, expectedGProcessedSigError);
-        checkValue(hybridizationData, index, AgilentAcghQuantitationType.G_PROCESSED_SIGNAL, expectedGProcessedSignal);
-        checkValue(hybridizationData, index, AgilentAcghQuantitationType.LOG_RATIO, expectedLogRatio);
-        checkValue(hybridizationData, index, AgilentAcghQuantitationType.LOG_RATIO_ERROR, expectedLogRatioError);
-        checkValue(hybridizationData, index, AgilentAcghQuantitationType.P_VALUE_LOG_RATIO, expectedPValueLogRatio);
-        checkValue(hybridizationData, index, AgilentAcghQuantitationType.R_MEDIAN_SIGNAL, expectedRMedianSignal);
-        checkValue(hybridizationData, index, AgilentAcghQuantitationType.R_PROCESSED_SIG_ERROR, expectedRProcessedSigError);
-        checkValue(hybridizationData, index, AgilentAcghQuantitationType.R_PROCESSED_SIGNAL, expectedRProcessedSignal);
+        int idx = 0;
+        for (AgilentTextQuantitationType qt : qts) {
+            checkValue(hybridizationData, index, qt, values[idx++]);
+        }
     }
 
     private void checkProbeName(List<AbstractDesignElement> designElements, int index, String expectedProbeName) {
@@ -249,29 +258,48 @@ public class AgilentRawTextDataHandlerTest extends AbstractHandlerTest {
         assertEquals(expectedProbeName, probe.getName());
     }
 
-    private void checkValue(HybridizationData hybridizationData, int index, AgilentAcghQuantitationType quantitationType,
-            float expected) {
-        final double floatTolerance = 0.00000001;
-        FloatColumn column = (FloatColumn) hybridizationData.getColumn(quantitationType);
-        assertEquals(expected, column.getValues()[index], floatTolerance);
+    private void checkValue(HybridizationData hybridizationData, int index, AgilentTextQuantitationType quantitationType,
+            Object expected) {
+        AbstractDataColumn col = hybridizationData.getColumn(quantitationType);
+        assertNotNull("missing column " + quantitationType, col);
+        switch (quantitationType.getDataType()) {
+            case FLOAT : 
+                final double floatTolerance = 0.00000001;
+                FloatColumn column = (FloatColumn) col;
+                float fexpected = ((Float)expected).floatValue();
+                assertEquals(quantitationType.toString(), fexpected, column.getValues()[index], floatTolerance);
+                break;
+            case BOOLEAN :
+                BooleanColumn bcolumn = (BooleanColumn) col;
+                assertEquals(quantitationType.toString(), ((Boolean)expected).booleanValue(), bcolumn.getValues()[index]);
+                break;
+            default:
+                fail("please implement " + quantitationType.getDataType());
+        }
     }
 
-    private void checkColumnLengths(HybridizationData hybridizationData, int expectedColumnLength) {
-        checkColumnLength(hybridizationData, AgilentAcghQuantitationType.G_MEDIAN_SIGNAL, expectedColumnLength);
-        checkColumnLength(hybridizationData, AgilentAcghQuantitationType.G_PROCESSED_SIG_ERROR, expectedColumnLength);
-        checkColumnLength(hybridizationData, AgilentAcghQuantitationType.G_PROCESSED_SIGNAL, expectedColumnLength);
-        checkColumnLength(hybridizationData, AgilentAcghQuantitationType.LOG_RATIO_ERROR, expectedColumnLength);
-        checkColumnLength(hybridizationData, AgilentAcghQuantitationType.LOG_RATIO, expectedColumnLength);
-        checkColumnLength(hybridizationData, AgilentAcghQuantitationType.P_VALUE_LOG_RATIO, expectedColumnLength);
-        checkColumnLength(hybridizationData, AgilentAcghQuantitationType.R_MEDIAN_SIGNAL, expectedColumnLength);
-        checkColumnLength(hybridizationData, AgilentAcghQuantitationType.R_PROCESSED_SIG_ERROR, expectedColumnLength);
-        checkColumnLength(hybridizationData, AgilentAcghQuantitationType.R_PROCESSED_SIGNAL, expectedColumnLength);
+    private void checkColumnLengths(HybridizationData hybridizationData, int expectedColumnLength, AgilentTextQuantitationType... cols) {
+        for (AgilentTextQuantitationType qt : cols) {
+            checkColumnLength(hybridizationData, AgilentTextQuantitationType.G_MEDIAN_SIGNAL, expectedColumnLength);
+        }
     }
 
-    private void checkColumnLength(HybridizationData hybridizationData, AgilentAcghQuantitationType quantitationType, int expectedColumnLength) {
-        FloatColumn column = (FloatColumn) hybridizationData.getColumn(quantitationType);
-        assertNotNull(column);
-        assertEquals(expectedColumnLength, column.getValues().length);
+    private void checkColumnLength(HybridizationData hybridizationData, AgilentTextQuantitationType quantitationType, int expectedColumnLength) {
+        try {
+            AbstractDataColumn column = hybridizationData.getColumn(quantitationType);
+            assertNotNull(column);
+            Object array = PropertyUtils.getProperty(column, "values");
+            assertEquals(expectedColumnLength, Array.getLength(array));
+        } catch (IllegalAccessException ex) {
+            ex.printStackTrace();
+            fail(ex.toString());
+        } catch (InvocationTargetException ex) {
+            ex.printStackTrace();
+            fail(ex.toString());
+        } catch (NoSuchMethodException ex) {
+            ex.printStackTrace();
+            fail(ex.toString());
+        }
     }
     
 
@@ -307,11 +335,11 @@ public class AgilentRawTextDataHandlerTest extends AbstractHandlerTest {
         }
         final String lsidString = lsid.toString();
         final String arrayDesignLsidString = arrayDesign.getLsid().toString();
-        
+
         if (arrayDesignLsidString.equals(lsidString)) {
             return arrayDesign;
         } else {
-            throw new IllegalArgumentException("Unsupported request design");  
+            throw new IllegalArgumentException("Unsupported request design " + arrayDesignLsidString + " is not " + lsidString);
         }
     }
     
@@ -326,6 +354,37 @@ public class AgilentRawTextDataHandlerTest extends AbstractHandlerTest {
         PhysicalProbe probe = new PhysicalProbe();
         probe.setName(probeName);
         arrayDesign.getDesignDetails().getProbes().add(probe);
+    }
+
+    @Test
+    public void testMiRNA() throws InvalidDataFileException {
+        setupArrayDesign(DESIGN_LSID);
+        addProbeToDesign("GE_BrightCorner");
+        addProbeToDesign("DarkCorner");
+
+        CaArrayFile caArrayFile = getCaArrayFile(AgilentArrayDataFiles.GENE_EXPRESSION, DESIGN_LSID.getObjectId());
+        this.arrayDataService.importData(caArrayFile, true, DEFAULT_IMPORT_OPTIONS);
+        assertEquals(FileStatus.IMPORTED, caArrayFile.getFileStatus());
+
+        RawArrayData rawArrayData = (RawArrayData) this.daoFactoryStub.getArrayDao().getArrayData(caArrayFile.getId());
+        DataSet dataSet = rawArrayData.getDataSet();
+        assertNotNull(dataSet.getDesignElementList());
+
+        assertEquals(1, dataSet.getHybridizationDataList().size());
+        HybridizationData hybridizationData = dataSet.getHybridizationDataList().get(0);
+
+        assertEquals(3, hybridizationData.getColumns().size());
+
+        List<AbstractDesignElement> designElements = dataSet.getDesignElementList().getDesignElements();
+
+        int expectedNumberOfProbes = 2;
+        assertEquals(expectedNumberOfProbes, designElements.size());
+
+        checkColumnLengths(hybridizationData, expectedNumberOfProbes, GEN_EXPRESSION_COLS);
+
+        checkValues(hybridizationData, designElements, 0, "GE_BrightCorner", GEN_EXPRESSION_COLS, 76104.65f, 7610.465f, 83981.0f);
+        checkValues(hybridizationData, designElements, 1, "DarkCorner", GEN_EXPRESSION_COLS, 2.090352f, 2.082407f, 32.0f);
+
     }
 
 }

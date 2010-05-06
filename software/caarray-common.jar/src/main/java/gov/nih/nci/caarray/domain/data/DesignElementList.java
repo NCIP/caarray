@@ -144,8 +144,7 @@ public final class DesignElementList extends AbstractCaArrayEntity {
     /**
      * @param designElements the designElements to set
      */
-    @SuppressWarnings({ "unused", "PMD.UnusedPrivateMethod" })
-    private void setDesignElements(List<AbstractDesignElement> designElements) {
+    public void setDesignElements(List<AbstractDesignElement> designElements) {
         this.designElements = designElements;
     }
 
