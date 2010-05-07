@@ -130,10 +130,6 @@
 
         <dependency conf="project" name="junit" org="junit" rev="4.4"/>
         
-       <dependency conf="project" name="jmock" org="jmock" rev="2.5.1"/>
-       
-       <dependency conf="project" name="jmock-junit4" org="jmock" rev="2.5.1"/>
-
         <dependency conf="project" name="myfaces-api" org="javax.faces" rev="1.1.5"/>
 
         <dependency conf="project" name="mysql-connector-java" org="mysql" rev="5.0.5"/>
@@ -257,5 +253,7 @@
         <dependency conf="project" name="aopalliance" org="aopalliance" rev="1.0"/>
         
         <dependency conf="project" name="woodstox" org="codehaus" rev="4.0.7"/>        
+        
+        <dependency conf="project" name="mockito" org="mockito" rev="1.8.4"/>        
     </dependencies>
 </ivy-module>

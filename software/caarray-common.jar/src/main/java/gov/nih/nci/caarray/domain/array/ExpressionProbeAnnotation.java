@@ -84,7 +84,6 @@ package gov.nih.nci.caarray.domain.array;
 
 import gov.nih.nci.cabio.domain.ExpressionArrayReporter;
 
-import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -149,23 +148,21 @@ public class ExpressionProbeAnnotation extends AbstractProbeAnnotation {
     /**
      * @return chromosome number (1-22) or letter (x or y)
      */
-    @Column(name = "chromosome_name")
     public String getChromosomeName() {
         return chromosomeName;
     }
 
     /**
-     * @param chromsomeStartPosition start position on the chromosome
+     * @param chromosomeStartPosition start position on the chromosome
      */
-    public void setChromsomeStartPosition(Long chromsomeStartPosition) {
-        this.chromosomeStartPosition = chromsomeStartPosition;
+    public void setChromosomeStartPosition(Long chromosomeStartPosition) {
+        this.chromosomeStartPosition = chromosomeStartPosition;
     }
 
     /**
      * @return start position on the chromosome
      */
-    @Column(name = "chromosome_start_position")
-    public Long getChromsomeStartPosition() {
+    public Long getChromosomeStartPosition() {
         return chromosomeStartPosition;
     }
 
@@ -179,7 +176,6 @@ public class ExpressionProbeAnnotation extends AbstractProbeAnnotation {
     /**
      * @return end position on the chromosome
      */
-    @Column(name = "chromosome_end_position")
     public Long getChromosomeEndPosition() {
         return chromosomeEndPosition;
     }
@@ -191,7 +187,7 @@ public class ExpressionProbeAnnotation extends AbstractProbeAnnotation {
      */
     public void setChromosome(String name, long startPosition, long endPosition) {
         setChromosomeName(name);
-        setChromsomeStartPosition(startPosition);
+        setChromosomeStartPosition(startPosition);
         setChromosomeEndPosition(endPosition);
     }
 

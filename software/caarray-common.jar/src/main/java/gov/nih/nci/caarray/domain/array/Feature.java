@@ -82,6 +82,8 @@
  */
 package gov.nih.nci.caarray.domain.array;
 
+import gov.nih.nci.caarray.domain.vocabulary.Term;
+
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
@@ -107,7 +109,7 @@ public class Feature extends AbstractDesignElement {
     private Integer featureNumber;
     private Double xCoordinate;
     private Double yCoordinate;
-    private String coordinateUnits;
+    private Term coordinateUnits;
 
     private ArrayDesignDetails arrayDesignDetails;
 
@@ -190,7 +192,6 @@ public class Feature extends AbstractDesignElement {
     /**
      * @return the featureNumber
      */
-    @Column(name = "feature_number")
     public Integer getFeatureNumber() {
         return featureNumber;
     }
@@ -235,15 +236,17 @@ public class Feature extends AbstractDesignElement {
     /**
      * @return the coordinate units
      */
-    @Column(name = "feature_coordinate_units")
-    public String getCoordinateUnits() {
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "feature_coordinate_units")
+    //@ForeignKey(name = "feature_coordinate_units_fk")
+    public Term getCoordinateUnits() {
         return coordinateUnits;
     }
 
     /**
      * @param coordinateUnits the coordinate units to set
      */
-    public void setCoordinateUnits(String coordinateUnits) {
+    public void setCoordinateUnits(Term coordinateUnits) {
         this.coordinateUnits = coordinateUnits;
     }
 

@@ -83,6 +83,9 @@
 package gov.nih.nci.caarray.platforms.agilent;
 
 import gov.nih.nci.caarray.platforms.agilent.AgilentGELMToken.Token;
+import gov.nih.nci.caarray.platforms.agilent.ArrayDesignBuilder.FeatureBuilder;
+import gov.nih.nci.caarray.platforms.agilent.ArrayDesignBuilder.GeneBuilder;
+import gov.nih.nci.caarray.platforms.agilent.ArrayDesignBuilder.PhysicalProbeBuilder;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -96,7 +99,11 @@ import java.util.regex.Pattern;
  *
  */
 @SuppressWarnings("PMD.ExcessiveClassLength")
-public class AgilentGELMParser {
+class AgilentGELMParser {
+    private static final String NEGATIVE_CONTROLS_CONTROL_GROUP_NAME = "negative controls";
+    private static final String POSITIVE_CONTROLS_CONTROL_GROUP_NAME = "positive controls";
+    private static final String IGNORE_CONTROL_GROUP_NAME = "ignore";
+
     private final XMLTokenizer<Token> tokenizer;
     private final Pattern chromosomePattern = Pattern.compile("chr(\\d{1,2}|X|Y|x|y):(\\d+)-(\\d+)(?:\\|.+){0,1}");
     private int featureCount;
@@ -107,7 +114,7 @@ public class AgilentGELMParser {
     /**
      * @param tokenizer provides the stream of tokens to be parsed.
      */
-    public AgilentGELMParser(XMLTokenizer<Token> tokenizer) {
+    AgilentGELMParser(XMLTokenizer<Token> tokenizer) {
         this.tokenizer = tokenizer;
     }
 
@@ -116,20 +123,19 @@ public class AgilentGELMParser {
      * 
      * @return true if the validation parse succeeds; false otherwise
      */
-    public boolean validate() {
-        ValidatingArrayDesignDetailer arrayDesignDetailer = new ValidatingArrayDesignDetailer();
-        final boolean parseResult = parse(arrayDesignDetailer);
-        return parseResult;
+    boolean validate() {
+        ValidatingArrayDesignBuilder arrayDesignBuilder = new ValidatingArrayDesignBuilder();
+        return parse(arrayDesignBuilder);
     }
 
     /**
-     * Parses the token stream, calling the arrayDesignDetailer as it goes.
-     * @param arrayDesignDetailer object to call as parse proceeds
+     * Parses the token stream, calling the arrayDesignBuilder as it goes.
+     * @param arrayDesignBuilder object to call as parse proceeds
      * @return true if the parse succeeds; false otherwise
      */
-    public boolean parse(ArrayDesignDetailerInterface arrayDesignDetailer) {
+    boolean parse(ArrayDesignBuilder arrayDesignBuilder) {
         try {
-            parseDocument(arrayDesignDetailer);
+            parseDocument(arrayDesignBuilder);
             expect(Token.EOF);
         } catch (ParseException e) {
             return false;
@@ -138,13 +144,13 @@ public class AgilentGELMParser {
         return true;
     }
 
-    private void parseDocument(ArrayDesignDetailerInterface arrayDesignDetailer) {
+    private void parseDocument(ArrayDesignBuilder arrayDesignBuilder) {
         expect(Token.DOCUMENT_START);
-        parseProject(arrayDesignDetailer);
+        parseProject(arrayDesignBuilder);
         expect(Token.DOCUMENT_END);
     }
 
-    private void parseProject(ArrayDesignDetailerInterface arrayDesignDetailer) {
+    private void parseProject(ArrayDesignBuilder arrayDesignBuilder) {
         expect(Token.PROJECT_START);
 
         accept(Token.BY);
@@ -161,7 +167,7 @@ public class AgilentGELMParser {
                     break;
 
                 case PATTERN_START:
-                    parsePattern(arrayDesignDetailer);
+                    parsePattern(arrayDesignBuilder);
                     break;
 
                 case OTHER_START:
@@ -230,7 +236,7 @@ public class AgilentGELMParser {
         expect(Token.END);
     }
 
-    private void parsePattern(ArrayDesignDetailerInterface arrayDesignDetailer) {
+    private void parsePattern(ArrayDesignBuilder arrayDesignBuilder) {
         int reporterCount = 0;
 
         expect(Token.PATTERN_START);
@@ -247,7 +253,7 @@ public class AgilentGELMParser {
 
                 case REPORTER_START:
                     reporterCount++;
-                    parseReporter(arrayDesignDetailer);
+                    parseReporter(arrayDesignBuilder);
                     break;
 
                 case OTHER_START:
@@ -266,7 +272,7 @@ public class AgilentGELMParser {
         }
     }
 
-    private void parseReporter(ArrayDesignDetailerInterface arrayDesignDetailer) {
+    private void parseReporter(ArrayDesignBuilder arrayDesignBuilder) {
         featureCount = 0;
         geneCount = 0;
 
@@ -280,10 +286,10 @@ public class AgilentGELMParser {
 
         final ControlType controlType = validateReporterControlType(controlTypeValue, name);
 
-        arrayDesignDetailer.findOrCreateCurrentPhysicalProbe(name);
-        addPhysicalProbeToProbeGroup(arrayDesignDetailer, controlType);
+        PhysicalProbeBuilder physicalProbeBuilder = arrayDesignBuilder.findOrCreatePhysicalProbeBuilder(name);
+        addPhysicalProbeToProbeGroup(physicalProbeBuilder, controlType);
 
-        parseReporterContents(arrayDesignDetailer);
+        parseReporterContents(physicalProbeBuilder);
 
         expect(Token.END);
 
@@ -296,18 +302,18 @@ public class AgilentGELMParser {
         }
     }
 
-    private void parseReporterContents(ArrayDesignDetailerInterface arrayDesignDetailer) {
+    private void parseReporterContents(PhysicalProbeBuilder physicalProbeBuilder) {
         while (Token.END != tokenizer.getCurrentToken()) {
             switch (tokenizer.getCurrentToken()) {
 
                 case FEATURE_START:
                     featureCount++;
-                    parseFeature(arrayDesignDetailer);
+                    parseFeature(physicalProbeBuilder);
                     break;
 
                 case GENE_START:
                     geneCount++;
-                    parseGene(arrayDesignDetailer);
+                    parseGene(physicalProbeBuilder);
                     break;
 
                 case OTHER_START:
@@ -320,17 +326,17 @@ public class AgilentGELMParser {
         }
     }
 
-    private void addPhysicalProbeToProbeGroup(ArrayDesignDetailerInterface arrayDesignDetailer,
+    private void addPhysicalProbeToProbeGroup(PhysicalProbeBuilder physicalProbeBuilder,
             final ControlType controlType) {
         switch (controlType) {
             case IGNORE:
-                arrayDesignDetailer.addCurrentPhysicalProbeToIgnoreProbeGroup();
+                physicalProbeBuilder.addToProbeGroup(IGNORE_CONTROL_GROUP_NAME);
                 break;
             case POSITIVE:
-                arrayDesignDetailer.addCurrentPhysicalProbeToPositiveControlProbeGroup();
+                physicalProbeBuilder.addToProbeGroup(POSITIVE_CONTROLS_CONTROL_GROUP_NAME);
                 break;
             case NEGATIVE:
-                arrayDesignDetailer.addCurrentPhysicalProbeToNegativeControlProbeGroup();
+                physicalProbeBuilder.addToProbeGroup(NEGATIVE_CONTROLS_CONTROL_GROUP_NAME);
                 break;
             default:
                 // Empty default case.
@@ -371,7 +377,7 @@ public class AgilentGELMParser {
         accept(Token.ACTIVE_SEQUENCE);
     }
 
-    private void parseFeature(ArrayDesignDetailerInterface arrayDesignDetailer) {
+    private void parseFeature(PhysicalProbeBuilder physicalProbeBuilder) {
         positionCount = 0;
         penCount = 0;
 
@@ -380,9 +386,9 @@ public class AgilentGELMParser {
         accept(Token.CTRL_FOR_FEAT_NUM);
         int featureNumber = acceptTokenWithIntValue(Token.NUMBER, 0);
 
-        arrayDesignDetailer.createFeatureForCurrentPhysicalProbe(featureNumber);
+        FeatureBuilder featureBuilder = physicalProbeBuilder.createFeatureBuilder(featureNumber);
 
-        parseFeatureContents(arrayDesignDetailer);
+        parseFeatureContents(featureBuilder);
 
         expect(Token.END);
 
@@ -395,13 +401,13 @@ public class AgilentGELMParser {
         }
     }
 
-    private void parseFeatureContents(ArrayDesignDetailerInterface arrayDesignDetailer) {
+    private void parseFeatureContents(FeatureBuilder featureBuilder) {
         while (Token.END != tokenizer.getCurrentToken()) {
             switch (tokenizer.getCurrentToken()) {
 
                 case POSITION_START:
                     positionCount++;
-                    parsePosition(arrayDesignDetailer);
+                    parsePosition(featureBuilder);
                     break;
 
                 case PEN_START:
@@ -419,7 +425,7 @@ public class AgilentGELMParser {
         }
     }
 
-    private void parseGene(ArrayDesignDetailerInterface arrayDesignDetailer) {
+    private void parseGene(PhysicalProbeBuilder physicalProbeBuilder) {
         expect(Token.GENE_START);
 
         accept(Token.CHROMOSOME);
@@ -431,13 +437,13 @@ public class AgilentGELMParser {
         accept(Token.SPECIES);
         accept(Token.SYSTEMATIC_NAME);
 
-        arrayDesignDetailer.createNewAnnotationOnCurrentPhysicalProbe(name);
+        GeneBuilder geneBuilder = physicalProbeBuilder.createGeneBuilder(name);
 
         while (Token.END != tokenizer.getCurrentToken()) {
             switch (tokenizer.getCurrentToken()) {
 
                 case ACCESSION_START:
-                    parseAccession(arrayDesignDetailer);
+                    parseAccession(geneBuilder);
                     break;
 
                 case ALIAS_START:
@@ -445,7 +451,7 @@ public class AgilentGELMParser {
                     break;
 
                 case OTHER_START:
-                    parseProbeMappingsOrOther(arrayDesignDetailer);
+                    parseProbeMappingsOrOther(geneBuilder);
                     break;
 
                 default:
@@ -456,7 +462,7 @@ public class AgilentGELMParser {
         expect(Token.END);
     }
 
-    private void parsePosition(ArrayDesignDetailerInterface arrayDesignDetailer) {
+    private void parsePosition(FeatureBuilder featureBuilder) {
         expect(Token.POSITION_START);
 
         String units = expectTokenWithStringValue(Token.UNITS);
@@ -475,7 +481,7 @@ public class AgilentGELMParser {
             }
         }
 
-        arrayDesignDetailer.setCoordinatesOnCurrentFeature(x, y, units);
+        featureBuilder.setCoordinates(x, y, units);
 
         expect(Token.END);
     }
@@ -502,7 +508,7 @@ public class AgilentGELMParser {
         expect(Token.END);
     }
 
-    private void parseAccession(ArrayDesignDetailerInterface arrayDesignDetailer) {
+    private void parseAccession(GeneBuilder geneBuilder) {
         expect(Token.ACCESSION_START);
         final String database = expectTokenWithStringValue(Token.DATABASE);
         final String id = expectTokenWithStringValue(Token.ID);
@@ -520,9 +526,9 @@ public class AgilentGELMParser {
         }
 
         if ("gb".equalsIgnoreCase(database)) {
-            arrayDesignDetailer.createNewGBAccessionOnCurrentGene(id);
+            geneBuilder.createNewGBAccession(id);
         } else if ("ens".equalsIgnoreCase(database)) {
-            arrayDesignDetailer.createNewEnsemblAccessionOnCurrentGene(id);
+            geneBuilder.createNewEnsemblAccession(id);
         }
 
         expect(Token.END);
@@ -547,7 +553,7 @@ public class AgilentGELMParser {
         expect(Token.END);
     }
 
-    private void parseProbeMappingsOrOther(ArrayDesignDetailerInterface arrayDesignDetailer) {
+    private void parseProbeMappingsOrOther(GeneBuilder geneBuilder) {
         expect(Token.OTHER_START);
         String name = expectTokenWithStringValue(Token.NAME);
 
@@ -564,7 +570,7 @@ public class AgilentGELMParser {
             final long startPosition = Long.parseLong(m.group(2));
             final long endPosition = Long.parseLong(m.group(3));
 
-            arrayDesignDetailer.setChromosomeLocationForCurrentGene(chromosome, startPosition, endPosition);
+            geneBuilder.setChromosomeLocation(chromosome, startPosition, endPosition);
             expect(Token.END);
         }
     }

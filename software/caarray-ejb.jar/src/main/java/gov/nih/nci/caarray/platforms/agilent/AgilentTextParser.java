@@ -109,7 +109,7 @@ class AgilentTextParser {
      * @param reader the input to parse
      * @throws  
      */
-    public AgilentTextParser(Reader reader) {
+    AgilentTextParser(Reader reader) {
         try {
             this.reader = DelimitedFileReaderFactory.INSTANCE.getTabDelimitedReader(reader);
         } catch (IOException e) {
@@ -120,14 +120,14 @@ class AgilentTextParser {
     /**
      * @return
      */
-    public boolean hasNext() {
+    boolean hasNext() {
         return reader.hasNextLine();
     }
 
     /**
      * 
      */
-    public void next() {
+    void next() {
         readLine();
         
         if ("TYPE".equalsIgnoreCase(fields.get(0))) {            
@@ -153,7 +153,7 @@ class AgilentTextParser {
      * @param string
      * @return
      */
-    public String getStringValue(String columnName) {
+    String getStringValue(String columnName) {
         Integer columnIndex = this.columnIndexMap.get(columnName.toLowerCase(Locale.ENGLISH));
         if (columnIndex == null) {
             return null;
@@ -164,7 +164,7 @@ class AgilentTextParser {
      * @param string
      * @return
      */
-    public int getIntValue(String columnName) {
+    int getIntValue(String columnName) {
         String v = getStringValue(columnName);
         if (v == null) {
             return 0;
@@ -177,7 +177,7 @@ class AgilentTextParser {
      * @param string
      * @return
      */
-    public float getFloatValue(String columnName) {
+    float getFloatValue(String columnName) {
         String v = getStringValue(columnName);
         if (v == null) {
             return 0.0F;
@@ -189,21 +189,21 @@ class AgilentTextParser {
      * @param columnName name of column.
      * @return true only if the column's value is "1".
      */
-    public boolean getBooleanValue(String columnName) {
+    boolean getBooleanValue(String columnName) {
         return "1".equals(getStringValue(columnName));
     }
 
     /**
      * @return
      */
-    public String getSectionName() {
+    String getSectionName() {
          return this.sectionName;
     }
 
     /**
      * @return
      */
-    public Collection<String> getColumnNames() {
+    Collection<String> getColumnNames() {
         return this.columnIndexMap.keySet();
     }
     

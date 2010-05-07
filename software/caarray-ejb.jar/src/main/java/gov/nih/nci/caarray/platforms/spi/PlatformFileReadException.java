@@ -108,13 +108,13 @@ public final class PlatformFileReadException extends Exception {
     /**
      * Create a new PlatformFileReadException for given file.
      * 
-     * @param designFile the file that could not be read
+     * @param file the file that could not be read
      * @param message more details about the error
      * @param cause lower-level exception that led to the error
      */
-    public PlatformFileReadException(File designFile, String message, Throwable cause) {
+    public PlatformFileReadException(File file, String message, Throwable cause) {
         super(message, cause);
-        this.file = designFile;
+        this.file = file;
     }
 
     /**

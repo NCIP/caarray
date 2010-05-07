@@ -92,7 +92,7 @@ package gov.nih.nci.caarray.platforms.agilent;
  *
  * @param <TokenT> the enumeration of tokens to be used
  */
-public interface XMLTokenizer<TokenT extends Enum<TokenT>> {
+interface XMLTokenizer<TokenT extends Enum<TokenT>> {
     /**
      * @return the token currently at the head of the token stream
      */
@@ -117,4 +117,9 @@ public interface XMLTokenizer<TokenT extends Enum<TokenT>> {
      * @return the integer value associated with the current token.
      */
     int getIntValue();
+    
+    /**
+     * Close the tokenizer.
+     */
+    void close();
 }

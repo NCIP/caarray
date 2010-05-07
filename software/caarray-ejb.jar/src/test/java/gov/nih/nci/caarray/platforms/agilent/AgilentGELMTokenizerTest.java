@@ -80,12 +80,11 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.application.arraydesign.agilient;
+package gov.nih.nci.caarray.platforms.agilent;
 
-import gov.nih.nci.caarray.platforms.agilent.AgilentGELMTokenizer;
+import static org.junit.Assert.assertEquals;
 import gov.nih.nci.caarray.platforms.agilent.AgilentGELMToken.Token;
 
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -93,7 +92,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 public class AgilentGELMTokenizerTest {
@@ -105,10 +103,10 @@ public class AgilentGELMTokenizerTest {
         StringReader inputReader = new StringReader(xmlSnippet);
         AgilentGELMTokenizer tokenizer = new AgilentGELMTokenizer(inputReader);
 
-        Assert.assertEquals(Token.DOCUMENT_START, tokenizer.getCurrentToken());
+        assertEquals(Token.DOCUMENT_START, tokenizer.getCurrentToken());
         tokenizer.advance();
 
-        Assert.assertEquals(Token.EOF, tokenizer.getCurrentToken());
+        assertEquals(Token.EOF, tokenizer.getCurrentToken());
     }
 
     @Test
@@ -119,19 +117,19 @@ public class AgilentGELMTokenizerTest {
         StringReader inputReader = new StringReader(xmlSnippet);
         AgilentGELMTokenizer tokenizer = new AgilentGELMTokenizer(inputReader);
 
-        Assert.assertEquals(Token.DOCUMENT_START, tokenizer.getCurrentToken());
+        assertEquals(Token.DOCUMENT_START, tokenizer.getCurrentToken());
         tokenizer.advance();
 
-        Assert.assertEquals(Token.PATTERN_START, tokenizer.getCurrentToken());
+        assertEquals(Token.PATTERN_START, tokenizer.getCurrentToken());
         tokenizer.advance();
 
-        Assert.assertEquals(Token.END, tokenizer.getCurrentToken());
+        assertEquals(Token.END, tokenizer.getCurrentToken());
         tokenizer.advance();
 
-        Assert.assertEquals(Token.DOCUMENT_END, tokenizer.getCurrentToken());
+        assertEquals(Token.DOCUMENT_END, tokenizer.getCurrentToken());
         tokenizer.advance();
 
-        Assert.assertEquals(Token.EOF, tokenizer.getCurrentToken());
+        assertEquals(Token.EOF, tokenizer.getCurrentToken());
     }
 
     @Test
@@ -142,19 +140,19 @@ public class AgilentGELMTokenizerTest {
         StringReader inputReader = new StringReader(xmlSnippet);
         AgilentGELMTokenizer tokenizer = new AgilentGELMTokenizer(inputReader);
 
-        Assert.assertEquals(Token.DOCUMENT_START, tokenizer.getCurrentToken());
+        assertEquals(Token.DOCUMENT_START, tokenizer.getCurrentToken());
         tokenizer.advance();
 
-        Assert.assertEquals(Token.TOKENIZER_ERROR, tokenizer.getCurrentToken());
+        assertEquals(Token.TOKENIZER_ERROR, tokenizer.getCurrentToken());
         tokenizer.advance();
 
-        Assert.assertEquals(Token.END, tokenizer.getCurrentToken());
+        assertEquals(Token.END, tokenizer.getCurrentToken());
         tokenizer.advance();
 
-        Assert.assertEquals(Token.DOCUMENT_END, tokenizer.getCurrentToken());
+        assertEquals(Token.DOCUMENT_END, tokenizer.getCurrentToken());
         tokenizer.advance();
 
-        Assert.assertEquals(Token.EOF, tokenizer.getCurrentToken());
+        assertEquals(Token.EOF, tokenizer.getCurrentToken());
     }
 
     @Test
@@ -165,22 +163,22 @@ public class AgilentGELMTokenizerTest {
         StringReader inputReader = new StringReader(xmlSnippet);
         AgilentGELMTokenizer tokenizer = new AgilentGELMTokenizer(inputReader);
 
-        Assert.assertEquals(Token.DOCUMENT_START, tokenizer.getCurrentToken());
+        assertEquals(Token.DOCUMENT_START, tokenizer.getCurrentToken());
         tokenizer.advance();
 
-        Assert.assertEquals(Token.PATTERN_START, tokenizer.getCurrentToken());
+        assertEquals(Token.PATTERN_START, tokenizer.getCurrentToken());
         tokenizer.advance();
 
-        Assert.assertEquals(Token.TOKENIZER_ERROR, tokenizer.getCurrentToken());
+        assertEquals(Token.TOKENIZER_ERROR, tokenizer.getCurrentToken());
         tokenizer.advance();
 
-        Assert.assertEquals(Token.END, tokenizer.getCurrentToken());
+        assertEquals(Token.END, tokenizer.getCurrentToken());
         tokenizer.advance();
 
-        Assert.assertEquals(Token.DOCUMENT_END, tokenizer.getCurrentToken());
+        assertEquals(Token.DOCUMENT_END, tokenizer.getCurrentToken());
         tokenizer.advance();
 
-        Assert.assertEquals(Token.EOF, tokenizer.getCurrentToken());
+        assertEquals(Token.EOF, tokenizer.getCurrentToken());
     }
 
     @Test
@@ -250,11 +248,11 @@ public class AgilentGELMTokenizerTest {
         AgilentGELMTokenizer tokenizer = new AgilentGELMTokenizer(inputReader);
 
         // Expect a document start token
-        Assert.assertEquals(Token.DOCUMENT_START, tokenizer.getCurrentToken());
+        assertEquals(Token.DOCUMENT_START, tokenizer.getCurrentToken());
         tokenizer.advance();
 
         // Followed by the element start token
-        Assert.assertEquals(elementStartToken, tokenizer.getCurrentToken());
+        assertEquals(elementStartToken, tokenizer.getCurrentToken());
         tokenizer.advance();
 
         // Followed by all the attribute tokens
@@ -267,20 +265,20 @@ public class AgilentGELMTokenizerTest {
 
         for (String attributeName : sortedAttributeNames) {
             Token expectedAttributeToken = attributeTokenMap.get(attributeName);
-            Assert.assertEquals(expectedAttributeToken, tokenizer.getCurrentToken());
+            assertEquals(expectedAttributeToken, tokenizer.getCurrentToken());
             tokenizer.advance();
         }
 
         // Followed the element end token
-        Assert.assertEquals(elementEndToken, tokenizer.getCurrentToken());
+        assertEquals(elementEndToken, tokenizer.getCurrentToken());
         tokenizer.advance();
 
         // Followed by the document end token
-        Assert.assertEquals(Token.DOCUMENT_END, tokenizer.getCurrentToken());
+        assertEquals(Token.DOCUMENT_END, tokenizer.getCurrentToken());
         tokenizer.advance();
 
         // Followed by the EOF token
-        Assert.assertEquals(Token.EOF, tokenizer.getCurrentToken());
+        assertEquals(Token.EOF, tokenizer.getCurrentToken());
     }
 
     private String buildXmlSnippet(String elementName, String[] attributeNames) {
@@ -295,21 +293,5 @@ public class AgilentGELMTokenizerTest {
         writer.close();
 
         return stringWriter.toString();
-    }
-
-    @Test
-    public void DELETEME() throws IOException {
-//        String filepath = AgilentGELMTokenizerTest.class.getResource("/arraydesign/agilent/aCGH/022522_D_F_20090107.xml").getFile();
-//        FileReader inputReader = new FileReader(filepath);
-//        FileWriter outputWriter = new FileWriter("tokens.txt");
-//
-//        AgilentGELMTokenizer tokenizer = new AgilentGELMTokenizer(inputReader);
-//        Token token;
-//        do {
-//            token = tokenizer.getCurrentToken();
-//            outputWriter.write(String.format("%s\n", token));
-//            tokenizer.advance();
-//        } while (token  != Token.EOF);
-//        outputWriter.close();
     }
 }

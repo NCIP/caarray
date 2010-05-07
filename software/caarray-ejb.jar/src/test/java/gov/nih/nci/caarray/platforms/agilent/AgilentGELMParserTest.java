@@ -80,12 +80,12 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.application.arraydesign.agilient;
+package gov.nih.nci.caarray.platforms.agilent;
 
-import gov.nih.nci.caarray.platforms.agilent.AgilentGELMParser;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import gov.nih.nci.caarray.platforms.agilent.AgilentGELMToken.Token;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 public class AgilentGELMParserTest {
@@ -1660,11 +1660,11 @@ public class AgilentGELMParserTest {
     }
 
     private void assertParserAccepts() {
-        Assert.assertTrue(parser.validate());
+        assertTrue(parser.validate());
     }
 
     private void assertParserRejects() {
-        Assert.assertFalse(parser.validate());
+        assertFalse(parser.validate());
     }
 
     private void add(Token token) {

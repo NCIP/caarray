@@ -80,7 +80,7 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.application.arraydesign.agilient;
+package gov.nih.nci.caarray.platforms.agilent;
 
 import gov.nih.nci.caarray.platforms.agilent.AgilentGELMToken;
 import gov.nih.nci.caarray.platforms.agilent.XMLTokenizer;
@@ -103,11 +103,11 @@ class TokenizerStub implements XMLTokenizer<AgilentGELMToken.Token> {
             this.value = value;
         }
 
-        public AgilentGELMToken.Token getToken() {
+        AgilentGELMToken.Token getToken() {
             return token;
         }
 
-        public Object getValue() {
+        Object getValue() {
             return value;
         }
     }
@@ -136,15 +136,18 @@ class TokenizerStub implements XMLTokenizer<AgilentGELMToken.Token> {
         return (Integer) value;
     }
 
+    public void close() {
+    }
+
     void add(AgilentGELMToken.Token token) {
         tokens.add(new TokenValue(token));
     }
 
-    public void add(AgilentGELMToken.Token token, Object value) {
+    void add(AgilentGELMToken.Token token, Object value) {
         tokens.add(new TokenValue(token, value));
     }
 
-    public void repeat(int count, AgilentGELMToken.Token token) {
+    void repeat(int count, AgilentGELMToken.Token token) {
         for (int i = 0; i < count; i++)
             add(token);
     }

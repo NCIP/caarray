@@ -83,6 +83,9 @@
 package gov.nih.nci.caarray.platforms.agilent;
 
 import java.io.Reader;
+import java.util.Iterator;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.XMLEvent;
@@ -102,12 +105,7 @@ import com.ctc.wstx.exc.WstxEOFException;
  * 
  * @param <TokenT> the enumeration of tokens to be used
  */
-public abstract class AbstractXMLTokenizer<TokenT extends Enum<TokenT>> implements XMLTokenizer<TokenT> {
-    /**
-     * 
-     */
-    private static final int MAX_ATTRIBUTE_COUNT = 100;
-
+abstract class AbstractXMLTokenizer<TokenT extends Enum<TokenT>> implements XMLTokenizer<TokenT> {
     /**
      * Indicates whether or not a stream is at the end of input.
      */
@@ -117,48 +115,15 @@ public abstract class AbstractXMLTokenizer<TokenT extends Enum<TokenT>> implemen
 
     private TokenT currentToken;
     private XMLStreamReader2 reader;
-    private int numberOfAttributes;
-    private int attributeIndex;
     private boolean currentTokenIsAttribute;
     private int currentAttributeIndex;
-    private int[] attributeIndexes = new int[MAX_ATTRIBUTE_COUNT];
-
-    private void sortAttributes() {
-        int count = reader.getAttributeCount();
-
-        final String[] attributeNames = new String[MAX_ATTRIBUTE_COUNT];
-        for (int i = 0; i < count; i++) {
-            attributeIndexes[i] = i;
-            attributeNames[i] = reader.getAttributeLocalName(i);
-        }
-
-        // A simple bubble sort will do
-        for (int out = count - 1; out > 0; out--) {
-            for (int in = 0; in < out; in++) {
-                if (attributeNames[in].compareTo(attributeNames[in + 1]) > 0) {
-                    swap(attributeIndexes, in, in + 1);
-                    swap(attributeNames, in, in + 1);
-                }
-            }
-        }
-    }
-
-    private void swap(int[] array, int i, int j) {
-        int temp = array[i];
-        array[i] = array[j];
-        array[j] = temp;
-    }
-
-    private void swap(String[] array, int i, int j) {
-        String temp = array[i];
-        array[i] = array[j];
-        array[j] = temp;
-    }
-
+    private final SortedMap<String, Integer> attributeIndexMap = new TreeMap<String, Integer>();   
+    private Iterator<Integer> attributeIndexIterator = attributeIndexMap.values().iterator();
+    
     /**
      * @param inputReader a reader on the XML source to tokenized
      */
-    public AbstractXMLTokenizer(Reader inputReader) {
+    AbstractXMLTokenizer(Reader inputReader) {
         XMLInputFactory2 inputFactory = (XMLInputFactory2) XMLInputFactory2.newInstance();
         inputFactory.configureForConvenience();
         inputFactory.setProperty(XMLInputFactory2.SUPPORT_DTD, false);
@@ -172,11 +137,24 @@ public abstract class AbstractXMLTokenizer<TokenT extends Enum<TokenT>> implemen
 
         currentToken = getNextToken();
     }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public void close() {
+        if (null != reader) {
+            try {
+                reader.close();
+            } catch (XMLStreamException e) {
+                throw new AgilentParseException("StAX library error", e);
+            }
+        }
+    }
 
     private TokenT getNextToken() {
-        currentTokenIsAttribute = attributeIndex < numberOfAttributes;
+        currentTokenIsAttribute = attributeIndexIterator.hasNext();
         if (currentTokenIsAttribute) {
-            currentAttributeIndex = attributeIndexes[attributeIndex];
+            currentAttributeIndex = attributeIndexIterator.next();
             String attributeName = reader.getAttributeLocalName(currentAttributeIndex);
             return findAttributeToken(attributeName);
         }
@@ -203,10 +181,8 @@ public abstract class AbstractXMLTokenizer<TokenT extends Enum<TokenT>> implemen
             token = getDocumentStartToken();
             break;
 
-        case XMLEvent.START_ELEMENT:
-            attributeIndex = 0;
-            numberOfAttributes = reader.getAttributeCount();
-            sortAttributes();
+        case XMLEvent.START_ELEMENT:            
+            setUpAttributes();
             token = findStartToken(reader.getLocalName());
             break;
 
@@ -240,6 +216,15 @@ public abstract class AbstractXMLTokenizer<TokenT extends Enum<TokenT>> implemen
         }
 
         return token;
+    }
+
+    private void setUpAttributes() {
+        int numberOfAttributes = reader.getAttributeCount();
+        attributeIndexMap.clear();
+        for (int i = 0; i < numberOfAttributes; i++) {
+            attributeIndexMap.put(reader.getAttributeLocalName(i), i);
+        }
+        attributeIndexIterator = attributeIndexMap.values().iterator();
     }
 
     /**
@@ -294,9 +279,8 @@ public abstract class AbstractXMLTokenizer<TokenT extends Enum<TokenT>> implemen
      * {@inheritDoc}
      */
     public void advance() {
-        if (attributeIndex < numberOfAttributes) {
+        if (attributeIndexIterator.hasNext()) {
             currentToken = getNextToken();
-            attributeIndex++;
         } else {
             switch (tryToAdvance()) {
             case OKAY:

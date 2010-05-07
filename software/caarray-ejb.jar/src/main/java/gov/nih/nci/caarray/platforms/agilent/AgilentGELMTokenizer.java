@@ -91,11 +91,11 @@ import java.io.Reader;
  * @author jscott
  *
  */
-public class AgilentGELMTokenizer extends AbstractXMLTokenizer<Token> {
+class AgilentGELMTokenizer extends AbstractXMLTokenizer<Token> {
     /**
      * @param inputReader a reader on the XML source to tokenized
      */
-   public AgilentGELMTokenizer(Reader inputReader) {
+   AgilentGELMTokenizer(Reader inputReader) {
         super(inputReader);
     }
 

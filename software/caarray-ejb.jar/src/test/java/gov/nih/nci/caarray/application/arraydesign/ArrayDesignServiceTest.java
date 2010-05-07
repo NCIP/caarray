@@ -98,10 +98,12 @@ import gov.nih.nci.caarray.application.vocabulary.VocabularyServiceStub;
 import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.dao.ContactDao;
 import gov.nih.nci.caarray.dao.SearchDao;
+import gov.nih.nci.caarray.dao.VocabularyDao;
 import gov.nih.nci.caarray.dao.stub.ArrayDaoStub;
 import gov.nih.nci.caarray.dao.stub.ContactDaoStub;
 import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
 import gov.nih.nci.caarray.dao.stub.SearchDaoStub;
+import gov.nih.nci.caarray.dao.stub.VocabularyDaoStub;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
@@ -116,6 +118,7 @@ import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.project.AssayType;
+import gov.nih.nci.caarray.domain.search.ExampleSearchCriteria;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
@@ -207,6 +210,7 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
                 bind(ContactDao.class).toInstance(caArrayDaoFactoryStub.getContactDao());
                 bind(SearchDao.class).toInstance(caArrayDaoFactoryStub.getSearchDao());
                 bind(ArrayDao.class).toInstance(caArrayDaoFactoryStub.getArrayDao());
+                bind(VocabularyDao.class).toInstance(caArrayDaoFactoryStub.getVocabularyDao());
             }
         });
         final ArrayDesignServiceBean bean = new ArrayDesignServiceBean() {
@@ -623,10 +627,10 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
         assertEquals("Agilent.com", design.getLsidAuthority());
         assertEquals("PhysicalArrayDesign", design.getLsidNamespace());
         assertEquals("022522_D_F_20090107", design.getLsidObjectId());
-        assertEquals(180880, design.getNumberOfFeatures().intValue());
         
         arrayDesignService.importDesignDetails(design);
         
+        assertEquals(180880, design.getNumberOfFeatures().intValue());
         assertEquals(180880, design.getDesignDetails().getFeatures().size());
         assertEquals(177071, design.getDesignDetails().getProbes().size());
         assertEquals(0, design.getDesignDetails().getLogicalProbes().size());
@@ -1039,6 +1043,34 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
                 }
             };
         }
+        
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public VocabularyDao getVocabularyDao() {
+            return new VocabularyDaoStub() {
+                private final TermSource termSource = new TermSource();
+                private final List<TermSource> termSources = Collections.singletonList(termSource);
+                private final Term millimeterTerm = new Term();
+               
+                
+                /**
+                 * {@InheritDoc}
+                 */
+                @SuppressWarnings("unchecked")
+                public <T extends PersistentObject> List<T> queryEntityByExample(ExampleSearchCriteria<T> criteria,
+                        Order... orders) {
+                    return (List<T>) termSources;
+                }
 
+                public Term getTerm(TermSource source, String value) {
+                    if (termSource.equals(source) && value.equals("mm")) {
+                        return millimeterTerm;
+                    }
+                    return null;
+                }
+            };
+        }
     }    
 }

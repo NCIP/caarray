@@ -82,124 +82,156 @@
  */
 package gov.nih.nci.caarray.platforms.agilent;
 
+import gov.nih.nci.caarray.dao.VocabularyDao;
 import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
 import gov.nih.nci.caarray.domain.array.ExpressionProbeAnnotation;
 import gov.nih.nci.caarray.domain.array.Feature;
 import gov.nih.nci.caarray.domain.array.Gene;
 import gov.nih.nci.caarray.domain.array.PhysicalProbe;
 import gov.nih.nci.caarray.domain.array.ProbeGroup;
+import gov.nih.nci.caarray.domain.search.ExampleSearchCriteria;
+import gov.nih.nci.caarray.domain.vocabulary.Term;
+import gov.nih.nci.caarray.domain.vocabulary.TermSource;
+import gov.nih.nci.caarray.util.CaArrayUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.hibernate.criterion.Order;
+
 /**
  * {@inheritDoc}
  * @author jscott
  *
  */
-public class ArrayDesignDetailer implements ArrayDesignDetailerInterface {
+class ArrayDesignBuilderImpl implements ArrayDesignBuilder, ArrayDesignBuilder.PhysicalProbeBuilder,
+        ArrayDesignBuilder.FeatureBuilder, ArrayDesignBuilder.GeneBuilder {
+    
+    private final VocabularyDao vocabularyDao;
     private final ArrayDesignDetails arrayDesignDetails = new ArrayDesignDetails();
     private final Map<String, ProbeGroup> probeGroups = new HashMap<String, ProbeGroup>();;
     private final Map<String, PhysicalProbe> physicalProbes = new HashMap<String, PhysicalProbe>();
     private final List<Feature> features = new ArrayList<Feature>();
     private PhysicalProbe currentPhysicalProbe;
     private Feature currentFeature;
-    private ProbeGroup ignoreProbeGroup;
-    private ProbeGroup positiveControlProbeGroup;
-    private ProbeGroup negativeControlProbeGroup;
+    private Term millimeterTerm;
+
+    /**
+     * @param vocabularyDao a vocabulary DAO
+     */
+    ArrayDesignBuilderImpl(VocabularyDao vocabularyDao) {
+        this.vocabularyDao = vocabularyDao;
+        lookupMillimeterTerm();
+    }
+    
+    private TermSource getSource(String name, String version) {
+        final String versionField = "version";
+        
+        TermSource querySource = new TermSource();
+        querySource.setName(name);
+        querySource.setVersion(version);
+        return CaArrayUtils.uniqueResult(vocabularyDao.queryEntityByExample(
+                ExampleSearchCriteria.forEntity(querySource).includeNulls().excludeProperties("url"),
+                Order.desc(versionField)));
+    }
+
+    private void lookupMillimeterTerm() {
+        final String termSourceName = "MO";
+        final String termSourceVersion = "1.3.1.1";
+        final String millimeterString = "mm";
+       
+        TermSource source = getSource(termSourceName, termSourceVersion);
+        if (null == source) {
+            throw new AgilentParseException(String.format(
+                    "Could not find the \"%s\" term source, version %s", termSourceName, termSourceVersion)); 
+        }
+        
+        millimeterTerm = vocabularyDao.getTerm(source, millimeterString);        
+        if (null == millimeterTerm) {
+            throw new AgilentParseException(String.format(
+                    "Could not look up the term for \"%s\".", millimeterString)); 
+        }
+    }
 
     /**
      * {@inheritDoc}
      */
-    public void findOrCreateCurrentPhysicalProbe(String name) {
+    public PhysicalProbeBuilder findOrCreatePhysicalProbeBuilder(String name) {
         PhysicalProbe probe = getPhysicalProbes().get(name);
 
         if (null == probe) {
             probe = new PhysicalProbe(arrayDesignDetails, null);
-            //arrayDesignDetails.getProbes().add(probe);
 
             probe.setName(name);
             getPhysicalProbes().put(name, probe);
         }
 
         currentPhysicalProbe = probe;
+        return this;
     }
 
     /**
      * {@inheritDoc}
      */
-    public void createFeatureForCurrentPhysicalProbe(int featureNumber) {
+    public FeatureBuilder createFeatureBuilder(int featureNumber) {
         Feature feature = new Feature(arrayDesignDetails);
-        //arrayDesignDetails.getFeatures().add(feature);
         currentPhysicalProbe.addFeature(feature);
 
         feature.setFeatureNumber(featureNumber);
 
         features.add(feature);
         currentFeature = feature;
+        return this;
     }
 
     /**
      * {@inheritDoc}
      */
-    public void setCoordinatesOnCurrentFeature(double x, double y, String units) {
+    public FeatureBuilder setCoordinates(double x, double y, String units) {
         currentFeature.setXCoordinate(x);
         currentFeature.setYCoordinate(y);
-        currentFeature.setCoordinateUnits(units);
+        if ("mm".equalsIgnoreCase(units)) {
+            currentFeature.setCoordinateUnits(millimeterTerm);
+        } else {
+            throw new AgilentParseException(String.format("Unexpected units \"%s\"", units));
+        }
+        return this;
     }
 
     /**
      * {@inheritDoc}
      */
-    public void addCurrentPhysicalProbeToIgnoreProbeGroup() {
-        if (null == ignoreProbeGroup) {
-            ignoreProbeGroup = createProbeGroup("ignore");
-        }
-
+    public PhysicalProbeBuilder addToProbeGroup(String probeGroupName) {
+        ProbeGroup ignoreProbeGroup = getOrCreateProbeGroup(probeGroupName);
         addCurrentPhysicalProbeToProbeGroup(ignoreProbeGroup);
+        return this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public void addCurrentPhysicalProbeToPositiveControlProbeGroup() {
-        if (null == positiveControlProbeGroup) {
-            positiveControlProbeGroup = createProbeGroup("positive controls");
+    private ProbeGroup getOrCreateProbeGroup(String probeGroupName) {
+        ProbeGroup probeGroup = probeGroups.get(probeGroupName);
+        if (null == probeGroup) {
+            probeGroup = createProbeGroup(probeGroupName);
         }
-
-        addCurrentPhysicalProbeToProbeGroup(positiveControlProbeGroup);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-   public void addCurrentPhysicalProbeToNegativeControlProbeGroup() {
-        if (null == negativeControlProbeGroup) {
-            negativeControlProbeGroup = createProbeGroup("negative controls");
-        }
-
-        addCurrentPhysicalProbeToProbeGroup(negativeControlProbeGroup);
+        return probeGroup;
     }
 
     private ProbeGroup createProbeGroup(String name) {
         ProbeGroup probeGroup = new ProbeGroup(arrayDesignDetails);
-        //arrayDesignDetails.getProbeGroups().add(probeGroup);
         probeGroup.setName(name);
         probeGroups.put(name, probeGroup);
         return probeGroup;
     }
 
     private void addCurrentPhysicalProbeToProbeGroup(final ProbeGroup probeGroup) {
-        //probeGroup.getProbes().add(currentPhysicalProbe);
         currentPhysicalProbe.setProbeGroup(probeGroup);
     }
 
     /**
      * {@inheritDoc}
      */
-    public void createNewAnnotationOnCurrentPhysicalProbe(String geneName) {
+    public GeneBuilder createGeneBuilder(String geneName) {
         Gene gene = new Gene();
         gene.setFullName(geneName);
 
@@ -207,59 +239,64 @@ public class ArrayDesignDetailer implements ArrayDesignDetailerInterface {
         annotation.setGene(gene);
 
         currentPhysicalProbe.setAnnotation(annotation);
+        return this;
     }
 
     /**
      * {@inheritDoc}
      */
-   public void createNewGBAccessionOnCurrentGene(String accessionNumber) {
+   public GeneBuilder createNewGBAccession(String accessionNumber) {
         ExpressionProbeAnnotation annotation = (ExpressionProbeAnnotation) currentPhysicalProbe.getAnnotation();
         Gene gene = annotation.getGene();
         gene.setGenbankAccession(accessionNumber);
+        return this;
     }
 
    /**
     * {@inheritDoc}
     */
-   public void createNewEnsemblAccessionOnCurrentGene(String accessionNumber) {
+   public GeneBuilder createNewEnsemblAccession(String accessionNumber) {
         ExpressionProbeAnnotation annotation = (ExpressionProbeAnnotation) currentPhysicalProbe.getAnnotation();
         Gene gene = annotation.getGene();
         gene.setEnsemblgeneID(accessionNumber);
+        return this;
     }
 
    /**
     * {@inheritDoc}
     */
-   public void setChromosomeLocationForCurrentGene(String chromosomeName, long startPosition, long endPosition) {
+   public GeneBuilder setChromosomeLocation(String chromosomeName,
+           long startPosition, long endPosition) {
         ExpressionProbeAnnotation annotation = (ExpressionProbeAnnotation) currentPhysicalProbe.getAnnotation();
         annotation.setChromosome(chromosomeName, startPosition, endPosition);
+        return this;
     }
 
     /**
      * @return the array design details object constructed by this class.
      */
-    public ArrayDesignDetails getArrayDesignDetails() {
+    ArrayDesignDetails getArrayDesignDetails() {
         return arrayDesignDetails;
     }
 
     /**
      * @return the features
      */
-    public List<Feature> getFeatures() {
+    List<Feature> getFeatures() {
         return features;
     }
 
     /**
      * @return the physicalProbes
      */
-    public Map<String, PhysicalProbe> getPhysicalProbes() {
+    Map<String, PhysicalProbe> getPhysicalProbes() {
         return physicalProbes;
     }
 
     /**
      * @return the probeGroups
      */
-    public Map<String, ProbeGroup> getProbeGroups() {
+    Map<String, ProbeGroup> getProbeGroups() {
         return probeGroups;
     }
 }

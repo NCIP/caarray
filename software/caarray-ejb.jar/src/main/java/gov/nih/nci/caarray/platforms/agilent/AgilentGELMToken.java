@@ -86,18 +86,18 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @author jscott
  * A wrapper for an enumeration of the tokens in the grammar describing the Agilent GEML file format.
  * Provides static class fields for use by the wrapped enumeration.
+ * @author jscott
  */
 //Non-final static variables in the outer class are set by the inner enumeration.
 @SuppressWarnings("PMD.AssignmentToNonFinalStatic")
-public class AgilentGELMToken {
+class AgilentGELMToken {
     /**
      * @author jscott
      * Enumeration of the tokens in the grammar describing the Agilent GEML file format.
      */
-    public enum Token {
+    enum Token {
         /**
          * Start of the XML document.
          */

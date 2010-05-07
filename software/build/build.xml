@@ -1016,34 +1016,12 @@
         </path>
         <property name="stax2-api.jar" refid="stax2-api.jar.fileset" />
 
-        <path id="jmock.jar.path">
-            <fileset dir="${project.lib}" id="jmock.jar.fileset">
-                <include name="jmock-*.jar"/>
-                <exclude name="jmock-junit4-*.jar"/>
+        <path id="mockito.jar.path">
+            <fileset dir="${project.lib}" id="mockito.jar.fileset">
+                <include name="mockito-*.jar"/>
             </fileset>
         </path>
-        <property name="jmock.jar" refid="jmock.jar.fileset" />
-
-        <path id="jmock-junit4.jar.path">
-            <fileset dir="${project.lib}" id="jmock-junit4.jar.fileset">
-                <include name="jmock-junit4-*.jar"/>
-            </fileset>
-        </path>        
-        <property name="jmock-junit4.jar" refid="jmock-junit4.jar.fileset" />
-
-        <path id="hamcrest-core.jar.path">
-            <fileset dir="${project.lib}" id="hamcrest-core.jar.fileset">
-                <include name="hamcrest-core-*.jar"/>
-            </fileset>
-        </path>
-        <property name="hamcrest-core.jar" refid="hamcrest-core.jar.fileset" />
-
-        <path id="hamcrest-library.jar.path">
-            <fileset dir="${project.lib}" id="hamcrest-library.jar.fileset">
-                <include name="hamcrest-library-*.jar"/>
-            </fileset>
-        </path>
-        <property name="hamcrest-library.jar" refid="hamcrest-library.jar.fileset" />
+        <property name="mockito.jar" refid="mockito.jar.fileset" />
 
         <path id="jboss.dependencies.path">
             <fileset id="jboss.dependencies.fileset" dir="${project.lib}">
@@ -1069,14 +1047,14 @@
             <fileset refid="javacsv.jar.fileset"/>
             <fileset refid="mysql-connector-java.jar.fileset"/>
             <fileset refid="rmiio.jar.fileset"/>
-        	<fileset refid="xerces-J.jar.fileset"/>
-        	<fileset refid="xercesImpl.jar.fileset"/>
+            <fileset refid="xerces-J.jar.fileset"/>
+            <fileset refid="xercesImpl.jar.fileset"/>
             <fileset refid="commons-configuration.jar.fileset"/>
-        	<fileset refid="guice.jar.fileset"/>
-        	<fileset refid="guice-multibindings.jar.fileset"/>
-        	<fileset refid="guice-assistedinject.jar.fileset"/>
-        	<fileset refid="woodstox.jar.fileset"/>
-       	<fileset refid="stax2-api.jar.fileset"/>
+            <fileset refid="guice.jar.fileset"/>
+            <fileset refid="guice-multibindings.jar.fileset"/>
+            <fileset refid="guice-assistedinject.jar.fileset"/>
+            <fileset refid="woodstox.jar.fileset"/>
+            <fileset refid="stax2-api.jar.fileset"/>
             <fileset id="common.grid.dependencies.fileset" dir="${project.lib}">
                 <include name="${axis.jar}"/>
                 <include name="${caGrid-core.jar}"/>
@@ -1084,7 +1062,7 @@
                 <include name="${caGrid-sdkQuery32-core.jar}"/>
                 <include name="${caGrid-data-stubs.jar}"/>
                 <include name="${caGrid-cql.jar}"/>
-            	<include name="${ejb3-persistence.jar}"/>
+                <include name="${ejb3-persistence.jar}"/>
                 <include name="${hibernate.jar}"/>
                 <include name="${hibernate-annotations.jar}"/>
                 <include name="${nci-commons-core.jar}"/>
@@ -1105,7 +1083,7 @@
 
         <path id="external.api.dependencies.path">
             <fileset refid="dozer.jar.fileset"/>
-        	<fileset refid="rmiio.jar.fileset"/>
+            <fileset refid="rmiio.jar.fileset"/>
             <fileset refid="google-collections.jar.fileset"/>
         </path>
         <pathtofileset name="external.api.dependencies.fileset" pathrefid="external.api.dependencies.path" dir="${project.lib}"/>
@@ -1215,11 +1193,8 @@
                 <include name="${concurrent.jar}"/>
                 <include name="${jgroups.jar}"/>
                 <include name="${junit.jar}"/>
-                <include name="${jmock.jar}"/>
-                <include name="${jmock-junit4.jar}"/>
-                <include name="${hamcrest-core.jar}"/>
-                <include name="${hamcrest-library.jar}"/>
                 <include name="${ledatastream.jar}"/>
+                <include name="${mockito.jar}"/>
             </fileset>
         </path>
 

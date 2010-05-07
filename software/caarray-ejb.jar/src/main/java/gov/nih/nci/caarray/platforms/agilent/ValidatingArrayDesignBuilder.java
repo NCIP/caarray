@@ -86,75 +86,79 @@ package gov.nih.nci.caarray.platforms.agilent;
  * @author jscott
  * Used during the parsing of an array design definition file for the purposes of file validation.
  */
-public class ValidatingArrayDesignDetailer implements ArrayDesignDetailerInterface {
+class ValidatingArrayDesignBuilder implements ArrayDesignBuilder, ArrayDesignBuilder.PhysicalProbeBuilder,
+        ArrayDesignBuilder.FeatureBuilder, ArrayDesignBuilder.GeneBuilder {
     /**
      * {@inheritDoc}
      */
-    public void findOrCreateCurrentPhysicalProbe(String name) {
+    public PhysicalProbeBuilder findOrCreatePhysicalProbeBuilder(String name) {
         // Do nothing
+       return this;
     }
 
     /**
      * {@inheritDoc}
      */
-    public void createFeatureForCurrentPhysicalProbe(int featureNumber) {
+    public FeatureBuilder createFeatureBuilder(int featureNumber) {
         // Do nothing
+        return this;
     }
 
     /**
      * {@inheritDoc}
      */
-    public void setCoordinatesOnCurrentFeature(double x, double y, String units) {
+    public FeatureBuilder setCoordinates(double x, double y, String units) {
         // Do nothing
+        return this;
     }
 
     /**
      * {@inheritDoc}
      */
-    public void addCurrentPhysicalProbeToIgnoreProbeGroup() {
+    public PhysicalProbeBuilder addToProbeGroup(String probeGroupName) {
         // Do nothing
+        return this;
     }
 
     /**
      * {@inheritDoc}
      */
-    public void addCurrentPhysicalProbeToPositiveControlProbeGroup() {
+    ArrayDesignBuilder addCurrentPhysicalProbeToPositiveControlProbeGroup() {
         // Do nothing
+        return this;
     }
 
     /**
      * {@inheritDoc}
      */
-    public void addCurrentPhysicalProbeToNegativeControlProbeGroup() {
+    public GeneBuilder createNewGBAccession(String accessionNumber) {
         // Do nothing
+        return this;
     }
 
     /**
      * {@inheritDoc}
      */
-    public void createNewAnnotationOnCurrentPhysicalProbe(String geneName) {
-        // Do nothing
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void createNewGBAccessionOnCurrentGene(String accessionNumber) {
-        // Do nothing
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-   public void createNewEnsemblAccessionOnCurrentGene(String accessionNumber) {
+   public GeneBuilder createNewEnsemblAccession(String accessionNumber) {
        // Do nothing
+       return this;
     }
 
     /**
      * {@inheritDoc}
      */
-    public void setChromosomeLocationForCurrentGene(String chromosome, long startPosition, long endPosition) {
+    public GeneBuilder setChromosomeLocation(String chromosome,
+            long startPosition, long endPosition) {
         // Do nothing
+        return this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public GeneBuilder createGeneBuilder(String geneName) {
+        // Do nothing
+        return this;
     }
 }
 

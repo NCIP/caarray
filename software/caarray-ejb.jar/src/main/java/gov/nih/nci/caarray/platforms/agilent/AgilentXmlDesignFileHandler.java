@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.platforms.agilent;
 
 import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.dao.SearchDao;
+import gov.nih.nci.caarray.dao.VocabularyDao;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
 import gov.nih.nci.caarray.domain.array.Feature;
@@ -100,7 +101,6 @@ import gov.nih.nci.caarray.validation.ValidationMessage;
 import gov.nih.nci.caarray.validation.ValidationResult;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
@@ -116,16 +116,19 @@ import com.google.inject.Inject;
  * @author jscott
  *
  */
-public class AgilentXmlDesignFileHandler extends AbstractDesignFileHandler {
+class AgilentXmlDesignFileHandler extends AbstractDesignFileHandler {
     static final String LSID_AUTHORITY = "Agilent.com";
     static final String LSID_NAMESPACE = "PhysicalArrayDesign";
  
+    private final VocabularyDao vocabularyDao;
     private CaArrayFile designFile;
     private File fileOnDisk;
     private ArrayDesignDetails arrayDesignDetails;
     private Collection<Feature> features;
     private Collection<PhysicalProbe> probes;
     private Collection<ProbeGroup> probeGroups;
+    private Reader inputReader = null;
+    private AgilentGELMTokenizer tokenizer = null;
     
     /**
      * @param sessionTransactionManager the SessionTransactionManager to use
@@ -135,81 +138,9 @@ public class AgilentXmlDesignFileHandler extends AbstractDesignFileHandler {
      */
     @Inject
     protected AgilentXmlDesignFileHandler(SessionTransactionManager sessionTransactionManager, FileManager fileManager,
-            ArrayDao arrayDao, SearchDao searchDao) {
+            ArrayDao arrayDao, SearchDao searchDao, VocabularyDao vocabularyDao) {
         super(sessionTransactionManager, fileManager, arrayDao, searchDao);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void closeFiles() {
-        getFileManager().closeFile(this.designFile);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void createDesignDetails(ArrayDesign arrayDesign) throws PlatformFileReadException {
-        load(arrayDesign);
-        
-        arrayDesign.setDesignDetails(this.arrayDesignDetails);
-        getArrayDao().save(arrayDesign);
-        getSessionTransactionManager().flushSession();
-        
-        saveEntities(probeGroups);
-        saveEntities(features);
-        saveEntities(probes);
-    }
-
-    private void saveEntities(final Collection<? extends PersistentObject> persistentObjects) {
-        for (PersistentObject persistentObject : persistentObjects) {
-            getArrayDao().save(persistentObject);
-        }       
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void load(ArrayDesign arrayDesign) throws PlatformFileReadException {
-        Reader inputReader = null;
-        boolean parseResult;
-        
-        arrayDesign.setName(FilenameUtils.getBaseName(this.designFile.getName()));
-        arrayDesign.setLsidForEntity(LSID_AUTHORITY + ":" + LSID_NAMESPACE + ":" + arrayDesign.getName());
-        try {
-            inputReader = new FileReader(this.fileOnDisk);
-            AgilentGELMTokenizer tokenizer = new AgilentGELMTokenizer(inputReader);
-            AgilentGELMParser parser = new AgilentGELMParser(tokenizer);
-
-            ArrayDesignDetailer detailer = new ArrayDesignDetailer();
-            parseResult = parser.parse(detailer);
-            
-            this.arrayDesignDetails = detailer.getArrayDesignDetails();
-            this.features = detailer.getFeatures();
-            this.probes = detailer.getPhysicalProbes().values();
-            this.probeGroups = detailer.getProbeGroups().values();           
-        } catch (Exception e) {
-            throw new PlatformFileReadException(this.fileOnDisk, "Could not parse file " + designFile.getName(), e);
-        } finally {
-            closeReader(inputReader);
-        }
-        
-        if (!parseResult) {
-            throw new PlatformFileReadException(this.fileOnDisk, "Could not load file " + designFile.getName());
-        }
-        
-        arrayDesign.setNumberOfFeatures(features.size());
-    }
-
-    private void closeReader(Reader inputReader) throws PlatformFileReadException {
-        try {
-            if (null != inputReader) {
-                inputReader.close();
-            }
-        } catch (IOException e) {
-            throw new PlatformFileReadException(this.fileOnDisk,
-                    "Could not close file " + designFile.getName(), e);
-        }
+        this.vocabularyDao = vocabularyDao;
     }
 
     /**
@@ -228,10 +159,131 @@ public class AgilentXmlDesignFileHandler extends AbstractDesignFileHandler {
               
         try {
             this.fileOnDisk = getFileManager().openFile(designFile);
-            return true;
+            inputReader = new FileReader(this.fileOnDisk);
+            tokenizer = new AgilentGELMTokenizer(inputReader);
+            
+           return true;
         } catch (Exception e) {
+            closeFiles();
+
             throw new PlatformFileReadException(this.fileOnDisk,
                         "Could not open reader for file " + designFile.getName(), e);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void validate(ValidationResult result) throws PlatformFileReadException {
+        try {
+            FileValidationResult fileResult = result.getOrCreateFileValidationResult(this.fileOnDisk);
+            designFile.setValidationResult(fileResult);
+            
+            AgilentGELMParser parser = new AgilentGELMParser(tokenizer);
+            
+            if (!parser.validate()) {
+                fileResult.addMessage(ValidationMessage.Type.ERROR, "Validation failed.");
+            }
+        } catch (Exception e) {
+            throw new PlatformFileReadException(this.fileOnDisk,
+                        "Unexpected error while validating " + designFile.getName(), e);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void load(ArrayDesign arrayDesign) throws PlatformFileReadException {
+        try {
+            arrayDesign.setName(FilenameUtils.getBaseName(this.designFile.getName()));
+            arrayDesign.setLsidForEntity(
+                    String.format("%s:%s:%s", LSID_AUTHORITY, LSID_NAMESPACE, arrayDesign.getName()));
+            getArrayDao().save(arrayDesign);
+        } catch (Exception e) {
+            throw new PlatformFileReadException(this.fileOnDisk,
+                        "Unexpected error while loading " + designFile.getName(), e);
+        }
+    }
+    
+   /**
+     * {@inheritDoc}
+     */
+    public void createDesignDetails(ArrayDesign arrayDesign) throws PlatformFileReadException {
+        parseArrayDesign(arrayDesign);
+        
+        try {
+            arrayDesign.setNumberOfFeatures(features.size());       
+            arrayDesign.setDesignDetails(this.arrayDesignDetails);
+            getArrayDao().save(arrayDesign);
+            getSessionTransactionManager().flushSession();
+            
+            saveEntities(probeGroups);
+            saveEntities(features);
+            saveEntities(probes);
+        } catch (Exception e) {
+            throw new PlatformFileReadException(this.fileOnDisk,
+                        "Unexpected error while validating " + designFile.getName(), e);
+        }
+    }
+    
+    private void parseArrayDesign(ArrayDesign arrayDesign) throws PlatformFileReadException {
+        boolean parseResult;
+        
+        try {
+            AgilentGELMParser parser = new AgilentGELMParser(tokenizer);
+
+            ArrayDesignBuilderImpl builder = new ArrayDesignBuilderImpl(vocabularyDao);
+            parseResult = parser.parse(builder);
+            
+            this.arrayDesignDetails = builder.getArrayDesignDetails();
+            this.features = builder.getFeatures();
+            this.probes = builder.getPhysicalProbes().values();
+            this.probeGroups = builder.getProbeGroups().values();           
+        } catch (Exception e) {
+            throw new PlatformFileReadException(this.fileOnDisk, "Could not parse file " + designFile.getName(), e);
+        }
+        
+        if (!parseResult) {
+            throw new PlatformFileReadException(this.fileOnDisk, "Could not load file " + designFile.getName());
+        }
+    }
+
+    private void saveEntities(final Collection<? extends PersistentObject> persistentObjects) {
+        for (PersistentObject persistentObject : persistentObjects) {
+            getArrayDao().save(persistentObject);
+        }       
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void closeFiles() {
+        try {
+            closeTokenizer();
+            closeReader();
+            getFileManager().closeFile(this.designFile);
+       } catch (PlatformFileReadException e) {
+            // Closing anyway, ignore the exception and move on
+           return;
+        }
+    }
+
+    private void closeReader() throws PlatformFileReadException {
+        try {
+            if (null != inputReader) {
+                inputReader.close();
+                inputReader = null;
+            }
+        } catch (IOException e) {
+            throw new PlatformFileReadException(this.fileOnDisk,
+                    "Could not close file " + designFile.getName(), e);
+        }
+    }
+
+    private void closeTokenizer() throws PlatformFileReadException {
+        if (null != tokenizer) {
+            tokenizer.close();
+            tokenizer = null;
         }
     }
 
@@ -241,28 +293,4 @@ public class AgilentXmlDesignFileHandler extends AbstractDesignFileHandler {
     public boolean parsesData() {
          return true;
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void validate(ValidationResult result) throws PlatformFileReadException {
-        Reader inputReader = null;
-        try {
-            FileValidationResult fileResult = result.getOrCreateFileValidationResult(this.fileOnDisk);
-            designFile.setValidationResult(fileResult);
-            
-            inputReader = new FileReader(this.fileOnDisk);
-            AgilentGELMTokenizer tokenizer = new AgilentGELMTokenizer(inputReader);
-            AgilentGELMParser parser = new AgilentGELMParser(tokenizer);
-            
-            if (!parser.validate()) {
-                fileResult.addMessage(ValidationMessage.Type.ERROR, "Validation failed.");
-            }
-        } catch (FileNotFoundException e) {
-             throw new PlatformFileReadException(this.fileOnDisk, "Could not find file.", e);
-        } finally {
-            closeReader(inputReader);
-        }
-    }
-
 }

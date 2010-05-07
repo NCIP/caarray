@@ -80,97 +80,110 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.application.arraydesign.agilient;
+package gov.nih.nci.caarray.platforms.agilent;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyObject;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.refEq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import gov.nih.nci.caarray.dao.VocabularyDao;
 import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
 import gov.nih.nci.caarray.domain.array.ExpressionProbeAnnotation;
 import gov.nih.nci.caarray.domain.array.Feature;
 import gov.nih.nci.caarray.domain.array.Gene;
 import gov.nih.nci.caarray.domain.array.PhysicalProbe;
 import gov.nih.nci.caarray.domain.array.ProbeGroup;
-import gov.nih.nci.caarray.platforms.agilent.ArrayDesignDetailer;
+import gov.nih.nci.caarray.domain.search.ExampleSearchCriteria;
+import gov.nih.nci.caarray.domain.vocabulary.Term;
+import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 
-import org.junit.Assert;
+import java.util.Collections;
+import java.util.List;
+
+import org.hibernate.criterion.Order;
 import org.junit.Before;
 import org.junit.Test;
 
-public class ArrayDesignDetailerTest {
-    private ArrayDesignDetailer arrayDesignDetailer;
+public class ArrayDesignBuilderTest {
+    private ArrayDesignBuilderImpl arrayDesignBuilder;
     private ArrayDesignDetails arrayDesignDetails;
+    private static final Term EXPECTED_MILLIMETER_TERM = new Term();
 
     @Test
     public void createsNewPhysicalProbe() {
         final String probeName = "probe1";
-        arrayDesignDetailer.findOrCreateCurrentPhysicalProbe(probeName);
+        arrayDesignBuilder.findOrCreatePhysicalProbeBuilder(probeName);
 
-        PhysicalProbe physicalProbe = arrayDesignDetailer.getPhysicalProbes().values().iterator().next();
-        Assert.assertSame(arrayDesignDetails, physicalProbe.getArrayDesignDetails());
-        Assert.assertEquals(probeName, physicalProbe.getName());
+        PhysicalProbe physicalProbe = arrayDesignBuilder.getPhysicalProbes().values().iterator().next();
+        assertSame(arrayDesignDetails, physicalProbe.getArrayDesignDetails());
+        assertEquals(probeName, physicalProbe.getName());
      }
 
     @Test
     public void findsExistingPhysicalProbe() {
         final String probe1Name = "probe1";
-        arrayDesignDetailer.findOrCreateCurrentPhysicalProbe(probe1Name);
+        arrayDesignBuilder.findOrCreatePhysicalProbeBuilder(probe1Name);
 
         final String probe2Name = "probe2";
-        arrayDesignDetailer.findOrCreateCurrentPhysicalProbe(probe2Name);
+        arrayDesignBuilder.findOrCreatePhysicalProbeBuilder(probe2Name);
 
-        Assert.assertEquals(2, arrayDesignDetailer.getPhysicalProbes().values().size());
+        assertEquals(2, arrayDesignBuilder.getPhysicalProbes().values().size());
 
-        arrayDesignDetailer.findOrCreateCurrentPhysicalProbe(probe1Name);
+        arrayDesignBuilder.findOrCreatePhysicalProbeBuilder(probe1Name);
 
-        Assert.assertEquals(2, arrayDesignDetailer.getPhysicalProbes().values().size());        
+        assertEquals(2, arrayDesignBuilder.getPhysicalProbes().values().size());        
      }
 
     @Test
     public void putsProbeInIgnoreProbeGroup() {
         final String probeGroupName = "ignore";
-        final String probe1Name = "probe1";
-        arrayDesignDetailer.findOrCreateCurrentPhysicalProbe(probe1Name);
-        arrayDesignDetailer.addCurrentPhysicalProbeToIgnoreProbeGroup();
-        
-        assertProbeGroup(probeGroupName);
+        putsProbeInProbeGroup(probeGroupName);
      }
 
     @Test
     public void putsProbeInPositiveControlProbeGroup() {
         final String probeGroupName = "positive controls";
-        final String probe1Name = "probe1";
-        arrayDesignDetailer.findOrCreateCurrentPhysicalProbe(probe1Name);
-        arrayDesignDetailer.addCurrentPhysicalProbeToPositiveControlProbeGroup();
-        
-        assertProbeGroup(probeGroupName);
+        putsProbeInProbeGroup(probeGroupName);
      }
 
     @Test
     public void putsProbeInNegativeControlProbeGroup() {
         final String probeGroupName = "negative controls";
-        final String probe1Name = "probe1";
-        arrayDesignDetailer.findOrCreateCurrentPhysicalProbe(probe1Name);
-        arrayDesignDetailer.addCurrentPhysicalProbeToNegativeControlProbeGroup();
+        putsProbeInProbeGroup(probeGroupName);
+     }
+
+    private void putsProbeInProbeGroup(final String probeGroupName) {
+        final String probeName = "probe";
+        arrayDesignBuilder.findOrCreatePhysicalProbeBuilder(probeName);
+        arrayDesignBuilder.addToProbeGroup(probeGroupName);
         
         assertProbeGroup(probeGroupName);
-     }
+    }
 
     @Test
     public void createsAnnotationOnCurrentPhysicalProbe() {
         final String probe1Name = "probe1";
         final String geneName = "gene1";
 
-        arrayDesignDetailer.findOrCreateCurrentPhysicalProbe(probe1Name);
-        PhysicalProbe probe = arrayDesignDetailer.getPhysicalProbes().values().iterator().next();
-        Assert.assertNull(probe.getAnnotation());
+        arrayDesignBuilder.findOrCreatePhysicalProbeBuilder(probe1Name);
+        PhysicalProbe probe = arrayDesignBuilder.getPhysicalProbes().values().iterator().next();
+        assertNull(probe.getAnnotation());
 
-        arrayDesignDetailer.createNewAnnotationOnCurrentPhysicalProbe(geneName);
+        arrayDesignBuilder.createGeneBuilder(geneName);
 
         ExpressionProbeAnnotation annotation = (ExpressionProbeAnnotation) probe.getAnnotation();
-        Assert.assertNotNull(annotation);
+        assertNotNull(annotation);
 
         Gene gene = annotation.getGene();
-        Assert.assertNotNull(gene);
+        assertNotNull(gene);
 
-        Assert.assertEquals(geneName, gene.getFullName());
+        assertEquals(geneName, gene.getFullName());
     }
 
     @Test
@@ -179,15 +192,15 @@ public class ArrayDesignDetailerTest {
         final String geneName = "gene1";
         final String accession = "accession1";
 
-        arrayDesignDetailer.findOrCreateCurrentPhysicalProbe(probe1Name);
-        PhysicalProbe probe = arrayDesignDetailer.getPhysicalProbes().values().iterator().next();
+        arrayDesignBuilder.findOrCreatePhysicalProbeBuilder(probe1Name);
+        PhysicalProbe probe = arrayDesignBuilder.getPhysicalProbes().values().iterator().next();
 
-        arrayDesignDetailer.createNewAnnotationOnCurrentPhysicalProbe(geneName);
+        arrayDesignBuilder.createGeneBuilder(geneName);
         ExpressionProbeAnnotation annotation = (ExpressionProbeAnnotation) probe.getAnnotation();
         Gene gene = annotation.getGene();
 
-        arrayDesignDetailer.createNewGBAccessionOnCurrentGene(accession);
-        Assert.assertEquals(accession, gene.getGenbankAccession());
+        arrayDesignBuilder.createNewGBAccession(accession);
+        assertEquals(accession, gene.getGenbankAccession());
     }
 
     @Test
@@ -196,15 +209,15 @@ public class ArrayDesignDetailerTest {
         final String geneName = "gene1";
         final String accession = "accession1";
 
-        arrayDesignDetailer.findOrCreateCurrentPhysicalProbe(probe1Name);
-        PhysicalProbe probe = arrayDesignDetailer.getPhysicalProbes().values().iterator().next();
+        arrayDesignBuilder.findOrCreatePhysicalProbeBuilder(probe1Name);
+        PhysicalProbe probe = arrayDesignBuilder.getPhysicalProbes().values().iterator().next();
 
-        arrayDesignDetailer.createNewAnnotationOnCurrentPhysicalProbe(geneName);
+        arrayDesignBuilder.createGeneBuilder(geneName);
         ExpressionProbeAnnotation annotation = (ExpressionProbeAnnotation) probe.getAnnotation();
         Gene gene = annotation.getGene();
 
-        arrayDesignDetailer.createNewEnsemblAccessionOnCurrentGene(accession);
-        Assert.assertEquals(accession, gene.getEnsemblgeneID());
+        arrayDesignBuilder.createNewEnsemblAccession(accession);
+        assertEquals(accession, gene.getEnsemblgeneID());
     }
 
     @Test
@@ -215,16 +228,16 @@ public class ArrayDesignDetailerTest {
         final Long chromosomeStart = 111111111l;
         final Long chromosomeEnd = 999999999l;
 
-        arrayDesignDetailer.findOrCreateCurrentPhysicalProbe(probe1Name);
-        PhysicalProbe probe = arrayDesignDetailer.getPhysicalProbes().values().iterator().next();
+        arrayDesignBuilder.findOrCreatePhysicalProbeBuilder(probe1Name);
+        PhysicalProbe probe = arrayDesignBuilder.getPhysicalProbes().values().iterator().next();
 
-        arrayDesignDetailer.createNewAnnotationOnCurrentPhysicalProbe(geneName);
+        arrayDesignBuilder.createGeneBuilder(geneName);
         ExpressionProbeAnnotation annotation = (ExpressionProbeAnnotation) probe.getAnnotation();
 
-        arrayDesignDetailer.setChromosomeLocationForCurrentGene(chromosomeName, chromosomeStart, chromosomeEnd);
-        Assert.assertEquals(chromosomeName, annotation.getChromosomeName());
-        Assert.assertEquals(chromosomeStart, annotation.getChromsomeStartPosition());
-        Assert.assertEquals(chromosomeEnd, annotation.getChromosomeEndPosition());
+        arrayDesignBuilder.setChromosomeLocation(chromosomeName, chromosomeStart, chromosomeEnd);
+        assertEquals(chromosomeName, annotation.getChromosomeName());
+        assertEquals(chromosomeStart, annotation.getChromosomeStartPosition());
+        assertEquals(chromosomeEnd, annotation.getChromosomeEndPosition());
     }
 
     @Test
@@ -232,17 +245,17 @@ public class ArrayDesignDetailerTest {
         final String probe1Name = "probe1";
         final Integer featureNumber = 987654321;
 
-        arrayDesignDetailer.findOrCreateCurrentPhysicalProbe(probe1Name);
-        PhysicalProbe probe = arrayDesignDetailer.getPhysicalProbes().values().iterator().next();
+        arrayDesignBuilder.findOrCreatePhysicalProbeBuilder(probe1Name);
+        PhysicalProbe probe = arrayDesignBuilder.getPhysicalProbes().values().iterator().next();
 
-        arrayDesignDetailer.createFeatureForCurrentPhysicalProbe(featureNumber);
+        arrayDesignBuilder.createFeatureBuilder(featureNumber);
 
-        Assert.assertEquals(1, arrayDesignDetailer.getFeatures().size());
-        Assert.assertEquals(1, probe.getFeatures().size());
+        assertEquals(1, arrayDesignBuilder.getFeatures().size());
+        assertEquals(1, probe.getFeatures().size());
 
-        Feature feature = arrayDesignDetailer.getFeatures().iterator().next();
-        Assert.assertSame(arrayDesignDetails, feature.getArrayDesignDetails());
-        Assert.assertEquals(featureNumber, feature.getFeatureNumber());
+        Feature feature = arrayDesignBuilder.getFeatures().iterator().next();
+        assertSame(arrayDesignDetails, feature.getArrayDesignDetails());
+        assertEquals(featureNumber, feature.getFeatureNumber());
     }
 
     @Test
@@ -253,34 +266,42 @@ public class ArrayDesignDetailerTest {
         final double y = 0.999999999;
         final String units = "mm";
 
-        arrayDesignDetailer.findOrCreateCurrentPhysicalProbe(probe1Name);
-        PhysicalProbe probe = arrayDesignDetailer.getPhysicalProbes().values().iterator().next();
+        arrayDesignBuilder.findOrCreatePhysicalProbeBuilder(probe1Name);
+        PhysicalProbe probe = arrayDesignBuilder.getPhysicalProbes().values().iterator().next();
 
-        arrayDesignDetailer.createFeatureForCurrentPhysicalProbe(featureNumber);
+        arrayDesignBuilder.createFeatureBuilder(featureNumber);
         Feature feature = probe.getFeatures().iterator().next();
 
-        arrayDesignDetailer.setCoordinatesOnCurrentFeature(x, y, units);
+        arrayDesignBuilder.setCoordinates(x, y, units);
 
-        Assert.assertEquals(x, feature.getXCoordinate(), 0);
-        Assert.assertEquals(y, feature.getYCoordinate(), 0);
-        Assert.assertEquals(units, feature.getCoordinateUnits());
+        assertEquals(x, feature.getXCoordinate(), 0);
+        assertEquals(y, feature.getYCoordinate(), 0);
+        assertSame(EXPECTED_MILLIMETER_TERM, feature.getCoordinateUnits());
     }
 
     private void assertProbeGroup(String probeGroupName) {
 
-        Assert.assertEquals(1, arrayDesignDetailer.getProbeGroups().values().size());
+        assertEquals(1, arrayDesignBuilder.getProbeGroups().values().size());
 
-        ProbeGroup probeGroup = arrayDesignDetailer.getProbeGroups().values().iterator().next();
-        Assert.assertSame(arrayDesignDetails, probeGroup.getArrayDesignDetails());
-        Assert.assertEquals(probeGroupName, probeGroup.getName());
+        ProbeGroup probeGroup = arrayDesignBuilder.getProbeGroups().values().iterator().next();
+        assertSame(arrayDesignDetails, probeGroup.getArrayDesignDetails());
+        assertEquals(probeGroupName, probeGroup.getName());
 
-        PhysicalProbe probe = arrayDesignDetailer.getPhysicalProbes().values().iterator().next();
-        Assert.assertSame(probeGroup, probe.getProbeGroup());
+        PhysicalProbe probe = arrayDesignBuilder.getPhysicalProbes().values().iterator().next();
+        assertSame(probeGroup, probe.getProbeGroup());
     }
 
+    @SuppressWarnings("unchecked")
     @Before
     public void setUp() throws Exception {
-        arrayDesignDetailer = new ArrayDesignDetailer();
-        arrayDesignDetails = arrayDesignDetailer.getArrayDesignDetails();
+        final TermSource termSource = new TermSource();
+        List<TermSource> termSources = Collections.singletonList(termSource);
+        
+        VocabularyDao vocabularyDaoMock = mock(VocabularyDao.class);
+        when(vocabularyDaoMock.queryEntityByExample((ExampleSearchCriteria<TermSource>)anyObject(), any(Order.class))).thenReturn(termSources);
+        when(vocabularyDaoMock.getTerm(refEq(termSource), eq("mm"))).thenReturn(EXPECTED_MILLIMETER_TERM);
+        
+        arrayDesignBuilder = new ArrayDesignBuilderImpl(vocabularyDaoMock);
+        arrayDesignDetails = arrayDesignBuilder.getArrayDesignDetails();
     }
 }

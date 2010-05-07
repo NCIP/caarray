@@ -86,21 +86,21 @@ package gov.nih.nci.caarray.platforms.agilent;
  * @author jscott
  * Indicates an unexpected exception arose during the parsing of an Aligent file.
  */
-public class AgilentParseException extends RuntimeException {
+class AgilentParseException extends RuntimeException {
     private static final long serialVersionUID = 1L;
 
     /**
      * @param message description of the exception
      * @param cause underlying cause of the exception
      */
-    public AgilentParseException(String message, Throwable cause) {
+    AgilentParseException(String message, Throwable cause) {
         super(message, cause);
     }
 
     /**
      * @param message description of the exception
      */
-   public AgilentParseException(String message) {
+   AgilentParseException(String message) {
         super(message);
     }
 }

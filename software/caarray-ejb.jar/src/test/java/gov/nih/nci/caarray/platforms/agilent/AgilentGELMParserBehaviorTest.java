@@ -80,25 +80,25 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.application.arraydesign.agilient;
+package gov.nih.nci.caarray.platforms.agilent;
 
-import gov.nih.nci.caarray.platforms.agilent.AgilentGELMParser;
-import gov.nih.nci.caarray.platforms.agilent.ArrayDesignDetailerInterface;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.anyDouble;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyLong;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import gov.nih.nci.caarray.platforms.agilent.AgilentGELMToken.Token;
 
-import org.jmock.Expectations;
-import org.jmock.Mockery;
-import org.jmock.integration.junit4.JMock;
-import org.jmock.integration.junit4.JUnit4Mockery;
-import org.junit.Assert;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
-@RunWith(JMock.class)
 public class AgilentGELMParserBehaviorTest {
-    Mockery context = new JUnit4Mockery();
     private TokenizerStub tokenizer = new TokenizerStub();
     private AgilentGELMParser parser = new AgilentGELMParser(tokenizer);
+    private AbstractBuilder builder = createMockBuilder();
 
     @Test
     public void reporterCreatesPhysicalProbe() {
@@ -124,21 +124,14 @@ public class AgilentGELMParserBehaviorTest {
         repeat(4, Token.END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
+        
+        assertTrue(parser.parse(builder));
 
-        final ArrayDesignDetailerInterface arrayDesignDetails = context.mock(ArrayDesignDetailerInterface.class);
-
-        context.checking(new Expectations() {
-            {
-                one(arrayDesignDetails).findOrCreateCurrentPhysicalProbe(reporterName);
-                one(arrayDesignDetails).createFeatureForCurrentPhysicalProbe(featureNumber);
-                one(arrayDesignDetails).setCoordinatesOnCurrentFeature(0.00000000000000001, 0.00000000000000001, "mm");
-                one(arrayDesignDetails).createNewAnnotationOnCurrentPhysicalProbe(geneName);
-            }
-        });
-
-        Assert.assertTrue(parser.parse(arrayDesignDetails));
+        verify(builder).findOrCreatePhysicalProbeBuilder(reporterName);
+        verify(builder).createFeatureBuilder(featureNumber);
+        verify(builder).setCoordinates(0.00000000000000001, 0.00000000000000001, "mm");
+        verify(builder).createGeneBuilder(geneName);
     }
-
 
     @Test
     public void createsAccessions() {
@@ -172,20 +165,14 @@ public class AgilentGELMParserBehaviorTest {
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
-        final ArrayDesignDetailerInterface arrayDesignDetails = context.mock(ArrayDesignDetailerInterface.class);
+        assertTrue(parser.parse(builder));
 
-        context.checking(new Expectations() {
-            {
-                one(arrayDesignDetails).findOrCreateCurrentPhysicalProbe(reporterName);
-                one(arrayDesignDetails).createFeatureForCurrentPhysicalProbe(featureNumber);
-                one(arrayDesignDetails).setCoordinatesOnCurrentFeature(0.00000000000000001, 0.00000000000000001, "mm");
-                one(arrayDesignDetails).createNewAnnotationOnCurrentPhysicalProbe(geneName);
-                one(arrayDesignDetails).createNewGBAccessionOnCurrentGene("genbank accession");
-                one(arrayDesignDetails).createNewEnsemblAccessionOnCurrentGene("ensembl accession");
-            }
-        });
-
-        Assert.assertTrue(parser.parse(arrayDesignDetails));
+        verify(builder).findOrCreatePhysicalProbeBuilder(reporterName);
+        verify(builder).createFeatureBuilder(featureNumber);
+        verify(builder).setCoordinates(0.00000000000000001, 0.00000000000000001, "mm");
+        verify(builder).createGeneBuilder(geneName);
+        verify(builder).createNewGBAccession("genbank accession");
+        verify(builder).createNewEnsemblAccession("ensembl accession");
     }
 
 
@@ -221,21 +208,15 @@ public class AgilentGELMParserBehaviorTest {
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
-        final ArrayDesignDetailerInterface arrayDesignDetails = context.mock(ArrayDesignDetailerInterface.class);
+        assertTrue(parser.parse(builder));
 
-        context.checking(new Expectations() {
-            {
-                one(arrayDesignDetails).findOrCreateCurrentPhysicalProbe(reporterName);
-                one(arrayDesignDetails).createFeatureForCurrentPhysicalProbe(featureNumber);
-                one(arrayDesignDetails).setCoordinatesOnCurrentFeature(0.00000000000000001, 0.00000000000000001, "mm");
-                one(arrayDesignDetails).createNewAnnotationOnCurrentPhysicalProbe(geneName);
-                one(arrayDesignDetails).createNewGBAccessionOnCurrentGene("genbank accession");
-                one(arrayDesignDetails).setChromosomeLocationForCurrentGene("2",111111111,999999999);
-            }
-        });
-
-        Assert.assertTrue(parser.parse(arrayDesignDetails));
-    }
+        verify(builder).findOrCreatePhysicalProbeBuilder(reporterName);
+        verify(builder).createFeatureBuilder(featureNumber);
+        verify(builder).setCoordinates(0.00000000000000001, 0.00000000000000001, "mm");
+        verify(builder).createGeneBuilder(geneName);
+        verify(builder).createNewGBAccession("genbank accession");
+        verify(builder).setChromosomeLocation("2",111111111,999999999);
+   }
 
     @Test
     public void probeWithEmptyNameAndNoControlTypeIsRejected() {
@@ -290,9 +271,8 @@ public class AgilentGELMParserBehaviorTest {
         final int featureNumber = 123;
 
         setupTokenStream(reporterName, controlType, featureNumber);
-
-        ArrayDesignDetailerInterface arrayDesignDetails = setExpectations(reporterName, controlType, featureNumber);
-        Assert.assertTrue(parser.parse(arrayDesignDetails));
+        assertTrue(parser.parse(builder));
+        verifyCalls(reporterName, controlType, featureNumber, builder);
     }
 
     @Test
@@ -302,9 +282,8 @@ public class AgilentGELMParserBehaviorTest {
         final int featureNumber = 123;
 
         setupTokenStream(reporterName, controlType, featureNumber);
-
-        ArrayDesignDetailerInterface arrayDesignDetails = setExpectations(reporterName, controlType, featureNumber);
-        Assert.assertTrue(parser.parse(arrayDesignDetails));
+        assertTrue(parser.parse(builder));
+        verifyCalls(reporterName, controlType, featureNumber, builder);
     }
 
     @Test
@@ -325,9 +304,8 @@ public class AgilentGELMParserBehaviorTest {
         final int featureNumber = 123;
 
         setupTokenStream(reporterName, controlType, featureNumber);
-
-        ArrayDesignDetailerInterface arrayDesignDetails = setExpectations(reporterName, controlType, featureNumber);
-        Assert.assertTrue(parser.parse(arrayDesignDetails));
+        assertTrue(parser.parse(builder));
+        verifyCalls(reporterName, controlType, featureNumber, builder);
     }
 
     @Test
@@ -337,32 +315,28 @@ public class AgilentGELMParserBehaviorTest {
         final int featureNumber = 123;
 
         setupTokenStream(reporterName, controlType, featureNumber);
-
-        ArrayDesignDetailerInterface arrayDesignDetails = setExpectations(reporterName, controlType, featureNumber);
-        Assert.assertTrue(parser.parse(arrayDesignDetails));
+        assertTrue(parser.parse(builder));
+        verifyCalls(reporterName, controlType, featureNumber, builder);
     }
 
-    private ArrayDesignDetailerInterface setExpectations(final String reporterName, final String controlType, final int featureNumber) {
-        final ArrayDesignDetailerInterface arrayDesignDetails = context.mock(ArrayDesignDetailerInterface.class);
+    private void verifyCalls(final String reporterName, final String controlType, final int featureNumber,
+            final AbstractBuilder arrayDesignBuilder) {
+        final String negativeControlsControlGroup = "negative controls";
+        final String positiveControlsControlGroup = "positive controls";
+        final String ignoreControlGroup = "ignore";
+        
+        verify(arrayDesignBuilder).findOrCreatePhysicalProbeBuilder(reporterName);
+        verify(arrayDesignBuilder).createFeatureBuilder(featureNumber);
 
-        context.checking(new Expectations() {
-            {
-                one(arrayDesignDetails).findOrCreateCurrentPhysicalProbe(reporterName);
-                one(arrayDesignDetails).createFeatureForCurrentPhysicalProbe(featureNumber);
+        if ("ignore".equalsIgnoreCase(controlType)) {
+            verify(arrayDesignBuilder).addToProbeGroup(ignoreControlGroup);
+        } else if ("pos".equalsIgnoreCase(controlType)) {
+            verify(arrayDesignBuilder).addToProbeGroup(positiveControlsControlGroup);
+        } else if ("neg".equalsIgnoreCase(controlType)) {
+            verify(arrayDesignBuilder).addToProbeGroup(negativeControlsControlGroup);
+        }
 
-                if ("ignore".equalsIgnoreCase(controlType)) {
-                    one(arrayDesignDetails).addCurrentPhysicalProbeToIgnoreProbeGroup();
-                } else if ("pos".equalsIgnoreCase(controlType)) {
-                    one(arrayDesignDetails).addCurrentPhysicalProbeToPositiveControlProbeGroup();
-                } else if ("neg".equalsIgnoreCase(controlType)) {
-                    one(arrayDesignDetails).addCurrentPhysicalProbeToNegativeControlProbeGroup();
-                }
-
-                one(arrayDesignDetails).setCoordinatesOnCurrentFeature(0.00000000000000001, 0.00000000000000001, "mm");
-            }
-        });
-
-        return arrayDesignDetails;
+        verify(arrayDesignBuilder).setCoordinates(0.00000000000000001, 0.00000000000000001, "mm");
     }
 
     private void setupTokenStream(String reporterName, String controlType, int featureNumber) {
@@ -385,7 +359,7 @@ public class AgilentGELMParserBehaviorTest {
     }
 
     private void assertParserRejects() {
-        Assert.assertFalse(parser.validate());
+        assertFalse(parser.validate());
     }
 
     private void add(Token token) {
@@ -398,5 +372,24 @@ public class AgilentGELMParserBehaviorTest {
 
     private void repeat(int count, Token token) {
         tokenizer.repeat(count, token);
+    }
+    
+    private abstract class AbstractBuilder implements ArrayDesignBuilder, ArrayDesignBuilder.PhysicalProbeBuilder,
+            ArrayDesignBuilder.FeatureBuilder, ArrayDesignBuilder.GeneBuilder {        
+    }
+
+    private AbstractBuilder createMockBuilder() {
+        AbstractBuilder newBuilder = mock(AbstractBuilder.class);
+        
+        when(newBuilder.createFeatureBuilder(anyInt())).thenReturn(newBuilder);
+        when(newBuilder.setCoordinates(anyDouble(), anyDouble(), anyString())).thenReturn(newBuilder);
+        when(newBuilder.createGeneBuilder(anyString())).thenReturn(newBuilder);
+        when(newBuilder.createNewEnsemblAccession(anyString())).thenReturn(newBuilder);
+        when(newBuilder.createNewGBAccession(anyString())).thenReturn(newBuilder);
+        when(newBuilder.setChromosomeLocation(anyString(), anyLong(), anyLong())).thenReturn(newBuilder);
+        when(newBuilder.addToProbeGroup(anyString())).thenReturn(newBuilder);
+        when(newBuilder.findOrCreatePhysicalProbeBuilder(anyString())).thenReturn(newBuilder);
+        
+        return newBuilder;
     }
 }
