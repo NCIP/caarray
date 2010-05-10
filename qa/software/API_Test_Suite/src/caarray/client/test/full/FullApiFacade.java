@@ -290,7 +290,7 @@ public class FullApiFacade implements ApiFacade
         return getFacade(api).getFileContents(api, fileReferences, compressed);
     }
 
-    public Integer getFileContentsZip(String api,
+    public Long getFileContentsZip(String api,
             List<CaArrayEntityReference> fileReferences, boolean compressed)
             throws Exception
     {

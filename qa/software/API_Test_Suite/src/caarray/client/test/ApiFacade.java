@@ -132,7 +132,7 @@ public interface ApiFacade
     
     public Integer getFileContents(String api, List<CaArrayEntityReference> fileReferences, boolean compressed) throws Exception;
     
-    public Integer getFileContentsZip(String api, List<CaArrayEntityReference> fileReferences, boolean compressed) throws Exception;
+    public Long getFileContentsZip(String api, List<CaArrayEntityReference> fileReferences, boolean compressed) throws Exception;
     
     public Integer copyFileContentsUtils(String api, List<CaArrayEntityReference> fileReferences, boolean compressed) throws Exception;
     

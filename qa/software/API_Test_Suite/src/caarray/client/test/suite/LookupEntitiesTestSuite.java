@@ -290,7 +290,9 @@ public class LookupEntitiesTestSuite extends ConfigurableTestSuite
     {
         for (ConfigurableTest test : configuredTests)
         {
+            log.debug("Executing test: " + test.getTestCase());
             TestResult result = test.runTest();
+            log.debug("Test " + test.getTestCase() + " complete.");
             resultReport.addTestResult(result);
         }
         System.out.println("LookupEntities tests complete ...");
@@ -382,6 +384,15 @@ public class LookupEntitiesTestSuite extends ConfigurableTestSuite
         {
             return api;
         }
+
+
+        /* (non-Javadoc)
+         * @see caarray.client.test.suite.ConfigurableTest#getTestCase()
+         */
+        public float getTestCase()
+        {
+            return testCase;
+        }
         
     }
     
@@ -456,6 +467,15 @@ public class LookupEntitiesTestSuite extends ConfigurableTestSuite
         public String getApi()
         {
             return api;
+        }
+
+
+        /* (non-Javadoc)
+         * @see caarray.client.test.suite.ConfigurableTest#getTestCase()
+         */
+        public float getTestCase()
+        {
+            return testCase;
         }
         
     }
@@ -572,6 +592,14 @@ public class LookupEntitiesTestSuite extends ConfigurableTestSuite
             }
             
             return testResult;
+        }
+
+        /* (non-Javadoc)
+         * @see caarray.client.test.suite.ConfigurableTest#getTestCase()
+         */
+        public float getTestCase()
+        {
+            return testCase;
         }
         
         

@@ -445,16 +445,17 @@ public class JavaApiFacade implements ApiFacade
         return total;    
     }
 
-    public Integer getFileContentsZip(String api,
+    public Long getFileContentsZip(String api,
             List<CaArrayEntityReference> fileReferences, boolean compressed)
             throws Exception
     {
         /*FileDownloadRequest request = new FileDownloadRequest();
-        request.setFiles(fileReferences);
-        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-        dataApiUtils.copyFileContentsZipToOutputStream(request, compressed, outStream);
-        return outStream.toByteArray();*/
-        return copyFileContentsZipUtils(api, fileReferences, compressed);
+        request.setFiles(fileReferences);*/
+        //ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+        /*CountingOutputStream outStream = new CountingOutputStream(new NullOutputStream());
+        dataApiUtils.copyFileContentsZipToOutputStream(fileReferences, outStream);
+        return outStream.getByteCount();*/
+        return new Long(copyFileContentsZipUtils(api, fileReferences, compressed));
     }
 
     public Integer copyFileContentsUtils(String api,

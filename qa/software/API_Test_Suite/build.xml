@@ -78,7 +78,7 @@
 			</classpath>
 		</javac>
 		<copy todir="${classes.dir}">
-			<fileset dir="${basedir}" includes="*.properties"/>
+			<fileset dir="${basedir}" includes="**/*.properties"/>
 		</copy>
 	</target>
 

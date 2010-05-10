@@ -109,8 +109,12 @@ public class TestResultReport {
 	private Set<TestResult> results = new TreeSet<TestResult>(new TestResultComparator());
 	private List<String> errorMessages = new ArrayList<String>();
 	
-	
-	private static final String[] COLUMN_HEADERS = new String[]{"Test Case", "Thread", "Test Status", "Elapsed Time","Details"};
+	public static final String TEST_CASE = "Test Case";
+	public static final String THREAD = "Thread";
+	public static final String STATUS = "Test Status";
+	public static final String TIME = "Elapsed Time";
+	public static final String DETAILS = "Details";
+	public static final String[] COLUMN_HEADERS = new String[]{TEST_CASE,THREAD,STATUS,TIME,DETAILS};
 	private static final String DELIMITER = ",";
 	
 	public TestResultReport()

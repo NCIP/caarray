@@ -98,13 +98,13 @@ public class TestProperties {
 	public static final String SERVER_HOSTNAME_KEY = "server.hostname";
     public static final String SERVER_JNDI_PORT_KEY = "server.jndi.port";
     
-    public static final String SERVER_HOSTNAME_DEFAULT = "array-stage.nci.nih.gov";
+    public static final String SERVER_HOSTNAME_DEFAULT = "array-qa.nci.nih.gov";
     public static final String SERVER_JNDI_PORT_DEFAULT = "8080";
     
 	public static final String GRID_SERVER_HOSTNAME_KEY = "grid.server.hostname";
     public static final String GRID_SERVER_PORT_KEY = "grid.server.http.port";
     
-    public static final String GRID_SERVER_HOSTNAME_DEFAULT = "array-stage.nci.nih.gov";
+    public static final String GRID_SERVER_HOSTNAME_DEFAULT = "array-qa.nci.nih.gov";
     public static final String GRID_SERVER_PORT_DEFAULT = "80";
     
     public static final String REPORT_DIR_KEY = "report.dir";
@@ -180,6 +180,11 @@ public class TestProperties {
     public static String getReportDir()
     {
     	return System.getProperty(REPORT_DIR_KEY,DEFAULT_REPORT_DIR);
+    }
+    
+    public static void setReportDir(String dir)
+    {
+        System.setProperty(REPORT_DIR_KEY, dir);
     }
     
     public static String getReportFile()

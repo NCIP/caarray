@@ -467,11 +467,14 @@ public class GridApiFacade implements ApiFacade
         return total;      
     }
     
-    public Integer getFileContentsZip(String api,
+    public Long getFileContentsZip(String api,
             List<CaArrayEntityReference> fileReferences, boolean compressed)
             throws Exception
     {
-        return copyFileContentsUtils(api, fileReferences, compressed);
+        /*CountingOutputStream ostream = new CountingOutputStream(new NullOutputStream());
+        dataApiUtils.copyFileContentsZipToOutputStream(fileReferences, ostream);
+        return ostream.getByteCount();*/
+        return new Long(copyFileContentsUtils(api, fileReferences, compressed));
     }
     
     public Integer copyFileContentsUtils(String api,
@@ -485,6 +488,7 @@ public class GridApiFacade implements ApiFacade
         for (int i = 0; i < fileReferences.size(); i++)
         {
           ByteArrayOutputStream stream = new ByteArrayOutputStream();  
+            
           dataApiUtils.copyFileContentsToOutputStream(fileReferences.get(i), compressed, stream);
           total += stream.size();
         }

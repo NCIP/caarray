@@ -133,16 +133,17 @@ public abstract class SearchByCriteriaTestSuite extends ConfigurableTestSuite
                 if (search.getApi() == null)
                 {
                     setTestResultFailure(testResult, search,
-                            "No API indicated for ArrayDataType test case: "
+                            "No API indicated for test case: "
                                     + search.getTestCase());
                     resultReport.addTestResult(testResult);
                     continue;
                 }
 
+                log.debug("Executing test: " + search.getTestCase());
                 long startTime = System.currentTimeMillis();
                 Object resultsList = executeSearch(search, testResult);
                 long elapsedTime = System.currentTimeMillis() - startTime;
-
+                log.debug("Test " + search.getTestCase() + " completed in: " + elapsedTime);
                 testResult.setElapsedTime(elapsedTime);
                 if (search.getTestCase() != null)
                     testResult.setTestCase(search.getTestCase());

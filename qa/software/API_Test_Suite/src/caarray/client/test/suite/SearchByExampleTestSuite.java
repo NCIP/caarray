@@ -159,18 +159,18 @@ public abstract class SearchByExampleTestSuite extends ConfigurableTestSuite
             else
             {
                 boolean skip = false;
-                if (search == null)
-                    throw new TestConfigurationException(
-                            "No test case indicated for row: " + index);
-                if (!excludeTests.isEmpty() && (excludeTests.contains(search.getTestCase()) || excludeTests.contains((float)Math.floor(search.getTestCase()))))
-                    skip = true;
-                if (!includeTests.isEmpty() && (!includeTests.contains(search.getTestCase())&& !includeTests.contains((float)Math.floor(search.getTestCase()))))
-                    skip = true;
-                if (!skip)
+                if (search != null)
                 {
-                    populateAdditionalSearchValues(input, search);
+                    if (!excludeTests.isEmpty() && (excludeTests.contains(search.getTestCase()) || excludeTests.contains((float)Math.floor(search.getTestCase()))))
+                        skip = true;
+                    if (!includeTests.isEmpty() && (!includeTests.contains(search.getTestCase())&& !includeTests.contains((float)Math.floor(search.getTestCase()))))
+                        skip = true;
+                    if (!skip)
+                    {
+                        populateAdditionalSearchValues(input, search);
+                    } 
                 }
-                
+                                  
             }
     
             if (search != null)
@@ -214,6 +214,7 @@ public abstract class SearchByExampleTestSuite extends ConfigurableTestSuite
                 }
                 criteria.setExcludeZeroes(search.isExcludeZeros());
                 List<AbstractCaArrayEntity> resultsList = new ArrayList<AbstractCaArrayEntity>();
+                log.debug("Executing test: " + search.getTestCase());
                 long startTime = System.currentTimeMillis();
                 try
                 {
@@ -275,7 +276,7 @@ public abstract class SearchByExampleTestSuite extends ConfigurableTestSuite
                     log.error("Exception encountered:",t);
                 }
                 long elapsedTime = System.currentTimeMillis() - startTime;
-
+                log.debug("Test " + search.getTestCase() + " completed.");
                 testResult.setElapsedTime(elapsedTime);
                 if (search.getTestCase() != null)
                     testResult.setTestCase(search.getTestCase());

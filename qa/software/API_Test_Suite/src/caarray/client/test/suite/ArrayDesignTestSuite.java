@@ -83,6 +83,7 @@
 package caarray.client.test.suite;
 
 import gov.nih.nci.caarray.external.v1_0.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
 import gov.nih.nci.caarray.external.v1_0.array.ArrayDesign;
 import gov.nih.nci.caarray.external.v1_0.array.ArrayProvider;
 import gov.nih.nci.caarray.external.v1_0.array.AssayType;
@@ -150,9 +151,26 @@ public class ArrayDesignTestSuite extends SearchByExampleTestSuite
         
         if (headerIndexMap.get(PROVIDER) < input.length && !input[headerIndexMap.get(PROVIDER)].equals(""))
         {
-            ArrayProvider provider = new ArrayProvider();
+            /*ArrayProvider provider = new ArrayProvider();
             provider.setName(input[headerIndexMap.get(PROVIDER)]);
-            example.setArrayProvider(provider);
+            example.setArrayProvider(provider);*/
+            ArrayProvider provider = null;
+            try
+            {
+                provider = apiFacade.getArrayProvider(search.getApi(), input[headerIndexMap.get(PROVIDER)]);   
+            }
+            catch (Exception e)
+            {
+                log.error("Error retrieving ArrayProvider for ArrayDesign search", e);
+                provider = new ArrayProvider();
+                provider.setName(input[headerIndexMap.get(PROVIDER)]);
+            }
+            
+            if (provider != null)
+            {
+                example.setArrayProvider(provider);
+            }
+            
         }
         if (headerIndexMap.get(ASSAY_TYPE) < input.length && !input[headerIndexMap.get(ASSAY_TYPE)].equals(""))
         {

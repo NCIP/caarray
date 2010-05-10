@@ -87,7 +87,9 @@ import gov.nih.nci.caarray.external.v1_0.data.ArrayDataType;
 import gov.nih.nci.caarray.external.v1_0.data.QuantitationType;
 
 import java.io.File;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import caarray.client.test.ApiFacade;
 import caarray.client.test.TestProperties;
@@ -198,15 +200,20 @@ public class ArrayDataTypeTestSuite extends SearchByExampleTestSuite
         if (testResult.isPassed() && adtSearch.getExpectedQuantitations() != null)
         {
 
+            Set<QuantitationType> qtypeSet = new HashSet<QuantitationType>();
+            int namedQuantitations = 0;
             for (ArrayDataType arrayDataType : adtResults)
             {
-                int namedQuantitations = 0;
+                
                 for (QuantitationType qType : arrayDataType
                         .getQuantitationTypes())
                 {
                     if (qType.getName() != null)
-                        namedQuantitations++;
+                        qtypeSet.add(qType);
+                        //namedQuantitations++;
                 }
+            }
+                namedQuantitations = qtypeSet.size();
                 if (namedQuantitations != adtSearch.getExpectedQuantitations())
                 {
                     testResult.setPassed(false);
@@ -221,7 +228,7 @@ public class ArrayDataTypeTestSuite extends SearchByExampleTestSuite
                             + namedQuantitations;
                     testResult.addDetail(detail);
                 }
-            }
+            
         }
     }
 
