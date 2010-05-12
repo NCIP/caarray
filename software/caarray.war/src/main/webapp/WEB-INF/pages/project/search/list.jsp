@@ -26,8 +26,14 @@
             </c:forEach>
         </display:column>
         <display:column titleKey="search.result.pi">
-            <c:url var="maitoUrl" value="mailto:${row.experiment.mainPointOfContact.contact.email}?subject=${row.experiment.title}"/>
-            <a href="${caarrayfn:encodeUrl(maitoUrl)}" class="email">${row.experiment.mainPointOfContact.contact.lastName}<img src="<c:url value="/images/ico_sendmail.gif"/>" alt="" style="padding-left:5px" /></a>
+            <c:choose>
+                <c:when test="${row.experiment.mainPointOfContact.contact.email != null}">
+                    <a href="mailto:${caarrayfn:encodeUrl(row.experiment.mainPointOfContact.contact.email)}?subject=${caarrayfn:encodeUrl(row.experiment.title)}" class="email">${row.experiment.mainPointOfContact.contact.lastName}<img src="<c:url value="/images/ico_sendmail.gif"/>" alt="" style="padding-left:5px" /></a>
+                </c:when>
+                <c:otherwise>
+                    ${row.experiment.mainPointOfContact.contact.lastName}
+                </c:otherwise>
+            </c:choose>
         </display:column>
         <display:column property="experiment.organism.scientificName" sortProperty="ORGANISM" titleKey="search.result.organism" sortable="true"/>
         <display:column titleKey="search.result.diseaseState">
