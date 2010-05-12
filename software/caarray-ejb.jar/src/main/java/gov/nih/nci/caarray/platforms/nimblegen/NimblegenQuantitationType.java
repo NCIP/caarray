@@ -96,7 +96,7 @@ public enum NimblegenQuantitationType implements QuantitationTypeDescriptor {
     /**
      * MATCH_INDEX.
      */
-    MATCH_INDEX(DataType.FLOAT),
+    MATCH_INDEX(DataType.INTEGER),
 
     /**
      * Perfect Match.
