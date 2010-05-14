@@ -238,7 +238,7 @@ public class Feature extends AbstractDesignElement {
      */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "feature_coordinate_units")
-    //@ForeignKey(name = "feature_coordinate_units_fk")
+    @ForeignKey(name = "feature_coordinate_units_fk")
     public Term getCoordinateUnits() {
         return coordinateUnits;
     }

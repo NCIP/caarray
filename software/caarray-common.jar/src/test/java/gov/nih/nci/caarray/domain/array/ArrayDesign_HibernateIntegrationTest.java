@@ -83,6 +83,8 @@
 package gov.nih.nci.caarray.domain.array;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static org.hamcrest.CoreMatchers.is;
 
 import java.util.TreeSet;
 
@@ -176,13 +178,8 @@ public class ArrayDesign_HibernateIntegrationTest extends AbstractCaArrayEntity_
         designDetails.getProbes().add(physicalProbe);
         ExpressionProbeAnnotation annotation = new ExpressionProbeAnnotation();
         Gene gene = new Gene();
-        gene.setEnsemblgeneID(getUniqueStringValue());
-        gene.setFullName(getUniqueStringValue());
-        gene.setSymbol(getUniqueStringValue());
-        gene.setEntrezgeneID(getUniqueStringValue());
-        gene.setGenbankAccession(getUniqueStringValue());
-        gene.setGenbankAccessionVersion(getUniqueStringValue());
-        gene.setUnigeneclusterID(getUniqueStringValue());
+        gene.addAccessionNumber(getUniqueStringValue(), getUniqueStringValue());
+        gene.addAccessionNumber(getUniqueStringValue(), getUniqueStringValue());
         annotation.setGene(gene);
         physicalProbe.setAnnotation(annotation);
     }
@@ -219,11 +216,8 @@ public class ArrayDesign_HibernateIntegrationTest extends AbstractCaArrayEntity_
                 (ExpressionProbeAnnotation) retrievedDetails.getProbes().iterator().next().getAnnotation();
             assertEquals(originalAnnotation.getGene().getFullName(), retrievedAnnotation.getGene().getFullName());
             assertEquals(originalAnnotation.getGene().getSymbol(), retrievedAnnotation.getGene().getSymbol());
-            assertEquals(originalAnnotation.getGene().getEnsemblgeneID(), retrievedAnnotation.getGene().getEnsemblgeneID());
-            assertEquals(originalAnnotation.getGene().getEntrezgeneID(), retrievedAnnotation.getGene().getEntrezgeneID());
-            assertEquals(originalAnnotation.getGene().getGenbankAccession(), retrievedAnnotation.getGene().getGenbankAccession());
-            assertEquals(originalAnnotation.getGene().getGenbankAccessionVersion(), retrievedAnnotation.getGene().getGenbankAccessionVersion());
-            assertEquals(originalAnnotation.getGene().getUnigeneclusterID(), retrievedAnnotation.getGene().getUnigeneclusterID());
+            assertThat(retrievedAnnotation.getGene().getAccessionNumbers(getUniqueStringValue()),
+                    is(originalAnnotation.getGene().getAccessionNumbers(getUniqueStringValue())));
         }
     }
 

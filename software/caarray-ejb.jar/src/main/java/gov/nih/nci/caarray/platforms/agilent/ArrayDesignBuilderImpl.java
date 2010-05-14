@@ -248,7 +248,7 @@ class ArrayDesignBuilderImpl implements ArrayDesignBuilder, ArrayDesignBuilder.P
    public GeneBuilder createNewGBAccession(String accessionNumber) {
         ExpressionProbeAnnotation annotation = (ExpressionProbeAnnotation) currentPhysicalProbe.getAnnotation();
         Gene gene = annotation.getGene();
-        gene.setGenbankAccession(accessionNumber);
+        gene.addAccessionNumber(Gene.GENBANK, accessionNumber);
         return this;
     }
 
@@ -258,7 +258,7 @@ class ArrayDesignBuilderImpl implements ArrayDesignBuilder, ArrayDesignBuilder.P
    public GeneBuilder createNewEnsemblAccession(String accessionNumber) {
         ExpressionProbeAnnotation annotation = (ExpressionProbeAnnotation) currentPhysicalProbe.getAnnotation();
         Gene gene = annotation.getGene();
-        gene.setEnsemblgeneID(accessionNumber);
+        gene.addAccessionNumber(Gene.ENSEMBLE, accessionNumber);
         return this;
     }
 

@@ -200,7 +200,7 @@ public class ArrayDesignBuilderTest {
         Gene gene = annotation.getGene();
 
         arrayDesignBuilder.createNewGBAccession(accession);
-        assertEquals(accession, gene.getGenbankAccession());
+        assertEquals(accession, gene.getAccessionNumbers(Gene.GENBANK).get(0));
     }
 
     @Test
@@ -217,7 +217,7 @@ public class ArrayDesignBuilderTest {
         Gene gene = annotation.getGene();
 
         arrayDesignBuilder.createNewEnsemblAccession(accession);
-        assertEquals(accession, gene.getEnsemblgeneID());
+        assertEquals(accession, gene.getAccessionNumbers(Gene.ENSEMBLE).get(0));
     }
 
     @Test

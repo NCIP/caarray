@@ -9,6 +9,7 @@ import gov.nih.nci.caarray.dao.stub.ArrayDaoStub;
 import gov.nih.nci.caarray.dao.stub.SearchDaoStub;
 import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
 import gov.nih.nci.caarray.domain.array.ExpressionProbeAnnotation;
+import gov.nih.nci.caarray.domain.array.Gene;
 import gov.nih.nci.caarray.domain.array.PhysicalProbe;
 import gov.nih.nci.caarray.util.HibernateUtil;
 
@@ -61,9 +62,9 @@ public class ProbeHandlerTest extends AbstractServiceTest {
             ExpressionProbeAnnotation ann = (ExpressionProbeAnnotation) p.getAnnotation();
             assertEquals("b", ann.getGene().getSymbol());
             assertEquals("c", ann.getGene().getFullName());
-            assertEquals("d", ann.getGene().getGenbankAccession());
-            assertEquals("e", ann.getGene().getEntrezgeneID());
-            assertEquals("f", ann.getGene().getUnigeneclusterID());
+            assertEquals("d", ann.getGene().getAccessionNumbers(Gene.GENBANK).get(0));
+            assertEquals("e", ann.getGene().getAccessionNumbers(Gene.ENTREZ_GENE).get(0));
+            assertEquals("f", ann.getGene().getAccessionNumbers(Gene.UNIGENE).get(0));
 
         }
         assertTrue(instance.getCount() == 2);

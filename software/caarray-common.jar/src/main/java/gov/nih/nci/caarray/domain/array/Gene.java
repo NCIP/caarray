@@ -84,7 +84,16 @@ package gov.nih.nci.caarray.domain.array;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.validator.Length;
@@ -101,11 +110,27 @@ public class Gene extends AbstractCaArrayEntity {
 
     private String fullName;
     private String symbol;
-    private String genbankAccession;
-    private String genbankAccessionVersion;
-    private String ensemblgeneID;
-    private String unigeneclusterID;
-    private String entrezgeneID;
+    private Set<Accession> accessions = new HashSet<Accession>();
+
+    /**
+     * Name of the UniGene database.
+     */
+    public static final String UNIGENE = "UniGene";
+
+    /**
+     * Name of the GenBank database.
+     */
+    public static final String GENBANK = "GenBank";
+
+    /**
+     * Name of the Entrez Gene database.
+     */
+    public static final String ENTREZ_GENE = "Entrez Gene";
+
+    /**
+     * Name of the Ensemble database.
+     */
+    public static final String ENSEMBLE = "Ensemble";
 
     /**
      * @return the symbol
@@ -137,73 +162,47 @@ public class Gene extends AbstractCaArrayEntity {
     }
 
     /**
-     * @return the ensemblgeneID
+     * @return the accessions
      */
-    public String getEnsemblgeneID() {
-        return ensemblgeneID;
+    @org.hibernate.annotations.CollectionOfElements
+    @JoinTable(name = "accession", joinColumns = @JoinColumn(name = "gene_id"))
+    @Column(updatable = false)
+    private Set<Accession> getAccessions() {
+        return accessions;
     }
 
     /**
-     * @param ensemblgeneID the ensemblgeneID to set
+     * @param accessions the accessions to set
      */
-    public void setEnsemblgeneID(String ensemblgeneID) {
-        this.ensemblgeneID = ensemblgeneID;
+    @SuppressWarnings("unused")
+    private void setAccessions(Set<Accession> accessions) {
+        this.accessions = accessions;
     }
-
+    
     /**
-     * @return the entrezgeneID
+     * Add an accession to this gene.
+     * @param databaseName the name of the public database.
+     * @param accessionNumber the accession number to add.
      */
-    public String getEntrezgeneID() {
-        return entrezgeneID;
+    public void addAccessionNumber(String databaseName, String accessionNumber) {
+        accessions.add(new Accession(databaseName, accessionNumber));
     }
-
+    
     /**
-     * @param entrezgeneID the entrezgeneID to set
+     * Get all the accessions associated with this gene in the given public database.
+     * @param databaseName the name of the public database.
+     * @return a list of accessions.
      */
-    public void setEntrezgeneID(String entrezgeneID) {
-        this.entrezgeneID = entrezgeneID;
+    @Transient
+    public List<String> getAccessionNumbers(String databaseName) {
+        List<String> accessionList = new ArrayList<String>();
+        
+        for (Accession accession : getAccessions()) {
+            if (accession.getDatabaseName().equals(databaseName)) {
+                accessionList.add(accession.getAccessionNumber());
+            }
+        }
+               
+        return accessionList;     
     }
-
-    /**
-     * @return the genbankAccession
-     */
-    public String getGenbankAccession() {
-        return genbankAccession;
-    }
-
-    /**
-     * @param genbankAccession the genbankAccession to set
-     */
-    public void setGenbankAccession(String genbankAccession) {
-        this.genbankAccession = genbankAccession;
-    }
-
-    /**
-     * @return the genbankAccessionVersion
-     */
-    public String getGenbankAccessionVersion() {
-        return genbankAccessionVersion;
-    }
-
-    /**
-     * @param genbankAccessionVersion the genbankAccessionVersion to set
-     */
-    public void setGenbankAccessionVersion(String genbankAccessionVersion) {
-        this.genbankAccessionVersion = genbankAccessionVersion;
-    }
-
-    /**
-     * @return the unigeneclusterID
-     */
-    public String getUnigeneclusterID() {
-        return unigeneclusterID;
-    }
-
-    /**
-     * @param unigeneclusterID the unigeneclusterID to set
-     */
-    public void setUnigeneclusterID(String unigeneclusterID) {
-        this.unigeneclusterID = unigeneclusterID;
-    }
-
 }
