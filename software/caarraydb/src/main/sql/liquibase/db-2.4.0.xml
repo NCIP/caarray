@@ -49,4 +49,9 @@
       <comment>GF 27274 - Parse Agilent GEML/xml array designs for aCGH assays.</comment>
       <sqlFile path="db-upgrade/mysql/2.4.0/27274.sql"/>
    </changeSet>
+   
+   <changeSet id="28412" author="dkokotov">
+      <comment>GF 28412 - Fix existing Nimblegen files.</comment>
+      <sqlFile path="db-upgrade/mysql/2.4.0/28412.sql"/>
+   </changeSet>   
 </databaseChangeLog>

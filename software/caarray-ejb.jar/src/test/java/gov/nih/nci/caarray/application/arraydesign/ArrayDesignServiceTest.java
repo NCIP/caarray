@@ -585,34 +585,34 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
 
     @Test
     public void testImportDesign_NimblegenTestExpression() throws Exception {
-        CaArrayFile designFile = getNimblegenCaArrayFile(NimblegenArrayDesignFiles.EXPRESSION_DESIGN);
+        CaArrayFile designFile = getNimblegenCaArrayFile(NimblegenArrayDesignFiles.SHORT_EXPRESSION_DESIGN);
         ArrayDesign design = new ArrayDesign();
         design.addDesignFile(designFile);
         arrayDesignService.importDesign(design);
         arrayDesignService.importDesignDetails(design);
-        assertEquals("2006-08-03_HG18_60mer_expr", design.getName());
+        assertEquals("2006-08-03_HG18_60mer_expr-short", design.getName());
         assertEquals("nimblegen.com", design.getLsidAuthority());
         assertEquals("PhysicalArrayDesign", design.getLsidNamespace());
-        assertEquals("2006-08-03_HG18_60mer_expr", design.getLsidObjectId());
+        assertEquals("2006-08-03_HG18_60mer_expr-short", design.getLsidObjectId());
         assertEquals(FileStatus.IMPORTED, design.getDesignFileSet().getStatus());
-        assertEquals(391973, design.getDesignDetails().getProbes().size());
-        assertEquals(47686, design.getDesignDetails().getLogicalProbes().size());
+        assertEquals(99, design.getDesignDetails().getProbes().size());
+        assertEquals(98, design.getDesignDetails().getLogicalProbes().size());
     }
 
     @Test
     public void testImportDesign_NimblegenTestCGH() throws Exception {
-        CaArrayFile designFile = getNimblegenCaArrayFile(NimblegenArrayDesignFiles.CGH_DESIGN);
+        CaArrayFile designFile = getNimblegenCaArrayFile(NimblegenArrayDesignFiles.SHORT_CGH_DESIGN);
         ArrayDesign design = new ArrayDesign();
         design.addDesignFile(designFile);
         arrayDesignService.importDesign(design);
         arrayDesignService.importDesignDetails(design);
-        assertEquals("090210_HG18_WG_CGH_v3.1_HX3", design.getName());
+        assertEquals("090210_HG18_WG_CGH_v3.1_HX3-short", design.getName());
         assertEquals("nimblegen.com", design.getLsidAuthority());
         assertEquals("PhysicalArrayDesign", design.getLsidNamespace());
-        assertEquals("090210_HG18_WG_CGH_v3.1_HX3", design.getLsidObjectId());
+        assertEquals("090210_HG18_WG_CGH_v3.1_HX3-short", design.getLsidObjectId());
         assertEquals(FileStatus.IMPORTED, design.getDesignFileSet().getStatus());
-        assertEquals(732623, design.getDesignDetails().getProbes().size());
-        assertEquals(70, design.getDesignDetails().getLogicalProbes().size());
+        assertEquals(4999, design.getDesignDetails().getProbes().size());
+        assertEquals(41, design.getDesignDetails().getLogicalProbes().size());
     }
 
     @Test

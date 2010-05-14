@@ -98,6 +98,8 @@ import gov.nih.nci.caarray.validation.InvalidDataFileException;
 import gov.nih.nci.caarray.validation.ValidationResult;
 import gov.nih.nci.caarray.validation.ValidationMessage.Type;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -400,5 +402,17 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
             getArrayDao().deleteArrayDesignDetails(arrayDesign);
         }
         getArrayDao().remove(arrayDesign);
+        Set<?> foo = null;
+        foo = new HashSet<String>();
+        List<Set<String>> strings = new ArrayList<Set<String>>();
+        strings.add(new HashSet<String>());
+        doStuff(strings);
+    }
+    
+    private void doStuff(List<? extends Set<?>> stuff) {
+        for (Set<?> oneStuff : stuff) {
+            // do
+        }
+        // noop
     }
 }

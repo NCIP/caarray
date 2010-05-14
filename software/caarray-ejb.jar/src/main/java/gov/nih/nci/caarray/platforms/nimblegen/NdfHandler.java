@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.platforms.nimblegen;
 
+import gov.nih.nci.caarray.application.util.Utils;
 import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
@@ -89,6 +90,7 @@ import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
 import gov.nih.nci.caarray.domain.array.Feature;
 import gov.nih.nci.caarray.domain.array.LogicalProbe;
 import gov.nih.nci.caarray.domain.array.PhysicalProbe;
+import gov.nih.nci.caarray.domain.data.DataType;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.platforms.FileManager;
@@ -112,11 +114,13 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.SQLQuery;
 import org.hibernate.ScrollableResults;
 
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 
 /**
@@ -124,6 +128,7 @@ import com.google.inject.Inject;
  * 
  * @author Jim McCusker
  */
+@SuppressWarnings("PMD.TooManyMethods")
 class NdfHandler extends AbstractDesignFileHandler {
     private static final String LSID_AUTHORITY = "nimblegen.com";
     private static final String LSID_NAMESPACE = "PhysicalArrayDesign";
@@ -139,6 +144,15 @@ class NdfHandler extends AbstractDesignFileHandler {
     private static final String PROBE_ID = "PROBE_ID";
     private static final String CONTAINER2 = "CONTAINER";
     private static final String SEQ_ID = "SEQ_ID";
+
+    private static final Map<String, DataType> NDF_REQUIRED_COLUMNS = new HashMap<String, DataType>();
+    static {
+        NDF_REQUIRED_COLUMNS.put(CONTAINER2, DataType.STRING);
+        NDF_REQUIRED_COLUMNS.put(SEQ_ID, DataType.STRING);
+        NDF_REQUIRED_COLUMNS.put(PROBE_ID, DataType.STRING);
+        NDF_REQUIRED_COLUMNS.put(X, DataType.INTEGER);
+        NDF_REQUIRED_COLUMNS.put(Y, DataType.INTEGER);
+    }
 
     private CaArrayFile designFile;
     private File fileOnDisk;
@@ -274,7 +288,6 @@ class NdfHandler extends AbstractDesignFileHandler {
         String sequenceId = (String) values.get(SEQ_ID);
         String container = (String) values.get(CONTAINER2);
         String probeId = (String) values.get(PROBE_ID);
-        // ProbeGroup group = getProbeGroup(container, details);
         LogicalProbe lp = getLogicalProbe(sequenceId, details, logicalProbes);
         PhysicalProbe p = new PhysicalProbe(details, null);
         lp.addProbe(p);
@@ -287,21 +300,6 @@ class NdfHandler extends AbstractDesignFileHandler {
         p.getFeatures().add(f);
 
         return p;
-    }
-
-    static Map<String, Object> getValues(List<String> values, Map<String, Integer> header) {
-        Map<String, Object> result = new HashMap<String, Object>();
-        for (String column : ndfColumnMapping.keySet()) {
-            String value = values.get(header.get(column));
-            if (ndfColumnMapping.get(column) == Integer.class) {
-                result.put(column, NumberUtils.createInteger(value));
-            } else if (ndfColumnMapping.get(column) == Long.class) {
-                result.put(column, NumberUtils.createLong(value));
-            } else {
-                result.put(column, value);
-            }
-        }
-        return result;
     }
 
     /**
@@ -319,42 +317,79 @@ class NdfHandler extends AbstractDesignFileHandler {
         FileValidationResult fileResult = result.getOrCreateFileValidationResult(fileOnDisk);
         designFile.setValidationResult(fileResult);
         try {
+            reader.reset();
             if (!reader.hasNextLine()) {
                 fileResult.addMessage(ValidationMessage.Type.ERROR, "File was empty");
             }
             Map<String, Integer> headers = getHeaders();
             validateHeader(headers, fileResult);
+            if (fileResult.isValid()) {
+                validateValues(headers, fileResult);                
+            }
         } catch (IOException e) {
             throw new PlatformFileReadException(fileOnDisk, "Unable to read file", e);
         }
     }
 
     private void validateHeader(Map<String, Integer> headers, FileValidationResult result) throws IOException {
-        Set<String> missing = new HashSet<String>(ndfColumnMapping.keySet());
-        missing.removeAll(headers.keySet());
+        if (headers == null) {
+            result.addMessage(ValidationMessage.Type.ERROR, "Could not find column headers in file. Header must "
+                    + " contain at least the following column headings: " + NDF_REQUIRED_COLUMNS.keySet());
+        } else {
+            Set<String> missing = new HashSet<String>(NDF_REQUIRED_COLUMNS.keySet());
+            missing.removeAll(headers.keySet());
 
-        for (String col : missing) {
-            result.addMessage(ValidationMessage.Type.ERROR, "Invalid column header in Nimblegen NDF. Missing " + col
-                    + ".");
+            for (String col : missing) {
+                result.addMessage(ValidationMessage.Type.ERROR, "Invalid column header for Nimblegen NDF. Missing "
+                        + col + " column", reader.getCurrentLineNumber(), 0);
+            }
+        }
+    }
+
+    private void validateValues(Map<String, Integer> headers, FileValidationResult result) throws IOException {
+        while (reader.hasNextLine()) {
+            List<String> values = reader.nextLine();
+            validateValuesRow(values, headers, result);
+        }        
+    }
+    
+    private void validateValuesRow(List<String> values, Map<String, Integer> header, FileValidationResult result) {
+        if (values.size() != header.size()) {
+            result.addMessage(ValidationMessage.Type.ERROR, "Row has incorrect number of columns. There were "
+                    + values.size() + " columns in the row, and " + header.size() + " columns in the header", reader
+                    .getCurrentLineNumber(), 0);
+            return;
+        }
+        
+        for (String column : NDF_REQUIRED_COLUMNS.keySet()) {
+            int columnIndex = header.get(column);
+            String value = values.get(columnIndex);
+            DataType columnType = NDF_REQUIRED_COLUMNS.get(column);
+            if (StringUtils.isBlank(value)) {
+                result.addMessage(ValidationMessage.Type.ERROR, "Empty value for required column " + column, reader
+                        .getCurrentLineNumber(), columnIndex + 1);
+            } else if (columnType == DataType.INTEGER && !Utils.isInteger(value)) {
+                result.addMessage(ValidationMessage.Type.ERROR, "Expected integer value but found " + value
+                        + " for required column " + column, reader.getCurrentLineNumber(), columnIndex + 1);
+            }
         }
     }
 
     private boolean isHeaderLine(List<String> values) {
-        return values.containsAll(ndfColumnMapping.keySet());
+        // assume that a line that contains any of expected header columns is the header
+        return !Sets.intersection(ImmutableSet.copyOf(values), NDF_REQUIRED_COLUMNS.keySet()).isEmpty();
     }
 
-    private static Map<String, Class<?>> ndfColumnMapping = new HashMap<String, Class<?>>();
-    static {
-        ndfColumnMapping.put(CONTAINER2, String.class);
-        ndfColumnMapping.put(SEQ_ID, String.class);
-        ndfColumnMapping.put(PROBE_ID, String.class);
-        ndfColumnMapping.put(X, Integer.class);
-        ndfColumnMapping.put(Y, Integer.class);
-    }
-
+    /**
+     * @return mapping of header columns to their positions, or null if no header line found
+     */
     private Map<String, Integer> getHeaders() throws IOException {
         while (reader.hasNextLine()) {
             List<String> values = reader.nextLine();
+            if (values.isEmpty()) {
+                // allow blank lines at start
+                continue;
+            }            
             if (isHeaderLine(values)) {
                 int index = 0;
                 Map<String, Integer> result = new HashMap<String, Integer>();
@@ -362,6 +397,9 @@ class NdfHandler extends AbstractDesignFileHandler {
                     result.put(value.toUpperCase(Locale.getDefault()), index++);
                 }
                 return result;
+            } else {
+                // once we've hit a non-blank line, if it's not the header, then there is no header
+                return null;
             }
         }
         return null;

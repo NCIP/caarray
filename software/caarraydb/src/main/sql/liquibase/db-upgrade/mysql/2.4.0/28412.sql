@@ -1,0 +1,1 @@
+update caarrayfile set type='NIMBLEGEN_DERIVED_TXT' where type='NIMBLEGEN_TXT';
