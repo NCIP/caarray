@@ -111,7 +111,8 @@ public class AgilentGELMParserTest {
         add(Token.COMPANY);
         add(Token.DATE);
         add(Token.ID);
-        add(Token.NAME, "reporter name");
+        add(Token.NAME);
+        add(Token.ORGANIZATION);
         add(Token.END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
@@ -207,7 +208,7 @@ public class AgilentGELMParserTest {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
         add(Token.OTHER_START);
-        add(Token.NAME, "reporter name");
+        add(Token.NAME);
         add(Token.VALUE);
         repeat(2, Token.END);
         add(Token.DOCUMENT_END);
@@ -221,11 +222,11 @@ public class AgilentGELMParserTest {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
         add(Token.OTHER_START);
-        add(Token.NAME, "reporter name");
+        add(Token.NAME);
         add(Token.VALUE);
         add(Token.END);
         add(Token.OTHER_START);
-        add(Token.NAME, "reporter name");
+        add(Token.NAME);
         add(Token.VALUE);
         repeat(2, Token.END);
         add(Token.DOCUMENT_END);
@@ -284,6 +285,9 @@ public class AgilentGELMParserTest {
         add(Token.PRINTING_START);        
         add(Token.DATE);
         add(Token.PATTERN_NAME);
+        add(Token.PREPARED_AT_SITE);
+        add(Token.PREPARED_BY);
+        add(Token.PREPARED_BY_ORG);
         add(Token.PRINTER);
         add(Token.RUN_DESCRIPTION);
         add(Token.TYPE);
@@ -305,7 +309,7 @@ public class AgilentGELMParserTest {
         add(Token.BARCODE);
         add(Token.END);
         add(Token.OTHER_START);
-        add(Token.NAME, "reporter name");
+        add(Token.NAME);
         add(Token.VALUE);
         repeat(3, Token.END);
         add(Token.DOCUMENT_END);
@@ -323,11 +327,11 @@ public class AgilentGELMParserTest {
         add(Token.BARCODE);
         add(Token.END);
         add(Token.OTHER_START);
-        add(Token.NAME, "reporter name");
+        add(Token.NAME);
         add(Token.VALUE);
         add(Token.END);
         add(Token.OTHER_START);
-        add(Token.NAME, "reporter name");
+        add(Token.NAME);
         add(Token.VALUE);
         repeat(3, Token.END);
         add(Token.DOCUMENT_END);
@@ -350,6 +354,22 @@ public class AgilentGELMParserTest {
     }
 
     @Test
+    public void acceptsChipWithOptionalAttributes() {
+        add(Token.DOCUMENT_START);
+        add(Token.PROJECT_START);
+        add(Token.PRINTING_START);
+        add(Token.CHIP_START);
+        add(Token.BARCODE);
+        add(Token.PREPARED_FOR);
+        add(Token.PREPARED_FOR_ORG);
+        repeat(3, Token.END);
+        add(Token.DOCUMENT_END);
+        add(Token.EOF);
+
+        assertParserAccepts();
+    }
+
+    @Test
     public void acceptsChipWithOneOther() {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
@@ -357,7 +377,7 @@ public class AgilentGELMParserTest {
         add(Token.CHIP_START);
         add(Token.BARCODE);
         add(Token.OTHER_START);
-        add(Token.NAME, "reporter name");
+        add(Token.NAME);
         add(Token.VALUE);
         repeat(4, Token.END);
         add(Token.DOCUMENT_END);
@@ -374,11 +394,11 @@ public class AgilentGELMParserTest {
         add(Token.CHIP_START);
         add(Token.BARCODE);
         add(Token.OTHER_START);
-        add(Token.NAME, "reporter name");
+        add(Token.NAME);
         add(Token.VALUE);
         add(Token.END);
         add(Token.OTHER_START);
-        add(Token.NAME, "reporter name");
+        add(Token.NAME);
         add(Token.VALUE);
         repeat(4, Token.END);
         add(Token.DOCUMENT_END);
@@ -455,9 +475,10 @@ public class AgilentGELMParserTest {
         add(Token.PATTERN_START);
         add(Token.ACCESS);
         add(Token.DESCRIPTION);
-        add(Token.NAME, "reporter name");
+        add(Token.NAME);
         add(Token.OWNER);
         add(Token.SPECIES_DATABASE);
+        add(Token.TYPE);
         add(Token.TYPE_ID);
         add(Token.REPORTER_START);
         add(Token.NAME, "reporter name");
@@ -489,7 +510,7 @@ public class AgilentGELMParserTest {
         add(Token.Y, 2.2);
         repeat(3, Token.END);
         add(Token.OTHER_START);
-        add(Token.NAME, "reporter name");
+        add(Token.NAME);
         add(Token.VALUE);
         repeat(3, Token.END);
         add(Token.DOCUMENT_END);
@@ -513,11 +534,11 @@ public class AgilentGELMParserTest {
         add(Token.Y, 2.2);
         repeat(3, Token.END);
         add(Token.OTHER_START);
-        add(Token.NAME, "reporter name");
+        add(Token.NAME);
         add(Token.VALUE);
         add(Token.END);
         add(Token.OTHER_START);
-        add(Token.NAME, "reporter name");
+        add(Token.NAME);
         add(Token.VALUE);
         repeat(3, Token.END);
         add(Token.DOCUMENT_END);
@@ -606,25 +627,6 @@ public class AgilentGELMParserTest {
     }
 
     @Test
-    public void rejectsReporterWithNoSystemicName() {
-        add(Token.DOCUMENT_START);
-        add(Token.PROJECT_START);
-        add(Token.PATTERN_START);
-        add(Token.REPORTER_START);
-        add(Token.NAME, "reporter name");
-        add(Token.FEATURE_START);
-        add(Token.POSITION_START);
-        add(Token.UNITS, "mm");
-        add(Token.X, 1.1);
-        add(Token.Y, 2.2);
-        repeat(5, Token.END);
-        add(Token.DOCUMENT_END);
-        add(Token.EOF);
-
-        assertParserRejects();
-    }
-
-    @Test
     public void acceptsReporterWithOptionalAttributes() {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
@@ -634,6 +636,7 @@ public class AgilentGELMParserTest {
         add(Token.ACTIVE_SEQUENCE);
         add(Token.CONTROL_TYPE);
         add(Token.DELETION);
+        add(Token.DESCRIPTION);
         add(Token.FAIL_TYPE);
         add(Token.LINKER_SEQUENCE);
         add(Token.MISMATCH_COUNT);
@@ -669,7 +672,7 @@ public class AgilentGELMParserTest {
         add(Token.Y, 2.2);
         repeat(2, Token.END);
         add(Token.OTHER_START);
-        add(Token.NAME, "reporter name");
+        add(Token.NAME);
         add(Token.VALUE);
         repeat(4, Token.END);
         add(Token.DOCUMENT_END);
@@ -693,11 +696,11 @@ public class AgilentGELMParserTest {
         add(Token.Y, 2.2);
         repeat(2, Token.END);
         add(Token.OTHER_START);
-        add(Token.NAME, "reporter name");
+        add(Token.NAME);
         add(Token.VALUE);
         add(Token.END);
         add(Token.OTHER_START);
-        add(Token.NAME, "reporter name");
+        add(Token.NAME);
         add(Token.VALUE);
         repeat(4, Token.END);
         add(Token.DOCUMENT_END);
@@ -788,7 +791,7 @@ public class AgilentGELMParserTest {
         add(Token.Y, 2.2);
         add(Token.END);
         add(Token.OTHER_START);
-        add(Token.NAME, "reporter name");
+        add(Token.NAME);
         add(Token.VALUE);
         repeat(5, Token.END);
         add(Token.DOCUMENT_END);
@@ -812,11 +815,11 @@ public class AgilentGELMParserTest {
         add(Token.Y, 2.2);
         add(Token.END);
         add(Token.OTHER_START);
-        add(Token.NAME, "reporter name");
+        add(Token.NAME);
         add(Token.VALUE);
         add(Token.END);
         add(Token.OTHER_START);
-        add(Token.NAME, "reporter name");
+        add(Token.NAME);
         add(Token.VALUE);
         repeat(5, Token.END);
         add(Token.DOCUMENT_END);
@@ -1006,7 +1009,7 @@ public class AgilentGELMParserTest {
         add(Token.X, 1.1);
         add(Token.Y, 2.2);
         add(Token.OTHER_START);
-        add(Token.NAME, "reporter name");
+        add(Token.NAME);
         add(Token.VALUE);
         repeat(6, Token.END);
         add(Token.DOCUMENT_END);
@@ -1034,11 +1037,11 @@ public class AgilentGELMParserTest {
         add(Token.X, 1.1);
         add(Token.Y, 2.2);
         add(Token.OTHER_START);
-        add(Token.NAME, "reporter name");
+        add(Token.NAME);
         add(Token.VALUE);
         add(Token.END);
         add(Token.OTHER_START);
-        add(Token.NAME, "reporter name");
+        add(Token.NAME);
         add(Token.VALUE);
         repeat(6, Token.END);
         add(Token.DOCUMENT_END);
@@ -1118,7 +1121,7 @@ public class AgilentGELMParserTest {
         add(Token.X, 1.1);
         add(Token.Y, 2.2);
         add(Token.OTHER_START);
-        add(Token.NAME, "reporter name");
+        add(Token.NAME);
         add(Token.VALUE);
         repeat(2, Token.END);
         add(Token.PEN_START);
@@ -1146,11 +1149,11 @@ public class AgilentGELMParserTest {
         add(Token.X, 1.1);
         add(Token.Y, 2.2);
         add(Token.OTHER_START);
-        add(Token.NAME, "reporter name");
+        add(Token.NAME);
         add(Token.VALUE);
         add(Token.END);
         add(Token.OTHER_START);
-        add(Token.NAME, "reporter name");
+        add(Token.NAME);
         add(Token.VALUE);
         repeat(2, Token.END);
         add(Token.PEN_START);
@@ -1237,7 +1240,7 @@ public class AgilentGELMParserTest {
         add(Token.GENE_START);
         add(Token.PRIMARY_NAME);
         add(Token.ALIAS_START);
-        add(Token.NAME, "reporter name");
+        add(Token.NAME);
         repeat(5, Token.END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
@@ -1262,10 +1265,10 @@ public class AgilentGELMParserTest {
         add(Token.GENE_START);
         add(Token.PRIMARY_NAME);
         add(Token.ALIAS_START);
-        add(Token.NAME, "reporter name");
+        add(Token.NAME);
         add(Token.END);
         add(Token.ALIAS_START);
-        add(Token.NAME, "reporter name");
+        add(Token.NAME);
         repeat(5, Token.END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
@@ -1340,7 +1343,7 @@ public class AgilentGELMParserTest {
         add(Token.GENE_START);
         add(Token.PRIMARY_NAME);
         add(Token.OTHER_START);
-        add(Token.NAME, "reporter name");
+        add(Token.NAME);
         add(Token.VALUE);
         repeat(5, Token.END);
         add(Token.DOCUMENT_END);
@@ -1366,11 +1369,11 @@ public class AgilentGELMParserTest {
         add(Token.GENE_START);
         add(Token.PRIMARY_NAME);
         add(Token.OTHER_START);
-        add(Token.NAME, "reporter name");
+        add(Token.NAME);
         add(Token.VALUE);
         add(Token.END);
         add(Token.OTHER_START);
-        add(Token.NAME, "reporter name");
+        add(Token.NAME);
         add(Token.VALUE);
         repeat(5, Token.END);
         add(Token.DOCUMENT_END);
@@ -1405,7 +1408,7 @@ public class AgilentGELMParserTest {
     }
 
     @Test
-    public void rejectsAccessionNoId() {
+    public void rejectsAccessionNoIdOrIdentifier() {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
         add(Token.PATTERN_START);
@@ -1430,6 +1433,58 @@ public class AgilentGELMParserTest {
     }
 
     @Test
+    public void acceptsAccessionWithId() {
+        add(Token.DOCUMENT_START);
+        add(Token.PROJECT_START);
+        add(Token.PATTERN_START);
+        add(Token.REPORTER_START);
+        add(Token.NAME, "reporter name");
+        add(Token.SYSTEMATIC_NAME);
+        add(Token.FEATURE_START);
+        add(Token.POSITION_START);
+        add(Token.UNITS, "mm");
+        add(Token.X, 1.1);
+        add(Token.Y, 2.2);
+        repeat(2, Token.END);
+        add(Token.GENE_START);
+        add(Token.PRIMARY_NAME);
+        add(Token.ACCESSION_START);
+        add(Token.DATABASE);
+        add(Token.ID);
+        repeat(5, Token.END);
+        add(Token.DOCUMENT_END);
+        add(Token.EOF);
+
+        assertParserAccepts();
+    }
+
+    @Test
+    public void acceptsAccessionWithIdentifier() {
+        add(Token.DOCUMENT_START);
+        add(Token.PROJECT_START);
+        add(Token.PATTERN_START);
+        add(Token.REPORTER_START);
+        add(Token.NAME, "reporter name");
+        add(Token.SYSTEMATIC_NAME);
+        add(Token.FEATURE_START);
+        add(Token.POSITION_START);
+        add(Token.UNITS, "mm");
+        add(Token.X, 1.1);
+        add(Token.Y, 2.2);
+        repeat(2, Token.END);
+        add(Token.GENE_START);
+        add(Token.PRIMARY_NAME);
+        add(Token.ACCESSION_START);
+        add(Token.DATABASE);
+        add(Token.IDENTIFIER);
+        repeat(5, Token.END);
+        add(Token.DOCUMENT_END);
+        add(Token.EOF);
+
+        assertParserAccepts();
+    }
+
+    @Test
     public void acceptsAccessionWithOneOther() {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
@@ -1449,7 +1504,7 @@ public class AgilentGELMParserTest {
         add(Token.DATABASE);
         add(Token.ID);
         add(Token.OTHER_START);
-        add(Token.NAME, "reporter name");
+        add(Token.NAME);
         add(Token.VALUE);
         repeat(6, Token.END);
         add(Token.DOCUMENT_END);
@@ -1478,11 +1533,11 @@ public class AgilentGELMParserTest {
         add(Token.DATABASE);
         add(Token.ID);
         add(Token.OTHER_START);
-        add(Token.NAME, "reporter name");
+        add(Token.NAME);
         add(Token.VALUE);
         add(Token.END);
         add(Token.OTHER_START);
-        add(Token.NAME, "reporter name");
+        add(Token.NAME);
         add(Token.VALUE);
         repeat(6, Token.END);
         add(Token.DOCUMENT_END);
@@ -1532,9 +1587,9 @@ public class AgilentGELMParserTest {
         add(Token.GENE_START);
         add(Token.PRIMARY_NAME);
         add(Token.ALIAS_START);
-        add(Token.NAME, "reporter name");
+        add(Token.NAME);
         add(Token.OTHER_START);
-        add(Token.NAME, "reporter name");
+        add(Token.NAME);
         add(Token.VALUE);
         repeat(6, Token.END);
         add(Token.DOCUMENT_END);
@@ -1560,13 +1615,13 @@ public class AgilentGELMParserTest {
         add(Token.GENE_START);
         add(Token.PRIMARY_NAME);
         add(Token.ALIAS_START);
-        add(Token.NAME, "reporter name");
+        add(Token.NAME);
         add(Token.OTHER_START);
-        add(Token.NAME, "reporter name");
+        add(Token.NAME);
         add(Token.VALUE);
         add(Token.END);
         add(Token.OTHER_START);
-        add(Token.NAME, "reporter name");
+        add(Token.NAME);
         add(Token.VALUE);
         repeat(6, Token.END);
         add(Token.DOCUMENT_END);
@@ -1593,7 +1648,7 @@ public class AgilentGELMParserTest {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
         add(Token.OTHER_START);
-        add(Token.NAME, "reporter name");
+        add(Token.NAME);
         repeat(2, Token.END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
@@ -1606,10 +1661,10 @@ public class AgilentGELMParserTest {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
         add(Token.OTHER_START);
-        add(Token.NAME, "reporter name");
+        add(Token.NAME);
         add(Token.VALUE);
         add(Token.OTHER_START);
-        add(Token.NAME, "reporter name");
+        add(Token.NAME);
         add(Token.VALUE);
         repeat(3, Token.END);
         add(Token.DOCUMENT_END);
@@ -1623,14 +1678,14 @@ public class AgilentGELMParserTest {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
         add(Token.OTHER_START);
-        add(Token.NAME, "reporter name");
+        add(Token.NAME);
         add(Token.VALUE);
         add(Token.OTHER_START);
-        add(Token.NAME, "reporter name");
+        add(Token.NAME);
         add(Token.VALUE);
         add(Token.END);
         add(Token.OTHER_START);
-        add(Token.NAME, "reporter name");
+        add(Token.NAME);
         add(Token.VALUE);
         repeat(3, Token.END);
         add(Token.DOCUMENT_END);
@@ -1644,15 +1699,310 @@ public class AgilentGELMParserTest {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
         add(Token.OTHER_START);
-        add(Token.NAME, "reporter name");
+        add(Token.NAME);
         add(Token.VALUE);
         add(Token.OTHER_START);
-        add(Token.NAME, "reporter name");
+        add(Token.NAME);
         add(Token.VALUE);
         add(Token.OTHER_START);
-        add(Token.NAME, "reporter name");
+        add(Token.NAME);
         add(Token.VALUE);
         repeat(4, Token.END);
+        add(Token.DOCUMENT_END);
+        add(Token.EOF);
+
+        assertParserAccepts();
+    }
+
+    @Test
+    public void acceptsGridLayout() {
+        add(Token.DOCUMENT_START);
+        add(Token.PROJECT_START);
+        add(Token.PATTERN_START);
+        add(Token.GRID_LAYOUT_START);
+        add(Token.END);
+        add(Token.REPORTER_START);
+        add(Token.NAME, "reporter name");
+        add(Token.SYSTEMATIC_NAME);
+        add(Token.FEATURE_START);
+        add(Token.POSITION_START);
+        add(Token.UNITS, "mm");
+        add(Token.X, 1.1);
+        add(Token.Y, 2.2);
+        repeat(5, Token.END);
+        add(Token.DOCUMENT_END);
+        add(Token.EOF);
+
+        assertParserAccepts();
+    }
+
+    @Test
+    public void acceptsGridLayoutWithOptionalAttributes() {
+        add(Token.DOCUMENT_START);
+        add(Token.PROJECT_START);
+        add(Token.PATTERN_START);
+        add(Token.GRID_LAYOUT_START);
+        add(Token.FEATURE_COUNT_X);
+        add(Token.FEATURE_COUNT_Y);
+        add(Token.FEATURE_SPACING_X);
+        add(Token.FEATURE_SPACING_Y);
+        add(Token.END);
+        add(Token.REPORTER_START);
+        add(Token.NAME, "reporter name");
+        add(Token.SYSTEMATIC_NAME);
+        add(Token.FEATURE_START);
+        add(Token.POSITION_START);
+        add(Token.UNITS, "mm");
+        add(Token.X, 1.1);
+        add(Token.Y, 2.2);
+        repeat(5, Token.END);
+        add(Token.DOCUMENT_END);
+        add(Token.EOF);
+
+        assertParserAccepts();
+    }
+
+    @Test
+    public void acceptsBiosequenceRef() {
+        add(Token.DOCUMENT_START);
+        add(Token.PROJECT_START);
+        add(Token.PATTERN_START);
+        add(Token.REPORTER_START);
+        add(Token.NAME, "reporter name");
+        add(Token.SYSTEMATIC_NAME);
+        add(Token.FEATURE_START);
+        add(Token.POSITION_START);
+        add(Token.UNITS, "mm");
+        add(Token.X, 1.1);
+        add(Token.Y, 2.2);
+        repeat(2, Token.END);
+        add(Token.BIOSEQUENCE_REF_START);
+        add(Token.IDENTIFIER);
+        add(Token.SPECIES);
+        repeat(4, Token.END);
+        add(Token.DOCUMENT_END);
+        add(Token.EOF);
+
+        assertParserAccepts();
+    }
+
+    @Test
+    public void rejectsBiosequenceRefWithNoIdentifier() {
+        add(Token.DOCUMENT_START);
+        add(Token.PROJECT_START);
+        add(Token.PATTERN_START);
+        add(Token.REPORTER_START);
+        add(Token.NAME, "reporter name");
+        add(Token.SYSTEMATIC_NAME);
+        add(Token.FEATURE_START);
+        add(Token.POSITION_START);
+        add(Token.UNITS, "mm");
+        add(Token.X, 1.1);
+        add(Token.Y, 2.2);
+        repeat(2, Token.END);
+        add(Token.BIOSEQUENCE_REF_START);
+        add(Token.SPECIES);
+        repeat(4, Token.END);
+        add(Token.DOCUMENT_END);
+        add(Token.EOF);
+
+        assertParserRejects();
+    }
+
+    @Test
+    public void rejectsBiosequenceRefWithNoSpecies() {
+        add(Token.DOCUMENT_START);
+        add(Token.PROJECT_START);
+        add(Token.PATTERN_START);
+        add(Token.REPORTER_START);
+        add(Token.NAME, "reporter name");
+        add(Token.SYSTEMATIC_NAME);
+        add(Token.FEATURE_START);
+        add(Token.POSITION_START);
+        add(Token.UNITS, "mm");
+        add(Token.X, 1.1);
+        add(Token.Y, 2.2);
+        repeat(2, Token.END);
+        add(Token.BIOSEQUENCE_REF_START);
+        add(Token.IDENTIFIER);
+        repeat(4, Token.END);
+        add(Token.DOCUMENT_END);
+        add(Token.EOF);
+
+        assertParserRejects();
+    }
+
+    @Test
+    public void acceptsBiosequenceRefWithOptionalAttributes() {
+        add(Token.DOCUMENT_START);
+        add(Token.PROJECT_START);
+        add(Token.PATTERN_START);
+        add(Token.REPORTER_START);
+        add(Token.NAME, "reporter name");
+        add(Token.SYSTEMATIC_NAME);
+        add(Token.FEATURE_START);
+        add(Token.POSITION_START);
+        add(Token.UNITS, "mm");
+        add(Token.X, 1.1);
+        add(Token.Y, 2.2);
+        repeat(2, Token.END);
+        add(Token.BIOSEQUENCE_REF_START);
+        add(Token.DATABASE);
+        add(Token.IDENTIFIER);
+        add(Token.SPECIES);
+        repeat(4, Token.END);
+        add(Token.DOCUMENT_END);
+        add(Token.EOF);
+
+        assertParserAccepts ();
+    }
+
+    @Test
+    public void acceptsBiosequence() {
+        add(Token.DOCUMENT_START);
+        add(Token.PROJECT_START);
+        add(Token.BIOSEQUENCE_START);
+        add(Token.SPECIES);
+        repeat(2, Token.END);
+        add(Token.DOCUMENT_END);
+        add(Token.EOF);
+
+        assertParserAccepts();
+    }
+
+    @Test
+    public void rejectsBiosequenceWithOutSpecies() {
+        add(Token.DOCUMENT_START);
+        add(Token.PROJECT_START);
+        add(Token.BIOSEQUENCE_START);
+        repeat(2, Token.END);
+        add(Token.DOCUMENT_END);
+        add(Token.EOF);
+
+        assertParserRejects();
+    }
+
+    @Test
+    public void acceptsBiosequenceWithOptionalAttributes() {
+        add(Token.DOCUMENT_START);
+        add(Token.PROJECT_START);
+        add(Token.BIOSEQUENCE_START);       
+        add(Token.ACCESS);
+        add(Token.CHROMOSOME);
+        add(Token.CONTROL_TYPE);
+        add(Token.DESCRIPTION);
+        add(Token.EC_NUMBER);
+        add(Token.MAP_POSITION);
+        add(Token.PRIMARY_NAME);
+        add(Token.SEQUENCEDB);
+        add(Token.SPECIES);
+        add(Token.TYPE);
+        repeat(2, Token.END);
+        add(Token.DOCUMENT_END);
+        add(Token.EOF);
+
+        assertParserAccepts();
+    }
+
+    @Test
+    public void acceptsBiosequenceWithOneOther() {
+        add(Token.DOCUMENT_START);
+        add(Token.PROJECT_START);
+        add(Token.BIOSEQUENCE_START);
+        add(Token.SPECIES);
+        add(Token.OTHER_START);
+        add(Token.NAME);
+        add(Token.VALUE);
+        repeat(3, Token.END);
+        add(Token.DOCUMENT_END);
+        add(Token.EOF);
+
+        assertParserAccepts();
+    }
+
+    @Test
+    public void acceptsBiosequenceWithTwoOthers() {
+        add(Token.DOCUMENT_START);
+        add(Token.PROJECT_START);
+        add(Token.BIOSEQUENCE_START);
+        add(Token.SPECIES);
+        add(Token.OTHER_START);
+        add(Token.NAME);
+        add(Token.VALUE);
+        add(Token.END);
+        add(Token.OTHER_START);
+        add(Token.NAME);
+        add(Token.VALUE);
+        repeat(3, Token.END);
+        add(Token.DOCUMENT_END);
+        add(Token.EOF);
+
+        assertParserAccepts();
+    }
+
+    @Test
+    public void acceptsBiosequenceWithOneAccession() {
+        add(Token.DOCUMENT_START);
+        add(Token.PROJECT_START);
+        add(Token.BIOSEQUENCE_START);
+        add(Token.SPECIES);
+        add(Token.ACCESSION_START);
+        add(Token.DATABASE);
+        add(Token.ID);
+        repeat(3, Token.END);
+        add(Token.DOCUMENT_END);
+        add(Token.EOF);
+
+        assertParserAccepts();
+    }
+
+    @Test
+    public void acceptsBiosequenceWithTwoAccessions() {
+        add(Token.DOCUMENT_START);
+        add(Token.PROJECT_START);
+        add(Token.BIOSEQUENCE_START);
+        add(Token.SPECIES);
+        add(Token.ACCESSION_START);
+        add(Token.DATABASE);
+        add(Token.ID);
+        add(Token.END);
+        add(Token.ACCESSION_START);
+        add(Token.DATABASE);
+        add(Token.ID);
+        repeat(3, Token.END);
+        add(Token.DOCUMENT_END);
+        add(Token.EOF);
+
+        assertParserAccepts();
+    }
+
+    @Test
+    public void acceptsBiosequenceWithOneAlias() {
+        add(Token.DOCUMENT_START);
+        add(Token.PROJECT_START);
+        add(Token.BIOSEQUENCE_START);
+        add(Token.SPECIES);
+        add(Token.ALIAS_START);
+        add(Token.NAME);
+        repeat(3, Token.END);
+        add(Token.DOCUMENT_END);
+        add(Token.EOF);
+
+        assertParserAccepts();
+    }
+
+    @Test
+    public void acceptsBiosequenceWithTwoAliases() {
+        add(Token.DOCUMENT_START);
+        add(Token.PROJECT_START);
+        add(Token.BIOSEQUENCE_START);
+        add(Token.SPECIES);
+        add(Token.ALIAS_START);
+        add(Token.NAME);
+        add(Token.END);
+        add(Token.ALIAS_START);
+        add(Token.NAME);
+        repeat(3, Token.END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 

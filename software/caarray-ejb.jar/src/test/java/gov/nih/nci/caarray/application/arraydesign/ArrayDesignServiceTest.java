@@ -220,7 +220,7 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
             }
         };
         bean.init();
-        
+
         final ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
         locatorStub.addLookup(FileAccessService.JNDI_NAME, fileAccessServiceStub);
         locatorStub.addLookup(VocabularyService.JNDI_NAME, new VocabularyServiceStub());
@@ -620,23 +620,46 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
         CaArrayFile designFile = getAgilentGelmCaArrayFile(AgilentArrayDesignFiles.TEST_ACGH_XML);
         ArrayDesign design = new ArrayDesign();
         design.addDesignFile(designFile);
-        
+
         arrayDesignService.importDesign(design);
-        
+
         assertEquals("022522_D_F_20090107", design.getName());
         assertEquals("Agilent.com", design.getLsidAuthority());
         assertEquals("PhysicalArrayDesign", design.getLsidNamespace());
         assertEquals("022522_D_F_20090107", design.getLsidObjectId());
-        
+
         arrayDesignService.importDesignDetails(design);
-        
+
         assertEquals(180880, design.getNumberOfFeatures().intValue());
         assertEquals(180880, design.getDesignDetails().getFeatures().size());
         assertEquals(177071, design.getDesignDetails().getProbes().size());
         assertEquals(0, design.getDesignDetails().getLogicalProbes().size());
-        
+
         assertEquals(FileStatus.IMPORTED, design.getDesignFileSet().getStatus());
-   }
+    }
+
+    @Test
+    public void testImportDesign_AgilentGeneExpression() throws Exception {
+        CaArrayFile designFile = getAgilentGelmCaArrayFile(AgilentArrayDesignFiles.TEST_GENE_EXPRESSION_1_XML);
+        ArrayDesign design = new ArrayDesign();
+        design.addDesignFile(designFile);
+
+        arrayDesignService.importDesign(design);
+
+        assertEquals("015354_D_20061130", design.getName());
+        assertEquals("Agilent.com", design.getLsidAuthority());
+        assertEquals("PhysicalArrayDesign", design.getLsidNamespace());
+        assertEquals("015354_D_20061130", design.getLsidObjectId());
+
+        arrayDesignService.importDesignDetails(design);
+
+        assertEquals(45220, design.getNumberOfFeatures().intValue());
+        assertEquals(45220, design.getDesignDetails().getFeatures().size());
+        assertEquals(21536, design.getDesignDetails().getProbes().size());
+        assertEquals(0, design.getDesignDetails().getLogicalProbes().size());
+
+        assertEquals(FileStatus.IMPORTED, design.getDesignFileSet().getStatus());
+    }
 
     @Test
     public void testImportDesign_UnsupportedVendors() {
@@ -718,7 +741,7 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
         CaArrayFile designFile = getIlluminaCaArrayFile(IlluminaArrayDesignFiles.HUMAN_WG6_CSV);
         ValidationResult result = arrayDesignService.validateDesign(Collections.singleton(designFile));
         assertTrue(result.isValid());
-        
+
         designFile = getIlluminaCaArrayFile(IlluminaArrayDesignFiles.HUMAN_WG6_CSV_INVALID_HEADERS);
 
         result = arrayDesignService.validateDesign(Collections.singleton(designFile));
@@ -730,7 +753,7 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
         designFile = getIlluminaCaArrayFile(IlluminaArrayDesignFiles.HUMAN_WG6_CSV_INVALID_CONTENT);
         result = arrayDesignService.validateDesign(Collections.singleton(designFile));
         assertFalse(result.isValid());
-        
+
 
         designFile = getIlluminaCaArrayFile(AffymetrixArrayDataFiles.TEST3_CEL);
         result = arrayDesignService.validateDesign(Collections.singleton(designFile));
@@ -757,7 +780,7 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
         result = arrayDesignService.validateDesign(Collections.singleton(invalidDesignFile));
         assertFalse(result.isValid());
     }
-    
+
     @Test
     public void testValidateDesign_AgilentGelm() {
         final CaArrayFile designFile = getAgilentGelmCaArrayFile(AgilentArrayDesignFiles.TEST_ACGH_XML);
@@ -948,7 +971,7 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
                 @Override
                 public ArrayDesign getArrayDesign(final String lsidAuthority, final String lsidNamespace, final String lsidObjectId) {
                     return (ArrayDesign)
-                        lsidEntityMap.get("URN:LSID:" + lsidAuthority + ":" + lsidNamespace + ":" + lsidObjectId);
+                    lsidEntityMap.get("URN:LSID:" + lsidAuthority + ":" + lsidNamespace + ":" + lsidObjectId);
                 }
 
                 @Override
@@ -1043,7 +1066,7 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
                 }
             };
         }
-        
+
         /**
          * {@inheritDoc}
          */
@@ -1053,8 +1076,8 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
                 private final TermSource termSource = new TermSource();
                 private final List<TermSource> termSources = Collections.singletonList(termSource);
                 private final Term millimeterTerm = new Term();
-               
-                
+
+
                 /**
                  * {@InheritDoc}
                  */

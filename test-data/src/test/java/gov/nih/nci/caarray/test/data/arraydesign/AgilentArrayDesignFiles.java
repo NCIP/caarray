@@ -82,9 +82,30 @@
  */
 package gov.nih.nci.caarray.test.data.arraydesign;
 
+import gov.nih.nci.caarray.test.data.arraydata.AgilentArrayDataFiles;
+
 import java.io.File;
 
 public class AgilentArrayDesignFiles {
     public static final File TEST_ACGH_XML =
-        new File(AgilentArrayDesignFiles.class.getResource("/arraydesign/agilent/aCGH/022522_D_F_20090107.xml").getFile());
+        getResourceFile("/arraydesign/agilent/aCGH/022522_D_F_20090107.xml");
+    
+    public static final File TEST_GENE_EXPRESSION_1_XML =
+        getResourceFile("/arraydesign/agilent/gene_expression/015354_D_20061130.xml");
+    
+    public static final File TEST_GENE_EXPRESSION_2_XML =
+        getResourceFile("/arraydesign/agilent/gene_expression/024656_D_F_20090719.xml");
+    
+    public static final File TEST_GENE_EXPRESSION_3_XML =
+        getResourceFile("/arraydesign/agilent/gene_expression/Whole_Human_Genome_Microarray_4x44K.xml");
+    
+    public static final File TEST_MIRNA_1_XML =
+        getResourceFile("/arraydesign/agilent/miRNA/Human_miRNA_Microarray_3.0.xml");
+    
+    public static final File TEST_MIRNA_2_XML =
+        getResourceFile("/arraydesign/agilent/miRNA/Mouse_miRNA_Microarray_2.0.xml");
+
+    private static File getResourceFile(String resourcePath) {
+        return new File(AgilentArrayDataFiles.class.getResource(resourcePath).getFile());
+    }
 }

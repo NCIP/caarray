@@ -114,7 +114,7 @@ public class ArrayDesignBuilderTest {
     private ArrayDesignBuilderImpl arrayDesignBuilder;
     private ArrayDesignDetails arrayDesignDetails;
     private static final Term EXPECTED_MILLIMETER_TERM = new Term();
-
+    
     @Test
     public void createsNewPhysicalProbe() {
         final String probeName = "probe1";
@@ -184,6 +184,102 @@ public class ArrayDesignBuilderTest {
         assertNotNull(gene);
 
         assertEquals(geneName, gene.getFullName());
+    }
+
+    @Test
+    public void createsAnnotationForGeneExpressionAssay() {
+        final String probe1Name = "probe1";
+        final String database = "database name";
+        final String species = "species name";
+        final String controlType = null;
+        
+        arrayDesignBuilder.findOrCreatePhysicalProbeBuilder(probe1Name);
+        PhysicalProbe probe = arrayDesignBuilder.getPhysicalProbes().values().iterator().next();
+        assertNull(probe.getAnnotation());
+
+        arrayDesignBuilder.setBiosequenceRef(database, species, probe1Name);
+        BiosequenceBuilder biosequenceBuilder = arrayDesignBuilder.createBiosequenceBuilder(controlType, species);
+        biosequenceBuilder.agpAccession(probe1Name);
+
+        ExpressionProbeAnnotation annotation = (ExpressionProbeAnnotation) probe.getAnnotation();
+        assertNotNull(annotation);
+
+        Gene gene = annotation.getGene();
+        assertNotNull(gene);
+    }
+
+    @Test
+    public void createsAccessionsForGeneExpressionAssay() {
+        final String probe1Name = "probe1";
+        final String database = "database name";
+        final String species = "species name";
+        final String controlType = null;
+        
+        arrayDesignBuilder.findOrCreatePhysicalProbeBuilder(probe1Name);
+        PhysicalProbe probe = arrayDesignBuilder.getPhysicalProbes().values().iterator().next();
+
+        arrayDesignBuilder.setBiosequenceRef(database, species, probe1Name);
+        BiosequenceBuilder biosequenceBuilder = arrayDesignBuilder.createBiosequenceBuilder(controlType, species);
+        biosequenceBuilder.agpAccession(probe1Name);
+
+        ExpressionProbeAnnotation annotation = (ExpressionProbeAnnotation) probe.getAnnotation();
+        Gene gene = annotation.getGene();
+        
+        final String ensemblAccession = "ensembl accession";
+        final String genbankAccession = "genebank accession";
+        final String refSeqAccession = "refseq accession";
+        final String thcAccession = "thc accession";
+        
+        biosequenceBuilder.createNewEnsemblAccession(ensemblAccession);
+        biosequenceBuilder.createNewGBAccession(genbankAccession);
+        biosequenceBuilder.createNewRefSeqAccession(refSeqAccession);
+        biosequenceBuilder.createNewTHCAccession(thcAccession);
+        
+        assertEquals(ensemblAccession, gene.getAccessionNumbers(Gene.ENSEMBLE).get(0));
+        assertEquals(genbankAccession, gene.getAccessionNumbers(Gene.GENBANK).get(0));
+        assertEquals(refSeqAccession, gene.getAccessionNumbers(Gene.REF_SEQ).get(0));
+        assertEquals(thcAccession, gene.getAccessionNumbers(Gene.THC).get(0));
+    }
+
+    @Test
+    public void ignoresBiosequenceForPositiveControl() {
+        final String controlType = "pos";
+        
+        assertIgnoresBiosquence(controlType);
+    }
+
+    @Test
+    public void ignoresBiosequenceForNegativeControl() {
+        final String controlType = "neg";
+        
+        assertIgnoresBiosquence(controlType);
+    }
+
+    private void assertIgnoresBiosquence(final String controlType) {
+        final String probe1Name = "probe1";
+        final String database = "database name";
+        final String species = "species name";
+        
+        arrayDesignBuilder.findOrCreatePhysicalProbeBuilder(probe1Name);
+        PhysicalProbe probe = arrayDesignBuilder.getPhysicalProbes().values().iterator().next();
+
+        arrayDesignBuilder.setBiosequenceRef(database, species, probe1Name);
+        BiosequenceBuilder biosequenceBuilder = arrayDesignBuilder.createBiosequenceBuilder(controlType, species);
+        biosequenceBuilder.agpAccession(probe1Name);
+
+        ExpressionProbeAnnotation annotation = (ExpressionProbeAnnotation) probe.getAnnotation();
+        
+        final String ensemblAccession = "ensembl accession";
+        final String genbankAccession = "genebank accession";
+        final String refSeqAccession = "refseq accession";
+        final String thcAccession = "thc accession";
+        
+        biosequenceBuilder.createNewEnsemblAccession(ensemblAccession);
+        biosequenceBuilder.createNewGBAccession(genbankAccession);
+        biosequenceBuilder.createNewRefSeqAccession(refSeqAccession);
+        biosequenceBuilder.createNewTHCAccession(thcAccession);
+        
+        assertNull(annotation);
     }
 
     @Test

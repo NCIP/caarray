@@ -200,7 +200,6 @@ abstract class AbstractXMLTokenizer<TokenT extends Enum<TokenT>> implements XMLT
         case XMLEvent.ENTITY_REFERENCE:
         case XMLEvent.NAMESPACE:
         case XMLEvent.NOTATION_DECLARATION:
-        case XMLEvent.PROCESSING_INSTRUCTION:
         case XMLEvent.SPACE:
             token = getErrorToken();
             break;
@@ -208,6 +207,7 @@ abstract class AbstractXMLTokenizer<TokenT extends Enum<TokenT>> implements XMLT
         case XMLEvent.CHARACTERS:
         case XMLEvent.COMMENT:
         case XMLEvent.DTD:
+        case XMLEvent.PROCESSING_INSTRUCTION:
             token = null;
             break;
 

@@ -134,7 +134,122 @@ public class AgilentGELMParserBehaviorTest {
     }
 
     @Test
-    public void createsAccessions() {
+    public void physicalProbeSetsBioSequenceRef() {
+        final String reporterName = "reporter name";
+        final String databaseName = "database name";
+        final String identifier = "identifier";
+        final String species = "species";
+        final int featureNumber = 123;
+
+        add(Token.DOCUMENT_START);
+        add(Token.PROJECT_START);
+        add(Token.PATTERN_START);
+        add(Token.REPORTER_START);
+        add(Token.NAME, reporterName);
+        add(Token.SYSTEMATIC_NAME);
+        add(Token.FEATURE_START);
+        add(Token.NUMBER, featureNumber);
+        add(Token.POSITION_START);
+        add(Token.UNITS, "mm");
+        add(Token.X, 0.00000000000000001);
+        add(Token.Y, 0.00000000000000001);
+        repeat(2, Token.END);
+        add(Token.BIOSEQUENCE_REF_START);
+        add(Token.DATABASE, databaseName);
+        add(Token.IDENTIFIER, identifier);
+        add(Token.SPECIES, species);
+        repeat(4, Token.END);
+        add(Token.DOCUMENT_END);
+        add(Token.EOF);
+        
+        assertTrue(parser.parse(builder));
+
+        verify(builder).findOrCreatePhysicalProbeBuilder(reporterName);
+        verify(builder).createFeatureBuilder(featureNumber);
+        verify(builder).setCoordinates(0.00000000000000001, 0.00000000000000001, "mm");
+        verify(builder).setBiosequenceRef(databaseName, species, identifier);
+    }
+    
+    @Test
+    public void biosequenceBuilderCreatesAccessions() {
+        final String controlType = null;
+        final String species = "species name";
+        final String probeId = "probe id";
+        
+        add(Token.DOCUMENT_START);
+        add(Token.PROJECT_START);
+        add(Token.BIOSEQUENCE_START);
+        add(Token.SPECIES, species);
+        add(Token.ACCESSION_START);
+        add(Token.DATABASE, "agp");
+        add(Token.ID, probeId);
+        add(Token.END);
+        add(Token.ACCESSION_START);
+        add(Token.DATABASE, "gb");
+        add(Token.ID, "genbank accession");
+        add(Token.END);
+        add(Token.ACCESSION_START);
+        add(Token.DATABASE, "ens");
+        add(Token.ID, "ensembl accession");
+        add(Token.END);
+        add(Token.ACCESSION_START);
+        add(Token.DATABASE, "ref");
+        add(Token.ID, "ref accession");
+        add(Token.END);
+        add(Token.ACCESSION_START);
+        add(Token.DATABASE, "thc");
+        add(Token.ID, "thc accession");
+        repeat(3, Token.END);
+        add(Token.DOCUMENT_END);
+        add(Token.EOF);
+
+        assertTrue(parser.parse(builder));
+
+        verify(builder).createBiosequenceBuilder(controlType, species);
+        verify(builder).agpAccession(probeId);
+        verify(builder).createNewGBAccession("genbank accession");
+        verify(builder).createNewEnsemblAccession("ensembl accession");
+        verify(builder).createNewRefSeqAccession("ref accession");
+        verify(builder).createNewTHCAccession("thc accession");
+    }
+    
+    @Test
+    public void biosequenceBuilderCreatesMiRnaAccessions() {
+        final String controlType = null;
+        final String species = "species name";
+        final String probeId = "probe id";
+        final String mirAccession1 = "mir accession 1";
+        final String mirAccession2 = "mir accession 2";
+        
+        add(Token.DOCUMENT_START);
+        add(Token.PROJECT_START);
+        add(Token.BIOSEQUENCE_START);
+        add(Token.SPECIES, species);
+        add(Token.ACCESSION_START);
+        add(Token.DATABASE, "agp");
+        add(Token.ID, probeId);
+        add(Token.END);
+        add(Token.ACCESSION_START);
+        add(Token.DATABASE, "mir");
+        add(Token.ID, mirAccession1);
+        add(Token.END);
+        add(Token.ACCESSION_START);
+        add(Token.DATABASE, "mir");
+        add(Token.ID, mirAccession2);
+        repeat(3, Token.END);
+        add(Token.DOCUMENT_END);
+        add(Token.EOF);
+
+        assertTrue(parser.parse(builder));
+
+        verify(builder).createBiosequenceBuilder(controlType, species);
+        verify(builder).agpAccession(probeId);
+        verify(builder).createNewMirAccession(mirAccession1);
+        verify(builder).createNewMirAccession(mirAccession2);
+    }
+
+    @Test
+    public void geneBuilderCreatesAccessions() {
         final String reporterName = "reporter name";
         final String geneName = "gene name";
         final int featureNumber = 123;
@@ -161,6 +276,14 @@ public class AgilentGELMParserBehaviorTest {
         add(Token.ACCESSION_START);
         add(Token.DATABASE, "ens");
         add(Token.ID, "ensembl accession");
+        add(Token.END);
+        add(Token.ACCESSION_START);
+        add(Token.DATABASE, "ref");
+        add(Token.ID, "ref accession");
+        add(Token.END);
+        add(Token.ACCESSION_START);
+        add(Token.DATABASE, "thc");
+        add(Token.ID, "thc accession");
         repeat(5, Token.END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
@@ -173,6 +296,8 @@ public class AgilentGELMParserBehaviorTest {
         verify(builder).createGeneBuilder(geneName);
         verify(builder).createNewGBAccession("genbank accession");
         verify(builder).createNewEnsemblAccession("ensembl accession");
+        verify(builder).createNewRefSeqAccession("ref accession");
+        verify(builder).createNewTHCAccession("thc accession");
     }
 
 
@@ -287,6 +412,17 @@ public class AgilentGELMParserBehaviorTest {
     }
 
     @Test
+    public void probeWithControlTypeIgnoreAndNameStartingWithNAIsPlacedInIgnoreProbeGroup() {
+        final String reporterName = "NA12345";
+        final String controlType = "ignore";
+        final int featureNumber = 123;
+
+        setupTokenStream(reporterName, controlType, featureNumber);
+        assertTrue(parser.parse(builder));
+        verifyCalls(reporterName, controlType, featureNumber, builder);
+    }
+
+    @Test
     public void probeWithControlTypeIgnoreAndAnyOtherNameIsRejected() {
         final String reporterName = "not empty or 'NA'";
         final String controlType = "ignore";
@@ -374,8 +510,8 @@ public class AgilentGELMParserBehaviorTest {
         tokenizer.repeat(count, token);
     }
     
-    private abstract class AbstractBuilder implements ArrayDesignBuilder, ArrayDesignBuilder.PhysicalProbeBuilder,
-            ArrayDesignBuilder.FeatureBuilder, ArrayDesignBuilder.GeneBuilder {        
+    private abstract class AbstractBuilder implements ArrayDesignBuilder, PhysicalProbeBuilder,
+            FeatureBuilder, GeneBuilder, AccessionBuilder, BiosequenceBuilder {
     }
 
     private AbstractBuilder createMockBuilder() {
@@ -389,6 +525,7 @@ public class AgilentGELMParserBehaviorTest {
         when(newBuilder.setChromosomeLocation(anyString(), anyLong(), anyLong())).thenReturn(newBuilder);
         when(newBuilder.addToProbeGroup(anyString())).thenReturn(newBuilder);
         when(newBuilder.findOrCreatePhysicalProbeBuilder(anyString())).thenReturn(newBuilder);
+        when(newBuilder.createBiosequenceBuilder(anyString(), anyString())).thenReturn(newBuilder);
         
         return newBuilder;
     }

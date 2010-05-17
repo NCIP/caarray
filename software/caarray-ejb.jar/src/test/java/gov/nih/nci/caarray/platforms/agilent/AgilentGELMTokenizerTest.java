@@ -83,8 +83,15 @@
 package gov.nih.nci.caarray.platforms.agilent;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import gov.nih.nci.caarray.platforms.agilent.AgilentGELMToken.Token;
+import gov.nih.nci.caarray.test.data.arraydesign.AgilentArrayDesignFiles;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -193,7 +200,7 @@ public class AgilentGELMTokenizerTest {
 
     @Test
     public void recognizesChipElementWithAttributes() {
-        handlesElementAndAttributes("chip", Token.CHIP_START, Token.END, new String[]{"barcode",}, new Token[]{Token.BARCODE,});
+        handlesElementAndAttributes("chip", Token.CHIP_START, Token.END, new String[]{"barcode", "prepared_for", "prepared_for_org"}, new Token[]{Token.BARCODE, Token.PREPARED_FOR, Token.PREPARED_FOR_ORG,});
     }
 
     @Test
@@ -228,17 +235,76 @@ public class AgilentGELMTokenizerTest {
 
     @Test
     public void recognizesPrintingElementWithAttributes() {
-        handlesElementAndAttributes("printing", Token.PRINTING_START, Token.END, new String[]{"date", "printer", "type", "pattern_name", "run_description",}, new Token[]{Token.DATE, Token.PRINTER, Token.TYPE, Token.PATTERN_NAME, Token.RUN_DESCRIPTION,});
+        handlesElementAndAttributes("printing", Token.PRINTING_START, Token.END, new String[]{"date", "printer", "type", "pattern_name", "run_description", "prepared_by", "prepared_at_site", "prepared_by_org",}, new Token[]{Token.DATE, Token.PRINTER, Token.TYPE, Token.PATTERN_NAME, Token.RUN_DESCRIPTION, Token.PREPARED_BY, Token.PREPARED_AT_SITE, Token.PREPARED_BY_ORG,});
     }
 
     @Test
-    public void recognizesProjectElementWithAttributes() {
+    public void recognizesProjectElementWithGelmPatternDtdAttributes() {
         handlesElementAndAttributes("project", Token.PROJECT_START, Token.END, new String[]{"name", "id", "date", "by", "company",}, new Token[]{Token.NAME, Token.ID, Token.DATE, Token.BY, Token.COMPANY,});
+    }
+
+    @Test
+    public void recognizesProjectElementWithGelmDtdAttributes() {
+        handlesElementAndAttributes("project", Token.PROJECT_START, Token.END, new String[]{"name", "id", "date", "by", "organization",}, new Token[]{Token.NAME, Token.ID, Token.DATE, Token.BY, Token.ORGANIZATION,});
     }
 
     @Test
     public void recognizesReporterElementWithAttributes() {
         handlesElementAndAttributes("reporter", Token.REPORTER_START, Token.END, new String[]{"name", "systematic_name", "accession", "deletion", "control_type", "fail_type", "active_sequence", "linker_sequence", "primer1_sequence", "primer2_sequence", "start_coord", "mismatch_count",}, new Token[]{Token.NAME, Token.SYSTEMATIC_NAME, Token.ACCESSION, Token.DELETION, Token.CONTROL_TYPE, Token.FAIL_TYPE, Token.ACTIVE_SEQUENCE, Token.LINKER_SEQUENCE, Token.PRIMER1_SEQUENCE, Token.PRIMER2_SEQUENCE, Token.START_COORD, Token.MISMATCH_COUNT,});
+    }
+
+    @Test
+    public void recognizesBiosequenceElementWithAttributes() {
+        handlesElementAndAttributes("biosequence", Token.BIOSEQUENCE_START, Token.END, new String[]{"access", "chromosome", "control_type", "description", "ec_number", "map_position", "primary_name", "sequenceDB", "species", "type",}, new Token[]{Token.ACCESS, Token.CHROMOSOME, Token.CONTROL_TYPE, Token.DESCRIPTION, Token.EC_NUMBER, Token.MAP_POSITION, Token.PRIMARY_NAME, Token.SEQUENCEDB, Token.SPECIES, Token.TYPE,});
+    }
+    
+    @Test
+    public void recognizesBiosequenceRefElementWithAttributes() {
+        handlesElementAndAttributes("biosequence_ref", Token.BIOSEQUENCE_REF_START, Token.END, new String[]{"database", "identifier", "species",}, new Token[]{Token.DATABASE, Token.IDENTIFIER, Token.SPECIES,});
+    }
+    
+    @Test
+    public void recognizesGridLayouElementWithAttributes() {
+        handlesElementAndAttributes("grid_layout", Token.GRID_LAYOUT_START, Token.END, new String[]{"feature_count_x", "feature_count_y", "feature_spacing_x  ","feature_spacing_y ",}, new Token[]{Token.FEATURE_COUNT_X, Token.FEATURE_COUNT_Y, Token.FEATURE_SPACING_X, Token.FEATURE_SPACING_Y,});
+    }
+    
+    @Test
+    public void recognizesAllTokensInTestAcghXmlFile() throws FileNotFoundException {
+        recognizesAllTokensInFile(AgilentArrayDesignFiles.TEST_ACGH_XML);       
+    }
+    
+    @Test
+    public void recognizesAllTokensInTestGeneExpressionOneXmlFile() throws FileNotFoundException {
+        recognizesAllTokensInFile(AgilentArrayDesignFiles.TEST_GENE_EXPRESSION_1_XML);       
+    }
+    
+    @Test
+    public void recognizesAllTokensInTestGeneExpressionTwoXmlFile() throws FileNotFoundException {
+        recognizesAllTokensInFile(AgilentArrayDesignFiles.TEST_GENE_EXPRESSION_2_XML);       
+    }
+    
+    @Test
+    public void recognizesAllTokensInTestGeneExpressionThreeXmlFile() throws FileNotFoundException {
+        recognizesAllTokensInFile(AgilentArrayDesignFiles.TEST_GENE_EXPRESSION_3_XML);       
+    }
+    
+    @Test
+    public void recognizesAllTokensInTestMiRnaOneXmlFile() throws FileNotFoundException {
+        recognizesAllTokensInFile(AgilentArrayDesignFiles.TEST_MIRNA_1_XML);       
+    }
+    
+    @Test
+    public void recognizesAllTokensInTestMiRnaTwoXmlFile() throws FileNotFoundException {
+        recognizesAllTokensInFile(AgilentArrayDesignFiles.TEST_MIRNA_2_XML);       
+    }
+    
+    private void recognizesAllTokensInFile(File file) throws FileNotFoundException {
+        FileReader reader = new FileReader(file);
+        AgilentGELMTokenizer tokenizer = new AgilentGELMTokenizer(reader);
+        while (Token.EOF != tokenizer.getCurrentToken()) {
+            assertThat(tokenizer.getCurrentToken(), not(is(Token.getErrorToken())));
+            tokenizer.advance();
+        }
     }
 
     private void handlesElementAndAttributes(String elementName, Token elementStartToken, Token elementEndToken, String[] attributeNames, Token[] attributeTokens) {

@@ -106,9 +106,9 @@ import org.hibernate.criterion.Order;
  * @author jscott
  *
  */
-class ArrayDesignBuilderImpl implements ArrayDesignBuilder, ArrayDesignBuilder.PhysicalProbeBuilder,
-        ArrayDesignBuilder.FeatureBuilder, ArrayDesignBuilder.GeneBuilder {
-    
+class ArrayDesignBuilderImpl implements ArrayDesignBuilder, PhysicalProbeBuilder,
+FeatureBuilder, GeneBuilder, AccessionBuilder {
+
     private final VocabularyDao vocabularyDao;
     private final ArrayDesignDetails arrayDesignDetails = new ArrayDesignDetails();
     private final Map<String, ProbeGroup> probeGroups = new HashMap<String, ProbeGroup>();;
@@ -117,6 +117,7 @@ class ArrayDesignBuilderImpl implements ArrayDesignBuilder, ArrayDesignBuilder.P
     private PhysicalProbe currentPhysicalProbe;
     private Feature currentFeature;
     private Term millimeterTerm;
+    private final Map<String, PhysicalProbe> biosequenceRefMap = new HashMap<String, PhysicalProbe>();
 
     /**
      * @param vocabularyDao a vocabulary DAO
@@ -125,10 +126,10 @@ class ArrayDesignBuilderImpl implements ArrayDesignBuilder, ArrayDesignBuilder.P
         this.vocabularyDao = vocabularyDao;
         lookupMillimeterTerm();
     }
-    
+
     private TermSource getSource(String name, String version) {
         final String versionField = "version";
-        
+
         TermSource querySource = new TermSource();
         querySource.setName(name);
         querySource.setVersion(version);
@@ -141,13 +142,13 @@ class ArrayDesignBuilderImpl implements ArrayDesignBuilder, ArrayDesignBuilder.P
         final String termSourceName = "MO";
         final String termSourceVersion = "1.3.1.1";
         final String millimeterString = "mm";
-       
+
         TermSource source = getSource(termSourceName, termSourceVersion);
         if (null == source) {
             throw new AgilentParseException(String.format(
                     "Could not find the \"%s\" term source, version %s", termSourceName, termSourceVersion)); 
         }
-        
+
         millimeterTerm = vocabularyDao.getTerm(source, millimeterString);        
         if (null == millimeterTerm) {
             throw new AgilentParseException(String.format(
@@ -231,45 +232,117 @@ class ArrayDesignBuilderImpl implements ArrayDesignBuilder, ArrayDesignBuilder.P
     /**
      * {@inheritDoc}
      */
+    public PhysicalProbeBuilder setBiosequenceRef(String database, String species, String identifier) {
+        String key = buildBiosequenceKey(species, identifier);
+        getBiosequenceRefMap().put(key, currentPhysicalProbe);
+        return this;
+    }
+
+    private String buildBiosequenceKey(String species, String identifier) {
+        return String.format("`%s`%s`", species, identifier);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public GeneBuilder createGeneBuilder(String geneName) {
+        createExpressionProbeAnnotation(currentPhysicalProbe, geneName);
+        return this;
+    }
+
+    private ExpressionProbeAnnotation createExpressionProbeAnnotation(PhysicalProbe physicalProbe, String geneName) {
         Gene gene = new Gene();
         gene.setFullName(geneName);
 
         ExpressionProbeAnnotation annotation = new ExpressionProbeAnnotation();
         annotation.setGene(gene);
 
-        currentPhysicalProbe.setAnnotation(annotation);
+        physicalProbe.setAnnotation(annotation);
+
+        return annotation;
+    }
+
+    private ExpressionProbeAnnotation createExpressionProbeAnnotation(PhysicalProbe physicalProbe) {
+        String geneName = null;
+        return createExpressionProbeAnnotation(physicalProbe, geneName);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public GeneBuilder setChromosomeLocation(String chromosomeName,
+            long startPosition, long endPosition) {
+        ExpressionProbeAnnotation annotation = (ExpressionProbeAnnotation) currentPhysicalProbe.getAnnotation();
+        annotation.setChromosome(chromosomeName, startPosition, endPosition);
         return this;
     }
 
     /**
      * {@inheritDoc}
      */
-   public GeneBuilder createNewGBAccession(String accessionNumber) {
+    public AccessionBuilder createNewGBAccession(String accessionNumber) {
         ExpressionProbeAnnotation annotation = (ExpressionProbeAnnotation) currentPhysicalProbe.getAnnotation();
         Gene gene = annotation.getGene();
         gene.addAccessionNumber(Gene.GENBANK, accessionNumber);
         return this;
     }
 
-   /**
-    * {@inheritDoc}
-    */
-   public GeneBuilder createNewEnsemblAccession(String accessionNumber) {
+    /**
+     * {@inheritDoc}
+     */
+    public AccessionBuilder createNewEnsemblAccession(String accessionNumber) {
         ExpressionProbeAnnotation annotation = (ExpressionProbeAnnotation) currentPhysicalProbe.getAnnotation();
         Gene gene = annotation.getGene();
         gene.addAccessionNumber(Gene.ENSEMBLE, accessionNumber);
         return this;
     }
 
-   /**
-    * {@inheritDoc}
-    */
-   public GeneBuilder setChromosomeLocation(String chromosomeName,
-           long startPosition, long endPosition) {
+    /**
+     * {@inheritDoc}
+     */
+    public AccessionBuilder createNewRefSeqAccession(String accessionNumber) {
         ExpressionProbeAnnotation annotation = (ExpressionProbeAnnotation) currentPhysicalProbe.getAnnotation();
-        annotation.setChromosome(chromosomeName, startPosition, endPosition);
+        Gene gene = annotation.getGene();
+        gene.addAccessionNumber(Gene.REF_SEQ, accessionNumber);
         return this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public AccessionBuilder createNewTHCAccession(String accessionNumber) {
+        ExpressionProbeAnnotation annotation = (ExpressionProbeAnnotation) currentPhysicalProbe.getAnnotation();
+        Gene gene = annotation.getGene();
+        gene.addAccessionNumber(Gene.THC, accessionNumber);
+        return this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public AccessionBuilder agpAccession(String probeId) {
+        return this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public AccessionBuilder createNewMirAccession(String accessionNumber) {
+        return this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public BiosequenceBuilder createBiosequenceBuilder(String controlType, String species) {
+        final String positiveControlLabel = "pos";
+
+        final String negativeControlLabel = "neg";
+        if (positiveControlLabel.equalsIgnoreCase(controlType) || negativeControlLabel.equalsIgnoreCase(controlType)) {
+            return new NullBiosequenceBuilder();
+        } else {
+            return new BiosequenceBuilderImpl(this, species);
+        }
     }
 
     /**
@@ -298,5 +371,137 @@ class ArrayDesignBuilderImpl implements ArrayDesignBuilder, ArrayDesignBuilder.P
      */
     Map<String, ProbeGroup> getProbeGroups() {
         return probeGroups;
+    }
+
+    private Map<String, PhysicalProbe> getBiosequenceRefMap() {
+        return biosequenceRefMap;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    private class BiosequenceBuilderImpl implements BiosequenceBuilder {
+        private final ArrayDesignBuilderImpl parentBuilder;
+        private final String species;
+        private PhysicalProbe physicalProbe;
+        private ExpressionProbeAnnotation annotation;
+
+        BiosequenceBuilderImpl(ArrayDesignBuilderImpl parentBuilder, String species) {
+            this.parentBuilder = parentBuilder;
+            this.species = species;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        public AccessionBuilder agpAccession(String accessionNumber) {
+            String key = parentBuilder.buildBiosequenceKey(species, accessionNumber);
+            physicalProbe = parentBuilder.getBiosequenceRefMap().get(key);
+
+            if (null != physicalProbe) {
+                annotation = createExpressionProbeAnnotation(physicalProbe);             
+            }
+
+            return this;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        public AccessionBuilder createNewEnsemblAccession(String accessionNumber) {
+            addAccession(Gene.ENSEMBLE, accessionNumber);           
+            return this;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        public AccessionBuilder createNewGBAccession(String accessionNumber) {
+            addAccession(Gene.GENBANK, accessionNumber);           
+            return this;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        public AccessionBuilder createNewMirAccession(String accessionNumber) {
+            return this;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        public AccessionBuilder createNewRefSeqAccession(String accessionNumber) {
+            addAccession(Gene.REF_SEQ, accessionNumber);           
+            return this;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        public AccessionBuilder createNewTHCAccession(String accessionNumber) {
+            addAccession(Gene.THC, accessionNumber);           
+            return this;
+        }
+
+        private void addAccession(String database, String accessionNumber) {
+            Gene gene = annotation.getGene();
+            gene.addAccessionNumber(database, accessionNumber);
+        }       
+    }
+    
+    /**
+     * For controls, this biosequenceBuilder does nothing.
+     * @author jscott
+     */
+    private class NullBiosequenceBuilder implements BiosequenceBuilder {
+
+        /**
+         * {@inheritDoc}
+         */
+        public AccessionBuilder agpAccession(String accessionNumber) {
+            // Do nothing
+            return this;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        public AccessionBuilder createNewEnsemblAccession(String accessionNumber) {
+            // Do nothing
+            return this;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        public AccessionBuilder createNewGBAccession(String accessionNumber) {
+            // Do nothing
+            return this;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        public AccessionBuilder createNewMirAccession(String accessionNumber) {
+            // Do nothing
+            return this;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        public AccessionBuilder createNewRefSeqAccession(String accessionNumber) {
+            // Do nothing
+            return this;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        public AccessionBuilder createNewTHCAccession(String accessionNumber) {
+            // Do nothing
+            return this;
+        }       
     }
 }

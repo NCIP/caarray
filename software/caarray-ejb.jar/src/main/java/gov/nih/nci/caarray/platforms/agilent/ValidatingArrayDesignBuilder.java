@@ -82,18 +82,19 @@
  */
 package gov.nih.nci.caarray.platforms.agilent;
 
- /**
+
+/**
  * @author jscott
  * Used during the parsing of an array design definition file for the purposes of file validation.
  */
-class ValidatingArrayDesignBuilder implements ArrayDesignBuilder, ArrayDesignBuilder.PhysicalProbeBuilder,
-        ArrayDesignBuilder.FeatureBuilder, ArrayDesignBuilder.GeneBuilder {
+class ValidatingArrayDesignBuilder implements ArrayDesignBuilder, PhysicalProbeBuilder,
+FeatureBuilder, GeneBuilder, AccessionBuilder, BiosequenceBuilder {
     /**
      * {@inheritDoc}
      */
     public PhysicalProbeBuilder findOrCreatePhysicalProbeBuilder(String name) {
         // Do nothing
-       return this;
+        return this;
     }
 
     /**
@@ -131,7 +132,7 @@ class ValidatingArrayDesignBuilder implements ArrayDesignBuilder, ArrayDesignBui
     /**
      * {@inheritDoc}
      */
-    public GeneBuilder createNewGBAccession(String accessionNumber) {
+    public AccessionBuilder createNewGBAccession(String accessionNumber) {
         // Do nothing
         return this;
     }
@@ -139,9 +140,41 @@ class ValidatingArrayDesignBuilder implements ArrayDesignBuilder, ArrayDesignBui
     /**
      * {@inheritDoc}
      */
-   public GeneBuilder createNewEnsemblAccession(String accessionNumber) {
-       // Do nothing
-       return this;
+    public AccessionBuilder createNewEnsemblAccession(String accessionNumber) {
+        // Do nothing
+        return this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public AccessionBuilder createNewRefSeqAccession(String accessionNumber) {
+        // Do nothing
+        return this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public AccessionBuilder createNewTHCAccession(String accessionNumber) {
+        // Do nothing
+        return this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public BiosequenceBuilder agpAccession(String probeId) {
+        // Do nothing
+        return this;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public BiosequenceBuilder createNewMirAccession(String accessionNumber) {
+        // Do nothing
+        return this;
     }
 
     /**
@@ -157,6 +190,22 @@ class ValidatingArrayDesignBuilder implements ArrayDesignBuilder, ArrayDesignBui
      * {@inheritDoc}
      */
     public GeneBuilder createGeneBuilder(String geneName) {
+        // Do nothing
+        return this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public PhysicalProbeBuilder setBiosequenceRef(String database, String species, String identifier) {
+        // Do nothing
+        return this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public BiosequenceBuilder createBiosequenceBuilder(String controlType, String species) {
         // Do nothing
         return this;
     }

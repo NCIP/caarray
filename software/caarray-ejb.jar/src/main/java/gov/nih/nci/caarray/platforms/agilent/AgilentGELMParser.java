@@ -83,20 +83,18 @@
 package gov.nih.nci.caarray.platforms.agilent;
 
 import gov.nih.nci.caarray.platforms.agilent.AgilentGELMToken.Token;
-import gov.nih.nci.caarray.platforms.agilent.ArrayDesignBuilder.FeatureBuilder;
-import gov.nih.nci.caarray.platforms.agilent.ArrayDesignBuilder.GeneBuilder;
-import gov.nih.nci.caarray.platforms.agilent.ArrayDesignBuilder.PhysicalProbeBuilder;
 
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Implements a parser which recognizes a grammar representing an Agilent GELM file.
- * Rather than dealing with XML directly, this parser makes use of an XMLTokenizer object,
- * which reduces the XML file to a series of tokens.  This simplifies unit testing this class.
+ * Implements a parser which recognizes a grammar representing an Agilent GELM file. Rather than dealing with XML
+ * directly, this parser makes use of an XMLTokenizer object, which reduces the XML file to a series of tokens. This
+ * simplifies unit testing this class.
  * 
  * @author jscott
- *
+ * 
  */
 @SuppressWarnings("PMD.ExcessiveClassLength")
 class AgilentGELMParser {
@@ -130,6 +128,7 @@ class AgilentGELMParser {
 
     /**
      * Parses the token stream, calling the arrayDesignBuilder as it goes.
+     * 
      * @param arrayDesignBuilder object to call as parse proceeds
      * @return true if the parse succeeds; false otherwise
      */
@@ -158,26 +157,82 @@ class AgilentGELMParser {
         accept(Token.DATE);
         accept(Token.ID);
         accept(Token.NAME);
+        accept(Token.ORGANIZATION);
 
         while (Token.END != tokenizer.getCurrentToken()) {
             switch (tokenizer.getCurrentToken()) {
 
-                case PRINTING_START:
-                    parsePrinting();
-                    break;
+            case BIOSEQUENCE_START:
+                parseBiosequence(arrayDesignBuilder);
+                break;
 
-                case PATTERN_START:
-                    parsePattern(arrayDesignBuilder);
-                    break;
+            case PRINTING_START:
+                parsePrinting();
+                break;
 
-                case OTHER_START:
-                    parseOther();
-                    break;
+            case PATTERN_START:
+                parsePattern(arrayDesignBuilder);
+                break;
 
-                default:
-                    throw new ParseException();
+            case OTHER_START:
+                parseOther();
+                break;
+
+            default:
+                throwTokenError();
             }
         }
+
+        expect(Token.END);
+    }
+
+    private void parseBiosequence(ArrayDesignBuilder arrayDesignBuilder) {
+        expect(Token.BIOSEQUENCE_START);
+
+        accept(Token.ACCESS);
+        accept(Token.CHROMOSOME);
+        final String controlType = acceptTokenWithStringValue(Token.CONTROL_TYPE, null);
+        accept(Token.DESCRIPTION);
+        accept(Token.EC_NUMBER);
+        accept(Token.MAP_POSITION);
+        accept(Token.PRIMARY_NAME);
+        accept(Token.SEQUENCEDB);
+        final String species = expectTokenWithStringValue(Token.SPECIES);
+        accept(Token.TYPE);
+        
+        BiosequenceBuilder biosequenceBuilder = arrayDesignBuilder.createBiosequenceBuilder(controlType, species);
+
+        while (Token.END != tokenizer.getCurrentToken()) {
+            switch (tokenizer.getCurrentToken()) {
+
+            case ACCESSION_START:
+                 parseAccession(biosequenceBuilder);
+                break;
+
+            case ALIAS_START:
+                parseAlias();
+                break;
+
+            case OTHER_START:
+                parseOther();
+                break;
+
+            default:
+                throwTokenError();
+            }
+        }
+
+        expect(Token.END);
+    }
+
+    private void parseBiosequenceRef(PhysicalProbeBuilder physicalProbeBuilder) {
+        expect(Token.BIOSEQUENCE_REF_START);
+
+        final String database = acceptTokenWithStringValue(Token.DATABASE, "");
+        final String identifier = expectTokenWithStringValue(Token.IDENTIFIER);
+        final String species = expectTokenWithStringValue(Token.SPECIES);
+        
+        physicalProbeBuilder.setBiosequenceRef(database, species, identifier);
 
         expect(Token.END);
     }
@@ -189,6 +244,9 @@ class AgilentGELMParser {
 
         accept(Token.DATE);
         accept(Token.PATTERN_NAME);
+        accept(Token.PREPARED_AT_SITE);
+        accept(Token.PREPARED_BY);
+        accept(Token.PREPARED_BY_ORG);
         accept(Token.PRINTER);
         accept(Token.RUN_DESCRIPTION);
         accept(Token.TYPE);
@@ -196,40 +254,43 @@ class AgilentGELMParser {
         while (Token.END != tokenizer.getCurrentToken()) {
             switch (tokenizer.getCurrentToken()) {
 
-                case CHIP_START:
-                    chipCount++;
-                    parseChip();
-                    break;
+            case CHIP_START:
+                chipCount++;
+                parseChip();
+                break;
 
-                case OTHER_START:
-                    parseOther();
-                    break;
+            case OTHER_START:
+                parseOther();
+                break;
 
-                default:
-                    throw new ParseException();
+            default:
+                throwTokenError();
             }
         }
 
         expect(Token.END);
 
         if (chipCount == 0) {
-            throw new ParseException();
+            throw new ParseException("Expected at least one \"chip\" element.");
         }
     }
 
     private void parseChip() {
         expect(Token.CHIP_START);
+
         expect(Token.BARCODE);
+        accept(Token.PREPARED_FOR);
+        accept(Token.PREPARED_FOR_ORG);
 
         while (Token.END != tokenizer.getCurrentToken()) {
             switch (tokenizer.getCurrentToken()) {
 
-                case OTHER_START:
-                    parseOther();
-                    break;
+            case OTHER_START:
+                parseOther();
+                break;
 
-                default:
-                    throw new ParseException();
+            default:
+                throwTokenError();
             }
         }
 
@@ -246,30 +307,49 @@ class AgilentGELMParser {
         accept(Token.NAME);
         accept(Token.OWNER);
         accept(Token.SPECIES_DATABASE);
+        accept(Token.TYPE);
         accept(Token.TYPE_ID);
 
         while (Token.END != tokenizer.getCurrentToken()) {
             switch (tokenizer.getCurrentToken()) {
 
-                case REPORTER_START:
-                    reporterCount++;
-                    parseReporter(arrayDesignBuilder);
-                    break;
+            case GRID_LAYOUT_START:
+                parseGridLayout();
+                break;
 
-                case OTHER_START:
-                    parseOther();
-                    break;
+            case REPORTER_START:
+                reporterCount++;
+                parseReporter(arrayDesignBuilder);
+                break;
 
-                default:
-                    throw new ParseException();
+            case OTHER_START:
+                parseOther();
+                break;
+
+            default:
+                throwTokenError();
             }
         }
 
         expect(Token.END);
 
         if (reporterCount == 0) {
-            throw new ParseException();
+            throw new ParseException("Expected at least one \"reporter\" element.");
         }
+    }
+
+    /**
+     * 
+     */
+    private void parseGridLayout() {
+        expect(Token.GRID_LAYOUT_START);
+
+        accept(Token.FEATURE_COUNT_X);
+        accept(Token.FEATURE_COUNT_Y);
+        accept(Token.FEATURE_SPACING_X);
+        accept(Token.FEATURE_SPACING_Y);
+
+        expect(Token.END);
     }
 
     private void parseReporter(ArrayDesignBuilder arrayDesignBuilder) {
@@ -294,11 +374,11 @@ class AgilentGELMParser {
         expect(Token.END);
 
         if (featureCount == 0) {
-            throw new ParseException();
+            throw new ParseException("Expected at least one \"feature\" element.");
         }
 
         if (geneCount > 1) {
-            throw new ParseException();
+            throw new ParseException("Expected no more than one \"gene\" element.");
         }
     }
 
@@ -306,22 +386,26 @@ class AgilentGELMParser {
         while (Token.END != tokenizer.getCurrentToken()) {
             switch (tokenizer.getCurrentToken()) {
 
-                case FEATURE_START:
-                    featureCount++;
-                    parseFeature(physicalProbeBuilder);
-                    break;
+            case BIOSEQUENCE_REF_START:
+                parseBiosequenceRef(physicalProbeBuilder);
+                break;
 
-                case GENE_START:
-                    geneCount++;
-                    parseGene(physicalProbeBuilder);
-                    break;
+            case FEATURE_START:
+                featureCount++;
+                parseFeature(physicalProbeBuilder);
+                break;
 
-                case OTHER_START:
-                    parseOther();
-                    break;
+            case GENE_START:
+                geneCount++;
+                parseGene(physicalProbeBuilder);
+                break;
 
-                default:
-                    throw new ParseException();
+            case OTHER_START:
+                parseOther();
+                break;
+
+            default:
+                throwTokenError();
             }
         }
     }
@@ -329,32 +413,45 @@ class AgilentGELMParser {
     private void addPhysicalProbeToProbeGroup(PhysicalProbeBuilder physicalProbeBuilder,
             final ControlType controlType) {
         switch (controlType) {
-            case IGNORE:
-                physicalProbeBuilder.addToProbeGroup(IGNORE_CONTROL_GROUP_NAME);
-                break;
-            case POSITIVE:
-                physicalProbeBuilder.addToProbeGroup(POSITIVE_CONTROLS_CONTROL_GROUP_NAME);
-                break;
-            case NEGATIVE:
-                physicalProbeBuilder.addToProbeGroup(NEGATIVE_CONTROLS_CONTROL_GROUP_NAME);
-                break;
-            default:
-                // Empty default case.
-                break;
+        case IGNORE:
+            physicalProbeBuilder.addToProbeGroup(IGNORE_CONTROL_GROUP_NAME);
+            break;
+        case POSITIVE:
+            physicalProbeBuilder.addToProbeGroup(POSITIVE_CONTROLS_CONTROL_GROUP_NAME);
+            break;
+        case NEGATIVE:
+            physicalProbeBuilder.addToProbeGroup(NEGATIVE_CONTROLS_CONTROL_GROUP_NAME);
+            break;
+        default:
+            // Empty default case.
+            break;
         }
     }
 
     private ControlType validateReporterControlType(final String controlTypeValue, final String name) {
         final ControlType controlType = ControlType.fromString(controlTypeValue);
         final boolean nameIsEmpty = "".equals(name);
-        final boolean nameIsEmptyOrNA = nameIsEmpty || "na".equalsIgnoreCase(name);
+        final boolean nameIsEmptyOrNA = nameIsEmpty || name.toLowerCase(Locale.ENGLISH).startsWith("na");
 
         if (!nameIsEmptyOrNA && controlType == ControlType.IGNORE) {
-            throw new ParseException();
+            throw new ParseException("Reporters with controlType=\"ignore\", should not have names");
         } else if (nameIsEmpty && controlType != ControlType.IGNORE) {
-            throw new ParseException();
+            throw new ParseException("Reporters with controlType<>\"ignore\", should have names");
         }
         return controlType;
+    }
+
+    private void parseReportAttributes1() {
+        accept(Token.ACCESSION);
+        accept(Token.ACTIVE_SEQUENCE);
+    }
+
+    private void parseReporterAttributes2() {
+        accept(Token.DELETION);
+        accept(Token.DESCRIPTION);
+        accept(Token.FAIL_TYPE);
+        accept(Token.LINKER_SEQUENCE);
+        accept(Token.MISMATCH_COUNT);
     }
 
     private void parseReporterAttributes3() {
@@ -362,19 +459,7 @@ class AgilentGELMParser {
         accept(Token.PRIMER2_SEQUENCE);
         accept(Token.START_COORD);
 
-        expect(Token.SYSTEMATIC_NAME);
-    }
-
-    private void parseReporterAttributes2() {
-        accept(Token.DELETION);
-        accept(Token.FAIL_TYPE);
-        accept(Token.LINKER_SEQUENCE);
-        accept(Token.MISMATCH_COUNT);
-    }
-
-    private void parseReportAttributes1() {
-        accept(Token.ACCESSION);
-        accept(Token.ACTIVE_SEQUENCE);
+        accept(Token.SYSTEMATIC_NAME);
     }
 
     private void parseFeature(PhysicalProbeBuilder physicalProbeBuilder) {
@@ -393,11 +478,11 @@ class AgilentGELMParser {
         expect(Token.END);
 
         if (positionCount != 1) {
-            throw new ParseException();
+            throw new ParseException("Expected no more than one \"position\" element.");
         }
 
         if (penCount > 1) {
-            throw new ParseException();
+            throw new ParseException("Expected no more than one \"pen\" element.");
         }
     }
 
@@ -405,23 +490,23 @@ class AgilentGELMParser {
         while (Token.END != tokenizer.getCurrentToken()) {
             switch (tokenizer.getCurrentToken()) {
 
-                case POSITION_START:
-                    positionCount++;
-                    parsePosition(featureBuilder);
-                    break;
+            case POSITION_START:
+                positionCount++;
+                parsePosition(featureBuilder);
+                break;
 
-                case PEN_START:
-                    penCount++;
-                    parsePen();
-                    break;
+            case PEN_START:
+                penCount++;
+                parsePen();
+                break;
 
-                case OTHER_START:
-                    parseOther();
-                    break;
+            case OTHER_START:
+                parseOther();
+                break;
 
-                default:
-                    throw new ParseException();
-            }
+            default:
+                throwTokenError();
+           }
         }
     }
 
@@ -438,24 +523,24 @@ class AgilentGELMParser {
         accept(Token.SYSTEMATIC_NAME);
 
         GeneBuilder geneBuilder = physicalProbeBuilder.createGeneBuilder(name);
-
+ 
         while (Token.END != tokenizer.getCurrentToken()) {
             switch (tokenizer.getCurrentToken()) {
 
-                case ACCESSION_START:
-                    parseAccession(geneBuilder);
-                    break;
+            case ACCESSION_START:
+                parseAccession(geneBuilder);
+                break;
 
-                case ALIAS_START:
-                    parseAlias();
-                    break;
+            case ALIAS_START:
+                parseAlias();
+                break;
 
-                case OTHER_START:
-                    parseProbeMappingsOrOther(geneBuilder);
-                    break;
+            case OTHER_START:
+                parseProbeMappingsOrOther(geneBuilder);
+                break;
 
-                default:
-                    throw new ParseException();
+            default:
+                throwTokenError();
             }
         }
 
@@ -472,12 +557,12 @@ class AgilentGELMParser {
         while (Token.END != tokenizer.getCurrentToken()) {
             switch (tokenizer.getCurrentToken()) {
 
-                case OTHER_START:
-                    parseOther();
-                    break;
+            case OTHER_START:
+                parseOther();
+                break;
 
-                default:
-                    throw new ParseException();
+            default:
+                throwTokenError();
             }
         }
 
@@ -495,43 +580,66 @@ class AgilentGELMParser {
         while (Token.END != tokenizer.getCurrentToken()) {
             switch (tokenizer.getCurrentToken()) {
 
-                case OTHER_START:
-                    parseOther();
-                    break;
+            case OTHER_START:
+                parseOther();
+                break;
 
-                default:
-                    throw new ParseException();
+            default:
+                throwTokenError();
             }
         }
-
 
         expect(Token.END);
     }
 
-    private void parseAccession(GeneBuilder geneBuilder) {
+    private void parseAccession(AccessionBuilder accessionBuilder) {
         expect(Token.ACCESSION_START);
-        final String database = expectTokenWithStringValue(Token.DATABASE);
-        final String id = expectTokenWithStringValue(Token.ID);
+        
+        final String database = expectTokenWithStringValue(Token.DATABASE);       
+        final String id = parseAccessionName();
 
         while (Token.END != tokenizer.getCurrentToken()) {
             switch (tokenizer.getCurrentToken()) {
 
-                case OTHER_START:
-                    parseOther();
-                    break;
+            case OTHER_START:
+                parseOther();
+                break;
 
-                default:
-                    throw new ParseException();
+            default:
+                throwTokenError();
             }
         }
 
-        if ("gb".equalsIgnoreCase(database)) {
-            geneBuilder.createNewGBAccession(id);
+        if ("agp".equalsIgnoreCase(database)) {
+            accessionBuilder.agpAccession(id);
+        } else if ("gb".equalsIgnoreCase(database)) {
+            accessionBuilder.createNewGBAccession(id);
         } else if ("ens".equalsIgnoreCase(database)) {
-            geneBuilder.createNewEnsemblAccession(id);
+            accessionBuilder.createNewEnsemblAccession(id);
+        } else if ("ref".equalsIgnoreCase(database)) {
+            accessionBuilder.createNewRefSeqAccession(id);
+        } else if ("thc".equalsIgnoreCase(database)) {
+            accessionBuilder.createNewTHCAccession(id);
+        } else if ("mir".equalsIgnoreCase(database)) {
+            accessionBuilder.createNewMirAccession(id);
         }
 
         expect(Token.END);
+    }
+
+    private String parseAccessionName() {      
+        final String defaultValue = "default value 9238BE1D-CA35-40F7-631264F9DCFB7ABA";
+        String id = acceptTokenWithStringValue(Token.ID, defaultValue);
+        
+        if (defaultValue.equals(id)) {
+            id = acceptTokenWithStringValue(Token.IDENTIFIER, defaultValue);
+        }
+        
+        if (defaultValue.equals(id)) {
+            throw new ParseException("Missing accession.");
+        }
+        
+        return id;
     }
 
     private void parseAlias() {
@@ -541,12 +649,12 @@ class AgilentGELMParser {
         while (Token.END != tokenizer.getCurrentToken()) {
             switch (tokenizer.getCurrentToken()) {
 
-                case OTHER_START:
-                    parseOther();
-                    break;
+            case OTHER_START:
+                parseOther();
+                break;
 
-                default:
-                    throw new ParseException();
+            default:
+                throwTokenError();
             }
         }
 
@@ -563,7 +671,7 @@ class AgilentGELMParser {
             String value = expectTokenWithStringValue(Token.VALUE);
             Matcher m = chromosomePattern.matcher(value);
             if (!m.matches()) {
-                throw new ParseException();
+                throw new ParseException(String.format("Unrecognized chromosome name \"%s\".", value));
             }
 
             final String chromosome = m.group(1);
@@ -587,16 +695,20 @@ class AgilentGELMParser {
         while (Token.END != tokenizer.getCurrentToken()) {
             switch (tokenizer.getCurrentToken()) {
 
-                case OTHER_START:
-                    parseOther();
-                    break;
+            case OTHER_START:
+                parseOther();
+                break;
 
-                default:
-                    throw new ParseException();
+            default:
+                throwTokenError();
             }
         }
 
         expect(Token.END);
+    }
+
+    private void throwTokenError() {
+        throw new ParseException(String.format("Unexpected token \"%s\".", tokenizer.getCurrentToken().toString()));
     }
 
     private void accept(Token token) {
@@ -627,7 +739,7 @@ class AgilentGELMParser {
 
     private void expect(Token token) {
         if (tokenizer.getCurrentToken() != token) {
-            throw new ParseException();
+            throwTokenError(token);
         }
 
         tokenizer.advance();
@@ -635,7 +747,7 @@ class AgilentGELMParser {
 
     private double expectTokenWithDoubleValue(Token token) {
         if (tokenizer.getCurrentToken() != token) {
-            throw new ParseException();
+            throwTokenError(token);
         }
 
         double value = tokenizer.getDoubleValue();
@@ -645,7 +757,7 @@ class AgilentGELMParser {
 
     private String expectTokenWithStringValue(Token token) {
         if (tokenizer.getCurrentToken() != token) {
-            throw new ParseException();
+            throwTokenError(token);
         }
 
         String value = tokenizer.getStringValue();
@@ -653,8 +765,15 @@ class AgilentGELMParser {
         return value;
     }
 
+    private void throwTokenError(Token token) {
+        throw new ParseException(
+                String.format("Unexepected token \"%s\".  Expected \"%s\"",
+                        tokenizer.getCurrentToken(), token.toString()));
+    }
+
     /***
      * Control types for probes in GELM files.
+     * 
      * @author jscott
      */
     private enum ControlType {
@@ -676,10 +795,18 @@ class AgilentGELMParser {
 
     /***
      * Exception thrown on unexpected exceptions during parsing.
+     * 
      * @author jscott
-     *
+     * 
      */
-     private class ParseException extends RuntimeException {
+    private class ParseException extends RuntimeException {
         private static final long serialVersionUID = 1L;
+        
+       /**
+         * @param message the exception message.
+         */
+        public ParseException(String message) {
+            super(message);
+        }
     }
 }

@@ -133,6 +133,16 @@ public class Gene extends AbstractCaArrayEntity {
     public static final String ENSEMBLE = "Ensemble";
 
     /**
+     * Name of the RefSeq database.
+     */
+    public static final String REF_SEQ = "RefSeq";
+
+    /**
+     * Name of the THC database.
+     */
+    public static final String THC = "THC";
+
+    /**
      * @return the symbol
      */
     public String getSymbol() {

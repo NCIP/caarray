@@ -150,7 +150,6 @@ class Accession {
         
         Accession other = (Accession) obj;
         return new EqualsBuilder()
-        .appendSuper(super.equals(obj))
         .append(accessionNumber, other.accessionNumber)
         .append(databaseName, other.databaseName)
         .isEquals();
