@@ -45,7 +45,7 @@
        <sqlFile path="db-upgrade/mysql/2.4.0/26324.sql"/>
     </changeSet>
     
-    <changeSet id="27274" author="jscott" failOnError=false>
+    <changeSet id="27274" author="jscott" failOnError="false">
       <comment>GF 27274 - Parse Agilent GEML/xml array designs for aCGH assays.</comment>
       <sqlFile path="db-upgrade/mysql/2.4.0/27274.sql"/>
    </changeSet>
