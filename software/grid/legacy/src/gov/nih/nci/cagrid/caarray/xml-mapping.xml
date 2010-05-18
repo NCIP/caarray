@@ -763,6 +763,18 @@
     <field name="arrayDesignDetails" type="gov.nih.nci.caarray.domain.array.ArrayDesignDetails">
       <bind-xml name="ArrayDesignDetails" type="gov.nih.nci.caarray.domain.array.ArrayDesignDetails" location="arrayDesignDetails" node="element" />
     </field>
+    <field name="coordinateUnits" type="gov.nih.nci.caarray.domain.vocabulary.Term">
+      <bind-xml name="Term" type="gov.nih.nci.caarray.domain.vocabulary.Term" location="coordinateUnits" node="element" />
+    </field>
+    <field name="featureNumber" type="java.lang.Integer">
+      <bind-xml name="featureNumber" node="attribute" />
+    </field>
+    <field name="xCoordinate" type="java.lang.Double">
+      <bind-xml name="xCoordinate" node="attribute" />
+    </field>
+    <field name="yCoordinate" type="java.lang.Double">
+      <bind-xml name="yCoordinate" node="attribute" />
+    </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.array.AbstractProbe" identity="id" extends="gov.nih.nci.caarray.domain.array.AbstractDesignElement">
     <map-to xml="AbstractProbe" ns-uri="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.array" />
@@ -796,6 +808,15 @@
   </class>
   <class name="gov.nih.nci.caarray.domain.array.ExpressionProbeAnnotation" identity="id" extends="gov.nih.nci.caarray.domain.array.AbstractProbeAnnotation">
     <map-to xml="ExpressionProbeAnnotation" ns-uri="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.array" />
+    <field name="chromosomeName" type="string">
+        <bind-xml name="chromosomeName" node="attribute" />
+    </field>
+    <field name="chromosomeStartPosition" type="java.lang.Long">
+        <bind-xml name="chromosomeStartPosition" node="attribute" />
+    </field>
+    <field name="chromosomeEndPosition" type="java.lang.Long">
+        <bind-xml name="chromosomeEndPosition" node="attribute" />
+    </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.array.Gene" identity="id" extends="gov.nih.nci.caarray.domain.AbstractCaArrayEntity">
     <map-to xml="Gene" ns-uri="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.array" />
@@ -805,20 +826,17 @@
     <field name="fullName" type="string">
       <bind-xml name="fullName" node="attribute" />
     </field>
-    <field name="genbankAccession" type="string">
-      <bind-xml name="genbankAccession" node="attribute" />
+    <field name="accessions" type="gov.nih.nci.caarray.domain.array.Accession" collection="collection">
+      <bind-xml name="AbstractContact" type="gov.nih.nci.caarray.domain.array.Accession" location="accessions" node="element" />
     </field>
-    <field name="genbankAccessionVersion" type="string">
-      <bind-xml name="genbankAccessionVersion" node="attribute" />
+  </class>
+  <class name="gov.nih.nci.caarray.domain.array.Accession">
+    <map-to xml="Accession" ns-uri="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.array" />
+    <field name="databaseName" type="string">
+      <bind-xml name="databaseName" node="attribute" />
     </field>
-    <field name="ensemblgeneID" type="string">
-      <bind-xml name="ensemblgeneID" node="attribute" />
-    </field>
-    <field name="unigeneclusterID" type="string">
-      <bind-xml name="unigeneclusterID" node="attribute" />
-    </field>
-    <field name="entrezgeneID" type="string">
-      <bind-xml name="entrezgeneID" node="attribute" />
+    <field name="accessionNumber" type="string">
+      <bind-xml name="accessionNumber" node="attribute" />
     </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.array.ExonProbeAnnotation" identity="id" extends="gov.nih.nci.caarray.domain.array.AbstractProbeAnnotation">

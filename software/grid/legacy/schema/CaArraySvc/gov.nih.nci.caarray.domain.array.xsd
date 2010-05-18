@@ -132,11 +132,15 @@
             <xs:extension base="AbstractDesignElement">
                 <xs:sequence>
                     <xs:element name="arrayDesignDetails" minOccurs="0" maxOccurs="1" type="ArrayDesignDetails" />
+                    <xs:element name="coordinateUnits" type="gov.nih.nci.caarray.domain.vocabulary:Term" minOccurs="0" maxOccurs="1" />
                 </xs:sequence>
                 <xs:attribute name="blockColumn" type="xs:short" />
                 <xs:attribute name="blockRow" type="xs:short" />
                 <xs:attribute name="column" type="xs:short" />
                 <xs:attribute name="row" type="xs:short" />
+                <xs:attribute name="featureNumber" type="xs:integer" />
+                <xs:attribute name="xCoordinate" type="xs:double" />
+                <xs:attribute name="yCoordinate" type="xs:double" />
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -218,6 +222,9 @@
                         type="gov.nih.nci.cabio.domain:ExpressionArrayReporter" />
                     <xs:element name="gene" minOccurs="0" maxOccurs="1" type="Gene" />
                 </xs:sequence>
+                <xs:attribute name="chromosomeName" type="xs:string" />
+                <xs:attribute name="chromosomeStartPosition" type="xs:long" />
+                <xs:attribute name="chromosomeEndPosition" type="xs:long" />
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -281,12 +288,23 @@
             <xs:extension base="gov.nih.nci.caarray.domain:AbstractCaArrayEntity">
                 <xs:attribute name="fullName" type="xs:string" />
                 <xs:attribute name="symbol" type="xs:string" />
-                <xs:attribute name="genbankAccession" type="xs:string" />
-                <xs:attribute name="genbankAccessionVersion" type="xs:string" />
-                <xs:attribute name="ensemblgeneID" type="xs:string" />
-                <xs:attribute name="unigeneclusterID" type="xs:string" />
-                <xs:attribute name="entrezgeneID" type="xs:string" />
+                <xs:sequence>
+                    <xs:element name="accessions" minOccurs="0">
+                        <xs:complexType>
+                            <xs:choice minOccurs="0" maxOccurs="unbounded">
+                                <xs:element ref="Accession" />
+                            </xs:choice>
+                        </xs:complexType>
+                    </xs:element>
+                </xs:sequence>
             </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="Accession" type="Accession" />
+    <xs:complexType name="Accession">
+        <xs:complexContent>
+            <xs:attribute name="databaseName" type="xs:string" />
+            <xs:attribute name="accessionNumber" type="xs:string" />
         </xs:complexContent>
     </xs:complexType>
 </xs:schema>
