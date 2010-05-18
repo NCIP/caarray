@@ -172,6 +172,16 @@ public class AgilentGELMParserFileTest {
         parsesFile(AgilentArrayDesignFiles.TEST_GENE_EXPRESSION_3_XML);       
     }
 
+    @Test
+    public void parsesTestMiRnaOneXmlFile() throws FileNotFoundException {
+        parsesFile(AgilentArrayDesignFiles.TEST_MIRNA_1_XML);       
+    }
+
+    @Test
+    public void parsesTestMiRnaTwoXmlFile() throws FileNotFoundException {
+        parsesFile(AgilentArrayDesignFiles.TEST_MIRNA_1_XML);       
+    }
+
     private void parsesFile(File file) throws FileNotFoundException {
         FileReader reader = new FileReader(file);
         AgilentGELMTokenizer tokenizer = new AgilentGELMTokenizer(reader);

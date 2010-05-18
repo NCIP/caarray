@@ -82,12 +82,9 @@
  */
 package gov.nih.nci.caarray.domain.array;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
-import static org.hamcrest.CoreMatchers.is;
-
-import java.util.TreeSet;
-
 import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity_HibernateIntegrationTest;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
@@ -100,6 +97,8 @@ import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.util.HibernateUtil;
+
+import java.util.TreeSet;
 
 import org.hibernate.Transaction;
 import org.junit.Before;
@@ -174,8 +173,14 @@ public class ArrayDesign_HibernateIntegrationTest extends AbstractCaArrayEntity_
         designDetails.getFeatures().add(feature);
         ProbeGroup probeGroup = new ProbeGroup(designDetails);
         designDetails.getProbeGroups().add(probeGroup);
+        addExpressionProbeAnnotation(designDetails, probeGroup);
+        addMiRNAProbeAnnotation(designDetails, probeGroup);
+    }
+
+    private void addExpressionProbeAnnotation(ArrayDesignDetails designDetails, ProbeGroup probeGroup) {
         PhysicalProbe physicalProbe = new PhysicalProbe(designDetails, probeGroup);
         designDetails.getProbes().add(physicalProbe);
+        
         ExpressionProbeAnnotation annotation = new ExpressionProbeAnnotation();
         Gene gene = new Gene();
         gene.addAccessionNumber(getUniqueStringValue(), getUniqueStringValue());
@@ -184,6 +189,16 @@ public class ArrayDesign_HibernateIntegrationTest extends AbstractCaArrayEntity_
         physicalProbe.setAnnotation(annotation);
     }
 
+    private void addMiRNAProbeAnnotation(ArrayDesignDetails designDetails, ProbeGroup probeGroup) {
+        PhysicalProbe physicalProbe = new PhysicalProbe(designDetails, probeGroup);
+        designDetails.getProbes().add(physicalProbe);
+        
+        MiRNAProbeAnnotation annotation = new MiRNAProbeAnnotation();
+        annotation.addAccessionNumber(getUniqueStringValue(), getUniqueStringValue());
+        annotation.addAccessionNumber(getUniqueStringValue(), getUniqueStringValue());
+        physicalProbe.setAnnotation(annotation);
+    }
+    
     @Override
     protected void compareValues(AbstractCaArrayObject caArrayObject, AbstractCaArrayObject retrievedCaArrayObject) {
         ArrayDesign original = (ArrayDesign) caArrayObject;
@@ -210,15 +225,45 @@ public class ArrayDesign_HibernateIntegrationTest extends AbstractCaArrayEntity_
             assertEquals(originalDetails.getFeatures().size(), retrievedDetails.getFeatures().size());
             assertEquals(originalDetails.getFeatures().iterator().next().toString(),
                     retrievedDetails.getFeatures().iterator().next().toString());
-            ExpressionProbeAnnotation originalAnnotation =
-                (ExpressionProbeAnnotation) originalDetails.getProbes().iterator().next().getAnnotation();
-            ExpressionProbeAnnotation retrievedAnnotation =
-                (ExpressionProbeAnnotation) retrievedDetails.getProbes().iterator().next().getAnnotation();
-            assertEquals(originalAnnotation.getGene().getFullName(), retrievedAnnotation.getGene().getFullName());
-            assertEquals(originalAnnotation.getGene().getSymbol(), retrievedAnnotation.getGene().getSymbol());
-            assertThat(retrievedAnnotation.getGene().getAccessionNumbers(getUniqueStringValue()),
-                    is(originalAnnotation.getGene().getAccessionNumbers(getUniqueStringValue())));
+            
+            compareExpressionProbeAnnotations(originalDetails, retrievedDetails);
+            compareMiRNAProbeAnnotations(originalDetails, retrievedDetails);
         }
+    }
+
+    private void compareExpressionProbeAnnotations(ArrayDesignDetails originalDetails,
+            ArrayDesignDetails retrievedDetails) {
+        
+        ExpressionProbeAnnotation originalAnnotation =
+            getAnnotation(ExpressionProbeAnnotation.class, originalDetails);
+        ExpressionProbeAnnotation retrievedAnnotation =
+            getAnnotation(ExpressionProbeAnnotation.class, retrievedDetails);
+        assertEquals(originalAnnotation.getGene().getFullName(), retrievedAnnotation.getGene().getFullName());
+        assertEquals(originalAnnotation.getGene().getSymbol(), retrievedAnnotation.getGene().getSymbol());
+        assertThat(retrievedAnnotation.getGene().getAccessionNumbers(getUniqueStringValue()),
+                is(originalAnnotation.getGene().getAccessionNumbers(getUniqueStringValue())));
+    }
+
+    private void compareMiRNAProbeAnnotations(ArrayDesignDetails originalDetails,
+            ArrayDesignDetails retrievedDetails) {
+        
+        MiRNAProbeAnnotation originalAnnotation =
+            getAnnotation(MiRNAProbeAnnotation.class, originalDetails);
+        MiRNAProbeAnnotation retrievedAnnotation =
+            getAnnotation(MiRNAProbeAnnotation.class, retrievedDetails);
+        assertThat(retrievedAnnotation.getAccessionNumbers(getUniqueStringValue()),
+                is(originalAnnotation.getAccessionNumbers(getUniqueStringValue())));
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T> T getAnnotation(Class<T> classtype, ArrayDesignDetails arrayDesignDetails) {
+        for (PhysicalProbe probe : arrayDesignDetails.getProbes()) {
+            AbstractProbeAnnotation annotation = probe.getAnnotation();
+            if (classtype.isInstance(annotation)) {
+                return (T) annotation;
+            }
+        }
+        return null;
     }
 
     @Override

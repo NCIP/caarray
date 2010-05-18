@@ -209,5 +209,13 @@ FeatureBuilder, GeneBuilder, AccessionBuilder, BiosequenceBuilder {
         // Do nothing
         return this;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public BiosequenceBuilder finish() {
+        // Do nothing
+        return this;
+    }
 }
 

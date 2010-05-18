@@ -662,6 +662,29 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
     }
 
     @Test
+    public void testImportDesign_AgilentMiRNA() throws Exception {
+        CaArrayFile designFile = getAgilentGelmCaArrayFile(AgilentArrayDesignFiles.TEST_MIRNA_1_XML);
+        ArrayDesign design = new ArrayDesign();
+        design.addDesignFile(designFile);
+
+        arrayDesignService.importDesign(design);
+
+        assertEquals("Human_miRNA_Microarray_3.0", design.getName());
+        assertEquals("Agilent.com", design.getLsidAuthority());
+        assertEquals("PhysicalArrayDesign", design.getLsidNamespace());
+        assertEquals("Human_miRNA_Microarray_3.0", design.getLsidObjectId());
+
+        arrayDesignService.importDesignDetails(design);
+
+        assertEquals(15744, design.getNumberOfFeatures().intValue());
+        assertEquals(15744, design.getDesignDetails().getFeatures().size());
+        assertEquals(2735, design.getDesignDetails().getProbes().size());
+        assertEquals(0, design.getDesignDetails().getLogicalProbes().size());
+
+        assertEquals(FileStatus.IMPORTED, design.getDesignFileSet().getStatus());
+    }
+
+    @Test
     public void testImportDesign_UnsupportedVendors() {
         // The specific file doesn't matter, because the type will determine how the file is handled
         // Once these file types can be properly parsed, they should be pulled out into their own tests

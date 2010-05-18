@@ -223,6 +223,8 @@ class AgilentGELMParser {
         }
 
         expect(Token.END);
+        
+        biosequenceBuilder.finish();
     }
 
     private void parseBiosequenceRef(PhysicalProbeBuilder physicalProbeBuilder) {

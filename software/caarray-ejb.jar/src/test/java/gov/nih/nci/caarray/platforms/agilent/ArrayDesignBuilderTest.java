@@ -82,10 +82,12 @@
  */
 package gov.nih.nci.caarray.platforms.agilent;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.eq;
@@ -97,12 +99,14 @@ import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
 import gov.nih.nci.caarray.domain.array.ExpressionProbeAnnotation;
 import gov.nih.nci.caarray.domain.array.Feature;
 import gov.nih.nci.caarray.domain.array.Gene;
+import gov.nih.nci.caarray.domain.array.MiRNAProbeAnnotation;
 import gov.nih.nci.caarray.domain.array.PhysicalProbe;
 import gov.nih.nci.caarray.domain.array.ProbeGroup;
 import gov.nih.nci.caarray.domain.search.ExampleSearchCriteria;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -200,6 +204,7 @@ public class ArrayDesignBuilderTest {
         arrayDesignBuilder.setBiosequenceRef(database, species, probe1Name);
         BiosequenceBuilder biosequenceBuilder = arrayDesignBuilder.createBiosequenceBuilder(controlType, species);
         biosequenceBuilder.agpAccession(probe1Name);
+        biosequenceBuilder.finish();
 
         ExpressionProbeAnnotation annotation = (ExpressionProbeAnnotation) probe.getAnnotation();
         assertNotNull(annotation);
@@ -215,30 +220,58 @@ public class ArrayDesignBuilderTest {
         final String species = "species name";
         final String controlType = null;
         
+        final String ensemblAccession = "ensembl accession";
+        final String genbankAccession = "genebank accession";
+        final String refSeqAccession = "refseq accession";
+        final String thcAccession = "thc accession";
+        
         arrayDesignBuilder.findOrCreatePhysicalProbeBuilder(probe1Name);
         PhysicalProbe probe = arrayDesignBuilder.getPhysicalProbes().values().iterator().next();
 
         arrayDesignBuilder.setBiosequenceRef(database, species, probe1Name);
         BiosequenceBuilder biosequenceBuilder = arrayDesignBuilder.createBiosequenceBuilder(controlType, species);
         biosequenceBuilder.agpAccession(probe1Name);
-
-        ExpressionProbeAnnotation annotation = (ExpressionProbeAnnotation) probe.getAnnotation();
-        Gene gene = annotation.getGene();
-        
-        final String ensemblAccession = "ensembl accession";
-        final String genbankAccession = "genebank accession";
-        final String refSeqAccession = "refseq accession";
-        final String thcAccession = "thc accession";
         
         biosequenceBuilder.createNewEnsemblAccession(ensemblAccession);
         biosequenceBuilder.createNewGBAccession(genbankAccession);
         biosequenceBuilder.createNewRefSeqAccession(refSeqAccession);
         biosequenceBuilder.createNewTHCAccession(thcAccession);
+        biosequenceBuilder.finish();
+        
+        ExpressionProbeAnnotation annotation = (ExpressionProbeAnnotation) probe.getAnnotation();
+        Gene gene = annotation.getGene();
         
         assertEquals(ensemblAccession, gene.getAccessionNumbers(Gene.ENSEMBLE).get(0));
         assertEquals(genbankAccession, gene.getAccessionNumbers(Gene.GENBANK).get(0));
         assertEquals(refSeqAccession, gene.getAccessionNumbers(Gene.REF_SEQ).get(0));
         assertEquals(thcAccession, gene.getAccessionNumbers(Gene.THC).get(0));
+    }
+
+    @Test
+    public void createsAccessionsForMiRNAAssay() {
+        final String probe1Name = "probe1";
+        final String database = "database name";
+        final String species = "species name";
+        final String controlType = null;
+        
+        final String accession1 = "mir 1";
+        final String accession2 = "mir 2";
+        final List<String> accessions = Arrays.asList(accession1, accession2);
+       
+        arrayDesignBuilder.findOrCreatePhysicalProbeBuilder(probe1Name);
+        PhysicalProbe probe = arrayDesignBuilder.getPhysicalProbes().values().iterator().next();
+
+        arrayDesignBuilder.setBiosequenceRef(database, species, probe1Name);
+        BiosequenceBuilder biosequenceBuilder = arrayDesignBuilder.createBiosequenceBuilder(controlType, species);
+        biosequenceBuilder.agpAccession(probe1Name);
+        
+        biosequenceBuilder.createNewMirAccession(accession1);
+        biosequenceBuilder.createNewMirAccession(accession2);
+        biosequenceBuilder.finish();
+        
+        MiRNAProbeAnnotation annotation = (MiRNAProbeAnnotation) probe.getAnnotation();
+        
+        assertThat(annotation.getAccessionNumbers(MiRNAProbeAnnotation.MIR), is(accessions));
     }
 
     @Test

@@ -211,6 +211,7 @@ public class AgilentGELMParserBehaviorTest {
         verify(builder).createNewEnsemblAccession("ensembl accession");
         verify(builder).createNewRefSeqAccession("ref accession");
         verify(builder).createNewTHCAccession("thc accession");
+        verify(builder).finish();
     }
     
     @Test
@@ -246,6 +247,7 @@ public class AgilentGELMParserBehaviorTest {
         verify(builder).agpAccession(probeId);
         verify(builder).createNewMirAccession(mirAccession1);
         verify(builder).createNewMirAccession(mirAccession2);
+        verify(builder).finish();
     }
 
     @Test
@@ -526,6 +528,7 @@ public class AgilentGELMParserBehaviorTest {
         when(newBuilder.addToProbeGroup(anyString())).thenReturn(newBuilder);
         when(newBuilder.findOrCreatePhysicalProbeBuilder(anyString())).thenReturn(newBuilder);
         when(newBuilder.createBiosequenceBuilder(anyString(), anyString())).thenReturn(newBuilder);
+        when(newBuilder.finish()).thenReturn(newBuilder);
         
         return newBuilder;
     }

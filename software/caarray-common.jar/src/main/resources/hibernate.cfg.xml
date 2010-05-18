@@ -36,6 +36,7 @@
         <mapping class="gov.nih.nci.caarray.domain.array.Feature"/>
         <mapping class="gov.nih.nci.caarray.domain.array.Gene"/>
         <mapping class="gov.nih.nci.caarray.domain.array.LogicalProbe"/>
+        <mapping class="gov.nih.nci.caarray.domain.array.MiRNAProbeAnnotation"/>
         <mapping class="gov.nih.nci.caarray.domain.array.PhysicalProbe"/>
         <mapping class="gov.nih.nci.caarray.domain.array.ProbeGroup"/>
         <mapping class="gov.nih.nci.caarray.domain.array.SNPProbeAnnotation"/>

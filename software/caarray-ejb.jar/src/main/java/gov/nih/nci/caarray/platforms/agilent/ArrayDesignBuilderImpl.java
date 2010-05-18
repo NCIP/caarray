@@ -87,6 +87,7 @@ import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
 import gov.nih.nci.caarray.domain.array.ExpressionProbeAnnotation;
 import gov.nih.nci.caarray.domain.array.Feature;
 import gov.nih.nci.caarray.domain.array.Gene;
+import gov.nih.nci.caarray.domain.array.MiRNAProbeAnnotation;
 import gov.nih.nci.caarray.domain.array.PhysicalProbe;
 import gov.nih.nci.caarray.domain.array.ProbeGroup;
 import gov.nih.nci.caarray.domain.search.ExampleSearchCriteria;
@@ -383,8 +384,10 @@ FeatureBuilder, GeneBuilder, AccessionBuilder {
     private class BiosequenceBuilderImpl implements BiosequenceBuilder {
         private final ArrayDesignBuilderImpl parentBuilder;
         private final String species;
-        private PhysicalProbe physicalProbe;
-        private ExpressionProbeAnnotation annotation;
+        private final List<AccessionNumber> accessionNumbers = new ArrayList<AccessionNumber>();
+        
+        private String key;
+        private boolean isMiRNA;
 
         BiosequenceBuilderImpl(ArrayDesignBuilderImpl parentBuilder, String species) {
             this.parentBuilder = parentBuilder;
@@ -394,21 +397,15 @@ FeatureBuilder, GeneBuilder, AccessionBuilder {
         /**
          * {@inheritDoc}
          */
-        public AccessionBuilder agpAccession(String accessionNumber) {
-            String key = parentBuilder.buildBiosequenceKey(species, accessionNumber);
-            physicalProbe = parentBuilder.getBiosequenceRefMap().get(key);
-
-            if (null != physicalProbe) {
-                annotation = createExpressionProbeAnnotation(physicalProbe);             
-            }
-
+        public BiosequenceBuilder agpAccession(String accessionNumber) {
+            key = parentBuilder.buildBiosequenceKey(species, accessionNumber);
             return this;
         }
 
         /**
          * {@inheritDoc}
          */
-        public AccessionBuilder createNewEnsemblAccession(String accessionNumber) {
+        public BiosequenceBuilder createNewEnsemblAccession(String accessionNumber) {
             addAccession(Gene.ENSEMBLE, accessionNumber);           
             return this;
         }
@@ -416,7 +413,7 @@ FeatureBuilder, GeneBuilder, AccessionBuilder {
         /**
          * {@inheritDoc}
          */
-        public AccessionBuilder createNewGBAccession(String accessionNumber) {
+        public BiosequenceBuilder createNewGBAccession(String accessionNumber) {
             addAccession(Gene.GENBANK, accessionNumber);           
             return this;
         }
@@ -424,14 +421,16 @@ FeatureBuilder, GeneBuilder, AccessionBuilder {
         /**
          * {@inheritDoc}
          */
-        public AccessionBuilder createNewMirAccession(String accessionNumber) {
+        public BiosequenceBuilder createNewMirAccession(String accessionNumber) {
+            isMiRNA = true;
+            addAccession(MiRNAProbeAnnotation.MIR, accessionNumber);           
             return this;
         }
 
         /**
          * {@inheritDoc}
          */
-        public AccessionBuilder createNewRefSeqAccession(String accessionNumber) {
+        public BiosequenceBuilder createNewRefSeqAccession(String accessionNumber) {
             addAccession(Gene.REF_SEQ, accessionNumber);           
             return this;
         }
@@ -439,19 +438,79 @@ FeatureBuilder, GeneBuilder, AccessionBuilder {
         /**
          * {@inheritDoc}
          */
-        public AccessionBuilder createNewTHCAccession(String accessionNumber) {
+        public BiosequenceBuilder createNewTHCAccession(String accessionNumber) {
             addAccession(Gene.THC, accessionNumber);           
             return this;
         }
+        
+        /**
+         * {@inheritDoc}
+         */
+        public BiosequenceBuilder finish() {
+            PhysicalProbe physicalProbe = parentBuilder.getBiosequenceRefMap().get(key);
+
+            if (null != physicalProbe) {
+                createAnnotationWithAccessions(physicalProbe);
+            }
+
+            return this;
+        }
+
+        private void createAnnotationWithAccessions(PhysicalProbe physicalProbe) {
+            if (isMiRNA) {
+                createMiRNAAnnotationWithAccessions(physicalProbe);
+            } else {
+                createExpressionAnnotationWithAccessions(physicalProbe);
+            }
+        }
+
+        private void createExpressionAnnotationWithAccessions(PhysicalProbe physicalProbe) {
+            ExpressionProbeAnnotation annotation = createExpressionProbeAnnotation(physicalProbe);             
+            Gene gene = annotation.getGene();
+   
+            for (AccessionNumber accessionNumber : accessionNumbers) {
+                gene.addAccessionNumber(accessionNumber.getDatabase(), accessionNumber.getAccession());
+            }
+        }
+
+        private void createMiRNAAnnotationWithAccessions(PhysicalProbe physicalProbe) {
+            MiRNAProbeAnnotation annotation = new MiRNAProbeAnnotation();
+            physicalProbe.setAnnotation(annotation);
+            
+            for (AccessionNumber accessionNumber : accessionNumbers) {
+                annotation.addAccessionNumber(accessionNumber.getDatabase(), accessionNumber.getAccession());
+            }
+        }
 
         private void addAccession(String database, String accessionNumber) {
-            Gene gene = annotation.getGene();
-            gene.addAccessionNumber(database, accessionNumber);
-        }       
+            this.accessionNumbers.add(new AccessionNumber(database, accessionNumber));          
+        }
+        
+        /**
+         * Stores accession numbers for association with an annotation.
+         * @author jscott
+         */
+        private class AccessionNumber {
+            private final String database;
+            private final String accession; 
+            
+            AccessionNumber(String database, String accessionNumber) {
+                this.database = database;
+                this.accession = accessionNumber;
+            }
+
+            public String getDatabase() {
+                return database;
+            }
+
+            public String getAccession() {
+                return accession;
+            }
+        }
     }
     
     /**
-     * For controls, this biosequenceBuilder does nothing.
+     * Used for controls, this biosequenceBuilder does nothing.
      * @author jscott
      */
     private class NullBiosequenceBuilder implements BiosequenceBuilder {
@@ -459,7 +518,7 @@ FeatureBuilder, GeneBuilder, AccessionBuilder {
         /**
          * {@inheritDoc}
          */
-        public AccessionBuilder agpAccession(String accessionNumber) {
+        public BiosequenceBuilder agpAccession(String accessionNumber) {
             // Do nothing
             return this;
         }
@@ -467,7 +526,7 @@ FeatureBuilder, GeneBuilder, AccessionBuilder {
         /**
          * {@inheritDoc}
          */
-        public AccessionBuilder createNewEnsemblAccession(String accessionNumber) {
+        public BiosequenceBuilder createNewEnsemblAccession(String accessionNumber) {
             // Do nothing
             return this;
         }
@@ -475,7 +534,7 @@ FeatureBuilder, GeneBuilder, AccessionBuilder {
         /**
          * {@inheritDoc}
          */
-        public AccessionBuilder createNewGBAccession(String accessionNumber) {
+        public BiosequenceBuilder createNewGBAccession(String accessionNumber) {
             // Do nothing
             return this;
         }
@@ -483,7 +542,7 @@ FeatureBuilder, GeneBuilder, AccessionBuilder {
         /**
          * {@inheritDoc}
          */
-        public AccessionBuilder createNewMirAccession(String accessionNumber) {
+        public BiosequenceBuilder createNewMirAccession(String accessionNumber) {
             // Do nothing
             return this;
         }
@@ -491,7 +550,7 @@ FeatureBuilder, GeneBuilder, AccessionBuilder {
         /**
          * {@inheritDoc}
          */
-        public AccessionBuilder createNewRefSeqAccession(String accessionNumber) {
+        public BiosequenceBuilder createNewRefSeqAccession(String accessionNumber) {
             // Do nothing
             return this;
         }
@@ -499,9 +558,17 @@ FeatureBuilder, GeneBuilder, AccessionBuilder {
         /**
          * {@inheritDoc}
          */
-        public AccessionBuilder createNewTHCAccession(String accessionNumber) {
+        public BiosequenceBuilder createNewTHCAccession(String accessionNumber) {
             // Do nothing
             return this;
-        }       
+        }
+              
+        /**
+         * {@inheritDoc}
+         */
+        public BiosequenceBuilder finish() {
+            return this;
+        }
+
     }
 }
