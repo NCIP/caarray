@@ -138,7 +138,6 @@ class AgilentRawTextDataHandler extends AbstractDataFileHandler {
     private boolean headerIsRead = false;
     private boolean dataIsRead = false;
     private AgilentTextParser parser;
-    private Class<? extends RowData> rowClass;
 
     @Inject
     AgilentRawTextDataHandler(FileManager fileManager) {
@@ -244,7 +243,10 @@ class AgilentRawTextDataHandler extends AbstractDataFileHandler {
         
         int index = 0;
         for (RowData probeElement : probes) {
-            final AbstractProbe probe = probeLookup.getProbe(probeElement.probeName);
+            AbstractProbe probe = probeLookup.getProbe(probeElement.probeName);
+            if (probe == null) {
+                probe = probeLookup.getProbe(probeElement.systematicName);
+            }
             designElements.add(probe);
             handleProbe(probeElement, index++, hybridizationData, typeSet);
         }
@@ -298,11 +300,6 @@ class AgilentRawTextDataHandler extends AbstractDataFileHandler {
 
     private void doReadData() throws PlatformFileReadException {
         readHeader();
-        if (isMiRNA()) {
-            rowClass = MiRNARowData.class;
-        } else {
-            rowClass = AcghRowData.class;
-        }
         try {
             Set<String> probeNames = new HashSet<String>(expectedRowCount);
             probes = new ArrayList<RowData>(expectedRowCount);
@@ -323,15 +320,9 @@ class AgilentRawTextDataHandler extends AbstractDataFileHandler {
              final String probeName = parser.getStringValue("ProbeName");
              if (!probeNames.contains(probeName)) {
                  probeNames.add(probeName);
-                 try {
-                     RowData probe = rowClass.newInstance();
-                     probe.loadRow(parser);
-                     probes.add(probe);
-                 } catch (InstantiationException ex) {
-                     throw new RuntimeException(ex);
-                 } catch (IllegalAccessException ex) {
-                     throw new RuntimeException(ex);
-                 }                 
+                 RowData probe = new RowData();
+                 probe.loadRow(parser);
+                 probes.add(probe);                                  
              }
          }
     }
@@ -364,11 +355,14 @@ class AgilentRawTextDataHandler extends AbstractDataFileHandler {
         ProbeLookup probeLookup = new ProbeLookup(design.getDesignDetails().getProbes());
         
         for (RowData probe : probes) {
-            final String probeName = probe.getProbeName();
+            String probeName = probe.getProbeName();
             if (null == probeLookup.getProbe(probeName)) {
-                result.addMessage(Type.ERROR, 
-                        String.format("Probe \"%s\" is not found array design \"%s\"",
-                                probeName, design.getName()));
+                String probeName2 = probe.getSystematicName();
+                if (null == probeLookup.getProbe(probeName2)) {
+                    result.addMessage(Type.ERROR, String.format(
+                            "Probe \"%s\" or \"%s\"is not found array design \"%s\"",
+                            probeName, probeName2, design.getName()));
+                }
             }
         }
     }
@@ -384,9 +378,7 @@ class AgilentRawTextDataHandler extends AbstractDataFileHandler {
     }
     
     private boolean hasMandatoryColumns() {
-        boolean isTwoColor = true;
-        
-        isTwoColor &= columnExists("ProbeName");
+        boolean isTwoColor = columnExists("ProbeName");
         if (isMiRNA()) {
             isTwoColor &= columnExists("gTotalProbeSignal");
         } else if (isTwoColorExperiment()) {
@@ -439,28 +431,10 @@ class AgilentRawTextDataHandler extends AbstractDataFileHandler {
     /**
      * data holder for a row in the data table.
      */
+    @SuppressWarnings("PMD.TooManyFields")
     static class RowData {
         private String probeName;
-
-        void loadRow(AgilentTextParser parser) {
-            probeName = parser.getStringValue("ProbeName");
-        }
-
-        String getProbeName() {
-            return probeName;
-        }
-        
-        void saveColumn(final AbstractDataColumn column, final int index) {
-            final QuantitationType quantitationType = column.getQuantitationType();
-            throw new IllegalArgumentException("Unsupported QuantitationType for aCGH data: " + quantitationType);
-        }
-    }
-
-    /**
-     * an aCGH / gene expresion (2 color/single color) data row.
-     */
-    static class AcghRowData extends RowData {
-
+        private String systematicName;
         private float logRatio;
         private float logRatioError;
         private float pValueLogRatio;
@@ -470,10 +444,15 @@ class AgilentRawTextDataHandler extends AbstractDataFileHandler {
         private float rProcessedSigError;
         private float gMedianSignal;
         private float rMedianSignal;
+        private float gTotalProbeSignal;
+        private float gTotalProbeError;
+        private float gTotalGeneSignal;
+        private float gTotalGeneError;
+        private boolean gIsGeneDetected;
 
-        @Override
         void loadRow(AgilentTextParser parser) {
-            super.loadRow(parser);
+            probeName = parser.getStringValue("ProbeName");
+            systematicName = parser.getStringValue("SystematicName");
             logRatio = parser.getFloatValue("LogRatio");
             logRatioError = parser.getFloatValue("LogRatioError");
             pValueLogRatio = parser.getFloatValue("PValueLogRatio");
@@ -483,10 +462,22 @@ class AgilentRawTextDataHandler extends AbstractDataFileHandler {
             rProcessedSigError = parser.getFloatValue("rProcessedSigError");
             gMedianSignal = parser.getFloatValue("gMedianSignal");
             rMedianSignal = parser.getFloatValue("rMedianSignal");
+            gTotalProbeSignal = parser.getFloatValue("gTotalProbeSignal");
+            gTotalProbeError = parser.getFloatValue("gTotalProbeError");
+            gTotalGeneSignal = parser.getFloatValue("gTotalGeneSignal");
+            gTotalGeneError = parser.getFloatValue("gTotalGeneError");
+            gIsGeneDetected = parser.getBooleanValue("gIsGeneDetected");
         }
 
-        @Override
-        void saveColumn(AbstractDataColumn column, int index) {
+        String getProbeName() {
+            return probeName;
+        }
+
+        String getSystematicName() {
+            return systematicName;
+        }
+        
+        void saveColumn(final AbstractDataColumn column, final int index) {
             final QuantitationType quantitationType = column.getQuantitationType();
             if (AgilentTextQuantitationType.LOG_RATIO.getName().equals(quantitationType.getName())) {
                 ((FloatColumn) column).getValues()[index] = logRatio;
@@ -506,37 +497,7 @@ class AgilentRawTextDataHandler extends AbstractDataFileHandler {
                 ((FloatColumn) column).getValues()[index] = gMedianSignal;
             } else if (AgilentTextQuantitationType.R_MEDIAN_SIGNAL.getName().equals(quantitationType.getName())) {
                 ((FloatColumn) column).getValues()[index] = rMedianSignal;
-            } else {
-                super.saveColumn(column, index);
-            }
-        }
-    }
-
-    /**
-     * miRNA data row.
-     */
-    static class MiRNARowData extends RowData {
-
-        private float gTotalProbeSignal;
-        private float gTotalProbeError;
-        private float gTotalGeneSignal;
-        private float gTotalGeneError;
-        private boolean gIsGeneDetected;
-
-        @Override
-        void loadRow(AgilentTextParser parser) {
-            super.loadRow(parser);
-            gTotalProbeSignal = parser.getFloatValue("gTotalProbeSignal");
-            gTotalProbeError = parser.getFloatValue("gTotalProbeError");
-            gTotalGeneSignal = parser.getFloatValue("gTotalGeneSignal");
-            gTotalGeneError = parser.getFloatValue("gTotalGeneError");
-            gIsGeneDetected = parser.getBooleanValue("gIsGeneDetected");
-        }
-
-        @Override
-        void saveColumn(AbstractDataColumn column, int index) {
-            final QuantitationType quantitationType = column.getQuantitationType();
-            if (AgilentTextQuantitationType.G_TOTAL_PROBE_SIGNAL.getName().equals(quantitationType.getName())) {
+            } else if (AgilentTextQuantitationType.G_TOTAL_PROBE_SIGNAL.getName().equals(quantitationType.getName())) {
                 ((FloatColumn) column).getValues()[index] = gTotalProbeSignal;
             } else if (AgilentTextQuantitationType.G_TOTAL_PROBE_ERROR.getName().equals(quantitationType.getName())) {
                 ((FloatColumn) column).getValues()[index] = gTotalProbeError;
@@ -547,8 +508,10 @@ class AgilentRawTextDataHandler extends AbstractDataFileHandler {
             } else if (AgilentTextQuantitationType.G_IS_GENE_DETECTED.getName().equals(quantitationType.getName())) {
                 ((BooleanColumn) column).getValues()[index] = gIsGeneDetected;
             } else {
-                super.saveColumn(column, index);
+                throw new IllegalArgumentException("Unsupported QuantitationType data: " + quantitationType);
             }
+            
         }
     }
+
 }

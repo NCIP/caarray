@@ -134,6 +134,17 @@ public class AgilentRawTextDataHandlerTest extends AbstractHandlerTest {
         AgilentTextQuantitationType.G_PROCESSED_SIGNAL,
         AgilentTextQuantitationType.G_PROCESSED_SIG_ERROR,
         AgilentTextQuantitationType.G_MEDIAN_SIGNAL};
+
+    private static final AgilentTextQuantitationType[] MIRNA_COLS = {
+        AgilentTextQuantitationType.G_PROCESSED_SIGNAL,
+        AgilentTextQuantitationType.G_PROCESSED_SIG_ERROR,
+        AgilentTextQuantitationType.G_MEDIAN_SIGNAL,
+        AgilentTextQuantitationType.G_TOTAL_PROBE_SIGNAL,
+        AgilentTextQuantitationType.G_TOTAL_PROBE_ERROR,
+        AgilentTextQuantitationType.G_TOTAL_GENE_SIGNAL,
+        AgilentTextQuantitationType.G_TOTAL_GENE_ERROR,
+        AgilentTextQuantitationType.G_IS_GENE_DETECTED
+    };
     
     @Test
     public void validIfMageTab() {
@@ -357,7 +368,7 @@ public class AgilentRawTextDataHandlerTest extends AbstractHandlerTest {
     }
 
     @Test
-    public void testMiRNA() throws InvalidDataFileException {
+    public void testGeneExpression() throws InvalidDataFileException {
         setupArrayDesign(DESIGN_LSID);
         addProbeToDesign("GE_BrightCorner");
         addProbeToDesign("DarkCorner");
@@ -385,6 +396,39 @@ public class AgilentRawTextDataHandlerTest extends AbstractHandlerTest {
         checkValues(hybridizationData, designElements, 0, "GE_BrightCorner", GEN_EXPRESSION_COLS, 76104.65f, 7610.465f, 83981.0f);
         checkValues(hybridizationData, designElements, 1, "DarkCorner", GEN_EXPRESSION_COLS, 2.090352f, 2.082407f, 32.0f);
 
+    }
+
+    @Test
+    public void testMiRNA() throws InvalidDataFileException {
+        setupArrayDesign(DESIGN_LSID);
+        addProbeToDesign("miRNABrightCorner30");
+        addProbeToDesign("DarkCorner");
+        addProbeToDesign("A_54_P2696");
+        addProbeToDesign("NegativeControl");
+        addProbeToDesign("A_54_P00004465");
+
+
+        CaArrayFile caArrayFile = getCaArrayFile(AgilentArrayDataFiles.MIRNA, DESIGN_LSID.getObjectId());
+        this.arrayDataService.importData(caArrayFile, true, DEFAULT_IMPORT_OPTIONS);
+        assertEquals(FileStatus.IMPORTED, caArrayFile.getFileStatus());
+
+        RawArrayData rawArrayData = (RawArrayData) this.daoFactoryStub.getArrayDao().getArrayData(caArrayFile.getId());
+        DataSet dataSet = rawArrayData.getDataSet();
+        assertNotNull(dataSet.getDesignElementList());
+
+        assertEquals(1, dataSet.getHybridizationDataList().size());
+        HybridizationData hybridizationData = dataSet.getHybridizationDataList().get(0);
+
+        assertEquals(8, hybridizationData.getColumns().size());
+        List<AbstractDesignElement> designElements = dataSet.getDesignElementList().getDesignElements();
+
+        int expectedNumberOfProbes = 5;
+        assertEquals(expectedNumberOfProbes, designElements.size());
+
+        checkColumnLengths(hybridizationData, expectedNumberOfProbes, MIRNA_COLS);
+
+        checkValues(hybridizationData, designElements, 0, "miRNABrightCorner30", MIRNA_COLS, 352.2096f, 35.41912f, 403.0f, 198.623f, 20.1593f, 198.623f, 20.1593f, true);
+        checkValues(hybridizationData, designElements, 3, "NegativeControl", MIRNA_COLS, 2.194657f, 3.747745f, 55.0f, 10.9847f, 43.2381f, 10.9847f, 43.2381f, false);
     }
 
 }
