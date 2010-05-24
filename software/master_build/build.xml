@@ -300,7 +300,8 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
             dist:javadoc,
             dist:caarray-client.zip,
             dist:gui-installer,
-            dist:example-api-zips
+            dist:example-api-zips,
+    	   dist:cn2magetab
         "/>
 
 
@@ -373,6 +374,11 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
             <zipfileset dir="${software.dir}/../api_client_examples/legacy_api_client_examples" excludes="dist/**, tools/**, bda-utils/**, local-ivy-repo/**, target/**, load-test/**, **/eclipse-out/**, **/.svn/**" prefix="legacy_api_client_examples"/>
         </zip>
     </target>
+	
+	<target name="dist:cn2magetab">
+        <delete file="${dist.dir}/cn2magetab.jar" />
+        <copy file="${software.dir}/copy-number-converter/target/cn2magetab.jar" tofile="${dist.dir}/cn2magetab.jar"/>
+	</target>
 
     <target name="dist:javadoc">
         <delete file="${dist.dir}/${caarray.javadoc.zip.file}" />

@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="software/grid/legacy/build/stubs-CaArraySvc/src"/>
+	<classpathentry kind="src" path="software/copy-number-converter/src/main/java"/>
+    <classpathentry kind="src" path="software/copy-number-converter/src/test/java"/>
 	<classpathentry kind="src" path="api_client_examples/legacy_api_client_examples/src"/>
 	<classpathentry kind="src" path="api_client_examples/java_api_client_examples_v1_0/src"/>
 	<classpathentry kind="src" path="api_client_examples/grid_api_client_examples_v1_0/src"/>

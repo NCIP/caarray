@@ -98,8 +98,11 @@ import gov.nih.nci.caarray.platforms.FileManager;
 import gov.nih.nci.caarray.platforms.ProbeLookup;
 import gov.nih.nci.caarray.platforms.ValueParser;
 import gov.nih.nci.caarray.platforms.spi.AbstractDataFileHandler;
-import gov.nih.nci.caarray.util.io.DelimitedFileReader;
-import gov.nih.nci.caarray.util.io.DelimitedFileReaderFactory;
+import com.fiveamsolutions.nci.commons.util.io.DelimitedFileReader;
+import com.fiveamsolutions.nci.commons.util.io.DelimitedFileReaderFactoryImpl;
+
+import com.google.inject.Inject;
+
 import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.ValidationMessage.Type;
 
@@ -115,8 +118,6 @@ import java.util.Set;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
-
-import com.google.inject.Inject;
 
 /**
  * Validates and reads data from all versions of Genepix GPR data files.
@@ -270,7 +271,7 @@ final class GprHandler extends AbstractDataFileHandler {
 
     private DelimitedFileReader getReader(File file) {
         try {
-            return DelimitedFileReaderFactory.INSTANCE.getTabDelimitedReader(file);
+            return new DelimitedFileReaderFactoryImpl().createTabDelimitedFileReader(file);
         } catch (IOException e) {
             throw new IllegalStateException("Couldn't open file " + file.getName(), e);
         }

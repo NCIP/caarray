@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caarray2-trunk
+ * source code form and machine readable, binary, object code form. The caArray
  * Software was developed in conjunction with the National Cancer Institute 
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent 
  * government employees are authors, any rights in such works shall be subject 
  * to Title 17 of the United States Code, section 105. 
  *
- * This caarray2-trunk Software License (the License) is between NCI and You. You (or 
+ * This caArray Software License (the License) is between NCI and You. You (or 
  * Your) shall mean a person or an entity, and all other entities that control, 
  * are controlled by, or are under common control with the entity. Control for 
  * purposes of this definition means (i) the direct or indirect power to cause 
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described 
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up, 
  * no-charge, irrevocable, transferable and royalty-free right and license in 
- * its rights in the caarray2-trunk Software to (i) use, install, access, operate, 
+ * its rights in the caArray Software to (i) use, install, access, operate, 
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caarray2-trunk Software; (ii) distribute and 
- * have distributed to and by third parties the caarray2-trunk Software and any 
+ * and prepare derivative works of the caArray Software; (ii) distribute and 
+ * have distributed to and by third parties the caArray Software and any 
  * modifications and derivative works thereof; and (iii) sublicense the 
  * foregoing rights set out in (i) and (ii) to third parties, including the 
  * right to license such rights to further third parties. For sake of clarity, 
@@ -80,115 +80,22 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.util.io;
-
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.Reader;
-import java.nio.CharBuffer;
+package gov.nih.nci.copynumberconverter;
 
 /**
- * Provides all the functionality of FileReader and adds simple Reset() capacity.
- * 
- * @author jscott
+ * CopyNumberDocumentConversionProcess contract.
+ * @author dharley
  *
  */
-public class ResettableFileReader extends Reader {
-    private final File file;
-    private FileReader fileReader;
- 
-    /**
-     * 
-     * @param file the file to read
-     * @throws IOException if there is a problem opening the file.
-     */
-    public ResettableFileReader(File file) throws IOException {
-        this.file = file;
-        createFileReader();
-    }
+public interface CopyNumberDocumentConversionProcess {
     
     /**
-     * {@inheritDoc}
+     * Converts the specified input file into the specified output file, using the specified ColumnInfo.
+     * @param inputFile the input file path
+     * @param outputFile the output file path
+     * @param columnInfo the column info
+     * @throws ConversionException if conversion fails
      */
-    public void reset() throws IOException {
-        closeFileReader();
-        createFileReader();
-    }
+    void convert(String inputFile, String outputFile, ColumnInfo columnInfo) throws ConversionException;
 
-    private void createFileReader() throws IOException {
-         fileReader = new FileReader(file);
-    }
-
-    private void closeFileReader() throws IOException {
-        if (null != fileReader) {
-            fileReader.close();
-            fileReader = null;
-        }
-    }
-
-    // All subsequent methods simply delegate to fileReader
- 
-    /**
-     * {@inheritDoc}
-     */
-    public void close() throws IOException {
-        fileReader.close();
-    }
-    
-    /**
-     * {@inheritDoc}
-     */
-    public void mark(int readAheadLimit) throws IOException {
-        fileReader.mark(readAheadLimit);
-    }
-    
-    /**
-     * {@inheritDoc}
-     */
-    public boolean markSupported() {
-        return fileReader.markSupported();
-    }
-    
-    /**
-     * {@inheritDoc}
-     */
-    public int read() throws IOException {
-        return fileReader.read();
-    }
-    
-    /**
-     * {@inheritDoc}
-     */
-    public int read(char[] cbuf) throws IOException {
-        return fileReader.read(cbuf);
-    }
-    
-    /**
-     * {@inheritDoc}
-     */
-    public int read(char[] cbuf, int off, int len) throws IOException {
-        return fileReader.read(cbuf, off, len);
-    }
-    
-    /**
-     * {@inheritDoc}
-     */
-    public int read(CharBuffer target) throws IOException {
-        return fileReader.read(target);
-    }
-    
-    /**
-     * {@inheritDoc}
-     */
-    public boolean ready() throws IOException {
-        return fileReader.ready();
-    }
-    
-    /**
-     * {@inheritDoc}
-     */
-    public long skip(long n) throws IOException {
-        return fileReader.skip(n);
-    }
 }

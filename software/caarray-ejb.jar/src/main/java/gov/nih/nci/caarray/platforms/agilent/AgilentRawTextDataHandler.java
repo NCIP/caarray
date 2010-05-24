@@ -88,10 +88,10 @@ import gov.nih.nci.caarray.domain.array.AbstractProbe;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.data.AbstractDataColumn;
 import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
+import gov.nih.nci.caarray.domain.data.BooleanColumn;
 import gov.nih.nci.caarray.domain.data.DataSet;
 import gov.nih.nci.caarray.domain.data.DesignElementList;
 import gov.nih.nci.caarray.domain.data.DesignElementType;
-import gov.nih.nci.caarray.domain.data.BooleanColumn;
 import gov.nih.nci.caarray.domain.data.FloatColumn;
 import gov.nih.nci.caarray.domain.data.HybridizationData;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
@@ -103,7 +103,6 @@ import gov.nih.nci.caarray.platforms.FileManager;
 import gov.nih.nci.caarray.platforms.ProbeLookup;
 import gov.nih.nci.caarray.platforms.spi.AbstractDataFileHandler;
 import gov.nih.nci.caarray.platforms.spi.PlatformFileReadException;
-import gov.nih.nci.caarray.util.io.ResettableFileReader;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.ValidationMessage.Type;
 
@@ -118,8 +117,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-import com.google.inject.Inject;
 import org.apache.log4j.Logger;
+
+import com.fiveamsolutions.nci.commons.util.io.ResettableFileReader;
+import com.google.inject.Inject;
 
 /**
  * Handler for Agilent raw text data formats.
@@ -189,7 +190,7 @@ class AgilentRawTextDataHandler extends AbstractDataFileHandler {
     private void openReader(final File file) throws PlatformFileReadException {
         try {
             this.reader = new ResettableFileReader(file);
-            this.parser = new AgilentTextParser(reader);
+            this.parser = new AgilentTextParser(file);
         } catch (IOException e) {
             throw new PlatformFileReadException(file, "Could not create file reader.", e);
         }

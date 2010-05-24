@@ -112,7 +112,7 @@ import org.hibernate.proxy.HibernateProxy;
 
 import com.fiveamsolutions.nci.commons.audit.AuditLogInterceptor;
 import com.fiveamsolutions.nci.commons.util.CompositeInterceptor;
-import com.fiveamsolutions.nci.commons.util.HibernateHelper;
+import com.fiveamsolutions.nci.commons.util.CsmEnabledHibernateHelper;
 
 /**
  * Utility class to create and retrieve Hibernate sessions.  Most methods are pass-throughs to {@link HibernateHelper},
@@ -126,11 +126,11 @@ public final class HibernateUtil {
 
     private static final AuditLogInterceptor AUDIT_LOG_INTERCEPTOR = new AuditLogInterceptor();
     private static final CaArrayAuditLogProcessor AUDIT_LOG_PROCESSOR = new CaArrayAuditLogProcessor();
-    private static final HibernateHelper HIBERNATE_HELPER = new HibernateHelper(SecurityUtils.getAuthorizationManager(),
-            new NamingStrategy(), new CompositeInterceptor(
-                new SecurityInterceptor(),
-                AUDIT_LOG_INTERCEPTOR), false);
+    private static final CsmEnabledHibernateHelper HIBERNATE_HELPER = new CsmEnabledHibernateHelper(
+            new NamingStrategy(), new CompositeInterceptor(new SecurityInterceptor(), AUDIT_LOG_INTERCEPTOR), 
+            SecurityUtils.getAuthorizationManager(), false);
     static {
+        HIBERNATE_HELPER.initialize();
         AUDIT_LOG_INTERCEPTOR.setHibernateHelper(HIBERNATE_HELPER);
         AUDIT_LOG_INTERCEPTOR.setProcessor(AUDIT_LOG_PROCESSOR);
     }
@@ -147,7 +147,7 @@ public final class HibernateUtil {
      * Get the hibernate helper.
      * @return the helper.
      */
-    public static HibernateHelper getHibernateHelper() {
+    public static CsmEnabledHibernateHelper getHibernateHelper() {
         return HIBERNATE_HELPER;
     }
 
@@ -349,10 +349,10 @@ public final class HibernateUtil {
             Map<String, List<? extends Serializable>> blocks) {
         StringBuffer inClause = new StringBuffer();
         int startIndex = blocks.size();
-        for (int i = 0; i < items.size(); i += HibernateHelper.MAX_IN_CLAUSE_LENGTH) {
+        for (int i = 0; i < items.size(); i += CsmEnabledHibernateHelper.MAX_IN_CLAUSE_LENGTH) {
             List<? extends Serializable> block = items.subList(i, Math.min(items.size(), i
-                    + HibernateHelper.MAX_IN_CLAUSE_LENGTH));
-            int paramNameIndex = startIndex + (i / HibernateHelper.MAX_IN_CLAUSE_LENGTH);
+                    + CsmEnabledHibernateHelper.MAX_IN_CLAUSE_LENGTH));
+            int paramNameIndex = startIndex + (i / CsmEnabledHibernateHelper.MAX_IN_CLAUSE_LENGTH);
             String paramName = "block" + paramNameIndex;
             if (inClause.length() > 0) {
                 inClause.append(" or");

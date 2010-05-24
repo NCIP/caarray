@@ -93,8 +93,11 @@ import gov.nih.nci.caarray.platforms.FileManager;
 import gov.nih.nci.caarray.platforms.SessionTransactionManager;
 import gov.nih.nci.caarray.platforms.spi.AbstractDesignFileHandler;
 import gov.nih.nci.caarray.platforms.spi.PlatformFileReadException;
-import gov.nih.nci.caarray.util.io.DelimitedFileReader;
-import gov.nih.nci.caarray.util.io.DelimitedFileReaderFactory;
+import com.fiveamsolutions.nci.commons.util.io.DelimitedFileReader;
+import com.fiveamsolutions.nci.commons.util.io.DelimitedFileReaderFactoryImpl;
+
+import com.google.inject.Inject;
+
 import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.ValidationMessage;
 import gov.nih.nci.caarray.validation.ValidationResult;
@@ -107,8 +110,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.io.FilenameUtils;
-
-import com.google.inject.Inject;
 
 /**
  * Reads Illumina genotyping and gene expression array description files.
@@ -141,7 +142,7 @@ final class CsvDesignHandler extends AbstractDesignFileHandler {
         this.designFile = designFiles.iterator().next();
         this.fileOnDisk = getFileManager().openFile(designFile);
         try {
-            this.reader = DelimitedFileReaderFactory.INSTANCE.getCsvReader(this.fileOnDisk);
+            this.reader = new DelimitedFileReaderFactoryImpl().createCommaDelimitedFileReader(this.fileOnDisk);
             this.helper = createHelper();
             return true;
         } catch (IOException e) {

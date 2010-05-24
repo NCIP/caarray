@@ -93,8 +93,8 @@ import gov.nih.nci.caarray.magetab.Protocol;
 import gov.nih.nci.caarray.magetab.TermSource;
 import gov.nih.nci.caarray.magetab.TermSourceable;
 import gov.nih.nci.caarray.magetab.sdrf.SdrfDocument;
-import gov.nih.nci.caarray.util.io.DelimitedFileReader;
-import gov.nih.nci.caarray.util.io.DelimitedWriter;
+import com.fiveamsolutions.nci.commons.util.io.DelimitedFileReader;
+import com.fiveamsolutions.nci.commons.util.io.DelimitedWriter;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -109,7 +109,7 @@ import gov.nih.nci.caarray.magetab.io.FileRef;
 
 /**
  * Represents an Investigation Description Format (IDF) file - a tab-delimited file providing general information about
- * the investigation, including its name, a brief description, the investigator’s contact details, bibliographic
+ * the investigation, including its name, a brief description, the investigatorï¾’s contact details, bibliographic
  * references, and free text descriptions of the protocols used in the investigation.
  */
 @SuppressWarnings({"PMD.CyclomaticComplexity", "PMD.ExcessiveClassLength", "PMD.TooManyMethods" })

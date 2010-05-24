@@ -82,11 +82,11 @@
  */
 package gov.nih.nci.caarray.platforms.agilent;
 
-import gov.nih.nci.caarray.util.io.DelimitedFileReader;
-import gov.nih.nci.caarray.util.io.DelimitedFileReaderFactory;
+import com.fiveamsolutions.nci.commons.util.io.DelimitedFileReader;
+import com.fiveamsolutions.nci.commons.util.io.DelimitedFileReaderFactoryImpl;
 
+import java.io.File;
 import java.io.IOException;
-import java.io.Reader;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -109,9 +109,9 @@ class AgilentTextParser {
      * @param reader the input to parse
      * @throws  
      */
-    AgilentTextParser(Reader reader) {
+    AgilentTextParser(final File file) {
         try {
-            this.reader = DelimitedFileReaderFactory.INSTANCE.getTabDelimitedReader(reader);
+            this.reader = new DelimitedFileReaderFactoryImpl().createTabDelimitedFileReader(file);
         } catch (IOException e) {
             throw new ParseException("Could not open tab delimited reader", e);
         }

@@ -33,6 +33,14 @@
 
     <!-- Components -->
 
+	<property name="cn2magetab.dir" value="${basedir}/copy-number-converter" />
+	<property name="cn2magetab.src.dir" value="${cn2magetab.dir}/src/main/java"/>
+	<property name="cn2magetab.target.dir" value="${cn2magetab.dir}/target" />
+    <property name="cn2magetab.classes.dir" value="${cn2magetab.target.dir}/classes"/>
+	<property name="cn2magetab.test.src.dir" value="${cn2magetab.dir}/src/test/java"/>
+	<property name="cn2magetab.instrumented.classes.dir" value="${cn2magetab.target.dir}/instrumented-classes" />
+    <property name="cn2magetab.test.classes.dir" value="${cn2magetab.target.dir}/test-classes"/>
+	
     <property name="caarray-client.dir" value="${basedir}/caarray-client.jar" />
     <property name="caarray-client.src.dir" value="${caarray-client.dir}/src/main/java" />
     <property name="caarray-client.resources.dir" value="${caarray-client.dir}/src/main/resources" />
@@ -381,6 +389,20 @@
             </fileset>
         </path>
         <property name="commons-collections.jar" refid="commons-collections.jar.fileset" />
+
+        <path id="commons-cli.jar.path">
+            <fileset dir="${project.lib}" id="commons-cli.jar.fileset">
+                <include name="commons-cli-*.jar"/>
+            </fileset>
+        </path>
+        <property name="commons-cli.jar" refid="commons-cli.jar.fileset" />
+
+        <path id="one-jar-ant-task.jar.path">
+            <fileset dir="${project.lib}" id="one-jar-ant-task.jar.fileset">
+                <include name="one-jar-ant-task-*.jar"/>
+            </fileset>
+        </path>
+        <property name="one-jar-ant-task.jar" refid="one-jar-ant-task.jar.fileset" />
 
         <path id="commons-discovery.jar.path">
             <fileset dir="${project.lib}" id="commons-discovery.jar.fileset">
@@ -1036,6 +1058,22 @@
                 <include name="${jboss-ejb3-client.jar}"/>
             </fileset>
         </path>
+        
+        <path id="cn2magetab.dependencies.compile.path">
+            <fileset refid="commons-cli.jar.fileset"/>
+            <fileset refid="commons-io.jar.fileset"/>
+            <fileset refid="commons-lang.jar.fileset"/>
+            <fileset refid="log4j.jar.fileset"/>
+            <fileset refid="javacsv.jar.fileset"/>
+            <fileset refid="guice.jar.fileset"/>
+            <fileset refid="aopalliance.jar.fileset"/>
+            <fileset refid="nci-commons-core.jar.fileset"/>
+        </path>
+        
+        <path id="cn2magetab.test.dependencies.path">
+            <path refid="cn2magetab.dependencies.compile.path"/>
+            <path refid="unit.test.dependencies.path"/>
+        </path>
 
         <path id="common.compile.dependencies.path">
             <fileset refid="javaee.jar.fileset"/>
@@ -1050,11 +1088,11 @@
             <fileset refid="xerces-J.jar.fileset"/>
             <fileset refid="xercesImpl.jar.fileset"/>
             <fileset refid="commons-configuration.jar.fileset"/>
-            <fileset refid="guice.jar.fileset"/>
-            <fileset refid="guice-multibindings.jar.fileset"/>
-            <fileset refid="guice-assistedinject.jar.fileset"/>
-            <fileset refid="woodstox.jar.fileset"/>
-            <fileset refid="stax2-api.jar.fileset"/>
+        	<fileset refid="guice.jar.fileset"/>
+        	<fileset refid="guice-multibindings.jar.fileset"/>
+        	<fileset refid="guice-assistedinject.jar.fileset"/>
+        	<fileset refid="woodstox.jar.fileset"/>
+       	    <fileset refid="stax2-api.jar.fileset"/>
             <fileset id="common.grid.dependencies.fileset" dir="${project.lib}">
                 <include name="${axis.jar}"/>
                 <include name="${caGrid-core.jar}"/>
@@ -1410,10 +1448,11 @@
         clean:target.dir,
         clean:caarray-grid-common,
         clean:caarray-grid-svc,
-        clean:caarraydb" description="Deletes all of the target directories" />
+        clean:caarraydb,
+    	clean-cn2magetab" description="Deletes all of the target directories" />
 
     <target name="clean:lib">
-        <delete dir="${lib.dir}"/>
+        
     </target>
 
     <target name="clean:caarray-client.jar">
@@ -1468,6 +1507,10 @@
 
     <target name="clean:caarraydb">
         <delete dir="${caarraydb.target.dir}" />
+    </target>
+    
+    <target name="clean-cn2magetab">
+        <delete dir="${cn2magetab.target.dir}"/>
     </target>
 
 
@@ -1549,6 +1592,13 @@
         compile:caarray-ejb.jar,
         compile:caarray.war,
         compile:caarray-grid-svc" />
+    
+    <target name="compile:cn2magetab" depends="init:third-party-paths">
+        <mkdir dir="${cn2magetab.classes.dir}" />
+        <javac srcdir="${cn2magetab.src.dir}" destdir="${cn2magetab.classes.dir}" debug="true">
+            <classpath refid="cn2magetab.dependencies.compile.path" />
+        </javac>
+    </target>
 
     <target name="compile:caarray-client.jar" depends="init:third-party-paths,compile:caarray-common.jar,compile:caarray-ejb.jar">
         <mkdir dir="${caarray-client.classes.dir}" />
@@ -1648,12 +1698,45 @@
         build:caarray-ejb.jar,
         build:caarray.war,
         build:caarray.ear,
-        build:caarray-grid-svc"/>
+        build:caarray-grid-svc,
+    	build:cn2magetab"/>
 
     <target name="build-functional" depends="init:third-party-paths,
         build:caarray-client.jar,
         build:functional:caarray.ear,
         build:caarray-grid-svc" description="Builds the application without deploying." />
+	
+	<target name="build:cn2magetab" depends="init:third-party-paths,compile:cn2magetab">
+		<mkdir dir="${cn2magetab.target.dir}/lib"/>
+		<unjar dest="${cn2magetab.target.dir}/lib">
+            <fileset refid="commons-cli.jar.fileset"/>
+            <fileset refid="commons-io.jar.fileset"/>
+            <fileset refid="commons-lang.jar.fileset"/>
+            <fileset refid="log4j.jar.fileset"/>
+            <fileset refid="javacsv.jar.fileset"/>
+            <fileset refid="guice.jar.fileset"/>
+            <fileset refid="guice.jar.fileset"/>
+            <fileset refid="guice-assistedinject.jar.fileset"/>
+            <fileset refid="guice-multibindings.jar.fileset"/>
+            <fileset refid="aopalliance.jar.fileset"/>
+            <fileset refid="nci-commons-core.jar.fileset"/>
+		</unjar>
+        <jar destfile="${cn2magetab.target.dir}/cn2magetab.jar">
+            <manifest>
+                <attribute name="Main-Class" value="gov.nih.nci.copynumberconverter.CopyNumberToMageTabDataMatrixConverter"/>
+                <section name="gov/nih/nci/copynumberconverter/">
+                    <attribute name="Specification-Title" value="cn2magetab" />
+                    <attribute name="Specification-Version" value="${svn.url} ${svn.revision}" />
+                    <attribute name="Specification-Vendor" value="5AM Solutions" />
+                    <attribute name="Implementation-Title" value="cn2magetab" />
+                    <attribute name="Implementation-Version" value="${svn.url} ${svn.revision}" />
+                    <attribute name="Implementation-Vendor" value="5AM Solutions" />
+                </section>
+            </manifest>
+            <fileset dir="${cn2magetab.classes.dir}"/>
+            <fileset dir="${cn2magetab.target.dir}/lib"/>
+        </jar>
+	</target>
 
     <target name="build:caarray-client.jar" depends="build:caarray-client-legacy.jar,build:caarray-client-external.jar"/>
 
@@ -2109,14 +2192,13 @@
       test:junit-caarray-common.jar,
       test:junit-caarray-ejb.jar,
       test:junit-caarray.war,
+      test:junit-cn2magetab,
       test:junit-report,
       test:cobertura-report,
       test:cobertura-check">
         <fail if="junit.failure" message="There were JUnit failures." />
         <fail if="cobertura.failure" message="Test coverage was insufficient (see Cobertura report)." />
     </target>
-
-    <!-- caarray-client.jar -->
 
     <!-- allows setting the "nocoverage" property to indicate that cobertura should not be invoked -->
     <target name="init:cobertura-runcheck">
@@ -2127,6 +2209,32 @@
         </or>
       </condition>
     </target>
+	
+	<!-- cn2magetab -->
+
+    <target name="test:instrument:cn2magetab" unless="nocobertura" depends="init:cobertura-runcheck,init:third-party-paths,compile:cn2magetab">
+        <cobertura-instrument todir="${cn2magetab.instrumented.classes.dir}" datafile="${cobertura.file}">
+            <fileset dir="${cn2magetab.classes.dir}">
+                <include name="gov/nih/nci/**" />
+            </fileset>
+        </cobertura-instrument>
+    </target>
+    
+    <target name="test:compile:cn2magetab.test.classes" unless="notest" depends="init:third-party-paths,compile:cn2magetab">
+        <mkdir dir="${cn2magetab.test.classes.dir}" />
+        <javac srcdir="${cn2magetab.test.src.dir}" destdir="${cn2magetab.test.classes.dir}" debug="true">
+            <classpath>
+                <pathelement location="${cn2magetab.classes.dir}" />
+                <path refid="cn2magetab.test.dependencies.path" />
+            </classpath>
+        </javac>
+    </target>
+
+    <target name="test:junit-cn2magetab" unless="notest" depends="init:third-party-paths,test:compile:cn2magetab.test.classes,test:instrument:cn2magetab">
+        <caarray-run-junit-tests source.include="**/*Test.java" test.src.dir="${cn2magetab.test.src.dir}" instrumented.classes="${cn2magetab.instrumented.classes.dir}" xml.output.dir="${cn2magetab.target.dir}/junit" classpath="${cn2magetab.test.classes.dir};${cn2magetab.classes.dir};${caarray-common.classes.dir}" classpathref.id="cn2magetab.test.dependencies.path" />
+    </target>
+
+    <!-- caarray-client.jar -->
 
     <target name="test:instrument:caarray-client.jar" unless="nocobertura" depends="init:cobertura-runcheck,init:third-party-paths,compile:caarray-client.jar">
         <cobertura-instrument todir="${caarray-client.instrumented.classes.dir}" datafile="${cobertura.file}">
@@ -2160,7 +2268,7 @@
     </target>
 
     <target name="test:junit-caarray-client.jar" unless="notest" depends="init:third-party-paths,test:compile:caarray-client.test.classes,test:instrument:caarray-client.jar">
-        <caarray-run-junit-tests test.src.dir="${caarray-client.test.src.dir}" xml.output.dir="${caarray-client.target.dir}/junit" instrumented.classes="${caarray-client.instrumented.classes.dir}" classpath="${caarray-client.test.classes.dir};${test.data.target.dir};${test.classes.dir};${caarray-client.test.files.dir};${caarray-client.classes.dir};${caarray-client.resources.dir};" classpathref.id="client.test.dependencies.path" />
+        <caarray-run-junit-tests source.include="**/*Test.java" test.src.dir="${caarray-client.test.src.dir}" xml.output.dir="${caarray-client.target.dir}/junit" instrumented.classes="${caarray-client.instrumented.classes.dir}" classpath="${caarray-client.test.classes.dir};${test.data.target.dir};${test.classes.dir};${caarray-client.test.files.dir};${caarray-client.classes.dir};${caarray-client.resources.dir};" classpathref.id="client.test.dependencies.path" />
     </target>
 
     <!-- caarray-common.jar -->
@@ -2194,7 +2302,7 @@
     </target>
 
     <target name="test:junit-caarray-common.jar" unless="notest" depends="init:third-party-paths,test:compile:caarray-common.test.classes,test:instrument:caarray-common.jar,configure-datasource-for-test,test:copy-files-to-target-dir-and-unpack-test-data">
-        <caarray-run-junit-tests test.src.dir="${caarray-common.test.src.dir}" xml.output.dir="${caarray-common.target.dir}/junit" instrumented.classes="${caarray-common.instrumented.classes.dir}" classpath="${caarray-common.test.classes.dir};${test.data.target.dir};${test.data.classes.dir};${caarray-common.test.files.dir};${caarray-common.classes.dir};" classpathref.id="common.test.dependencies.path" />
+        <caarray-run-junit-tests source.include="**/*Test.java" test.src.dir="${caarray-common.test.src.dir}" xml.output.dir="${caarray-common.target.dir}/junit" instrumented.classes="${caarray-common.instrumented.classes.dir}" classpath="${caarray-common.test.classes.dir};${test.data.target.dir};${test.data.classes.dir};${caarray-common.test.files.dir};${caarray-common.classes.dir};" classpathref.id="common.test.dependencies.path" />
     </target>
 
 	<!-- caarray-ejb.jar -->
@@ -2230,7 +2338,7 @@
     </target>
 
     <target name="test:junit-caarray-ejb.jar" unless="notest" depends="init:third-party-paths,test:compile:caarray-ejb.test.classes,test:instrument:caarray-ejb.jar,compile:caarray-client.jar,compile:caarray-common.jar,test:functional:compile-tests,test:copy-files-to-target-dir-and-unpack-test-data">
-        <caarray-run-junit-tests test.src.dir="${caarray-ejb.test.src.dir}" xml.output.dir="${caarray-ejb.target.dir}/junit" instrumented.classes="${caarray-ejb.instrumented.classes.dir};${caarray-common.instrumented.classes.dir}" classpath="${caarray-ejb.test.classes.dir};${caarray-common.test.classes.dir};${test.data.target.dir};${test.data.classes.dir};${caarray-ejb.test.resources.dir};${caarray-ejb.resources.dir};${caarray-common.test.files.dir};${caarray-ejb.classes.dir};${caarray-client.classes.dir};${caarray-common.classes.dir};" classpathref.id="ejb.test.dependencies.path"/>
+        <caarray-run-junit-tests source.include="**/*Test.java" test.src.dir="${caarray-ejb.test.src.dir}" xml.output.dir="${caarray-ejb.target.dir}/junit" instrumented.classes="${caarray-ejb.instrumented.classes.dir};${caarray-common.instrumented.classes.dir}" classpath="${caarray-ejb.test.classes.dir};${caarray-common.test.classes.dir};${test.data.target.dir};${test.data.classes.dir};${caarray-ejb.test.resources.dir};${caarray-ejb.resources.dir};${caarray-common.test.files.dir};${caarray-ejb.classes.dir};${caarray-client.classes.dir};${caarray-common.classes.dir};" classpathref.id="ejb.test.dependencies.path"/>
     </target>
 
     <!-- caarray.war -->
@@ -2271,7 +2379,7 @@
         <copy todir="${caarray-war.classes.dir}">
             <fileset dir="${caarray-war.src.dir}" includes="struts.xml,struts.properties,validators.xml" />
         </copy>
-        <caarray-run-junit-tests test.src.dir="${caarray-war.test.src.dir}" xml.output.dir="${caarray-war.target.dir}/junit" instrumented.classes="${caarray-war.instrumented.classes.dir}" classpath="${caarray-war.test.classes.dir};${caarray-war.classes.dir};${caarray-common.test.classes.dir};${caarray-common.test.files.dir};${caarray-common.classes.dir};${caarray-ejb.classes.dir};${caarray-ejb.test.classes.dir};${test.data.target.dir};${test.data.classes.dir};" classpathref.id="war.test.dependencies.path" />
+        <caarray-run-junit-tests source.include="**/*Test.java" test.src.dir="${caarray-war.test.src.dir}" xml.output.dir="${caarray-war.target.dir}/junit" instrumented.classes="${caarray-war.instrumented.classes.dir}" classpath="${caarray-war.test.classes.dir};${caarray-war.classes.dir};${caarray-common.test.classes.dir};${caarray-common.test.files.dir};${caarray-common.classes.dir};${caarray-ejb.classes.dir};${caarray-ejb.test.classes.dir};${test.data.target.dir};${test.data.classes.dir};" classpathref.id="war.test.dependencies.path" />
     </target>
 
     <target name="test:junit-report" unless="notest" depends="init:third-party-paths">
@@ -2290,6 +2398,9 @@
             <fileset dir="${caarray-war.target.dir}/junit">
                 <include name="TEST-*.xml" />
             </fileset>
+            <fileset dir="${cn2magetab.target.dir}/junit">
+                <include name="TEST-*.xml" />
+            </fileset>
             <report format="frames" todir="${site.dir}/junit/unit" />
         </junitreport>
     </target>
@@ -2301,12 +2412,14 @@
             <fileset dir="${caarray-common.src.dir}" />
             <fileset dir="${caarray-ejb.src.dir}" />
             <fileset dir="${caarray-war.src.dir}" />
+            <fileset dir="${cn2magetab.src.dir}" />
         </cobertura-report>
         <cobertura-report format="html" destdir="${site.dir}/cobertura/unit" datafile="${cobertura.file}">
             <fileset dir="${caarray-client.src.dir}" />
             <fileset dir="${caarray-common.src.dir}" />
             <fileset dir="${caarray-ejb.src.dir}" />
             <fileset dir="${caarray-war.src.dir}" />
+            <fileset dir="${cn2magetab.src.dir}" />
         </cobertura-report>
     </target>
 
@@ -2320,6 +2433,7 @@
     <target
     	name="test:instrument"
     	depends="
+            test:instrument:cn2magetab,
     		test:instrument:caarray-client.jar,
 			test:instrument:caarray-common.jar,
 			test:instrument:caarray-ejb.jar,
@@ -2606,19 +2720,21 @@
         <fail if="pmd.failure" message="There were PMD failures." />
     </target>
 
-    <target name="check:checkstyle" depends="init:third-party-paths,build:caarray-common.jar,build:caarray-ejb.jar,compile:caarray.war">
+    <target name="check:checkstyle" depends="init:third-party-paths,build:caarray-common.jar,build:caarray-ejb.jar,compile:caarray.war,compile:cn2magetab">
         <mkdir dir="${site.dir}/checkstyle" />
         <checkstyle config="${checkstyle.config}" failureProperty="checkstyle.failure" failOnViolation="false" maxerrors="0" maxwarnings="0">
             <classpath>
                 <pathelement location="${caarray-common.jar}" />
                 <pathelement location="${caarray-ejb.jar}" />
                 <pathelement location="${caarray-war.classes.dir}" />
+                <pathelement location="${cn2magetab.classes.dir}" />
             </classpath>
             <classpath refid="common.compile.dependencies.path" />
             <formatter type="xml" tofile="${site.dir}/checkstyle/checkstyle.xml" />
             <fileset dir="${caarray-common.src.dir}" includes="**/*.java" />
             <fileset dir="${caarray-ejb.src.dir}" includes="**/*.java" />
             <fileset dir="${caarray-war.src.dir}" includes="**/*.java" />
+        	<fileset dir="${cn2magetab.src.dir}" includes="**/*.java" />
         </checkstyle>
         <xslt in="${site.dir}/checkstyle/checkstyle.xml" out="${site.dir}/checkstyle/checkstyle.html" style="${resource.dir}/checkstyle-frames-errors.xsl">
             <param name="output.dir" expression="${site.dir}/checkstyle" />
@@ -2641,6 +2757,9 @@
                 <include name="**/*.java" />
             </fileset>
             <fileset dir="${caarray-ejb.src.dir}">
+                <include name="**/*.java" />
+            </fileset>
+            <fileset dir="${cn2magetab.src.dir}">
                 <include name="**/*.java" />
             </fileset>
         </pmd>
@@ -3068,6 +3187,7 @@
             <packageset dir="${caarray-grid-svc.base.dir}/common/src" />
             <packageset dir="${caarray-grid-svc.base.dir}/v1_0/src" />
             <packageset dir="${caarray-grid-svc.base.dir}/legacy/src" />
+            <packageset dir="${cn2magetab.src.dir}" />
         </javadoc>
     </target>
 

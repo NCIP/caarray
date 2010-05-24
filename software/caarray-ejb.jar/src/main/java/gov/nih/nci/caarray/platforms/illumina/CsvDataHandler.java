@@ -100,8 +100,9 @@ import gov.nih.nci.caarray.platforms.FileManager;
 import gov.nih.nci.caarray.platforms.ProbeLookup;
 import gov.nih.nci.caarray.platforms.ValueParser;
 import gov.nih.nci.caarray.platforms.spi.AbstractDataFileHandler;
-import gov.nih.nci.caarray.util.io.DelimitedFileReader;
-import gov.nih.nci.caarray.util.io.DelimitedFileReaderFactory;
+import com.fiveamsolutions.nci.commons.util.io.DelimitedFileReader;
+import com.fiveamsolutions.nci.commons.util.io.DelimitedFileReaderFactoryImpl;
+
 import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.ValidationMessage;
 import gov.nih.nci.caarray.validation.ValidationMessage.Type;
@@ -118,11 +119,11 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import com.google.inject.Inject;
+
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-
-import com.google.inject.Inject;
 
 /**
  * Handles reading of Illumina data.
@@ -265,7 +266,7 @@ class CsvDataHandler extends AbstractDataFileHandler {
 
     private DelimitedFileReader getReader(File dataFile) {
         try {
-            return DelimitedFileReaderFactory.INSTANCE.getCsvReader(dataFile);
+            return new DelimitedFileReaderFactoryImpl().createCommaDelimitedFileReader(dataFile);
         } catch (IOException e) {
             throw new IllegalStateException("File " + dataFile.getName() + " could not be read", e);
         }

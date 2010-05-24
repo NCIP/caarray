@@ -95,8 +95,11 @@ import gov.nih.nci.caarray.platforms.DefaultValueParser;
 import gov.nih.nci.caarray.platforms.FileManager;
 import gov.nih.nci.caarray.platforms.ValueParser;
 import gov.nih.nci.caarray.platforms.spi.AbstractDataFileHandler;
-import gov.nih.nci.caarray.util.io.DelimitedFileReader;
-import gov.nih.nci.caarray.util.io.DelimitedFileReaderFactory;
+import com.fiveamsolutions.nci.commons.util.io.DelimitedFileReader;
+import com.fiveamsolutions.nci.commons.util.io.DelimitedFileReaderFactoryImpl;
+
+import com.google.inject.Inject;
+
 import gov.nih.nci.caarray.validation.FileValidationResult;
 
 import java.io.File;
@@ -113,7 +116,6 @@ import org.apache.axis.utils.StringUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 
-import com.google.inject.Inject;
 import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.validation.ValidationMessage.Type;
@@ -245,7 +247,7 @@ final class SampleProbeProfileHandler extends AbstractDataFileHandler {
 
     private static DelimitedFileReader openReader(File dataFile) {
         try {
-            return DelimitedFileReaderFactory.INSTANCE.getTabDelimitedReader(dataFile);
+            return new DelimitedFileReaderFactoryImpl().createTabDelimitedFileReader(dataFile);
         } catch (IOException e) {
             throw new IllegalStateException("File " + dataFile.getName() + " could not be read", e);
         }

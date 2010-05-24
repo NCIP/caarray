@@ -53,10 +53,13 @@ package gov.nih.nci.caarray.magetab;
 import gov.nih.nci.caarray.magetab.io.FileRef;
 import gov.nih.nci.caarray.magetab.sdrf.AbstractSampleDataRelationshipNode;
 import gov.nih.nci.caarray.magetab.sdrf.ArrayDesign;
-import gov.nih.nci.caarray.util.io.DelimitedFileReader;
-import gov.nih.nci.caarray.util.io.DelimitedFileReaderFactory;
-import gov.nih.nci.caarray.util.io.DelimitedWriter;
-import gov.nih.nci.caarray.util.io.DelimitedWriterFactory;
+import com.fiveamsolutions.nci.commons.util.io.DelimitedFileReader;
+import com.fiveamsolutions.nci.commons.util.io.DelimitedFileReaderFactory;
+import com.fiveamsolutions.nci.commons.util.io.DelimitedFileReaderFactoryImpl;
+import com.fiveamsolutions.nci.commons.util.io.DelimitedWriter;
+import com.fiveamsolutions.nci.commons.util.io.DelimitedFileWriterFactory;
+import com.fiveamsolutions.nci.commons.util.io.DelimitedFileWriterFactoryImpl;
+
 import gov.nih.nci.caarray.util.io.FileUtility;
 import gov.nih.nci.caarray.validation.ValidationMessage;
 import gov.nih.nci.caarray.validation.ValidationMessage.Type;
@@ -70,14 +73,14 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import org.apache.commons.io.output.FileWriterWithEncoding;
-
 /**
  * Base class for all MAGE-TAB documents.
  */
 @SuppressWarnings("PMD.TooManyMethods")
 public abstract class AbstractMageTabDocument implements Serializable {
     private static final long serialVersionUID = 1L;
+    private static final DelimitedFileReaderFactory READER_FACTORY = new DelimitedFileReaderFactoryImpl();
+    private static final DelimitedFileWriterFactory WRITER_FACTORY = new DelimitedFileWriterFactoryImpl();
 
     private final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 
@@ -139,7 +142,7 @@ public abstract class AbstractMageTabDocument implements Serializable {
      */
     protected final DelimitedFileReader createTabDelimitedReader() throws MageTabParsingException {
         try {
-            return DelimitedFileReaderFactory.INSTANCE.getTabDelimitedReader(getFile().getAsFile());
+            return READER_FACTORY.createTabDelimitedFileReader(getFile().getAsFile());
         } catch (IOException e) {
             throw new MageTabParsingException("Couldn't create the tab-delimited file reader", e);
         }
@@ -152,8 +155,7 @@ public abstract class AbstractMageTabDocument implements Serializable {
      */
     protected final DelimitedWriter createTabDelimitedWriter() {
         try {
-            FileWriterWithEncoding fw = new FileWriterWithEncoding(file.getAsFile(), "UTF-8");
-            return DelimitedWriterFactory.getTabDelimitedWriter(fw);
+            return WRITER_FACTORY.createTabDelimitedWriter(getFile().getAsFile());
         } catch (IOException e) {
             throw new MageTabExportException(e);
         }

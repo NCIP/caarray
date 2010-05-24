@@ -88,12 +88,17 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.matchers.JUnitMatchers.hasItems;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 
 /**
@@ -103,40 +108,42 @@ import org.junit.Test;
 public class AgilentTextParserTest {
 
     @Test
-    public void emptyInputTest() {
-        Reader reader = new StringReader("");
-        AgilentTextParser parser = new AgilentTextParser(reader);
+    public void emptyInputTest() throws Exception{
+        File file = createFile(new String[] {});
+        AgilentTextParser parser = new AgilentTextParser(file);
         
         assertFalse(parser.hasNext());
+        FileUtils.deleteQuietly(file);
     }
 
     @Test
-    public void simpleSingleLineSectionTest() {
-        Reader reader = createReader(
+    public void simpleSingleLineSectionTest() throws Exception {
+        File file = createFile(
                 new String[] { "TYPE", "text" },
                 new String[] { "SECTION_1", "column1" },
                 new String[] { "DATA", "test string1" }
                 );
         
-        AgilentTextParser parser = new AgilentTextParser(reader);
+        AgilentTextParser parser = new AgilentTextParser(file);
         
         assertTrue(parser.hasNext());
         parser.next();
         
         assertEquals("test string1", parser.getStringValue("column1"));
         assertFalse(parser.hasNext());
+        FileUtils.deleteQuietly(file);
     }
 
     @Test
-    public void simpleTwoLineSectionTest() {
-        Reader reader = createReader(
+    public void simpleTwoLineSectionTest() throws Exception {
+        File file = createFile(
                 new String[] { "TYPE", "text" },
                 new String[] { "SECTION_1", "column1" },
                 new String[] { "DATA", "test string1" },
                 new String[] { "DATA", "test string2" }
                 );
         
-        AgilentTextParser parser = new AgilentTextParser(reader);
+        AgilentTextParser parser = new AgilentTextParser(file);
         
         assertTrue(parser.hasNext());
         parser.next();        
@@ -147,19 +154,20 @@ public class AgilentTextParserTest {
         assertEquals("test string2", parser.getStringValue("column1"));
        
         assertFalse(parser.hasNext());
+        FileUtils.deleteQuietly(file);
     }
     
     @Test
-    public void dataTypesTest() {
+    public void dataTypesTest() throws Exception {
         final double delta = 0.0001;
-        Reader reader = createReader(
+        File file = createFile(
                 new String[] { "TYPE", "text", "integer", "float", "boolean" },
                 new String[] { "SECTION_1", "column1", "column2", "column3", "column4"},
                 new String[] { "DATA", "test string1", "1", "123.456", "0"},
                 new String[] { "DATA", "test string2", "2", "654.321", "1"}
                 );
         
-        AgilentTextParser parser = new AgilentTextParser(reader);
+        AgilentTextParser parser = new AgilentTextParser(file);
         
         assertTrue(parser.hasNext());
         parser.next();        
@@ -176,11 +184,12 @@ public class AgilentTextParserTest {
         assertTrue(parser.getBooleanValue("column4"));
 
         assertFalse(parser.hasNext());
+        FileUtils.deleteQuietly(file);
     }
 
     @Test
-    public void twoSectionsTest() {
-        Reader reader = createReader(
+    public void twoSectionsTest() throws Exception {
+        File file = createFile(
                 new String[] { "TYPE", "text", "integer", "float" },
                 new String[] { "SECTION_1", "column1", "column2", "column3"},
                 new String[] { "DATA", "test string1", "1", "123.456"},
@@ -191,7 +200,7 @@ public class AgilentTextParserTest {
                 new String[] { "DATA", "test string3", "3", "4", "5"}
                 );
         
-        AgilentTextParser parser = new AgilentTextParser(reader);
+        AgilentTextParser parser = new AgilentTextParser(file);
         
         parser.next();        
         parser.next();        
@@ -204,11 +213,12 @@ public class AgilentTextParserTest {
         assertEquals(5, parser.getIntValue("fourth column"));
         
        assertFalse(parser.hasNext());
+       FileUtils.deleteQuietly(file);
     }
 
     @Test
-    public void sectionNameTest() {
-        Reader reader = createReader(
+    public void sectionNameTest() throws Exception {
+        File file = createFile(
                 new String[] { "TYPE", "text" },
                 new String[] { "SECTION_1", "column1" },
                 new String[] { "DATA", "test string1" },
@@ -220,7 +230,7 @@ public class AgilentTextParserTest {
                 new String[] { "DATA", "test string4" }
                 );
         
-        AgilentTextParser parser = new AgilentTextParser(reader);
+        AgilentTextParser parser = new AgilentTextParser(file);
         
         parser.next();        
         assertEquals("SECTION_1", parser.getSectionName());
@@ -235,11 +245,12 @@ public class AgilentTextParserTest {
         assertEquals("SECTION_2", parser.getSectionName());
         
        assertFalse(parser.hasNext());
+       FileUtils.deleteQuietly(file);
     }
 
     @Test
-    public void columnNamesTest() {
-        Reader reader = createReader(
+    public void columnNamesTest() throws Exception {
+        File file = createFile(
                 new String[] { "TYPE", "integer", "integer", "integer" },
                 new String[] { "SECTION_1", "q", "w", "r" },
                 new String[] { "DATA", "1", "2", "3" },
@@ -249,7 +260,7 @@ public class AgilentTextParserTest {
                 new String[] { "DATA", "1", "2", "3" , "4" }
                 );
         
-        AgilentTextParser parser = new AgilentTextParser(reader);
+        AgilentTextParser parser = new AgilentTextParser(file);
         Collection<String> columnNames;
         
         parser.next();        
@@ -263,22 +274,23 @@ public class AgilentTextParserTest {
         assertThat(columnNames, hasItems("a", "b", "c", "d"));
         
         assertFalse(parser.hasNext());
+        FileUtils.deleteQuietly(file);
     }
-
-    private Reader createReader(String[]... lines) {
-       StringWriter stringWriter = new StringWriter();
-       PrintWriter printWriter = new PrintWriter(stringWriter);
-       
-       for (String[] line : lines) {
-           String delimiter = "";
-           for (String field : line) {
-               printWriter.format("%s%s", delimiter, field);
-               delimiter = "\t";
-           }
-           printWriter.println();
-       }
-       printWriter.flush();
-       
-       return new StringReader(stringWriter.toString());      
+    
+    private File createFile(String[]... lines) throws IOException {
+        File outFile = new File ("outfile.txt");
+        StringBuffer stringCatcher = new StringBuffer();
+        for (String[] line : lines) {
+            for (int i = 0; i < line.length; i++) {
+                stringCatcher.append(line[i]);
+                if (i < (line.length - 1)) {
+                    stringCatcher.append("\t");
+                } else {
+                    stringCatcher.append("\n");
+                }
+            }
+        }
+        FileUtils.writeStringToFile(outFile, stringCatcher.toString());
+        return outFile;
     }
 }

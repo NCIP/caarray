@@ -100,8 +100,11 @@ import gov.nih.nci.caarray.platforms.ProbeLookup;
 import gov.nih.nci.caarray.platforms.ValueParser;
 import gov.nih.nci.caarray.platforms.spi.AbstractDataFileHandler;
 import gov.nih.nci.caarray.platforms.spi.PlatformFileReadException;
-import gov.nih.nci.caarray.util.io.DelimitedFileReader;
-import gov.nih.nci.caarray.util.io.DelimitedFileReaderFactory;
+import com.fiveamsolutions.nci.commons.util.io.DelimitedFileReader;
+import com.fiveamsolutions.nci.commons.util.io.DelimitedFileReaderFactoryImpl;
+
+import com.google.inject.Inject;
+
 import gov.nih.nci.caarray.validation.FileValidationResult;
 
 import java.io.File;
@@ -114,8 +117,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
-
-import com.google.inject.Inject;
 
 /**
  * Handles reading of nimblegen data.
@@ -185,7 +186,7 @@ class PairDataHandler extends AbstractDataFileHandler {
 
     private DelimitedFileReader getReader(File dataFile) {
         try {
-            return DelimitedFileReaderFactory.INSTANCE.getTabDelimitedReader(dataFile);
+            return new DelimitedFileReaderFactoryImpl().createTabDelimitedFileReader(dataFile);
         } catch (IOException e) {
             throw new IllegalStateException("File " + dataFile.getName() + " could not be read", e);
         }

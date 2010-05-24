@@ -102,8 +102,8 @@ import gov.nih.nci.caarray.magetab.sdrf.SdrfColumnType;
 import gov.nih.nci.caarray.magetab.sdrf.SdrfDocument;
 import gov.nih.nci.caarray.magetab.sdrf.SdrfDocumentNodes;
 import gov.nih.nci.caarray.magetab.sdrf.Source;
-import gov.nih.nci.caarray.util.io.DelimitedFileReader;
-import gov.nih.nci.caarray.util.io.DelimitedFileReaderFactory;
+import com.fiveamsolutions.nci.commons.util.io.DelimitedFileReader;
+import com.fiveamsolutions.nci.commons.util.io.DelimitedFileReaderFactoryImpl;
 
 import java.io.File;
 import java.io.IOException;
@@ -203,7 +203,7 @@ public class MageTabDocumentExportTest {
         documentSet.export();
 
         // Verify that the exported MAGE-TAB is correct.
-        DelimitedFileReader reader = DelimitedFileReaderFactory.INSTANCE.getTabDelimitedReader(sdrfFile);
+        DelimitedFileReader reader = new DelimitedFileReaderFactoryImpl().createTabDelimitedFileReader(sdrfFile);
         verifyRowsOneToOne(reader, 1);
         reader.close();
     }
@@ -230,7 +230,7 @@ public class MageTabDocumentExportTest {
         documentSet.export();
 
         // Verify that the exported MAGE-TAB is correct.
-        DelimitedFileReader reader = DelimitedFileReaderFactory.INSTANCE.getTabDelimitedReader(sdrfFile);
+        DelimitedFileReader reader = new DelimitedFileReaderFactoryImpl().createTabDelimitedFileReader(sdrfFile);
         verifyBiomaterialCharacteristics(reader);
         reader.close();
     }
@@ -246,7 +246,7 @@ public class MageTabDocumentExportTest {
         documentSet.export();
 
         // Verify that the exported MAGE-TAB is correct.
-        DelimitedFileReader reader = DelimitedFileReaderFactory.INSTANCE.getTabDelimitedReader(idfFile);
+        DelimitedFileReader reader = new DelimitedFileReaderFactoryImpl().createTabDelimitedFileReader(idfFile);        
         verifyExperimentOverview(reader);
         reader.close();
     }

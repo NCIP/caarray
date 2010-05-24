@@ -98,8 +98,8 @@ import gov.nih.nci.caarray.magetab.TermSource;
 import gov.nih.nci.caarray.magetab.TermSourceable;
 import gov.nih.nci.caarray.magetab.Unitable;
 import gov.nih.nci.caarray.magetab.idf.IdfDocument;
-import gov.nih.nci.caarray.util.io.DelimitedFileReader;
-import gov.nih.nci.caarray.util.io.DelimitedWriter;
+import com.fiveamsolutions.nci.commons.util.io.DelimitedFileReader;
+import com.fiveamsolutions.nci.commons.util.io.DelimitedWriter;
 import gov.nih.nci.caarray.validation.ValidationMessage;
 import gov.nih.nci.caarray.validation.ValidationMessage.Type;
 

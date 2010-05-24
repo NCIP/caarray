@@ -97,8 +97,10 @@ import gov.nih.nci.caarray.platforms.FileManager;
 import gov.nih.nci.caarray.platforms.SessionTransactionManager;
 import gov.nih.nci.caarray.platforms.spi.AbstractDesignFileHandler;
 import gov.nih.nci.caarray.platforms.spi.PlatformFileReadException;
-import gov.nih.nci.caarray.util.io.DelimitedFileReader;
-import gov.nih.nci.caarray.util.io.DelimitedFileReaderFactory;
+import com.fiveamsolutions.nci.commons.util.io.DelimitedFileReader;
+import com.fiveamsolutions.nci.commons.util.io.DelimitedFileReaderFactory;
+import com.fiveamsolutions.nci.commons.util.io.DelimitedFilesModule;
+
 import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.ValidationMessage;
 import gov.nih.nci.caarray.validation.ValidationResult;
@@ -116,7 +118,9 @@ import java.util.Set;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 
+import com.google.inject.Guice;
 import com.google.inject.Inject;
+import com.google.inject.Injector;
 
 /**
  * Manages validation and loading of array designs described in the GenePix GAL
@@ -161,7 +165,9 @@ final class GalDesignHandler extends AbstractDesignFileHandler {
         this.designFile = designFiles.iterator().next();
         this.fileOnDisk = getFileManager().openFile(designFile);
         try {
-            this.reader = DelimitedFileReaderFactory.INSTANCE.getTabDelimitedReader(this.fileOnDisk);
+            Injector injector = Guice.createInjector(new DelimitedFilesModule());
+            DelimitedFileReaderFactory readerFactory = injector.getInstance(DelimitedFileReaderFactory.class);
+            this.reader = readerFactory.createTabDelimitedFileReader(this.fileOnDisk);
             return true;
         } catch (IOException e) {
             throw new PlatformFileReadException(this.fileOnDisk, "Could not open reader for file "

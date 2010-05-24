@@ -98,8 +98,11 @@ import gov.nih.nci.caarray.platforms.SessionTransactionManager;
 import gov.nih.nci.caarray.platforms.spi.AbstractDesignFileHandler;
 import gov.nih.nci.caarray.platforms.spi.PlatformFileReadException;
 import gov.nih.nci.caarray.util.HibernateUtil;
-import gov.nih.nci.caarray.util.io.DelimitedFileReader;
-import gov.nih.nci.caarray.util.io.DelimitedFileReaderFactory;
+import com.fiveamsolutions.nci.commons.util.io.DelimitedFileReader;
+import com.fiveamsolutions.nci.commons.util.io.DelimitedFileReaderFactoryImpl;
+
+import com.google.inject.Inject;
+
 import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.ValidationMessage;
 import gov.nih.nci.caarray.validation.ValidationResult;
@@ -121,7 +124,6 @@ import org.hibernate.ScrollableResults;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
-import com.google.inject.Inject;
 
 /**
  * Implementation of NDF parser.
@@ -176,7 +178,7 @@ class NdfHandler extends AbstractDesignFileHandler {
         this.designFile = designFiles.iterator().next();
         this.fileOnDisk = getFileManager().openFile(designFile);
         try {
-            this.reader = DelimitedFileReaderFactory.INSTANCE.getTabDelimitedReader(this.fileOnDisk);
+            this.reader = new DelimitedFileReaderFactoryImpl().createTabDelimitedFileReader(this.fileOnDisk);
             return true;
         } catch (IOException e) {
             throw new PlatformFileReadException(this.fileOnDisk, "Could not open reader for file "
