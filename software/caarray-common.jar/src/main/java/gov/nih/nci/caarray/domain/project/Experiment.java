@@ -177,9 +177,12 @@ public class Experiment extends AbstractCaArrayEntity {
         + "upe.protection_element_id = pe.protection_element_id and upe.user_id = u.user_id) "
         + CaarrayInnoDBDialect.FILTER_ALIAS + ")";
 
-    private static final String READABLE_SAMPLE_CLAUSE = "(select pe.attribute_value from csm_protection_group pg, "
-        + "csm_protection_element pe, csm_pg_pe pgpe, csm_user_group_role_pg ugrpg, csm_user u, csm_role_privilege rp, "
-        + "csm_role r, csm_privilege p, csm_user_group ug where "
+    private static final String READABLE_SAMPLE_CLAUSE = "(select straight_join pe.attribute_value "
+        + "from csm_user u use index(UQ_LOGIN_NAME), csm_privilege p use index(UQ_PRIVILEGE_NAME), "
+        + "csm_role_privilege rp use index(UQ_ROLE_PRIVILEGE_ROLE_ID), csm_user_group ug use index(idx_USER_ID), "
+        + "csm_role r use index(PRIMARY), csm_user_group_role_pg ugrpg use index(idx_GROUP_ID), "
+        + "csm_protection_group pg use index(PRIMARY), csm_pg_pe pgpe use index(idx_PROTECTION_GROUP_ID), "
+        + "csm_protection_element pe use index(PRIMARY) where "
         + "pe.object_id= 'gov.nih.nci.caarray.domain.sample.Sample' and pe.attribute='id' and "
         + "u.login_name=:USER_NAME and pe.application_id=:APPLICATION_ID and ugrpg.role_id=r.role_id "
         + "and ugrpg.group_id = ug.group_id and ug.user_id = u.user_id and "
