@@ -55,7 +55,7 @@ Test Case,API,File Reference,File Name,File Experiment,File Experiment Id,Experi
 198.2,grid,,,QA Affymetrix Experiment for API Testing,,,,,,,TRUE,TRUE,,140000,,,,,,
 203,java,,,,woost-00041,,,20,CEL,,TRUE,,,5000000,,,,,,600000
 204,grid,,,,woost-00041,,,20,CEL,,TRUE,,,5000000,,,,,,600000
-294,java,,,,woost-00041,,,,,,,TRUE,343283,,,,,,,
+294,java,,,,woost-00041,,,,,,,TRUE,343287,,,,,,,
 295,java,,,,woost-00041,,,,,,TRUE,TRUE,,47200,,,,,TRUE,
 297.1,java,,,,woost-00041,,,,,TRUE,TRUE,TRUE,,47200,,,,,TRUE,
 297.2,java,,,,woost-00041,,,,,FALSE,TRUE,TRUE,,47200,,,,,TRUE,

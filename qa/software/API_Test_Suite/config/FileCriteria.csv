@@ -39,7 +39,7 @@ Test Case,API,Experiment Id,Experiment Name,Experiment Reference,Extension,Type 
 ,,,,,,,,,,QaApiTestHybridization02,,,,
 140,grid,,,,,URN:LSID:gov.nih.nci.caarray.external.v1_0.data.FileType:AFFYMETRIX_CHP,DERIVED_DATA,QaApiTestSample01,,,,,,1
 141,java,woost-00035,,,CEL,,,,,,,,TRUE,676
-142,grid,woost-00035,,,,,RAW_DATA,,,,,,,676
+129,grid,woost-00035,,,,,RAW_DATA,,,,,,,676
 292.1,java,,,,,,,QaApiTestSource01,,,,,,2
 292.2,java,,,,,,,,${empty},,,,,0
 292.3,java,,,,,,,QaApiTestSource01,,,,,,4

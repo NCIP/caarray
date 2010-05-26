@@ -100,6 +100,7 @@ import caarray.client.test.TestProperties;
 import caarray.client.test.TestResult;
 import caarray.client.test.TestResultReport;
 import caarray.client.test.TestUtils;
+import caarray.client.test.search.ExampleSearch;
 
 /**
  * @author vaughng
@@ -279,7 +280,28 @@ public class LookupEntitiesTestSuite extends ConfigurableTestSuite
             }
             configuredTests = filteredTests;
         }
-        
+        List<Float> excludedTests = TestProperties.getExcludedTests();
+        if (!excludedTests.isEmpty())
+        {
+            List<ConfigurableTest> filteredSearches = new ArrayList<ConfigurableTest>();
+            for (ConfigurableTest search : configuredTests)
+            {
+                if (!excludedTests.contains(search.getTestCase()) && !excludedTests.contains(search.getTestCase()))
+                    filteredSearches.add(search);
+            }
+            configuredTests = filteredSearches;
+        }
+        List<Float> includeTests = TestProperties.getIncludeOnlyTests();
+        if (!includeTests.isEmpty())
+        {
+            List<ConfigurableTest> filteredSearches = new ArrayList<ConfigurableTest>();
+            for (ConfigurableTest search : configuredTests)
+            {
+                if (includeTests.contains(search.getTestCase()) || includeTests.contains((float)Math.floor(search.getTestCase())))
+                    filteredSearches.add(search);
+            }
+            configuredTests = filteredSearches; 
+        }
     }
     
     /* (non-Javadoc)

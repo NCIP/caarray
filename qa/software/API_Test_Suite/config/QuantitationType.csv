@@ -1,9 +1,9 @@
 Test Case,API,Name,Data Type,Expected Results,Min Results,Expected Name,Expected Data Type
-89,java,,,123,,,
-90,grid,,,123,,,
+89,java,,,168,,,
+90,grid,,,168,,,
 91,java,CHPSignalLogRatio,,1,,CHPSignalLogRatio,Float
 92,grid,CHPSignalLogRatio,,1,,CHPSignalLogRatio,Float
 263,java,invalid#%!,,0,,,
 264,grid,invalid#%!,,0,,,
-265,java,,FLOAT,47,,,
-266,grid,,FLOAT,47,,,
+265,java,,FLOAT,,150,,
+266,grid,,FLOAT,,150,,

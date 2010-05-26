@@ -21,6 +21,7 @@ import gov.nih.nci.caarray.external.v1_0.data.StringColumn;
 import gov.nih.nci.caarray.external.v1_0.experiment.Experiment;
 import gov.nih.nci.caarray.external.v1_0.query.DataSetRequest;
 import gov.nih.nci.caarray.external.v1_0.query.ExperimentSearchCriteria;
+import gov.nih.nci.caarray.external.v1_0.query.FileSearchCriteria;
 import gov.nih.nci.caarray.external.v1_0.query.SearchResult;
 import gov.nih.nci.caarray.external.v1_0.sample.Hybridization;
 
@@ -504,7 +505,7 @@ public class DataSetTestSuite extends SearchByCriteriaTestSuite
             
         if (headerIndexMap.get(FILE_REF) < input.length && !input[headerIndexMap.get(FILE_REF)].equals(""))
         {
-            String name = input[headerIndexMap.get(FILE)].trim();
+            String name = input[headerIndexMap.get(FILE_REF)].trim();
             if (name.startsWith(VAR_START))
                 name = getVariableValue(name);
             CaArrayEntityReference ref = new CaArrayEntityReference(name);
@@ -523,10 +524,13 @@ public class DataSetTestSuite extends SearchByCriteriaTestSuite
                 String experiment = input[headerIndexMap.get(FILE_EXPERIMENT)].trim();
                 search.setExperimentName(experiment);
                 List<File> files = apiFacade.getFilesByName(search.getApi(), fileNames, experiment);
-                for (File file : files)
-                {
-                    criteria.getDataFiles().add(file.getReference());
-                }
+                
+                    for (File file : files)
+                    {
+                        criteria.getDataFiles().add(file.getReference());
+                    }
+                
+                
             }
             else if (headerIndexMap.get(FILE_EXPERIMENT_ID) < input.length && !input[headerIndexMap.get(FILE_EXPERIMENT_ID)].equals(""))
             {
