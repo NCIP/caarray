@@ -171,13 +171,15 @@ public class Gene extends AbstractCaArrayEntity {
         this.fullName = fullName;
     }
 
-    /**
-     * @return the accessions
-     */
+   /**
+    * @return the accessions
+    * @deprecated should only be used by castor and hibernate.
+    */
+    @Deprecated
     @org.hibernate.annotations.CollectionOfElements
     @JoinTable(name = "accession", joinColumns = @JoinColumn(name = "gene_id"))
     @Column(updatable = false)
-    private Set<Accession> getAccessions() {
+    public Set<Accession> getAccessions() {
         return accessions;
     }
 

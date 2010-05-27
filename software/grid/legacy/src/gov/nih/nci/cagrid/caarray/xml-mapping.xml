@@ -769,11 +769,11 @@
     <field name="featureNumber" type="java.lang.Integer">
       <bind-xml name="featureNumber" node="attribute" />
     </field>
-    <field name="xCoordinate" type="java.lang.Double">
-      <bind-xml name="xCoordinate" node="attribute" />
+    <field name="x_Coordinate" type="java.lang.Double">
+      <bind-xml name="x_Coordinate" node="attribute" />
     </field>
-    <field name="yCoordinate" type="java.lang.Double">
-      <bind-xml name="yCoordinate" node="attribute" />
+    <field name="y_Coordinate" type="java.lang.Double">
+      <bind-xml name="y_Coordinate" node="attribute" />
     </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.array.AbstractProbe" identity="id" extends="gov.nih.nci.caarray.domain.array.AbstractDesignElement">
@@ -827,7 +827,7 @@
       <bind-xml name="fullName" node="attribute" />
     </field>
     <field name="accessions" type="gov.nih.nci.caarray.domain.array.Accession" collection="collection">
-      <bind-xml name="AbstractContact" type="gov.nih.nci.caarray.domain.array.Accession" location="accessions" node="element" />
+      <bind-xml name="Accession" type="gov.nih.nci.caarray.domain.array.Accession" location="accessions" node="element" />
     </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.array.Accession">

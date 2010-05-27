@@ -98,8 +98,8 @@ abstract class AbstractChpDesignElementListUtility {
     private static final String LSID_NAMESPACE_ELEMENT_LIST = "DesignElementList";
     private static final String LSID_OBJECT_ID_ELEMENT_LIST_PREFIX = "LogicalProbes";
 
-    static final int BATCH_SIZE = 500;
-    static final int TRANSACTION_SIZE = 5000;
+    static final int BATCH_SIZE = 1000;
+    static final int TRANSACTION_SIZE = 10000;
 
     private final ArrayDao arrayDao;
     private final SessionTransactionManager sessionTransactionManager;

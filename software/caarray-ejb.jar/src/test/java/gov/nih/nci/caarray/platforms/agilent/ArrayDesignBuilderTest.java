@@ -403,8 +403,8 @@ public class ArrayDesignBuilderTest {
 
         arrayDesignBuilder.setCoordinates(x, y, units);
 
-        assertEquals(x, feature.getXCoordinate(), 0);
-        assertEquals(y, feature.getYCoordinate(), 0);
+        assertEquals(x, feature.getX_Coordinate(), 0);
+        assertEquals(y, feature.getY_Coordinate(), 0);
         assertSame(EXPECTED_MILLIMETER_TERM, feature.getCoordinateUnits());
     }
 

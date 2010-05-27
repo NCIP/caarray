@@ -106,7 +106,7 @@ abstract class AbstractAffymetrixDesignFileHandler extends AbstractDesignFileHan
 
     static final String LSID_AUTHORITY = "Affymetrix.com";
     static final String LSID_NAMESPACE = "PhysicalArrayDesign";
-    static final int PROBE_SET_BATCH_SIZE = 25;
+    static final int PROBE_SET_BATCH_SIZE = 1000;
 
     private final AbstractChpDesignElementListUtility designElementListUtility;
 

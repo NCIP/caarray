@@ -107,8 +107,10 @@ public class Feature extends AbstractDesignElement {
     private short column;
     private short row;
     private Integer featureNumber;
-    private Double xCoordinate;
-    private Double yCoordinate;
+    // CHECKSTYLE:OFF
+    private Double x_Coordinate;
+    private Double y_Coordinate;
+    // CHECKSTYLE:ON
     private Term coordinateUnits;
 
     private ArrayDesignDetails arrayDesignDetails;
@@ -203,36 +205,43 @@ public class Feature extends AbstractDesignElement {
         this.featureNumber = featureNumber;
     }
 
+    // CHECKSTYLE:OFF
+    // the underscore in the method name is to avoid 2 consecutive capital letters which make hibernate use a diffrent
+    // property name computation that the grid/castor
     /**
      * @return the xCoordinate
      */
+    @SuppressWarnings("PMD.MethodNamingConventions")
     @Column(name = "feature_x_coordinate")
-    public Double getXCoordinate() {
-        return xCoordinate;
+    public Double getX_Coordinate() {
+        return x_Coordinate;
     }
 
     /**
      * @param xCoordinate the x coordinate to set
      */
-    public void setXCoordinate(Double xCoordinate) {
-        this.xCoordinate = xCoordinate;
+    @SuppressWarnings("PMD.MethodNamingConventions")
+    public void setX_Coordinate(Double xCoordinate) {
+        this.x_Coordinate = xCoordinate;
     }
 
     /**
      * @return the y coordinate
      */
+    @SuppressWarnings("PMD.MethodNamingConventions")
     @Column(name = "feature_y_coordinate")
-    public Double getYCoordinate() {
-        return yCoordinate;
+    public Double getY_Coordinate() {
+        return y_Coordinate;
     }
 
     /**
      * @param yCoordinate the y coordinate to set
      */
-    public void setYCoordinate(Double yCoordinate) {
-        this.yCoordinate = yCoordinate;
+    @SuppressWarnings("PMD.MethodNamingConventions")
+    public void setY_Coordinate(Double yCoordinate) {
+        this.y_Coordinate = yCoordinate;
     }
-    
+    // CHECKSTYLE:ON
     /**
      * @return the coordinate units
      */
@@ -281,9 +290,9 @@ public class Feature extends AbstractDesignElement {
         stringBuffer.append(", featureNumber = ");
         stringBuffer.append(featureNumber != null ? featureNumber : "null");
         stringBuffer.append(", xCoordinate = ");
-        stringBuffer.append(xCoordinate != null ? xCoordinate : "null");
+        stringBuffer.append(x_Coordinate != null ? x_Coordinate : "null");
         stringBuffer.append(", yCoordinate = ");
-        stringBuffer.append(yCoordinate != null ? yCoordinate : "null");
+        stringBuffer.append(y_Coordinate != null ? y_Coordinate : "null");
         stringBuffer.append(", coordinateUnits = \"");
         stringBuffer.append(coordinateUnits);
         stringBuffer.append('"');

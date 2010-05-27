@@ -192,8 +192,8 @@ FeatureBuilder, GeneBuilder, AccessionBuilder {
      * {@inheritDoc}
      */
     public FeatureBuilder setCoordinates(double x, double y, String units) {
-        currentFeature.setXCoordinate(x);
-        currentFeature.setYCoordinate(y);
+        currentFeature.setX_Coordinate(x);
+        currentFeature.setY_Coordinate(y);
         if ("mm".equalsIgnoreCase(units)) {
             currentFeature.setCoordinateUnits(millimeterTerm);
         } else {

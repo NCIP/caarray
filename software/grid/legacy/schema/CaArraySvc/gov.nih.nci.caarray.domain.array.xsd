@@ -139,8 +139,8 @@
                 <xs:attribute name="column" type="xs:short" />
                 <xs:attribute name="row" type="xs:short" />
                 <xs:attribute name="featureNumber" type="xs:integer" />
-                <xs:attribute name="xCoordinate" type="xs:double" />
-                <xs:attribute name="yCoordinate" type="xs:double" />
+                <xs:attribute name="x_Coordinate" type="xs:double" />
+                <xs:attribute name="y_Coordinate" type="xs:double" />
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>

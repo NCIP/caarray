@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.domain.array;
 
+import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
@@ -93,14 +94,18 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
  * Uniquely identifies a gene relative to a public sequence database.
  */
 @Embeddable
-class Accession {
+public class Accession implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private String databaseName;
     private String accessionNumber;
 
-    @SuppressWarnings("unused")
-    private Accession() {
+    /**
+     * default ctor for castor.
+     * @deprecated public for castor and hibernate only.
+     */
+    @Deprecated
+    public Accession() {
         // For castor and hibernate
     }
     
@@ -155,37 +160,41 @@ class Accession {
         .isEquals();
     }
 
-    /**
-      * @return the databaseName
-     */
+   /**
+    * @return the databaseName
+    * @deprecated should only be used by castor and hibernate.
+    */
+    @Deprecated
     @Column(nullable = false, updatable = false)
-    String getDatabaseName() {
+    public String getDatabaseName() {
         return databaseName;
     }
     
-    /**
-     * private: should only be used by castor and hibernate.
-     * @param databaseName the databaseName to set
+   /**
+    * @param databaseName the databaseName to set
+    * @deprecated should only be used by castor and hibernate.
     */
-    @SuppressWarnings("unused")
-    private void setDatabaseName(String databaseName) {
+    @Deprecated
+    public void setDatabaseName(String databaseName) {
         this.databaseName = databaseName;
     }
 
     /**
      * @return the accessionNumber
+     * * @deprecated should only be used by castor and hibernate.
      */
+    @Deprecated
     @Column(nullable = false, updatable = false)
-    String getAccessionNumber() {
+    public String getAccessionNumber() {
          return accessionNumber;
     }
     
-    /**
-     * private: should only be used by castor and hibernate.
-     * @param accessionNumber the accessionNumber to set
+   /**
+    * @param accessionNumber the accessionNumber to set
+    * @deprecated should only be used by castor and hibernate.
     */
-    @SuppressWarnings("unused")
-    private void setAccessionNumber(String accessionNumber) {
+    @Deprecated
+    public void setAccessionNumber(String accessionNumber) {
         this.accessionNumber = accessionNumber;
     }
 }
