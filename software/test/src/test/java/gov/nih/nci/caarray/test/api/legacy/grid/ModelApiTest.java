@@ -135,7 +135,7 @@ public class ModelApiTest extends AbstractLegacyGridApiTest {
         cqlQuery.setQueryModifier(qm);
 
         CQLQueryResults cqlResults = gridClient.query(cqlQuery);
-//        assertEquals("this will fail du to http://gforge.nci.nih.gov/tracker/index.php?func=detail&aid=28685", 48, cqlResults.getObjectResult().length);
+//        assertEquals("this will fail due to http://gforge.nci.nih.gov/tracker/index.php?func=detail&aid=28685", 48, cqlResults.getObjectResult().length);
         Iterator iter = new CQLQueryResultsIterator(cqlResults, CaArraySvcClient.class.getResourceAsStream("client-config.wsdd"));
         while (iter.hasNext()) {
             Feature f = (Feature) (iter.next());
