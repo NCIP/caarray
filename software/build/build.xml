@@ -2675,8 +2675,8 @@
     	<delete dir="${application.base.path}"/>
     </target>
 
-	<target name="test:api:init-data" unless="notest" depends="init:third-party-paths">
-		<antcall target="database:reinitialize"/>
+    <target name="test:api:init-data" unless="notest" depends="init:third-party-paths">
+        <antcall target="database:dropAll"/>
 
         <!--
         the dump file was created with :
@@ -2696,8 +2696,6 @@
         </exec>
         <echo message="done importing the DB dump."/>
         <antcall target="database:update"/>
-        <!--run-sql-script database.url="${database.url}" database.user="${database.user}" database.password="${database.password}"
-            sql.file="${test.target.dir}/caarraydb.sql" /-->
     </target>
 
     <target name="test:grid:run-tests" unless="notest"  depends="init:third-party-paths,test:grid:compile-tests,build:caarray-client.jar,build:caarray-grid-svc">
