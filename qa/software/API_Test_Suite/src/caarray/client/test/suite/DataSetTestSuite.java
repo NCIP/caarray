@@ -94,7 +94,7 @@ public class DataSetTestSuite extends SearchByCriteriaTestSuite
             if (namedResults != dataSearch.getExpectedProbeIds())
             {
                 String errorMessage = "Failed with unexpected number of probe ids, expected: "
-                        + dataSearch.getExpectedResults()
+                        + dataSearch.getExpectedProbeIds()
                         + ", actual number of probe ids: " + namedResults;
                 setTestResultFailure(testResult, dataSearch, errorMessage);
             }
