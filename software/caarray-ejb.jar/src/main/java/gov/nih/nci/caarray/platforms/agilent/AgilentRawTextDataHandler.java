@@ -121,6 +121,7 @@ import org.apache.log4j.Logger;
 
 import com.fiveamsolutions.nci.commons.util.io.ResettableFileReader;
 import com.google.inject.Inject;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * Handler for Agilent raw text data formats.
@@ -130,6 +131,9 @@ class AgilentRawTextDataHandler extends AbstractDataFileHandler {
 
     private static final int MIN_EXPECTED_ROW_COUNT = 1024;
     private static final Logger LOG = Logger.getLogger(AgilentRawTextDataHandler.class);
+    private static final String[] MANDATORY_MIRNA = {"ProbeName", "gTotalProbeSignal" };
+    private static final String[] MANDATORY_2_COLOR = {"ProbeName", "LogRatio" };
+    private static final String[] MANDATORY_1_COLOR = {"ProbeName", "gProcessedSignal" };
 
     private List<RowData> probes;
     private int expectedRowCount;
@@ -292,40 +296,76 @@ class AgilentRawTextDataHandler extends AbstractDataFileHandler {
         }
     }
 
-    private void readData() throws PlatformFileReadException {
+    /**
+     * read and validate all rows.
+     */
+    private void readData(FileValidationResult result) throws PlatformFileReadException {
         if (!dataIsRead) {
-           doReadData();
+           doReadData(result);
            dataIsRead = true;
         }
     }
 
-    private void doReadData() throws PlatformFileReadException {
+    /**
+     * read all rows w/o validation.
+     */
+    private void readData() throws PlatformFileReadException {
+        doReadData(null);
+    }
+
+    private void doReadData(FileValidationResult result) throws PlatformFileReadException {
         readHeader();
+        String[] mandatoryColumns = getMandatoryColumnNames();
         try {
             Set<String> probeNames = new HashSet<String>(expectedRowCount);
             probes = new ArrayList<RowData>(expectedRowCount);
-            handleFeatureLine(probeNames);
+            handleFeatureLine(probeNames, result, mandatoryColumns);
             while (parser.hasNext()) {
                  parser.next();                 
-                 handleFeatureLine(probeNames);
+                 handleFeatureLine(probeNames, result, mandatoryColumns);
             }
             LOG.info("read " + probes.size() + " features");
         } catch (Exception e) {
             throw new PlatformFileReadException(getFile(), "Could parse file", e);
         }
     }
+    
+    private String[] getMandatoryColumnNames() {
+        if (isMiRNA()) {
+            return MANDATORY_MIRNA;
+        } else if (isTwoColor()) {
+            return MANDATORY_2_COLOR;
+        } else if (isSingleColor()) {
+            return MANDATORY_1_COLOR;
+        } else {
+            return new String[0];
+        }
+    }
 
     @SuppressWarnings("PMD.AvoidThrowingRawExceptionTypes")
-    private void handleFeatureLine(Set<String> probeNames) {
+    private void handleFeatureLine(Set<String> probeNames, FileValidationResult result, String[] mandatoryColumns) {
         if ("FEATURES".equalsIgnoreCase(parser.getSectionName())) {
-             final String probeName = parser.getStringValue("ProbeName");
-             if (!probeNames.contains(probeName)) {
-                 probeNames.add(probeName);
-                 RowData probe = new RowData();
-                 probe.loadRow(parser);
-                 probes.add(probe);                                  
-             }
+            if (result != null) {
+                checkMandatoryColumns(mandatoryColumns, result);
+            }
+            final String probeName = parser.getStringValue("ProbeName");
+            if (!probeNames.contains(probeName)) {
+                probeNames.add(probeName);
+                RowData probe = new RowData();
+                probe.loadRow(parser);
+                probes.add(probe);
+            }
          }
+    }
+
+    private void checkMandatoryColumns(String[] mandatoryColumns, FileValidationResult result) {
+        for (String n : mandatoryColumns) {
+            String v = parser.getStringValue(n);
+            if (StringUtils.isBlank(v)) {
+                result.addMessage(Type.ERROR, "Missing or blank " + n, 
+                        parser.getCurrentLineNumber(), parser.getColumnIndex(n) + 1);
+            }
+        }
     }
 
     /**
@@ -333,8 +373,8 @@ class AgilentRawTextDataHandler extends AbstractDataFileHandler {
      */
     public void validate(MageTabDocumentSet mTabSet, FileValidationResult result, ArrayDesign design)
             throws PlatformFileReadException {
-        readData();
-        if (isTwoColorExperiment()) {
+        readData(result);
+        if (isTwoColor()) {
             validateMageTab(mTabSet, result);
         }
         if (design == null) {
@@ -354,12 +394,11 @@ class AgilentRawTextDataHandler extends AbstractDataFileHandler {
     
     private void validateProbeNames(FileValidationResult result, ArrayDesign design) {
         ProbeLookup probeLookup = new ProbeLookup(design.getDesignDetails().getProbes());
-        
         for (RowData probe : probes) {
             String probeName = probe.getProbeName();
-            if (null == probeLookup.getProbe(probeName)) {
+            if (probeName == null || null == probeLookup.getProbe(probeName)) {
                 String probeName2 = probe.getSystematicName();
-                if (null == probeLookup.getProbe(probeName2)) {
+                if (probeName2 == null || null == probeLookup.getProbe(probeName2)) {
                     result.addMessage(Type.ERROR, String.format(
                             "Probe \"%s\" or \"%s\"is not found array design \"%s\"",
                             probeName, probeName2, design.getName()));
@@ -369,41 +408,47 @@ class AgilentRawTextDataHandler extends AbstractDataFileHandler {
     }
     
     private void validateMandatoryColumnsPresent(FileValidationResult result) {
-        if (!hasMandatoryColumns()) {
-            result.addMessage(Type.ERROR, "Agilent Raw Text files must contain both ProbeName and LogRatio columns.");
+        if (isMiRNA()) {
+            result.addMessage(Type.INFO, "Processing as miRNA (found gTotalProbeSignal w/o LogRatio)");
+        } else if (isTwoColor()) {
+            result.addMessage(Type.INFO, "Processing as aCGH or 2 color gene expression "
+                    + "(found LogRatio w/o gTotalProbeSignal)");
+        } else if (isSingleColor()) {
+            result.addMessage(Type.INFO, "Processing as single color gene expression (found gProcessedSignal w/o "
+                    + "LogRatio or gTotalProbeSignal)");
+        } else {
+            result.addMessage(Type.ERROR, "Unable to find column gTotalProbeSignal without a LogRatio column (miRNA)");
+            result.addMessage(Type.ERROR, "Unable to find column LogRatio without a gTotalProbeSignal column " 
+                    + "(aCGH or 2 color gene expression)");
+            result.addMessage(Type.ERROR, "Unable to find column gProcessedSignal without a LogRatio " 
+                    + "or gTotalProbeSignal column (single color gene expression)");
+        }
+        if (!columnExists("ProbeName")) {
+            result.addMessage(Type.ERROR, "Unable to find column ProbeName");
         }
     }
-    
+
+    /**
+     * miRNA.
+     */
     private boolean isMiRNA() {
-        return !columnExists("gProcessedSignal");
-    }
-    
-    private boolean hasMandatoryColumns() {
-        boolean isTwoColor = columnExists("ProbeName");
-        if (isMiRNA()) {
-            isTwoColor &= columnExists("gTotalProbeSignal");
-        } else if (isTwoColorExperiment()) {
-            isTwoColor &= columnExists("LogRatio");
-        }        
-        
-        return isTwoColor;
-    }
-    
-    private boolean isTwoColorExperiment() {
-        boolean isTwoColor = true;
-        
-        isTwoColor &= columnExists("LogRatioError");
-        isTwoColor &= columnExists("PValueLogRatio");
-        isTwoColor &= columnExists("gProcessedSignal");
-        isTwoColor &= columnExists("rProcessedSignal");
-        isTwoColor &= columnExists("gProcessedSigError");
-        isTwoColor &= columnExists("rProcessedSigError");
-        isTwoColor &= columnExists("gMedianSignal");
-        isTwoColor &= columnExists("rMedianSignal");
-        
-        return isTwoColor;
+        return columnExists("gTotalProbeSignal") && !columnExists("LogRatio");
     }
 
+    /**
+     * aCGH / gene_expression-2_color.
+     */
+    private boolean isTwoColor() {
+        return columnExists("LogRatio") && !columnExists("gTotalProbeSignal");
+    }
+
+    /**
+     * gene_expression-1_color.
+     */
+    private boolean isSingleColor() {
+        return columnExists("gProcessedSignal") && !columnExists("LogRatio") && !columnExists("gTotalProbeSignal");
+    }
+    
     /**
      * @param columnName
      * @return

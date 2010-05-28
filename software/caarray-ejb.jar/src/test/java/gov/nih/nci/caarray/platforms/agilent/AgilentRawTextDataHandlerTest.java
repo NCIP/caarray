@@ -105,7 +105,9 @@ import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.platforms.AbstractHandlerTest;
 import gov.nih.nci.caarray.test.data.arraydata.AgilentArrayDataFiles;
+import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.InvalidDataFileException;
+import gov.nih.nci.caarray.validation.ValidationMessage;
 
 import java.io.File;
 import java.lang.reflect.Array;
@@ -429,6 +431,33 @@ public class AgilentRawTextDataHandlerTest extends AbstractHandlerTest {
 
         checkValues(hybridizationData, designElements, 0, "miRNABrightCorner30", MIRNA_COLS, 352.2096f, 35.41912f, 403.0f, 198.623f, 20.1593f, 198.623f, 20.1593f, true);
         checkValues(hybridizationData, designElements, 3, "NegativeControl", MIRNA_COLS, 2.194657f, 3.747745f, 55.0f, 10.9847f, 43.2381f, 10.9847f, 43.2381f, false);
+    }
+
+    @Test
+    public void testMiRNA_BlankValues() throws InvalidDataFileException {
+        setupArrayDesign(DESIGN_LSID);
+        addProbeToDesign("miRNABrightCorner30");
+        addProbeToDesign("DarkCorner");
+        addProbeToDesign("A_54_P2696");
+        addProbeToDesign("NegativeControl");
+        addProbeToDesign("A_54_P00004465");
+
+        CaArrayFile caArrayFile = getCaArrayFile(AgilentArrayDataFiles.MIRNA_BLANKS, DESIGN_LSID.getObjectId());
+        FileValidationResult results = this.arrayDataService.validate(caArrayFile, null);
+        assertEquals(FileStatus.VALIDATION_ERRORS, caArrayFile.getFileStatus());
+
+        int i = 0;
+        String[] expected = {
+            "ERROR File is not a valid file of type AGILENT_RAW_TXT L=0 C=0",
+            "ERROR Missing or blank ProbeName L=13 C=7",
+            "ERROR Missing or blank gTotalProbeSignal L=14 C=27"
+        };
+        assertEquals(expected.length, results.getMessages().size());
+        for (ValidationMessage m :  results.getMessages()) {
+            String msg = m.getType().name() + " " + m.getMessage() + " L=" + m.getLine() + " C=" + m.getColumn();
+            assertEquals(expected[i], msg);
+            i++;
+        }
     }
 
 }

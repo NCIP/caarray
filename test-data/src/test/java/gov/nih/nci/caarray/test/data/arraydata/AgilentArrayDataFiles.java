@@ -102,6 +102,8 @@ public class AgilentArrayDataFiles {
 
     public static final File MIRNA = getResourceFile("/arraydata/agilent/miRNA.txt");
 
+    public static final File MIRNA_BLANKS = getResourceFile("/arraydata/agilent/miRNA_blanks.txt");
+
     private static File getResourceFile(String resourcePath) {
         return new File(AgilentArrayDataFiles.class.getResource(resourcePath).getFile());
     }

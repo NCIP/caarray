@@ -206,6 +206,21 @@ class AgilentTextParser {
     Collection<String> getColumnNames() {
         return this.columnIndexMap.keySet();
     }
+
+    /**
+     * @return current line number.
+     */
+    int getCurrentLineNumber() {
+        return reader.getCurrentLineNumber();
+    }
+
+    /**
+     * @return index of named column, or -1 is not found.
+     */
+    int getColumnIndex(String columnName) {
+        Integer columnIndex = this.columnIndexMap.get(columnName.toLowerCase(Locale.ENGLISH));
+        return columnIndex == null ? -1 : columnIndex.intValue();
+    }
     
     private void readLine() {
         try {

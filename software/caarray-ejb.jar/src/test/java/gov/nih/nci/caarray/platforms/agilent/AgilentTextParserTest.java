@@ -263,22 +263,26 @@ public class AgilentTextParserTest {
         AgilentTextParser parser = new AgilentTextParser(file);
         Collection<String> columnNames;
         
-        parser.next();        
+        parser.next();
         columnNames = parser.getColumnNames();
         assertEquals(3, columnNames.size());
         assertThat(columnNames, hasItems("q", "r", "w"));
-                
+
         parser.next();        
         columnNames = parser.getColumnNames();
         assertEquals(4, columnNames.size());
         assertThat(columnNames, hasItems("a", "b", "c", "d"));
+
+        assertEquals(7, parser.getCurrentLineNumber());
+        assertEquals(3, parser.getColumnIndex("b"));
+        assertEquals(-1, parser.getColumnIndex("foo"));
         
         assertFalse(parser.hasNext());
         FileUtils.deleteQuietly(file);
     }
     
     private File createFile(String[]... lines) throws IOException {
-        File outFile = new File ("outfile.txt");
+        File outFile = File.createTempFile("outfile-", ".txt");
         StringBuffer stringCatcher = new StringBuffer();
         for (String[] line : lines) {
             for (int i = 0; i < line.length; i++) {
