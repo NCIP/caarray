@@ -548,7 +548,8 @@ public class MageTabExporterBean implements MageTabExporter {
             }
         } else if (caarrayNode.getClass() == DerivedArrayData.class) {
             FileType fileType = ((DerivedArrayData) caarrayNode).getDataFile().getFileType();
-            if (fileType == FileType.MAGE_TAB_DATA_MATRIX) {
+            if ((fileType == FileType.MAGE_TAB_DATA_MATRIX)
+                    || (fileType == FileType.MAGE_TAB_DATA_MATRIX_COPY_NUMBER)) {
                 node = new gov.nih.nci.caarray.magetab.sdrf.DerivedArrayDataMatrixFile();
                 allDerivedArrayDataMatrixFiles.add((gov.nih.nci.caarray.magetab.sdrf.DerivedArrayDataMatrixFile) node);
             } else {

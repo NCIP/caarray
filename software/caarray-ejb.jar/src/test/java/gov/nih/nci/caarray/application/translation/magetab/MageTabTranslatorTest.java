@@ -478,6 +478,22 @@ public class MageTabTranslatorTest extends AbstractServiceTest {
     }
 
     @Test
+    public void testTranslateDataMatrixCopyNumberData() throws Exception {
+        CaArrayFileSet fileSet = TestMageTabSets.getFileSet(TestMageTabSets.DATA_MATRIX_COPY_NUMBER_GOOD_INPUT_SET);
+        MageTabDocumentSet docSet = MageTabParser.INSTANCE.parse(TestMageTabSets.DATA_MATRIX_COPY_NUMBER_GOOD_INPUT_SET);
+        CaArrayTranslationResult result = this.translator.translate(docSet, fileSet);
+        assertEquals(1, result.getInvestigations().size());
+        Experiment investigation = result.getInvestigations().iterator().next();
+        Set<Hybridization> hybridizations = investigation.getHybridizations();
+        assertEquals(2, hybridizations.size());
+        for (Hybridization hybridization : hybridizations) {
+            assertTrue(hybridization.getRawDataCollection().isEmpty());
+            assertFalse(hybridization.getDerivedDataCollection().isEmpty());
+            assertNotNull(hybridization.getDerivedDataCollection().iterator().next().getDataFile());
+        }
+    }
+
+    @Test
     public void testTranslatePersonsWithNullAffiliation() throws Exception {
         CaArrayFileSet fileSet = TestMageTabSets.getFileSet(TestMageTabSets.MAGE_TAB_SPECIFICATION_INPUT_SET);
         MageTabDocumentSet docSet = MageTabParser.INSTANCE.parse(TestMageTabSets.MAGE_TAB_SPECIFICATION_INPUT_SET);

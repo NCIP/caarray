@@ -292,7 +292,7 @@ class AgilentRawTextDataHandler extends AbstractDataFileHandler {
                 }
             }
         } catch (Exception e) {
-            throw new PlatformFileReadException(getFile(), "Could parse file", e);
+            throw new PlatformFileReadException(getFile(), "Could not parse file", e);
         }
     }
 
@@ -326,7 +326,7 @@ class AgilentRawTextDataHandler extends AbstractDataFileHandler {
             }
             LOG.info("read " + probes.size() + " features");
         } catch (Exception e) {
-            throw new PlatformFileReadException(getFile(), "Could parse file", e);
+            throw new PlatformFileReadException(getFile(), "Could not parse file", e);
         }
     }
     

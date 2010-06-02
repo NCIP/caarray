@@ -209,6 +209,15 @@ public class MageTabDataFiles {
     public static final File PERFORMANCE_1_SDRF = new File(MageTabDataFiles.class.getResource(
             "/magetab/performance/performance_test1.sdrf").getFile());
 
+    public static final File DATA_MATRIX_COPY_NUMER_IDF = new File(MageTabDataFiles.class.getResource(
+            "/magetab/data_matrix_copy_number/data_matrix_copy_number.idf").getFile());
+
+    public static final File DATA_MATRIX_COPY_NUMER_SDRF = new File(MageTabDataFiles.class.getResource(
+            "/magetab/data_matrix_copy_number/data_matrix_copy_number.sdrf").getFile());
+
+    public static final File DATA_MATRIX_COPY_NUMER_DATA = new File(MageTabDataFiles.class.getResource(
+            "/magetab/data_matrix_copy_number/data_matrix_copy_number.data.txt").getFile());
+
     public static final File PERFORMANCE_10_IDF = new File(MageTabDataFiles.class.getResource(
             "/magetab/performance/performance_test10.idf").getFile());
 

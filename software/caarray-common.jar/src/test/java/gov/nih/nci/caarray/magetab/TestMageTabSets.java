@@ -162,6 +162,11 @@ public final class TestMageTabSets {
      * Example set of MAGE-TAB data with 10 large CEL files and no derived data.
      */
     public static final MageTabFileSet PERFORMANCE_TEST_10_INPUT_SET = getPerformanceTest10InputSet();
+    
+    /**
+     * good MAGE-TAB data matrix copy number data import files.
+     */
+    public static final MageTabFileSet DATA_MATRIX_COPY_NUMBER_GOOD_INPUT_SET = getDataMatrixCopyNumberGoodInputSet();
 
     /**
      * MAGE-TAB input set from TCGA Broad data.
@@ -390,6 +395,14 @@ public final class TestMageTabSets {
         fileSet.addIdf(new JavaIOFileRef(MageTabDataFiles.PERFORMANCE_10_IDF));
         fileSet.addSdrf(new JavaIOFileRef(MageTabDataFiles.PERFORMANCE_10_SDRF));
         addCelFiles(fileSet, MageTabDataFiles.PERFORMANCE_DIRECTORY);
+        return fileSet;
+    }
+    
+    private static MageTabFileSet getDataMatrixCopyNumberGoodInputSet() {
+        MageTabFileSet fileSet = new MageTabFileSet();
+        fileSet.addIdf(new JavaIOFileRef(MageTabDataFiles.DATA_MATRIX_COPY_NUMER_IDF));
+        fileSet.addSdrf(new JavaIOFileRef(MageTabDataFiles.DATA_MATRIX_COPY_NUMER_SDRF));
+        fileSet.addDataMatrix(new JavaIOFileRef(MageTabDataFiles.DATA_MATRIX_COPY_NUMER_DATA));
         return fileSet;
     }
 

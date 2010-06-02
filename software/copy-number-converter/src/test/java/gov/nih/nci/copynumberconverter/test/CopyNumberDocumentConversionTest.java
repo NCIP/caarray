@@ -56,99 +56,109 @@ public class CopyNumberDocumentConversionTest {
         "A_16_P37638626\t6\t62964904\t-0.447480618012438\t0.447480618012438\n" +
         "A_18_P10656728\t10\t19811167\t-0.258419751156074\t0.258419751156074\n";
     
-    private String[] GOOD_SINGLE_HYB_OPTIONS = new String[] {
+    private static final String[] GOOD_SINGLE_HYB_OPTIONS = new String[] {
             "-input_file", "foo.txt", "-output_file", "bar.txt", "-probe_names_header", "longcat",
             "-chromosome_id_header", "blah", "-chromosome_position_header", "erm", "-log2ratio_values_header", 
             "ummm", "-hybridization_name", "yo"
     };
     
-    private String[] GOOD_SINGLE_HYB_OPTIONS_NO_CHROMOSOME = new String[] {
+    private static final String[] BAD_SINGLE_HYB_OPTIONS_NO_CHROMOSOME = new String[] {
             "-input_file", "foo.txt", "-output_file", "bar.txt","-log2ratio_values_header", "ummm", 
-            "-probe_names_header", "longcat", "-hybridization_name", "yo"
+            "-probe_names_header", "longcat", "-hybridization_name", "yo", "-chromosome_position_header", "erm"
     };
     
-    private String[] BAD_SINGLE_HYB_OPTIONS_HAS_PREFIX = new String[] {
+    private static final String[] BAD_SINGLE_HYB_OPTIONS_NO_CHROMOSOME_POSITION = new String[] {
+            "-input_file", "foo.txt", "-output_file", "bar.txt","-log2ratio_values_header", "ummm", 
+            "-probe_names_header", "longcat", "-hybridization_name", "yo", "-chromosome_id_header", "blah"
+    };
+    
+    private static final String[] BAD_SINGLE_HYB_OPTIONS_HAS_PREFIX = new String[] {
             "-input_file", "foo.txt", "-output_file", "bar.txt", "-chromosome_id_header", "blah", 
             "-chromosome_position_header", "erm", "-log2ratio_values_header", "ummm", "-hybridization_name", "yo",
             "-probe_names_header", "longcat", "-hybridization_prefix"
     };
     
-    private String[] BAD_SINGLE_HYB_OPTIONS_HAS_SUFFIX = new String[] {
+    private static final String[] BAD_SINGLE_HYB_OPTIONS_HAS_SUFFIX = new String[] {
             "-input_file", "foo.txt", "-output_file", "bar.txt", "-chromosome_id_header", "blah", 
             "-chromosome_position_header", "erm", "-log2ratio_values_header", "ummm", "-hybridization_name", "yo",
             "-probe_names_header", "longcat", "-hybridization_suffix"
     };
     
-    private String[] BAD_SINGLE_HYB_OPTIONS_HAS_DELIMITER = new String[] {
+    private static final String[] BAD_SINGLE_HYB_OPTIONS_HAS_DELIMITER = new String[] {
             "-input_file", "foo.txt", "-output_file", "bar.txt", "-chromosome_id_header", "blah", 
             "-chromosome_position_header", "erm", "-log2ratio_values_header", "ummm", "-hybridization_name", "yo",
             "-probe_names_header", "longcat", "-hybridization_delimiter", "_"
     };
     
-    private String[] BAD_SINGLE_HYB_OPTIONS_NO_INTPUT = new String[] {
+    private static final String[] BAD_SINGLE_HYB_OPTIONS_NO_INTPUT = new String[] {
             "-output_file", "bar.txt", "-chromosome_id_header", "blah", 
             "-chromosome_position_header", "erm", "-log2ratio_values_header", "ummm", "-hybridization_name", "yo",
             "-probe_names_header", "longcat"
     };
     
-    private String[] BAD_SINGLE_HYB_OPTIONS_NO_OUTPUT = new String[] {
+    private static final String[] BAD_SINGLE_HYB_OPTIONS_NO_OUTPUT = new String[] {
             "-input_file", "foo.txt", "-probe_names_header", "longcat", "-chromosome_id_header", "blah", 
             "-chromosome_position_header", "erm", "-log2ratio_values_header", "ummm", "-hybridization_name", "yo"
     };
     
-    private String[] BAD_SINGLE_HYB_OPTIONS_NO_LOG2RATIOS = new String[] {
+    private static final String[] BAD_SINGLE_HYB_OPTIONS_NO_LOG2RATIOS = new String[] {
             "-input_file", "foo.txt", "-output_file", "bar.txt", "-chromosome_id_header", "blah", 
             "-chromosome_position_header", "erm", "-hybridization_name", "yo",
             "-probe_names_header", "longcat", "-hybridization_delimiter", "_"
     };
     
-    private String[] GOOD_MULTI_HYB_PREFIX_OPTIONS = new String[] {
+    private static final String[] GOOD_MULTI_HYB_PREFIX_OPTIONS = new String[] {
             "-input_file", "foo.txt", "-output_file", "bar.txt", "-chromosome_id_header", "blah", 
             "-chromosome_position_header", "erm", "-log2ratio_values_header", "ummm", "-hybridization_prefix", 
             "-probe_names_header", "longcat", "-hybridization_delimiter", "_"
     };
     
-    private String[] GOOD_MULTI_HYB_SUFFIX_OPTIONS = new String[] {
+    private static final String[] GOOD_MULTI_HYB_SUFFIX_OPTIONS = new String[] {
             "-input_file", "foo.txt", "-output_file", "bar.txt", "-chromosome_id_header", "blah", 
             "-chromosome_position_header", "erm", "-log2ratio_values_header", "ummm", "-hybridization_suffix", 
             "-probe_names_header", "longcat", "-hybridization_delimiter", "_"
     };
     
-    private String[] GOOD_MULTI_HYB_SUFFIX_OPTIONS_NO_CHROMOSOME = new String[] {
+    private static final String[] BAD_MULTI_HYB_PREFIX_OPTIONS_NO_CHROMOSOME = new String[] {
             "-input_file", "foo.txt", "-output_file", "bar.txt", "-log2ratio_values_header", "ummm",
-            "-probe_names_header", "longcat", "-hybridization_suffix", "-hybridization_delimiter", "_"
+            "-probe_names_header", "longcat", "-hybridization_prefix", "-hybridization_delimiter", "_",
+            "-chromosome_position_header", "erm"
+    };
+
+    private static final String[] BAD_MULTI_HYB_PREFIX_OPTIONS_NO_CHROMOSOME_POSITION = new String[] {
+            "-input_file", "foo.txt", "-output_file", "bar.txt", "-log2ratio_values_header", "ummm",
+            "-chromosome_id_header", "blah", "-chromosome_id_header", "blah", "-probe_names_header",
+            "longcat", "-hybridization_prefix", "-hybridization_delimiter", "_"
     };
     
-    private String[] GOOD_MULTI_HYB_PREFIX_OPTIONS_NO_CHROMOSOME = new String[] {
-            "-input_file", "foo.txt", "-output_file", "bar.txt", "-log2ratio_values_header", "ummm",
-            "-probe_names_header", "longcat", "-hybridization_prefix", "-hybridization_delimiter", "_"
-    };
-    
-    private String[] BAD_MULTI_HYB_PREFIX_OPTIONS_HAS_HYB_NAME = new String[] {
+    private static final String[] BAD_MULTI_HYB_PREFIX_OPTIONS_HAS_HYB_NAME = new String[] {
             "-input_file", "foo.txt", "-output_file", "bar.txt", "-chromosome_id_header", "blah", 
             "-chromosome_position_header", "erm", "-log2ratio_values_header", "ummm", "-hybridization_prefix", 
             "-probe_names_header", "longcat", "-hybridization_delimiter", "_", "-hybridization_name", "yo"
     };
     
-    private String[] BAD_MULTI_HYB_PREFIX_OPTIONS_NO_DELIMITER = new String[] {
+    private static final String[] BAD_MULTI_HYB_PREFIX_OPTIONS_NO_DELIMITER = new String[] {
             "-input_file", "foo.txt", "-output_file", "bar.txt", "-chromosome_id_header", "blah", 
-            "-probe_names_header", "longcat", "-chromosome_position_header", "erm", "-log2ratio_values_header", "ummm", "-hybridization_prefix"
+            "-probe_names_header", "longcat", "-chromosome_position_header", "erm", "-log2ratio_values_header", "ummm",
+            "-hybridization_prefix"
     };
     
-    private String[] BAD_MULTI_HYB_PREFIX_OPTIONS_NO_SUFFIX_OR_PREFIX = new String[] {
+    private static final String[] BAD_MULTI_HYB_PREFIX_OPTIONS_NO_SUFFIX_OR_PREFIX = new String[] {
             "-input_file", "foo.txt", "-output_file", "bar.txt", "-chromosome_id_header", "blah", 
             "-chromosome_position_header", "erm", "-log2ratio_values_header", "ummm", 
             "-probe_names_header", "longcat", "-hybridization_delimiter", "_"
     };
     
-    private String[] BAD_MULTI_HYB_PREFIX_OPTIONS_NO_PROBE_NAMES_HEADER = new String[] {
+    private static final String[] BAD_MULTI_HYB_PREFIX_OPTIONS_NO_PROBE_NAMES_HEADER = new String[] {
             "-input_file", "foo.txt", "-output_file", "bar.txt", "-log2ratio_values_header", "ummm",
-            "-hybridization_prefix", "-hybridization_delimiter", "_"
+            "-hybridization_prefix", "-hybridization_delimiter", "_", "-chromosome_id_header", "blah",
+            "-chromosome_position_header", "erm"
     };
     
-    private String[] BAD_SINGLE_HYB_OPTIONS_NO_PROBE_NAMES_HEADER = new String[] {
+    private static final String[] BAD_SINGLE_HYB_OPTIONS_NO_PROBE_NAMES_HEADER = new String[] {
             "-input_file", "foo.txt", "-output_file", "bar.txt","-log2ratio_values_header", "ummm", 
-            "-hybridization_name", "yo"
+            "-hybridization_name", "yo", "-chromosome_id_header", "blah",
+            "-chromosome_position_header", "erm"
     };
     
     private static final String NO_PROBE_NAMES_HEADER_ERROR = "-probe_names_header is a required option";
@@ -156,6 +166,8 @@ public class CopyNumberDocumentConversionTest {
     private static final String NO_PREFIX_OR_SUFFIX_ERROR = 
         "neither -hybridization_prefix nor -hybridization_suffix were specified";
     private static final String NO_LOG2RATIO_VALUES_HEADER_ERROR = "-log2ratio_values_header is a required option";
+    private static final String NO_CHROMOSOME_ID_HEADER_ERROR = "-chromosome_id_header is a required option";
+    private static final String NO_CHROMOSOME_POSITION_HEADER_ERROR = "-chromosome_position_header is a required option";
     private static final String ILLEGAL_MULTI_HYBRIDIZATION_OPTIONS_ERROR =
         "all multi-hybridization options are illegal";
     private static final String NO_OUTPUT_FILE_ERROR = "-output_file is a required option";
@@ -240,13 +252,14 @@ public class CopyNumberDocumentConversionTest {
     @Test
     public void testCommandLineArgs() throws Exception {
         testOptions(null, GOOD_SINGLE_HYB_OPTIONS);
-        testOptions(null, GOOD_SINGLE_HYB_OPTIONS_NO_CHROMOSOME);
         testOptions(null, GOOD_MULTI_HYB_PREFIX_OPTIONS);
-        testOptions(null, GOOD_MULTI_HYB_PREFIX_OPTIONS_NO_CHROMOSOME);
         testOptions(null, GOOD_MULTI_HYB_SUFFIX_OPTIONS);
-        testOptions(null, GOOD_MULTI_HYB_SUFFIX_OPTIONS_NO_CHROMOSOME);
         testOptions(NO_INPUT_FILE_ERROR, BAD_SINGLE_HYB_OPTIONS_NO_INTPUT);
         testOptions(NO_OUTPUT_FILE_ERROR, BAD_SINGLE_HYB_OPTIONS_NO_OUTPUT);
+        testOptions(NO_CHROMOSOME_ID_HEADER_ERROR, BAD_SINGLE_HYB_OPTIONS_NO_CHROMOSOME);
+        testOptions(NO_CHROMOSOME_POSITION_HEADER_ERROR, BAD_SINGLE_HYB_OPTIONS_NO_CHROMOSOME_POSITION);
+        testOptions(NO_CHROMOSOME_ID_HEADER_ERROR, BAD_MULTI_HYB_PREFIX_OPTIONS_NO_CHROMOSOME);
+        testOptions(NO_CHROMOSOME_POSITION_HEADER_ERROR, BAD_MULTI_HYB_PREFIX_OPTIONS_NO_CHROMOSOME_POSITION);
         testOptions(ILLEGAL_MULTI_HYBRIDIZATION_OPTIONS_ERROR, BAD_SINGLE_HYB_OPTIONS_HAS_PREFIX);
         testOptions(ILLEGAL_MULTI_HYBRIDIZATION_OPTIONS_ERROR, BAD_SINGLE_HYB_OPTIONS_HAS_SUFFIX);
         testOptions(ILLEGAL_MULTI_HYBRIDIZATION_OPTIONS_ERROR, BAD_SINGLE_HYB_OPTIONS_HAS_DELIMITER);

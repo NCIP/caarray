@@ -187,7 +187,8 @@ public final class CopyNumberToMageTabDataMatrixConverter {
         checkForMandatoryOption(OUTPUT_FILE, commandLine);
         checkForMandatoryOption(PROBE_NAMES_HEADER, commandLine);
         checkForMandatoryOption(LOG2RATIO_VALUES_HEADER, commandLine);
-        checkForMandatoryOption(PROBE_NAMES_HEADER, commandLine);
+        checkForMandatoryOption(CHROMOSOME_ID_HEADER, commandLine);
+        checkForMandatoryOption(CHROMOSOME_POSITION_HEADER, commandLine);
         if (commandLine.hasOption(HYBRIDIZATION_NAME)
             && (commandLine.hasOption(HYBRIDIZATION_PREFIX) || commandLine.hasOption(HYBRIDIZATION_SUFFIX)
             || commandLine.hasOption(HYBRIDIZATION_DELIMITER))) {
@@ -235,11 +236,11 @@ public final class CopyNumberToMageTabDataMatrixConverter {
                 create(PROBE_NAMES_HEADER));
         options.addOption(OptionBuilder.
                 withArgName("COLUMN").
-                hasArg().withDescription("OPTIONAL: the header for the column that contains chromosome IDs").
+                hasArg().withDescription("REQUIRED: the header for the column that contains chromosome IDs").
                 create(CHROMOSOME_ID_HEADER));
         options.addOption(OptionBuilder.
                 withArgName("COLUMN").
-                hasArg().withDescription("OPTIONAL: the header for the column that contains chromosome positions").
+                hasArg().withDescription("REQUIRED: the header for the column that contains chromosome positions").
                 create(CHROMOSOME_POSITION_HEADER));
         options.addOption(OptionBuilder.
                 withArgName("COLUMN").

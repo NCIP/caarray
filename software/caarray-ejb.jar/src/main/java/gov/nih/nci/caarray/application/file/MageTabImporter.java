@@ -272,7 +272,8 @@ class MageTabImporter {
             inputFileSet.addSdrf(new CaArrayFileRef(caArrayFile));
         } else if (FileType.MAGE_TAB_ADF.equals(type)) {
             inputFileSet.addAdf(new CaArrayFileRef(caArrayFile));
-        } else if (FileType.MAGE_TAB_DATA_MATRIX.equals(type)) {
+        } else if (FileType.MAGE_TAB_DATA_MATRIX.equals(type)
+                || FileType.MAGE_TAB_DATA_MATRIX_COPY_NUMBER.equals(type)) {
             inputFileSet.addDataMatrix(new CaArrayFileRef(caArrayFile));
         } else {
             inputFileSet.addNativeData(new CaArrayFileRef(caArrayFile));

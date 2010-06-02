@@ -448,7 +448,7 @@ public class AgilentRawTextDataHandlerTest extends AbstractHandlerTest {
 
         int i = 0;
         String[] expected = {
-            "ERROR File is not a valid file of type AGILENT_RAW_TXT L=0 C=0",
+            "ERROR File is not a valid file of type AGILENT_RAW_TXT: Could not parse file L=0 C=0",
             "ERROR Missing or blank ProbeName L=13 C=7",
             "ERROR Missing or blank gTotalProbeSignal L=14 C=27"
         };

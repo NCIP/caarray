@@ -130,7 +130,8 @@ final class DataFileValidator extends AbstractArrayDataUtility {
                 }
             } catch (PlatformFileReadException e) {
                 LOG.error("Error obtaining a data handler for validating data file", e);
-                result.addMessage(Type.ERROR, "File is not a valid file of type " + caArrayFile.getFileType());
+                result.addMessage(Type.ERROR, "File is not a valid file of type " + caArrayFile.getFileType() + ": "
+                        + e.getMessage());
             } catch (RuntimeException e) {
                 LOG.error("Unexpected RuntimeException validating data file", e);
                 result.addMessage(Type.ERROR, "Unexpected error validating data file: " + e.getMessage());

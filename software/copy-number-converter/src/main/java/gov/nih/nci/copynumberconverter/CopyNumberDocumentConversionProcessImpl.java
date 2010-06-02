@@ -216,11 +216,11 @@ public final class CopyNumberDocumentConversionProcessImpl implements CopyNumber
             throw new ConversionException("Cannot locate " + probeNameColumnHeader + " column in "
                     + "hybridization file " + inputFile.getAbsolutePath() + ".");
         }
-        if (!StringUtils.isEmpty(chromosomeIdColumnHeader) && -1 == chromosomeIdColumnIndex) {
+        if (-1 == chromosomeIdColumnIndex) {
             throw new ConversionException("Cannot locate " + chromosomeIdColumnHeader + " column in "
                     + "hybridization file " + inputFile.getAbsolutePath() + ".");
         }
-        if (!StringUtils.isEmpty(chromosomePositionColumnHeader) && -1 == chromosomePositionColumnIndex) {
+        if (-1 == chromosomePositionColumnIndex) {
             throw new ConversionException("Cannot locate " + chromosomePositionColumnHeader + " column in "
                     + "hybridization file " + inputFile.getAbsolutePath() + ".");
         }
@@ -290,12 +290,8 @@ public final class CopyNumberDocumentConversionProcessImpl implements CopyNumber
         firstHeaderLine = null;
         List<String> secondHeaderLine = new ArrayList<String>();
         secondHeaderLine.add(REPORTER_REF_OUTPUT_COLUMN_HEADER);
-        if (chromosomeIdColumnIndex != -1) {
-            secondHeaderLine.add(CHROMOSOME_OUTPUT_COLUMN_HEADER);
-        }
-        if (chromosomePositionColumnIndex != -1) {
-            secondHeaderLine.add(POSITION_OUTPUT_COLUMN_HEADER);
-        }
+        secondHeaderLine.add(CHROMOSOME_OUTPUT_COLUMN_HEADER);
+        secondHeaderLine.add(POSITION_OUTPUT_COLUMN_HEADER);
         for (int i = 0; i < numberOfHybridizations; i++) {
             secondHeaderLine.add(LOG2RATIO_OUTPUT_COLUMN_HEADER);
         }
