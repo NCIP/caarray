@@ -3,6 +3,7 @@ package gov.nih.nci.caarray.test.api.external.v1_0.java;
 import gov.nih.nci.caarray.services.external.v1_0.data.DataTransferException;
  import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
@@ -289,6 +290,7 @@ public class DataServiceTest extends AbstractExternalJavaApiTest {
             zin.read();
             fail("expected an IOException");
         }catch(IOException e) {
+            assertEquals("Not in GZIP format", e.getMessage());
         }
     }
 }
