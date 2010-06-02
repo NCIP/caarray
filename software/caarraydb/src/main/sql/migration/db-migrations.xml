@@ -99,7 +99,7 @@
         <sql-script>migrate-2.3.1.alpha2-to-2.3.1.alpha2-20295.sql</sql-script>
     </migration>
     <migration fromVersion="2.3.1.alpha2-20295" toVersion="2.3.1.2-28739">
-        <sql-script>migrate-2.3.1.alpha2-20295-to-2.3.1.2-28739.sql</sql-script>
+        <sql-script delimiter="~~dont use a delimiter pretty please~~">migrate-2.3.1.alpha2-20295-to-2.3.1.2-28739.sql</sql-script>
     </migration>
 
 </migrations>
