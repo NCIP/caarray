@@ -150,7 +150,7 @@ public final class TemporaryFileCacheImpl implements TemporaryFileCache {
         File file = new File(getSessionWorkingDirectory(), caArrayFile.getName());
         try {
             OutputStream outputStream = FileUtils.openOutputStream(file);
-            CaArrayDaoFactory.INSTANCE.getFileDao().copyContentsToStream(caArrayFile, outputStream);
+            CaArrayDaoFactory.INSTANCE.getFileDao().copyContentsToStream(caArrayFile, uncompress, outputStream);
             IOUtils.closeQuietly(outputStream);
         } catch (IOException e) {
             throw new FileAccessException("Couldn't access file contents " + caArrayFile.getName(), e);

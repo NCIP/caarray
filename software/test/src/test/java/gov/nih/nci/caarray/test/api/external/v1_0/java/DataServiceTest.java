@@ -1,5 +1,6 @@
 package gov.nih.nci.caarray.test.api.external.v1_0.java;
 
+import gov.nih.nci.caarray.services.external.v1_0.data.DataTransferException;
  import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -31,6 +32,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.healthmarketscience.rmiio.RemoteInputStreamClient;
+import gov.nih.nci.caarray.services.external.v1_0.data.JavaDataApiUtils;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 
 
 /**
@@ -262,5 +266,29 @@ public class DataServiceTest extends AbstractExternalJavaApiTest {
         String hash;
         hash = new BigInteger(1, b).toString(16);
         return hash;
+    }
+
+    @Test
+    public void testJavaDataApiUtils() throws InvalidReferenceException, DataTransferException, IOException {
+        JavaDataApiUtils util = new JavaDataApiUtils(service);
+        String dfid = "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.File:1";
+        CaArrayEntityReference fileRef = new CaArrayEntityReference(dfid);
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        // test gziped
+        util.copyFileContentsToOutputStream(fileRef, true, stream);
+        ByteArrayInputStream in = new ByteArrayInputStream(stream.toByteArray());
+        GZIPInputStream zin = new GZIPInputStream(in);
+        assertFalse( -1 == zin.read());
+
+        // test non gzip
+        stream.reset();
+        util.copyFileContentsToOutputStream(fileRef, false, stream);
+        in = new ByteArrayInputStream(stream.toByteArray());
+        try {
+            zin = new GZIPInputStream(in);
+            zin.read();
+            fail("expected an IOException");
+        }catch(IOException e) {
+        }
     }
 }
