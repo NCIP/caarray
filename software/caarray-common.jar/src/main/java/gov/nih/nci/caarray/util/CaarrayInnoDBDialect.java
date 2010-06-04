@@ -88,11 +88,41 @@ import org.hibernate.dialect.MySQLInnoDBDialect;
  * A hack: hibernate has a bug in parsing the Filter clauses with subselects where it unnecessarily prepends
  * table qualifications to identifiers. To get around this, we need to use a special known value as the identifier
  * and then tell hibernate that it's a keyword, thereby preventing it from qualifying it with the table name.
- * @author dkokotov
+ * 
+ * Later, when one of the CSM queries changed, it turned out that this was not enough, so another hack was added
+ * to modify the query after the bug in Hibernate has had its way with it.  This hack will be mercifully retired
+ * when 2.4.0 is released in a few weeks (from 6/3/2010).
+ * 
+ * @author dkokotov, jscott
  */
 public class CaarrayInnoDBDialect extends MySQLInnoDBDialect {
     /** The well known value used as the identifier in the nested subqueries for CSM filters. */
     public static final String FILTER_ALIAS = "__caarray_filter_alias__";
+    
+    /** This value will be replaced in the final SQL string. */
+    public static final String READABLE_SAMPLE_CLAUSE_PREAMBLE_PLACEHOLDER = "__READABLE_SAMPLE_CLAUSE_PREAMBLE__";
+    
+    private static final String READABLE_SAMPLE_CLAUSE_PREAMBLE = ""
+        + " ( "
+         + "    SELECT pe.attribute_value "
+         + "    FROM  csm_user u use index(UQ_LOGIN_NAME) "
+         + "    STRAIGHT_JOIN  csm_privilege p USE INDEX(UQ_PRIVILEGE_NAME) "
+         + "       ON 'READ'=p.privilege_name "
+         + "    STRAIGHT_JOIN  csm_role_privilege rp USE INDEX(UQ_ROLE_PRIVILEGE_ROLE_ID) "
+         + "       ON p.privilege_id=rp.privilege_id "
+         + "    STRAIGHT_JOIN  csm_user_group ug USE INDEX(idx_USER_ID) "
+         + "       ON u.user_id=ug.user_id  "
+         + "    STRAIGHT_JOIN  csm_role r USE INDEX(PRIMARY) "
+         + "       ON rp.role_id=r.role_id "
+         + "    STRAIGHT_JOIN  csm_user_group_role_pg ugrpg USE INDEX(idx_GROUP_ID) "
+         + "       ON ug.group_id=ugrpg.group_id AND ugrpg.role_id=r.role_id "
+         + "    STRAIGHT_JOIN  csm_protection_group pg USE INDEX(PRIMARY) "
+         + "       ON ugrpg.protection_group_id=pg.protection_group_id "
+         + "    STRAIGHT_JOIN  csm_pg_pe pgpe USE INDEX(idx_PROTECTION_GROUP_ID) "
+         + "       ON pg.protection_group_id=pgpe.protection_group_id "
+         + "    STRAIGHT_JOIN  csm_protection_element pe USE INDEX(PRIMARY) "
+         + "       ON pgpe.protection_element_id=pe.protection_element_id "
+         + "";
 
     /**
      * Create a new dialect.
@@ -100,5 +130,18 @@ public class CaarrayInnoDBDialect extends MySQLInnoDBDialect {
     public CaarrayInnoDBDialect() {
         super();
         registerKeyword(FILTER_ALIAS);
+        registerKeyword(READABLE_SAMPLE_CLAUSE_PREAMBLE_PLACEHOLDER);
     }
-}
+    
+    /**
+     * Replace the place-holder string with the correct value.
+     * 
+     * @param select {@inheritDoc}
+     * @return {@inheritDoc}
+     */
+    @Override
+    public String transformSelectString(String select) {
+        final String result = super.transformSelectString(select);
+        return result.replace(READABLE_SAMPLE_CLAUSE_PREAMBLE_PLACEHOLDER, READABLE_SAMPLE_CLAUSE_PREAMBLE);
+    }
+}   
