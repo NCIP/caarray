@@ -149,7 +149,6 @@ import org.hibernate.Hibernate;
 import org.hibernate.Query;
 import org.hibernate.Transaction;
 import org.junit.Test;
-import org.junit.Ignore;
 
 import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
 
@@ -860,7 +859,6 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
     }
 
     @Test
-    @Ignore // Ignoring for 3.2.1.2 release only
     public void testSearchByCategory() {
         Transaction tx = HibernateUtil.beginTransaction();
         saveSupportingObjects();
@@ -911,7 +909,6 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
     }
 
     @Test
-    @Ignore // Ignoring for 3.2.1.2 release only
     public void testSearchByCriteria() {
         Transaction tx = HibernateUtil.beginTransaction();
         DUMMY_SAMPLE.setDiseaseState(DUMMY_NORMALIZATION_TYPE);
@@ -1052,7 +1049,6 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
     }
 
     @Test
-    @Ignore // Ignoring for 3.2.1.2 release only
     public void testGetTermsForExperiment() {
         Transaction tx = null;
         try {
