@@ -485,7 +485,7 @@ public class MageTabTranslatorTest extends AbstractServiceTest {
         assertEquals(1, result.getInvestigations().size());
         Experiment investigation = result.getInvestigations().iterator().next();
         Set<Hybridization> hybridizations = investigation.getHybridizations();
-        assertEquals(2, hybridizations.size());
+        assertEquals(3, hybridizations.size());
         for (Hybridization hybridization : hybridizations) {
             assertTrue(hybridization.getRawDataCollection().isEmpty());
             assertFalse(hybridization.getDerivedDataCollection().isEmpty());
