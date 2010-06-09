@@ -16,6 +16,7 @@ import caarray.legacy.client.test.suite.DataSetTestSuite;
 import caarray.legacy.client.test.suite.ExperimentTestSuite;
 import caarray.legacy.client.test.suite.FactorTestSuite;
 import caarray.legacy.client.test.suite.FileDownloadTestSuite;
+import caarray.legacy.client.test.suite.PropertyTestSuit;
 import caarray.legacy.client.test.suite.QuantitationTypeTestSuite;
 import caarray.legacy.client.test.suite.SampleTestSuite;
 
@@ -57,9 +58,12 @@ public class TestMain
     public static List<ConfigurableTestSuite> getShortTestSuites(ApiFacade apiFacade)
     {
         ConfigurableTestSuite[] shortSuites = new ConfigurableTestSuite[]{
-                new CaArrayFileTestSuite(apiFacade), new SampleTestSuite(apiFacade), new ExperimentTestSuite(apiFacade), new QuantitationTypeTestSuite(apiFacade),
-                new CQLTestSuite(apiFacade), new DataSetTestSuite(apiFacade), new FileDownloadTestSuite(apiFacade),
-                new CategoryTestSuite(apiFacade), new AssayTypeTestSuite(apiFacade),new FactorTestSuite(apiFacade)};
+                //new CaArrayFileTestSuite(apiFacade), new SampleTestSuite(apiFacade), new ExperimentTestSuite(apiFacade), new QuantitationTypeTestSuite(apiFacade),
+                //new CQLTestSuite(apiFacade),
+                new PropertyTestSuit(apiFacade)
+                //new DataSetTestSuite(apiFacade), new FileDownloadTestSuite(apiFacade),
+                //new CategoryTestSuite(apiFacade), new AssayTypeTestSuite(apiFacade),new FactorTestSuite(apiFacade)
+        };
         
         
         return Arrays.asList(shortSuites);

@@ -17,8 +17,8 @@ public class TestProperties
 
     public static final String SERVER_HOSTNAME_KEY = "server.hostname";
     public static final String SERVER_JNDI_PORT_KEY = "server.jndi.port";
-    public static final String GRID_SERVER_HOSTNAME_KEY = "globoss.server.hostname";
-    public static final String GRID_SERVER_PORT_KEY = "globoss.server.http.port";
+    public static final String GRID_SERVER_HOSTNAME_KEY = "grid.server.hostname";
+    public static final String GRID_SERVER_PORT_KEY = "grid.server.http.port";
 
     public static final String SERVER_HOSTNAME_DEFAULT = "array-stage.nci.nih.gov";
     public static final String SERVER_JNDI_PORT_DEFAULT = "8080";
