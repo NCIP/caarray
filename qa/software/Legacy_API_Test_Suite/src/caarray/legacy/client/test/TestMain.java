@@ -58,11 +58,11 @@ public class TestMain
     public static List<ConfigurableTestSuite> getShortTestSuites(ApiFacade apiFacade)
     {
         ConfigurableTestSuite[] shortSuites = new ConfigurableTestSuite[]{
-                //new CaArrayFileTestSuite(apiFacade), new SampleTestSuite(apiFacade), new ExperimentTestSuite(apiFacade), new QuantitationTypeTestSuite(apiFacade),
-                //new CQLTestSuite(apiFacade),
-                new PropertyTestSuit(apiFacade)
-                //new DataSetTestSuite(apiFacade), new FileDownloadTestSuite(apiFacade),
-                //new CategoryTestSuite(apiFacade), new AssayTypeTestSuite(apiFacade),new FactorTestSuite(apiFacade)
+                new CaArrayFileTestSuite(apiFacade), new SampleTestSuite(apiFacade), new ExperimentTestSuite(apiFacade), new QuantitationTypeTestSuite(apiFacade),
+                new CQLTestSuite(apiFacade),
+                new PropertyTestSuit(apiFacade),
+                new DataSetTestSuite(apiFacade), new FileDownloadTestSuite(apiFacade),
+                new CategoryTestSuite(apiFacade), new AssayTypeTestSuite(apiFacade),new FactorTestSuite(apiFacade)
         };
         
         
