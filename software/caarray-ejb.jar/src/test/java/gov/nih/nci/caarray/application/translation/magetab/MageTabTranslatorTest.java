@@ -115,9 +115,11 @@ import gov.nih.nci.caarray.domain.protocol.MeasurementParameterValue;
 import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
 import gov.nih.nci.caarray.domain.protocol.TermBasedParameterValue;
 import gov.nih.nci.caarray.domain.protocol.UserDefinedParameterValue;
+import gov.nih.nci.caarray.domain.publication.Publication;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 import gov.nih.nci.caarray.domain.sample.MeasurementCharacteristic;
 import gov.nih.nci.caarray.domain.sample.Sample;
+import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.domain.sample.TermBasedCharacteristic;
 import gov.nih.nci.caarray.domain.sample.UserDefinedCharacteristic;
 import gov.nih.nci.caarray.domain.search.ExampleSearchCriteria;
@@ -150,6 +152,7 @@ import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.criterion.Order;
 import org.junit.Before;
 import org.junit.Test;
@@ -562,6 +565,18 @@ public class MageTabTranslatorTest extends AbstractServiceTest {
         for (Sample s : e.getSamples()) {
             assertNotNull(s.getExternalId());
         }
+        boolean wasFound = false;
+        for (Source source : e.getSources()) {
+            if (!(StringUtils.isEmpty(source.getDescription()))) {
+                assertEquals(2000, source.getDescription().length());
+                wasFound = true;
+            }
+        }
+        assertTrue("the 2000 char source description was not found.", wasFound);
+        Set<Publication> publicationsSet = e.getPublications();
+        assertEquals(1, publicationsSet.size());
+        Publication publication = publicationsSet.iterator().next();
+        assertEquals(2000, publication.getAuthors().length());
     }
 
     @Test

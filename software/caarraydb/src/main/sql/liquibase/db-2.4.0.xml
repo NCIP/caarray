@@ -69,6 +69,11 @@
       <comment>GF 27276 - Parse Agilent GEML/xml array designs for miRNA assays.</comment>
       <sqlFile path="db-upgrade/mysql/2.4.0/27276.sql"/>
    </changeSet>
+     
+   <changeSet id="22060" author="dharley">
+      <comment>GF 22060 - [#22060] Source, sample description length limitation - passes validation fails import.</comment>
+      <sqlFile path="db-upgrade/mysql/2.4.0/22060.sql"/>
+   </changeSet>
    
    
    
