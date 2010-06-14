@@ -808,7 +808,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
            <deploy-files dist.file="${caarray.upgrade.zip.file}" />
 
         <override-properties-prep
-            override.properties="@{override.properties}"
+            override.properties="${override.properties}"
             override.properties.string.property.name="override.properties.string"
             />
         <!-- SSH to machine ant run ant command line to install application -->
