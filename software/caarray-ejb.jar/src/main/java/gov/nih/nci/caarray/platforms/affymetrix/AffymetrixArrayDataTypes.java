@@ -112,6 +112,12 @@ enum AffymetrixArrayDataTypes implements ArrayDataTypeDescriptor {
      * Affymetrix CHP format (Expression Signal).
      */    
     AFFYMETRIX_SIGNAL_CHP("Affymetrix CHP (Expression Signal)", AffymetrixExpressionSignalChpQuantitationType.values()),
+    
+    /**
+     * Affymetrix CHP format (Expression Signal).
+     */    
+    AFFYMETRIX_SIGNAL_DETECTION_CHP("Affymetrix CHP (Expression Signal Detection)"
+            , AffymetrixExpressionSignalDetectionChpQuantitationType.values()),
        
     /**
      * Affymetrix CHP format (SNP BRLMM).

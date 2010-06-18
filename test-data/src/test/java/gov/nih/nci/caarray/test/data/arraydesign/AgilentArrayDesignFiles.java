@@ -82,7 +82,7 @@
  */
 package gov.nih.nci.caarray.test.data.arraydesign;
 
-import gov.nih.nci.caarray.test.data.arraydata.AgilentArrayDataFiles;
+import static gov.nih.nci.caarray.test.data.ResourceFiles.getResourceFile;
 
 import java.io.File;
 
@@ -104,8 +104,4 @@ public class AgilentArrayDesignFiles {
     
     public static final File TEST_MIRNA_2_XML =
         getResourceFile("/arraydesign/agilent/miRNA/Mouse_miRNA_Microarray_2.0.xml");
-
-    private static File getResourceFile(String resourcePath) {
-        return new File(AgilentArrayDataFiles.class.getResource(resourcePath).getFile());
-    }
 }

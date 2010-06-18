@@ -114,6 +114,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import affymetrix.calvin.exception.UnsignedOutOfLimitsException;
@@ -306,6 +307,33 @@ public class AffymetrixDataHandlerTest extends AbstractHandlerTest {
 
     private void checkChpExpresionColumnTypes(DataSet dataSet) {
         checkColumnTypes(dataSet, AffymetrixExpressionChpQuantitationType.values());
+    }
+    
+    @Test
+    public void testImportDabgChp() throws InvalidDataFileException, PlatformFileReadException {
+        testImportDabgChp(AffymetrixArrayDesignFiles.TEST3_CDF, AffymetrixArrayDataFiles.DABG_CHP);
+    }
+
+    private void testImportDabgChp(File cdfFile, File chpFile) throws InvalidDataFileException, PlatformFileReadException {
+        DerivedArrayData chpData = getChpData(cdfFile, chpFile);
+        assertEquals(FileStatus.UPLOADED, chpData.getDataFile().getFileStatus());
+        assertNull(chpData.getDataSet());
+        this.arrayDataService.importData(chpData.getDataFile(), false, DEFAULT_IMPORT_OPTIONS);
+        assertEquals(FileStatus.IMPORTED, chpData.getDataFile().getFileStatus());
+        assertNotNull(chpData.getDataSet());
+        DataSet dataSet = chpData.getDataSet();
+        assertNotNull(dataSet.getHybridizationDataList());
+        assertEquals(1, dataSet.getHybridizationDataList().size());
+        HybridizationData hybridizationData = dataSet.getHybridizationDataList().get(0);
+        assertEquals(chpData.getHybridizations().iterator().next(), hybridizationData.getHybridization());
+        assertEquals(AffymetrixExpressionSignalDetectionChpQuantitationType.values().length,
+                hybridizationData.getColumns().size());
+        assertEquals(AffymetrixExpressionSignalDetectionChpQuantitationType.values().length,
+                dataSet.getQuantitationTypes().size());
+        for (AbstractDesignElement element : dataSet.getDesignElementList().getDesignElements()) {
+            assertNotNull(element);
+        }
+        checkColumnTypes(dataSet, AffymetrixExpressionSignalDetectionChpQuantitationType.values());;
     }
 
     @Test

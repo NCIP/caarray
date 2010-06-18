@@ -291,7 +291,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
                     />
             </then>
         </if>
-        <delete dir="${jboss.home}"/>
+        <!--delete dir="${jboss.home}"/-->
     </target>
    
     <target name="install:database" description="Re-creates database and users from baseline and applys incremental database changes." unless="exclude.database"

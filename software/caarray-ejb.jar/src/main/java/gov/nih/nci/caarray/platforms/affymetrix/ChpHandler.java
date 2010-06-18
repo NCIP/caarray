@@ -109,6 +109,7 @@ import affymetrix.fusion.chp.FusionCHPHeader;
 import affymetrix.fusion.chp.FusionCHPLegacyData;
 import affymetrix.fusion.chp.FusionCHPMultiDataData;
 import affymetrix.fusion.chp.FusionCHPQuantificationData;
+import affymetrix.fusion.chp.FusionCHPQuantificationDetectionData;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
@@ -130,6 +131,7 @@ class ChpHandler extends AbstractDataFileHandler {
         
         FusionCHPLegacyData.registerReader();
         FusionCHPQuantificationData.registerReader();
+        FusionCHPQuantificationDetectionData.registerReader();
         FusionCHPMultiDataData.registerReader();
     }
 
@@ -199,6 +201,8 @@ class ChpHandler extends AbstractDataFileHandler {
             chpData = getChpLegacyData(data);
         } else if (data instanceof FusionCHPQuantificationData) {
             chpData = getChpExpressionSignalData(data);
+        } else if (data instanceof FusionCHPQuantificationDetectionData) {
+            chpData = getChpExpressionDABGSignalData(data);
         } else if (data instanceof FusionCHPMultiDataData) {
             chpData = getChpMultiDataData(data);
         }
@@ -227,6 +231,12 @@ class ChpHandler extends AbstractDataFileHandler {
         final FusionCHPQuantificationData fusionCHPQuantificationData 
             = FusionCHPQuantificationData.fromBase(fusionCHPData);
         return new CHPExpressionSignalData(fusionCHPQuantificationData);
+    }
+
+    private AbstractCHPData<?> getChpExpressionDABGSignalData(final FusionCHPData fusionCHPData) {
+        final FusionCHPQuantificationDetectionData fusionCHPQuantificationData 
+            = FusionCHPQuantificationDetectionData.fromBase(fusionCHPData);
+        return new CHPExpressionSignalDetectionData(fusionCHPQuantificationData);
     }
 
     private AbstractCHPData<?> getChpMultiDataData(final FusionCHPData fusionCHPData) {

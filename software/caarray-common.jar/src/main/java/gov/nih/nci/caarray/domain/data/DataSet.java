@@ -107,7 +107,7 @@ import org.hibernate.annotations.IndexColumn;
  */
 @Entity
 @SuppressWarnings("PMD.AvoidDuplicateLiterals")
-public final class DataSet extends AbstractCaArrayObject {
+public class DataSet extends AbstractCaArrayObject {
 
     private static final long serialVersionUID = 4430513886275629776L;
 
