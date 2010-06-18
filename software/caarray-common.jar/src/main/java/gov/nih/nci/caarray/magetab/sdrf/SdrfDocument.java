@@ -571,9 +571,9 @@ public final class SdrfDocument extends AbstractMageTabDocument {
                 row.add(materialType.getValue());
                 TermSource termSource = materialType.getTermSource();
                 if ((termSource == null) || StringUtils.isBlank(termSource.getName())) {
-                    row.add(termSource.getName());
-                } else {
                     row.add("");
+                } else {
+                    row.add(termSource.getName());
                 }
             } else {
                 // Add empty material type and Term Source REF.

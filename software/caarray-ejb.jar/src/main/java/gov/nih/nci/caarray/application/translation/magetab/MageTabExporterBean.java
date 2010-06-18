@@ -134,6 +134,7 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 /**
@@ -312,7 +313,12 @@ public class MageTabExporterBean implements MageTabExporter {
             sdrfCharacteristic.setUnit(sdrfUnit);
             sdrfBiomaterial.getCharacteristics().add(sdrfCharacteristic);
         }
-
+        if (StringUtils.isNotEmpty(biomaterial.getExternalId())) {
+            Characteristic sdrfCharacteristic = new Characteristic();
+            sdrfCharacteristic.setCategory(ExperimentOntologyCategory.EXTERNAL_ID.getCategoryName());
+            sdrfCharacteristic.setValue(biomaterial.getExternalId());
+            sdrfBiomaterial.getCharacteristics().add(sdrfCharacteristic);
+        }
         // TODO Organism and ProtocolApplications
     }
 

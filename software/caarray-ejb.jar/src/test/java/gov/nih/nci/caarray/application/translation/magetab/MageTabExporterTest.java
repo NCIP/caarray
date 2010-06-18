@@ -31,6 +31,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -75,6 +76,7 @@ public class MageTabExporterTest extends AbstractServiceTest {
     private static final String MAGETAB_FILE_BASENAME = "MageTabExporterTest";
     private static final String IDF_FILE_SUFFIX = ".idf";
     private static final String SDRF_FILE_SUFFIX = ".sdrf";
+    private static final String TEST_EXTERNAL_ID = "TestExternalId";
 
     /**
      * Temporary variables used while verifying correctness of generated MAGE-TAB.
@@ -87,6 +89,7 @@ public class MageTabExporterTest extends AbstractServiceTest {
     private int currHybridizationIndex = -1;
     private int currProviderIndex = -1;
     private int currSourceMaterialTypeIndex = -1;
+    private int currSourceMaterialTypeTermSourceRefIndex = -1;
     private int currSourceCellTypeIndex = -1;
     private int currSourceDiseaseStateIndex = -1;
     private int currSourceTissueSiteIndex = -1;
@@ -95,6 +98,7 @@ public class MageTabExporterTest extends AbstractServiceTest {
     private int currLabeledExtractSpecialCharacteristicIndex = -1;
     private int currCharacteristicUnitIndex = -1;
     private int currLabelIndex = -1;
+    private int currExternalIdCharacteristicIndex = -1;
 
     /**
      * Creates the temporary files that will hold the exported MAGE-TAB.
@@ -253,6 +257,7 @@ public class MageTabExporterTest extends AbstractServiceTest {
         for (Source source : experiment.getSources()) {
             source.getProviders().add(provider);
             addPredefinedCharacteristics(source, allOntologyCategories);
+            source.setExternalId(TEST_EXTERNAL_ID);
         }
 
         // Add Sample predefined characteristics and special characteristics with a term source.
@@ -638,6 +643,10 @@ public class MageTabExporterTest extends AbstractServiceTest {
             } else if (SdrfColumnType.MATERIAL_TYPE.toString().equals(columnName)) {
                 // Only Source's material type expected.
                 currSourceMaterialTypeIndex = currColumnNum;
+                String nextColumnName = header.get(currSourceMaterialTypeIndex + 1);
+                if (nextColumnName.equals("Term Source REF")) {
+                    currSourceMaterialTypeTermSourceRefIndex = currSourceMaterialTypeIndex + 1;
+                }
             } else if (columnName.startsWith(SdrfColumnType.CHARACTERISTICS.toString())) {
                 String categoryName = columnName.substring(columnName.indexOf('[') + 1, columnName.length() - 1);
                 switch (currNode) {
@@ -671,6 +680,9 @@ public class MageTabExporterTest extends AbstractServiceTest {
                     // Do nothing
                     break;
                 }
+                if (categoryName.equals(ExperimentOntologyCategory.EXTERNAL_ID.getCategoryName())) {
+                    currExternalIdCharacteristicIndex = currColumnNum;
+                }
             } else if (SdrfColumnType.UNIT.toString().equals(columnName)) {
                 currCharacteristicUnitIndex = currColumnNum;
             } else if (SdrfColumnType.LABEL.toString().equals(columnName)) {
@@ -691,6 +703,7 @@ public class MageTabExporterTest extends AbstractServiceTest {
         // Source should have provider and predefined characteristics.
         assertEquals(PROVIDER_ORGANIZATION, line.get(currProviderIndex));
         assertEquals(MATERIAL_TYPE_VALUE, line.get(currSourceMaterialTypeIndex));
+        assertTrue(StringUtils.isNotEmpty(line.get(currSourceMaterialTypeTermSourceRefIndex)));
         assertEquals(CELL_TYPE_VALUE, line.get(currSourceCellTypeIndex));
         assertEquals(DISEASE_STATE_VALUE, line.get(currSourceDiseaseStateIndex));
         assertEquals(TISSUE_SITE_VALUE, line.get(currSourceTissueSiteIndex));
@@ -704,6 +717,9 @@ public class MageTabExporterTest extends AbstractServiceTest {
         // LabeledExtract should have label and special characteristics without a term source.
         assertEquals(LABEL_VALUE, line.get(currLabelIndex));
         assertEquals(SPECIAL_CHARACTERISTIC_VALUE, line.get(currLabeledExtractSpecialCharacteristicIndex));
+        
+        // external ID should be set
+        assertEquals(TEST_EXTERNAL_ID, line.get(currExternalIdCharacteristicIndex));
     }
 
     private void verifyExperimentOverview(DelimitedFileReader reader) throws IOException {
