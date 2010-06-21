@@ -217,7 +217,7 @@ public class FileManagementServiceBean implements FileManagementService {
 
         ArrayDesignService ads = ServiceLocatorFactory.getArrayDesignService();
         arrayDesign.setDesignFileSet(designFiles);
-        ads.saveArrayDesign(arrayDesign);
+        arrayDesign = ads.saveArrayDesign(arrayDesign);
         ads.importDesign(arrayDesign);
 
         final ArrayDao arrayDao = getDaoFactory().getArrayDao();
@@ -255,6 +255,26 @@ public class FileManagementServiceBean implements FileManagementService {
         getDaoFactory().getProjectDao().save(arrayDesign.getDesignFiles());
         ArrayDesignFileImportJob job = new ArrayDesignFileImportJob(UsernameHolder.getUser(), arrayDesign);
         getSubmitter().submitJob(job);
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @TransactionAttribute(TransactionAttributeType.REQUIRED)
+    public void reimportAndParseArrayDesign(Long arrayDesignId) throws InvalidDataFileException, 
+        IllegalAccessException {
+        ArrayDesign arrayDesign = getDaoFactory().getSearchDao().retrieve(ArrayDesign.class, arrayDesignId);        
+        if (!arrayDesign.isUnparsedAndReimportable()) {
+            throw new IllegalAccessException("This array design is not eligible for reimport");
+        }
+        
+        ArrayDesignService ads = ServiceLocatorFactory.getArrayDesignService();
+        arrayDesign.getDesignFileSet().updateStatus(FileStatus.VALIDATING);
+        arrayDesign = ads.saveArrayDesign(arrayDesign); 
+        ads.importDesign(arrayDesign);
+        checkDesignFiles(arrayDesign.getDesignFileSet());
+        
+        importArrayDesignDetails(arrayDesign);
     }
 
     private CaArrayDaoFactory getDaoFactory() {

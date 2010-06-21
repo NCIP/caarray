@@ -98,10 +98,11 @@ import gov.nih.nci.caarray.validation.InvalidDataFileException;
 import gov.nih.nci.caarray.validation.ValidationResult;
 import gov.nih.nci.caarray.validation.ValidationMessage.Type;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.Local;
@@ -333,7 +334,8 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
      * {@inheritDoc}
      */
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public void saveArrayDesign(ArrayDesign arrayDesign) throws IllegalAccessException, InvalidDataFileException {
+    public ArrayDesign saveArrayDesign(ArrayDesign arrayDesign) throws IllegalAccessException, 
+        InvalidDataFileException {
         LogUtil.logSubsystemEntry(LOG, arrayDesign);
         FileStatus fileSetStatus = arrayDesign.getDesignFileSet().getStatus();
         if (fileSetStatus == FileStatus.IMPORTING || fileSetStatus == FileStatus.IMPORTED) {
@@ -345,23 +347,32 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
         }
         Long id = arrayDesign.getId();
         if (id != null && isArrayDesignLocked(id)) {
-            getArrayDao().evictObject(arrayDesign);
             if (!validateLockedDesign(arrayDesign)) {
                 throw new IllegalAccessException("Cannot modify locked fields on an array design");
             }
-            getArrayDao().mergeObject(arrayDesign);
+            LogUtil.logSubsystemExit(LOG);
+            return (ArrayDesign) getArrayDao().mergeObject(arrayDesign);
         } else {
             getArrayDao().save(arrayDesign);
+            LogUtil.logSubsystemExit(LOG);
+            return arrayDesign;
         }
-        LogUtil.logSubsystemExit(LOG);
     }
 
-
+    /**
+     * Validated that the given array design (which is considered "locked") has not had its provider,
+     * assay types, or design files properties modified.
+     * @param arrayDesign the design to check
+     * @return true if the design has not had the key properties above modified, false if it has.
+     */
     private boolean validateLockedDesign(ArrayDesign arrayDesign) {
+        Organization provider = arrayDesign.getProvider();
+        SortedSet<AssayType> assayTypes = new TreeSet<AssayType>(arrayDesign.getAssayTypes());
+        Set<CaArrayFile> designFiles = new HashSet<CaArrayFile>(arrayDesign.getDesignFiles());
+        getArrayDao().evictObject(arrayDesign);
         ArrayDesign loadedArrayDesign = getArrayDesign(arrayDesign.getId());
-        if (!loadedArrayDesign.getProvider().equals(arrayDesign.getProvider())
-                || !loadedArrayDesign.getAssayTypes().equals(arrayDesign.getAssayTypes())
-                || !loadedArrayDesign.getDesignFiles().equals(arrayDesign.getDesignFiles())) {
+        if (!loadedArrayDesign.getProvider().equals(provider) || !loadedArrayDesign.getAssayTypes().equals(assayTypes)
+                || !loadedArrayDesign.getDesignFiles().equals(designFiles)) {
             return false;
         }
         getArrayDao().evictObject(loadedArrayDesign);
@@ -402,17 +413,5 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
             getArrayDao().deleteArrayDesignDetails(arrayDesign);
         }
         getArrayDao().remove(arrayDesign);
-        Set<?> foo = null;
-        foo = new HashSet<String>();
-        List<Set<String>> strings = new ArrayList<Set<String>>();
-        strings.add(new HashSet<String>());
-        doStuff(strings);
-    }
-    
-    private void doStuff(List<? extends Set<?>> stuff) {
-        for (Set<?> oneStuff : stuff) {
-            // do
-        }
-        // noop
     }
 }

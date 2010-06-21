@@ -391,4 +391,15 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
         return this.getFileStatus().isValidatable();
     }
 
+    /**
+     * Check whether this is a file that was previously imported but not parsed,
+     * but now can be imported and parsed (due to a parsing FileHandler being
+     * implemented for it).
+     * @return true if the file can be re-imported and parsed, false otherwise. 
+     */
+    @Transient
+    public boolean isUnparsedAndReimportable() {
+        return getFileStatus() == FileStatus.IMPORTED_NOT_PARSED
+                && (getFileType().isParseableArrayDesign() || getFileType().isParseableData());
+    }
 }

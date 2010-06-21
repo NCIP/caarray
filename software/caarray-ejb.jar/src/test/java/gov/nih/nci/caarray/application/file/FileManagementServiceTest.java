@@ -396,7 +396,7 @@ public class FileManagementServiceTest extends AbstractServiceTest {
         this.fileManagementService.importArrayDesignDetails(design);
         assertTrue(this.arrayDesignServiceStub.importCalled);
     }
-
+    
     @Test
     public void testErrorHandling() throws InvalidDataFileException, IllegalAccessException {
         ArrayDesign design = new ArrayDesign();
@@ -507,7 +507,6 @@ public class FileManagementServiceTest extends AbstractServiceTest {
             }
             this.importCalled = true;
         }
-
     }
 
     private static class LocalDaoFactoryStub extends DaoFactoryStub {

@@ -124,6 +124,7 @@ import gov.nih.nci.caarray.magetab.TestMageTabSets;
 import gov.nih.nci.caarray.magetab.io.FileRef;
 import gov.nih.nci.caarray.test.data.arraydata.IlluminaArrayDataFiles;
 import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
+import gov.nih.nci.caarray.test.data.arraydesign.AgilentArrayDesignFiles;
 import gov.nih.nci.caarray.test.data.arraydesign.IlluminaArrayDesignFiles;
 import gov.nih.nci.caarray.util.CaArrayUtils;
 import gov.nih.nci.caarray.util.HibernateUtil;
@@ -138,18 +139,21 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import javax.transaction.UserTransaction;
+
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Order;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 /**
  * Integration test for the FileManagementService.
+ * 
  * @author Steve Lustbader
  */
 @SuppressWarnings("PMD")
 public class FileManagementServiceIntegrationTest extends AbstractServiceIntegrationTest {
-    @SuppressWarnings("unused")
     private FileManagementService fileManagementService;
     private final FileAccessServiceStub fileAccessService = new FileAccessServiceStub();
 
@@ -245,6 +249,13 @@ public class FileManagementServiceIntegrationTest extends AbstractServiceIntegra
             unknownProtocolType.setValue(VocabularyService.UNKNOWN_PROTOCOL_TYPE_NAME);
             unknownProtocolType.setSource(savedMgedOntology);
             HibernateUtil.getCurrentSession().save(unknownProtocolType);
+        }
+
+        if (vocabularyDao.getTerm(savedMgedOntology, "mm") == null) {
+            Term mm = new Term();
+            mm.setValue("mm");
+            mm.setSource(savedMgedOntology);
+            HibernateUtil.getCurrentSession().save(mm);
         }
 
         HibernateUtil.getCurrentSession().save(DUMMY_PROVIDER);
@@ -611,6 +622,63 @@ public class FileManagementServiceIntegrationTest extends AbstractServiceIntegra
         tx.commit();
     }
 
+    @Test
+    public void testReimport() throws Exception {
+        Transaction tx = HibernateUtil.beginTransaction();
+        saveSupportingObjects();
+        ArrayDesign design = importArrayDesign(AgilentArrayDesignFiles.TEST_GENE_EXPRESSION_1_XML, FileType.AGILENT_CSV);
+        assertNull(design.getDesignDetails());
+        tx.commit();
+
+        tx = HibernateUtil.beginTransaction();
+        design.getFirstDesignFile().setFileType(FileType.AGILENT_XML);
+        HibernateUtil.getCurrentSession().saveOrUpdate(design);
+        tx.commit();
+        
+        tx = HibernateUtil.beginTransaction();
+        HibernateUtil.getCurrentSession().evict(design);        
+        this.fileManagementService.reimportAndParseArrayDesign(design.getId());        
+        tx.commit();
+
+        tx = HibernateUtil.beginTransaction();
+        design = (ArrayDesign) HibernateUtil.getCurrentSession().load(ArrayDesign.class, design.getId());
+        assertNotNull(design.getDesignDetails());
+        assertEquals(45220, design.getNumberOfFeatures().intValue());
+        assertEquals(45220, design.getDesignDetails().getFeatures().size());
+        tx.commit();
+    }
+
+    @Test
+    public void testReimportWithReferencingExperiment() throws Exception {
+        Transaction tx = HibernateUtil.beginTransaction();
+        saveSupportingObjects();
+        ArrayDesign design = importArrayDesign(AgilentArrayDesignFiles.TEST_GENE_EXPRESSION_1_XML, FileType.AGILENT_CSV);
+        assertNull(design.getDesignDetails());
+        tx.commit();
+        
+        tx = HibernateUtil.beginTransaction();
+        DUMMY_EXPERIMENT_1.getArrayDesigns().add(design);
+        HibernateUtil.getCurrentSession().save(DUMMY_PROJECT_1);
+        tx.commit();
+
+        tx = HibernateUtil.beginTransaction();
+        design.getFirstDesignFile().setFileType(FileType.AGILENT_XML);
+        HibernateUtil.getCurrentSession().saveOrUpdate(design);
+        tx.commit();
+        
+        tx = HibernateUtil.beginTransaction();
+        HibernateUtil.getCurrentSession().evict(design);        
+        this.fileManagementService.reimportAndParseArrayDesign(design.getId());        
+        tx.commit();
+
+        tx = HibernateUtil.beginTransaction();
+        design = (ArrayDesign) HibernateUtil.getCurrentSession().load(ArrayDesign.class, design.getId());
+        assertNotNull(design.getDesignDetails());
+        assertEquals(45220, design.getNumberOfFeatures().intValue());
+        assertEquals(45220, design.getDesignDetails().getFeatures().size());
+        tx.commit();
+    }
+
     @SuppressWarnings("PMD")
     private void importFiles(Project project, MageTabFileSet fileSet) throws Exception {
         Transaction tx = HibernateUtil.beginTransaction();
@@ -705,13 +773,21 @@ public class FileManagementServiceIntegrationTest extends AbstractServiceIntegra
     }
 
     private ArrayDesign importArrayDesign(File designFile) throws IllegalAccessException, InvalidDataFileException {
+        return importArrayDesign(designFile, null);
+    }
+
+    private ArrayDesign importArrayDesign(File designFile, FileType fileType) throws IllegalAccessException, InvalidDataFileException {
         ArrayDesign design = new ArrayDesign();
         design.setName(designFile.getName());
         design.setVersion("2.0");
         design.setGeoAccession("GPL0000");
         design.setProvider(DUMMY_PROVIDER);
         design.setLsidForEntity("authority:namespace:" + designFile.getName());
-        design.addDesignFile(this.fileAccessService.add(designFile));
+        CaArrayFile caArrayDesignFile = this.fileAccessService.add(designFile);
+        if (fileType != null) {
+            caArrayDesignFile.setFileType(fileType);
+        }
+        design.addDesignFile(caArrayDesignFile);
         design.setTechnologyType(DUMMY_TERM);
         design.setOrganism(DUMMY_ORGANISM);
         HibernateUtil.getCurrentSession().save(design);
@@ -728,7 +804,10 @@ public class FileManagementServiceIntegrationTest extends AbstractServiceIntegra
         locatorStub.addLookup(FileAccessService.JNDI_NAME, fileAccessServiceStub);
 
         FileManagementServiceBean bean = new FileManagementServiceBean();
-        DirectJobSubmitter submitter = new DirectJobSubmitter(new FileManagementMDB());
+        FileManagementMDB mdb = new FileManagementMDB();
+        UserTransaction ut = Mockito.mock(UserTransaction.class);
+        mdb.setTransaction(ut);
+        DirectJobSubmitter submitter = new DirectJobSubmitter(mdb);
         bean.setSubmitter(submitter);
 
         TemporaryFileCacheLocator.setTemporaryFileCacheFactory(new TemporaryFileCacheStubFactory(fileAccessServiceStub));

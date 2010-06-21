@@ -96,6 +96,14 @@
                                 </div>
                           </c:if>
                         </display:column>
+                        <display:column titleKey="button.reimport" class="centered" headerClass="centered">
+                            <c:if test="${row.unparsedAndReimportable}">
+                                <c:url value="/protected/arrayDesign/reimport.action" var="reimportDesignUrl">
+                                     <c:param name="arrayDesign.id" value="${row.id}" />
+                                </c:url>
+                                <a href="${reimportDesignUrl}"><img src="<c:url value="/images/ico_import.gif"/>" alt="<fmt:message key="button.reimport"/>" /></a>
+                          </c:if>
+                        </display:column>
                         <display:column sortProperty="designFileSet.status" titleKey="experiment.files.status" sortable="true" >
                             <c:if test="${not empty row.designFileSet.status}">
                                 <ajax:anchors target="tabboxlevel2wrapper">

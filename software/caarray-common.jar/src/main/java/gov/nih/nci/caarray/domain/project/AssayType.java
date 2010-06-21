@@ -138,7 +138,7 @@ public class AssayType extends AbstractCaArrayEntity implements Comparable<Assay
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
     }
-
+    
     /**
      * Compares assayTypes by name.
      * @param o other assayType to compare to

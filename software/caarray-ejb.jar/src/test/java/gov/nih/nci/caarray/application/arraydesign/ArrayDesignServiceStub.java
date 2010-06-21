@@ -168,8 +168,8 @@ public class ArrayDesignServiceStub implements ArrayDesignService {
         return false;
     }
 
-    public void saveArrayDesign(ArrayDesign arrayDesign) throws IllegalAccessError, InvalidDataFileException {
-        // no op
+    public ArrayDesign saveArrayDesign(ArrayDesign arrayDesign) throws IllegalAccessError, InvalidDataFileException {
+        return arrayDesign;
     }
 
     public DesignElementList getDesignElementList(String lsidAuthority, String lsidNamespace, String lsidObjectId) {

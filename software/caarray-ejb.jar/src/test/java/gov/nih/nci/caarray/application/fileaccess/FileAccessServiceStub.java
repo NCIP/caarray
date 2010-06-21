@@ -102,7 +102,6 @@ import org.apache.commons.lang.BooleanUtils;
  * Stub implementation for testing.
  */
 public class FileAccessServiceStub implements FileAccessService, TemporaryFileCache {
-
     private final Map<String, File> nameToFile = new HashMap<String, File>();
     private final Map<String, Boolean> deletables = new HashMap<String, Boolean>();
     private int savedFileCount = 0;
@@ -165,6 +164,9 @@ public class FileAccessServiceStub implements FileAccessService, TemporaryFileCa
 
     public void save(CaArrayFile caArrayFile) {
         this.savedFileCount++;
+        if (caArrayFile.getId() == null) {
+            caArrayFile.setId((long) this.savedFileCount);
+        }
     }
 
     public void unzipFiles(List<File> uploads, List<String> uploadFileNames) {

@@ -52,6 +52,7 @@
         <exclude name="MissingStaticMethodInNonInstantiatableClass" />
         <exclude name="UseSingleton" />
         <exclude name="UnnecessaryLocalBeforeReturn" />
+        <exclude name="AvoidReassigningParameters" />
     </rule>
 
     <rule ref="rulesets/finalizers.xml" />

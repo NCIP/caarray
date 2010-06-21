@@ -187,14 +187,16 @@ public interface ArrayDesignService {
     boolean isArrayDesignLocked(Long id);
 
     /**
-     * Saves an array design.
-     *
+     * Saves an array design. May be called with either a new ArrayDesign not yet in the data store, or an already
+     * existing design to be updated.
+     * 
      * @param arrayDesign the array design to save
+     * @return the persisted array design. This may not be the same object instance as passed in.
      * @throws IllegalAccessException if trying to modify locked fields on an array design or if the array design file
-     *         is currently being imported
+     *             is currently being imported
      * @throws InvalidDataFileException if array is duplicate
      */
-    void saveArrayDesign(ArrayDesign arrayDesign) throws IllegalAccessException, InvalidDataFileException;
+    ArrayDesign saveArrayDesign(ArrayDesign arrayDesign) throws IllegalAccessException, InvalidDataFileException;
 
     /**
      * Checks for duplicate array design.

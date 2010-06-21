@@ -91,7 +91,6 @@ import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileExtension;
-import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.file.UnsupportedAffymetrixCdfFiles;
 import gov.nih.nci.caarray.domain.project.AssayType;
@@ -646,14 +645,7 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
             }
 
             ServiceLocatorFactory.getFileManagementService().saveArrayDesign(arrayDesign, designFiles);
-
-            // even if some of the file could not be parsed still import the array design details
-            for (CaArrayFile designFile : designFiles.getFiles()) {
-                if (!FileStatus.IMPORTED_NOT_PARSED.equals(designFile.getFileStatus())) {
-                    ServiceLocatorFactory.getFileManagementService().importArrayDesignDetails(arrayDesign);
-                    break;
-                }
-            }
+            ServiceLocatorFactory.getFileManagementService().importArrayDesignDetails(arrayDesign);
 
             // add error message for the user if there was an attempt to import non-array design files.
             if (uploads.size() > designFiles.getFiles().size()) {
@@ -668,5 +660,28 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
             }
 
         }
+    }
+
+    /**
+     * Handles reimporting an array design that was previously imported-not-parsed but now can be parsed.
+     * 
+     * @return "list" 
+     */
+    public String reimport() {
+        if (getArrayDesign() == null || getArrayDesign().getId() == null) {
+            ActionHelper.saveMessage(getText("arrayDesign.noDesignSelected"));
+            return SUCCESS;
+        }
+
+        try {
+            ServiceLocatorFactory.getFileManagementService().reimportAndParseArrayDesign(getArrayDesign().getId());
+            ActionHelper.saveMessage(getText("arrayDesign.importing"));
+        } catch (IllegalAccessException e) {
+            ActionHelper.saveMessage(getText("arrayDesign.cannotReimport"));            
+        } catch (InvalidDataFileException e) {
+            ActionHelper.saveMessage(getText("arrayDesign.invalid"));            
+        }
+
+        return SUCCESS;
     }
 }

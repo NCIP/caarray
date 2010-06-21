@@ -204,7 +204,8 @@ final class ArrayDesignPlatformFacade {
         // See hibernate bug http://opensource.atlassian.com/projects/hibernate/browse/HHH-511
         // When we upgrade to hibernate 3.2.4+, we can remove the call to merge.
         arrayDesign = (ArrayDesign) arrayDao.mergeObject(arrayDesign);
-        arrayDesign.getDesignFileSet().updateStatus(FileStatus.IMPORTED);
+        arrayDesign.getDesignFileSet().updateStatus(
+                handler.parsesData() ? FileStatus.IMPORTED : FileStatus.IMPORTED_NOT_PARSED);
         arrayDao.save(arrayDesign);        
     }
     

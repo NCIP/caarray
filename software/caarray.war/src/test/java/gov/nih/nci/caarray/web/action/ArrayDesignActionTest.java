@@ -147,6 +147,7 @@ public class ArrayDesignActionTest extends AbstractDownloadTest {
         locatorStub.addLookup(VocabularyService.JNDI_NAME, this.vocabularyServiceStub);
         locatorStub.addLookup(FileAccessService.JNDI_NAME, this.fileAccessServiceStub);
         locatorStub.addLookup(FileManagementService.JNDI_NAME, this.fileManagementServiceStub);
+        this.fileManagementServiceStub.reimportCount = 0;
     }
 
     @SuppressWarnings("deprecation")
@@ -321,6 +322,45 @@ public class ArrayDesignActionTest extends AbstractDownloadTest {
         arrayDesignServiceStub.throwArrayDesignDeleteException = false;
         assertEquals(arrayDesignAction.SUCCESS, arrayDesignAction.delete());
     }
+    
+    @Test
+    public void testReimportNoDesign() throws Exception {
+        arrayDesignAction.setArrayDesign(new ArrayDesign());
+        assertEquals(arrayDesignAction.SUCCESS, arrayDesignAction.reimport());
+        assertEquals(1, ActionHelper.getMessages().size());
+        assertEquals("arrayDesign.noDesignSelected", ActionHelper.getMessages().get(0));
+        assertEquals(0, fileManagementServiceStub.reimportCount);
+    }
+    
+    @Test
+    public void testReimportOk() throws Exception {
+        arrayDesignAction.setArrayDesign(new ArrayDesign());
+        arrayDesignAction.getArrayDesign().setId(1L);
+        assertEquals(arrayDesignAction.SUCCESS, arrayDesignAction.reimport());
+        assertEquals(1, ActionHelper.getMessages().size());
+        assertEquals("arrayDesign.importing", ActionHelper.getMessages().get(0));
+        assertEquals(1, fileManagementServiceStub.reimportCount);
+    }
+    
+    @Test
+    public void testReimportInvalidFile() throws Exception {
+        arrayDesignAction.setArrayDesign(new ArrayDesign());
+        arrayDesignAction.getArrayDesign().setId(2L);
+        assertEquals(arrayDesignAction.SUCCESS, arrayDesignAction.reimport());
+        assertEquals(1, ActionHelper.getMessages().size());
+        assertEquals("arrayDesign.invalid", ActionHelper.getMessages().get(0));
+        assertEquals(1, fileManagementServiceStub.reimportCount);
+    }
+
+    @Test
+    public void testReimportIllegal() throws Exception {
+        arrayDesignAction.setArrayDesign(new ArrayDesign());
+        arrayDesignAction.getArrayDesign().setId(3L);
+        assertEquals(arrayDesignAction.SUCCESS, arrayDesignAction.reimport());
+        assertEquals(1, ActionHelper.getMessages().size());
+        assertEquals("arrayDesign.cannotReimport", ActionHelper.getMessages().get(0));
+        assertEquals(1, fileManagementServiceStub.reimportCount);       
+    }
 
     @SuppressWarnings("deprecation")
     private void setTargetIdParam() {
@@ -378,7 +418,10 @@ public class ArrayDesignActionTest extends AbstractDownloadTest {
             return caArrayFile;
         }
     }
+    
     private static class LocalFileManagementServiceStub extends FileManagementServiceStub {
+        private int reimportCount = 0;
+        
         @Override
         public void saveArrayDesign(ArrayDesign arrayDesign, CaArrayFileSet designFiles) throws InvalidDataFileException {
             FileValidationResult fvr = new FileValidationResult(null);
@@ -386,5 +429,15 @@ public class ArrayDesignActionTest extends AbstractDownloadTest {
             throw new InvalidDataFileException(fvr);
         }
 
+        @Override
+        public void reimportAndParseArrayDesign(Long arrayDesignId) throws InvalidDataFileException, IllegalAccessException {
+            reimportCount++;
+            switch (arrayDesignId.intValue()) {
+            case 2:
+                throw new InvalidDataFileException(new FileValidationResult(new File("foo")));
+            case 3:
+                throw new IllegalAccessException("Cannot reimport this design");
+            }
+        }
     }
 }

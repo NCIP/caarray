@@ -86,7 +86,6 @@ import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.LSID;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
-import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.platforms.FileManager;
 import gov.nih.nci.caarray.platforms.spi.DesignFileHandler;
@@ -172,10 +171,6 @@ class UnparsedArrayDesignFileHandler implements DesignFileHandler {
     public void validate(ValidationResult result) {
         FileValidationResult fileResult = result.getOrCreateFileValidationResult(fileOnDisk);
         designFile.setValidationResult(fileResult);
-    }
-
-    FileStatus getValidatedStatus() {
-        return FileStatus.IMPORTED_NOT_PARSED;
     }
     
     public boolean parsesData() {

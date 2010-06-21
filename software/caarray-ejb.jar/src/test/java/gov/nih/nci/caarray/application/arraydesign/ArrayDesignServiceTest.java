@@ -238,7 +238,6 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
 
 
     @Test
-    @SuppressWarnings("deprecation")
     public void testSaveArrayDesign() throws Exception {
         final ArrayDesign design = createDesign(null, null, null,
                 getAffymetrixCdfCaArrayFile(AffymetrixArrayDesignFiles.TEST3_CDF));
@@ -257,18 +256,27 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
         assertEquals("PhysicalArrayDesign", updatedDesign.getLsidNamespace());
         assertEquals("Test3", updatedDesign.getLsidObjectId());
         assertEquals("new description", updatedDesign.getDescription());
-
+    }
+    
+    @Test
+    @SuppressWarnings("deprecation")
+    public void testSaveLockedArrayDesignAllowedFields() throws Exception {
+        ArrayDesign design = createDesign(null, null, null,
+                getAffymetrixCdfCaArrayFile(AffymetrixArrayDesignFiles.TEST3_CDF));
         // "lock" this design by setting the ID to 2 but can still update description of locked designs
         design.setId(2L);
         caArrayDaoFactoryStub.getArrayDao().save(design);
+        arrayDesignService.importDesign(design);
+        
         design.setDescription("another description");
-        arrayDesignService.saveArrayDesign(design);
+        design = arrayDesignService.saveArrayDesign(design);
+        assertEquals(2L, design.getId().longValue());        
         final ArrayDesign updatedLockedDesign = arrayDesignService.getArrayDesign(design.getId());
         assertEquals("Test3", updatedLockedDesign.getName());
         assertEquals("Affymetrix.com", updatedLockedDesign.getLsidAuthority());
         assertEquals("PhysicalArrayDesign", updatedLockedDesign.getLsidNamespace());
         assertEquals("Test3", updatedLockedDesign.getLsidObjectId());
-        assertEquals("another description", updatedLockedDesign.getDescription());
+        assertEquals("another description", updatedLockedDesign.getDescription());        
     }
 
     @Test(expected=IllegalAccessException.class)
@@ -831,7 +839,7 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
         assertTrue(result.getMessages().iterator().next().getMessage().contains("design already exists with the name"));
     }
 
-    public static ArrayDesign createDesign(Organization provider, Organism organism, SortedSet<AssayType> assayTypes,
+    public ArrayDesign createDesign(Organization provider, Organism organism, SortedSet<AssayType> assayTypes,
             CaArrayFile caArrayFile) {
         final ArrayDesign arrayDesign = new ArrayDesign();
         arrayDesign.setName("Dummy Design");
@@ -855,6 +863,7 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
         if (caArrayFile == null) {
             caArrayFile = new CaArrayFile();
         }
+        fileAccessServiceStub.save(caArrayFile);
         arrayDesign.addDesignFile(caArrayFile);
 
         arrayDesign.setTechnologyType(DUMMY_TERM);
@@ -910,7 +919,7 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
     public static class LocalDaoFactoryStub extends DaoFactoryStub {
         private final Map<String, AbstractCaArrayEntity> lsidEntityMap = new HashMap<String, AbstractCaArrayEntity>();
         private final Map<Long, PersistentObject> objectMap = new HashMap<Long, PersistentObject>();
-        private static long nextId = 0;
+        private static long nextId = 1;
         private static long nextFeatureId = 1;
 
         @Override
@@ -988,6 +997,13 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
                     } else if (object instanceof Feature) {
                         final Feature feature = (Feature) object;
                         feature.getArrayDesignDetails().getFeatures().add(feature);
+                    } else if (object instanceof ArrayDesign) {
+                        final ArrayDesign ad = (ArrayDesign) object;
+                        for (CaArrayFile f : ad.getDesignFiles()) {
+                            if (f.getId() == null) {
+                                f.setId(nextId++);                                
+                            }
+                        }
                     }
                 }
 

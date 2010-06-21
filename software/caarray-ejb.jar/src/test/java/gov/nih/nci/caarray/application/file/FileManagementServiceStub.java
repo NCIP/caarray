@@ -165,4 +165,8 @@ public class FileManagementServiceStub implements FileManagementService {
 
         return filenames;
     }
+    
+    public void reimportAndParseArrayDesign(Long arrayDesignId) throws InvalidDataFileException, IllegalAccessException {
+        // no-op
+    }
 }

@@ -121,6 +121,9 @@ import org.hibernate.validator.Length;
 import org.hibernate.validator.NotNull;
 import org.hibernate.validator.Size;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
+
 /**
  * The design details for a type of microarray.
  */
@@ -540,4 +543,19 @@ public class ArrayDesign extends AbstractCaArrayEntity {
         this.geoAccession = geoAccession;
     }
 
+    /**
+     * Check whether this is a array design that was previously imported but not parsed,
+     * but now can be imported and parsed (due to a parsing FileHandler being
+     * implemented for it). This will be the case if all of the design files
+     * associated with the array design meet this condition.
+     * @return true if the design can be re-imported and parsed, false otherwise. 
+     */
+    @Transient
+    public boolean isUnparsedAndReimportable() {
+        return Iterables.any(getDesignFiles(), new Predicate<CaArrayFile>() {
+           public boolean apply(CaArrayFile file) {
+                return file.isUnparsedAndReimportable();
+            } 
+        }); 
+    }
 }

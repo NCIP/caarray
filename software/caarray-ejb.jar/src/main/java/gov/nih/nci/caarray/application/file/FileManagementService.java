@@ -96,7 +96,6 @@ import java.util.List;
  * Interface to the FileManagement subsystem.
  */
 public interface FileManagementService {
-
     /**
      * The default JNDI name to use to lookup <code>ProjectManagementService</code>.
      */
@@ -144,6 +143,20 @@ public interface FileManagementService {
      * @param arrayDesign the array design object
      */
     void importArrayDesignDetails(ArrayDesign arrayDesign);
+
+    /**
+     * Re-import and parse an array design which had previously been imported without parsing, but for which a parser is
+     * now available.
+     * 
+     * @param arrayDesignId id of the array design to re-import
+     * 
+     * @throws InvalidDataFileException if the array design files are not valid according to the parser
+     * @throws IllegalAccessException if the array design is not eligible for re=import. An array design can only be
+     *             reimported if currently it has a status of IMPORTED_NOT_PARSED, but there is now a parser available
+     *             for its design files.
+     */
+    void reimportAndParseArrayDesign(Long arrayDesignId) throws InvalidDataFileException, IllegalAccessException;
+    
     /**
      * Takes a idf file(s), and all files associated to the project,
      * finds the sdrf file associated with the idf from the list,
@@ -155,5 +168,4 @@ public interface FileManagementService {
      * @return list of selected file names.
      */
     List<String> findIdfRefFileNames(CaArrayFile idfFile, Project project);
-
 }

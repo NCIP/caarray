@@ -336,8 +336,8 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
         }
 
         /**
-         * Update the provided criteria object with values from the associated entites. Ignores collection properties
-         * (ie, one-to-many), but handles all other association types (ie, many-to-one, one-to-one, etc.)
+         * Update the provided criteria object with values from the associated entites. For collection-valued
+         * associations, the criteria will contain a disjunction using collection members as examples.
          * 
          * @param entityToMatch the entity to match
          */
