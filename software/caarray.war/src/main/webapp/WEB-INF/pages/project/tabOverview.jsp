@@ -35,9 +35,9 @@ setExperimentTitleHeader('${caarrayfn:escapeJavaScript(projectTitle)}');
             </c:if>
             <c:url var="autocompleteUrl" value="/protected/ajax/project/listTab/Overview/generateAssayList.action" />
             <caarray:listSelector baseId="assayTypes" listField="${project.experiment.assayTypes}" listFieldName="project.experiment.assayTypes"
-                tabIndex="1" showFilter="false" objectValue="id" required="false" multiple="true" hideAddButton="true"
+                tabIndex="1" showFilter="false" objectValue="id" required="true" multiple="true" hideAddButton="true"
                 autocompleteUrl="${autocompleteUrl}"/>
-            <s:select key="project.experiment.manufacturer" tabindex="6" required="false"
+            <s:select key="project.experiment.manufacturer" tabindex="6" required="true"
                       list="manufacturers" listKey="id" listValue="name"
                       headerKey="" headerValue="--Select a Provider--" value="project.experiment.manufacturer.id">
                 <s:param name="after">
