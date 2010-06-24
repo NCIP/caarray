@@ -252,4 +252,12 @@ public interface ProjectDao extends CaArrayDao {
      * @return matching LabeledExtract or null if not found
      */
     LabeledExtract getLabeledExtractForExperiment(Experiment experiment, String labeledExtractName);
+
+    /**
+     * Get experiments that have files that were uploaded but not parsed by earlier caArray versions,
+     * but can now be parsed.
+     * @return projects with unparsed - now parsable data file.
+     * @since 2.4.0
+     */
+    List<Project> getProjectsWithReImportable();
 }

@@ -156,7 +156,7 @@ public interface FileManagementService {
      *             for its design files.
      */
     void reimportAndParseArrayDesign(Long arrayDesignId) throws InvalidDataFileException, IllegalAccessException;
-    
+
     /**
      * Takes a idf file(s), and all files associated to the project,
      * finds the sdrf file associated with the idf from the list,

@@ -728,4 +728,13 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     private SearchDao getSearchDao() {
         return this.daoFactory.getSearchDao();
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public List<Project> getProjectsWithReImportableFiles() {
+        return getProjectDao().getProjectsWithReImportable();
+    }
+
+    
 }

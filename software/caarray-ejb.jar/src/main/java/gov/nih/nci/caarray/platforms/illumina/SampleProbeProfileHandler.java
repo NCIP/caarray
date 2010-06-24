@@ -112,13 +112,13 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import org.apache.axis.utils.StringUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 
 import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.validation.ValidationMessage.Type;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * Illumina Sample Probe Profile file loader.

@@ -128,6 +128,7 @@ import org.hibernate.criterion.Restrictions;
 
 import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
 
 /**
@@ -137,6 +138,14 @@ import java.util.Collections;
  */
 @SuppressWarnings({"PMD.AvoidDuplicateLiterals", "PMD.CyclomaticComplexity", "PMD.TooManyMethods" })
 class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
+
+    private static final List<String> PARSEABLE_ARRAY_DESIGN_FILE_TYPE_NAMES
+            = new ArrayList<String>(FileType.PARSEABLE_ARRAY_DESIGN_FILE_TYPES.size());
+    static {
+        for (FileType t : FileType.PARSEABLE_ARRAY_DESIGN_FILE_TYPES) {
+            PARSEABLE_ARRAY_DESIGN_FILE_TYPE_NAMES.add(t.getName());
+        }
+    }
     /**
      * {@inheritDoc}
      */
@@ -537,5 +546,17 @@ class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
             qTypes.add(qt);
         }
         return qTypes;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public List<ArrayDesign> getArrayDesignsWithReImportable() {
+        String q = "select distinct a from " + ArrayDesign.class.getName() 
+                + " a left join a.designFiles f where f.status = :status and f.type in (:types) order by a.id";
+        Query query = HibernateUtil.getCurrentSession().createQuery(q);
+        query.setParameter("status",  FileStatus.IMPORTED_NOT_PARSED.name());
+        query.setParameterList("types", PARSEABLE_ARRAY_DESIGN_FILE_TYPE_NAMES);
+        return (List<ArrayDesign>) query.list();
     }
 }

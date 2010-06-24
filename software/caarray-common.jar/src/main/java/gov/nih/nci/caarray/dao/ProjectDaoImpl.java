@@ -127,6 +127,8 @@ import org.hibernate.criterion.Restrictions;
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
 import com.fiveamsolutions.nci.commons.data.search.SortCriterion;
+import gov.nih.nci.caarray.domain.file.FileStatus;
+import gov.nih.nci.caarray.domain.file.FileType;
 
 /**
  * DAO for entities in the <code>gov.nih.nci.caarray.domain.project</code> package.
@@ -141,6 +143,13 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
     private static final String[] BIOMATERIALS = {"sources", "samples", "extracts", "labeledExtracts" };
     private static final String TERM_FOR_EXPERIMENT_HSQL = "select distinct s.{0} from " + Experiment.class.getName()
         + " e left join e.{1} s where e.id = :" + EXP_ID_PARAM + " and s.{0} is not null";
+    private static final List<String> PARSEABLE_ARRAY_DATA_FILE_TYPE_NAMES
+            = new ArrayList<String>(FileType.PARSEABLE_ARRAY_DATA_FILE_TYPES.size());
+    static {
+        for (FileType t : FileType.PARSEABLE_ARRAY_DATA_FILE_TYPES) {
+            PARSEABLE_ARRAY_DATA_FILE_TYPE_NAMES.add(t.getName());
+        }
+    }
 
     /**
      * Saves a project by first updating the lastUpdated field, and then saves the entity to persistent storage,
@@ -517,5 +526,17 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
         query.setParameter("experiment", experiment);
         query.setString("name", bioMaterialName);
         return (T) query.uniqueResult();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public List<Project> getProjectsWithReImportable() {
+        String q = "select distinct p from " + Project.class.getName()
+                + " p left join p.files f where f.status = :status and f.type in (:types) order by p.id";
+        Query query = HibernateUtil.getCurrentSession().createQuery(q);
+        query.setParameter("status",  FileStatus.IMPORTED_NOT_PARSED.name());
+        query.setParameterList("types", PARSEABLE_ARRAY_DATA_FILE_TYPE_NAMES);
+        return (List<Project>) query.list();
     }
 }

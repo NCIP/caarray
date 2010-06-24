@@ -102,6 +102,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
+import java.util.ArrayList;
 
 /**
  *
@@ -217,5 +218,9 @@ public class ProjectDaoStub extends AbstractDaoStub implements ProjectDao {
      */
     public List<AssayType> getAssayTypes() {
         return null;
+    }
+
+    public List<Project> getProjectsWithReImportable() {
+        return new ArrayList<Project>();
     }
 }

@@ -226,4 +226,13 @@ public interface ArrayDesignService {
      * @return the matching design element list or null.
      */
     DesignElementList getDesignElementList(String lsidAuthority, String lsidNamespace, String lsidObjectId);
+
+    /**
+     * Get array designs that have files that were uploaded but not parsed by earlier caArray versions,
+     * but can now be parsed.
+     * @return designs with unparsed - now parsable data file.
+     * @since 2.4.0
+     */
+    List<ArrayDesign> getArrayDesignsWithReImportableFiles();
+
 }

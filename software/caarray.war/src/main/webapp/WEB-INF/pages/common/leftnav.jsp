@@ -23,6 +23,11 @@
                 <li><a href="<c:url value="/protected/arrayDesign/list.action" />">Manage Array Designs</a></li>
                 <li><a href="<c:url value="/protected/protocol/manage.action" />">Manage Protocols</a></li>
                 <li><a href="<c:url value="/protected/vocabulary/manage.action" />">Manage Vocabulary</a></li>
+                <c:if test="${isSystemAdministrator}">
+                    <li class="liheader">To Do</li>
+                    <li><a href="<c:url value="/protected/admin/import/reimport.action" />"
+                           title="Re-import files to take advantage of new features">Re-Process</a></li>
+                </c:if>
             </ul>
 
          </c:when>

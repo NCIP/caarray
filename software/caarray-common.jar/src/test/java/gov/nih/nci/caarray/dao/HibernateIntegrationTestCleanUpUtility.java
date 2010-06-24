@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.dao;
 
+import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
@@ -206,7 +207,10 @@ public final class HibernateIntegrationTestCleanUpUtility {
             if (!ArrayUtils.contains(CSM_CLASSES_NOT_TO_REMOVE, persistentClass)) {
                 classesToRemove.add(persistentClass);
             }
-        }        
+        }
+        if (classesToRemove.remove(CaArrayFile.class)) {
+            classesToRemove.add(0, CaArrayFile.class);
+        }
     }
 
     private static Session getSession() {

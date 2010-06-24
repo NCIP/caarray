@@ -414,4 +414,12 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
         }
         getArrayDao().remove(arrayDesign);
     }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    public List<ArrayDesign> getArrayDesignsWithReImportableFiles() {
+        return getArrayDao().getArrayDesignsWithReImportable();
+    }
 }

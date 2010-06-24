@@ -263,4 +263,12 @@ public interface ArrayDao extends CaArrayDao {
      */
     List<QuantitationType> searchForQuantitationTypes(PageSortParams<QuantitationType> params,
             QuantitationTypeSearchCriteria criteria);
+
+    /**
+     * Get array designs that have files that were uploaded but not parsed by earlier caArray versions,
+     * but can now be parsed.
+     * @return designs with unparsed - now parsable data file.
+     * @since 2.4.0
+     */
+    List<ArrayDesign> getArrayDesignsWithReImportable();
 }

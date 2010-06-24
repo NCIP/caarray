@@ -82,6 +82,17 @@
                 <a href="${editProjectPermissionsUrl}"><img src="<c:url value="/images/ico_permissions.gif"/>" alt="Permissions" /></a>
             </c:if>
         </display:column>
+        <display:column titleKey="button.reimport" class="centered" headerClass="centered">
+            <c:if test="${row.unparsedAndReimportable}">
+                <c:url var="reimportProjectUrl" value="/project/details.action">
+                    <c:param name="project.id" value="${row.id}"/>
+                    <c:param name="initialTab" value="data"/>
+                    <c:param name="initialTab2" value="importedData"/>
+
+                </c:url>
+                <a href="${reimportProjectUrl}"><img src="<c:url value="/images/ico_import.gif"/>" alt="<fmt:message key="button.reimport"/>" /></a>
+          </c:if>
+        </display:column>
         <display:column titleKey="button.edit" class="centered" headerClass="centered">
             <c:if test="${canWriteRow && !row.locked}">
                 <c:url value="/protected/project/edit.action" var="editProjectUrl">

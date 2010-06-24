@@ -154,6 +154,8 @@ import org.hibernate.Transaction;
 import org.junit.Test;
 
 import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
+import gov.nih.nci.caarray.domain.file.FileStatus;
+import gov.nih.nci.caarray.domain.file.FileType;
 
 /**
  * Unit tests for the Project DAO.
@@ -1150,6 +1152,48 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
             HibernateUtil.rollbackTransaction(tx);
             throw e;
         }
+    }
+
+    @Test
+    public void testGetProjectsWithReImportable() {
+        Transaction tx = HibernateUtil.beginTransaction();
+        saveSupportingObjects();
+        DAO_OBJECT.save(DUMMY_PROJECT_1);
+        CaArrayFile f1 = new CaArrayFile();
+        f1.setProject(DUMMY_PROJECT_1);
+        f1.setName("foo");
+        f1.setFileStatus(FileStatus.IMPORTED_NOT_PARSED);
+        f1.setFileType(FileType.AGILENT_RAW_TXT);
+        DUMMY_PROJECT_1.getFiles().add(f1);
+        DAO_OBJECT.save(f1);
+
+        CaArrayFile f2 = new CaArrayFile();
+        f2.setProject(DUMMY_PROJECT_2);
+        f2.setName("bar");
+        f2.setFileStatus(FileStatus.IMPORTED_NOT_PARSED);
+        f2.setFileType(FileType.SCANARRAY_CSV);
+        DUMMY_PROJECT_2.getFiles().add(f2);
+        DAO_OBJECT.save(f2);
+        DAO_OBJECT.save(DUMMY_PROJECT_2);
+        
+        tx.commit();
+        tx = HibernateUtil.beginTransaction();
+        HibernateUtil.getCurrentSession().evict(DUMMY_PROJECT_1);
+        HibernateUtil.getCurrentSession().evict(DUMMY_PROJECT_2);
+        DUMMY_PROJECT_1 = (Project) HibernateUtil.getCurrentSession().load(Project.class, DUMMY_PROJECT_1.getId());
+        DUMMY_PROJECT_2 = (Project) HibernateUtil.getCurrentSession().load(Project.class, DUMMY_PROJECT_2.getId());
+        assertTrue(f1.isUnparsedAndReimportable());
+        assertTrue(DUMMY_PROJECT_1.isUnparsedAndReimportable());
+        assertFalse(f2.isUnparsedAndReimportable());
+        assertFalse(DUMMY_PROJECT_2.isUnparsedAndReimportable());
+
+
+
+        List<Project> projects = DAO_OBJECT.getProjectsWithReImportable();
+        assertEquals(1, projects.size());
+        assertEquals(DUMMY_PROJECT_1.getId(), projects.get(0).getId());
+
+        tx.commit();
     }
 
 

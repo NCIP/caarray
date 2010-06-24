@@ -494,5 +494,13 @@ public interface ProjectManagementService {
      * @param projectId id of the project
      * @return a list of deletable files in given project
      */
-    List<CaArrayFile> getDeletableFiles(Long projectId); 
+    List<CaArrayFile> getDeletableFiles(Long projectId);
+
+    /**
+     * Get projects that have files that were uploaded but not parsed by earlier caArray versions,
+     * but can now be parsed.
+     * @return projects with unparsed - now parsable data file.
+     * @since 2.4.0
+     */
+    List<Project> getProjectsWithReImportableFiles();
 }

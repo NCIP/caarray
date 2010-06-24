@@ -83,6 +83,8 @@
 
 package gov.nih.nci.caarray.domain.project;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
@@ -561,5 +563,21 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
+    }
+
+    /**
+     * Check whether this is a experiment that was previously imported but not parsed,
+     * but now can be imported and parsed (due to a parsing FileHandler being
+     * implemented for it). This will be the case if all of the imported data files
+     * associated with the experiment meet this condition.
+     * @return true if the experiment has repasable data files.
+     */
+    @Transient
+    public boolean isUnparsedAndReimportable() {
+        return Iterables.any(getImportedFileSet(), new Predicate<CaArrayFile>() {
+           public boolean apply(CaArrayFile file) {
+                return file.isUnparsedAndReimportable();
+            }
+        });
     }
 }

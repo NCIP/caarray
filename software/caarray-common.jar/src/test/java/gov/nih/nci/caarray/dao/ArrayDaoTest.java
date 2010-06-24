@@ -88,6 +88,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
+import static org.junit.Assert.assertTrue;
+
 import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
@@ -100,6 +102,7 @@ import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileStatus;
+import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.project.AssayType;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
@@ -111,7 +114,10 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
+import org.hibernate.Query;
+import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -159,6 +165,23 @@ public class ArrayDaoTest extends AbstractDaoTest {
             LOG.error("Error setting up test data.", e);
             throw e;
         }
+    }
+
+    @After
+    public void cleanupObjects() {
+        Transaction tx = null;
+        // Save dummy objects to database.
+
+        tx = HibernateUtil.beginTransaction();
+        Session s = HibernateUtil.getCurrentSession();
+        s.delete(s.merge(DUMMY_ARRAYDESIGN_1));
+        s.delete(s.merge(DUMMY_ARRAYDESIGN_2));
+        s.delete(s.merge(DUMMY_ARRAYDESIGN_3));
+        s.delete(s.merge(DUMMY_ORGANIZATION3));
+        s.delete(s.merge(DUMMY_ASSAY_TYPE1));
+        s.delete(s.merge(DUMMY_ASSAY_TYPE2));
+        tx.commit();
+
     }
 
     /**
@@ -535,5 +558,47 @@ public class ArrayDaoTest extends AbstractDaoTest {
         quantitationType.setName(descriptor.getName());
         quantitationType.setTypeClass(descriptor.getDataType().getTypeClass());
         return quantitationType;
+    }
+
+    @Test
+    public void testGetArrayDesignsWithReImportable() {
+        Transaction tx = null;
+
+        try {
+            tx = HibernateUtil.beginTransaction();
+            CaArrayFile f1 = new CaArrayFile();
+            f1.setName("foo");
+            f1.setFileStatus(FileStatus.IMPORTED_NOT_PARSED);
+            assertTrue("AGILENT_XML should be parsable", FileType.AGILENT_XML.isParseableArrayDesign());
+            f1.setFileType(FileType.AGILENT_XML);
+            DUMMY_ARRAYDESIGN_1.getDesignFiles().clear();
+            DUMMY_ARRAYDESIGN_1.addDesignFile(f1);
+            DAO_OBJECT.save(f1);
+            DAO_OBJECT.save(DUMMY_ARRAYDESIGN_1);
+            
+            CaArrayFile f2 = new CaArrayFile();
+            f2.setName("bar");
+            f2.setFileStatus(FileStatus.IMPORTED_NOT_PARSED);
+            assertFalse("GEO_GSM has become parsable, use one that's not", FileType.GEO_GSM.isParseableArrayDesign());
+            f2.setFileType(FileType.GEO_GSM);
+            DUMMY_ARRAYDESIGN_2.getDesignFiles().clear();
+            DUMMY_ARRAYDESIGN_2.addDesignFile(f2);
+            DAO_OBJECT.save(f2);
+            DAO_OBJECT.save(DUMMY_ARRAYDESIGN_2);
+            tx.commit();
+
+            tx = HibernateUtil.beginTransaction();
+            assertTrue(DUMMY_ARRAYDESIGN_1.getDesignFiles().iterator().next().isUnparsedAndReimportable());
+            assertTrue(DUMMY_ARRAYDESIGN_1.isUnparsedAndReimportable());
+            assertFalse(DUMMY_ARRAYDESIGN_2.getDesignFiles().iterator().next().isUnparsedAndReimportable());
+            assertFalse(DUMMY_ARRAYDESIGN_2.isUnparsedAndReimportable());
+
+            List<ArrayDesign> ads = DAO_OBJECT.getArrayDesignsWithReImportable();
+            assertEquals(1, ads.size());
+            assertEquals(DUMMY_ARRAYDESIGN_1.getId(), ads.get(0).getId());
+        } catch (DAOException e) {
+            HibernateUtil.rollbackTransaction(tx);
+            fail("DAO exception during save and retrieve of arraydesign: " + e.getMessage());
+        }
     }
 }

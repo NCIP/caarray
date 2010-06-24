@@ -474,4 +474,8 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
     public List<CaArrayFile> getDeletableFiles(Long projectId) {
         return Collections.emptyList();
     }
+
+    public List<Project> getProjectsWithReImportableFiles() {
+        return Collections.EMPTY_LIST;
+    }
 }

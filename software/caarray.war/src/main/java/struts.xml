@@ -334,6 +334,12 @@
         <action name="ajax/audit/*" class="gov.nih.nci.caarray.web.action.audit.AuditAction" method="{1}">
             <result name="success">/WEB-INF/pages/audit/{1}.jsp</result>
         </action>
+        <action name="admin/import/*" class="gov.nih.nci.caarray.web.action.admin.ImportAction" method="{1}">
+            <result name="success">/WEB-INF/pages/admin/{1}.jsp</result>
+        </action>
+        <action name="ajax/admin/import/*" class="gov.nih.nci.caarray.web.action.admin.ImportAction" method="{1}">
+            <result name="success">/WEB-INF/pages/admin/{1}.jsp</result>
+        </action>
 
     </package>
 

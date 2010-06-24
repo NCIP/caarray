@@ -92,6 +92,7 @@ import gov.nih.nci.caarray.validation.InvalidDataFileException;
 import gov.nih.nci.caarray.validation.ValidationResult;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -185,5 +186,9 @@ public class ArrayDesignServiceStub implements ArrayDesignService {
         }
 
         return false;
+    }
+
+    public List<ArrayDesign> getArrayDesignsWithReImportableFiles() {
+        return Collections.EMPTY_LIST;
     }
 }
