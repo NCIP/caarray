@@ -108,7 +108,7 @@ public class MageTabTranslatorBean implements MageTabTranslator {
     private static final Logger LOG = Logger.getLogger(MageTabTranslatorBean.class);
 
     private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
-
+    
     /**
      * {@inheritDoc}
      */

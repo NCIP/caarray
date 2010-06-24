@@ -94,7 +94,7 @@ import gov.nih.nci.caarray.domain.sample.TermBasedCharacteristic;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
-import gov.nih.nci.caarray.util.HibernateUtil;
+import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -114,7 +114,6 @@ import org.junit.Test;
  */
 @SuppressWarnings("PMD")
 public class VocabularyDaoTest extends AbstractDaoTest {
-
     private static Category DUMMY_CATEGORY_1 = new Category();
     private static Category DUMMY_CATEGORY_2 = new Category();
     private static Category DUMMY_CATEGORY_3 = new Category();
@@ -209,10 +208,10 @@ public class VocabularyDaoTest extends AbstractDaoTest {
     public void testGetTermsRecursive() {
         Transaction tx = null;
         try {
-            tx = HibernateUtil.beginTransaction();
+            tx = hibernateHelper.beginTransaction();
             setupTestGetTermsRecursive();
             tx.commit();
-            tx = HibernateUtil.beginTransaction();
+            tx = hibernateHelper.beginTransaction();
             Set<Term> retrievedTerms = DAO_OBJECT.getTermsRecursive(DUMMY_CATEGORY_4, null);
             assertEquals("Did not retrieve the expected number of terms.", NUM_DUMMY_TERMS, retrievedTerms.size());
             // Check if we got the expected terms, and accordingly pass or fail the test.
@@ -225,7 +224,7 @@ public class VocabularyDaoTest extends AbstractDaoTest {
 
             tx.commit();
         } catch (Exception e) {
-            HibernateUtil.rollbackTransaction(tx);
+            hibernateHelper.rollbackTransaction(tx);
             fail("DAO exception while getting terms in a category: " + e.getMessage());
         }
     }
@@ -234,7 +233,7 @@ public class VocabularyDaoTest extends AbstractDaoTest {
     public void testGetOrganism() {
         Transaction tx = null;
         try {
-            tx = HibernateUtil.beginTransaction();
+            tx = hibernateHelper.beginTransaction();
             DAO_OBJECT.save(DUMMY_ORGANISM_1);
             DAO_OBJECT.save(DUMMY_ORGANISM_2);
             Organism o = DAO_OBJECT.getOrganism(DUMMY_SOURCE_1, DUMMY_ORGANISM_1.getScientificName());
@@ -245,7 +244,7 @@ public class VocabularyDaoTest extends AbstractDaoTest {
             assertEquals(DUMMY_ORGANISM_2, o);
             tx.commit();
         } catch (DAOException e) {
-            HibernateUtil.rollbackTransaction(tx);
+            hibernateHelper.rollbackTransaction(tx);
             fail("DAO exception while getting organisms: " + e.getMessage());
         }
     }
@@ -254,7 +253,7 @@ public class VocabularyDaoTest extends AbstractDaoTest {
     public void testGetTerm() {
         Transaction tx = null;
         try {
-            tx = HibernateUtil.beginTransaction();
+            tx = hibernateHelper.beginTransaction();
             setupTestGetTerms();
             Term t = DAO_OBJECT.getTerm(DUMMY_SOURCE_1, DUMMY_TERM_1.getValue());
             assertEquals(DUMMY_TERM_1, t);
@@ -264,7 +263,7 @@ public class VocabularyDaoTest extends AbstractDaoTest {
             assertNull(t);
             tx.commit();
         } catch (DAOException e) {
-            HibernateUtil.rollbackTransaction(tx);
+            hibernateHelper.rollbackTransaction(tx);
             fail("DAO exception while getting organisms: " + e.getMessage());
         }
     }
@@ -276,7 +275,7 @@ public class VocabularyDaoTest extends AbstractDaoTest {
     public void testGetTermsById() {
         Transaction tx = null;
         try {
-            tx = HibernateUtil.beginTransaction();
+            tx = hibernateHelper.beginTransaction();
             setupTestGetTermsRecursive();
             Term retrievedTerm1 = DAO_OBJECT.getTermById(DUMMY_TERM_1.getId());
             Term retrievedTerm2 = DAO_OBJECT.getTermById(DUMMY_TERM_2.getId());
@@ -286,7 +285,7 @@ public class VocabularyDaoTest extends AbstractDaoTest {
             assertEquals(DUMMY_TERM_2, retrievedTerm2);
             assertEquals(DUMMY_TERM_3, retrievedTerm3);
         } catch (DAOException e) {
-            HibernateUtil.rollbackTransaction(tx);
+            hibernateHelper.rollbackTransaction(tx);
             fail("DAO exception while getting terms in a category: " + e.getMessage());
         }
     }
@@ -298,14 +297,14 @@ public class VocabularyDaoTest extends AbstractDaoTest {
     public void testGetCategory() {
         Transaction tx = null;
         try {
-            tx = HibernateUtil.beginTransaction();
+            tx = hibernateHelper.beginTransaction();
             DAO_OBJECT.save(DUMMY_CATEGORY_1);
             Category retrievedCategory = DAO_OBJECT.getCategory(DUMMY_CATEGORY_1.getSource(), DUMMY_CATEGORY_1.getName());
             assertNotNull(retrievedCategory);
             assertEquals(DUMMY_CATEGORY_1.getName(), retrievedCategory.getName());
             tx.commit();
         } catch (DAOException e) {
-            HibernateUtil.rollbackTransaction(tx);
+            hibernateHelper.rollbackTransaction(tx);
             fail("DAO exception while getting category by name: " + e.getMessage());
         }
     }
@@ -319,13 +318,13 @@ public class VocabularyDaoTest extends AbstractDaoTest {
 
         // Try saving the dummy category and then retrieving it.
         try {
-            tx = HibernateUtil.beginTransaction();
+            tx = hibernateHelper.beginTransaction();
             DAO_OBJECT.save(DUMMY_CATEGORY_1);
             // Check if we got the expected category, and accordingly pass or fail the test.
             checkIfExpectedCategory(DUMMY_CATEGORY_1.getId());
             tx.commit();
         } catch (DAOException saveException) {
-            HibernateUtil.rollbackTransaction(tx);
+            hibernateHelper.rollbackTransaction(tx);
             fail("DAO exception during save and retrieve of category: " + saveException.getMessage());
         }
     }
@@ -340,11 +339,11 @@ public class VocabularyDaoTest extends AbstractDaoTest {
         categoryList.add(DUMMY_CATEGORY_1);
         categoryList.add(DUMMY_CATEGORY_2);
         try {
-            tx = HibernateUtil.beginTransaction();
+            tx = hibernateHelper.beginTransaction();
             DAO_OBJECT.save(categoryList);
             tx.commit();
         } catch (DAOException e) {
-            HibernateUtil.rollbackTransaction(tx);
+            hibernateHelper.rollbackTransaction(tx);
             fail("DAO exception during save of category collection: " + e.getMessage());
         }
         assertTrue(true);
@@ -358,13 +357,13 @@ public class VocabularyDaoTest extends AbstractDaoTest {
         Transaction tx = null;
         // Try saving the dummy term and then retrieving it.
         try {
-            tx = HibernateUtil.beginTransaction();
+            tx = hibernateHelper.beginTransaction();
             DAO_OBJECT.save(DUMMY_TERM_1);
             // Check if we got the expected term, and accordingly pass or fail the test.
             checkIfExpectedTerm(DUMMY_TERM_1.getId());
             tx.commit();
         } catch (DAOException saveException) {
-            HibernateUtil.rollbackTransaction(tx);
+            hibernateHelper.rollbackTransaction(tx);
             fail("DAO exception during save and retrieve of term: " + saveException.getMessage());
         }
     }
@@ -379,11 +378,11 @@ public class VocabularyDaoTest extends AbstractDaoTest {
         termList.add(DUMMY_TERM_1);
         termList.add(DUMMY_TERM_2);
         try {
-            tx = HibernateUtil.beginTransaction();
+            tx = hibernateHelper.beginTransaction();
             DAO_OBJECT.save(termList);
             tx.commit();
         } catch (DAOException e) {
-            HibernateUtil.rollbackTransaction(tx);
+            hibernateHelper.rollbackTransaction(tx);
             fail("DAO exception during save of term collection: " + e.getMessage());
         }
         assertTrue(true);
@@ -397,13 +396,13 @@ public class VocabularyDaoTest extends AbstractDaoTest {
         Transaction tx = null;
         // Try saving the dummy source and then retrieving it.
         try {
-            tx = HibernateUtil.beginTransaction();
+            tx = hibernateHelper.beginTransaction();
             DAO_OBJECT.save(DUMMY_SOURCE_1);
             // Check if we got the expected source, and accordingly pass or fail the test.
             checkIfExpectedSource(DUMMY_SOURCE_1.getId());
             tx.commit();
         } catch (DAOException saveException) {
-            HibernateUtil.rollbackTransaction(tx);
+            hibernateHelper.rollbackTransaction(tx);
             fail("DAO exception during save and retrieve of source: " + saveException.getMessage());
         }
     }
@@ -418,11 +417,11 @@ public class VocabularyDaoTest extends AbstractDaoTest {
         sourceList.add(DUMMY_SOURCE_1);
         sourceList.add(DUMMY_SOURCE_2);
         try {
-            tx = HibernateUtil.beginTransaction();
+            tx = hibernateHelper.beginTransaction();
             DAO_OBJECT.save(sourceList);
             tx.commit();
         } catch (DAOException e) {
-            HibernateUtil.rollbackTransaction(tx);
+            hibernateHelper.rollbackTransaction(tx);
             fail("DAO exception during save of source collection: " + e.getMessage());
         }
         assertTrue(true);
@@ -432,7 +431,7 @@ public class VocabularyDaoTest extends AbstractDaoTest {
     public void testFindTermInAllSourceVersions() {
         Transaction tx = null;
         try {
-            tx = HibernateUtil.beginTransaction();
+            tx = hibernateHelper.beginTransaction();
             setupTestGetTermsRecursive();
 
             TermSource DUMMY_SOURCE_1_V2 = new TermSource();
@@ -457,7 +456,7 @@ public class VocabularyDaoTest extends AbstractDaoTest {
 
             tx.commit();
         } catch (DAOException e) {
-            HibernateUtil.rollbackTransaction(tx);
+            hibernateHelper.rollbackTransaction(tx);
             fail("DAO exception during save of source collection: " + e.getMessage());
         }
     }
@@ -489,7 +488,7 @@ public class VocabularyDaoTest extends AbstractDaoTest {
     }
 
     private void checkIfExpectedTerm(long id) {
-        Term retrievedTerm = (Term) HibernateUtil.getCurrentSession().get(Term.class, id);
+        Term retrievedTerm = (Term) hibernateHelper.getCurrentSession().get(Term.class, id);
         if (DUMMY_TERM_1.equals(retrievedTerm)) {
             // The retrieved term is the same as the saved term. Save and retrieve test passed.
             assertTrue(true);
@@ -499,7 +498,7 @@ public class VocabularyDaoTest extends AbstractDaoTest {
     }
 
     private void checkIfExpectedCategory(long id) {
-        Category retrievedCategory = (Category) HibernateUtil.getCurrentSession().get(Category.class, id);
+        Category retrievedCategory = (Category) hibernateHelper.getCurrentSession().get(Category.class, id);
         if (DUMMY_CATEGORY_1.equals(retrievedCategory)) {
             // The retrieved category is the same as the saved category. Save and retrieve test passed.
             assertTrue(true);
@@ -509,7 +508,7 @@ public class VocabularyDaoTest extends AbstractDaoTest {
     }
 
     private void checkIfExpectedSource(long id) {
-        TermSource retrievedSource = (TermSource) HibernateUtil.getCurrentSession().get(TermSource.class, id);
+        TermSource retrievedSource = (TermSource) hibernateHelper.getCurrentSession().get(TermSource.class, id);
         if (DUMMY_SOURCE_1.equals(retrievedSource)) {
             // The retrieved source is the same as the saved source. Save and retrieve test passed.
             assertTrue(true);
@@ -542,7 +541,7 @@ public class VocabularyDaoTest extends AbstractDaoTest {
 
         try {
 
-            tx = HibernateUtil.beginTransaction();
+            tx = hibernateHelper.beginTransaction();
             Experiment e = new Experiment();
             e.setTitle("Foo");
             e.setOrganism(DUMMY_ORGANISM_1);
@@ -571,7 +570,7 @@ public class VocabularyDaoTest extends AbstractDaoTest {
 
             tx.commit();
 
-            tx = HibernateUtil.beginTransaction();
+            tx = hibernateHelper.beginTransaction();
 
             List<Category> chars = DAO_OBJECT.searchForCharacteristicCategory(null, TermBasedCharacteristic.class,
                     null);
@@ -592,7 +591,7 @@ public class VocabularyDaoTest extends AbstractDaoTest {
             tx.commit();
 
         } catch (DAOException e) {
-            HibernateUtil.rollbackTransaction(tx);
+            hibernateHelper.rollbackTransaction(tx);
             throw e;
         }
     }
@@ -606,7 +605,7 @@ public class VocabularyDaoTest extends AbstractDaoTest {
 
         try {
             // Save term
-            tx = HibernateUtil.beginTransaction();
+            tx = hibernateHelper.beginTransaction();
             Term term1 = new Term();
             term1.setValue("13755-value-1");
             TermSource termSource1 = new TermSource();
@@ -645,7 +644,7 @@ public class VocabularyDaoTest extends AbstractDaoTest {
             // Test validation of unique key constraint
             // for (Term.value, Term.source)
             // of existing term
-            tx = HibernateUtil.beginTransaction();
+            tx = hibernateHelper.beginTransaction();
             term2.setValue("13755-value-1");
             term2.setSource(termSource1);
             term2.setAccession("13755-accession-100");

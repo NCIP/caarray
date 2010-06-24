@@ -82,7 +82,7 @@
  */
 package gov.nih.nci.caarray.application.registration;
 
-import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
+import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.domain.register.RegistrationRequest;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
 
@@ -93,6 +93,8 @@ import javax.ejb.TransactionAttributeType;
 
 import org.apache.log4j.Logger;
 
+import com.google.inject.Inject;
+
 /**
  * Implementation entry point for the Registration subsystem.
  */
@@ -100,7 +102,16 @@ import org.apache.log4j.Logger;
 @Stateless
 public class RegistrationServiceBean implements RegistrationService {
     private static final Logger LOG = Logger.getLogger(RegistrationServiceBean.class);
-    private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
+    private final SearchDao searchDao;
+   
+    /**
+     * 
+     * @param searchDao the SearchDao dependency
+     */
+    @Inject
+    public RegistrationServiceBean(SearchDao searchDao) {
+        this.searchDao = searchDao;
+    }
 
     /**
      * {@inheritDoc}
@@ -108,15 +119,7 @@ public class RegistrationServiceBean implements RegistrationService {
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public void register(RegistrationRequest registrationRequest) {
         LogUtil.logSubsystemEntry(LOG, registrationRequest);
-        getDaoFactory().getSearchDao().save(registrationRequest);
+        searchDao.save(registrationRequest);
         LogUtil.logSubsystemExit(LOG);
-    }
-
-    private CaArrayDaoFactory getDaoFactory() {
-        return daoFactory;
-    }
-
-    void setDaoFactory(CaArrayDaoFactory daoFactory) {
-        this.daoFactory = daoFactory;
     }
 }

@@ -83,8 +83,8 @@
 package gov.nih.nci.caarray.dao;
 
 import gov.nih.nci.caarray.domain.search.ExampleSearchCriteria;
+import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
 import gov.nih.nci.caarray.util.CaArrayUtils;
-import gov.nih.nci.caarray.util.HibernateUtil;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
@@ -121,6 +121,23 @@ import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
 @SuppressWarnings({"PMD.CyclomaticComplexity", "PMD.TooManyMethods" })
 public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
     private static final Logger LOG = Logger.getLogger(AbstractCaArrayDaoImpl.class);
+    
+    private final CaArrayHibernateHelper hibernateHelper;
+    
+    /**
+     * 
+     * @param hibernateHelper the CaArrayHibernateHelper dependency
+     */
+    public AbstractCaArrayDaoImpl(CaArrayHibernateHelper hibernateHelper) {
+        this.hibernateHelper = hibernateHelper;
+    }
+
+    /**
+      * @return the hibernate helper
+     */
+    protected CaArrayHibernateHelper getHibernateHelper() {
+        return hibernateHelper;
+    }
 
     /**
      * Returns the current Hibernate Session.
@@ -128,7 +145,7 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
      * @return the current Hibernate Session.
      */
     protected Session getCurrentSession() {
-        return HibernateUtil.getCurrentSession();
+        return getHibernateHelper().getCurrentSession();
     }
 
     /**
@@ -212,11 +229,12 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
         T entityToMatch = criteria.getExample();
         CaArrayUtils.blankStringPropsToNull(entityToMatch);
         
-        Criteria c = HibernateUtil.getCurrentSession().createCriteria(getPersistentClass(entityToMatch.getClass()))
+        Criteria c = getCurrentSession()
+                .createCriteria(getPersistentClass(entityToMatch.getClass()))
                 .setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
         c.add(createExample(entityToMatch, criteria.getMatchMode(), criteria.isExcludeNulls(), criteria
                 .isExcludeZeroes(), criteria.getExcludeProperties()));
-        new SearchCriteriaHelper<T>(c, criteria).addCriteriaForAssociations();            
+        new SearchCriteriaHelper<T>(this, c, criteria).addCriteriaForAssociations();            
 
         return c;
     }
@@ -226,40 +244,43 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
      * {@inheritDoc}
      */
     public void flushSession() {
-        HibernateUtil.getCurrentSession().flush();
+        getCurrentSession().flush();
     }
 
     /**
      * {@inheritDoc}
      */
     public void clearSession() {
-        HibernateUtil.getCurrentSession().clear();
+        getCurrentSession().clear();
     }
 
     /**
      * {@inheritDoc}
      */
     public Object mergeObject(Object object) {
-        return HibernateUtil.getCurrentSession().merge(object);
+        return getCurrentSession().merge(object);
     }
 
     /**
      * {@inheritDoc}
      */
     public void evictObject(Object object) {
-        HibernateUtil.getCurrentSession().evict(object);
+        getCurrentSession().evict(object);
     }
     
+    @SuppressWarnings("deprecation")
     static Order toOrder(PageSortParams<?> params) {
         String orderField = params.getSortCriterion().getOrderField();
         return params.isDesc() ? Order.desc(orderField) : Order.asc(orderField);
     }
     
+    @SuppressWarnings("deprecation")
     static String toHqlOrder(PageSortParams<?> params) {
         return new StringBuilder("ORDER BY ").append(params.getSortCriterion().getOrderField()).append(
                 params.isDesc() ? " desc" : " asc").toString();
     }
     
+    @SuppressWarnings("deprecation")
     static Order toOrder(PageSortParams<?> params, String alias) {
         String orderField = params.getSortCriterion().getOrderField();
         if (!StringUtils.isEmpty(alias)) {
@@ -268,7 +289,7 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
         return params.isDesc() ? Order.desc(orderField) : Order.asc(orderField);
     }
     
-    static Criterion createExample(Object entity, MatchMode matchMode, boolean excludeNulls,
+    Criterion createExample(Object entity, MatchMode matchMode, boolean excludeNulls,
             boolean excludeZeroes, Collection<String> excludeProperties) {
         Example example = Example.create(entity).enableLike(matchMode).ignoreCase();
         if (excludeZeroes) {
@@ -297,14 +318,14 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
         }
     }
 
-    private static PersistentClass getClassMapping(Class<?> exampleClass) {
+    private PersistentClass getClassMapping(Class<?> exampleClass) {
         Class<?> persistentClass = getPersistentClass(exampleClass);
-        return persistentClass == null ? null : HibernateUtil.getConfiguration().getClassMapping(
+        return persistentClass == null ? null : getHibernateHelper().getConfiguration().getClassMapping(
                 persistentClass.getName());
     }
 
-    private static Class<?> getPersistentClass(Class<?> exampleClass) {
-        Configuration hcfg = HibernateUtil.getConfiguration();
+    private Class<?> getPersistentClass(Class<?> exampleClass) {
+        Configuration hcfg = getHibernateHelper().getConfiguration();
         for (Class<?> klass = exampleClass; !Object.class.equals(klass); klass = klass
                 .getSuperclass()) {
             if (hcfg.getClassMapping(klass.getName()) != null) {
@@ -324,13 +345,17 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
 
         private final Criteria hibCriteria;
         private final ExampleSearchCriteria<T> exampleCriteria;
+        private final AbstractCaArrayDaoImpl dao;
 
         /**
+         * @param abstractCaArrayDaoImpl 
          * @param criteria
          * @param excludeNulls
          * @param matchMode
          */
-        public SearchCriteriaHelper(Criteria hibCriteria, ExampleSearchCriteria<T> exampleCriteria) {
+        public SearchCriteriaHelper(AbstractCaArrayDaoImpl dao, Criteria hibCriteria,
+                ExampleSearchCriteria<T> exampleCriteria) {
+            this.dao = dao;
             this.hibCriteria = hibCriteria;
             this.exampleCriteria = exampleCriteria;
         }
@@ -401,7 +426,7 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
         }
 
         private Criterion createExample(Object value) {
-            return AbstractCaArrayDaoImpl.createExample(value, exampleCriteria.getMatchMode(), exampleCriteria
+            return dao.createExample(value, exampleCriteria.getMatchMode(), exampleCriteria
                     .isExcludeNulls(), exampleCriteria.isExcludeZeroes(), exampleCriteria.getExcludeProperties());
         }
     }

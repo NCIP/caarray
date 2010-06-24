@@ -82,20 +82,32 @@
  */
 package gov.nih.nci.caarray.dao;
 
+import gov.nih.nci.caarray.domain.search.AuditLogSearchCriteria;
+import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
+
+import java.util.List;
+
+import org.apache.commons.lang.StringUtils;
+import org.hibernate.Query;
+
 import com.fiveamsolutions.nci.commons.audit.AuditLogRecord;
 import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
 import com.fiveamsolutions.nci.commons.data.search.SortCriterion;
-import gov.nih.nci.caarray.domain.search.AuditLogSearchCriteria;
-import gov.nih.nci.caarray.util.HibernateUtil;
-import java.util.List;
-import org.apache.commons.lang.StringUtils;
-import org.hibernate.Query;
+import com.google.inject.Inject;
 
 /**
  *
  * @author gax
  */
-public class AuditLogDaoImpl implements AuditLogDao {
+public class AuditLogDaoImpl extends AbstractCaArrayDaoImpl implements AuditLogDao {
+    /**
+     * 
+     * @param hibernateHelper the CaArrayHibernateHelper dependency
+     */
+    @Inject 
+    public AuditLogDaoImpl(CaArrayHibernateHelper hibernateHelper) {
+        super(hibernateHelper);
+    }
 
     /**
      * {@inheritDoc}
@@ -156,7 +168,7 @@ public class AuditLogDaoImpl implements AuditLogDao {
     }
 
     private Query buildQuery(AuditLogSearchCriteria criteria, StringBuffer sb) {
-        Query q = HibernateUtil.getCurrentSession().createQuery(sb.toString());
+        Query q = getCurrentSession().createQuery(sb.toString());
         if (StringUtils.isNotBlank(criteria.getUsername())) {
             q.setParameter("username", criteria.getUsername());
         }

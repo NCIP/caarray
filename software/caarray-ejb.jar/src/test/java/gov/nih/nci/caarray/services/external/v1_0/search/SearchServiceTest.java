@@ -130,7 +130,7 @@ public class SearchServiceTest extends AbstractServiceTest {
     @Before
     public void setUpService() {
         UsernameHolder.setUser(STANDARD_USER);
-        SearchServiceBean searchServiceBean = new SearchServiceBean();
+        SearchServiceBean searchServiceBean = new SearchServiceBean(null);
         searchServiceBean.setDaoFactory(this.daoFactoryStub);
         ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
         this.searchService = searchServiceBean;

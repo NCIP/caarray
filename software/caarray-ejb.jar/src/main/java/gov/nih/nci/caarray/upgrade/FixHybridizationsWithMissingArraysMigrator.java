@@ -95,6 +95,7 @@ import gov.nih.nci.caarray.platforms.PlatformModule;
 import gov.nih.nci.caarray.platforms.SessionTransactionManager;
 import gov.nih.nci.caarray.platforms.spi.DataFileHandler;
 import gov.nih.nci.caarray.platforms.spi.PlatformFileReadException;
+import gov.nih.nci.caarray.staticinjection.CaArrayEjbStaticInjectionModule;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -146,7 +147,8 @@ public class FixHybridizationsWithMissingArraysMigrator extends AbstractCustomCh
         try {
             this.openFileMap.clear();
             this.database = db;
-            Injector injector = Guice.createInjector(new DaoModule(), new PlatformModule(), new AbstractModule() {
+            
+            final AbstractModule localModule = new AbstractModule() {
                 @Override
                 protected void configure() {
                     bind(FileManager.class).toInstance(new FileManager() {
@@ -190,7 +192,9 @@ public class FixHybridizationsWithMissingArraysMigrator extends AbstractCustomCh
                         }
                     });
                 }
-            });
+            };
+            Injector injector = Guice.createInjector(new DaoModule(), new PlatformModule(), localModule,
+                    new CaArrayEjbStaticInjectionModule());
             this.handlers = (Set<DataFileHandler>) injector.getInstance(Key.get(TypeLiteral.get(Types
                     .setOf(DataFileHandler.class))));
 
@@ -286,7 +290,7 @@ public class FixHybridizationsWithMissingArraysMigrator extends AbstractCustomCh
             return null;
         }
 
-        ArrayDesignService ads = new ArrayDesignServiceBean() {
+        ArrayDesignService ads = new ArrayDesignServiceBean(null, null, null, null) {
             public ArrayDesign getArrayDesign(String lsidAuthority, String lsidNamesapce, String lsidObjectId) {
                 try {
                     String sql = "select id from array_design where lsid_authority = ? and lsid_namespace = ? "

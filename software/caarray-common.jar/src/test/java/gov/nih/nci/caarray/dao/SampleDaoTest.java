@@ -101,7 +101,7 @@ import gov.nih.nci.caarray.domain.search.SearchSampleCategory;
 import gov.nih.nci.caarray.domain.search.SearchSourceCategory;
 import gov.nih.nci.caarray.domain.search.SourceJoinableSortCriterion;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
-import gov.nih.nci.caarray.util.HibernateUtil;
+import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -121,7 +121,6 @@ import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
  */
 @SuppressWarnings("PMD")
 public class SampleDaoTest  extends AbstractProjectDaoTest {
-
     private static TermBasedCharacteristic DUMMY_CHARACTERISTIC = new TermBasedCharacteristic();
 
     private static final SampleDao DAO_SAMPLE_OBJECT = CaArrayDaoFactory.INSTANCE.getSampleDao();
@@ -139,7 +138,7 @@ public class SampleDaoTest  extends AbstractProjectDaoTest {
         Transaction tx = null;
 
         try {
-            tx = HibernateUtil.beginTransaction();
+            tx = hibernateHelper.beginTransaction();
 
 
             DUMMY_CHARACTERISTIC = new TermBasedCharacteristic();
@@ -154,7 +153,7 @@ public class SampleDaoTest  extends AbstractProjectDaoTest {
             DAO_OBJECT.save(DUMMY_PROJECT_1);
             tx.commit();
 
-            tx = HibernateUtil.beginTransaction();
+            tx = hibernateHelper.beginTransaction();
             Sample retrievedSample = SEARCH_DAO.retrieve(Sample.class, DUMMY_SAMPLE.getId());
 
             if (!DUMMY_SAMPLE.equals(retrievedSample)
@@ -163,7 +162,7 @@ public class SampleDaoTest  extends AbstractProjectDaoTest {
             }
             tx.commit();
         } catch (DAOException e) {
-            HibernateUtil.rollbackTransaction(tx);
+            hibernateHelper.rollbackTransaction(tx);
             fail("DAO exception during save and retrieve of sample: " + e.getMessage());
         }
     }
@@ -177,12 +176,12 @@ public class SampleDaoTest  extends AbstractProjectDaoTest {
         Transaction tx = null;
 
         try {
-            tx = HibernateUtil.beginTransaction();
+            tx = hibernateHelper.beginTransaction();
             saveSupportingObjects();
             DAO_OBJECT.save(DUMMY_PROJECT_1);
             tx.commit();
 
-            tx = HibernateUtil.beginTransaction();
+            tx = hibernateHelper.beginTransaction();
 
             SearchSampleCategory[] categories = {SearchSampleCategory.SAMPLE_NAME};
 
@@ -198,7 +197,7 @@ public class SampleDaoTest  extends AbstractProjectDaoTest {
             assertEquals(DUMMY_SAMPLE , retrievedSamples.get(0));
 
         } catch (DAOException e) {
-            HibernateUtil.rollbackTransaction(tx);
+            hibernateHelper.rollbackTransaction(tx);
             throw e;
         }
     }
@@ -214,12 +213,12 @@ public class SampleDaoTest  extends AbstractProjectDaoTest {
         Transaction tx = null;
 
         try {
-            tx = HibernateUtil.beginTransaction();
+            tx = hibernateHelper.beginTransaction();
             saveSupportingObjects();
             DAO_OBJECT.save(DUMMY_PROJECT_1);
             tx.commit();
 
-            tx = HibernateUtil.beginTransaction();
+            tx = hibernateHelper.beginTransaction();
             SearchSourceCategory[] categories = SearchSourceCategory.values();
             int sourceCount = DAO_SAMPLE_OBJECT.searchCount("", Source.class, categories);
 
@@ -232,7 +231,7 @@ public class SampleDaoTest  extends AbstractProjectDaoTest {
             assertEquals(1 , sourceCount);
 
         } catch (DAOException e) {
-            HibernateUtil.rollbackTransaction(tx);
+            hibernateHelper.rollbackTransaction(tx);
             throw e;
         }
     }
@@ -247,12 +246,12 @@ public class SampleDaoTest  extends AbstractProjectDaoTest {
         Transaction tx = null;
 
         try {
-            tx = HibernateUtil.beginTransaction();
+            tx = hibernateHelper.beginTransaction();
             saveSupportingObjects();
             DAO_OBJECT.save(DUMMY_PROJECT_1);
             tx.commit();
 
-            tx = HibernateUtil.beginTransaction();
+            tx = hibernateHelper.beginTransaction();
             SearchSampleCategory[] categories = SearchSampleCategory.values();
             int sampleCount = DAO_SAMPLE_OBJECT.searchCount("", Sample.class, categories);
 
@@ -265,7 +264,7 @@ public class SampleDaoTest  extends AbstractProjectDaoTest {
             assertEquals(1 , sampleCount);
 
         } catch (DAOException e) {
-            HibernateUtil.rollbackTransaction(tx);
+            hibernateHelper.rollbackTransaction(tx);
             throw e;
         }
     }
@@ -280,12 +279,12 @@ public class SampleDaoTest  extends AbstractProjectDaoTest {
         Transaction tx = null;
 
         try {
-            tx = HibernateUtil.beginTransaction();
+            tx = hibernateHelper.beginTransaction();
             saveSupportingObjects();
             DAO_OBJECT.save(DUMMY_PROJECT_1);
             tx.commit();
 
-            tx = HibernateUtil.beginTransaction();
+            tx = hibernateHelper.beginTransaction();
             SearchSampleCategory[] categories = SearchSampleCategory.values();
             int sampleCount = DAO_SAMPLE_OBJECT.searchCount("", Sample.class, categories);
 
@@ -298,7 +297,7 @@ public class SampleDaoTest  extends AbstractProjectDaoTest {
             assertEquals(1 , sampleCount);
 
         } catch (DAOException e) {
-            HibernateUtil.rollbackTransaction(tx);
+            hibernateHelper.rollbackTransaction(tx);
             throw e;
         }
     }
@@ -313,12 +312,12 @@ public class SampleDaoTest  extends AbstractProjectDaoTest {
         Transaction tx = null;
 
         try {
-            tx = HibernateUtil.beginTransaction();
+            tx = hibernateHelper.beginTransaction();
             saveSupportingObjects();
             DAO_OBJECT.save(DUMMY_PROJECT_1);
             tx.commit();
 
-            tx = HibernateUtil.beginTransaction();
+            tx = hibernateHelper.beginTransaction();
 
             Set<Class<? extends AbstractBioMaterial>> classes = new HashSet<Class<? extends AbstractBioMaterial>>();
             classes.add(Source.class);
@@ -340,7 +339,7 @@ public class SampleDaoTest  extends AbstractProjectDaoTest {
             assertEquals(DUMMY_SOURCE.getName(), retrievedBms.get(2).getName());
 
         } catch (DAOException e) {
-            HibernateUtil.rollbackTransaction(tx);
+            hibernateHelper.rollbackTransaction(tx);
             throw e;
         }
     }
@@ -351,7 +350,7 @@ public class SampleDaoTest  extends AbstractProjectDaoTest {
         Transaction tx = null;
 
         try {
-            tx = HibernateUtil.beginTransaction();
+            tx = hibernateHelper.beginTransaction();
             DUMMY_CHARACTERISTIC = new TermBasedCharacteristic();
             DUMMY_CHARACTERISTIC.setCategory(DUMMY_CATEGORY);
             DUMMY_CHARACTERISTIC.setTerm(DUMMY_REPLICATE_TYPE);
@@ -363,7 +362,7 @@ public class SampleDaoTest  extends AbstractProjectDaoTest {
             DAO_OBJECT.save(DUMMY_PROJECT_1);
             tx.commit();
 
-            tx = HibernateUtil.beginTransaction();
+            tx = hibernateHelper.beginTransaction();
 
             List<Category> all_chars = VOCABULARY_DAO.searchForCharacteristicCategory(null,
                     TermBasedCharacteristic.class, DUMMY_CATEGORY.getName());
@@ -384,7 +383,7 @@ public class SampleDaoTest  extends AbstractProjectDaoTest {
 
 
         } catch (DAOException e) {
-            HibernateUtil.rollbackTransaction(tx);
+            hibernateHelper.rollbackTransaction(tx);
             throw e;
         }
     }
@@ -394,7 +393,7 @@ public class SampleDaoTest  extends AbstractProjectDaoTest {
         Transaction tx = null;
 
         try {
-            tx = HibernateUtil.beginTransaction();
+            tx = hibernateHelper.beginTransaction();
             DUMMY_CHARACTERISTIC = new TermBasedCharacteristic();
             DUMMY_CHARACTERISTIC.setCategory(DUMMY_CATEGORY);
             DUMMY_CHARACTERISTIC.setTerm(DUMMY_REPLICATE_TYPE);
@@ -406,7 +405,7 @@ public class SampleDaoTest  extends AbstractProjectDaoTest {
             DAO_OBJECT.save(DUMMY_PROJECT_1);
             tx.commit();
 
-            tx = HibernateUtil.beginTransaction();
+            tx = hibernateHelper.beginTransaction();
 
             List<Category> all_chars = VOCABULARY_DAO.searchForCharacteristicCategory(null,
                     TermBasedCharacteristic.class, DUMMY_CATEGORY.getName());
@@ -427,7 +426,7 @@ public class SampleDaoTest  extends AbstractProjectDaoTest {
 
 
         } catch (DAOException e) {
-            HibernateUtil.rollbackTransaction(tx);
+            hibernateHelper.rollbackTransaction(tx);
             throw e;
         }
     }
@@ -445,7 +444,7 @@ public class SampleDaoTest  extends AbstractProjectDaoTest {
 
         try {
 
-            tx = HibernateUtil.beginTransaction();
+            tx = hibernateHelper.beginTransaction();
             DUMMY_CHARACTERISTIC = new TermBasedCharacteristic();
             DUMMY_CHARACTERISTIC.setCategory(DUMMY_CATEGORY);
             DUMMY_CHARACTERISTIC.setTerm(DUMMY_REPLICATE_TYPE);
@@ -457,7 +456,7 @@ public class SampleDaoTest  extends AbstractProjectDaoTest {
             DAO_OBJECT.save(DUMMY_PROJECT_1);
             tx.commit();
 
-            tx = HibernateUtil.beginTransaction();
+            tx = hibernateHelper.beginTransaction();
 
             List<Category> all_chars = VOCABULARY_DAO.searchForCharacteristicCategory(null,
                     TermBasedCharacteristic.class, DUMMY_CATEGORY.getName());
@@ -473,7 +472,7 @@ public class SampleDaoTest  extends AbstractProjectDaoTest {
 
 
         } catch (DAOException e) {
-            HibernateUtil.rollbackTransaction(tx);
+            hibernateHelper.rollbackTransaction(tx);
             throw e;
         }
     }
@@ -488,7 +487,7 @@ public class SampleDaoTest  extends AbstractProjectDaoTest {
         Transaction tx = null;
 
         try {
-            tx = HibernateUtil.beginTransaction();
+            tx = hibernateHelper.beginTransaction();
             DUMMY_CHARACTERISTIC = new TermBasedCharacteristic();
             DUMMY_CHARACTERISTIC.setCategory(DUMMY_CATEGORY);
             DUMMY_CHARACTERISTIC.setTerm(DUMMY_REPLICATE_TYPE);
@@ -500,7 +499,7 @@ public class SampleDaoTest  extends AbstractProjectDaoTest {
             DAO_OBJECT.save(DUMMY_PROJECT_1);
             tx.commit();
 
-            tx = HibernateUtil.beginTransaction();
+            tx = hibernateHelper.beginTransaction();
 
             List<Category> all_chars = VOCABULARY_DAO.searchForCharacteristicCategory(null,
                     TermBasedCharacteristic.class, DUMMY_CATEGORY.getName());
@@ -517,7 +516,7 @@ public class SampleDaoTest  extends AbstractProjectDaoTest {
 
 
         } catch (DAOException e) {
-            HibernateUtil.rollbackTransaction(tx);
+            hibernateHelper.rollbackTransaction(tx);
             throw e;
         }
     }
@@ -527,7 +526,7 @@ public class SampleDaoTest  extends AbstractProjectDaoTest {
         Transaction tx = null;
 
         try {
-            tx = HibernateUtil.beginTransaction();
+            tx = hibernateHelper.beginTransaction();
             DUMMY_CHARACTERISTIC = new TermBasedCharacteristic();
             DUMMY_CHARACTERISTIC.setCategory(DUMMY_CATEGORY);
             DUMMY_CHARACTERISTIC.setTerm(DUMMY_REPLICATE_TYPE);
@@ -544,7 +543,7 @@ public class SampleDaoTest  extends AbstractProjectDaoTest {
             DAO_OBJECT.save(DUMMY_PROJECT_3);
             tx.commit();
 
-            tx = HibernateUtil.beginTransaction();
+            tx = hibernateHelper.beginTransaction();
 
             PageSortParams<Source> sourceParams = new PageSortParams<Source>(20, 0, new AdHocSortCriterion<Source>(
                     "name"), false);
@@ -613,7 +612,7 @@ public class SampleDaoTest  extends AbstractProjectDaoTest {
 
             tx.commit();
         } catch (DAOException e) {
-            HibernateUtil.rollbackTransaction(tx);
+            hibernateHelper.rollbackTransaction(tx);
             throw e;
         }
     }

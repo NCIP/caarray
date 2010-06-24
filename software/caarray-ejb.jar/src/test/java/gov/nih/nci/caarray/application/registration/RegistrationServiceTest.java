@@ -100,8 +100,8 @@ public class RegistrationServiceTest extends AbstractServiceTest {
 
     @Before
     public void setUp() {
-        RegistrationServiceBean registrationServiceBean = new RegistrationServiceBean();
-        registrationServiceBean.setDaoFactory(new DaoFactoryStub());
+        final DaoFactoryStub daoFactory = new DaoFactoryStub();
+        RegistrationServiceBean registrationServiceBean = new RegistrationServiceBean(daoFactory.getSearchDao());
         this.registrationService = registrationServiceBean;
     }
 

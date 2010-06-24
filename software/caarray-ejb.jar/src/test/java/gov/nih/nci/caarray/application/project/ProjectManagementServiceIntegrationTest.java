@@ -93,6 +93,7 @@ import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheStubFactory;
+import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.contact.Address;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.contact.Person;
@@ -106,7 +107,6 @@ import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
-import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import gov.nih.nci.security.authorization.domainobjects.User;
@@ -124,16 +124,15 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
-import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 
 /**
  * Integration Test class for ProjectManagementService subsystem.
  */
 @SuppressWarnings("PMD")
 public class ProjectManagementServiceIntegrationTest extends AbstractServiceIntegrationTest {
-    private ProjectManagementService projectManagementService;
     private final FileAccessServiceStub fileAccessService = new FileAccessServiceStub();
-    private final GenericDataService genericDataService = new GenericDataServiceBean();
+    private ProjectManagementService projectManagementService;
+    private GenericDataService genericDataService;
     private static Organism DUMMY_ORGANISM = new Organism();
     private static Organization DUMMY_PROVIDER = new Organization();
     private static Project DUMMY_PROJECT_1 = new Project();
@@ -152,7 +151,7 @@ public class ProjectManagementServiceIntegrationTest extends AbstractServiceInte
 
     @Before
     public void setUp() {
-        this.projectManagementService = createProjectManagementService(fileAccessService, this.genericDataService);
+        this.projectManagementService = createProjectManagementService(fileAccessService);
 
         // Experiment
         DUMMY_ORGANISM = new Organism();
@@ -174,8 +173,8 @@ public class ProjectManagementServiceIntegrationTest extends AbstractServiceInte
 
         // Initialize all the dummy objects needed for the tests.
         initializeProjects();
-        Transaction tx = HibernateUtil.beginTransaction();
-        HibernateUtil.getCurrentSession().save(DUMMY_ASSAY_TYPE);
+        Transaction tx = hibernateHelper.beginTransaction();
+        hibernateHelper.getCurrentSession().save(DUMMY_ASSAY_TYPE);
         tx.commit();
     }
 
@@ -221,14 +220,17 @@ public class ProjectManagementServiceIntegrationTest extends AbstractServiceInte
         DUMMY_EXPERIMENT_1.getExperimentContacts().add(DUMMY_EXPERIMENT_CONTACT);
     }
 
-    private static ProjectManagementService createProjectManagementService(
-            final FileAccessServiceStub fileAccessServiceStub, GenericDataService genericDataServiceStub) {
-        ProjectManagementServiceBean bean = new ProjectManagementServiceBean();
+    private ProjectManagementService createProjectManagementService(
+            final FileAccessServiceStub fileAccessServiceStub) {
+        CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
+        genericDataService = new GenericDataServiceBean(daoFactory.getSearchDao(), daoFactory.getProjectDao());
+        ProjectManagementServiceBean bean = new ProjectManagementServiceBean(daoFactory.getProjectDao(),
+                daoFactory.getFileDao(), daoFactory.getSampleDao(), daoFactory.getSearchDao());
         ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
         locatorStub.addLookup(FileAccessService.JNDI_NAME, fileAccessServiceStub);
-        locatorStub.addLookup(GenericDataService.JNDI_NAME, genericDataServiceStub);
+        locatorStub.addLookup(GenericDataService.JNDI_NAME, genericDataService);
         MysqlDataSource ds = new MysqlDataSource();
-        Configuration config = HibernateUtil.getConfiguration();
+        Configuration config = hibernateHelper.getConfiguration();
         ds.setUrl(config.getProperty("hibernate.connection.url"));
         ds.setUser(config.getProperty("hibernate.connection.username"));
         ds.setPassword(config.getProperty("hibernate.connection.password"));
@@ -270,22 +272,22 @@ public class ProjectManagementServiceIntegrationTest extends AbstractServiceInte
 
         Transaction t = null;
         try {
-            t = HibernateUtil.beginTransaction();
+            t = hibernateHelper.beginTransaction();
             this.projectManagementService.saveProject(DUMMY_PROJECT_1);
             t.commit();
 
-            t = HibernateUtil.beginTransaction();
-            DUMMY_PROJECT_1 = (Project) HibernateUtil.getCurrentSession().load(Project.class, DUMMY_PROJECT_1.getId());
+            t = hibernateHelper.beginTransaction();
+            DUMMY_PROJECT_1 = (Project) hibernateHelper.getCurrentSession().load(Project.class, DUMMY_PROJECT_1.getId());
             DUMMY_PROJECT_1.setLocked(false);
-            HibernateUtil.getCurrentSession().refresh(DUMMY_PROJECT_1);
+            hibernateHelper.getCurrentSession().refresh(DUMMY_PROJECT_1);
             this.projectManagementService.saveProject(DUMMY_PROJECT_1);
             t.commit();
 
-            t = HibernateUtil.beginTransaction();
+            t = hibernateHelper.beginTransaction();
             this.projectManagementService.deleteProject(DUMMY_PROJECT_1);
             t.commit();
 
-            t = HibernateUtil.beginTransaction();
+            t = hibernateHelper.beginTransaction();
             Project retrieved = this.genericDataService.getPersistentObject(Project.class, DUMMY_PROJECT_1.getId());
             t.commit();
             assertNull(retrieved);
@@ -301,23 +303,23 @@ public class ProjectManagementServiceIntegrationTest extends AbstractServiceInte
     @Test
     public void testChangeProjectOwner() throws Exception {
         UsernameHolder.setUser(STANDARD_USER);
-        Transaction tx = HibernateUtil.beginTransaction();
+        Transaction tx = hibernateHelper.beginTransaction();
         this.projectManagementService.saveProject(DUMMY_PROJECT_1);
         tx.commit();
         
-        tx = HibernateUtil.beginTransaction();
+        tx = hibernateHelper.beginTransaction();
         assertNotNull(DUMMY_PROJECT_1.getId());
         Set<User> owners = DUMMY_PROJECT_1.getOwners();
         assertEquals(1, owners.size());
         assertEquals(STANDARD_USER, owners.iterator().next().getLoginName());
         tx.commit();
         
-        tx = HibernateUtil.beginTransaction();
+        tx = hibernateHelper.beginTransaction();
         this.projectManagementService.changeOwner(DUMMY_PROJECT_1.getId(), "caarrayuser");
         tx.commit();
         
-        tx = HibernateUtil.beginTransaction();
-        HibernateUtil.getCurrentSession().clear();
+        tx = hibernateHelper.beginTransaction();
+        hibernateHelper.getCurrentSession().clear();
         UsernameHolder.setUser("caarrayuser");
         Project retrieved = this.genericDataService.getPersistentObject(Project.class, DUMMY_PROJECT_1.getId());
         assertNotNull(retrieved);
@@ -332,12 +334,12 @@ public class ProjectManagementServiceIntegrationTest extends AbstractServiceInte
     @Test(expected = PermissionDeniedException.class)
     public void testDeleteUnownedProject() throws Exception {
         UsernameHolder.setUser("caarrayuser");
-        Transaction tx = HibernateUtil.beginTransaction();
+        Transaction tx = hibernateHelper.beginTransaction();
         this.projectManagementService.saveProject(DUMMY_PROJECT_1);
         tx.commit();
         
         UsernameHolder.setUser(STANDARD_USER);
-        tx = HibernateUtil.beginTransaction();
+        tx = hibernateHelper.beginTransaction();
         this.projectManagementService.deleteProject(DUMMY_PROJECT_1);
         tx.commit();
     }
@@ -345,7 +347,7 @@ public class ProjectManagementServiceIntegrationTest extends AbstractServiceInte
     @Test
     public void testPublicId() throws Exception {
         UsernameHolder.setUser(STANDARD_USER);
-        Transaction tx = HibernateUtil.beginTransaction();
+        Transaction tx = hibernateHelper.beginTransaction();
         Experiment exp = DUMMY_PROJECT_1.getExperiment();
         assertNull(exp.getPublicIdentifier());
         this.projectManagementService.saveProject(DUMMY_PROJECT_1);

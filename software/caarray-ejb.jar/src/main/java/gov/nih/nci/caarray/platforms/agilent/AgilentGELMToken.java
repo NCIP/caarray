@@ -92,7 +92,7 @@ import java.util.Map;
  */
 //Non-final static variables in the outer class are set by the inner enumeration.
 @SuppressWarnings("PMD.AssignmentToNonFinalStatic")
-class AgilentGELMToken {
+final class AgilentGELMToken {
 
     // These are added to by static constructors in the wrapped Token enumeration.
     private static Map<String, Token> startTokenMap = new HashMap<String, Token>();
@@ -104,6 +104,10 @@ class AgilentGELMToken {
     private static Token eofToken;
     private static Token endToken;
     private static Token errorToken;
+    
+    // Utility class should not have a default constructor.
+    private AgilentGELMToken() {       
+    }
     
     /**
      * @author jscott
@@ -467,7 +471,7 @@ class AgilentGELMToken {
          * A "y" XML attribute.
          */
         Y("y", TokenType.ATTRIBUTE);
-
+              
         private Token(TokenType tokenType) {
             switch (tokenType) {
                 case DOCUMENT_START:

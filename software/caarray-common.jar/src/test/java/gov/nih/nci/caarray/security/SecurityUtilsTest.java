@@ -3,7 +3,9 @@ package gov.nih.nci.caarray.security;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import gov.nih.nci.caarray.util.HibernateUtil;
+import gov.nih.nci.caarray.staticinjection.CaArrayCommonStaticInjectionModule;
+import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
+import gov.nih.nci.caarray.util.CaArrayHibernateHelperModule;
 import gov.nih.nci.security.authorization.domainobjects.Group;
 import gov.nih.nci.security.authorization.domainobjects.User;
 import gov.nih.nci.security.exceptions.CSObjectNotFoundException;
@@ -19,11 +21,16 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+
 /**
  *
  * @author gax
  */
 public class SecurityUtilsTest {
+    private static Injector injector;
+    private static CaArrayHibernateHelper hibernateHelper; 
 
     List<Object> garbage = new ArrayList<Object>();
     private Transaction tx;
@@ -32,13 +39,28 @@ public class SecurityUtilsTest {
     public static void beforeClass() {
         SecurityUtils.init();
     }
+    
+    /**
+     * post-construct lifecycle method; intializes the Guice injector that will provide dependencies. 
+     */
+    @BeforeClass
+    public static void init() {
+        injector = createInjector();
+        hibernateHelper = injector.getInstance(CaArrayHibernateHelper.class);
+    }
+    
+    /**
+     * @return a Guice injector from which this will obtain dependencies.
+     */
+    protected static Injector createInjector() {
+        return Guice.createInjector(new CaArrayCommonStaticInjectionModule(), new CaArrayHibernateHelperModule());
+    }
 
     @Before
     public void before() {
-        tx = HibernateUtil.beginTransaction();
+        tx = hibernateHelper.beginTransaction();
     }
 
-    @SuppressWarnings("unchecked")
     @After
     public void after() {
         try {
@@ -48,11 +70,11 @@ public class SecurityUtilsTest {
         } catch (Exception e) {
             tx.rollback();
         }
-        tx = HibernateUtil.beginTransaction();
+        tx = hibernateHelper.beginTransaction();
         for (Object o : garbage) {
-            HibernateUtil.getCurrentSession().delete(o);
+            hibernateHelper.getCurrentSession().delete(o);
         }
-//        HibernateUtil.getCurrentSession().createQuery("delete FROM " + Group.class.getName() + " g where g.groupName like 'test%'").executeUpdate();
+//        hibernateHelper.getCurrentSession().createQuery("delete FROM " + Group.class.getName() + " g where g.groupName like 'test%'").executeUpdate();
         tx.commit();
     }
 
@@ -74,6 +96,7 @@ public class SecurityUtilsTest {
         assertEquals(group.getGroupDesc(), g.getGroupDesc());
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testAssignUsersToGroup() throws Exception {
         Group group = new Group();
@@ -103,6 +126,7 @@ public class SecurityUtilsTest {
     /**
      * Test of removeUserFromGroup method, of class SecurityUtils.
      */
+    @SuppressWarnings("unchecked")
     @Test
     public void testRemoveUserFromGroup() throws Exception {
         Group group = new Group();

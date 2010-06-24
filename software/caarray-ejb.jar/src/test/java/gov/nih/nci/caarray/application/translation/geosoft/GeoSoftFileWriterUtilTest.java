@@ -21,6 +21,7 @@ public class GeoSoftFileWriterUtilTest {
     @Before
     public void setUp() throws Exception {
         helper = new GeoSoftExporterBeanTest();
+        helper.baseIntegrationSetUp();
         helper.setUp();
     }
 

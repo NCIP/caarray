@@ -96,7 +96,9 @@ import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
 import gov.nih.nci.caarray.dao.stub.SearchDaoStub;
 import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
 import gov.nih.nci.caarray.security.SecurityUtils;
-import gov.nih.nci.caarray.util.HibernateUtil;
+import gov.nih.nci.caarray.staticinjection.CaArrayEjbStaticInjectionModule;
+import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
+import gov.nih.nci.caarray.util.CaArrayHibernateHelperModule;
 import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.security.authorization.domainobjects.Group;
 import gov.nih.nci.security.authorization.domainobjects.User;
@@ -119,34 +121,54 @@ import org.hibernate.Transaction;
 import org.hibernate.criterion.Projections;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 
 /**
  * Test cases for service.
  */
 @SuppressWarnings("PMD")
 public class PermissionsManagementServiceTest extends AbstractServiceTest {
+    private static Injector injector;
+    private static CaArrayHibernateHelper hibernateHelper; 
 
     private static final String TEST = "test";
     private PermissionsManagementService permissionsManagementService;
     private final GenericDataServiceStub genericDataServiceStub = new GenericDataServiceStub();
     private final DaoFactoryStub daoFactoryStub = new LocalDaoFactoryStub();
     private Transaction tx;
-
+    
+    /**
+     * post-construct lifecycle method; intializes the Guice injector that will provide dependencies. 
+     */
+    @BeforeClass
+    public static void init() {
+        injector = createInjector();
+        hibernateHelper = injector.getInstance(CaArrayHibernateHelper.class);
+    }
+    
+    /**
+     * @return a Guice injector from which this will obtain dependencies.
+     */
+    protected static Injector createInjector() {
+        return Guice.createInjector(new CaArrayEjbStaticInjectionModule(), new CaArrayHibernateHelperModule());
+    }
+    
     @Before
     public void setup() {
-        PermissionsManagementServiceBean bean = new PermissionsManagementServiceBean();
+        PermissionsManagementServiceBean bean = new PermissionsManagementServiceBean(hibernateHelper,
+                this.daoFactoryStub.getCollaboratorGroupDao(), this.daoFactoryStub.getSearchDao());
         bean.setGenericDataService(this.genericDataServiceStub);
-        bean.setDaoFactory(this.daoFactoryStub);
 
         this.permissionsManagementService = bean;
 
-        tx = HibernateUtil.beginTransaction();
+        tx = hibernateHelper.beginTransaction();
     }
 
-    @SuppressWarnings("unchecked")
     @After
     public void after() {
         try {
@@ -154,8 +176,8 @@ public class PermissionsManagementServiceTest extends AbstractServiceTest {
         } catch (Exception e) {
             tx.rollback();
         }
-        tx = HibernateUtil.beginTransaction();
-        HibernateUtil.getCurrentSession().createQuery("delete FROM " + Group.class.getName() + " g where g.groupName like '" + TEST + "%'").executeUpdate();
+        tx = hibernateHelper.beginTransaction();
+        hibernateHelper.getCurrentSession().createQuery("delete FROM " + Group.class.getName() + " g where g.groupName like '" + TEST + "%'").executeUpdate();
         tx.commit();
     }
 
@@ -213,12 +235,12 @@ public class PermissionsManagementServiceTest extends AbstractServiceTest {
         toAdd.add(3L);
         toAdd.add(4L);
         this.permissionsManagementService.addUsers(created, toAdd);
-        HibernateUtil.getCurrentSession().flush();
+        hibernateHelper.getCurrentSession().flush();
         
-        Group g =  (Group) HibernateUtil.getCurrentSession().load(Group.class, created.getGroup().getGroupId());
-        User anonUser = (User) HibernateUtil.getCurrentSession().load(User.class, anonId);
-        User user3 = (User) HibernateUtil.getCurrentSession().load(User.class, 3L);
-        User user4 = (User) HibernateUtil.getCurrentSession().load(User.class, 4L);
+        Group g =  (Group) hibernateHelper.getCurrentSession().load(Group.class, created.getGroup().getGroupId());
+        User anonUser = (User) hibernateHelper.getCurrentSession().load(User.class, anonId);
+        User user3 = (User) hibernateHelper.getCurrentSession().load(User.class, 3L);
+        User user4 = (User) hibernateHelper.getCurrentSession().load(User.class, 4L);
         Hibernate.initialize(anonUser.getGroups());
         assertFalse(anonUser.getGroups().contains(g));
         assertTrue(user3.getGroups().contains(g));
@@ -228,12 +250,12 @@ public class PermissionsManagementServiceTest extends AbstractServiceTest {
         List<Long> toRemove = new ArrayList<Long>();
         toRemove.add(3L);
         this.permissionsManagementService.removeUsers(created, toRemove);
-        HibernateUtil.getCurrentSession().flush();
+        hibernateHelper.getCurrentSession().flush();
 
-        HibernateUtil.getCurrentSession().refresh(anonUser);
-        HibernateUtil.getCurrentSession().refresh(user3);
-        HibernateUtil.getCurrentSession().refresh(user4);
-        HibernateUtil.getCurrentSession().refresh(g);
+        hibernateHelper.getCurrentSession().refresh(anonUser);
+        hibernateHelper.getCurrentSession().refresh(user3);
+        hibernateHelper.getCurrentSession().refresh(user4);
+        hibernateHelper.getCurrentSession().refresh(g);
         assertFalse(anonUser.getGroups().contains(g));
         assertFalse(user3.getGroups().contains(g));
         assertTrue(user4.getGroups().contains(g));
@@ -242,9 +264,9 @@ public class PermissionsManagementServiceTest extends AbstractServiceTest {
     @Test
     public void testRename() throws CSTransactionException, CSObjectNotFoundException {
         CollaboratorGroup created = this.permissionsManagementService.create(TEST);
-//        Transaction tx = HibernateUtil.getCurrentSession().beginTransaction();
+//        Transaction tx = hibernateHelper.getCurrentSession().beginTransaction();
         this.permissionsManagementService.rename(created, "test2");
-        Group g = (Group) HibernateUtil.getCurrentSession().load(Group.class, created.getGroup().getGroupId());
+        Group g = (Group) hibernateHelper.getCurrentSession().load(Group.class, created.getGroup().getGroupId());
         assertEquals("test2", g.getGroupName());
 //        tx.commit();
     }
@@ -253,9 +275,9 @@ public class PermissionsManagementServiceTest extends AbstractServiceTest {
     @SuppressWarnings("unchecked")
     public void testAddUsersToCollaboratorGroup() throws CSTransactionException, CSObjectNotFoundException {
         CollaboratorGroup created = this.permissionsManagementService.create(TEST);
-//        Transaction tx = HibernateUtil.getCurrentSession().beginTransaction();
+//        Transaction tx = hibernateHelper.getCurrentSession().beginTransaction();
         this.permissionsManagementService.addUsers(created, Arrays.asList(3L, 2L, 1L));
-        Group g = (Group) HibernateUtil.getCurrentSession().load(Group.class, created.getGroup().getGroupId());
+        Group g = (Group) hibernateHelper.getCurrentSession().load(Group.class, created.getGroup().getGroupId());
         assertEquals(2, g.getUsers().size());
         for (User u : (Set<User>) g.getUsers()) {
             assertTrue("caarrayuser".equals(u.getLoginName()) || "caarrayadmin".equals(u.getLoginName()));
@@ -266,24 +288,24 @@ public class PermissionsManagementServiceTest extends AbstractServiceTest {
 
     @Test
     public void testAddUsersToAnonymousGroup() throws CSTransactionException, CSObjectNotFoundException {
-//        Transaction tx = HibernateUtil.getCurrentSession().beginTransaction();
+//        Transaction tx = hibernateHelper.getCurrentSession().beginTransaction();
         Predicate anonUserExists = new Predicate() {
             public boolean evaluate(Object o) {
                 return ((User) o).getLoginName().equals(SecurityUtils.ANONYMOUS_USERNAME);
             }
          };
-        Group g = (Group) HibernateUtil.getCurrentSession().load(Group.class,
+        Group g = (Group) hibernateHelper.getCurrentSession().load(Group.class,
                 SecurityUtils.findGroupByName(SecurityUtils.ANONYMOUS_GROUP).getGroupId());
          assertTrue(CollectionUtils.exists(g.getUsers(), anonUserExists));
          this.permissionsManagementService.addUsers(SecurityUtils.ANONYMOUS_GROUP, "biostatistician");
-         HibernateUtil.getCurrentSession().refresh(g);
+         hibernateHelper.getCurrentSession().refresh(g);
          assertTrue(CollectionUtils.exists(g.getUsers(), anonUserExists));
 //         tx.commit();
     }
 
     @Test
     public void testGetUsers() {
-        Number count = (Number) HibernateUtil.getCurrentSession().createCriteria(User.class).setProjection(Projections.rowCount()).uniqueResult();
+        Number count = (Number) hibernateHelper.getCurrentSession().createCriteria(User.class).setProjection(Projections.rowCount()).uniqueResult();
         List<User> users = this.permissionsManagementService.getUsers(null);
         assertNotNull(users);
         assertEquals(count.intValue(), users.size());

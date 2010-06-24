@@ -90,7 +90,7 @@ import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.array.LogicalProbe;
 import gov.nih.nci.caarray.domain.data.DesignElementList;
 import gov.nih.nci.caarray.domain.data.DesignElementType;
-import gov.nih.nci.caarray.platforms.MockSessionTransactionManager;
+import gov.nih.nci.caarray.platforms.SessionTransactionManagerNoOpImpl;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -116,7 +116,7 @@ public class ChpPgfClfDesignElementUtillityTest extends AbstractCaarrayTest {
                 return null;
             }
         };
-        chpUtility = new ChpPgfClfDesignElementListUtility(arrayDao, new MockSessionTransactionManager());
+        chpUtility = new ChpPgfClfDesignElementListUtility(arrayDao, new SessionTransactionManagerNoOpImpl());
     }
     
     @Test

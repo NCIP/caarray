@@ -97,12 +97,7 @@ import gov.nih.nci.caarray.platforms.FileManager;
 import gov.nih.nci.caarray.platforms.SessionTransactionManager;
 import gov.nih.nci.caarray.platforms.spi.AbstractDesignFileHandler;
 import gov.nih.nci.caarray.platforms.spi.PlatformFileReadException;
-import gov.nih.nci.caarray.util.HibernateUtil;
-import com.fiveamsolutions.nci.commons.util.io.DelimitedFileReader;
-import com.fiveamsolutions.nci.commons.util.io.DelimitedFileReaderFactoryImpl;
-
-import com.google.inject.Inject;
-
+import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.ValidationMessage;
 import gov.nih.nci.caarray.validation.ValidationResult;
@@ -122,8 +117,11 @@ import org.apache.log4j.Logger;
 import org.hibernate.SQLQuery;
 import org.hibernate.ScrollableResults;
 
+import com.fiveamsolutions.nci.commons.util.io.DelimitedFileReader;
+import com.fiveamsolutions.nci.commons.util.io.DelimitedFileReaderFactoryImpl;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
+import com.google.inject.Inject;
 
 /**
  * Implementation of NDF parser.
@@ -159,11 +157,13 @@ class NdfHandler extends AbstractDesignFileHandler {
     private CaArrayFile designFile;
     private File fileOnDisk;
     private DelimitedFileReader reader;
+    private final CaArrayHibernateHelper hibernateHelper; 
 
     @Inject
     NdfHandler(SessionTransactionManager sessionTransactionManager, FileManager fileManager,
-            ArrayDao arrayDao, SearchDao searchDao) {
+            ArrayDao arrayDao, SearchDao searchDao, CaArrayHibernateHelper hibernateHelper) {
         super(sessionTransactionManager, fileManager, arrayDao, searchDao);
+        this.hibernateHelper = hibernateHelper;
     }
 
     /**
@@ -205,19 +205,19 @@ class NdfHandler extends AbstractDesignFileHandler {
     }
 
     private ScrollableResults loadRows(File file) throws IOException {
-        HibernateUtil.getCurrentSession().createSQLQuery(CREATE_TEMP_TABLE_STMT).executeUpdate();
+        hibernateHelper.getCurrentSession().createSQLQuery(CREATE_TEMP_TABLE_STMT).executeUpdate();
         String filePath = file.getAbsolutePath().replace('\\', '/');
         String loadQuery = "load data local infile '" + filePath + "' into table " + TEMP_TABLE_NAME
                 + " fields terminated by '\t' ignore 1 lines "
                 + "(@c1,CONTAINER,@c3,@c4,SEQ_ID,@c6,@c7,@c8,@c9,@c10,@c11,@c12,PROBE_ID,@c14,@c15,X,Y);";
 
-        SQLQuery q = HibernateUtil.getCurrentSession().createSQLQuery(loadQuery);
+        SQLQuery q = hibernateHelper.getCurrentSession().createSQLQuery(loadQuery);
         q.executeUpdate();
         return getProbes();
     }
 
     ScrollableResults getProbes() {
-        SQLQuery q = HibernateUtil.getCurrentSession().createSQLQuery(
+        SQLQuery q = hibernateHelper.getCurrentSession().createSQLQuery(
                 "select * from " + TEMP_TABLE_NAME + " order by SEQ_ID asc");
         return q.scroll();
     }
@@ -241,7 +241,8 @@ class NdfHandler extends AbstractDesignFileHandler {
             LOG.error("Error processing line " + count);
             throw new PlatformFileReadException(fileOnDisk, "Couldn't read file: ", e);
         } finally {
-            HibernateUtil.getCurrentSession().createSQLQuery("DROP TABLE " + TEMP_TABLE_NAME + ";").executeUpdate();
+            hibernateHelper.getCurrentSession().createSQLQuery("DROP TABLE " + TEMP_TABLE_NAME + ";")
+            .executeUpdate();
         }
     }
 

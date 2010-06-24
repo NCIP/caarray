@@ -88,6 +88,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import gov.nih.nci.caarray.AbstractCaarrayTest;
+import gov.nih.nci.caarray.staticinjection.CaArrayCommonStaticInjectionModule;
 import gov.nih.nci.security.authorization.domainobjects.User;
 
 import java.util.ArrayList;
@@ -100,14 +101,36 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 
 /**
  * Test cases for the entity pruner
  */
 public class EntityPrunerTest extends AbstractCaarrayTest {
+    private static Injector injector;
+    private static CaArrayHibernateHelper hibernateHelper; 
+    
+    /**
+     * post-construct lifecycle method; intializes the Guice injector that will provide dependencies. 
+     */
+    @BeforeClass
+    public static void init() {
+        injector = createInjector();
+        hibernateHelper = injector.getInstance(CaArrayHibernateHelper.class);
+    }
+    
+    /**
+     * @return a Guice injector from which this will obtain dependencies.
+     */
+    protected static Injector createInjector() {
+        return Guice.createInjector(new CaArrayCommonStaticInjectionModule(), new CaArrayHibernateHelperModule());
+    }
+
     @Test
     public void testNullSetter() {
         User u = new User();
@@ -123,7 +146,7 @@ public class EntityPrunerTest extends AbstractCaarrayTest {
     @Test
     public void testMakeLeaf() {
         EntityPruner pruner = new EntityPruner();
-        HibernateUtil.beginTransaction();
+        hibernateHelper.beginTransaction();
         B b = new B();
         pruner.makeLeaf(b);
 
@@ -144,7 +167,7 @@ public class EntityPrunerTest extends AbstractCaarrayTest {
     @Test
     public void testMakeChildrenLeaves() {
         EntityPruner pruner = new EntityPruner();
-        HibernateUtil.beginTransaction();
+        hibernateHelper.beginTransaction();
         B b = new B();
         pruner.makeChildrenLeaves(b);
         assertTrue(b.fooAccessed || b.iAccessed);

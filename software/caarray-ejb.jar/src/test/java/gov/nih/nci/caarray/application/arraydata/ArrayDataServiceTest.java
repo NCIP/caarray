@@ -89,7 +89,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import gov.nih.nci.caarray.application.AbstractServiceTest;
-import gov.nih.nci.caarray.application.arraydesign.ArrayDesignModule;
+import gov.nih.nci.caarray.application.TemporaryCacheFileManager;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignServiceBean;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
@@ -101,10 +101,12 @@ import gov.nih.nci.caarray.application.vocabulary.VocabularyServiceStub;
 import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.dao.ContactDao;
 import gov.nih.nci.caarray.dao.SearchDao;
+import gov.nih.nci.caarray.dao.VocabularyDao;
 import gov.nih.nci.caarray.dao.stub.ArrayDaoStub;
 import gov.nih.nci.caarray.dao.stub.ContactDaoStub;
 import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
 import gov.nih.nci.caarray.dao.stub.SearchDaoStub;
+import gov.nih.nci.caarray.dao.stub.VocabularyDaoStub;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.ArrayDataType;
@@ -115,7 +117,6 @@ import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
-import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
@@ -124,21 +125,21 @@ import gov.nih.nci.caarray.domain.project.ExperimentDesignNodeType;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
-import gov.nih.nci.caarray.magetab.MageTabFileSet;
-import gov.nih.nci.caarray.magetab.MageTabParser;
 import gov.nih.nci.caarray.magetab.MageTabParsingException;
-import gov.nih.nci.caarray.magetab.TestMageTabSets;
-import gov.nih.nci.caarray.magetab.io.FileRef;
+import gov.nih.nci.caarray.platforms.FileManager;
+import gov.nih.nci.caarray.platforms.LocalSessionTransactionManager;
+import gov.nih.nci.caarray.platforms.PlatformModule;
+import gov.nih.nci.caarray.platforms.SessionTransactionManager;
+import gov.nih.nci.caarray.staticinjection.CaArrayEjbStaticInjectionModule;
 import gov.nih.nci.caarray.test.data.arraydata.AffymetrixArrayDataFiles;
 import gov.nih.nci.caarray.test.data.arraydata.AgilentArrayDataFiles;
 import gov.nih.nci.caarray.test.data.arraydata.NimblegenArrayDataFiles;
 import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
+import gov.nih.nci.caarray.util.CaArrayHibernateHelperModule;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import gov.nih.nci.caarray.validation.FileValidationResult;
-import gov.nih.nci.caarray.validation.InvalidDataException;
 import gov.nih.nci.caarray.validation.InvalidDataFileException;
-import gov.nih.nci.caarray.validation.ValidationResult;
 
 import java.io.File;
 import java.util.Arrays;
@@ -156,7 +157,6 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.multibindings.Multibinder;
-import com.google.inject.util.Modules;
 
 
 /**
@@ -174,6 +174,7 @@ public class ArrayDataServiceTest extends AbstractServiceTest {
     FileAccessServiceStub fileAccessServiceStub = new FileAccessServiceStub();
     LocalDaoFactoryStub daoFactoryStub = new LocalDaoFactoryStub();
     LocalSearchDaoStub searchDaoStub = new LocalSearchDaoStub();
+    VocabularyServiceStub vocabularyServiceStub = new VocabularyServiceStub();
     
     private long fileIdCounter = 1;
 
@@ -181,43 +182,38 @@ public class ArrayDataServiceTest extends AbstractServiceTest {
     public void setUp() throws Exception {
         ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
         locatorStub.addLookup(FileAccessService.JNDI_NAME, this.fileAccessServiceStub);
-        locatorStub.addLookup(VocabularyService.JNDI_NAME, new VocabularyServiceStub());
+        locatorStub.addLookup(VocabularyService.JNDI_NAME, vocabularyServiceStub);
 
-        final Module testArrayDesignModule = Modules.override(new ArrayDesignModule()).with(new AbstractModule() {
+        final Module testModule = new AbstractModule() {
             @Override
             protected void configure() {
                 bind(ContactDao.class).toInstance(new ContactDaoStub());
                 bind(SearchDao.class).toInstance(daoFactoryStub.getSearchDao());
                 bind(ArrayDao.class).toInstance(daoFactoryStub.getArrayDao());
-            }
-        });
-        final ArrayDesignServiceBean arrayDesignServiceBean = new ArrayDesignServiceBean() {
-            @Override
-            protected Injector createInjector() {
-                return Guice.createInjector(testArrayDesignModule);
-            }
-        };
-        arrayDesignServiceBean.init();
-        locatorStub.addLookup(ArrayDesignService.JNDI_NAME, arrayDesignServiceBean);
-        
-        final Module testArrayDataModule = Modules.override(new ArrayDesignModule()).with(new AbstractModule() {
-            @Override
-            protected void configure() {
-                bind(ContactDao.class).toInstance(new ContactDaoStub());
-                bind(SearchDao.class).toInstance(daoFactoryStub.getSearchDao());
-                bind(ArrayDao.class).toInstance(daoFactoryStub.getArrayDao());
+                bind(VocabularyService.class).toInstance(vocabularyServiceStub);
+                bind(FileManager.class).toInstance(new TemporaryCacheFileManager());
+                bind(VocabularyDao.class).toInstance(new VocabularyDaoStub());
+                bind(SessionTransactionManager.class).to(LocalSessionTransactionManager.class).asEagerSingleton();
+                
                 Multibinder<ArrayDataTypeDescriptor> arrayDataDescriptorBinder = Multibinder.newSetBinder(binder(),
                         ArrayDataTypeDescriptor.class);       
                 arrayDataDescriptorBinder.addBinding().toInstance(TestArrayDescriptor.INSTANCE);
-            }
-        });  
-        final ArrayDataServiceBean arrayDataServiceBean = new ArrayDataServiceBean() {
-            @Override
-            protected Injector createInjector() {
-                return Guice.createInjector(testArrayDataModule);
-            }
+                
+                install(new PlatformModule());
+                bind(ArrayDesignService.class).to(ArrayDesignServiceBean.class);
+                bind(ArrayDataService.class).to(ArrayDataServiceBean.class);
+           }
         };
-        arrayDataServiceBean.init();
+        
+        final Injector injector = Guice.createInjector(new CaArrayEjbStaticInjectionModule(), new CaArrayHibernateHelperModule(),
+                testModule);
+      
+        final ArrayDesignServiceBean arrayDesignServiceBean =
+            (ArrayDesignServiceBean) injector.getInstance(ArrayDesignService.class);
+
+        locatorStub.addLookup(ArrayDesignService.JNDI_NAME, arrayDesignServiceBean);
+        
+        final ArrayDataServiceBean arrayDataServiceBean = (ArrayDataServiceBean) injector.getInstance(ArrayDataService.class);
 
         this.arrayDataService = arrayDataServiceBean;
         TemporaryFileCacheLocator.setTemporaryFileCacheFactory(new TemporaryFileCacheStubFactory(this.fileAccessServiceStub));
@@ -409,6 +405,7 @@ public class ArrayDataServiceTest extends AbstractServiceTest {
         return caArrayFile;
     }
 
+    @SuppressWarnings("deprecation")
     public CaArrayFile getDataCaArrayFile(File file, FileType type) {
         CaArrayFile caArrayFile = this.fileAccessServiceStub.add(file);
         caArrayFile.setId(fileIdCounter++);

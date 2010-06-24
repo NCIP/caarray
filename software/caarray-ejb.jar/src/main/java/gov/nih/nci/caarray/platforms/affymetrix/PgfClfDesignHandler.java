@@ -98,7 +98,7 @@ import gov.nih.nci.caarray.platforms.FileManager;
 import gov.nih.nci.caarray.platforms.SessionTransactionManager;
 import gov.nih.nci.caarray.platforms.affymetrix.AffymetrixTsvFileReader.Record;
 import gov.nih.nci.caarray.platforms.spi.PlatformFileReadException;
-import gov.nih.nci.caarray.util.HibernateUtil;
+import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.ValidationMessage;
 import gov.nih.nci.caarray.validation.ValidationResult;
@@ -159,14 +159,18 @@ final class PgfClfDesignHandler extends AbstractAffymetrixDesignFileHandler {
     
     private CaArrayFile pgfFile, clfFile;
     private AffymetrixTsvFileReader pgfReader, clfReader;    
+    private final CaArrayHibernateHelper hibernateHelper; 
 
     private final Map<String, Long> vendorIdDesignElementMap = new HashMap<String, Long>();
 
     @Inject
+    @SuppressWarnings("PMD.ExcessiveParameterList")
     PgfClfDesignHandler(SessionTransactionManager sessionTransactionManager, FileManager fileManager,
             ArrayDao arrayDao, SearchDao searchDao,
-            @Named("pgfClf") AbstractChpDesignElementListUtility designElementListUtility) {
+            @Named("pgfClf") AbstractChpDesignElementListUtility designElementListUtility,
+            CaArrayHibernateHelper hibernateHelper) {
         super(sessionTransactionManager, fileManager, arrayDao, searchDao, designElementListUtility);
+        this.hibernateHelper = hibernateHelper;
     }
 
     /**
@@ -364,8 +368,8 @@ final class PgfClfDesignHandler extends AbstractAffymetrixDesignFileHandler {
             currentMDB.commitTransaction();
             currentMDB.beginTransaction();
         } else {
-            HibernateUtil.getCurrentSession().getTransaction().commit();
-            HibernateUtil.beginTransaction();
+            hibernateHelper.getCurrentSession().getTransaction().commit();
+            hibernateHelper.beginTransaction();
         }
     }
 

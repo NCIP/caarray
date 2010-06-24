@@ -90,6 +90,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.AbstractHibernateTest;
+import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.MultiPartBlob;
 import gov.nih.nci.caarray.domain.data.DerivedArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
@@ -101,9 +102,10 @@ import gov.nih.nci.caarray.domain.sample.Extract;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
+import gov.nih.nci.caarray.staticinjection.CaArrayEjbStaticInjectionModule;
 import gov.nih.nci.caarray.test.data.arraydata.GenepixArrayDataFiles;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
-import gov.nih.nci.caarray.util.HibernateUtil;
+import gov.nih.nci.caarray.util.CaArrayHibernateHelperModule;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -119,6 +121,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+
 /**
  *
  */
@@ -130,11 +135,20 @@ public class FileAccessServiceTest extends AbstractHibernateTest {
         super(true);        
     }
     
+    /**
+     * @return a Guice injector from which this will obtain dependencies.
+     */
+    @Override
+    protected Injector createInjector() {
+        return Guice.createInjector(new CaArrayEjbStaticInjectionModule(), new CaArrayHibernateHelperModule());
+    }
+    
     @Before
     public void setUp() {
-        this.fileAccessService = new FileAccessServiceBean();
-        HibernateUtil.getHibernateHelper().unbindAndCleanupSession();
-        HibernateUtil.getHibernateHelper().openAndBindSession();
+        CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
+        this.fileAccessService = new FileAccessServiceBean(daoFactory.getFileDao(), daoFactory.getArrayDao());
+        hibernateHelper.unbindAndCleanupSession();
+        hibernateHelper.openAndBindSession();
         
         TemporaryFileCacheLocator.resetTemporaryFileCache();
         TemporaryFileCacheLocator.setTemporaryFileCacheFactory(TemporaryFileCacheLocator.DEFAULT);
@@ -147,7 +161,7 @@ public class FileAccessServiceTest extends AbstractHibernateTest {
 
     @Test
     public void testAdd() throws IOException, FileAccessException {
-        Transaction tx = HibernateUtil.beginTransaction();
+        Transaction tx = hibernateHelper.beginTransaction();
         File file = File.createTempFile("pre", ".ext");
         file.deleteOnExit();
         CaArrayFile caArrayFile = this.fileAccessService.add(file);
@@ -170,12 +184,12 @@ public class FileAccessServiceTest extends AbstractHibernateTest {
      */
     @Test
     public void testGetFile() throws Exception {
-        Transaction tx = HibernateUtil.beginTransaction();        
+        Transaction tx = hibernateHelper.beginTransaction();        
         MultiPartBlob.setBlobSize(100);
         File file = MageTabDataFiles.SPECIFICATION_EXAMPLE_SDRF;
         CaArrayFile caArrayFile = this.fileAccessService.add(file);
-        HibernateUtil.getCurrentSession().save(caArrayFile);
-        HibernateUtil.getCurrentSession().flush();
+        hibernateHelper.getCurrentSession().save(caArrayFile);
+        hibernateHelper.getCurrentSession().flush();
         File retrievedFile = TemporaryFileCacheLocator.getTemporaryFileCache().getFile(caArrayFile);
         assertEquals(file.getName(), retrievedFile.getName());
         assertEquals(file.length(), retrievedFile.length());
@@ -240,7 +254,7 @@ public class FileAccessServiceTest extends AbstractHibernateTest {
 
     @Test(expected = org.hibernate.ObjectNotFoundException.class)
     public void testRemove() {
-        Transaction tx = HibernateUtil.beginTransaction();
+        Transaction tx = hibernateHelper.beginTransaction();
         MultiPartBlob.setBlobSize(100);
         File file = MageTabDataFiles.SPECIFICATION_EXAMPLE_SDRF;
         CaArrayFile caArrayFile = this.fileAccessService.add(file);
@@ -257,25 +271,25 @@ public class FileAccessServiceTest extends AbstractHibernateTest {
         o.setTermSource(ts);
         p.getFiles().add(caArrayFile);
         caArrayFile.setProject(p);
-        HibernateUtil.getCurrentSession().save(p);
-        HibernateUtil.getCurrentSession().save(caArrayFile);
+        hibernateHelper.getCurrentSession().save(p);
+        hibernateHelper.getCurrentSession().save(caArrayFile);
         tx.commit();
         
-        tx = HibernateUtil.beginTransaction();
-        caArrayFile = (CaArrayFile) HibernateUtil.getCurrentSession().load(CaArrayFile.class, caArrayFile.getId());
+        tx = hibernateHelper.beginTransaction();
+        caArrayFile = (CaArrayFile) hibernateHelper.getCurrentSession().load(CaArrayFile.class, caArrayFile.getId());
         boolean removed = this.fileAccessService.remove(caArrayFile);
         assertTrue(removed);
         tx.commit();
 
-        tx = HibernateUtil.beginTransaction();
-        caArrayFile = (CaArrayFile) HibernateUtil.getCurrentSession().load(CaArrayFile.class, caArrayFile.getId());
+        tx = hibernateHelper.beginTransaction();
+        caArrayFile = (CaArrayFile) hibernateHelper.getCurrentSession().load(CaArrayFile.class, caArrayFile.getId());
         caArrayFile.toString();
         tx.commit();
     }
 
     @Test
     public void testRemoveWithArrayData() throws SQLException {
-        Transaction tx = HibernateUtil.beginTransaction();
+        Transaction tx = hibernateHelper.beginTransaction();
         MultiPartBlob.setBlobSize(100);
         // SDRF
         File file = MageTabDataFiles.SPECIFICATION_EXAMPLE_SDRF;
@@ -318,57 +332,57 @@ public class FileAccessServiceTest extends AbstractHibernateTest {
         caArrayFile.setProject(p);
         caArrayFile2.setProject(p);
         
-        HibernateUtil.getCurrentSession().save(p);
+        hibernateHelper.getCurrentSession().save(p);
         
-        HibernateUtil.getCurrentSession().save(sample);
-        HibernateUtil.getCurrentSession().saveOrUpdate(extract);
-        HibernateUtil.getCurrentSession().saveOrUpdate(le);
-        HibernateUtil.getCurrentSession().saveOrUpdate(sample);
-        HibernateUtil.getCurrentSession().saveOrUpdate(hyb);
-        HibernateUtil.getCurrentSession().saveOrUpdate(der);
+        hibernateHelper.getCurrentSession().save(sample);
+        hibernateHelper.getCurrentSession().saveOrUpdate(extract);
+        hibernateHelper.getCurrentSession().saveOrUpdate(le);
+        hibernateHelper.getCurrentSession().saveOrUpdate(sample);
+        hibernateHelper.getCurrentSession().saveOrUpdate(hyb);
+        hibernateHelper.getCurrentSession().saveOrUpdate(der);
 
-        HibernateUtil.getCurrentSession().save(caArrayFile);
-        HibernateUtil.getCurrentSession().save(caArrayFile2);
-        HibernateUtil.getCurrentSession().flush();
+        hibernateHelper.getCurrentSession().save(caArrayFile);
+        hibernateHelper.getCurrentSession().save(caArrayFile2);
+        hibernateHelper.getCurrentSession().flush();
         tx.commit();
         
-        tx = HibernateUtil.beginTransaction();
-        caArrayFile = (CaArrayFile) HibernateUtil.getCurrentSession().load(CaArrayFile.class, caArrayFile.getId());
-        caArrayFile2 = (CaArrayFile) HibernateUtil.getCurrentSession().load(CaArrayFile.class, caArrayFile2.getId());
-        der = (DerivedArrayData) HibernateUtil.getCurrentSession().load(DerivedArrayData.class, der.getId());
+        tx = hibernateHelper.beginTransaction();
+        caArrayFile = (CaArrayFile) hibernateHelper.getCurrentSession().load(CaArrayFile.class, caArrayFile.getId());
+        caArrayFile2 = (CaArrayFile) hibernateHelper.getCurrentSession().load(CaArrayFile.class, caArrayFile2.getId());
+        der = (DerivedArrayData) hibernateHelper.getCurrentSession().load(DerivedArrayData.class, der.getId());
         assertEquals(der.getDataFile(), caArrayFile2);
         assertNotNull(caArrayFile.getProject());
         assertNotNull(caArrayFile2.getProject());
         tx.commit();
         
-        tx = HibernateUtil.beginTransaction();
-        caArrayFile = (CaArrayFile) HibernateUtil.getCurrentSession().load(CaArrayFile.class, caArrayFile.getId());
+        tx = hibernateHelper.beginTransaction();
+        caArrayFile = (CaArrayFile) hibernateHelper.getCurrentSession().load(CaArrayFile.class, caArrayFile.getId());
         boolean removed = this.fileAccessService.remove(caArrayFile);
         assertTrue(removed);
-        caArrayFile2 = (CaArrayFile) HibernateUtil.getCurrentSession().load(CaArrayFile.class, caArrayFile2.getId());
+        caArrayFile2 = (CaArrayFile) hibernateHelper.getCurrentSession().load(CaArrayFile.class, caArrayFile2.getId());
         removed = this.fileAccessService.remove(caArrayFile2);
         assertTrue(removed);        
 
         tx.commit();
-        tx = HibernateUtil.beginTransaction();
+        tx = hibernateHelper.beginTransaction();
 
         try {
-            caArrayFile = (CaArrayFile) HibernateUtil.getCurrentSession().load(CaArrayFile.class, caArrayFile.getId());
+            caArrayFile = (CaArrayFile) hibernateHelper.getCurrentSession().load(CaArrayFile.class, caArrayFile.getId());
             fail("file " + caArrayFile + " not deleted");
         } catch (org.hibernate.ObjectNotFoundException e) {
         }
 
         try {
-            caArrayFile2 = (CaArrayFile) HibernateUtil.getCurrentSession().load(CaArrayFile.class, caArrayFile2.getId());
+            caArrayFile2 = (CaArrayFile) hibernateHelper.getCurrentSession().load(CaArrayFile.class, caArrayFile2.getId());
             fail("file " + caArrayFile2 + " not deleted");
         } catch (org.hibernate.ObjectNotFoundException e) {
         }
         try {
-            der = (DerivedArrayData) HibernateUtil.getCurrentSession().load(DerivedArrayData.class, der.getId());
+            der = (DerivedArrayData) hibernateHelper.getCurrentSession().load(DerivedArrayData.class, der.getId());
             fail("raw array data not deleted " + der);
         } catch (org.hibernate.ObjectNotFoundException e) {
         }
-        hyb = (Hybridization) HibernateUtil.getCurrentSession().load(Hybridization.class, hyb.getId());
+        hyb = (Hybridization) hibernateHelper.getCurrentSession().load(Hybridization.class, hyb.getId());
         assertTrue(hyb.getDerivedDataCollection().isEmpty());
         tx.commit();
     }

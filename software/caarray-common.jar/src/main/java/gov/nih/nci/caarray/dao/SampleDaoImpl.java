@@ -82,7 +82,7 @@
  */
 package gov.nih.nci.caarray.dao;
 
- import gov.nih.nci.caarray.domain.project.Experiment;
+import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
 import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
 import gov.nih.nci.caarray.domain.sample.Sample;
@@ -94,7 +94,7 @@ import gov.nih.nci.caarray.domain.search.BiomaterialSearchCriteria;
 import gov.nih.nci.caarray.domain.search.JoinableSortCriterion;
 import gov.nih.nci.caarray.domain.search.SearchSampleCategory;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
-import gov.nih.nci.caarray.util.HibernateUtil;
+import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
@@ -115,6 +115,7 @@ import org.hibernate.criterion.Restrictions;
 
 import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
 import com.fiveamsolutions.nci.commons.util.HibernateHelper;
+import com.google.inject.Inject;
 
 /**
  * DAO for entities in the <code>gov.nih.nci.caarray.domain.sample</code> package.
@@ -131,6 +132,15 @@ public class SampleDaoImpl extends AbstractCaArrayDaoImpl implements SampleDao {
     private static final String ORDER_BY = " ORDER BY ";
     private static final String LEFT_JOIN = " LEFT JOIN ";
 
+    /**
+     * 
+     * @param hibernateHelper the CaArrayHibernateHelper dependency
+     */
+    @Inject
+    public SampleDaoImpl(CaArrayHibernateHelper hibernateHelper) {
+        super(hibernateHelper);
+    }
+   
     /**
      * {@inheritDoc}
      */
@@ -171,7 +181,7 @@ public class SampleDaoImpl extends AbstractCaArrayDaoImpl implements SampleDao {
         sb.append(SELECT_DISTINCT + "s");
         sb.append(generateSourcesByCharacteristicCategoryClause(false, params, keyword));
 
-        Query q = HibernateUtil.getCurrentSession().createQuery(sb.toString());
+        Query q = getCurrentSession().createQuery(sb.toString());
         q.setString(CATEGORY_SUB, c.getName());
 
         if (keyword != null && !keyword.equals("")) {
@@ -194,7 +204,7 @@ public class SampleDaoImpl extends AbstractCaArrayDaoImpl implements SampleDao {
         sb.append("SELECT count(DISTINCT s)");
         sb.append(generateSourcesByCharacteristicCategoryClause(true, null, keyword));
 
-        Query q = HibernateUtil.getCurrentSession().createQuery(sb.toString());
+        Query q = getCurrentSession().createQuery(sb.toString());
         q.setString(CATEGORY_SUB, c.getName());
         if (!StringUtils.isEmpty(keyword)) {
             q.setString(KEYWORD_SUB, "%" + keyword + "%");
@@ -246,13 +256,13 @@ public class SampleDaoImpl extends AbstractCaArrayDaoImpl implements SampleDao {
                     new HashMap<String, List<? extends Serializable>>();
                 StringBuffer sb = new StringBuffer(selectClause);
                 sb.append(generateSamplesByCharacteristicCategoryClause(count, tbsList, params, idBlocks));
-                returnVal = HibernateUtil.getCurrentSession().createQuery(sb.toString());
+                returnVal = getCurrentSession().createQuery(sb.toString());
                 HibernateHelper.bindInClauseParameters(returnVal, idBlocks);
             }
         } else {
             StringBuffer sb = new StringBuffer(selectClause);
             sb.append(generateSamplesByCharacteristicCategoryClause(count, null, params, null));
-            returnVal = HibernateUtil.getCurrentSession().createQuery(sb.toString());
+            returnVal = getCurrentSession().createQuery(sb.toString());
             returnVal.setString(CATEGORY_SUB, c.getName());
         }
 
@@ -268,7 +278,7 @@ public class SampleDaoImpl extends AbstractCaArrayDaoImpl implements SampleDao {
         String queryStr = "SELECT DISTINCT tbs from " + TermBasedCharacteristic.class.getName()
                 + " tbs left join tbs.term t left join tbs.category c WHERE c.name = :category AND t.value like :"
                 + KEYWORD_SUB;
-        Query q = HibernateUtil.getCurrentSession().createQuery(queryStr);
+        Query q = getCurrentSession().createQuery(queryStr);
         q.setString(KEYWORD_SUB, "%" + keyword + "%");
         q.setString("category", categoryName);
         return q.list();
@@ -343,7 +353,7 @@ public class SampleDaoImpl extends AbstractCaArrayDaoImpl implements SampleDao {
         sb.append(getJoinClause(false, null, c));
         sb.append(getWhereClause(singletonClass(Sample.class), c));
         sb.append(" AND s.experiment = :exp" + ORDER_BY + "s.name");
-        Query q = HibernateUtil.getCurrentSession().createQuery(sb.toString());
+        Query q = getCurrentSession().createQuery(sb.toString());
         q.setEntity("exp", e);
         q.setString(KEYWORD_SUB, "%" + keyword + "%");
 
@@ -380,7 +390,7 @@ public class SampleDaoImpl extends AbstractCaArrayDaoImpl implements SampleDao {
                 sb.append(" desc");
             }
         }
-        Query q = HibernateUtil.getCurrentSession().createQuery(sb.toString());
+        Query q = getCurrentSession().createQuery(sb.toString());
         q.setString(KEYWORD_SUB, "%" + StringUtils.defaultString(keyword) + "%");
         if (biomaterialSubclasses.size() > 1) {
             Set<String> discriminators = new HashSet<String>();
@@ -398,7 +408,7 @@ public class SampleDaoImpl extends AbstractCaArrayDaoImpl implements SampleDao {
     @SuppressWarnings({"unchecked", "PMD" })
     public <T extends AbstractBioMaterial> List<T> searchByCriteria(PageSortParams<T> params,
             BiomaterialSearchCriteria criteria) {
-        Criteria c = HibernateUtil.getCurrentSession().createCriteria(AbstractBioMaterial.class);
+        Criteria c = getCurrentSession().createCriteria(AbstractBioMaterial.class);
 
         if (criteria.getExperiment() != null) {
             c.add(Restrictions.eq("experiment", criteria.getExperiment()));

@@ -83,7 +83,6 @@
 package gov.nih.nci.caarray.services.file;
 
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
-import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.services.AuthorizationInterceptor;
@@ -103,6 +102,8 @@ import javax.interceptor.Interceptors;
 
 import org.apache.log4j.Logger;
 
+import com.google.inject.Inject;
+
 /**
  * Implementation of the remote API file retrieval subsystem.
  */
@@ -114,15 +115,25 @@ public class FileRetrievalServiceBean implements FileRetrievalService {
 
     private static final Logger LOG = Logger.getLogger(FileRetrievalServiceBean.class);
     private static final int CHUNK_SIZE = 4096;
-    private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
-
+    
+    private final SearchDao searchDao;
+    
+    /**
+     * 
+     * @param searchDao the SearchDao dependency
+     */
+    @Inject
+    public FileRetrievalServiceBean(SearchDao searchDao) {
+        this.searchDao = searchDao;
+    }
+    
     /**
      * {@inheritDoc}
      */
     public byte[] readFile(final CaArrayFile caArrayFileArg) {
         // Look up the fully-populated CaArray object since the one passed in by remote clients will have contents set
         // to null (not serializable).
-        CaArrayFile caArrayFile = getSearchDao().query(caArrayFileArg).get(0);
+        CaArrayFile caArrayFile = searchDao.query(caArrayFileArg).get(0);
         InputStream is = null;
         try {
             File file = TemporaryFileCacheLocator.getTemporaryFileCache().getFile(caArrayFile);
@@ -147,17 +158,5 @@ public class FileRetrievalServiceBean implements FileRetrievalService {
             }
             TemporaryFileCacheLocator.getTemporaryFileCache().closeFiles();
         }
-    }
-
-    private SearchDao getSearchDao() {
-        return getDaoFactory().getSearchDao();
-    }
-
-    CaArrayDaoFactory getDaoFactory() {
-        return daoFactory;
-    }
-
-    void setDaoFactory(CaArrayDaoFactory daoFactory) {
-        this.daoFactory = daoFactory;
     }
 }

@@ -84,7 +84,9 @@ package gov.nih.nci.caarray.services;
 
 import static org.junit.Assert.assertTrue;
 import gov.nih.nci.caarray.AbstractCaarrayTest;
-import gov.nih.nci.caarray.util.HibernateUtil;
+import gov.nih.nci.caarray.staticinjection.CaArrayEjbStaticInjectionModule;
+import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
+import gov.nih.nci.caarray.util.CaArrayHibernateHelperModule;
 
 import java.lang.reflect.Method;
 import java.util.Map;
@@ -94,20 +96,42 @@ import javax.interceptor.InvocationContext;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
-public class HibernateSessionInterceptorTest extends AbstractCaarrayTest {
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 
+public class HibernateSessionInterceptorTest extends AbstractCaarrayTest {
+    private static Injector injector;
+    private static CaArrayHibernateHelper hibernateHelper; 
+    
+    /**
+     * post-construct lifecycle method; intializes the Guice injector that will provide dependencies. 
+     */
+    @BeforeClass
+    public static void init() {
+        injector = createInjector();
+        hibernateHelper = injector.getInstance(CaArrayHibernateHelper.class);
+    }
+    
+    /**
+     * @return a Guice injector from which this will obtain dependencies.
+     */
+    protected static Injector createInjector() {
+        return Guice.createInjector(new CaArrayEjbStaticInjectionModule(), new CaArrayHibernateHelperModule());
+    }
+    
     @Before
     public void setUp() {
-        HibernateUtil.setFiltersEnabled(false);
+        hibernateHelper.setFiltersEnabled(false);
     }
 
     @Test
     public void testManageHibernateSession() throws Exception {
         TestInvocationContext testContext = new TestInvocationContext();
         HibernateSessionInterceptor interceptor = new HibernateSessionInterceptor();
-        Transaction tx = HibernateUtil.getCurrentSession().beginTransaction();
+        Transaction tx = hibernateHelper.getCurrentSession().beginTransaction();
         interceptor.manageHibernateSession(testContext);
         tx.commit();
         assertTrue(testContext.getHibernateSession() != null);
@@ -149,7 +173,7 @@ public class HibernateSessionInterceptorTest extends AbstractCaarrayTest {
         }
 
         public void setHibernateSession() {
-            this.hibernateSession = HibernateUtil.getCurrentSession();
+            this.hibernateSession = hibernateHelper.getCurrentSession();
             this.hibernateSessionOpenInCall = this.hibernateSession.isOpen();
         }
     }

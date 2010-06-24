@@ -123,6 +123,7 @@ import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.platforms.spi.PlatformFileReadException;
+import gov.nih.nci.caarray.staticinjection.CaArrayEjbStaticInjectionModule;
 import gov.nih.nci.caarray.test.data.arraydata.AffymetrixArrayDataFiles;
 import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
 import gov.nih.nci.caarray.test.data.arraydesign.AgilentArrayDesignFiles;
@@ -130,7 +131,8 @@ import gov.nih.nci.caarray.test.data.arraydesign.GenepixArrayDesignFiles;
 import gov.nih.nci.caarray.test.data.arraydesign.IlluminaArrayDesignFiles;
 import gov.nih.nci.caarray.test.data.arraydesign.NimblegenArrayDesignFiles;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
-import gov.nih.nci.caarray.util.HibernateUtil;
+import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
+import gov.nih.nci.caarray.util.CaArrayHibernateHelperModule;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import gov.nih.nci.caarray.validation.ValidationResult;
 
@@ -171,11 +173,9 @@ import com.google.inject.util.Modules;
  */
 @SuppressWarnings("PMD")
 public class ArrayDesignServiceTest extends AbstractServiceTest {
-
     private ArrayDesignService arrayDesignService;
     private final LocalDaoFactoryStub caArrayDaoFactoryStub = new LocalDaoFactoryStub();
     private final FileAccessServiceStub fileAccessServiceStub = new FileAccessServiceStub();
-    private final VocabularyServiceStub vocabularyServiceStub = new VocabularyServiceStub();
     private Transaction transaction;
 
     private static Organization DUMMY_ORGANIZATION = new Organization();
@@ -185,8 +185,26 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
 
     @Before
     public void setUp() {
+        final Module testArrayDesignModule = Modules.override(new ArrayDesignModule()).with(new AbstractModule() {
+            @Override
+            protected void configure() {
+                bind(ContactDao.class).toInstance(caArrayDaoFactoryStub.getContactDao());
+                bind(SearchDao.class).toInstance(caArrayDaoFactoryStub.getSearchDao());
+                bind(ArrayDao.class).toInstance(caArrayDaoFactoryStub.getArrayDao());
+                bind(VocabularyDao.class).toInstance(caArrayDaoFactoryStub.getVocabularyDao());
+                
+                bind(ArrayDesignService.class).to(ArrayDesignServiceBean.class);
+            }
+        });
+        
+        Injector injector = Guice.createInjector(new CaArrayEjbStaticInjectionModule(), new CaArrayHibernateHelperModule(),
+                testArrayDesignModule);
+        CaArrayHibernateHelper hibernateHelper = injector.getInstance(CaArrayHibernateHelper.class);;
+        hibernateHelper.setFiltersEnabled(false);
+        transaction = hibernateHelper.beginTransaction();
+
         caArrayDaoFactoryStub.clear();
-        arrayDesignService = createArrayDesignService(caArrayDaoFactoryStub, fileAccessServiceStub, vocabularyServiceStub);
+        arrayDesignService = createArrayDesignService(injector);
         DUMMY_ORGANIZATION.setName("DummyOrganization");
         DUMMY_ORGANISM.setScientificName("Homo sapiens");
         final TermSource ts = new TermSource();
@@ -198,29 +216,10 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
         DUMMY_TERM.setValue("testval");
         DUMMY_TERM.setCategory(cat);
         DUMMY_TERM.setSource(ts);
-        HibernateUtil.setFiltersEnabled(false);
-        transaction = HibernateUtil.beginTransaction();
     }
 
-    public static ArrayDesignService createArrayDesignService(final DaoFactoryStub caArrayDaoFactoryStub,
-            final FileAccessServiceStub fileAccessServiceStub, final VocabularyServiceStub vocabularyServiceStub) {
-        final Module testArrayDesignModule = Modules.override(new ArrayDesignModule()).with(new AbstractModule() {
-            @Override
-            protected void configure() {
-                bind(ContactDao.class).toInstance(caArrayDaoFactoryStub.getContactDao());
-                bind(SearchDao.class).toInstance(caArrayDaoFactoryStub.getSearchDao());
-                bind(ArrayDao.class).toInstance(caArrayDaoFactoryStub.getArrayDao());
-                bind(VocabularyDao.class).toInstance(caArrayDaoFactoryStub.getVocabularyDao());
-            }
-        });
-        final ArrayDesignServiceBean bean = new ArrayDesignServiceBean() {
-            @Override
-            protected Injector createInjector() {
-                return Guice.createInjector(testArrayDesignModule);
-            }
-        };
-        bean.init();
-
+    public ArrayDesignService createArrayDesignService(final Injector injector) {       
+        final ArrayDesignServiceBean bean = (ArrayDesignServiceBean) injector.getInstance(ArrayDesignService.class);
         final ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
         locatorStub.addLookup(FileAccessService.JNDI_NAME, fileAccessServiceStub);
         locatorStub.addLookup(VocabularyService.JNDI_NAME, new VocabularyServiceStub());
@@ -360,7 +359,7 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
         design.addDesignFile(getGenepixCaArrayFile(GenepixArrayDesignFiles.MEEBO));
         arrayDesignService.importDesign(design);
         arrayDesignService.importDesignDetails(design);
-        checkGenepixDesign(design, "MEEBO", 38880, 4, 12);
+        checkGenepixDesign(design, "MEEBO", 38880, 16, 13);
     }
 
     private void checkGenepixDesign(final ArrayDesign design, final String expectedName, final int expectedNumberOfFeatures,

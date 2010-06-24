@@ -110,7 +110,6 @@ import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
-import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.caarray.util.UsernameHolder;
 
 import java.io.IOException;
@@ -132,7 +131,6 @@ import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
  *
  */
 public class FileDaoTest extends AbstractDaoTest {
-
     private static final FileDao DAO_OBJECT = CaArrayDaoFactory.INSTANCE.getFileDao();
 
     // Experiment
@@ -214,7 +212,7 @@ public class FileDaoTest extends AbstractDaoTest {
         DUMMY_EXPERIMENT_1.getQualityControlTypes().add(DUMMY_QUALITY_CTRL_TYPE);
     }
 
-    private static void saveSupportingObjects() {
+    private void saveSupportingObjects() {
         DUMMY_REPLICATE_TYPE.setValue("Dummy Replicate Type");
         DUMMY_REPLICATE_TYPE.setSource(DUMMY_TERM_SOURCE);
         DUMMY_REPLICATE_TYPE.setCategory(DUMMY_CATEGORY);
@@ -228,17 +226,17 @@ public class FileDaoTest extends AbstractDaoTest {
         VOCABULARY_DAO.save(DUMMY_QUALITY_CTRL_TYPE);
         VOCABULARY_DAO.save(DUMMY_NORMALIZATION_TYPE);
         DAO_OBJECT.save(DUMMY_PROJECT_1);
-        assertTrue(HibernateUtil.getCurrentSession().contains(DUMMY_EXPERIMENT_1));
+        assertTrue(hibernateHelper.getCurrentSession().contains(DUMMY_EXPERIMENT_1));
         DAO_OBJECT.flushSession();
-//        HibernateUtil.getCurrentSession().evict(DUMMY_EXPERIMENT_1);
-//        DUMMY_EXPERIMENT_1 = (Experiment) HibernateUtil.getCurrentSession().load(Experiment.class, DUMMY_EXPERIMENT_1.getId());
-        HibernateUtil.getCurrentSession().refresh(DUMMY_EXPERIMENT_1);
+//        hibernateHelper.getCurrentSession().evict(DUMMY_EXPERIMENT_1);
+//        DUMMY_EXPERIMENT_1 = (Experiment) hibernateHelper.getCurrentSession().load(Experiment.class, DUMMY_EXPERIMENT_1.getId());
+        hibernateHelper.getCurrentSession().refresh(DUMMY_EXPERIMENT_1);
         assertNotNull(DUMMY_EXPERIMENT_1.getProject());
     }
 
     @Test
     public void testSaveAndRemove() throws Exception {
-        Transaction tx = HibernateUtil.beginTransaction();
+        Transaction tx = hibernateHelper.beginTransaction();
 
         saveSupportingObjects();
         CaArrayFile DUMMY_FILE_1 = new CaArrayFile();
@@ -251,7 +249,7 @@ public class FileDaoTest extends AbstractDaoTest {
         DAO_OBJECT.save(DUMMY_FILE_1);
         tx.commit();
 
-        tx = HibernateUtil.beginTransaction();
+        tx = hibernateHelper.beginTransaction();
         DAO_OBJECT.deleteHqlBlobsByProjectId(DUMMY_PROJECT_1.getId());
         tx.commit();
     }
@@ -266,7 +264,7 @@ public class FileDaoTest extends AbstractDaoTest {
 
     @Test
     public void testUnknownProjectIds() {
-        Transaction tx = HibernateUtil.beginTransaction();
+        Transaction tx = hibernateHelper.beginTransaction();
         DAO_OBJECT.deleteHqlBlobsByProjectId(12345678L);
         // we are simply testing that this does not cause an exception. the result is a no-op
         tx.commit();
@@ -274,7 +272,7 @@ public class FileDaoTest extends AbstractDaoTest {
 
     @Test
     public void testSearchByCriteria() throws Exception {
-        Transaction tx = HibernateUtil.beginTransaction();
+        Transaction tx = hibernateHelper.beginTransaction();
 
         saveSupportingObjects();
         
@@ -408,7 +406,7 @@ public class FileDaoTest extends AbstractDaoTest {
 
         tx.commit();
 
-        tx = HibernateUtil.beginTransaction();
+        tx = hibernateHelper.beginTransaction();
         Experiment e = CaArrayDaoFactory.INSTANCE.getSearchDao().retrieve(Experiment.class, DUMMY_EXPERIMENT_1.getId());
         
         PageSortParams<CaArrayFile> params = new PageSortParams<CaArrayFile>(5, 0, new AdHocSortCriterion<CaArrayFile>("name"), false);
@@ -536,7 +534,7 @@ public class FileDaoTest extends AbstractDaoTest {
     @Test
     public void testFilePermissions() throws Exception {
         UsernameHolder.setUser(STANDARD_USER);
-        Transaction tx = HibernateUtil.beginTransaction();
+        Transaction tx = hibernateHelper.beginTransaction();
 
         saveSupportingObjects();
         
@@ -565,7 +563,7 @@ public class FileDaoTest extends AbstractDaoTest {
 
         tx.commit();
 
-        tx = HibernateUtil.beginTransaction();
+        tx = hibernateHelper.beginTransaction();
         List<CaArrayFile> files = CaArrayDaoFactory.INSTANCE.getSearchDao().retrieveAll(CaArrayFile.class, Order.asc("name"));
         assertEquals(3, files.size());
         assertEquals("file1", files.get(0).getName());
@@ -573,7 +571,7 @@ public class FileDaoTest extends AbstractDaoTest {
         assertEquals("file3", files.get(2).getName());
         tx.commit();
         
-        tx = HibernateUtil.beginTransaction();
+        tx = hibernateHelper.beginTransaction();
         UsernameHolder.setUser(SecurityUtils.ANONYMOUS_USERNAME);
         files = CaArrayDaoFactory.INSTANCE.getSearchDao().retrieveAll(CaArrayFile.class, Order.asc("name"));
         assertEquals(2, files.size());
@@ -584,7 +582,7 @@ public class FileDaoTest extends AbstractDaoTest {
     
     @Test
     public void testGetDeletableFiles() throws Exception {
-        Transaction tx = HibernateUtil.beginTransaction();
+        Transaction tx = hibernateHelper.beginTransaction();
 
         saveSupportingObjects();
         CaArrayFile f1 = new CaArrayFile();
@@ -651,7 +649,7 @@ public class FileDaoTest extends AbstractDaoTest {
 
         tx.commit();
 
-        tx = HibernateUtil.beginTransaction();
+        tx = hibernateHelper.beginTransaction();
         List<CaArrayFile> files = DAO_OBJECT.getDeletableFiles(DUMMY_PROJECT_1.getId());
         assertEquals(4, files.size());
         assertEquals(f1, files.get(0));
@@ -664,7 +662,7 @@ public class FileDaoTest extends AbstractDaoTest {
 
     @Test
     public void testClearAndEvictionOnSave() throws IOException {
-        Transaction tx = HibernateUtil.beginTransaction();
+        Transaction tx = hibernateHelper.beginTransaction();
 
         CaArrayFile f1 = new CaArrayFile();
         f1.setName("dummy1");

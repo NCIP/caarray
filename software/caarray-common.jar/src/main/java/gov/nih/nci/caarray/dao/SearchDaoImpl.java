@@ -85,7 +85,7 @@ package gov.nih.nci.caarray.dao;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.domain.LSID;
-import gov.nih.nci.caarray.util.HibernateUtil;
+import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
 import gov.nih.nci.cagrid.cqlquery.CQLQuery;
 import gov.nih.nci.cagrid.data.QueryProcessingException;
 import gov.nih.nci.cagrid.data.sdk32query.CQL2HQL;
@@ -109,6 +109,7 @@ import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
 import com.fiveamsolutions.nci.commons.data.search.SortCriterion;
 import com.fiveamsolutions.nci.commons.util.HibernateHelper;
+import com.google.inject.Inject;
 
 /**
  * DAO to search for entities using various types of criteria. Supports searching by example, CQL, HQL (Hibernate Query
@@ -122,13 +123,22 @@ class SearchDaoImpl extends AbstractCaArrayDaoImpl implements SearchDao {
     private static final String UNCHECKED = "unchecked";
 
     /**
+     * 
+     * @param hibernateHelper the CaArrayHibernateHelper dependency
+     */
+    @Inject
+    public SearchDaoImpl(CaArrayHibernateHelper hibernateHelper) {
+        super(hibernateHelper);
+    }
+   
+   /**
      * {@inheritDoc}
      */
     @SuppressWarnings("unchecked")
     public <T extends AbstractCaArrayObject> List<T> query(final T entityToMatch) {
         if (entityToMatch.getId() != null) {
             String qStr = "from " + entityToMatch.getClass().getName() + " where id = :id";
-            Query q = HibernateUtil.getCurrentSession().createQuery(qStr);
+            Query q = getCurrentSession().createQuery(qStr);
             q.setLong("id", entityToMatch.getId());
             return q.list();
         }
@@ -145,7 +155,7 @@ class SearchDaoImpl extends AbstractCaArrayDaoImpl implements SearchDao {
                 // ensure results are distinct
                 s = "select distinct " + CQL2HQL.TARGET_ALIAS + " " + s;
             }
-            Query hqlquery = HibernateUtil.getCurrentSession().createQuery(s);
+            Query hqlquery = getCurrentSession().createQuery(s);
             return hqlquery.list();            
         } catch (QueryProcessingException e) {
             LOG.error("Unable to parse CQL query", e);
@@ -158,8 +168,9 @@ class SearchDaoImpl extends AbstractCaArrayDaoImpl implements SearchDao {
      */
     @SuppressWarnings(UNCHECKED)
     public <T extends PersistentObject> T retrieve(Class<T> entityClass, Long entityId) {
-        Query q = HibernateUtil.getCurrentSession().createQuery("from " + entityClass.getName() + " where id = :id");
-        q.setLong("id", entityId);
+        Query q = getCurrentSession()
+        .createQuery("from " + entityClass.getName() + " where id = :id")
+        .setLong("id", entityId);
         return (T) q.uniqueResult();
     }
 
@@ -169,7 +180,7 @@ class SearchDaoImpl extends AbstractCaArrayDaoImpl implements SearchDao {
     @SuppressWarnings(UNCHECKED)
     public <T extends PersistentObject> T retrieve(Class<T> entityClass, Long entityId, LockMode lockMode) {
         Query q =
-                HibernateUtil.getCurrentSession()
+                getCurrentSession()
                         .createQuery("from " + entityClass.getName() + " o where o.id = :id");
         q.setLong("id", entityId);
         q.setLockMode("o", lockMode);
@@ -189,7 +200,7 @@ class SearchDaoImpl extends AbstractCaArrayDaoImpl implements SearchDao {
      */
     @SuppressWarnings(UNCHECKED)
     public <T extends AbstractCaArrayEntity> T getEntityByLsid(Class<T> entityClass, LSID lsid) {
-        Query q = HibernateUtil.getCurrentSession().createQuery(
+        Query q = getCurrentSession().createQuery(
                 "from " + entityClass.getName()
                         + " where lsidAuthority = :lsidAuthority and lsidNamespace = :lsidNamespace "
                         + "and lsidObjectId = :lsidObjectId");
@@ -214,7 +225,7 @@ class SearchDaoImpl extends AbstractCaArrayDaoImpl implements SearchDao {
         StringBuilder queryStr = new StringBuilder("from " + entityClass.getName() + " o where ");
         Map<String, List<? extends Serializable>> idBlocks = new HashMap<String, List<? extends Serializable>>();
         queryStr.append(HibernateHelper.buildInClause(ids, "o.id", idBlocks));
-        Query q = HibernateUtil.getCurrentSession().createQuery(queryStr.toString());
+        Query q = getCurrentSession().createQuery(queryStr.toString());
         HibernateHelper.bindInClauseParameters(q, idBlocks);
         return q.list();
     }
@@ -223,7 +234,7 @@ class SearchDaoImpl extends AbstractCaArrayDaoImpl implements SearchDao {
      * {@inheritDoc}
      */
     public void refresh(PersistentObject o) {
-        HibernateUtil.getCurrentSession().refresh(o);
+        getCurrentSession().refresh(o);
     }
 
     /**
@@ -239,7 +250,7 @@ class SearchDaoImpl extends AbstractCaArrayDaoImpl implements SearchDao {
     @SuppressWarnings(UNCHECKED)
     public <T extends PersistentObject> List<T> retrieveAll(Class<T> entityClass, int maxResults, int firstResult,
             Order... orders) {
-        Criteria crit = HibernateUtil.getCurrentSession().createCriteria(entityClass);
+        Criteria crit = getCurrentSession().createCriteria(entityClass);
         for (Order o : orders) {
             crit.addOrder(o);
         }
@@ -257,7 +268,7 @@ class SearchDaoImpl extends AbstractCaArrayDaoImpl implements SearchDao {
     public <T extends PersistentObject> List<T> filterCollection(Collection<T> collection, String property,
             String value) {
         String hql = MessageFormat.format("where lower({0}) like :value order by {0}", property);
-        Query q = HibernateUtil.getCurrentSession().createFilter(collection, hql);
+        Query q = getCurrentSession().createFilter(collection, hql);
         q.setParameter("value", value.toLowerCase(Locale.ENGLISH) + "%");
         return q.list();
     }
@@ -276,7 +287,7 @@ class SearchDaoImpl extends AbstractCaArrayDaoImpl implements SearchDao {
                 filterQueryStr.append(" desc");
             }
         }
-        Query q = HibernateUtil.getCurrentSession().createFilter(collection, filterQueryStr.toString());
+        Query q = getCurrentSession().createFilter(collection, filterQueryStr.toString());
         q.setFirstResult(pageSortParams.getIndex());
         if (pageSortParams.getPageSize() > 0) {
             q.setMaxResults(pageSortParams.getPageSize());            
@@ -308,7 +319,7 @@ class SearchDaoImpl extends AbstractCaArrayDaoImpl implements SearchDao {
             }
         }
         
-        Query q = HibernateUtil.getCurrentSession().createFilter(collection, filterQueryStr.toString());
+        Query q = getCurrentSession().createFilter(collection, filterQueryStr.toString());
         if (!idBlocks.isEmpty()) {
             HibernateHelper.bindInClauseParameters(q, idBlocks);            
         }
@@ -324,8 +335,8 @@ class SearchDaoImpl extends AbstractCaArrayDaoImpl implements SearchDao {
      * {@inheritDoc}
      */
     public int collectionSize(Collection<? extends PersistentObject> collection) {
-        return ((Number) HibernateUtil.getCurrentSession().createFilter(collection, "select count(this)").iterate()
-                .next()).intValue();
+        return ((Number) getCurrentSession().createFilter(collection, "select count(this)")
+                .iterate().next()).intValue();
     }
 
     /**
@@ -335,7 +346,7 @@ class SearchDaoImpl extends AbstractCaArrayDaoImpl implements SearchDao {
     public List<String> findValuesWithSamePrefix(Class<?> entityClass, String fieldName, String namePrefix) {
         String queryStr =
                 "select " + fieldName + " from " + entityClass.getName() + " where " + fieldName + " like :prefix";
-        Query query = HibernateUtil.getCurrentSession().createQuery(queryStr);
+        Query query = getCurrentSession().createQuery(queryStr);
         query.setString("prefix", namePrefix + "%");
         return query.list();
     }

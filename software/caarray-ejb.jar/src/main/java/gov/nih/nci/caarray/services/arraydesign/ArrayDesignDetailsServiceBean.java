@@ -82,7 +82,7 @@
  */
 package gov.nih.nci.caarray.services.arraydesign;
 
-import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
+import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
 import gov.nih.nci.caarray.services.AuthorizationInterceptor;
@@ -94,6 +94,8 @@ import javax.ejb.Remote;
 import javax.ejb.Stateless;
 import javax.interceptor.Interceptors;
 
+import com.google.inject.Inject;
+
 /**
  * Implementation of the remote API array design detail retrieval subsystem.
  */
@@ -102,27 +104,26 @@ import javax.interceptor.Interceptors;
 @PermitAll
 @Interceptors({ AuthorizationInterceptor.class, HibernateSessionInterceptor.class, EntityConfiguringInterceptor.class })
 public class ArrayDesignDetailsServiceBean implements ArrayDesignDetailsService {
-
-    private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
-
+    private final ArrayDao arrayDao;
+   
+    /**
+     * 
+     * @param arrayDao the ArrayDao dependency
+     */
+    @Inject
+    public ArrayDesignDetailsServiceBean(ArrayDao arrayDao) {
+        this.arrayDao = arrayDao;
+    }
+    
     /**
      * {@inheritDoc}
      */
     public ArrayDesignDetails getDesignDetails(ArrayDesign design) {
-        ArrayDesign retrievedDesign = getDaoFactory().getArrayDao().getArrayDesign(design.getId());
+        ArrayDesign retrievedDesign = arrayDao.getArrayDesign(design.getId());
         if (retrievedDesign != null) {
             return retrievedDesign.getDesignDetails();
         } else {
             return null;
         }
     }
-
-    CaArrayDaoFactory getDaoFactory() {
-        return daoFactory;
-    }
-
-    void setDaoFactory(CaArrayDaoFactory daoFactory) {
-        this.daoFactory = daoFactory;
-    }
-
 }

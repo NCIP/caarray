@@ -11,32 +11,56 @@ import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
 import gov.nih.nci.caarray.domain.array.ExpressionProbeAnnotation;
 import gov.nih.nci.caarray.domain.array.Gene;
 import gov.nih.nci.caarray.domain.array.PhysicalProbe;
-import gov.nih.nci.caarray.util.HibernateUtil;
+import gov.nih.nci.caarray.staticinjection.CaArrayEjbStaticInjectionModule;
+import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
+import gov.nih.nci.caarray.util.CaArrayHibernateHelperModule;
 
 import org.hibernate.Transaction;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
+
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 
 /**
  *
  * @author gax
  */
 public class ProbeHandlerTest extends AbstractServiceTest {
+    private static Injector injector;
+    private static CaArrayHibernateHelper hibernateHelper; 
 
     private Transaction transaction;
-
+    
+    /**
+     * post-construct lifecycle method; intializes the Guice injector that will provide dependencies. 
+     */
+    @BeforeClass
+    public static void init() {
+        injector = createInjector();
+        hibernateHelper = injector.getInstance(CaArrayHibernateHelper.class);
+    }
+    
+    /**
+     * @return a Guice injector from which this will obtain dependencies.
+     */
+    protected static Injector createInjector() {
+        return Guice.createInjector(new CaArrayEjbStaticInjectionModule(), new CaArrayHibernateHelperModule());
+    }
+    
     @Before
     public  void setUp() throws Exception {
-        HibernateUtil.setFiltersEnabled(false);
+        hibernateHelper.setFiltersEnabled(false);
     }
 
     @Test
     public void testMapping() {
-        this.transaction = HibernateUtil.beginTransaction();
+        this.transaction = hibernateHelper.beginTransaction();
 
         ArrayDesignDetails d = new ArrayDesignDetails();
-        HibernateUtil.getCurrentSession().save(d);
-        HibernateUtil.getCurrentSession().flush();
+        hibernateHelper.getCurrentSession().save(d);
+        hibernateHelper.getCurrentSession().flush();
 
         ProbeHandler instance = new ProbeHandler(d, new ArrayDaoStub(), new SearchDaoStub());
         instance.startSection("Probes", 1);

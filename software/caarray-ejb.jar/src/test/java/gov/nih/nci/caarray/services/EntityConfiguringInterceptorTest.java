@@ -89,7 +89,10 @@ import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.security.AttributePolicy;
 import gov.nih.nci.caarray.security.SecurityPolicy;
 import gov.nih.nci.caarray.security.SecurityPolicyMode;
-import gov.nih.nci.caarray.util.HibernateUtil;
+import gov.nih.nci.caarray.staticinjection.CaArrayEjbStaticInjectionModule;
+import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
+import gov.nih.nci.caarray.util.CaArrayHibernateHelperFactory;
+import gov.nih.nci.caarray.util.CaArrayHibernateHelperModule;
 import gov.nih.nci.security.authorization.domainobjects.User;
 
 import java.lang.reflect.Method;
@@ -101,6 +104,10 @@ import java.util.Set;
 import javax.interceptor.InvocationContext;
 
 import org.junit.Test;
+import org.junit.BeforeClass;
+
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 
@@ -108,10 +115,28 @@ import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
  *
  */
 public class EntityConfiguringInterceptorTest extends AbstractCaarrayTest {
-
+    private static Injector injector;
+    private static CaArrayHibernateHelper hibernateHelper; 
+    
+    /**
+     * post-construct lifecycle method; intializes the Guice injector that will provide dependencies. 
+     */
+    @BeforeClass
+    public static void init() {
+        injector = createInjector();
+        hibernateHelper = injector.getInstance(CaArrayHibernateHelper.class);
+    }
+    
+    /**
+     * @return a Guice injector from which this will obtain dependencies.
+     */
+    protected static Injector createInjector() {
+        return Guice.createInjector(new CaArrayEjbStaticInjectionModule(), new CaArrayHibernateHelperModule());
+    }
+    
     @Test
     public void testPrepareReturnValue() throws Exception {
-        HibernateUtil.beginTransaction();
+        hibernateHelper.beginTransaction();
 
         EntityConfiguringInterceptor interceptor = new EntityConfiguringInterceptor();
         TestInvocationContext testContext = new TestInvocationContext();

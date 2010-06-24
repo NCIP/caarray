@@ -89,7 +89,7 @@ import gov.nih.nci.caarray.domain.data.DataSet;
 import gov.nih.nci.caarray.domain.data.DesignElementList;
 import gov.nih.nci.caarray.domain.data.HybridizationData;
 import gov.nih.nci.caarray.util.EntityPruner;
-import gov.nih.nci.caarray.util.HibernateUtil;
+import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
 
 import java.lang.reflect.Method;
 
@@ -98,11 +98,15 @@ import javax.interceptor.InvocationContext;
 
 import org.hibernate.Hibernate;
 
+import com.google.inject.Inject;
+
 /**
  * Ensures that the <code>Hybridizations</code> within a <code>DataSet</code> are made leaves,
  * preventing lazy initialization errors.
  */
 public class DataSetConfiguringInterceptor {
+    @Inject private static CaArrayHibernateHelper hibernateHelper; 
+
     /**
      * Ensures that any object returned and its direct associated entities are loaded.
      *
@@ -121,7 +125,7 @@ public class DataSetConfiguringInterceptor {
         // TODO see EntityConfiguringInterceptor for discussion of hibernate flush/clear issue
 
         // keep hibernate from performing write behind of all the cutting we just did
-        HibernateUtil.getCurrentSession().clear();
+        hibernateHelper.getCurrentSession().clear();
 
         return returnValue;
     }

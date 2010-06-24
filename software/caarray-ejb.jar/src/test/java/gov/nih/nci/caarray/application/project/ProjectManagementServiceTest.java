@@ -96,6 +96,7 @@ import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheStubFactory;
 import gov.nih.nci.caarray.application.project.InconsistentProjectStateException.Reason;
+import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.dao.ProjectDao;
 import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
@@ -118,8 +119,10 @@ import gov.nih.nci.caarray.domain.search.SearchSampleCategory;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.security.Protectable;
 import gov.nih.nci.caarray.security.SecurityUtils;
+import gov.nih.nci.caarray.staticinjection.CaArrayEjbStaticInjectionModule;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
-import gov.nih.nci.caarray.util.HibernateUtil;
+import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
+import gov.nih.nci.caarray.util.CaArrayHibernateHelperModule;
 import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import gov.nih.nci.security.authorization.domainobjects.User;
@@ -137,39 +140,61 @@ import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
 
 @SuppressWarnings("PMD")
 public class ProjectManagementServiceTest extends AbstractServiceTest {
+    private static Injector injector;
+    private static CaArrayHibernateHelper hibernateHelper; 
 
     private ProjectManagementService projectManagementService;
     private final LocalDaoFactoryStub daoFactoryStub = new LocalDaoFactoryStub();
     private final FileAccessServiceStub fileAccessService = new FileAccessServiceStub();
     private final GenericDataService genericDataService = new GenericDataServiceStub();
     private Transaction transaction;
-
+    
+    /**
+     * post-construct lifecycle method; intializes the Guice injector that will provide dependencies. 
+     */
+    @BeforeClass
+    public static void init() {
+        injector = createInjector();
+        hibernateHelper = injector.getInstance(CaArrayHibernateHelper.class);
+    }
+    
+    /**
+     * @return a Guice injector from which this will obtain dependencies.
+     */
+    protected static Injector createInjector() {
+        return Guice.createInjector(new CaArrayEjbStaticInjectionModule(), new CaArrayHibernateHelperModule());
+    }
+    
     @Before
     public void setUpService() {
         UsernameHolder.setUser(STANDARD_USER);
-        ProjectManagementServiceBean projectManagementServiceBean = new ProjectManagementServiceBean();
-        projectManagementServiceBean.setDaoFactory(this.daoFactoryStub);
+        ProjectManagementServiceBean projectManagementServiceBean = new ProjectManagementServiceBean(
+                this.daoFactoryStub.getProjectDao(), this.daoFactoryStub.getFileDao(),
+                this.daoFactoryStub.getSampleDao(), this.daoFactoryStub.getSearchDao());
         ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
         locatorStub.addLookup(FileAccessService.JNDI_NAME, this.fileAccessService);
         locatorStub.addLookup(GenericDataService.JNDI_NAME, this.genericDataService);
         MysqlDataSource ds = new MysqlDataSource();
-        Configuration config = HibernateUtil.getConfiguration();
+        Configuration config = hibernateHelper.getConfiguration();
         ds.setUrl(config.getProperty("hibernate.connection.url"));
         ds.setUser(config.getProperty("hibernate.connection.username"));
         ds.setPassword(config.getProperty("hibernate.connection.password"));
         locatorStub.addLookup("java:jdbc/CaArrayDataSource", ds);
         this.projectManagementService = projectManagementServiceBean;
         locatorStub.addLookup(ProjectManagementService.JNDI_NAME, this.projectManagementService);
-        HibernateUtil.setFiltersEnabled(false);
-        transaction = HibernateUtil.beginTransaction();
+        hibernateHelper.setFiltersEnabled(false);
+        transaction = hibernateHelper.beginTransaction();
         TemporaryFileCacheLocator.setTemporaryFileCacheFactory(new TemporaryFileCacheStubFactory(this.fileAccessService));
         TemporaryFileCacheLocator.resetTemporaryFileCache();
     }
@@ -510,8 +535,7 @@ public class ProjectManagementServiceTest extends AbstractServiceTest {
     @Test(expected = IllegalStateException.class)
     @SuppressWarnings("unchecked")
     public void testGetSampleByExternalIdReturnsNonUniqueResult() throws Exception {
-        ProjectManagementServiceBean bean = (ProjectManagementServiceBean) this.projectManagementService;
-        bean.setDaoFactory(new DaoFactoryStub(){
+        CaArrayDaoFactory daoFactory = new DaoFactoryStub(){
             @Override
             public SearchDao getSearchDao() {
                 return new SearchDaoStub(){
@@ -523,16 +547,17 @@ public class ProjectManagementServiceTest extends AbstractServiceTest {
                     };
                 };
             }
-        });
-        Project project = new Project();
+        };
+        ProjectManagementServiceBean bean = new ProjectManagementServiceBean(daoFactory.getProjectDao(),
+                daoFactory.getFileDao(), daoFactory.getSampleDao(), daoFactory.getSearchDao());
 
-        assertNull(this.projectManagementService.getBiomaterialByExternalId(project, "def", Sample.class));
+        Project project = new Project();
+        assertNull(bean.getBiomaterialByExternalId(project, "def", Sample.class));
     }
 
     @Test
     public void testGetSampleByExternalIdReturnsNull() throws Exception {
-        ProjectManagementServiceBean bean = (ProjectManagementServiceBean) this.projectManagementService;
-        bean.setDaoFactory(new DaoFactoryStub(){
+        CaArrayDaoFactory daoFactory = new DaoFactoryStub() {
             @Override
             public SearchDao getSearchDao() {
                 return new SearchDaoStub(){
@@ -541,16 +566,18 @@ public class ProjectManagementServiceTest extends AbstractServiceTest {
                     };
                 };
             }
-        });
-        Project project = new Project();
+        };
+       ProjectManagementServiceBean bean = new ProjectManagementServiceBean(daoFactory.getProjectDao(),
+                   daoFactory.getFileDao(), daoFactory.getSampleDao(), daoFactory.getSearchDao());
+       
+       Project project = new Project();
 
-        assertNull(this.projectManagementService.getBiomaterialByExternalId(project, "abc", Sample.class));
+        assertNull(bean.getBiomaterialByExternalId(project, "abc", Sample.class));
     }
 
     @Test
     public void testGetSampleByExternalId() throws Exception {
-        ProjectManagementServiceBean bean = (ProjectManagementServiceBean) this.projectManagementService;
-        bean.setDaoFactory(new DaoFactoryStub(){
+        CaArrayDaoFactory daoFactory = new DaoFactoryStub() {
             @Override
             public SearchDao getSearchDao() {
                 return new SearchDaoStub(){
@@ -561,10 +588,13 @@ public class ProjectManagementServiceTest extends AbstractServiceTest {
                     };
                 };
             }
-        });
+        };
+        ProjectManagementServiceBean bean = new ProjectManagementServiceBean(daoFactory.getProjectDao(),
+                daoFactory.getFileDao(), daoFactory.getSampleDao(), daoFactory.getSearchDao());
+        
         Project project = new Project();
 
-        Sample sampleByExternalId = this.projectManagementService.getBiomaterialByExternalId(project, "abc", Sample.class);
+        Sample sampleByExternalId = bean.getBiomaterialByExternalId(project, "abc", Sample.class);
         assertNotNull(sampleByExternalId);
         assertSame(project.getExperiment(), sampleByExternalId.getExperiment());
     }

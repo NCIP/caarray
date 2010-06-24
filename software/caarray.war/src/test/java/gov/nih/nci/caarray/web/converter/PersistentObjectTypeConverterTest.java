@@ -136,8 +136,8 @@ public class PersistentObjectTypeConverterTest extends AbstractCaarrayTest {
          */
         public Object lookup(String jndiName) {
             if (GenericDataService.JNDI_NAME.equals(jndiName)) {
-                GenericDataServiceBean serviceBean = new GenericDataServiceBean();
-                serviceBean.setDaoFactory(this.daoFactoryStub);
+                GenericDataServiceBean serviceBean = new GenericDataServiceBean(this.daoFactoryStub.getSearchDao(),
+                        this.daoFactoryStub.getProjectDao());
                 return serviceBean;
             }
             return null;

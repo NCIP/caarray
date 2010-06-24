@@ -80,13 +80,13 @@
        <comment>GF 18908 - create audit log trail for experiments</comment>
        <sqlFile path="db-upgrade/mysql/2.3.0/18908.sql"/>
     </changeSet>
-    <changeSet id="19498" author="dkokotov">
+    <!--changeSet id="19498" author="dkokotov">
         <preConditions onFail="MARK_RAN">
             <sqlCheck expectedResult="2.2.0.rc3">SELECT raw_value from config_parameter where param='SCHEMA_VERSION'</sqlCheck>
         </preConditions>
        <comment>GF 19498 - fix hybs with missing array designs</comment>
        <customChange class="gov.nih.nci.caarray.upgrade.FixHybridizationsWithMissingArraysMigrator"/>
-    </changeSet>    
+    </changeSet-->    
     <changeSet id="21544" author="dkokotov">
         <preConditions onFail="MARK_RAN">
             <sqlCheck expectedResult="2.2.0.rc3">SELECT raw_value from config_parameter where param='SCHEMA_VERSION'</sqlCheck>

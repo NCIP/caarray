@@ -89,7 +89,6 @@ import gov.nih.nci.caarray.util.io.logging.LogUtil;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.InvalidDataFileException;
 
-import javax.annotation.PostConstruct;
 import javax.ejb.Local;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
@@ -97,8 +96,8 @@ import javax.ejb.TransactionAttributeType;
 
 import org.apache.log4j.Logger;
 
-import com.google.inject.Guice;
-import com.google.inject.Injector;
+import com.google.inject.Inject;
+
 
 /**
  * Entry point to the ArrayDataService subsystem.
@@ -109,27 +108,27 @@ import com.google.inject.Injector;
 @Stateless
 @TransactionAttribute(TransactionAttributeType.SUPPORTS)
 public class ArrayDataServiceBean implements ArrayDataService {
-
     private static final Logger LOG = Logger.getLogger(ArrayDataServiceBean.class);
-
-    private Injector injector;
-
+    
+    private final TypeRegistrationManager tm;
+    private final DataSetImporter dataSetImporter;
+    private final DataSetLoader loader;
+    private final DataFileValidator dataFileValidator;
+   
     /**
-     * post-construct lifecycle method; intializes the Guice injector that will provide dependencies. 
-     */
-    @PostConstruct
-    public void init() {
-        this.injector = createInjector();
-    }
-
-    /**
-     * Subclasses can override this to configure a custom injector, e.g. by overriding some modules with 
-     * stubbed out functionality.
      * 
-     * @return a Guice injector from which this will obtain dependencies.
+     * @param tm the TypeRegistrationManager dependency
+     * @param dataSetImporter the DataSetImporter dependency
+     * @param loader the DataSetLoader dependency
+     * @param dataFileValidator the DataFileValidator dependency
      */
-    protected Injector createInjector() {
-        return Guice.createInjector(new ArrayDataModule());
+    @Inject
+    public ArrayDataServiceBean(TypeRegistrationManager tm, DataSetImporter dataSetImporter, DataSetLoader loader,
+            DataFileValidator dataFileValidator) {
+        this.tm = tm;
+        this.dataSetImporter = dataSetImporter;
+        this.loader = loader;
+        this.dataFileValidator = dataFileValidator;
     }
 
     /**
@@ -138,7 +137,6 @@ public class ArrayDataServiceBean implements ArrayDataService {
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public void initialize() {
         LogUtil.logSubsystemEntry(LOG);
-        TypeRegistrationManager tm = injector.getInstance(TypeRegistrationManager.class);
         tm.registerNewTypes();
         LogUtil.logSubsystemExit(LOG);
     }
@@ -150,9 +148,7 @@ public class ArrayDataServiceBean implements ArrayDataService {
     public void importData(CaArrayFile caArrayFile, boolean createAnnnotation, DataImportOptions dataImportOptions)
             throws InvalidDataFileException {
         LogUtil.logSubsystemEntry(LOG, caArrayFile);
-        DataSetImporter dataSetImporter = injector.getInstance(DataSetImporter.class);
         AbstractArrayData arrayData = dataSetImporter.importData(caArrayFile, dataImportOptions, createAnnnotation);
-        DataSetLoader loader = injector.getInstance(DataSetLoader.class);
         loader.load(arrayData);
         LogUtil.logSubsystemExit(LOG);
     }
@@ -162,7 +158,6 @@ public class ArrayDataServiceBean implements ArrayDataService {
      */
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public FileValidationResult validate(CaArrayFile arrayDataFile, MageTabDocumentSet mTabSet) {
-        DataFileValidator dataFileValidator = injector.getInstance(DataFileValidator.class);
         dataFileValidator.validate(arrayDataFile, mTabSet);
         return arrayDataFile.getValidationResult();
     }

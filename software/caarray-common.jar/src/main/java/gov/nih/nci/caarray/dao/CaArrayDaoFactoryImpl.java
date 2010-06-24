@@ -82,12 +82,18 @@
  */
 package gov.nih.nci.caarray.dao;
 
+import com.google.inject.Inject;
+
+import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
+
 /**
  * Factory used to retrieve DAO instances.
  *
  * @author ETavela
  */
-class CaArrayDaoFactoryImpl implements CaArrayDaoFactory {
+public class CaArrayDaoFactoryImpl implements CaArrayDaoFactory {
+    @Inject
+    private static CaArrayHibernateHelper hibernateHelper;
 
     /**
      * Returns a <code>ProtocolDao</code>.
@@ -95,7 +101,7 @@ class CaArrayDaoFactoryImpl implements CaArrayDaoFactory {
      * @return a <code>ProtocolDao</code>.
      */
     public ProtocolDao getProtocolDao() {
-        return new ProtocolDaoImpl();
+        return new ProtocolDaoImpl(hibernateHelper);
     }
 
     /**
@@ -104,7 +110,7 @@ class CaArrayDaoFactoryImpl implements CaArrayDaoFactory {
      * @return a <code>VocabularyDao</code>.
      */
     public VocabularyDao getVocabularyDao() {
-        return new VocabularyDaoImpl();
+        return new VocabularyDaoImpl(hibernateHelper);
     }
 
     /**
@@ -113,7 +119,7 @@ class CaArrayDaoFactoryImpl implements CaArrayDaoFactory {
      * @return an <code>ArrayDao</code>.
      */
     public ArrayDao getArrayDao() {
-        return new ArrayDaoImpl();
+        return new ArrayDaoImpl(this.getSearchDao(), hibernateHelper);
     }
 
     /**
@@ -122,7 +128,7 @@ class CaArrayDaoFactoryImpl implements CaArrayDaoFactory {
      * @return a <code>ProjectDao</code>.
      */
     public ProjectDao getProjectDao() {
-        return new ProjectDaoImpl();
+        return new ProjectDaoImpl(hibernateHelper);
     }
 
     /**
@@ -131,7 +137,7 @@ class CaArrayDaoFactoryImpl implements CaArrayDaoFactory {
      * @return a <code>SearchDao</code>.
      */
     public SearchDao getSearchDao() {
-        return new SearchDaoImpl();
+        return new SearchDaoImpl(hibernateHelper);
     }
 
     /**
@@ -140,7 +146,7 @@ class CaArrayDaoFactoryImpl implements CaArrayDaoFactory {
      * @return a <code>FileDao</code>.
      */
     public FileDao getFileDao() {
-        return new FileDaoImpl();
+        return new FileDaoImpl(hibernateHelper);
     }
 
     /**
@@ -149,41 +155,41 @@ class CaArrayDaoFactoryImpl implements CaArrayDaoFactory {
      * @return a <code>ContactDao</code>.
      */
     public ContactDao getContactDao() {
-        return new ContactDaoImpl();
+        return new ContactDaoImpl(hibernateHelper);
     }
 
     /**
      * {@inheritDoc}
      */
     public CollaboratorGroupDao getCollaboratorGroupDao() {
-        return new CollaboratorGroupDaoImpl();
+        return new CollaboratorGroupDaoImpl(hibernateHelper);
     }
 
     /**
      * {@inheritDoc}
      */
     public BrowseDao getBrowseDao() {
-        return new BrowseDaoImpl();
+        return new BrowseDaoImpl(this.getSearchDao(), hibernateHelper);
     }
 
     /**
      * {@inheritDoc}
      */
     public SampleDao getSampleDao() {
-        return new SampleDaoImpl();
+        return new SampleDaoImpl(hibernateHelper);
     }
     
     /**
      * {@inheritDoc}
      */
     public HybridizationDao getHybridizationDao() {
-        return new HybridizationDaoImpl();
+        return new HybridizationDaoImpl(hibernateHelper);
     }
 
     /**
      * {@inheritDoc}
      */
     public AuditLogDao getAuditLogDao() {
-        return new AuditLogDaoImpl();
+        return new AuditLogDaoImpl(hibernateHelper);
     }
 }

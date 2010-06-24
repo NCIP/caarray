@@ -84,7 +84,7 @@ package gov.nih.nci.caarray.dao;
 
 import static org.junit.Assert.assertEquals;
 import gov.nih.nci.caarray.domain.contact.Organization;
-import gov.nih.nci.caarray.util.HibernateUtil;
+import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
 
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -94,17 +94,16 @@ import org.junit.Test;
  * Test cases
  */
 public class ContactDaoTest extends AbstractDaoTest {
-
     private static final ContactDao DAO_OBJECT = CaArrayDaoFactory.INSTANCE.getContactDao();
 
     @Test
     public void testGetAllProviders() {
-        Transaction tx = HibernateUtil.beginTransaction();
+        Transaction tx = hibernateHelper.beginTransaction();
         assertEquals(0, DAO_OBJECT.getAllProviders().size());
         tx.commit();
 
-        tx = HibernateUtil.beginTransaction();
-        Session s = HibernateUtil.getCurrentSession();
+        tx = hibernateHelper.beginTransaction();
+        Session s = hibernateHelper.getCurrentSession();
         Organization o = new Organization();
         o.setName("Foo");
         o.setEmail("foo@bar.org");
@@ -113,8 +112,8 @@ public class ContactDaoTest extends AbstractDaoTest {
         tx.commit();
 
 
-        tx = HibernateUtil.beginTransaction();
-        s = HibernateUtil.getCurrentSession();
+        tx = hibernateHelper.beginTransaction();
+        s = hibernateHelper.getCurrentSession();
         assertEquals(1, DAO_OBJECT.getAllProviders().size());
         assertEquals("Foo", DAO_OBJECT.getAllProviders().get(0).getName());
         tx.commit();

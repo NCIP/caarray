@@ -86,7 +86,7 @@ import gov.nih.nci.caarray.domain.protocol.Parameter;
 import gov.nih.nci.caarray.domain.protocol.Protocol;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
-import gov.nih.nci.caarray.util.HibernateUtil;
+import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
 
 import java.util.List;
 
@@ -97,6 +97,8 @@ import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 
+import com.google.inject.Inject;
+
 /**
  * DAO for entities in the <code>gov.nih.nci.caarray.domain.protocol</code> package.
  *
@@ -105,6 +107,15 @@ import org.hibernate.criterion.Restrictions;
 class ProtocolDaoImpl extends AbstractCaArrayDaoImpl implements ProtocolDao {
     private static final String NAME_FIELD = "name";
 
+    /**
+     * 
+     * @param hibernateHelper the CaArrayHibernateHelper dependency
+     */
+    @Inject
+    public ProtocolDaoImpl(CaArrayHibernateHelper hibernateHelper) {
+        super(hibernateHelper);
+    }
+   
     /**
      * {@inheritDoc}
      */
@@ -125,7 +136,7 @@ class ProtocolDaoImpl extends AbstractCaArrayDaoImpl implements ProtocolDao {
      */
     @SuppressWarnings("unchecked")
     public List<Protocol> getProtocols(Term type, String name) {
-        Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(Protocol.class);
+        Criteria criteria = getCurrentSession().createCriteria(Protocol.class);
         criteria.add(Restrictions.eq("type", type));
         if (StringUtils.isNotBlank(name)) {
             criteria.add(Restrictions.like(NAME_FIELD, name, MatchMode.START).ignoreCase());

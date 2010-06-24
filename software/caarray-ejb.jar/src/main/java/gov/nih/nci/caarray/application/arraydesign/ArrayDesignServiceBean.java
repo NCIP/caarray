@@ -104,7 +104,6 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import javax.annotation.PostConstruct;
 import javax.ejb.Local;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
@@ -114,8 +113,8 @@ import org.apache.log4j.Logger;
 import org.hibernate.criterion.Order;
 import org.jboss.annotation.ejb.TransactionTimeout;
 
-import com.google.inject.Guice;
-import com.google.inject.Injector;
+import com.google.inject.Inject;
+
 
 /**
  * Implementation entry point for the ArrayDesign subsystem.
@@ -130,40 +129,25 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
     static final int TIMEOUT_SECONDS = 1800;
     static final int DELETE_ARRAY_DELETE_TIMEOUT_SECONDS = 7200;
 
-    private Injector injector;
+    private final ArrayDao arrayDao;
+    private final SearchDao searchDao;
+    private final ContactDao contactDao;
+    private final ArrayDesignPlatformFacade arrayDesignPlatformFacade;
     
     /**
-     * post-construct lifecycle method; intializes the Guice injector that will provide dependencies. 
-     */
-    @PostConstruct
-    public void init() {
-        this.injector = createInjector();
-    }
-    
-    /**
-     * Subclasses can override this to configure a custom injector, e.g. by overriding some modules with 
-     * stubbed out functionality.
      * 
-     * @return a Guice injector from which this will obtain dependencies.
+     * @param arrayDao the ArrayDao dependency
+     * @param searchDao the SearchDao dependency 
+     * @param contactDao the ContactDao dependency
+     * @param arrayDesignPlatformFacade the ArrayDesignPlatformFacade dependency
      */
-    protected Injector createInjector() {
-        return Guice.createInjector(new ArrayDesignModule());
-    }
-    
-    private ArrayDao getArrayDao() {
-        return injector.getInstance(ArrayDao.class);
-    }
-    
-    private SearchDao getSearchDao() {
-        return injector.getInstance(SearchDao.class);        
-    }
-
-    private ContactDao getContactDao() {
-        return injector.getInstance(ContactDao.class);        
-    }
-
-    private ArrayDesignPlatformFacade getFacade() {
-        return injector.getInstance(ArrayDesignPlatformFacade.class);
+    @Inject
+    public ArrayDesignServiceBean(ArrayDao arrayDao, SearchDao searchDao, ContactDao contactDao,
+            ArrayDesignPlatformFacade arrayDesignPlatformFacade) {
+        this.arrayDao = arrayDao;
+        this.searchDao = searchDao;
+        this.contactDao = contactDao;
+        this.arrayDesignPlatformFacade = arrayDesignPlatformFacade;
     }
     
     /**
@@ -172,7 +156,7 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public ValidationResult validateDesign(Set<CaArrayFile> designFiles) {
         LogUtil.logSubsystemEntry(LOG, designFiles);
-        ValidationResult result = getFacade().validateDesignFiles(designFiles);
+        ValidationResult result = arrayDesignPlatformFacade.validateDesignFiles(designFiles);
         LogUtil.logSubsystemExit(LOG);
         return result;
     }
@@ -183,7 +167,7 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public ValidationResult validateDesign(ArrayDesign design) {
         LogUtil.logSubsystemEntry(LOG, design);
-        ValidationResult result = getFacade().validateDesignFiles(design.getDesignFiles());
+        ValidationResult result = arrayDesignPlatformFacade.validateDesignFiles(design.getDesignFiles());
         FileValidationResult duplicateResult = validateDuplicate(design);
         result.addFile(duplicateResult.getFile(), duplicateResult);
         LogUtil.logSubsystemExit(LOG);
@@ -202,8 +186,8 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
                     + " and provider " + arrayDesign.getProvider().getName());
             designFile.setFileStatus(FileStatus.VALIDATION_ERRORS);
             designFile.setValidationResult(result);
-            getArrayDao().save(designFile);
-            getArrayDao().flushSession();
+            arrayDao.save(designFile);
+            arrayDao.flushSession();
         }
         return result;
     }
@@ -213,7 +197,7 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
      */
     public boolean isDuplicate(ArrayDesign arrayDesign) {
         List<ArrayDesign> providerDesigns =
-            getArrayDao().getArrayDesigns(arrayDesign.getProvider(), null, false);
+            arrayDao.getArrayDesigns(arrayDesign.getProvider(), null, false);
         for (ArrayDesign providerDesign : providerDesigns) {
             if (!arrayDesign.equals(providerDesign)
                     && arrayDesign.getName().equalsIgnoreCase(providerDesign.getName())) {
@@ -237,18 +221,18 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
         String lsid = arrayDesign.getLsid();
         String tmpLsid = lsid + "tmp";
         arrayDesign.setLsidForEntity(tmpLsid);
-        getArrayDao().save(arrayDesign);
-        getArrayDao().flushSession();
-        ArrayDesignPlatformFacade facade = getFacade();
+        arrayDao.save(arrayDesign);
+        arrayDao.flushSession();
+        ArrayDesignPlatformFacade facade = arrayDesignPlatformFacade;
         if (facade.validateDesignFiles(arrayDesign.getDesignFiles()).isValid()) {
             facade.importDesign(arrayDesign);
             if (validateDuplicate(arrayDesign).isValid()) {
-                getArrayDao().save(arrayDesign);
+                arrayDao.save(arrayDesign);
             }
         }
         if (tmpLsid.equals(arrayDesign.getLsid())) {
             arrayDesign.setLsidForEntity(lsid);
-            getArrayDao().save(arrayDesign);
+            arrayDao.save(arrayDesign);
         }
         LogUtil.logSubsystemExit(LOG);
     }
@@ -271,11 +255,11 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
 
         ArrayDesignDetails designDetails = arrayDesign.getDesignDetails();
         if (designDetails != null) {
-            getArrayDao().deleteArrayDesignDetails(arrayDesign);
-            getArrayDao().flushSession();
+            arrayDao.deleteArrayDesignDetails(arrayDesign);
+            arrayDao.flushSession();
         }
 
-        getFacade().importDesignDetails(arrayDesign);
+        arrayDesignPlatformFacade.importDesignDetails(arrayDesign);
         LogUtil.logSubsystemExit(LOG);
     }
 
@@ -284,7 +268,7 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
      */
     public List<Organization> getAllProviders() {
         LogUtil.logSubsystemEntry(LOG);
-        List<Organization> orgs = getContactDao().getAllProviders();
+        List<Organization> orgs = contactDao.getAllProviders();
         LogUtil.logSubsystemExit(LOG);
         return orgs;
     }
@@ -294,7 +278,7 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
      */
     public List<ArrayDesign> getImportedArrayDesigns(Organization provider, Set<AssayType> assayTypes) {
         LogUtil.logSubsystemEntry(LOG);
-        List<ArrayDesign> designs = getArrayDao().getArrayDesigns(provider, assayTypes, true);
+        List<ArrayDesign> designs = arrayDao.getArrayDesigns(provider, assayTypes, true);
         LogUtil.logSubsystemExit(LOG);
         return designs;
     }
@@ -303,14 +287,14 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
      * {@inheritDoc}
      */
     public ArrayDesign getArrayDesign(Long id) {
-        return getArrayDao().getArrayDesign(id);
+        return arrayDao.getArrayDesign(id);
     }
 
     /**
      * {@inheritDoc}
      */
     public ArrayDesign getArrayDesign(String lsidAuthority, String lsidNamespace, String lsidObjectId) {
-        return getArrayDao().getArrayDesign(lsidAuthority, lsidNamespace, lsidObjectId);
+        return arrayDao.getArrayDesign(lsidAuthority, lsidNamespace, lsidObjectId);
     }
 
     /**
@@ -318,7 +302,7 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
      */
     public List<ArrayDesign> getArrayDesigns() {
         LogUtil.logSubsystemEntry(LOG);
-        List<ArrayDesign> designs = getSearchDao().retrieveAll(ArrayDesign.class, Order.asc("name"));
+        List<ArrayDesign> designs = searchDao.retrieveAll(ArrayDesign.class, Order.asc("name"));
         LogUtil.logSubsystemExit(LOG);
         return designs;
     }
@@ -327,7 +311,7 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
      * {@inheritDoc}
      */
     public boolean isArrayDesignLocked(Long id) {
-        return getArrayDao().isArrayDesignLocked(id);
+        return arrayDao.isArrayDesignLocked(id);
     }
 
     /**
@@ -351,9 +335,9 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
                 throw new IllegalAccessException("Cannot modify locked fields on an array design");
             }
             LogUtil.logSubsystemExit(LOG);
-            return (ArrayDesign) getArrayDao().mergeObject(arrayDesign);
+            return (ArrayDesign) arrayDao.mergeObject(arrayDesign);
         } else {
-            getArrayDao().save(arrayDesign);
+            arrayDao.save(arrayDesign);
             LogUtil.logSubsystemExit(LOG);
             return arrayDesign;
         }
@@ -369,13 +353,13 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
         Organization provider = arrayDesign.getProvider();
         SortedSet<AssayType> assayTypes = new TreeSet<AssayType>(arrayDesign.getAssayTypes());
         Set<CaArrayFile> designFiles = new HashSet<CaArrayFile>(arrayDesign.getDesignFiles());
-        getArrayDao().evictObject(arrayDesign);
+        arrayDao.evictObject(arrayDesign);
         ArrayDesign loadedArrayDesign = getArrayDesign(arrayDesign.getId());
         if (!loadedArrayDesign.getProvider().equals(provider) || !loadedArrayDesign.getAssayTypes().equals(assayTypes)
                 || !loadedArrayDesign.getDesignFiles().equals(designFiles)) {
             return false;
         }
-        getArrayDao().evictObject(loadedArrayDesign);
+        arrayDao.evictObject(loadedArrayDesign);
         return true;
     }
 
@@ -383,7 +367,7 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
      * {@inheritDoc}
      */
     public DesignElementList getDesignElementList(String lsidAuthority, String lsidNamespace, String lsidObjectId) {
-        return getArrayDao().getDesignElementList(lsidAuthority, lsidNamespace, lsidObjectId);
+        return arrayDao.getDesignElementList(lsidAuthority, lsidNamespace, lsidObjectId);
     }
 
     /**
@@ -402,7 +386,7 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
                     + "imported or that is associated with one or more experiments.");
         }
 
-        if (getArrayDao().getArrayDesigns(arrayDesign.getDesignDetails()).size() > 1) {
+        if (arrayDao.getArrayDesigns(arrayDesign.getDesignDetails()).size() > 1) {
             // if there's more than one array design for the design details, we don't want to delete the details
             // or the files, just the array design itself, because other array designs share the files and details.
             LOG.debug("Deleting just the array design object");
@@ -410,9 +394,9 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
             arrayDesign.setDesignDetails(null);
         } else {
             LOG.debug("Deleting the array design and the array design details");
-            getArrayDao().deleteArrayDesignDetails(arrayDesign);
+            arrayDao.deleteArrayDesignDetails(arrayDesign);
         }
-        getArrayDao().remove(arrayDesign);
+        arrayDao.remove(arrayDesign);
     }
 
 
@@ -420,6 +404,6 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
      * {@inheritDoc}
      */
     public List<ArrayDesign> getArrayDesignsWithReImportableFiles() {
-        return getArrayDao().getArrayDesignsWithReImportable();
+        return arrayDao.getArrayDesignsWithReImportable();
     }
 }

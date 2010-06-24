@@ -27,7 +27,7 @@ import gov.nih.nci.caarray.magetab.io.JavaIOFileRef;
 import gov.nih.nci.caarray.magetab.sdrf.SdrfDocument;
 import gov.nih.nci.caarray.test.data.arraydata.IlluminaArrayDataFiles;
 import gov.nih.nci.caarray.test.data.magetab.SdrfTestFiles;
-import gov.nih.nci.caarray.util.HibernateUtil;
+import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.ValidationMessage;
 
@@ -47,7 +47,6 @@ import org.junit.Test;
  * @author gax
  */
 public class IlluminaGenotypingProcessedMatrixHandlerIntegrationTest extends AbstractServiceIntegrationTest  {
-
     ArrayDataServiceTest helper = new ArrayDataServiceTest();
 
     @Test
@@ -92,7 +91,7 @@ public class IlluminaGenotypingProcessedMatrixHandlerIntegrationTest extends Abs
 
     @Test
     public void test1() throws Exception {
-        Transaction tx = HibernateUtil.beginTransaction();
+        Transaction tx = hibernateHelper.beginTransaction();
         setup();
 
         CaArrayFile f = helper.getDataCaArrayFile(IlluminaArrayDataFiles.ILLUMINA_DERIVED_1_HYB, FileType.ILLUMINA_GENOTYPING_PROCESSED_MATRIX_TXT);
@@ -120,7 +119,7 @@ public class IlluminaGenotypingProcessedMatrixHandlerIntegrationTest extends Abs
 
     @Test
     public void test2() throws Exception {
-        Transaction tx = HibernateUtil.beginTransaction();
+        Transaction tx = hibernateHelper.beginTransaction();
         setup();
 
         CaArrayFile f = helper.getDataCaArrayFile(IlluminaArrayDataFiles.ILLUMINA_DERIVED_2_HYB, FileType.ILLUMINA_GENOTYPING_PROCESSED_MATRIX_TXT);

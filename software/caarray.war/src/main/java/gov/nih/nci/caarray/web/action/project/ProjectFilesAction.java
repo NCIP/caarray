@@ -97,7 +97,7 @@ import gov.nih.nci.caarray.domain.project.ExperimentDesignNodeType;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
 import gov.nih.nci.caarray.security.SecurityUtils;
-import gov.nih.nci.caarray.util.HibernateUtil;
+import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
 import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.web.fileupload.MonitoredMultiPartRequest;
 import gov.nih.nci.caarray.web.helper.DownloadHelper;
@@ -127,6 +127,7 @@ import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 
 import com.fiveamsolutions.nci.commons.web.struts2.action.ActionHelper;
+import com.google.inject.Inject;
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.Preparable;
@@ -142,6 +143,7 @@ import com.opensymphony.xwork2.validator.annotations.Validations;
 @Validations(expressions = @ExpressionValidator(message = "Files must be selected for this operation.",
         expression = "selectedFiles.size() > 0"))
 public class ProjectFilesAction extends AbstractBaseProjectAction implements Preparable {
+    @Inject private static CaArrayHibernateHelper hibernateHelper; 
     private static final Logger LOG = Logger.getLogger(ProjectFilesAction.class);
 
     /**
@@ -795,7 +797,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
      * This method refreshes the project from the db. It is in its own method to allow test cases to overwrite this.
      */
     protected void refreshProject() {
-        HibernateUtil.getCurrentSession().refresh(getProject());
+        hibernateHelper.getCurrentSession().refresh(getProject());
     }
 
     /**

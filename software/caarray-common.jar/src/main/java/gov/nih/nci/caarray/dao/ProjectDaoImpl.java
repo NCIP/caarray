@@ -82,6 +82,8 @@
  */
 package gov.nih.nci.caarray.dao;
 
+import gov.nih.nci.caarray.domain.file.FileStatus;
+import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.permissions.AccessProfile;
 import gov.nih.nci.caarray.domain.permissions.SecurityLevel;
 import gov.nih.nci.caarray.domain.project.AssayType;
@@ -99,7 +101,7 @@ import gov.nih.nci.caarray.domain.search.ExperimentSearchCriteria;
 import gov.nih.nci.caarray.domain.search.SearchCategory;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.security.SecurityUtils;
-import gov.nih.nci.caarray.util.HibernateUtil;
+import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
 import gov.nih.nci.caarray.util.UnfilteredCallback;
 import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionElement;
@@ -127,8 +129,7 @@ import org.hibernate.criterion.Restrictions;
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
 import com.fiveamsolutions.nci.commons.data.search.SortCriterion;
-import gov.nih.nci.caarray.domain.file.FileStatus;
-import gov.nih.nci.caarray.domain.file.FileType;
+import com.google.inject.Inject;
 
 /**
  * DAO for entities in the <code>gov.nih.nci.caarray.domain.project</code> package.
@@ -152,6 +153,16 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
     }
 
     /**
+     * 
+     * @param hibernateHelper the CaArrayHibernateHelper dependency
+     * @return 
+     */
+    @Inject
+    public ProjectDaoImpl(CaArrayHibernateHelper hibernateHelper) {
+        super(hibernateHelper);
+    }
+   
+   /**
      * Saves a project by first updating the lastUpdated field, and then saves the entity to persistent storage,
      * updating or inserting as necessary.
      *
@@ -171,7 +182,7 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
      * {@inheritDoc}
      */
     public Project getProjectByPublicId(String publicId) {
-        Criteria c = HibernateUtil.getCurrentSession().createCriteria(Project.class);
+        Criteria c = getCurrentSession().createCriteria(Project.class);
         c.createCriteria("experiment").add(Restrictions.eq("publicIdentifier", publicId).ignoreCase());
         return (Project) c.uniqueResult();
     }
@@ -300,7 +311,7 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
                 sb.append(" desc");
             }
         }
-        Query q = HibernateUtil.getCurrentSession().createQuery(sb.toString());
+        Query q = getCurrentSession().createQuery(sb.toString());
         q.setString("keyword", "%" + StringUtils.defaultString(keyword) + "%");
         return q;
     }
@@ -374,9 +385,9 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
             }
         }
         
-        Query q = HibernateUtil.getCurrentSession().createQuery(
+        Query q = getCurrentSession().createQuery(
                 from.append(" ").append(where).append(" ").append(toHqlOrder(params)).toString());
-        HibernateUtil.setQueryParams(queryParams, q);
+        getHibernateHelper().setQueryParams(queryParams, q);
         q.setFirstResult(params.getIndex());
         if (params.getPageSize() > 0) {
             q.setMaxResults(params.getPageSize());
@@ -391,7 +402,8 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
         if (!values.isEmpty()) {            
             from.append(" INNER JOIN e.biomaterials ").append(bmAlias);
             from.append(" INNER JOIN ").append(bmAlias).append(".").append(assocPath).append(" ").append(alias);
-            where.append(" AND (").append(HibernateUtil.buildInClause(values, alias + ".value", blocks)).append(")");
+            where.append(" AND (").append(getHibernateHelper().buildInClauses(values, alias + ".value", blocks))
+                .append(")");
         }
     }
 
@@ -422,7 +434,8 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
     @SuppressWarnings(UNCHECKED)
     public List<Term> getCellTypesForExperiment(Experiment experiment) {
         String hsql = MessageFormat.format(TERM_FOR_EXPERIMENT_HSQL, "cellType", SOURCES);
-        return HibernateUtil.getCurrentSession().createQuery(hsql).setLong(EXP_ID_PARAM, experiment.getId()).list();
+        return getCurrentSession().createQuery(hsql)
+        .setLong(EXP_ID_PARAM, experiment.getId()).list();
     }
 
     /**
@@ -431,7 +444,8 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
     @SuppressWarnings(UNCHECKED)
     public List<Term> getDiseaseStatesForExperiment(Experiment experiment) {
         String hsql = MessageFormat.format(TERM_FOR_EXPERIMENT_HSQL, "diseaseState", SOURCES);
-        return HibernateUtil.getCurrentSession().createQuery(hsql).setLong(EXP_ID_PARAM, experiment.getId()).list();
+        return getCurrentSession().createQuery(hsql)
+        .setLong(EXP_ID_PARAM, experiment.getId()).list();
     }
 
     /**
@@ -440,7 +454,8 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
     @SuppressWarnings(UNCHECKED)
     public List<Term> getTissueSitesForExperiment(Experiment experiment) {
         String hsql = MessageFormat.format(TERM_FOR_EXPERIMENT_HSQL, "tissueSite", SOURCES);
-        return HibernateUtil.getCurrentSession().createQuery(hsql).setLong(EXP_ID_PARAM, experiment.getId()).list();
+        return getCurrentSession().createQuery(hsql)
+        .setLong(EXP_ID_PARAM, experiment.getId()).list();
     }
 
     /**
@@ -454,8 +469,8 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
         Set<Term> types = new HashSet<Term>();
         for (String biomaterial : BIOMATERIALS) {
             String hsql = MessageFormat.format(TERM_FOR_EXPERIMENT_HSQL, "materialType", biomaterial);
-            types.addAll(HibernateUtil.getCurrentSession().createQuery(hsql).setLong(EXP_ID_PARAM, experiment.getId())
-                    .list());
+            types.addAll(getCurrentSession().createQuery(hsql)
+                    .setLong(EXP_ID_PARAM, experiment.getId()).list());
         }
         return new ArrayList<Term>(types);
     }
@@ -466,7 +481,7 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
     @SuppressWarnings(UNCHECKED)
     public List<AssayType> getAssayTypes() {
         String queryString = "from " + AssayType.class.getName() + " c order by c.name asc";
-        return HibernateUtil.getCurrentSession().createQuery(queryString).setCacheable(true).list();
+        return getCurrentSession().createQuery(queryString).setCacheable(true).list();
     }
 
     /**
@@ -482,7 +497,8 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
             }
         };
         @SuppressWarnings(UNCHECKED)        
-        List<AbstractBioMaterial> bms = (List<AbstractBioMaterial>) HibernateUtil.doUnfiltered(unfilteredCallback);
+        List<AbstractBioMaterial> bms = (List<AbstractBioMaterial>) getHibernateHelper()
+        .doUnfiltered(unfilteredCallback);
         return new HashSet<AbstractBioMaterial>(bms);
     }
 
@@ -522,7 +538,7 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
         }
         String queryString = "from " + bioMaterialClass.getName()
                 + " b where b.experiment = :experiment and b.name = :name";
-        Query query = HibernateUtil.getCurrentSession().createQuery(queryString);
+        Query query = getCurrentSession().createQuery(queryString);
         query.setParameter("experiment", experiment);
         query.setString("name", bioMaterialName);
         return (T) query.uniqueResult();
@@ -531,10 +547,11 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
     /**
      * {@inheritDoc}
      */
+    @SuppressWarnings("unchecked")
     public List<Project> getProjectsWithReImportable() {
         String q = "select distinct p from " + Project.class.getName()
                 + " p left join p.files f where f.status = :status and f.type in (:types) order by p.id";
-        Query query = HibernateUtil.getCurrentSession().createQuery(q);
+        Query query = getCurrentSession().createQuery(q);
         query.setParameter("status",  FileStatus.IMPORTED_NOT_PARSED.name());
         query.setParameterList("types", PARSEABLE_ARRAY_DATA_FILE_TYPE_NAMES);
         return (List<Project>) query.list();

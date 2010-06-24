@@ -84,11 +84,12 @@ package gov.nih.nci.caarray.application.permissions;
 
 import gov.nih.nci.caarray.application.ExceptionLoggingInterceptor;
 import gov.nih.nci.caarray.application.GenericDataService;
-import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
+import gov.nih.nci.caarray.dao.CollaboratorGroupDao;
+import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.domain.permissions.AccessProfile;
 import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
 import gov.nih.nci.caarray.security.SecurityUtils;
-import gov.nih.nci.caarray.util.HibernateUtil;
+import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
 import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
 import gov.nih.nci.security.AuthorizationManager;
@@ -116,6 +117,8 @@ import javax.interceptor.Interceptors;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.log4j.Logger;
 
+import com.google.inject.Inject;
+
 /**
  * Local implementation of interface.
  */
@@ -127,10 +130,25 @@ public class PermissionsManagementServiceBean implements PermissionsManagementSe
 
     private static final Logger LOG = Logger.getLogger(PermissionsManagementServiceBean.class);
 
-    private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
-
     @EJB private GenericDataService genericDataService;
-
+    
+    private final CaArrayHibernateHelper hibernateHelper; 
+    private final CollaboratorGroupDao collaboratorGroupDao;
+    private final SearchDao searchDao;
+    
+    /**
+     * @param hibernateHelper the CaArrayHibernateHelper dependency
+     * @param collaboratorGroupDao the CollaboratorGroupDao dependency
+     * @param searchDao the SearchDao dependency
+     */
+    @Inject
+    public PermissionsManagementServiceBean(CaArrayHibernateHelper hibernateHelper,
+            CollaboratorGroupDao collaboratorGroupDao, SearchDao searchDao) {
+        this.hibernateHelper = hibernateHelper;
+        this.collaboratorGroupDao = collaboratorGroupDao;
+        this.searchDao = searchDao;
+    }
+    
     /**
      * {@inheritDoc}
      */
@@ -172,7 +190,7 @@ public class PermissionsManagementServiceBean implements PermissionsManagementSe
     @TransactionAttribute(TransactionAttributeType.SUPPORTS)
     public List<CollaboratorGroup> getCollaboratorGroups() {
         LogUtil.logSubsystemEntry(LOG);
-        List<CollaboratorGroup> result = getDaoFactory().getCollaboratorGroupDao().getAll();
+        List<CollaboratorGroup> result = collaboratorGroupDao.getAll();
         LogUtil.logSubsystemExit(LOG);
         return result;
     }
@@ -183,23 +201,9 @@ public class PermissionsManagementServiceBean implements PermissionsManagementSe
     @TransactionAttribute(TransactionAttributeType.SUPPORTS)
     public List<CollaboratorGroup> getCollaboratorGroupsForCurrentUser() {
         LogUtil.logSubsystemEntry(LOG);
-        List<CollaboratorGroup> result = getDaoFactory().getCollaboratorGroupDao().getAllForCurrentUser();
+        List<CollaboratorGroup> result = collaboratorGroupDao.getAllForCurrentUser();
         LogUtil.logSubsystemExit(LOG);
         return result;
-    }
-
-    /**
-     * @return the daoFactory
-     */
-    public CaArrayDaoFactory getDaoFactory() {
-        return daoFactory;
-    }
-
-    /**
-     * @param daoFactory the daoFactory to set
-     */
-    public void setDaoFactory(CaArrayDaoFactory daoFactory) {
-        this.daoFactory = daoFactory;
     }
 
     /**
@@ -216,7 +220,7 @@ public class PermissionsManagementServiceBean implements PermissionsManagementSe
         User user = UsernameHolder.getCsmUser();
 
         CollaboratorGroup cg = new CollaboratorGroup(group, user);
-        getDaoFactory().getCollaboratorGroupDao().save(cg);
+        collaboratorGroupDao.save(cg);
 
         LogUtil.logSubsystemExit(LOG);
         return cg;
@@ -287,7 +291,7 @@ public class PermissionsManagementServiceBean implements PermissionsManagementSe
         
         Group g = targetGroup.getGroup();
         g.setGroupName(groupName);
-        HibernateUtil.getCurrentSession().update(g);
+        hibernateHelper.getCurrentSession().update(g);
         LogUtil.logSubsystemExit(LOG);
     }
 
@@ -339,7 +343,7 @@ public class PermissionsManagementServiceBean implements PermissionsManagementSe
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public void saveAccessProfile(AccessProfile profile) {
         LogUtil.logSubsystemEntry(LOG, profile);
-        getDaoFactory().getCollaboratorGroupDao().save(profile);
+        collaboratorGroupDao.save(profile);
         LogUtil.logSubsystemExit(LOG);
     }
 
@@ -350,13 +354,13 @@ public class PermissionsManagementServiceBean implements PermissionsManagementSe
     public void changeOwner(Long targetGroupId, String username) throws CSException {
         LogUtil.logSubsystemEntry(LOG, targetGroupId, username);
         AuthorizationManager am = SecurityUtils.getAuthorizationManager();
-        CollaboratorGroup cg = getDaoFactory().getSearchDao().retrieve(CollaboratorGroup.class, targetGroupId);
+        CollaboratorGroup cg = searchDao.retrieve(CollaboratorGroup.class, targetGroupId);
         User newOwner = am.getUser(username);
         cg.setOwner(newOwner);
 
         SecurityUtils.changeOwner(cg, newOwner);
 
-        getDaoFactory().getCollaboratorGroupDao().save(cg);
+        collaboratorGroupDao.save(cg);
         LogUtil.logSubsystemExit(LOG);
     }
 
@@ -365,7 +369,7 @@ public class PermissionsManagementServiceBean implements PermissionsManagementSe
      */
     public List<CollaboratorGroup> getCollaboratorGroupsForOwner(long userId) {
         LogUtil.logSubsystemEntry(LOG, userId);
-        List<CollaboratorGroup> result = getDaoFactory().getCollaboratorGroupDao().getAllForUser(userId);
+        List<CollaboratorGroup> result = collaboratorGroupDao.getAllForUser(userId);
         LogUtil.logSubsystemExit(LOG);
         return result;
     }

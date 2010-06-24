@@ -83,7 +83,6 @@
 package gov.nih.nci.caarray.application.browse;
 
 import gov.nih.nci.caarray.dao.BrowseDao;
-import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.search.BrowseCategory;
 
@@ -95,6 +94,7 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 
 import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
+import com.google.inject.Inject;
 
 /**
  * @author Winston Cheng
@@ -104,54 +104,55 @@ import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
 @Stateless
 @TransactionAttribute(TransactionAttributeType.SUPPORTS)
 public class BrowseServiceBean implements BrowseService {
-    private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
-
-    private BrowseDao getBrowseDao() {
-        return this.daoFactory.getBrowseDao();
-    }
+    private final BrowseDao browseDao;
     
-    void setDaoFactory(CaArrayDaoFactory daoFactory) {
-        this.daoFactory = daoFactory;
+    /**
+     * 
+     * @param browseDao the browseDao dependency
+     */
+    @Inject
+    public BrowseServiceBean(BrowseDao browseDao) {
+        this.browseDao = browseDao;
     }
-
+ 
     /**
      * {@inheritDoc}
      */
     public int countByBrowseCategory(BrowseCategory cat) {
-        return getBrowseDao().countByBrowseCategory(cat);
+        return browseDao.countByBrowseCategory(cat);
     }
 
     /**
      * {@inheritDoc}
      */
     public int hybridizationCount() {
-        return getBrowseDao().hybridizationCount();
+        return browseDao.hybridizationCount();
     }
 
     /**
      * {@inheritDoc}
      */
     public int userCount() {
-        return getBrowseDao().userCount();
+        return browseDao.userCount();
     }
 
     /**
      * {@inheritDoc}
      */
     public List<Object[]> tabList(BrowseCategory cat) {
-        return getBrowseDao().tabList(cat);
+        return browseDao.tabList(cat);
     }
     /**
      * {@inheritDoc}
      */
     public List<Project> browseList(PageSortParams<Project> params, BrowseCategory cat, Number fieldId) {
-        return getBrowseDao().browseList(params, cat, fieldId);
+        return browseDao.browseList(params, cat, fieldId);
     }
 
     /**
      * {@inheritDoc}
      */
     public int browseCount(BrowseCategory cat, Number fieldId) {
-        return getBrowseDao().browseCount(cat, fieldId);
+        return browseDao.browseCount(cat, fieldId);
     }
 }

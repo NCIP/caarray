@@ -82,7 +82,7 @@
  */
 package gov.nih.nci.caarray.web.filter;
 
-import gov.nih.nci.caarray.util.HibernateUtil;
+import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
 
 import java.io.IOException;
 
@@ -93,6 +93,8 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
+import com.google.inject.Inject;
+
 /**
  * A Filter that enables OpenSessionInView behavior. It leverages the contextual session facility
  * in Hibernate, opening a session at the beginning of a request and closing it at the end
@@ -102,6 +104,7 @@ import javax.servlet.ServletResponse;
  * @author Dan Kokotov
  */
 public class OpenSessionInViewFilter implements Filter {
+    @Inject private static CaArrayHibernateHelper hibernateHelper; 
 
     /**
      * {@inheritDoc}
@@ -117,10 +120,10 @@ public class OpenSessionInViewFilter implements Filter {
             ServletException {
         // set up a new session at beginning of request and close it afterwards
         try {
-            HibernateUtil.openAndBindSession();
+            hibernateHelper.openAndBindSession();
             chain.doFilter(request, response);
         } finally {
-            HibernateUtil.unbindAndCleanupSession();
+            hibernateHelper.unbindAndCleanupSession();
         }
     }
 

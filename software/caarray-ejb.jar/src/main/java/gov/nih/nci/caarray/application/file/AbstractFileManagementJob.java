@@ -83,7 +83,7 @@
 package gov.nih.nci.caarray.application.file;
 
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
-import gov.nih.nci.caarray.util.HibernateUtil;
+import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
 
 import java.io.Serializable;
 import java.sql.Connection;
@@ -92,12 +92,15 @@ import java.sql.SQLException;
 
 import org.apache.log4j.Logger;
 
+import com.google.inject.Inject;
+
 /**
  * Base class for file handling jobs.
  */
-abstract class AbstractFileManagementJob implements Serializable {
+public abstract class AbstractFileManagementJob implements Serializable {
 
     private static final Logger LOG = Logger.getLogger(AbstractFileManagementJob.class);
+    @Inject private static CaArrayHibernateHelper hibernateHelper; 
 
     private static final long serialVersionUID = 1L;
     private final String username;
@@ -129,7 +132,7 @@ abstract class AbstractFileManagementJob implements Serializable {
         Connection con = null;
         PreparedStatement ps = null;
         try {
-            con = HibernateUtil.getNewConnection();
+            con = hibernateHelper.getNewConnection();
             con.setAutoCommit(false);
             ps = getUnexpectedErrorPreparedStatement(con);
             ps.executeUpdate();

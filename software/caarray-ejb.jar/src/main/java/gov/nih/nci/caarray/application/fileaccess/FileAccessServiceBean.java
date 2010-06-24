@@ -83,7 +83,8 @@
 package gov.nih.nci.caarray.application.fileaccess;
 
 import gov.nih.nci.caarray.application.ExceptionLoggingInterceptor;
-import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
+import gov.nih.nci.caarray.dao.ArrayDao;
+import gov.nih.nci.caarray.dao.FileDao;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileExtension;
@@ -110,6 +111,8 @@ import javax.interceptor.Interceptors;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 
+import com.google.inject.Inject;
+
 /**
  * Implementation of the FileAccess subsystem.
  */
@@ -119,7 +122,19 @@ import org.apache.log4j.Logger;
 public class FileAccessServiceBean implements FileAccessService {
 
     private static final Logger LOG = Logger.getLogger(FileAccessServiceBean.class);
-    private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
+    private final FileDao fileDao;
+    private final ArrayDao arrayDao;
+    
+    /**
+     * 
+     * @param fileDao the FileDao dependency
+     * @param arrayDao the ArrayDao dependency
+     */
+    @Inject
+    public FileAccessServiceBean(FileDao fileDao, ArrayDao arrayDao) {
+        this.fileDao = fileDao;
+        this.arrayDao = arrayDao;
+    }
 
     /**
      * {@inheritDoc}
@@ -147,7 +162,7 @@ public class FileAccessServiceBean implements FileAccessService {
     public CaArrayFile add(InputStream stream, String filename) {
         CaArrayFile caArrayFile = createCaArrayFile(filename);
         try {
-            daoFactory.getFileDao().writeContents(caArrayFile, stream);
+            fileDao.writeContents(caArrayFile, stream);
         } catch (IOException e) {
             throw new FileAccessException("Stream " + filename + " couldn't be written", e);
         }
@@ -158,7 +173,7 @@ public class FileAccessServiceBean implements FileAccessService {
     private CaArrayFile doAddFile(File file, String filename) {
         CaArrayFile caArrayFile = createCaArrayFile(filename);
         try {
-            daoFactory.getFileDao().writeContents(caArrayFile, file);
+            fileDao.writeContents(caArrayFile, file);
         } catch (IOException e) {
             throw new FileAccessException("File " + file.getAbsolutePath() + " couldn't be written", e);
         }
@@ -179,9 +194,9 @@ public class FileAccessServiceBean implements FileAccessService {
     public boolean remove(CaArrayFile caArrayFile) {
         LogUtil.logSubsystemEntry(LOG, caArrayFile);
 
-        AbstractArrayData data = this.daoFactory.getArrayDao().getArrayData(caArrayFile.getId());
+        AbstractArrayData data = this.arrayDao.getArrayData(caArrayFile.getId());
         if (caArrayFile.getProject() != null
-                && !this.daoFactory.getFileDao().getDeletableFiles(caArrayFile.getProject().getId()).contains(
+                && !this.fileDao.getDeletableFiles(caArrayFile.getProject().getId()).contains(
                         caArrayFile)) {
             return false;
         }
@@ -190,11 +205,11 @@ public class FileAccessServiceBean implements FileAccessService {
             for (Hybridization h : data.getHybridizations()) {
                 h.removeArrayData(data);
             }
-            this.daoFactory.getArrayDao().remove(data);
+            this.arrayDao.remove(data);
         }
         
         caArrayFile.getProject().getFiles().remove(caArrayFile);
-        this.daoFactory.getFileDao().remove(caArrayFile);
+        this.fileDao.remove(caArrayFile);
 
         LogUtil.logSubsystemExit(LOG);
         return true;
@@ -205,7 +220,7 @@ public class FileAccessServiceBean implements FileAccessService {
      */
     public void save(CaArrayFile caArrayFile) {
         LogUtil.logSubsystemEntry(LOG, caArrayFile);
-        this.daoFactory.getFileDao().saveAndEvict(caArrayFile);
+        this.fileDao.saveAndEvict(caArrayFile);
         LogUtil.logSubsystemExit(LOG);
     }
 
@@ -214,10 +229,6 @@ public class FileAccessServiceBean implements FileAccessService {
         if (type != null) {
             caArrayFile.setFileType(type);
         }
-    }
-
-    void setDaoFactory(CaArrayDaoFactory daoFactory) {
-        this.daoFactory = daoFactory;
     }
 
     /**

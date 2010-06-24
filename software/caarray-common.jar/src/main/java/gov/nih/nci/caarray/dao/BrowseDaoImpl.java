@@ -86,7 +86,7 @@ import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.search.BrowseCategory;
-import gov.nih.nci.caarray.util.HibernateUtil;
+import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
 import gov.nih.nci.security.authorization.domainobjects.User;
 
 import java.util.List;
@@ -95,13 +95,24 @@ import org.hibernate.Query;
 
 import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
 import com.fiveamsolutions.nci.commons.data.search.SortCriterion;
+import com.google.inject.Inject;
 
 /**
  * @author Winston Cheng
  */
 @SuppressWarnings("PMD.CyclomaticComplexity")
-public class BrowseDaoImpl implements BrowseDao {
-    private final CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
+public class BrowseDaoImpl extends AbstractCaArrayDaoImpl implements BrowseDao {
+    private final SearchDao searchDao;
+    
+    /**
+     * @param searchDao the SearchDao dependency
+     * @param hibernateHelper the CaArrayHibernateHelper dependency
+     */
+    @Inject 
+    public BrowseDaoImpl(SearchDao searchDao, CaArrayHibernateHelper hibernateHelper) {
+        super(hibernateHelper);
+        this.searchDao = searchDao;
+    }
 
     /**
      * {@inheritDoc}
@@ -135,7 +146,7 @@ public class BrowseDaoImpl implements BrowseDao {
         if (cat.getJoin() != null) {
             sb.append(" JOIN ").append(cat.getJoin());
         }
-        Query q = HibernateUtil.getCurrentSession().createQuery(sb.toString());
+        Query q = getCurrentSession().createQuery(sb.toString());
         return ((Number) q.uniqueResult()).intValue();
     }
 
@@ -144,7 +155,7 @@ public class BrowseDaoImpl implements BrowseDao {
      */
     public int hybridizationCount() {
         String queryStr = "SELECT COUNT(DISTINCT h) FROM " + Hybridization.class.getName() + " h";
-        Query q = HibernateUtil.getCurrentSession().createQuery(queryStr);
+        Query q = getCurrentSession().createQuery(queryStr);
         return ((Number) q.uniqueResult()).intValue();
     }
 
@@ -153,7 +164,7 @@ public class BrowseDaoImpl implements BrowseDao {
      */
     public int userCount() {
         String queryStr = "SELECT COUNT(DISTINCT u) FROM " + User.class.getName() + " u";
-        Query q = HibernateUtil.getCurrentSession().createQuery(queryStr);
+        Query q = getCurrentSession().createQuery(queryStr);
         return ((Number) q.uniqueResult()).intValue();
     }
 
@@ -179,11 +190,11 @@ public class BrowseDaoImpl implements BrowseDao {
         } else {
             return null;
         }
-        return HibernateUtil.getCurrentSession().createQuery(queryStr).list();
+        return getCurrentSession().createQuery(queryStr).list();
     }
 
 
-    @SuppressWarnings({"PMD.CyclomaticComplexity", "PMD.ExcessiveMethodLength", "PMD.NPathComplexity" })
+    @SuppressWarnings({"PMD.CyclomaticComplexity", "PMD.ExcessiveMethodLength", "PMD.NPathComplexity", "deprecation" })
     private Query browseQuery(boolean count, PageSortParams<Project> params, BrowseCategory cat, Number fieldId) {
         // The query is built dynamically, but is not vulnerable to SQL injection
         // because the fields are pulled from an enum.
@@ -213,22 +224,15 @@ public class BrowseDaoImpl implements BrowseDao {
                 sb.append(" desc");
             }
         }
-        Query q = HibernateUtil.getCurrentSession().createQuery(sb.toString());
+        Query q = getCurrentSession().createQuery(sb.toString());
         if (!allProjects) {
             if (cat.equals(BrowseCategory.ORGANISMS)) {
-                Organism org = getDaoFactory().getSearchDao().retrieveUnsecured(Organism.class, fieldId.longValue());
+                Organism org = searchDao.retrieveUnsecured(Organism.class, fieldId.longValue());
                 q.setParameter("name", org.getScientificName());
             } else {
                 q.setParameter("id", fieldId);
             }
         }
         return q;
-    }
-
-    /**
-     * @return the daoFactory
-     */
-    private CaArrayDaoFactory getDaoFactory() {
-        return daoFactory;
     }
 }

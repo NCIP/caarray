@@ -85,7 +85,7 @@ package gov.nih.nci.caarray.dao;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
 import gov.nih.nci.caarray.domain.search.HybridizationSearchCriteria;
-import gov.nih.nci.caarray.util.HibernateUtil;
+import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -95,6 +95,7 @@ import org.hibernate.Criteria;
 import org.hibernate.criterion.Restrictions;
 
 import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
+import com.google.inject.Inject;
 
 /**
  * Implementation of the HybridizationDao.
@@ -102,13 +103,23 @@ import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
  * @author dkokotov
  */
 public class HybridizationDaoImpl extends AbstractCaArrayDaoImpl implements HybridizationDao {
+
     /**
+     * 
+     * @param hibernateHelper the CaArrayHibernateHelper dependency
+     */
+    @Inject
+    public HybridizationDaoImpl(CaArrayHibernateHelper hibernateHelper) {
+        super(hibernateHelper);
+    }
+   
+   /**
      * {@inheritDoc}
      */
     @SuppressWarnings("unchecked")
     public List<Hybridization> searchByCriteria(PageSortParams<Hybridization> params,
             HybridizationSearchCriteria criteria) {
-        Criteria c = HibernateUtil.getCurrentSession().createCriteria(Hybridization.class);
+        Criteria c = getCurrentSession().createCriteria(Hybridization.class);
 
         if (criteria.getExperiment() != null) {
             c.add(Restrictions.eq("experiment", criteria.getExperiment()));

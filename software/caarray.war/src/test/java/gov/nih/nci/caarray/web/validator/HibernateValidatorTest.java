@@ -87,7 +87,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import gov.nih.nci.caarray.AbstractCaarrayTest;
 import gov.nih.nci.caarray.domain.sample.Source;
-import gov.nih.nci.caarray.util.HibernateUtil;
+import gov.nih.nci.caarray.staticinjection.CaArrayWarStaticInjectionModule;
+import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
+import gov.nih.nci.caarray.util.CaArrayHibernateHelperModule;
 import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.web.AbstractBaseStrutsTest;
 
@@ -97,9 +99,12 @@ import java.util.Map;
 
 import org.hibernate.Transaction;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.fiveamsolutions.nci.commons.web.struts2.validator.HibernateValidator;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.util.ValueStack;
@@ -113,13 +118,31 @@ import com.opensymphony.xwork2.validator.ValidatorContext;
  */
 @SuppressWarnings("PMD.AvoidDuplicateLiterals")
 public class HibernateValidatorTest extends AbstractBaseStrutsTest {
+    private static Injector injector;
+    private static CaArrayHibernateHelper hibernateHelper; 
 
     private TestAction action;
     private Transaction tx;
     
     private ValidatorContext validatorContext;
     private HibernateValidator validator;
-     
+    
+    /**
+     * post-construct lifecycle method; intializes the Guice injector that will provide dependencies. 
+     */
+    @BeforeClass
+    public static void init() {
+        injector = createInjector();
+        hibernateHelper = injector.getInstance(CaArrayHibernateHelper.class);
+    }
+    
+    /**
+     * @return a Guice injector from which this will obtain dependencies.
+     */
+    protected static Injector createInjector() {
+        return Guice.createInjector(new CaArrayWarStaticInjectionModule(), new CaArrayHibernateHelperModule());
+    }
+    
     @Before
     public void onSetUp() {
         this.action = new TestAction();
@@ -128,12 +151,12 @@ public class HibernateValidatorTest extends AbstractBaseStrutsTest {
         validator.setValidatorContext(validatorContext);        
         
         UsernameHolder.setUser(AbstractCaarrayTest.STANDARD_USER);
-        tx = HibernateUtil.beginTransaction();
+        tx = hibernateHelper.beginTransaction();
         
     }
     
     public void teardown() {
-        HibernateUtil.rollbackTransaction(tx);        
+        hibernateHelper.rollbackTransaction(tx);        
     }
 
     @Test

@@ -93,8 +93,11 @@ import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
 import gov.nih.nci.caarray.dao.stub.SearchDaoStub;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.staticinjection.CaArrayEjbStaticInjectionModule;
 import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
-import gov.nih.nci.caarray.util.HibernateUtil;
+import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
+import gov.nih.nci.caarray.util.CaArrayHibernateHelperFactory;
+import gov.nih.nci.caarray.util.CaArrayHibernateHelperModule;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 
 import java.io.File;
@@ -104,6 +107,10 @@ import java.util.List;
 import org.hibernate.cfg.Configuration;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.BeforeClass;
+
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 
 import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
 
@@ -111,21 +118,38 @@ import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
  * Tests the FileRetrievalServiceBean
  */
 public class FileRetrievalServiceBeanTest extends AbstractServiceTest {
-    private final FileRetrievalServiceBean bean = new FileRetrievalServiceBean();
-    private final LocalFileAccessServiceStub fileAccessServiceStub = new LocalFileAccessServiceStub();
+    private static Injector injector;
+    private static CaArrayHibernateHelper hibernateHelper; 
     private final LocalDaoFactoryStub daoFactoryStub = new LocalDaoFactoryStub();
-
+    private final FileRetrievalServiceBean bean = new FileRetrievalServiceBean(daoFactoryStub.getSearchDao());
+    private final LocalFileAccessServiceStub fileAccessServiceStub = new LocalFileAccessServiceStub();
+    
+    /**
+     * post-construct lifecycle method; intializes the Guice injector that will provide dependencies. 
+     */
+    @BeforeClass
+    public static void init() {
+        injector = createInjector();
+        hibernateHelper = injector.getInstance(CaArrayHibernateHelper.class);
+    }
+    
+    /**
+     * @return a Guice injector from which this will obtain dependencies.
+     */
+    protected static Injector createInjector() {
+        return Guice.createInjector(new CaArrayEjbStaticInjectionModule(), new CaArrayHibernateHelperModule());
+    }
+    
     @Before
     public void setUp() throws Exception {
         ServiceLocatorStub serviceLocatorStub = ServiceLocatorStub.registerEmptyLocator();
         serviceLocatorStub.addLookup(FileAccessService.JNDI_NAME, this.fileAccessServiceStub);
         MysqlDataSource ds = new MysqlDataSource();
-        Configuration config = HibernateUtil.getConfiguration();
+        Configuration config = hibernateHelper.getConfiguration();
         ds.setUrl(config.getProperty("hibernate.connection.url"));
         ds.setUser(config.getProperty("hibernate.connection.username"));
         ds.setPassword(config.getProperty("hibernate.connection.password"));
         serviceLocatorStub.addLookup("java:jdbc/CaArrayDataSource", ds);
-        this.bean.setDaoFactory(this.daoFactoryStub);
         TemporaryFileCacheLocator.setTemporaryFileCacheFactory(new TemporaryFileCacheStubFactory(this.fileAccessServiceStub));
         TemporaryFileCacheLocator.resetTemporaryFileCache();
     }

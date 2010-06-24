@@ -84,7 +84,7 @@ package gov.nih.nci.caarray.domain.permissions;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.security.Protectable;
-import gov.nih.nci.caarray.util.HibernateUtil;
+import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
 import gov.nih.nci.security.authorization.domainobjects.Group;
 import gov.nih.nci.security.authorization.domainobjects.User;
 
@@ -104,6 +104,7 @@ import javax.persistence.UniqueConstraint;
 import org.hibernate.annotations.BatchSize;
 
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
+import com.google.inject.Inject;
 
 /**
  * CollaboratorGroups bridge CSM groups with owners.
@@ -113,6 +114,8 @@ import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 @Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "csm_group", "csm_user" }) })
 @SuppressWarnings("PMD.AvoidDuplicateLiterals")
 public class CollaboratorGroup implements PersistentObject, Protectable {
+    @Inject private static CaArrayHibernateHelper hibernateHelper; 
+
     //
     // DEVELOPER NOTE: This class has-a Group, rather than is-a Group,
     // to be fully compatible with whatever CSM changes may come down
@@ -200,7 +203,7 @@ public class CollaboratorGroup implements PersistentObject, Protectable {
 
     @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
     private void setGroupId(long groupId) {
-        group = (Group) HibernateUtil.getCurrentSession().load(Group.class, groupId);
+        group = (Group) hibernateHelper.getCurrentSession().load(Group.class, groupId);
     }
 
     @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
@@ -211,7 +214,7 @@ public class CollaboratorGroup implements PersistentObject, Protectable {
 
     @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
     private void setOwnerId(long ownerId) {
-        owner = (User) HibernateUtil.getCurrentSession().load(User.class, ownerId);
+        owner = (User) hibernateHelper.getCurrentSession().load(User.class, ownerId);
     }
 
     /**

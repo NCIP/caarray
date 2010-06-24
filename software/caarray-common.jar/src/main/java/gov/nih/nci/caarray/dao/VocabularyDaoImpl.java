@@ -56,7 +56,7 @@ import gov.nih.nci.caarray.domain.sample.AbstractCharacteristic;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
-import gov.nih.nci.caarray.util.HibernateUtil;
+import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -69,6 +69,8 @@ import org.hibernate.Query;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 
+import com.google.inject.Inject;
+
 /**
  * DAO for entities in the <code>gov.nih.nci.caarray.domain.vocabulary</code> package.
  *
@@ -77,6 +79,15 @@ import org.hibernate.criterion.Restrictions;
 class VocabularyDaoImpl extends AbstractCaArrayDaoImpl implements VocabularyDao {
     private static final String UNCHECKED = "unchecked";
 
+    /**
+     * 
+     * @param hibernateHelper the CaArrayHibernateHelper dependency
+     */
+    @Inject
+    public VocabularyDaoImpl(CaArrayHibernateHelper hibernateHelper) {
+        super(hibernateHelper);
+    }
+   
     /**
      * {@inheritDoc}
      */
@@ -90,7 +101,7 @@ class VocabularyDaoImpl extends AbstractCaArrayDaoImpl implements VocabularyDao 
         if (valuePrefix != null) {
             whereClause.append(" and upper(t.value) like upper(:valuePrefix)");
         }
-        Query query = HibernateUtil.getCurrentSession().createQuery(
+        Query query = getCurrentSession().createQuery(
                 "select distinct t from " + Term.class.getName() + " t join t.categories cat where "
                         + whereClause.toString() + " order by t.value asc");
         query.setParameterList("categories", searchCategories);
@@ -104,7 +115,7 @@ class VocabularyDaoImpl extends AbstractCaArrayDaoImpl implements VocabularyDao 
      * {@inheritDoc}
      */
     public Term getTerm(TermSource source, String value) {
-        Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(Term.class);
+        Criteria criteria = getCurrentSession().createCriteria(Term.class);
         criteria.add(Restrictions.eq("value", value).ignoreCase());
         criteria.add(Restrictions.eq("source", source));
         return (Term) criteria.uniqueResult();
@@ -114,7 +125,7 @@ class VocabularyDaoImpl extends AbstractCaArrayDaoImpl implements VocabularyDao 
      * {@inheritDoc}
      */
     public Organism getOrganism(TermSource source, String scientificName) {
-        Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(Organism.class);
+        Criteria criteria = getCurrentSession().createCriteria(Organism.class);
         criteria.add(Restrictions.eq("scientificName", scientificName).ignoreCase());
         criteria.add(Restrictions.eq("termSource", source));
         return (Organism) criteria.uniqueResult();
@@ -136,7 +147,7 @@ class VocabularyDaoImpl extends AbstractCaArrayDaoImpl implements VocabularyDao 
      * {@inheritDoc}
      */
     public Category getCategory(TermSource termSource, String name) {
-        Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(Category.class);
+        Criteria criteria = getCurrentSession().createCriteria(Category.class);
         criteria.add(Restrictions.eq("name", name).ignoreCase());
         criteria.add(Restrictions.eq("source", termSource));
         return (Category) criteria.uniqueResult();
@@ -154,7 +165,7 @@ class VocabularyDaoImpl extends AbstractCaArrayDaoImpl implements VocabularyDao 
      */
     @SuppressWarnings(UNCHECKED)
     public Term findTermInAllTermSourceVersions(TermSource termSource, String value) {
-        Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(Term.class);
+        Criteria criteria = getCurrentSession().createCriteria(Term.class);
         criteria.add(Restrictions.eq("value", value).ignoreCase());
         criteria.createAlias("source", "ts");
         if (termSource.getUrl() == null) {
@@ -189,7 +200,7 @@ class VocabularyDaoImpl extends AbstractCaArrayDaoImpl implements VocabularyDao 
         
         sb.append(" ORDER BY c.category.name");
 
-        Query q = HibernateUtil.getCurrentSession().createQuery(sb.toString());
+        Query q = getCurrentSession().createQuery(sb.toString());
         if (keyword != null) {
             q.setString("keyword", keyword + "%");
         }

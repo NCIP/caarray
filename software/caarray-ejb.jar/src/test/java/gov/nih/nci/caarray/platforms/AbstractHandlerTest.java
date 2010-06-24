@@ -123,7 +123,9 @@ import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.magetab.MageTabFileSet;
 import gov.nih.nci.caarray.magetab.MageTabParserImplementation;
 import gov.nih.nci.caarray.magetab.io.JavaIOFileRef;
+import gov.nih.nci.caarray.staticinjection.CaArrayEjbStaticInjectionModule;
 import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
+import gov.nih.nci.caarray.util.CaArrayHibernateHelperModule;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 
 import java.io.File;
@@ -158,39 +160,25 @@ public abstract class AbstractHandlerTest extends AbstractCaarrayTest {
         locatorStub.addLookup(FileAccessService.JNDI_NAME, this.fileAccessServiceStub);
         locatorStub.addLookup(VocabularyService.JNDI_NAME, new VocabularyServiceStub());
 
-        final Module testArrayDesignModule = Modules.override(new ArrayDesignModule()).with(new AbstractModule() {
+        final Module testModule = Modules.override(new ArrayDesignModule()).with(new AbstractModule() {
             @Override
             protected void configure() {
                 bind(ContactDao.class).toInstance(new ContactDaoStub());
                 bind(SearchDao.class).toInstance(daoFactoryStub.getSearchDao());
                 bind(ArrayDao.class).toInstance(daoFactoryStub.getArrayDao());
+                
+                bind(ArrayDesignService.class).to(ArrayDesignServiceBean.class);
+                bind(ArrayDataService.class).to(ArrayDataServiceBean.class);
             }
         });
-        final ArrayDesignServiceBean arrayDesignServiceBean = new ArrayDesignServiceBean() {
-            @Override
-            protected Injector createInjector() {
-                return Guice.createInjector(testArrayDesignModule);
-            }
-        };
-        arrayDesignServiceBean.init();
-        locatorStub.addLookup(ArrayDesignService.JNDI_NAME, arrayDesignServiceBean);
         
-        final Module testArrayDataModule = Modules.override(new ArrayDesignModule()).with(new AbstractModule() {
-            @Override
-            protected void configure() {
-                bind(SearchDao.class).toInstance(daoFactoryStub.getSearchDao());
-                bind(ArrayDao.class).toInstance(daoFactoryStub.getArrayDao());
-            }
-        });
-        final ArrayDataServiceBean arrayDataServiceBean = new ArrayDataServiceBean() {
-            @Override
-            protected Injector createInjector() {
-                return Guice.createInjector(testArrayDataModule);
-            }
-        };
-        arrayDataServiceBean.init();
-
-        this.arrayDataService = arrayDataServiceBean;
+        final Injector injector = Guice.createInjector(new CaArrayEjbStaticInjectionModule(),
+                new CaArrayHibernateHelperModule(), testModule);
+               
+        locatorStub.addLookup(ArrayDesignService.JNDI_NAME,
+                (ArrayDesignServiceBean) injector.getInstance(ArrayDesignService.class));
+        
+        this.arrayDataService = injector.getInstance(ArrayDataService.class);
         TemporaryFileCacheLocator.setTemporaryFileCacheFactory(new TemporaryFileCacheStubFactory(this.fileAccessServiceStub));
         TemporaryFileCacheLocator.resetTemporaryFileCache();
         fileAccessServiceStub.add(AffymetrixArrayDesignFiles.TEST3_CDF);
@@ -258,6 +246,7 @@ public abstract class AbstractHandlerTest extends AbstractCaarrayTest {
         return hybridization;
     }
     
+    @SuppressWarnings("deprecation")
     protected CaArrayFile getDataCaArrayFile(File file, FileType type) {
         CaArrayFile caArrayFile = this.fileAccessServiceStub.add(file);
         caArrayFile.setId(fileIdCounter++);

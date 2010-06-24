@@ -82,9 +82,7 @@
  */
 package gov.nih.nci.caarray.services.data;
 
-import gov.nih.nci.caarray.application.ServiceLocatorFactory;
-import gov.nih.nci.caarray.application.arraydata.ArrayDataService;
-import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
+import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.DataRetrievalRequest;
 import gov.nih.nci.caarray.domain.data.DataSet;
@@ -111,6 +109,8 @@ import org.apache.commons.collections.ListUtils;
 import org.apache.log4j.Logger;
 import org.jboss.annotation.ejb.TransactionTimeout;
 
+import com.google.inject.Inject;
+
 /**
  * Implementation for remote API data retrieval.
  */
@@ -127,8 +127,17 @@ import org.jboss.annotation.ejb.TransactionTimeout;
 public class DataRetrievalServiceBean implements DataRetrievalService {
     private static final Logger LOG = Logger.getLogger(DataRetrievalServiceBean.class);
 
-    private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
     static final int TIMEOUT_SECONDS = 1800;
+    private final SearchDao searchDao;
+    
+    /**
+     * 
+     * @param searchDao the SearchDao dependency
+     */
+    @Inject
+    public DataRetrievalServiceBean(SearchDao searchDao) {
+        this.searchDao = searchDao;
+    }
 
     /**
      * {@inheritDoc}
@@ -264,21 +273,8 @@ public class DataRetrievalServiceBean implements DataRetrievalService {
     private List<Hybridization> getHybridizations(DataRetrievalRequest request) {
         List<Hybridization> hybridizations = new ArrayList<Hybridization>(request.getHybridizations().size());
         for (Hybridization hybridization : request.getHybridizations()) {
-            hybridizations.add(getDaoFactory().getSearchDao().retrieve(Hybridization.class, hybridization.getId()));
+            hybridizations.add(searchDao.retrieve(Hybridization.class, hybridization.getId()));
         }
         return hybridizations;
     }
-
-    private ArrayDataService getArrayDataService() {
-        return (ArrayDataService) ServiceLocatorFactory.getLocator().lookup(ArrayDataService.JNDI_NAME);
-    }
-
-    CaArrayDaoFactory getDaoFactory() {
-        return daoFactory;
-    }
-
-    void setDaoFactory(CaArrayDaoFactory daoFactory) {
-        this.daoFactory = daoFactory;
-    }
-
 }

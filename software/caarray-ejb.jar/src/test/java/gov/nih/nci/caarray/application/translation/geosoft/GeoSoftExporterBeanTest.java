@@ -33,7 +33,7 @@ import gov.nih.nci.caarray.domain.sample.UserDefinedCharacteristic;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
-import gov.nih.nci.caarray.util.HibernateUtil;
+import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -61,7 +61,6 @@ import static org.junit.Assert.*;
  * @author gax
  */
 public class GeoSoftExporterBeanTest extends AbstractHibernateTest {
-
     private GeoSoftExporterBean bean;
     VocabularyServiceStub vocab;
     Transaction tx;
@@ -76,7 +75,7 @@ public class GeoSoftExporterBeanTest extends AbstractHibernateTest {
     public void setUp() {
         bean = new GeoSoftExporterBean();
         vocab  = new VocabularyServiceStub();
-        tx = HibernateUtil.beginTransaction();
+        tx = hibernateHelper.beginTransaction();
     }
 
     @After

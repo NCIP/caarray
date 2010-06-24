@@ -82,7 +82,7 @@
  */
 package gov.nih.nci.caarray.security;
 
-import gov.nih.nci.caarray.util.HibernateUtil;
+import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
 import gov.nih.nci.logging.api.logger.hibernate.HibernateSessionFactoryHelper;
 import gov.nih.nci.security.authorization.domainobjects.Application;
 import gov.nih.nci.security.authorization.domainobjects.Group;
@@ -123,6 +123,7 @@ import org.hibernate.Transaction;
 import org.hibernate.criterion.Restrictions;
 
 import com.fiveamsolutions.nci.commons.util.HibernateHelper;
+import com.google.inject.Inject;
 
 /**
  * Class with methods supplementing missing AuthorizationManager APIs. We expect these to eventually be implemented by
@@ -134,6 +135,7 @@ import com.fiveamsolutions.nci.commons.util.HibernateHelper;
 // adapted from CSM code
 public final class AuthorizationManagerExtensions {
     private static final Logger LOG = Logger.getLogger(AuthorizationManagerExtensions.class);
+    @Inject private static CaArrayHibernateHelper hibernateHelper; 
 
     private AuthorizationManagerExtensions() {
     }
@@ -392,7 +394,7 @@ public final class AuthorizationManagerExtensions {
         try {
             InstanceLevelMappingElement mappingElt = SecurityUtils.findMappingElement(className, attributeName);
             
-            s = HibernateUtil.getSessionFactory().openSession();            
+            s = hibernateHelper.getSessionFactory().openSession();            
             if (mappingElt != null) {
                 return checkPermissionWithMappingTable(mappingElt.getTableNameForGroup(), userName, value,
                         privilegeName, s);

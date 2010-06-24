@@ -96,7 +96,7 @@ import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
-import gov.nih.nci.caarray.util.HibernateUtil;
+import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
 
 import java.util.TreeSet;
 
@@ -112,8 +112,8 @@ public class ArrayDesign_HibernateIntegrationTest extends AbstractCaArrayEntity_
     public void setUp() {
         //Initialize the dummy object needed for the tests.
         DUMMY_ASSAY_TYPE = new AssayType("Gene Expression");
-        Transaction tx = HibernateUtil.beginTransaction();
-        HibernateUtil.getCurrentSession().save(DUMMY_ASSAY_TYPE);
+        Transaction tx = hibernateHelper.beginTransaction();
+        hibernateHelper.getCurrentSession().save(DUMMY_ASSAY_TYPE);
         tx.commit();
     }
 

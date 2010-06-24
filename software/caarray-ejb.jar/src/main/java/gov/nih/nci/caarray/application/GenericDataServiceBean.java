@@ -82,7 +82,8 @@
  */
 package gov.nih.nci.caarray.application;
 
-import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
+import gov.nih.nci.caarray.dao.ProjectDao;
+import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.security.Protectable;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.UsernameHolder;
@@ -103,6 +104,7 @@ import org.hibernate.criterion.Order;
 
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
+import com.google.inject.Inject;
 
 /**
  * Implementation of the GenericDataService.
@@ -114,15 +116,27 @@ import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
 public class GenericDataServiceBean implements GenericDataService {
 
     private static final Logger LOG = Logger.getLogger(GenericDataServiceBean.class);
-
-    private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
-
+    
+    private final SearchDao searchDao;
+    private final ProjectDao projectDao;
+    
+    /**
+     * 
+     * @param searchDao the SearchDao dependency
+     * @param projectDao the ProjectDao dependency
+     */
+    @Inject
+    public GenericDataServiceBean(SearchDao searchDao, ProjectDao projectDao) {
+        this.searchDao = searchDao;
+        this.projectDao = projectDao;
+    }
+    
     /**
      * {@inheritDoc}
      */
     public <T extends PersistentObject> T getPersistentObject(Class<T> entityClass, Long entityId) {
         LogUtil.logSubsystemEntry(LOG, entityClass, entityId);
-        T result = this.daoFactory.getSearchDao().retrieve(entityClass, entityId);
+        T result = this.searchDao.retrieve(entityClass, entityId);
         LogUtil.logSubsystemExit(LOG);
         return result;
     }
@@ -132,7 +146,7 @@ public class GenericDataServiceBean implements GenericDataService {
      */
     public <T extends PersistentObject> List<T> retrieveByIds(Class<T> entityClass, List<? extends Serializable> ids) {
         LogUtil.logSubsystemEntry(LOG, entityClass, ids);
-        List<T> result = this.daoFactory.getSearchDao().retrieveByIds(entityClass, ids);
+        List<T> result = this.searchDao.retrieveByIds(entityClass, ids);
         LogUtil.logSubsystemExit(LOG);
         return result;
     }
@@ -145,7 +159,7 @@ public class GenericDataServiceBean implements GenericDataService {
         int maxSuffix = StringUtils.isEmpty(numericSuffix) ? 1 : Integer.parseInt(numericSuffix);
 
         List<String> currentNames =
-            this.daoFactory.getSearchDao().findValuesWithSamePrefix(entityClass, fieldName, alphaPrefix);
+            this.searchDao.findValuesWithSamePrefix(entityClass, fieldName, alphaPrefix);
         for (String currentName : currentNames) {
             String suffix = StringUtils.substringAfter(currentName, alphaPrefix);
             if (!StringUtils.isNumeric(suffix) || StringUtils.isEmpty(suffix)) {
@@ -164,14 +178,14 @@ public class GenericDataServiceBean implements GenericDataService {
         if (entity instanceof Protectable && !SecurityUtils.canWrite(entity, UsernameHolder.getCsmUser())) {
             throw new IllegalArgumentException("The current user does not have the rights to edit the given object.");
         }
-        this.daoFactory.getSearchDao().save(entity);
+        this.searchDao.save(entity);
     }
 
     /**
      * {@inheritDoc}
      */
     public <T extends PersistentObject> List<T> retrieveAll(Class<T> entityClass, Order... orders) {
-        return this.daoFactory.getSearchDao().retrieveAll(entityClass, orders);
+        return this.searchDao.retrieveAll(entityClass, orders);
     }
     
     /**
@@ -179,15 +193,7 @@ public class GenericDataServiceBean implements GenericDataService {
      */
     public <T extends PersistentObject> List<T> retrieveAll(Class<T> entityClass, int maxResults, int firstResult,
             Order... orders) {
-        return this.daoFactory.getSearchDao().retrieveAll(entityClass, maxResults, firstResult, orders);
-    }
-
-    /**
-     * Set the current dao factory.
-     * @param daoFactory the dao factory.
-     */
-    public void setDaoFactory(CaArrayDaoFactory daoFactory) {
-        this.daoFactory = daoFactory;
+        return this.searchDao.retrieveAll(entityClass, maxResults, firstResult, orders);
     }
 
     /**
@@ -195,7 +201,7 @@ public class GenericDataServiceBean implements GenericDataService {
      */
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public void delete(PersistentObject object) {
-        this.daoFactory.getProjectDao().remove(object);
+        this.projectDao.remove(object);
     }
 
     /**
@@ -203,7 +209,7 @@ public class GenericDataServiceBean implements GenericDataService {
      */
     public <T extends PersistentObject> List<T> filterCollection(Collection<T> collection, String property,
             String value) {
-        return this.daoFactory.getSearchDao().filterCollection(collection, property, value);
+        return this.searchDao.filterCollection(collection, property, value);
     }
 
     /**
@@ -211,7 +217,7 @@ public class GenericDataServiceBean implements GenericDataService {
      */
     public <T extends PersistentObject> List<T> pageCollection(Collection<T> collection,
             PageSortParams<T> pageSortParams) {
-        return this.daoFactory.getSearchDao().pageCollection(collection, pageSortParams);
+        return this.searchDao.pageCollection(collection, pageSortParams);
     }
     
     /**
@@ -219,13 +225,13 @@ public class GenericDataServiceBean implements GenericDataService {
      */
     public <T extends PersistentObject> List<T> pageAndFilterCollection(Collection<T> collection, String property,
             List<? extends Serializable> values, PageSortParams<T> pageSortParams) {
-        return this.daoFactory.getSearchDao().pageAndFilterCollection(collection, property, values, pageSortParams);
+        return this.searchDao.pageAndFilterCollection(collection, property, values, pageSortParams);
     }
 
     /**
      * {@inheritDoc}
      */
     public int collectionSize(Collection<? extends PersistentObject> collection) {
-        return this.daoFactory.getSearchDao().collectionSize(collection);
+        return this.searchDao.collectionSize(collection);
     }
 }

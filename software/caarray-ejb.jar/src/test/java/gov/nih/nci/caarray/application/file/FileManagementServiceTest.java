@@ -147,9 +147,10 @@ public class FileManagementServiceTest extends AbstractServiceTest {
         fileManagementMDB.setDaoFactory(this.daoFactoryStub);
         fileManagementMDB.setTransaction(new UserTransactionStub());
         DirectJobSubmitter submitter = new DirectJobSubmitter(fileManagementMDB);
-        FileManagementServiceBean fileManagementServiceBean = new FileManagementServiceBean();
+        FileManagementServiceBean fileManagementServiceBean =
+            new FileManagementServiceBean(this.daoFactoryStub.getProjectDao(), this.daoFactoryStub.getArrayDao(),
+                    this.daoFactoryStub.getFileDao(), this.daoFactoryStub.getSearchDao());
         fileManagementServiceBean.setSubmitter(submitter);
-        fileManagementServiceBean.setDaoFactory(this.daoFactoryStub);
         ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
         locatorStub.addLookup(FileAccessService.JNDI_NAME, this.fileAccessServiceStub);
         locatorStub.addLookup(ArrayDataService.JNDI_NAME, new LocalArrayDataServiceStub());

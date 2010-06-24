@@ -83,7 +83,7 @@
 package gov.nih.nci.caarray.services;
 
 import gov.nih.nci.caarray.util.EntityPruner;
-import gov.nih.nci.caarray.util.HibernateUtil;
+import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -95,6 +95,7 @@ import javax.interceptor.InvocationContext;
 import org.apache.log4j.Logger;
 
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
+import com.google.inject.Inject;
 
 /**
  * Ensures that retrieved entities are ready for transport, including correct
@@ -105,6 +106,7 @@ import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 public class EntityConfiguringInterceptor {
 
     private static final Logger LOG = Logger.getLogger(EntityConfiguringInterceptor.class);
+    @Inject private static CaArrayHibernateHelper hibernateHelper; 
 
     /**
      * Ensures that any object returned and its direct associated entities are loaded.
@@ -127,7 +129,7 @@ public class EntityConfiguringInterceptor {
         // does not have permission to modify the objects, so we get an exception at this point.
         // Commenting this call out for now, because the only time we'd need to flush changes is for
         // parse-on-demand, which we don't currently do.
-//        HibernateUtil.getCurrentSession().flush();
+//        hibernateHelper.getCurrentSession().flush();
 
         if (returnValue instanceof Collection) {
             prepareEntities((Collection<Object>) returnValue);
@@ -136,7 +138,7 @@ public class EntityConfiguringInterceptor {
         }
 
         // keep hibernate from performing write behind of all the cutting we just did
-        HibernateUtil.getCurrentSession().clear();
+        hibernateHelper.getCurrentSession().clear();
 
         return returnValue;
     }
@@ -161,11 +163,11 @@ public class EntityConfiguringInterceptor {
             Object toCut = it.next();
             if (toCut instanceof PersistentObject) {
                 // some test code has non-persistentObject entities, which can't work here
-                toCut = HibernateUtil.getCurrentSession().get(toCut.getClass(),
+                toCut = hibernateHelper.getCurrentSession().get(toCut.getClass(),
                                                               ((PersistentObject) toCut).getId());
             }
             prepareEntity(toCut, pruner);
-            HibernateUtil.getCurrentSession().clear();
+            hibernateHelper.getCurrentSession().clear();
             tmpCollection.add(toCut);
             try {
                 it.remove();

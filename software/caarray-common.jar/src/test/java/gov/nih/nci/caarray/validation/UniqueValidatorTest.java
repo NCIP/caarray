@@ -42,7 +42,7 @@ import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.dao.DAOException;
 import gov.nih.nci.caarray.dao.VocabularyDao;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
-import gov.nih.nci.caarray.util.HibernateUtil;
+import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
 
 import org.hibernate.Transaction;
 import org.junit.Test;
@@ -88,7 +88,7 @@ public class UniqueValidatorTest extends AbstractDaoTest {
 
         Transaction tx = null;
         try {
-            tx = HibernateUtil.beginTransaction();
+            tx = hibernateHelper.beginTransaction();
             DAO_OBJECT.save(t1);
 
             assertTrue(ucv.isValid(t1));
@@ -110,7 +110,7 @@ public class UniqueValidatorTest extends AbstractDaoTest {
 
             tx.commit();
         } catch (DAOException e) {
-            HibernateUtil.rollbackTransaction(tx);
+            hibernateHelper.rollbackTransaction(tx);
             fail("DAO exception during save and retrieve of protocol: " + e.getMessage());
         }
     }

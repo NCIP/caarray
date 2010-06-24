@@ -86,7 +86,7 @@ import gov.nih.nci.caarray.application.ConfigurationHelper;
 import gov.nih.nci.caarray.application.ServiceLocatorFactory;
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCache;
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
-import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
+import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.domain.ConfigParamEnum;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.DerivedArrayData;
@@ -123,7 +123,7 @@ import gov.nih.nci.caarray.services.external.v1_0.data.DataService;
 import gov.nih.nci.caarray.services.external.v1_0.data.DataTransferException;
 import gov.nih.nci.caarray.services.external.v1_0.data.InconsistentDataSetsException;
 import gov.nih.nci.caarray.services.external.v1_0.impl.BaseV1_0ExternalService;
-import gov.nih.nci.caarray.util.HibernateUtil;
+import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
 
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
@@ -145,6 +145,7 @@ import org.jboss.annotation.ejb.RemoteBinding;
 import org.jboss.annotation.ejb.TransactionTimeout;
 
 import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
+import com.google.inject.Inject;
 import com.healthmarketscience.rmiio.RemoteInputStreamMonitor;
 import com.healthmarketscience.rmiio.RemoteInputStreamServer;
 import com.healthmarketscience.rmiio.SimpleRemoteInputStream;
@@ -167,8 +168,20 @@ public class DataServiceBean extends BaseV1_0ExternalService implements DataServ
     static final int TIMEOUT_SECONDS = 1800;
     static final long MAX_FILE_REQUEST_SIZE = 1024 * 1024 * 1024; // 1 GB
 
-    private final CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
-
+    private final CaArrayHibernateHelper hibernateHelper;
+    private final ArrayDao arrayDao;
+    
+    /**
+     * 
+     * @param hibernateHelper the CaArrayHibernateHelper dependency
+     * @param arrayDao the ArrayDao dependency
+     */
+    @Inject
+    public DataServiceBean(CaArrayHibernateHelper hibernateHelper, ArrayDao arrayDao) {
+        this.hibernateHelper = hibernateHelper;
+        this.arrayDao = arrayDao;
+    }
+    
     /**
      * {@inheritDoc}
      */
@@ -181,7 +194,7 @@ public class DataServiceBean extends BaseV1_0ExternalService implements DataServ
         LOG.info("Retrieved " + mergedDataSet.getHybridizationDataList().size() + " hybridization data elements, "
                 + mergedDataSet.getQuantitationTypes().size() + " quant types");
         DataSet externalDataSet = toExternalDataSet(mergedDataSet);
-        HibernateUtil.getCurrentSession().clear();
+        hibernateHelper.getCurrentSession().clear();
         return externalDataSet;
     }
     
@@ -305,7 +318,7 @@ public class DataServiceBean extends BaseV1_0ExternalService implements DataServ
 
     private void addArrayDatas(List<AbstractArrayData> arrayDatas, CaArrayFile dataFile,
             List<gov.nih.nci.caarray.domain.data.QuantitationType> quantitationTypes) {
-        AbstractArrayData arrayData = daoFactory.getArrayDao().getArrayData(dataFile.getId());
+        AbstractArrayData arrayData = arrayDao.getArrayData(dataFile.getId());
         if (arrayData != null && shouldAddData(arrayDatas, arrayData, quantitationTypes)) {
             arrayDatas.add(arrayData);
         }

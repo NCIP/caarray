@@ -82,7 +82,6 @@
  */
 package gov.nih.nci.caarray.services.search;
 
-import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.dao.DAOException;
 import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
@@ -105,6 +104,8 @@ import javax.interceptor.Interceptors;
 import org.apache.log4j.Logger;
 import org.jboss.annotation.ejb.TransactionTimeout;
 
+import com.google.inject.Inject;
+
 /**
  * Session bean that searches for caArray entities based on various types of criteria.
  *
@@ -120,8 +121,18 @@ public class CaArraySearchServiceBean implements CaArraySearchService {
 
     private static final Logger LOG = Logger.getLogger(CaArraySearchServiceBean.class);
     static final int TIMEOUT_SECONDS = 1800;
-    private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
-
+    
+    private final SearchDao searchDao;
+    
+    /**
+     * 
+     * @param searchDao the SearchDao dependency
+     */
+    @Inject
+    public CaArraySearchServiceBean(SearchDao searchDao) {
+        this.searchDao = searchDao;
+    }
+    
     /**
      * {@inheritDoc}
      */
@@ -144,7 +155,7 @@ public class CaArraySearchServiceBean implements CaArraySearchService {
             ExampleSearchCriteria<T> ex = new ExampleSearchCriteria<T>(entityExample);
             ex.setExcludeNulls(excludeNulls);
             ex.setExcludeZeroes(excludeZeroes);
-            retrievedList = getSearchDao().queryEntityByExample(ex);
+            retrievedList = searchDao.queryEntityByExample(ex);
         } catch (DAOException e) {
             LOG.error("DAO exception while querying by example: ", e);
         } catch (Exception e) {
@@ -169,7 +180,7 @@ public class CaArraySearchServiceBean implements CaArraySearchService {
         }
 
         try {
-            retrievedList = getSearchDao().query(cqlQuery);
+            retrievedList = searchDao.query(cqlQuery);
         } catch (DAOException e) {
             LOG.error("DAO exception while querying by CQL: ", e);
         } catch (Exception e) {
@@ -177,22 +188,5 @@ public class CaArraySearchServiceBean implements CaArraySearchService {
         }
 
         return retrievedList;
-    }
-
-    /**
-    * Returns a DAO for searching domain objects.
-    *
-    * @return SearchDao
-    */
-   private SearchDao getSearchDao() {
-       return getDaoFactory().getSearchDao();
-   }
-
-    CaArrayDaoFactory getDaoFactory() {
-        return daoFactory;
-    }
-
-    void setDaoFactory(CaArrayDaoFactory daoFactory) {
-        this.daoFactory = daoFactory;
     }
 }

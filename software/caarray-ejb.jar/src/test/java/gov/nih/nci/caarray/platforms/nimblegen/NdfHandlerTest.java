@@ -93,10 +93,13 @@ import gov.nih.nci.caarray.dao.stub.SearchDaoStub;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.platforms.FileManager;
 import gov.nih.nci.caarray.platforms.MockFileManager;
-import gov.nih.nci.caarray.platforms.MockSessionTransactionManager;
+import gov.nih.nci.caarray.platforms.SessionTransactionManagerNoOpImpl;
 import gov.nih.nci.caarray.platforms.SessionTransactionManager;
 import gov.nih.nci.caarray.platforms.spi.PlatformFileReadException;
+import gov.nih.nci.caarray.staticinjection.CaArrayEjbStaticInjectionModule;
 import gov.nih.nci.caarray.test.data.arraydesign.NimblegenArrayDesignFiles;
+import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
+import gov.nih.nci.caarray.util.CaArrayHibernateHelperModule;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.ValidationMessage;
 import gov.nih.nci.caarray.validation.ValidationResult;
@@ -104,20 +107,42 @@ import gov.nih.nci.caarray.validation.ValidationResult;
 import java.util.Collections;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+
 public class NdfHandlerTest {
+    private static Injector injector;
+    private static CaArrayHibernateHelper hibernateHelper; 
     private NdfHandler handler;
     private FileAccessServiceStub fasStub;        
     
+    /**
+     * post-construct lifecycle method; intializes the Guice injector that will provide dependencies. 
+     */
+    @BeforeClass
+    public static void init() {
+        injector = createInjector();
+        hibernateHelper = injector.getInstance(CaArrayHibernateHelper.class);
+    }
+    
+    /**
+     * @return a Guice injector from which this will obtain dependencies.
+     */
+    protected static Injector createInjector() {
+        return Guice.createInjector(new CaArrayEjbStaticInjectionModule(), new CaArrayHibernateHelperModule());
+    }
+    
     @Before
     public void setup() {
-        SessionTransactionManager stm = new MockSessionTransactionManager();
+        SessionTransactionManager stm = new SessionTransactionManagerNoOpImpl();
         fasStub = new FileAccessServiceStub();        
         FileManager fm = new MockFileManager(fasStub);
         ArrayDao arrayDao = new ArrayDaoStub();
         SearchDao searchDao = new SearchDaoStub();
-        handler = new NdfHandler(stm, fm, arrayDao, searchDao);
+        handler = new NdfHandler(stm, fm, arrayDao, searchDao, hibernateHelper);
     }
     
     @Test

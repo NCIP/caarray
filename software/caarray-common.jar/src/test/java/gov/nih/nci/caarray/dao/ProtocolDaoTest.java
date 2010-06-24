@@ -93,7 +93,7 @@ import gov.nih.nci.caarray.domain.protocol.TermBasedParameterValue;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
-import gov.nih.nci.caarray.util.HibernateUtil;
+import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -110,7 +110,6 @@ import org.junit.Test;
  */
 @SuppressWarnings("PMD")
 public class ProtocolDaoTest  extends AbstractDaoTest {
-
     private static TermBasedParameterValue DUMMY_PARAMETER_VALUE_1 = new TermBasedParameterValue();
     private static MeasurementParameterValue DUMMY_PARAMETER_VALUE_2 = new MeasurementParameterValue();
     private static MeasurementParameterValue DUMMY_PARAMETER_VALUE_3 = new MeasurementParameterValue();
@@ -219,7 +218,7 @@ public class ProtocolDaoTest  extends AbstractDaoTest {
         protocolList.add(DUMMY_PROTOCOL_1);
         protocolList.add(DUMMY_PROTOCOL_2);
         try {
-            tx = HibernateUtil.beginTransaction();
+            tx = hibernateHelper.beginTransaction();
             DAO_OBJECT.save(protocolList);
             Logger.getLogger(this.getClass()).error("STM:  Here 1");
             tx.commit();
@@ -227,7 +226,7 @@ public class ProtocolDaoTest  extends AbstractDaoTest {
         } catch (Exception e) {
             Logger.getLogger(this.getClass()).error("STM:  Here 3");
             Logger.getLogger(this.getClass()).error("STM:  ", e);
-            HibernateUtil.rollbackTransaction(tx);
+            hibernateHelper.rollbackTransaction(tx);
             fail("DAO exception during save of protocol collection: " + e.getMessage());
         }
     }
@@ -241,10 +240,10 @@ public class ProtocolDaoTest  extends AbstractDaoTest {
         Transaction tx = null;
 
         try {
-            tx = HibernateUtil.beginTransaction();
+            tx = hibernateHelper.beginTransaction();
             DAO_OBJECT.save(DUMMY_PROTOCOL_APPLICATION_1);
             ProtocolApplication retrievedProtocolApp =
-                (ProtocolApplication) HibernateUtil.getCurrentSession().get(ProtocolApplication.class,
+                (ProtocolApplication) hibernateHelper.getCurrentSession().get(ProtocolApplication.class,
                                                                             DUMMY_PROTOCOL_APPLICATION_1.getId());
             if (DUMMY_PROTOCOL_APPLICATION_1.equals(retrievedProtocolApp)) {
                 // The retrieved protocol app is the same as the saved protocol app. Test passed.
@@ -254,7 +253,7 @@ public class ProtocolDaoTest  extends AbstractDaoTest {
             }
             tx.commit();
         } catch (DAOException e) {
-            HibernateUtil.rollbackTransaction(tx);
+            hibernateHelper.rollbackTransaction(tx);
             fail("DAO exception during save and retrieve of protocol app: " + e.getMessage());
         }
     }
@@ -269,11 +268,11 @@ public class ProtocolDaoTest  extends AbstractDaoTest {
         protocolAppList.add(DUMMY_PROTOCOL_APPLICATION_1);
         protocolAppList.add(DUMMY_PROTOCOL_APPLICATION_2);
         try {
-            tx = HibernateUtil.beginTransaction();
+            tx = hibernateHelper.beginTransaction();
             DAO_OBJECT.save(protocolAppList);
             tx.commit();
         } catch (DAOException e) {
-            HibernateUtil.rollbackTransaction(tx);
+            hibernateHelper.rollbackTransaction(tx);
             fail("DAO exception during save of protocol app collection: " + e.getMessage());
         }
         assertTrue(true);
@@ -288,10 +287,10 @@ public class ProtocolDaoTest  extends AbstractDaoTest {
         Transaction tx = null;
 
         try {
-            tx = HibernateUtil.beginTransaction();
+            tx = hibernateHelper.beginTransaction();
             DAO_OBJECT.save(DUMMY_PROTOCOL_1);
             tx.commit();
-            tx = HibernateUtil.beginTransaction();
+            tx = hibernateHelper.beginTransaction();
             Protocol exampleProtocol = new Protocol();
             exampleProtocol.setDescription(DUMMY_PROTOCOL_1.getDescription());
             Protocol retrievedProtocol = null;
@@ -302,7 +301,7 @@ public class ProtocolDaoTest  extends AbstractDaoTest {
             assertEquals(DUMMY_PROTOCOL_1.getDescription(), retrievedProtocol.getDescription());
             tx.commit();
         } catch (DAOException e) {
-            HibernateUtil.rollbackTransaction(tx);
+            hibernateHelper.rollbackTransaction(tx);
             fail("DAO exception during search of protocol: " + e.getMessage());
         }
     }
@@ -315,7 +314,7 @@ public class ProtocolDaoTest  extends AbstractDaoTest {
         Transaction tx = null;
 
         try {
-            tx = HibernateUtil.beginTransaction();
+            tx = hibernateHelper.beginTransaction();
             DAO_OBJECT.save(DUMMY_PROTOCOL_1);
             DAO_OBJECT.save(DUMMY_PROTOCOL_2);
             DAO_OBJECT.save(DUMMY_PROTOCOL_3);
@@ -323,7 +322,7 @@ public class ProtocolDaoTest  extends AbstractDaoTest {
             DAO_OBJECT.save(p4);
             tx.commit();
 
-            tx = HibernateUtil.beginTransaction();
+            tx = hibernateHelper.beginTransaction();
             List<Protocol> protocols = DAO_OBJECT.getProtocols(DUMMY_TERM_1, "dummy");
             assertEquals(1, protocols.size());
             assertEquals(DUMMY_PROTOCOL_1, protocols.get(0));
@@ -355,7 +354,7 @@ public class ProtocolDaoTest  extends AbstractDaoTest {
 
             tx.commit();
         } catch (DAOException e) {
-            HibernateUtil.rollbackTransaction(tx);
+            hibernateHelper.rollbackTransaction(tx);
             fail("DAO exception during search of protocol: " + e.getMessage());
         }
     }
@@ -370,11 +369,11 @@ public class ProtocolDaoTest  extends AbstractDaoTest {
         Transaction tx = null;
 
         try {
-            tx = HibernateUtil.beginTransaction();
+            tx = hibernateHelper.beginTransaction();
             DAO_OBJECT.save(DUMMY_PROTOCOL_2);
             DAO_OBJECT.save(DUMMY_PROTOCOL_3);
             tx.commit();
-            tx = HibernateUtil.beginTransaction();
+            tx = hibernateHelper.beginTransaction();
             Protocol exampleProtocol = setupDeepSearchExample();
             Protocol retrievedProtocol = null;
             List<Protocol> matchingProtocols =
@@ -389,7 +388,7 @@ public class ProtocolDaoTest  extends AbstractDaoTest {
             }
             tx.commit();
         } catch (DAOException e) {
-            HibernateUtil.rollbackTransaction(tx);
+            hibernateHelper.rollbackTransaction(tx);
             fail("DAO exception during search of protocol: " + e.getMessage());
         }
     }
@@ -414,7 +413,7 @@ public class ProtocolDaoTest  extends AbstractDaoTest {
         Transaction tx = null;
 
         try {
-            tx = HibernateUtil.beginTransaction();
+            tx = hibernateHelper.beginTransaction();
             DAO_OBJECT.save(DUMMY_PROTOCOL_1);
             Protocol retrievedProtocol = DAO_OBJECT.getProtocol(DUMMY_PROTOCOL_1.getName(), DUMMY_PROTOCOL_1.getSource());
             if (DUMMY_PROTOCOL_1.equals(retrievedProtocol)) {
@@ -430,7 +429,7 @@ public class ProtocolDaoTest  extends AbstractDaoTest {
             assertEquals(null,  DAO_OBJECT.getProtocol(DUMMY_PROTOCOL_1.getName(), s));
             tx.commit();
         } catch (DAOException e) {
-            HibernateUtil.rollbackTransaction(tx);
+            hibernateHelper.rollbackTransaction(tx);
             fail("DAO exception during save and retrieve of protocol: " + e.getMessage());
         }
     }
@@ -441,7 +440,7 @@ public class ProtocolDaoTest  extends AbstractDaoTest {
         Transaction tx = null;
 
         try {
-            tx = HibernateUtil.beginTransaction();
+            tx = hibernateHelper.beginTransaction();
             DAO_OBJECT.save(DUMMY_PROTOCOL_1);
             Parameter param1 = DAO_OBJECT.getParameter(DUMMY_PARAMETER_1.getName(), DUMMY_PARAMETER_1.getProtocol());
             Parameter param2 = DAO_OBJECT.getParameter(DUMMY_PARAMETER_1.getName() +  "foo", DUMMY_PARAMETER_1.getProtocol());
@@ -453,7 +452,7 @@ public class ProtocolDaoTest  extends AbstractDaoTest {
             assertEquals(null, param3);
             assertEquals(null, param4);
         } catch (DAOException e) {
-            HibernateUtil.rollbackTransaction(tx);
+            hibernateHelper.rollbackTransaction(tx);
             fail("DAO exception during save and retrieve of protocol: " + e.getMessage());
         }
     }

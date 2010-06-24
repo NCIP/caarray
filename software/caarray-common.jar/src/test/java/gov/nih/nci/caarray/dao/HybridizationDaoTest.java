@@ -97,7 +97,7 @@ import gov.nih.nci.caarray.domain.search.HybridizationSearchCriteria;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
-import gov.nih.nci.caarray.util.HibernateUtil;
+import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -114,7 +114,6 @@ import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
  *
  */
 public class HybridizationDaoTest extends AbstractDaoTest {
-
     private static final HybridizationDao DAO_OBJECT = CaArrayDaoFactory.INSTANCE.getHybridizationDao();
 
     // Experiment
@@ -214,7 +213,7 @@ public class HybridizationDaoTest extends AbstractDaoTest {
     
     @Test
     public void testSearchByCriteria() throws Exception {
-        Transaction tx = HibernateUtil.beginTransaction();
+        Transaction tx = hibernateHelper.beginTransaction();
 
         saveSupportingObjects();
         
@@ -284,7 +283,7 @@ public class HybridizationDaoTest extends AbstractDaoTest {
 
         tx.commit();
 
-        tx = HibernateUtil.beginTransaction();
+        tx = hibernateHelper.beginTransaction();
         Experiment e = CaArrayDaoFactory.INSTANCE.getSearchDao().retrieve(Experiment.class, DUMMY_EXPERIMENT_1.getId());
         
         PageSortParams<Hybridization> params = new PageSortParams<Hybridization>(5, 0,

@@ -98,6 +98,7 @@ import gov.nih.nci.caarray.domain.sample.Extract;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -109,10 +110,12 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
 import javax.ejb.Local;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
 import org.apache.commons.io.IOUtils;
@@ -137,7 +140,7 @@ public class GeoSoftExporterBean implements GeoSoftExporter {
     // CHECKSTYLE:OFF magic numbers
     private static final int ONE_KB = 1024;
     // CHECKSTYLE:ON
-
+    
     /**
      * {@inheritDoc}
      */

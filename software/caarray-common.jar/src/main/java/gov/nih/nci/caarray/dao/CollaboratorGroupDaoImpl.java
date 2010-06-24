@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.dao;
 
 import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
+import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
 import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.security.authorization.domainobjects.Group;
 
@@ -90,11 +91,23 @@ import java.util.List;
 
 import org.hibernate.Query;
 
+import com.google.inject.Inject;
+
 /**
  * Dao impl.
  */
 public class CollaboratorGroupDaoImpl extends AbstractCaArrayDaoImpl implements CollaboratorGroupDao {
+
     /**
+     * 
+     * @param hibernateHelper the CaArrayHibernateHelper dependency
+     */
+    @Inject
+    public CollaboratorGroupDaoImpl(CaArrayHibernateHelper hibernateHelper) {
+        super(hibernateHelper);
+    }
+   
+   /**
      * {@inheritDoc}
      */
     @SuppressWarnings("unchecked")

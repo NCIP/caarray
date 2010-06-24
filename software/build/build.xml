@@ -645,6 +645,29 @@
         </path>
         <property name="jboss-annotations-ejb3.jar" refid="jboss-annotations-ejb3.jar.fileset" />
 
+        <path id="jboss-dependency.jar.path">
+            <fileset dir="${project.lib}" id="jboss-dependency.jar.fileset">
+                <include name="jboss-dependency-*.jar"/>
+            </fileset>
+        </path>
+        <property name="jboss-dependency.jar" refid="jboss-dependency.jar.fileset" />
+
+        <path id="jboss-aop-jdk50.jar.path">
+            <fileset dir="${project.lib}" id="jboss-aop-jdk50.jar.fileset">
+                <include name="jboss-aop-jdk50-*.jar"/>
+            </fileset>
+        </path>
+        <property name="jboss-aop-jdk50.jar" refid="jboss-aop-jdk50.jar.fileset" />
+
+        <path id="jboss-ejb3.jar.path">
+            <fileset dir="${project.lib}" id="jboss-ejb3.jar.fileset">
+                <include name="jboss-ejb3*.jar"/>
+                <exclude name="jboss-ejb3-client-*.jar"/>
+                <exclude name="jboss-ejb3x*.jar"/>
+            </fileset>
+        </path>
+        <property name="jboss-ejb3.jar" refid="jboss-ejb3.jar.fileset" />
+
         <path id="jta.jar.path">
             <fileset dir="${project.lib}" id="jta.jar.fileset">
                 <include name="jta-*.jar"/>
@@ -915,6 +938,7 @@
         <path id="nci-commons-core.jar.path">
             <fileset dir="${project.lib}" id="nci-commons-core.jar.fileset">
                 <include name="nci-commons-core-*.jar"/>
+                <exclude name="*-1.2.11.jar"/>
             </fileset>
         </path>
         <property name="nci-commons-core.jar" refid="nci-commons-core.jar.fileset" />
@@ -1056,6 +1080,9 @@
                 <include name="${jboss-aop-client.jar}"/>
                 <include name="${jboss-aspect-client.jar}"/>
                 <include name="${jboss-ejb3-client.jar}"/>
+                <include name="${jboss-dependency.jar}"/>
+                <include name="${jboss-aop-jdk50.jar}"/>
+                <include name="${jboss-ejb3.jar}"/>
             </fileset>
         </path>
         
@@ -1088,11 +1115,11 @@
             <fileset refid="xerces-J.jar.fileset"/>
             <fileset refid="xercesImpl.jar.fileset"/>
             <fileset refid="commons-configuration.jar.fileset"/>
-        	<fileset refid="guice.jar.fileset"/>
-        	<fileset refid="guice-multibindings.jar.fileset"/>
-        	<fileset refid="guice-assistedinject.jar.fileset"/>
-        	<fileset refid="woodstox.jar.fileset"/>
-       	    <fileset refid="stax2-api.jar.fileset"/>
+            <fileset refid="guice.jar.fileset"/>
+            <fileset refid="guice-multibindings.jar.fileset"/>
+            <fileset refid="guice-assistedinject.jar.fileset"/>
+            <fileset refid="woodstox.jar.fileset"/>
+            <fileset refid="stax2-api.jar.fileset"/>
             <fileset id="common.grid.dependencies.fileset" dir="${project.lib}">
                 <include name="${axis.jar}"/>
                 <include name="${caGrid-core.jar}"/>
@@ -1263,9 +1290,13 @@
         </path>
 
         <path id="ejb.test.dependencies.path">
+            <fileset refid="xercesImpl.jar.fileset"/>
             <path refid="ejb.compile.dependencies.path"/>
             <fileset refid="jboss-annotations-ejb3.jar.fileset"/>
             <fileset refid="test.dependencies.fileset"/>
+            <fileset refid="liquibase.jar.fileset"/>
+            <path refid="jboss-ejb3.jar.path" />
+            <fileset refid="jaxen.jar.fileset"/>
         </path>
 
         <path id="war.test.dependencies.path">
@@ -1415,6 +1446,7 @@
     <!-- File References -->
     <property name="mysql.datasource.file" value="caarray-mysql-ds.xml" />
     <property name="jboss-mail-service.file" value="mail-service.xml" />
+    <property name="jboss-aop.file" value="ejb3-interceptors-aop.xml" />
     <property name="jboss-globus-serverinstance-config.zip" location="${resource.dir}/deploy/jboss-globus-serverinstance-config.zip" />
     <property name="caArrayOnlineHelp.zip" location="${caarray-war.dir}/src/main/help/caArrayOnlineHelp.zip" />
 
@@ -2231,7 +2263,7 @@
     </target>
 
     <target name="test:junit-cn2magetab" unless="notest" depends="init:third-party-paths,test:compile:cn2magetab.test.classes,test:instrument:cn2magetab">
-        <caarray-run-junit-tests source.include="**/*Test.java" test.src.dir="${cn2magetab.test.src.dir}" instrumented.classes="${cn2magetab.instrumented.classes.dir}" xml.output.dir="${cn2magetab.target.dir}/junit" classpath="${cn2magetab.test.classes.dir};${cn2magetab.classes.dir};${caarray-common.classes.dir}" classpathref.id="cn2magetab.test.dependencies.path" />
+        <caarray-run-junit-tests test.src.dir="${cn2magetab.test.src.dir}" instrumented.classes="${cn2magetab.instrumented.classes.dir}" xml.output.dir="${cn2magetab.target.dir}/junit" classpath="${cn2magetab.test.classes.dir};${cn2magetab.classes.dir};${caarray-common.classes.dir}" classpathref.id="cn2magetab.test.dependencies.path" />
     </target>
 
     <!-- caarray-client.jar -->
@@ -2268,7 +2300,7 @@
     </target>
 
     <target name="test:junit-caarray-client.jar" unless="notest" depends="init:third-party-paths,test:compile:caarray-client.test.classes,test:instrument:caarray-client.jar">
-        <caarray-run-junit-tests source.include="**/*Test.java" test.src.dir="${caarray-client.test.src.dir}" xml.output.dir="${caarray-client.target.dir}/junit" instrumented.classes="${caarray-client.instrumented.classes.dir}" classpath="${caarray-client.test.classes.dir};${test.data.target.dir};${test.classes.dir};${caarray-client.test.files.dir};${caarray-client.classes.dir};${caarray-client.resources.dir};" classpathref.id="client.test.dependencies.path" />
+        <caarray-run-junit-tests test.src.dir="${caarray-client.test.src.dir}" xml.output.dir="${caarray-client.target.dir}/junit" instrumented.classes="${caarray-client.instrumented.classes.dir}" classpath="${caarray-client.test.classes.dir};${test.data.target.dir};${test.classes.dir};${caarray-client.test.files.dir};${caarray-client.classes.dir};${caarray-client.resources.dir};" classpathref.id="client.test.dependencies.path" />
     </target>
 
     <!-- caarray-common.jar -->
@@ -2302,7 +2334,7 @@
     </target>
 
     <target name="test:junit-caarray-common.jar" unless="notest" depends="init:third-party-paths,test:compile:caarray-common.test.classes,test:instrument:caarray-common.jar,configure-datasource-for-test,test:copy-files-to-target-dir-and-unpack-test-data">
-        <caarray-run-junit-tests source.include="**/*Test.java" test.src.dir="${caarray-common.test.src.dir}" xml.output.dir="${caarray-common.target.dir}/junit" instrumented.classes="${caarray-common.instrumented.classes.dir}" classpath="${caarray-common.test.classes.dir};${test.data.target.dir};${test.data.classes.dir};${caarray-common.test.files.dir};${caarray-common.classes.dir};" classpathref.id="common.test.dependencies.path" />
+        <caarray-run-junit-tests test.src.dir="${caarray-common.test.src.dir}" xml.output.dir="${caarray-common.target.dir}/junit" instrumented.classes="${caarray-common.instrumented.classes.dir}" classpath="${caarray-common.test.classes.dir};${test.data.target.dir};${test.data.classes.dir};${caarray-common.test.files.dir};${caarray-common.classes.dir};" classpathref.id="common.test.dependencies.path" />
     </target>
 
 	<!-- caarray-ejb.jar -->
@@ -2338,7 +2370,7 @@
     </target>
 
     <target name="test:junit-caarray-ejb.jar" unless="notest" depends="init:third-party-paths,test:compile:caarray-ejb.test.classes,test:instrument:caarray-ejb.jar,compile:caarray-client.jar,compile:caarray-common.jar,test:functional:compile-tests,test:copy-files-to-target-dir-and-unpack-test-data">
-        <caarray-run-junit-tests source.include="**/*Test.java" test.src.dir="${caarray-ejb.test.src.dir}" xml.output.dir="${caarray-ejb.target.dir}/junit" instrumented.classes="${caarray-ejb.instrumented.classes.dir};${caarray-common.instrumented.classes.dir}" classpath="${caarray-ejb.test.classes.dir};${caarray-common.test.classes.dir};${test.data.target.dir};${test.data.classes.dir};${caarray-ejb.test.resources.dir};${caarray-ejb.resources.dir};${caarray-common.test.files.dir};${caarray-ejb.classes.dir};${caarray-client.classes.dir};${caarray-common.classes.dir};" classpathref.id="ejb.test.dependencies.path"/>
+        <caarray-run-junit-tests test.src.dir="${caarray-ejb.test.src.dir}" xml.output.dir="${caarray-ejb.target.dir}/junit" instrumented.classes="${caarray-ejb.instrumented.classes.dir};${caarray-common.instrumented.classes.dir}" classpath="${caarray-ejb.test.classes.dir};${caarray-common.test.classes.dir};${test.data.target.dir};${test.data.classes.dir};${caarray-ejb.test.resources.dir};${caarray-ejb.resources.dir};${caarray-common.test.files.dir};${caarray-ejb.classes.dir};${caarray-client.classes.dir};${caarray-common.classes.dir};" classpathref.id="ejb.test.dependencies.path"/>
     </target>
 
     <!-- caarray.war -->
@@ -2379,7 +2411,7 @@
         <copy todir="${caarray-war.classes.dir}">
             <fileset dir="${caarray-war.src.dir}" includes="struts.xml,struts.properties,validators.xml" />
         </copy>
-        <caarray-run-junit-tests source.include="**/*Test.java" test.src.dir="${caarray-war.test.src.dir}" xml.output.dir="${caarray-war.target.dir}/junit" instrumented.classes="${caarray-war.instrumented.classes.dir}" classpath="${caarray-war.test.classes.dir};${caarray-war.classes.dir};${caarray-common.test.classes.dir};${caarray-common.test.files.dir};${caarray-common.classes.dir};${caarray-ejb.classes.dir};${caarray-ejb.test.classes.dir};${test.data.target.dir};${test.data.classes.dir};" classpathref.id="war.test.dependencies.path" />
+        <caarray-run-junit-tests test.src.dir="${caarray-war.test.src.dir}" xml.output.dir="${caarray-war.target.dir}/junit" instrumented.classes="${caarray-war.instrumented.classes.dir}" classpath="${caarray-war.test.classes.dir};${caarray-war.classes.dir};${caarray-common.test.classes.dir};${caarray-common.test.files.dir};${caarray-common.classes.dir};${caarray-ejb.classes.dir};${caarray-ejb.test.classes.dir};${test.data.target.dir};${test.data.classes.dir};" classpathref.id="war.test.dependencies.path" />
     </target>
 
     <target name="test:junit-report" unless="notest" depends="init:third-party-paths">
@@ -2859,29 +2891,32 @@
         <path id="liquibase.dependencies.path">
             <pathelement location="${caarray-common.classes.dir}" />
             <pathelement location="${caarray-ejb.classes.dir}" />
-        	<fileset refid="liquibase.jar.fileset"/>
-        	<fileset refid="mysql-connector-java.jar.fileset"/>
-        	<fileset refid="log4j.jar.fileset"/>
-        	<fileset refid="nci-commons-core.jar.fileset"/>
-        	<fileset refid="javaee.jar.fileset"/>
-        	<fileset refid="affxfusion.jar.fileset"/>
-        	<fileset refid="commons-io.jar.fileset"/>
-        	<fileset refid="guice.jar.fileset"/>
-        	<fileset refid="guice-assistedinject.jar.fileset"/>
-        	<fileset refid="guice-multibindings.jar.fileset"/>
-        	<fileset refid="aopalliance.jar.fileset"/>
-        	<fileset refid="hibernate.jar.fileset"/>
-        	<fileset refid="csmapi.jar.fileset"/>
-        	<fileset refid="common.compile.dependencies.fileset"/>
-
+            <fileset refid="liquibase.jar.fileset"/>
+            <fileset refid="mysql-connector-java.jar.fileset"/>
+            <fileset refid="log4j.jar.fileset"/>
+            <fileset refid="nci-commons-core.jar.fileset"/>
+            <fileset refid="javaee.jar.fileset"/>
+            <fileset refid="affxfusion.jar.fileset"/>
+            <fileset refid="commons-io.jar.fileset"/>
+            <fileset refid="guice.jar.fileset"/>
+            <fileset refid="guice-assistedinject.jar.fileset"/>
+            <fileset refid="guice-multibindings.jar.fileset"/>
+            <fileset refid="aopalliance.jar.fileset"/>
+            <fileset refid="hibernate.jar.fileset"/>
+            <fileset refid="csmapi.jar.fileset"/>
+            <fileset refid="common.compile.dependencies.fileset"/>
+            <fileset refid="dozer.jar.fileset"/>
+            <fileset refid="jaxen.jar.fileset"/>
+            <fileset refid="asm.jar.fileset"/>
+            <fileset refid="antlr.jar.fileset"/>
             <pathelement path="${caarraydb.sql.src.dir}/liquibase" />
-		</path>
+        </path>
 		
-		<taskdef resource="liquibasetasks.properties">
-		    <classpath refid="liquibase.dependencies.path"/>	 
-		</taskdef>
+        <taskdef resource="liquibasetasks.properties">
+            <classpath refid="liquibase.dependencies.path"/>	 
+        </taskdef>
     </target>
-	
+
 	<target name="database:update" depends="init:third-party-paths,build:caarray-common.jar,build:caarray-ejb.jar,database:liquibase-taskdef" unless="nodbintegration" description="Run all needed schema creation, population and updates scripts to get database to correct state">
 		<updateDatabase
 			driver="${database.driver}"
@@ -2912,6 +2947,9 @@
 
     <target name="deploy:caarray.ear-dependencies" depends="init:third-party-paths,prepare:create-local.properties">
         <copy file="${common.resources.jboss.conf.dir}/${mysql.datasource.file}" todir="${jboss.deploy.dir}" overwrite="true">
+            <filterset refid="caarray.filterset" />
+        </copy>
+        <copy file="${common.resources.jboss.conf.dir}/${jboss-aop.file}" todir="${jboss.deploy.dir}" overwrite="true">
             <filterset refid="caarray.filterset" />
         </copy>
         <copy todir="${jboss.lib.dir}" overwrite="true" flatten="true">

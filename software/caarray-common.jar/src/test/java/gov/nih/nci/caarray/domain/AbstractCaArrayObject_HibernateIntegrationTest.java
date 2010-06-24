@@ -87,20 +87,43 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import gov.nih.nci.caarray.AbstractCaarrayTest;
 import gov.nih.nci.caarray.dao.HibernateIntegrationTestCleanUpUtility;
-import gov.nih.nci.caarray.util.HibernateUtil;
+import gov.nih.nci.caarray.staticinjection.CaArrayCommonStaticInjectionModule;
+import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
+import gov.nih.nci.caarray.util.CaArrayHibernateHelperModule;
 
 import org.hibernate.Transaction;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
-public abstract class AbstractCaArrayObject_HibernateIntegrationTest extends AbstractCaarrayTest {
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 
+public abstract class AbstractCaArrayObject_HibernateIntegrationTest extends AbstractCaarrayTest {
+    private static Injector injector;
+    protected static CaArrayHibernateHelper hibernateHelper; 
     private static int uniqueIntValue = 0;
+    
+    /**
+     * post-construct lifecycle method; intializes the Guice injector that will provide dependencies. 
+     */
+    @BeforeClass
+    public static void init() {
+        injector = createInjector();
+        hibernateHelper = injector.getInstance(CaArrayHibernateHelper.class);
+    }
+    
+    /**
+     * @return a Guice injector from which this will obtain dependencies.
+     */
+    protected static Injector createInjector() {
+        return Guice.createInjector(new CaArrayCommonStaticInjectionModule(), new CaArrayHibernateHelperModule());
+    }
 
     @Before
     public void setUp() {
-        HibernateUtil.setFiltersEnabled(true);
+        hibernateHelper.setFiltersEnabled(true);
     }
 
     @After
@@ -131,17 +154,17 @@ public abstract class AbstractCaArrayObject_HibernateIntegrationTest extends Abs
         save(caArrayObject);
         assertNotNull(caArrayObject.getId());
         assertTrue(caArrayObject.getId() > 0L);
-        Transaction tx = HibernateUtil.beginTransaction();
-        HibernateUtil.getCurrentSession().evict(caArrayObject);
+        Transaction tx = hibernateHelper.beginTransaction();
+        hibernateHelper.getCurrentSession().evict(caArrayObject);
         AbstractCaArrayObject retrievedCaArrayObject =
-            (AbstractCaArrayObject) HibernateUtil.getCurrentSession().get(caArrayObject.getClass(), caArrayObject.getId());
+            (AbstractCaArrayObject) hibernateHelper.getCurrentSession().get(caArrayObject.getClass(), caArrayObject.getId());
         compareCaArrayObjectValues(caArrayObject, retrievedCaArrayObject);
         tx.commit();
     }
 
     protected final void save(AbstractCaArrayObject caArrayObject) {
-        Transaction tx = HibernateUtil.beginTransaction();
-        HibernateUtil.getCurrentSession().saveOrUpdate(caArrayObject);
+        Transaction tx = hibernateHelper.beginTransaction();
+        hibernateHelper.getCurrentSession().saveOrUpdate(caArrayObject);
         tx.commit();
     }
 

@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.dao;
 
 import gov.nih.nci.caarray.domain.BlobHolder;
+import gov.nih.nci.caarray.domain.MultiPartBlob;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileCategory;
@@ -90,11 +91,15 @@ import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.project.AbstractExperimentDesignNode;
 import gov.nih.nci.caarray.domain.search.FileSearchCriteria;
+import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
 import gov.nih.nci.caarray.util.CaArrayUtils;
-import gov.nih.nci.caarray.util.HibernateUtil;
-import java.io.File;
-import java.io.OutputStream;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -102,28 +107,23 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
+import org.hibernate.Session;
 import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.Restrictions;
 
 import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
-import gov.nih.nci.caarray.domain.MultiPartBlob;
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Logger;
-import org.hibernate.Session;
+import com.google.inject.Inject;
 
 /**
  * DAO to manipulate file objects.
  */
 @SuppressWarnings("PMD.CyclomaticComplexity")
 class FileDaoImpl extends AbstractCaArrayDaoImpl implements FileDao {
-
     private static final Logger LOG = Logger.getLogger(FileDaoImpl.class);
     private static final Method GET_MULTI_PART_BLOB;
     private static final Method SET_MULTI_PART_BLOB;
@@ -144,6 +144,15 @@ class FileDaoImpl extends AbstractCaArrayDaoImpl implements FileDao {
         }
     }
 
+    /**
+     * 
+     * @param hibernateHelper the CaArrayHibernateHelper dependency
+     */
+    @Inject
+    public FileDaoImpl(CaArrayHibernateHelper hibernateHelper) {
+        super(hibernateHelper);
+    }
+   
     @SuppressWarnings("PMD.AvoidThrowingRawExceptionTypes")
     private static Error throwError(Exception ex) {
         throw new Error(ex);
@@ -166,10 +175,10 @@ class FileDaoImpl extends AbstractCaArrayDaoImpl implements FileDao {
          + "and h.id = hd.hybridization "
          + "and d.id = bp.datacolumn";
 
-        List filesToProject = HibernateUtil.getCurrentSession().createSQLQuery(sqlProjBlobs)
+        List filesToProject = getCurrentSession().createSQLQuery(sqlProjBlobs)
             .setLong("p_id", projectId).list();
 
-        List filesToHyb = HibernateUtil.getCurrentSession().createSQLQuery(sqlHybBlobs)
+        List filesToHyb = getCurrentSession().createSQLQuery(sqlHybBlobs)
             .setLong("p_id", projectId).list();
 
         if ((filesToProject != null && !filesToProject.isEmpty()) || (filesToHyb != null && !filesToHyb.isEmpty())) {
@@ -183,12 +192,12 @@ class FileDaoImpl extends AbstractCaArrayDaoImpl implements FileDao {
 
     private int removeAssociationsByBlobHolderId(List<Long> idList) {
         String sql = "delete from CAARRAYFILE_BLOB_PARTS where blob_parts in (:b_parts)";
-        Query q = HibernateUtil.getCurrentSession().createSQLQuery(sql);
+        Query q = getCurrentSession().createSQLQuery(sql);
         q.setParameterList("b_parts", idList);
         q.executeUpdate();
 
         sql = "delete from DATACOLUMN_BLOB_PARTS where blob_parts in (:b_parts)";
-        q = HibernateUtil.getCurrentSession().createSQLQuery(sql);
+        q = getCurrentSession().createSQLQuery(sql);
         q.setParameterList("b_parts", idList);
         return q.executeUpdate();
     }
@@ -203,7 +212,7 @@ class FileDaoImpl extends AbstractCaArrayDaoImpl implements FileDao {
             this.removeAssociationsByBlobHolderId(list);
             for (int i = 0; i < list.size(); i++) {
                 String hql = "delete from " + BlobHolder.class.getName() + " where id = :bId";
-                Query q = HibernateUtil.getCurrentSession().createQuery(hql);
+                Query q = getCurrentSession().createQuery(hql);
                 q.setBigInteger("bId", (BigInteger) list.get(i));
                 q.executeUpdate();
                 this.flushSession();
@@ -218,7 +227,7 @@ class FileDaoImpl extends AbstractCaArrayDaoImpl implements FileDao {
      */
     @SuppressWarnings({"unchecked", "PMD" })
     public List<CaArrayFile> searchFiles(PageSortParams<CaArrayFile> params, FileSearchCriteria criteria) {        
-        Criteria c = HibernateUtil.getCurrentSession().createCriteria(CaArrayFile.class);
+        Criteria c = getCurrentSession().createCriteria(CaArrayFile.class);
 
         if (criteria.getExperiment() != null) {
             c.add(Restrictions.eq("project", criteria.getExperiment().getProject()));
@@ -292,7 +301,7 @@ class FileDaoImpl extends AbstractCaArrayDaoImpl implements FileDao {
                 + " f where f.project.id = :projectId and f.status in (:deletableStatuses) "
                 + " and (f.status <> :importedStatus or not exists (select h from " + AbstractArrayData.class.getName()
                 + " ad join ad.hybridizations h where ad.dataFile = f order by f.name))";
-        Query q = HibernateUtil.getCurrentSession().createQuery(hql);
+        Query q = getCurrentSession().createQuery(hql);
         q.setLong("projectId", projectId);
         q.setParameterList("deletableStatuses", CaArrayUtils.namesForEnums(FileStatus.DELETABLE_FILE_STATUSES));
         q.setString("importedStatus", FileStatus.IMPORTED.name());
@@ -301,7 +310,7 @@ class FileDaoImpl extends AbstractCaArrayDaoImpl implements FileDao {
 
    private boolean refreshIfCleared(MultiPartBlob blobs) {
          List<BlobHolder> list = getBlobParts(blobs);
-         Session s = HibernateUtil.getCurrentSession();
+         Session s = getCurrentSession();
          boolean reloaded = false;
          for (BlobHolder bh : list) {
              if (bh.getContents() == null) {
@@ -367,7 +376,7 @@ class FileDaoImpl extends AbstractCaArrayDaoImpl implements FileDao {
         List<BlobHolder> parts = getBlobParts(blobs);
         if (parts != null) {
             for (BlobHolder bh : parts) {
-                HibernateUtil.getCurrentSession().evict(bh);
+                getCurrentSession().evict(bh);
                 bh.setContents(null);
             }
         }

@@ -86,31 +86,52 @@ import gov.nih.nci.caarray.application.ServiceLocatorFactory;
 import gov.nih.nci.caarray.application.arraydata.ArrayDataService;
 import gov.nih.nci.caarray.application.fileaccess.FileCleanupThread;
 import gov.nih.nci.caarray.security.SecurityUtils;
-import gov.nih.nci.caarray.util.HibernateUtil;
+import gov.nih.nci.caarray.staticinjection.CaArrayWarStaticInjectionModule;
+import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
+import gov.nih.nci.caarray.util.CaArrayHibernateHelperModule;
 
 import java.util.Timer;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
+import com.google.inject.Guice;
+import com.google.inject.Inject;
+import com.google.inject.Injector;
+
 /**
  * Performs initialization operations required at startup of the caArray application.
  */
 public class StartupListener implements ServletContextListener {
+    @Inject private static CaArrayHibernateHelper hibernateHelper; 
     private static final int TIMER_INTERVAL_FIFTEEN_MINS = 900000;
 
+    private Injector injector;
+    
+    /**
+     * Subclasses can override this to configure a custom injector, e.g. by overriding some modules with 
+     * stubbed out functionality.
+     * 
+     * @return a Guice injector from which this will obtain dependencies.
+     */
+    protected Injector createInjector() {
+        return Guice.createInjector(new CaArrayWarStaticInjectionModule(), new CaArrayHibernateHelperModule());
+    }
+    
     /**
      * Creates connection to DataService as well as sets configuration in
      * application scope. Initiates scheduled task to cleanup files every 15 mins
      * @param event ServletContextEvent
      */
     public void contextInitialized(ServletContextEvent event) {
-        HibernateUtil.openAndBindSession();
+        this.injector = createInjector();
+
+        hibernateHelper.openAndBindSession();
         ArrayDataService arrayDataService =
             (ArrayDataService) ServiceLocatorFactory.getLocator().lookup(ArrayDataService.JNDI_NAME);
         arrayDataService.initialize();
         SecurityUtils.init();
-        HibernateUtil.unbindAndCleanupSession();
+        hibernateHelper.unbindAndCleanupSession();
         
         Timer timer = new Timer();
         timer.schedule(FileCleanupThread.getInstance(), TIMER_INTERVAL_FIFTEEN_MINS, TIMER_INTERVAL_FIFTEEN_MINS);

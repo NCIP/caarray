@@ -105,13 +105,16 @@ import gov.nih.nci.caarray.domain.project.AssayType;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.search.BrowseCategory;
 import gov.nih.nci.caarray.domain.search.QuantitationTypeSearchCriteria;
+import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
 import gov.nih.nci.caarray.util.CaArrayUtils;
-import gov.nih.nci.caarray.util.HibernateUtil;
 import gov.nih.nci.caarray.util.UnfilteredCallback;
 
+import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -127,9 +130,7 @@ import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.Restrictions;
 
 import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
+import com.google.inject.Inject;
 
 /**
  * DAO for entities in the <code>gov.nih.nci.caarray.domain.array</code> package.
@@ -138,7 +139,7 @@ import java.util.Collections;
  */
 @SuppressWarnings({"PMD.AvoidDuplicateLiterals", "PMD.CyclomaticComplexity", "PMD.TooManyMethods" })
 class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
-
+    
     private static final List<String> PARSEABLE_ARRAY_DESIGN_FILE_TYPE_NAMES
             = new ArrayList<String>(FileType.PARSEABLE_ARRAY_DESIGN_FILE_TYPES.size());
     static {
@@ -146,6 +147,19 @@ class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
             PARSEABLE_ARRAY_DESIGN_FILE_TYPE_NAMES.add(t.getName());
         }
     }
+    
+    private final SearchDao searchDao;
+
+    /**
+     * 
+     * @param hibernateHelper the CaArrayHibernateHelper dependency
+     */
+    @Inject
+    public ArrayDaoImpl(SearchDao searchDao, CaArrayHibernateHelper hibernateHelper) {
+        super(hibernateHelper);
+        this.searchDao = searchDao;
+    }
+   
     /**
      * {@inheritDoc}
      */
@@ -231,8 +245,9 @@ class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
     /**
      * {@inheritDoc}
      */
+    @SuppressWarnings("unchecked")
     public AbstractArrayData getArrayData(Long fileId) {
-        Session session = HibernateUtil.getCurrentSession();
+        Session session = getCurrentSession();
         Query query = session.createQuery("select distinct arrayData from " + AbstractArrayData.class.getName()
                 + " arrayData join arrayData.dataFile f where f.id = :fileId");
         query.setLong("fileId", fileId);
@@ -263,7 +278,7 @@ class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
      * {@inheritDoc}
      */
     public DesignElementList getDesignElementList(String lsidAuthority, String lsidNamespace, String lsidObjectId) {
-        return CaArrayDaoFactory.INSTANCE.getSearchDao().getEntityByLsid(DesignElementList.class,
+        return searchDao.getEntityByLsid(DesignElementList.class,
                 new LSID(lsidAuthority, lsidNamespace, lsidObjectId));
     }
 
@@ -271,7 +286,7 @@ class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
      * {@inheritDoc}
      */
     public ArrayDesign getArrayDesign(String lsidAuthority, String lsidNamespace, String lsidObjectId) {
-        return CaArrayDaoFactory.INSTANCE.getSearchDao().getEntityByLsid(ArrayDesign.class,
+        return searchDao.getEntityByLsid(ArrayDesign.class,
                 new LSID(lsidAuthority, lsidNamespace, lsidObjectId));
     }
 
@@ -290,7 +305,7 @@ class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
                 return q.uniqueResult();
             }
         };
-        Number count = (Number) HibernateUtil.doUnfiltered(u);
+        Number count = (Number) getHibernateHelper().doUnfiltered(u);
         return count.intValue() > 0;
     }
 
@@ -320,7 +335,7 @@ class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
             return Collections.emptyList();
         }
         Map<String, List<? extends Serializable>> inParams = new HashMap<String, List<? extends Serializable>>();
-        String inClause = HibernateUtil.buildInClause(names, "pp.name", inParams);
+        String inClause = getHibernateHelper().buildInClauses(names, "pp.name", inParams);
         String queryString = "select pp from " + PhysicalProbe.class.getName()
                 + " pp where pp.arrayDesignDetails = :details and " + inClause;
         Query query = getCurrentSession().createQuery(queryString);
@@ -498,7 +513,7 @@ class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
     @SuppressWarnings({"unchecked", "PMD.ExcessiveMethodLength", "PMD.NPathComplexity" })
     public List<QuantitationType> searchForQuantitationTypes(PageSortParams<QuantitationType> params,
             QuantitationTypeSearchCriteria criteria) {
-        Criteria c = HibernateUtil.getCurrentSession().createCriteria(HybridizationData.class);
+        Criteria c = getCurrentSession().createCriteria(HybridizationData.class);
         c.createCriteria("hybridization").add(Restrictions.eq("id", criteria.getHybridization().getId()));
         c.createCriteria("dataSet").createAlias("quantitationTypes", "qt").createAlias("arrayData", "ad");
         c.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
@@ -551,10 +566,11 @@ class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
     /**
      * {@inheritDoc}
      */
+    @SuppressWarnings("unchecked")
     public List<ArrayDesign> getArrayDesignsWithReImportable() {
         String q = "select distinct a from " + ArrayDesign.class.getName() 
                 + " a left join a.designFiles f where f.status = :status and f.type in (:types) order by a.id";
-        Query query = HibernateUtil.getCurrentSession().createQuery(q);
+        Query query = getCurrentSession().createQuery(q);
         query.setParameter("status",  FileStatus.IMPORTED_NOT_PARSED.name());
         query.setParameterList("types", PARSEABLE_ARRAY_DESIGN_FILE_TYPE_NAMES);
         return (List<ArrayDesign>) query.list();

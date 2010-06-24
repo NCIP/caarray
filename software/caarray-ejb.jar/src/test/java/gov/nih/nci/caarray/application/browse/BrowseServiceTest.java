@@ -108,8 +108,7 @@ public class BrowseServiceTest extends AbstractServiceTest {
 
     @Before
     public void setUpService() {
-        BrowseServiceBean browseServiceBean = new BrowseServiceBean();
-        browseServiceBean.setDaoFactory(this.daoFactoryStub);
+        BrowseServiceBean browseServiceBean = new BrowseServiceBean(this.daoFactoryStub.getBrowseDao());
         browseService = browseServiceBean;
     }
 

@@ -1,44 +1,44 @@
 package gov.nih.nci.caarray.dao;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import gov.nih.nci.caarray.domain.search.AuditLogSearchCriteria;
+import gov.nih.nci.caarray.domain.search.AuditLogSortCriterion;
+
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+
+import org.hibernate.Transaction;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
 import com.fiveamsolutions.nci.commons.audit.AuditLogDetail;
 import com.fiveamsolutions.nci.commons.audit.AuditLogRecord;
 import com.fiveamsolutions.nci.commons.audit.AuditType;
 import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
-import gov.nih.nci.caarray.domain.search.AuditLogSearchCriteria;
-import gov.nih.nci.caarray.domain.search.AuditLogSortCriterion;
-import gov.nih.nci.caarray.util.HibernateUtil;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import org.hibernate.Transaction;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import com.fiveamsolutions.nci.commons.data.search.SortCriterion;
 
 /**
  *
  * @author gax
  */
 public class AuditLogDaoTest extends AbstractDaoTest {
-
     private Transaction tx;
     private AuditLogRecord r1, r2;
     private AuditLogDetail d1, d2;
     private PageSortParams<AuditLogRecord> sort;
 
-    @BeforeClass
-    public static void init() {
-        Transaction tx = HibernateUtil.beginTransaction();
-        HibernateUtil.getCurrentSession().createQuery("delete from "+AuditLogDetail.class.getName()).executeUpdate();
-        HibernateUtil.getCurrentSession().createQuery("delete from "+AuditLogRecord.class.getName()).executeUpdate();
-        tx.commit();
-    }
-
+    @SuppressWarnings("deprecation")
     @Before
     public void setup() {
-        tx = HibernateUtil.beginTransaction();
+        tx = hibernateHelper.beginTransaction();
+        hibernateHelper.getCurrentSession().createQuery("delete from "+AuditLogDetail.class.getName()).executeUpdate();
+        hibernateHelper.getCurrentSession().createQuery("delete from "+AuditLogRecord.class.getName()).executeUpdate();
+        tx.commit();
+        
+        tx = hibernateHelper.beginTransaction();
         r1 = new AuditLogRecord(AuditType.UPDATE, "foo", 1L, "user1", new Date(1L));
         d1 = new AuditLogDetail(r1, "bar", null, null);
         d1.setMessage("bla bla bla aaa bla bla bla");
@@ -49,25 +49,27 @@ public class AuditLogDaoTest extends AbstractDaoTest {
         d2.setMessage("bla bla bla bbb bla bla bla");
         r2.getDetails().add(d2);
 
-        HibernateUtil.getCurrentSession().save(r1);
-        HibernateUtil.getCurrentSession().save(r2);
+        hibernateHelper.getCurrentSession().save(r1);
+        hibernateHelper.getCurrentSession().save(r2);
 
-        sort = new PageSortParams<AuditLogRecord>(20, 0, Collections.EMPTY_LIST, false);
+        sort = new PageSortParams<AuditLogRecord>(20, 0, Collections.<SortCriterion<AuditLogRecord>>emptyList(),
+                false);
         sort.setSortCriterion(AuditLogSortCriterion.DATE);
     }
 
     @After
     public void cleanup() {
-        HibernateUtil.getCurrentSession().flush();
-        HibernateUtil.getCurrentSession().createQuery("delete from "+AuditLogDetail.class.getName()).executeUpdate();
-        HibernateUtil.getCurrentSession().createQuery("delete from "+AuditLogRecord.class.getName()).executeUpdate();
+        hibernateHelper.getCurrentSession().flush();
+        hibernateHelper.getCurrentSession().createQuery("delete from "+AuditLogDetail.class.getName()).executeUpdate();
+        hibernateHelper.getCurrentSession().createQuery("delete from "+AuditLogRecord.class.getName()).executeUpdate();
         tx.commit();
     }
     
+    @SuppressWarnings("deprecation")
     @Test
     public void testSortRecords() {
 
-        AuditLogDaoImpl instance = new AuditLogDaoImpl();
+        AuditLogDaoImpl instance = new AuditLogDaoImpl(hibernateHelper);
         AuditLogSearchCriteria cr = new AuditLogSearchCriteria();
         
         assertEquals(2, instance.getRecordsCount(cr));
@@ -84,7 +86,7 @@ public class AuditLogDaoTest extends AbstractDaoTest {
 
     @Test
     public void testUsername() {
-        AuditLogDaoImpl instance = new AuditLogDaoImpl();
+        AuditLogDaoImpl instance = new AuditLogDaoImpl(hibernateHelper);
         AuditLogSearchCriteria cr = new AuditLogSearchCriteria();
         cr.setUsername("user1");
         List<AuditLogRecord> l = instance.getRecords(cr, sort);
@@ -94,7 +96,7 @@ public class AuditLogDaoTest extends AbstractDaoTest {
 
     @Test
     public void testMessage() {
-        AuditLogDaoImpl instance = new AuditLogDaoImpl();
+        AuditLogDaoImpl instance = new AuditLogDaoImpl(hibernateHelper);
         AuditLogSearchCriteria cr = new AuditLogSearchCriteria();
         
         cr.setMessage("bbb");
@@ -110,9 +112,9 @@ public class AuditLogDaoTest extends AbstractDaoTest {
         AuditLogDetail d3 = new AuditLogDetail(r1, "bar", null, null);
         d3.setMessage("bla bla bla ccc bla bla bla");
         r1.getDetails().add(d3);
-        HibernateUtil.getCurrentSession().update(r1);
+        hibernateHelper.getCurrentSession().update(r1);
 
-        AuditLogDaoImpl instance = new AuditLogDaoImpl();
+        AuditLogDaoImpl instance = new AuditLogDaoImpl(hibernateHelper);
         AuditLogSearchCriteria cr = new AuditLogSearchCriteria();
 
         List<AuditLogRecord> l = instance.getRecords(cr, sort);

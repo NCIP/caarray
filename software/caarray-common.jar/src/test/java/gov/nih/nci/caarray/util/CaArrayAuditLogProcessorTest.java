@@ -52,19 +52,19 @@ public class CaArrayAuditLogProcessorTest extends AbstractDaoTest {
 
     @Test
     public void testProcessDetailGroupCreate() {
-        Transaction tx = HibernateUtil.beginTransaction();
-        HibernateUtil.getCurrentSession().createQuery("delete from " + AuditLogDetail.class.getName()).executeUpdate();
+        Transaction tx = hibernateHelper.beginTransaction();
+        hibernateHelper.getCurrentSession().createQuery("delete from " + AuditLogDetail.class.getName()).executeUpdate();
 
         
         setupUsersAndGroups();
     
-        HibernateUtil.getCurrentSession().save(u1);
-        HibernateUtil.getCurrentSession().save(u2);
-        HibernateUtil.getCurrentSession().save(g1);
+        hibernateHelper.getCurrentSession().save(u1);
+        hibernateHelper.getCurrentSession().save(u2);
+        hibernateHelper.getCurrentSession().save(g1);
         tx.commit();
         
-        tx = HibernateUtil.beginTransaction();
-        Criteria c = HibernateUtil.getCurrentSession().createCriteria(AuditLogDetail.class)
+        tx = hibernateHelper.beginTransaction();
+        Criteria c = hibernateHelper.getCurrentSession().createCriteria(AuditLogDetail.class)
                 .setProjection(Projections.property("message"));
 
         List<String> l = c.list();
@@ -78,18 +78,18 @@ public class CaArrayAuditLogProcessorTest extends AbstractDaoTest {
 
     @Test
     public void testSampleSecurityLog() {
-        Transaction tx = HibernateUtil.beginTransaction();
+        Transaction tx = hibernateHelper.beginTransaction();
         ProjectTestHelper helper = new ProjectTestHelper(){};
         helper.setup();
         ProjectTestHelper.saveStuff();
-        HibernateUtil.getCurrentSession().flush();
-        List<AuditLogDetail> l = HibernateUtil.getCurrentSession().createCriteria(AuditLogDetail.class).list();
+        hibernateHelper.getCurrentSession().flush();
+        List<AuditLogDetail> l = hibernateHelper.getCurrentSession().createCriteria(AuditLogDetail.class).list();
         Project p = ProjectTestHelper.getDummyProject();
         p.getPublicProfile().getSampleSecurityLevels().put(ProjectTestHelper.getDummySample(), SampleSecurityLevel.READ);
-        HibernateUtil.getCurrentSession().saveOrUpdate(p);
-        HibernateUtil.getCurrentSession().flush();
+        hibernateHelper.getCurrentSession().saveOrUpdate(p);
+        hibernateHelper.getCurrentSession().flush();
 
-        List<AuditLogDetail> l2 = HibernateUtil.getCurrentSession().createCriteria(AuditLogDetail.class).list();
+        List<AuditLogDetail> l2 = hibernateHelper.getCurrentSession().createCriteria(AuditLogDetail.class).list();
         assertEquals(2L, l2.size() - l.size());
         tx.commit();
     }
@@ -106,20 +106,20 @@ public class CaArrayAuditLogProcessorTest extends AbstractDaoTest {
 
 
     private void testSampleSecurityLog_Selective(int expectedCount, SecurityLevel projectLevel, SampleSecurityLevel sampleLevel) {
-        Transaction tx = HibernateUtil.beginTransaction();
+        Transaction tx = hibernateHelper.beginTransaction();
         ProjectTestHelper helper = new ProjectTestHelper(){};
         helper.setup();
         ProjectTestHelper.saveStuff();
-        HibernateUtil.getCurrentSession().flush();
-        List<AuditLogDetail> l = HibernateUtil.getCurrentSession().createCriteria(AuditLogDetail.class).list();
+        hibernateHelper.getCurrentSession().flush();
+        List<AuditLogDetail> l = hibernateHelper.getCurrentSession().createCriteria(AuditLogDetail.class).list();
         Project p = ProjectTestHelper.getDummyProject();
 
         p.getPublicProfile().getSampleSecurityLevels().put(ProjectTestHelper.getDummySample(), sampleLevel);
         p.getPublicProfile().setSecurityLevel(projectLevel);
-        HibernateUtil.getCurrentSession().saveOrUpdate(p);
-        HibernateUtil.getCurrentSession().flush();
+        hibernateHelper.getCurrentSession().saveOrUpdate(p);
+        hibernateHelper.getCurrentSession().flush();
 
-        List<AuditLogDetail> l2 = HibernateUtil.getCurrentSession().createCriteria(AuditLogDetail.class).list();
+        List<AuditLogDetail> l2 = hibernateHelper.getCurrentSession().createCriteria(AuditLogDetail.class).list();
         assertEquals(expectedCount, l2.size() - l.size());
         tx.commit();
     }

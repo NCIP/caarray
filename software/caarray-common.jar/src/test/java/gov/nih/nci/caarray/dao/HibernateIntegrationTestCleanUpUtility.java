@@ -86,7 +86,8 @@ import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.security.SecurityUtils;
-import gov.nih.nci.caarray.util.HibernateUtil;
+import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
+import gov.nih.nci.caarray.util.CaArrayHibernateHelperFactory;
 import gov.nih.nci.security.authorization.domainobjects.Group;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionElement;
 import gov.nih.nci.security.authorization.domainobjects.User;
@@ -110,6 +111,8 @@ import org.hibernate.metadata.ClassMetadata;
  * Provides methods to remove objects created during Hibernate integration tests.
  */
 public final class HibernateIntegrationTestCleanUpUtility {
+    private static final CaArrayHibernateHelper hibernateHelper = CaArrayHibernateHelperFactory
+            .getCaArrayHibernateHelper(); 
 
     private static final Logger LOG = Logger.getLogger(HibernateIntegrationTestCleanUpUtility.class);
     private static List<Class<?>> classesToRemove;
@@ -185,10 +188,10 @@ public final class HibernateIntegrationTestCleanUpUtility {
             s.flush();
             tx.commit();
         } catch (DAOException deleteException) {
-            HibernateUtil.rollbackTransaction(tx);
+            hibernateHelper.rollbackTransaction(tx);
             LOG.warn("Error cleaning up test objects.", deleteException);
         } catch (HibernateException he) {
-            HibernateUtil.rollbackTransaction(tx);
+            hibernateHelper.rollbackTransaction(tx);
             LOG.warn("Error cleaning up test objects.", he);
         } finally {
             s.close();
@@ -198,7 +201,7 @@ public final class HibernateIntegrationTestCleanUpUtility {
 
     @SuppressWarnings("unchecked")
     private static void retrieveClassMetadata() {
-        Map<String, ClassMetadata> classMetadataMap = HibernateUtil.getSessionFactory().getAllClassMetadata();
+        Map<String, ClassMetadata> classMetadataMap = hibernateHelper.getSessionFactory().getAllClassMetadata();
 
         classesToRemove = new LinkedList<Class<?>>();
         for (ClassMetadata classMetadata : classMetadataMap.values()) {
@@ -211,7 +214,7 @@ public final class HibernateIntegrationTestCleanUpUtility {
 
     private static Session getSession() {
         // we need a session that bypasses security, so override the security interceptor here
-        return HibernateUtil.getSessionFactory().openSession(new EmptyInterceptor() {
+        return hibernateHelper.getSessionFactory().openSession(new EmptyInterceptor() {
 
             private static final long serialVersionUID = 1L;
         });

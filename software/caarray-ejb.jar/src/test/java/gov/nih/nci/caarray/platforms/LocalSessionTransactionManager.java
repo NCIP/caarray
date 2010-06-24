@@ -82,30 +82,32 @@
  */
 package gov.nih.nci.caarray.platforms;
 
-import gov.nih.nci.caarray.util.HibernateUtil;
+import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
+import gov.nih.nci.caarray.util.CaArrayHibernateHelperFactory;
 
 /**
  * @author dkokotov
  *
  */
 public class LocalSessionTransactionManager implements SessionTransactionManager {
+    private static final CaArrayHibernateHelper hibernateHelper = CaArrayHibernateHelperFactory.getCaArrayHibernateHelper(); 
     public void beginTransaction() {
-        HibernateUtil.beginTransaction();
+        hibernateHelper.beginTransaction();
     }
 
     public void clearSession() {
-        HibernateUtil.getCurrentSession().clear();
+        hibernateHelper.getCurrentSession().clear();
     }
 
     public void commitTransaction() {
-        HibernateUtil.getCurrentSession().getTransaction().commit();
+        hibernateHelper.getCurrentSession().getTransaction().commit();
     }
 
     public void flushSession() {
-        HibernateUtil.getCurrentSession().clear();        
+        hibernateHelper.getCurrentSession().clear();        
     }
 
     public void rollbackTransaction() {
-        HibernateUtil.getCurrentSession().getTransaction().rollback();
+        hibernateHelper.getCurrentSession().getTransaction().rollback();
     }
 }

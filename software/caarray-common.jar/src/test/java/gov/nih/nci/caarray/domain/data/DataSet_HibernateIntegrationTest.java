@@ -91,14 +91,13 @@ import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.sample.Extract;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 import gov.nih.nci.caarray.domain.sample.Sample;
-import gov.nih.nci.caarray.util.HibernateUtil;
+import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
 
 import org.hibernate.Transaction;
 import org.junit.Before;
 import org.junit.Test;
 
 public class DataSet_HibernateIntegrationTest extends AbstractCaArrayObject_HibernateIntegrationTest {
-
     private static final int NUMBER_OF_DATA_ROWS = 100;
     private QuantitationType stringType;
     private QuantitationType floatType;
@@ -191,8 +190,8 @@ public class DataSet_HibernateIntegrationTest extends AbstractCaArrayObject_Hibe
         hybridization.setName("Test Hyb");
         le.getHybridizations().add(hybridization);
         hybridization.getLabeledExtracts().add(le);
-        Transaction tx = HibernateUtil.beginTransaction();
-        HibernateUtil.getCurrentSession().saveOrUpdate(sample);
+        Transaction tx = hibernateHelper.beginTransaction();
+        hibernateHelper.getCurrentSession().saveOrUpdate(sample);
         tx.commit();
         DataSet dataSet = new DataSet();
         dataSet.addHybridizationData(hybridization);

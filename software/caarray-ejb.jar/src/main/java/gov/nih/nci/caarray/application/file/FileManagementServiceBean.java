@@ -89,6 +89,9 @@ import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
 import gov.nih.nci.caarray.application.translation.magetab.MageTabTranslator;
 import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
+import gov.nih.nci.caarray.dao.FileDao;
+import gov.nih.nci.caarray.dao.ProjectDao;
+import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
@@ -113,6 +116,8 @@ import javax.interceptor.Interceptors;
 import org.apache.log4j.Logger;
 import org.jboss.annotation.ejb.TransactionTimeout;
 
+import com.google.inject.Inject;
+
 /**
  * EJB implementation of the entry point to the FileManagement subsystem. Delegates functionality
  * to other components in the subsystem.
@@ -126,8 +131,26 @@ public class FileManagementServiceBean implements FileManagementService {
     private static final Logger LOG = Logger.getLogger(FileManagementServiceBean.class);
     private static final int SAVE_ARRAY_DESIGN_TIMEOUT = 1800;
 
-    private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
     private FileManagementJobSubmitter submitter = new JmsJobSubmitter();
+    private final ProjectDao projectDao;
+    private final ArrayDao arrayDao;
+    private final FileDao fileDao;
+    private final SearchDao searchDao;
+    
+    /**
+     * 
+     * @param projectDao the ProjectDao dependency
+     * @param arrayDao the ArrayDao dependency
+     * @param fileDao the FileDao dependency
+     * @param searchDao the SearchDao dependency
+     */
+    @Inject
+    public FileManagementServiceBean(ProjectDao projectDao, ArrayDao arrayDao, FileDao fileDao, SearchDao searchDao) {
+        this.projectDao = projectDao;
+        this.arrayDao = arrayDao;
+        this.fileDao = fileDao;
+        this.searchDao = searchDao;
+    }
 
     private void checkForImport(CaArrayFileSet fileSet) {
         for (CaArrayFile caArrayFile : fileSet.getFiles()) {
@@ -179,7 +202,7 @@ public class FileManagementServiceBean implements FileManagementService {
     private void clearValidationMessages(CaArrayFileSet fileSet) {
         for (CaArrayFile caArrayFile : fileSet.getFiles()) {
             caArrayFile.setValidationResult(null);
-            getDaoFactory().getProjectDao().save(caArrayFile);
+            projectDao.save(caArrayFile);
         }
     }
 
@@ -209,8 +232,8 @@ public class FileManagementServiceBean implements FileManagementService {
      * {@inheritDoc}
      */
     @TransactionTimeout(SAVE_ARRAY_DESIGN_TIMEOUT)
-    public void saveArrayDesign(ArrayDesign arrayDesign, CaArrayFileSet designFiles) throws InvalidDataFileException,
-            IllegalAccessException {
+    public void saveArrayDesign(ArrayDesign arrayDesign, CaArrayFileSet designFiles)
+            throws InvalidDataFileException, IllegalAccessException {
         boolean newArrayDesign = arrayDesign.getId() == null;
         CaArrayFileSet oldFiles = arrayDesign.getDesignFileSet();
         designFiles.updateStatus(FileStatus.VALIDATING);
@@ -220,7 +243,6 @@ public class FileManagementServiceBean implements FileManagementService {
         arrayDesign = ads.saveArrayDesign(arrayDesign);
         ads.importDesign(arrayDesign);
 
-        final ArrayDao arrayDao = getDaoFactory().getArrayDao();
         if (FileStatus.VALIDATION_ERRORS.equals(designFiles.getStatus())) {
             if (newArrayDesign) {
                 arrayDao.remove(arrayDesign);
@@ -252,7 +274,7 @@ public class FileManagementServiceBean implements FileManagementService {
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public void importArrayDesignDetails(ArrayDesign arrayDesign) {
         arrayDesign.getDesignFileSet().updateStatus(FileStatus.IN_QUEUE);
-        getDaoFactory().getProjectDao().save(arrayDesign.getDesignFiles());
+        projectDao.save(arrayDesign.getDesignFiles());
         ArrayDesignFileImportJob job = new ArrayDesignFileImportJob(UsernameHolder.getUser(), arrayDesign);
         getSubmitter().submitJob(job);
     }
@@ -263,7 +285,7 @@ public class FileManagementServiceBean implements FileManagementService {
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public void reimportAndParseArrayDesign(Long arrayDesignId) throws InvalidDataFileException, 
         IllegalAccessException {
-        ArrayDesign arrayDesign = getDaoFactory().getSearchDao().retrieve(ArrayDesign.class, arrayDesignId);        
+        ArrayDesign arrayDesign = searchDao.retrieve(ArrayDesign.class, arrayDesignId);        
         if (!arrayDesign.isUnparsedAndReimportable()) {
             throw new IllegalAccessException("This array design is not eligible for reimport");
         }
@@ -277,14 +299,6 @@ public class FileManagementServiceBean implements FileManagementService {
         importArrayDesignDetails(arrayDesign);
     }
 
-    private CaArrayDaoFactory getDaoFactory() {
-        return daoFactory;
-    }
-
-    void setDaoFactory(CaArrayDaoFactory daoFactory) {
-        this.daoFactory = daoFactory;
-    }
-
     /**
      * {@inheritDoc}
      */
@@ -295,10 +309,10 @@ public class FileManagementServiceBean implements FileManagementService {
         for (CaArrayFile caArrayFile : fileSet.getFiles()) {
             caArrayFile.setFileStatus(FileStatus.SUPPLEMENTAL);
             caArrayFile.setProject(targetProject);
-            getDaoFactory().getFileDao().save(caArrayFile);
+            fileDao.save(caArrayFile);
             targetProject.getFiles().add(caArrayFile);
         }
-        getDaoFactory().getProjectDao().save(targetProject);
+        projectDao.save(targetProject);
     }
 
     private FileManagementJobSubmitter getSubmitter() {
@@ -320,7 +334,7 @@ public class FileManagementServiceBean implements FileManagementService {
         addFilesToInputSet(inputFiles, project.getFileSet(), FileType.MAGE_TAB_SDRF);
         MageTabTranslator mtt = (MageTabTranslator)
             ServiceLocatorFactory.getLocator().lookup(MageTabTranslator.JNDI_NAME);
-        MageTabImporter mti = new MageTabImporter(mtt, getDaoFactory());
+        MageTabImporter mti = new MageTabImporter(mtt, CaArrayDaoFactory.INSTANCE);
         MageTabDocumentSet mTabSet = mti.selectRefFiles(project, inputFiles);
         // we only care about the sdrf docs connected to the idf
         for (SdrfDocument sdrfDoc : mTabSet.getIdfDocuments().iterator().next().getSdrfDocuments()) {

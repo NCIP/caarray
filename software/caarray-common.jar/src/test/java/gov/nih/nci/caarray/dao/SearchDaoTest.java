@@ -99,7 +99,7 @@ import gov.nih.nci.caarray.domain.search.SourceSortCriterion;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
-import gov.nih.nci.caarray.util.HibernateUtil;
+import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
 import gov.nih.nci.caarray.util.UnfilteredCallback;
 import gov.nih.nci.cagrid.cqlquery.Association;
 import gov.nih.nci.cagrid.cqlquery.Attribute;
@@ -176,7 +176,7 @@ public class SearchDaoTest extends AbstractDaoTest {
     }
     
     private void saveSupportingObjects() {
-        Transaction tx = HibernateUtil.beginTransaction();
+        Transaction tx = hibernateHelper.beginTransaction();
         PROTOCOL_DAO.save(DUMMY_TERM_SOURCE);
         PROTOCOL_DAO.save(DUMMY_CATEGORY);
         PROTOCOL_DAO.save(DUMMY_TERM_SOURCE);
@@ -196,7 +196,7 @@ public class SearchDaoTest extends AbstractDaoTest {
         saveSupportingObjects();
         Transaction tx = null;
         try {
-            tx = HibernateUtil.beginTransaction();
+            tx = hibernateHelper.beginTransaction();
             Protocol exampleProtocol = setUpExampleProtocol();
             List<Protocol> matchingProtocols = SEARCH_DAO.query(exampleProtocol);
             assertEquals(1, matchingProtocols.size());
@@ -211,14 +211,14 @@ public class SearchDaoTest extends AbstractDaoTest {
             assertEquals(DUMMY_PROTOCOL_1.getName(), matchingProtocols.get(0).getName());
             tx.commit();
         } catch (DAOException e) {
-            HibernateUtil.rollbackTransaction(tx);
+            hibernateHelper.rollbackTransaction(tx);
             fail("DAO exception during search by example: " + e.getMessage());
         }
     }
     
     @Test
     public void testSearchByExampleLimitOffset() {
-        Transaction tx = HibernateUtil.beginTransaction();
+        Transaction tx = hibernateHelper.beginTransaction();
 
         AssayType at1 = new AssayType("AT1");        
         AssayType at2 = new AssayType("AT2");
@@ -265,9 +265,9 @@ public class SearchDaoTest extends AbstractDaoTest {
         SEARCH_DAO.save(Arrays.asList(p1, p2, p3, p4));
 
         tx.commit();
-        tx = HibernateUtil.beginTransaction();
+        tx = hibernateHelper.beginTransaction();
         @SuppressWarnings("unchecked")
-        List<Experiment> results = (List<Experiment>) HibernateUtil.doUnfiltered(new UnfilteredCallback() {
+        List<Experiment> results = (List<Experiment>) hibernateHelper.doUnfiltered(new UnfilteredCallback() {
             public Object doUnfiltered(Session s) {
                 return SEARCH_DAO.queryEntityByExample(ExampleSearchCriteria.forEntity(new Experiment()), 3, 0, Order
                         .asc("title"));
@@ -282,7 +282,7 @@ public class SearchDaoTest extends AbstractDaoTest {
     
     @Test
     public void testSearchByExampleSuperclassAssociations() {
-        Transaction tx =  HibernateUtil.beginTransaction();
+        Transaction tx =  hibernateHelper.beginTransaction();
         try {
             Organism o = new Organism();
             o.setCommonName("Foo");
@@ -312,7 +312,7 @@ public class SearchDaoTest extends AbstractDaoTest {
             SEARCH_DAO.save(s2);
             tx.commit();
 
-            tx = HibernateUtil.beginTransaction();
+            tx = hibernateHelper.beginTransaction();
             Source exSource = new Source();
             Organism exOrg = new Organism();
             exOrg.setCommonName("Boo");
@@ -331,7 +331,7 @@ public class SearchDaoTest extends AbstractDaoTest {
             assertEquals("TEstSource1", results.get(1).getName());
             tx.commit();
         } catch (DAOException e) {
-            HibernateUtil.rollbackTransaction(tx);
+            hibernateHelper.rollbackTransaction(tx);
             fail("DAO exception during search by example: " + e.getMessage());
         }
     }
@@ -344,7 +344,7 @@ public class SearchDaoTest extends AbstractDaoTest {
         saveSupportingObjects();
         Transaction tx = null;
         try {
-            tx = HibernateUtil.beginTransaction();
+            tx = hibernateHelper.beginTransaction();
             List<Long> paramIds = Arrays.asList(new Long[] { DUMMY_PARAMETER_1.getId(), DUMMY_PARAMETER_2.getId() });
             Long protocolId = DUMMY_PROTOCOL_1.getId();
             List<Long> combinedIds = new ArrayList<Long>(paramIds);
@@ -387,7 +387,7 @@ public class SearchDaoTest extends AbstractDaoTest {
 
             tx.commit();
         } catch (DAOException e) {
-            HibernateUtil.rollbackTransaction(tx);
+            hibernateHelper.rollbackTransaction(tx);
             fail("DAO exception during search by example: " + e.getMessage());
         }
     }
@@ -400,7 +400,7 @@ public class SearchDaoTest extends AbstractDaoTest {
         saveSupportingObjects();
         Transaction tx = null;
         try {
-            tx = HibernateUtil.beginTransaction();
+            tx = hibernateHelper.beginTransaction();
             List<String> values = SEARCH_DAO.findValuesWithSamePrefix(Parameter.class, "name", "DummyTest");
             assertNotNull(values);
             assertEquals(2, values.size());
@@ -415,7 +415,7 @@ public class SearchDaoTest extends AbstractDaoTest {
             assertEquals(0, values.size());
             tx.commit();
         } catch (DAOException e) {
-            HibernateUtil.rollbackTransaction(tx);
+            hibernateHelper.rollbackTransaction(tx);
             fail("DAO exception during search by example: " + e.getMessage());
         }
     }
@@ -430,13 +430,13 @@ public class SearchDaoTest extends AbstractDaoTest {
 
         Transaction tx = null;
         try {
-            tx = HibernateUtil.beginTransaction();
+            tx = hibernateHelper.beginTransaction();
             List<?> matchingProtocols = SEARCH_DAO.query(cqlQuery);
             assertEquals(1, matchingProtocols.size());
             assertEquals(DUMMY_PROTOCOL_1, matchingProtocols.get(0));
             tx.commit();
         } catch (DAOException e) {
-            HibernateUtil.rollbackTransaction(tx);
+            hibernateHelper.rollbackTransaction(tx);
             fail("DAO exception during CQL search: " + e.getMessage());
         }
     }
@@ -451,13 +451,13 @@ public class SearchDaoTest extends AbstractDaoTest {
 
         Transaction tx = null;
         try {
-            tx = HibernateUtil.beginTransaction();
+            tx = hibernateHelper.beginTransaction();
             List<?> matchingProtocols = SEARCH_DAO.query(cqlQuery);
             assertEquals(1, matchingProtocols.size());
             assertEquals(DUMMY_PROTOCOL_1, matchingProtocols.get(0));
             tx.commit();
         } catch (DAOException e) {
-            HibernateUtil.rollbackTransaction(tx);
+            hibernateHelper.rollbackTransaction(tx);
             fail("DAO exception during CQL search: " + e.getMessage());
         }
     }
@@ -472,13 +472,13 @@ public class SearchDaoTest extends AbstractDaoTest {
 
         Transaction tx = null;
         try {
-            tx = HibernateUtil.beginTransaction();
+            tx = hibernateHelper.beginTransaction();
             List<?> matchingProtocols = SEARCH_DAO.query(cqlQuery);
             assertEquals(1, matchingProtocols.size());
             assertEquals(DUMMY_PROTOCOL_1, matchingProtocols.get(0));
             tx.commit();
         } catch (DAOException e) {
-            HibernateUtil.rollbackTransaction(tx);
+            hibernateHelper.rollbackTransaction(tx);
             fail("DAO exception during CQL search: " + e.getMessage());
         }
     }
@@ -496,13 +496,13 @@ public class SearchDaoTest extends AbstractDaoTest {
 
         Transaction tx = null;
         try {
-            tx = HibernateUtil.beginTransaction();
+            tx = hibernateHelper.beginTransaction();
             List<?> results = SEARCH_DAO.query(cqlQuery);
             assertEquals(1, results.size());
             assertEquals(1L, results.get(0));
             tx.commit();
         } catch (DAOException e) {
-            HibernateUtil.rollbackTransaction(tx);
+            hibernateHelper.rollbackTransaction(tx);
             fail("DAO exception during CQL search: " + e.getMessage());
         }
     }
@@ -580,7 +580,7 @@ public class SearchDaoTest extends AbstractDaoTest {
         saveSupportingObjects();
         Transaction tx = null;
         try {
-            tx = HibernateUtil.beginTransaction();
+            tx = hibernateHelper.beginTransaction();
             Object obj = SEARCH_DAO.retrieve(Protocol.class, 999l);
             assertEquals(null, obj);
 
@@ -593,7 +593,7 @@ public class SearchDaoTest extends AbstractDaoTest {
 
             tx.commit();
         } catch (DAOException e) {
-            HibernateUtil.rollbackTransaction(tx);
+            hibernateHelper.rollbackTransaction(tx);
             fail("DAO exception during search by example: " + e.getMessage());
         }
     }
@@ -603,8 +603,8 @@ public class SearchDaoTest extends AbstractDaoTest {
         Transaction tx = null;
         try {
             // set up dummy data
-            tx = HibernateUtil.beginTransaction();
-            Session s = HibernateUtil.getCurrentSession();
+            tx = hibernateHelper.beginTransaction();
+            Session s = hibernateHelper.getCurrentSession();
             Organism org = new Organism();
             org.setScientificName("Foo");
             org.setTermSource(DUMMY_TERM_SOURCE);
@@ -663,7 +663,7 @@ public class SearchDaoTest extends AbstractDaoTest {
             assertEquals(source, filteredList.get(0));
             assertEquals(source2, filteredList.get(1));
         } catch (DAOException e) {
-            HibernateUtil.rollbackTransaction(tx);
+            hibernateHelper.rollbackTransaction(tx);
             fail("DAO exception during search by example: " + e.getMessage());
         }
     }
@@ -674,8 +674,8 @@ public class SearchDaoTest extends AbstractDaoTest {
         Transaction tx = null;
         try {
             // set up dummy data
-            tx = HibernateUtil.beginTransaction();
-            Session s = HibernateUtil.getCurrentSession();
+            tx = hibernateHelper.beginTransaction();
+            Session s = hibernateHelper.getCurrentSession();
             Organism org = new Organism();
             org.setScientificName("Foo");
             org.setTermSource(DUMMY_TERM_SOURCE);
@@ -732,7 +732,7 @@ public class SearchDaoTest extends AbstractDaoTest {
             assertEquals("Source 1 Name", filteredList.get(0).getName());    
             assertEquals("Source 2 Name", filteredList.get(1).getName());    
         } catch (DAOException e) {
-            HibernateUtil.rollbackTransaction(tx);
+            hibernateHelper.rollbackTransaction(tx);
             fail("DAO exception during search by example: " + e.getMessage());
         }
     }
@@ -770,13 +770,13 @@ public class SearchDaoTest extends AbstractDaoTest {
 
         Transaction tx = null;
         try {
-            tx = HibernateUtil.beginTransaction();
+            tx = hibernateHelper.beginTransaction();
             List<?> matchingProtocols = SEARCH_DAO.query(cqlQuery);
             // just making sure it ran through w/o exception or null return
             assertNotNull(matchingProtocols);
             tx.commit();
         } catch (DAOException e) {
-            HibernateUtil.rollbackTransaction(tx);
+            hibernateHelper.rollbackTransaction(tx);
             throw e;
         }
     }

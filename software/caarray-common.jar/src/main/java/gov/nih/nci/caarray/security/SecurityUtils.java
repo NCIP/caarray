@@ -88,7 +88,7 @@ import gov.nih.nci.caarray.domain.permissions.SampleSecurityLevel;
 import gov.nih.nci.caarray.domain.permissions.SecurityLevel;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.sample.Sample;
-import gov.nih.nci.caarray.util.HibernateUtil;
+import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
 import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.logging.api.logger.hibernate.HibernateSessionFactoryHelper;
 import gov.nih.nci.security.AuthorizationManager;
@@ -139,6 +139,7 @@ import org.springframework.core.io.support.ResourcePatternResolver;
 
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 import com.fiveamsolutions.nci.commons.util.HibernateHelper;
+import com.google.inject.Inject;
 
 /**
  * Utility class containing methods for synchronizing our security data model with CSM, as well as a facade for querying
@@ -147,6 +148,7 @@ import com.fiveamsolutions.nci.commons.util.HibernateHelper;
 @SuppressWarnings({"PMD.CyclomaticComplexity", "PMD.ExcessiveClassLength", "PMD.AvoidDuplicateLiterals",
         "PMD.TooManyMethods" })
 public final class SecurityUtils {
+    @Inject private static CaArrayHibernateHelper hibernateHelper; 
     private static final Logger LOG = Logger.getLogger(SecurityUtils.class);
     private static final long serialVersionUID = -2071964672876972370L;
 
@@ -677,7 +679,7 @@ public final class SecurityUtils {
                         + "  AND size(ugrpg.protectionGroup.protectionElements) = 1" + "  AND pe.attribute = 'id' "
                         + "  AND pe.objectId = :objectId " + "  AND pe.value = :value "
                         + "  AND ugrpg.role.name in (:roleNames)";
-        Query q = HibernateUtil.getCurrentSession().createQuery(queryString);
+        Query q = hibernateHelper.getCurrentSession().createQuery(queryString);
         q.setParameterList("roleNames", new String[]{BROWSE_ROLE, READ_ROLE, WRITE_ROLE, PERMISSIONS_ROLE });
         q.setString("objectId", getNonGLIBClass(p).getName());
         q.setString("value", p.getId().toString());
@@ -881,7 +883,7 @@ public final class SecurityUtils {
                 + "inner join csm_user u on ug.user_id = u.user_id "
                 + "where pe.attribute_value in (:attr_values) and u.login_name = :login_name "
                 + "order by pe.attribute_value, p.privilege_name"; 
-        SQLQuery query = HibernateUtil.getCurrentSession().createSQLQuery(sql);
+        SQLQuery query = hibernateHelper.getCurrentSession().createSQLQuery(sql);
         query.setParameterList("attr_values", protectableIds);
         query.setString("login_name", userName);
 
@@ -904,7 +906,7 @@ public final class SecurityUtils {
             + "where pe.object_id = :class_name and pe.attribute = :attr_name "
             + "and pe.attribute_value in (:attr_values) and u.login_name = :login_name "
             + "and pe.application_id = :app_id order by pe.attribute_value, p.privilege_name";
-        SQLQuery query = HibernateUtil.getCurrentSession().createSQLQuery(sql);
+        SQLQuery query = hibernateHelper.getCurrentSession().createSQLQuery(sql);
         query.setParameterList("attr_values", protectableIds);
         query.setString("login_name", userName);
         query.setString("class_name", className);
@@ -971,7 +973,7 @@ public final class SecurityUtils {
         try {
             group.setUpdateDate(new Date());
             group.setApplication(getApplication());
-            Session s = HibernateUtil.getCurrentSession();
+            Session s = hibernateHelper.getCurrentSession();
             s.save(group);
         } catch (HibernateException e) {
             throw new CSTransactionException(e);
@@ -992,7 +994,7 @@ public final class SecurityUtils {
     @SuppressWarnings("unchecked")
     public static void assignUsersToGroup(Long groupId, Set<Long> userIds) throws CSTransactionException {
         try {
-            Session s = HibernateUtil.getCurrentSession();
+            Session s = hibernateHelper.getCurrentSession();
             Group group = (Group) s.load(Group.class, groupId);
             if (group.getUsers() == null) {
                 group.setUsers(new HashSet<User>(userIds.size()));
@@ -1020,7 +1022,7 @@ public final class SecurityUtils {
      */
     public static void removeUserFromGroup(Long groupId, Long userId) throws CSTransactionException {
         try {
-            Session s = HibernateUtil.getCurrentSession();
+            Session s = hibernateHelper.getCurrentSession();
             Group group = (Group) s.load(Group.class, groupId);
             User user = (User) s.load(User.class, userId);
             user.getGroups().remove(group);
@@ -1043,7 +1045,7 @@ public final class SecurityUtils {
      */
     public static void removeGroup(Long groupId) throws CSTransactionException {
         try {
-            Session s = HibernateUtil.getCurrentSession();
+            Session s = hibernateHelper.getCurrentSession();
             Group group = (Group) s.load(Group.class, groupId);
             s.delete(group);
         } catch (HibernateException e) {
@@ -1064,7 +1066,7 @@ public final class SecurityUtils {
      */
     public static Set<User> getUsers(Long groupId) throws CSTransactionException {
         try {
-            Session s = HibernateUtil.getCurrentSession();
+            Session s = hibernateHelper.getCurrentSession();
             Group group = (Group) s.load(Group.class, groupId);
             @SuppressWarnings("unchecked")
             Set<User> us = group.getUsers();
@@ -1090,7 +1092,7 @@ public final class SecurityUtils {
      */
     public static Group findGroupByName(String g) throws CSTransactionException {
         try {
-            Session s = HibernateUtil.getCurrentSession();
+            Session s = hibernateHelper.getCurrentSession();
             Criteria c = s.createCriteria(Group.class);
             c.add(Restrictions.eq("groupName", g));
             c.add(Restrictions.eq("application", getApplication()));

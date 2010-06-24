@@ -86,8 +86,11 @@ import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.contact.Person;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.ExperimentContact;
+import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
 
 import java.util.List;
+
+import com.google.inject.Inject;
 
 /**
  * DAO for entities in the <code>gov.nih.nci.caarray.domain.contact</code> package.
@@ -95,6 +98,16 @@ import java.util.List;
  * @author Dan Kokotov
  */
 class ContactDaoImpl extends AbstractCaArrayDaoImpl implements ContactDao {
+
+    /**
+     * 
+     * @param hibernateHelper the CaArrayHibernateHelper dependency
+     */
+    @Inject
+    public ContactDaoImpl(CaArrayHibernateHelper hibernateHelper) {
+        super(hibernateHelper);
+    }
+   
     /**
      * {@inheritDoc}
      */

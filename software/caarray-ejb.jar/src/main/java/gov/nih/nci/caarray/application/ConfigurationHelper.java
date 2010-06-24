@@ -83,7 +83,7 @@
 package gov.nih.nci.caarray.application;
 
 import gov.nih.nci.caarray.domain.ConfigParamEnum;
-import gov.nih.nci.caarray.util.HibernateUtil;
+import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
 
 import javax.sql.DataSource;
 
@@ -92,6 +92,7 @@ import org.apache.commons.configuration.DatabaseConfiguration;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.cfg.Environment;
 
+import com.google.inject.Inject;
 import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
 
 /**
@@ -99,6 +100,7 @@ import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
  * @author dkokotov
  */
 public final class ConfigurationHelper {
+    @Inject private static CaArrayHibernateHelper hibernateHelper; 
     private static final String DATASOURCE_JNDI_LOC = "java:jdbc/CaArrayDataSource";
     private static final String TABLE_NAME = "config_parameter";
     private static final String PARAM_NAME_COLUMN = "param";
@@ -135,7 +137,7 @@ public final class ConfigurationHelper {
     
     private static DataSource getAdhocDataSource() {
         MysqlDataSource ds = new MysqlDataSource();
-        Configuration config = HibernateUtil.getConfiguration();
+        Configuration config = hibernateHelper.getConfiguration();
         ds.setUrl(config.getProperty(Environment.URL));
         ds.setUser(config.getProperty(Environment.USER));
         ds.setPassword(config.getProperty(Environment.PASS));

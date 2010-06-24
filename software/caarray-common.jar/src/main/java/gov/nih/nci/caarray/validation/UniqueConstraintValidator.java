@@ -34,7 +34,7 @@
 
 package gov.nih.nci.caarray.validation;
 
-import gov.nih.nci.caarray.util.HibernateUtil;
+import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
 import gov.nih.nci.caarray.util.UnfilteredCallback;
 
 import java.lang.annotation.Annotation;
@@ -55,6 +55,8 @@ import org.hibernate.util.ReflectHelper;
 import org.hibernate.validator.PersistentClassConstraint;
 import org.hibernate.validator.Validator;
 
+import com.google.inject.Inject;
+
 /**
  * Validator for UniqueConstraint annotation.
  *
@@ -62,6 +64,7 @@ import org.hibernate.validator.Validator;
  */
 @SuppressWarnings("PMD.CyclomaticComplexity")
 public class UniqueConstraintValidator implements Validator<UniqueConstraint>, PersistentClassConstraint {
+    @Inject private static CaArrayHibernateHelper hibernateHelper; 
     private UniqueConstraint uniqueConstraint;
 
     /**
@@ -78,9 +81,9 @@ public class UniqueConstraintValidator implements Validator<UniqueConstraint>, P
     public boolean isValid(final Object o) {
         UnfilteredCallback unfilteredCallback = new UnfilteredCallback() {
             public Object doUnfiltered(Session s) {
-                Class<?> classWithConstraint = findClassDeclaringConstraint(HibernateUtil.unwrapProxy(o).getClass()); 
+                Class<?> classWithConstraint = findClassDeclaringConstraint(hibernateHelper.unwrapProxy(o).getClass()); 
                 Criteria crit = s.createCriteria(classWithConstraint);
-                ClassMetadata metadata = HibernateUtil.getSessionFactory()
+                ClassMetadata metadata = hibernateHelper.getSessionFactory()
                         .getClassMetadata(classWithConstraint);
                 for (UniqueConstraintField field : uniqueConstraint.fields()) {
                     Object fieldVal = metadata.getPropertyValue(o, field.name(), EntityMode.POJO);
@@ -101,9 +104,9 @@ public class UniqueConstraintValidator implements Validator<UniqueConstraint>, P
                         // is not persistent then it will be a new value and thus different from any currently in the
                         // db, thus
                         // satisfying uniqueness
-                        ClassMetadata fieldMetadata = HibernateUtil
+                        ClassMetadata fieldMetadata = hibernateHelper
                                 .getSessionFactory().getClassMetadata(
-                                        HibernateUtil.unwrapProxy(fieldVal).getClass());
+                                        hibernateHelper.unwrapProxy(fieldVal).getClass());
                         if (fieldMetadata == null || fieldMetadata.getIdentifier(fieldVal, EntityMode.POJO) != null) {
                             crit.add(Restrictions.eq(field.name(), ReflectHelper.getGetter(o.getClass(), field.name())
                                     .get(o)));
@@ -122,7 +125,7 @@ public class UniqueConstraintValidator implements Validator<UniqueConstraint>, P
                 return numMatches == 0;
             }
         };
-        return (Boolean) HibernateUtil.doUnfiltered(unfilteredCallback);
+        return (Boolean) hibernateHelper.doUnfiltered(unfilteredCallback);
 
     }
     

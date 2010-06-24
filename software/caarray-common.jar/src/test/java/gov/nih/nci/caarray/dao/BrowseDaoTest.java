@@ -91,7 +91,7 @@ import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.search.BrowseCategory;
 import gov.nih.nci.caarray.domain.search.ProjectSortCriterion;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
-import gov.nih.nci.caarray.util.HibernateUtil;
+import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
 
 import java.util.List;
 import java.util.SortedSet;
@@ -202,21 +202,21 @@ public class BrowseDaoTest extends AbstractDaoTest {
     @Test
     public void testCountByBrowseCategory() {
         saveProjects();
-        Transaction tx = HibernateUtil.beginTransaction();
+        Transaction tx = hibernateHelper.beginTransaction();
         assertEquals(2, DAO_OBJECT.countByBrowseCategory(BrowseCategory.ORGANISMS));
         tx.commit();
     }
 
     @Test
     public void testHybridizationCount() {
-        Transaction tx = HibernateUtil.beginTransaction();
+        Transaction tx = hibernateHelper.beginTransaction();
         DAO_OBJECT.hybridizationCount();
         tx.commit();
     }
 
     @Test
     public void testUserCount() {
-        Transaction tx = HibernateUtil.beginTransaction();
+        Transaction tx = hibernateHelper.beginTransaction();
         DAO_OBJECT.userCount();
         tx.commit();
     }
@@ -224,7 +224,7 @@ public class BrowseDaoTest extends AbstractDaoTest {
     @Test
     public void testTabList() {
         saveProjects();
-        Transaction tx = HibernateUtil.beginTransaction();
+        Transaction tx = hibernateHelper.beginTransaction();
         List<Object[]> tabs = DAO_OBJECT.tabList(BrowseCategory.ORGANISMS);
         assertEquals(2, tabs.size());
         Object[] tab1 = tabs.get(0);
@@ -239,7 +239,7 @@ public class BrowseDaoTest extends AbstractDaoTest {
     @Test
     public void testBrowseList() {
         saveProjects();
-        Transaction tx = HibernateUtil.beginTransaction();
+        Transaction tx = hibernateHelper.beginTransaction();
         Long id = DUMMY_ORGANISM_1.getId();
         PageSortParams<Project> psp = new PageSortParams<Project>(20,0,ProjectSortCriterion.TITLE,false);
         assertEquals(2, DAO_OBJECT.browseCount(BrowseCategory.ORGANISMS, id));
@@ -248,8 +248,8 @@ public class BrowseDaoTest extends AbstractDaoTest {
     }
 
     private void saveProjects() {
-        Transaction tx = HibernateUtil.beginTransaction();
-        Session session = HibernateUtil.getCurrentSession();
+        Transaction tx = hibernateHelper.beginTransaction();
+        Session session = hibernateHelper.getCurrentSession();
         session.save(DUMMY_ASSAYTYPE_1);
         session.save(DUMMY_ASSAYTYPE_2);
         session.save(DUMMY_ORGANISM_1);

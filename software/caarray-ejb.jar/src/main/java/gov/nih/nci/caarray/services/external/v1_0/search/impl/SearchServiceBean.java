@@ -133,7 +133,7 @@ import gov.nih.nci.caarray.services.external.v1_0.NoEntityMatchingReferenceExcep
 import gov.nih.nci.caarray.services.external.v1_0.UnsupportedCategoryException;
 import gov.nih.nci.caarray.services.external.v1_0.impl.BaseV1_0ExternalService;
 import gov.nih.nci.caarray.services.external.v1_0.search.SearchService;
-import gov.nih.nci.caarray.util.HibernateUtil;
+import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -152,6 +152,7 @@ import org.jboss.annotation.ejb.RemoteBinding;
 import org.jboss.annotation.ejb.TransactionTimeout;
 
 import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
+import com.google.inject.Inject;
 
 /**
  * @author dkokotov
@@ -172,7 +173,18 @@ public class SearchServiceBean extends BaseV1_0ExternalService implements Search
     static final int MAX_FILE_RESULTS = 200;        
     static final int MAX_EXAMPLE_RESULTS = 50;
     
+    private final CaArrayHibernateHelper hibernateHelper;
+    
     /**
+     * 
+     * @param hibernateHelper the CaArrayHibernateHelper dependency
+     */
+    @Inject
+    public SearchServiceBean(CaArrayHibernateHelper hibernateHelper) {
+        this.hibernateHelper = hibernateHelper;
+    }
+    
+   /**
      * {@inheritDoc}
      */
     public SearchResult<Experiment> searchForExperiments(ExperimentSearchCriteria criteria, LimitOffset pagingParams)
@@ -185,7 +197,7 @@ public class SearchServiceBean extends BaseV1_0ExternalService implements Search
                 .getProjectManagementService().searchByCriteria(actualParams, internalCriteria);
         applySecurityPolicies(experiments);
         mapCollection(experiments, externalExperiments, Experiment.class);
-        HibernateUtil.getCurrentSession().clear();
+        hibernateHelper.getCurrentSession().clear();
         return new SearchResult<Experiment>(externalExperiments, MAX_EXPERIMENT_RESULTS, actualParams.getIndex());
     }
 
@@ -225,7 +237,7 @@ public class SearchServiceBean extends BaseV1_0ExternalService implements Search
             applySecurityPolicies(exp);
             externalExperiments.add(mapEntity(exp, Experiment.class));
         }
-        HibernateUtil.getCurrentSession().clear();
+        hibernateHelper.getCurrentSession().clear();
         return new SearchResult<Experiment>(externalExperiments, MAX_EXPERIMENT_RESULTS, actualParams.getIndex());
     }
     
@@ -316,7 +328,7 @@ public class SearchServiceBean extends BaseV1_0ExternalService implements Search
         List<CaArrayFile> files = getDaoFactory().getFileDao().searchFiles(actualParams,
                 internalCriteria);
         mapCollection(files, externalFiles, File.class);
-        HibernateUtil.getCurrentSession().clear();
+        hibernateHelper.getCurrentSession().clear();
         return new SearchResult<File>(externalFiles, MAX_FILE_RESULTS, actualParams.getIndex());
     };
 
@@ -466,7 +478,7 @@ public class SearchServiceBean extends BaseV1_0ExternalService implements Search
         List<gov.nih.nci.caarray.domain.data.QuantitationType> types = getDaoFactory().getArrayDao()
                 .searchForQuantitationTypes(actualParams, internalCriteria);
         mapCollection(types, externalTypes, QuantitationType.class);
-        HibernateUtil.getCurrentSession().clear();
+        hibernateHelper.getCurrentSession().clear();
         return externalTypes;  
     }
 

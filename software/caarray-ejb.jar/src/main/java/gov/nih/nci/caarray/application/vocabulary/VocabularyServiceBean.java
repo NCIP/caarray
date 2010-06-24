@@ -84,7 +84,8 @@ package gov.nih.nci.caarray.application.vocabulary;
 
 import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.application.ExceptionLoggingInterceptor;
-import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
+import gov.nih.nci.caarray.dao.ProtocolDao;
+import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.dao.VocabularyDao;
 import gov.nih.nci.caarray.domain.protocol.Protocol;
 import gov.nih.nci.caarray.domain.sample.AbstractCharacteristic;
@@ -107,6 +108,8 @@ import javax.interceptor.Interceptors;
 
 import org.hibernate.criterion.Order;
 
+import com.google.inject.Inject;
+
 /**
  * Entry point into implementation of the vocabulary service subsystem.
  */
@@ -116,8 +119,24 @@ import org.hibernate.criterion.Order;
 @TransactionAttribute(TransactionAttributeType.SUPPORTS)
 public class VocabularyServiceBean implements VocabularyService {
     private static final String VERSION_FIELD = "version";
-    private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
-
+    
+    private final SearchDao searchDao;
+    private final ProtocolDao protocolDao;
+    private final VocabularyDao vocabularyDao;
+    
+    /**
+     * 
+     * @param searchDao the SearchDao dependency
+     * @param protocolDao the ProtocolDao dependency
+     * @param vocabularyDao the VocabularyDao dependency
+     */
+    @Inject
+    public VocabularyServiceBean(SearchDao searchDao, ProtocolDao protocolDao, VocabularyDao vocabularyDao) {
+        this.searchDao = searchDao;
+        this.protocolDao = protocolDao;
+        this.vocabularyDao = vocabularyDao;
+    }
+ 
     /**
      *
      * {@inheritDoc}
@@ -133,28 +152,28 @@ public class VocabularyServiceBean implements VocabularyService {
         if (category == null) {
             throw new IllegalArgumentException("Category is null");
         }
-        return getVocabularyDao().getTermsRecursive(category, value);
+        return vocabularyDao.getTermsRecursive(category, value);
     }
 
     /**
      * {@inheritDoc}
      */
     public Term getTerm(TermSource source, String value) {
-        return getVocabularyDao().getTerm(source, value);
+        return vocabularyDao.getTerm(source, value);
     }
 
     /**
      * {@inheritDoc}
      */
     public Organism getOrganism(TermSource source, String scientificName) {
-        return getVocabularyDao().getOrganism(source, scientificName);
+        return vocabularyDao.getOrganism(source, scientificName);
     }
 
     /**
      * {@inheritDoc}
      */
     public List<Organism> getOrganisms() {
-        return this.daoFactory.getSearchDao().retrieveAll(Organism.class, Order.asc("scientificName"));
+        return this.searchDao.retrieveAll(Organism.class, Order.asc("scientificName"));
     }
 
     /**
@@ -164,7 +183,7 @@ public class VocabularyServiceBean implements VocabularyService {
         TermSource querySource = new TermSource();
         querySource.setName(name);
         querySource.setVersion(version);
-        return CaArrayUtils.uniqueResult(getVocabularyDao().queryEntityByExample(
+        return CaArrayUtils.uniqueResult(vocabularyDao.queryEntityByExample(
                 ExampleSearchCriteria.forEntity(querySource).includeNulls().excludeProperties("url"),
                 Order.desc(VERSION_FIELD)));
     }
@@ -175,7 +194,7 @@ public class VocabularyServiceBean implements VocabularyService {
     public Set<TermSource> getSources(String name) {
         TermSource querySource = new TermSource();
         querySource.setName(name);
-        return new LinkedHashSet<TermSource>(getVocabularyDao().queryEntityByExample(querySource,
+        return new LinkedHashSet<TermSource>(vocabularyDao.queryEntityByExample(querySource,
                 Order.desc(VERSION_FIELD)));
     }
 
@@ -186,7 +205,7 @@ public class VocabularyServiceBean implements VocabularyService {
         TermSource querySource = new TermSource();
         querySource.setUrl(url);
         querySource.setVersion(version);
-        return CaArrayUtils.uniqueResult(getVocabularyDao().queryEntityByExample(
+        return CaArrayUtils.uniqueResult(vocabularyDao.queryEntityByExample(
                 ExampleSearchCriteria.forEntity(querySource).includeNulls().excludeProperties("name"),
                 Order.desc(VERSION_FIELD)));
     }
@@ -197,7 +216,7 @@ public class VocabularyServiceBean implements VocabularyService {
     public Set<TermSource> getSourcesByUrl(String url) {
         TermSource querySource = new TermSource();
         querySource.setUrl(url);
-        return new LinkedHashSet<TermSource>(getVocabularyDao().queryEntityByExample(querySource,
+        return new LinkedHashSet<TermSource>(vocabularyDao.queryEntityByExample(querySource,
                 Order.desc(VERSION_FIELD)));
     }
 
@@ -206,21 +225,21 @@ public class VocabularyServiceBean implements VocabularyService {
      * {@inheritDoc}
      */
     public List<TermSource> getAllSources() {
-        return this.daoFactory.getSearchDao().retrieveAll(TermSource.class, Order.asc("name"));
+        return this.searchDao.retrieveAll(TermSource.class, Order.asc("name"));
     }
 
     /**
      * {@inheritDoc}
      */
     public Category getCategory(TermSource source, String categoryName) {
-        return getVocabularyDao().getCategory(source, categoryName);
+        return vocabularyDao.getCategory(source, categoryName);
     }
 
     /**
      * {@inheritDoc}
      */
     public Term getTerm(Long id) {
-        return getVocabularyDao().getTermById(id);
+        return vocabularyDao.getTermById(id);
     }
 
     /**
@@ -230,14 +249,14 @@ public class VocabularyServiceBean implements VocabularyService {
         if (type == null) {
             return new ArrayList<Protocol>();
         }
-        return this.daoFactory.getProtocolDao().getProtocols(type, name);
+        return this.protocolDao.getProtocols(type, name);
     }
 
     /**
      * {@inheritDoc}
      */
     public Protocol getProtocol(String name, TermSource source) {
-        return this.daoFactory.getProtocolDao().getProtocol(name, source);
+        return this.protocolDao.getProtocol(name, source);
     }
 
     /**
@@ -245,14 +264,14 @@ public class VocabularyServiceBean implements VocabularyService {
      */
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public void saveTerm(Term term) {
-        getVocabularyDao().save(term);
+        vocabularyDao.save(term);
     }
 
     /**
      * {@inheritDoc}
      */
     public Term findTermInAllTermSourceVersions(TermSource termSource, String value) {
-        return getVocabularyDao().findTermInAllTermSourceVersions(termSource, value);
+        return vocabularyDao.findTermInAllTermSourceVersions(termSource, value);
     }
 
     /**
@@ -260,18 +279,6 @@ public class VocabularyServiceBean implements VocabularyService {
      */
     public <T extends AbstractCharacteristic> List<Category> searchForCharacteristicCategory(
             Class<T> characteristicClass, String keyword) {
-        return getVocabularyDao().searchForCharacteristicCategory(null, characteristicClass, keyword);
-    }
-
-    /**
-     *
-     * @return VocabularyDao
-     */
-    private VocabularyDao getVocabularyDao() {
-        return this.daoFactory.getVocabularyDao();
-    }
-
-    void setDaoFactory(CaArrayDaoFactory daoFactory) {
-        this.daoFactory = daoFactory;
+        return vocabularyDao.searchForCharacteristicCategory(null, characteristicClass, keyword);
     }
 }

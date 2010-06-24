@@ -97,6 +97,7 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
+import com.google.inject.Inject;
 
 /**
  * Class with utility methods for pruning entities to prepare them for transmittal over the wire. Caches reflection
@@ -107,6 +108,7 @@ import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 @SuppressWarnings("PMD.CyclomaticComplexity")
 public final class EntityPruner {
     static final Logger LOG = Logger.getLogger(EntityPruner.class);
+    @Inject private static CaArrayHibernateHelper hibernateHelper; 
     private final Map<Class<?>, ReflectionHelper> classCache = new HashMap<Class<?>, ReflectionHelper>();
 
     /**
@@ -148,7 +150,7 @@ public final class EntityPruner {
         }
 
         // ensure we are dealing with the real underyling object, not a proxy
-        Object actualVal = HibernateUtil.unwrapProxy(val);
+        Object actualVal = hibernateHelper.unwrapProxy(val);
         applySecurityPolicies(actualVal);
         ReflectionHelper helper = getOrCreateHelper(actualVal.getClass());
         boolean initialized = false;
