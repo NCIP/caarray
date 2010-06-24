@@ -622,6 +622,23 @@ public class MageTabTranslatorTest extends AbstractServiceTest {
         assertEquals(String.format(prototypeString, "FOO"), validationResult.getMessages(ValidationMessage.Type.ERROR).get(5).getMessage());
         assertEquals("Duplicate term source name 'FOO'.", validationResult.getMessages(ValidationMessage.Type.ERROR).get(6).getMessage());
     }
+
+    @Test
+    public void testValidateExperimentDescriptionLength() throws Exception {
+        MageTabFileSet validMageTabFileSet = new MageTabFileSet();
+        validMageTabFileSet.addIdf(new JavaIOFileRef(MageTabDataFiles.VALID_DESCRIPTION_LENGTH_IDF));
+        MageTabDocumentSet validDocSet = MageTabParser.INSTANCE.parse(validMageTabFileSet);
+        ValidationResult goodValidationResult = this.translator.validate(validDocSet, TestMageTabSets.getFileSet(validMageTabFileSet));
+        assertTrue(goodValidationResult.getMessages().isEmpty());
+        
+        MageTabFileSet invalidMageTabFileSet = new MageTabFileSet();
+        invalidMageTabFileSet.addIdf(new JavaIOFileRef(MageTabDataFiles.INVALID_DESCRIPTION_LENGTH_IDF));
+        MageTabDocumentSet invalidDocSet = MageTabParser.INSTANCE.parse(invalidMageTabFileSet);
+        ValidationResult badValidationResult = this.translator.validate(invalidDocSet, TestMageTabSets.getFileSet(invalidMageTabFileSet));
+        assertFalse(badValidationResult.getMessages().isEmpty());
+        assertEquals(1, badValidationResult.getMessages(ValidationMessage.Type.ERROR).size());
+        assertEquals("The experiment description length of 2001 is greater than the allowed length of 2000.", badValidationResult.getMessages(ValidationMessage.Type.ERROR).get(0).getMessage());
+    }
     
     @Test
     public void testExtendedFactorValues() throws Exception {

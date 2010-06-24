@@ -311,6 +311,12 @@ public class MageTabDataFiles {
     public static final File FEATURE_13141_IDF = new File(MageTabDataFiles.class
             .getResource("/magetab/external_sample_id/valid.idf").getFile());
 
+    public static final File VALID_DESCRIPTION_LENGTH_IDF = new File(MageTabDataFiles.class
+            .getResource("/magetab/experiment_description_length/valid.idf").getFile());
+
+    public static final File INVALID_DESCRIPTION_LENGTH_IDF = new File(MageTabDataFiles.class
+            .getResource("/magetab/experiment_description_length/invalid.idf").getFile());
+
     public static final File FEATURE_13141_SDRF = new File(MageTabDataFiles.class
             .getResource("/magetab/external_sample_id/valid1.sdrf").getFile());
 

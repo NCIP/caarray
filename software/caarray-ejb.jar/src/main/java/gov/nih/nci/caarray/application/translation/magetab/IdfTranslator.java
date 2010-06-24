@@ -137,6 +137,12 @@ final class IdfTranslator extends AbstractTranslator {
         if (!idfDocumentsSet.isEmpty()) {
             IdfDocument idfDocument = idfDocumentsSet.iterator().next();
             validateTermSources(idfDocument);
+            String investigationDescription = idfDocument.getInvestigation().getDescription();
+            if (null != investigationDescription && investigationDescription.length() > LARGE_TEXT_FIELD_LENGTH) {
+                idfDocument.addErrorMessage("The experiment description length of "
+                        + investigationDescription.length() + " is greater than the allowed length of "
+                        + LARGE_TEXT_FIELD_LENGTH + ".");
+            }
         }
     }
 
