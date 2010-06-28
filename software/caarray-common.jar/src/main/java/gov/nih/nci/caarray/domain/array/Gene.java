@@ -105,12 +105,20 @@ import org.hibernate.validator.Length;
  */
 @Entity
 @BatchSize(size = AbstractProbeAnnotation.RELATED_BATCH_SIZE)
+@SuppressWarnings("PMD.CyclomaticComplexity") // Cascading if-then-else
 public class Gene extends AbstractCaArrayEntity {
     private static final long serialVersionUID = 1L;
 
     private String fullName;
     private String symbol;
-    private Set<Accession> accessions = new HashSet<Accession>();
+    private String genbankAccession;
+    private String genbankAccessionVersion;
+    private String ensemblgeneID;
+    private String unigeneclusterID;
+    private String entrezgeneID;
+    private String refseqAccession;
+    private String thcAccession;
+    private Set<Accession> additonalAccessions = new HashSet<Accession>();
 
     /**
      * Name of the UniGene database.
@@ -171,50 +179,186 @@ public class Gene extends AbstractCaArrayEntity {
         this.fullName = fullName;
     }
 
-   /**
-    * @return the accessions
-    * @deprecated should only be used by castor and hibernate.
-    */
-    @Deprecated
-    @org.hibernate.annotations.CollectionOfElements
-    @JoinTable(name = "accession", joinColumns = @JoinColumn(name = "gene_id"))
-    @Column(updatable = false)
-    public Set<Accession> getAccessions() {
-        return accessions;
+    /**
+     * @return the ensemblgeneID
+     */
+    public String getEnsemblgeneID() {
+        return ensemblgeneID;
     }
 
     /**
-     * @param accessions the accessions to set
+     * @param ensemblgeneID the ensemblgeneID to set
      */
-    @SuppressWarnings("unused")
-    private void setAccessions(Set<Accession> accessions) {
-        this.accessions = accessions;
+    public void setEnsemblgeneID(String ensemblgeneID) {
+        this.ensemblgeneID = ensemblgeneID;
+    }
+
+    /**
+     * @return the entrezgeneID
+     */
+    public String getEntrezgeneID() {
+        return entrezgeneID;
+    }
+
+    /**
+     * @param entrezgeneID the entrezgeneID to set
+     */
+    public void setEntrezgeneID(String entrezgeneID) {
+        this.entrezgeneID = entrezgeneID;
+    }
+
+    /**
+     * @return the genbankAccession
+     */
+    public String getGenbankAccession() {
+        return genbankAccession;
+    }
+
+    /**
+     * @param genbankAccession the genbankAccession to set
+     */
+    public void setGenbankAccession(String genbankAccession) {
+        this.genbankAccession = genbankAccession;
+    }
+
+    /**
+     * @return the genbankAccessionVersion
+     */
+    public String getGenbankAccessionVersion() {
+        return genbankAccessionVersion;
+    }
+
+    /**
+     * @param genbankAccessionVersion the genbankAccessionVersion to set
+     */
+    public void setGenbankAccessionVersion(String genbankAccessionVersion) {
+        this.genbankAccessionVersion = genbankAccessionVersion;
+    }
+
+    /**
+     * @return the unigeneclusterID
+     */
+    public String getUnigeneclusterID() {
+        return unigeneclusterID;
+    }
+
+    /**
+     * @param unigeneclusterID the unigeneclusterID to set
+     */
+    public void setUnigeneclusterID(String unigeneclusterID) {
+        this.unigeneclusterID = unigeneclusterID;
     }
     
     /**
-     * Add an accession to this gene.
-     * @param databaseName the name of the public database.
-     * @param accessionNumber the accession number to add.
+     * @return the refseqAccession
      */
-    public void addAccessionNumber(String databaseName, String accessionNumber) {
-        accessions.add(new Accession(databaseName, accessionNumber));
+    public String getRefseqAccession() {
+        return refseqAccession;
     }
-    
+
     /**
-     * Get all the accessions associated with this gene in the given public database.
-     * @param databaseName the name of the public database.
-     * @return a list of accessions.
+     * @param refseqAccession the refseqAccession to set
      */
-    @Transient
-    public List<String> getAccessionNumbers(String databaseName) {
-        List<String> accessionList = new ArrayList<String>();
+    public void setRefseqAccession(String refseqAccession) {
+        this.refseqAccession = refseqAccession;
+    }
         
-        for (Accession accession : getAccessions()) {
-            if (accession.getDatabaseName().equals(databaseName)) {
-                accessionList.add(accession.getAccessionNumber());
-            }
-        }
-               
-        return accessionList;     
+    /**
+     * @return the thcAccession
+     */
+    public String getThcAccession() {
+        return thcAccession;
     }
+
+    /**
+     * @param thcAccession the thcAccession to set
+     */
+    public void setThcAccession(String thcAccession) {
+        this.thcAccession = thcAccession;
+    }
+    
+   /**
+     * @return the additional accessions
+     * @deprecated should only be used by castor and hibernate.
+     */
+     @org.hibernate.annotations.CollectionOfElements
+     @JoinTable(name = "accession", joinColumns = @JoinColumn(name = "gene_id"))
+     @Column(updatable = false)
+     private Set<Accession> getAdditionalAccessions() {
+         return additonalAccessions;
+     }
+
+     /**
+      * @param accessions the accessions to set
+      */
+     @SuppressWarnings("unused")
+     private void setAdditionalAccessions(Set<Accession> additionalAccessions) {
+         this.additonalAccessions = additionalAccessions;
+     }
+     
+     /**
+      * Add an accession to this gene.
+      * @param databaseName the name of the public database.
+      * @param accessionNumber the accession number to add.
+      */
+     @SuppressWarnings("PMD.CyclomaticComplexity")
+     public void addAccessionNumber(String databaseName, String accessionNumber) {
+         if (UNIGENE.equals(databaseName) && null == unigeneclusterID) {
+             unigeneclusterID = accessionNumber;
+         } else if (GENBANK.equals(databaseName) && null == genbankAccession) {
+             genbankAccession = accessionNumber;
+         } else if (ENTREZ_GENE.equals(databaseName) && null == entrezgeneID) {
+             entrezgeneID = accessionNumber;
+         } else if (ENSEMBLE.equals(databaseName) && null == ensemblgeneID) {
+             ensemblgeneID = accessionNumber;
+         } else if (REF_SEQ.equals(databaseName) && null == refseqAccession) {
+             refseqAccession = accessionNumber;
+         } else if (THC.equals(databaseName) && null == thcAccession) {
+             thcAccession = accessionNumber;
+         } else {
+             additonalAccessions.add(new Accession(databaseName, accessionNumber));
+         }
+     }
+     
+     /**
+      * Get all the accessions associated with this gene in the given public database.
+      * @param databaseName the name of the public database.
+      * @return a list of accessions.
+      */
+     @SuppressWarnings("deprecation")
+     @Transient
+     public List<String> getAccessionNumbers(String databaseName) {
+         List<String> accessionList = new ArrayList<String>();
+         
+         String primaryAccessionNumber = getPrimaryAccessionNumber(databaseName);
+         if (null != primaryAccessionNumber) {
+             accessionList.add(primaryAccessionNumber);
+         }
+         
+         for (Accession accession : getAdditionalAccessions()) {
+             if (accession.getDatabaseName().equals(databaseName)) {
+                 accessionList.add(accession.getAccessionNumber());
+             }
+         }
+                
+         return accessionList;     
+     }
+     
+     private String getPrimaryAccessionNumber(String databaseName) {
+        if (UNIGENE.equals(databaseName)) {
+            return unigeneclusterID;
+        } else if (GENBANK.equals(databaseName)) {
+            return genbankAccession;
+        } else if (ENTREZ_GENE.equals(databaseName)) {
+            return entrezgeneID;
+        } else if (ENSEMBLE.equals(databaseName)) {
+            return ensemblgeneID;
+        } else if (REF_SEQ.equals(databaseName)) {
+            return refseqAccession;
+        } else if (THC.equals(databaseName)) {
+            return thcAccession;
+        } else {
+            return null;
+        }
+     }
 }
