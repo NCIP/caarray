@@ -169,4 +169,8 @@ public class FileManagementServiceStub implements FileManagementService {
     public void reimportAndParseArrayDesign(Long arrayDesignId) throws InvalidDataFileException, IllegalAccessException {
         // no-op
     }
+    
+    public void reimportAndParseProjectFiles(Project targetProject, CaArrayFileSet fileSet) {
+        // no-op
+    }
 }

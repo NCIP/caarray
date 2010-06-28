@@ -272,6 +272,13 @@ class PairDataHandler extends AbstractDataFileHandler {
             throws PlatformFileReadException {
         // no validation implemented yet
     }
+    
+    /**
+     * {@inheritDoc}
+     */        
+    public boolean requiresMageTab() {
+        return false;
+    }
 
     /**
      * {@inheritDoc}

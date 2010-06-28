@@ -148,6 +148,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import com.google.inject.Injector;
+import gov.nih.nci.caarray.test.data.arraydata.AgilentArrayDataFiles;
 
 /**
  * Integration test for the FileManagementService.
@@ -264,6 +265,64 @@ public class FileManagementServiceIntegrationTest extends AbstractServiceIntegra
         hibernateHelper.getCurrentSession().save(DUMMY_ORGANISM);
         hibernateHelper.getCurrentSession().save(DUMMY_TERM);
     }
+
+    @Test
+    public void testReimportProjectFiles() throws Exception {
+        Transaction tx = hibernateHelper.beginTransaction();
+        saveSupportingObjects();
+        ArrayDesign design = importArrayDesign(AgilentArrayDesignFiles.TEST_MIRNA_1_XML_SMALL, FileType.AGILENT_XML);
+        tx.commit();
+
+        tx = hibernateHelper.beginTransaction();
+        DUMMY_EXPERIMENT_1.getArrayDesigns().add(design);
+        hibernateHelper.getCurrentSession().save(DUMMY_PROJECT_1);
+        tx.commit();
+
+        Map<File, FileType> files = new HashMap<File, FileType>();
+        files.put(AgilentArrayDataFiles.MIRNA, FileType.ILLUMINA_RAW_TXT);
+
+        tx = hibernateHelper.beginTransaction();
+        Project project = (Project) hibernateHelper.getCurrentSession().load(Project.class, DUMMY_PROJECT_1.getId());
+        CaArrayFileSet fileSet = uploadFiles(project, files);
+        tx.commit();
+
+        tx = hibernateHelper.beginTransaction();
+        project = (Project) hibernateHelper.getCurrentSession().load(Project.class, DUMMY_PROJECT_1.getId());
+        importFiles(project, fileSet, DataImportOptions.getAutoCreatePerFileOptions());
+        tx.commit();
+
+        tx = hibernateHelper.beginTransaction();
+        project = (Project) hibernateHelper.getCurrentSession().load(Project.class, project.getId());
+        assertEquals(1, project.getExperiment().getHybridizations().size());
+        assertEquals(1, project.getExperiment().getHybridizations().iterator().next().getRawDataCollection().size());
+
+        assertEquals(1, project.getImportedFiles().size());
+        assertEquals(FileStatus.IMPORTED_NOT_PARSED, project.getImportedFiles().iterator().next().getFileStatus());
+        CaArrayFile f  = project.getImportedFiles().iterator().next();
+        f.setFileType(FileType.AGILENT_RAW_TXT);
+        hibernateHelper.getCurrentSession().save(f);
+
+        tx.commit();
+
+        tx = hibernateHelper.beginTransaction();
+        project = (Project) hibernateHelper.getCurrentSession().load(Project.class, project.getId());
+        fileSet = new CaArrayFileSet();
+        fileSet.addAll(project.getImportedFiles());
+        this.fileManagementService.reimportAndParseProjectFiles(project, fileSet);
+        tx.commit();
+
+        tx = hibernateHelper.beginTransaction();
+        project = (Project) hibernateHelper.getCurrentSession().load(Project.class, project.getId());
+        assertEquals(1, project.getImportedFiles().size());
+        assertEquals(1, project.getExperiment().getHybridizations().size());
+        assertEquals(1, project.getExperiment().getHybridizations().iterator().next().getRawDataCollection().size());
+        assertEquals("Agilent Raw Text", project.getExperiment().getHybridizations().iterator().next()
+                .getRawDataCollection().iterator().next().getType().getName());
+        CaArrayFile imported = project.getImportedFiles().iterator().next();
+        assertEquals(FileStatus.IMPORTED, imported.getFileStatus());
+        tx.commit();
+    }
+
 
     @Test
     public void testImportMageTabSpecificationAndUpdateCharacteristics() throws Exception {

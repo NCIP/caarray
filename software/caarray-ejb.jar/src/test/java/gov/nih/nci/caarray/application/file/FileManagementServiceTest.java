@@ -449,9 +449,8 @@ public class FileManagementServiceTest extends AbstractServiceTest {
     }
 
     private static class LocalArrayDataServiceStub extends ArrayDataServiceStub {
-
         @Override
-        public FileValidationResult validate(CaArrayFile arrayDataFile, MageTabDocumentSet mTabSet) {
+        public FileValidationResult validate(CaArrayFile arrayDataFile, MageTabDocumentSet mTabSet, boolean reimport) {
             if (arrayDataFile.getFileType().isParseableData()) {
                 arrayDataFile.setFileStatus(FileStatus.VALIDATED);
             } else {

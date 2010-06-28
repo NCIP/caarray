@@ -101,7 +101,10 @@ public class AgilentArrayDesignFiles {
     
     public static final File TEST_MIRNA_1_XML =
         getResourceFile("/arraydesign/agilent/miRNA/Human_miRNA_Microarray_3.0.xml");
-    
+
+    public static final File TEST_MIRNA_1_XML_SMALL =
+        getResourceFile("/arraydesign/agilent/miRNA/Human_miRNA_Microarray_3.0-small.xml");
+
     public static final File TEST_MIRNA_2_XML =
         getResourceFile("/arraydesign/agilent/miRNA/Mouse_miRNA_Microarray_2.0.xml");
 }

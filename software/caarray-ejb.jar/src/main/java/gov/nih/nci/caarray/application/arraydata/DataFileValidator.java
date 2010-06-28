@@ -105,6 +105,7 @@ import com.google.inject.Inject;
  * 
  * @author dkokotov
  */
+@SuppressWarnings("PMD.CyclomaticComplexity")
 final class DataFileValidator extends AbstractArrayDataUtility {
     private static final Logger LOG = Logger.getLogger(DataFileValidator.class);
 
@@ -116,17 +117,22 @@ final class DataFileValidator extends AbstractArrayDataUtility {
         this.fileManager = fileManager;
     }
     
-    void validate(CaArrayFile caArrayFile, MageTabDocumentSet mTabSet) {        
+    void validate(CaArrayFile caArrayFile, MageTabDocumentSet mTabSet, boolean reimport) {        
         DataFileHandler handler = null;
         try {
             File file = fileManager.openFile(caArrayFile);            
             FileValidationResult result = new FileValidationResult(file);
             try {
                 handler = getHandler(caArrayFile);
-                ArrayDesign design = getArrayDesign(caArrayFile, handler);
-                handler.validate(mTabSet, result, design);
+                if (!reimport && handler.requiresMageTab()) {
+                    validateMageTabPresent(mTabSet, result);
+                }
                 if (result.isValid()) {
-                    validateArrayDesignInExperiment(caArrayFile, result, handler);
+                    ArrayDesign design = getArrayDesign(caArrayFile, handler);
+                    handler.validate(mTabSet, result, design);
+                    if (result.isValid()) {
+                        validateArrayDesignInExperiment(caArrayFile, result, handler);
+                    }                    
                 }
             } catch (PlatformFileReadException e) {
                 LOG.error("Error obtaining a data handler for validating data file", e);
@@ -148,6 +154,12 @@ final class DataFileValidator extends AbstractArrayDataUtility {
             if (handler != null) {
                 handler.closeFiles();
             }
+        }
+    }
+    
+    private void validateMageTabPresent(MageTabDocumentSet mTabSet, FileValidationResult result) {
+        if (mTabSet == null || mTabSet.getIdfDocuments().isEmpty() || mTabSet.getSdrfDocuments().isEmpty()) {
+            result.addMessage(Type.ERROR, "An IDF and SDRF must be provided for this data file type.");
         }
     }
     

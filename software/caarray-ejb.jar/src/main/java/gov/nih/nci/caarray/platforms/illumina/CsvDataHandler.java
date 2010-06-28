@@ -487,6 +487,13 @@ class CsvDataHandler extends AbstractDataFileHandler {
             reader.close();
         }
     }
+    
+    /**
+     * {@inheritDoc}
+     */        
+    public boolean requiresMageTab() {
+        return false;
+    }
 
     private void validateHeaders(DelimitedFileReader reader, FileValidationResult result) throws IOException {
         validateHasArrayContentHeader(reader, result);

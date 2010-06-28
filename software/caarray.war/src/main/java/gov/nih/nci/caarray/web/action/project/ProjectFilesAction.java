@@ -776,6 +776,49 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
     }
 
     /**
+     * Method to reparse the imported-not-parsed files which now have parsers.
+     *
+     * @return the string matching the result to follow
+     */
+    @SuppressWarnings("PMD.ExcessiveMethodLength")
+    public String reparseFiles() {
+        if (!getProject().getExperiment().hasParsedArrayDesigns()) {
+            ActionHelper.saveMessage(getText("project.fileReparse.error.noParsedDesigns"));
+            return prepListImportedPage();
+        }
+        
+        ErrorCounts errors = new ErrorCounts();
+        CaArrayFileSet fileSet = new CaArrayFileSet(getProject());
+        
+        for (CaArrayFile file : getSelectedFiles()) {
+            if (!file.isUnparsedAndReimportable()) {
+                errors.incrementCount("project.fileReparse.error.notEligible");
+            } else {
+                fileSet.add(file);
+            }
+        }
+
+        for (String msg : errors.getMessages()) {
+            ActionHelper.saveMessage(msg);
+        }
+
+        if (fileSet.getTotalUncompressedSize() > MAX_IMPORT_TOTAL_SIZE) {
+            ActionHelper.saveMessage(getText("project.fileImport.error.jobTooLarge"));
+        } else {
+            if (!fileSet.getFiles().isEmpty()) {
+                ServiceLocatorFactory.getFileManagementService().reimportAndParseProjectFiles(getProject(), fileSet);
+            }
+            ActionHelper.saveMessage(getText("project.fileImport.success", new String[] {String.valueOf(fileSet
+                    .getFiles().size()) }));
+            refreshProject();
+        }
+
+        this.clearCheckboxes = false;
+        return prepListUnimportedPage();
+    }
+
+
+    /**
      * Adds supplemental data files to the system.
      *
      * @return the string matching the result to follow

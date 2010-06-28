@@ -99,6 +99,7 @@ import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.security.AttributePolicy;
 import gov.nih.nci.caarray.security.SecurityPolicy;
+import gov.nih.nci.caarray.util.CaArrayUtils;
 import gov.nih.nci.caarray.validation.UniqueConstraint;
 import gov.nih.nci.caarray.validation.UniqueConstraintField;
 import gov.nih.nci.security.authorization.domainobjects.User;
@@ -124,8 +125,6 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cascade;
@@ -140,6 +139,9 @@ import org.hibernate.annotations.SortType;
 import org.hibernate.annotations.Where;
 import org.hibernate.validator.Length;
 import org.hibernate.validator.NotNull;
+
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
 
 /**
  *
@@ -925,7 +927,7 @@ public class Experiment extends AbstractCaArrayEntity {
      * @return the source with given name or null if there is none.
      */
     public Source getSourceByName(final String sourceName) {
-       return (Source) CollectionUtils.find(getSources(), new ExperimentDesignNodeNamePredicate(sourceName));
+       return CaArrayUtils.find(getSources(), new ExperimentDesignNodeNamePredicate(sourceName));
     }
 
     /**
@@ -934,7 +936,7 @@ public class Experiment extends AbstractCaArrayEntity {
      * @return the sample with given name or null if there is none.
      */
     public Sample getSampleByName(final String sampleName) {
-        return (Sample) CollectionUtils.find(getSamples(), new ExperimentDesignNodeNamePredicate(sampleName));
+        return CaArrayUtils.find(getSamples(), new ExperimentDesignNodeNamePredicate(sampleName));
      }
 
     /**
@@ -943,7 +945,7 @@ public class Experiment extends AbstractCaArrayEntity {
      * @return the extract with given name or null if there is none.
      */
     public Extract getExtractByName(final String extractName) {
-       return (Extract) CollectionUtils.find(getExtracts(), new ExperimentDesignNodeNamePredicate(extractName));
+       return CaArrayUtils.find(getExtracts(), new ExperimentDesignNodeNamePredicate(extractName));
     }
 
     /**
@@ -952,8 +954,7 @@ public class Experiment extends AbstractCaArrayEntity {
      * @return the labeledExtract with given name or null if there is none.
      */
     public LabeledExtract getLabeledExtractByName(final String labeledExtractName) {
-        return (LabeledExtract) CollectionUtils.find(getLabeledExtracts(), new ExperimentDesignNodeNamePredicate(
-                labeledExtractName));
+        return CaArrayUtils.find(getLabeledExtracts(), new ExperimentDesignNodeNamePredicate(labeledExtractName));
      }
 
     /**
@@ -962,14 +963,24 @@ public class Experiment extends AbstractCaArrayEntity {
      * @return the hybridization with given name or null if there is none.
      */
     public Hybridization getHybridizationByName(final String hybridizationName) {
-        return (Hybridization) CollectionUtils.find(getHybridizations(), new ExperimentDesignNodeNamePredicate(
-                hybridizationName));
+        return CaArrayUtils.find(getHybridizations(), new ExperimentDesignNodeNamePredicate(hybridizationName));
      }
+    
+    /**
+     * @return whether this experiment has any imported and parsed array designs
+     */
+    public boolean hasParsedArrayDesigns() {
+        return Iterables.any(getArrayDesigns(), new Predicate<ArrayDesign>() {
+            public boolean apply(ArrayDesign design) {
+                 return design.isImportedAndParsed();
+             } 
+         });     
+    }
 
     /**
      * Predicate to match biomaterial/hybridization names.
      */
-    private class ExperimentDesignNodeNamePredicate implements Predicate {
+    private class ExperimentDesignNodeNamePredicate implements Predicate<AbstractExperimentDesignNode> {
         private final String nameToMatch;
 
         /**
@@ -982,8 +993,7 @@ public class Experiment extends AbstractCaArrayEntity {
         /**
          * {@inheritDoc}
          */
-        public boolean evaluate(Object o) {
-            AbstractExperimentDesignNode node = (AbstractExperimentDesignNode) o;
+        public boolean apply(AbstractExperimentDesignNode node) {
             return nameToMatch.equalsIgnoreCase(node.getName());
         }
     }

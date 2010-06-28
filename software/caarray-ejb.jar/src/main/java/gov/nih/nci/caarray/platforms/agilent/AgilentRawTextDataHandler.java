@@ -374,9 +374,6 @@ class AgilentRawTextDataHandler extends AbstractDataFileHandler {
     public void validate(MageTabDocumentSet mTabSet, FileValidationResult result, ArrayDesign design)
             throws PlatformFileReadException {
         readData(result);
-        if (isTwoColor()) {
-            validateMageTab(mTabSet, result);
-        }
         if (design == null) {
             result.addMessage(Type.ERROR, "No array design associated with this experiment");
         } else {
@@ -384,14 +381,15 @@ class AgilentRawTextDataHandler extends AbstractDataFileHandler {
         }        
         validateMandatoryColumnsPresent(result);
     }
-
     
-    private void validateMageTab(MageTabDocumentSet mTabSet, FileValidationResult result) {
-        if (mTabSet == null || mTabSet.getIdfDocuments().isEmpty() || mTabSet.getSdrfDocuments().isEmpty()) {
-            result.addMessage(Type.ERROR, "An IDF and SDRF must be provided for this data file type.");
-        }
+    /**
+     * {@inheritDoc}
+     */        
+    public boolean requiresMageTab() throws PlatformFileReadException {
+        readHeader();
+        return isTwoColor();
     }
-    
+
     private void validateProbeNames(FileValidationResult result, ArrayDesign design) {
         ProbeLookup probeLookup = new ProbeLookup(design.getDesignDetails().getProbes());
         for (RowData probe : probes) {
@@ -470,6 +468,9 @@ class AgilentRawTextDataHandler extends AbstractDataFileHandler {
         }
     }
     
+    /**
+     * {@inheritDoc}
+     */
     public boolean parsesData() {
         return true;
     }

@@ -102,7 +102,7 @@ public class IlluminaSampleProbeProfileHandlerIntegrationTest extends AbstractSe
         f.getProject().getExperiment().getArrayDesigns().add(design);
         CaArrayDaoFactory.INSTANCE.getSearchDao().save(f);
 
-        FileValidationResult result = helper.arrayDataService.validate(f, null);
+        FileValidationResult result = helper.arrayDataService.validate(f, null, false);
         assertTrue("validation: " + result.getMessages().toString(), result.isValid());
         helper.arrayDataService.importData(f, true, DataImportOptions.getAutoCreatePerFileOptions());
         Hybridization hyb = f.getProject().getExperiment().getHybridizations().iterator().next();

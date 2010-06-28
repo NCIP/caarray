@@ -140,6 +140,13 @@ class UnparsedDataHandler extends AbstractDataFileHandler {
     public void validate(MageTabDocumentSet mTabSet, FileValidationResult result, ArrayDesign design) {
         // no-op, data parsing not supported for the current type
     }
+    
+    /**
+     * {@inheritDoc}
+     */        
+    public boolean requiresMageTab() {
+        return false;
+    }
 
     /**
      * {@inheritDoc}

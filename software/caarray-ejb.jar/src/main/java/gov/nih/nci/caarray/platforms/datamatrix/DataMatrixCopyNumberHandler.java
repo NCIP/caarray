@@ -409,12 +409,12 @@ final class DataMatrixCopyNumberHandler extends AbstractDataFileHandler {
         for (String columnName : headersOfColumnsToBeIgnored) {
             result.addMessage(Type.WARNING, "The column '" + columnName + "' will be ignored during data parsing.");
         }
-        if (1 != mTabSet.getIdfDocuments().size()) {
-            result.addMessage(Type.ERROR, "No MAGE-TAB IDF file present.");
-        }
-        if (1 != mTabSet.getSdrfDocuments().size()) {
-            result.addMessage(Type.ERROR, "No MAGE-TAB SDRF file present.");
-        }
     }
 
+    /**
+     * {@inheritDoc}
+     */        
+    public boolean requiresMageTab() {
+        return true;
+    }
 }

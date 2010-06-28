@@ -157,8 +157,8 @@ public class ArrayDataServiceBean implements ArrayDataService {
      * {@inheritDoc}
      */
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public FileValidationResult validate(CaArrayFile arrayDataFile, MageTabDocumentSet mTabSet) {
-        dataFileValidator.validate(arrayDataFile, mTabSet);
+    public FileValidationResult validate(CaArrayFile arrayDataFile, MageTabDocumentSet mTabSet, boolean reimport) {
+        dataFileValidator.validate(arrayDataFile, mTabSet, reimport);
         return arrayDataFile.getValidationResult();
     }
 }

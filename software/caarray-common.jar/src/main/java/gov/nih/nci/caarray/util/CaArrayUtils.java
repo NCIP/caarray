@@ -98,6 +98,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -110,6 +111,8 @@ import org.apache.commons.lang.StringUtils;
 
 import com.csvreader.CsvReader;
 import com.csvreader.CsvWriter;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
 
 /**
  * Utility classes for our project.
@@ -630,5 +633,23 @@ public final class CaArrayUtils {
             IOUtils.closeQuietly(byteArrayInputStream);
         }
         return object;
+    }
+    
+    /**
+     * Returns the first element in iterable that satisfies the given predicate, or null if no elements do. This is
+     * identical to Iterables.find from Google's Collections library, except it returns null rather than throw
+     * NoSuchElementException if there are no matches.
+     * 
+     * @param <T> the type of elements of iterable
+     * @param iterable the iterable to search throw
+     * @param predicate the predicate to satisfy
+     * @return the first element matching the predicate, or null if no matches
+     */
+    public static <T> T find(Iterable<T> iterable, Predicate<? super T> predicate) {
+       try {
+           return Iterables.find(iterable, predicate);
+       } catch (NoSuchElementException e) {
+           return null;
+       }
     }
 }

@@ -112,9 +112,10 @@ public interface ArrayDataService {
      *
      * @param arrayDataFile the array data file to validate.
      * @param mTabSet the set of mage tab docs used in validating the data file.
+     * @param reimport whether this validation is being performed as part of a data reimport
      * @return the results of the validation.
      */
-    FileValidationResult validate(CaArrayFile arrayDataFile, MageTabDocumentSet mTabSet);
+    FileValidationResult validate(CaArrayFile arrayDataFile, MageTabDocumentSet mTabSet, boolean reimport);
 
     /**
      * Imports array data from the file given, creating annotation if necessary and requested

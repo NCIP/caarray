@@ -443,7 +443,7 @@ public class AgilentRawTextDataHandlerTest extends AbstractHandlerTest {
         addProbeToDesign("A_54_P00004465");
 
         CaArrayFile caArrayFile = getCaArrayFile(AgilentArrayDataFiles.MIRNA_BLANKS, DESIGN_LSID.getObjectId());
-        FileValidationResult results = this.arrayDataService.validate(caArrayFile, null);
+        FileValidationResult results = this.arrayDataService.validate(caArrayFile, null, false);
         assertEquals(FileStatus.VALIDATION_ERRORS, caArrayFile.getFileStatus());
 
         int i = 0;

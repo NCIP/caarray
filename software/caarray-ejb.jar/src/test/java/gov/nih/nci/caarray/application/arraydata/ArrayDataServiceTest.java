@@ -346,7 +346,7 @@ public class ArrayDataServiceTest extends AbstractServiceTest {
     public void testAgilentRawTextAcghRejectedIfNoMageTab() throws InvalidDataFileException {
         CaArrayFile expFile = getAgilentRawTextCaArrayFile(AgilentArrayDataFiles.TEST_ACGH_RAW_TEXT, AGILENT_ACGH_LSID_OBJECT_ID);
         MageTabDocumentSet mTabSet = null;
-        FileValidationResult validationResult = this.arrayDataService.validate(expFile, mTabSet);
+        FileValidationResult validationResult = this.arrayDataService.validate(expFile, mTabSet, false);
         assertFalse(validationResult.isValid());
     }
 

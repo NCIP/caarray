@@ -83,6 +83,8 @@
 
 package gov.nih.nci.caarray.platforms.illumina;
 
+import gov.nih.nci.caarray.dao.ArrayDao;
+import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.domain.LSID;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
@@ -95,11 +97,6 @@ import gov.nih.nci.caarray.platforms.DefaultValueParser;
 import gov.nih.nci.caarray.platforms.FileManager;
 import gov.nih.nci.caarray.platforms.ValueParser;
 import gov.nih.nci.caarray.platforms.spi.AbstractDataFileHandler;
-import com.fiveamsolutions.nci.commons.util.io.DelimitedFileReader;
-import com.fiveamsolutions.nci.commons.util.io.DelimitedFileReaderFactoryImpl;
-
-import com.google.inject.Inject;
-
 import gov.nih.nci.caarray.validation.FileValidationResult;
 
 import java.io.File;
@@ -112,8 +109,9 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.log4j.Logger;
 
-import gov.nih.nci.caarray.dao.ArrayDao;
-import gov.nih.nci.caarray.dao.SearchDao;
+import com.fiveamsolutions.nci.commons.util.io.DelimitedFileReader;
+import com.fiveamsolutions.nci.commons.util.io.DelimitedFileReaderFactoryImpl;
+import com.google.inject.Inject;
 
 /**
  * Illumina Genotyping Processed Matrix importer.
@@ -187,6 +185,13 @@ final class GenotypingProcessedMatrixHandler extends AbstractDataFileHandler {
                 arrayDao);
         processFile(headerProc, proc, getFile());
         proc.finish();
+    }
+    
+    /**
+     * {@inheritDoc}
+     */        
+    public boolean requiresMageTab() {
+        return false;
     }
 
     /**

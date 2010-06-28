@@ -89,6 +89,7 @@ import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
+import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.project.AssayType;
 import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
@@ -544,17 +545,32 @@ public class ArrayDesign extends AbstractCaArrayEntity {
     }
 
     /**
-     * Check whether this is a array design that was previously imported but not parsed,
-     * but now can be imported and parsed (due to a parsing FileHandler being
-     * implemented for it). This will be the case if all of the design files
+     * Check whether this is a array design that was previously imported but not parsed, but now can be imported and
+     * parsed (due to a parsing FileHandler being implemented for it). This will be the case if any of the design files
      * associated with the array design meet this condition.
-     * @return true if the design can be re-imported and parsed, false otherwise. 
+     * 
+     * @return true if the design can be re-imported and parsed, false otherwise.
      */
     @Transient
     public boolean isUnparsedAndReimportable() {
         return Iterables.any(getDesignFiles(), new Predicate<CaArrayFile>() {
            public boolean apply(CaArrayFile file) {
                 return file.isUnparsedAndReimportable();
+            } 
+        }); 
+    }
+
+    /**
+     * Check whether this is a array design that has been imported imported but not parsed. implemented for it). This
+     * will be the case if any of the design files associated with the array design meet this condition.
+     * 
+     * @return true if the design has been imported and parsed, false otherwise.
+     */
+    @Transient
+    public boolean isImportedAndParsed() {
+        return Iterables.any(getDesignFiles(), new Predicate<CaArrayFile>() {
+           public boolean apply(CaArrayFile file) {
+                return file.getFileStatus() == FileStatus.IMPORTED;
             } 
         }); 
     }

@@ -152,6 +152,14 @@ public class FileManagementServiceBean implements FileManagementService {
         this.searchDao = searchDao;
     }
 
+    private void checkForReparse(CaArrayFileSet fileSet) {
+        for (CaArrayFile caArrayFile : fileSet.getFiles()) {
+            if (!caArrayFile.isUnparsedAndReimportable()) {
+                throw new IllegalArgumentException("Illegal attempt to reparse file " + caArrayFile.getName());
+            }
+        }
+    }
+
     private void checkForImport(CaArrayFileSet fileSet) {
         for (CaArrayFile caArrayFile : fileSet.getFiles()) {
             if (!caArrayFile.getFileStatus().isImportable()) {
@@ -171,7 +179,6 @@ public class FileManagementServiceBean implements FileManagementService {
     }
 
     private void checkForFileType(CaArrayFile caArrayFile, FileType ft) {
-
         if (!ft.equals(caArrayFile.getFileType())) {
             throw new IllegalArgumentException("File "
                     + caArrayFile.getName() + " must be an " + ft.getName() + " file type.");
@@ -297,6 +304,21 @@ public class FileManagementServiceBean implements FileManagementService {
         checkDesignFiles(arrayDesign.getDesignFileSet());
         
         importArrayDesignDetails(arrayDesign);
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public void reimportAndParseProjectFiles(Project targetProject, CaArrayFileSet fileSet) {
+        LogUtil.logSubsystemEntry(LOG, fileSet);
+        checkForReparse(fileSet);
+        clearValidationMessages(fileSet);
+        fileSet.updateStatus(FileStatus.IN_QUEUE);
+        
+        ProjectFilesReparseJob job = new ProjectFilesReparseJob(UsernameHolder.getUser(), targetProject, fileSet);
+        getSubmitter().submitJob(job);
+
+        LogUtil.logSubsystemExit(LOG);       
     }
 
     /**

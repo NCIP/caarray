@@ -192,10 +192,8 @@ class DataSetImporter extends AbstractArrayDataUtility {
         }
         
         private void setArrayDataType() {
-            if (arrayData.getType() == null) {
-                arrayData.setType(getArrayDao().getArrayDataType(handler.getArrayDataTypeDescriptor()));
-                getArrayDao().save(arrayData);
-            }
+            arrayData.setType(getArrayDao().getArrayDataType(handler.getArrayDataTypeDescriptor()));
+            getArrayDao().save(arrayData);
         }
 
         private void lookupOrCreateArrayData(boolean createAnnnotation) throws PlatformFileReadException {
@@ -203,6 +201,11 @@ class DataSetImporter extends AbstractArrayDataUtility {
             if (arrayData == null) {
                 createArrayData(createAnnnotation);
             } else {
+                if (arrayData.getDataSet() != null) {
+                    getArrayDao().remove(arrayData.getDataSet());
+                    arrayData.setDataSet(null);
+                    getArrayDao().save(arrayData);
+                }
                 for (Hybridization h : arrayData.getHybridizations()) {
                     ensureArrayDesignSetForHyb(h);
                 }

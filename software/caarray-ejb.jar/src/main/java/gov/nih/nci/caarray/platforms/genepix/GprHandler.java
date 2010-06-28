@@ -381,23 +381,26 @@ final class GprHandler extends AbstractDataFileHandler {
      * {@inheritDoc}
      */
     public void validate(MageTabDocumentSet mTabSet, FileValidationResult result, ArrayDesign design) {
-        if (mTabSet == null || mTabSet.getIdfDocuments().isEmpty() || mTabSet.getSdrfDocuments().isEmpty()) {
-            result.addMessage(Type.ERROR, "An IDF and SDRF must be provided for this data file type.");
-        } else {
-            DelimitedFileReader reader = getReader(getFile());
-            try {
-                validateHeader(reader, result);
-                if (result.isValid()) {
-                    validateData(reader, result);
-                }
-            } catch (IOException e) {
-                throw new IllegalStateException(READ_FILE_ERROR_MESSAGE, e);
-            } finally {
-                reader.close();
+        DelimitedFileReader reader = getReader(getFile());
+        try {
+            validateHeader(reader, result);
+            if (result.isValid()) {
+                validateData(reader, result);
             }
+        } catch (IOException e) {
+            throw new IllegalStateException(READ_FILE_ERROR_MESSAGE, e);
+        } finally {
+            reader.close();
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */        
+    public boolean requiresMageTab() {
+        return true;
+    }
+    
     private void validateData(DelimitedFileReader reader, FileValidationResult result) throws IOException {
         List<String> headers = getColumnHeaders(reader);
         Map<String, QuantitationTypeDescriptor> headerToDescriptorMap = getHeaderToDescriptorMap(headers);

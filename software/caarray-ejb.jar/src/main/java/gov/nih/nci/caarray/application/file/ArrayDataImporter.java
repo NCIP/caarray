@@ -148,7 +148,7 @@ final class ArrayDataImporter {
         this.daoFactory.getProjectDao().clearSession();
     }
 
-    void validateFiles(CaArrayFileSet fileSet, MageTabDocumentSet mTabSet) {
+    void validateFiles(CaArrayFileSet fileSet, MageTabDocumentSet mTabSet, boolean reimport) {
         Set<CaArrayFile> dataFiles = fileSet.getArrayDataFiles();
         Set<CaArrayFile> sdrfFiles = fileSet.getFilesByType(FileType.MAGE_TAB_SDRF);
         int fileCount = 0;
@@ -156,14 +156,14 @@ final class ArrayDataImporter {
         for (CaArrayFile file : dataFiles) {
             if (file.getFileStatus() != FileStatus.VALIDATION_ERRORS) {
                 LOG.info("Validating data file [" + ++fileCount + "/" + totalNumberOfFiles + "]: " + file.getName());
-                validateFile(file, mTabSet);
+                validateFile(file, mTabSet, reimport);
             }
         }
         checkSdrfHybNames(dataFiles, mTabSet, sdrfFiles);
     }
 
-    private void validateFile(CaArrayFile file, MageTabDocumentSet mTabSet) {
-        this.arrayDataService.validate(file, mTabSet);
+    private void validateFile(CaArrayFile file, MageTabDocumentSet mTabSet, boolean reimport) {
+        this.arrayDataService.validate(file, mTabSet, reimport);
     }
 
     private void checkSdrfHybNames(Set<CaArrayFile> dataFiles, MageTabDocumentSet mTabSet,

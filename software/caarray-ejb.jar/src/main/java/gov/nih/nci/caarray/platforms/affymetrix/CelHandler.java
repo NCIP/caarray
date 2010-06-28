@@ -181,7 +181,14 @@ final class CelHandler extends AbstractDataFileHandler {
         validateHeader(result);
         validateAgainstDesign(result, design);
     }
-
+    
+    /**
+     * {@inheritDoc}
+     */        
+    public boolean requiresMageTab() {
+        return false;
+    }
+    
     private void validateAgainstDesign(final FileValidationResult result, final ArrayDesign design) {
         if (celData.getCells() != design.getNumberOfFeatures()) {
             result.addMessage(Type.ERROR, "The CEL file is inconsistent with the array design: "

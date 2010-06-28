@@ -96,7 +96,10 @@ import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheStubFactory;
 import gov.nih.nci.caarray.application.project.ProjectManagementService;
 import gov.nih.nci.caarray.application.project.ProjectManagementServiceStub;
+import gov.nih.nci.caarray.dao.FileDaoTest;
+import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.project.Experiment;
@@ -142,7 +145,6 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 import com.fiveamsolutions.nci.commons.web.struts2.action.ActionHelper;
 import com.opensymphony.xwork2.Action;
-import gov.nih.nci.caarray.dao.FileDaoTest;
 
 
 /**
@@ -160,7 +162,7 @@ public class ProjectFilesActionTest extends AbstractDownloadTest {
     private static final String LIST_SUPPLEMENTAL = "listSupplemental";
     private static final String UPLOAD = "upload";
     private static final ProjectManagementServiceStub projectManagementServiceStub = new ProjectManagementServiceStub();
-    private static final FileManagementServiceStub fileManagementServiceStub = new FileManagementServiceStub();
+    private static final LocalFileManagementServiceStub fileManagementServiceStub = new LocalFileManagementServiceStub();
     private static final FileAccessServiceStub fileAccessServiceStub = new FileAccessServiceStub();
     private static final GenericDataServiceStub dataServiceStub = new LocalGenericDataServiceStub();
     ProjectFilesAction action = new ProjectFilesAction();
@@ -179,6 +181,8 @@ public class ProjectFilesActionTest extends AbstractDownloadTest {
         projectManagementServiceStub.reset();
         fileManagementServiceStub.reset();
         fileAccessServiceStub.reset();
+        fileManagementServiceStub.reimportCount = 0;
+
 
         this.action = new ProjectFilesAction() {
             private static final long serialVersionUID = 1L;
@@ -948,6 +952,76 @@ public class ProjectFilesActionTest extends AbstractDownloadTest {
         assertEquals(2,action.getFiles().size());
         assertEquals(2,action.getFileStatusCountMap().get(FileStatus.UPLOADED).intValue());
     }
+    
+    @Test
+    public void testReparseFilesNoDesign() {
+        TestProject project = new TestProject();
+        project.setImportedFiles(new TreeSet<CaArrayFile>());
+        ArrayDesign design = new ArrayDesign() {
+            @Override
+            public boolean isImportedAndParsed() {
+                return false;
+            }
+        };
+        project.getExperiment().getArrayDesigns().add(design);
+        action.setProject(project);
+        
+        String result = action.reparseFiles();
+        assertEquals(LIST_IMPORTED, result);
+        assertEquals(1, ActionHelper.getMessages().size());
+        assertEquals("project.fileReparse.error.noParsedDesigns", ActionHelper.getMessages().get(0));        
+    }
+
+    @Test
+    public void testReparseFilesIneligible() {
+        TestProject project = new TestProject();
+        project.setUnimportedFiles(new TreeSet<CaArrayFile>());
+        action.setProject(project);
+        ArrayDesign design = new ArrayDesign() {
+            @Override
+            public boolean isImportedAndParsed() {
+                return true;
+            }
+        };
+        project.getExperiment().getArrayDesigns().add(design);        
+
+        CaArrayFile file1 = new CaArrayFile();
+        file1.setName("file1");
+        file1.setFileType(FileType.AFFYMETRIX_CEL);
+        file1.setFileStatus(FileStatus.UPLOADED);
+        action.getSelectedFiles().add(file1);
+        
+        String result = action.reparseFiles();
+        assertEquals(LIST_UNIMPORTED, result);
+        assertEquals(2, ActionHelper.getMessages().size());
+        assertEquals("project.fileReparse.error.notEligible", ActionHelper.getMessages().get(0));        
+    }
+
+    @Test
+    public void testReparseFilesOk() {
+        TestProject project = new TestProject();
+        project.setUnimportedFiles(new TreeSet<CaArrayFile>());
+        action.setProject(project);
+        ArrayDesign design = new ArrayDesign() {
+            @Override
+            public boolean isImportedAndParsed() {
+                return true;
+            }
+        };
+        project.getExperiment().getArrayDesigns().add(design);
+
+        CaArrayFile file1 = new CaArrayFile();
+        file1.setName("file1");
+        file1.setFileType(FileType.AGILENT_RAW_TXT);
+        file1.setFileStatus(FileStatus.IMPORTED_NOT_PARSED);
+        action.getSelectedFiles().add(file1);
+        
+        String result = action.reparseFiles();
+        assertEquals(LIST_UNIMPORTED, result);
+        assertEquals(1, ActionHelper.getMessages().size());
+        assertEquals("project.fileImport.success", ActionHelper.getMessages().get(0));
+        assertEquals(1, fileManagementServiceStub.reimportCount);
+    }
 
     private SortedSet<CaArrayFile> getUnimportedFileSet() throws IOException {
         SortedSet<CaArrayFile> fileSet = new TreeSet<CaArrayFile>();
@@ -1160,5 +1234,14 @@ public class ProjectFilesActionTest extends AbstractDownloadTest {
             this.files = files;
         }
 
+    }
+    
+    private static class LocalFileManagementServiceStub extends FileManagementServiceStub {
+        private int reimportCount = 0;
+        
+        @Override
+        public void reimportAndParseProjectFiles(Project targetProject, CaArrayFileSet fileSet) {
+            reimportCount++;
+        }        
     }
 }

@@ -26,6 +26,8 @@
         <caarray:actions divclass="actionsthin">
             <c:url value="/protected/ajax/project/files/deleteImportedFiles.action" var="deleteUrl" />
             <caarray:linkButton actionClass="delete" text="Delete" onclick="TabUtils.submitTabFormToUrl('selectFilesForm', '${deleteUrl}', 'tabboxlevel2wrapper');" />
+            <c:url value="/protected/ajax/project/files/reparseFiles.action" var="reparseUrl" />
+            <caarray:linkButton actionClass="import" text="Reparse" onclick="TabUtils.submitTabFormToUrl('selectFilesForm', '${reparseUrl}', 'tabboxlevel2wrapper');" />
         </caarray:actions>
     </c:if>
 </caarray:tabPane>

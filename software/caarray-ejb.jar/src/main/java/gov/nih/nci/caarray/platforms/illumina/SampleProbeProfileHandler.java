@@ -227,6 +227,13 @@ final class SampleProbeProfileHandler extends AbstractDataFileHandler {
         processFile(getFile(), null, headerValidator, dataValidator);
         dataValidator.finish();
     }
+    
+    /**
+     * {@inheritDoc}
+     */        
+    public boolean requiresMageTab() {
+        return false;
+    }
 
     /**
      * {@inheritDoc}

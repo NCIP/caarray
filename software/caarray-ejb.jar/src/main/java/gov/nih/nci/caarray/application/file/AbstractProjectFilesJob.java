@@ -137,7 +137,7 @@ abstract class AbstractProjectFilesJob extends AbstractFileManagementJob {
     }
 
     private void validateArrayData(CaArrayFileSet fileSet, MageTabDocumentSet mTabSet) {
-        getArrayDataImporter().validateFiles(fileSet, mTabSet);
+        getArrayDataImporter().validateFiles(fileSet, mTabSet, false);
     }
 
     ArrayDataImporter getArrayDataImporter() {

@@ -80,34 +80,58 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.application.arraydata;
+package gov.nih.nci.caarray.application.file;
 
-import gov.nih.nci.caarray.domain.array.ArrayDesign;
-import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
+import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
+import gov.nih.nci.caarray.domain.file.FileStatus;
+import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
-import gov.nih.nci.caarray.validation.FileValidationResult;
-import gov.nih.nci.caarray.validation.InvalidDataFileException;
+import gov.nih.nci.caarray.magetab.MageTabFileSet;
+import gov.nih.nci.caarray.magetab.validator.ValidatorSet;
 
-import java.io.File;
+import org.apache.log4j.Logger;
 
 /**
- * Simple stub for array data service.
+ * Encapsulates the functionality necessary for re-parsing a set of files that
+ * were previously imported-not-parsed but now have an available parser.
+ * 
+ * This is very similar to ProjectFilesImportJob except the annotation validation
+ * and importing component is skipped.
+ * @author dkokotov 
  */
-public class ArrayDataServiceStub implements ArrayDataService {
-    public void importData(CaArrayFile caArrayFile, boolean createAnnotation, DataImportOptions importOptions)
-            throws InvalidDataFileException {
-        // no-op
+final class ProjectFilesReparseJob extends AbstractProjectFilesJob {
+    private static final long serialVersionUID = 1L;
+    private static final Logger LOG = Logger.getLogger(ProjectFilesReparseJob.class);
+
+    ProjectFilesReparseJob(String username, Project targetProject, CaArrayFileSet fileSet) {
+        super(username, targetProject, fileSet);
+    }
+
+    @Override
+    void execute() {
+        CaArrayFileSet fileSet = getFileSet(getProject());
+        try {
+            getArrayDataImporter().validateFiles(fileSet,
+                    new MageTabDocumentSet(new MageTabFileSet(), new ValidatorSet()), true);
+            if (fileSet.getStatus().equals(FileStatus.VALIDATED)
+                    || fileSet.getStatus().equals(FileStatus.VALIDATED_NOT_PARSED)) {
+                getDaoFactory().getProjectDao().flushSession();
+                getDaoFactory().getProjectDao().clearSession();
+                importArrayData(fileSet);
+            }
+        } finally {
+            TemporaryFileCacheLocator.getTemporaryFileCache().closeFiles();
+        }
     }
     
-    public ArrayDesign getArrayDesign(CaArrayFile file) {
-        return null;
+    private void importArrayData(CaArrayFileSet fileSet) {
+        ArrayDataImporter arrayDataImporter = getArrayDataImporter();
+        arrayDataImporter.importFiles(fileSet, null); // don't need to specify import options since ArrayData exists
     }
 
-    public void initialize() {
-        // no-op
-    }
-
-    public FileValidationResult validate(CaArrayFile arrayDataFile, MageTabDocumentSet mTabSet, boolean reimport) {
-        return new FileValidationResult(new File(arrayDataFile.getName()));
+    @Override
+    FileStatus getInProgressStatus() {
+        return FileStatus.IMPORTING;
     }
 }

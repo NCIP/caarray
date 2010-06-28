@@ -192,6 +192,14 @@ class ChpHandler extends AbstractDataFileHandler {
             result.addMessage(Type.ERROR, "Couldn't read Affymetrix CHP file: " + getFile().getName());
         }
     }
+    
+    /**
+     * {@inheritDoc}
+     */        
+    public boolean requiresMageTab() {
+        // TODO Auto-generated method stub
+        return false;
+    }
 
     private AbstractCHPData<?> getChpData(final File file) {
         AbstractCHPData<?> chpData = null;

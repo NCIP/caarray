@@ -66,10 +66,14 @@ public interface DataFileHandler {
     List<LSID> getReferencedArrayDesignCandidateIds() throws PlatformFileReadException;
 
     /**
-     * Validate the contents of the currently open file.
+     * Validate the contents of the currently open file. This can include validation against the mage-tab data set,
+     * if any, of which this file is a part. Note that the handler should indicate whether a mage-tab set is required
+     * via the requiresMageTab() method; in this method, it should only validate that the file matches
+     * the mage-tab dataset in ways specific to the file type (e.g. that the hybridization names are defined
+     * appropriately).
      * 
      * @param mTabSet the MageTabDocumentSet for the MAGE-TAB import of which this file is a part; can be null,
-     * if this is not done as part of an MAGE-TAB import.
+     * if this is not done as part of an MAGE-TAB import.  
      * @param result the FileValidationResult to which any errors or warnings from the validation should be added.
      * @param design the ArrayDesign corresponding to the currently open file.
      * @throws PlatformFileReadException if there is an error processing the file.
@@ -77,6 +81,14 @@ public interface DataFileHandler {
     void validate(MageTabDocumentSet mTabSet, FileValidationResult result, ArrayDesign design)
             throws PlatformFileReadException;
 
+    /**
+     * Return whether the currently open file  must be imported as part of a MAGE-TAB data set.
+     * 
+     * @return true if file must be part of a MAGE-TAB dataset, false otherwise.
+     * @throws PlatformFileReadException if there is an error processing the file.
+     */
+    boolean requiresMageTab() throws PlatformFileReadException;
+    
     /**
      * load measurement values for the given measurements from the currently open file into the provided data set. 
      * 

@@ -202,7 +202,7 @@ public abstract class AbstractHandlerTest extends AbstractCaarrayTest {
 
     protected void testValidFile(CaArrayFile caArrayFile, MageTabDocumentSet mTabSet) {
         assertEquals(FileStatus.UPLOADED, caArrayFile.getFileStatus());
-        this.arrayDataService.validate(caArrayFile, mTabSet);
+        this.arrayDataService.validate(caArrayFile, mTabSet, false);
         if (FileStatus.VALIDATION_ERRORS.equals(caArrayFile.getFileStatus())) {
             System.out.println(caArrayFile.getValidationResult());
         }
@@ -211,7 +211,7 @@ public abstract class AbstractHandlerTest extends AbstractCaarrayTest {
 
     protected void testInvalidFile(CaArrayFile caArrayFile, MageTabDocumentSet mTabSet) {
         assertEquals(FileStatus.UPLOADED, caArrayFile.getFileStatus());
-        this.arrayDataService.validate(caArrayFile, mTabSet);
+        this.arrayDataService.validate(caArrayFile, mTabSet, false);
         assertEquals(FileStatus.VALIDATION_ERRORS, caArrayFile.getFileStatus());
     }
 

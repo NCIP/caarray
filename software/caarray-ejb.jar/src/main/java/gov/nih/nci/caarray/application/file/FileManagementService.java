@@ -158,6 +158,15 @@ public interface FileManagementService {
     void reimportAndParseArrayDesign(Long arrayDesignId) throws InvalidDataFileException, IllegalAccessException;
 
     /**
+     * Re-import and parse data files which had previously been imported without parsing, but for which a parser is
+     * now available.
+     * 
+     * @param targetProject the project which the files are a part of
+     * @param fileSet the set of files to reimport
+     */
+    void reimportAndParseProjectFiles(Project targetProject, CaArrayFileSet fileSet);
+    
+    /**
      * Takes a idf file(s), and all files associated to the project,
      * finds the sdrf file associated with the idf from the list,
      * and parses the sdrf to find all files that are referenced in
