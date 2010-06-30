@@ -482,6 +482,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
 		common:jboss:init,
 		common:init,
         -install:jboss:configure:log4j,
+        -install:jboss:configure:ejb3-interceptors-aop,
         -install:jboss:configure:disable-credential-caching,
         -install:jboss:configure:java_opts,
         -install:jboss:configure:tomcat,
@@ -731,7 +732,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
         install:validation:post-install
         "/-->
     <!-- Generic targets to call appropriate upgrade path targets, just change the depends to use alternate ugprade path -->
-    <target name="upgrade:jboss" description="Wrapper target to call all targets required to upgrade jboss container." unless="exclude.jboss" depends="upgrade:jboss:init,common:init,upgrade-ncm:jboss,-install:jboss:configure:tomcat,-install:jboss:configure:log4j,-install:jboss:configure:disable-credential-caching,-install:jboss:configure:api:streaming:port">
+    <target name="upgrade:jboss" description="Wrapper target to call all targets required to upgrade jboss container." unless="exclude.jboss" depends="upgrade:jboss:init,common:init,upgrade-ncm:jboss,-install:jboss:configure:tomcat,-install:jboss:configure:log4j,-install:jboss:configure:ejb3-interceptors-aop,-install:jboss:configure:disable-credential-caching,-install:jboss:configure:api:streaming:port">
     </target>
 
     <target name="upgrade:tier:caarray" description="Upgrades caArray installation on NCICB tier."
@@ -747,6 +748,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
 		-install:jboss:configure:tomcat,
 		install:jboss:caarray,
 		-install:jboss:configure:log4j,
+    	-install:jboss:configure:ejb3-interceptors-aop,
 		-install:jboss:configure:disable-credential-caching,
 		upgrade:database,
 		-install:jboss:start-with-config,
@@ -889,9 +891,6 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
         install:jboss:caarray:re-configure,
         install:jboss:caarray,                
         install:post:jboss,
-        upgrade:carray-grid,
-        -install:jboss:start-with-config,
-        install:grid:start,
         install:jboss:validation:post-install
         ">
     </target>
@@ -907,8 +906,11 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
 		install:jboss:stop,
         upgrade:database,
         upgrade:jboss,
-        install:common:validation:post-install
+        upgrade:carray-grid
         ">
+    <antcall target="-install:jboss:start-with-config"/>
+        <antcall target="install:grid:start"/>
+        <antcall target="install:common:validation:post-install"/>
     </target>
 
     <target name="upgrade-ncm:with-dbinstall" description="Upgrades JBoss and Database"
@@ -1088,6 +1090,14 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
             </sequential>
         </for>
         <unzip dest="${grid.home}/server/${grid.server.name}" src="${basedir}/grid/jboss-globus-serverinstance-config.zip" />
+    </target>
+	
+	<target name="-install:jboss:configure:ejb3-interceptors-aop">
+        <copy todir="${jboss.home}/server/${jboss.server.name}/deploy" overwrite="true">
+            <fileset dir="${jboss-conf.dist.relative.dir}">
+                <include name="ejb3-interceptors-aop.xml"/>
+            </fileset>
+        </copy>
     </target>
     
     <target name="-install:jboss:configure:disable-credential-caching" unless="exclude.jboss" description="Cnonfigures the jboss-service.xml file to turn off JAAS credential caching.">
