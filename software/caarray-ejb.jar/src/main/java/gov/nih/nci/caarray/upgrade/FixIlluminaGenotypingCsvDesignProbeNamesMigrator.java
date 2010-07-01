@@ -172,9 +172,11 @@ public class FixIlluminaGenotypingCsvDesignProbeNamesMigrator extends AbstractCu
         Transaction transaction = hibernateHelper.beginTransaction();              
         try {
             ArrayDao arrayDao = injector.getInstance(ArrayDao.class);
-            List<ArrayDesign> arrayDesigns = getArrayDesigns(hibernateHelper, arrayDao);
-            
-            fixArrayDesigns(handlers, arrayDao, arrayDesigns);
+                        
+            List<Long> arrayDesignIds = getArrayDesignIds(hibernateHelper, arrayDao);
+            hibernateHelper.getCurrentSession().clear();
+           
+            fixArrayDesigns(handlers, arrayDao, arrayDesignIds);
             
             transaction.commit();           
         } catch (Exception e) {
@@ -183,9 +185,12 @@ public class FixIlluminaGenotypingCsvDesignProbeNamesMigrator extends AbstractCu
         }
     }
 
-    private void fixArrayDesigns(Set<DesignFileHandler> handlers, ArrayDao arrayDao, List<ArrayDesign> arrayDesigns)
+    private void fixArrayDesigns(Set<DesignFileHandler> handlers, ArrayDao arrayDao, List<Long> arrayDesignIds)
             throws PlatformFileReadException {
-        for (ArrayDesign originalArrayDesign : arrayDesigns) {
+        
+        for (long arrayDesignId : arrayDesignIds) {
+            ArrayDesign originalArrayDesign = arrayDao.getArrayDesign(arrayDesignId);
+           
             CaArrayFile arrayDesignFile = originalArrayDesign.getFirstDesignFile();
             ArrayDesign reparsedArrayDesign = getNewArrayDesign(handlers, arrayDesignFile);
             
@@ -193,6 +198,9 @@ public class FixIlluminaGenotypingCsvDesignProbeNamesMigrator extends AbstractCu
               
             arrayDao.save(originalArrayDesign);
             arrayDao.flushSession();
+            
+            // Detach the array design
+            arrayDao.clearSession();           
         }
     }
 
@@ -214,9 +222,9 @@ public class FixIlluminaGenotypingCsvDesignProbeNamesMigrator extends AbstractCu
     private SortedSet<PhysicalProbe> getSortedProbeList(ArrayDesign orrayDesign) {
         Comparator<PhysicalProbe> comparator = getPhysicalProbeIdComparator();
             
-        SortedSet<PhysicalProbe> originalProbes = new TreeSet<PhysicalProbe>(comparator);
-        originalProbes.addAll(orrayDesign.getDesignDetails().getProbes());
-        return originalProbes;
+        SortedSet<PhysicalProbe> probes = new TreeSet<PhysicalProbe>(comparator);
+        probes.addAll(orrayDesign.getDesignDetails().getProbes());
+        return probes;
     }
 
     private Comparator<PhysicalProbe> getPhysicalProbeIdComparator() {
@@ -327,9 +335,8 @@ public class FixIlluminaGenotypingCsvDesignProbeNamesMigrator extends AbstractCu
         return handlers;
     }
 
-    private List<ArrayDesign> getArrayDesigns(SingleConnectionHibernateHelper hibernateHelper, ArrayDao arrayDao) {
-        List<ArrayDesign> arrayDesigns
-        = new ArrayList<ArrayDesign>();
+    private List<Long> getArrayDesignIds(SingleConnectionHibernateHelper hibernateHelper, ArrayDao arrayDao) {
+        List<Long> arrayDesignIds = new ArrayList<Long>();
         
         Organization provider = (Organization) hibernateHelper.getCurrentSession()
             .createQuery("FROM " + Organization.class.getName() + " where provider = true and name = 'Illumina'")
@@ -345,10 +352,11 @@ public class FixIlluminaGenotypingCsvDesignProbeNamesMigrator extends AbstractCu
         List<ArrayDesign> candidateArrayDesigns = arrayDao.getArrayDesigns(provider, assayTypes , true);
         for (ArrayDesign candidate : candidateArrayDesigns) {
              if (candidate.getFirstDesignFile().getFileType() == FileType.ILLUMINA_DESIGN_CSV) {
-                 arrayDesigns.add(candidate);
+                 arrayDesignIds.add(candidate.getId());
              }
         }
-        return arrayDesigns;
+        
+        return arrayDesignIds;
     }
 }
 
