@@ -538,7 +538,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
     </target>
 
     <target name="-install:jboss:start-with-config" description="Starts jboss" unless="exclude.jboss" depends="common:jboss:init,common:init,-install:jboss:configure:tomcat ">
-        <antcall target="install:jboss:start">
+        <antcall target="install:jboss:start"inheritAll="false">
         	<param name="skip.clean" value="true"/>
         </antcall>
     </target>
@@ -908,9 +908,15 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
         upgrade:jboss,
         upgrade:carray-grid
         ">
-    <antcall target="-install:jboss:start-with-config"/>
-        <antcall target="install:grid:start"/>
-        <antcall target="install:common:validation:post-install"/>
+    <antcall target="-install:jboss:start-with-config">
+            <param name="skip.clean" value="true"/>
+        </antcall>
+        <antcall target="install:grid:start">
+            <param name="skip.clean" value="true"/>
+        </antcall>
+        <antcall target="install:common:validation:post-install">
+            <param name="skip.clean" value="true"/>
+    </antcall>
     </target>
 
     <target name="upgrade-ncm:with-dbinstall" description="Upgrades JBoss and Database"
