@@ -538,7 +538,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
     </target>
 
     <target name="-install:jboss:start-with-config" description="Starts jboss" unless="exclude.jboss" depends="common:jboss:init,common:init,-install:jboss:configure:tomcat ">
-        <antcall target="install:jboss:start"inheritAll="false">
+        <antcall target="install:jboss:start" inheritAll="false">
         	<param name="skip.clean" value="true"/>
         </antcall>
     </target>
