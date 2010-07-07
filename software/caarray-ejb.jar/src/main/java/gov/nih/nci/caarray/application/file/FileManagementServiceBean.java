@@ -306,6 +306,9 @@ public class FileManagementServiceBean implements FileManagementService {
         } catch (InvalidDataFileException e) {
             arrayDesign.getDesignFileSet().updateStatus(FileStatus.IMPORT_FAILED);
             throw e;
+        } catch (IllegalAccessException e) {
+            arrayDesign.getDesignFileSet().updateStatus(FileStatus.IMPORT_FAILED);
+            throw e;
         }
         
         importArrayDesignDetails(arrayDesign);
