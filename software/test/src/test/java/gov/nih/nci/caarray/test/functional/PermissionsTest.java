@@ -122,7 +122,7 @@ public class PermissionsTest extends AbstractSeleniumTest {
         // click the edit icon
         selenium.click("//table[@id='row']/tbody/tr[" + row + "]/td[7]/a/img");
         waitForText("Overall Experiment Characteristics");
-        submitExperiment();
+        lockExperimentFromEdits();
         
         createCollaborationGroup(groupName);
         addUsers();

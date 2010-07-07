@@ -130,7 +130,7 @@ public class ImportStandardMageTabSetTest extends AbstractSeleniumTest {
         // validate the status
         checkFileStatus("Imported", THIRD_COLUMN, NUMBER_OF_FILES);
         // make experiment public
-        submitExperiment();
+        lockExperimentFromEdits();
         makeExperimentPublic(experimentId);
         endTime = System.currentTimeMillis();
         String totalTime = df.format((endTime - startTime) / 60000f);

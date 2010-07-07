@@ -110,7 +110,7 @@ public class BrowseExperimentTest extends AbstractSeleniumTest {
         String experimentId = createExperiment(title, TestProperties.getAffymetrixSpecificationDesignName());
 
         // - Submit Experiment Proposal
-        submitExperiment();
+        lockExperimentFromEdits();
         makeExperimentPublic(experimentId);
 
         // - logout
@@ -174,6 +174,7 @@ public class BrowseExperimentTest extends AbstractSeleniumTest {
 
         // file upload based on ImportAffymetrixChpTest.testImportAndRetrieval()
         // - go to the data tab
+        pause(1000);
         selenium.click("link=Data");
         waitForTab();
         upload(AffymetrixArrayDataFiles.TEST3_SPECIFICATION_ZIP);
@@ -183,28 +184,27 @@ public class BrowseExperimentTest extends AbstractSeleniumTest {
         importData(MAGE_TAB);
         
         selenium.click("link=My Experiment Workspace");
-        waitForTab();
-        pause(2000);
+        waitForText("Public Access");
 
         int row = getExperimentRow(experimentId, ZERO_COLUMN);
         if (row == -1){
             fail("Did not find experiment with id = " + experimentId);
         }
         pause(1000);
-        assertTrue("Delete icon is missing at row "+row+" column 8", selenium.isElementPresent("//table[@id='row']/tbody/tr[" + row + "]/td[8]/a/img"));
+        assertTrue("Delete icon is missing at row "+row+" column 10", selenium.isElementPresent("//table[@id='row']/tbody/tr[" + row + "]/td[10]/a/img"));
         selenium.chooseCancelOnNextConfirmation();
-        selenium.click("//tr[" + row + "]/td[8]/a/img");
+        selenium.click("//tr[" + row + "]/td[10]/a/img");
         assertTrue(selenium.getConfirmation().matches("^Are you sure you want to delete this experiment\\?$"));
         pause(500);
         assertEquals(row, getExperimentRow(experimentId, ZERO_COLUMN));
-        selenium.click("//tr[" + row + "]/td[8]/a/img");
+        selenium.click("//tr[" + row + "]/td[10]/a/img");
         assertTrue(selenium.getConfirmation().matches("^Are you sure you want to delete this experiment\\?$"));
         waitForText("Experiment has been deleted.");
         assertFalse(selenium.isTextPresent(experimentId));
 
         // testing the delete icon is not present when an experiment is in the 'Inprogress' state.
         experimentId = createExperiment(title, TestProperties.getAffymetrixSpecificationDesignName());
-        submitExperiment();
+        lockExperimentFromEdits();
         row = getExperimentRow(experimentId, ZERO_COLUMN);
         // ensure the delete icon is not present
         assertFalse(selenium.isElementPresent("//table[@id='row']/tbody/tr[" + row + "]/td[8]/a/img"));

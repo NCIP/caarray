@@ -139,7 +139,7 @@ public class ImportSimpleMageTabSetTest extends AbstractSeleniumTest {
         System.out.println("total time = " + totalTime);
 
         // make experiment public
-        submitExperiment();
+        lockExperimentFromEdits();
         makeExperimentPublic(experimentId);
     }
 }

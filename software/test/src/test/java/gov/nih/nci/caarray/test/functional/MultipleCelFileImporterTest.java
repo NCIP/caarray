@@ -133,7 +133,7 @@ public class MultipleCelFileImporterTest extends AbstractSeleniumTest {
 
         // Import the files.
         importData(MAGE_TAB);
-        submitExperiment();
+        lockExperimentFromEdits();
         makeExperimentPublic(experimentId);
     }
 

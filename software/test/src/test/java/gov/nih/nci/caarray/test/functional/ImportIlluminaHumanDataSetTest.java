@@ -149,7 +149,7 @@ public class ImportIlluminaHumanDataSetTest extends AbstractSeleniumTest {
         checkFileStatus("Imported", THIRD_COLUMN, NUMBER_OF_FILES);
 
         // make experiment public
-        submitExperiment();
+        lockExperimentFromEdits();
         makeExperimentPublic(experimentId);
 
         endTime = System.currentTimeMillis();

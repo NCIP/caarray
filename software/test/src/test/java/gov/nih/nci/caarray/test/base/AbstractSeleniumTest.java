@@ -99,11 +99,11 @@ import com.thoughtworks.selenium.SeleneseTestCase;
 public abstract class AbstractSeleniumTest extends SeleneseTestCase {
 
     protected DecimalFormat df = new DecimalFormat("0.##");
-    //private static final int PAGE_TIMEOUT_SECONDS = 180;
-    private static final int PAGE_TIMEOUT_SECONDS = 5;
+    private static final int PAGE_TIMEOUT_SECONDS = 180;
+    //private static final int PAGE_TIMEOUT_SECONDS = 5;
     private static final String LOGIN_BUTTON = "//div[2]/form/table/tbody/tr[4]/td/del/ul/li/a/span/span";
     protected static final String TAB_KEY = "\\009";
-    protected static int RECORD_TIMEOUT_SECONDS = 5;
+    protected static int RECORD_TIMEOUT_SECONDS = 30;
     protected static int FIFTEEN_MINUTES = 900;
     protected static final int PAGE_SIZE = 20;
     private static final String UPLOAD_BUTTON = "//ul/a[3]/span/span";
@@ -114,7 +114,7 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
     protected static final String IMPORTED = "Imported";
     protected static final String AFFYMETRIX_PROVIDER = "Affymetrix";
     protected static final String HOMO_SAPIENS_ORGANISM = "Homo sapiens (ncbitax)";
-    private static final int FOURTY_MINUTES = 2400;
+    private static final int FORTY_MINUTES = 2400;
     protected static final int AUTOCREATE_ANNOTATION_SET = 1;
     protected static final int AUTOCREATE_SINGLE_ANNOTATION = 2;
     protected static final int ASSOCIATE_TO_EXISTING_BIOMATERIAL = 3;
@@ -167,6 +167,7 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
      */
     protected void loginAs(String userid) {
         selenium.open("/caarray/");
+        waitForText("caArray Login");
         selenium.type("j_username", userid);
         selenium.type("j_password", "caArray2!");
         clickAndWait(LOGIN_BUTTON);
@@ -175,6 +176,7 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
 
     protected void loginAs(String userid, String password) {
         selenium.open("/caarray/");
+        waitForText("caArray Login");
         selenium.type("j_username", userid);
         selenium.type("j_password", password);
         clickAndWait(LOGIN_BUTTON);
@@ -183,6 +185,7 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
 
     protected void loginAsPrincipalInvestigator() {
         selenium.open("/caarray/");
+        waitForText("caArray Login");
         selenium.type("j_username", "caarrayadmin");
         selenium.type("j_password", "caArray2!");
         clickAndWait(LOGIN_BUTTON);
@@ -193,40 +196,31 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
         upload(file, RECORD_TIMEOUT_SECONDS);
     }
 
-    protected void upload(File file, int timeoutSeconds) throws IOException {
-        upload(file, timeoutSeconds, true);
-    }
-
-    protected void upload(File file, long timeoutSeconds, boolean runAssert) throws IOException {
+    protected void upload(File file, long timeoutSeconds) throws IOException {
+        waitForText("Upload New File(s)");
         selenium.click("link=Upload New File(s)");
         waitForPopup("uploadWindow", timeoutSeconds);
         selenium.selectWindow("uploadWindow");
         String filePath = file.getCanonicalPath().replace('/', File.separatorChar);
         selenium.type("upload", filePath);
         selenium.click(UPLOAD_BUTTON);
-        pause(2000);
         waitForDiv("uploadProgressFileList", timeoutSeconds);
+        waitForText(" uploaded.");
+        pause(3000);
         selenium.getAlert();
-
-        if (runAssert) {
-            if (file == null) {
-                fail("upload file name is null");
-            }
-            assertTrue(file.getName() + " was not uploaded.", selenium.isTextPresent(file.getName()));
-        }
 
         selenium.click("link=Close Window");
         selenium.selectWindow(null);
 
-        pause(1000);
+        waitForText("Data");
         selenium.click("link=Data");
         waitForTab();
-        waitForSecondLevelTab();
+        waitForText("File Status Summary");
     }
 
     protected void waitForElementWithId(String id, long timeoutSeconds) {
         selenium.waitForCondition("selenium.browserbot.getCurrentWindow().document.getElementById('" + id
-                + "') != null", toMillisecondsString(timeoutSeconds));
+                + "') != null && element.style.display == 'none';", toMillisecondsString(timeoutSeconds));
     }
 
     protected void waitForElementWithId(String id) {
@@ -255,7 +249,7 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
 
     protected void waitForDiv(String divId, long timeoutSeconds) {
         selenium.waitForCondition("element = selenium.browserbot.getCurrentWindow().document.getElementById('" + divId
-                + "'); element != null && element.style.display == 'none';", toMillisecondsString(timeoutSeconds));
+                + "'); element != null", toMillisecondsString(timeoutSeconds));
     }
 
     protected void waitForSecondLevelTab() {
@@ -368,8 +362,8 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
 
         // - Save the Experiment
         selenium.click("link=Save");
-        waitForAction();
-        // get the experiment identifier e.g. admin-00012
+        // get the experiment identifier that starts with "EXP-"
+        waitForText("EXP-");
         experimentId = selenium.getText("//tr[4]/td[2]");
         return experimentId;
     }
@@ -423,7 +417,7 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
    // selenium.addSelection("projectForm_project_experiment_arrayDesigns", "label=Test3");
 
     /**
-     * Import array design with default provider and organism
+     * Import array design with default assay type (gene expression) provider and organism
      *
      * @param arrayDesignFile
      * @param arrayDesignName
@@ -442,10 +436,10 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
      * @param Organism - array design organism
      * @throws Exception
      */
-    protected void importArrayDesign(File arrayDesignFile, String arrayDesignName, String provider, String Organism)
+    protected void importArrayDesign(File arrayDesignFile,String arrayDesignName,  String provider, String Organism)
             throws Exception {
         selenium.click("link=Manage Array Designs");
-        selenium.waitForPageToLoad("30000");
+        waitForText("Array Design Name");
         if (!doesArrayDesignExists(arrayDesignName)) {
             addArrayDesign(arrayDesignFile, provider, Organism);
             // the file is uploaded. this may take a while. after it is uploaded
@@ -455,7 +449,7 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
             // get the array design row so we do not find the wrong Imported text
             int row = getExperimentRow(arrayDesignName, ZERO_COLUMN);
             // wait for array design to be imported
-            waitForArrayDesignImport(FOURTY_MINUTES, row);
+            waitForArrayDesignImport(FORTY_MINUTES, row);
         }
     }
 
@@ -467,6 +461,11 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
         // assert the Use Case required fields are present
         assertArrayDesignMetaRequiredFields();
         selenium.keyPress("id=assayTypesSearchInput", TAB_KEY);
+        
+        // select gene expression assay type
+        waitForText("Gene Expression");
+        selenium.click("//div[@id='assayTypesAutocompleteDiv']/ul/li[3]");
+        
         if (arrayDesignProvider == null) {
             arrayDesignProvider = AFFYMETRIX_PROVIDER; // default to Affy
         }
@@ -486,9 +485,10 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
         selenium.click("link=Save");
         // we should now be at the
         // all-good page
-        waitForText("has been successfully uploaded.", FOURTY_MINUTES);
-        selenium.click("link=Close Window and go to Manage Design Array");
-        selenium.waitForPageToLoad("30000");
+        waitForText("has been successfully uploaded.", FORTY_MINUTES);
+        selenium.click("link=Close Window and go to Manage Array Designs");
+        selenium.selectWindow(null);
+        waitForText("Provider");
     }
 
     /**
@@ -508,6 +508,7 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
     }
 
     protected void findTitleAcrossMultiPages(String text) {
+        waitForText("Experiment Title");
         for (int page = 1;; page++) {
             // - Safety catch
             if (page == 50) {
@@ -525,23 +526,13 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
         }
     }
 
-    protected void setExperimentPublic() {
-        String makeExperimentPublicButton = "//span/span";
-        selenium.click(makeExperimentPublicButton);
+    protected void lockExperimentFromEdits() {
+        waitForText("Lock Experiment from Edits");
+        selenium.click("link=Lock Experiment from Edits");
         selenium.waitForPageToLoad("30000");
-        assertTrue(selenium.getConfirmation().matches("^Are you sure you want to change the project's status[\\s\\S]$"));
-        // making an experiement public will return the user back to their experiment workspace
-        waitForText("My Experiment Workspace");
-    }
-
-    protected void submitExperiment() {
-        String submitExperimentProposalButton = "//span/span";
-        // selenium.click("link=Submit Experiment Proposal");
-        selenium.click(submitExperimentProposalButton);
-        selenium.waitForPageToLoad("30000");
-        assertTrue(selenium.getConfirmation().matches("^Are you sure you want to change the project's status[\\s\\S]$"));
-        // making an experiement public will return the user back to the experiment's main page
-        waitForTab();
+        assertTrue(selenium.getConfirmation().contains("Are you sure you want to lock this experiment from edits?"));
+        // locking an experiement will return the user back to their experiment workspace
+        waitForText("Permissions");
     }
 
     /**
@@ -557,7 +548,7 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
             selenium.click("link=Manage Array Designs");
             waitForPageToLoad();
             // done
-            String rowText = selenium.getTable("row." + row + ".9");
+            String rowText = selenium.getText("//table[id('row')]/tbody/tr[" + row + "]/td[11]");
             if (rowText.equalsIgnoreCase("Import Failed")){
                 fail("Array Design import failed");
             }
@@ -631,11 +622,7 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
         }
     }
 
-    private boolean waitForImport(final String textToWaitFor) {
-    	return waitForImport(textToWaitFor, 10);
-    }
-
-    private boolean waitForImport(final String textToWaitFor, final int specifiedTimeToWaitInMinutes) {
+    private boolean waitForImport(final int specifiedTimeToWaitInMinutes) {
         int tenMinutesOfSeconds = 600;
         int tenSeconds = 10;
         int oneThousandMilliseconds = 1000;
@@ -654,12 +641,12 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
                 break;
             }
             selenium.click("link=Manage Data");
-            if (selenium.isTextPresent(textToWaitFor)) {
-            	completedWithinTimeout = true;
-            	break;
-            }
-            else {
+            waitForText("File Status Summary");
+            if (selenium.isTextPresent("Importing") || selenium.isTextPresent("In Queue")) {
                 pause(tenSeconds * oneThousandMilliseconds);
+            } else {
+                completedWithinTimeout = true;
+                break;
             }
         }
         if (!completedWithinTimeout) {
@@ -673,18 +660,17 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
     }
 
     protected void makeExperimentPublic(String experimentId) {
-
         clickAndWait("link=My Experiment Workspace");
-        waitForTab();
-
         // - Make the experiment public
         int row = getExperimentRow(experimentId, ZERO_COLUMN);
-        // - Click on the image to enter the edit mode again
-        selenium.click("//tr[" + row + "]/td[7]/a/img");
-        waitForText("Overall Experiment Characteristics");
-
-        // make experiment public
-        setExperimentPublic();
+        selenium.click("//table[@id='row']/tbody/tr[" + row + "]/td[7]/a/img");
+        waitForText("Who May Access this Experiment");
+        selenium.click("//div/table/tbody/tr[1]/td/a");
+        waitForText("Control Access to Specific Content for The Public");
+        selenium.select("id=profileForm_accessProfile_securityLevel", "label=Read");
+        selenium.click("link=Save");
+        waitForText("The permissions have been updated");
+        clickAndWait("link=My Experiment Workspace");
     }
 
     protected void checkFileStatus(String status, int column, int numFiles) {
@@ -721,7 +707,6 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
         String importButton = "//button[text()='Import']";
         String treeSourceIcon = "//img[@class='x-tree-ec-icon x-tree-elbow-plus']";
         String treeSouceCheckbox = "//*[@class='x-tree-node-cb']";
-        String textToFind = "Nothing found to display";
 
         selenium.click("selectAllCheckbox");
         selenium.click("link=Import");
@@ -755,9 +740,8 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
                         .matches(
                                 "^1 Array Design\\(s\\) cannot not imported\\.  Please use Manage Array Designs\\.\nWould you like to continue importing the remaining 15 file\\(s\\)[\\s\\S]$"));
                 // Once the Unpack Archive button is back on the page the import is complete.
-                textToFind = "Unpack Archive";
                 selenium.click("link=Manage Data");
-                waitForTab();
+                waitForText("Importing");
             }
             break;
         default:
@@ -767,7 +751,7 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
 
         waitForAction();
         // - hit the refresh button until files are imported
-        waitForImport(textToFind, 30);
+        waitForImport(30);
     }
     /**
      *

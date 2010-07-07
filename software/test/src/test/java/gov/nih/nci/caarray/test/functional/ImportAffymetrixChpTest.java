@@ -136,7 +136,7 @@ public class ImportAffymetrixChpTest extends AbstractSeleniumTest {
         checkFileStatus("Imported", SECOND_COLUMN, NUMBER_OF_FILES);
 
         // make experiment public
-        submitExperiment();
+        lockExperimentFromEdits();
         makeExperimentPublic(experimentId);
 
         endTime = System.currentTimeMillis();

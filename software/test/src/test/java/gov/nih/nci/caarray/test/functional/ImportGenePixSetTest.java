@@ -141,7 +141,7 @@ public class ImportGenePixSetTest extends AbstractSeleniumTest {
         checkSampleNames();
 
         // make experiment public
-        submitExperiment();
+        lockExperimentFromEdits();
         makeExperimentPublic(experimentId);
     }
 
