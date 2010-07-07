@@ -299,9 +299,14 @@ public class FileManagementServiceBean implements FileManagementService {
         
         ArrayDesignService ads = ServiceLocatorFactory.getArrayDesignService();
         arrayDesign.getDesignFileSet().updateStatus(FileStatus.VALIDATING);
-        arrayDesign = ads.saveArrayDesign(arrayDesign); 
-        ads.importDesign(arrayDesign);
-        checkDesignFiles(arrayDesign.getDesignFileSet());
+        try {
+            arrayDesign = ads.saveArrayDesign(arrayDesign);
+            ads.importDesign(arrayDesign);
+            checkDesignFiles(arrayDesign.getDesignFileSet());
+        } catch (InvalidDataFileException e) {
+            arrayDesign.getDesignFileSet().updateStatus(FileStatus.IMPORT_FAILED);
+            throw e;
+        }
         
         importArrayDesignDetails(arrayDesign);
     }

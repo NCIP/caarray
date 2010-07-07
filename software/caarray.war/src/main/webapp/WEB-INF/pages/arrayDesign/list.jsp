@@ -104,12 +104,13 @@
                                 <a href="${reimportDesignUrl}"><img src="<c:url value="/images/ico_import.gif"/>" alt="<fmt:message key="button.reimport"/>" /></a>
                           </c:if>
                         </display:column>
-                        <display:column sortProperty="designFileSet.status" titleKey="experiment.files.status" sortable="true" >
+                        <display:column sortProperty="designFileSet.status" titleKey="experiment.files.status" sortable="true" url="/protected/arrayDesign/view.action" paramId="arrayDesign.id" paramProperty="id" >
                             <c:if test="${not empty row.designFileSet.status}">
                                 <ajax:anchors target="tabboxlevel2wrapper">
                                     <fmt:message key="experiment.files.filestatus.${row.designFileSet.status}">
                                         <fmt:param><c:url value="/" /></fmt:param>
                                     </fmt:message>
+                            
                                 </ajax:anchors>
                             </c:if>
                         </display:column>

@@ -679,7 +679,17 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
         } catch (IllegalAccessException e) {
             ActionHelper.saveMessage(getText("arrayDesign.cannotReimport"));            
         } catch (InvalidDataFileException e) {
-            ActionHelper.saveMessage(getText("arrayDesign.invalid"));            
+            ActionHelper.saveMessage(getText("arrayDesign.invalid"));
+            ArrayDesign ad = ServiceLocatorFactory.getArrayDesignService().getArrayDesign(getArrayDesign().getId());
+            if (ad != null) {
+                Set<CaArrayFile> files = ad.getDesignFiles();
+                for (CaArrayFile f : files) {
+                    for (ValidationMessage vm : f.getValidationResult().getMessages()) {
+                        ActionHelper.saveMessage(vm.getMessage());
+                    }
+                }
+            }
+            
         }
 
         return SUCCESS;

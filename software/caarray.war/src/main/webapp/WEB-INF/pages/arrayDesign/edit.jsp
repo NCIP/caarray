@@ -127,6 +127,25 @@
                          </c:choose>.
                     </caarray:actions>
                 </div>
+                <a name="files"/>
+                <c:if test="${!empty arrayDesign.designFiles}">
+                    <div class="boxpad">
+                        <table class="form">
+                            <thead>
+                                <tr><th colspan="2">Array Design Files and Status</th></tr>
+                            </thead>
+                            <tbody>
+                            <c:forEach items="${arrayDesign.designFiles}" var="file">
+                                <tr><td class="tdLabel" style="text-align: left" colspan="2"><c:out value="${file.name}" escapeXml="true"/></td></tr>
+                                <c:forEach items="${file.validationResult.messages}" var="message">
+                                    <tr><td></td><td class="instructions"><c:out value="${message.message}" escapeXml="true"/></td></tr>
+                                </c:forEach>
+                            </c:forEach>
+                            </tbody>
+                        </table>
+                    </div>
+                </c:if>
+
             </div>
         </div>
     </div>
