@@ -5,21 +5,11 @@ RUNNING THE TEST SUITE
 --------------------------------------------------------------
 
 Before building and running the test suite, confirm that the
-lib, lib/java, and lib/grid directories contain the .jar files
-corresponding to the tag to be tested. The directory contents
-should be as follows:
-	lib: should contain the caarray-client-legacy.jar
-		 file contained in the caarray-client-legacy.zip file.
-	lib/java: should contain the .jar files contained in the
-		 lib/java directory of the caarray-client-legacy.zip file.
-	lib/grid: should contain the .jar files contained in the
-		 lib/grid directory of the caarray-client-legacy.zip file.
+caArray project on this branch is fully built and deployed (i.e. ant deploy)
 		 
 To run the test suite via gui: 	in a command line shell, navigate to the
-'Legacy_API_Test_Suite' directory and run the 'ant' command. This will build an
-executable .jar file in the Legacy_API_Test_Suite directory, which can be run by clicking
-on the file, or by navigating to the Legacy_API_Test_Suite directory in a command line shell
-and executing the command java -jar client_legacy_api_test_suite.jar.
+'Legacy_API_Test_Suite' directory and run the 'ant' command. This will compile
+all the tests.
 
 To run the test suite with ant: in a command line shell, navigate to the
 'Legacy_API_Test_Suite' directory and run one of the following commands:
@@ -28,16 +18,10 @@ To run the test suite with ant: in a command line shell, navigate to the
 	   suite against both the java and grid APIs.
 	2) ant test_java
 	   This command will build and run only the portions of the
-	   test suite pertaining to the java API. Only the .jar files
-	   included in the /lib and lib/java directories will be included
-	   in the classpath, confirming the integrity of the dependency
-	   directories as provided to end users.
+	   test suite pertaining to the java API.
 	3) ant test_grid
 	   This command will build and run only the portions of the
-	   test suite pertaining to the grid API. Only the .jar files
-	   included in the /lib and lib/grid directories will be included
-	   in the classpath, confirming the integrity of the dependency
-	   directories as provided to end users.
+	   test suite pertaining to the grid API.
 
 A test result report .csv file will be written to the 'report' directory
 upon completion of the test suite.

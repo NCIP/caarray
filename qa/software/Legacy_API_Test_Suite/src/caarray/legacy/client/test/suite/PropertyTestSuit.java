@@ -22,8 +22,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.beanutils.PropertyUtils;
-import org.hibernate.property.DirectPropertyAccessor;
-import org.hibernate.property.PropertyAccessorFactory;
 
 
 /**
