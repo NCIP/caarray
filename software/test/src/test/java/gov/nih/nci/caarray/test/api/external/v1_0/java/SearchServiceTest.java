@@ -620,7 +620,7 @@ public class SearchServiceTest extends AbstractExternalJavaApiTest {
         logForSilverCompatibility(TEST_NAME, "testSearchForFiles_All");
         FileSearchCriteria crit = new FileSearchCriteria();
         List<File> files = service.searchForFiles(crit, null).getResults();
-        assertEquals(22, files.size());
+        assertEquals(24, files.size());
     }
 
     @Test
@@ -788,7 +788,7 @@ public class SearchServiceTest extends AbstractExternalJavaApiTest {
         xsc.setExcludeZeroes(true);
         File file = new File();
         xsc.setExample(file);
-        testExampleProperty(xsc, null, null, 22);
+        testExampleProperty(xsc, null, null, 24);
         testExampleProperty(xsc, "id", "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.File:1", 1);
         testExampleProperty(xsc, "id", "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.File:0", 0);
 
@@ -815,11 +815,11 @@ public class SearchServiceTest extends AbstractExternalJavaApiTest {
     @Test
     public void testSearchByExample_QuantitationType() throws Exception {
         logForSilverCompatibility(TEST_NAME, "testSearchByExample_QuantitationType");
-        testExampleProperty(new QuantitationType(), null, null, 123);
+        testExampleProperty(new QuantitationType(), null, null, 167);
         testExampleProperty(new QuantitationType(), "id", "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.QuantitationType:1", 1);
         testExampleProperty(new QuantitationType(), "id", "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.QuantitationType:0", 0);
         testExampleProperty(new QuantitationType(), "name", "CHPDetection", 1);
-        testExampleProperty(new QuantitationType(), "dataType", DataType.STRING, 3);
+        testExampleProperty(new QuantitationType(), "dataType", DataType.STRING, 8);
     }
 
     @Test
@@ -973,7 +973,7 @@ public class SearchServiceTest extends AbstractExternalJavaApiTest {
     @Test
     public void testSearchByExample_ArrayDesign() throws Exception {
         logForSilverCompatibility(TEST_NAME, "testSearchByExample_ArrayDesign");
-        testExampleProperty(new ArrayDesign(), null, null, 1);
+        testExampleProperty(new ArrayDesign(), null, null, 3);
         testExampleProperty(new ArrayDesign(), "id", "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.array.ArrayDesign:1", 1);
         testExampleProperty(new ArrayDesign(), "id", "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.array.ArrayDesign:0", 0);
 
@@ -982,7 +982,7 @@ public class SearchServiceTest extends AbstractExternalJavaApiTest {
         testExampleProperty(new ArrayDesign(), "arrayProvider", ap, 1);
         AssayType at = new AssayType("Gene Expression");
         at.setId("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.array.AssayType:3");
-        testExampleProperty(new ArrayDesign(), "assayTypes", Collections.singleton(at), 1);
+        testExampleProperty(new ArrayDesign(), "assayTypes", Collections.singleton(at), 2);
 
         File df = new File();
         df.setId("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.File:1");
@@ -999,8 +999,8 @@ public class SearchServiceTest extends AbstractExternalJavaApiTest {
         testExampleProperty(new ArrayDesign(), "organism", o, 1);
         Term t = new Term();
         t.setId("URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.vocabulary.Term:624");//???
-        testExampleProperty(new ArrayDesign(), "technologyType", t, 1);
-        testExampleProperty(new ArrayDesign(), "version", "1", 1);
+        testExampleProperty(new ArrayDesign(), "technologyType", t, 3);
+        testExampleProperty(new ArrayDesign(), "version", "1", 3);
     }
 
     @Test
@@ -1059,7 +1059,7 @@ public class SearchServiceTest extends AbstractExternalJavaApiTest {
     @Test
     public void testSearchByExample_ArrayDataType() throws Exception {
         logForSilverCompatibility(TEST_NAME, "testSearchByExample_ArrayDataType");
-        testExampleProperty(new ArrayDataType(), null, null, 7);
+        testExampleProperty(new ArrayDataType(), null, null, 16);
         testExampleProperty(new ArrayDataType(), "id", "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.ArrayDataType:1", 1);
         testExampleProperty(new ArrayDataType(), "id", "URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.data.ArrayDataType:0", 0);
         testExampleProperty(new ArrayDataType(), "name", "Illumina CSV (Genotyping)", 1);

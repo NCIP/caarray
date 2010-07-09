@@ -143,7 +143,7 @@ public class ArrayProviderOrganizationConverter implements CustomConverter {
     
     private void setupArrayProviderBasedOnOrganization(ArrayProvider arrayProvider, Organization organization) {
         if (null != organization.getId()) {
-            arrayProvider.setId(AbstractExternalService.makeExternalId(ArrayProvider.class.toString(),
+            arrayProvider.setId(AbstractExternalService.makeExternalId(ArrayProvider.class.getName(),
                     organization.getId().toString()));
         } else {
             arrayProvider.setId(null);
