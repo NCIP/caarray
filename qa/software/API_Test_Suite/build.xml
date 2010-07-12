@@ -28,9 +28,6 @@
     <property name="grid.src.dir" value="${package.dir}/grid" />
     <property name="java.src.dir" value="${package.dir}/java" />
     <property name="full.src.dir" value="${package.dir}/full" />
-    <property name="lib.dir" value="${basedir}/lib" />
-    <property name="grid.lib.dir" value="${lib.dir}/grid" />
-    <property name="java.lib.dir" value="${lib.dir}/java" />
     <property name="classes.dir" value="${basedir}/classes" />
     <property name="jar.dir" value="${basedir}/gui" />
     <property name="jar.file" value="${jar.dir}/client_api_test_suite.jar" />
@@ -55,6 +52,7 @@
     <path id="libs">
         <fileset dir="../../../software/caarray-client.jar/target/" includes="caarray-client-external-v1_0.jar"/>
         <fileset dir="../../../software/grid/v1_0/build/lib/" includes="*.jar"/>
+        <fileset dir="../../../software/grid/v1_0/lib/" includes="*.jar"/>
         <fileset dir="../../../software/lib/caarray-project/" >
             <include name="*.jar"/>
             <exclude name="xercesImpl-1.7.0.jar" />
