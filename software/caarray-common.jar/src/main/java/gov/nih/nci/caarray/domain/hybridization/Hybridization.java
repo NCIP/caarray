@@ -122,7 +122,6 @@ import javax.persistence.UniqueConstraint;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
@@ -430,7 +429,7 @@ public class Hybridization extends AbstractExperimentDesignNode implements Prote
      */
     @Override
     public String toString() {
-        return new ToStringBuilder(this).append(this.name).toString();
+        return super.toString() + ", name=" + getName();
     }
 
     /**

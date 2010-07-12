@@ -102,7 +102,6 @@ import javax.persistence.ManyToMany;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
 
@@ -165,14 +164,6 @@ public class Sample extends AbstractBioMaterial implements Protectable {
     @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
     private void setExtracts(final Set<Extract> extractsVal) {
         this.extracts = extractsVal;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String toString() {
-        return ToStringBuilder.reflectionToString(this);
     }
 
     /**

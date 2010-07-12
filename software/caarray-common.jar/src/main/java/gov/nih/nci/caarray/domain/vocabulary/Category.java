@@ -100,7 +100,6 @@ import javax.persistence.ManyToOne;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.validator.Length;
@@ -287,6 +286,6 @@ public class Category extends AbstractCaArrayEntity implements Cloneable {
      */
     @Override
     public String toString() {
-        return new ToStringBuilder(this).append("name", name).toString();
+        return super.toString() + ", name=" + getName();
     }
 }

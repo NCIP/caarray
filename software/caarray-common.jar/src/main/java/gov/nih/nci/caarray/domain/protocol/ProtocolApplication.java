@@ -96,7 +96,6 @@ import javax.persistence.OneToMany;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
@@ -212,13 +211,5 @@ public class ProtocolApplication extends AbstractCaArrayEntity {
      */
     public void setNotes(String notes) {
         this.notes = notes;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String toString() {
-        return ToStringBuilder.reflectionToString(this);
     }
 }

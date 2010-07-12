@@ -105,7 +105,6 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.ForeignKey;
@@ -224,16 +223,6 @@ public class LabeledExtract extends AbstractBioMaterial implements ProtectableDe
         Map<ExperimentOntologyCategory, Term> chars = super.getSpecialCharacteristics();
         chars.put(ExperimentOntologyCategory.LABEL_COMPOUND, this.label);
         return chars;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this)
-            .append("label", label)
-            .toString();
     }
 
     /**

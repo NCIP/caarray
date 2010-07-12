@@ -272,31 +272,4 @@ public class Feature extends AbstractDesignElement {
     private void setArrayDesignDetails(ArrayDesignDetails arrayDesignDetails) {
         this.arrayDesignDetails = arrayDesignDetails;
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String toString() {
-        StringBuffer stringBuffer = new StringBuffer();
-        stringBuffer.append("blockColumn = ");
-        stringBuffer.append(blockColumn);
-        stringBuffer.append(", blockRow = ");
-        stringBuffer.append(blockRow);
-        stringBuffer.append(", column = ");
-        stringBuffer.append(column);
-        stringBuffer.append(", row = ");
-        stringBuffer.append(row);
-        stringBuffer.append(", featureNumber = ");
-        stringBuffer.append(featureNumber != null ? featureNumber : "null");
-        stringBuffer.append(", xCoordinate = ");
-        stringBuffer.append(x_Coordinate != null ? x_Coordinate : "null");
-        stringBuffer.append(", yCoordinate = ");
-        stringBuffer.append(y_Coordinate != null ? y_Coordinate : "null");
-        stringBuffer.append(", coordinateUnits = \"");
-        stringBuffer.append(coordinateUnits);
-        stringBuffer.append('"');
-        return stringBuffer.toString();
-    }
-
 }

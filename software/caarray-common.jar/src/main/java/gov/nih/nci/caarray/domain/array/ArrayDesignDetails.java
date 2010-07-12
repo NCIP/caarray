@@ -179,12 +179,4 @@ public class ArrayDesignDetails extends AbstractCaArrayObject {
     private void setProbeGroups(Set<ProbeGroup> probeGroups) {
         this.probeGroups = probeGroups;
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String toString() {
-        return "id=" + getId();
-    }
 }

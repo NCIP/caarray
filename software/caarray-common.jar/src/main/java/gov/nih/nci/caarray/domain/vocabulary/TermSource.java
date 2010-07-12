@@ -1,22 +1,3 @@
-package gov.nih.nci.caarray.domain.vocabulary;
-
-import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
-import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
-import gov.nih.nci.caarray.validation.UniqueConstraint;
-import gov.nih.nci.caarray.validation.UniqueConstraintField;
-import gov.nih.nci.caarray.validation.UniqueConstraints;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Transient;
-
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.hibernate.annotations.BatchSize;
-import org.hibernate.validator.Length;
-import org.hibernate.validator.NotNull;
-
 /**
  * The software subject to this notice and license includes both human readable
  * source code form and machine readable, binary, object code form. The caArray
@@ -99,6 +80,23 @@ import org.hibernate.validator.NotNull;
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package gov.nih.nci.caarray.domain.vocabulary;
+
+import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
+import gov.nih.nci.caarray.validation.UniqueConstraint;
+import gov.nih.nci.caarray.validation.UniqueConstraintField;
+import gov.nih.nci.caarray.validation.UniqueConstraints;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Transient;
+
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.hibernate.annotations.BatchSize;
+import org.hibernate.validator.Length;
+import org.hibernate.validator.NotNull;
 
   /**
    */
@@ -217,11 +215,6 @@ public class TermSource extends AbstractCaArrayEntity {
      */
     @Override
     public String toString() {
-        return new ToStringBuilder(this)
-        .append("id", getId())
-        .append("name", this.name)
-        .append("url", this.url)
-        .append("version", this.version)
-        .toString();
+        return super.toString() + ", name=" + getName();
     }
 }

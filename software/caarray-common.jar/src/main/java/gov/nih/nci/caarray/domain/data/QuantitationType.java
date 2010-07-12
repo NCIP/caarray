@@ -165,7 +165,7 @@ public final class QuantitationType extends AbstractCaArrayObject {
      */
     @Override
     public String toString() {
-        return name;
+        return getName();
     }
 
     /**

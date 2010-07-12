@@ -123,7 +123,6 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Filter;
@@ -562,7 +561,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
      */
     @Override
     public String toString() {
-        return ToStringBuilder.reflectionToString(this);
+        return super.toString() + ", experiment=" + getExperiment();
     }
 
     /**

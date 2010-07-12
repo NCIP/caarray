@@ -104,7 +104,6 @@ import javax.persistence.Transient;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
@@ -288,14 +287,6 @@ public class ExperimentContact extends AbstractCaArrayEntity {
     @Transient
     public boolean isMainPointOfContact() {
         return CollectionUtils.exists(roles, new RolePredicate(MAIN_POC_ROLE));
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String toString() {
-        return ToStringBuilder.reflectionToString(this);
     }
 
     /**

@@ -106,7 +106,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.ForeignKey;
@@ -236,7 +235,7 @@ public abstract class AbstractArrayData extends AbstractCaArrayEntity {
      */
     @Override
     public String toString() {
-        return new ToStringBuilder(this).append(name).append(dataFile).toString();
+        return super.toString() + ", name=" + getName();
     }
     
     /**

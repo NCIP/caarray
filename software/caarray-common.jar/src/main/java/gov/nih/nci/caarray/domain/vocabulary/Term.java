@@ -103,7 +103,6 @@ import javax.persistence.Transient;
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.validator.Length;
@@ -294,20 +293,6 @@ public class Term extends AbstractCaArrayEntity implements Comparable<Term> {
     @Override
     public int hashCode() {
         return new HashCodeBuilder().append(this.getId()).append(this.getValue()).append(this.getSource()).toHashCode();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this)
-            .append("id", getId())
-            .append("source", this.source)
-            .append("value", this.value)
-            .append("accession", this.accession)
-            .append("description", this.description)
-            .toString();
     }
 
     /**

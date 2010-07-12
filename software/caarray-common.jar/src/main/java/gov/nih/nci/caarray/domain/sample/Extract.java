@@ -101,7 +101,6 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Transient;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.ForeignKey;
@@ -169,17 +168,6 @@ public class Extract extends AbstractBioMaterial implements ProtectableDescenden
     @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
     private void setLabeledExtracts(final Set<LabeledExtract> labeledExtractsVal) {
         this.labeledExtracts = labeledExtractsVal;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this)
-            .appendSuper(super.toString())
-            .append("labeledExtracts", labeledExtracts)
-            .toString();
     }
 
     /**

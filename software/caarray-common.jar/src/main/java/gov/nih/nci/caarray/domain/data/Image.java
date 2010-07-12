@@ -98,7 +98,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.ForeignKey;
@@ -184,7 +183,7 @@ public class Image extends AbstractCaArrayEntity {
      */
     @Override
     public String toString() {
-        return ToStringBuilder.reflectionToString(this);
+        return super.toString() + ", name=" + getName();
     }
 
     /**

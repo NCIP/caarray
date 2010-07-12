@@ -450,7 +450,7 @@ public class ArrayDesign extends AbstractCaArrayEntity {
      */
     @Override
     public String toString() {
-        return name;
+        return getName();
     }
 
     /**

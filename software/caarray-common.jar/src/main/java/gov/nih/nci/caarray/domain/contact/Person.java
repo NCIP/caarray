@@ -99,7 +99,6 @@ import javax.persistence.Transient;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
@@ -237,7 +236,7 @@ public class Person extends AbstractContact {
      */
     @Override
     public String toString() {
-        return ToStringBuilder.reflectionToString(this);
+        return super.toString() + ", name=" + getName();
     }
 
     /**

@@ -89,7 +89,6 @@ import javax.persistence.Entity;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Index;
 
 /**
@@ -145,7 +144,7 @@ public class Organization extends AbstractContact {
      */
     @Override
     public String toString() {
-        return ToStringBuilder.reflectionToString(this);
+        return super.toString() + ", name=" + getName();
     }
 
     /**

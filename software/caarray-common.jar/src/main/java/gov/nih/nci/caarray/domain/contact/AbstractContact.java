@@ -245,4 +245,12 @@ public abstract class AbstractContact extends AbstractCaArrayEntity {
                 .append(this.email).append(this.fax).toHashCode();
         // CHECKSTYLE:ON
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        return super.toString() + ", email=" + getEmail();
+    }
 }

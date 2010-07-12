@@ -1,21 +1,3 @@
-package gov.nih.nci.caarray.domain.protocol;
-
-import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
-import gov.nih.nci.caarray.domain.AbstractUnitableValue;
-import gov.nih.nci.caarray.domain.vocabulary.Term;
-
-import javax.persistence.Entity;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.hibernate.annotations.BatchSize;
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.ForeignKey;
-
 /**
  * The software subject to this notice and license includes both human readable
  * source code form and machine readable, binary, object code form. The caArray
@@ -98,6 +80,23 @@ import org.hibernate.annotations.ForeignKey;
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
+package gov.nih.nci.caarray.domain.protocol;
+
+import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
+import gov.nih.nci.caarray.domain.AbstractUnitableValue;
+import gov.nih.nci.caarray.domain.vocabulary.Term;
+
+import javax.persistence.Entity;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.ForeignKey;
 
 /**
  * A value for a parameter of a Protocol for a specific ProtocolApplication of that Protocol.
@@ -201,14 +200,6 @@ public abstract class AbstractParameterValue extends AbstractUnitableValue {
         this.unit = unitVal;
     }
     
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String toString() {
-        return ToStringBuilder.reflectionToString(this);
-    }
-
     /**
      * Checks if two ParameterValues are the same, ignoring ProtocolApplications.
      * Subclasses should override to define additional checks (possibly calling super.matches).

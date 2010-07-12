@@ -107,7 +107,6 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
@@ -263,12 +262,7 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
      */
     @Override
     public String toString() {
-        return new ToStringBuilder(this)
-            .appendSuper(super.toString())
-            .append("name", this.name)
-            .append("fileStatus", this.status)
-            .append("type", this.type)
-            .toString();
+        return super.toString() + ", name=" + getName();
     }
 
     /**

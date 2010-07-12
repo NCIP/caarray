@@ -88,7 +88,6 @@ import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
  * Represents a single assay type associated with an Experiment or Array Design.
@@ -136,7 +135,7 @@ public class AssayType extends AbstractCaArrayEntity implements Comparable<Assay
      */
     @Override
     public String toString() {
-        return ToStringBuilder.reflectionToString(this);
+        return super.toString() + ", name=" + getName();
     }
     
     /**

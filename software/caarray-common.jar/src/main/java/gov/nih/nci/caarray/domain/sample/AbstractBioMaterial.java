@@ -119,7 +119,6 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
@@ -556,9 +555,7 @@ public abstract class AbstractBioMaterial extends AbstractExperimentDesignNode {
      */
     @Override
     public String toString() {
-        return new ToStringBuilder(this)
-            .append("name", getName())
-            .toString();
+        return super.toString() + ", name=" + getName();
     }
 
 }

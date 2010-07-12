@@ -101,7 +101,6 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Transient;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Filter;
@@ -179,16 +178,6 @@ public class Source extends AbstractBioMaterial {
     @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
     private void setProviders(final Set<AbstractContact> providersVal) {
         this.providers = providersVal;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this)
-            .append("providers", providers)
-            .toString();
     }
 
     /**

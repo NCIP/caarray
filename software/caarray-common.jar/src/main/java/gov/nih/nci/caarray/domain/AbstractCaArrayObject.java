@@ -220,7 +220,7 @@ public abstract class AbstractCaArrayObject implements PersistentObject {
      */
     @Override
     public String toString() {
-        StringBuffer stringBuffer = new StringBuffer();
+        StringBuilder stringBuffer = new StringBuilder();
         stringBuffer.append('[');
         stringBuffer.append(getClass().getSimpleName());
         stringBuffer.append("] id=");

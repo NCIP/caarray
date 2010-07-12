@@ -90,7 +90,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.ForeignKey;
@@ -207,13 +206,5 @@ public class Array extends AbstractCaArrayEntity {
      */
     public void setArrayGroup(ArrayGroup arrayGroup) {
         this.arrayGroup = arrayGroup;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String toString() {
-        return ToStringBuilder.reflectionToString(this);
     }
 }
