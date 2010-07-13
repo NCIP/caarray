@@ -35,8 +35,7 @@ public class PropertyTestSuit extends ConfigurableTestSuite {
     private static final String ID = "Id";
     private static final String PROPERTY = "Property";
     private static final String VALUE = "Value";
-    private static final String[] COLUMN_HEADERS = new String[] { TEST_CASE,
-           CLASS, ID, PROPERTY, VALUE};
+    private static final String[] COLUMN_HEADERS = new String[] {TEST_CASE,CLASS,ID,PROPERTY,VALUE};
     private List<TestResult> results = new ArrayList<TestResult>();
 
     public PropertyTestSuit(ApiFacade apiFacade)

@@ -9,6 +9,8 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
@@ -253,7 +255,7 @@ public class GuiMain
         //textDisplay.setSize(500, 700);
         textScroll.setViewportView(textDisplay);
         System.setOut(new PrintStream(new JTextAreaOutputStream(textDisplay)));
-        System.setErr(new PrintStream(new JTextAreaOutputStream(textDisplay)));
+//        System.setErr(new PrintStream(new JTextAreaOutputStream(textDisplay)));
         centerPanel.add(textScroll);
         JScrollPane scroll = new JScrollPane(centerPanel);
         

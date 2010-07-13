@@ -113,6 +113,9 @@ public abstract class SearchByExampleTestSuite extends ConfigurableTestSuite
                     resultReport.addTestResult(testResult);
                     continue;
                 }
+                else{ //MT
+                	testResult.setType(search.getApi()); //MT
+                } //MT
 
                 
                 List<AbstractCaArrayObject> resultsList = new ArrayList<AbstractCaArrayObject>();
@@ -151,7 +154,8 @@ public abstract class SearchByExampleTestSuite extends ConfigurableTestSuite
                     String detail = "An exception occured executing " + getType() + " search-by-example: "
                     + t.getClass() + " " + t.getLocalizedMessage();
                     testResult.addDetail(detail);
-                    t.printStackTrace();
+                    testResult.setThrowable(t); //MT
+//                    t.printStackTrace();
                 }
                 long elapsedTime = System.currentTimeMillis() - startTime;
 
@@ -167,6 +171,7 @@ public abstract class SearchByExampleTestSuite extends ConfigurableTestSuite
                 setTestResultFailure(testResult, search,
                         "An exception occured executing an " + getType() + " search-by-example: "
                                 + t.getClass() + " " + t.getLocalizedMessage());
+                testResult.setThrowable(t); //MT
                 t.printStackTrace();
             }
 

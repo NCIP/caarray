@@ -14,10 +14,20 @@ public class TestResult
     private boolean passed = true;
     private String details;
     private long elapsedTime = 0;
+    private String confFile;
+    private String api;
+    private Throwable t;
     
-    public TestResult()
-    {}
 
+
+    public void setThrowable(Throwable t){
+    	this.t = t;
+    }
+    
+    public Throwable getThrowable(){
+    	return this.t;
+    }
+    
     public boolean isPassed() {
         return passed;
     }
@@ -53,5 +63,19 @@ public class TestResult
         this.testCase = testCase;
     }
     
+    public void setConfFile(String confFile){
+    	this.confFile = confFile;
+    }
     
+    public String getConfFile(){
+    	return this.confFile;
+    }
+    
+    public void setType(String type){
+    	this.api = type;
+    }
+    
+    public String getType(){
+    	return this.api;
+    }
 }

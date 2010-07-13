@@ -246,6 +246,12 @@ public class FileDownloadTestSuite extends ConfigurableTestSuite
         for (FileDownloadSearch search : fileSearches)
         {
             TestResult testResult = new TestResult();
+
+/////////////////////////////////////
+            testResult.setType(search.getApi());
+            testResult.setConfFile("FileDownload.csv");
+/////////////////////////////////////           
+            
             try
             {
                 if (search.getApi() == null)

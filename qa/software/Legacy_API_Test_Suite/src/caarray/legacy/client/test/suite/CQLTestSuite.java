@@ -311,6 +311,9 @@ public class CQLTestSuite extends ConfigurableTestSuite
                     resultReport.addTestResult(testResult);
                     continue;
                 }
+                else{ //MT
+                	testResult.setType(search.getApi()); //MT
+                } //MT
 
                 
                 java.lang.Object results = null;
@@ -324,6 +327,7 @@ public class CQLTestSuite extends ConfigurableTestSuite
                     String detail = "An exception occured executing a CQL search: "
                     + t.getClass() + " " + t.getLocalizedMessage();
                     testResult.addDetail(detail);
+                    testResult.setThrowable(t); //MT
                     t.printStackTrace();
                 }
                 long elapsedTime = System.currentTimeMillis() - startTime;
@@ -340,6 +344,7 @@ public class CQLTestSuite extends ConfigurableTestSuite
                 setTestResultFailure(testResult, search,
                         "An exception occured executing a CQL search: "
                                 + t.getClass() + " " + t.getLocalizedMessage());
+                testResult.setThrowable(t); //MT
                 t.printStackTrace();
             }
 

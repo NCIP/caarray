@@ -22,9 +22,10 @@ public class TestProperties
 
     public static final String SERVER_HOSTNAME_DEFAULT = "array-qa.nci.nih.gov";
     public static final String SERVER_JNDI_PORT_DEFAULT = "8080";
+
     public static final String GRID_SERVER_HOSTNAME_DEFAULT = "array-qa.nci.nih.gov";
-    public static final String GRID_SERVER_PORT_DEFAULT = "80";
-    
+    public static final String GRID_SERVER_PORT_DEFAULT = "59580";
+
     public static final String REPORT_DIR_KEY = "report.dir";
     public static final String REPORT_FILE_KEY = "report.file";
     public static final String DEFAULT_REPORT_DIR = "report";

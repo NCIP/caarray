@@ -8,6 +8,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.io.Writer;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -27,7 +28,8 @@ public class TestResultReport
     private List<String> errorMessages = new ArrayList<String>();
     
     
-    private static final String[] COLUMN_HEADERS = new String[]{"Test Case", "Test Status", "Elapsed Time","Details"};
+    private static final String[] COLUMN_HEADERS = new String[]{"Test Case", "Test Status", "Type", 
+    	"Conf File", "Elapsed Time", "Details"};
     private static final String DELIMITER = ",";
     
     public TestResultReport()
@@ -98,8 +100,12 @@ public class TestResultReport
         }
         for (TestResult result : results)
         {
-            String[] resultArray = new String[]{Float.toString(result.getTestCase()),
-                    (result.isPassed() ? "passed" : "failed"), Long.toString(result.getElapsedTime()) + " ms",result.getDetails()};
+        	if(!result.isPassed()){
+        		writeIndividualReport(result, df);
+        	}
+            String[] resultArray = new String[]{Float.toString(result.getTestCase()), 
+            		(result.isPassed() ? "passed" : "failed"), result.getType(), result.getConfFile(), 
+            		Long.toString(result.getElapsedTime()) + " ms", result.getDetails()};
             String results = TestUtils.delimit(resultArray, DELIMITER);
             writer.write(results);
             writer.write('\n');
@@ -108,5 +114,21 @@ public class TestResultReport
         writer.close();
         System.out.println("Test result report written to: " + reportFilename);
         
+    }
+    
+    private void writeIndividualReport(TestResult result, SimpleDateFormat df) throws IOException{
+    	File indDirectory = new File(TestProperties.getReportDir() + "/Individual_Reports" + 
+    			df.format(Calendar.getInstance().getTime()));
+    	if (!indDirectory.exists()){
+    		indDirectory.mkdirs();
+    	}
+    	File indFile= new File(indDirectory, result.getTestCase() + ".txt");
+    	Writer writer = new OutputStreamWriter(new FileOutputStream(indFile));
+    	writer.write(result.getDetails());
+    	if (!(result.getThrowable() == null)){
+    		writer.write('\n');
+    		result.getThrowable().printStackTrace(new PrintWriter(writer));
+    	}
+    	writer.close();
     }
 }
