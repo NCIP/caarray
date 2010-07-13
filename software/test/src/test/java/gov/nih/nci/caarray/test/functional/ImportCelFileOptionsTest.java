@@ -153,9 +153,9 @@ public class ImportCelFileOptionsTest extends AbstractSeleniumTest {
      */
     private void verifyImport(String bioMaterialName) {
         selenium.click("link=Annotations");
-        waitForTab();
+        waitForText("Experiment Design Types");
         selenium.click("link=Sources");
-        waitForTab();
+        waitForText(bioMaterialName);
         assertTrue("Unable to find " + bioMaterialName + " on the Source tab", selenium.isTextPresent(bioMaterialName));
     }
 
@@ -164,9 +164,9 @@ public class ImportCelFileOptionsTest extends AbstractSeleniumTest {
         String source = null;
      
         selenium.click("link=Annotations");
-        waitForTab();
+        waitForText("Quality Control Description");
         selenium.click("link=Sources");
-        waitForTab();
+        waitForText("Related Samples");
         boolean foundBioMaterialNameInSamplesColumn = false;
         for (int i = 1; i < 3; i++) {
             relatedSample = selenium.getTable("row." + i + ".3");
@@ -182,7 +182,7 @@ public class ImportCelFileOptionsTest extends AbstractSeleniumTest {
         
         // Check the files got linked together.  See if two files are available for download
         selenium.click("link=" + DEFAULT_SOURCE_NAME);
-        waitForTab();
+        waitForText("Uncompressed Size");
         assertTrue("failed to find file Test3-1-121502.CHP", selenium.isTextPresent("Test3-1-121502.CHP"));
         assertTrue("failed to find file Test3-1-121502.calvin.CEL", selenium.isTextPresent("Test3-1-121502.calvin.CEL"));
     }
@@ -204,7 +204,6 @@ public class ImportCelFileOptionsTest extends AbstractSeleniumTest {
         importData(forThisOption);
         // - click on the Imported data tab and re-click until data
         // - can be found
-        reClickForText(lookForThisText, "link=Imported Data", 40, 1000);
         // - validate the status
         checkFileStatus("Imported", THIRD_COLUMN, numberOfFiles);
     }

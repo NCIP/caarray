@@ -117,28 +117,27 @@ public class DeleteExperimentWithFilesTest extends AbstractSeleniumTest {
         this.selenium.click("link=Data");
         waitForTab();
 
-        upload(MageTabDataFiles.TCGA_BROAD_ZIP);
+        upload(MageTabDataFiles.TCGA_BROAD_ZIP, FIFTEEN_MINUTES);
         // - Check if they are uploaded
         checkFileStatus("Uploaded", THIRD_COLUMN, NUMBER_OF_FILES);
 
         // - Import files
         importData(MAGE_TAB);
-
-        // - click on the Imported data tab and re-click until data
-        // - can be found
-        reClickForText("29 items found", "link=Imported Data", 10, 10000);
-
+        // check to make sure they are imported
+        selenium.click("link=Data");
+        waitForText("Uncompressed Size");
+        selenium.click("link=Imported Data");
+        waitForText("Uncompressed Size");
+        checkFileStatus("Imported", THIRD_COLUMN, NUMBER_OF_FILES);
 
         // go back to experiment list screen
         selenium.click("link=My Experiment Workspace");
-        waitForText("Work Queue");
-        pause(2000);
+        waitForText("Public Access");
         int row = getExperimentRow(experimentId, ZERO_COLUMN);
-        // - Click on the image to enter the delete mode again
-        selenium.click("//tr[" + row + "]/td[8]/a/img");
-
-        // delete experiment
-        waitForText("Experiment has been deleted", FIFTEEN_MINUTES);
+        selenium.click("//tr[" + row + "]/td[10]/a/img");
+        assertTrue(selenium.getConfirmation().matches("^Are you sure you want to delete this experiment\\?$"));
+        waitForText("Experiment has been deleted.");
+        assertFalse(selenium.isTextPresent(experimentId));
 
         endTime = System.currentTimeMillis();
         String totalTime = df.format((endTime - startTime)/60000f);

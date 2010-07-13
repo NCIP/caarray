@@ -195,14 +195,14 @@ public class BrowseExperimentTest extends AbstractSeleniumTest {
         selenium.chooseCancelOnNextConfirmation();
         selenium.click("//tr[" + row + "]/td[10]/a/img");
         assertTrue(selenium.getConfirmation().matches("^Are you sure you want to delete this experiment\\?$"));
-        pause(500);
+        pause(1000);
         assertEquals(row, getExperimentRow(experimentId, ZERO_COLUMN));
         selenium.click("//tr[" + row + "]/td[10]/a/img");
         assertTrue(selenium.getConfirmation().matches("^Are you sure you want to delete this experiment\\?$"));
         waitForText("Experiment has been deleted.");
         assertFalse(selenium.isTextPresent(experimentId));
 
-        // testing the delete icon is not present when an experiment is in the 'Inprogress' state.
+        // testing the delete icon is not present when an experiment is in the 'locked' state.
         experimentId = createExperiment(title, TestProperties.getAffymetrixSpecificationDesignName());
         lockExperimentFromEdits();
         row = getExperimentRow(experimentId, ZERO_COLUMN);

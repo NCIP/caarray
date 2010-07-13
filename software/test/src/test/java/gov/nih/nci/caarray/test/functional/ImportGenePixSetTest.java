@@ -126,15 +126,16 @@ public class ImportGenePixSetTest extends AbstractSeleniumTest {
         upload(GenepixArrayDataFiles.EXPORTED_SDRF);
 
         // - Check if they are uploaded
+        selenium.click("link=Manage Data");
+        waitForText("Uncompressed Size");
         checkFileStatus("Uploaded", THIRD_COLUMN, NUMBER_OF_FILES);
 
         // - Import files
         importData(MAGE_TAB);
 
-        // - click on the Imported data tab and re-click until data can be found
-        reClickForText(GenepixArrayDataFiles.GPR_3_0_6_mod.getName(), "link=Imported Data", 4, 60000);
-
         // - validate the status
+        selenium.click("link=Imported Data");
+        waitForText("Uncompressed Size");
         checkFileStatus("Imported", THIRD_COLUMN, NUMBER_OF_FILES);
 
         // - check sample names
@@ -147,9 +148,9 @@ public class ImportGenePixSetTest extends AbstractSeleniumTest {
 
     private void checkSampleNames() {
         selenium.click("link=Annotations");
-        waitForTab();
+        waitForText("Experiment Design Types");
         selenium.click("link=Samples");
-        waitForText("Sample name");
+        waitForText("Add a new Sample");
         assertTrue(selenium.isTextPresent(SAMPLE_IN_SDRF));
         assertFalse(selenium.isTextPresent(SAMPLE_NOT_IN_SDRF));
     }

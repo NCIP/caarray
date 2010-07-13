@@ -103,7 +103,7 @@ public class ProtocolTest extends AbstractSeleniumTest {
         createExperiment(title, TestProperties.getAffymetrixSpecificationDesignName());
         // switch to annotations tab and enter in all the annotations
         selenium.click("link=Annotations");
-        waitForTab();
+        waitForText("Experiment Design Description");
         addExperimentDesign();
         addExperimentFactor();
         addSource();
@@ -123,35 +123,41 @@ public class ProtocolTest extends AbstractSeleniumTest {
     private void addHybridizations() {
         String name = "Hybridization";
         doClick(name);
-        selenium.keyPress("id=labeledExtractPickerAssociatedValueName", TAB_KEY);
+        waitForText("Selected Labeled Extracts");
+        selenium.type("projectForm_currentHybridization_name", "Test Hybridization Name");
+        selenium.type("projectForm_currentHybridization_description", "Test Hybridization Description");
+        selenium.click("//div[@id='labeledExtractPickerAutocompleteDiv']/ul/li[1]");
         doSave(name);
     }
 
     private void addLabeledExtract() {
         String name = "Labeled Extract";
         doClick(name);
-        selenium.keyPress("id=extractPickerAssociatedValueName", TAB_KEY);
-        selenium.keyPress("id=materialTypeSearchInput", TAB_KEY);
-        selenium.select("projectForm_protocolType", "label=acclimatization");
-        waitForDiv("progressMsg", 3000);
-        selenium.keyPress("id=protocolSearchInput", TAB_KEY);
+        waitForText("Selected Material Type");
+        selenium.type("projectForm_currentLabeledExtract_name", "Test Labelled Extract Name");
+        selenium.type("projectForm_currentLabeledExtract_description", "Test Labelled Extract Description");
+        selenium.type("projectForm_currentLabeledExtract_externalId", "Test Labelled Extract External ID");
+        selenium.click("//div[@id='extractPickerAutocompleteDiv']/ul/li[1]");
         doSave(name);
     }
 
     private void addExtract() {
         String name = "Extract";
         doClick(name);
-        selenium.keyPress("id=samplePickerAssociatedValueName", TAB_KEY);
-        selenium.keyPress("id=materialTypeSearchInput", TAB_KEY);
-        selenium.select("projectForm_protocolType", "label=acclimatization");
-        waitForDiv("progressMsg", 3000);
-        selenium.keyPress("id=protocolSearchInput", TAB_KEY);
+        waitForText("Selected Material Type");
+        selenium.type("projectForm_currentExtract_name", "Test Extract Name");
+        selenium.type("projectForm_currentExtract_description", "Test Extract Name");
+        selenium.click("//div[@id='samplePickerAutocompleteDiv']/ul/li[1]");
         doSave(name);
     }
 
     private void addSample() {
         String name = "Sample";
         doClick(name);
+        waitForText("External ID");
+        selenium.type("projectForm_currentSample_name", "Sample name for Sample One");
+        selenium.type("projectForm_currentSample_description", "Sample description for Sample One");
+        selenium.click("//div[@id='sourcePickerAutocompleteDiv']/ul/li[1]");
         selenium.type("projectForm_currentSample_externalId", "External id for Sample One");
         selenium.keyPress("id=sourcePickerAssociatedValueName", TAB_KEY);
         selenium.keyPress("id=materialTypeSearchInput", TAB_KEY);
@@ -164,6 +170,7 @@ public class ProtocolTest extends AbstractSeleniumTest {
     private void addExperimentDesign() {
         selenium.setCursorPosition("id=experimentDesignTypesSearchInput", "0");
         selenium.keyPress("id=experimentDesignTypesSearchInput", TAB_KEY);
+        selenium.click("//div[@id='experimentDesignTypesAutocompleteDiv']/ul/li[1]");
         selenium.type("projectForm_project_experiment_designDescription", "Experiment Design Description");
         selenium.keyPress("id=qualityControlTypesSearchInput", TAB_KEY);
         selenium.type("projectForm_project_experiment_qualityControlDescription", "Quality Control Description");
@@ -174,13 +181,11 @@ public class ProtocolTest extends AbstractSeleniumTest {
 
     private void addExperimentFactor() {
         String name = "Experimental Factor";
-        // doClick(name);
         selenium.click("link=Experimental Factors");
-        waitForTab();
+        waitForText("Add a new Experimental Factor");
         assertTrue("Experiment Factor button is missing", selenium.isTextPresent("Add a new Experimental Factor"));
         selenium.click("link=Add a new Experimental Factor");
-        waitForTab();
-        selenium.setCursorPosition("id=projectForm_currentFactor_name", "0");
+        waitForText("Factor Name");
         selenium.type("projectForm_currentFactor_name", "Factor One");
         selenium.type("projectForm_currentFactor_description", "Description for Factor One");
         selenium.select("projectForm_currentFactor_type", "label=age");
@@ -188,25 +193,25 @@ public class ProtocolTest extends AbstractSeleniumTest {
     }
 
     private void addSource() {
-        String name = "Source";
-        doClick(name);
-        selenium.keyPress("id=tissueSiteSearchInput", TAB_KEY);
-        selenium.keyPress("id=materialTypeSearchInput", TAB_KEY);
-        selenium.keyPress("id=cellTypeSearchInput", TAB_KEY);
-        selenium.keyPress("id=diseaseStateSearchInput", TAB_KEY);
+        String name = "Test Source";
+        selenium.click("link=Annotations");
+        waitForText("Experiment Design Description");
+        selenium.click("link=Sources");
+        waitForText("Add a new Source");
+        selenium.click("link=Add a new Source");
+        waitForText("Brain");
+        selenium.click("//div[@id='tissueSiteAutocompleteDiv']/ul/li[1]");
+        selenium.type("projectForm_currentSource_name", name);
         doSave(name);
+        waitForText("Source created successfully");
     }
 
     private void doClick(String name) {
         selenium.click("link=" + name + "s");
-        waitForTab();
+        waitForText("Add a new " + name);
         assertTrue("Add " + name + " button is missing", selenium.isTextPresent("Add a new " + name));
         selenium.click("link=Add a new " + name);
         waitForTab();
-        selenium.type("projectForm_current" + StringUtils.deleteWhitespace(name) + "_name", name + " One");
-        selenium.type("projectForm_current" + StringUtils.deleteWhitespace(name) + "_description", "Description for "
-                + name);
-
     }
 
     private void doSave(String name) {
@@ -219,7 +224,7 @@ public class ProtocolTest extends AbstractSeleniumTest {
 
     private void createProtocol(String protocolName) throws InterruptedException {
         selenium.click("link=Manage Protocols");
-        waitForTab();
+        waitForText("Add Protocol");
         assertTrue("Protocol button is missing", selenium.isTextPresent("Add Protocol"));
 
         selenium.click("link=Add Protocol");
@@ -228,6 +233,7 @@ public class ProtocolTest extends AbstractSeleniumTest {
         selenium.type("protocolForm_protocol_name", protocolName);
         selenium.type("protocolForm_protocol_description", "Test Protocol");
         selenium.keyPress("id=protocolTypeSearchInput", TAB_KEY);
+        selenium.click("//div[@id='protocolTypeAutocompleteDiv']/ul/li[54]");
         selenium.type("protocolForm_protocol_contact", "Science Boy");
         selenium.type("protocolForm_protocol_software", "Software Used");
         selenium.type("protocolForm_protocol_hardware", "hardware used");

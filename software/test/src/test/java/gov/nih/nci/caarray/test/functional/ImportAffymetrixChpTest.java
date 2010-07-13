@@ -130,10 +130,8 @@ public class ImportAffymetrixChpTest extends AbstractSeleniumTest {
         // - Import files
         importData(AUTOCREATE_ANNOTATION_SET);
 
-        reClickForText("One item found", "link=Imported Data", 4, 10000);
-
         // - validate the status
-        checkFileStatus("Imported", SECOND_COLUMN, NUMBER_OF_FILES);
+        checkFileStatus("Imported", THIRD_COLUMN, NUMBER_OF_FILES);
 
         // make experiment public
         lockExperimentFromEdits();

@@ -2460,7 +2460,7 @@
     </target>
 
     <!-- Functional (Selenium) and API Test Targets -->
-    <target name="-test:functional:setup" depends="deploy:functional:caarray.ear, deploy:caarray-grid-svc-jboss, test:api:init-data, deploy:start-jboss-servers, test:wait-for-jboss-servers"/>
+    <target name="-test:functional:setup" depends="deploy:functional:caarray.ear, deploy:caarray-grid-svc-jboss, deploy:start-jboss-servers, test:wait-for-jboss-servers"/>
     
     <target
     	name="test:instrument"

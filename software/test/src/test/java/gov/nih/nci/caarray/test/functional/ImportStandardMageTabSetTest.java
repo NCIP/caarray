@@ -118,16 +118,17 @@ public class ImportStandardMageTabSetTest extends AbstractSeleniumTest {
         waitForTab();
 
         // Upload the following zip file:
-        upload(MageTabDataFiles.TCGA_BROAD_ZIP);
+        upload(MageTabDataFiles.TCGA_BROAD_ZIP, FIFTEEN_MINUTES);
         // - Check if they are uploaded
         checkFileStatus("Uploaded", THIRD_COLUMN, NUMBER_OF_FILES);
 
         importData(MAGE_TAB);
-        // - click on the Imported data tab and re-click until data
-        // - can be found
-        reClickForText("29 items found", "link=Imported Data", 10, 30000);
 
         // validate the status
+        selenium.click("link=Data");
+        waitForText("Uncompressed Size");
+        selenium.click("link=Imported Data");
+        waitForText("Uncompressed Size");
         checkFileStatus("Imported", THIRD_COLUMN, NUMBER_OF_FILES);
         // make experiment public
         lockExperimentFromEdits();

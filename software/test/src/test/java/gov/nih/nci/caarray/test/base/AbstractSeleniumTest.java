@@ -196,7 +196,7 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
         upload(file, RECORD_TIMEOUT_SECONDS);
     }
 
-    protected void upload(File file, long timeoutSeconds) throws IOException {
+    protected void upload(File file, int timeoutSeconds) throws IOException {
         waitForText("Upload New File(s)");
         selenium.click("link=Upload New File(s)");
         waitForPopup("uploadWindow", timeoutSeconds);
@@ -205,8 +205,7 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
         selenium.type("upload", filePath);
         selenium.click(UPLOAD_BUTTON);
         waitForDiv("uploadProgressFileList", timeoutSeconds);
-        waitForText(" uploaded.");
-        pause(3000);
+        waitForText("Close Window and go to Experiment Data", timeoutSeconds);
         selenium.getAlert();
 
         selenium.click("link=Close Window");
@@ -436,22 +435,22 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
      * @param Organism - array design organism
      * @throws Exception
      */
-    protected void importArrayDesign(File arrayDesignFile,String arrayDesignName,  String provider, String Organism)
+    protected void importArrayDesign(File arrayDesignFile, String arrayDesignName,  String provider, String Organism)
             throws Exception {
-        selenium.click("link=Manage Array Designs");
-        waitForText("Array Design Name");
-        if (!doesArrayDesignExists(arrayDesignName)) {
-            addArrayDesign(arrayDesignFile, provider, Organism);
-            // the file is uploaded. this may take a while. after it is uploaded
-            // we must click on the OKAY box to close the popup.
-            selenium.selectWindow(null);
-            selenium.waitForPageToLoad("30000");
-            // get the array design row so we do not find the wrong Imported text
-            int row = getExperimentRow(arrayDesignName, ZERO_COLUMN);
-            // wait for array design to be imported
-            waitForArrayDesignImport(FORTY_MINUTES, row);
-        }
-    }
+selenium.click("link=Manage Array Designs");
+waitForText("Array Design Name");
+if (!doesArrayDesignExists(arrayDesignName)) {
+    addArrayDesign(arrayDesignFile, provider, Organism);
+    // the file is uploaded. this may take a while. after it is uploaded
+    // we must click on the OKAY box to close the popup.
+    selenium.selectWindow(null);
+    selenium.waitForPageToLoad("9000");
+    // get the array design row so we do not find the wrong Imported text
+    int row = getExperimentRow(arrayDesignName, ZERO_COLUMN);
+    // wait for array design to be imported
+    waitForArrayDesignImport(FORTY_MINUTES, row);
+}
+}
 
     private void addArrayDesign(File arrayDesign, String arrayDesignProvider, String arrayDesignOrganism) {
         selenium.click("link=Import a New Array Design");
@@ -682,15 +681,6 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
             }
             rowCount++;
             assertEquals(status, selenium.getTable("row." + row + "." + column));
-            if (status.equalsIgnoreCase("Imported")) {
-                if (row % PAGE_SIZE == 0) {
-                    // Moving to next page
-                    selenium.click("link=Next");
-                    waitForDiv("loadingText");
-                    pause(2000);
-                    row = 0;
-                }
-            }
         }
     }
     // defaults a name for named annotations
@@ -751,7 +741,7 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
 
         waitForAction();
         // - hit the refresh button until files are imported
-        waitForImport(30);
+        waitForImport(45);
     }
     /**
      *
@@ -764,12 +754,12 @@ public abstract class AbstractSeleniumTest extends SeleneseTestCase {
         waitForText("Choose a name for the group.");
         selenium.type("newGroupForm_groupName", groupName);
         selenium.click("link=Save");
-        selenium.waitForPageToLoad("30000");
+        waitForText("Collaboration group with name " + groupName + " has been successfully saved.");
         // - find the added group and click the edit icon
         int row = getExperimentRow(groupName, ZERO_COLUMN);
         // edit icon to add members
         selenium.click("//tr[" + row + "]/td[3]/a/img");
-        waitForText("Remove");
+        waitForText("Add a New Group Member");
         selenium.click("link=Add a New Group Member");
         waitForText("Search for users by choosing filter criteria");
         // add all the users

@@ -100,7 +100,7 @@ import org.junit.Test;
  */
 public class Import64CelZip extends AbstractSeleniumTest {
 
-    private static final int FIFTY_MINUTES_IN_MILLISECOND = 3000000;
+    private static final int FIFTY_MINUTES_IN_SECONDS = 900;
     private List<File> zipFiles = new ArrayList<File>();
     public static final String DIRECTORY =
             "L:\\NCICB\\caArray\\QA\\testdata_central_caArray2\\Affymetrix\\HG-U133_Plus_2\\CEL\\Public_Rembrandt_from_caArray1.6\\exponential_CEL_ZIPs\\";
@@ -132,7 +132,7 @@ public class Import64CelZip extends AbstractSeleniumTest {
             System.out.println("Upload of " +celFile.getName()+ " started at " + DateFormat.getTimeInstance().format(new Date()));
 
             // - Upload the zip file
-            upload(celFile, FIFTY_MINUTES_IN_MILLISECOND);
+            upload(celFile, FIFTY_MINUTES_IN_SECONDS);
             checkFileStatus("Uploaded", THIRD_COLUMN, numberOfFiles);
             waitForAction();
             assertTrue(selenium.isTextPresent("file(s) uploaded"));

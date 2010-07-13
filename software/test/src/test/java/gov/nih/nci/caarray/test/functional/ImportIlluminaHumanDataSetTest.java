@@ -141,10 +141,6 @@ public class ImportIlluminaHumanDataSetTest extends AbstractSeleniumTest {
         // - Import files
         importData(AUTOCREATE_ANNOTATION_SET);
 
-        // - click on the Imported data tab and re-click until data
-        // - can be found
-        reClickForText("One item found", "link=Imported Data", 4, 60000);
-
         // - validate the status
         checkFileStatus("Imported", THIRD_COLUMN, NUMBER_OF_FILES);
 

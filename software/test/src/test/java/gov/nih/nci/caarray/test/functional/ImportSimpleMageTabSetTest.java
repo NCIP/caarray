@@ -130,8 +130,11 @@ public class ImportSimpleMageTabSetTest extends AbstractSeleniumTest {
         // - Import files
         importData(MAGE_TAB);
 
-        reClickForText("15 items found", "link=Imported Data", 10, 30000);
         // - validate the status
+        selenium.click("link=Data");
+        waitForText("Uncompressed Size");
+        selenium.click("link=Imported Data");
+        waitForText("Uncompressed Size");
         checkFileStatus("Imported", THIRD_COLUMN, NUMBER_OF_FILES);
 
         endTime = System.currentTimeMillis();

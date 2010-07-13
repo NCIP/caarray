@@ -120,7 +120,7 @@ public class PermissionsTest extends AbstractSeleniumTest {
         
         row = getExperimentRow(experimentId, ZERO_COLUMN);
         // click the edit icon
-        selenium.click("//table[@id='row']/tbody/tr[" + row + "]/td[7]/a/img");
+        selenium.click("//table[@id='row']/tbody/tr[" + row + "]/td[9]/a/img");
         waitForText("Overall Experiment Characteristics");
         lockExperimentFromEdits();
         
@@ -129,22 +129,22 @@ public class PermissionsTest extends AbstractSeleniumTest {
         
         // set the new group on the experiment
         selenium.click("link=My Experiment Workspace");
-        waitForText("Work Queue*");
+        waitForText("Assay Type");
         row = getExperimentRow(experimentId, ZERO_COLUMN);
         // click the permission icon
-        pause(1000);
-        selenium.click("//table[@id='row']/tbody/tr["+row+"]/td[6]/a/img");
-        waitForText("Experiment Permissions");
+        selenium.click("//table[@id='row']/tbody/tr["+row+"]/td[7]/a/img");
+        waitForText("Who May Access this Experiment");
         // select the collaboration group for the experiment
         selenium.select("collaborators_form_collaboratorGroup_id", "label=" + groupName);
-        pause(1000);
         
         // set the permission
-        selenium.click(EDIT_ACCESS_CONTROL_BUTTON); 
-        pause(1000);
+        selenium.click(EDIT_ACCESS_CONTROL_BUTTON);
+        waitForText("Read/Write Selective");
+        
         // Experiment Access ddw
         selenium.select("profileForm_accessProfile_securityLevel", "label=Read"); 
-        selenium.click(SAVE_BUTTON); 
+        selenium.click(SAVE_BUTTON);
+        waitForText("The permissions have been updated");
     
         logout();
         loginAs("caarrayuser");
@@ -156,7 +156,7 @@ public class PermissionsTest extends AbstractSeleniumTest {
         assertTrue("Experiment " + experimentId +" was found",row != -1);
         
         // the permission is read only so ensure the edit icon is not avaliable
-        assertFalse(selenium.isElementPresent("//table[@id='row']/tbody/tr[" + row + "]/td[7]/a/img"));
+        assertFalse(selenium.isElementPresent("//table[@id='row']/tbody/tr[" + row + "]/td[9]/a/img"));
         logout();
     }
 

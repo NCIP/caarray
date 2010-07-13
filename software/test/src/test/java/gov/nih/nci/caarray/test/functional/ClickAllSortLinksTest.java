@@ -150,7 +150,7 @@ public class ClickAllSortLinksTest extends AbstractSeleniumTest {
 
     private void clickManageDataLinks() {
         selenium.click("link=Manage Data");
-        waitForTab();
+        waitForText("Upload New File(s)");
         assertTrue("Upload file button is missing", selenium.isTextPresent("Upload New File(s)"));
         selenium.click("link=File Name");
         waitForTab();
@@ -162,7 +162,7 @@ public class ClickAllSortLinksTest extends AbstractSeleniumTest {
 
     private void clickImportedDataLinks() {
         selenium.click("link=Imported Data");
-        waitForTab();
+        waitForText("Status");
         assertTrue("Import Data tab -  Status is missing", selenium.isTextPresent("Status"));
         selenium.click("link=File Name");
         waitForTab();
@@ -174,7 +174,7 @@ public class ClickAllSortLinksTest extends AbstractSeleniumTest {
 
     private void clickSupplementalFilesLinks() {
         selenium.click("link=Supplemental Files");
-        waitForTab();
+        waitForText("Status");
         assertTrue("Supplemental Data tab -  Status is missing", selenium.isTextPresent("Status"));
         selenium.click("link=File Name");
         waitForTab();
@@ -186,23 +186,15 @@ public class ClickAllSortLinksTest extends AbstractSeleniumTest {
 
     private void clickDownloadDataLinks() {
         selenium.click("link=Download Data");
-        waitForTab();
-        assertTrue("Download -  Filter By is missing", selenium.isTextPresent("Filter By"));
-        selenium.click("link=File Name");
-        waitForTab();
-        selenium.click("link=File Type");
-        waitForTab();
-        selenium.click("link=Ext.");
-        waitForTab();
-        selenium.click("link=Compressed Size");
-        waitForTab();
-        selenium.click("link=Uncompressed Size");
-        waitForTab();
+        waitForText("Download Experiment File Packages");
+        assertTrue("Download -  Download Experiment File Packages is missing", selenium.isTextPresent("Download Experiment File Packages"));
+        assertTrue("Download -  Download Selected Experiment Files is missing", selenium.isTextPresent("Download Selected Experiment Files"));
+        assertTrue("Download -  Export Experiment Annotation Packages is missing", selenium.isTextPresent("Export Experiment Annotation Packages"));
     }
 
     private void clickPublicationsLinks() {
         selenium.click("link=Publications");
-        waitForTab();
+        waitForText("Add a new Publication");
         assertTrue("Publication button is missing", selenium.isTextPresent("Add a new Publication"));
         selenium.click("link=Title");
         waitForTab();
@@ -217,6 +209,7 @@ public class ClickAllSortLinksTest extends AbstractSeleniumTest {
     // Start annotations tab
     private void annotationLinks() throws InterruptedException {
         selenium.click("link=Annotations");
+        waitForText("Experimental Design");
         waitForTab();
         clickExperimentalFactorsLinks();
         clickSourcesLinks();
@@ -228,7 +221,7 @@ public class ClickAllSortLinksTest extends AbstractSeleniumTest {
 
     private void clickExperimentalFactorsLinks() {
         selenium.click("link=Experimental Factors");
-        waitForText("Factor Name");
+        waitForText("Add a new Experimental Factor");
         assertTrue("Experimental Factor is missing", selenium.isTextPresent("Add a new Experimental Factor"));
         selenium.click("link=Factor Name");
         waitForTab();
@@ -238,9 +231,9 @@ public class ClickAllSortLinksTest extends AbstractSeleniumTest {
 
     private void clickSourcesLinks() throws InterruptedException {
         selenium.click("link=Sources");
-        waitForText("Source name");
+        waitForText("Add a new Source");
         assertTrue("Source button is missing", selenium.isTextPresent("Add a new Source"));
-        selenium.click("link=Source name");
+        selenium.click("link=Source Name");
         waitForTab();
         selenium.click("link=Description");
         waitForTab();
@@ -248,9 +241,9 @@ public class ClickAllSortLinksTest extends AbstractSeleniumTest {
 
     private void clickSamplesLinks() throws InterruptedException {
         selenium.click("link=Samples");
-        waitForText("Sample name");
+        waitForText("Add a new Sample");
         assertTrue("Sample button is missing", selenium.isTextPresent("Add a new Sample"));
-        selenium.click("link=Sample name");
+        selenium.click("link=Sample Name");
         waitForTab();
         selenium.click("link=Description");
         waitForTab();
@@ -258,9 +251,9 @@ public class ClickAllSortLinksTest extends AbstractSeleniumTest {
 
     private void clickExtractsLinks() {
         selenium.click("link=Extracts");
-        waitForText("Extract name");
+        waitForText("Add a new Extract");
         assertTrue("Extract button is missing", selenium.isTextPresent("Add a new Extract"));
-        selenium.click("link=Extract name");
+        selenium.click("link=Extract Name");
         waitForTab();
         selenium.click("link=Description");
         waitForTab();
@@ -268,9 +261,9 @@ public class ClickAllSortLinksTest extends AbstractSeleniumTest {
 
     private void clickLabeledExtractsLinks() {
         selenium.click("link=Labeled Extracts");
-        waitForText("Labeled Extract name");
+        waitForText("Add a new Labeled Extract");
         assertTrue("Labeled Extract button is missing", selenium.isTextPresent("Add a new Labeled Extract"));
-        selenium.click("link=Labeled Extract name");
+        selenium.click("link=Labeled Extract Name");
         waitForTab();
         selenium.click("link=Description");
         waitForTab();
@@ -278,9 +271,9 @@ public class ClickAllSortLinksTest extends AbstractSeleniumTest {
 
     private void clickHybridizationsLinks() {
         selenium.click("link=Hybridizations");
-        waitForText("Hybridization name");
+        waitForText("Add a new Hybridization");
         assertTrue("Add hyb button is not present", selenium.isTextPresent("Add a new Hybridization"));
-        selenium.click("link=Hybridization name");
+        selenium.click("link=Hybridization Name");
         waitForTab();
     }
 
@@ -313,9 +306,9 @@ public class ClickAllSortLinksTest extends AbstractSeleniumTest {
 
     private void clickExperimentSortLinks() {
         selenium.click("link=Experiment ID");
-        waitForTab();
+        waitForText("Experiment ID");
         selenium.click("link=Experiment Title");
-        waitForTab();
+        waitForText("Experiment Title");
    }
 
     private void clickManageCollaborationGroupLinks() {
@@ -369,11 +362,11 @@ public class ClickAllSortLinksTest extends AbstractSeleniumTest {
 
     private void clickCommonHeaders() {
         selenium.click("link=Value");
-        waitForTab();
+        waitForText("Value");
         selenium.click("link=Description");
-        waitForTab();
+        waitForText("Description");
         selenium.click("link=Source");
-        waitForTab();
+        waitForText("Source");
     }
 
     private void clickMangeProtocolLinks() {
@@ -385,6 +378,7 @@ public class ClickAllSortLinksTest extends AbstractSeleniumTest {
 
     private void clickProtocolLinks() {
         waitForText("Description");
+        waitForText("Add Protocol");
         assertTrue(selenium.isTextPresent("Add Protocol"));
         selenium.click("link=Name");
         waitForTab();
@@ -403,7 +397,7 @@ public class ClickAllSortLinksTest extends AbstractSeleniumTest {
     private void clickProtocolTypes() {
         System.out.println("Clicking on Protocol Types");
         selenium.click("link=Protocol Types");
-        waitForText("Value");
+        waitForText("Add Protocol Types");
         assertTrue(selenium.isTextPresent("Add Protocol Types"));
         clickCommonHeaders();
     }
