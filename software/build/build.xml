@@ -2695,12 +2695,12 @@
     </target>
     
     <target name="test:api-wrapper">
-    	<antcall target="test:wait-for-jboss-servers"/>
-    	<antcall target="deploy:stop-jboss-servers"/>
-    	<antcall target="test:api:init-data"/>
-    	<antcall target="test:api"/>
-    	<antcall target="deploy:stop-jboss-servers"/>
-    	<antcall target="test:selenium:stop-server"/>
+    	<antcall target="test:wait-for-jboss-servers" inheritAll="true" inheritRefs="true"/>
+    	<antcall target="deploy:stop-jboss-servers" inheritAll="true" inheritRefs="true"/>
+    	<antcall target="test:api:init-data" inheritAll="true" inheritRefs="true"/>
+    	<antcall target="test:api" inheritAll="true" inheritRefs="true"/>
+    	<antcall target="deploy:stop-jboss-servers" inheritAll="true" inheritRefs="true"/>
+    	<antcall target="test:selenium:stop-server" inheritAll="true" inheritRefs="true"/>
     </target>
     
     <target name="deploy:cleaup-testing-installation" depends="deploy:stop-jboss-servers">
