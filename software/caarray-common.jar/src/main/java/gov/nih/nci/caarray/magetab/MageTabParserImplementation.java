@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.magetab;
 
 import gov.nih.nci.caarray.magetab.validator.ValidatorSet;
+import gov.nih.nci.caarray.magetab.validator.caarray.SdrfDuplicateNodeValidator;
 import gov.nih.nci.caarray.magetab.validator.caarray.SdrfMinimumColumnsValidator;
 import gov.nih.nci.caarray.magetab.validator.v1_1.SdrfNodeColumnValidator;
 import gov.nih.nci.caarray.magetab.validator.v1_1.SdrfTermSourceColumnValidator;
@@ -105,6 +106,7 @@ public class MageTabParserImplementation implements MageTabParser {
         CAARRAY_VALIDATION_SET.getSdrfColumnValidators().add(new SdrfNodeColumnValidator());
         CAARRAY_VALIDATION_SET.getSdrfColumnValidators().add(new SdrfTermSourceColumnValidator());
         CAARRAY_VALIDATION_SET.getSdrfColumnValidators().add(new SdrfMinimumColumnsValidator());
+        CAARRAY_VALIDATION_SET.getSdrfColumnValidators().add(new SdrfDuplicateNodeValidator());
     }
 
     /**
