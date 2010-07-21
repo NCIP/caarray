@@ -117,6 +117,7 @@ import org.apache.log4j.Logger;
 import org.jboss.annotation.ejb.TransactionTimeout;
 
 import com.google.inject.Inject;
+import org.apache.commons.lang.UnhandledException;
 
 /**
  * EJB implementation of the entry point to the FileManagement subsystem. Delegates functionality
@@ -248,7 +249,7 @@ public class FileManagementServiceBean implements FileManagementService {
         ArrayDesignService ads = ServiceLocatorFactory.getArrayDesignService();
         arrayDesign.setDesignFileSet(designFiles);
         arrayDesign = ads.saveArrayDesign(arrayDesign);
-        ads.importDesign(arrayDesign);
+            ads.importDesign(arrayDesign);
 
         if (FileStatus.VALIDATION_ERRORS.equals(designFiles.getStatus())) {
             if (newArrayDesign) {
@@ -309,6 +310,9 @@ public class FileManagementServiceBean implements FileManagementService {
         } catch (IllegalAccessException e) {
             arrayDesign.getDesignFileSet().updateStatus(FileStatus.IMPORT_FAILED);
             throw e;
+        } catch (Exception e) {
+            arrayDesign.getDesignFileSet().updateStatus(FileStatus.IMPORT_FAILED);
+            throw new UnhandledException(e);
         }
         
         importArrayDesignDetails(arrayDesign);

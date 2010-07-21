@@ -127,6 +127,7 @@ import com.opensymphony.xwork2.validator.annotations.FieldExpressionValidator;
 import com.opensymphony.xwork2.validator.annotations.RequiredFieldValidator;
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 import com.opensymphony.xwork2.validator.annotations.Validations;
+import org.apache.commons.lang.UnhandledException;
 
 /**
  * @author Winston Cheng
@@ -680,16 +681,12 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
             ActionHelper.saveMessage(getText("arrayDesign.cannotReimport"));            
         } catch (InvalidDataFileException e) {
             ActionHelper.saveMessage(getText("arrayDesign.invalid"));
-            ArrayDesign ad = ServiceLocatorFactory.getArrayDesignService().getArrayDesign(getArrayDesign().getId());
-            if (ad != null) {
-                Set<CaArrayFile> files = ad.getDesignFiles();
-                for (CaArrayFile f : files) {
-                    for (ValidationMessage vm : f.getValidationResult().getMessages()) {
-                        ActionHelper.saveMessage(vm.getMessage());
-                    }
-                }
+            for (ValidationMessage vm : e.getFileValidationResult().getMessages()) {
+                ActionHelper.saveMessage(vm.getMessage());
             }
-            
+        } catch (UnhandledException e) {
+            ActionHelper.saveMessage(getText("arrayDesign.error.importingFile"));
+            ActionHelper.saveMessage(e.getCause().getMessage());
         }
 
         return SUCCESS;

@@ -163,12 +163,13 @@ final class ArrayDesignPlatformFacade {
                 handler.validate(result);
             } catch (PlatformFileReadException e) {
                 CaArrayFile firstDesignFile = designFiles.iterator().next();
-                if (firstDesignFile.getValidationResult() == null) {
-                    FileValidationResult fileResult = new FileValidationResult(new File(firstDesignFile.getName()));
+                FileValidationResult fileResult = firstDesignFile.getValidationResult();
+                if (fileResult == null) {
+                    fileResult = new FileValidationResult(new File(firstDesignFile.getName()));
                     firstDesignFile.setValidationResult(fileResult);
-                    result.addFile(fileResult.getFile(), fileResult);
                 }
-                firstDesignFile.getValidationResult().addMessage(Type.ERROR, "Unable to read file");
+                fileResult.addMessage(Type.ERROR, "Unable to read file");
+                result.addFile(fileResult.getFile(), fileResult);
             } finally {
                 if (handler != null) {
                     handler.closeFiles();
