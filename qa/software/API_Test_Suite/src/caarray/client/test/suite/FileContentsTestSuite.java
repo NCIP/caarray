@@ -241,6 +241,7 @@ public class FileContentsTestSuite extends SearchByCriteriaTestSuite
     protected Object executeSearch(CriteriaSearch search, TestResult testResult)
             throws Exception
     {
+        System.out.println("test:"+search.getTestCase());
         FileContentsSearch fileSearch = (FileContentsSearch)search;
         try
         {

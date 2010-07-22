@@ -147,7 +147,7 @@ public abstract class SearchByCriteriaTestSuite extends ConfigurableTestSuite
                 testResult.setElapsedTime(elapsedTime);
                 if (search.getTestCase() != null)
                     testResult.setTestCase(search.getTestCase());
-
+                System.out.println("evaluating " + search.getTestCase() + " ...");
                evaluateResults(resultsList, search, testResult);
             }
             catch (Throwable t)
@@ -221,6 +221,7 @@ public abstract class SearchByCriteriaTestSuite extends ConfigurableTestSuite
         if (search.getTestCase() != null)
             testResult.setTestCase(search.getTestCase());
         testResult.addDetail(errorMessage);
+        System.out.println("test failed with " + errorMessage);
     }
     
     /**
