@@ -201,6 +201,11 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
     <target name="clean">
         <delete dir="${temp.dir}"/>
         <delete dir="${dist.dir}"/>
+        <ant antfile="${software.dir}/build/build.xml" inheritall="false" target="clean" dir="${software.dir}">
+            <property name="no.ivy" value="true"/>
+            <property name="clean.bootstrap.libs.and.ivy.cache" value="true"/>
+            <property name="local.repo.dir" value="${local.repo.dir}"/>
+        </ant>
     </target>
 
     <target name="init" >

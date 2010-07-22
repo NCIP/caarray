@@ -1469,6 +1469,7 @@
     <!-- ******************************************************************* -->
 
     <target name="clean" depends="clean:lib,
+    	clean:ivy-cache,
         clean:caarray-client.jar,
         clean:caarray-common.jar,
         clean:caarray-ejb.jar,
@@ -1484,7 +1485,11 @@
     	clean-cn2magetab" description="Deletes all of the target directories" />
 
     <target name="clean:lib">
-        
+        <delete dir="${lib.dir}"/>
+    </target>
+    
+    <target name="clean:ivy-cache">
+    	<delete dir="${basedir}/master_build/.ivy2-caarray-cache"/>
     </target>
 
     <target name="clean:caarray-client.jar">
