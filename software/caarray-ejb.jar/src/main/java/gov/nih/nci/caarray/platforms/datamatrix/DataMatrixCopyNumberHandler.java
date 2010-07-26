@@ -204,6 +204,17 @@ final class DataMatrixCopyNumberHandler extends AbstractDataFileHandler {
         }
     }
 
+    private void unInitializeAndClose(DelimitedFileReader delimitedFileReader) {
+        hasBeenInitialized = false;
+        hybridizations = null;
+        hybridizationNamesToColumnIndexesMapping = null;
+        hybridizationColumnIndexesBasedOnLog2RatioColumnPosition = null;
+        headersOfColumnsToBeIgnored = null;
+        if (null != delimitedFileReader) {
+            delimitedFileReader.close();
+        }
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -239,9 +250,7 @@ final class DataMatrixCopyNumberHandler extends AbstractDataFileHandler {
         } catch (IOException e) {
             throw new PlatformFileReadException(getFile(), "", e);
         } finally {
-            if (null != delimitedFileReader) {
-                delimitedFileReader.close();
-            }
+            unInitializeAndClose(delimitedFileReader);
         }
     }
     
