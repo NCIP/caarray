@@ -111,7 +111,8 @@ class AgilentTextParser {
      */
     AgilentTextParser(final File file) {
         try {
-            this.reader = new DelimitedFileReaderFactoryImpl().createTabDelimitedFileReader(file);
+            this.reader = new DelimitedFileReaderFactoryImpl().createTabDelimitedReader(
+                    new EndOfLineCorrectingReader(file));
         } catch (IOException e) {
             throw new ParseException("Could not open tab delimited reader", e);
         }

@@ -668,7 +668,7 @@ public final class SdrfDocument extends AbstractMageTabDocument {
             for (int i = 0; i < values.size(); i++) {
                 currentColumnNumber = i + 1;
                 try {
-                    String value = NCICommonsUtils.performXSSFilter(StringUtils.trim(values.get(i)));
+                    String value = NCICommonsUtils.performXSSFilter(StringUtils.trim(values.get(i)), true, true);
                     handleValue(columns.getColumns().get(i), value);
                 } catch (Exception e) {
                     StringWriter sw = new StringWriter();

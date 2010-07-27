@@ -107,8 +107,6 @@ import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.ValidationMessage.Type;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -117,11 +115,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import com.fiveamsolutions.nci.commons.util.io.ResettableFileReader;
 import com.google.inject.Inject;
-import org.apache.commons.lang.StringUtils;
 
 /**
  * Handler for Agilent raw text data formats.
@@ -137,7 +134,6 @@ class AgilentRawTextDataHandler extends AbstractDataFileHandler {
 
     private List<RowData> probes;
     private int expectedRowCount;
-    private Reader reader;
     private LSID arrayDesignId;
     private Collection<String> columnNames;
     private boolean headerIsRead = false;
@@ -193,9 +189,8 @@ class AgilentRawTextDataHandler extends AbstractDataFileHandler {
 
     private void openReader(final File file) throws PlatformFileReadException {
         try {
-            this.reader = new ResettableFileReader(file);
             this.parser = new AgilentTextParser(file);
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new PlatformFileReadException(file, "Could not create file reader.", e);
         }
     }
@@ -205,20 +200,7 @@ class AgilentRawTextDataHandler extends AbstractDataFileHandler {
      */
     @Override
     public void closeFiles() {
-        closeReader();
         super.closeFiles();
-    }
-
-    private void closeReader() {
-        if (null != this.reader) {
-            try {
-                this.reader.close();
-                this.reader = null;
-            } catch (IOException e) {
-                // Attempted close failed, just move on
-                return;
-            }
-        }
     }
 
     public void loadData(DataSet dataSet, List<QuantitationType> types, ArrayDesign design)

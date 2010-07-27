@@ -83,7 +83,6 @@
 
 package gov.nih.nci.caarray.platforms.agilent;
 
-import java.lang.reflect.InvocationTargetException;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
@@ -111,10 +110,11 @@ import gov.nih.nci.caarray.validation.ValidationMessage;
 
 import java.io.File;
 import java.lang.reflect.Array;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.commons.beanutils.PropertyUtils;
 
+import org.apache.commons.beanutils.PropertyUtils;
 import org.junit.Test;
 
 /**
@@ -126,7 +126,8 @@ public class AgilentRawTextDataHandlerTest extends AbstractHandlerTest {
     private static final LSID TINY_DESIGN = new LSID ("Agilent.com", "PhysicalArrayDesign", "Agilent_Tiny");
     private ArrayDesign arrayDesign;
 
-    private static final AgilentTextQuantitationType[] ACGH_COLS = {AgilentTextQuantitationType.G_MEDIAN_SIGNAL,
+    private static final AgilentTextQuantitationType[] ACGH_COLS = {
+        AgilentTextQuantitationType.G_MEDIAN_SIGNAL,
         AgilentTextQuantitationType.G_PROCESSED_SIG_ERROR, AgilentTextQuantitationType.G_PROCESSED_SIGNAL,
         AgilentTextQuantitationType.LOG_RATIO_ERROR, AgilentTextQuantitationType.LOG_RATIO,
         AgilentTextQuantitationType.P_VALUE_LOG_RATIO, AgilentTextQuantitationType.R_MEDIAN_SIGNAL,
@@ -458,6 +459,36 @@ public class AgilentRawTextDataHandlerTest extends AbstractHandlerTest {
             assertEquals(expected[i], msg);
             i++;
         }
+    }
+    
+    @Test
+    public void testFileWithErroneousLineEndings() throws InvalidDataFileException {
+        setupArrayDesign(DESIGN_LSID);
+        addProbeToDesign("HsCGHBrightCorner");
+        addProbeToDesign("DarkCorner");
+
+        CaArrayFile caArrayFile = getCaArrayFile(AgilentArrayDataFiles.ERRONEOUS_LINE_ENDINGS, DESIGN_LSID.getObjectId());
+        this.arrayDataService.importData(caArrayFile, true, DEFAULT_IMPORT_OPTIONS);
+        assertEquals(FileStatus.IMPORTED, caArrayFile.getFileStatus());
+
+        RawArrayData rawArrayData = (RawArrayData) this.daoFactoryStub.getArrayDao().getArrayData(caArrayFile.getId());
+        DataSet dataSet = rawArrayData.getDataSet();
+        assertNotNull(dataSet.getDesignElementList());
+
+        assertEquals(1, dataSet.getHybridizationDataList().size());
+        HybridizationData hybridizationData = dataSet.getHybridizationDataList().get(0);
+
+        assertEquals(9, hybridizationData.getColumns().size());
+
+        List<AbstractDesignElement> designElements = dataSet.getDesignElementList().getDesignElements();
+
+        int expectedNumberOfProbes = 2;
+        assertEquals(expectedNumberOfProbes, designElements.size());
+
+        checkColumnLengths(hybridizationData, expectedNumberOfProbes, ACGH_COLS);
+
+        checkValues(hybridizationData, designElements, 0, "HsCGHBrightCorner", ACGH_COLS, 1363.0f, 596.5607f, 5963.058f, 0.06193424398f, 0.0855067622f, 0.1674002912f, 1292.0f, 726.2786f, 7260.655f);
+        checkValues(hybridizationData, designElements, 1, "DarkCorner", ACGH_COLS, 59.0f, 17.4904f, 23.3982f, 0.4784317876f, -0.03151133335f, 0.9474862651f, 62.5f, 17.67106f, 21.76061f);
     }
 
 }

@@ -105,4 +105,6 @@ public class AgilentArrayDataFiles {
     public static final File MIRNA = getResourceFile("/arraydata/agilent/miRNA.txt");
 
     public static final File MIRNA_BLANKS = getResourceFile("/arraydata/agilent/miRNA_blanks.txt");
+
+    public static final File ERRONEOUS_LINE_ENDINGS = getResourceFile("/arraydata/agilent/erroneous_line_endings.txt");
 }

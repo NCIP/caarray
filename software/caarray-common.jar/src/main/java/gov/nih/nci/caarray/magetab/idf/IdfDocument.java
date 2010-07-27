@@ -279,7 +279,7 @@ public final class IdfDocument extends AbstractMageTabDocument {
                 int valueIndex = columnIndex - 1;
                 String value = StringUtils.trim(lineContents.get(columnIndex));
                 if (!StringUtils.isEmpty(value)) {
-                    value = NCICommonsUtils.performXSSFilter(value);
+                    value = NCICommonsUtils.performXSSFilter(value, true, true);
                     handleValue(idfRow, value, valueIndex);
                 }
             }

@@ -1069,6 +1069,13 @@
         </path>
         <property name="mockito.jar" refid="mockito.jar.fileset" />
 
+        <path id="gnu-regexp.jar.path">
+            <fileset dir="${project.lib}" id="gnu-regexp.jar.fileset">
+                <include name="gnu-regexp-*.jar"/>
+            </fileset>
+        </path>
+        <property name="gnu-regexp.jar" refid="gnu-regexp.jar.fileset" />
+        
         <path id="jboss.dependencies.path">
             <fileset id="jboss.dependencies.fileset" dir="${project.lib}">
                 <include name="${jboss-annotations-ejb3.jar}"/>
@@ -1160,6 +1167,7 @@
             <fileset refid="ejb3-persistence.jar.fileset"/>
             <fileset refid="javassist.jar.fileset"/>
             <fileset refid="commons-compress.jar.fileset"/>
+            <fileset refid="gnu-regexp.jar.fileset"/>
         	<fileset refid="liquibase.jar.fileset"/>
         </path>
 
