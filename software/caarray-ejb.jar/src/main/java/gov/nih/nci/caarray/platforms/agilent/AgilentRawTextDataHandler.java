@@ -195,14 +195,6 @@ class AgilentRawTextDataHandler extends AbstractDataFileHandler {
         }
     }
     
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void closeFiles() {
-        super.closeFiles();
-    }
-
     public void loadData(DataSet dataSet, List<QuantitationType> types, ArrayDesign design)
             throws PlatformFileReadException {
         readData();
