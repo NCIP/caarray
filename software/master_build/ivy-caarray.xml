@@ -200,7 +200,7 @@
 
         <dependency conf="project" name="nci-commons-core" org="ncicb" rev="1.2.14"/>
 
-        <dependency conf="project" name="nci-commons-struts2" org="ncicb" rev="1.2.12"/>
+        <dependency conf="project" name="nci-commons-struts2" org="ncicb" rev="1.2.14"/>
 
         <dependency conf="project" name="ezmorph" org="ezmorph" rev="1.0.4"/>
 
