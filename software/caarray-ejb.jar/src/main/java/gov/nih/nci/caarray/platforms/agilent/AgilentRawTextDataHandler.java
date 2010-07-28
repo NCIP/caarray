@@ -350,6 +350,8 @@ class AgilentRawTextDataHandler extends AbstractDataFileHandler {
         readData(result);
         if (design == null) {
             result.addMessage(Type.ERROR, "No array design associated with this experiment");
+        } else if (design.getDesignDetails() == null) {
+            result.addMessage(Type.ERROR, "Array design " + design.getName() + " was not parsed");
         } else {
             validateProbeNames(result, design);
         }        

@@ -130,15 +130,17 @@
                 <a name="files"/>
                 <c:if test="${!empty arrayDesign.designFiles}">
                     <div class="boxpad">
-                        <table class="form">
+                        <table class="form" >
                             <thead>
-                                <tr><th colspan="2">Array Design Files and Status</th></tr>
+                                <tr><th colspan="3">Array Design Files and Status</th></tr>
                             </thead>
                             <tbody>
                             <c:forEach items="${arrayDesign.designFiles}" var="file">
-                                <tr><td class="tdLabel" style="text-align: left" colspan="2"><c:out value="${file.name}" escapeXml="true"/></td></tr>
+                                <tr><td class="tdLabel" style="text-align: left"><c:out value="${file.name}" escapeXml="true"/></td>
+                                    <td style="width: 17em">${file.type}</td>
+                                    <td style="width: 17em">${file.status}</td></tr>
                                 <c:forEach items="${file.validationResult.messages}" var="message">
-                                    <tr><td></td><td class="instructions"><c:out value="${message.message}" escapeXml="true"/></td></tr>
+                                    <tr><td colspan="3" class="instructions" style="padding-left:5em"><c:out value="${message.message}" escapeXml="true"/></td></tr>
                                 </c:forEach>
                             </c:forEach>
                             </tbody>

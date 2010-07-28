@@ -235,9 +235,7 @@ final class GenotypingProcessedMatrixHandler extends AbstractDataFileHandler {
             boolean keepGoing = r.hasNextLine() && headerProc.parse(r.nextLine(), r.getCurrentLineNumber());
             while (rowProc != null && keepGoing && r.hasNextLine()) {
                 keepGoing = rowProc.parse(r.nextLine(), r.getCurrentLineNumber());
-                long now = System.currentTimeMillis();
-                ticker = tick(ticker, "...still processing around line " + r.getCurrentLineNumber()  + " with "
-                        + rowProc);
+                ticker = tick(ticker, r.getCurrentLineNumber(), rowProc);
             }
         } catch (IOException e) {
             throw new IllegalStateException(AbstractDataFileHandler.READ_FILE_ERROR_MESSAGE, e);
@@ -247,11 +245,12 @@ final class GenotypingProcessedMatrixHandler extends AbstractDataFileHandler {
     }
 
     // CHECKSTYLE:OFF
-    static long tick(long lastTick, String msg) {
+    static long tick(long lastTick, int line, Object proc) {
         long now = System.currentTimeMillis();
         if (lastTick + ONE_MINUTE <= now) {
             Runtime r = Runtime.getRuntime();
-            LOG.info(msg + " free=" + (r.freeMemory() / 1048576) + "/" + (r.totalMemory()/1048576) + "MB");
+            LOG.info("...still processing around line " + line + " with " + proc
+                    + " free=" + (r.freeMemory() / 1048576) + "/" + (r.totalMemory()/1048576) + "MB");
             return now;
         }
         return lastTick;

@@ -491,4 +491,27 @@ public class AgilentRawTextDataHandlerTest extends AbstractHandlerTest {
         checkValues(hybridizationData, designElements, 1, "DarkCorner", ACGH_COLS, 59.0f, 17.4904f, 23.3982f, 0.4784317876f, -0.03151133335f, 0.9474862651f, 62.5f, 17.67106f, 21.76061f);
     }
 
+    @Test
+    public void testMiRNA_UnparsedDesign() throws InvalidDataFileException {
+        setupArrayDesign(DESIGN_LSID);
+        this.arrayDesign.setDesignDetails(null);
+        this.arrayDesign.setName("Foo");
+
+        CaArrayFile caArrayFile = getCaArrayFile(AgilentArrayDataFiles.MIRNA, DESIGN_LSID.getObjectId());
+        FileValidationResult results = this.arrayDataService.validate(caArrayFile, null, false);
+        assertEquals(FileStatus.VALIDATION_ERRORS, caArrayFile.getFileStatus());
+
+        int i = 0;
+        String[] expected = {
+            "ERROR Array design Foo was not parsed L=0 C=0",
+            "INFO Processing as miRNA (found gTotalProbeSignal w/o LogRatio) L=0 C=0"
+        };
+        assertEquals(expected.length, results.getMessages().size());
+        for (ValidationMessage m :  results.getMessages()) {
+            String msg = m.getType().name() + " " + m.getMessage() + " L=" + m.getLine() + " C=" + m.getColumn();
+            assertEquals(expected[i], msg);
+            i++;
+        }
+    }
+
 }

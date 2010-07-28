@@ -321,8 +321,7 @@ final class SampleProbeProfileHandler extends AbstractDataFileHandler {
             long ticker = System.currentTimeMillis();
             while (keepGoing && r.hasNextLine() && row != null) {
                 keepGoing = row.parse(r.nextLine(), r.getCurrentLineNumber());
-                ticker = GenotypingProcessedMatrixHandler.tick(ticker, "...still processing around line " 
-                        + r.getCurrentLineNumber() + " with " + row);
+                ticker = GenotypingProcessedMatrixHandler.tick(ticker, r.getCurrentLineNumber(), row);
             }
         }
     }
