@@ -129,14 +129,9 @@ final class DataFileValidator extends AbstractArrayDataUtility {
                 }
                 if (result.isValid()) {
                     ArrayDesign design = getArrayDesign(caArrayFile, handler);
-                    if (design != null && design.isUnparsedAndReimportable()) {
-                        result.addMessage(Type.ERROR, "Associated array design " + design.getName()
-                                + " must be re-parsed");
-                    } else {
-                        handler.validate(mTabSet, result, design);
-                        if (result.isValid()) {
-                            validateArrayDesignInExperiment(caArrayFile, result, handler);
-                        }
+                    handler.validate(mTabSet, result, design);
+                    if (result.isValid()) {
+                        validateArrayDesignInExperiment(caArrayFile, result, handler);
                     }
                 }
             } catch (PlatformFileReadException e) {

@@ -361,6 +361,10 @@ public class AgilentRawTextDataHandlerTest extends AbstractHandlerTest {
         arrayDesign = new ArrayDesign();
         arrayDesign.setDesignDetails(new ArrayDesignDetails());
         arrayDesign.setLsid(designLsid);
+        CaArrayFile f = new CaArrayFile();
+        f.setFileStatus(FileStatus.IMPORTED);
+        f.setFileType(FileType.AGILENT_XML);
+        arrayDesign.getDesignFiles().add(f);
     }
 
     @SuppressWarnings("deprecation")
@@ -492,26 +496,19 @@ public class AgilentRawTextDataHandlerTest extends AbstractHandlerTest {
     }
 
     @Test
-    public void testMiRNA_UnparsedDesign() throws InvalidDataFileException {
+    public void testUnparsedDesign() throws InvalidDataFileException {
         setupArrayDesign(DESIGN_LSID);
         this.arrayDesign.setDesignDetails(null);
+        CaArrayFile f = new CaArrayFile();
+        f.setFileStatus(FileStatus.IMPORTED_NOT_PARSED);
+        f.setFileType(FileType.MAGE_TAB_ADF);
+        this.arrayDesign.getDesignFiles().clear();
+        this.arrayDesign.getDesignFiles().add(f);
         this.arrayDesign.setName("Foo");
 
         CaArrayFile caArrayFile = getCaArrayFile(AgilentArrayDataFiles.MIRNA, DESIGN_LSID.getObjectId());
         FileValidationResult results = this.arrayDataService.validate(caArrayFile, null, false);
-        assertEquals(FileStatus.VALIDATION_ERRORS, caArrayFile.getFileStatus());
-
-        int i = 0;
-        String[] expected = {
-            "ERROR Array design Foo was not parsed L=0 C=0",
-            "INFO Processing as miRNA (found gTotalProbeSignal w/o LogRatio) L=0 C=0"
-        };
-        assertEquals(expected.length, results.getMessages().size());
-        for (ValidationMessage m :  results.getMessages()) {
-            String msg = m.getType().name() + " " + m.getMessage() + " L=" + m.getLine() + " C=" + m.getColumn();
-            assertEquals(expected[i], msg);
-            i++;
-        }
+        assertEquals(FileStatus.VALIDATED_NOT_PARSED, caArrayFile.getFileStatus());
     }
 
 }

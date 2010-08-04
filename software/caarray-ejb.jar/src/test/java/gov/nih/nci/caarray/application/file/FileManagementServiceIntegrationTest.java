@@ -856,7 +856,8 @@ public class FileManagementServiceIntegrationTest extends AbstractServiceIntegra
         ArrayDesignService arrayDesignService = ServiceLocatorFactory.getArrayDesignService();
         arrayDesignService.importDesign(design);
         arrayDesignService.importDesignDetails(design);
-
+        design = (ArrayDesign) hibernateHelper.getCurrentSession().load(ArrayDesign.class, design.getId());
+        resetData();
         return design;
     }
     

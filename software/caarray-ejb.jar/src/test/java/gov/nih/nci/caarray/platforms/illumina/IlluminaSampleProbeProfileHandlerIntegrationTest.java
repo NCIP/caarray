@@ -15,6 +15,7 @@ import gov.nih.nci.caarray.domain.data.AbstractDataColumn;
 import gov.nih.nci.caarray.domain.data.FloatColumn;
 import gov.nih.nci.caarray.domain.data.HybridizationData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
@@ -66,6 +67,7 @@ public class IlluminaSampleProbeProfileHandlerIntegrationTest extends AbstractSe
         detail.getProbes().add(p);
         CaArrayFile f = new CaArrayFile();
         f.setFileType(FileType.ILLUMINA_DESIGN_BGX);
+        f.setFileStatus(FileStatus.IMPORTED);
         design.getDesignFiles().add(f);
         return design;
     }

@@ -424,7 +424,12 @@ public class ArrayDataServiceTest extends AbstractServiceTest {
      * @return
      */
     protected ArrayDesign createArrayDesign(String lsidAuthority, String lsidNamespace, String lsidObjectId) {
-        return new ArrayDesign();
+        ArrayDesign arrayDesign = new ArrayDesign();
+        CaArrayFile f = new CaArrayFile();
+        f.setFileStatus(FileStatus.IMPORTED);
+        f.setFileType(FileType.AGILENT_XML);
+        arrayDesign.getDesignFiles().add(f);
+        return arrayDesign;
     }
 
 

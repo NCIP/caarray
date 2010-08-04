@@ -125,17 +125,19 @@ abstract class AbstractArrayDataUtility {
      * have been initialized with this file.
      */
     protected DataFileHandler getHandler(CaArrayFile caArrayFile) throws PlatformFileReadException {
-        for (DataFileHandler handler : this.handlers) {
-            try {
-                if (handler.openFile(caArrayFile)) {
-                    return handler;
-                }                
-            } catch (PlatformFileReadException e) {
-                handler.closeFiles();
-                throw e;
-            }
+        DataFileHandler handler = getOpeningHandler(caArrayFile);
+        if (handler == null) {
+            throw new IllegalArgumentException("Unsupported type " + caArrayFile.getFileType());
         }
-        throw new IllegalArgumentException("Unsupported type " + caArrayFile.getFileType());
+        if (!handler.parsesData()) {
+            return handler;
+        }
+        ArrayDesign ad = getArrayDesign(caArrayFile, handler);
+        if (ad == null || !ad.isImportedAndParsed()) {
+            handler.closeFiles();
+            return getUnparsedDataHandler(caArrayFile);
+        }
+        return handler;        
     }
 
     /**
@@ -181,5 +183,34 @@ abstract class AbstractArrayDataUtility {
     
     protected ArrayDao getArrayDao() {
         return this.arrayDao;
+    }
+
+    private DataFileHandler getUnparsedDataHandler(CaArrayFile caArrayFile) throws PlatformFileReadException {
+        for (DataFileHandler handler : this.handlers) {
+            if (!handler.parsesData()) {
+                try {
+                    handler.openFile(caArrayFile);
+                    return handler;
+                } catch (PlatformFileReadException e) {
+                    handler.closeFiles();
+                    throw e;
+                }
+            }
+        }
+        throw new IllegalArgumentException("Unparsed Data Handler not found");
+    }
+
+    private DataFileHandler getOpeningHandler(CaArrayFile caArrayFile) throws PlatformFileReadException {
+        for (DataFileHandler handler : this.handlers) {
+            try {
+                if (handler.openFile(caArrayFile)) {
+                    return handler;
+                }
+            } catch (PlatformFileReadException e) {
+                handler.closeFiles();
+                throw e;
+            }
+        }
+        return null;
     }
 }

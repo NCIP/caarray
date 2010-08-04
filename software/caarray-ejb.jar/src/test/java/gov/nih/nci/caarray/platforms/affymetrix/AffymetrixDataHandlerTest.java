@@ -152,7 +152,12 @@ public class AffymetrixDataHandlerTest extends AbstractHandlerTest {
         } else if (BIRDSEED_SNP_TEST_LSID_OBJECT_ID.equals(lsidObjectId)) {
             return createArrayDesign(lsidObjectId, 448, 448, AffymetrixArrayDesignFiles.HG_FOCUS_CDF);
         } else {
-            return new ArrayDesign();
+            ArrayDesign ad = new ArrayDesign();
+            CaArrayFile f = new CaArrayFile();
+            f.setFileStatus(FileStatus.IMPORTED);
+            f.setFileType(FileType.AFFYMETRIX_CDF);
+            ad.addDesignFile(f);
+            return ad;
         }
     }
  

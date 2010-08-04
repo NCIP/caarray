@@ -269,9 +269,16 @@ public abstract class AbstractHandlerTest extends AbstractCaarrayTest {
     @SuppressWarnings("deprecation")
     protected ArrayDesign createArrayDesign(String lsidObjectId, int rows, int columns, File designFile) {
         ArrayDesign arrayDesign = new ArrayDesign();
+        CaArrayFile f;
         if (designFile != null) {
-            arrayDesign.addDesignFile(fileAccessServiceStub.add(designFile));
+            f = fileAccessServiceStub.add(designFile);
+        } else {
+            f = new CaArrayFile();
         }
+        f.setFileStatus(FileStatus.IMPORTED);
+        f.setFileType(FileType.ILLUMINA_DESIGN_CSV);
+        arrayDesign.addDesignFile(f);
+
         ArrayDesignDetails details = new ArrayDesignDetails();
         for (short row = 0; row < rows; row++) {
             for (short column = 0; column < columns; column++) {
@@ -283,6 +290,7 @@ public abstract class AbstractHandlerTest extends AbstractCaarrayTest {
         }
         arrayDesign.setNumberOfFeatures(details.getFeatures().size());
         arrayDesign.setDesignDetails(details);
+
         return arrayDesign;
     }
 
