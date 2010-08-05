@@ -101,7 +101,7 @@ import org.apache.commons.lang.StringUtils;
  * @author gax
  */
 class ProbeHandler extends LineCountHandler {
-    private static final int LOGICAL_PROBE_BATCH_SIZE = 1000;
+    private static final int LOGICAL_PROBE_BATCH_SIZE = 5;
     
     private int[] colIndex;
     private ArrayDesignDetails details;
@@ -169,8 +169,7 @@ class ProbeHandler extends LineCountHandler {
         for (int i = 0; i < values.length; i++) {
             String col = values[i].toUpperCase(Locale.getDefault());
             try {
-                BgxDesignHandler.Header h =
-                        BgxDesignHandler.Header.valueOf(col);
+                BgxDesignHandler.Header h = BgxDesignHandler.Header.valueOf(col);
                 colIndex[h.ordinal()] = i;
             } catch (IllegalArgumentException e) {
                 // unknown column
@@ -187,8 +186,8 @@ class ProbeHandler extends LineCountHandler {
         PhysicalProbe p = createProbe(values);
         arrayDao.save(p);
         if (getCount() % LOGICAL_PROBE_BATCH_SIZE == 0) {
-                flushAndClear();
-            }
+            flushAndClear();
+        }
     }
 
     private PhysicalProbe createProbe(String[] line) {
@@ -224,8 +223,8 @@ class ProbeHandler extends LineCountHandler {
     private void flushAndClear() {
         arrayDao.flushSession();
         arrayDao.clearSession();
-        details = (ArrayDesignDetails) searchDao.retrieve(ArrayDesignDetails.class, details.getId());
-        group = (ProbeGroup) searchDao.retrieve(ProbeGroup.class, group.getId());
+        details = searchDao.retrieve(ArrayDesignDetails.class, details.getId());
+        group = searchDao.retrieve(ProbeGroup.class, group.getId());
     }
 
 

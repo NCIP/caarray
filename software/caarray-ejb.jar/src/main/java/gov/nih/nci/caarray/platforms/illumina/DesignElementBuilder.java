@@ -109,7 +109,7 @@ public class DesignElementBuilder extends AbstractParser {
     private final List<String> batch = new ArrayList<String>();
     private final ArrayDesign design;
     private final DataSet dataSet;
-    private final DesignElementList probeList;
+    private DesignElementList probeList;
     private int elementCount = 0;
     private final Map<String, PhysicalProbe> lookup = new HashMap<String, PhysicalProbe>(HybDataValidator.BATCH_SIZE);
 
@@ -149,7 +149,9 @@ public class DesignElementBuilder extends AbstractParser {
         for (PhysicalProbe p : arrayDao.getPhysicalProbeByNames(design, batch)) {
             lookup.put(p.getName(), p);
         }
-
+        if (probeList.getId() != null) {
+            probeList = searchDao.retrieve(DesignElementList.class, probeList.getId());
+        }
         List<AbstractDesignElement> list = probeList.getDesignElements();
         for (String n : batch) {
             PhysicalProbe p = lookup.get(n);
@@ -157,10 +159,13 @@ public class DesignElementBuilder extends AbstractParser {
         }
         batch.clear();
         
+        searchDao.save(probeList);
+        searchDao.evictObject(probeList);
         for (PhysicalProbe p : lookup.values()) {
             searchDao.evictObject(p.getArrayDesignDetails());
             searchDao.evictObject(p.getProbeGroup());
             searchDao.evictObject(p.getAnnotation());
+            searchDao.evictObject(p);
         }
         lookup.clear();
     }
@@ -170,6 +175,9 @@ public class DesignElementBuilder extends AbstractParser {
      */
     void finish() {
         processBatch();
+        if (probeList.getId() != null) {
+            probeList = searchDao.retrieve(DesignElementList.class, probeList.getId());
+        }
         dataSet.setDesignElementList(probeList);
     }
 
