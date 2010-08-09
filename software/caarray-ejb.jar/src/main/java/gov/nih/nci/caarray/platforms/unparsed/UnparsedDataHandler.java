@@ -90,7 +90,6 @@ import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
-import gov.nih.nci.caarray.platforms.FileManager;
 import gov.nih.nci.caarray.platforms.spi.AbstractDataFileHandler;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 
@@ -100,6 +99,9 @@ import java.util.List;
 import java.util.Set;
 
 import com.google.inject.Inject;
+import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.platforms.spi.PlatformFileReadException;
+import org.apache.commons.io.FilenameUtils;
 
 /**
  * Handler for unparsed data formats.
@@ -113,8 +115,37 @@ class UnparsedDataHandler extends AbstractDataFileHandler {
             FileType.NIMBLEGEN_RAW_TXT);
 
     @Inject
-    UnparsedDataHandler(FileManager fileManager) {
-        super(fileManager);
+    UnparsedDataHandler() {
+        super(null);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean openFile(CaArrayFile dataFile) throws PlatformFileReadException {
+        if (!acceptFileType(dataFile.getFileType())) {
+            return false;
+        }
+
+        this.setCaArrayFile(dataFile);
+        return true;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void closeFiles() {
+        this.setCaArrayFile(null);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<String> getHybridizationNames() {
+        return Collections.singletonList(FilenameUtils.getBaseName(getCaArrayFile().getName()));
     }
 
     /**

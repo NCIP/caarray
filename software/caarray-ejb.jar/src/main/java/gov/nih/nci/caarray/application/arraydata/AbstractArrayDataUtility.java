@@ -95,6 +95,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.google.inject.Inject;
+import gov.nih.nci.caarray.platforms.unparsed.FallbackUnparsedDataHandler;
 
 /**
  * Base class for array data helper classes that interface with the platform handlers. Contains
@@ -186,18 +187,9 @@ abstract class AbstractArrayDataUtility {
     }
 
     private DataFileHandler getUnparsedDataHandler(CaArrayFile caArrayFile) throws PlatformFileReadException {
-        for (DataFileHandler handler : this.handlers) {
-            if (!handler.parsesData()) {
-                try {
-                    handler.openFile(caArrayFile);
-                    return handler;
-                } catch (PlatformFileReadException e) {
-                    handler.closeFiles();
-                    throw e;
-                }
-            }
-        }
-        throw new IllegalArgumentException("Unparsed Data Handler not found");
+        DataFileHandler handler = new FallbackUnparsedDataHandler();
+        handler.openFile(caArrayFile);
+        return handler;
     }
 
     private DataFileHandler getOpeningHandler(CaArrayFile caArrayFile) throws PlatformFileReadException {

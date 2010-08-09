@@ -293,9 +293,9 @@ class DataSetImporter extends AbstractArrayDataUtility {
         private Hybridization createHybridization(String hybridizationName) throws PlatformFileReadException {
             Hybridization hybridization = new Hybridization();
             hybridization.setName(hybridizationName);
-            Array array = new Array();
             ArrayDesign ad = getArrayDesign(caArrayFile, handler);
             if (ad != null) {
+                Array array = new Array();
                 array.setDesign(ad);
                 hybridization.setArray(array);
             } 

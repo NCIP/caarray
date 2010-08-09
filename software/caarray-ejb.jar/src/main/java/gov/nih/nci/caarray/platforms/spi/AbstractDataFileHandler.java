@@ -124,7 +124,7 @@ public abstract class AbstractDataFileHandler implements DataFileHandler {
         this.file = fileManager.openFile(dataFile);
         return true;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -162,9 +162,25 @@ public abstract class AbstractDataFileHandler implements DataFileHandler {
     }
 
     /**
+     * @param caArrayFile the file to handle.
+     */
+    protected void setCaArrayFile(CaArrayFile caArrayFile) {
+        this.caArrayFile = caArrayFile;
+    }
+
+    /**
      * @return the file
      */
     protected File getFile() {
         return file;
     }
+
+    /**
+     * @param file the data file to handle.
+     */
+    protected void setFile(File file) {
+        this.file = file;
+    }
+
+
 }
