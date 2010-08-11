@@ -83,7 +83,11 @@
 
 package gov.nih.nci.caarray.platforms.unparsed;
 
+import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.file.FileType;
+import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
+import gov.nih.nci.caarray.validation.FileValidationResult;
+import gov.nih.nci.caarray.validation.ValidationMessage.Type;
 
 /**
  * A non parsing Data handler that can process any file type.
@@ -105,6 +109,15 @@ public class FallbackUnparsedDataHandler extends UnparsedDataHandler {
     @Override
     protected boolean acceptFileType(FileType type) {
         return true;
+    }
+
+    @Override
+    public void validate(MageTabDocumentSet mTabSet, FileValidationResult result, ArrayDesign design) {
+        if (design == null) {
+            result.addMessage(Type.INFO, "Not parsed due to missing array design");
+        } else {
+            result.addMessage(Type.INFO, "Not parsed because array design " + design.getName() + " is not parsed");
+        }
     }
 
 

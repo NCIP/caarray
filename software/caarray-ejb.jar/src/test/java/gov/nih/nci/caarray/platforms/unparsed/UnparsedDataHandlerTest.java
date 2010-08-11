@@ -82,9 +82,11 @@
  */
 package gov.nih.nci.caarray.platforms.unparsed;
 
+import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.platforms.spi.PlatformFileReadException;
+import gov.nih.nci.caarray.validation.FileValidationResult;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -113,6 +115,17 @@ public class UnparsedDataHandlerTest {
         f.setFileType(FileType.AGILENT_CSV);
         assertTrue(h.openFile(f));
         assertFalse(h.parsesData());
+    }
+
+    @Test
+    public void testFallbackUnparsedDataHandlerValidation() throws PlatformFileReadException {
+        FallbackUnparsedDataHandler h = new FallbackUnparsedDataHandler();
+        ArrayDesign ad = new ArrayDesign();
+        ad.setName("foo");
+        FileValidationResult results = new FileValidationResult(null);
+        h.validate(null, results, ad);
+        assertEquals("Not parsed because array design foo is not parsed", results.getMessages().get(0).getMessage());
+
     }
 
 }
