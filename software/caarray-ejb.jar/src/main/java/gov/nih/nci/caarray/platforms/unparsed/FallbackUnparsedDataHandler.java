@@ -111,6 +111,9 @@ public class FallbackUnparsedDataHandler extends UnparsedDataHandler {
         return true;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void validate(MageTabDocumentSet mTabSet, FileValidationResult result, ArrayDesign design) {
         if (design == null) {
