@@ -46,6 +46,7 @@
 
     <path id="libs">
         <fileset dir="../../../software/caarray-client.jar/target/" includes="caarray-client-legacy.jar"/>
+        <fileset dir="../../../software/grid/legacy/lib/" includes="*.jar"/>
         <fileset dir="../../../software/grid/legacy/build/lib/" includes="*.jar"/>
         <fileset dir="../../../software/lib/caarray-project/" >
             <include name="*.jar"/>
