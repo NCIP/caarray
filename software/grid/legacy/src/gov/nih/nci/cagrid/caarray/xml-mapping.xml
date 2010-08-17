@@ -826,8 +826,29 @@
     <field name="fullName" type="string">
       <bind-xml name="fullName" node="attribute" />
     </field>
-    <field name="accessions" type="gov.nih.nci.caarray.domain.array.Accession" collection="collection">
-      <bind-xml name="Accession" type="gov.nih.nci.caarray.domain.array.Accession" location="accessions" node="element" />
+    <field name="genbankAccession" type="string">
+      <bind-xml name="genbankAccession" node="attribute" />
+    </field>
+    <field name="genbankAccessionVersion" type="string">
+      <bind-xml name="genbankAccessionVersion" node="attribute" />
+    </field>
+    <field name="ensemblgeneID" type="string">
+      <bind-xml name="ensemblgeneID" node="attribute" />
+    </field>
+    <field name="unigeneclusterID" type="string">
+      <bind-xml name="unigeneclusterID" node="attribute" />
+    </field>
+    <field name="entrezgeneID" type="string">
+      <bind-xml name="entrezgeneID" node="attribute" />
+    </field>
+    <field name="refseqAccession" type="string">
+      <bind-xml name="refseqAccession" node="attribute" />
+    </field>
+    <field name="thcAccession" type="string">
+      <bind-xml name="thcAccession" node="attribute" />
+    </field>
+    <field name="additionalAccessions" type="gov.nih.nci.caarray.domain.array.Accession" collection="set">
+      <bind-xml name="Accession" type="gov.nih.nci.caarray.domain.array.Accession" location="additonalAccessions" node="element" />
     </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.array.Accession">

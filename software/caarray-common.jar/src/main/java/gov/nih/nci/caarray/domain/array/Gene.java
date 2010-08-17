@@ -284,7 +284,7 @@ public class Gene extends AbstractCaArrayEntity {
      @org.hibernate.annotations.CollectionOfElements
      @JoinTable(name = "accession", joinColumns = @JoinColumn(name = "gene_id"))
      @Column(updatable = false)
-     private Set<Accession> getAdditionalAccessions() {
+     public Set<Accession> getAdditionalAccessions() {
          return additonalAccessions;
      }
 
