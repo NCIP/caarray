@@ -140,6 +140,8 @@ public class DataSetConfiguringInterceptor {
             for (AbstractDataColumn adc : hybridizationData.getColumns()) {
                 adc.setHybridizationData(null);
                 Hibernate.initialize(adc.getQuantitationType());
+                // make sure the blobs are converted to value array.
+                adc.loadValues();
             }
         }
         MaxSerializableSize maxSize = getMaxSerializableDesignElements();

@@ -190,6 +190,13 @@ public abstract class AbstractDataColumn extends AbstractCaArrayObject {
     }
 
     /**
+     * Ensure that the values array is deserialized from the stream.
+     */
+    public void loadValues() {
+        valuesSerializer.getValue();
+    }
+
+    /**
      * @return the hybridizationData
      */
     @ManyToOne

@@ -98,6 +98,7 @@ import org.apache.log4j.Logger;
 
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 import com.google.inject.Inject;
+import gov.nih.nci.caarray.domain.data.AbstractDataColumn;
 
 /**
  * Class with utility methods for pruning entities to prepare them for transmittal over the wire. Caches reflection
@@ -108,7 +109,7 @@ import com.google.inject.Inject;
 @SuppressWarnings("PMD.CyclomaticComplexity")
 public final class EntityPruner {
     static final Logger LOG = Logger.getLogger(EntityPruner.class);
-    @Inject private static CaArrayHibernateHelper hibernateHelper; 
+    @Inject private static CaArrayHibernateHelper hibernateHelper;
     private final Map<Class<?>, ReflectionHelper> classCache = new HashMap<Class<?>, ReflectionHelper>();
 
     /**
@@ -147,6 +148,11 @@ public final class EntityPruner {
     public void makeLeaf(Object val) {
         if (val == null) {
             return;
+        }
+
+        // prune column data.
+        if (val instanceof AbstractDataColumn) {
+            ((AbstractDataColumn) val).initializeArray(0);
         }
 
         // ensure we are dealing with the real underyling object, not a proxy
@@ -198,6 +204,11 @@ public final class EntityPruner {
     public void makeChildrenLeaves(Object val) {
         if (val == null) {
             return;
+        }
+
+        // make sure blobs are loaded
+        if (val instanceof AbstractDataColumn) {
+            ((AbstractDataColumn) val).loadValues();
         }
 
         applySecurityPolicies(val);

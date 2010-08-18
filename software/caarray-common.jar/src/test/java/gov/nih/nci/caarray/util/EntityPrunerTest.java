@@ -107,6 +107,8 @@ import org.junit.Test;
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import gov.nih.nci.caarray.domain.data.HybridizationData;
+import gov.nih.nci.caarray.domain.data.IntegerColumn;
 
 /**
  * Test cases for the entity pruner
@@ -201,6 +203,25 @@ public class EntityPrunerTest extends AbstractCaarrayTest {
         A a = c.getMapA().get(c.getMapA().keySet().iterator().next());
         assertNull(a.getA());
     }
+
+    @Test
+    public void testDataColumnPruning() {
+        IntegerColumn col = new IntegerColumn();
+        col.initializeArray(10);
+        assertEquals(10, col.getValues().length);
+        EntityPruner pruner = new EntityPruner();
+        pruner.makeChildrenLeaves(col);
+        assertEquals("need data", 10, col.getValues().length);
+
+        col = new IntegerColumn();
+        col.initializeArray(10);
+        assertEquals(10, col.getValues().length);
+        HybridizationData data = new HybridizationData();
+        data.getColumns().add(col);
+        pruner.makeChildrenLeaves(data);
+        assertEquals("should be pruned", 0, col.getValues().length);
+    }
+
 
     public static class A implements PersistentObject, Comparable<A> {
         private static final long serialVersionUID = 1L;
