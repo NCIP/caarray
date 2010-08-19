@@ -90,12 +90,9 @@ public class CQLTestSuite extends ConfigurableTestSuite
                 }
                 if (!skip)
                 {
-                    
-                    populateSearch(input, search);  
-                } 
-                
-                if (search != null)
+                    populateSearch(input, search);
                     cqlSearches.add(search);
+                } 
             }
             else
             {

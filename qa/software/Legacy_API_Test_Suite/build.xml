@@ -132,13 +132,14 @@
             </classpath>
             <jvmarg value="-Xms64m"/>
             <jvmarg value="-Xmx1280m"/>
+            <!-- jvmarg value="-Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n"/-->
             <sysproperty key="grid.server.hostname" value="${grid.server.hostname}" />
             <sysproperty key="grid.server.http.port" value="${grid.server.http.port}" />
             <sysproperty key="server.hostname" value="${server.hostname}" />
             <sysproperty key="server.jndi.port" value="${server.jndi.port}" />
             <sysproperty key="report.dir" value="${report.dir}"/>
             <sysproperty key="report.file" value="${report.file}"/>
-            <sysproperty key="api.use" value="java"/>
+            <sysproperty key="api.use" value="all"/>
             <sysproperty key="test.version" value="${test.version}"/>
         </java>
     </target>
