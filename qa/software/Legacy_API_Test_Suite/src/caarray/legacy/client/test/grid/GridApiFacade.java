@@ -22,6 +22,12 @@ import gov.nih.nci.cagrid.caarray.client.CaArraySvcClient;
 import gov.nih.nci.cagrid.cqlquery.CQLQuery;
 import caarray.legacy.client.test.ApiFacade;
 import caarray.legacy.client.test.TestProperties;
+import gov.nih.nci.cagrid.cqlquery.Attribute;
+import gov.nih.nci.cagrid.cqlquery.Predicate;
+import gov.nih.nci.cagrid.cqlresultset.CQLObjectResult;
+import gov.nih.nci.cagrid.cqlresultset.CQLQueryResults;
+import gov.nih.nci.cagrid.data.utilities.CQLQueryResultsIterator;
+import java.util.Iterator;
 
 /**
  * @author vaughng
@@ -41,14 +47,37 @@ public class GridApiFacade implements ApiFacade
         gridClient = new CaArraySvcClient(gridUrl);   
     }
 
-    /* (non-Javadoc)
+    /* this is a very limited search that converts the example into cql.
      * @see caarray.legacy.client.test.ApiFacade#searchByExample(java.lang.String, gov.nih.nci.caarray.domain.AbstractCaArrayObject)
      */
     public <T extends AbstractCaArrayObject> List<T> searchByExample(
             String api, T example, boolean login) throws Exception
     {
-        //TODO: handle this for grid api?
-        return new ArrayList<T>();
+        CQLQuery cqlQuery = new CQLQuery();
+        gov.nih.nci.cagrid.cqlquery.Object target = new gov.nih.nci.cagrid.cqlquery.Object();
+        Attribute attribute = new Attribute();
+        attribute.setName("name");
+        attribute.setPredicate(Predicate.EQUAL_TO);
+        target.setAttribute(attribute);
+        cqlQuery.setTarget(target);
+        if (example instanceof CaArrayFile) {
+            target.setName(CaArrayFile.class.getName());
+            attribute.setValue(((CaArrayFile)example).getName());
+        } else if (example instanceof ArrayDesign) {
+            target.setName(ArrayDesign.class.getName());
+            attribute.setValue(((ArrayDesign)example).getName());
+        } else {
+            throw new UnsupportedOperationException("not yet implemented");
+        }
+        ArrayList<T> list = new ArrayList<T>();
+        CQLQueryResults r = gridClient.query(cqlQuery);
+        Iterator iter = new CQLQueryResultsIterator(r, CaArraySvcClient.class.getResourceAsStream("client-config.wsdd"));
+        while (iter.hasNext()) {
+            @SuppressWarnings("unchecked")
+            T o = (T) iter.next();
+            list.add(o);
+        }
+        return list;
     }
 
     /* (non-Javadoc)
