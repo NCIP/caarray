@@ -96,7 +96,12 @@ public enum ExperimentOntology {
     /**
      * CAArray Local (aka User-defined) Ontology.
      */
-    CAARRAY("caArray", "2.0");
+    CAARRAY("caArray", "2.0"),
+
+    /**
+     * NCBI Taxonomy.
+     */
+    NCBI("ncbitax", null);
 
     private final String ontologyName;
     private final String version;

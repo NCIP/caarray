@@ -358,6 +358,18 @@ public class MageTabDataFiles {
     public static final File DEFECT_17200_IDF = new File(MageTabDataFiles.class.getResource(
         "/magetab/baddata/invalidFileRef/test_gpr.idf").getFile());
 
+    public static final File DEFECT_13164_IDF = new File(MageTabDataFiles.class.getResource(
+    "/magetab/test_organism_term_source/test.idf").getFile());
+    
+    public static final File DEFECT_13164_SDRF = new File(MageTabDataFiles.class.getResource(
+    "/magetab/test_organism_term_source/test.sdrf").getFile());
+    
+    public static final File DEFECT_13164_CEL = new File(MageTabDataFiles.class.getResource(
+    "/magetab/test_organism_term_source/Test3.CEL").getFile());
+    
+    public static final File DEFECT_13164_CHP = new File(MageTabDataFiles.class.getResource(
+    "/magetab/test_organism_term_source/Test3.CHP").getFile());
+
     public static final File DEFECT_27959_IDF = new File(MageTabDataFiles.class.getResource(
         "/magetab/incorrect_array_data_type/ilmn_test.bad.idf.txt").getFile());
 

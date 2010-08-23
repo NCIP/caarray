@@ -284,6 +284,16 @@ final class SdrfTranslator extends AbstractTranslator {
                                 + "Please correct and try again.");
                     }
                 }
+                if (ExperimentOntologyCategory.ORGANISM.getCategoryName().equalsIgnoreCase(category)
+                        && (null != sdrfCharacteristic.getTerm().getTermSource()
+                                && !sdrfCharacteristic.getTerm().getTermSource().getName().equals(
+                                ExperimentOntology.NCBI.getOntologyName()))) {
+                    document.addErrorMessage("The Characteristics [" + category + "] associated Term Source '"
+                            + sdrfCharacteristic.getTerm().getTermSource().getName() + "' is invalid.  It must be '"
+                            + ExperimentOntology.NCBI.getOntologyName() + "', or the Term Source should be ommitted"
+                            + ", so the system can then auto-assign the " + ExperimentOntology.NCBI.getOntologyName()
+                            + " Term Source.");
+                }
             }
         }
     }
@@ -517,6 +527,10 @@ final class SdrfTranslator extends AbstractTranslator {
                 bioMaterial.setDiseaseState(forceToTerm(characteristic));
             } else if (ExperimentOntologyCategory.ORGANISM.getCategoryName().equals(category)) {
                 Organism organism = getOrganism(forceToTerm(characteristic));
+                if (null == organism.getTermSource()) {
+                    organism.setTermSource(this.vocabularyService.getSource(
+                            ExperimentOntology.NCBI.getOntologyName(), ExperimentOntology.NCBI.getVersion()));
+                }
                 bioMaterial.setOrganism(organism);
             } else if (ExperimentOntologyCategory.EXTERNAL_SAMPLE_ID.getCategoryName().equals(category)
                     || ExperimentOntologyCategory.EXTERNAL_ID.getCategoryName().equals(category)) {

@@ -205,6 +205,25 @@ public class MageTabTranslatorTest extends AbstractServiceTest {
         assertEquals(1, fileResult.getMessages().size());
         assertTrue(fileResult.getMessages().get(0).getMessage().startsWith("This file is not correctly referenced"));
     }
+    
+    @Test
+    public void testDefect13164() throws InvalidDataException, MageTabParsingException {
+        MageTabFileSet mageTabSet = TestMageTabSets.DEFECT_13164;
+        for (FileRef f : mageTabSet.getAllFiles()) {
+            fileAccessServiceStub.add(f.getAsFile());
+        }
+        MageTabDocumentSet docSet = MageTabParser.INSTANCE.parse(mageTabSet);
+        assertTrue(docSet.getValidationResult().isValid());
+        CaArrayFileSet fileSet = TestMageTabSets.getFileSet(mageTabSet);
+        ValidationResult result = this.translator.validate(docSet, fileSet);
+        assertFalse(result.isValid());
+        FileValidationResult fileResult = result.getFileValidationResult(
+                MageTabDataFiles.DEFECT_13164_SDRF);
+        assertNotNull(fileResult);
+        assertFalse(result.isValid());
+        assertEquals(1, fileResult.getMessages().size());
+        assertTrue(fileResult.getMessages().get(0).getMessage().indexOf("or the Term Source should be ommitted") >= 0);
+    }
 
     @Test
     public void testDefect17200() throws InvalidDataException, MageTabParsingException {
