@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
-    xmlns="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.vocabulary"
-    xmlns:gov.nih.nci.caarray.domain="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain"
-    targetNamespace="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.vocabulary" elementFormDefault="qualified">
-    <xs:import namespace="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain"
+    xmlns="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.vocabulary"
+    xmlns:gov.nih.nci.caarray.domain="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain"
+    targetNamespace="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.vocabulary" elementFormDefault="qualified">
+    <xs:import namespace="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain"
         schemaLocation="gov.nih.nci.caarray.domain.xsd" />
 
     <xs:element name="TermSource" type="TermSource" />

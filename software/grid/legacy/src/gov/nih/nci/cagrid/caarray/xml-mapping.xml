@@ -3,7 +3,7 @@
 
 <mapping>
   <class name="gov.nih.nci.caarray.domain.AbstractCaArrayObject" identity="id">
-    <map-to xml="AbstractCaArrayObject" ns-uri="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain" />
+    <map-to xml="AbstractCaArrayObject" ns-uri="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain" />
     <field name="caBigId" type="string">
       <bind-xml name="caBigId" node="attribute" />
     </field>
@@ -12,7 +12,7 @@
     </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.array.ArrayGroup" identity="id" extends="gov.nih.nci.caarray.domain.AbstractCaArrayObject">
-    <map-to xml="ArrayGroup" ns-uri="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.array" />
+    <map-to xml="ArrayGroup" ns-uri="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.array" />
     <field name="name" type="string">
       <bind-xml name="name" node="attribute" />
     </field>
@@ -21,7 +21,7 @@
     </field>
   </class>
   <class name="gov.nih.nci.cabio.domain.ArrayReporter" identity="id">
-    <map-to xml="ArrayReporter" ns-uri="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.cabio.domain" />
+    <map-to xml="ArrayReporter" ns-uri="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.cabio.domain" />
     <field name="bigid" type="string">
       <bind-xml name="bigid" node="attribute" />
     </field>
@@ -33,7 +33,7 @@
     </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.AbstractCaArrayEntity" identity="id" extends="gov.nih.nci.caarray.domain.AbstractCaArrayObject">
-    <map-to xml="AbstractCaArrayEntity" ns-uri="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain" />
+    <map-to xml="AbstractCaArrayEntity" ns-uri="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain" />
     <field name="lsidAuthority" type="string">
       <bind-xml name="lsidAuthority" node="attribute" />
     </field>
@@ -45,7 +45,7 @@
     </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.array.ArrayDesignDetails" identity="id" extends="gov.nih.nci.caarray.domain.AbstractCaArrayObject">
-    <map-to xml="ArrayDesignDetails" ns-uri="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.array" />
+    <map-to xml="ArrayDesignDetails" ns-uri="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.array" />
     <field name="logicalProbes" type="gov.nih.nci.caarray.domain.array.LogicalProbe" collection="collection">
       <bind-xml name="LogicalProbe" type="gov.nih.nci.caarray.domain.array.LogicalProbe" location="logicalProbes" node="element" />
     </field>
@@ -60,7 +60,7 @@
     </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.data.ArrayDataType" identity="id" extends="gov.nih.nci.caarray.domain.AbstractCaArrayObject">
-    <map-to xml="ArrayDataType" ns-uri="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.data" />
+    <map-to xml="ArrayDataType" ns-uri="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.data" />
     <field name="name" type="string">
       <bind-xml name="name" node="attribute" />
     </field>
@@ -72,7 +72,7 @@
     </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.data.HybridizationData" identity="id" extends="gov.nih.nci.caarray.domain.AbstractCaArrayObject">
-    <map-to xml="HybridizationData" ns-uri="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.data" />
+    <map-to xml="HybridizationData" ns-uri="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.data" />
     <field name="columns" type="gov.nih.nci.caarray.domain.data.AbstractDataColumn" collection="collection">
       <bind-xml name="AbstractDataColumn" type="gov.nih.nci.caarray.domain.data.AbstractDataColumn" location="columns" node="element" />
     </field>
@@ -87,7 +87,7 @@
     </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.data.DataSet" identity="id" extends="gov.nih.nci.caarray.domain.AbstractCaArrayObject">
-    <map-to xml="DataSet" ns-uri="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.data" />
+    <map-to xml="DataSet" ns-uri="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.data" />
     <field name="hybridizationDataList" type="gov.nih.nci.caarray.domain.data.HybridizationData" collection="collection">
       <bind-xml name="HybridizationData" type="gov.nih.nci.caarray.domain.data.HybridizationData" location="hybridizationDataList" node="element" />
     </field>
@@ -99,7 +99,7 @@
     </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.data.DesignElementList" identity="id" extends="gov.nih.nci.caarray.domain.AbstractCaArrayEntity">
-    <map-to xml="DesignElementList" ns-uri="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.data" />
+    <map-to xml="DesignElementList" ns-uri="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.data" />
     <field name="designElementType" type="string">
       <bind-xml name="designElementType" node="attribute" />
     </field>
@@ -108,7 +108,7 @@
     </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.data.AbstractDataColumn" identity="id" extends="gov.nih.nci.caarray.domain.AbstractCaArrayObject">
-    <map-to xml="AbstractDataColumn" ns-uri="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.data" />
+    <map-to xml="AbstractDataColumn" ns-uri="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.data" />
     <field name="quantitationType" type="gov.nih.nci.caarray.domain.data.QuantitationType">
       <bind-xml name="QuantitationType" type="gov.nih.nci.caarray.domain.data.QuantitationType" location="quantitationType" node="element" />
     </field>
@@ -117,7 +117,7 @@
     </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.data.QuantitationType" identity="id" extends="gov.nih.nci.caarray.domain.AbstractCaArrayObject">
-    <map-to xml="QuantitationType" ns-uri="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.data" />
+    <map-to xml="QuantitationType" ns-uri="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.data" />
     <field name="name" type="string">
       <bind-xml name="name" node="attribute" />
     </field>
@@ -126,16 +126,16 @@
     </field>
   </class>
   <class name="gov.nih.nci.cabio.domain.TranscriptArrayReporter" identity="id" extends="gov.nih.nci.cabio.domain.ArrayReporter">
-    <map-to xml="TranscriptArrayReporter" ns-uri="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.cabio.domain" />
+    <map-to xml="TranscriptArrayReporter" ns-uri="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.cabio.domain" />
   </class>
   <class name="gov.nih.nci.cabio.domain.SNPArrayReporter" identity="id" extends="gov.nih.nci.cabio.domain.ArrayReporter">
-    <map-to xml="SNPArrayReporter" ns-uri="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.cabio.domain" />
+    <map-to xml="SNPArrayReporter" ns-uri="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.cabio.domain" />
     <field name="phastConservation" type="string">
       <bind-xml name="phastConservation" node="attribute" />
     </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.array.ArrayDesign" identity="id" extends="gov.nih.nci.caarray.domain.AbstractCaArrayEntity">
-    <map-to xml="ArrayDesign" ns-uri="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.array" />
+    <map-to xml="ArrayDesign" ns-uri="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.array" />
     <field name="name" type="string">
       <bind-xml name="name" node="attribute" />
     </field>
@@ -171,13 +171,13 @@
     </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.array.AbstractDesignElement" identity="id" extends="gov.nih.nci.caarray.domain.AbstractCaArrayObject">
-    <map-to xml="AbstractDesignElement" ns-uri="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.array" />
+    <map-to xml="AbstractDesignElement" ns-uri="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.array" />
   </class>
   <class name="gov.nih.nci.caarray.domain.array.AbstractProbeAnnotation" identity="id" extends="gov.nih.nci.caarray.domain.AbstractCaArrayEntity">
-    <map-to xml="AbstractProbeAnnotation" ns-uri="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.array" />
+    <map-to xml="AbstractProbeAnnotation" ns-uri="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.array" />
   </class>
   <class name="gov.nih.nci.caarray.domain.array.Array" identity="id" extends="gov.nih.nci.caarray.domain.AbstractCaArrayEntity">
-    <map-to xml="Array" ns-uri="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.array" />
+    <map-to xml="Array" ns-uri="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.array" />
     <field name="batch" type="string">
       <bind-xml name="batch" node="attribute" />
     </field>
@@ -192,7 +192,7 @@
     </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.array.ProbeGroup" identity="id" extends="gov.nih.nci.caarray.domain.AbstractCaArrayEntity">
-    <map-to xml="ProbeGroup" ns-uri="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.array" />
+    <map-to xml="ProbeGroup" ns-uri="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.array" />
     <field name="name" type="string">
       <bind-xml name="name" node="attribute" />
     </field>
@@ -204,7 +204,7 @@
     </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.contact.AbstractContact" identity="id" extends="gov.nih.nci.caarray.domain.AbstractCaArrayEntity">
-    <map-to xml="AbstractContact" ns-uri="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.contact" />
+    <map-to xml="AbstractContact" ns-uri="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.contact" />
     <field name="email" type="string">
       <bind-xml name="email" node="attribute" />
     </field>
@@ -219,7 +219,7 @@
     </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.contact.Address" identity="id" extends="gov.nih.nci.caarray.domain.AbstractCaArrayEntity">
-    <map-to xml="Address" ns-uri="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.contact" />
+    <map-to xml="Address" ns-uri="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.contact" />
     <field name="city" type="string">
       <bind-xml name="city" node="attribute" />
     </field>
@@ -237,7 +237,7 @@
     </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.data.Image" identity="id" extends="gov.nih.nci.caarray.domain.AbstractCaArrayEntity">
-    <map-to xml="Image" ns-uri="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.data" />
+    <map-to xml="Image" ns-uri="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.data" />
     <field name="name" type="string">
       <bind-xml name="name" node="attribute" />
     </field>
@@ -246,19 +246,19 @@
     </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.data.ShortColumn" identity="id" extends="gov.nih.nci.caarray.domain.data.AbstractDataColumn">
-    <map-to xml="ShortColumn" ns-uri="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.data" />
+    <map-to xml="ShortColumn" ns-uri="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.data" />
     <field name="valuesAsString" type="string">
       <bind-xml name="values" node="element" />
     </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.data.LongColumn" identity="id" extends="gov.nih.nci.caarray.domain.data.AbstractDataColumn">
-    <map-to xml="LongColumn" ns-uri="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.data" />
+    <map-to xml="LongColumn" ns-uri="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.data" />
     <field name="valuesAsString" type="string">
       <bind-xml name="values" node="element" />
     </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.data.AbstractArrayData" identity="id" extends="gov.nih.nci.caarray.domain.AbstractCaArrayEntity">
-    <map-to xml="AbstractArrayData" ns-uri="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.data" />
+    <map-to xml="AbstractArrayData" ns-uri="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.data" />
     <field name="name" type="string">
       <bind-xml name="name" node="attribute" />
     </field>
@@ -276,19 +276,19 @@
     </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.data.BooleanColumn" identity="id" extends="gov.nih.nci.caarray.domain.data.AbstractDataColumn">
-    <map-to xml="BooleanColumn" ns-uri="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.data" />
+    <map-to xml="BooleanColumn" ns-uri="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.data" />
     <field name="valuesAsString" type="string">
       <bind-xml name="values" node="element" />
     </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.data.FloatColumn" identity="id" extends="gov.nih.nci.caarray.domain.data.AbstractDataColumn">
-    <map-to xml="FloatColumn" ns-uri="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.data" />
+    <map-to xml="FloatColumn" ns-uri="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.data" />
     <field name="valuesAsString" type="string">
       <bind-xml name="values" node="element" />
     </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.data.DerivedArrayData" identity="id" extends="gov.nih.nci.caarray.domain.data.AbstractArrayData">
-    <map-to xml="DerivedArrayData" ns-uri="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.data" />
+    <map-to xml="DerivedArrayData" ns-uri="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.data" />
     <field name="hybridizations" type="gov.nih.nci.caarray.domain.hybridization.Hybridization" collection="collection">
       <bind-xml name="Hybridization" type="gov.nih.nci.caarray.domain.hybridization.Hybridization" location="hybridizations" node="element" />
     </field>
@@ -297,7 +297,7 @@
     </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.data.RawArrayData" identity="id" extends="gov.nih.nci.caarray.domain.data.AbstractArrayData">
-    <map-to xml="RawArrayData" ns-uri="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.data" />
+    <map-to xml="RawArrayData" ns-uri="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.data" />
     <field name="sourceImages" type="gov.nih.nci.caarray.domain.data.Image" collection="collection">
       <bind-xml name="Image" type="gov.nih.nci.caarray.domain.data.Image" location="sourceImages" node="element" />
     </field>
@@ -306,25 +306,25 @@
     </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.data.StringColumn" identity="id" extends="gov.nih.nci.caarray.domain.data.AbstractDataColumn">
-    <map-to xml="StringColumn" ns-uri="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.data" />
+    <map-to xml="StringColumn" ns-uri="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.data" />
     <field name="valuesAsString" type="string">
       <bind-xml name="values" node="element" />
     </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.data.DoubleColumn" identity="id" extends="gov.nih.nci.caarray.domain.data.AbstractDataColumn">
-    <map-to xml="DoubleColumn" ns-uri="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.data" />
+    <map-to xml="DoubleColumn" ns-uri="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.data" />
     <field name="valuesAsString" type="string">
       <bind-xml name="values" node="element" />
     </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.data.IntegerColumn" identity="id" extends="gov.nih.nci.caarray.domain.data.AbstractDataColumn">
-    <map-to xml="IntegerColumn" ns-uri="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.data" />
+    <map-to xml="IntegerColumn" ns-uri="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.data" />
     <field name="valuesAsString" type="string">
       <bind-xml name="values" node="element" />
     </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.file.CaArrayFile" identity="id" extends="gov.nih.nci.caarray.domain.AbstractCaArrayEntity">
-    <map-to xml="CaArrayFile" ns-uri="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.file" />
+    <map-to xml="CaArrayFile" ns-uri="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.file" />
     <field name="name" type="string">
       <bind-xml name="name" node="attribute" />
     </field>
@@ -339,7 +339,7 @@
     </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.hybridization.Hybridization" identity="id" extends="gov.nih.nci.caarray.domain.AbstractCaArrayEntity">
-    <map-to xml="Hybridization" ns-uri="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.hybridization" />
+    <map-to xml="Hybridization" ns-uri="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.hybridization" />
     <field name="amountOfMaterial" type="float">
       <bind-xml name="amountOfMaterial" node="attribute" />
     </field>
@@ -372,7 +372,7 @@
     </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.project.Factor" identity="id" extends="gov.nih.nci.caarray.domain.AbstractCaArrayEntity">
-    <map-to xml="Factor" ns-uri="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.project" />
+    <map-to xml="Factor" ns-uri="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.project" />
     <field name="name" type="string">
       <bind-xml name="name" node="attribute" />
     </field>
@@ -384,7 +384,7 @@
     </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.project.Experiment" identity="id" extends="gov.nih.nci.caarray.domain.AbstractCaArrayEntity">
-    <map-to xml="Experiment" ns-uri="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.project" />
+    <map-to xml="Experiment" ns-uri="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.project" />
     <field name="date" type="date">
       <bind-xml name="date" node="attribute" />
     </field>
@@ -459,19 +459,19 @@
     </field>  
   </class>
   <class name="gov.nih.nci.caarray.domain.project.AssayType" identity="id" extends="gov.nih.nci.caarray.domain.AbstractCaArrayEntity">
-    <map-to xml="AssayType" ns-uri="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.project" />
+    <map-to xml="AssayType" ns-uri="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.project" />
     <field name="name" type="string">
       <bind-xml name="name" node="attribute" />
     </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.project.Project" identity="id" extends="gov.nih.nci.caarray.domain.AbstractCaArrayEntity">
-    <map-to xml="Project" ns-uri="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.project" />
+    <map-to xml="Project" ns-uri="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.project" />
     <field name="files" type="gov.nih.nci.caarray.domain.file.CaArrayFile" collection="collection">
       <bind-xml name="CaArrayFile" type="gov.nih.nci.caarray.domain.file.CaArrayFile" location="files" node="element" />
     </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.project.AbstractFactorValue" identity="id" extends="gov.nih.nci.caarray.domain.AbstractCaArrayEntity">
-    <map-to xml="AbstractFactorValue" ns-uri="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.project" />
+    <map-to xml="AbstractFactorValue" ns-uri="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.project" />
     <field name="unit" type="gov.nih.nci.caarray.domain.vocabulary.Term">
       <bind-xml name="Term" type="gov.nih.nci.caarray.domain.vocabulary.Term" location="unit" node="element" />
     </field>
@@ -480,25 +480,25 @@
     </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.project.MeasurementFactorValue" identity="id" extends="gov.nih.nci.caarray.domain.project.AbstractFactorValue">
-    <map-to xml="MeasurementFactorValue" ns-uri="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.project" />
+    <map-to xml="MeasurementFactorValue" ns-uri="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.project" />
     <field name="value" type="float">
       <bind-xml name="value" node="attribute" />
     </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.project.UserDefinedFactorValue" identity="id" extends="gov.nih.nci.caarray.domain.project.AbstractFactorValue">
-    <map-to xml="UserDefinedFactorValue" ns-uri="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.project" />
+    <map-to xml="UserDefinedFactorValue" ns-uri="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.project" />
     <field name="value" type="string">
       <bind-xml name="value" node="attribute" />
     </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.project.TermBasedFactorValue" identity="id" extends="gov.nih.nci.caarray.domain.project.AbstractFactorValue">
-    <map-to xml="TermBasedFactorValue" ns-uri="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.project" />
+    <map-to xml="TermBasedFactorValue" ns-uri="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.project" />
     <field name="term" type="gov.nih.nci.caarray.domain.vocabulary.Term">
       <bind-xml name="Term" type="gov.nih.nci.caarray.domain.vocabulary.Term" location="term" node="element" />
     </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.project.ExperimentContact" identity="id" extends="gov.nih.nci.caarray.domain.AbstractCaArrayEntity">
-    <map-to xml="ExperimentContact" ns-uri="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.project" />
+    <map-to xml="ExperimentContact" ns-uri="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.project" />
     <field name="roles" type="gov.nih.nci.caarray.domain.vocabulary.Term" collection="collection">
       <bind-xml name="Term" type="gov.nih.nci.caarray.domain.vocabulary.Term" location="roles" node="element" />
     </field>
@@ -507,13 +507,13 @@
     </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.protocol.Parameter" identity="id" extends="gov.nih.nci.caarray.domain.AbstractCaArrayEntity">
-    <map-to xml="Parameter" ns-uri="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.protocol" />
+    <map-to xml="Parameter" ns-uri="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.protocol" />
     <field name="name" type="string">
       <bind-xml name="name" node="attribute" />
     </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.protocol.Protocol" identity="id" extends="gov.nih.nci.caarray.domain.AbstractCaArrayEntity">
-    <map-to xml="Protocol" ns-uri="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.protocol" />
+    <map-to xml="Protocol" ns-uri="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.protocol" />
     <field name="contact" type="string">
       <bind-xml name="contact" node="attribute" />
     </field>
@@ -543,7 +543,7 @@
     </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.protocol.ProtocolApplication" identity="id" extends="gov.nih.nci.caarray.domain.AbstractCaArrayEntity">
-    <map-to xml="ProtocolApplication" ns-uri="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.protocol" />
+    <map-to xml="ProtocolApplication" ns-uri="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.protocol" />
     <field name="notes" type="string">
       <bind-xml name="notes" node="attribute" />
     </field>
@@ -555,7 +555,7 @@
     </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.protocol.AbstractParameterValue" identity="id" extends="gov.nih.nci.caarray.domain.AbstractCaArrayEntity">
-    <map-to xml="AbstractParameterValue" ns-uri="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.protocol" />
+    <map-to xml="AbstractParameterValue" ns-uri="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.protocol" />
     <field name="parameter" type="gov.nih.nci.caarray.domain.protocol.Parameter">
       <bind-xml name="Parameter" type="gov.nih.nci.caarray.domain.protocol.Parameter" location="parameter" node="element" />
     </field>
@@ -564,25 +564,25 @@
     </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.protocol.MeasurementParameterValue" identity="id" extends="gov.nih.nci.caarray.domain.protocol.AbstractParameterValue">
-    <map-to xml="MeasurementParameterValue" ns-uri="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.protocol" />
+    <map-to xml="MeasurementParameterValue" ns-uri="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.protocol" />
     <field name="value" type="float">
       <bind-xml name="value" node="attribute" />
     </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.protocol.UserDefinedParameterValue" identity="id" extends="gov.nih.nci.caarray.domain.protocol.AbstractParameterValue">
-    <map-to xml="UserDefinedParameterValue" ns-uri="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.protocol" />
+    <map-to xml="UserDefinedParameterValue" ns-uri="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.protocol" />
     <field name="value" type="string">
       <bind-xml name="value" node="attribute" />
     </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.protocol.TermBasedParameterValue" identity="id" extends="gov.nih.nci.caarray.domain.protocol.AbstractParameterValue">
-    <map-to xml="TermBasedParameterValue" ns-uri="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.protocol" />
+    <map-to xml="TermBasedParameterValue" ns-uri="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.protocol" />
     <field name="term" type="gov.nih.nci.caarray.domain.vocabulary.Term">
       <bind-xml name="Term" type="gov.nih.nci.caarray.domain.vocabulary.Term" location="term" node="element" />
     </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.publication.Publication" identity="id" extends="gov.nih.nci.caarray.domain.AbstractCaArrayEntity">
-    <map-to xml="Publication" ns-uri="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.publication" />
+    <map-to xml="Publication" ns-uri="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.publication" />
     <field name="authors" type="string">
       <bind-xml name="authors" node="attribute" />
     </field>
@@ -627,7 +627,7 @@
     </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.sample.AbstractBioMaterial" identity="id" extends="gov.nih.nci.caarray.domain.AbstractCaArrayEntity">
-    <map-to xml="AbstractBioMaterial" ns-uri="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.sample" />
+    <map-to xml="AbstractBioMaterial" ns-uri="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.sample" />
     <field name="description" type="string">
       <bind-xml name="description" node="attribute" />
     </field>
@@ -654,7 +654,7 @@
     </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.sample.AbstractCharacteristic" identity="id" extends="gov.nih.nci.caarray.domain.AbstractCaArrayEntity">
-    <map-to xml="AbstractCharacteristic" ns-uri="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.sample" />
+    <map-to xml="AbstractCharacteristic" ns-uri="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.sample" />
     <field name="category" type="gov.nih.nci.caarray.domain.vocabulary.Category">
       <bind-xml name="Category" type="gov.nih.nci.caarray.domain.vocabulary.Category" location="category" node="element" />
     </field>
@@ -666,7 +666,7 @@
     </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.vocabulary.TermSource" identity="id" extends="gov.nih.nci.caarray.domain.AbstractCaArrayEntity">
-    <map-to xml="TermSource" ns-uri="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.vocabulary" />
+    <map-to xml="TermSource" ns-uri="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.vocabulary" />
     <field name="name" type="string">
       <bind-xml name="name" node="attribute" />
     </field>
@@ -678,7 +678,7 @@
     </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.vocabulary.Category" identity="id" extends="gov.nih.nci.caarray.domain.AbstractCaArrayEntity">
-    <map-to xml="Category" ns-uri="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.vocabulary" />
+    <map-to xml="Category" ns-uri="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.vocabulary" />
     <field name="name" type="string">
       <bind-xml name="name" node="attribute" />
     </field>
@@ -699,7 +699,7 @@
     </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.vocabulary.Term" identity="id" extends="gov.nih.nci.caarray.domain.AbstractCaArrayEntity">
-    <map-to xml="Term" ns-uri="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.vocabulary" />
+    <map-to xml="Term" ns-uri="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.vocabulary" />
     <field name="description" type="string">
       <bind-xml name="description" node="attribute" />
     </field>
@@ -720,7 +720,7 @@
     </field>
   </class>
   <class name="gov.nih.nci.cabio.domain.ExonArrayReporter" identity="id" extends="gov.nih.nci.cabio.domain.TranscriptArrayReporter">
-    <map-to xml="ExonArrayReporter" ns-uri="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.cabio.domain" />
+    <map-to xml="ExonArrayReporter" ns-uri="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.cabio.domain" />
     <field name="probeCount" type="long">
       <bind-xml name="probeCount" node="attribute" />
     </field>
@@ -732,7 +732,7 @@
     </field>
   </class>
   <class name="gov.nih.nci.cabio.domain.ExpressionArrayReporter" identity="id" extends="gov.nih.nci.cabio.domain.TranscriptArrayReporter">
-    <map-to xml="ExpressionArrayReporter" ns-uri="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.cabio.domain" />
+    <map-to xml="ExpressionArrayReporter" ns-uri="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.cabio.domain" />
     <field name="sequenceSource" type="string">
       <bind-xml name="sequenceSource" node="attribute" />
     </field>
@@ -747,7 +747,7 @@
     </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.array.Feature" identity="id" extends="gov.nih.nci.caarray.domain.array.AbstractDesignElement">
-    <map-to xml="Feature" ns-uri="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.array" />
+    <map-to xml="Feature" ns-uri="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.array" />
     <field name="blockColumn" type="short">
       <bind-xml name="blockColumn" node="attribute" />
     </field>
@@ -777,13 +777,13 @@
     </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.array.AbstractProbe" identity="id" extends="gov.nih.nci.caarray.domain.array.AbstractDesignElement">
-    <map-to xml="AbstractProbe" ns-uri="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.array" />
+    <map-to xml="AbstractProbe" ns-uri="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.array" />
     <field name="name" type="string">
       <bind-xml name="name" node="attribute" />
     </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.array.SNPProbeAnnotation" identity="id" extends="gov.nih.nci.caarray.domain.array.AbstractProbeAnnotation">
-    <map-to xml="SNPProbeAnnotation" ns-uri="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.array" />
+    <map-to xml="SNPProbeAnnotation" ns-uri="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.array" />
     <field name="alleleA" type="string">
       <bind-xml name="alleleA" node="attribute" />
     </field>
@@ -807,7 +807,7 @@
     </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.array.ExpressionProbeAnnotation" identity="id" extends="gov.nih.nci.caarray.domain.array.AbstractProbeAnnotation">
-    <map-to xml="ExpressionProbeAnnotation" ns-uri="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.array" />
+    <map-to xml="ExpressionProbeAnnotation" ns-uri="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.array" />
     <field name="chromosomeName" type="string">
         <bind-xml name="chromosomeName" node="attribute" />
     </field>
@@ -818,8 +818,11 @@
         <bind-xml name="chromosomeEndPosition" node="attribute" />
     </field>
   </class>
+  <class name="gov.nih.nci.caarray.domain.array.MiRNAProbeAnnotation" identity="id" extends="gov.nih.nci.caarray.domain.array.AbstractProbeAnnotation">
+    <map-to xml="MiRNAProbeAnnotation" ns-uri="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.array" />
+  </class>
   <class name="gov.nih.nci.caarray.domain.array.Gene" identity="id" extends="gov.nih.nci.caarray.domain.AbstractCaArrayEntity">
-    <map-to xml="Gene" ns-uri="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.array" />
+    <map-to xml="Gene" ns-uri="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.array" />
     <field name="symbol" type="string">
       <bind-xml name="symbol" node="attribute" />
     </field>
@@ -841,18 +844,9 @@
     <field name="entrezgeneID" type="string">
       <bind-xml name="entrezgeneID" node="attribute" />
     </field>
-    <field name="refseqAccession" type="string">
-      <bind-xml name="refseqAccession" node="attribute" />
-    </field>
-    <field name="thcAccession" type="string">
-      <bind-xml name="thcAccession" node="attribute" />
-    </field>
-    <field name="additionalAccessions" type="gov.nih.nci.caarray.domain.array.Accession" collection="set">
-      <bind-xml name="Accession" type="gov.nih.nci.caarray.domain.array.Accession" location="additonalAccessions" node="element" />
-    </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.array.Accession">
-    <map-to xml="Accession" ns-uri="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.array" />
+    <map-to xml="Accession" ns-uri="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.array" />
     <field name="databaseName" type="string">
       <bind-xml name="databaseName" node="attribute" />
     </field>
@@ -861,7 +855,7 @@
     </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.array.ExonProbeAnnotation" identity="id" extends="gov.nih.nci.caarray.domain.array.AbstractProbeAnnotation">
-    <map-to xml="ExonProbeAnnotation" ns-uri="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.array" />
+    <map-to xml="ExonProbeAnnotation" ns-uri="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.array" />
     <field name="start" type="long">
       <bind-xml name="start" node="attribute" />
     </field>
@@ -876,13 +870,13 @@
     </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.contact.Organization" identity="id" extends="gov.nih.nci.caarray.domain.contact.AbstractContact">
-    <map-to xml="Organization" ns-uri="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.contact" />
+    <map-to xml="Organization" ns-uri="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.contact" />
     <field name="name" type="string">
       <bind-xml name="name" node="attribute" />
     </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.contact.Person" identity="id" extends="gov.nih.nci.caarray.domain.contact.AbstractContact">
-    <map-to xml="Person" ns-uri="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.contact" />
+    <map-to xml="Person" ns-uri="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.contact" />
     <field name="firstName" type="string">
       <bind-xml name="firstName" node="attribute" />
     </field>
@@ -897,19 +891,19 @@
     </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.sample.MeasurementCharacteristic" identity="id" extends="gov.nih.nci.caarray.domain.sample.AbstractCharacteristic">
-    <map-to xml="MeasurementCharacteristic" ns-uri="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.sample" />
+    <map-to xml="MeasurementCharacteristic" ns-uri="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.sample" />
     <field name="value" type="float">
       <bind-xml name="value" node="attribute" />
     </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.sample.UserDefinedCharacteristic" identity="id" extends="gov.nih.nci.caarray.domain.sample.AbstractCharacteristic">
-    <map-to xml="UserDefinedCharacteristic" ns-uri="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.sample" />
+    <map-to xml="UserDefinedCharacteristic" ns-uri="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.sample" />
     <field name="value" type="string">
       <bind-xml name="value" node="attribute" />
     </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.sample.LabeledExtract" identity="id" extends="gov.nih.nci.caarray.domain.sample.AbstractBioMaterial">
-    <map-to xml="LabeledExtract" ns-uri="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.sample" />
+    <map-to xml="LabeledExtract" ns-uri="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.sample" />
     <field name="extracts" type="gov.nih.nci.caarray.domain.sample.Extract" collection="collection">
       <bind-xml name="Extract" type="gov.nih.nci.caarray.domain.sample.Extract" location="extracts" node="element" />
     </field>
@@ -921,7 +915,7 @@
     </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.sample.Source" identity="id" extends="gov.nih.nci.caarray.domain.sample.AbstractBioMaterial">
-    <map-to xml="Source" ns-uri="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.sample" />
+    <map-to xml="Source" ns-uri="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.sample" />
     <field name="samples" type="gov.nih.nci.caarray.domain.sample.Sample" collection="collection">
       <bind-xml name="Sample" type="gov.nih.nci.caarray.domain.sample.Sample" location="samples" node="element" />
     </field>
@@ -930,7 +924,7 @@
     </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.sample.Sample" identity="id" extends="gov.nih.nci.caarray.domain.sample.AbstractBioMaterial">
-    <map-to xml="Sample" ns-uri="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.sample" />
+    <map-to xml="Sample" ns-uri="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.sample" />
     <field name="extracts" type="gov.nih.nci.caarray.domain.sample.Extract" collection="collection">
       <bind-xml name="Extract" type="gov.nih.nci.caarray.domain.sample.Extract" location="extracts" node="element" />
     </field>
@@ -939,13 +933,13 @@
     </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.sample.TermBasedCharacteristic" identity="id" extends="gov.nih.nci.caarray.domain.sample.AbstractCharacteristic">
-    <map-to xml="TermBasedCharacteristic" ns-uri="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.sample" />
+    <map-to xml="TermBasedCharacteristic" ns-uri="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.sample" />
     <field name="term" type="gov.nih.nci.caarray.domain.vocabulary.Term">
       <bind-xml name="Term" type="gov.nih.nci.caarray.domain.vocabulary.Term" location="term" node="element" />
     </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.sample.Extract" identity="id" extends="gov.nih.nci.caarray.domain.sample.AbstractBioMaterial">
-    <map-to xml="Extract" ns-uri="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.sample" />
+    <map-to xml="Extract" ns-uri="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.sample" />
     <field name="samples" type="gov.nih.nci.caarray.domain.sample.Sample" collection="collection">
       <bind-xml name="Sample" type="gov.nih.nci.caarray.domain.sample.Sample" location="samples" node="element" />
     </field>
@@ -954,7 +948,7 @@
     </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.array.LogicalProbe" identity="id" extends="gov.nih.nci.caarray.domain.array.AbstractProbe">
-    <map-to xml="LogicalProbe" ns-uri="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.array" />
+    <map-to xml="LogicalProbe" ns-uri="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.array" />
     <field name="arrayDesignDetails" type="gov.nih.nci.caarray.domain.array.ArrayDesignDetails">
       <bind-xml name="ArrayDesignDetails" type="gov.nih.nci.caarray.domain.array.ArrayDesignDetails" location="arrayDesignDetails" node="element" />
     </field>
@@ -963,7 +957,7 @@
     </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.array.PhysicalProbe" identity="id" extends="gov.nih.nci.caarray.domain.array.AbstractProbe">
-    <map-to xml="PhysicalProbe" ns-uri="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.array" />
+    <map-to xml="PhysicalProbe" ns-uri="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.array" />
     <field name="arrayDesignDetails" type="gov.nih.nci.caarray.domain.array.ArrayDesignDetails">
       <bind-xml name="ArrayDesignDetails" type="gov.nih.nci.caarray.domain.array.ArrayDesignDetails" location="arrayDesignDetails" node="element" />
     </field>
@@ -978,7 +972,7 @@
     </field>
   </class>
   <class name="edu.georgetown.pir.Organism" identity="id">
-    <map-to xml="Organism" ns-uri="gme://Internal.caArray.caBIG/2.3/edu.georgetown.pir" />
+    <map-to xml="Organism" ns-uri="gme://Internal.caArray.caBIG/2.4/edu.georgetown.pir" />
     <field name="commonName" type="string">
       <bind-xml name="commonName" node="attribute" />
     </field>
@@ -1005,7 +999,7 @@
     </field>
   </class>
   <class name="edu.georgetown.pir.AdditionalOrganismName" identity="id">
-    <map-to xml="AdditionalOrganismName" ns-uri="gme://Internal.caArray.caBIG/2.3/edu.georgetown.pir" />
+    <map-to xml="AdditionalOrganismName" ns-uri="gme://Internal.caArray.caBIG/2.4/edu.georgetown.pir" />
     <field name="comment" type="string">
       <bind-xml name="comment" node="attribute" />
     </field>
@@ -1023,7 +1017,7 @@
     </field>
   </class>
   <class name="gov.nih.nci.caarray.domain.data.DataRetrievalRequest">
-    <map-to xml="DataRetrievalRequest" ns-uri="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.data" />
+    <map-to xml="DataRetrievalRequest" ns-uri="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.data" />
     <field name="id" type="long">
       <bind-xml name="id" node="attribute" />
     </field>
