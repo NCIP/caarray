@@ -3,6 +3,7 @@
 <c:if test="${!editMode}">
     <c:set var="theme" value="readonly" scope="request"/>
 </c:if>
+
 <caarray:tabPane>
     <div class="boxpad2">
         <fmt:message key="vocabulary.tabs.${category}" var="tabTitle"/>
@@ -22,26 +23,35 @@
             <s:textfield key="currentTerm.value" required="true" size="80" tabindex="1"/>
             <s:textfield key="currentTerm.description" size="80" tabindex="2"/>
             <tr><th colspan="2">Source</th></tr>
-            <c:if test="${editMode}">
-            <s:radio name="createNewSource" label="Create a new Source?" list="#{true: 'Yes', false: 'No'}"
-                tabindex="3" onclick="displayCorrectSourceEditingUi();" />
+            <c:if test="${tabTitle != \"Material Types\" && tabTitle != \"Protocol Types\"}">
+                 <c:if test="${editMode}">
+                 <s:radio name="createNewSource" label="Create a new Source?" list="#{true: 'Yes', false: 'No'}"
+                     tabindex="3" onclick="displayCorrectSourceEditingUi();" />
+                 </c:if>
+                 <tbody id="selectSource" <s:if test="createNewSource == true">style="display: none"</s:if>>
+                     <s:select list="sources" key="currentTerm.source" headerKey="" headerValue="-- Select A Source --"
+                         listKey="id" listValue="nameAndVersion" value="currentTerm.source.id" tabindex="4" required="true" />
+                 </tbody>
+                 <tbody id="newSource" <s:if test="createNewSource == false">style="display: none"</s:if>>
+                 <tr>
+                   <td colspan="2" valign="top" align="center">
+                     <s:fielderror>
+                       <s:param>newSource</s:param>
+                     </s:fielderror>
+                   </td>
+                 </tr>
+                 <s:textfield key="newSource.name" size="80" tabindex="5" required="true" />
+                 <s:textfield key="newSource.url" size="80" tabindex="5" />
+                 <s:textfield key="newSource.version" size="80" tabindex="7"/>
+                 </tbody>
             </c:if>
-            <tbody id="selectSource" <s:if test="createNewSource == true">style="display: none"</s:if>>
-                <s:select list="sources" key="currentTerm.source" headerKey="" headerValue="-- Select A Source --"
-                    listKey="id" listValue="nameAndVersion" value="currentTerm.source.id" tabindex="4" required="true" />
-            </tbody>
-            <tbody id="newSource" <s:if test="createNewSource == false">style="display: none"</s:if>>
-            <tr>
-              <td colspan="2" valign="top" align="center">
-                <s:fielderror>
-                  <s:param>newSource</s:param>
-                </s:fielderror>
-              </td>
-            </tr>
-            <s:textfield key="newSource.name" size="80" tabindex="5" required="true" />
-            <s:textfield key="newSource.url" size="80" tabindex="5" />
-            <s:textfield key="newSource.version" size="80" tabindex="7"/>
-            </tbody>
+            <c:if test="${tabTitle == \"Material Types\" || tabTitle == \"Protocol Types\"}">
+                <tbody id="selectSource">
+                    <s:select list="sources" key="currentTerm.source" listKey="id" listValue="nameAndVersion"
+                        value="mgedTermSource.id" tabindex="4" required="true" disabled="true" />
+                </tbody>
+                <c:set var="theme" value="readonly" scope="request"/>
+            </c:if>
             <tr><th colspan="2">Accession</th></tr>
             <s:textfield key="currentTerm.url" size="80" tabindex="8">
                 <s:param name="url">true</s:param>
@@ -102,7 +112,11 @@
     }
 
     submitTermForm = function() {
-        $('termForm_currentTerm_source').disabled = $('termForm_createNewSourcetrue').checked;
+        if($('termForm_createNewSourcetrue')) {
+            $('termForm_currentTerm_source').disabled = $('termForm_createNewSourcetrue').checked;
+        } else {
+            $('termForm_currentTerm_source').disabled = false;
+        }
         TabUtils.submitTabForm('termForm', 'tabboxwrapper');
         return false;
     }

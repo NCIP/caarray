@@ -108,6 +108,7 @@ import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.ExperimentContact;
+import gov.nih.nci.caarray.domain.project.ExperimentOntology;
 import gov.nih.nci.caarray.domain.project.MeasurementFactorValue;
 import gov.nih.nci.caarray.domain.project.TermBasedFactorValue;
 import gov.nih.nci.caarray.domain.project.UserDefinedFactorValue;
@@ -207,22 +208,49 @@ public class MageTabTranslatorTest extends AbstractServiceTest {
     }
     
     @Test
-    public void testDefect13164() throws InvalidDataException, MageTabParsingException {
-        MageTabFileSet mageTabSet = TestMageTabSets.DEFECT_13164;
-        for (FileRef f : mageTabSet.getAllFiles()) {
+    public void testVocabularyTermSources() throws InvalidDataException, MageTabParsingException {
+        // negative testing
+        MageTabFileSet badMageTabFileSet = TestMageTabSets.BAD_VOCABULARY_TERM_SOURCES_FILE_SET;
+        for (FileRef f : badMageTabFileSet.getAllFiles()) {
             fileAccessServiceStub.add(f.getAsFile());
         }
-        MageTabDocumentSet docSet = MageTabParser.INSTANCE.parse(mageTabSet);
-        assertTrue(docSet.getValidationResult().isValid());
-        CaArrayFileSet fileSet = TestMageTabSets.getFileSet(mageTabSet);
-        ValidationResult result = this.translator.validate(docSet, fileSet);
-        assertFalse(result.isValid());
-        FileValidationResult fileResult = result.getFileValidationResult(
-                MageTabDataFiles.DEFECT_13164_SDRF);
-        assertNotNull(fileResult);
-        assertFalse(result.isValid());
-        assertEquals(1, fileResult.getMessages().size());
-        assertTrue(fileResult.getMessages().get(0).getMessage().indexOf("or the Term Source should be ommitted") >= 0);
+        MageTabDocumentSet badMageTabDocumentSet = MageTabParser.INSTANCE.parse(badMageTabFileSet);
+        assertTrue(badMageTabDocumentSet.getValidationResult().isValid());
+        CaArrayFileSet badCaarrayFileSet = TestMageTabSets.getFileSet(badMageTabFileSet);
+        ValidationResult badValidationResult = this.translator.validate(badMageTabDocumentSet, badCaarrayFileSet);
+        FileValidationResult badSdrfFileValidationResult = badValidationResult.getFileValidationResult(
+                MageTabDataFiles.BAD_VOCABULARY_TERM_SOURCES_SDRF);
+        assertNotNull(badSdrfFileValidationResult);
+        assertFalse(badValidationResult.isValid());
+        assertEquals(2, badSdrfFileValidationResult.getMessages().size());
+        assertTrue(badSdrfFileValidationResult.getMessages().get(0).getMessage().indexOf("all Material Types must come from the") >= 0);
+        assertTrue(badSdrfFileValidationResult.getMessages().get(1).getMessage().indexOf("or the Term Source should be omitted") >= 0);
+        FileValidationResult badIdfFileValidationResult = badValidationResult.getFileValidationResult(MageTabDataFiles.BAD_VOCABULARY_TERM_SOURCES_IDF);
+        assertNotNull(badIdfFileValidationResult);
+        assertEquals(1, badIdfFileValidationResult.getMessages().size());
+        assertTrue(badIdfFileValidationResult.getMessages().get(0).getMessage().indexOf("All Protocol Types must come from the") >= 0);
+
+        // positive testing
+        MageTabFileSet goodMageTabFileSet = TestMageTabSets.GOOD_VOCABULARY_TERM_SOURCES_FILE_SET;
+        for (FileRef f : goodMageTabFileSet.getAllFiles()) {
+            fileAccessServiceStub.add(f.getAsFile());
+        }
+        MageTabDocumentSet goodMageTabDocumentSet = MageTabParser.INSTANCE.parse(goodMageTabFileSet);
+        assertTrue(goodMageTabDocumentSet.getValidationResult().isValid());
+        CaArrayFileSet goodCaarrayFileSet = TestMageTabSets.getFileSet(goodMageTabFileSet);
+        ValidationResult goodValidationResult = this.translator.validate(goodMageTabDocumentSet, goodCaarrayFileSet);
+        FileValidationResult goodSdrfFileValidationResult = goodValidationResult.getFileValidationResult(
+                MageTabDataFiles.GOOD_VOCABULARY_TERM_SOURCES_SDRF);
+        assertNull(goodSdrfFileValidationResult);
+        
+        CaArrayTranslationResult goodCaArrayTranslationResult = this.translator.translate(goodMageTabDocumentSet, goodCaarrayFileSet);
+        Collection<Experiment> investigationsCollection = goodCaArrayTranslationResult.getInvestigations();
+        assertTrue("There should only be one experiment.", investigationsCollection.size() == 1);
+        Experiment experiment = investigationsCollection.iterator().next();
+        Set<Sample> samplesSet = experiment.getSamples();
+        assertTrue("There should only be one sample.", samplesSet.size() == 1);
+        Sample sample = samplesSet.iterator().next();
+        assertEquals("The organism is incorrect.", "Crazy Alien", sample.getOrganism().getScientificName());
     }
 
     @Test

@@ -87,6 +87,7 @@ import gov.nih.nci.caarray.domain.contact.Address;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.ExperimentContact;
+import gov.nih.nci.caarray.domain.project.ExperimentOntology;
 import gov.nih.nci.caarray.domain.project.Factor;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
@@ -117,8 +118,8 @@ final class IdfTranslator extends AbstractTranslator {
     private static final Logger LOG = Logger.getLogger(IdfTranslator.class);
     private static final String UNVERSIONED_TERM_SOURCE = "*unversioned*";
 
-    IdfTranslator(MageTabDocumentSet documentSet, MageTabTranslationResult translationResult,
-            CaArrayDaoFactory daoFactory) {
+    IdfTranslator(final MageTabDocumentSet documentSet, final MageTabTranslationResult translationResult,
+            final CaArrayDaoFactory daoFactory) {
         super(documentSet, translationResult, daoFactory);
     }
 
@@ -137,6 +138,7 @@ final class IdfTranslator extends AbstractTranslator {
         if (!idfDocumentsSet.isEmpty()) {
             IdfDocument idfDocument = idfDocumentsSet.iterator().next();
             validateTermSources(idfDocument);
+            validateProtocolTypes(idfDocument);
             String investigationDescription = idfDocument.getInvestigation().getDescription();
             if (null != investigationDescription && investigationDescription.length() > LARGE_TEXT_FIELD_LENGTH) {
                 idfDocument.addErrorMessage("The experiment description length of "
@@ -146,7 +148,7 @@ final class IdfTranslator extends AbstractTranslator {
         }
     }
 
-    private void translate(gov.nih.nci.caarray.magetab.idf.Investigation idfInvestigation) {
+    private void translate(final gov.nih.nci.caarray.magetab.idf.Investigation idfInvestigation) {
         Experiment investigation = new Experiment();
         translateInvestigationSummary(idfInvestigation, investigation);
         translateTerms(idfInvestigation, investigation);
@@ -156,7 +158,7 @@ final class IdfTranslator extends AbstractTranslator {
         getTranslationResult().addInvestigation(investigation);
     }
 
-    private void validateTermSources(IdfDocument idfDocument) {
+    private void validateTermSources(final IdfDocument idfDocument) {
         Set<String> termSourceNamesSet = new HashSet<String>();
         Set<TermSourceKey> termSourceKeysByUrlSet = new HashSet<TermSourceKey>();
         List<TermSource> termSources = idfDocument.getDocTermSources();
@@ -182,8 +184,21 @@ final class IdfTranslator extends AbstractTranslator {
             }
         }
     }
+    
+    private void validateProtocolTypes(final IdfDocument idfDocument) {
+        for (gov.nih.nci.caarray.magetab.Protocol protocol : idfDocument.getInvestigation().getProtocols()) {
+            if (null != protocol.getType() && null != protocol.getType().getTermSource()
+                    && !ExperimentOntology.MGED_ONTOLOGY.getOntologyName().equals(
+                            protocol.getType().getTermSource().getName())) {
+                idfDocument.addErrorMessage("The Protocol Type '" + protocol.getType().getValue()
+                        + "'is associated with an invalid Term Source REF '"
+                        + protocol.getType().getTermSource().getName() + "'. All Protocol Types must come from the '"
+                        + ExperimentOntology.MGED_ONTOLOGY.getOntologyName() + "' Term Source.");
+            }
+        }
+    }
 
-    private void translateInvestigationSummary(gov.nih.nci.caarray.magetab.idf.Investigation idfInvestigation,
+    private void translateInvestigationSummary(final gov.nih.nci.caarray.magetab.idf.Investigation idfInvestigation,
             Experiment investigation) {
         investigation.setTitle(idfInvestigation.getTitle());
         // WC: temporary fix.  this should be constrained on the db.
@@ -196,16 +211,16 @@ final class IdfTranslator extends AbstractTranslator {
         investigation.setPublicReleaseDate(idfInvestigation.getPublicReleaseDate());
     }
 
-    private void translateTerms(gov.nih.nci.caarray.magetab.idf.Investigation idfInvestigation,
-            Experiment investigation) {
+    private void translateTerms(final gov.nih.nci.caarray.magetab.idf.Investigation idfInvestigation,
+            final Experiment investigation) {
         investigation.getExperimentDesignTypes().addAll(getTerms(idfInvestigation.getDesigns()));
         investigation.getNormalizationTypes().addAll(getTerms(idfInvestigation.getNormalizationTypes()));
         investigation.getReplicateTypes().addAll(getTerms(idfInvestigation.getReplicateTypes()));
         investigation.getQualityControlTypes().addAll(getTerms(idfInvestigation.getQualityControlTypes()));
     }
 
-    private void translatePublications(gov.nih.nci.caarray.magetab.idf.Investigation idfInvestigation,
-            Experiment investigation) {
+    private void translatePublications(final gov.nih.nci.caarray.magetab.idf.Investigation idfInvestigation,
+            final Experiment investigation) {
         List<gov.nih.nci.caarray.domain.publication.Publication> publications =
             new ArrayList<gov.nih.nci.caarray.domain.publication.Publication>();
         List<Publication> idfPublications = idfInvestigation.getPublications();
@@ -225,8 +240,8 @@ final class IdfTranslator extends AbstractTranslator {
         investigation.getPublications().addAll(publications);
     }
 
-    private void translateFactors(gov.nih.nci.caarray.magetab.idf.Investigation idfInvestigation,
-            Experiment investigation) {
+    private void translateFactors(final gov.nih.nci.caarray.magetab.idf.Investigation idfInvestigation,
+            final Experiment investigation) {
         List<Factor> factors = new ArrayList<Factor>();
         List<ExperimentalFactor> idfFactors = idfInvestigation.getFactors();
         Iterator<ExperimentalFactor> iterator = idfFactors.iterator();
@@ -242,8 +257,8 @@ final class IdfTranslator extends AbstractTranslator {
         investigation.getFactors().addAll(factors);
     }
 
-    private void translateContacts(gov.nih.nci.caarray.magetab.idf.Investigation idfInvestigation,
-            Experiment investigation) {
+    private void translateContacts(final gov.nih.nci.caarray.magetab.idf.Investigation idfInvestigation,
+            final Experiment investigation) {
         List<ExperimentContact> contacts = new ArrayList<ExperimentContact>();
         List<Person> idfPersons = idfInvestigation.getPersons();
         Iterator<Person> iterator = idfPersons.iterator();
