@@ -15,7 +15,7 @@
         <s:textfield key="currentLabeledExtract.externalId" size="80" tabindex="3" />
         <c:if test="${!empty currentLabeledExtract.externalId}">
             <caarray:outputUrl var="permalinkUrl">
-                <jsp:attribute name="url"><c:url value="/project/${project.experiment.publicIdentifier}/labeledExtract/${currentLabeledExtract.externalId}"/></jsp:attribute>
+                <jsp:attribute name="url"><c:url value="/project/${project.experiment.publicIdentifier}/labeledExtract/${caarrayfn:encodeUrl(currentLabeledExtract.externalId)}"/></jsp:attribute>
             </caarray:outputUrl>
             <s:textfield theme="readonly" label="Sample URL" value="%{#attr.permalinkUrl}">
                 <s:param name="url">true</s:param>

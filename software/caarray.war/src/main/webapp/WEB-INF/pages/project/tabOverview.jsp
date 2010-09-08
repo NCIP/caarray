@@ -27,7 +27,7 @@ setExperimentTitleHeader('${caarrayfn:escapeJavaScript(projectTitle)}');
             <s:textfield theme="readonly" name="project.experiment.publicIdentifier" label="Experiment Identifier"/>
             <c:if test="${!empty project.id}">
                 <caarray:outputUrl var="permalinkUrl">
-                    <jsp:attribute name="url"><c:url value="/project/${project.experiment.publicIdentifier}"/></jsp:attribute>
+                    <jsp:attribute name="url"><c:url value="/project/${caarrayfn:encodeUrl(project.experiment.publicIdentifier)}"/></jsp:attribute>
                 </caarray:outputUrl>
                 <s:textfield theme="readonly" label="Experiment URL" value="%{#attr.permalinkUrl}">
                     <s:param name="url">true</s:param>

@@ -31,9 +31,11 @@
     fileSizeLookup['${file.id}'] = ${file.uncompressedSize};
     </c:forEach>
     <c:forEach items="${selectedFileIds}" var="sid">
+      <c:if test="${sid.class.name == 'java.lang.Long'}">
       if(${sid}) {
         toggleFileInJob(true, ${sid});
       }
+      </c:if>
     </c:forEach>
 
     toggleAllFiles = function(checked, theform) {
