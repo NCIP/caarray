@@ -23,7 +23,7 @@
         <s:textfield key="currentSample.externalId" size="80" tabindex="3" />
         <c:if test="${!empty currentSample.externalId}">
             <caarray:outputUrl var="permalinkUrl">
-                <jsp:attribute name="url"><c:url value="/project/${project.experiment.publicIdentifier}/sample/${currentSample.externalId}"/></jsp:attribute>
+                <jsp:attribute name="url"><c:url value="/project/${project.experiment.publicIdentifier}/sample/${caarrayfn:encodeUrl(currentSample.externalId)}"/></jsp:attribute>
             </caarray:outputUrl>
             <s:textfield theme="readonly" label="Sample URL" value="%{#attr.permalinkUrl}">
                 <s:param name="url">true</s:param>

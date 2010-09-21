@@ -1,29 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.array"
-    xmlns:edu.georgetown.pir="gme://Internal.caArray.caBIG/2.3/edu.georgetown.pir"
-    xmlns:gov.nih.nci.caarray.domain="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain"
-    xmlns:gov.nih.nci.caarray.domain.contact="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.contact"
-    xmlns:gov.nih.nci.caarray.domain.file="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.file"
-    xmlns:gov.nih.nci.caarray.domain.protocol="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.protocol"
-    xmlns:gov.nih.nci.caarray.domain.project="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.project"
-    xmlns:gov.nih.nci.caarray.domain.vocabulary="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.vocabulary"
-    xmlns:gov.nih.nci.cabio.domain="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.cabio.domain"
-    targetNamespace="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.array" elementFormDefault="qualified">
-    <xs:import namespace="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.vocabulary"
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.array"
+    xmlns:edu.georgetown.pir="gme://Internal.caArray.caBIG/2.4/edu.georgetown.pir"
+    xmlns:gov.nih.nci.caarray.domain="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain"
+    xmlns:gov.nih.nci.caarray.domain.contact="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.contact"
+    xmlns:gov.nih.nci.caarray.domain.file="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.file"
+    xmlns:gov.nih.nci.caarray.domain.protocol="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.protocol"
+    xmlns:gov.nih.nci.caarray.domain.project="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.project"
+    xmlns:gov.nih.nci.caarray.domain.vocabulary="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.vocabulary"
+    xmlns:gov.nih.nci.cabio.domain="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.cabio.domain"
+    targetNamespace="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.array" elementFormDefault="qualified">
+    <xs:import namespace="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.vocabulary"
         schemaLocation="gov.nih.nci.caarray.domain.vocabulary.xsd" />
-    <xs:import namespace="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain"
+    <xs:import namespace="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain"
         schemaLocation="gov.nih.nci.caarray.domain.xsd" />
-    <xs:import namespace="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.file"
+    <xs:import namespace="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.file"
         schemaLocation="gov.nih.nci.caarray.domain.file.xsd" />
-    <xs:import namespace="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.contact"
+    <xs:import namespace="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.contact"
         schemaLocation="gov.nih.nci.caarray.domain.contact.xsd" />
-    <xs:import namespace="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.cabio.domain"
+    <xs:import namespace="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.cabio.domain"
         schemaLocation="gov.nih.nci.cabio.domain.xsd" />
-    <xs:import namespace="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.protocol"
+    <xs:import namespace="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.protocol"
         schemaLocation="gov.nih.nci.caarray.domain.protocol.xsd" />
-    <xs:import namespace="gme://Internal.caArray.caBIG/2.3/gov.nih.nci.caarray.domain.project"
+    <xs:import namespace="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.project"
         schemaLocation="gov.nih.nci.caarray.domain.project.xsd" />
-    <xs:import namespace="gme://Internal.caArray.caBIG/2.3/edu.georgetown.pir" schemaLocation="edu.georgetown.pir.xsd" />
+    <xs:import namespace="gme://Internal.caArray.caBIG/2.4/edu.georgetown.pir" schemaLocation="edu.georgetown.pir.xsd" />
     <xs:element name="ArrayGroup" type="ArrayGroup" />
     <xs:complexType name="ArrayGroup">
         <xs:complexContent>
@@ -282,21 +282,26 @@
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
+    <xs:element name="MiRNAProbeAnnotation" type="MiRNAProbeAnnotation" />
+    <xs:complexType name="MiRNAProbeAnnotation">
+        <xs:complexContent>
+            <xs:extension base="AbstractProbeAnnotation">
+                <!-- accessions field not in registered model, so not included -->
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
     <xs:element name="Gene" type="Gene" />
     <xs:complexType name="Gene">
         <xs:complexContent>
             <xs:extension base="gov.nih.nci.caarray.domain:AbstractCaArrayEntity">
                 <xs:attribute name="fullName" type="xs:string" />
                 <xs:attribute name="symbol" type="xs:string" />
-                <xs:sequence>
-                    <xs:element name="accessions" minOccurs="0">
-                        <xs:complexType>
-                            <xs:choice minOccurs="0" maxOccurs="unbounded">
-                                <xs:element ref="Accession" />
-                            </xs:choice>
-                        </xs:complexType>
-                    </xs:element>
-                </xs:sequence>
+                <xs:attribute name="genbankAccession" type="xs:string" />
+                <xs:attribute name="genbankAccessionVersion" type="xs:string" />
+                <xs:attribute name="ensemblgeneID" type="xs:string" />
+                <xs:attribute name="unigeneclusterID" type="xs:string" />
+                <xs:attribute name="entrezgeneID" type="xs:string" />
+                <!-- accessions field not in registered model, so not included -->
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
