@@ -83,7 +83,11 @@
     <changeSet id="28337" author="jscott">
        <comment>GF-28337 - Fix already-imported Illumina genotyping CSV array designs to use correct probe ids.</comment>
        <customChange class="gov.nih.nci.caarray.upgrade.FixIlluminaGenotypingCsvDesignProbeNamesMigrator"/>
-    </changeSet>    
+    </changeSet>
    
+    <changeSet id="29399" author="dharley">
+       <comment>GF-29399 - Write an upgrade script that will clean up organisms in the database to limit them to the NCBI taxonomy term source.</comment>
+       <customChange class="gov.nih.nci.caarray.upgrade.FixOrganismsMigrator"/>
+    </changeSet>
    
 </databaseChangeLog>

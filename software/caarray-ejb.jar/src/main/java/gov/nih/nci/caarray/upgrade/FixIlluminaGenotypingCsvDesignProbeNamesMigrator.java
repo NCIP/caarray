@@ -82,8 +82,6 @@
  */
 package gov.nih.nci.caarray.upgrade;
 
-import gov.nih.nci.caarray.application.ApplicationModule;
-import gov.nih.nci.caarray.application.arraydata.ArrayDataModule;
 import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.dao.FileDao;
 import gov.nih.nci.caarray.dao.SearchDao;
@@ -98,13 +96,9 @@ import gov.nih.nci.caarray.platforms.FileDaoFileManager;
 import gov.nih.nci.caarray.platforms.FileManager;
 import gov.nih.nci.caarray.platforms.SessionTransactionManager;
 import gov.nih.nci.caarray.platforms.SessionTransactionManagerNoOpImpl;
-import gov.nih.nci.caarray.platforms.illumina.IlluminaModule;
 import gov.nih.nci.caarray.platforms.spi.DesignFileHandler;
 import gov.nih.nci.caarray.platforms.spi.PlatformFileReadException;
-import gov.nih.nci.caarray.services.ServicesModule;
-import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
 
-import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -115,15 +109,9 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import liquibase.database.Database;
-import liquibase.exception.CustomChangeException;
-
 import org.apache.commons.lang.UnhandledException;
-import org.hibernate.Transaction;
 
 import com.google.inject.AbstractModule;
-import com.google.inject.Guice;
-import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.google.inject.Module;
 import com.google.inject.TypeLiteral;
@@ -133,55 +121,23 @@ import com.google.inject.util.Types;
  * @author jscott
  *
  */
-public class FixIlluminaGenotypingCsvDesignProbeNamesMigrator extends AbstractCustomChange {
+public class FixIlluminaGenotypingCsvDesignProbeNamesMigrator extends AbstractHibernateBasedCustomChange {
 
     /**
      * {@inheritDoc}
      */
-    public void execute(Database database) throws CustomChangeException {
-        try {
-            fixClassLoader();
-                        
-            Connection connection = database.getConnection().getUnderlyingConnection();       
-            execute(connection);
-        } catch (Exception e) {
-            throw new CustomChangeException(e);
-        }
-    }
-
-    /**
-     * Running from an Ant updateDatabase task will fail due to class loader issues
-     * unless the context class loader is changed.
-     */
-    private void fixClassLoader() {
-        ClassLoader currentClassLoader = this.getClass().getClassLoader();            
-        Thread.currentThread().setContextClassLoader(currentClassLoader);
-    }
-
-    /**
-     * @param connection the JDBC connection to use
-     */
-    public void execute(Connection connection) {
-        Injector injector = createInjector();
-        
-        SingleConnectionHibernateHelper hibernateHelper = createHibernateHelper(connection, injector);
-        
-        FileDao fileDao = injector.getInstance(FileDao.class);
+    public void execute(SingleConnectionHibernateHelper hibernateHelper) {
+        FileDao fileDao = getInjector().getInstance(FileDao.class);
         Set<DesignFileHandler> handlers = getAllDesignHandlers(fileDao);
-        
-        Transaction transaction = hibernateHelper.beginTransaction();              
         try {
-            ArrayDao arrayDao = injector.getInstance(ArrayDao.class);
+            ArrayDao arrayDao = getInjector().getInstance(ArrayDao.class);
                         
             List<Long> arrayDesignIds = getArrayDesignIds(hibernateHelper, arrayDao);
             hibernateHelper.getCurrentSession().clear();
            
             fixArrayDesigns(handlers, arrayDao, arrayDesignIds);
-            
-            transaction.commit();           
         } catch (Exception e) {
-            transaction.rollback();
-            throw new UnhandledException(e);
+            throw new UnhandledException("Cannot migrate the Illumina Genotyping CSV design probe names.", e);
         }
     }
 
@@ -240,33 +196,6 @@ public class FixIlluminaGenotypingCsvDesignProbeNamesMigrator extends AbstractCu
             }
         };
         return comparator;
-    }
-
-    private SingleConnectionHibernateHelper createHibernateHelper(Connection connection, Injector injector) {
-        SingleConnectionHibernateHelper hibernateHelper = (SingleConnectionHibernateHelper) injector
-                .getInstance(CaArrayHibernateHelper.class);
-        
-        hibernateHelper.initialize(connection);
-        
-        return hibernateHelper;
-    }
-
-    private Injector createInjector() {
-        Module localModule = new AbstractModule() {
-            @Override
-            protected void configure() {
-                bind(CaArrayHibernateHelper.class).toInstance(new SingleConnectionHibernateHelper());             
-            }   
-        };
-        
-        final Module[] modules = new Module[] {
-                new ArrayDataModule(), // identical to ArrayDataModule, includes DaoModule
-                new ServicesModule(),
-                new ApplicationModule(),
-                localModule,
-            };
-       
-        return Guice.createInjector(modules);
     }
 
     /**
@@ -328,9 +257,8 @@ public class FixIlluminaGenotypingCsvDesignProbeNamesMigrator extends AbstractCu
                 bind(SearchDao.class).to(SearchDaoUnsupportedOperationImpl.class).asEagerSingleton();
             }
          };
-        Injector injector = Guice.createInjector(module, new IlluminaModule());
         final Key<?> key = Key.get(TypeLiteral.get(Types.setOf(DesignFileHandler.class)));
-        Set<DesignFileHandler> handlers = (Set<DesignFileHandler>) injector.getInstance(key);
+        Set<DesignFileHandler> handlers = (Set<DesignFileHandler>) getInjector().getInstance(key);
         
         return handlers;
     }
