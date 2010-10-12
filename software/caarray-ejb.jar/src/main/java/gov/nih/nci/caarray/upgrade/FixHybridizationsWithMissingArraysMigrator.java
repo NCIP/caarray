@@ -82,8 +82,6 @@
  */
 package gov.nih.nci.caarray.upgrade;
 
-import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
-import gov.nih.nci.caarray.application.arraydesign.ArrayDesignServiceBean;
 import gov.nih.nci.caarray.dao.DaoModule;
 import gov.nih.nci.caarray.domain.LSID;
 import gov.nih.nci.caarray.domain.MultiPartBlob;
@@ -93,18 +91,17 @@ import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.platforms.FileManager;
 import gov.nih.nci.caarray.platforms.PlatformModule;
 import gov.nih.nci.caarray.platforms.SessionTransactionManager;
+import gov.nih.nci.caarray.platforms.SessionTransactionManagerNoOpImpl;
 import gov.nih.nci.caarray.platforms.spi.DataFileHandler;
 import gov.nih.nci.caarray.platforms.spi.PlatformFileReadException;
-import gov.nih.nci.caarray.staticinjection.CaArrayEjbStaticInjectionModule;
+import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -135,70 +132,42 @@ import com.google.inject.util.Types;
  */
 @SuppressWarnings({ "PMD.TooManyMethods", "PMD.CyclomaticComplexity" })
 public class FixHybridizationsWithMissingArraysMigrator extends AbstractCustomChange {
-    private Database database;
     private Set<DataFileHandler> handlers;
     private final Map<Long, File> openFileMap = new HashMap<Long, File>();
+    private final FixHybridizationsWithMissingArraysDao dao;
+    private Injector injector;
+    
+    /**
+     * Creates a FixHybridizationsWithMissingArraysMigrator that will make updates to the live database.
+     */
+    public FixHybridizationsWithMissingArraysMigrator() {
+        this(new FixHybridizationsWithMissingArraysDao());
+    }
+    
+    /**
+     * Creates a FixHybridizationsWithMissingArraysMigrator that uses a custom data access object for
+     * database operations.  Intended for use in testing.
+     * 
+     * @param dao handles the database update operations
+     */
+    public FixHybridizationsWithMissingArraysMigrator(FixHybridizationsWithMissingArraysDao dao) {
+        this.dao = dao;
+    }
 
     /**
      * {@inheritDoc}
      */
     @SuppressWarnings("PMD.ExcessiveMethodLength")
     public void execute(Database db) throws CustomChangeException {
+        final Connection underlyingConnection = db.getConnection().getUnderlyingConnection();
+        execute(underlyingConnection);
+    }
+
+    public void execute(Connection connection) throws CustomChangeException {
+        setup(connection);
+
         try {
-            this.openFileMap.clear();
-            this.database = db;
-            
-            final AbstractModule localModule = new AbstractModule() {
-                @Override
-                protected void configure() {
-                    bind(FileManager.class).toInstance(new FileManager() {
-                        public File openFile(CaArrayFile caArrayFile) {
-                            try {
-                                File file = getFile(caArrayFile.getId());
-                                openFileMap.put(caArrayFile.getId(), file);
-                                return file;
-                            } catch (SQLException e) {
-                                throw new IllegalStateException("Could not open the file " + caArrayFile);
-                            } catch (IOException e) {
-                                throw new IllegalStateException("Could not open the file " + caArrayFile);
-                            }
-                        }
-
-                        public void closeFile(CaArrayFile caArrayFile) {
-                            File file = openFileMap.get(caArrayFile.getId());
-                            FileUtils.deleteQuietly(file);                            
-                        }
-                    });
-                    
-                    bind(SessionTransactionManager.class).toInstance(new SessionTransactionManager() {
-                        public void rollbackTransaction() {
-                            //no-op
-                        }
-                        
-                        public void flushSession() {
-                            //no-op
-                        }
-                        
-                        public void commitTransaction() {
-                            //no-op
-                        }
-                        
-                        public void clearSession() {
-                            //no-op
-                        }
-                        
-                        public void beginTransaction() {
-                            //no-op
-                        }
-                    });
-                }
-            };
-            Injector injector = Guice.createInjector(new DaoModule(), new PlatformModule(), localModule,
-                    new CaArrayEjbStaticInjectionModule());
-            this.handlers = (Set<DataFileHandler>) injector.getInstance(Key.get(TypeLiteral.get(Types
-                    .setOf(DataFileHandler.class))));
-
-            List<Long> hybIdsWithoutArray = getHybIdsWithNoArrayDesign();
+            List<Long> hybIdsWithoutArray = dao.getHybIdsWithNoArrayOrNoArrayDesign();
             for (Long hid : hybIdsWithoutArray) {
                 ensureArrayDesignSetForHyb(hid);
             }
@@ -209,71 +178,25 @@ public class FixHybridizationsWithMissingArraysMigrator extends AbstractCustomCh
         } catch (PlatformFileReadException e) {
             throw new CustomChangeException("Could not fix hybridizations", e);
         }
-
     }
 
     private void ensureArrayDesignSetForHyb(Long hid) throws SQLException, IOException, PlatformFileReadException {
-        Long adid = getArrayDesignIdFromExperiment(hid);
-        if (adid == null) {
-            adid = getArrayDesignIdFromFiles(hid);
-        }
+        Long adid = getArrayDesignId(hid);
         if (adid != null) {
             setArrayDesignForHyb(hid, adid);
         }
     }
 
-    private void setArrayDesignForHyb(Long hid, Long adid) throws SQLException {
-        Long aid = getArrayFromHybridizationId(hid);
-        if (aid == null) {
-            setArrayAndDesign(hid, adid);
-        } else {
-            setArrayDesignForArray(aid, adid);
+    private Long getArrayDesignId(Long hid) throws SQLException, IOException, PlatformFileReadException {
+        Long adid = dao.getUniqueArrayDesignIdFromExperiment(hid);
+        if (adid == null) {
+            adid = getArrayDesignIdFromFiles(hid);
         }
-    }
-
-    private void setArrayDesignForArray(Long aid, Long adid) throws SQLException {
-        String sql = "update array set design = ? where id = ?";
-        PreparedStatement ps = database.getConnection().prepareStatement(sql);
-        ps.setLong(1, adid);
-        ps.setLong(2, aid);
-        ps.executeUpdate();
-    }
-
-    private void setArrayAndDesign(Long hid, Long adid) throws SQLException {
-        String sql = "insert into array (design) values (?)";
-        PreparedStatement ps = database.getConnection().prepareStatement(sql);
-        ps.setLong(1, adid);
-        ps.executeUpdate();
-
-        sql = "select last_insert_id()";
-        ps = database.getConnection().prepareStatement(sql);
-        ResultSet rs = ps.executeQuery();
-        if (!rs.next()) {
-            throw new SQLException("Could not determine id of just-inserted array row");
-        }
-        Long aid = rs.getLong(1);
-
-        sql = "update hybridization set array = ? where id = ?";
-        ps = database.getConnection().prepareStatement(sql);
-        ps.setLong(1, aid);
-        ps.setLong(2, hid);
-        ps.executeUpdate();
-    }
-
-    private Long getArrayFromHybridizationId(Long hid) throws SQLException {
-        String sql = "select h.array from hybridization h where h.id = ?";
-        PreparedStatement ps = database.getConnection().prepareStatement(sql);
-        ps.setLong(1, hid);
-        ResultSet rs = ps.executeQuery();
-        Long id = null;
-        if (rs.first() && rs.getLong(1) != 0) {
-            id = rs.getLong(1);
-        }
-        return id;
+        return adid;
     }
 
     private Long getArrayDesignIdFromFiles(Long hid) throws SQLException, IOException, PlatformFileReadException {
-        List<Long> dataFileIds = getDataFileIds(hid);
+        List<Long> dataFileIds = dao.getImportedDataFileIdsFromHybId(hid);
         for (Long fileId : dataFileIds) {
             Long adid = getArrayDesignFromFile(fileId);
             if (adid != null) {
@@ -283,33 +206,13 @@ public class FixHybridizationsWithMissingArraysMigrator extends AbstractCustomCh
         return null;
     }
 
+    @SuppressWarnings("deprecation")
     private Long getArrayDesignFromFile(Long fileId) throws SQLException, IOException {
-        FileType ft = getFileType(fileId);
+        FileType ft = dao.getFileType(fileId);
 
         if (!ft.isArrayData()) {
             return null;
         }
-
-        ArrayDesignService ads = new ArrayDesignServiceBean(null, null, null, null) {
-            public ArrayDesign getArrayDesign(String lsidAuthority, String lsidNamesapce, String lsidObjectId) {
-                try {
-                    String sql = "select id from array_design where lsid_authority = ? and lsid_namespace = ? "
-                            + " and lsid_object_id = ?";
-                    PreparedStatement ps = database.getConnection().prepareStatement(sql);
-                    ps.setString(1, lsidAuthority);
-                    ps.setString(2, lsidNamesapce);
-                    ps.setString(3, lsidObjectId);
-                    ResultSet rs = ps.executeQuery();
-                    ArrayDesign ad = new ArrayDesign();
-                    if (rs.first()) {
-                        ad.setId(rs.getLong(1));
-                    }
-                    return ad;
-                } catch (SQLException e) {
-                    throw new IllegalStateException("Could not get array design ", e);
-                }
-            }
-        };
 
         CaArrayFile caArrayFile = new CaArrayFile();
         caArrayFile.setId(fileId);
@@ -328,102 +231,16 @@ public class FixHybridizationsWithMissingArraysMigrator extends AbstractCustomCh
     
     private ArrayDesign findArrayDesignFromFile(DataFileHandler handler) throws PlatformFileReadException {
         List<LSID> designLsids = handler.getReferencedArrayDesignCandidateIds();
-        for (LSID lsid : designLsids) {
-            try {
-                String sql = "select id from array_design where lsid_authority = ? and lsid_namespace = ? "
-                        + " and lsid_object_id = ?";
-                PreparedStatement ps = database.getConnection().prepareStatement(sql);
-                ps.setString(1, lsid.getAuthority());
-                ps.setString(2, lsid.getNamespace());
-                ps.setString(3, lsid.getObjectId());
-                ResultSet rs = ps.executeQuery();
-                if (rs.first()) {
-                    ArrayDesign ad = new ArrayDesign();
-                    ad.setId(rs.getLong(1));
-                    return ad;
-                }
-            } catch (SQLException e) {
-                throw new IllegalStateException("Could not get array design ", e);
-            }
-        }
-        return new ArrayDesign();
+        return dao.getFirstArrayDesignFromLsidList(designLsids);
     }
 
-
-    private FileType getFileType(Long fileId) throws SQLException {
-        String sql = "select type from caarrayfile where id = ?";
-        PreparedStatement ps = database.getConnection().prepareStatement(sql);
-        ps.setLong(1, fileId);
-        ResultSet rs = ps.executeQuery();
-        if (rs.next()) {
-            return FileType.valueOf(rs.getString(1));
+    private void setArrayDesignForHyb(Long hid, Long adid) throws SQLException {
+        Long aid = dao.getArrayFromHybridizationId(hid);
+        if (aid != null) {
+            dao.setArrayDesignForArray(aid, adid);
+        } else {
+            dao.setArrayAndDesign(hid, adid);
         }
-        return null;
-    }
-
-    private File getFile(Long fileId) throws SQLException, IOException {
-        String sql = "select bh.contents from caarrayfile f join caarrayfile_blob_parts fbp on f.id = fbp.caarrayfile "
-                + " join blob_holder bh on fbp.blob_parts = bh.id where f.id = ? order by fbp.contents_index";
-        PreparedStatement ps = database.getConnection().prepareStatement(sql);
-        ps.setLong(1, fileId);
-
-        ResultSet rs = ps.executeQuery();
-        MultiPartBlob mpb = new MultiPartBlob();
-        while (rs.next()) {
-            mpb.addBlob(rs.getBlob(1));
-        }
-
-        File f = File.createTempFile("datafile", null);
-        InputStream is = mpb.readUncompressedContents();
-        FileOutputStream fos = FileUtils.openOutputStream(f);
-        IOUtils.copy(is, fos);
-        IOUtils.closeQuietly(is);
-        IOUtils.closeQuietly(fos);
-
-        return f;
-    }
-
-    private List<Long> getDataFileIds(Long hid) throws SQLException {
-        String sql = "select f.id from caarrayfile f left join arraydata ad on f.id = ad.data_file "
-                + " left join rawarraydata_hybridizations radh on ad.id = radh.rawarraydata_id "
-                + " left join hybridization h on radh.hybridization_id = h.id "
-                + " left join derivedarraydata_hybridizations dadh on ad.id = dadh.derivedarraydata_id "
-                + " left join hybridization h2 on dadh.hybridization_id = h2.id where h.id = ? or h2.id = ?";
-        PreparedStatement ps = database.getConnection().prepareStatement(sql);
-        ps.setLong(1, hid);
-        ps.setLong(2, hid);
-        ResultSet rs = ps.executeQuery();
-        List<Long> ids = new ArrayList<Long>();
-        while (rs.next()) {
-            ids.add(rs.getLong(1));
-        }
-        return ids;
-    }
-
-    private Long getArrayDesignIdFromExperiment(Long hid) throws SQLException {
-        String sql = "select ad.id from hybridization h join experiment e on h.experiment = e.id "
-                + " join experimentarraydesign ead on e.id = ead.experiment_id "
-                + " join array_design ad on ead.arraydesign_id = ad.id where h.id = ?";
-        PreparedStatement ps = database.getConnection().prepareStatement(sql);
-        ps.setLong(1, hid);
-        ResultSet rs = ps.executeQuery();
-        Long id = null;
-        if (rs.first() && rs.isLast()) {
-            id = rs.getLong(1);
-        }
-        return id;
-    }
-
-    private List<Long> getHybIdsWithNoArrayDesign() throws SQLException {
-        String sql = "select h.id from hybridization h left join array a on h.array = a.id "
-                + " left join array_design ad on a.design = ad.id where a.id is null or ad.id is null";
-        PreparedStatement ps = database.getConnection().prepareStatement(sql);
-        ResultSet rs = ps.executeQuery();
-        List<Long> ids = new ArrayList<Long>();
-        while (rs.next()) {
-            ids.add(rs.getLong(1));
-        }
-        return ids;
     }
 
     /**
@@ -445,5 +262,78 @@ public class FixHybridizationsWithMissingArraysMigrator extends AbstractCustomCh
             }
         }
         throw new IllegalArgumentException("Unsupported type " + caArrayFile.getFileType());
+    }
+
+    private void setup(Connection connection) {
+        this.injector = createInjector();
+        dao.setConnection(connection);
+        createHibernateHelper(connection);
+        this.openFileMap.clear();
+        this.handlers = getHandlers();
+    }
+
+    private Injector createInjector() {
+        return Guice.createInjector(new DaoModule(), new PlatformModule(), getLocalModule());
+    }
+
+    private AbstractModule getLocalModule() {
+        final AbstractModule localModule = new AbstractModule() {
+            @Override
+            protected void configure() {
+                bind(FileManager.class).toInstance(createFileManager());               
+                bind(SessionTransactionManager.class).toInstance(new SessionTransactionManagerNoOpImpl());               
+                bind(CaArrayHibernateHelper.class).toInstance(new SingleConnectionHibernateHelper());
+            }
+        };
+        return localModule;
+    }
+    
+    private FileManager createFileManager() {
+        return new FileManager() {
+            public File openFile(CaArrayFile caArrayFile) {
+                try {
+                    File file = getFile(caArrayFile.getId());
+                    openFileMap.put(caArrayFile.getId(), file);
+                    return file;
+                } catch (SQLException e) {
+                    throw new IllegalStateException("Could not open the file " + caArrayFile);
+                } catch (IOException e) {
+                    throw new IllegalStateException("Could not open the file " + caArrayFile);
+                }
+            }
+
+            public void closeFile(CaArrayFile caArrayFile) {
+                File file = openFileMap.get(caArrayFile.getId());
+                FileUtils.deleteQuietly(file);                            
+            }
+        };
+    }
+    
+    private File getFile(Long fileId) throws SQLException, IOException {
+        MultiPartBlob mpb = dao.getFileBlob(fileId);
+
+        File f = File.createTempFile("datafile", null);
+        InputStream is = mpb.readUncompressedContents();
+        FileOutputStream fos = FileUtils.openOutputStream(f);
+        IOUtils.copy(is, fos);
+        IOUtils.closeQuietly(is);
+        IOUtils.closeQuietly(fos);
+
+        return f;
+    }
+    
+    private SingleConnectionHibernateHelper createHibernateHelper(Connection connection) {
+        SingleConnectionHibernateHelper hibernateHelper = (SingleConnectionHibernateHelper) injector
+                .getInstance(CaArrayHibernateHelper.class);
+        
+        hibernateHelper.initialize(connection);
+        
+        return hibernateHelper;
+    }
+    
+    @SuppressWarnings("unchecked")
+    private Set<DataFileHandler> getHandlers() {
+        return (Set<DataFileHandler>) injector.getInstance(Key.get(TypeLiteral.get(Types
+                .setOf(DataFileHandler.class))));
     }
 }
