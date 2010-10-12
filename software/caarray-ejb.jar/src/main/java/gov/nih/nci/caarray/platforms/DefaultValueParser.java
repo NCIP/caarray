@@ -98,6 +98,17 @@ import gov.nih.nci.caarray.domain.data.StringColumn;
  * @author dkokotov
  */
 public class DefaultValueParser implements ValueParser {
+
+    /**
+     * This string will be interpreted as Float.NaN.
+     */
+    public static final String NA = "NA";
+    
+    /**
+     * An alternative string which will be interpreted as Float.NaN.
+     */
+    public static final String ALT_NA = "N/A";
+
     /**
      * Set value at given row of the given column to the given value.
      * @param column the column 
@@ -168,7 +179,15 @@ public class DefaultValueParser implements ValueParser {
      * @return the float equivalent of the String value.
      */
     protected float parseFloat(String value) {
-        return Float.parseFloat(value);
+        float returnValue = Float.NaN;
+        try {
+            returnValue = Float.parseFloat(value);
+        } catch (NumberFormatException numberFormatException) {
+            if (!valueIsSpecial(value)) {
+                throw numberFormatException;
+            }
+        }
+        return returnValue;
     }
 
     /**
@@ -178,5 +197,13 @@ public class DefaultValueParser implements ValueParser {
      */
     protected double parseDouble(String value) {
         return Double.parseDouble(value);
+    }
+
+    private boolean valueIsSpecial(final String value) {
+        boolean valueIsSpecial = false;
+        if (NA.equalsIgnoreCase(value) || ALT_NA.equalsIgnoreCase(value)) {
+            valueIsSpecial = true;
+        }
+        return valueIsSpecial;
     }
 }
