@@ -179,15 +179,15 @@ public class DefaultValueParser implements ValueParser {
      * @return the float equivalent of the String value.
      */
     protected float parseFloat(String value) {
-        float returnValue = Float.NaN;
         try {
-            returnValue = Float.parseFloat(value);
+            return Float.parseFloat(value);
         } catch (NumberFormatException numberFormatException) {
-            if (!valueIsSpecial(value)) {
+            if (valueIsSpecial(value)) {
+                return Float.NaN;
+            } else {
                 throw numberFormatException;
             }
         }
-        return returnValue;
     }
 
     /**
