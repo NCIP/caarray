@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caArray2-branch
+ * source code form and machine readable, binary, object code form. The caArray2
  * Software was developed in conjunction with the National Cancer Institute 
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent 
  * government employees are authors, any rights in such works shall be subject 
  * to Title 17 of the United States Code, section 105. 
  *
- * This caArray2-branch Software License (the License) is between NCI and You. You (or 
+ * This caArray2 Software License (the License) is between NCI and You. You (or 
  * Your) shall mean a person or an entity, and all other entities that control, 
  * are controlled by, or are under common control with the entity. Control for 
  * purposes of this definition means (i) the direct or indirect power to cause 
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described 
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up, 
  * no-charge, irrevocable, transferable and royalty-free right and license in 
- * its rights in the caArray2-branch Software to (i) use, install, access, operate, 
+ * its rights in the caArray2 Software to (i) use, install, access, operate, 
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caArray2-branch Software; (ii) distribute and 
- * have distributed to and by third parties the caArray2-branch Software and any 
+ * and prepare derivative works of the caArray2 Software; (ii) distribute and 
+ * have distributed to and by third parties the caArray2 Software and any 
  * modifications and derivative works thereof; and (iii) sublicense the 
  * foregoing rights set out in (i) and (ii) to third parties, including the 
  * right to license such rights to further third parties. For sake of clarity, 
@@ -80,66 +80,93 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.platforms.nimblegen;
+package gov.nih.nci.caarray.domain.data;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import gov.nih.nci.caarray.application.arraydata.DataImportOptions;
-import gov.nih.nci.caarray.domain.array.ArrayDesign;
-import gov.nih.nci.caarray.domain.data.DataSet;
-import gov.nih.nci.caarray.domain.data.HybridizationData;
-import gov.nih.nci.caarray.domain.data.RawArrayData;
-import gov.nih.nci.caarray.domain.file.CaArrayFile;
-import gov.nih.nci.caarray.domain.file.FileType;
-import gov.nih.nci.caarray.platforms.AbstractHandlerTest;
-import gov.nih.nci.caarray.test.data.arraydata.NimblegenArrayDataFiles;
-import gov.nih.nci.caarray.validation.InvalidDataFileException;
+import gov.nih.nci.caarray.domain.array.AbstractDesignElement;
 
-import java.io.File;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
-import org.junit.Test;
+import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 
 /**
  * @author dkokotov
- *
+ * 
  */
-public class PairDataHandlerTest extends AbstractHandlerTest {
-    private static final String NIMBLEGEN_2006_08_03_HG18_60mer_expr_LSID_OBJECT_ID = "2006-08-03_HG18_60mer_expr";
-    private static final DataImportOptions DEFAULT_IMPORT_OPTIONS = DataImportOptions.getAutoCreatePerFileOptions();
+@Entity
+@Table(name = "designelementlist_designelement")
+public class DesignElementReference implements PersistentObject {
+    private static final long serialVersionUID = 1L;
+    
+    private AbstractDesignElement designElement;
+    private int index;
+    private DesignElementList designElementList;
+    private Long id;
 
-    @Override
-    protected ArrayDesign createArrayDesign(String lsidAuthority, String lsidNamespace, String lsidObjectId) {
-        if (NIMBLEGEN_2006_08_03_HG18_60mer_expr_LSID_OBJECT_ID.equals(lsidObjectId)) {
-            return createArrayDesign(lsidObjectId, 126, 126, null);
-        } else {
-            throw new IllegalArgumentException("Unsupported request design");  
-        }
+    /**
+     * @return database identifier
+     */
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    public Long getId() {
+        return this.id;
     }
 
-    @Test
-    public void testNimblegenData() throws InvalidDataFileException {
-        testNimblegenDataFull();
+    @SuppressWarnings({"PMD.UnusedPrivateMethod", "unused" })
+    private void setId(Long id) {
+        this.id = id;
     }
 
-    private void testNimblegenDataFull() throws InvalidDataFileException {
-        CaArrayFile nimblegenFile = getNimblegenCaArrayFile(NimblegenArrayDataFiles.HUMAN_EXPRESSION,
-                this.NIMBLEGEN_2006_08_03_HG18_60mer_expr_LSID_OBJECT_ID);
-        this.arrayDataService.importData(nimblegenFile, true, DEFAULT_IMPORT_OPTIONS);
-        RawArrayData nimblegenData = (RawArrayData) this.daoFactoryStub.getArrayDao().getArrayData(nimblegenFile.getId());
-        assertEquals(1, nimblegenData.getHybridizations().size());
-        DataSet dataSet = nimblegenData.getDataSet();
-        assertNotNull(dataSet.getDesignElementList());
-        assertEquals(1, dataSet.getHybridizationDataList().size());
-        HybridizationData hybridizationData = dataSet.getHybridizationDataList().get(0);
-        assertEquals(5, hybridizationData.getColumns().size());
-        assertNotNull(hybridizationData.getHybridization().getArray());
+    /**
+     * @return the designElement
+     */
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "designelement_id")
+    public AbstractDesignElement getDesignElement() {
+        return designElement;
     }
 
-    private CaArrayFile getNimblegenCaArrayFile(File file, String lsidObjectId) {
-        CaArrayFile caArrayFile = getDataCaArrayFile(file, FileType.NIMBLEGEN_RAW_PAIR);
-        ArrayDesign arrayDesign = daoFactoryStub.getArrayDao().getArrayDesign(null, null, lsidObjectId);
-        caArrayFile.getProject().getExperiment().getArrayDesigns().add(arrayDesign);
-        return caArrayFile;
+    /**
+     * @param designElement the designElement to set
+     */
+    public void setDesignElement(AbstractDesignElement designElement) {
+        this.designElement = designElement;
     }
 
+    /**
+     * @return the index
+     */
+    @Column(name = "designelement_index")
+    public int getIndex() {
+        return index;
+    }
+
+    /**
+     * @param index the index to set
+     */
+    public void setIndex(int index) {
+        this.index = index;
+    }
+
+    /**
+     * @return the designElementList
+     */
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "designelementlist_id")
+    public DesignElementList getDesignElementList() {
+        return designElementList;
+    }
+
+    /**
+     * @param designElementList the designElementList to set
+     */
+    public void setDesignElementList(DesignElementList designElementList) {
+        this.designElementList = designElementList;
+    }
 }

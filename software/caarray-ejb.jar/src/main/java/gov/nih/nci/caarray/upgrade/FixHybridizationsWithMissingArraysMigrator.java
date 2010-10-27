@@ -112,6 +112,7 @@ import liquibase.exception.CustomChangeException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.UnhandledException;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
@@ -159,11 +160,19 @@ public class FixHybridizationsWithMissingArraysMigrator extends AbstractCustomCh
      */
     @SuppressWarnings("PMD.ExcessiveMethodLength")
     public void execute(Database db) throws CustomChangeException {
-        final Connection underlyingConnection = db.getConnection().getUnderlyingConnection();
-        execute(underlyingConnection);
+        try {
+            final Connection underlyingConnection = db.getConnection().getUnderlyingConnection();
+            execute(underlyingConnection);
+        } catch (Exception e) {
+            throw new CustomChangeException(e);
+        }
     }
 
-    public void execute(Connection connection) throws CustomChangeException {
+    /**
+     * Execute the change given a connection.
+     * @param connection the connection
+     */
+    public void execute(Connection connection) {
         setup(connection);
 
         try {
@@ -171,12 +180,8 @@ public class FixHybridizationsWithMissingArraysMigrator extends AbstractCustomCh
             for (Long hid : hybIdsWithoutArray) {
                 ensureArrayDesignSetForHyb(hid);
             }
-        } catch (SQLException e) {
-            throw new CustomChangeException("Could not fix hybridizations", e);
-        } catch (IOException e) {
-            throw new CustomChangeException("Could not fix hybridizations", e);
-        } catch (PlatformFileReadException e) {
-            throw new CustomChangeException("Could not fix hybridizations", e);
+        } catch (Exception e) {
+            throw new UnhandledException("Could not fix hybridizations", e);
         }
     }
 
@@ -281,7 +286,7 @@ public class FixHybridizationsWithMissingArraysMigrator extends AbstractCustomCh
             @Override
             protected void configure() {
                 bind(FileManager.class).toInstance(createFileManager());               
-                bind(SessionTransactionManager.class).toInstance(new SessionTransactionManagerNoOpImpl());               
+                bind(SessionTransactionManager.class).toInstance(new SessionTransactionManagerNoOpImpl());
                 bind(CaArrayHibernateHelper.class).toInstance(new SingleConnectionHibernateHelper());
             }
         };

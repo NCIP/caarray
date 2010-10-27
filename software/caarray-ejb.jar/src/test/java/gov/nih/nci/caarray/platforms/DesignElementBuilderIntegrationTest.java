@@ -80,66 +80,161 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.platforms.nimblegen;
+package gov.nih.nci.caarray.platforms;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import gov.nih.nci.caarray.application.arraydata.DataImportOptions;
+import static org.junit.Assert.assertTrue;
+import edu.georgetown.pir.Organism;
+import gov.nih.nci.caarray.AbstractHibernateTest;
+import gov.nih.nci.caarray.dao.ArrayDao;
+import gov.nih.nci.caarray.dao.DaoModule;
+import gov.nih.nci.caarray.dao.SearchDao;
+import gov.nih.nci.caarray.domain.array.AbstractDesignElement;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
+import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
+import gov.nih.nci.caarray.domain.array.PhysicalProbe;
+import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.data.DataSet;
-import gov.nih.nci.caarray.domain.data.HybridizationData;
-import gov.nih.nci.caarray.domain.data.RawArrayData;
+import gov.nih.nci.caarray.domain.data.DesignElementList;
+import gov.nih.nci.caarray.domain.data.DesignElementReference;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
-import gov.nih.nci.caarray.platforms.AbstractHandlerTest;
-import gov.nih.nci.caarray.test.data.arraydata.NimblegenArrayDataFiles;
-import gov.nih.nci.caarray.validation.InvalidDataFileException;
+import gov.nih.nci.caarray.domain.project.AssayType;
+import gov.nih.nci.caarray.domain.vocabulary.Category;
+import gov.nih.nci.caarray.domain.vocabulary.Term;
+import gov.nih.nci.caarray.domain.vocabulary.TermSource;
+import gov.nih.nci.caarray.staticinjection.CaArrayCommonStaticInjectionModule;
+import gov.nih.nci.caarray.util.CaArrayHibernateHelperModule;
 
-import java.io.File;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
+import org.hibernate.Transaction;
+import org.junit.Before;
 import org.junit.Test;
+
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 
 /**
  * @author dkokotov
  *
  */
-public class PairDataHandlerTest extends AbstractHandlerTest {
-    private static final String NIMBLEGEN_2006_08_03_HG18_60mer_expr_LSID_OBJECT_ID = "2006-08-03_HG18_60mer_expr";
-    private static final DataImportOptions DEFAULT_IMPORT_OPTIONS = DataImportOptions.getAutoCreatePerFileOptions();
+public class DesignElementBuilderIntegrationTest extends AbstractHibernateTest {    
+    /**
+     * 
+     */
+    private static final int NUMBER_OF_PROBES = 700;
+    private ArrayDao arrayDao;
+    private SearchDao searchDao;
+    
+    private ArrayDesign design;
 
-    @Override
-    protected ArrayDesign createArrayDesign(String lsidAuthority, String lsidNamespace, String lsidObjectId) {
-        if (NIMBLEGEN_2006_08_03_HG18_60mer_expr_LSID_OBJECT_ID.equals(lsidObjectId)) {
-            return createArrayDesign(lsidObjectId, 126, 126, null);
-        } else {
-            throw new IllegalArgumentException("Unsupported request design");  
-        }
+    public DesignElementBuilderIntegrationTest() {
+        super(false);
+    }
+     
+    /**
+     * Subclasses can override this to configure a custom injector, e.g. by overriding some modules with stubbed out
+     * functionality.
+     * 
+     * @return a Guice injector from which this will obtain dependencies.
+     */
+    protected Injector createInjector() {
+        return Guice.createInjector(new CaArrayCommonStaticInjectionModule(), new CaArrayHibernateHelperModule(),
+                new DaoModule());
     }
 
+    @Before
+    public void setUp() throws Exception {        
+        arrayDao = injector.getInstance(ArrayDao.class);
+        searchDao = injector.getInstance(SearchDao.class);
+        design = createArrayDesign();
+    }
+    
     @Test
-    public void testNimblegenData() throws InvalidDataFileException {
-        testNimblegenDataFull();
-    }
+    public void testBuilder() {
+        Transaction tx = hibernateHelper.beginTransaction();
+        hibernateHelper.getCurrentSession().save(design);        
+        DataSet ds = new DataSet();
+        hibernateHelper.getCurrentSession().save(ds);                
+        tx.commit();
 
-    private void testNimblegenDataFull() throws InvalidDataFileException {
-        CaArrayFile nimblegenFile = getNimblegenCaArrayFile(NimblegenArrayDataFiles.HUMAN_EXPRESSION,
-                this.NIMBLEGEN_2006_08_03_HG18_60mer_expr_LSID_OBJECT_ID);
-        this.arrayDataService.importData(nimblegenFile, true, DEFAULT_IMPORT_OPTIONS);
-        RawArrayData nimblegenData = (RawArrayData) this.daoFactoryStub.getArrayDao().getArrayData(nimblegenFile.getId());
-        assertEquals(1, nimblegenData.getHybridizations().size());
-        DataSet dataSet = nimblegenData.getDataSet();
-        assertNotNull(dataSet.getDesignElementList());
-        assertEquals(1, dataSet.getHybridizationDataList().size());
-        HybridizationData hybridizationData = dataSet.getHybridizationDataList().get(0);
-        assertEquals(5, hybridizationData.getColumns().size());
-        assertNotNull(hybridizationData.getHybridization().getArray());
+        tx = hibernateHelper.beginTransaction();
+        DesignElementBuilder builder = new DesignElementBuilder(ds, design, arrayDao, searchDao, 300);
+        final int midpoint = NUMBER_OF_PROBES / 2;
+        for (int i = 0; i < midpoint; i++) {
+            builder.addProbe("PROBE_" + i);
+        }
+        for (int i = midpoint; i < NUMBER_OF_PROBES; i++) {
+            builder.addProbe("dummy probe name", "PROBE_" + i);
+        }
+        builder.finish();
+        tx.commit();
+        
+        tx = hibernateHelper.beginTransaction();
+        DesignElementList del = (DesignElementList) hibernateHelper.getCurrentSession().load(DesignElementList.class,
+                ds.getDesignElementList().getId());
+        assertEquals(NUMBER_OF_PROBES, del.getDesignElementReferences().size());
+        assertEquals(NUMBER_OF_PROBES, del.getDesignElements().size());
+        for (int i = 0; i < NUMBER_OF_PROBES; i++) {
+            DesignElementReference der = del.getDesignElementReferences().get(i);
+            AbstractDesignElement de = del.getDesignElements().get(i);
+            String probeName = "PROBE_" + i;
+            assertNotNull(der.getDesignElement());
+            assertTrue(der.getDesignElement() instanceof PhysicalProbe);
+            assertEquals(probeName, ((PhysicalProbe) der.getDesignElement()).getName());
+            assertTrue(de instanceof PhysicalProbe);
+            assertEquals(probeName, ((PhysicalProbe) de).getName());
+        }
+        tx.commit();        
     }
+    
+    private static ArrayDesign createArrayDesign() {
+        TermSource ts = new TermSource();
+        ts.setName("TS 1");
+        Category cat = new Category();
+        cat.setName("catName");
+        cat.setSource(ts);
 
-    private CaArrayFile getNimblegenCaArrayFile(File file, String lsidObjectId) {
-        CaArrayFile caArrayFile = getDataCaArrayFile(file, FileType.NIMBLEGEN_RAW_PAIR);
-        ArrayDesign arrayDesign = daoFactoryStub.getArrayDao().getArrayDesign(null, null, lsidObjectId);
-        caArrayFile.getProject().getExperiment().getArrayDesigns().add(arrayDesign);
-        return caArrayFile;
+        Term term = new Term();
+        term.setValue("testval");
+        term.setCategory(cat);
+        term.setSource(ts);
+
+        Organism organism = new Organism();
+        organism.setScientificName("Homo sapiens");
+        organism.setTermSource(ts);
+
+        Organization o = new Organization();
+        o.setName("DummyOrganization");
+        o.setProvider(true);
+        
+        ArrayDesign design = new ArrayDesign();
+        design.setName("foo");
+        design.setVersion("99");
+        design.setGeoAccession("GPL0001");
+        design.setProvider(o);
+        AssayType at1 = new AssayType("Gene Expression");
+        SortedSet<AssayType> assayTypes = new TreeSet<AssayType>();
+        assayTypes.add(at1);
+        design.setTechnologyType(term);
+        design.setOrganism(organism);
+
+        ArrayDesignDetails detail = new ArrayDesignDetails();
+        design.setDesignDetails(detail);
+        for (int i = 0; i < NUMBER_OF_PROBES; i++) {
+            PhysicalProbe p = new PhysicalProbe(detail, null);
+            p.setName("PROBE_" + i);
+            detail.getProbes().add(p);            
+        }
+        
+        CaArrayFile f = new CaArrayFile();
+        f.setFileStatus(FileStatus.IMPORTED);
+        f.setFileType(FileType.ILLUMINA_DESIGN_CSV);
+        design.addDesignFile(f);
+        return design;
     }
-
 }

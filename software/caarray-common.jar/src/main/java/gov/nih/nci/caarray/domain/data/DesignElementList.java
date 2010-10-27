@@ -97,18 +97,20 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Transient;
 
-import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.IndexColumn;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 /**
  * Contains an ordered list of the microarray design elements (features or probes) for which data values are provided.
  */
 @Entity
-@SuppressWarnings("PMD.AvoidDuplicateLiterals")
 @UniqueConstraints(constraints = {
         @UniqueConstraint(fields = {@UniqueConstraintField(name = "lsidAuthority"),
                 @UniqueConstraintField(name = "lsidNamespace"),
@@ -117,9 +119,9 @@ import org.hibernate.annotations.IndexColumn;
 public final class DesignElementList extends AbstractCaArrayEntity {
 
     private static final long serialVersionUID = 4430513886275629776L;
-    private static final int BATCH_SIZE = 200;
     private static final int MAX_SERIALIZABLE_SIZE = 100000;
 
+    private List<DesignElementReference> designElementReferences = new LinkedList<DesignElementReference>();
     private List<AbstractDesignElement> designElements = new LinkedList<AbstractDesignElement>();
     private String designElementType;
 
@@ -130,13 +132,13 @@ public final class DesignElementList extends AbstractCaArrayEntity {
     @IndexColumn(name = "designelement_index")
     @JoinTable(
             name = "designelementlist_designelement",
-            joinColumns = { @JoinColumn(name = "designelementlist_id") },
-            inverseJoinColumns = { @JoinColumn(name = "designelement_id") }
+            joinColumns = { @JoinColumn(name = "designelementlist_id", insertable = false, updatable = false) },
+            inverseJoinColumns = { @JoinColumn(name = "designelement_id", insertable = false, updatable = false) }
     )
     @ForeignKey(name = "deldedesignelementlist_fk", inverseName = "deldedesignelement_fk")
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    @BatchSize(size = BATCH_SIZE)
     @MaxSerializableSize(MAX_SERIALIZABLE_SIZE)
+    @LazyCollection(LazyCollectionOption.EXTRA)
     public List<AbstractDesignElement> getDesignElements() {
         return designElements;
     }
@@ -180,6 +182,22 @@ public final class DesignElementList extends AbstractCaArrayEntity {
         } else {
             setDesignElementType(designElementTypeEnum.getValue());
         }
+    }
+
+    /**
+     * @return the designElementReferences
+     */
+    @OneToMany(mappedBy = "designElementList")
+    @OrderBy("index asc")
+    public List<DesignElementReference> getDesignElementReferences() {
+        return designElementReferences;
+    }
+
+    /**
+     * @param designElementReferences the designElementReferences to set
+     */
+    public void setDesignElementReferences(List<DesignElementReference> designElementReferences) {
+        this.designElementReferences = designElementReferences;
     }
 
 }

@@ -90,6 +90,7 @@ import javax.persistence.FetchType;
 import javax.persistence.OneToOne;
 
 import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 
 /**
  *
@@ -110,7 +111,7 @@ public class ExpressionProbeAnnotation extends AbstractProbeAnnotation {
      * @return the expressionArrayReporter
      */
     @OneToOne
-    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @Cascade({CascadeType.SAVE_UPDATE, CascadeType.EVICT })
     public ExpressionArrayReporter getExpressionArrayReporter() {
         return expressionArrayReporter;
     }
@@ -126,7 +127,7 @@ public class ExpressionProbeAnnotation extends AbstractProbeAnnotation {
      * @return the gene
      */
     @OneToOne(fetch = FetchType.EAGER)
-    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @Cascade({CascadeType.SAVE_UPDATE, CascadeType.EVICT })
     public Gene getGene() {
         return gene;
     }

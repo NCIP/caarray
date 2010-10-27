@@ -144,7 +144,6 @@ public class IlluminaDataHandlerTest extends AbstractHandlerTest {
         assertEquals(5.8, signalColumn.getValues()[0], 0.00001);
         assertEquals(3.6, signalColumn.getValues()[9], 0.00001);
         assertNotNull(hybridizationData.getHybridization().getArray());
-        assertEquals(10, illuminaData.getDataSet().getDesignElementList().getDesignElements().size());
     }
 
     @Test
@@ -160,7 +159,6 @@ public class IlluminaDataHandlerTest extends AbstractHandlerTest {
         HybridizationData hybridizationData = dataSet.getHybridizationDataList().get(0);
         assertEquals(4, hybridizationData.getColumns().size());
         assertNotNull(hybridizationData.getHybridization().getArray());
-        assertEquals(47293, illuminaData.getDataSet().getDesignElementList().getDesignElements().size());
     }
     
     private CaArrayFile getIlluminaCaArrayFile(File file, String lsidObjectId) {

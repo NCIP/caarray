@@ -111,6 +111,7 @@ import gov.nih.nci.caarray.domain.data.ArrayDataType;
 import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
 import gov.nih.nci.caarray.domain.data.DataSet;
 import gov.nih.nci.caarray.domain.data.DesignElementList;
+import gov.nih.nci.caarray.domain.data.DesignElementReference;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
@@ -386,6 +387,11 @@ public abstract class AbstractHandlerTest extends AbstractCaarrayTest {
                 public void save(PersistentObject caArrayEntity) {
                     if (caArrayEntity instanceof AbstractArrayData) {
                         addData((AbstractArrayData) caArrayEntity);
+                    } else if (caArrayEntity instanceof DesignElementReference) {
+                        DesignElementReference reference = (DesignElementReference) caArrayEntity;                        
+                        DesignElementList designElementList = reference.getDesignElementList();
+                        designElementList.getDesignElementReferences().add(reference);
+                        designElementList.getDesignElements().add(reference.getDesignElement());
                     }
                 }
 

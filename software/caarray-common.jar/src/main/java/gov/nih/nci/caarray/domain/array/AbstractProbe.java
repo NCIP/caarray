@@ -86,6 +86,7 @@ import javax.persistence.Entity;
 import javax.persistence.OneToOne;
 
 import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
 
 /**
@@ -108,7 +109,7 @@ public abstract class AbstractProbe extends AbstractDesignElement {
      * @return the annotation
      */
     @OneToOne
-    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @Cascade({ CascadeType.SAVE_UPDATE, CascadeType.EVICT })
     public AbstractProbeAnnotation getAnnotation() {
         return annotation;
     }

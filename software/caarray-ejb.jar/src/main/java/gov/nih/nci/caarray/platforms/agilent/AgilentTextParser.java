@@ -254,4 +254,11 @@ class AgilentTextParser {
            super(reason, cause);
        }
    }
+
+    /**
+     * Closes the file.
+     */
+    public void close() {
+        reader.close();        
+    }
 }

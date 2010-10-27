@@ -82,13 +82,13 @@
  */
 package gov.nih.nci.caarray.platforms.illumina;
 
+import gov.nih.nci.caarray.dao.ArrayDao;
+import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.domain.LSID;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.data.AbstractDataColumn;
 import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
 import gov.nih.nci.caarray.domain.data.DataSet;
-import gov.nih.nci.caarray.domain.data.DesignElementList;
-import gov.nih.nci.caarray.domain.data.DesignElementType;
 import gov.nih.nci.caarray.domain.data.HybridizationData;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
@@ -96,13 +96,10 @@ import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.magetab.sdrf.Hybridization;
 import gov.nih.nci.caarray.platforms.DefaultValueParser;
+import gov.nih.nci.caarray.platforms.DesignElementBuilder;
 import gov.nih.nci.caarray.platforms.FileManager;
-import gov.nih.nci.caarray.platforms.ProbeLookup;
 import gov.nih.nci.caarray.platforms.ValueParser;
 import gov.nih.nci.caarray.platforms.spi.AbstractDataFileHandler;
-import com.fiveamsolutions.nci.commons.util.io.DelimitedFileReader;
-import com.fiveamsolutions.nci.commons.util.io.DelimitedFileReaderFactoryImpl;
-
 import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.ValidationMessage;
 import gov.nih.nci.caarray.validation.ValidationMessage.Type;
@@ -119,11 +116,12 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import com.google.inject.Inject;
-
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+
+import com.fiveamsolutions.nci.commons.util.io.DelimitedFileReader;
+import com.fiveamsolutions.nci.commons.util.io.DelimitedFileReaderFactoryImpl;
+import com.google.inject.Inject;
 
 /**
  * Handles reading of Illumina data.
@@ -138,7 +136,6 @@ class CsvDataHandler extends AbstractDataFileHandler {
         new HashMap<String, IlluminaExpressionQuantitationType>();
     private static final Map<String, IlluminaGenotypingQuantitationType> SNP_TYPE_MAP =
         new HashMap<String, IlluminaGenotypingQuantitationType>();
-    private static final Logger LOG = Logger.getLogger(CsvDataHandler.class);
 
     static {
         for (IlluminaExpressionQuantitationType descriptor : IlluminaExpressionQuantitationType.values()) {
@@ -151,13 +148,17 @@ class CsvDataHandler extends AbstractDataFileHandler {
     }
     
     private final ValueParser valueParser = new DefaultValueParser();
+    private final ArrayDao arrayDao;
+    private final SearchDao searchDao;
 
     /**
      * 
      */
     @Inject
-    CsvDataHandler(FileManager fileManager) {
+    CsvDataHandler(FileManager fileManager, ArrayDao arrayDao, SearchDao searchDao) {
         super(fileManager);
+        this.arrayDao = arrayDao;
+        this.searchDao = searchDao;
     }
 
     /**
@@ -397,16 +398,14 @@ class CsvDataHandler extends AbstractDataFileHandler {
     private void loadDesignElementList(DataSet dataSet, DelimitedFileReader reader, List<String> headers,
             ArrayDesign design) throws IOException {
         int indexOfTargetId = headers.indexOf(TARGET_ID);
-        DesignElementList probeList = new DesignElementList();
-        probeList.setDesignElementTypeEnum(DesignElementType.PHYSICAL_PROBE);
-        dataSet.setDesignElementList(probeList);
-        ProbeLookup probeLookup = new ProbeLookup(design.getDesignDetails().getProbes());
+        DesignElementBuilder builder = new DesignElementBuilder(dataSet, design, arrayDao, searchDao);        
         positionAtData(reader);
         while (reader.hasNextLine()) {
             List<String> values = reader.nextLine();
             String probeName = values.get(indexOfTargetId);
-            probeList.getDesignElements().add(probeLookup.getProbe(probeName));
+            builder.addProbe(probeName);
         }
+        builder.finish();
     }
 
     @SuppressWarnings("PMD.ExcessiveParameterList")

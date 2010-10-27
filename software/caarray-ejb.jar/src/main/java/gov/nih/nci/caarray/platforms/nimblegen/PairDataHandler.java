@@ -82,29 +82,23 @@
  */
 package gov.nih.nci.caarray.platforms.nimblegen;
 
+import gov.nih.nci.caarray.dao.ArrayDao;
+import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.domain.LSID;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
-import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
 import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
 import gov.nih.nci.caarray.domain.data.DataSet;
-import gov.nih.nci.caarray.domain.data.DesignElementList;
-import gov.nih.nci.caarray.domain.data.DesignElementType;
 import gov.nih.nci.caarray.domain.data.HybridizationData;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.platforms.DefaultValueParser;
+import gov.nih.nci.caarray.platforms.DesignElementBuilder;
 import gov.nih.nci.caarray.platforms.FileManager;
-import gov.nih.nci.caarray.platforms.ProbeLookup;
 import gov.nih.nci.caarray.platforms.ValueParser;
 import gov.nih.nci.caarray.platforms.spi.AbstractDataFileHandler;
 import gov.nih.nci.caarray.platforms.spi.PlatformFileReadException;
-import com.fiveamsolutions.nci.commons.util.io.DelimitedFileReader;
-import com.fiveamsolutions.nci.commons.util.io.DelimitedFileReaderFactoryImpl;
-
-import com.google.inject.Inject;
-
 import gov.nih.nci.caarray.validation.FileValidationResult;
 
 import java.io.File;
@@ -118,6 +112,10 @@ import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.fiveamsolutions.nci.commons.util.io.DelimitedFileReader;
+import com.fiveamsolutions.nci.commons.util.io.DelimitedFileReaderFactoryImpl;
+import com.google.inject.Inject;
+
 /**
  * Handles reading of nimblegen data.
  */
@@ -130,6 +128,8 @@ class PairDataHandler extends AbstractDataFileHandler {
     private static final String CONTAINER_HEADER = "GENE_EXPR_OPTION";
 
     private final ValueParser valueParser = new DefaultValueParser();
+    private final ArrayDao arrayDao;
+    private final SearchDao searchDao;
 
     @Override
     protected boolean acceptFileType(FileType type) {
@@ -144,8 +144,10 @@ class PairDataHandler extends AbstractDataFileHandler {
      * @param fileManager the FileManager to use
      */
     @Inject
-    PairDataHandler(FileManager fileManager) {
+    PairDataHandler(FileManager fileManager, ArrayDao arrayDao, SearchDao searchDao) {
         super(fileManager);
+        this.arrayDao = arrayDao;
+        this.searchDao = searchDao;
     }
 
     /**
@@ -162,6 +164,7 @@ class PairDataHandler extends AbstractDataFileHandler {
         return NimblegenQuantitationType.values();
     }
 
+    // returns the column headers in the file, and positions reader at start of data
     private List<String> getHeaders(DelimitedFileReader reader) throws IOException {
         reset(reader);
         while (reader.hasNextLine()) {
@@ -215,11 +218,7 @@ class PairDataHandler extends AbstractDataFileHandler {
 
     private void loadDesignElementList(DataSet dataSet, DelimitedFileReader reader, ArrayDesign design)
             throws IOException {
-        DesignElementList probeList = new DesignElementList();
-        probeList.setDesignElementTypeEnum(DesignElementType.PHYSICAL_PROBE);
-        dataSet.setDesignElementList(probeList);
-        ArrayDesignDetails designDetails = design.getDesignDetails();
-        ProbeLookup probeLookup = new ProbeLookup(designDetails.getProbes());
+        DesignElementBuilder builder = new DesignElementBuilder(dataSet, design, arrayDao, searchDao);        
         List<String> headers = getHeaders(reader);
         int seqIdIndex = headers.indexOf(SEQ_ID_HEADER);
         int probeIdIndex = headers.indexOf(PROBE_ID_HEADER);
@@ -230,8 +229,9 @@ class PairDataHandler extends AbstractDataFileHandler {
             String sequenceId = values.get(seqIdIndex);
             String container = values.get(containerIndex);
             String probeName = container + "|" + sequenceId + "|" + probeId;
-            probeList.getDesignElements().add(probeLookup.getProbe(probeName));
+            builder.addProbe(probeName);
         }
+        builder.finish();
     }
 
     private void loadData(HybridizationData hybridizationData, DelimitedFileReader reader) throws IOException {

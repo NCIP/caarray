@@ -83,6 +83,8 @@
 
 package gov.nih.nci.caarray.platforms.illumina;
 
+import gov.nih.nci.caarray.dao.ArrayDao;
+import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.domain.LSID;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
@@ -95,12 +97,8 @@ import gov.nih.nci.caarray.platforms.DefaultValueParser;
 import gov.nih.nci.caarray.platforms.FileManager;
 import gov.nih.nci.caarray.platforms.ValueParser;
 import gov.nih.nci.caarray.platforms.spi.AbstractDataFileHandler;
-import com.fiveamsolutions.nci.commons.util.io.DelimitedFileReader;
-import com.fiveamsolutions.nci.commons.util.io.DelimitedFileReaderFactoryImpl;
-
-import com.google.inject.Inject;
-
 import gov.nih.nci.caarray.validation.FileValidationResult;
+import gov.nih.nci.caarray.validation.ValidationMessage.Type;
 
 import java.io.File;
 import java.io.IOException;
@@ -113,12 +111,12 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import gov.nih.nci.caarray.dao.ArrayDao;
-import gov.nih.nci.caarray.dao.SearchDao;
-import gov.nih.nci.caarray.validation.ValidationMessage.Type;
-import org.apache.commons.lang.StringUtils;
+import com.fiveamsolutions.nci.commons.util.io.DelimitedFileReader;
+import com.fiveamsolutions.nci.commons.util.io.DelimitedFileReaderFactoryImpl;
+import com.google.inject.Inject;
 
 /**
  * Illumina Sample Probe Profile file loader.
@@ -191,8 +189,8 @@ final class SampleProbeProfileHandler extends AbstractDataFileHandler {
      */
     public void loadData(DataSet dataSet, List<QuantitationType> types, ArrayDesign design) {
         DataHeaderParser header = new DataHeaderParser(design.getFirstDesignFile().getFileType());
-        DesignElementBuilder designElementBuilder = new DesignElementBuilder(header, dataSet, design, arrayDao,
-                searchDao);
+        DesignElementBuilderParser designElementBuilder = new DesignElementBuilderParser(header, dataSet, design,
+                arrayDao, searchDao);
         processFile(getFile(), null, header, designElementBuilder);
         designElementBuilder.finish();
         dataSet.prepareColumns(types, designElementBuilder.getElementCount());

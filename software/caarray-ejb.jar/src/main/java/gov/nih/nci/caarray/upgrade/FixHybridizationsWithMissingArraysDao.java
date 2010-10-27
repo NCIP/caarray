@@ -95,17 +95,27 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Encapsulates all database access required for the FixHybridizationsWithMissingArraysMigrator.
  * @author jscott
- *
  */
 public class FixHybridizationsWithMissingArraysDao {
     
     private Connection connection;
     
+    /**
+     * Set the connection the dao will use.
+     * @param connection the connection to use
+     */
     public void setConnection(Connection connection) {
         this.connection = connection;
     }
 
+    /**
+     * Get a list of hybridizations that either have no associated array or have an
+     * associated array with no associated array design.
+     * @return the hybridization ids
+     * @throws SQLException on error
+     */
     public List<Long> getHybIdsWithNoArrayOrNoArrayDesign() throws SQLException {
         String sql = "select h.id from hybridization h left join array a on h.array = a.id "
                 + " left join array_design ad on a.design = ad.id where a.id is null or ad.id is null";
@@ -118,12 +128,18 @@ public class FixHybridizationsWithMissingArraysDao {
         return ids;
     }
     
-    public Long getUniqueArrayDesignIdFromExperiment(Long hid) throws SQLException {
+    /**
+     * Get the unique array design id associated with an experiment.
+     * @param eid the experiment id
+     * @return the unique array design id or null if there is no such unique id
+     * @throws SQLException on error
+     */
+    public Long getUniqueArrayDesignIdFromExperiment(Long eid) throws SQLException {
         String sql = "select ad.id from hybridization h join experiment e on h.experiment = e.id "
                 + " join experimentarraydesign ead on e.id = ead.experiment_id "
                 + " join array_design ad on ead.arraydesign_id = ad.id where h.id = ?";
         PreparedStatement ps = connection.prepareStatement(sql);
-        ps.setLong(1, hid);
+        ps.setLong(1, eid);
         ResultSet rs = ps.executeQuery();
         Long id = null;
         if (rs.first() && rs.isLast()) {
@@ -132,6 +148,12 @@ public class FixHybridizationsWithMissingArraysDao {
         return id;
     }
 
+    /**
+     * Get the ids for all imported files associated with a hybridization.
+     * @param hid the hybridization id
+     * @return the id list
+     * @throws SQLException on error
+     */
     public List<Long> getImportedDataFileIdsFromHybId(Long hid) throws SQLException {
         String sql = " "
                 + " select f.id "
@@ -154,6 +176,12 @@ public class FixHybridizationsWithMissingArraysDao {
         return ids;
     }
 
+    /**
+     * Get the file type of a file.
+     * @param fileId the id of the file
+     * @return the file type or null
+     * @throws SQLException on error
+     */
     public FileType getFileType(Long fileId) throws SQLException {
         String sql = "select type from caarrayfile where id = ?";
         PreparedStatement ps = connection.prepareStatement(sql);
@@ -165,6 +193,11 @@ public class FixHybridizationsWithMissingArraysDao {
         return null;
     }
 
+    /**
+     * Get the first array design matching an LSID in a list of LSIDs.
+     * @param designLsids the list of LSIDs
+     * @return the matching array design or an empty array design if not match is found
+     */
     @SuppressWarnings("deprecation")
     public ArrayDesign getFirstArrayDesignFromLsidList(List<LSID> designLsids) {
         for (LSID lsid : designLsids) {
@@ -188,6 +221,12 @@ public class FixHybridizationsWithMissingArraysDao {
         return new ArrayDesign();
     }
 
+    /**
+     * Get the id of the unique array associated array a hybridization.
+     * @param hid the hybridization id
+     * @return the array id or null if there is no such unique array
+     * @throws SQLException on error
+     */
     public Long getArrayFromHybridizationId(Long hid) throws SQLException {
         String sql = "select h.array from hybridization h where h.id = ?";
         PreparedStatement ps = connection.prepareStatement(sql);
@@ -200,6 +239,12 @@ public class FixHybridizationsWithMissingArraysDao {
         return id;
     }
 
+    /**
+     * Get a file BLOB.
+     * @param fileId the file id
+     * @return the blob or an empty blob if no data is found
+     * @throws SQLException on error
+     */
     public MultiPartBlob getFileBlob(Long fileId) throws SQLException {
         String sql = "select bh.contents from caarrayfile f join caarrayfile_blob_parts fbp on f.id = fbp.caarrayfile "
                 + " join blob_holder bh on fbp.blob_parts = bh.id where f.id = ? order by fbp.contents_index";
@@ -214,6 +259,12 @@ public class FixHybridizationsWithMissingArraysDao {
         return mpb;
     }
     
+    /**
+     * Associate an array design with an array.
+     * @param aid the array id
+     * @param adid the array design id
+     * @throws SQLException on error
+     */
     public void setArrayDesignForArray(Long aid, Long adid) throws SQLException {
         String sql = "update array set design = ? where id = ?";
         PreparedStatement ps = connection.prepareStatement(sql);
@@ -222,6 +273,12 @@ public class FixHybridizationsWithMissingArraysDao {
         ps.executeUpdate();
     }
 
+    /**
+     * Create an array associated with an array design and associate a hybridization with it.
+     * @param hid the hybridization id
+     * @param adid the array design id
+     * @throws SQLException on error
+     */
     public void setArrayAndDesign(Long hid, Long adid) throws SQLException {
         String sql = "insert into array (design) values (?)";
         PreparedStatement ps = connection.prepareStatement(sql);

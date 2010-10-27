@@ -104,4 +104,7 @@ public class IlluminaArrayDesignFiles {
     public static final File ILLUMINA_SMALL_BGX_TXT =
         new File(IlluminaArrayDesignFiles.class.getResource("/arraydesign/illumina/illumina-small.bgx.txt").getFile());
 
+    public static final File MOUSE_REF_8 = new File(IlluminaArrayDesignFiles.class.getResource(
+            "/arraydesign/illumina/MouseRef-8_V1_1_R2_11234312_A.bgx.txt").getFile());
+
 }

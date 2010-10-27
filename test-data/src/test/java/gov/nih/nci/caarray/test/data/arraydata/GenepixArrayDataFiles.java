@@ -124,4 +124,11 @@ public class GenepixArrayDataFiles {
 
     public static final File EXPORTED_SDRF =
         new File(GenepixArrayDataFiles.class.getResource("/arraydata/genepix/exportedGprMageTab.sdrf").getFile());
+    
+    public static final File SMALL_IDF =
+        new File(GenepixArrayDataFiles.class.getResource("/arraydata/genepix/smallGprMageTab.idf").getFile());
+
+    public static final File SMALL_SDRF =
+        new File(GenepixArrayDataFiles.class.getResource("/arraydata/genepix/smallGprMageTab.sdrf").getFile());
+
 }

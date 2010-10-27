@@ -82,10 +82,54 @@
  */
 package gov.nih.nci.caarray.application.file;
 
+import static gov.nih.nci.caarray.platforms.genepix.GenepixQuantitationType.B532_MEAN;
+import static gov.nih.nci.caarray.platforms.genepix.GenepixQuantitationType.B532_MEDIAN;
+import static gov.nih.nci.caarray.platforms.genepix.GenepixQuantitationType.B532_SD;
+import static gov.nih.nci.caarray.platforms.genepix.GenepixQuantitationType.B635_MEAN;
+import static gov.nih.nci.caarray.platforms.genepix.GenepixQuantitationType.B635_MEDIAN;
+import static gov.nih.nci.caarray.platforms.genepix.GenepixQuantitationType.B635_SD;
+import static gov.nih.nci.caarray.platforms.genepix.GenepixQuantitationType.B_PIXELS;
+import static gov.nih.nci.caarray.platforms.genepix.GenepixQuantitationType.DIA;
+import static gov.nih.nci.caarray.platforms.genepix.GenepixQuantitationType.F532_MEAN;
+import static gov.nih.nci.caarray.platforms.genepix.GenepixQuantitationType.F532_MEAN_B532;
+import static gov.nih.nci.caarray.platforms.genepix.GenepixQuantitationType.F532_MEDIAN;
+import static gov.nih.nci.caarray.platforms.genepix.GenepixQuantitationType.F532_MEDIAN_B532;
+import static gov.nih.nci.caarray.platforms.genepix.GenepixQuantitationType.F532_PERCENT_SAT;
+import static gov.nih.nci.caarray.platforms.genepix.GenepixQuantitationType.F532_SD;
+import static gov.nih.nci.caarray.platforms.genepix.GenepixQuantitationType.F532_TOTAL_INTENSITY;
+import static gov.nih.nci.caarray.platforms.genepix.GenepixQuantitationType.F635_MEAN;
+import static gov.nih.nci.caarray.platforms.genepix.GenepixQuantitationType.F635_MEAN_B635;
+import static gov.nih.nci.caarray.platforms.genepix.GenepixQuantitationType.F635_MEDIAN;
+import static gov.nih.nci.caarray.platforms.genepix.GenepixQuantitationType.F635_MEDIAN_B635;
+import static gov.nih.nci.caarray.platforms.genepix.GenepixQuantitationType.F635_PERCENT_SAT;
+import static gov.nih.nci.caarray.platforms.genepix.GenepixQuantitationType.F635_SD;
+import static gov.nih.nci.caarray.platforms.genepix.GenepixQuantitationType.F635_TOTAL_INTENSITY;
+import static gov.nih.nci.caarray.platforms.genepix.GenepixQuantitationType.FLAGS;
+import static gov.nih.nci.caarray.platforms.genepix.GenepixQuantitationType.F_PIXELS;
+import static gov.nih.nci.caarray.platforms.genepix.GenepixQuantitationType.LOG_RATIO_635_532;
+import static gov.nih.nci.caarray.platforms.genepix.GenepixQuantitationType.MEAN_OF_RATIOS_635_532;
+import static gov.nih.nci.caarray.platforms.genepix.GenepixQuantitationType.MEDIAN_OF_RATIOS_635_532;
+import static gov.nih.nci.caarray.platforms.genepix.GenepixQuantitationType.NORMALIZE;
+import static gov.nih.nci.caarray.platforms.genepix.GenepixQuantitationType.PERCENT_GT_B532_1SD;
+import static gov.nih.nci.caarray.platforms.genepix.GenepixQuantitationType.PERCENT_GT_B532_2SD;
+import static gov.nih.nci.caarray.platforms.genepix.GenepixQuantitationType.PERCENT_GT_B635_1SD;
+import static gov.nih.nci.caarray.platforms.genepix.GenepixQuantitationType.PERCENT_GT_B635_2SD;
+import static gov.nih.nci.caarray.platforms.genepix.GenepixQuantitationType.RATIOS_SD_635_532;
+import static gov.nih.nci.caarray.platforms.genepix.GenepixQuantitationType.RATIO_OF_MEANS_635_532;
+import static gov.nih.nci.caarray.platforms.genepix.GenepixQuantitationType.RATIO_OF_MEDIANS_635_532;
+import static gov.nih.nci.caarray.platforms.genepix.GenepixQuantitationType.RGN_R2_635_532;
+import static gov.nih.nci.caarray.platforms.genepix.GenepixQuantitationType.RGN_RATIO_635_532;
+import static gov.nih.nci.caarray.platforms.genepix.GenepixQuantitationType.SNR_532;
+import static gov.nih.nci.caarray.platforms.genepix.GenepixQuantitationType.SNR_635;
+import static gov.nih.nci.caarray.platforms.genepix.GenepixQuantitationType.SUM_OF_MEANS_635_532;
+import static gov.nih.nci.caarray.platforms.genepix.GenepixQuantitationType.SUM_OF_MEDIANS_635_532;
+import static gov.nih.nci.caarray.platforms.genepix.GenepixQuantitationType.X;
+import static gov.nih.nci.caarray.platforms.genepix.GenepixQuantitationType.Y;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.application.AbstractServiceIntegrationTest;
 import gov.nih.nci.caarray.application.ServiceLocatorFactory;
@@ -99,10 +143,17 @@ import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheStubFactory;
 import gov.nih.nci.caarray.application.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.dao.VocabularyDao;
+import gov.nih.nci.caarray.domain.array.AbstractDesignElement;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
+import gov.nih.nci.caarray.domain.array.PhysicalProbe;
 import gov.nih.nci.caarray.domain.contact.Organization;
+import gov.nih.nci.caarray.domain.data.AbstractDataColumn;
 import gov.nih.nci.caarray.domain.data.DerivedArrayData;
+import gov.nih.nci.caarray.domain.data.FloatColumn;
+import gov.nih.nci.caarray.domain.data.HybridizationData;
+import gov.nih.nci.caarray.domain.data.IntegerColumn;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
+import gov.nih.nci.caarray.domain.data.StringColumn;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileStatus;
@@ -123,19 +174,31 @@ import gov.nih.nci.caarray.magetab.MageTabFileSet;
 import gov.nih.nci.caarray.magetab.MageTabParser;
 import gov.nih.nci.caarray.magetab.TestMageTabSets;
 import gov.nih.nci.caarray.magetab.io.FileRef;
+import gov.nih.nci.caarray.magetab.io.JavaIOFileRef;
+import gov.nih.nci.caarray.platforms.genepix.GenepixQuantitationType;
+import gov.nih.nci.caarray.platforms.illumina.IlluminaGenotypingProcessedMatrixHandlerTest;
+import gov.nih.nci.caarray.platforms.illumina.IlluminaGenotypingProcessedMatrixQuantitationType;
+import gov.nih.nci.caarray.platforms.illumina.SampleProbeProfileQuantitationType;
+import gov.nih.nci.caarray.platforms.nimblegen.NimblegenQuantitationType;
+import gov.nih.nci.caarray.test.data.arraydata.AgilentArrayDataFiles;
+import gov.nih.nci.caarray.test.data.arraydata.GenepixArrayDataFiles;
 import gov.nih.nci.caarray.test.data.arraydata.IlluminaArrayDataFiles;
+import gov.nih.nci.caarray.test.data.arraydata.NimblegenArrayDataFiles;
 import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
 import gov.nih.nci.caarray.test.data.arraydesign.AgilentArrayDesignFiles;
 import gov.nih.nci.caarray.test.data.arraydesign.IlluminaArrayDesignFiles;
+import gov.nih.nci.caarray.test.data.arraydesign.NimblegenArrayDesignFiles;
 import gov.nih.nci.caarray.util.CaArrayUtils;
 import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import gov.nih.nci.caarray.validation.InvalidDataFileException;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -148,7 +211,6 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import com.google.inject.Injector;
-import gov.nih.nci.caarray.test.data.arraydata.AgilentArrayDataFiles;
 
 /**
  * Integration test for the FileManagementService.
@@ -739,6 +801,252 @@ public class FileManagementServiceIntegrationTest extends AbstractServiceIntegra
         assertEquals(45220, design.getDesignDetails().getFeatures().size());
         tx.commit();
     }
+    
+    private void importDesignAndDataFilesIntoProject(File arrayDesignFile, FileType dataFilesType, File... dataFiles) throws Exception {
+        Transaction tx = hibernateHelper.beginTransaction();
+        saveSupportingObjects();
+        ArrayDesign design = importArrayDesign(arrayDesignFile);
+        tx.commit();
+
+        importDataFilesIntoProject(design, dataFilesType, dataFiles);
+    }
+
+    private void importDataFilesIntoProject(ArrayDesign design, FileType dataFilesType, File... dataFiles) throws Exception {
+        Transaction tx = hibernateHelper.beginTransaction();
+        DUMMY_EXPERIMENT_1.getArrayDesigns().add(design);
+        hibernateHelper.getCurrentSession().save(DUMMY_PROJECT_1);
+        tx.commit();
+
+        tx = hibernateHelper.beginTransaction();
+        Project project = (Project) hibernateHelper.getCurrentSession().load(Project.class, DUMMY_PROJECT_1.getId());
+        CaArrayFileSet fileSet = uploadFiles(project, dataFiles);
+        for (CaArrayFile file : fileSet.getFiles()) {
+            if (!file.getName().endsWith(".sdrf") && !file.getName().endsWith(".idf")) {
+                file.setFileType(dataFilesType);                
+            }
+        }
+        tx.commit();
+
+        tx = hibernateHelper.beginTransaction();
+        project = (Project) hibernateHelper.getCurrentSession().load(Project.class, project.getId());
+        importFiles(project, fileSet, DataImportOptions.getAutoCreatePerFileOptions());
+        tx.commit();        
+    }
+    
+    @Test
+    public void testIlluminaCsvDataImport() throws Exception {
+        final int numberOfProbes = 10;
+        importDesignAndDataFilesIntoProject(IlluminaArrayDesignFiles.HUMAN_WG6_CSV,
+                FileType.ILLUMINA_DATA_CSV, IlluminaArrayDataFiles.HUMAN_WG6_SMALL);
+        Transaction tx = hibernateHelper.beginTransaction();
+        Project project = (Project) hibernateHelper.getCurrentSession().load(Project.class, DUMMY_PROJECT_1.getId());
+        ArrayDesign design = project.getExperiment().getArrayDesigns().iterator().next();
+        Hybridization hyb = project.getExperiment().getHybridizations().iterator().next();
+        List<AbstractDesignElement> l = hyb.getDerivedDataCollection().iterator().next().getDataSet().getDesignElementList().getDesignElements();
+        assertEquals(numberOfProbes, l.size());
+        for (AbstractDesignElement de : l) {
+            PhysicalProbe p = (PhysicalProbe) de;
+            assertTrue(design.getDesignDetails().getProbes().contains(p));
+        }
+        List<HybridizationData> hdl = hyb.getDerivedDataCollection().iterator().next().getDataSet().getHybridizationDataList();
+        assertEquals(19, hdl.size());
+        for (HybridizationData hd : hdl){
+            assertEquals(4, hd.getColumns().size());
+            List<String> intColumns = new ArrayList<String>(Arrays.asList(
+                    SampleProbeProfileQuantitationType.AVG_NBEADS.getName()));
+            List<String> floatColumns = new ArrayList<String>(Arrays.asList(
+                    SampleProbeProfileQuantitationType.AVG_SIGNAL.getName(),
+                    SampleProbeProfileQuantitationType.BEAD_STDEV.getName(),
+                    SampleProbeProfileQuantitationType.DETECTION.getName()));
+            for (AbstractDataColumn c : hd.getColumns()) {
+                String name = c.getQuantitationType().getName();
+                if (intColumns.contains(name)) {
+                    assertEquals(numberOfProbes, ((IntegerColumn) c).getValues().length);
+                    assertTrue("missing " + c.getQuantitationType(), intColumns.remove(c.getQuantitationType().getName()));                                        
+                } else if (floatColumns.contains(name)) {
+                    assertEquals(numberOfProbes, ((FloatColumn) c).getValues().length);
+                    assertTrue("missing " + c.getQuantitationType(), floatColumns.remove(c.getQuantitationType().getName()));                    
+                } else {
+                    fail("unexpected column: " + name);
+                }
+            }
+            assertTrue("not all columns present", intColumns.isEmpty() && floatColumns.isEmpty());
+        }
+        tx.commit();        
+     }
+
+    @Test
+    public void testIlluminaSampleProbeProfileImport() throws Exception {
+        importDesignAndDataFilesIntoProject(IlluminaArrayDesignFiles.MOUSE_REF_8,
+                FileType.ILLUMINA_SAMPLE_PROBE_PROFILE_TXT, IlluminaArrayDataFiles.SAMPLE_PROBE_PROFILE);
+        Transaction tx = hibernateHelper.beginTransaction();
+        Project project = (Project) hibernateHelper.getCurrentSession().load(Project.class, DUMMY_PROJECT_1.getId());
+        ArrayDesign design = project.getExperiment().getArrayDesigns().iterator().next();
+        Hybridization hyb = project.getExperiment().getHybridizations().iterator().next();
+        List<AbstractDesignElement> l = hyb.getDerivedDataCollection().iterator().next().getDataSet().getDesignElementList().getDesignElements();
+        assertEquals(3, l.size());
+        for (AbstractDesignElement de : l) {
+            PhysicalProbe p = (PhysicalProbe) de;
+            assertTrue(design.getDesignDetails().getProbes().contains(p));
+        }
+        List<HybridizationData> hdl = hyb.getDerivedDataCollection().iterator().next().getDataSet().getHybridizationDataList();
+        assertEquals(16, hdl.size());
+        for (HybridizationData hd : hdl){
+            assertEquals(8, hd.getColumns().size());
+            List<String> intColumns = new ArrayList<String>(Arrays.asList(
+                    SampleProbeProfileQuantitationType.NARRAYS.getName(),
+                    SampleProbeProfileQuantitationType.AVG_NBEADS.getName()));
+            List<String> floatColumns = new ArrayList<String>(Arrays.asList(
+                    SampleProbeProfileQuantitationType.MIN_SIGNAL.getName(),
+                    SampleProbeProfileQuantitationType.AVG_SIGNAL.getName(),
+                    SampleProbeProfileQuantitationType.MAX_SIGNAL.getName(),
+                    SampleProbeProfileQuantitationType.ARRAY_STDEV.getName(),
+                    SampleProbeProfileQuantitationType.BEAD_STDEV.getName(),
+                    SampleProbeProfileQuantitationType.DETECTION.getName()));
+            for (AbstractDataColumn c : hd.getColumns()) {
+                String name = c.getQuantitationType().getName();
+                if (intColumns.contains(name)) {
+                    assertEquals(3, ((IntegerColumn) c).getValues().length);
+                    assertTrue("missing " + c.getQuantitationType(), intColumns.remove(c.getQuantitationType().getName()));                                        
+                } else if (floatColumns.contains(name)) {
+                    assertEquals(3, ((FloatColumn) c).getValues().length);
+                    assertTrue("missing " + c.getQuantitationType(), floatColumns.remove(c.getQuantitationType().getName()));                    
+                } else {
+                    fail("unexpected column: " + name);
+                }
+            }
+            assertTrue("not all columns present", intColumns.isEmpty() && floatColumns.isEmpty());
+        }
+        tx.commit();        
+     }
+
+    @Test
+    public void testIlluminaGenotypingProcessedMatrixImport() throws Exception {
+        Transaction tx = hibernateHelper.beginTransaction();
+        saveSupportingObjects();
+        ArrayDesign design = IlluminaGenotypingProcessedMatrixHandlerTest.buildArrayDesign();
+        hibernateHelper.getCurrentSession().save(design);        
+        tx.commit();
+        
+        importDataFilesIntoProject(design, FileType.ILLUMINA_GENOTYPING_PROCESSED_MATRIX_TXT,
+                IlluminaArrayDataFiles.ILLUMINA_DERIVED_1_HYB);
+        tx = hibernateHelper.beginTransaction();
+        Project project = (Project) hibernateHelper.getCurrentSession().load(Project.class, DUMMY_PROJECT_1.getId());
+        design = (ArrayDesign) hibernateHelper.getCurrentSession().load(ArrayDesign.class, design.getId());
+        Hybridization hyb = project.getExperiment().getHybridizations().iterator().next();        
+        List<AbstractDesignElement> l = hyb.getDerivedDataCollection().iterator().next().getDataSet().getDesignElementList().getDesignElements();
+        assertEquals(3, l.size());
+        for (AbstractDesignElement de : l) {
+            PhysicalProbe p = (PhysicalProbe) de;
+            assertTrue(design.getDesignDetails().getProbes().contains(p));
+        }
+        List<HybridizationData> hdl = hyb.getDerivedDataCollection().iterator().next().getDataSet().getHybridizationDataList();
+        assertEquals(1, hdl.size());
+        assertEquals(6, hdl.get(0).getColumns().size());
+        List<String> stringColumns = new ArrayList<String>(
+                Arrays.asList(IlluminaGenotypingProcessedMatrixQuantitationType.ALLELE.getName()));
+        List<String> floatColumns = new ArrayList<String>(Arrays.asList(
+                IlluminaGenotypingProcessedMatrixQuantitationType.B_ALLELE_FREQ.getName(),
+                IlluminaGenotypingProcessedMatrixQuantitationType.GC_SCORE.getName(),
+                IlluminaGenotypingProcessedMatrixQuantitationType.LOG_R_RATIO.getName(),
+                IlluminaGenotypingProcessedMatrixQuantitationType.R.getName(),
+                IlluminaGenotypingProcessedMatrixQuantitationType.THETA.getName()));
+        for (AbstractDataColumn c : hdl.get(0).getColumns()) {
+            String name = c.getQuantitationType().getName();
+            if (stringColumns.contains(name)) {
+                assertEquals(3, ((StringColumn) c).getValues().length);
+                assertTrue("missing " + c.getQuantitationType(),
+                        stringColumns.remove(c.getQuantitationType().getName()));
+            } else if (floatColumns.contains(name)) {
+                assertEquals(3, ((FloatColumn) c).getValues().length);
+                assertTrue("missing " + c.getQuantitationType(), floatColumns.remove(c.getQuantitationType().getName()));
+            } else {
+                fail("unexpected column: " + name);
+            }
+        }
+        assertTrue("not all columns present", stringColumns.isEmpty() && floatColumns.isEmpty());
+        tx.commit();                
+     }
+
+    @Test
+    public void testGenepixGprImport() throws Exception {
+        importDesignAndDataFilesIntoProject(GenepixArrayDataFiles.JOE_DERISI_FIX, FileType.GENEPIX_GPR,
+                GenepixArrayDataFiles.SMALL_IDF, GenepixArrayDataFiles.SMALL_SDRF, GenepixArrayDataFiles.GPR_4_1_1);
+        Transaction tx = hibernateHelper.beginTransaction();
+        Project project = (Project) hibernateHelper.getCurrentSession().load(Project.class, DUMMY_PROJECT_1.getId());
+        ArrayDesign design = project.getExperiment().getArrayDesigns().iterator().next();
+        Hybridization hyb = project.getExperiment().getHybridizations().iterator().next();
+        
+        List<AbstractDesignElement> l = hyb.getDerivedDataCollection().iterator().next().getDataSet().getDesignElementList().getDesignElements();
+        assertEquals(6528, l.size());
+        for (AbstractDesignElement de : l) {
+            PhysicalProbe p = (PhysicalProbe) de;
+            assertTrue(design.getDesignDetails().getProbes().contains(p));
+        }
+        List<HybridizationData> hdl = hyb.getDerivedDataCollection().iterator().next().getDataSet().getHybridizationDataList();
+        assertEquals(1, hdl.size());
+        
+        GenepixQuantitationType[] expectedTypes = new GenepixQuantitationType[] {
+                X, Y, DIA, F635_MEDIAN, F635_MEAN,
+                F635_SD, B635_MEDIAN, B635_MEAN, B635_SD, PERCENT_GT_B635_1SD, PERCENT_GT_B635_2SD, F635_PERCENT_SAT,
+                F532_MEDIAN, F532_MEAN, F532_SD, B532_MEDIAN, B532_MEAN, B532_SD, PERCENT_GT_B532_1SD,
+                PERCENT_GT_B532_2SD, F532_PERCENT_SAT, RATIO_OF_MEDIANS_635_532, RATIO_OF_MEANS_635_532,
+                MEDIAN_OF_RATIOS_635_532, MEAN_OF_RATIOS_635_532, RATIOS_SD_635_532, RGN_RATIO_635_532, RGN_R2_635_532,
+                F_PIXELS, B_PIXELS, SUM_OF_MEDIANS_635_532, SUM_OF_MEANS_635_532, LOG_RATIO_635_532, F635_MEDIAN_B635,
+                F532_MEDIAN_B532, F635_MEAN_B635, F532_MEAN_B532, F635_TOTAL_INTENSITY, F532_TOTAL_INTENSITY, SNR_635,
+                SNR_532, FLAGS, NORMALIZE };
+
+        for (HybridizationData hd : hdl){
+            assertEquals(expectedTypes.length, hd.getColumns().size());
+            for (int i = 0; i < expectedTypes.length; i++) {
+                assertEquals(expectedTypes[i].getName(), hd.getColumns().get(i).getQuantitationType().getName());
+            }
+        }
+        tx.commit();                
+     }
+
+    @Test
+    public void testNimblegenPairImport() throws Exception {
+        importDesignAndDataFilesIntoProject(NimblegenArrayDesignFiles.SHORT_EXPRESSION_DESIGN, FileType.NIMBLEGEN_NORMALIZED_PAIR,
+                NimblegenArrayDataFiles.SHORT_HUMAN_EXPRESSION);
+        Transaction tx = hibernateHelper.beginTransaction();
+        Project project = (Project) hibernateHelper.getCurrentSession().load(Project.class, DUMMY_PROJECT_1.getId());
+        ArrayDesign design = project.getExperiment().getArrayDesigns().iterator().next();
+        Hybridization hyb = project.getExperiment().getHybridizations().iterator().next();
+        
+        List<AbstractDesignElement> l = hyb.getDerivedDataCollection().iterator().next().getDataSet().getDesignElementList().getDesignElements();
+        assertEquals(3, l.size());
+        for (AbstractDesignElement de : l) {
+            PhysicalProbe p = (PhysicalProbe) de;
+            assertTrue(design.getDesignDetails().getProbes().contains(p));
+        }
+        List<HybridizationData> hdl = hyb.getDerivedDataCollection().iterator().next().getDataSet().getHybridizationDataList();
+        assertEquals(1, hdl.size());
+        for (HybridizationData hd : hdl){
+            assertEquals(5, hd.getColumns().size());
+            List<String> intColumns = new ArrayList<String>(Arrays.asList(
+                    NimblegenQuantitationType.MATCH_INDEX.getName(),
+                    NimblegenQuantitationType.X.getName(),
+                    NimblegenQuantitationType.Y.getName()));
+            List<String> floatColumns = new ArrayList<String>(Arrays.asList(
+                    NimblegenQuantitationType.MM.getName(),
+                    NimblegenQuantitationType.PM.getName()));
+            for (AbstractDataColumn c : hd.getColumns()) {
+                String name = c.getQuantitationType().getName();
+                if (intColumns.contains(name)) {
+                    assertEquals(3, ((IntegerColumn) c).getValues().length);
+                    assertTrue("missing " + c.getQuantitationType(), intColumns.remove(c.getQuantitationType().getName()));                                        
+                } else if (floatColumns.contains(name)) {
+                    assertEquals(3, ((FloatColumn) c).getValues().length);
+                    assertTrue("missing " + c.getQuantitationType(), floatColumns.remove(c.getQuantitationType().getName()));                    
+                } else {
+                    fail("unexpected column: " + name);
+                }
+            }
+            assertTrue("not all columns present", intColumns.isEmpty() && floatColumns.isEmpty());
+        }
+        tx.commit();                
+     }
 
     @SuppressWarnings("PMD")
     private void importFiles(Project project, MageTabFileSet fileSet) throws Exception {
@@ -789,6 +1097,14 @@ public class FileManagementServiceIntegrationTest extends AbstractServiceIntegra
         }
         hibernateHelper.getCurrentSession().update(project);
         return caarrayFileSet;
+    }
+    
+    private CaArrayFileSet uploadFiles(Project project, File... files) {
+        MageTabFileSet inputFiles = new MageTabFileSet();
+        for (File f : files) {
+            inputFiles.addNativeData(new JavaIOFileRef(f));            
+        }
+        return uploadFiles(project, inputFiles);
     }
 
     private CaArrayFileSet uploadFiles(Project project, Map<File, FileType> files) {

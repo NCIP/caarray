@@ -82,21 +82,21 @@
  */
 package gov.nih.nci.caarray.platforms.datamatrix;
 
+import gov.nih.nci.caarray.dao.ArrayDao;
+import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.domain.LSID;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.data.AbstractDataColumn;
 import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
 import gov.nih.nci.caarray.domain.data.DataSet;
-import gov.nih.nci.caarray.domain.data.DesignElementList;
-import gov.nih.nci.caarray.domain.data.DesignElementType;
 import gov.nih.nci.caarray.domain.data.HybridizationData;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.platforms.DefaultValueParser;
+import gov.nih.nci.caarray.platforms.DesignElementBuilder;
 import gov.nih.nci.caarray.platforms.FileManager;
-import gov.nih.nci.caarray.platforms.ProbeLookup;
 import gov.nih.nci.caarray.platforms.ValueParser;
 import gov.nih.nci.caarray.platforms.spi.AbstractDataFileHandler;
 import gov.nih.nci.caarray.platforms.spi.PlatformFileReadException;
@@ -146,10 +146,14 @@ final class DataMatrixCopyNumberHandler extends AbstractDataFileHandler {
     private boolean hasBeenInitialized = false;
     private int numberOfProbes = UNINITIALIZED_INDEX;
     private final ValueParser valueParser = new DefaultValueParser();
+    private final ArrayDao arrayDao;
+    private final SearchDao searchDao;
 
     @Inject
-    protected DataMatrixCopyNumberHandler(FileManager fileManager) {
+    protected DataMatrixCopyNumberHandler(FileManager fileManager, ArrayDao arrayDao, SearchDao searchDao) {
         super(fileManager);
+        this.arrayDao = arrayDao;
+        this.searchDao = searchDao;
     }
 
     /**
@@ -282,16 +286,14 @@ final class DataMatrixCopyNumberHandler extends AbstractDataFileHandler {
 
     private void loadDesignElementList(DataSet dataSet, DelimitedFileReader delimitedFileReader, ArrayDesign design)
             throws IOException {
-        DesignElementList probeList = new DesignElementList();
-        probeList.setDesignElementTypeEnum(DesignElementType.PHYSICAL_PROBE);
-        dataSet.setDesignElementList(probeList);
-        ProbeLookup probeLookup = new ProbeLookup(design.getDesignDetails().getProbes());
+        DesignElementBuilder builder = new DesignElementBuilder(dataSet, design, arrayDao, searchDao);        
         positionReaderAtStartOfData(delimitedFileReader);
         while (delimitedFileReader.hasNextLine()) {
             List<String> values = delimitedFileReader.nextLine();
             String probeName = values.get(reporterRefColumnIndex);
-            probeList.getDesignElements().add(probeLookup.getProbe(probeName));
+            builder.addProbe(probeName);
         }
+        builder.finish();
     }
     
     private void readHybridizationRefNamesAndColumnIndexes(DelimitedFileReader reader)

@@ -42,6 +42,7 @@ import java.lang.reflect.Method;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
@@ -98,6 +99,8 @@ public class GeoSoftExporterBeanTest extends AbstractHibernateTest {
 
         TermSource src = vocab.getSource("MO", "1.3.1.1");
 
+        // to ensure consistent order
+        experiment.setExperimentDesignTypes(new LinkedHashSet<Term>());
         experiment.getExperimentDesignTypes().add(vocab.getTerm(src, "test-design-type1"));
         experiment.getExperimentDesignTypes().add(vocab.getTerm(src, "test-design-type2"));
         experiment.setPublicIdentifier("test-exp-id");

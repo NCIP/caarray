@@ -107,7 +107,7 @@ public enum SampleProbeProfileQuantitationType implements QuantitationTypeDescri
     /**
      * NARRAYS.
      */
-    NARRAYS("NARRAYS", DataType.FLOAT),
+    NARRAYS("NARRAYS", DataType.INTEGER),
     /**
      * ARRAY_STDEV.
      */
@@ -119,7 +119,7 @@ public enum SampleProbeProfileQuantitationType implements QuantitationTypeDescri
     /**
      * Avg_NBEADS.
      */
-    AVG_NBEADS("Avg_NBEADS", DataType.FLOAT),
+    AVG_NBEADS("Avg_NBEADS", DataType.INTEGER),
     /**
      * Detection, aka Detection Pval or DetectionPval.
      */

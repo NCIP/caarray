@@ -81,7 +81,7 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package gov.nih.nci.caarray.domain.array;
-
+ 
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 
 import java.util.HashSet;
@@ -139,7 +139,7 @@ public class PhysicalProbe extends AbstractProbe {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(updatable = false)
     @ForeignKey(name = "probe_group_fk")
-    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @Cascade({ org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.EVICT })
     public ProbeGroup getProbeGroup() {
         return probeGroup;
     }
