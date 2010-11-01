@@ -93,7 +93,7 @@
         <dependency conf="project" name="commons-logging" org="jakarta" rev="1.0.4"/>
 
         <dependency conf="project" name="commons-fileupload" org="jakarta" rev="1.2.1"/>
-        
+
         <dependency conf="project" name="commons-compress" org="apache" rev="1.0"/>
 
         <dependency conf="project" name="javaee" org="javaee" rev="5.0"/>
@@ -127,11 +127,11 @@
         <dependency conf="project" name="jboss-annotations-ejb3" org="jboss" rev="1.0"/>
 
         <dependency conf="project" name="jboss-remoting" org="jboss" rev="1.4.6"/>
-        
+
         <dependency conf="project" name="jta" org="javax.transaction" rev="1.0.1B"/>
 
         <dependency conf="project" name="junit" org="junit" rev="4.4"/>
-        
+
         <dependency conf="project" name="myfaces-api" org="javax.faces" rev="1.1.5"/>
 
         <dependency conf="project" name="mysql-connector-java" org="mysql" rev="5.0.5"/>
@@ -185,9 +185,9 @@
         <dependency conf="project" name="jboss-system" org="jboss" rev="4.0.5.GA"/>
 
         <dependency conf="project" name="jboss-jmx" org="jboss" rev="4.0.5.GA"/>
-        
+
         <dependency conf="project" name="jboss-dependency" org="jboss" rev="4.0.5.GA"/>
-        
+
         <dependency conf="project" name="jboss-ejb3" org="jboss" rev="4.0.5.GA"/>
 
         <dependency conf="project" name="jboss-aop-client" org="jboss" rev="1.5.2.GA"/>
@@ -198,9 +198,9 @@
 
         <dependency conf="project" name="concurrent" org="edu.oswego" rev="1.3.4"/>
 
-        <dependency conf="project" name="nci-commons-core" org="ncicb" rev="1.2.14"/>
+        <dependency conf="project" name="nci-commons-core" org="ncicb" rev="1.2.17"/>
 
-        <dependency conf="project" name="nci-commons-struts2" org="ncicb" rev="1.2.14"/>
+        <dependency conf="project" name="nci-commons-struts2" org="ncicb" rev="1.2.17"/>
 
         <dependency conf="project" name="ezmorph" org="ezmorph" rev="1.0.4"/>
 
@@ -249,7 +249,7 @@
         <dependency conf="project" name="rmiio" org="com.healthmarketscience" rev="2.0.2"/>
 
         <dependency conf="project" name="google-collections" org="google" rev="1.0-rc1"/>
-        
+
         <dependency conf="project" name="liquibase" org="liquibase" rev="1.9.3"/>
 
         <dependency conf="project" name="ledatastream" org="mindprod" rev="1.8"/>
@@ -258,16 +258,16 @@
 
         <dependency conf="project" name="guice-multibindings" org="google" rev="2.0"/>
 
-        <dependency conf="project" name="guice-assistedinject" org="google" rev="2.0"/>        
+        <dependency conf="project" name="guice-assistedinject" org="google" rev="2.0"/>
 
         <dependency conf="project" name="aopalliance" org="aopalliance" rev="1.0"/>
-        
+
         <dependency conf="project" name="woodstox" org="codehaus" rev="4.0.7"/>
-                
-        <dependency conf="project" name="mockito" org="mockito" rev="1.8.4"/>  
-                
-        <dependency conf="project" name="gnu-regexp" org="gnu" rev="1.1.4"/> 
-        
+
+        <dependency conf="project" name="mockito" org="mockito" rev="1.8.4"/>
+
+        <dependency conf="project" name="gnu-regexp" org="gnu" rev="1.1.4"/>
+
         <exclude org="pull-parser" module="pull-parser"/>
     </dependencies>
 </ivy-module>
