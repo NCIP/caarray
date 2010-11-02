@@ -21,11 +21,13 @@
                 <interceptor-ref name="alias" />
                 <interceptor-ref name="params">
                     <!--
-                        Excludes the jQuery no-cache _ parameter and the Displaytag d-#-X parameter(s)
+                        Excludes:
+                            the jQuery no-cache _ parameter and the Displaytag d-#-X parameter(s)
+                            All dojo parameters.
+                            .*\\.*,.*\(.*,.*\).*,.*@.* these are for an exploitation described here:
+                                http://blog.o0o.nu/2010/07/cve-2010-1870-struts2xwork-remote.html
                     -->
-                    <param name="excludeParams">
-                        _,d-\d+?-[sop]
-                    </param>
+                    <param name="excludeParams">_,d-\d+?-[sop],dojo\..*,^struts\..*,.*\\.*,.*\(.*,.*\).*,.*@.*</param>
                 </interceptor-ref>
                 <interceptor-ref name="servletConfig" />
                 <interceptor-ref name="prepare" />
@@ -36,12 +38,7 @@
                 <interceptor-ref name="checkbox" />
                 <interceptor-ref name="staticParams" />
                 <interceptor-ref name="params">
-                    <!--
-                        Excludes the jQuery no-cache _ parameter and the Displaytag d-#-X parameter(s)
-                    -->
-                    <param name="excludeParams">
-                        _,d-\d+?-[sop]
-                    </param>
+                    <param name="excludeParams">_,d-\d+?-[sop],dojo\..*,^struts\..*,.*\\.*,.*\(.*,.*\).*,.*@.*</param>
                 </interceptor-ref>
                 <interceptor-ref name="conversionError" />
                 <interceptor-ref name="nullCollectionElements" />
@@ -72,12 +69,7 @@
                 <interceptor-ref name="checkbox" />
                 <interceptor-ref name="staticParams" />
                 <interceptor-ref name="params">
-                    <!--
-                        Excludes the jQuery no-cache _ parameter and the Displaytag d-#-X parameter(s)
-                    -->
-                    <param name="excludeParams">
-                        _,d-\d+?-[sop]
-                    </param>
+                    <param name="excludeParams">_,d-\d+?-[sop],dojo\..*,^struts\..*,.*\\.*,.*\(.*,.*\).*,.*@.*</param>
                 </interceptor-ref>
                 <interceptor-ref name="conversionError" />
                 <interceptor-ref name="nullCollectionElements" />
@@ -325,7 +317,7 @@
             <result name="newOwner">/WEB-INF/pages/ownership/newOwner.jsp</result>
         </action>
         <action name="ajax/ownership/*" class="gov.nih.nci.caarray.web.action.OwnershipAction" method="{1}">
-            <result name="success">/WEB-INF/pages/ownership/{1}.jsp</result>            
+            <result name="success">/WEB-INF/pages/ownership/{1}.jsp</result>
         </action>
         <action name="audit/*" class="gov.nih.nci.caarray.web.action.audit.AuditAction" method="{1}">
             <result name="success">/WEB-INF/pages/audit/{1}.jsp</result>
