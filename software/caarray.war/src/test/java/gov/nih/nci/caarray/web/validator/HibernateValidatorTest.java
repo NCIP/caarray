@@ -114,49 +114,50 @@ import com.opensymphony.xwork2.validator.ValidatorContext;
 /**
  * Note: the actual HibernateValidator class has been moved to nci-commons, but the test remains here because
  * hibernate, etc isn't available there for testing.
+ * 
  * @author Scott Miller
  */
 @SuppressWarnings("PMD.AvoidDuplicateLiterals")
 public class HibernateValidatorTest extends AbstractBaseStrutsTest {
     private static Injector injector;
-    private static CaArrayHibernateHelper hibernateHelper; 
+    private static CaArrayHibernateHelper hibernateHelper;
 
     private TestAction action;
     private Transaction tx;
-    
+
     private ValidatorContext validatorContext;
     private HibernateValidator validator;
-    
+
     /**
-     * post-construct lifecycle method; intializes the Guice injector that will provide dependencies. 
+     * post-construct lifecycle method; intializes the Guice injector that will provide dependencies.
      */
     @BeforeClass
     public static void init() {
         injector = createInjector();
         hibernateHelper = injector.getInstance(CaArrayHibernateHelper.class);
     }
-    
+
     /**
      * @return a Guice injector from which this will obtain dependencies.
      */
     protected static Injector createInjector() {
         return Guice.createInjector(new CaArrayWarStaticInjectionModule(), new CaArrayHibernateHelperModule());
     }
-    
+
     @Before
     public void onSetUp() {
         this.action = new TestAction();
         this.validatorContext = new DelegatingValidatorContext(this.action);
         validator = new HibernateValidator();
-        validator.setValidatorContext(validatorContext);        
-        
+        validator.setValidatorContext(validatorContext);
+
         UsernameHolder.setUser(AbstractCaarrayTest.STANDARD_USER);
         tx = hibernateHelper.beginTransaction();
-        
+
     }
-    
+
     public void teardown() {
-        hibernateHelper.rollbackTransaction(tx);        
+        hibernateHelper.rollbackTransaction(tx);
     }
 
     @Test
@@ -173,7 +174,7 @@ public class HibernateValidatorTest extends AbstractBaseStrutsTest {
     @Test
     public void testHibernateValidatorWithInvalidObject() throws Exception {
         Source source = new Source();
-        
+
         ValueStack valueStack = ActionContext.getContext().getValueStack();
         valueStack.set("source", source);
         validator.setValueStack(valueStack);
@@ -185,14 +186,14 @@ public class HibernateValidatorTest extends AbstractBaseStrutsTest {
         Map.Entry<String, List<String>> error = validatorContext.getFieldErrors().entrySet().iterator().next();
         assertEquals("source.name", error.getKey());
         assertEquals(1, error.getValue().size());
-        assertEquals("source.name must be set", error.getValue().get(0));                
+        assertEquals("name must be set", error.getValue().get(0));
     }
 
     @Test
     public void testHibernateValidatorWithValidObject() throws Exception {
         Source source = new Source();
         source.setName("test name 1");
-        
+
         ValueStack valueStack = ActionContext.getContext().getValueStack();
         valueStack.set("source", source);
         validator.setValueStack(valueStack);
@@ -229,7 +230,7 @@ public class HibernateValidatorTest extends AbstractBaseStrutsTest {
         Map.Entry<String, List<String>> error = validatorContext.getFieldErrors().entrySet().iterator().next();
         assertEquals("sourceList[1].name", error.getKey());
         assertEquals(1, error.getValue().size());
-        assertEquals("sourceList[1].name must be set", error.getValue().get(0));                
+        assertEquals("name must be set", error.getValue().get(0));
     }
 
     @Test
@@ -252,11 +253,12 @@ public class HibernateValidatorTest extends AbstractBaseStrutsTest {
         Map.Entry<String, List<String>> error = validatorContext.getFieldErrors().entrySet().iterator().next();
         assertEquals("sourceList[1].name", error.getKey());
         assertEquals(1, error.getValue().size());
-        assertEquals("sourceList[1].name must be set", error.getValue().get(0));                
+        assertEquals("name must be set", error.getValue().get(0));
     }
 
     /**
      * The action for this test case.
      */
-    private class TestAction extends ActionSupport { }
+    private class TestAction extends ActionSupport {
+    }
 }
