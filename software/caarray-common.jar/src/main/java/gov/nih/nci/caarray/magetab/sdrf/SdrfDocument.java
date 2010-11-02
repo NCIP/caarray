@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.magetab.sdrf;
 
+import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
 import gov.nih.nci.caarray.magetab.AbstractMageTabDocument;
 import gov.nih.nci.caarray.magetab.Commentable;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
@@ -971,6 +972,11 @@ public final class SdrfDocument extends AbstractMageTabDocument {
                 currentUnitable = characteristic;
             }
         } else {
+            if (ExperimentOntologyCategory.ORGANISM.getCategoryName().equals(
+                    currentColumn.getHeading().getQualifier())) {
+                OntologyTerm term = addOntologyTerm(characteristic.getCategory(), value);
+                characteristic.setTerm(term);
+            }
             characteristic.setValue(value);
             if (nextColumn != null && nextColumn.getType() == SdrfColumnType.UNIT) {               
                 currentUnitable = characteristic;

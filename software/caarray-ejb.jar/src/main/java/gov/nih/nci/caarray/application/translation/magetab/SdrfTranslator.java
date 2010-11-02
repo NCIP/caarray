@@ -294,8 +294,8 @@ final class SdrfTranslator extends AbstractTranslator {
                 }
                 if (ExperimentOntologyCategory.ORGANISM.getCategoryName().equalsIgnoreCase(category)
                         && (null != sdrfCharacteristic.getTerm().getTermSource()
-                                && !sdrfCharacteristic.getTerm().getTermSource().getName().equals(
-                                ExperimentOntology.NCBI.getOntologyName()))) {
+                                && (!sdrfCharacteristic.getTerm().getTermSource().getName().equals(
+                                ExperimentOntology.NCBI.getOntologyName())))) {
                     document.addErrorMessage("The Characteristics [" + category + "] associated Term Source '"
                             + sdrfCharacteristic.getTerm().getTermSource().getName() + "' is invalid.  It must be '"
                             + ExperimentOntology.NCBI.getOntologyName() + "', or the Term Source should be omitted"

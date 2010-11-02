@@ -130,8 +130,10 @@ import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.magetab.MageTabFileSet;
 import gov.nih.nci.caarray.magetab.MageTabParser;
 import gov.nih.nci.caarray.magetab.MageTabParsingException;
+import gov.nih.nci.caarray.magetab.Protocol;
 import gov.nih.nci.caarray.magetab.TestMageTabSets;
 import gov.nih.nci.caarray.magetab.idf.IdfDocument;
+import gov.nih.nci.caarray.magetab.idf.Investigation;
 import gov.nih.nci.caarray.magetab.io.FileRef;
 import gov.nih.nci.caarray.magetab.io.JavaIOFileRef;
 import gov.nih.nci.caarray.magetab.sdrf.AbstractBioMaterial;
@@ -247,10 +249,20 @@ public class MageTabTranslatorTest extends AbstractServiceTest {
         Collection<Experiment> investigationsCollection = goodCaArrayTranslationResult.getInvestigations();
         assertTrue("There should only be one experiment.", investigationsCollection.size() == 1);
         Experiment experiment = investigationsCollection.iterator().next();
+        Investigation investigation = goodMageTabDocumentSet.getIdfDocument(MageTabDataFiles.GOOD_VOCABULARY_TERM_SOURCES_IDF.getName()).getInvestigation();
+        List<Protocol> protocols = investigation.getProtocols();
+        Protocol protocol = protocols.get(0);
+        String protocolTypeTermSourceUrl = protocol.getType().getTermSource().getFile();
+        assertEquals("The protocol term source is incorrect.", "http://mged.sourceforge.net/ontologies/MGEDOntology1.1.8.daml", protocolTypeTermSourceUrl);
         Set<Sample> samplesSet = experiment.getSamples();
         assertTrue("There should only be one sample.", samplesSet.size() == 1);
+        Set<Source> sourcesSet = experiment.getSources();
+        assertTrue("There should only be one source.", sourcesSet.size() == 1);
         Sample sample = samplesSet.iterator().next();
-        assertEquals("The organism is incorrect.", "Crazy Alien", sample.getOrganism().getScientificName());
+        Source source = sourcesSet.iterator().next();
+        assertEquals("The sample organism is incorrect.", "Homo sapiens", sample.getOrganism().getScientificName());
+        assertEquals("The sample organism term source is incorrect.", "http://ncicb.nci.nih.gov/", sample.getOrganism().getTermSource().getUrl());
+        assertEquals("The source material type term source is incorrect.", "http://mged.sourceforge.net/ontologies/MGEDOntology1.1.8.daml", source.getMaterialType().getSource().getUrl());
     }
 
     @Test
