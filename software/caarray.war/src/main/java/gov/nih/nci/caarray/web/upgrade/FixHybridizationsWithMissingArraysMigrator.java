@@ -288,11 +288,16 @@ public class FixHybridizationsWithMissingArraysMigrator extends AbstractMigrator
     }
 
     private List<Long> getDataFileIds(Long hid) throws SQLException {
-        String sql = "select f.id from caarrayfile f left join arraydata ad on f.id = ad.data_file "
-            + " left join rawarraydata_hybridizations radh on ad.id = radh.rawarraydata_id "
-            + " left join hybridization h on radh.hybridization_id = h.id "
-            + " left join derivedarraydata_hybridizations dadh on ad.id = dadh.derivedarraydata_id "
-            + " left join hybridization h2 on dadh.hybridization_id = h2.id where h.id = ? or h2.id = ?";
+        String sql = " "
+                + " select f.id "
+                + " from caarrayfile f "
+                + " left join arraydata ad on f.id = ad.data_file "
+                + " left join rawarraydata_hybridizations radh on ad.id = radh.rawarraydata_id "
+                + " left join hybridization h on radh.hybridization_id = h.id "
+                + " left join derivedarraydata_hybridizations dadh on ad.id = dadh.derivedarraydata_id "
+                + " left join hybridization h2 on dadh.hybridization_id = h2.id "
+                + " where (h.id = ? or h2.id = ?) "
+                + "   and f.status = 'IMPORTED' ";
         PreparedStatement ps = this.connection.prepareStatement(sql);
         ps.setLong(1, hid);
         ps.setLong(2, hid);
