@@ -127,7 +127,15 @@ public enum SearchCategory implements ResourceBasedEnum {
      * Sample.
      */
     SAMPLE("search.category.sample", new String[] {"p.experiment e", "e.samples s"}, "s.name"),
-
+    /**
+     * Pubmed ID.
+     */
+    PUBMED_ID("search.category.pubMedId", new String[] {"p.experiment e", "e.publications pub"}, "pub.pubMedId"),
+    /**
+     * Publication Author.
+     */
+    PUBLICATION_AUTHOR("search.category.publicationAuthor", new String[] {"p.experiment e", "e.publications pub"},
+            "pub.authors"),
     /**
      * Disease state.
      */

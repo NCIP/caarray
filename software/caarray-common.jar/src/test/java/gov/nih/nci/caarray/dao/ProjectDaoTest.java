@@ -293,7 +293,7 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
             tx = hibernateHelper.beginTransaction();
             assertEquals(0, DAO_OBJECT.getProjectsForCurrentUser(ALL_BY_ID).size());
             tx.commit();
-            
+
             UsernameHolder.setUser("caarrayadmin");
             tx = hibernateHelper.beginTransaction();
             Map<Long, Privileges> privilegeMap = SecurityUtils.getPrivileges(Arrays.asList(DUMMY_PROJECT_1), UsernameHolder.getCsmUser());
@@ -329,7 +329,7 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
             assertFalse(privileges.isWrite());
             assertFalse(privileges.isPermissions());
             tx.commit();
-            
+
         } catch (DAOException e) {
             hibernateHelper.rollbackTransaction(tx);
             throw e;
@@ -552,7 +552,7 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
             assertFalse(SecurityUtils.canRead(p, UsernameHolder.getCsmUser()));
             assertFalse(SecurityUtils.canWrite(p, UsernameHolder.getCsmUser()));
             assertFalse(SecurityUtils.canModifyPermissions(p, UsernameHolder.getCsmUser()));
-            // browse policy no longer applied on post load, but only on remote api. 
+            // browse policy no longer applied on post load, but only on remote api.
             // verify manually that it would do the right thing
             Set<SecurityPolicy> policies = p.getRemoteApiSecurityPolicies(UsernameHolder.getCsmUser());
             assertEquals(1, policies.size());
@@ -942,11 +942,61 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
         projects = DAO_OBJECT.searchByCategory(psp, "DummyExperiment1", SearchCategory.EXPERIMENT_TITLE);
         assertTrue(DUMMY_PROJECT_1.equals(projects.get(0)));
 
-        // test search by desription
+        // test search by description
         projects = DAO_OBJECT.searchByCategory(psp, "Desc", SearchCategory.EXPERIMENT_DESCRIPTION);
         assertTrue(DUMMY_PROJECT_1.equals(projects.get(0)));
 
+        // test search by pubmedid.
+        testSearchByPubmedId();
+
+        // test search by publication authors.
+        testSearchByPublicationAuthors();
+
         tx.commit();
+    }
+
+    private void testSearchByPubmedId() {
+        PageSortParams<Project> psp = new PageSortParams<Project>(20, 0, ProjectSortCriterion.PUBLIC_ID, false);
+        List<Project> projects = null;
+        Set<Publication> pubs = null;
+
+        // test search by pubmedid
+        projects  = DAO_OBJECT.searchByCategory(psp, "DummyPubMedId1", SearchCategory.PUBMED_ID);
+        assertEquals(1, projects.size());
+        assertTrue(DUMMY_PROJECT_1.equals(projects.get(0)));
+        pubs = projects.get(0).getExperiment().getPublications();
+        assertEquals(2, pubs.size());
+
+        projects  = DAO_OBJECT.searchByCategory(psp, "DummyPubMedId1", SearchCategory.PUBMED_ID);
+        assertEquals(1, projects.size());
+        assertTrue(DUMMY_PROJECT_1.equals(projects.get(0)));
+        pubs = projects.get(0).getExperiment().getPublications();
+        assertEquals(2, pubs.size());
+
+        projects  = DAO_OBJECT.searchByCategory(psp, "PubMed", SearchCategory.PUBMED_ID);
+        assertEquals(1, projects.size());
+    }
+
+    private void testSearchByPublicationAuthors() {
+        PageSortParams<Project> psp = new PageSortParams<Project>(20, 0, ProjectSortCriterion.PUBLIC_ID, false);
+        List<Project> projects = null;
+        Set<Publication> pubs = null;
+
+        // test search by publication authors
+        projects  = DAO_OBJECT.searchByCategory(psp, "DummyAuthors1", SearchCategory.PUBLICATION_AUTHOR);
+        assertEquals(1, projects.size());
+        assertTrue(DUMMY_PROJECT_1.equals(projects.get(0)));
+        pubs = projects.get(0).getExperiment().getPublications();
+        assertEquals(2, pubs.size());
+
+        projects  = DAO_OBJECT.searchByCategory(psp, "DummyAuthors2", SearchCategory.PUBLICATION_AUTHOR);
+        assertEquals(1, projects.size());
+        assertTrue(DUMMY_PROJECT_1.equals(projects.get(0)));
+        pubs = projects.get(0).getExperiment().getPublications();
+        assertEquals(2, pubs.size());
+
+        projects  = DAO_OBJECT.searchByCategory(psp, "uthors", SearchCategory.PUBLICATION_AUTHOR);
+        assertEquals(1, projects.size());
     }
 
     @Test
@@ -972,7 +1022,7 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
         List<Experiment> experiments = DAO_OBJECT.searchByCriteria(psp, crit);
         assertEquals(1, experiments.size());
         assertEquals(DUMMY_EXPERIMENT_1, experiments.get(0));
-        
+
         // test search by assay type
         crit = new ExperimentSearchCriteria();
         crit.setAssayType(DUMMY_ASSAYTYPE_1);
@@ -980,7 +1030,7 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
         assertEquals(2, experiments.size());
         assertEquals(DUMMY_EXPERIMENT_1, experiments.get(0));
         assertEquals(DUMMY_EXPERIMENT_2, experiments.get(1));
-        
+
         // test search by assay type and public id
         crit = new ExperimentSearchCriteria();
         crit.setPublicIdentifier(DUMMY_EXPERIMENT_2.getPublicIdentifier());
@@ -988,7 +1038,7 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
         experiments = DAO_OBJECT.searchByCriteria(psp, crit);
         assertEquals(1, experiments.size());
         assertEquals(DUMMY_EXPERIMENT_2, experiments.get(0));
-        
+
         // test search by manufacturer
         crit = new ExperimentSearchCriteria();
         crit.setArrayProvider(DUMMY_PROVIDER);
@@ -1013,12 +1063,12 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
         experiments = DAO_OBJECT.searchByCriteria(psp, crit);
         assertEquals(1, experiments.size());
         assertEquals(DUMMY_EXPERIMENT_1, experiments.get(0));
-        
+
         crit.getAnnotationCriterions().add(new AnnotationCriterion(ts, DUMMY_FACTOR_TYPE_1.getValue()));
         experiments = DAO_OBJECT.searchByCriteria(psp, crit);
         assertEquals(1, experiments.size());
         assertEquals(DUMMY_EXPERIMENT_1, experiments.get(0));
-        
+
         Category ct = new Category();
         ct.setName(ExperimentOntologyCategory.CELL_TYPE.getCategoryName());
         crit.getAnnotationCriterions().add(new AnnotationCriterion(ct, DUMMY_REPLICATE_TYPE.getValue()));
@@ -1051,10 +1101,10 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
         PageSortParams<Project> psp = new PageSortParams<Project>(20,0, ProjectSortCriterion.TITLE,false);
         List<Project> projects = DAO_OBJECT.getProjectsForCurrentUser( psp);
         assertEquals(3, projects.size());
-        
+
         // test count
         assertEquals(3, DAO_OBJECT.getProjectCountForCurrentUser());
-        
+
         // test paging
         psp.setPageSize(2);
         projects = DAO_OBJECT.getProjectsForCurrentUser(psp);
@@ -1174,7 +1224,7 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
         DUMMY_PROJECT_2.getFiles().add(f2);
         DAO_OBJECT.save(f2);
         DAO_OBJECT.save(DUMMY_PROJECT_2);
-        
+
         tx.commit();
         tx = hibernateHelper.beginTransaction();
         hibernateHelper.getCurrentSession().evict(DUMMY_PROJECT_1);
