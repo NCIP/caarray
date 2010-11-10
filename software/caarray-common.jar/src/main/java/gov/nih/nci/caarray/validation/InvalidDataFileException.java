@@ -97,7 +97,7 @@ public final class InvalidDataFileException extends Exception {
      * @param fileValidationResult contains validation messages, including the error that caused this exception.
      */
     public InvalidDataFileException(FileValidationResult fileValidationResult) {
-        super();
+        super(fileValidationResult.toString());
         this.fileValidationResult = fileValidationResult;
     }
 

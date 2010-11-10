@@ -95,8 +95,10 @@ public class InvalidDataFileExceptionTest extends AbstractCaarrayTest {
     @Test
     public final void testGetFileValidationResult() {
         FileValidationResult result = new FileValidationResult(new File("."));
+        result.addMessage(new ValidationMessage(ValidationMessage.Type.ERROR, "foo"));
         InvalidDataFileException exception = new InvalidDataFileException(result);
         assertEquals(result, exception.getFileValidationResult());
+        assertEquals("The exception message was not as expected.", "ERROR: foo", exception.getMessage().trim());
     }
 
 }
