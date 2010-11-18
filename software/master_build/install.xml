@@ -244,6 +244,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
 			<os family="windows" />
 		</condition>
 		<echo message="os.temp.dir - ${os.temp.dir}"/>
+
 		<!-- Copy files to ensure values containing variables are expanded, such properties are stored in embedded.filterset and then copy with filter files -->
 		<copy todir="${common.dir.dest}" filtering="true">
 			<fileset dir="${common.dir.src}">
@@ -302,6 +303,8 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
  
         <mkdir dir="${temp.dir}/caarray.ear" />
         <unzip src="${caarray.dir.dist}/${caarray.ear.file}" dest="${temp.dir}/caarray.ear/" />
+    	
+    	<apply-filters-to-dir filters.target.dir="${db.dir.src}"/>
 
         <path id="liquibase.dependencies.path">
             <fileset dir="${lib.dir}/caarray-project" includes="*.jar"/>
@@ -352,7 +355,8 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
         <unjar src="${temp.dir}/caarray.ear/caarray-common.jar" dest="${temp.dir}/caarray-common.jar"/>
         <unjar src="${temp.dir}/caarray.ear/caarray.war" dest="${temp.dir}/caarray.war"/>
         <move file="${temp.dir}/caarray-common.jar/csm/caarray.csm.new.hibernate.cfg.xml" tofile="${temp.dir}/caarray-common.jar/csm/${csm.application.name}.csm.new.hibernate.cfg.xml"/>
-        <jar destfile="${temp.dir}/caarray.ear/caarray-common.jar" basedir="${temp.dir}/caarray-common.jar" update="false" manifest="${temp.dir}/caarray-common.jar/META-INF/MANIFEST.MF"/>
+        <apply-filters-to-dir filters.target.dir="${temp.dir}/caarray-common.jar"/>
+    	<jar destfile="${temp.dir}/caarray.ear/caarray-common.jar" basedir="${temp.dir}/caarray-common.jar" update="false" manifest="${temp.dir}/caarray-common.jar/META-INF/MANIFEST.MF"/>
 
         <propertyregex property="corrected.database.url" input="${read.database.url}" regexp="(.*)\?" select="\1" defaultValue="${database.url}"/>
 		<copy file="${jboss-conf.dist.relative.dir}/security-config.xml" tofile="${temp.dir}/caarray.ear/META-INF/security-config.xml"/>
@@ -397,10 +401,12 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
             <replace path="//*[local-name()='param-name'][text()='ldapUserIdLabel']/following-sibling::*/text()" withText="${ldap.searchprefix}"/>
         </xmltask>
 
+    	<apply-filters-to-dir filters.target.dir="${temp.dir}/caarray.war"/>
         <war destfile="${temp.dir}/caarray.ear/caarray.war">
             <fileset dir="${temp.dir}/caarray.war"/>
         </war>
 
+        <apply-filters-to-dir filters.target.dir="${temp.dir}/caarray.ear"/>
         <ear destfile="${temp.dir}/caarray.ear.to_deploy/${caarray.ear.file}" appxml="${temp.dir}/caarray.ear/META-INF/application.xml" update="false" duplicate="preserve">
             <metainf dir="${temp.dir}/caarray.ear/META-INF" includes="*.xml" excludes="jboss-service.xml" />
             <fileset dir="${temp.dir}/caarray.ear">
@@ -1083,6 +1089,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
 
                 <delete file="${temp.dir}/grid${version.label}/WEB-INF/lib/CaArraySvc${version.label}-common.jar" />
 
+            	<apply-filters-to-dir filters.target.dir="${temp.dir}/grid${version.label}/WEB-INF/lib/CaArraySvc${version.label}-common"/>
                 <jar jarfile="${temp.dir}/grid${version.label}/WEB-INF/lib/CaArraySvc${version.label}-common.jar" compress="false" manifest="${temp.dir}/grid${version.label}/WEB-INF/lib/CaArraySvc${version.label}-common/META-INF/MANIFEST.MF">
                     <fileset dir="${temp.dir}/grid${version.label}/WEB-INF/lib/CaArraySvc${version.label}-common">
                         <include name="*/**" />
@@ -1091,6 +1098,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
 
                 <delete dir="${temp.dir}/grid${version.label}/WEB-INF/lib/CaArraySvc${version.label}-common" />
 
+            	<apply-filters-to-dir filters.target.dir="${temp.dir}/grid${version.label}"/>
                 <zip destfile="${basedir}/grid/cagrid_CaArraySvc${version.label}.zip">
                     <zipfileset dir="${temp.dir}/grid${version.label}" />
                 </zip>
@@ -1514,7 +1522,28 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
             </replaceregexp>
         </sequential>
     </macrodef>
-    
+	
+    <macrodef name="apply-filters-to-dir">
+        <attribute name="filters.target.dir" />
+        <sequential>
+            <delete dir="@{filters.target.dir}.filters.temp"/>
+            <copy todir="@{filters.target.dir}.filters.temp" overwrite="true">
+                <fileset dir="@{filters.target.dir}">
+                    <include name="**/*"/>
+                </fileset>
+                <filterset refid="embedded.filterset"/>
+                <filterset>
+                    <filtersfile file="${properties.file}"/>
+                    <filtersfile file="project.properties"/>
+                </filterset>
+            </copy>
+            <delete dir="@{filters.target.dir}"/>
+            <move todir="@{filters.target.dir}">
+                <fileset dir="@{filters.target.dir}.filters.temp"/>
+            </move>
+        </sequential>
+    </macrodef>
+
     <macrodef name="caarray-jboss-configure-java_opts">
         <attribute name="jboss.bin.dir" default="${jboss.home}/bin" />
         <attribute name="jboss.java.opts" default="${jboss.java.opts}" />
