@@ -131,7 +131,6 @@ import com.google.inject.util.Types;
  * 
  * @author Dan Kokotov
  */
-@SuppressWarnings({ "PMD.TooManyMethods", "PMD.CyclomaticComplexity" })
 public class FixHybridizationsWithMissingArraysMigrator extends AbstractCustomChange {
     private Set<DataFileHandler> handlers;
     private final Map<Long, File> openFileMap = new HashMap<Long, File>();
@@ -158,8 +157,7 @@ public class FixHybridizationsWithMissingArraysMigrator extends AbstractCustomCh
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("PMD.ExcessiveMethodLength")
-    public void execute(Database db) throws CustomChangeException {
+    protected void doExecute(Database db) throws CustomChangeException {
         try {
             final Connection underlyingConnection = db.getConnection().getUnderlyingConnection();
             execute(underlyingConnection);
@@ -342,3 +340,4 @@ public class FixHybridizationsWithMissingArraysMigrator extends AbstractCustomCh
                 .setOf(DataFileHandler.class))));
     }
 }
+

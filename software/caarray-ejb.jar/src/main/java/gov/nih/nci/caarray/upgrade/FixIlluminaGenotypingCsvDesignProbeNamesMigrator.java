@@ -138,24 +138,13 @@ public class FixIlluminaGenotypingCsvDesignProbeNamesMigrator extends AbstractCu
     /**
      * {@inheritDoc}
      */
-    public void execute(Database database) throws CustomChangeException {
+    protected void doExecute(Database database) throws CustomChangeException {
         try {
-            fixClassLoader();
-                        
             Connection connection = database.getConnection().getUnderlyingConnection();       
             execute(connection);
         } catch (Exception e) {
             throw new CustomChangeException(e);
         }
-    }
-
-    /**
-     * Running from an Ant updateDatabase task will fail due to class loader issues
-     * unless the context class loader is changed.
-     */
-    private void fixClassLoader() {
-        ClassLoader currentClassLoader = this.getClass().getClassLoader();            
-        Thread.currentThread().setContextClassLoader(currentClassLoader);
     }
 
     /**
