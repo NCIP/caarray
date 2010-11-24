@@ -47,7 +47,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
     <property name="caarray.ds.file" value="caarray-mysql-ds.xml" />
     <property name="mail.service.file" value="mail-service.xml" />
     <property name="caarray.ear.file" value="caarray.ear" />
-    <property name="caarray-webapp.name" value="caarray" />    
+    <property name="caarray-webapp.name" value="caarray" />
     <!-- Added to make sure that it works with both absolute and relative paths, this property is handed to sub-project scripts in absolute format. -->
     <property name="jar-signing.keystore.abs-location" location="${jar-signing.keystore.location}"/>
 
@@ -63,7 +63,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
             <include name="**/*.jar" />
         </fileset>
     </path>
-    
+
     <!-- Task definitions -->
     <taskdef uri="antlib:org.apache.ant.antunit" resource="org/apache/ant/antunit/antlib.xml" classpathref="bda-utils.classpath"/>
     <taskdef name="for" classname="net.sf.antcontrib.logic.ForTask" classpathref="bda-utils.classpath"/>
@@ -74,11 +74,11 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
     <!-- Includes-->
     <import file="${bda-utils.dir}/bda-build-utils-${bda.version}.xml" />
 
-    <!-- Start logging moved out of target so all targets are logged --> 
+    <!-- Start logging moved out of target so all targets are logged -->
     <!--<property name="install-logs.dir" location="${application.base.path}/change-logs"/> -->
     <property name="install-logs.dir" location="${log.dir}"/>
     <mkdir dir="${install-logs.dir}"/>
-    
+
     <!-- Start logging -->
     <mkdir dir="${log.dir}" />
     <tstamp>
@@ -112,7 +112,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
 				<!-- clean/make working dir -->
     			<delete dir="${working.dir}"/>
     			<mkdir dir="${working.dir}" />
-    			
+
     			<!-- clean temp dir -->
         		<delete dir="${temp.dir}" />
 			</then>
@@ -155,7 +155,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
 	        <math result="jboss.ssl.port" operand1="${jboss.server.port}" operation="+" operand2="363" datatype="int"/>
 	        <!-- Default to false, properties can override -->
 	        <property name="grid.secure.enable" value="false"/>
-		<property name="jboss.ssl.enable" value="false"/>	
+		<property name="jboss.ssl.enable" value="false"/>
 		<property name="jboss.home" value="${application.base.path}/${jboss.relative.path}"/>
 		<jboss-version
 			/>
@@ -231,7 +231,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
 			<filter token="project.name" value="project.name"/>
 			<filter token="" value=""/>
 		    </filterset>
-   
+
 		<!--OS Temp dir -->
 		<condition property="os.temp.dir" value="/tmp/${project.name}">
 			<or>
@@ -259,7 +259,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
         <available file="${jboss.home}" property="jboss.exists"/>
         <available file="${grid.home}" property="grid.exists"/>
 	</target>
-    
+
     <target name="diag">
         <echoproperties/>
     </target>
@@ -280,11 +280,11 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
             <then>
                 <!-- Jboss backup, do not compress until install is finished -->
                 <property name="backup.jboss.base.dir" location="${application.base.path}/backup/jboss"/>
-        
+
                 <!-- So these directories won't be included in the backup, they are not needed to use jboss -->
                 <delete dir="${jboss.home}/server/${jboss.server.name}/work"/>
                 <delete dir="${jboss.home}/server/${jboss.server.name}/tmp"/>
-        
+
                 <backup-dir
                     src.dir="${jboss.home}"
                     backup.base.dir="${backup.jboss.base.dir}"
@@ -294,16 +294,16 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
         </if>
         <!--delete dir="${jboss.home}"/-->
     </target>
-   
+
     <target name="install:database" description="Re-creates database and users from baseline and applys incremental database changes." unless="exclude.database"
         depends="
 		common:init,
 		install:database:validation:pre-install
         ">
- 
+
         <mkdir dir="${temp.dir}/caarray.ear" />
         <unzip src="${caarray.dir.dist}/${caarray.ear.file}" dest="${temp.dir}/caarray.ear/" />
-    	
+
     	<apply-filters-to-dir filters.target.dir="${db.dir.src}"/>
 
         <path id="liquibase.dependencies.path">
@@ -313,16 +313,16 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
 		</path>
 
 		<taskdef resource="liquibasetasks.properties">
-		    <classpath refid="liquibase.dependencies.path"/>	 
+		    <classpath refid="liquibase.dependencies.path"/>
 		</taskdef>
-    	
+
 		<updateDatabase
 			driver="${database.driver}"
 			url="${database.url}"
 			username="${database.user}"
 			password="${database.password}"
 			classpathref="liquibase.dependencies.path"
-			changeLogFile="db-upgrade.xml">			
+			changeLogFile="db-upgrade.xml">
 			<changeLogProperty name="csm.application.name" value="${csm.application.name}"/>
 			<changeLogProperty name="environment" value="${environment}"/>
     	</updateDatabase>
@@ -354,7 +354,12 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
         <unzip src="${caarray.dir.dist}/${caarray.ear.file}" dest="${temp.dir}/caarray.ear/" />
         <unjar src="${temp.dir}/caarray.ear/caarray-common.jar" dest="${temp.dir}/caarray-common.jar"/>
         <unjar src="${temp.dir}/caarray.ear/caarray.war" dest="${temp.dir}/caarray.war"/>
-        <move file="${temp.dir}/caarray-common.jar/csm/caarray.csm.new.hibernate.cfg.xml" tofile="${temp.dir}/caarray-common.jar/csm/${csm.application.name}.csm.new.hibernate.cfg.xml"/>
+        <move todir="${temp.dir}/caarray-common.jar/csm">
+            <fileset dir="${temp.dir}/caarray-common.jar/csm">
+                <include name="*.csm.new.hibernate.cfg.xml" />
+            </fileset>
+            <mapper type="regexp" from="^.*.csm.new.hibernate.cfg.xml" to="${csm.application.name}.csm.new.hibernate.cfg.xml" />
+        </move>
         <apply-filters-to-dir filters.target.dir="${temp.dir}/caarray-common.jar"/>
     	<jar destfile="${temp.dir}/caarray.ear/caarray-common.jar" basedir="${temp.dir}/caarray-common.jar" update="false" manifest="${temp.dir}/caarray-common.jar/META-INF/MANIFEST.MF"/>
 
@@ -461,7 +466,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
 
                     <layout class="org.apache.log4j.PatternLayout">
                         <param name="ConversionPattern" value="%d %-5p [%c] %m%n"/>
-                    </layout>           
+                    </layout>
                 </appender>
                 ]]>
             </insert>
@@ -476,7 +481,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
         </xmltask>
         <validate-log4j
             log4j.file="${jboss.home}/server/${jboss.server.name}/conf/${log4j.file.name}"
-            />                              
+            />
 
         <replaceregexp file="${jboss.home}/server/${jboss.server.name}/conf/${log4j.file.name}"
             byline="true"
@@ -527,7 +532,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
 			</then>
 		</if>
     </target>
-    
+
     <target name="-install:jboss:configure:tomcat" description="Configure tomcat web container for caArray JBoss installation.">
         <!-- set the ldap-related servlet parameters -->
         <xmltask source="${jboss.home}/server/${jboss.server.name}/deploy/jbossweb-tomcat55.sar/server.xml" dest="${jboss.home}/server/${jboss.server.name}/deploy/jbossweb-tomcat55.sar/server.xml">
@@ -535,7 +540,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
             <attr path="//Connector" attr="emptySessionPath" value="false"/>
         </xmltask>
     </target>
-    
+
     <!-- Calls to bda macros for basic functionality -->
     <target name="install:jboss:stop" description="Stops jboss" unless="exclude.jboss" depends="common:jboss:init,common:init">
         <if>
@@ -563,7 +568,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
             </then>
         </if>
     </target>
-    
+
     	<target name="install:common:validation:pre-install" description="Runs pre-install validation checks bda-utils" depends="common:init">
     		<validate-pre-install-common
     			ant.check.version="${ant.minimum.version}"
@@ -589,8 +594,8 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
     			database.version="${mysql.minimum.version}"
     			/>
     	</target>
-    
-    
+
+
     	<target name="install:jboss:validation:pre-install:ports" description="Checks to see if configured ports are listenting and fails buld, meant to be run after jboss:stop"
     		depends="
     		common:init,
@@ -599,7 +604,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
     		<validate-pre-jboss-ports
     			/>
     	</target>
-    
+
     	<target name="install:common:validation:post-install" description="Run post-install checks from bda-utils"
     		depends="
     		common:init
@@ -620,13 +625,13 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
     			</then>
     		</if>
 	</target>
-    
-    
+
+
     <!-- Calls to bda macros for basic functionality -->
     <target name="install:grid:stop" description="Stops grid jboss" unless="exclude.jboss" depends="common:jboss:init,common:init">
         <if>
 			<isset property="grid.exists"/>
-            <then>            
+            <then>
                 <jboss-stop-jboss jboss.home="${grid.home}" jboss.server.hostname="${grid.server.hostname}" jboss.server.jndi.port="${grid.server.jndi.port}" jboss.server.name="${grid.server.name}" jboss.web.user="${grid.web.user}" jboss.web.password="${grid.web.password}"/>
             </then>
         </if>
@@ -643,7 +648,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
             </then>
         </if>
     </target>
-    
+
     <target name="-install:jboss:configure:java_opts" description="Updates JAVA_OPTS">
          <caarray-jboss-configure-java_opts/>
     </target>
@@ -651,7 +656,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
     <target name="-install:jboss:configure:update-runscripts" description="Updates run.bat and run.sh so remote RMI clients can connect.">
         <set-host-flag-in-start-jboss-scripts jboss.bin.dir="${jboss.home}/bin" host.flag.value="${jboss.server.hostname}"/>
     </target>
-    
+
     <target name="-set:target:port:configuration:file">
         <property name="jboss.bin.dir" value="${jboss.home}/bin"/>
         <osfamily property="os.family"/>
@@ -668,7 +673,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
         </switch>
         <loadfile srcFile="${target.port.configuration.file}" property="port.configuration.file.contents"/>
     </target>
-    
+
     <target name="-install:jboss:configure:api:streaming:port" description="Configures the java API file streaming port number." depends="-set:target:port:configuration:file">
         <propertyregex property="current.java.api.filestreaming.port.value" input="${port.configuration.file.contents}" regexp="com.healthmarketscience.rmiio.exporter.port=(\d{1,})" select="\1" />
         <if>
@@ -819,7 +824,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
 		install:common:validation:post-install
         ">
     </target>
-    
+
     <target name="upgrade:database" depends="install:database" description="Upgrading and installing db is the same"/>
 
     <target name="upgrade-dac:with-dbinstall" description="Upgrades JBoss and Database"
@@ -854,7 +859,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
         upgrade:post:jboss,
         install:post:jboss,
         -install:jboss:start-with-config,
-	install:jboss:validation:post-install        
+	install:jboss:validation:post-install
         ">
     </target>
 
@@ -898,7 +903,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
 		install:jboss:stop,
 		install:jboss:validation:pre-install:ports,
         install:jboss:caarray:re-configure,
-        install:jboss:caarray,                
+        install:jboss:caarray,
         install:post:jboss,
         install:jboss:validation:post-install
         ">
@@ -942,7 +947,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
         install:common:validation:post-install
         ">
     </target>
-        
+
     <target name="install:carray-grid" description="Grouping of caArray Grid application targets" depends="install:jboss:grid-binaries,install:grid:deploy">
 		<jboss-configure
 			jboss.server.bindingfile.location="${grid.home}/bindings/bindings.xml"
@@ -1007,7 +1012,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
             </sequential>
         </for>
     </target>
-    
+
     <target name="upgrade:carray-grid" description="Grouping of caArray Grid application targets" depends="install:grid:deploy">
             <for param="version" list="${caarray-grid-svc.versions}">
                 <sequential>
@@ -1108,7 +1113,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
         </for>
         <unzip dest="${grid.home}/server/${grid.server.name}" src="${basedir}/grid/jboss-globus-serverinstance-config.zip" />
     </target>
-	
+
 	<target name="-install:jboss:configure:ejb3-interceptors-aop">
         <copy todir="${jboss.home}/server/${jboss.server.name}/deploy" overwrite="true">
             <fileset dir="${jboss-conf.dist.relative.dir}">
@@ -1116,14 +1121,14 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
             </fileset>
         </copy>
     </target>
-    
+
     <target name="-install:jboss:configure:disable-credential-caching" unless="exclude.jboss" description="Cnonfigures the jboss-service.xml file to turn off JAAS credential caching.">
     	<xmltask source="${jboss.home}/server/${jboss.server.name}/conf/jboss-service.xml" dest="${jboss.home}/server/${jboss.server.name}/conf/jboss-service.xml">
 			<xmlcatalog refid="bda.xml.catalog"/>
 			<replace path="/server/mbean[@name='jboss.security:service=JaasSecurityManager']/attribute[@name='DefaultCacheTimeout']/text()" withText="0"/>
 		</xmltask>
     </target>
-    
+
     <target name="-install:jboss:configure:log4j" unless="exclude.jboss" description="Configures log4j.xml for caArray JBoss server.">
 		<echo message="Configuring ${jboss.home}/server/${jboss.server.name}/conf/log4j.xml."/>
         <copy file="${jboss.home}/server/${jboss.server.name}/conf/log4j.xml" tofile="${jboss.home}/server/${jboss.server.name}/conf/log4j.xml.original"/>
@@ -1240,7 +1245,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
                         <include name="*"/>
                     </fileset>
                 </move>
-        
+
                 <!-- Compress backup and cleanup -->
                 <mkdir dir="${backup.jboss.base.dir}/backup1"/>
                 <zip destfile="${backup.jboss.base.dir}/backup1/${jboss.binaries.relative.dir}.zip" basedir="${backup.jboss.base.dir}/backup" />
@@ -1258,7 +1263,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
                 <os family="mac" />
             </or>
         </condition>
-    
+
         <condition property="application.base.path" value="${application.base.path.windows}">
             <os family="windows" />
         </condition>
@@ -1315,8 +1320,8 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
 		/>
 
     </target>
-    
-  
+
+
 	<target name="upgrade:database:init"
 		depends="
 		upgrade:jboss:init:prep,
@@ -1325,9 +1330,9 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
 		">
 		<!-- You need to either depend on jboss or tomcat so that you can read the db properties from it's configs.  BDA only has macros to read database properties from jboss. -->
 	</target>
-  
+
     <target name="upgrade:jboss:init:prep" depends="upgrade:common:init:prep">
-		<property name="jboss.home" value="${application.base.path}/${jboss.relative.path}"/>    
+		<property name="jboss.home" value="${application.base.path}/${jboss.relative.path}"/>
 		<property name="application.url" value="http://${jboss.server.hostname}:${jboss.server.port}/caarray"/>
         <properties-print
             properties.list="application.base.path,jboss.home,jboss.server.name"
@@ -1344,14 +1349,14 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
                         <os family="mac" />
                     </or>
                 </condition>
-            
+
                 <condition property="application.base.path" value="${application.base.path.windows}">
                     <os family="windows" />
                 </condition>
                 <echo message="application.base.path=${application.base.path}"/>
             </then>
         </if>
-            
+
         <if>
             <equals arg1="${jboss.ncicb-standard.port-config}" arg2="true"/>
             <then>
@@ -1361,7 +1366,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
                 <property name="jboss.server.binding.template.location" value="${bda-utils.dir}/resource/${jboss.binaries.relative.dir}/bindings.xml"/>
             </else>
         </if>
-                        
+
         <property name="upgrade.running" value="true"/>
         <!-- Upgrades always use port configs -->
         <property name="jboss.ncicb-standard.port-config" value="true"/>
@@ -1416,7 +1421,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
             copied.jboss.server.bindingfile.dir="${working.dir}/copied-bindings"
             copied.jboss.bindings.file.property.name="copied.jboss.bindings.file"
             />
-        # Setting this will cause install to copy this file into place if using CM/DAC, not modified in NCM 
+        # Setting this will cause install to copy this file into place if using CM/DAC, not modified in NCM
         <var name="jboss.server.binding.template.location" value="${working.dir}/copied-bindings/${copied.jboss.bindings.file}"/>
         -->
         <jboss-read-external-hostname
@@ -1424,7 +1429,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
         <!-- for tier installs, should be done first, since it is set first it will be the one used if it exists -->
         <jboss-read-java_opts
             jboss.bin.dir="${jboss.home}/server/${jboss.server.name}/bin"
-            />              
+            />
         <jboss-read-java_opts
             />
         <!-- will have to add code to install:post:jboss to copy this back if exists -->
@@ -1434,13 +1439,13 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
             />
         <grid-read-index-url
             grid.wsrf.dir="${grid.home}/server/${grid.server.name}/deploy/wsrf.war"
-            />              
+            />
         <var name="jboss.grid.secure.dir" value="${working.dir}/keys/jboss"/>
         <jboss-read-grid-secure
             copied.keystore.dir="${jboss.grid.secure.dir}"
             />
         <!-- will have to add code to install:post:jboss to copy this back if exists -->
-        <!-- no longer needed 
+        <!-- no longer needed
         <property name="copied.jboss.service-metadata.dir" value="${working.dir}/jboss-grid"/>
         <grid-copy-service-metadata
             copied.service-metadata.dir="${copied.service-metadata.dir}"
@@ -1449,16 +1454,16 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
         <grid-read-poc
             grid.service.name="CaArraySvc"
             grid.wsrf.dir="${grid.home}/server/${grid.server.name}/deploy/wsrf.war"
-            />                      
+            />
 
     </target>
-    
+
    	<target name="upgrade:database:readers:custom">
    		<!-- call your custom readers here, two properties included in these scripts that don't have readers are "fs-data.base.dir, mail.smtp.server" -->
 	</target>
-   
+
    	<target name="upgrade:database:readers:bda" depends="upgrade:jboss:init:prep,common:init" if="jboss.exists">
-   
+
    		<!-- Make sure the ${properties.file} has at least the following props -->
    		<properties-exist
    			properties.list="application.base.path,jboss.home,jboss.server.name"
@@ -1468,7 +1473,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
    			jboss.ds-xml.file="caarray-ds.xml"
    			/>
 	</target>
-    
+
 	<target name="upgrade:common:init:prep">
 		<if>
 			<not>
@@ -1494,7 +1499,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
 			/>
 		<var name="read.properties.list" value=""/>
 	</target>
-	
+
     <target name="upgrade:post:jboss">
 		<if>
 			<equals arg1="${jboss.major.version}" arg2="4"/>
@@ -1522,7 +1527,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
             </replaceregexp>
         </sequential>
     </macrodef>
-	
+
     <macrodef name="apply-filters-to-dir">
         <attribute name="filters.target.dir" />
         <sequential>
