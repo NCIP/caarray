@@ -95,13 +95,18 @@ import liquibase.exception.SetupException;
  */
 public abstract class AbstractCustomChange implements CustomTaskChange {    
     private FileOpener fileOpener;
+    private ClassLoader oldClassLoader;
 
     /**
      * {@inheritDoc}
      */
     public final void execute(Database database) throws CustomChangeException {
         fixClassLoader();
-        doExecute(database);
+        try {
+            doExecute(database);
+        } finally {
+            restoreClassLoader();
+        }
     }
 
     /**
@@ -110,8 +115,13 @@ public abstract class AbstractCustomChange implements CustomTaskChange {
      * problem in liquibase 1.9.x and might be fixed when liquibase 2.0 is released.
      */
     private void fixClassLoader() {
-        ClassLoader currentClassLoader = this.getClass().getClassLoader();            
+        ClassLoader currentClassLoader = this.getClass().getClassLoader();
+        oldClassLoader = Thread.currentThread().getContextClassLoader();
         Thread.currentThread().setContextClassLoader(currentClassLoader);
+    }
+    
+    private void restoreClassLoader() {
+        Thread.currentThread().setContextClassLoader(oldClassLoader);
     }
  
     /**
