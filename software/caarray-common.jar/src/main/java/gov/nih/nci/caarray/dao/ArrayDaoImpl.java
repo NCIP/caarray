@@ -347,6 +347,19 @@ class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
         List<PhysicalProbe> results = query.list();
         return results;
     }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public List<String> getPhysicalProbeNamesForDesign(final ArrayDesign design) {
+        String queryString = "select probe.name from " + PhysicalProbe.class.getName()
+                + " probe where probe.arrayDesignDetails = :details";
+        Query query = getCurrentSession().createQuery(queryString);
+        query.setParameter("details", design.getDesignDetails());
+        @SuppressWarnings("unchecked")
+        List<String> results = query.list();
+        return results;
+    }
 
     /**
      * {@inheritDoc}

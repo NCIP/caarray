@@ -166,7 +166,12 @@ public final class TestMageTabSets {
     /**
      * good MAGE-TAB data matrix copy number data import files.
      */
-    public static final MageTabFileSet DATA_MATRIX_COPY_NUMBER_GOOD_INPUT_SET = getDataMatrixCopyNumberGoodInputSet();
+    public static final MageTabFileSet GOOD_DATA_MATRIX_COPY_NUMBER_INPUT_SET = getDataMatrixCopyNumberGoodInputSet();
+    
+    /**
+     * bad MAGE-TAB data matrix copy number data import files.
+     */
+    public static final MageTabFileSet BAD_DATA_MATRIX_COPY_NUMBER_INPUT_SET = getDataMatrixCopyNumberBadInputSet();
 
     /**
      * MAGE-TAB input set from TCGA Broad data.
@@ -400,9 +405,17 @@ public final class TestMageTabSets {
     
     private static MageTabFileSet getDataMatrixCopyNumberGoodInputSet() {
         MageTabFileSet fileSet = new MageTabFileSet();
-        fileSet.addIdf(new JavaIOFileRef(MageTabDataFiles.DATA_MATRIX_COPY_NUMER_IDF));
-        fileSet.addSdrf(new JavaIOFileRef(MageTabDataFiles.DATA_MATRIX_COPY_NUMER_SDRF));
-        fileSet.addDataMatrix(new JavaIOFileRef(MageTabDataFiles.DATA_MATRIX_COPY_NUMER_DATA));
+        fileSet.addIdf(new JavaIOFileRef(MageTabDataFiles.GOOD_DATA_MATRIX_COPY_NUMER_IDF));
+        fileSet.addSdrf(new JavaIOFileRef(MageTabDataFiles.GOOD_DATA_MATRIX_COPY_NUMER_SDRF));
+        fileSet.addDataMatrix(new JavaIOFileRef(MageTabDataFiles.GOOD_DATA_MATRIX_COPY_NUMER_DATA));
+        return fileSet;
+    }
+    
+    private static MageTabFileSet getDataMatrixCopyNumberBadInputSet() {
+        MageTabFileSet fileSet = new MageTabFileSet();
+        fileSet.addIdf(new JavaIOFileRef(MageTabDataFiles.BAD_DATA_MATRIX_COPY_NUMER_IDF));
+        fileSet.addSdrf(new JavaIOFileRef(MageTabDataFiles.BAD_DATA_MATRIX_COPY_NUMER_SDRF));
+        fileSet.addDataMatrix(new JavaIOFileRef(MageTabDataFiles.BAD_DATA_MATRIX_COPY_NUMER_DATA));
         return fileSet;
     }
 

@@ -210,4 +210,8 @@ public class ArrayDaoStub extends AbstractDaoStub implements ArrayDao {
     public List<ArrayDesign> getArrayDesignsWithReImportable() {
         return new ArrayList<ArrayDesign>();
     }
+
+    public List<String> getPhysicalProbeNamesForDesign(ArrayDesign design) {
+        return new ArrayList<String>();
+    }
 }

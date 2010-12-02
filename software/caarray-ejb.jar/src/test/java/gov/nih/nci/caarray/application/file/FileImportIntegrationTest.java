@@ -126,27 +126,15 @@ import static gov.nih.nci.caarray.platforms.genepix.GenepixQuantitationType.SUM_
 import static gov.nih.nci.caarray.platforms.genepix.GenepixQuantitationType.X;
 import static gov.nih.nci.caarray.platforms.genepix.GenepixQuantitationType.Y;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import edu.georgetown.pir.Organism;
-import gov.nih.nci.caarray.application.AbstractServiceIntegrationTest;
-import gov.nih.nci.caarray.application.ServiceLocatorFactory;
-import gov.nih.nci.caarray.application.arraydata.ArrayDataService;
 import gov.nih.nci.caarray.application.arraydata.DataImportOptions;
-import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
-import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
-import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
-import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
-import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheStubFactory;
-import gov.nih.nci.caarray.application.vocabulary.VocabularyService;
-import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
-import gov.nih.nci.caarray.dao.VocabularyDao;
 import gov.nih.nci.caarray.domain.array.AbstractDesignElement;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.array.PhysicalProbe;
-import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.data.AbstractDataColumn;
 import gov.nih.nci.caarray.domain.data.DerivedArrayData;
 import gov.nih.nci.caarray.domain.data.FloatColumn;
@@ -159,22 +147,14 @@ import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
-import gov.nih.nci.caarray.domain.project.Experiment;
-import gov.nih.nci.caarray.domain.project.ExperimentOntology;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.sample.Extract;
 import gov.nih.nci.caarray.domain.sample.Source;
-import gov.nih.nci.caarray.domain.search.ExampleSearchCriteria;
-import gov.nih.nci.caarray.domain.vocabulary.Category;
-import gov.nih.nci.caarray.domain.vocabulary.Term;
-import gov.nih.nci.caarray.domain.vocabulary.TermSource;
-import gov.nih.nci.caarray.injection.InjectorFactory;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.magetab.MageTabFileSet;
 import gov.nih.nci.caarray.magetab.MageTabParser;
 import gov.nih.nci.caarray.magetab.TestMageTabSets;
 import gov.nih.nci.caarray.magetab.io.FileRef;
-import gov.nih.nci.caarray.magetab.io.JavaIOFileRef;
 import gov.nih.nci.caarray.platforms.genepix.GenepixQuantitationType;
 import gov.nih.nci.caarray.platforms.illumina.IlluminaGenotypingProcessedMatrixHandlerTest;
 import gov.nih.nci.caarray.platforms.illumina.IlluminaGenotypingProcessedMatrixQuantitationType;
@@ -188,173 +168,37 @@ import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
 import gov.nih.nci.caarray.test.data.arraydesign.AgilentArrayDesignFiles;
 import gov.nih.nci.caarray.test.data.arraydesign.IlluminaArrayDesignFiles;
 import gov.nih.nci.caarray.test.data.arraydesign.NimblegenArrayDesignFiles;
-import gov.nih.nci.caarray.util.CaArrayUtils;
-import gov.nih.nci.caarray.util.UsernameHolder;
-import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
-import gov.nih.nci.caarray.validation.InvalidDataFileException;
+import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
+import gov.nih.nci.caarray.validation.FileValidationResult;
+import gov.nih.nci.caarray.validation.ValidationMessage;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.transaction.UserTransaction;
-
 import org.hibernate.Transaction;
-import org.hibernate.criterion.Order;
-import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 
-import com.google.inject.Injector;
-
-/**
- * Integration test for the FileManagementService.
- * 
- * @author Steve Lustbader
- */
-@SuppressWarnings("PMD")
-public class FileManagementServiceIntegrationTest extends AbstractServiceIntegrationTest {
-    private FileManagementService fileManagementService;
-    private final FileAccessServiceStub fileAccessService = new FileAccessServiceStub();
-
-    private static Organism DUMMY_ORGANISM = new Organism();
-    private static Organization DUMMY_PROVIDER = new Organization();
-    private static Project DUMMY_PROJECT_1 = new Project();
-
-    private static Experiment DUMMY_EXPERIMENT_1 = new Experiment();
-
-    private static TermSource DUMMY_TERM_SOURCE = new TermSource();
-    private static Category DUMMY_CATEGORY = new Category();
-    private static Term DUMMY_TERM = new Term();
-
-    @Before
-    public void setUp() {
-        this.fileManagementService = createFileManagementService(fileAccessService);
-        
-        Transaction tx = hibernateHelper.beginTransaction();
-        ArrayDataService ads = ServiceLocatorFactory.getArrayDataService();
-        ads.initialize();
-        tx.commit();
-        
-        resetData();
-    }
+public class FileImportIntegrationTest extends AbstractFileManagementServiceIntegrationTest {
     
-    private static void resetData() {
-        DUMMY_ORGANISM = new Organism();
-        DUMMY_PROVIDER = new Organization();
-        DUMMY_PROJECT_1 = new Project();
-
-        DUMMY_EXPERIMENT_1 = new Experiment();
-
-        DUMMY_TERM_SOURCE = new TermSource();
-        DUMMY_CATEGORY = new Category();
-        DUMMY_TERM = new Term();
-
-        // Initialize all the dummy objects needed for the tests.
-        initializeProjects();
-    }
-
-    private static void initializeProjects() {
-        setExperimentSummary();
-        DUMMY_TERM_SOURCE.setName("dummy source");
-        DUMMY_TERM_SOURCE.setUrl("test url");
-        DUMMY_CATEGORY.setName("Dummy Category");
-        DUMMY_CATEGORY.setSource(DUMMY_TERM_SOURCE);
-        DUMMY_ORGANISM.setScientificName("Foo");
-        DUMMY_ORGANISM.setTermSource(DUMMY_TERM_SOURCE);
-        DUMMY_TERM.setValue("testval");
-        DUMMY_TERM.setCategory(DUMMY_CATEGORY);
-        DUMMY_TERM.setSource(DUMMY_TERM_SOURCE);
-
-        DUMMY_PROJECT_1.setExperiment(DUMMY_EXPERIMENT_1);
-        DUMMY_EXPERIMENT_1.setOrganism(DUMMY_ORGANISM);
-        DUMMY_EXPERIMENT_1.setManufacturer(DUMMY_PROVIDER);
-        DUMMY_PROJECT_1.setLocked(false);
-    }
-
-    private static void setExperimentSummary() {
-        DUMMY_EXPERIMENT_1.setTitle("DummyExperiment1");
-        DUMMY_EXPERIMENT_1.setDescription("DummyExperiment1Desc");
-        Date currDate = new Date();
-        DUMMY_EXPERIMENT_1.setDate(currDate);
-        DUMMY_EXPERIMENT_1.setPublicReleaseDate(currDate);
-        DUMMY_EXPERIMENT_1.setDesignDescription("Working on it");
-    }
-
-    private void saveSupportingObjects() {
-        TermSource caarraySource = new TermSource();
-        caarraySource.setName(ExperimentOntology.CAARRAY.getOntologyName());
-        caarraySource.setVersion(ExperimentOntology.CAARRAY.getVersion());
-
-        VocabularyDao vocabularyDao = CaArrayDaoFactory.INSTANCE.getVocabularyDao();
-        if (CaArrayUtils.uniqueResult(vocabularyDao.queryEntityByExample(ExampleSearchCriteria.forEntity(caarraySource)
-                .includeNulls().excludeProperties("url"), Order.desc("version"))) == null) {
-            hibernateHelper.getCurrentSession().save(caarraySource);
-        }
-
-        TermSource mgedOntology = new TermSource();
-        mgedOntology.setName(ExperimentOntology.MGED_ONTOLOGY.getOntologyName());
-        mgedOntology.setVersion(ExperimentOntology.MGED_ONTOLOGY.getVersion());
-
-        TermSource savedMgedOntology = CaArrayUtils.uniqueResult(vocabularyDao.queryEntityByExample(
-                ExampleSearchCriteria.forEntity(mgedOntology).includeNulls().excludeProperties("url"), Order
-                        .desc("version")));
-        if (savedMgedOntology == null) {
-            hibernateHelper.getCurrentSession().save(mgedOntology);
-            savedMgedOntology = mgedOntology;
-        }
-
-        if (vocabularyDao.getTerm(savedMgedOntology, VocabularyService.UNKNOWN_PROTOCOL_TYPE_NAME) == null) {
-            Term unknownProtocolType = new Term();
-            unknownProtocolType.setValue(VocabularyService.UNKNOWN_PROTOCOL_TYPE_NAME);
-            unknownProtocolType.setSource(savedMgedOntology);
-            hibernateHelper.getCurrentSession().save(unknownProtocolType);
-        }
-
-        if (vocabularyDao.getTerm(savedMgedOntology, "mm") == null) {
-            Term mm = new Term();
-            mm.setValue("mm");
-            mm.setSource(savedMgedOntology);
-            hibernateHelper.getCurrentSession().save(mm);
-        }
-
-        hibernateHelper.getCurrentSession().save(DUMMY_PROVIDER);
-        hibernateHelper.getCurrentSession().save(DUMMY_ORGANISM);
-        hibernateHelper.getCurrentSession().save(DUMMY_TERM);
-    }
-
     @Test
     public void testReimportProjectFiles() throws Exception {
-        Transaction tx = hibernateHelper.beginTransaction();
-        saveSupportingObjects();
         ArrayDesign design = importArrayDesign(AgilentArrayDesignFiles.TEST_MIRNA_1_XML_SMALL, FileType.AGILENT_XML);
-        tx.commit();
-
-        tx = hibernateHelper.beginTransaction();
-        DUMMY_EXPERIMENT_1.getArrayDesigns().add(design);
-        hibernateHelper.getCurrentSession().save(DUMMY_PROJECT_1);
-        tx.commit();
+        addDesignToExperiment(design);
 
         Map<File, FileType> files = new HashMap<File, FileType>();
         files.put(AgilentArrayDataFiles.MIRNA, FileType.ILLUMINA_RAW_TXT);
 
-        tx = hibernateHelper.beginTransaction();
-        Project project = (Project) hibernateHelper.getCurrentSession().load(Project.class, DUMMY_PROJECT_1.getId());
-        CaArrayFileSet fileSet = uploadFiles(project, files);
-        tx.commit();
+        CaArrayFileSet fileSet = uploadFiles(files);
 
-        tx = hibernateHelper.beginTransaction();
-        project = (Project) hibernateHelper.getCurrentSession().load(Project.class, DUMMY_PROJECT_1.getId());
-        importFiles(project, fileSet, DataImportOptions.getAutoCreatePerFileOptions());
-        tx.commit();
+        importFiles(fileSet);
 
-        tx = hibernateHelper.beginTransaction();
-        project = (Project) hibernateHelper.getCurrentSession().load(Project.class, project.getId());
+        Transaction tx = hibernateHelper.beginTransaction();
+        Project project = getTestProject();
         assertEquals(1, project.getExperiment().getHybridizations().size());
         assertEquals(1, project.getExperiment().getHybridizations().iterator().next().getRawDataCollection().size());
 
@@ -367,14 +211,14 @@ public class FileManagementServiceIntegrationTest extends AbstractServiceIntegra
         tx.commit();
 
         tx = hibernateHelper.beginTransaction();
-        project = (Project) hibernateHelper.getCurrentSession().load(Project.class, project.getId());
+        project = getTestProject();
         fileSet = new CaArrayFileSet();
         fileSet.addAll(project.getImportedFiles());
-        this.fileManagementService.reimportAndParseProjectFiles(project, fileSet);
+        this.getFileManagementService().reimportAndParseProjectFiles(project, fileSet);
         tx.commit();
 
         tx = hibernateHelper.beginTransaction();
-        project = (Project) hibernateHelper.getCurrentSession().load(Project.class, project.getId());
+        project = getTestProject();
         assertEquals(1, project.getImportedFiles().size());
         assertEquals(1, project.getExperiment().getHybridizations().size());
         assertEquals(1, project.getExperiment().getHybridizations().iterator().next().getRawDataCollection().size());
@@ -385,27 +229,17 @@ public class FileManagementServiceIntegrationTest extends AbstractServiceIntegra
         tx.commit();
     }
 
-
     @Test
     public void testImportMageTabSpecificationAndUpdateCharacteristics() throws Exception {
-        Transaction tx = hibernateHelper.beginTransaction();
-        saveSupportingObjects();
         ArrayDesign design = importArrayDesign(AffymetrixArrayDesignFiles.TEST3_CDF);
-        tx.commit();
-
-        tx = hibernateHelper.beginTransaction();
         importArrayDesign(AffymetrixArrayDesignFiles.HG_FOCUS_CDF);
-        tx.commit();
 
-        tx = hibernateHelper.beginTransaction();
-        DUMMY_EXPERIMENT_1.getArrayDesigns().add(design);
-        hibernateHelper.getCurrentSession().save(DUMMY_PROJECT_1);
-        tx.commit();
+        addDesignToExperiment(design);
 
-        importFiles(DUMMY_PROJECT_1, TestMageTabSets.MAGE_TAB_SPECIFICATION_INPUT_SET);
+        importFiles(TestMageTabSets.MAGE_TAB_SPECIFICATION_INPUT_SET);
 
-        tx = hibernateHelper.beginTransaction();
-        Project project = (Project) hibernateHelper.getCurrentSession().load(Project.class, DUMMY_PROJECT_1.getId());
+        Transaction tx = hibernateHelper.beginTransaction();
+        Project project = getTestProject();
         assertEquals(FileStatus.IMPORTED, project.getFileSet().getStatus());
         assertTrue(project.getExperiment().getDescription().endsWith("MDR1 overexpression."));
         assertEquals(1, project.getExperiment().getFactors().size());
@@ -424,10 +258,10 @@ public class FileManagementServiceIntegrationTest extends AbstractServiceIntegra
         tx.commit();
 
         // now try to update annotations of existing biomaterials
-        importFiles(project, TestMageTabSets.MAGE_TAB_SPECIFICATION_UPDATE_ANNOTATIONS_INPUT_SET);
+        importFiles(TestMageTabSets.MAGE_TAB_SPECIFICATION_UPDATE_ANNOTATIONS_INPUT_SET);
 
         tx = hibernateHelper.beginTransaction();
-        project = (Project) hibernateHelper.getCurrentSession().load(Project.class, DUMMY_PROJECT_1.getId());
+        project = getTestProject();
         assertEquals(FileStatus.IMPORTED, project.getFileSet().getStatus());
         assertTrue(project.getExperiment().getDescription().endsWith("This sentence is added to the description."));
         assertEquals(2, project.getExperiment().getFactors().size());
@@ -448,10 +282,10 @@ public class FileManagementServiceIntegrationTest extends AbstractServiceIntegra
         tx.commit();
 
         // now try to add a new biomaterial while update existing biomaterials
-        importFiles(project, TestMageTabSets.MAGE_TAB_SPECIFICATION_UPDATE_ANNOTATIONS_ADD_BM_INPUT_SET);
+        importFiles(TestMageTabSets.MAGE_TAB_SPECIFICATION_UPDATE_ANNOTATIONS_ADD_BM_INPUT_SET);
 
         tx = hibernateHelper.beginTransaction();
-        project = (Project) hibernateHelper.getCurrentSession().load(Project.class, DUMMY_PROJECT_1.getId());
+        project = getTestProject();
         assertEquals(FileStatus.IMPORTED, project.getFileSet().getStatus());
         assertTrue(project.getExperiment().getDescription().endsWith("This sentence is added to the description."));
         assertEquals(2, project.getExperiment().getFactors().size());
@@ -475,20 +309,13 @@ public class FileManagementServiceIntegrationTest extends AbstractServiceIntegra
 
     @Test
     public void testImportMageTabWithoutArrayDesignRef() throws Exception {
-        Transaction tx = hibernateHelper.beginTransaction();
-        saveSupportingObjects();
         ArrayDesign design = importArrayDesign(AffymetrixArrayDesignFiles.TEST3_CDF);
-        tx.commit();
+        addDesignToExperiment(design);
 
-        tx = hibernateHelper.beginTransaction();
-        DUMMY_EXPERIMENT_1.getArrayDesigns().add(design);
-        hibernateHelper.getCurrentSession().save(DUMMY_PROJECT_1);
-        tx.commit();
+        importFiles(TestMageTabSets.EXTENDED_FACTOR_VALUES_INPUT_SET);
 
-        importFiles(DUMMY_PROJECT_1, TestMageTabSets.EXTENDED_FACTOR_VALUES_INPUT_SET);
-
-        tx = hibernateHelper.beginTransaction();
-        Project project = (Project) hibernateHelper.getCurrentSession().load(Project.class, DUMMY_PROJECT_1.getId());
+        Transaction tx = hibernateHelper.beginTransaction();
+        Project project = getTestProject();
         assertEquals(5, project.getImportedFiles().size());
         assertEquals(3, project.getExperiment().getHybridizations().size());
         for (Hybridization h : project.getExperiment().getHybridizations()) {
@@ -499,31 +326,21 @@ public class FileManagementServiceIntegrationTest extends AbstractServiceIntegra
 
     @Test
     public void testImportMageTabWithoutArrayDesignRef2() throws Exception {
-        Transaction tx = hibernateHelper.beginTransaction();
-        saveSupportingObjects();
         ArrayDesign design = importArrayDesign(AffymetrixArrayDesignFiles.TEST3_CDF);
-        tx.commit();
+        addDesignToExperiment(design);
 
-        tx = hibernateHelper.beginTransaction();
-        DUMMY_EXPERIMENT_1.getArrayDesigns().add(design);
-        hibernateHelper.getCurrentSession().save(DUMMY_PROJECT_1);
-        tx.commit();
-
-        tx = hibernateHelper.beginTransaction();
-        Project project = (Project) hibernateHelper.getCurrentSession().load(Project.class, DUMMY_PROJECT_1.getId());
-        CaArrayFileSet fileSet = uploadFiles(project, TestMageTabSets.EXTENDED_FACTOR_VALUES_INPUT_SET);
+        CaArrayFileSet fileSet = uploadFiles(TestMageTabSets.EXTENDED_FACTOR_VALUES_INPUT_SET);
+        
+        Transaction tx = hibernateHelper.beginTransaction();
         for (CaArrayFile file : fileSet.getFilesByType(FileType.AFFYMETRIX_CEL)) {
             file.setFileType(FileType.AFFYMETRIX_DAT);
         }
         tx.commit();
 
-        tx = hibernateHelper.beginTransaction();
-        project = (Project) hibernateHelper.getCurrentSession().load(Project.class, project.getId());
-        importFiles(project, fileSet, null);
-        tx.commit();
+        importFiles(fileSet, null);
 
         tx = hibernateHelper.beginTransaction();
-        project = (Project) hibernateHelper.getCurrentSession().load(Project.class, DUMMY_PROJECT_1.getId());
+        Project project = getTestProject();
         assertEquals(5, project.getImportedFiles().size());
         assertEquals(3, project.getExperiment().getHybridizations().size());
         for (Hybridization h : project.getExperiment().getHybridizations()) {
@@ -531,18 +348,11 @@ public class FileManagementServiceIntegrationTest extends AbstractServiceIntegra
         }
         tx.commit();
     }
-    
+
     @Test
     public void testImportNonMageTabWithoutArrayDesign() throws Exception {
-        Transaction tx = hibernateHelper.beginTransaction();
-        saveSupportingObjects();
         ArrayDesign design = importArrayDesign(AffymetrixArrayDesignFiles.TEST3_CDF);
-        tx.commit();
-
-        tx = hibernateHelper.beginTransaction();
-        DUMMY_EXPERIMENT_1.getArrayDesigns().add(design);
-        hibernateHelper.getCurrentSession().save(DUMMY_PROJECT_1);
-        tx.commit();
+        addDesignToExperiment(design);
 
         MageTabFileSet inputFiles = new MageTabFileSet();
         for (FileRef f : TestMageTabSets.EXTENDED_FACTOR_VALUES_INPUT_SET.getAllFiles()) {
@@ -554,21 +364,18 @@ public class FileManagementServiceIntegrationTest extends AbstractServiceIntegra
         docSet.getIdfDocuments().clear();
         docSet.getSdrfDocuments().clear();
 
-        tx = hibernateHelper.beginTransaction();
-        Project project = (Project) hibernateHelper.getCurrentSession().load(Project.class, DUMMY_PROJECT_1.getId());
-        CaArrayFileSet fileSet = uploadFiles(project, inputFiles);
+        CaArrayFileSet fileSet = uploadFiles(inputFiles);
+        
+        Transaction tx = hibernateHelper.beginTransaction();
         for (CaArrayFile file : fileSet.getFilesByType(FileType.AFFYMETRIX_CEL)) {
             file.setFileType(FileType.AFFYMETRIX_DAT);
         }
         tx.commit();
 
-        tx = hibernateHelper.beginTransaction();
-        project = (Project) hibernateHelper.getCurrentSession().load(Project.class, project.getId());
-        importFiles(project, fileSet, DataImportOptions.getAutoCreatePerFileOptions());
-        tx.commit();
+        importFiles(fileSet, DataImportOptions.getAutoCreatePerFileOptions());
 
         tx = hibernateHelper.beginTransaction();
-        project = (Project) hibernateHelper.getCurrentSession().load(Project.class, project.getId());
+        Project project = getTestProject();
         assertEquals(3, project.getImportedFiles().size());
         assertEquals(3, project.getExperiment().getHybridizations().size());
         for (Hybridization h : project.getExperiment().getHybridizations()) {
@@ -578,189 +385,18 @@ public class FileManagementServiceIntegrationTest extends AbstractServiceIntegra
     }
 
     @Test
-    public void testValidateDefect18625Hybes() throws Exception {
-        Transaction tx = hibernateHelper.beginTransaction();
-        saveSupportingObjects();
-        ArrayDesign design = importArrayDesign(IlluminaArrayDesignFiles.HUMAN_WG6_CSV);
-        tx.commit();
-
-        tx = hibernateHelper.beginTransaction();
-        DUMMY_EXPERIMENT_1.getArrayDesigns().add(design);
-        hibernateHelper.getCurrentSession().save(DUMMY_PROJECT_1);
-        tx.commit();
-        Map<File, FileType> files = new HashMap<File, FileType>();
-        files.put(IlluminaArrayDataFiles.DEFECT_18652_IDF, FileType.MAGE_TAB_IDF);
-        files.put(IlluminaArrayDataFiles.DEFECT_18652_SDRF, FileType.MAGE_TAB_SDRF);
-        files.put(IlluminaArrayDataFiles.HUMAN_WG6_SMALL, FileType.ILLUMINA_DATA_CSV);
-
-        uploadAndValidateFiles(DUMMY_PROJECT_1, files);
-
-        tx = hibernateHelper.beginTransaction();
-        Project project = (Project) hibernateHelper.getCurrentSession().load(Project.class, DUMMY_PROJECT_1.getId());
-        for (CaArrayFile file : project.getFiles()) {
-            if (!file.getFileType().equals(FileType.MAGE_TAB_SDRF)) {
-                assertEquals(FileStatus.VALIDATED, file.getFileStatus());
-            } else {
-                assertEquals(FileStatus.VALIDATION_ERRORS, file.getFileStatus());
-                assertEquals(1, file.getValidationResult().getMessages().size());
-                assertTrue(file.getValidationResult()
-                        .getMessages().get(0).getMessage().contains("WRONG"));
-            }
-        }
-        tx.commit();
-
-    }
-
-    @Test
-    public void testUpdateBioMaterialChain() throws Exception {
-        Transaction tx = hibernateHelper.beginTransaction();
-        saveSupportingObjects();
-        ArrayDesign design = importArrayDesign(AffymetrixArrayDesignFiles.TEST3_CDF);
-        tx.commit();
-
-        tx = hibernateHelper.beginTransaction();
-        DUMMY_EXPERIMENT_1.getArrayDesigns().add(design);
-        hibernateHelper.getCurrentSession().save(DUMMY_PROJECT_1);
-        tx.commit();
-
-        importFiles(DUMMY_PROJECT_1, TestMageTabSets.UPDATE_BIO_MATERIAL_CHAIN_BASELINE_INPUT_SET);
-
-        tx = hibernateHelper.beginTransaction();
-        Project project = (Project) hibernateHelper.getCurrentSession().load(Project.class, DUMMY_PROJECT_1.getId());
-        assertEquals(FileStatus.IMPORTED, project.getFileSet().getStatus());
-        assertEquals(1, project.getExperiment().getSources().size());
-        assertEquals(1, project.getExperiment().getSamples().size());
-        assertEquals(2, project.getExperiment().getExtracts().size());
-        assertEquals(2, project.getExperiment().getLabeledExtracts().size());
-        assertEquals(2, project.getExperiment().getHybridizations().size());
-        assertNotNull(findSource(project, "Source A"));
-        assertNull(findSource(project, "Source B"));
-        assertEquals(1, project.getExperiment().getHybridizationByName("Hyb 1").getAllDataFiles().size());
-        tx.commit();
-
-        // now try to add new biomaterials in the middle of the existing chains
-        importFiles(project, TestMageTabSets.UPDATE_BIO_MATERIAL_CHAIN_NEW_BIO_MATERIALS_INPUT_SET);
-
-        tx = hibernateHelper.beginTransaction();
-        project = (Project) hibernateHelper.getCurrentSession().load(Project.class, DUMMY_PROJECT_1.getId());
-        assertEquals(FileStatus.IMPORTED, project.getFileSet().getStatus());
-        assertEquals(2, project.getExperiment().getSources().size());
-        assertEquals(2, project.getExperiment().getSamples().size());
-        Set<Extract> extracts = project.getExperiment().getExtracts();
-        System.out.println("Updated extracts: " + extracts);
-        assertEquals(4, extracts.size());
-        assertEquals(4, project.getExperiment().getLabeledExtracts().size());
-        assertEquals(4, project.getExperiment().getHybridizations().size());
-        assertNotNull(findSource(project, "Source A"));
-        assertNotNull(findSource(project, "Source B"));
-        assertEquals(1, project.getExperiment().getHybridizationByName("Hyb 1").getAllDataFiles().size());
-        tx.commit();
-
-        // now try to add a data files to existing hybs
-        importFiles(project, TestMageTabSets.UPDATE_BIO_MATERIAL_CHAIN_NEW_DATA_FILES_INPUT_SET);
-
-        tx = hibernateHelper.beginTransaction();
-        project = (Project) hibernateHelper.getCurrentSession().load(Project.class, DUMMY_PROJECT_1.getId());
-        assertEquals(FileStatus.IMPORTED, project.getFileSet().getStatus());
-        assertEquals(2, project.getExperiment().getSources().size());
-        assertEquals(2, project.getExperiment().getSamples().size());
-        extracts = project.getExperiment().getExtracts();
-        System.out.println("Updated extracts: " + extracts);
-        assertEquals(4, extracts.size());
-        assertEquals(4, project.getExperiment().getLabeledExtracts().size());
-        assertEquals(4, project.getExperiment().getHybridizations().size());
-        assertNotNull(findSource(project, "Source A"));
-        assertNotNull(findSource(project, "Source B"));
-        assertEquals(2, project.getExperiment().getHybridizationByName("Hyb 1").getAllDataFiles().size());
-        tx.commit();
-    }
-
-    @Test
-    public void testUpdateFiles() throws Exception {
-        Transaction tx = hibernateHelper.beginTransaction();
-        saveSupportingObjects();
-        ArrayDesign design = importArrayDesign(AffymetrixArrayDesignFiles.TEST3_CDF);
-        tx.commit();
-
-        tx = hibernateHelper.beginTransaction();
-        DUMMY_EXPERIMENT_1.getArrayDesigns().add(design);
-        hibernateHelper.getCurrentSession().save(DUMMY_PROJECT_1);
-        tx.commit();
-
-        importFiles(DUMMY_PROJECT_1, TestMageTabSets.UPDATE_FILES_BASELINE_INPUT_SET);
-
-        tx = hibernateHelper.beginTransaction();
-        Project project = (Project) hibernateHelper.getCurrentSession().load(Project.class, DUMMY_PROJECT_1.getId());
-        assertEquals(FileStatus.IMPORTED, project.getFileSet().getStatus());
-        assertEquals(1, project.getExperiment().getSources().size());
-        assertEquals(1, project.getExperiment().getSamples().size());
-        assertEquals(1, project.getExperiment().getExtracts().size());
-        assertEquals(1, project.getExperiment().getLabeledExtracts().size());
-        assertEquals(2, project.getExperiment().getHybridizations().size());
-        assertNotNull(findSource(project, "Source A"));
-        assertNull(findSource(project, "Source B"));
-        assertEquals(2, project.getExperiment().getHybridizationByName("Hyb 1").getAllDataFiles().size());
-        assertEquals(1, project.getExperiment().getHybridizationByName("Hyb 1").getRawDataCollection().size());
-        assertEquals(1, project.getExperiment().getHybridizationByName("Hyb 1").getDerivedDataCollection().size());
-        RawArrayData raw = project.getExperiment().getHybridizationByName("Hyb 1").getRawDataCollection().iterator().next();
-        DerivedArrayData derived = project.getExperiment().getHybridizationByName("Hyb 1").getDerivedDataCollection().iterator().next();
-        assertEquals(1, derived.getDerivedFromArrayDataCollection().size());
-        assertEquals(raw, derived.getDerivedFromArrayDataCollection().iterator().next());
-        tx.commit();
-
-        // now try to add data files to existing hybs, which also reference existing data files
-        importFiles(project, TestMageTabSets.UPDATE_FILES_NEW_INPUT_SET);
-
-        tx = hibernateHelper.beginTransaction();
-        project = (Project) hibernateHelper.getCurrentSession().load(Project.class, DUMMY_PROJECT_1.getId());
-        assertEquals(FileStatus.IMPORTED, project.getFileSet().getStatus());
-        assertEquals(1, project.getExperiment().getSources().size());
-        assertEquals(1, project.getExperiment().getSamples().size());
-        assertEquals(2, project.getExperiment().getHybridizations().size());
-
-        assertEquals(3, project.getExperiment().getHybridizationByName("Hyb 1").getAllDataFiles().size());
-        assertEquals(2, project.getExperiment().getHybridizationByName("Hyb 1").getRawDataCollection().size());
-        assertEquals(1, project.getExperiment().getHybridizationByName("Hyb 1").getDerivedDataCollection().size());
-        derived = project.getExperiment().getHybridizationByName("Hyb 1").getDerivedDataCollection().iterator().next();
-        assertEquals("BM1.EXP", derived.getDataFile().getName());
-        assertEquals(2, derived.getDerivedFromArrayDataCollection().size());
-        for (RawArrayData oneRaw : project.getExperiment().getHybridizationByName("Hyb 1").getRawDataCollection()) {
-            assertTrue(Arrays.asList("BM1.CEL", "BM1a.CEL").contains(oneRaw.getDataFile().getName()));
-            assertTrue("BM1.EXP is not derived from " + oneRaw.getName(), derived.getDerivedFromArrayDataCollection()
-                    .contains(oneRaw));
-        }
-
-        assertEquals(3, project.getExperiment().getHybridizationByName("Hyb 2").getAllDataFiles().size());
-        assertEquals(1, project.getExperiment().getHybridizationByName("Hyb 2").getRawDataCollection().size());
-        assertEquals(2, project.getExperiment().getHybridizationByName("Hyb 2").getDerivedDataCollection().size());
-        raw = project.getExperiment().getHybridizationByName("Hyb 2").getRawDataCollection().iterator().next();
-        assertEquals("BM2.CEL", raw.getDataFile().getName());
-        for (DerivedArrayData oneDerived : project.getExperiment().getHybridizationByName("Hyb 2")
-                .getDerivedDataCollection()) {
-            assertTrue(Arrays.asList("BM2.EXP", "BM2a.EXP").contains(oneDerived.getDataFile().getName()));
-            assertEquals(1, oneDerived.getDerivedFromArrayDataCollection().size());
-            assertEquals(raw, oneDerived.getDerivedFromArrayDataCollection().iterator().next());
-        }
-
-        tx.commit();
-    }
-
-    @Test
     public void testReimport() throws Exception {
-        Transaction tx = hibernateHelper.beginTransaction();
-        saveSupportingObjects();
         ArrayDesign design = importArrayDesign(AgilentArrayDesignFiles.TEST_GENE_EXPRESSION_1_XML, FileType.AGILENT_CSV);
         assertNull(design.getDesignDetails());
-        tx.commit();
 
-        tx = hibernateHelper.beginTransaction();
+        Transaction tx = hibernateHelper.beginTransaction();
         design.getFirstDesignFile().setFileType(FileType.AGILENT_XML);
         hibernateHelper.getCurrentSession().saveOrUpdate(design);
         tx.commit();
-        
+
         tx = hibernateHelper.beginTransaction();
         hibernateHelper.getCurrentSession().evict(design);        
-        this.fileManagementService.reimportAndParseArrayDesign(design.getId());        
+        this.getFileManagementService().reimportAndParseArrayDesign(design.getId());        
         tx.commit();
 
         tx = hibernateHelper.beginTransaction();
@@ -773,25 +409,19 @@ public class FileManagementServiceIntegrationTest extends AbstractServiceIntegra
 
     @Test
     public void testReimportWithReferencingExperiment() throws Exception {
-        Transaction tx = hibernateHelper.beginTransaction();
-        saveSupportingObjects();
         ArrayDesign design = importArrayDesign(AgilentArrayDesignFiles.TEST_GENE_EXPRESSION_1_XML, FileType.AGILENT_CSV);
         assertNull(design.getDesignDetails());
-        tx.commit();
-        
-        tx = hibernateHelper.beginTransaction();
-        DUMMY_EXPERIMENT_1.getArrayDesigns().add(design);
-        hibernateHelper.getCurrentSession().save(DUMMY_PROJECT_1);
-        tx.commit();
 
-        tx = hibernateHelper.beginTransaction();
+        addDesignToExperiment(design);
+
+        Transaction tx = hibernateHelper.beginTransaction();
         design.getFirstDesignFile().setFileType(FileType.AGILENT_XML);
         hibernateHelper.getCurrentSession().saveOrUpdate(design);
         tx.commit();
-        
+
         tx = hibernateHelper.beginTransaction();
         hibernateHelper.getCurrentSession().evict(design);        
-        this.fileManagementService.reimportAndParseArrayDesign(design.getId());        
+        this.getFileManagementService().reimportAndParseArrayDesign(design.getId());        
         tx.commit();
 
         tx = hibernateHelper.beginTransaction();
@@ -801,45 +431,14 @@ public class FileManagementServiceIntegrationTest extends AbstractServiceIntegra
         assertEquals(45220, design.getDesignDetails().getFeatures().size());
         tx.commit();
     }
-    
-    private void importDesignAndDataFilesIntoProject(File arrayDesignFile, FileType dataFilesType, File... dataFiles) throws Exception {
-        Transaction tx = hibernateHelper.beginTransaction();
-        saveSupportingObjects();
-        ArrayDesign design = importArrayDesign(arrayDesignFile);
-        tx.commit();
 
-        importDataFilesIntoProject(design, dataFilesType, dataFiles);
-    }
-
-    private void importDataFilesIntoProject(ArrayDesign design, FileType dataFilesType, File... dataFiles) throws Exception {
-        Transaction tx = hibernateHelper.beginTransaction();
-        DUMMY_EXPERIMENT_1.getArrayDesigns().add(design);
-        hibernateHelper.getCurrentSession().save(DUMMY_PROJECT_1);
-        tx.commit();
-
-        tx = hibernateHelper.beginTransaction();
-        Project project = (Project) hibernateHelper.getCurrentSession().load(Project.class, DUMMY_PROJECT_1.getId());
-        CaArrayFileSet fileSet = uploadFiles(project, dataFiles);
-        for (CaArrayFile file : fileSet.getFiles()) {
-            if (!file.getName().endsWith(".sdrf") && !file.getName().endsWith(".idf")) {
-                file.setFileType(dataFilesType);                
-            }
-        }
-        tx.commit();
-
-        tx = hibernateHelper.beginTransaction();
-        project = (Project) hibernateHelper.getCurrentSession().load(Project.class, project.getId());
-        importFiles(project, fileSet, DataImportOptions.getAutoCreatePerFileOptions());
-        tx.commit();        
-    }
-    
     @Test
     public void testIlluminaCsvDataImport() throws Exception {
         final int numberOfProbes = 10;
         importDesignAndDataFilesIntoProject(IlluminaArrayDesignFiles.HUMAN_WG6_CSV,
                 FileType.ILLUMINA_DATA_CSV, IlluminaArrayDataFiles.HUMAN_WG6_SMALL);
         Transaction tx = hibernateHelper.beginTransaction();
-        Project project = (Project) hibernateHelper.getCurrentSession().load(Project.class, DUMMY_PROJECT_1.getId());
+        Project project = getTestProject();
         ArrayDesign design = project.getExperiment().getArrayDesigns().iterator().next();
         Hybridization hyb = project.getExperiment().getHybridizations().iterator().next();
         List<AbstractDesignElement> l = hyb.getDerivedDataCollection().iterator().next().getDataSet().getDesignElementList().getDesignElements();
@@ -873,14 +472,14 @@ public class FileManagementServiceIntegrationTest extends AbstractServiceIntegra
             assertTrue("not all columns present", intColumns.isEmpty() && floatColumns.isEmpty());
         }
         tx.commit();        
-     }
+    }
 
     @Test
     public void testIlluminaSampleProbeProfileImport() throws Exception {
         importDesignAndDataFilesIntoProject(IlluminaArrayDesignFiles.MOUSE_REF_8,
                 FileType.ILLUMINA_SAMPLE_PROBE_PROFILE_TXT, IlluminaArrayDataFiles.SAMPLE_PROBE_PROFILE);
         Transaction tx = hibernateHelper.beginTransaction();
-        Project project = (Project) hibernateHelper.getCurrentSession().load(Project.class, DUMMY_PROJECT_1.getId());
+        Project project = getTestProject();
         ArrayDesign design = project.getExperiment().getArrayDesigns().iterator().next();
         Hybridization hyb = project.getExperiment().getHybridizations().iterator().next();
         List<AbstractDesignElement> l = hyb.getDerivedDataCollection().iterator().next().getDataSet().getDesignElementList().getDesignElements();
@@ -918,20 +517,19 @@ public class FileManagementServiceIntegrationTest extends AbstractServiceIntegra
             assertTrue("not all columns present", intColumns.isEmpty() && floatColumns.isEmpty());
         }
         tx.commit();        
-     }
+    }
 
     @Test
     public void testIlluminaGenotypingProcessedMatrixImport() throws Exception {
         Transaction tx = hibernateHelper.beginTransaction();
-        saveSupportingObjects();
         ArrayDesign design = IlluminaGenotypingProcessedMatrixHandlerTest.buildArrayDesign();
         hibernateHelper.getCurrentSession().save(design);        
         tx.commit();
-        
+
         importDataFilesIntoProject(design, FileType.ILLUMINA_GENOTYPING_PROCESSED_MATRIX_TXT,
                 IlluminaArrayDataFiles.ILLUMINA_DERIVED_1_HYB);
         tx = hibernateHelper.beginTransaction();
-        Project project = (Project) hibernateHelper.getCurrentSession().load(Project.class, DUMMY_PROJECT_1.getId());
+        Project project = getTestProject();
         design = (ArrayDesign) hibernateHelper.getCurrentSession().load(ArrayDesign.class, design.getId());
         Hybridization hyb = project.getExperiment().getHybridizations().iterator().next();        
         List<AbstractDesignElement> l = hyb.getDerivedDataCollection().iterator().next().getDataSet().getDesignElementList().getDesignElements();
@@ -966,17 +564,17 @@ public class FileManagementServiceIntegrationTest extends AbstractServiceIntegra
         }
         assertTrue("not all columns present", stringColumns.isEmpty() && floatColumns.isEmpty());
         tx.commit();                
-     }
+    }
 
     @Test
     public void testGenepixGprImport() throws Exception {
         importDesignAndDataFilesIntoProject(GenepixArrayDataFiles.JOE_DERISI_FIX, FileType.GENEPIX_GPR,
                 GenepixArrayDataFiles.SMALL_IDF, GenepixArrayDataFiles.SMALL_SDRF, GenepixArrayDataFiles.GPR_4_1_1);
         Transaction tx = hibernateHelper.beginTransaction();
-        Project project = (Project) hibernateHelper.getCurrentSession().load(Project.class, DUMMY_PROJECT_1.getId());
+        Project project = getTestProject();
         ArrayDesign design = project.getExperiment().getArrayDesigns().iterator().next();
         Hybridization hyb = project.getExperiment().getHybridizations().iterator().next();
-        
+
         List<AbstractDesignElement> l = hyb.getDerivedDataCollection().iterator().next().getDataSet().getDesignElementList().getDesignElements();
         assertEquals(6528, l.size());
         for (AbstractDesignElement de : l) {
@@ -985,7 +583,7 @@ public class FileManagementServiceIntegrationTest extends AbstractServiceIntegra
         }
         List<HybridizationData> hdl = hyb.getDerivedDataCollection().iterator().next().getDataSet().getHybridizationDataList();
         assertEquals(1, hdl.size());
-        
+
         GenepixQuantitationType[] expectedTypes = new GenepixQuantitationType[] {
                 X, Y, DIA, F635_MEDIAN, F635_MEAN,
                 F635_SD, B635_MEDIAN, B635_MEAN, B635_SD, PERCENT_GT_B635_1SD, PERCENT_GT_B635_2SD, F635_PERCENT_SAT,
@@ -1003,17 +601,17 @@ public class FileManagementServiceIntegrationTest extends AbstractServiceIntegra
             }
         }
         tx.commit();                
-     }
+    }
 
     @Test
     public void testNimblegenPairImport() throws Exception {
         importDesignAndDataFilesIntoProject(NimblegenArrayDesignFiles.SHORT_EXPRESSION_DESIGN, FileType.NIMBLEGEN_NORMALIZED_PAIR,
                 NimblegenArrayDataFiles.SHORT_HUMAN_EXPRESSION);
         Transaction tx = hibernateHelper.beginTransaction();
-        Project project = (Project) hibernateHelper.getCurrentSession().load(Project.class, DUMMY_PROJECT_1.getId());
+        Project project = getTestProject();
         ArrayDesign design = project.getExperiment().getArrayDesigns().iterator().next();
         Hybridization hyb = project.getExperiment().getHybridizations().iterator().next();
-        
+
         List<AbstractDesignElement> l = hyb.getDerivedDataCollection().iterator().next().getDataSet().getDesignElementList().getDesignElements();
         assertEquals(3, l.size());
         for (AbstractDesignElement de : l) {
@@ -1046,158 +644,125 @@ public class FileManagementServiceIntegrationTest extends AbstractServiceIntegra
             assertTrue("not all columns present", intColumns.isEmpty() && floatColumns.isEmpty());
         }
         tx.commit();                
-     }
+    }
 
-    @SuppressWarnings("PMD")
-    private void importFiles(Project project, MageTabFileSet fileSet) throws Exception {
+    @Test
+    public void testUpdateBioMaterialChain() throws Exception {
+        ArrayDesign design = importArrayDesign(AffymetrixArrayDesignFiles.TEST3_CDF);
+        addDesignToExperiment(design);
+
+        importFiles(TestMageTabSets.UPDATE_BIO_MATERIAL_CHAIN_BASELINE_INPUT_SET);
+
         Transaction tx = hibernateHelper.beginTransaction();
-        project = (Project) hibernateHelper.getCurrentSession().load(Project.class, project.getId());
-        CaArrayFileSet caarrayFileSet = uploadFiles(project, fileSet);
+        Project project = getTestProject();
+        assertEquals(FileStatus.IMPORTED, project.getFileSet().getStatus());
+        assertEquals(1, project.getExperiment().getSources().size());
+        assertEquals(1, project.getExperiment().getSamples().size());
+        assertEquals(2, project.getExperiment().getExtracts().size());
+        assertEquals(2, project.getExperiment().getLabeledExtracts().size());
+        assertEquals(2, project.getExperiment().getHybridizations().size());
+        assertNotNull(findSource(project, "Source A"));
+        assertNull(findSource(project, "Source B"));
+        assertEquals(1, project.getExperiment().getHybridizationByName("Hyb 1").getAllDataFiles().size());
         tx.commit();
+
+        // now try to add new biomaterials in the middle of the existing chains
+        importFiles(TestMageTabSets.UPDATE_BIO_MATERIAL_CHAIN_NEW_BIO_MATERIALS_INPUT_SET);
 
         tx = hibernateHelper.beginTransaction();
-        project = (Project) hibernateHelper.getCurrentSession().load(Project.class, project.getId());
-        importFiles(project, caarrayFileSet, null);
-        hibernateHelper.getCurrentSession().getTransaction().commit();
-    }
-
-    @SuppressWarnings("PMD")
-    private void uploadAndValidateFiles(Project project, Map<File, FileType> files) throws Exception {
-        Transaction tx = hibernateHelper.beginTransaction();
-        project = (Project) hibernateHelper.getCurrentSession().load(Project.class, project.getId());
-        CaArrayFileSet fileSet = uploadFiles(project, files);
+        project = getTestProject();
+        assertEquals(FileStatus.IMPORTED, project.getFileSet().getStatus());
+        assertEquals(2, project.getExperiment().getSources().size());
+        assertEquals(2, project.getExperiment().getSamples().size());
+        Set<Extract> extracts = project.getExperiment().getExtracts();
+        System.out.println("Updated extracts: " + extracts);
+        assertEquals(4, extracts.size());
+        assertEquals(4, project.getExperiment().getLabeledExtracts().size());
+        assertEquals(4, project.getExperiment().getHybridizations().size());
+        assertNotNull(findSource(project, "Source A"));
+        assertNotNull(findSource(project, "Source B"));
+        assertEquals(1, project.getExperiment().getHybridizationByName("Hyb 1").getAllDataFiles().size());
         tx.commit();
 
-        helpValidateFiles(tx, project, fileSet);
-    }
+        // now try to add a data files to existing hybs
+        importFiles(TestMageTabSets.UPDATE_BIO_MATERIAL_CHAIN_NEW_DATA_FILES_INPUT_SET);
 
-    @SuppressWarnings("PMD")
-    private void helpValidateFiles(Transaction tx, Project project, CaArrayFileSet fileSet) throws Exception {
         tx = hibernateHelper.beginTransaction();
-        project = (Project) hibernateHelper.getCurrentSession().load(Project.class, project.getId());
-        validateFiles(project, fileSet);
+        project = getTestProject();
+        assertEquals(FileStatus.IMPORTED, project.getFileSet().getStatus());
+        assertEquals(2, project.getExperiment().getSources().size());
+        assertEquals(2, project.getExperiment().getSamples().size());
+        extracts = project.getExperiment().getExtracts();
+        System.out.println("Updated extracts: " + extracts);
+        assertEquals(4, extracts.size());
+        assertEquals(4, project.getExperiment().getLabeledExtracts().size());
+        assertEquals(4, project.getExperiment().getHybridizations().size());
+        assertNotNull(findSource(project, "Source A"));
+        assertNotNull(findSource(project, "Source B"));
+        assertEquals(2, project.getExperiment().getHybridizationByName("Hyb 1").getAllDataFiles().size());
         tx.commit();
     }
 
-    /**
-     * "Upload" files to a project, returning the CaArrayFileSet containing those files.
-     * @param project project to upload to
-     * @param fileSet MageTabFileSet containing the files to upload (should correspond to the files in the file set)
-     * @return
-     */
-    private CaArrayFileSet uploadFiles(Project project, MageTabFileSet fileSet) {
-        for (FileRef file : fileSet.getAllFiles()) {
-            this.fileAccessService.add(file.getAsFile());
+    @Test
+    public void testUpdateFiles() throws Exception {
+        ArrayDesign design = importArrayDesign(AffymetrixArrayDesignFiles.TEST3_CDF);
+        addDesignToExperiment(design);
+
+        importFiles(TestMageTabSets.UPDATE_FILES_BASELINE_INPUT_SET);
+
+        Transaction tx = hibernateHelper.beginTransaction();
+        Project project = getTestProject();
+        assertEquals(FileStatus.IMPORTED, project.getFileSet().getStatus());
+        assertEquals(1, project.getExperiment().getSources().size());
+        assertEquals(1, project.getExperiment().getSamples().size());
+        assertEquals(1, project.getExperiment().getExtracts().size());
+        assertEquals(1, project.getExperiment().getLabeledExtracts().size());
+        assertEquals(2, project.getExperiment().getHybridizations().size());
+        assertNotNull(findSource(project, "Source A"));
+        assertNull(findSource(project, "Source B"));
+        assertEquals(2, project.getExperiment().getHybridizationByName("Hyb 1").getAllDataFiles().size());
+        assertEquals(1, project.getExperiment().getHybridizationByName("Hyb 1").getRawDataCollection().size());
+        assertEquals(1, project.getExperiment().getHybridizationByName("Hyb 1").getDerivedDataCollection().size());
+        RawArrayData raw = project.getExperiment().getHybridizationByName("Hyb 1").getRawDataCollection().iterator().next();
+        DerivedArrayData derived = project.getExperiment().getHybridizationByName("Hyb 1").getDerivedDataCollection().iterator().next();
+        assertEquals(1, derived.getDerivedFromArrayDataCollection().size());
+        assertEquals(raw, derived.getDerivedFromArrayDataCollection().iterator().next());
+        tx.commit();
+
+        // now try to add data files to existing hybs, which also reference existing data files
+        importFiles(TestMageTabSets.UPDATE_FILES_NEW_INPUT_SET);
+
+        tx = hibernateHelper.beginTransaction();
+        project = getTestProject();
+        assertEquals(FileStatus.IMPORTED, project.getFileSet().getStatus());
+        assertEquals(1, project.getExperiment().getSources().size());
+        assertEquals(1, project.getExperiment().getSamples().size());
+        assertEquals(2, project.getExperiment().getHybridizations().size());
+
+        assertEquals(3, project.getExperiment().getHybridizationByName("Hyb 1").getAllDataFiles().size());
+        assertEquals(2, project.getExperiment().getHybridizationByName("Hyb 1").getRawDataCollection().size());
+        assertEquals(1, project.getExperiment().getHybridizationByName("Hyb 1").getDerivedDataCollection().size());
+        derived = project.getExperiment().getHybridizationByName("Hyb 1").getDerivedDataCollection().iterator().next();
+        assertEquals("BM1.EXP", derived.getDataFile().getName());
+        assertEquals(2, derived.getDerivedFromArrayDataCollection().size());
+        for (RawArrayData oneRaw : project.getExperiment().getHybridizationByName("Hyb 1").getRawDataCollection()) {
+            assertTrue(Arrays.asList("BM1.CEL", "BM1a.CEL").contains(oneRaw.getDataFile().getName()));
+            assertTrue("BM1.EXP is not derived from " + oneRaw.getName(), derived.getDerivedFromArrayDataCollection()
+                    .contains(oneRaw));
         }
-        CaArrayFileSet caarrayFileSet = TestMageTabSets.getFileSet(fileSet);
-        for (CaArrayFile file : caarrayFileSet.getFiles()) {
-            file.setProject(project);
-            project.getFiles().add(file);
-            hibernateHelper.getCurrentSession().save(file);
-        }
-        hibernateHelper.getCurrentSession().update(project);
-        return caarrayFileSet;
-    }
-    
-    private CaArrayFileSet uploadFiles(Project project, File... files) {
-        MageTabFileSet inputFiles = new MageTabFileSet();
-        for (File f : files) {
-            inputFiles.addNativeData(new JavaIOFileRef(f));            
-        }
-        return uploadFiles(project, inputFiles);
-    }
 
-    private CaArrayFileSet uploadFiles(Project project, Map<File, FileType> files) {
-        for (File file : files.keySet()) {
-            CaArrayFile caArrayFile = this.fileAccessService.add(file);
-            caArrayFile.setProject(project);
-            caArrayFile.setFileType(files.get(file));
-            project.getFiles().add(caArrayFile);
-            hibernateHelper.getCurrentSession().save(caArrayFile);
+        assertEquals(3, project.getExperiment().getHybridizationByName("Hyb 2").getAllDataFiles().size());
+        assertEquals(1, project.getExperiment().getHybridizationByName("Hyb 2").getRawDataCollection().size());
+        assertEquals(2, project.getExperiment().getHybridizationByName("Hyb 2").getDerivedDataCollection().size());
+        raw = project.getExperiment().getHybridizationByName("Hyb 2").getRawDataCollection().iterator().next();
+        assertEquals("BM2.CEL", raw.getDataFile().getName());
+        for (DerivedArrayData oneDerived : project.getExperiment().getHybridizationByName("Hyb 2")
+                .getDerivedDataCollection()) {
+            assertTrue(Arrays.asList("BM2.EXP", "BM2a.EXP").contains(oneDerived.getDataFile().getName()));
+            assertEquals(1, oneDerived.getDerivedFromArrayDataCollection().size());
+            assertEquals(raw, oneDerived.getDerivedFromArrayDataCollection().iterator().next());
         }
 
-        hibernateHelper.getCurrentSession().update(project);
-        return project.getFileSet();
+        tx.commit();
     }
-
-
-
-    private Source findSource(Project project, String name) {
-        return CaArrayDaoFactory.INSTANCE.getProjectDao().getSourceForExperiment(project.getExperiment(), name);
-    }
-
-    private void importFiles(Project targetProject, CaArrayFileSet fileSet, DataImportOptions dataImportOptions) throws Exception {
-        ProjectFilesImportJob job = new ProjectFilesImportJob(UsernameHolder.getUser(), targetProject, fileSet,
-                dataImportOptions);
-        job.setDaoFactory(CaArrayDaoFactory.INSTANCE);
-        try {
-            job.execute();
-        } catch (Exception e) {
-            job.getUnexpectedErrorPreparedStatement(hibernateHelper.getCurrentSession().connection()).execute();
-            throw e;
-        }
-    }
-
-    private void validateFiles(Project targetProject, CaArrayFileSet fileSet) throws Exception {
-        ProjectFilesValidationJob job = new ProjectFilesValidationJob(UsernameHolder.getUser(), targetProject, fileSet);
-        job.setDaoFactory(CaArrayDaoFactory.INSTANCE);
-        try {
-            job.execute();
-        } catch (Exception e) {
-            job.getUnexpectedErrorPreparedStatement(hibernateHelper.getCurrentSession().connection()).execute();
-            throw e;
-        }
-    }
-
-    private ArrayDesign importArrayDesign(File designFile) throws IllegalAccessException, InvalidDataFileException {
-        return importArrayDesign(designFile, null);
-    }
-
-    private ArrayDesign importArrayDesign(File designFile, FileType fileType) throws IllegalAccessException, InvalidDataFileException {
-        ArrayDesign design = new ArrayDesign();
-        design.setName(designFile.getName());
-        design.setVersion("2.0");
-        design.setGeoAccession("GPL0000");
-        design.setProvider(DUMMY_PROVIDER);
-        design.setLsidForEntity("authority:namespace:" + designFile.getName());
-        CaArrayFile caArrayDesignFile = this.fileAccessService.add(designFile);
-        if (fileType != null) {
-            caArrayDesignFile.setFileType(fileType);
-        }
-        design.addDesignFile(caArrayDesignFile);
-        design.setTechnologyType(DUMMY_TERM);
-        design.setOrganism(DUMMY_ORGANISM);
-        hibernateHelper.getCurrentSession().save(design);
-
-        ArrayDesignService arrayDesignService = ServiceLocatorFactory.getArrayDesignService();
-        arrayDesignService.importDesign(design);
-        arrayDesignService.importDesignDetails(design);
-        design = (ArrayDesign) hibernateHelper.getCurrentSession().load(ArrayDesign.class, design.getId());
-        resetData();
-        return design;
-    }
-    
-    @Override
-    protected Injector createInjector() {
-        return InjectorFactory.getInjector();       
-    }
-
-    private FileManagementService createFileManagementService(final FileAccessServiceStub fileAccessServiceStub) {
-        ServiceLocatorStub locatorStub = ServiceLocatorStub.registerActualImplementations();
-        locatorStub.addLookup(FileAccessService.JNDI_NAME, fileAccessServiceStub);
-
-        FileManagementServiceBean bean = (FileManagementServiceBean) injector.getInstance(FileManagementService.class);
-        FileManagementMDB mdb = new FileManagementMDB();
-        UserTransaction ut = Mockito.mock(UserTransaction.class);
-        mdb.setTransaction(ut);
-        DirectJobSubmitter submitter = new DirectJobSubmitter(mdb);
-        bean.setSubmitter(submitter);
-
-        TemporaryFileCacheLocator.setTemporaryFileCacheFactory(new TemporaryFileCacheStubFactory(fileAccessServiceStub));
-
-        return bean;
-    }
-
-
-
 }

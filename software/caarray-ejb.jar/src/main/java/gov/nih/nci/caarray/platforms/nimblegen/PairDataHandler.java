@@ -96,13 +96,16 @@ import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.platforms.DefaultValueParser;
 import gov.nih.nci.caarray.platforms.DesignElementBuilder;
 import gov.nih.nci.caarray.platforms.FileManager;
+import gov.nih.nci.caarray.platforms.ProbeNamesValidator;
 import gov.nih.nci.caarray.platforms.ValueParser;
 import gov.nih.nci.caarray.platforms.spi.AbstractDataFileHandler;
 import gov.nih.nci.caarray.platforms.spi.PlatformFileReadException;
 import gov.nih.nci.caarray.validation.FileValidationResult;
+import gov.nih.nci.caarray.validation.ValidationMessage.Type;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -130,6 +133,7 @@ class PairDataHandler extends AbstractDataFileHandler {
     private final ValueParser valueParser = new DefaultValueParser();
     private final ArrayDao arrayDao;
     private final SearchDao searchDao;
+    private List<String> probeNames;
 
     @Override
     protected boolean acceptFileType(FileType type) {
@@ -215,20 +219,30 @@ class PairDataHandler extends AbstractDataFileHandler {
             reader.close();
         }
     }
+    
+    private List<String> getProbeNames(final DelimitedFileReader reader, final ArrayDesign design) throws IOException {
+        if (null == probeNames) {
+            probeNames = new ArrayList<String>();
+            List<String> headers = getHeaders(reader);
+            int seqIdIndex = headers.indexOf(SEQ_ID_HEADER);
+            int probeIdIndex = headers.indexOf(PROBE_ID_HEADER);
+            int containerIndex = headers.indexOf(CONTAINER_HEADER);
+            while (reader.hasNextLine()) {
+                List<String> values = reader.nextLine();
+                String probeId = values.get(probeIdIndex);
+                String sequenceId = values.get(seqIdIndex);
+                String container = values.get(containerIndex);
+                String probeName = container + "|" + sequenceId + "|" + probeId;
+                probeNames.add(probeName);
+            }
+        }
+        return probeNames;
+    }
 
-    private void loadDesignElementList(DataSet dataSet, DelimitedFileReader reader, ArrayDesign design)
-            throws IOException {
-        DesignElementBuilder builder = new DesignElementBuilder(dataSet, design, arrayDao, searchDao);        
-        List<String> headers = getHeaders(reader);
-        int seqIdIndex = headers.indexOf(SEQ_ID_HEADER);
-        int probeIdIndex = headers.indexOf(PROBE_ID_HEADER);
-        int containerIndex = headers.indexOf(CONTAINER_HEADER);
-        while (reader.hasNextLine()) {
-            List<String> values = reader.nextLine();
-            String probeId = values.get(probeIdIndex);
-            String sequenceId = values.get(seqIdIndex);
-            String container = values.get(containerIndex);
-            String probeName = container + "|" + sequenceId + "|" + probeId;
+    private void loadDesignElementList(final DataSet dataSet, final DelimitedFileReader reader,
+            final ArrayDesign design) throws IOException {
+        DesignElementBuilder builder = new DesignElementBuilder(dataSet, design, arrayDao, searchDao);
+        for (String probeName : getProbeNames(reader, design)) {
             builder.addProbe(probeName);
         }
         builder.finish();
@@ -268,9 +282,18 @@ class PairDataHandler extends AbstractDataFileHandler {
     /**
      * {@inheritDoc}
      */
-    public void validate(MageTabDocumentSet mTabSet, FileValidationResult result, ArrayDesign design)
+    public void validate(final MageTabDocumentSet mTabSet, final FileValidationResult result, final ArrayDesign design)
             throws PlatformFileReadException {
-        // no validation implemented yet
+        try {
+            ProbeNamesValidator probeNamesValidator = new ProbeNamesValidator(arrayDao, design);
+            for (String invalidProbeName : probeNamesValidator.getInvalidProbeNames(
+                    getProbeNames(getReader(getFile()), design))) {
+                result.addMessage(Type.ERROR, "The probe name '" + invalidProbeName
+                        + "' is not present in the array design.");
+            }
+        } catch (IOException ioException) {
+            throw new PlatformFileReadException(getFile(), "Cannot validate pair data file.", ioException);
+        }
     }
     
     /**

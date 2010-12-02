@@ -222,6 +222,13 @@ public class ArrayDaoUnsupportedOperationImpl implements ArrayDao {
     /**
      * {@inheritDoc}
      */
+    public List<String> getPhysicalProbeNamesForDesign(ArrayDesign design) {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public QuantitationType getQuantitationType(QuantitationTypeDescriptor descriptor) {
         throw new UnsupportedOperationException();
     }
