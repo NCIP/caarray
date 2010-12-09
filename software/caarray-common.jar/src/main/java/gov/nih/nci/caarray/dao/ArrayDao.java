@@ -211,13 +211,6 @@ public interface ArrayDao extends CaArrayDao {
     List<PhysicalProbe> getPhysicalProbeByNames(ArrayDesign design, List<String> names);
 
     /**
-     * Select all probe names from an array design.
-     * @param design owner design.
-     * @return a complete list of the probe names belonging to the owner design.
-     */
-    List<String> getPhysicalProbeNamesForDesign(ArrayDesign design);
-
-    /**
      * Save a batch of design element entries in a design element list. The entries are put in the list starting at
      * a given index.
      * @param designElementList the design element list to which the entries belong (must already be persistent)

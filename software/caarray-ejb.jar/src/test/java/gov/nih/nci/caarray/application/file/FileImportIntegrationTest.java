@@ -181,6 +181,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.hibernate.Transaction;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class FileImportIntegrationTest extends AbstractFileManagementServiceIntegrationTest {

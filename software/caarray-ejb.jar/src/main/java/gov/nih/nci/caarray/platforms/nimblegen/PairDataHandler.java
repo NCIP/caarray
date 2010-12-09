@@ -86,22 +86,24 @@ import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.domain.LSID;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
+import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
 import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
 import gov.nih.nci.caarray.domain.data.DataSet;
+import gov.nih.nci.caarray.domain.data.DesignElementList;
+import gov.nih.nci.caarray.domain.data.DesignElementType;
 import gov.nih.nci.caarray.domain.data.HybridizationData;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.platforms.DefaultValueParser;
-import gov.nih.nci.caarray.platforms.DesignElementBuilder;
 import gov.nih.nci.caarray.platforms.FileManager;
+import gov.nih.nci.caarray.platforms.ProbeLookup;
 import gov.nih.nci.caarray.platforms.ProbeNamesValidator;
 import gov.nih.nci.caarray.platforms.ValueParser;
 import gov.nih.nci.caarray.platforms.spi.AbstractDataFileHandler;
 import gov.nih.nci.caarray.platforms.spi.PlatformFileReadException;
 import gov.nih.nci.caarray.validation.FileValidationResult;
-import gov.nih.nci.caarray.validation.ValidationMessage.Type;
 
 import java.io.File;
 import java.io.IOException;
@@ -129,11 +131,11 @@ class PairDataHandler extends AbstractDataFileHandler {
     private static final String SEQ_ID_HEADER = "SEQ_ID";
     private static final String PROBE_ID_HEADER = "PROBE_ID";
     private static final String CONTAINER_HEADER = "GENE_EXPR_OPTION";
+    private static final int BATCH_SIZE = 1000;
 
     private final ValueParser valueParser = new DefaultValueParser();
     private final ArrayDao arrayDao;
     private final SearchDao searchDao;
-    private List<String> probeNames;
 
     @Override
     protected boolean acceptFileType(FileType type) {
@@ -220,33 +222,54 @@ class PairDataHandler extends AbstractDataFileHandler {
         }
     }
     
-    private List<String> getProbeNames(final DelimitedFileReader reader, final ArrayDesign design) throws IOException {
-        if (null == probeNames) {
-            probeNames = new ArrayList<String>();
-            List<String> headers = getHeaders(reader);
-            int seqIdIndex = headers.indexOf(SEQ_ID_HEADER);
-            int probeIdIndex = headers.indexOf(PROBE_ID_HEADER);
-            int containerIndex = headers.indexOf(CONTAINER_HEADER);
-            while (reader.hasNextLine()) {
-                List<String> values = reader.nextLine();
-                String probeId = values.get(probeIdIndex);
-                String sequenceId = values.get(seqIdIndex);
-                String container = values.get(containerIndex);
-                String probeName = container + "|" + sequenceId + "|" + probeId;
-                probeNames.add(probeName);
+    private void validateProbeNames(final DelimitedFileReader reader, final ArrayDesign design,
+            final FileValidationResult fileValidationResult) throws IOException {
+        ProbeNamesValidator probeNamesValidator = new ProbeNamesValidator(arrayDao, design);
+        List<String> probeNamesBatch = new ArrayList<String>();
+        int probeCounter = 0;
+        List<String> headers = getHeaders(reader);
+        int seqIdIndex = headers.indexOf(SEQ_ID_HEADER);
+        int probeIdIndex = headers.indexOf(PROBE_ID_HEADER);
+        int containerIndex = headers.indexOf(CONTAINER_HEADER);
+        while (reader.hasNextLine()) {
+            List<String> values = reader.nextLine();
+            String probeId = values.get(probeIdIndex);
+            String sequenceId = values.get(seqIdIndex);
+            String container = values.get(containerIndex);
+            String probeName = container + "|" + sequenceId + "|" + probeId;
+            probeNamesBatch.add(probeName);
+            probeCounter++;
+            if (BATCH_SIZE == probeCounter) {
+                probeNamesValidator.validateProbeNames(fileValidationResult, probeNamesBatch);
+                probeNamesBatch.clear();
             }
         }
-        return probeNames;
+        if (!probeNamesBatch.isEmpty()) {
+            probeNamesValidator.validateProbeNames(fileValidationResult, probeNamesBatch);
+        }
     }
 
-    private void loadDesignElementList(final DataSet dataSet, final DelimitedFileReader reader,
-            final ArrayDesign design) throws IOException {
-        DesignElementBuilder builder = new DesignElementBuilder(dataSet, design, arrayDao, searchDao);
-        for (String probeName : getProbeNames(reader, design)) {
-            builder.addProbe(probeName);
+    private void loadDesignElementList(DataSet dataSet, DelimitedFileReader reader, ArrayDesign design)
+            throws IOException {
+        DesignElementList probeList = new DesignElementList();
+        probeList.setDesignElementTypeEnum(DesignElementType.PHYSICAL_PROBE);
+        dataSet.setDesignElementList(probeList);
+        ArrayDesignDetails designDetails = design.getDesignDetails();
+        ProbeLookup probeLookup = new ProbeLookup(designDetails.getProbes());
+        List<String> headers = getHeaders(reader);
+        int seqIdIndex = headers.indexOf(SEQ_ID_HEADER);
+        int probeIdIndex = headers.indexOf(PROBE_ID_HEADER);
+        int containerIndex = headers.indexOf(CONTAINER_HEADER);
+        while (reader.hasNextLine()) {
+            List<String> values = reader.nextLine();
+            String probeId = values.get(probeIdIndex);
+            String sequenceId = values.get(seqIdIndex);
+            String container = values.get(containerIndex);
+            String probeName = container + "|" + sequenceId + "|" + probeId;
+            probeList.getDesignElements().add(probeLookup.getProbe(probeName));
         }
-        builder.finish();
     }
+
 
     private void loadData(HybridizationData hybridizationData, DelimitedFileReader reader) throws IOException {
         List<String> headers = getHeaders(reader);
@@ -285,14 +308,10 @@ class PairDataHandler extends AbstractDataFileHandler {
     public void validate(final MageTabDocumentSet mTabSet, final FileValidationResult result, final ArrayDesign design)
             throws PlatformFileReadException {
         try {
-            ProbeNamesValidator probeNamesValidator = new ProbeNamesValidator(arrayDao, design);
-            for (String invalidProbeName : probeNamesValidator.getInvalidProbeNames(
-                    getProbeNames(getReader(getFile()), design))) {
-                result.addMessage(Type.ERROR, "The probe name '" + invalidProbeName
-                        + "' is not present in the array design.");
-            }
+            validateProbeNames(getReader(getFile()), design, result);
         } catch (IOException ioException) {
-            throw new PlatformFileReadException(getFile(), "Cannot validate pair data file.", ioException);
+            throw new PlatformFileReadException(getFile(), "Cannot validate pair data file: "
+                    + ioException.getMessage(), ioException);
         }
     }
     

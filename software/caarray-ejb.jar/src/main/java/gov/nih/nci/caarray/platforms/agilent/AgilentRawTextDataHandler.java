@@ -103,6 +103,7 @@ import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.platforms.DesignElementBuilder;
 import gov.nih.nci.caarray.platforms.FileManager;
 import gov.nih.nci.caarray.platforms.ProbeLookup;
+import gov.nih.nci.caarray.platforms.ProbeNamesValidator;
 import gov.nih.nci.caarray.platforms.spi.AbstractDataFileHandler;
 import gov.nih.nci.caarray.platforms.spi.PlatformFileReadException;
 import gov.nih.nci.caarray.validation.FileValidationResult;
@@ -127,7 +128,7 @@ import com.google.inject.Inject;
  */
 @SuppressWarnings({ "PMD.CyclomaticComplexity", "PMD.TooManyMethods" }) // Switch-like statement
 class AgilentRawTextDataHandler extends AbstractDataFileHandler {
-
+    
     /**
      * Handles probes during parsing.
      */
@@ -361,12 +362,12 @@ class AgilentRawTextDataHandler extends AbstractDataFileHandler {
     }
     
     @SuppressWarnings("PMD.AvoidThrowingRawExceptionTypes")
-    private void handleFeatureLine(AgilentTextParser parser, Set<String> probeNames, ProbeHandler handler) {
+    private void handleFeatureLine(AgilentTextParser parser, Set<String> probeNamesSet, ProbeHandler handler) {
         if ("FEATURES".equalsIgnoreCase(parser.getSectionName())) {
             final String probeName = parser.getStringValue(Columns.PROBE_NAME.getName());
             final String systematicName = parser.getStringValue(Columns.SYSTEMATIC_NAME.getName());
-            if (!probeNames.contains(probeName)) {
-                probeNames.add(probeName);
+            if (!probeNamesSet.contains(probeName)) {
+                probeNamesSet.add(probeName);
                 handler.handle(probeName, systematicName, parser);
             }
          }
@@ -413,9 +414,8 @@ class AgilentRawTextDataHandler extends AbstractDataFileHandler {
                         boolean systematicNameNotFound = systematicName == null
                             || null == probeLookup.getProbe(systematicName);
                         if (systematicNameNotFound) {
-                            result.addMessage(Type.ERROR, String.format(
-                                    "Probe \"%s\" or \"%s\"is not found array design \"%s\"",
-                                    probeName, systematicName, design.getName()));
+                            result.addMessage(Type.ERROR, ProbeNamesValidator.formatErrorMessage(
+                                    new String[] {probeName, systematicName}, design));
                         }
                     }
                 }

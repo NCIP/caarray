@@ -96,6 +96,7 @@ import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.platforms.DesignElementBuilder;
 import gov.nih.nci.caarray.platforms.FileManager;
+import gov.nih.nci.caarray.platforms.ProbeNamesValidator;
 import gov.nih.nci.caarray.platforms.ValueParser;
 import gov.nih.nci.caarray.platforms.spi.AbstractDataFileHandler;
 import gov.nih.nci.caarray.validation.FileValidationResult;
@@ -334,7 +335,7 @@ final class GprHandler extends AbstractDataFileHandler {
 
     private void loadDesignElementList(DataSet dataSet, DelimitedFileReader reader, ArrayDesign design)
             throws IOException {
-        DesignElementBuilder builder = new DesignElementBuilder(dataSet, design, arrayDao, searchDao);        
+        DesignElementBuilder builder = new DesignElementBuilder(dataSet, design, arrayDao, searchDao);
         List<String> headers = getColumnHeaders(reader); // resets reader to start of data
         int idIndex = headers.indexOf(ID_HEADER);
         while (reader.hasNextLine()) {
@@ -391,7 +392,7 @@ final class GprHandler extends AbstractDataFileHandler {
         try {
             validateHeader(reader, result);
             if (result.isValid()) {
-                validateData(reader, result);
+                validateData(reader, result, design);
             }
         } catch (IOException e) {
             throw new IllegalStateException(READ_FILE_ERROR_MESSAGE, e);
@@ -407,7 +408,9 @@ final class GprHandler extends AbstractDataFileHandler {
         return true;
     }
     
-    private void validateData(DelimitedFileReader reader, FileValidationResult result) throws IOException {
+    private void validateData(DelimitedFileReader reader, FileValidationResult result, ArrayDesign arrayDesign)
+            throws IOException {
+        validateProbeNames(reader, arrayDesign, result);
         List<String> headers = getColumnHeaders(reader);
         Map<String, QuantitationTypeDescriptor> headerToDescriptorMap = getHeaderToDescriptorMap(headers);
         while (reader.hasNextLine()) {
@@ -418,6 +421,29 @@ final class GprHandler extends AbstractDataFileHandler {
             } else {
                 validateValues(values, headers, headerToDescriptorMap, result, reader.getCurrentLineNumber());
             }
+        }
+    }
+
+    private void validateProbeNames(final DelimitedFileReader delimitedFileReader, final ArrayDesign arrayDesign,
+            final FileValidationResult fileValidationResult) throws IOException {
+        ProbeNamesValidator probeNamesValidator = new ProbeNamesValidator(arrayDao, arrayDesign);
+        List<String> probeNamesBatch = new ArrayList<String>(BATCH_SIZE);
+        int probeCounter = 0;
+        List<String> headers = getColumnHeaders(delimitedFileReader); // resets reader to start of data
+        int idIndex = headers.indexOf(ID_HEADER);
+        while (delimitedFileReader.hasNextLine()) {
+            List<String> values = delimitedFileReader.nextLine();
+            String probeName = values.get(idIndex);
+            probeNamesBatch.add(probeName);
+            probeCounter++;
+            if (BATCH_SIZE == probeCounter) {
+                probeNamesValidator.validateProbeNames(fileValidationResult, probeNamesBatch);
+                probeCounter = 0;
+                probeNamesBatch.clear();
+            }
+        }
+        if (!probeNamesBatch.isEmpty()) {
+            probeNamesValidator.validateProbeNames(fileValidationResult, probeNamesBatch);
         }
     }
 

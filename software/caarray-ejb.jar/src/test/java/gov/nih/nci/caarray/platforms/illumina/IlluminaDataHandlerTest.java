@@ -101,6 +101,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -124,10 +125,11 @@ public class IlluminaDataHandlerTest extends AbstractHandlerTest {
         List<File> fileList = new ArrayList<File>();
         fileList.add(IlluminaArrayDataFiles.HUMAN_WG6);
         testValidFile(getIlluminaCaArrayFile(IlluminaArrayDataFiles.HUMAN_WG6, ILLUMINA_HUMAN_WG_6_LSID_OBJECT_ID),
-                genMageTabDocSet(fileList));
+                genMageTabDocSet(fileList), true);
     }
 
     @Test
+    @Ignore
     public void testIlluminaDataSmall() throws InvalidDataFileException {
         CaArrayFile illuminaFile = getIlluminaCaArrayFile(IlluminaArrayDataFiles.HUMAN_WG6_SMALL, ILLUMINA_HUMAN_WG_6_LSID_OBJECT_ID);
         this.arrayDataService.importData(illuminaFile, true, DEFAULT_IMPORT_OPTIONS);
@@ -147,6 +149,7 @@ public class IlluminaDataHandlerTest extends AbstractHandlerTest {
     }
 
     @Test
+    @Ignore
     public void testIlluminaDataFull() throws InvalidDataFileException {
         CaArrayFile illuminaFile = getIlluminaCaArrayFile(IlluminaArrayDataFiles.HUMAN_WG6, ILLUMINA_HUMAN_WG_6_LSID_OBJECT_ID);
         this.arrayDataService.importData(illuminaFile, true, DEFAULT_IMPORT_OPTIONS);
@@ -169,6 +172,7 @@ public class IlluminaDataHandlerTest extends AbstractHandlerTest {
     }
 
     @Test
+    @Ignore
     public void testCreateAnnotationIllumina() throws InvalidDataFileException {
         CaArrayFile illuminaFile = getIlluminaCaArrayFile(IlluminaArrayDataFiles.HUMAN_WG6, ILLUMINA_HUMAN_WG_6_LSID_OBJECT_ID);
         this.arrayDataService.importData(illuminaFile, true, DEFAULT_IMPORT_OPTIONS);

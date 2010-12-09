@@ -102,6 +102,8 @@ public class AgilentArrayDataFiles {
 
     public static final File GENE_EXPRESSION = getResourceFile("/arraydata/agilent/gene-expression.txt");
 
+    public static final File BAD_GENE_EXPRESSION = getResourceFile("/arraydata/agilent/gene-expression.bad.txt");
+
     public static final File MIRNA = getResourceFile("/arraydata/agilent/miRNA.txt");
 
     public static final File MIRNA_BLANKS = getResourceFile("/arraydata/agilent/miRNA_blanks.txt");

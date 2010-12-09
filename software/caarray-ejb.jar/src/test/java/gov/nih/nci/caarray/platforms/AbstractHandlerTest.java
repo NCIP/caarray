@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.platforms;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import gov.nih.nci.caarray.AbstractCaarrayTest;
 import gov.nih.nci.caarray.application.arraydata.ArrayDataService;
 import gov.nih.nci.caarray.application.arraydata.ArrayDataServiceBean;
@@ -128,6 +129,8 @@ import gov.nih.nci.caarray.staticinjection.CaArrayEjbStaticInjectionModule;
 import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
 import gov.nih.nci.caarray.util.CaArrayHibernateHelperModule;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
+import gov.nih.nci.caarray.validation.FileValidationResult;
+import gov.nih.nci.caarray.validation.ValidationMessage;
 
 import java.io.File;
 import java.util.HashMap;
@@ -152,6 +155,7 @@ public abstract class AbstractHandlerTest extends AbstractCaarrayTest {
     protected FileAccessServiceStub fileAccessServiceStub = new FileAccessServiceStub();
     protected LocalDaoFactoryStub daoFactoryStub = new LocalDaoFactoryStub();
     protected LocalSearchDaoStub searchDaoStub = new LocalSearchDaoStub();
+    public static final String PROBE_WAS_NOT_FOUND_IN_ARRAY_DESIGN_FRAGMENT = "' was not found in array design '";
     
     protected long fileIdCounter = 1;
 
@@ -201,19 +205,43 @@ public abstract class AbstractHandlerTest extends AbstractCaarrayTest {
         return mTabSet;
     }
 
-    protected void testValidFile(CaArrayFile caArrayFile, MageTabDocumentSet mTabSet) {
-        assertEquals(FileStatus.UPLOADED, caArrayFile.getFileStatus());
+    protected void testValidFile(CaArrayFile caArrayFile, MageTabDocumentSet mTabSet, boolean probeNameValidationErrorsAreAcceptable) {
+        assertEquals(FileStatus.UPLOADED, caArrayFile.getFileStatus()); 
         this.arrayDataService.validate(caArrayFile, mTabSet, false);
         if (FileStatus.VALIDATION_ERRORS.equals(caArrayFile.getFileStatus())) {
             System.out.println(caArrayFile.getValidationResult());
         }
-        assertEquals(FileStatus.VALIDATED, caArrayFile.getFileStatus());
+        if (probeNameValidationErrorsAreAcceptable) {
+            assertTrue("The file is only allowed to have probe name validation errors, but other errors were found.", onlyAcceptableValidationErrorsArePresent(caArrayFile.getValidationResult(), new String[] {" was not found in array design '"}));
+        } else {
+            assertEquals(FileStatus.VALIDATED, caArrayFile.getFileStatus());
+        }
     }
 
-    protected void testInvalidFile(CaArrayFile caArrayFile, MageTabDocumentSet mTabSet) {
+    protected void testInvalidFile(CaArrayFile caArrayFile, MageTabDocumentSet mTabSet, final String[] acceptableErrorMessageFragments) {
         assertEquals(FileStatus.UPLOADED, caArrayFile.getFileStatus());
         this.arrayDataService.validate(caArrayFile, mTabSet, false);
         assertEquals(FileStatus.VALIDATION_ERRORS, caArrayFile.getFileStatus());
+        System.out.println("caArrayFile.getValidationResult().getMessages() =" + caArrayFile.getValidationResult().getMessages() + "=");
+        assertTrue("The file should should have additional validation errors.", !onlyAcceptableValidationErrorsArePresent(caArrayFile.getValidationResult(), acceptableErrorMessageFragments));
+    }
+    
+    private static boolean onlyAcceptableValidationErrorsArePresent(final FileValidationResult fileValidationResult, String[] acceptableErrorMessageFragments) {
+        boolean onlyAcceptableValidationErrorsArePresent = true;
+        for (ValidationMessage validationMessage : fileValidationResult.getMessages(ValidationMessage.Type.ERROR)) {
+            if (null == acceptableErrorMessageFragments ||  0 == acceptableErrorMessageFragments.length) {
+                onlyAcceptableValidationErrorsArePresent = false;
+                break;                                                                                                                          
+            } else {
+                for (String acceptableErrorMessageFragment : acceptableErrorMessageFragments) {
+                    if (!validationMessage.getMessage().contains(acceptableErrorMessageFragment)) {
+                        onlyAcceptableValidationErrorsArePresent = false;
+                        break;
+                    }
+                }
+            }
+        }
+        return onlyAcceptableValidationErrorsArePresent;
     }
 
     protected void checkAnnotation(CaArrayFile dataFile, int numberOfSamples) {

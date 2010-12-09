@@ -88,6 +88,7 @@ import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.array.PhysicalProbe;
 import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
+import gov.nih.nci.caarray.platforms.ProbeNamesValidator;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -164,8 +165,7 @@ public class HybDataValidator <QT extends Enum<QT> & QuantitationTypeDescriptor>
         }
         for (String n : probeNames) {
             if (!lookup.contains(n)) {
-                error("Probe " + n + " not found in design " + design.getName() + " ver. " + design.getVersion(),
-                    batchLineNumber, 0);
+                error(ProbeNamesValidator.formatErrorMessage(new String[] {n}, design), batchLineNumber, 0);
             }
             batchLineNumber++;
         }

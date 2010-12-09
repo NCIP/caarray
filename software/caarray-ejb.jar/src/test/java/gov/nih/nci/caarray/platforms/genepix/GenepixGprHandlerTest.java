@@ -195,15 +195,15 @@ public class GenepixGprHandlerTest extends AbstractHandlerTest {
         fileList.add(AffymetrixArrayDataFiles.TEST3_CEL);
 
         testValidFile(getGprCaArrayFile(GenepixArrayDataFiles.GPR_3_0_6, GAL_DERISI_LSID_OBJECT_ID),
-                genMageTabDocSet(fileList));
+                genMageTabDocSet(fileList), true);
         testValidFile(getGprCaArrayFile(GenepixArrayDataFiles.GPR_4_0_1, GAL_DERISI_LSID_OBJECT_ID),
-                genMageTabDocSet(fileList));
+                genMageTabDocSet(fileList), true);
         testValidFile(getGprCaArrayFile(GenepixArrayDataFiles.GPR_4_1_1, GAL_DERISI_LSID_OBJECT_ID),
-                genMageTabDocSet(fileList));
+                genMageTabDocSet(fileList), true);
         testValidFile(getGprCaArrayFile(GenepixArrayDataFiles.GPR_5_0_1, GAL_YEAST1_LSID_OBJECT_ID),
-                genMageTabDocSet(fileList));
+                genMageTabDocSet(fileList), true);
         testInvalidFile(getGprCaArrayFile(AffymetrixArrayDataFiles.TEST3_CEL, GAL_DERISI_LSID_OBJECT_ID),
-                genMageTabDocSet(fileList));
+                genMageTabDocSet(fileList), new String[] {PROBE_WAS_NOT_FOUND_IN_ARRAY_DESIGN_FRAGMENT});
     }
 
     @Test
@@ -215,13 +215,13 @@ public class GenepixGprHandlerTest extends AbstractHandlerTest {
         fileList.add(GenepixArrayDataFiles.GPR_5_0_1);
 
         testInvalidFile(getGprCaArrayFile(GenepixArrayDataFiles.GPR_3_0_6, GAL_DERISI_LSID_OBJECT_ID),
-                genMageTabDocSet(fileList));
+                genMageTabDocSet(fileList), new String[] {PROBE_WAS_NOT_FOUND_IN_ARRAY_DESIGN_FRAGMENT});
         testInvalidFile(getGprCaArrayFile(GenepixArrayDataFiles.GPR_4_0_1, GAL_DERISI_LSID_OBJECT_ID),
-                genMageTabDocSet(fileList));
+                genMageTabDocSet(fileList), new String[] {PROBE_WAS_NOT_FOUND_IN_ARRAY_DESIGN_FRAGMENT});
         testInvalidFile(getGprCaArrayFile(GenepixArrayDataFiles.GPR_4_1_1, GAL_DERISI_LSID_OBJECT_ID),
-                genMageTabDocSet(fileList));
+                genMageTabDocSet(fileList), new String[] {PROBE_WAS_NOT_FOUND_IN_ARRAY_DESIGN_FRAGMENT});
         testInvalidFile(getGprCaArrayFile(GenepixArrayDataFiles.GPR_5_0_1, GAL_YEAST1_LSID_OBJECT_ID),
-                genMageTabDocSet(fileList));
+                genMageTabDocSet(fileList), new String[] {PROBE_WAS_NOT_FOUND_IN_ARRAY_DESIGN_FRAGMENT});
 
     }
 

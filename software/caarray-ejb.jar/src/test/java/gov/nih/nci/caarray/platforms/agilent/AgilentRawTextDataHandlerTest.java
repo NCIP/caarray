@@ -84,6 +84,7 @@
 package gov.nih.nci.caarray.platforms.agilent;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 import gov.nih.nci.caarray.application.arraydata.DataImportOptions;
@@ -115,6 +116,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.beanutils.PropertyUtils;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -168,6 +170,7 @@ public class AgilentRawTextDataHandlerTest extends AbstractHandlerTest {
         addProbeToDesign("Agilent_Tiny_2");
 
         assertInvalid(
+                new String[] {PROBE_WAS_NOT_FOUND_IN_ARRAY_DESIGN_FRAGMENT},
                 TINY_DESIGN, AgilentArrayDataFiles.TEST_ACGH_RAW_TEXT);
     }
     
@@ -178,6 +181,7 @@ public class AgilentRawTextDataHandlerTest extends AbstractHandlerTest {
         addProbeToDesign("Agilent_Tiny_2");
 
        assertInvalid(
+               new String[] {PROBE_WAS_NOT_FOUND_IN_ARRAY_DESIGN_FRAGMENT},
                TINY_DESIGN, 
                AgilentArrayDataFiles.TINY_RAW_TEXT, AgilentArrayDataFiles.TINY_SDRF);
     }
@@ -189,6 +193,7 @@ public class AgilentRawTextDataHandlerTest extends AbstractHandlerTest {
         addProbeToDesign("Agilent_Tiny_2");
 
         assertInvalid(
+                new String[] {PROBE_WAS_NOT_FOUND_IN_ARRAY_DESIGN_FRAGMENT},
                 TINY_DESIGN, 
                AgilentArrayDataFiles.TINY_RAW_TEXT, AgilentArrayDataFiles.TINY_IDF);
     }
@@ -199,6 +204,7 @@ public class AgilentRawTextDataHandlerTest extends AbstractHandlerTest {
         addProbeToDesign("Agilent_Tiny_1");
  
         assertInvalid(
+                new String[] {},
                 TINY_DESIGN, 
                 AgilentArrayDataFiles.TINY_RAW_TEXT,
                 AgilentArrayDataFiles.TINY_IDF, AgilentArrayDataFiles.TINY_SDRF);
@@ -210,16 +216,16 @@ public class AgilentRawTextDataHandlerTest extends AbstractHandlerTest {
         CaArrayFile caArrayFile =
             getCaArrayFile(rawTextFile, designLsid.getObjectId());
         
-        testValidFile(caArrayFile, genMageTabDocSet(fileList));
+        testValidFile(caArrayFile, genMageTabDocSet(fileList), true);
     }
     
-    public void assertInvalid(LSID designLsid, final File rawTextFile, final File... files) {
+    public void assertInvalid(final String[] acceptableErrorMessageFragments, final LSID designLsid, final File rawTextFile, final File... files) {
         List<File> fileList = makeFileList(rawTextFile, files);
        
         CaArrayFile caArrayFile =
             getCaArrayFile(rawTextFile, designLsid.getObjectId());
         
-        testInvalidFile(caArrayFile, genMageTabDocSet(fileList));
+        testInvalidFile(caArrayFile, genMageTabDocSet(fileList), acceptableErrorMessageFragments);
     }
     
     @Test
@@ -350,11 +356,7 @@ public class AgilentRawTextDataHandlerTest extends AbstractHandlerTest {
         final String lsidString = lsid.toString();
         final String arrayDesignLsidString = arrayDesign.getLsid().toString();
 
-        if (arrayDesignLsidString.equals(lsidString)) {
-            return arrayDesign;
-        } else {
-            throw new IllegalArgumentException("Unsupported request design " + arrayDesignLsidString + " is not " + lsidString);
-        }
+        return arrayDesign;
     }
     
     private void setupArrayDesign(LSID designLsid) {
@@ -453,16 +455,30 @@ public class AgilentRawTextDataHandlerTest extends AbstractHandlerTest {
         assertEquals(FileStatus.VALIDATION_ERRORS, caArrayFile.getFileStatus());
 
         int i = 0;
-        String[] expected = {
-            "ERROR Missing or blank ProbeName L=13 C=7",
-            "ERROR Missing or blank gTotalProbeSignal L=14 C=27",
-            "INFO Processing as miRNA (found gTotalProbeSignal w/o LogRatio) L=0 C=0",
-        };
-        assertEquals(expected.length, results.getMessages().size());
-        for (ValidationMessage m :  results.getMessages()) {
-            String msg = m.getType().name() + " " + m.getMessage() + " L=" + m.getLine() + " C=" + m.getColumn();
-            assertEquals(expected[i], msg);
-            i++;
+            String[] expectedErrors = {
+                "Missing or blank ProbeName",
+                "Missing or blank gTotalProbeSignal"
+            };
+        String[] expectedInfo = {
+                "Processing as miRNA (found gTotalProbeSignal w/o LogRatio)"
+            };
+        validateValidationMessages(expectedErrors, results.getMessages(ValidationMessage.Type.ERROR));
+        validateValidationMessages(expectedInfo, results.getMessages(ValidationMessage.Type.INFO));
+    }
+    
+    private static void validateValidationMessages(final String[] expectedMessages, final List<ValidationMessage> validationMessages) {
+        assertEquals("The validation messages length is incorrect.", expectedMessages.length, validationMessages.size());
+        for (String expectedMessage : expectedMessages) {
+            System.out.println("expectedMessage =" + expectedMessage + "=");
+            boolean wasFound = false;
+            for (ValidationMessage validationMessage : validationMessages) {
+                System.out.println("validationMessage.getMessage().trim() =" + validationMessage.getMessage().trim() + "=");
+                if (expectedMessage.equals(validationMessage.getMessage().trim())) {
+                    wasFound = true;
+                    break;
+                }
+            }
+            assertTrue("This message was not found: " + expectedMessage, wasFound);
         }
     }
     

@@ -98,6 +98,7 @@ import gov.nih.nci.caarray.magetab.sdrf.Hybridization;
 import gov.nih.nci.caarray.platforms.DefaultValueParser;
 import gov.nih.nci.caarray.platforms.DesignElementBuilder;
 import gov.nih.nci.caarray.platforms.FileManager;
+import gov.nih.nci.caarray.platforms.ProbeNamesValidator;
 import gov.nih.nci.caarray.platforms.ValueParser;
 import gov.nih.nci.caarray.platforms.spi.AbstractDataFileHandler;
 import gov.nih.nci.caarray.validation.FileValidationResult;
@@ -136,6 +137,7 @@ class CsvDataHandler extends AbstractDataFileHandler {
         new HashMap<String, IlluminaExpressionQuantitationType>();
     private static final Map<String, IlluminaGenotypingQuantitationType> SNP_TYPE_MAP =
         new HashMap<String, IlluminaGenotypingQuantitationType>();
+    private static final int BATCH_SIZE = 1000;
 
     static {
         for (IlluminaExpressionQuantitationType descriptor : IlluminaExpressionQuantitationType.values()) {
@@ -477,7 +479,7 @@ class CsvDataHandler extends AbstractDataFileHandler {
             }
 
             if (result.isValid()) {
-                validateData(reader, result);
+                validateData(reader, result, design);
             }
             result.addValidationProperties(FileValidationResult.HYB_NAME, hybNames);
         } catch (IOException e) {
@@ -551,14 +553,29 @@ class CsvDataHandler extends AbstractDataFileHandler {
         }
     }
 
-    private void validateData(DelimitedFileReader reader, FileValidationResult result) throws IOException {
+    private void validateData(final DelimitedFileReader reader, final FileValidationResult result,
+            final ArrayDesign arrayDesign) throws IOException {
         List<String> headers = getHeaders(reader);
+        int targetIdColumnIndex = headers.indexOf(TARGET_ID);
         positionAtData(reader);
+        ProbeNamesValidator probeNamesValidator = new ProbeNamesValidator(arrayDao, arrayDesign);
+        List<String> probeNamesBatch = new ArrayList<String>(BATCH_SIZE);
+        int probeCounter = 0;
         while (reader.hasNextLine()) {
-            if (reader.nextLine().size() != headers.size()) {
+            List<String> nextLineValues = reader.nextLine();
+            if (nextLineValues.size() != headers.size()) {
                 ValidationMessage message = result.addMessage(Type.ERROR, "Invalid number of values in row");
                 message.setLine(reader.getCurrentLineNumber());
             }
+            probeNamesBatch.add(nextLineValues.get(targetIdColumnIndex));
+            probeCounter++;
+            if (BATCH_SIZE == probeCounter) {
+                probeNamesValidator.validateProbeNames(result, probeNamesBatch);
+                probeNamesBatch.clear();
+            }
+        }
+        if (!probeNamesBatch.isEmpty()) {
+            probeNamesValidator.validateProbeNames(result, probeNamesBatch);
         }
     }
 

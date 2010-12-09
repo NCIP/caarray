@@ -211,7 +211,4 @@ public class ArrayDaoStub extends AbstractDaoStub implements ArrayDao {
         return new ArrayList<ArrayDesign>();
     }
 
-    public List<String> getPhysicalProbeNamesForDesign(ArrayDesign design) {
-        return new ArrayList<String>();
-    }
 }

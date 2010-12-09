@@ -136,6 +136,7 @@ final class DataMatrixCopyNumberHandler extends AbstractDataFileHandler {
     private static final int CHROMOSOME_DATA_COLUMN_ARRAY_POSITION = 0;
     private static final int POSITION_DATA_COLUMN_ARRAY_POSITION = 1;
     private static final int LOG2RATIO_DATA_COLUMN_ARRAY_POSITION = 2;
+    private static final int BATCH_SIZE = 1000;
     
     private int reporterRefColumnIndex = UNINITIALIZED_INDEX;
     private int chromosomeColumnIndex = UNINITIALIZED_INDEX;
@@ -149,7 +150,6 @@ final class DataMatrixCopyNumberHandler extends AbstractDataFileHandler {
     private final ValueParser valueParser = new DefaultValueParser();
     private final ArrayDao arrayDao;
     private final SearchDao searchDao;
-    private List<String> probeNames;
 
     @Inject
     protected DataMatrixCopyNumberHandler(FileManager fileManager, ArrayDao arrayDao, SearchDao searchDao) {
@@ -193,13 +193,11 @@ final class DataMatrixCopyNumberHandler extends AbstractDataFileHandler {
     
     private void initialize() throws PlatformFileReadException {
         if (!hasBeenInitialized) {
-            probeNames = new ArrayList<String>();
             DelimitedFileReader delimitedFileReader = null;
             try {
                 delimitedFileReader = getDelimitedFileReader();
                 readHybridizationRefNamesAndColumnIndexes(delimitedFileReader);
                 readDataColumnMappings(delimitedFileReader);
-                getProbeNames(delimitedFileReader);
                 hasBeenInitialized = true;
             } catch (IOException e) {
                 throw new PlatformFileReadException(getFile(), "Cannot initialize: " + e.getMessage(), e);
@@ -331,13 +329,12 @@ final class DataMatrixCopyNumberHandler extends AbstractDataFileHandler {
     }
     
     private boolean listContainsString(String targetString, List<String> listToSearchThrough) {
-        boolean listContainsString  = false;
         for (String string : listToSearchThrough) {
             if (targetString.equalsIgnoreCase(string)) {
-                listContainsString = true;
+                return true;
             }
         }
-        return listContainsString;
+        return false;
     }
     
     private void positionReaderAtStartOfData(DelimitedFileReader delimitedFileReader) throws IOException {
@@ -354,14 +351,28 @@ final class DataMatrixCopyNumberHandler extends AbstractDataFileHandler {
         }
     }
     
-    private void getProbeNames(DelimitedFileReader delimitedFileReader) throws IOException {
+    private void validateProbeNamesAndCountProbes(final DelimitedFileReader delimitedFileReader,
+            final ArrayDesign arrayDesign, final FileValidationResult fileValidationResult) throws IOException {
         if (UNINITIALIZED_INDEX != reporterRefColumnIndex) {
             positionReaderAtStartOfData(delimitedFileReader);
+            ProbeNamesValidator probeNamesValidator = new ProbeNamesValidator(arrayDao, arrayDesign);
+            List<String> probeNamesBatch = new ArrayList<String>(BATCH_SIZE);
+            numberOfProbes = 0;
+            int probeCounter = 0;
             while (delimitedFileReader.hasNextLine()) {
                 List<String> strings = delimitedFileReader.nextLine();
-                probeNames.add(strings.get(reporterRefColumnIndex));
+                probeNamesBatch.add(strings.get(reporterRefColumnIndex));
+                numberOfProbes++;
+                probeCounter++;
+                if (BATCH_SIZE == probeCounter) {
+                    probeNamesValidator.validateProbeNames(fileValidationResult, probeNamesBatch);
+                    probeCounter = 0;
+                    probeNamesBatch.clear();
+                }
             }
-            numberOfProbes = probeNames.size();
+            if (!probeNamesBatch.isEmpty()) {
+                probeNamesValidator.validateProbeNames(fileValidationResult, probeNamesBatch);
+            }
         }
     }
     
@@ -424,12 +435,11 @@ final class DataMatrixCopyNumberHandler extends AbstractDataFileHandler {
         for (String columnName : headersOfColumnsToBeIgnored) {
             result.addMessage(Type.WARNING, "The column '" + columnName + "' will be ignored during data parsing.");
         }
-        ProbeNamesValidator probeNamesValidator = new ProbeNamesValidator(arrayDao, design);
-        for (String invalidProbeName : probeNamesValidator.getInvalidProbeNames(probeNames)) {
-            result.addMessage(Type.ERROR, "The probe name '" + invalidProbeName
-                    + "' is not present in the array design.");
+        try {
+            validateProbeNamesAndCountProbes(getDelimitedFileReader(), design, result);
+        } catch (IOException e) {
+            throw new PlatformFileReadException(getFile(), "Cannot validate probe names: " + e.getMessage(), e);
         }
-        probeNames = null;
     }
 
     /**
