@@ -2906,8 +2906,8 @@
 
     <target name="database:liquibase-taskdef" depends="init:third-party-paths">
         <path id="liquibase.dependencies.path">
-            <pathelement location="${caarray-common.classes.dir}" />
-            <pathelement location="${caarray-ejb.classes.dir}" />
+            <pathelement location="${caarray-common.jar}" />
+            <pathelement location="${caarray-ejb.jar}" />
             <fileset refid="liquibase.jar.fileset"/>
             <fileset refid="mysql-connector-java.jar.fileset"/>
             <fileset refid="log4j.jar.fileset"/>
@@ -2947,7 +2947,7 @@
     	</updateDatabase>
 	</target>
 
-	<target name="database:dropAll" depends="init:third-party-paths,build:caarray-ejb.jar,database:liquibase-taskdef" unless="nodbintegration" description="Drop all database tables and other objects">
+	<target name="database:dropAll" depends="init:third-party-paths,database:liquibase-taskdef" unless="nodbintegration" description="Drop all database tables and other objects">
 		<dropAllDatabaseObjects
 			driver="${database.driver}"
 			url="${database.url}"

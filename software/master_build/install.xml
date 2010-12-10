@@ -294,11 +294,39 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
         </if>
         <!--delete dir="${jboss.home}"/-->
     </target>
-
+    
     <target name="install:database" description="Re-creates database and users from baseline and applys incremental database changes." unless="exclude.database"
         depends="
 		common:init,
 		install:database:validation:pre-install
+        ">
+        
+        <!-- Run "ant install:database:execute" in a forked jvm. This is necessary because in Windows references to the
+             caarray jars are kept open after the task completes, causing subsequent file operations to fail. By running
+             the task in a separate jvm, we are assured all files are closed when the task completes. -->
+		<java
+			classname="org.apache.tools.ant.launch.Launcher"
+			fork="true"
+			clonevm="true"
+			failonerror="true"
+			taskname="forked"
+			>
+			<arg value="-buildfile"/>
+			<arg file="${ant.file}"/>
+			<arg value="-Dinstall.path=${install.path}"/>
+			<arg value="-Ddatabase.user=${database.user}"/>
+			<arg value="-Ddatabase.url=${database.url}"/>
+			<arg value="-Ddatabase.password=${database.password}"/>
+			<arg value="-Ddatabase.driver=${database.driver}"/>
+			<arg value="-Dcsm.application.name=${csm.application.name}"/>
+			<arg value="install:database:execute"/>
+			<jvmarg value="-verbose"/>
+		</java>
+	</target>
+
+    <target name="install:database:execute"
+        depends="
+		common:init
         ">
 
         <mkdir dir="${temp.dir}/caarray.ear" />
@@ -411,6 +439,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
             <fileset dir="${temp.dir}/caarray.war"/>
         </war>
 
+        <apply-filters-to-dir filters.target.dir="${temp.dir}/caarray.ear"/>
         <ear destfile="${temp.dir}/caarray.ear.to_deploy/${caarray.ear.file}" appxml="${temp.dir}/caarray.ear/META-INF/application.xml" update="false" duplicate="preserve">
             <metainf dir="${temp.dir}/caarray.ear/META-INF" includes="*.xml" excludes="jboss-service.xml" />
             <fileset dir="${temp.dir}/caarray.ear">
