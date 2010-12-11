@@ -189,6 +189,7 @@
     </fileset>
 
     <target name="init:third-party-paths">
+        <echoproperties/>
         <ant antfile="caarray-ivy-build.xml" dir="${basedir}/master_build" inheritAll="true" inheritRefs="true" target="retrieve-app-dependencies">
             <property name="no.ivy" value="${no.ivy}"/>
             <property name="psuedo_override.clean.bootstrap.libs.and.ivy.cache" value="false"/>
