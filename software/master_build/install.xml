@@ -300,35 +300,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
 		common:init,
 		install:database:validation:pre-install
         ">
-        
-        <!-- Run "ant install:database:execute" in a forked jvm. This is necessary because in Windows references to the
-             caarray jars are kept open after the task completes, causing subsequent file operations to fail. By running
-             the task in a separate jvm, we are assured all files are closed when the task completes. -->
-		<java
-			classname="org.apache.tools.ant.launch.Launcher"
-			fork="true"
-			clonevm="true"
-			failonerror="true"
-			taskname="forked"
-			>
-			<arg value="-buildfile"/>
-			<arg file="${ant.file}"/>
-			<arg value="-Dinstall.path=${install.path}"/>
-			<arg value="-Ddatabase.user=${database.user}"/>
-			<arg value="-Ddatabase.url=${database.url}"/>
-			<arg value="-Ddatabase.password=${database.password}"/>
-			<arg value="-Ddatabase.driver=${database.driver}"/>
-			<arg value="-Dcsm.application.name=${csm.application.name}"/>
-			<arg value="install:database:execute"/>
-			<jvmarg value="-verbose"/>
-		</java>
-	</target>
-
-    <target name="install:database:execute"
-        depends="
-		common:init
-        ">
-
+ 
         <mkdir dir="${temp.dir}/caarray.ear" />
         <unzip src="${caarray.dir.dist}/${caarray.ear.file}" dest="${temp.dir}/caarray.ear/" />
 
@@ -1562,7 +1534,9 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
             <delete dir="@{filters.target.dir}.filters.temp"/>
             <copy todir="@{filters.target.dir}.filters.temp" overwrite="true">
                 <fileset dir="@{filters.target.dir}">
-                    <include name="**/*"/>
+                    <include name="**/*.properties"/>
+                    <include name="**/*.sql"/>
+                    <include name="**/*.xml"/>
                 </fileset>
                 <filterset refid="embedded.filterset"/>
                 <filterset>
@@ -1570,9 +1544,10 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
                     <filtersfile file="project.properties"/>
                 </filterset>
             </copy>
-            <delete dir="@{filters.target.dir}"/>
             <move todir="@{filters.target.dir}">
-                <fileset dir="@{filters.target.dir}.filters.temp"/>
+                <fileset dir="@{filters.target.dir}.filters.temp">
+                   <different targetdir="@{filters.target.dir}" ignoreFileTimes="true"/>
+                </fileset>
             </move>
         </sequential>
     </macrodef>
