@@ -436,9 +436,8 @@ final class GprHandler extends AbstractDataFileHandler {
             String probeName = values.get(idIndex);
             probeNamesBatch.add(probeName);
             probeCounter++;
-            if (BATCH_SIZE == probeCounter) {
+            if (0 == probeCounter % BATCH_SIZE) {
                 probeNamesValidator.validateProbeNames(fileValidationResult, probeNamesBatch);
-                probeCounter = 0;
                 probeNamesBatch.clear();
             }
         }

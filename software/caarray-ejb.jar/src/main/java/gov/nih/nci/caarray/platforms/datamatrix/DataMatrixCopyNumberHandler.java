@@ -358,15 +358,12 @@ final class DataMatrixCopyNumberHandler extends AbstractDataFileHandler {
             ProbeNamesValidator probeNamesValidator = new ProbeNamesValidator(arrayDao, arrayDesign);
             List<String> probeNamesBatch = new ArrayList<String>(BATCH_SIZE);
             numberOfProbes = 0;
-            int probeCounter = 0;
             while (delimitedFileReader.hasNextLine()) {
                 List<String> strings = delimitedFileReader.nextLine();
                 probeNamesBatch.add(strings.get(reporterRefColumnIndex));
                 numberOfProbes++;
-                probeCounter++;
-                if (BATCH_SIZE == probeCounter) {
+                if (0 == numberOfProbes % BATCH_SIZE) {
                     probeNamesValidator.validateProbeNames(fileValidationResult, probeNamesBatch);
-                    probeCounter = 0;
                     probeNamesBatch.clear();
                 }
             }

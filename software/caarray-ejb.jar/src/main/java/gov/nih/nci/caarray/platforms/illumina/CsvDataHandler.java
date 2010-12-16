@@ -569,7 +569,7 @@ class CsvDataHandler extends AbstractDataFileHandler {
             }
             probeNamesBatch.add(nextLineValues.get(targetIdColumnIndex));
             probeCounter++;
-            if (BATCH_SIZE == probeCounter) {
+            if (0 == probeCounter % BATCH_SIZE) {
                 probeNamesValidator.validateProbeNames(result, probeNamesBatch);
                 probeNamesBatch.clear();
             }

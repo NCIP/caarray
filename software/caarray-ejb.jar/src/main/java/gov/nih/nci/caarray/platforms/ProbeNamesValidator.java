@@ -106,7 +106,7 @@ public class ProbeNamesValidator {
      * @param arrayDao the array DAO to use.
      * @param arrayDesign the array design to validate against.
      */
-    public  ProbeNamesValidator(final ArrayDao arrayDao, final ArrayDesign arrayDesign) {
+    public ProbeNamesValidator(final ArrayDao arrayDao, final ArrayDesign arrayDesign) {
         this.arrayDao = arrayDao;
         this.arrayDesign = arrayDesign;
     }

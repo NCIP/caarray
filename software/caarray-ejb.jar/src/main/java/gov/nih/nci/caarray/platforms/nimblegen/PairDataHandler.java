@@ -239,7 +239,7 @@ class PairDataHandler extends AbstractDataFileHandler {
             String probeName = container + "|" + sequenceId + "|" + probeId;
             probeNamesBatch.add(probeName);
             probeCounter++;
-            if (BATCH_SIZE == probeCounter) {
+            if (0 == probeCounter % BATCH_SIZE) {
                 probeNamesValidator.validateProbeNames(fileValidationResult, probeNamesBatch);
                 probeNamesBatch.clear();
             }
