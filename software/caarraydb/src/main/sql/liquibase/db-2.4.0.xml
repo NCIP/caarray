@@ -94,9 +94,4 @@
         <comment>GF-28739 - MAGE-TAB import can change names of key term sources, breaking functionality</comment>
         <sqlFile path="db-upgrade/mysql/2.4.0/27244.sql"/>
     </changeSet>
-   
-    <changeSet id="27244" author="jscott">
-       <comment>GF-28739 - MAGE-TAB import can change names of key term sources, breaking functionality</comment>
-      <sqlFile path="db-upgrade/mysql/2.4.0/27244.sql"/>
-    </changeSet>       
 </databaseChangeLog>
