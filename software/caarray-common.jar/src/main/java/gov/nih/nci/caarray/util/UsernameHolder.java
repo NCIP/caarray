@@ -105,7 +105,7 @@ public final class UsernameHolder extends com.fiveamsolutions.nci.commons.util.U
     public static User getCsmUser() {
         User csmUser = userThreadLocal.get();
         String userName = getUser();
-        if (csmUser == null || !csmUser.getLoginName().equals(userName)) {
+        if (csmUser == null || !csmUser.getLoginName().equalsIgnoreCase(userName)) {
             csmUser = SecurityUtils.getAuthorizationManager().getUser(getUser());
             userThreadLocal.set(csmUser);
         }
