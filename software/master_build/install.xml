@@ -494,7 +494,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
         -install:jboss:configure:disable-credential-caching,
         -install:jboss:configure:java_opts,
         -install:jboss:configure:tomcat,
-        -install:jboss:configure:update-runscripts
+        -install:jboss:configure:modify-runscripts
             ">
 		<!-- Calls the following macros
 		    jboss-bindings - configures ports for jboss
@@ -647,8 +647,22 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
          <caarray-jboss-configure-java_opts/>
     </target>
 
-    <target name="-install:jboss:configure:update-runscripts" description="Updates run.bat and run.sh so remote RMI clients can connect.">
-        <set-host-flag-in-start-jboss-scripts jboss.bin.dir="${jboss.home}/bin" host.flag.value="${jboss.server.hostname}"/>
+    <target name="-install:jboss:configure:modify-runscripts" description="Updates run.bat and run.sh so remote RMI clients can connect.">
+        <set-host-flag-in-start-jboss-scripts 
+            jboss.bin.dir="${jboss.home}/bin" 
+            host.flag.value="${jboss.server.hostname}" 
+            match.expression.value="(org.jboss.Main) (?!--host=)" 
+            replace.expression.value="org.jboss.Main --host=${jboss.server.hostname} "
+            />
+    </target>
+    
+    <target name="-upgrade:jboss:configure:modify-runscripts" description="Updates run.bat and run.sh so remote RMI clients can connect.">
+        <set-host-flag-in-start-jboss-scripts 
+            jboss.bin.dir="${jboss.home}/bin" 
+            host.flag.value="${jboss.server.hostname}"
+            match.expression.value="(org.jboss.Main --host=\S*) " 
+            replace.expression.value="org.jboss.Main --host=${jboss.server.hostname} "
+            />
     </target>
 
     <target name="-set:target:port:configuration:file">
@@ -740,7 +754,16 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
         install:validation:post-install
         "/-->
     <!-- Generic targets to call appropriate upgrade path targets, just change the depends to use alternate ugprade path -->
-    <target name="upgrade:jboss" description="Wrapper target to call all targets required to upgrade jboss container." unless="exclude.jboss" depends="upgrade:jboss:init,common:init,upgrade-ncm:jboss,-install:jboss:configure:tomcat,-install:jboss:configure:log4j,-install:jboss:configure:ejb3-interceptors-aop,-install:jboss:configure:disable-credential-caching,-install:jboss:configure:api:streaming:port">
+    <target name="upgrade:jboss" description="Wrapper target to call all targets required to upgrade jboss container." unless="exclude.jboss" 
+        depends="upgrade:jboss:init,
+        common:init,
+        upgrade-ncm:jboss,
+        -install:jboss:configure:tomcat,
+        -install:jboss:configure:log4j,
+        -install:jboss:configure:ejb3-interceptors-aop,
+        -install:jboss:configure:disable-credential-caching,
+        -install:jboss:configure:api:streaming:port,
+        -upgrade:jboss:configure:modify-runscripts">
     </target>
 
     <target name="upgrade:tier:caarray" description="Upgrades caArray installation on NCICB tier."
@@ -796,7 +819,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
         install:jboss:caarray:re-configure,
         install:jboss:caarray,
         install:jboss:caarray:configure,
-        -install:jboss:configure:update-runscripts,
+        -install:jboss:configure:modify-runscripts,
         upgrade:post:jboss,
         install:post:jboss,
         -install:jboss:start-with-config,
@@ -849,7 +872,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
         install:jboss:caarray:re-configure,
         install:jboss:caarray,
         install:jboss:caarray:configure,
-        -install:jboss:configure:update-runscripts,
+        -install:jboss:configure:modify-runscripts,
         upgrade:post:jboss,
         install:post:jboss,
         -install:jboss:start-with-config,
@@ -1510,8 +1533,10 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
     <macrodef name="set-host-flag-in-start-jboss-scripts">
         <attribute name="jboss.bin.dir" />
         <attribute name="host.flag.value" />
+        <attribute name="match.expression.value" />
+        <attribute name="replace.expression.value" />
         <sequential>
-            <replaceregexp match="(org.jboss.Main) (?!--host=)" replace="org.jboss.Main --host=@{host.flag.value} " byline="true">
+            <replaceregexp match="@{match.expression.value}" replace="@{replace.expression.value}" byline="true">
                 <fileset dir="@{jboss.bin.dir}">
                     <include name="run.bat"/>
                     <include name="run.sh"/>
