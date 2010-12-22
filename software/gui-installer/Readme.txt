@@ -1,13 +1,9 @@
-                                                                     
-                                                                     
-                                                                     
-                                             
-Release Notes
+elease Notes
 =============
  
   #Product:#	caArray
-  #Version:#	2.4.0
-  #Date:#	September 2010
+  #Version:#	2.4.0.1
+  #Date:#	January 2011
 
 Contents
 --------
@@ -39,9 +35,10 @@ library of assay management.
 Release History
 ------------------------
 
+    * caArray v2.4.0.1		-- January   2011 
     * caArray v2.4.0		-- September 2010 
     * caArray v2.3.1		-- February  2010 
-    * caArray v2.3.0		-- November  2009   
+    * caArray v2.3.0.1		-- November  2009   
     * caArray v2.2.1		-- May	     2009    
     * caArray v2.2.0		-- January   2009    
     * caArray v2.1.1		-- October   2008    
@@ -54,14 +51,14 @@ Release History
 Anticipated Releases
 ------------------------
  
-    * caArray v2.5.0	--   Q1 2011 (new features)
+    * caArray v2.5.0	--   Q2 2011 (new features)
 
 
 Features and Defects Addressed in this Release
 -----------------------------------------------
 
 This release represents a feature release of the caArray 2 software. 
-Highlights of caArray 2.4.0 are:
+Highlights of caArray 2.4.0.1 are:
 
 * Parsers for several new data types:
   * Agilent raw TXT for aCGH, expression and miRNA assays.
@@ -87,6 +84,15 @@ in the caArray User's Guide.
 
 * For experiments created from 2.4.0 onwards, the experiment public identifier will be composed of the
   string "EXP-" followed by a number. Already-existing experiment public identifiers will not be changed.
+
+We gratefully acknowledge our collaborators at Yale and UPMC for their contribution of the Nimblegen parsers to the release.
+
+The 2.4.0.1 release addresses the following issues with the 2.4.0 release:
+* Fixes out-of-memory errors with the parsers.
+* Fixes null pointer exception in the upgrade installer.
+* Adds probe name validation to the data file parsers.
+* Adds a security patch to Struts 2.1.x.
+* Correctly validates Genepix GAL array designs with non-integer block header information.
 
 
 Known Issues/Defects
