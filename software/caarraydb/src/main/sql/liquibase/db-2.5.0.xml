@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+    <preConditions>
+        <dbms type="mysql" />
+    </preConditions>
+
+    <!-- 2.5.0 changes --> 
+    <changeSet id="29399" author="dharley">
+       <comment>GF-29399 - Write an upgrade script that will clean up organisms in the database to limit them to the NCBI taxonomy term source.</comment>
+       <customChange class="gov.nih.nci.caarray.upgrade.FixOrganismsMigrator"/>
+    </changeSet>
+</databaseChangeLog>

@@ -108,7 +108,7 @@ public class FixOrganismsMigrator extends AbstractHibernateBasedCustomChange {
     /**
      * {@inheritDoc}
      */
-    public void execute(final SingleConnectionHibernateHelper hibernateHelper) {
+    public void doHibernateExecute(final SingleConnectionHibernateHelper hibernateHelper) {
         try {
             List<Organism> allOrganisms = getAllOrganisms(hibernateHelper);
             Map<String, List<Organism>> nameToOrganismsListMap = buildNamesToOrganismsListMap(allOrganisms);

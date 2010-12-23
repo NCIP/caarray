@@ -472,15 +472,15 @@ public class AffymetrixDataHandlerTest extends AbstractHandlerTest {
         fileList.add(AffymetrixArrayDesignFiles.TEST3_CDF);
 
         testValidFile(getChpCaArrayFile(AffymetrixArrayDataFiles.TEST3_CALVIN_CHP, AFFY_TEST3_LSID_OBJECT_ID),
-                genMageTabDocSet(fileList));
+                genMageTabDocSet(fileList), false);
         testValidFile(getChpCaArrayFile(AffymetrixArrayDataFiles.HG_FOCUS_CALVIN_CHP, HG_FOCUS_LSID_OBJECT_ID),
-                genMageTabDocSet(fileList));
+                genMageTabDocSet(fileList), false);
         testValidFile(getChpCaArrayFile(AffymetrixArrayDataFiles.HG_FOCUS_CHP, HG_FOCUS_LSID_OBJECT_ID),
-                genMageTabDocSet(fileList));
+                genMageTabDocSet(fileList), false);
         testValidFile(getChpCaArrayFile(AffymetrixArrayDataFiles.TEST3_CHP, AFFY_TEST3_LSID_OBJECT_ID),
-                genMageTabDocSet(fileList));
+                genMageTabDocSet(fileList), false);
         testInvalidFile(getChpCaArrayFile(AffymetrixArrayDesignFiles.TEST3_CDF, AFFY_TEST3_LSID_OBJECT_ID),
-                genMageTabDocSet(fileList));
+                genMageTabDocSet(fileList), new String[] {});
     }
 
     @Test
@@ -492,13 +492,13 @@ public class AffymetrixDataHandlerTest extends AbstractHandlerTest {
         fileList.add(AffymetrixArrayDataFiles.TEST3_INVALID_HEADER_CEL);
 
         testValidFile(getCelCaArrayFile(AffymetrixArrayDataFiles.TEST3_CEL, AFFY_TEST3_LSID_OBJECT_ID),
-                genMageTabDocSet(fileList));
+                genMageTabDocSet(fileList), true);
         testInvalidFile(getCelCaArrayFile(AffymetrixArrayDesignFiles.TEST3_CDF, AFFY_TEST3_LSID_OBJECT_ID),
-                genMageTabDocSet(fileList));
+                genMageTabDocSet(fileList), new String[] {PROBE_WAS_NOT_FOUND_IN_ARRAY_DESIGN_FRAGMENT});
         testInvalidFile(getCelCaArrayFile(AffymetrixArrayDataFiles.TEST3_INVALID_DATA_CEL, AFFY_TEST3_LSID_OBJECT_ID),
-                genMageTabDocSet(fileList));
+                genMageTabDocSet(fileList), new String[] {PROBE_WAS_NOT_FOUND_IN_ARRAY_DESIGN_FRAGMENT});
         testInvalidFile(getCelCaArrayFile(AffymetrixArrayDataFiles.TEST3_INVALID_HEADER_CEL, AFFY_TEST3_LSID_OBJECT_ID),
-                genMageTabDocSet(fileList));
+                genMageTabDocSet(fileList), new String[] {PROBE_WAS_NOT_FOUND_IN_ARRAY_DESIGN_FRAGMENT});
     }
     
     @Test

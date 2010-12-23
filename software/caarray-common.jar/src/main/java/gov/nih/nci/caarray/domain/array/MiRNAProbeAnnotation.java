@@ -111,11 +111,13 @@ public class MiRNAProbeAnnotation extends AbstractProbeAnnotation {
 
 
     /**
+     * @deprecated public scope for Castor serialization only.
      * @return the accessions
      */
     @org.hibernate.annotations.CollectionOfElements
     @JoinTable(name = "mirna_accession", joinColumns = @JoinColumn(name = "annotation_id"))
     @Column(updatable = false)
+    @Deprecated
     private Set<Accession> getAccessions() {
         return accessions;
     }

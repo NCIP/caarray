@@ -157,7 +157,7 @@ abstract class AbstractProjectFilesJob extends AbstractFileManagementJob {
      * {@inheritDoc}
      */
     @Override
-    PreparedStatement getUnexpectedErrorPreparedStatement(Connection con) throws SQLException {
+    public PreparedStatement getUnexpectedErrorPreparedStatement(Connection con) throws SQLException {
         PreparedStatement s = con.prepareStatement(
                 "update caarrayfile set status = ? where project = ? and status = ?");
         FileStatus newStatus;

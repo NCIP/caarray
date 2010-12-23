@@ -124,7 +124,7 @@ public class IlluminaDataHandlerTest extends AbstractHandlerTest {
         List<File> fileList = new ArrayList<File>();
         fileList.add(IlluminaArrayDataFiles.HUMAN_WG6);
         testValidFile(getIlluminaCaArrayFile(IlluminaArrayDataFiles.HUMAN_WG6, ILLUMINA_HUMAN_WG_6_LSID_OBJECT_ID),
-                genMageTabDocSet(fileList));
+                genMageTabDocSet(fileList), true);
     }
 
     @Test

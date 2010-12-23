@@ -200,7 +200,8 @@ final class GenotypingProcessedMatrixHandler extends AbstractDataFileHandler {
     public void loadData(DataSet dataSet, List<QuantitationType> types, ArrayDesign design) {
         // pass 1: load design element and count row.
         DefaultHeaderProcessor header = new DefaultHeaderProcessor();
-        DesignElementBuilder designElementProc = new DesignElementBuilder(header, dataSet, design, arrayDao, searchDao);
+        DesignElementBuilderParser designElementProc = new DesignElementBuilderParser(header, dataSet, design,
+                arrayDao, searchDao);
         processFile(header, designElementProc, getFile());
         designElementProc.finish();
         dataSet.prepareColumns(types, designElementProc.getElementCount());

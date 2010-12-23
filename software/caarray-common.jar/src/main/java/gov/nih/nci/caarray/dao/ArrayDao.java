@@ -85,6 +85,7 @@ package gov.nih.nci.caarray.dao;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
 import gov.nih.nci.caarray.domain.array.LogicalProbe;
+import gov.nih.nci.caarray.domain.array.PhysicalProbe;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.ArrayDataType;
@@ -100,7 +101,6 @@ import java.util.Map;
 import java.util.Set;
 
 import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
-import gov.nih.nci.caarray.domain.array.PhysicalProbe;
 
 /**
  * DAO for entities in the <code>gov.nih.nci.caarray.domain.array</code> package.
@@ -203,7 +203,7 @@ public interface ArrayDao extends CaArrayDao {
     List<Long> getLogicalProbeIds(ArrayDesign design, PageSortParams<LogicalProbe> params);
 
     /**
-     * Select named Physycal Probes from a array design, if found.
+     * Select named Physical Probes from a array design, if found.
      * @param design owner design.
      * @param names the names of probes of interest.
      * @return a potentially incomplete list of the probes of interest.

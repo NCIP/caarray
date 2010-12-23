@@ -88,7 +88,7 @@ import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
 /**
  * Quantitation type information for Affymetrix CEL files.
  */
-enum GenepixQuantitationType implements QuantitationTypeDescriptor {
+public enum GenepixQuantitationType implements QuantitationTypeDescriptor {
     /**
      * Autoflag.
      */

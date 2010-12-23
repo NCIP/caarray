@@ -137,6 +137,9 @@ public class AbstractDaoStub implements CaArrayDao {
      * {@inheritDoc}
      */
     public void save(Collection<? extends PersistentObject> caArrayEntities) {
+        for (PersistentObject entity : caArrayEntities) {
+            save(entity);
+        }
         // no-op
     }
 

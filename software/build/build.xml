@@ -2765,6 +2765,9 @@
 
     <target name="check:checkstyle" depends="init:third-party-paths,build:caarray-common.jar,build:caarray-ejb.jar,compile:caarray.war,compile:cn2magetab">
         <mkdir dir="${site.dir}/checkstyle" />
+                <!-- Checkstyle chokes on @throws CustomChangeException in gov.nih.nci.caarray.upgrade.AbstractCustomChange.java -->
+        <property name="checkstyle-caarray-ejb-excludes" value="**/AbstractCustomChange.java" />
+
         <checkstyle config="${checkstyle.config}" failureProperty="checkstyle.failure" failOnViolation="false" maxerrors="0" maxwarnings="0">
             <classpath>
                 <pathelement location="${caarray-common.jar}" />
@@ -2775,7 +2778,7 @@
             <classpath refid="common.compile.dependencies.path" />
             <formatter type="xml" tofile="${site.dir}/checkstyle/checkstyle.xml" />
             <fileset dir="${caarray-common.src.dir}" includes="**/*.java" />
-            <fileset dir="${caarray-ejb.src.dir}" includes="**/*.java" />
+            <fileset dir="${caarray-ejb.src.dir}" includes="**/*.java" excludes="${checkstyle-caarray-ejb-excludes}" />
             <fileset dir="${caarray-war.src.dir}" includes="**/*.java" />
         	<fileset dir="${cn2magetab.src.dir}" includes="**/*.java" />
         </checkstyle>
@@ -2902,8 +2905,8 @@
 
     <target name="database:liquibase-taskdef" depends="init:third-party-paths">
         <path id="liquibase.dependencies.path">
-            <pathelement location="${caarray-common.classes.dir}" />
-            <pathelement location="${caarray-ejb.classes.dir}" />
+            <pathelement location="${caarray-common.jar}" />
+            <pathelement location="${caarray-ejb.jar}" />
             <fileset refid="liquibase.jar.fileset"/>
             <fileset refid="mysql-connector-java.jar.fileset"/>
             <fileset refid="log4j.jar.fileset"/>

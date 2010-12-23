@@ -255,7 +255,7 @@ final class GalDesignHandler extends AbstractDesignFileHandler {
     private void setBlockInfoFromHeaderData() {
         short blockRow = 0;
         short blockColumn = 0;
-        int currentYOrigin = -1;
+        double currentYOrigin = -1;
         for (BlockInfo blockInfo : blockInfos) {
             if (blockInfo.getYOrigin() > currentYOrigin) {
                 blockColumn = 0;
@@ -290,8 +290,8 @@ final class GalDesignHandler extends AbstractDesignFileHandler {
     private void handleBlockInformation(String name, String value) {
         String[] parts = value.split(",");
         short blockNumber = Short.parseShort(name.substring(BLOCK_INDICATOR.length()));
-        int xOrigin = Integer.parseInt(parts[0].trim());
-        int yOrigin = Integer.parseInt(parts[1].trim());
+        double xOrigin = Double.parseDouble(parts[0].trim());
+        double yOrigin = Double.parseDouble(parts[1].trim());
         BlockInfo blockInfo = new BlockInfo(blockNumber, xOrigin, yOrigin);
         blockInfos.add(blockInfo);
         numberToBlockMap.put(blockInfo.getBlockNumber(), blockInfo);
@@ -559,13 +559,26 @@ final class GalDesignHandler extends AbstractDesignFileHandler {
     }
 
     private void validateBlockInformationFields(String[] values, int line, FileValidationResult result) {
-        if (values.length != NUMBER_OF_BLOCK_INFORMATION_FIELDS
-                || !Utils.isInteger(values[0].trim()) || !Utils.isInteger(values[1].trim())) {
+        if (values.length != NUMBER_OF_BLOCK_INFORMATION_FIELDS) {
             ValidationMessage message =
                 result.addMessage(Type.ERROR,
                         "Block information must consist of exactly 7 comma-separated numeric values");
             message.setLine(line);
             message.setColumn(1);
+        }
+        if (!Utils.isDouble(values[0].trim())) {
+            ValidationMessage message =
+                result.addMessage(Type.ERROR,
+                        "Block information must contain a valid xOrigin value");
+            message.setLine(line);
+            message.setColumn(1);
+        }
+        if (!Utils.isDouble(values[1].trim())) {
+            ValidationMessage message =
+                result.addMessage(Type.ERROR,
+                    "Block information must contain a valid yOrigin value");
+            message.setLine(line);
+            message.setColumn(2);
         }
     }
 
@@ -580,10 +593,10 @@ final class GalDesignHandler extends AbstractDesignFileHandler {
         private final short blockNumber;
         private short blockColumn;
         private short blockRow;
-        private final int xOrigin;
-        private final int yOrigin;
+        private final double xOrigin;
+        private final double yOrigin;
 
-        private BlockInfo(short blockNumber, int xOrigin, int yOrigin) {
+        private BlockInfo(short blockNumber, double xOrigin, double yOrigin) {
             this.blockNumber = blockNumber;
             this.xOrigin = xOrigin;
             this.yOrigin = yOrigin;
@@ -602,11 +615,11 @@ final class GalDesignHandler extends AbstractDesignFileHandler {
         }
 
         @SuppressWarnings("unused")
-        private int getXOrigin() {
+        private double getXOrigin() {
             return xOrigin;
         }
 
-        private int getYOrigin() {
+        private double getYOrigin() {
             return yOrigin;
         }
 
@@ -621,3 +634,4 @@ final class GalDesignHandler extends AbstractDesignFileHandler {
     }
 
 }
+

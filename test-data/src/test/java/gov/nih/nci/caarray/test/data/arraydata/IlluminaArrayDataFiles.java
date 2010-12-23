@@ -101,6 +101,9 @@ public class IlluminaArrayDataFiles {
     public static final File ILLUMINA_DERIVED_1_HYB =
         new File(IlluminaArrayDataFiles.class.getResource("/arraydata/illumina/illumina-der-1.txt").getFile());
 
+    public static final File BAD_ILLUMINA_DERIVED_1_HYB =
+        new File(IlluminaArrayDataFiles.class.getResource("/arraydata/illumina/illumina-der-1.bad.txt").getFile());
+
     public static final File ILLUMINA_DERIVED_2_HYB =
         new File(IlluminaArrayDataFiles.class.getResource("/arraydata/illumina/illumina-der-2.txt").getFile());
 

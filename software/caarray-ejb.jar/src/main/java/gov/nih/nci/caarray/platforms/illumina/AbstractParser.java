@@ -84,6 +84,7 @@
 package gov.nih.nci.caarray.platforms.illumina;
 
 import gov.nih.nci.caarray.validation.FileValidationResult;
+
 import java.util.List;
 
 /**
@@ -93,7 +94,7 @@ import java.util.List;
  * @author gax
  * @since 2.4.0
  */
-public abstract class AbstractParser {
+abstract class AbstractParser {
     private final MessageHandler messages;
 
     /**
@@ -125,7 +126,7 @@ public abstract class AbstractParser {
      * @param lineNum the line number in the file.
      * @return true when the line was parsed correctly, or the rest of the file can be read.
      */
-    public abstract boolean parse(List<String> row, int lineNum);
+    abstract boolean parse(List<String> row, int lineNum);
 
     /**
      * called when an error is detected while parsing the header.

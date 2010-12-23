@@ -1,0 +1,5 @@
+# software=NimbleScan	version=2.3.78	imagefile=/home/mhogan/Extraction/Expression/100449_532.tif	designfile=/usr/nfsshare/aruba_images/NimbleScan/pipeline/Design_files/2006-08-03_HG18_60mer_expr.ndf	designname=2006-08-03_HG18_60mer_expr	designid=4542	date=Tue May 01 14:49:13 CDT 2007	border=0	ul_x=48.288	ul_y=43.710	ur_x=2645.858	ur_y=42.812	lr_x=2648.006	lr_y=3509.872	ll_x=50.800	ll_y=3510.981	score=0.112	qcscore=0.490	locallyaligned=no	correctAstig=no	Knots=	auto=yes
+IMAGE_ID	GENE_EXPR_OPTION	SEQ_ID	PROBE_ID	POSITION	X	Y	MATCH_INDEX	SEQ_URL	PM	MM
+100449_532	BLOCK1	AK027303	AK027303P00520	520	23	1	64353261		3925.67	0.00
+100449_532	BLOCK1	BC047023	BC047023P00799	799	33	1	64412088		2379.89	0.00
+100449_532	BLOCK1	NM_001932	NM_001932P02904	2904	25	1	64327510		307.00	0.00

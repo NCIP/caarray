@@ -119,6 +119,7 @@ import com.google.inject.Inject;
 class AgilentXmlDesignFileHandler extends AbstractDesignFileHandler {
     static final String LSID_AUTHORITY = "Agilent.com";
     static final String LSID_NAMESPACE = "PhysicalArrayDesign";
+    private static final int BATCH_SIZE = 1000;
  
     private final VocabularyDao vocabularyDao;
     private CaArrayFile designFile;
@@ -210,16 +211,18 @@ class AgilentXmlDesignFileHandler extends AbstractDesignFileHandler {
      */
     public void createDesignDetails(ArrayDesign arrayDesign) throws PlatformFileReadException {
         parseArrayDesign(arrayDesign);
-        
         try {
             arrayDesign.setNumberOfFeatures(features.size());       
             arrayDesign.setDesignDetails(this.arrayDesignDetails);
             getArrayDao().save(arrayDesign);
             getSessionTransactionManager().flushSession();
-            
-            saveEntities(probeGroups);
-            saveEntities(features);
-            saveEntities(probes);
+            saveEntities(true, features);
+            features = null;
+            saveEntities(true, probeGroups);
+            probeGroups = null;
+            saveEntities(false, probes);
+            flushAndClearSession();
+            probes = null;
         } catch (Exception e) {
             throw new PlatformFileReadException(this.fileOnDisk,
                         "Unexpected error while validating " + designFile.getName(), e);
@@ -248,9 +251,14 @@ class AgilentXmlDesignFileHandler extends AbstractDesignFileHandler {
         }
     }
 
-    private void saveEntities(final Collection<? extends PersistentObject> persistentObjects) {
+    private void saveEntities(final boolean shouldBatchFlushAndClear,
+            final Collection<? extends PersistentObject> persistentObjects) {
+        int count = 0;
         for (PersistentObject persistentObject : persistentObjects) {
             getArrayDao().save(persistentObject);
+            if (shouldBatchFlushAndClear && ++count % BATCH_SIZE == 0) {
+                flushAndClearSession();
+            }
         }       
     }
 

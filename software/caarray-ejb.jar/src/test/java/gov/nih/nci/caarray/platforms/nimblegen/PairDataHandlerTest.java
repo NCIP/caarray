@@ -133,7 +133,6 @@ public class PairDataHandlerTest extends AbstractHandlerTest {
         HybridizationData hybridizationData = dataSet.getHybridizationDataList().get(0);
         assertEquals(5, hybridizationData.getColumns().size());
         assertNotNull(hybridizationData.getHybridization().getArray());
-        assertEquals(388502, nimblegenData.getDataSet().getDesignElementList().getDesignElements().size());
     }
 
     private CaArrayFile getNimblegenCaArrayFile(File file, String lsidObjectId) {

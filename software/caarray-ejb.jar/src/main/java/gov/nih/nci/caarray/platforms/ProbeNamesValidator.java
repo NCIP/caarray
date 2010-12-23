@@ -80,111 +80,83 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
-package gov.nih.nci.caarray.platforms.illumina;
+package gov.nih.nci.caarray.platforms;
 
 import gov.nih.nci.caarray.dao.ArrayDao;
-import gov.nih.nci.caarray.dao.SearchDao;
-import gov.nih.nci.caarray.domain.array.AbstractDesignElement;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.array.PhysicalProbe;
-import gov.nih.nci.caarray.domain.data.DataSet;
-import gov.nih.nci.caarray.domain.data.DesignElementList;
-import gov.nih.nci.caarray.domain.data.DesignElementType;
-import java.util.ArrayList;
-import java.util.HashMap;
+import gov.nih.nci.caarray.validation.FileValidationResult;
+import gov.nih.nci.caarray.validation.ValidationMessage.Type;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
- * Builds a design element list.
- * @author gax
- * @since 2.4.0
+ * Validates probe names against those actually present in an array design.
+ * @author dharley
+ *
  */
-public class DesignElementBuilder extends AbstractParser {
-    private final AbstractHeaderParser<?> header;
+public class ProbeNamesValidator {
+    
     private final ArrayDao arrayDao;
-    private final SearchDao searchDao;
-    private final List<String> batch = new ArrayList<String>();
-    private final ArrayDesign design;
-    private final DataSet dataSet;
-    private DesignElementList probeList;
-    private int elementCount = 0;
-    private final Map<String, PhysicalProbe> lookup = new HashMap<String, PhysicalProbe>(HybDataValidator.BATCH_SIZE);
-
-    /**
-     * @param header table header info.
-     * @param dataSet the dataset to populate with a {@link DesignElementList}
-     * @param design the design that defines the probes.
-     * @param arrayDao dao for prob lookup.
-     * @param searchDao dao to evict and reload probes and design element lists.
+    private final ArrayDesign arrayDesign;
+    
+    /**   
+     * Creates a new ProbeNamesValidator.
+     * @param arrayDao the array DAO to use.
+     * @param arrayDesign the array design to validate against.
      */
-    public DesignElementBuilder(AbstractHeaderParser<?> header, DataSet dataSet, ArrayDesign design,
-            ArrayDao arrayDao, SearchDao searchDao) {
-        this.header = header;
-        this.design = design;
-        this.dataSet = dataSet;
+    public ProbeNamesValidator(final ArrayDao arrayDao, final ArrayDesign arrayDesign) {
         this.arrayDao = arrayDao;
-        this.searchDao = searchDao;
-        probeList = new DesignElementList();
-        probeList.setDesignElementTypeEnum(DesignElementType.PHYSICAL_PROBE);
+        this.arrayDesign = arrayDesign;
     }
 
     /**
-     * {@inheritDoc}
+     * Validates a list of probe names against the specified array design.  Does not support probes with aliases
+     * (i.e., can only have a single probe name).
+     * @param fileValidationResult the validation result to write to.
+     * @param potentiallyInvalidProbeNames the list of probe names to validate.
      */
-    public boolean parse(List<String> row, int lineNum) {
-        String probeId = header.parseProbeId(row, lineNum);
-        batch.add(probeId);
-        if (batch.size() == HybDataValidator.BATCH_SIZE) {
-            processBatch();
+    public void validateProbeNames(final FileValidationResult fileValidationResult,
+            final List<String> potentiallyInvalidProbeNames) {
+        potentiallyInvalidProbeNames.removeAll(getProbeNamesThatArePresentInDesign(potentiallyInvalidProbeNames));
+        for (String badProbeName : potentiallyInvalidProbeNames) {
+            fileValidationResult.addMessage(
+                    Type.ERROR, formatErrorMessage(new String[] {(String) badProbeName}, arrayDesign));
         }
-        elementCount++;
-        return true;
-    }
-
-    private void processBatch() {
-        
-        for (PhysicalProbe p : arrayDao.getPhysicalProbeByNames(design, batch)) {
-            lookup.put(p.getName(), p);
-        }
-        if (probeList.getId() != null) {
-            probeList = searchDao.retrieve(DesignElementList.class, probeList.getId());
-        }
-        List<AbstractDesignElement> list = probeList.getDesignElements();
-        for (String n : batch) {
-            PhysicalProbe p = lookup.get(n);
-            list.add(p);
-        }
-        batch.clear();
-        
-        searchDao.save(probeList);
-        searchDao.evictObject(probeList);
-        for (PhysicalProbe p : lookup.values()) {
-            searchDao.evictObject(p.getArrayDesignDetails());
-            searchDao.evictObject(p.getProbeGroup());
-            searchDao.evictObject(p.getAnnotation());
-            searchDao.evictObject(p);
-        }
-        lookup.clear();
     }
 
     /**
-     * to be called when all lines are parsed, to flush remaining batch.
+     * Returns a properly-formatted error message for cases when a probe name is not found in an array design.
+     * @param badProbeNameAliases the aliases for the bad probe name.
+     * @param arrayDesign the array design which does not contain the bad probe name.
+     * @return error message in proper format.
      */
-    void finish() {
-        processBatch();
-        if (probeList.getId() != null) {
-            probeList = searchDao.retrieve(DesignElementList.class, probeList.getId());
+    public static String formatErrorMessage(final String[] badProbeNameAliases, final ArrayDesign arrayDesign) {
+        StringBuilder stringBuilder = new StringBuilder();
+        if (badProbeNameAliases.length > 1) {
+            stringBuilder.append("Probe with aliases ");
+        } else {
+            stringBuilder.append("Probe with name ");
         }
-        dataSet.setDesignElementList(probeList);
+        for (int i = 0; i < badProbeNameAliases.length; i++) {
+            stringBuilder.append("'" + badProbeNameAliases[i] + "'");
+            if (i != (badProbeNameAliases.length - 1)) {
+                stringBuilder.append(",");
+            }
+        }
+        stringBuilder.append(" was not found in array design '" + arrayDesign.getName() + "' version '"
+                + arrayDesign.getVersion() + "'.");
+        return stringBuilder.toString();
+    }
+    
+    private List<String> getProbeNamesThatArePresentInDesign(final List<String> probeNames) {
+        List<PhysicalProbe> physicalProbesPresentInDesign = arrayDao.getPhysicalProbeByNames(arrayDesign, probeNames);
+        List<String> probeNamesThatArePresentInDesign = new ArrayList<String>();
+        for (PhysicalProbe probe : physicalProbesPresentInDesign) {
+            probeNamesThatArePresentInDesign.add(probe.getName());
+        }
+        return probeNamesThatArePresentInDesign;
     }
 
-    /**
-     * @return list of the created design elements.
-     */
-    public int getElementCount() {
-        return elementCount;
-    }
 }

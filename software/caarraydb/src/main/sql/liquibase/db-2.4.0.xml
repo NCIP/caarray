@@ -85,9 +85,13 @@
        <customChange class="gov.nih.nci.caarray.upgrade.FixIlluminaGenotypingCsvDesignProbeNamesMigrator"/>
     </changeSet>
    
-    <changeSet id="29399" author="dharley">
-       <comment>GF-29399 - Write an upgrade script that will clean up organisms in the database to limit them to the NCBI taxonomy term source.</comment>
-       <customChange class="gov.nih.nci.caarray.upgrade.FixOrganismsMigrator"/>
+    <changeSet id="29831" author="dkokotov">
+       <comment>GF-29831 - Improve memory performance of DesignElementList</comment>
+       <sqlFile path="db-upgrade/mysql/2.4.0/29831.sql"/>
     </changeSet>
    
+    <changeSet id="27244" author="jscott">
+        <comment>GF-28739 - MAGE-TAB import can change names of key term sources, breaking functionality</comment>
+        <sqlFile path="db-upgrade/mysql/2.4.0/27244.sql"/>
+    </changeSet>
 </databaseChangeLog>

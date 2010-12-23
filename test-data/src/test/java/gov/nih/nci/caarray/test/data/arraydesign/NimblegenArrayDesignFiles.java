@@ -88,6 +88,9 @@ public class NimblegenArrayDesignFiles {
     public static final File SHORT_EXPRESSION_DESIGN = 
         new File(NimblegenArrayDesignFiles.class.getResource("/arraydesign/nimblegen/2006-08-03_HG18_60mer_expr-short.ndf").getFile());
 
+    public static final File FULL_EXPRESSION_DESIGN = 
+        new File(NimblegenArrayDesignFiles.class.getResource("/arraydesign/nimblegen/2006-08-03_HG18_60mer_expr.ndf").getFile());
+
     public static final File SHORT_CGH_DESIGN =
         new File(NimblegenArrayDesignFiles.class.getResource("/arraydesign/nimblegen/090210_HG18_WG_CGH_v3.1_HX3-short.ndf").getFile());
         

@@ -111,12 +111,12 @@ public abstract class AbstractHibernateBasedCustomChange extends AbstractCustomC
     /**
      * {@inheritDoc}
      */
-    public void execute(final Database database) throws CustomChangeException {
+    public void doExecute(final Database database) throws CustomChangeException {
         SingleConnectionHibernateHelper hibernateHelper =
             createHibernateHelper(database.getConnection().getUnderlyingConnection());
         Transaction transaction = hibernateHelper.beginTransaction();
         try {
-            execute(hibernateHelper);
+            doHibernateExecute(hibernateHelper);
             transaction.commit();
         } catch (Exception exception) {
             transaction.rollback();
@@ -129,7 +129,7 @@ public abstract class AbstractHibernateBasedCustomChange extends AbstractCustomC
      * will be managed by calling execute(Database) method.
      * @param singleConnectionHibernateHelper the SingleConnectionHibernateHelper to use.
      */
-    protected abstract void execute(final SingleConnectionHibernateHelper singleConnectionHibernateHelper);
+    protected abstract void doHibernateExecute(final SingleConnectionHibernateHelper singleConnectionHibernateHelper);
     
     /**
      * Creates a new AbstractHibernateBasedCustomChange instance.

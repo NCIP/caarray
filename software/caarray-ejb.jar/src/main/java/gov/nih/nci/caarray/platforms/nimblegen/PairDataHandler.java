@@ -82,6 +82,8 @@
  */
 package gov.nih.nci.caarray.platforms.nimblegen;
 
+import gov.nih.nci.caarray.dao.ArrayDao;
+import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.domain.LSID;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
@@ -97,18 +99,15 @@ import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.platforms.DefaultValueParser;
 import gov.nih.nci.caarray.platforms.FileManager;
 import gov.nih.nci.caarray.platforms.ProbeLookup;
+import gov.nih.nci.caarray.platforms.ProbeNamesValidator;
 import gov.nih.nci.caarray.platforms.ValueParser;
 import gov.nih.nci.caarray.platforms.spi.AbstractDataFileHandler;
 import gov.nih.nci.caarray.platforms.spi.PlatformFileReadException;
-import com.fiveamsolutions.nci.commons.util.io.DelimitedFileReader;
-import com.fiveamsolutions.nci.commons.util.io.DelimitedFileReaderFactoryImpl;
-
-import com.google.inject.Inject;
-
 import gov.nih.nci.caarray.validation.FileValidationResult;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -117,6 +116,10 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+
+import com.fiveamsolutions.nci.commons.util.io.DelimitedFileReader;
+import com.fiveamsolutions.nci.commons.util.io.DelimitedFileReaderFactoryImpl;
+import com.google.inject.Inject;
 
 /**
  * Handles reading of nimblegen data.
@@ -128,8 +131,11 @@ class PairDataHandler extends AbstractDataFileHandler {
     private static final String SEQ_ID_HEADER = "SEQ_ID";
     private static final String PROBE_ID_HEADER = "PROBE_ID";
     private static final String CONTAINER_HEADER = "GENE_EXPR_OPTION";
+    private static final int BATCH_SIZE = 1000;
 
     private final ValueParser valueParser = new DefaultValueParser();
+    private final ArrayDao arrayDao;
+    private final SearchDao searchDao;
 
     @Override
     protected boolean acceptFileType(FileType type) {
@@ -144,8 +150,10 @@ class PairDataHandler extends AbstractDataFileHandler {
      * @param fileManager the FileManager to use
      */
     @Inject
-    PairDataHandler(FileManager fileManager) {
+    PairDataHandler(FileManager fileManager, ArrayDao arrayDao, SearchDao searchDao) {
         super(fileManager);
+        this.arrayDao = arrayDao;
+        this.searchDao = searchDao;
     }
 
     /**
@@ -162,6 +170,7 @@ class PairDataHandler extends AbstractDataFileHandler {
         return NimblegenQuantitationType.values();
     }
 
+    // returns the column headers in the file, and positions reader at start of data
     private List<String> getHeaders(DelimitedFileReader reader) throws IOException {
         reset(reader);
         while (reader.hasNextLine()) {
@@ -210,6 +219,33 @@ class PairDataHandler extends AbstractDataFileHandler {
             throw new IllegalStateException(READ_FILE_ERROR_MESSAGE, e);
         } finally {
             reader.close();
+        }
+    }
+
+    private void validateProbeNames(final DelimitedFileReader reader, final ArrayDesign design,
+            final FileValidationResult fileValidationResult) throws IOException {
+        ProbeNamesValidator probeNamesValidator = new ProbeNamesValidator(arrayDao, design);
+        List<String> probeNamesBatch = new ArrayList<String>();
+        int probeCounter = 0;
+        List<String> headers = getHeaders(reader);
+        int seqIdIndex = headers.indexOf(SEQ_ID_HEADER);
+        int probeIdIndex = headers.indexOf(PROBE_ID_HEADER);
+        int containerIndex = headers.indexOf(CONTAINER_HEADER);
+        while (reader.hasNextLine()) {
+            List<String> values = reader.nextLine();
+            String probeId = values.get(probeIdIndex);
+            String sequenceId = values.get(seqIdIndex);
+            String container = values.get(containerIndex);
+            String probeName = container + "|" + sequenceId + "|" + probeId;
+            probeNamesBatch.add(probeName);
+            probeCounter++;
+            if (0 == probeCounter % BATCH_SIZE) {
+                probeNamesValidator.validateProbeNames(fileValidationResult, probeNamesBatch);
+                probeNamesBatch.clear();
+            }
+        }
+        if (!probeNamesBatch.isEmpty()) {
+            probeNamesValidator.validateProbeNames(fileValidationResult, probeNamesBatch);
         }
     }
 
@@ -268,9 +304,14 @@ class PairDataHandler extends AbstractDataFileHandler {
     /**
      * {@inheritDoc}
      */
-    public void validate(MageTabDocumentSet mTabSet, FileValidationResult result, ArrayDesign design)
+    public void validate(final MageTabDocumentSet mTabSet, final FileValidationResult result, final ArrayDesign design)
             throws PlatformFileReadException {
-        // no validation implemented yet
+        try {
+            validateProbeNames(getReader(getFile()), design, result);
+        } catch (IOException ioException) {
+            throw new PlatformFileReadException(getFile(), "Cannot validate pair data file: "
+                    + ioException.getMessage(), ioException);
+        }
     }
     
     /**

@@ -85,14 +85,15 @@ package gov.nih.nci.caarray.web.action.project;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import gov.nih.nci.caarray.application.GenericDataService;
 import gov.nih.nci.caarray.application.GenericDataServiceStub;
 import gov.nih.nci.caarray.application.project.InconsistentProjectStateException;
+import gov.nih.nci.caarray.application.project.InconsistentProjectStateException.Reason;
 import gov.nih.nci.caarray.application.project.ProjectManagementService;
 import gov.nih.nci.caarray.application.project.ProjectManagementServiceStub;
 import gov.nih.nci.caarray.application.project.ProposalWorkflowException;
-import gov.nih.nci.caarray.application.project.InconsistentProjectStateException.Reason;
 import gov.nih.nci.caarray.application.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.application.vocabulary.VocabularyServiceStub;
 import gov.nih.nci.caarray.application.vocabulary.VocabularyUtils;
@@ -202,7 +203,8 @@ public class ProjectExperimentContactsActionTest extends AbstractBaseStrutsTest 
 
         action.save();
         assertEquals(1, action.getExperiment().getExperimentContacts().size());
-        assertEquals("submitter, investigator",action.getExperiment().getExperimentContacts().get(0).getRoleNames());
+        String roles = action.getExperiment().getExperimentContacts().get(0).getRoleNames();
+        assertTrue("submitter, investigator".equals(roles) || "investigator, submitter".equals(roles));
         assertEquals(1,action.getExperiment().getPrimaryInvestigatorCount());
         assertNotNull(action.getExperiment().getPrimaryInvestigator());
         assertEquals("Administrator, caArray", action.getExperiment().getExperimentContacts().get(0).getContact().getName());

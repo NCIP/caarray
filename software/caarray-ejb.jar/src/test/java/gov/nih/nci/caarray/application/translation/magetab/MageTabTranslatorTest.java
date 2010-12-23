@@ -88,6 +88,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import gov.nih.nci.caarray.application.AbstractServiceTest;
+import gov.nih.nci.caarray.application.arraydesign.ArrayDesignServiceTest;
+import gov.nih.nci.caarray.application.file.AbstractFileManagementServiceIntegrationTest;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheStubFactory;
@@ -139,6 +141,7 @@ import gov.nih.nci.caarray.magetab.io.JavaIOFileRef;
 import gov.nih.nci.caarray.magetab.sdrf.AbstractBioMaterial;
 import gov.nih.nci.caarray.magetab.sdrf.SdrfDocument;
 import gov.nih.nci.caarray.test.data.arraydata.GenepixArrayDataFiles;
+import gov.nih.nci.caarray.test.data.arraydesign.AgilentArrayDesignFiles;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import gov.nih.nci.caarray.validation.FileValidationResult;
@@ -541,8 +544,8 @@ public class MageTabTranslatorTest extends AbstractServiceTest {
 
     @Test
     public void testTranslateDataMatrixCopyNumberData() throws Exception {
-        CaArrayFileSet fileSet = TestMageTabSets.getFileSet(TestMageTabSets.DATA_MATRIX_COPY_NUMBER_GOOD_INPUT_SET);
-        MageTabDocumentSet docSet = MageTabParser.INSTANCE.parse(TestMageTabSets.DATA_MATRIX_COPY_NUMBER_GOOD_INPUT_SET);
+        CaArrayFileSet fileSet = TestMageTabSets.getFileSet(TestMageTabSets.GOOD_DATA_MATRIX_COPY_NUMBER_INPUT_SET);
+        MageTabDocumentSet docSet = MageTabParser.INSTANCE.parse(TestMageTabSets.GOOD_DATA_MATRIX_COPY_NUMBER_INPUT_SET);
         CaArrayTranslationResult result = this.translator.translate(docSet, fileSet);
         assertEquals(1, result.getInvestigations().size());
         Experiment investigation = result.getInvestigations().iterator().next();

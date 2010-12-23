@@ -82,21 +82,22 @@
  */
 package gov.nih.nci.caarray.platforms.datamatrix;
 
+import gov.nih.nci.caarray.dao.ArrayDao;
+import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.domain.LSID;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.data.AbstractDataColumn;
 import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
 import gov.nih.nci.caarray.domain.data.DataSet;
-import gov.nih.nci.caarray.domain.data.DesignElementList;
-import gov.nih.nci.caarray.domain.data.DesignElementType;
 import gov.nih.nci.caarray.domain.data.HybridizationData;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.platforms.DefaultValueParser;
+import gov.nih.nci.caarray.platforms.DesignElementBuilder;
 import gov.nih.nci.caarray.platforms.FileManager;
-import gov.nih.nci.caarray.platforms.ProbeLookup;
+import gov.nih.nci.caarray.platforms.ProbeNamesValidator;
 import gov.nih.nci.caarray.platforms.ValueParser;
 import gov.nih.nci.caarray.platforms.spi.AbstractDataFileHandler;
 import gov.nih.nci.caarray.platforms.spi.PlatformFileReadException;
@@ -135,6 +136,7 @@ final class DataMatrixCopyNumberHandler extends AbstractDataFileHandler {
     private static final int CHROMOSOME_DATA_COLUMN_ARRAY_POSITION = 0;
     private static final int POSITION_DATA_COLUMN_ARRAY_POSITION = 1;
     private static final int LOG2RATIO_DATA_COLUMN_ARRAY_POSITION = 2;
+    private static final int BATCH_SIZE = 1000;
     
     private int reporterRefColumnIndex = UNINITIALIZED_INDEX;
     private int chromosomeColumnIndex = UNINITIALIZED_INDEX;
@@ -146,10 +148,14 @@ final class DataMatrixCopyNumberHandler extends AbstractDataFileHandler {
     private boolean hasBeenInitialized = false;
     private int numberOfProbes = UNINITIALIZED_INDEX;
     private final ValueParser valueParser = new DefaultValueParser();
+    private final ArrayDao arrayDao;
+    private final SearchDao searchDao;
 
     @Inject
-    protected DataMatrixCopyNumberHandler(FileManager fileManager) {
+    protected DataMatrixCopyNumberHandler(FileManager fileManager, ArrayDao arrayDao, SearchDao searchDao) {
         super(fileManager);
+        this.arrayDao = arrayDao;
+        this.searchDao = searchDao;
     }
 
     /**
@@ -192,7 +198,6 @@ final class DataMatrixCopyNumberHandler extends AbstractDataFileHandler {
                 delimitedFileReader = getDelimitedFileReader();
                 readHybridizationRefNamesAndColumnIndexes(delimitedFileReader);
                 readDataColumnMappings(delimitedFileReader);
-                countNumberOfProbes(delimitedFileReader);
                 hasBeenInitialized = true;
             } catch (IOException e) {
                 throw new PlatformFileReadException(getFile(), "Cannot initialize: " + e.getMessage(), e);
@@ -282,16 +287,14 @@ final class DataMatrixCopyNumberHandler extends AbstractDataFileHandler {
 
     private void loadDesignElementList(DataSet dataSet, DelimitedFileReader delimitedFileReader, ArrayDesign design)
             throws IOException {
-        DesignElementList probeList = new DesignElementList();
-        probeList.setDesignElementTypeEnum(DesignElementType.PHYSICAL_PROBE);
-        dataSet.setDesignElementList(probeList);
-        ProbeLookup probeLookup = new ProbeLookup(design.getDesignDetails().getProbes());
+        DesignElementBuilder builder = new DesignElementBuilder(dataSet, design, arrayDao, searchDao);        
         positionReaderAtStartOfData(delimitedFileReader);
         while (delimitedFileReader.hasNextLine()) {
             List<String> values = delimitedFileReader.nextLine();
             String probeName = values.get(reporterRefColumnIndex);
-            probeList.getDesignElements().add(probeLookup.getProbe(probeName));
+            builder.addProbe(probeName);
         }
+        builder.finish();
     }
     
     private void readHybridizationRefNamesAndColumnIndexes(DelimitedFileReader reader)
@@ -326,13 +329,12 @@ final class DataMatrixCopyNumberHandler extends AbstractDataFileHandler {
     }
     
     private boolean listContainsString(String targetString, List<String> listToSearchThrough) {
-        boolean listContainsString  = false;
         for (String string : listToSearchThrough) {
             if (targetString.equalsIgnoreCase(string)) {
-                listContainsString = true;
+                return true;
             }
         }
-        return listContainsString;
+        return false;
     }
     
     private void positionReaderAtStartOfData(DelimitedFileReader delimitedFileReader) throws IOException {
@@ -349,14 +351,26 @@ final class DataMatrixCopyNumberHandler extends AbstractDataFileHandler {
         }
     }
     
-    private void countNumberOfProbes(DelimitedFileReader delimitedFileReader) throws IOException {
-        positionReaderAtStartOfData(delimitedFileReader);
-        int probeCount = 0;
-        while (delimitedFileReader.hasNextLine()) {
-            delimitedFileReader.nextLine();
-            probeCount++;
+    private void validateProbeNamesAndCountProbes(final DelimitedFileReader delimitedFileReader,
+            final ArrayDesign arrayDesign, final FileValidationResult fileValidationResult) throws IOException {
+        if (UNINITIALIZED_INDEX != reporterRefColumnIndex) {
+            positionReaderAtStartOfData(delimitedFileReader);
+            ProbeNamesValidator probeNamesValidator = new ProbeNamesValidator(arrayDao, arrayDesign);
+            List<String> probeNamesBatch = new ArrayList<String>(BATCH_SIZE);
+            numberOfProbes = 0;
+            while (delimitedFileReader.hasNextLine()) {
+                List<String> strings = delimitedFileReader.nextLine();
+                probeNamesBatch.add(strings.get(reporterRefColumnIndex));
+                numberOfProbes++;
+                if (0 == numberOfProbes % BATCH_SIZE) {
+                    probeNamesValidator.validateProbeNames(fileValidationResult, probeNamesBatch);
+                    probeNamesBatch.clear();
+                }
+            }
+            if (!probeNamesBatch.isEmpty()) {
+                probeNamesValidator.validateProbeNames(fileValidationResult, probeNamesBatch);
+            }
         }
-        numberOfProbes = probeCount;
     }
     
     private void readDataColumnMappings(DelimitedFileReader reader) throws IOException, PlatformFileReadException {
@@ -417,6 +431,11 @@ final class DataMatrixCopyNumberHandler extends AbstractDataFileHandler {
         }
         for (String columnName : headersOfColumnsToBeIgnored) {
             result.addMessage(Type.WARNING, "The column '" + columnName + "' will be ignored during data parsing.");
+        }
+        try {
+            validateProbeNamesAndCountProbes(getDelimitedFileReader(), design, result);
+        } catch (IOException e) {
+            throw new PlatformFileReadException(getFile(), "Cannot validate probe names: " + e.getMessage(), e);
         }
     }
 

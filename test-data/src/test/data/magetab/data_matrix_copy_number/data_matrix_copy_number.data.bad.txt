@@ -1,0 +1,5 @@
+Hybridization REF			my_hybridization_1	my_hybridization_2	ahybridization
+Reporter REF	Chromosome	Position	Log2Ratio	Log2Ratio	Log2Ratio
+A_16_P37638626	6	62964904	-0.447480618	-0.457480618	-0.444480618
+A_16_P37904891	7	2275926	n/a	N/A	NA
+foo	7	2275926	n/a	N/A	NA
