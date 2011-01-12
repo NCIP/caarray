@@ -99,7 +99,7 @@ import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.staticinjection.CaArrayEjbStaticInjectionModule;
 import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
 import gov.nih.nci.caarray.util.CaArrayHibernateHelperModule;
-import gov.nih.nci.caarray.util.UsernameHolder;
+import gov.nih.nci.caarray.util.CaArrayUsernameHolder;
 import gov.nih.nci.security.authorization.domainobjects.Group;
 import gov.nih.nci.security.authorization.domainobjects.User;
 import gov.nih.nci.security.exceptions.CSException;
@@ -313,7 +313,7 @@ public class PermissionsManagementServiceTest extends AbstractServiceTest {
 
     @Test
     public void testGetCollaboratorGroupsForOwner() throws Exception {
-        User u = UsernameHolder.getCsmUser();
+        User u = CaArrayUsernameHolder.getCsmUser();
         List<CollaboratorGroup> l = this.permissionsManagementService.getCollaboratorGroupsForOwner(u.getUserId().longValue());
         assertSame(Collections.EMPTY_LIST, l);
     }

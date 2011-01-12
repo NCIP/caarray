@@ -84,12 +84,19 @@ package gov.nih.nci.caarray.application.file;
 
 import gov.nih.nci.caarray.application.ServiceLocatorFactory;
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
+import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
+import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileStatus;
+import gov.nih.nci.caarray.domain.project.JobType;
+import gov.nih.nci.caarray.util.UsernameHolder;
+import gov.nih.nci.security.authorization.domainobjects.User;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+
+import com.google.inject.Inject;
 
 /**
  * Encapsulates the data to import array design details from a design file.
@@ -99,19 +106,40 @@ final class ArrayDesignFileImportJob extends AbstractFileManagementJob {
     private static final long serialVersionUID = 1L;
 
     private final long arrayDesignId;
+    private final ArrayDao arrayDao;
+    private final String arrayDesignName;
 
-    ArrayDesignFileImportJob(String username, ArrayDesign arrayDesign) {
-        super(username);
+    @Inject
+    @SuppressWarnings("PMD.ExcessiveParameterList")
+    ArrayDesignFileImportJob(String username, UsernameHolder usernameHolder,
+            ArrayDesign arrayDesign, ArrayDao arrayDao) {
+        super(username, usernameHolder);
         this.arrayDesignId = arrayDesign.getId();
+        this.arrayDesignName = arrayDesign.getName();
+        this.arrayDao = arrayDao;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    public JobType getJobType() {
+        return JobType.DESIGN_FILE_IMPORT;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public String getExperimentName() {
+        return arrayDesignName;
+    }
+    
     long getArrayDesignId() {
         return this.arrayDesignId;
     }
 
     @Override
-    void execute() {
-        ArrayDesign arrayDesign = getDaoFactory().getArrayDao().getArrayDesign(getArrayDesignId());
+    protected void doExecute() {
+        ArrayDesign arrayDesign = getArrayDesign();
         try {
             ArrayDesignImporter importer = new ArrayDesignImporter(ServiceLocatorFactory.getArrayDesignService());
             importer.importArrayDesign(arrayDesign);
@@ -120,17 +148,24 @@ final class ArrayDesignFileImportJob extends AbstractFileManagementJob {
         }
     }
     
+    private ArrayDesign getArrayDesign() {
+        return arrayDao.getArrayDesign(getArrayDesignId());
+    }
+    
     @Override
-    void setInProgressStatus() {
-        ArrayDesign arrayDesign = getDaoFactory().getArrayDao().getArrayDesign(getArrayDesignId());
-        arrayDesign.getDesignFileSet().updateStatus(FileStatus.IMPORTING);
+    protected FileStatus getInProgressStatus() {
+        return FileStatus.IMPORTING;
+    };
+    
+    protected CaArrayFileSet getFileSet() {
+        return getArrayDesign().getDesignFileSet();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    PreparedStatement getUnexpectedErrorPreparedStatement(Connection con) throws SQLException {
+    public PreparedStatement getUnexpectedErrorPreparedStatement(Connection con) throws SQLException {
         PreparedStatement s = con.prepareStatement("update caarrayfile set status = ? where id in "
                 + "(select design_file from array_design_design_file where array_design = ?)");
         s.setString(1, FileStatus.IMPORT_FAILED.toString());
@@ -138,4 +173,17 @@ final class ArrayDesignFileImportJob extends AbstractFileManagementJob {
         return s;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    public boolean userHasReadAccess(User user) {
+        return true;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public boolean userHasWriteAccess(User user) {
+        return user.getLoginName().equalsIgnoreCase(this.getOwnerName());
+    }
 }

@@ -212,7 +212,7 @@ public class IlluminaSampleProbeProfileHandlerTest extends AbstractServiceTest {
         }
     }
 
-    @Test @Ignore
+    @Test
     public void testValidationErrors_0() {
         String[] header = {"", "", ""};
         String [] messages = {"No samples with quantitation type AVG_SIGNAL found",
@@ -221,7 +221,7 @@ public class IlluminaSampleProbeProfileHandlerTest extends AbstractServiceTest {
         processHeader(header, messages, null, null);
     }
 
-    @Test @Ignore
+    @Test
     public void testValidationErrors_1() {
         String[] header = {"Probe_Id", "Foo", "Hyb1.MIN_Signal", "Hyb1.AVG_Signal"};
         String [] messages = {
@@ -232,14 +232,14 @@ public class IlluminaSampleProbeProfileHandlerTest extends AbstractServiceTest {
         processHeader(header, messages, null, FileType.ILLUMINA_DESIGN_CSV);
     }
 
-    @Test @Ignore
+    @Test
     public void testValidationErrors_2() {
         String[] header = {"TargetId", "Foo", "Hyb1.DETECTION PVAL", "Hyb1.AVG_Signal"};
         String [] messages = {"Using column TARGETID with design type ILLUMINA_DESIGN_BGX", "Ignored column Foo"};
         processHeader(header, messages, null, FileType.ILLUMINA_DESIGN_BGX);
     }
 
-    @Test @Ignore
+    @Test
     public void testValidationErrors_3() {
         String[] header = {"ID_REF", "Hyb1.DETECTION PVAL", "Hyb1.AVG_Signal", "DETECTION PVAL-Hyb2", "AVG_Signal-Hyb2"};
         String [] messages = {
@@ -251,7 +251,7 @@ public class IlluminaSampleProbeProfileHandlerTest extends AbstractServiceTest {
         processHeader(header, messages, null, FileType.ILLUMINA_DESIGN_BGX);
     }
 
-    @Test @Ignore
+    @Test
     public void testValidationErrors_4() {
         String[] header = {"ID_REF", "Hyb1.DETECTION PVAL", "Hyb1.AVG_Signal", "Hyb2.DETECTION PVAL", "Hyb2.AVG_Signal", "Hyb2.Foo"};
         String [] messages = { "Unsupported column Hyb2.Foo", "Ignored column Hyb2.Foo" };
@@ -263,7 +263,7 @@ public class IlluminaSampleProbeProfileHandlerTest extends AbstractServiceTest {
         assertTrue(p.getLoaders().get(1).getQTypes().containsAll(p.getLoaders().get(0).getQTypes()));
     }
 
-    @Test @Ignore
+    @Test
     public void testValidationErrors_5() {
         String[] header = {"ID_REF"};
         String [] messages = {"No samples found" , "No samples with quantitation type AVG_SIGNAL found"};
@@ -272,7 +272,7 @@ public class IlluminaSampleProbeProfileHandlerTest extends AbstractServiceTest {
         assertTrue(p.getHybNames().isEmpty());
     }
 
-    @Test @Ignore
+    @Test
     public void testInterleavedColumns() {
         String[] header = { "Hyb2.AVG_Signal", "Hyb1.DETECTION PVAL", "ID_REF", "Hyb1.AVG_Signal", "Hyb2.DETECTION PVAL",};
         String [] messages = {};
@@ -285,7 +285,7 @@ public class IlluminaSampleProbeProfileHandlerTest extends AbstractServiceTest {
         assertEquals(5, p.getRowWidth());
     }
 
-    @Test @Ignore
+    @Test
     public void testValidationErrors_AllQTypes() {
         String[] header = { "ID_REF", //  1
             "Hyb1.MIN_Signal",        //  2

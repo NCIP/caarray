@@ -103,7 +103,7 @@ import gov.nih.nci.caarray.domain.project.ExperimentContact;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
-import gov.nih.nci.caarray.util.UsernameHolder;
+import gov.nih.nci.caarray.util.CaArrayUsernameHolder;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import gov.nih.nci.caarray.web.AbstractBaseStrutsTest;
 import gov.nih.nci.security.authorization.domainobjects.User;
@@ -140,8 +140,8 @@ public class ProjectExperimentContactsActionTest extends AbstractBaseStrutsTest 
          locatorStub.addLookup(ProjectManagementService.JNDI_NAME, projectManagementServiceStub);
          DUMMY_EXPERIMENT_CONTACT.setId(1L);
 
-         UsernameHolder.setUser("caarrayadmin");
-         STANDARD_USER = UsernameHolder.getCsmUser();
+         CaArrayUsernameHolder.setUser("caarrayadmin");
+         STANDARD_USER = CaArrayUsernameHolder.getCsmUser();
     }
 
     @Test

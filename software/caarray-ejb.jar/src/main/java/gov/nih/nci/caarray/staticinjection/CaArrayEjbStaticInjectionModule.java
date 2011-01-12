@@ -94,7 +94,6 @@ public class CaArrayEjbStaticInjectionModule extends CaArrayCommonStaticInjectio
     protected void configure() {
         super.configure();
         requestStaticInjection(gov.nih.nci.caarray.application.ConfigurationHelper.class);
-        requestStaticInjection(gov.nih.nci.caarray.application.file.AbstractFileManagementJob.class);
         requestStaticInjection(gov.nih.nci.caarray.services.data.DataSetConfiguringInterceptor.class);
         requestStaticInjection(gov.nih.nci.caarray.services.EntityConfiguringInterceptor.class);
         requestStaticInjection(gov.nih.nci.caarray.services.HibernateSessionInterceptor.class);

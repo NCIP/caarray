@@ -114,7 +114,7 @@ import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.security.SecurityUtils;
-import gov.nih.nci.caarray.util.UsernameHolder;
+import gov.nih.nci.caarray.util.CaArrayUsernameHolder;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
 import gov.nih.nci.security.AuthorizationManager;
 import gov.nih.nci.security.authorization.domainobjects.User;
@@ -258,9 +258,9 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     public void changeProjectLockStatus(long projectId, boolean newStatus) throws ProposalWorkflowException {
         LogUtil.logSubsystemEntry(LOG, projectId);
         Project project = searchDao.retrieve(Project.class, projectId);
-        if (!project.isOwner(UsernameHolder.getCsmUser())) {
+        if (!project.isOwner(CaArrayUsernameHolder.getCsmUser())) {
             LogUtil.logSubsystemExit(LOG);
-            throw new PermissionDeniedException(project, "WORKFLOW_CHANGE", UsernameHolder.getUser());
+            throw new PermissionDeniedException(project, "WORKFLOW_CHANGE", CaArrayUsernameHolder.getUser());
         }
         if (project.isLocked() == newStatus) {
             LogUtil.logSubsystemExit(LOG);
@@ -282,8 +282,9 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
         LogUtil.logSubsystemEntry(LOG, project);
         checkIfProjectSaveAllowed(project);
         // make sure that an anonymous user cannot create a new project
-        if (project.getId() == null && UsernameHolder.getUser().equals(SecurityUtils.ANONYMOUS_USERNAME)) {
-            throw new PermissionDeniedException(project, SecurityUtils.WRITE_PRIVILEGE, UsernameHolder.getUser());
+        if (project.getId() == null && CaArrayUsernameHolder.getUser().equals(SecurityUtils.ANONYMOUS_USERNAME)) {
+            throw new PermissionDeniedException(project, SecurityUtils.WRITE_PRIVILEGE,
+                    CaArrayUsernameHolder.getUser());
         }
 
         if (project.getId() == null) {
@@ -309,9 +310,10 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     @TransactionTimeout(DELETE_TIMEOUT)
     public void deleteProject(Project project) throws ProposalWorkflowException {
         LogUtil.logSubsystemEntry(LOG, project);
-        if (!project.isOwner(UsernameHolder.getCsmUser())) {
+        if (!project.isOwner(CaArrayUsernameHolder.getCsmUser())) {
             LogUtil.logSubsystemExit(LOG);
-            throw new PermissionDeniedException(project, SecurityUtils.WRITE_PRIVILEGE, UsernameHolder.getUser());
+            throw new PermissionDeniedException(project, SecurityUtils.WRITE_PRIVILEGE,
+                    CaArrayUsernameHolder.getUser());
         }
         if (project.isLocked()) {
             LogUtil.logSubsystemExit(LOG);
@@ -440,9 +442,9 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public AccessProfile addGroupProfile(Project project, CollaboratorGroup group) throws ProposalWorkflowException {
         LogUtil.logSubsystemEntry(LOG, project, group);
-        if (!project.canModifyPermissions(UsernameHolder.getCsmUser())) {
+        if (!project.canModifyPermissions(CaArrayUsernameHolder.getCsmUser())) {
             LogUtil.logSubsystemExit(LOG);
-            throw new PermissionDeniedException(project, SecurityUtils.PERMISSIONS_PRIVILEGE, UsernameHolder
+            throw new PermissionDeniedException(project, SecurityUtils.PERMISSIONS_PRIVILEGE, CaArrayUsernameHolder
                     .getUser());
         }
         AccessProfile profile = project.addGroupProfile(group);

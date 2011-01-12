@@ -111,7 +111,7 @@ final class ServiceLocatorImplementation implements ServiceLocator {
             InitialContext initialContext = new InitialContext();
             return initialContext.lookup(jndiName);
         } catch (NamingException e) {
-            LOG.error("Couldn't get InitialContex", e);
+            LOG.error("Couldn't get InitialContext", e);
             throw new IllegalStateException(e);
         }
     }

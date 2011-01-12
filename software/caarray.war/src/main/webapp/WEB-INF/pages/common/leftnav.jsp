@@ -10,6 +10,7 @@
                 <li class="liheader">Experiment Management</li>
                 <li><a href="<c:url value="/protected/project/workspace.action" />">My Experiment Workspace</a></li>
                 <li><a href="<c:url value="/protected/project/create.action" />">Create/Propose Experiment</a></li>
+                <li><a href="<c:url value="/protected/project/viewJobQueue.action" />">Job Queue</a></li>
 
                 <li class="liheader">User Management</li>
                 <c:if test="${isSystemAdministrator}">

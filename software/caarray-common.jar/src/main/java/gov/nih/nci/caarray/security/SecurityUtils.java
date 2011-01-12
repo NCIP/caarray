@@ -89,7 +89,7 @@ import gov.nih.nci.caarray.domain.permissions.SecurityLevel;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
-import gov.nih.nci.caarray.util.UsernameHolder;
+import gov.nih.nci.caarray.util.CaArrayUsernameHolder;
 import gov.nih.nci.logging.api.logger.hibernate.HibernateSessionFactoryHelper;
 import gov.nih.nci.security.AuthorizationManager;
 import gov.nih.nci.security.authorization.domainobjects.Application;
@@ -305,7 +305,7 @@ public final class SecurityUtils {
         try {
             for (Protectable p : deletedInstances) {
                 LOG.debug("Deleting records for obj of type: " + p.getClass().getName() + " for user "
-                        + UsernameHolder.getUser());
+                        + CaArrayUsernameHolder.getUser());
                 List<UserGroupRoleProtectionGroup> l = getUserGroupRoleProtectionGroups(p);
                 for (UserGroupRoleProtectionGroup ugrpg : l) {
                     if (ugrpg.getGroup() != null) {
@@ -339,7 +339,7 @@ public final class SecurityUtils {
             return;
         }
 
-        User csmUser = UsernameHolder.getCsmUser();
+        User csmUser = CaArrayUsernameHolder.getCsmUser();
 
 
         try {
@@ -618,7 +618,7 @@ public final class SecurityUtils {
 
     private static void handleNewSample(Sample s, Project p) throws CSTransactionException, CSObjectNotFoundException {
         ProtectionGroup pg = getProtectionGroup(s);
-        User csmUser = UsernameHolder.getCsmUser();
+        User csmUser = CaArrayUsernameHolder.getCsmUser();
 
         for (User u : p.getOwners()) {
             if (!u.equals(csmUser)) {
@@ -831,7 +831,7 @@ public final class SecurityUtils {
     private static boolean hasPrivilege(Protectable p, User user, String privilege) {
         // if the protectable is not yet saved, assume user only has access if he is the current user
         if (p.getId() == null) {
-            return UsernameHolder.getCsmUser().equals(user);
+            return CaArrayUsernameHolder.getCsmUser().equals(user);
         }
         try {
             Application app = getApplication();

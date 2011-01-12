@@ -90,7 +90,7 @@ import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.staticinjection.CaArrayWarStaticInjectionModule;
 import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
 import gov.nih.nci.caarray.util.CaArrayHibernateHelperModule;
-import gov.nih.nci.caarray.util.UsernameHolder;
+import gov.nih.nci.caarray.util.CaArrayUsernameHolder;
 import gov.nih.nci.caarray.web.AbstractBaseStrutsTest;
 
 import java.util.ArrayList;
@@ -151,7 +151,7 @@ public class HibernateValidatorTest extends AbstractBaseStrutsTest {
         validator = new HibernateValidator();
         validator.setValidatorContext(validatorContext);
 
-        UsernameHolder.setUser(AbstractCaarrayTest.STANDARD_USER);
+        CaArrayUsernameHolder.setUser(AbstractCaarrayTest.STANDARD_USER);
         tx = hibernateHelper.beginTransaction();
 
     }

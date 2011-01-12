@@ -85,7 +85,7 @@ package gov.nih.nci.caarray.web.action.project;
 import gov.nih.nci.caarray.application.ServiceLocatorFactory;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.Project;
-import gov.nih.nci.caarray.util.UsernameHolder;
+import gov.nih.nci.caarray.util.CaArrayUsernameHolder;
 import gov.nih.nci.security.authorization.domainobjects.User;
 
 import javax.servlet.http.HttpServletRequest;
@@ -156,7 +156,7 @@ public abstract class AbstractBaseProjectAction extends ActionSupport implements
      * @return the csm user.
      */
     protected User getCsmUser() {
-        return UsernameHolder.getCsmUser();
+        return CaArrayUsernameHolder.getCsmUser();
     }
 
     /**

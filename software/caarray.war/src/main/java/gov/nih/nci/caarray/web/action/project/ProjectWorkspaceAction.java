@@ -90,7 +90,7 @@ import gov.nih.nci.caarray.domain.permissions.Privileges;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.search.ProjectSortCriterion;
 import gov.nih.nci.caarray.security.SecurityUtils;
-import gov.nih.nci.caarray.util.UsernameHolder;
+import gov.nih.nci.caarray.util.CaArrayUsernameHolder;
 
 import org.apache.struts2.interceptor.validation.SkipValidation;
 
@@ -121,7 +121,8 @@ public class ProjectWorkspaceAction {
         this.projects.setList(ServiceLocatorFactory.getProjectManagementService().getMyProjects(
                 this.projects.getPageSortParams()));
         this.projects.setFullListSize(ServiceLocatorFactory.getProjectManagementService().getMyProjectCount());
-        this.projectPrivileges = SecurityUtils.getPrivileges(this.projects.getList(), UsernameHolder.getCsmUser());
+        this.projectPrivileges = SecurityUtils.getPrivileges(this.projects.getList(),
+                CaArrayUsernameHolder.getCsmUser());
         return Action.SUCCESS;
     }
 

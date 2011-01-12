@@ -83,7 +83,7 @@
 package gov.nih.nci.caarray.services;
 
 import gov.nih.nci.caarray.security.SecurityUtils;
-import gov.nih.nci.caarray.util.UsernameHolder;
+import gov.nih.nci.caarray.util.CaArrayUsernameHolder;
 
 import javax.annotation.Resource;
 import javax.ejb.SessionContext;
@@ -115,7 +115,7 @@ public class AuthorizationInterceptor {
         } catch (IllegalStateException e) {
             username = SecurityUtils.ANONYMOUS_USERNAME;
         }
-        UsernameHolder.setUser(username);
+        CaArrayUsernameHolder.setUser(username);
         return invContext.proceed();
     }
 }

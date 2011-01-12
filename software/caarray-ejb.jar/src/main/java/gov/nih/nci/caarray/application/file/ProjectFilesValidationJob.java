@@ -83,9 +83,15 @@
 package gov.nih.nci.caarray.application.file;
 
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
+import gov.nih.nci.caarray.dao.ProjectDao;
+import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileStatus;
+import gov.nih.nci.caarray.domain.project.JobType;
 import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.util.UsernameHolder;
+
+import com.google.inject.Inject;
 
 /**
  * Encapsulates the functionality necessary for validating a set of files in a project.
@@ -94,15 +100,28 @@ final class ProjectFilesValidationJob extends AbstractProjectFilesJob {
 
     private static final long serialVersionUID = 1L;
 
-    ProjectFilesValidationJob(String username, Project project, CaArrayFileSet fileSet) {
-        super(username, project, fileSet);
+    @SuppressWarnings("PMD.ExcessiveParameterList")
+    @Inject
+    // CHECKSTYLE:OFF more than 7 parameters are okay for injected constructor
+    ProjectFilesValidationJob(String username, UsernameHolder usernameHolder, Project project,
+            CaArrayFileSet fileSet, ArrayDataImporter arrayDataImporter, MageTabImporter mageTabImporter,
+            ProjectDao projectDao, SearchDao searchDao) {
+    // CHECKSTYLE:ON
+        super(username, usernameHolder, project, fileSet, arrayDataImporter, mageTabImporter,
+                projectDao, searchDao);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public JobType getJobType() {
+        return JobType.DATA_FILE_VALIDATION;
     }
 
     @Override
-    void execute() {
-        Project project = getProject();
+    protected void doExecute() {
         try {            
-            doValidate(getFileSet(project));
+            doValidate(getFileSet());
         } finally {
             TemporaryFileCacheLocator.getTemporaryFileCache().closeFiles();            
         }
@@ -110,7 +129,7 @@ final class ProjectFilesValidationJob extends AbstractProjectFilesJob {
 
 
     @Override
-    FileStatus getInProgressStatus() {
+    protected FileStatus getInProgressStatus() {
         return FileStatus.VALIDATING;
     }
 

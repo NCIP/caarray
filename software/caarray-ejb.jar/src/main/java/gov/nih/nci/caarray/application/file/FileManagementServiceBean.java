@@ -86,9 +86,7 @@ import gov.nih.nci.caarray.application.ExceptionLoggingInterceptor;
 import gov.nih.nci.caarray.application.ServiceLocatorFactory;
 import gov.nih.nci.caarray.application.arraydata.DataImportOptions;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
-import gov.nih.nci.caarray.application.translation.magetab.MageTabTranslator;
 import gov.nih.nci.caarray.dao.ArrayDao;
-import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.dao.FileDao;
 import gov.nih.nci.caarray.dao.ProjectDao;
 import gov.nih.nci.caarray.dao.SearchDao;
@@ -100,7 +98,7 @@ import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.magetab.sdrf.SdrfDocument;
-import gov.nih.nci.caarray.util.UsernameHolder;
+import gov.nih.nci.caarray.util.CaArrayUsernameHolder;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
 import gov.nih.nci.caarray.validation.InvalidDataFileException;
 
@@ -113,11 +111,11 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.interceptor.Interceptors;
 
+import org.apache.commons.lang.UnhandledException;
 import org.apache.log4j.Logger;
 import org.jboss.annotation.ejb.TransactionTimeout;
 
 import com.google.inject.Inject;
-import org.apache.commons.lang.UnhandledException;
 
 /**
  * EJB implementation of the entry point to the FileManagement subsystem. Delegates functionality
@@ -132,25 +130,36 @@ public class FileManagementServiceBean implements FileManagementService {
     private static final Logger LOG = Logger.getLogger(FileManagementServiceBean.class);
     private static final int SAVE_ARRAY_DESIGN_TIMEOUT = 1800;
 
-    private FileManagementJobSubmitter submitter = new JmsJobSubmitter();
+    private final FileManagementJobSubmitter jobSubmitter;
     private final ProjectDao projectDao;
     private final ArrayDao arrayDao;
     private final FileDao fileDao;
+    private final MageTabImporter mageTabImporter;
     private final SearchDao searchDao;
+    private final JobFactory jobFactory;
     
     /**
      * 
      * @param projectDao the ProjectDao dependency
      * @param arrayDao the ArrayDao dependency
      * @param fileDao the FileDao dependency
+     * @param mageTabImporter the MageTabImporter dependency
      * @param searchDao the SearchDao dependency
+     * @param jobSubmitter the JobSubmitter dependency
+     * @param jobFactory the JobFactory dependency
      */
+    @SuppressWarnings("PMD.ExcessiveParameterList")
     @Inject
-    public FileManagementServiceBean(ProjectDao projectDao, ArrayDao arrayDao, FileDao fileDao, SearchDao searchDao) {
+    public FileManagementServiceBean(ProjectDao projectDao, ArrayDao arrayDao, FileDao fileDao,
+            MageTabImporter mageTabImporter, SearchDao searchDao, FileManagementJobSubmitter jobSubmitter,
+            JobFactory jobFactory) {
         this.projectDao = projectDao;
         this.arrayDao = arrayDao;
         this.fileDao = fileDao;
+        this.mageTabImporter = mageTabImporter;
         this.searchDao = searchDao;
+        this.jobSubmitter = jobSubmitter;
+        this.jobFactory = jobFactory;
     }
 
     private void checkForReparse(CaArrayFileSet fileSet) {
@@ -202,7 +211,6 @@ public class FileManagementServiceBean implements FileManagementService {
         LogUtil.logSubsystemEntry(LOG, fileSet);
         checkForImport(fileSet);
         clearValidationMessages(fileSet);
-        fileSet.updateStatus(FileStatus.IN_QUEUE);
         sendImportJobMessage(targetProject, fileSet, dataImportOptions);
         LogUtil.logSubsystemExit(LOG);
     }
@@ -216,9 +224,9 @@ public class FileManagementServiceBean implements FileManagementService {
 
     private void sendImportJobMessage(Project targetProject, CaArrayFileSet fileSet,
             DataImportOptions dataImportOptions) {
-        ProjectFilesImportJob job = new ProjectFilesImportJob(UsernameHolder.getUser(), targetProject, fileSet,
-                dataImportOptions);
-        getSubmitter().submitJob(job);
+        ProjectFilesImportJob job = jobFactory.createProjectFilesImportJob(CaArrayUsernameHolder.getUser(),
+                targetProject, fileSet, dataImportOptions);
+        jobSubmitter.submitJob(job);
     }
 
     /**
@@ -227,13 +235,13 @@ public class FileManagementServiceBean implements FileManagementService {
     public void validateFiles(Project project, CaArrayFileSet fileSet) {
         checkForValidation(fileSet);
         clearValidationMessages(fileSet);
-        fileSet.updateStatus(FileStatus.IN_QUEUE);
         sendValidationJobMessage(project, fileSet);
     }
 
     private void sendValidationJobMessage(Project project, CaArrayFileSet fileSet) {
-        ProjectFilesValidationJob job = new ProjectFilesValidationJob(UsernameHolder.getUser(), project, fileSet);
-        getSubmitter().submitJob(job);
+        ProjectFilesValidationJob job = jobFactory.createProjectFilesValidationJob(CaArrayUsernameHolder.getUser(),
+                project, fileSet);
+        jobSubmitter.submitJob(job);
     }
 
     /**
@@ -281,10 +289,10 @@ public class FileManagementServiceBean implements FileManagementService {
      */
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public void importArrayDesignDetails(ArrayDesign arrayDesign) {
-        arrayDesign.getDesignFileSet().updateStatus(FileStatus.IN_QUEUE);
-        projectDao.save(arrayDesign.getDesignFiles());
-        ArrayDesignFileImportJob job = new ArrayDesignFileImportJob(UsernameHolder.getUser(), arrayDesign);
-        getSubmitter().submitJob(job);
+         projectDao.save(arrayDesign.getDesignFiles());
+        AbstractFileManagementJob job =
+            jobFactory.createArrayDesignFileImportJob(CaArrayUsernameHolder.getUser(), arrayDesign);
+        jobSubmitter.submitJob(job);
     }
     
     /**
@@ -325,10 +333,10 @@ public class FileManagementServiceBean implements FileManagementService {
         LogUtil.logSubsystemEntry(LOG, fileSet);
         checkForReparse(fileSet);
         clearValidationMessages(fileSet);
-        fileSet.updateStatus(FileStatus.IN_QUEUE);
         
-        ProjectFilesReparseJob job = new ProjectFilesReparseJob(UsernameHolder.getUser(), targetProject, fileSet);
-        getSubmitter().submitJob(job);
+        ProjectFilesReparseJob job = jobFactory.createProjectFilesReparseJob(CaArrayUsernameHolder.getUser(),
+                targetProject, fileSet);
+        jobSubmitter.submitJob(job);
 
         LogUtil.logSubsystemExit(LOG);       
     }
@@ -349,14 +357,6 @@ public class FileManagementServiceBean implements FileManagementService {
         projectDao.save(targetProject);
     }
 
-    private FileManagementJobSubmitter getSubmitter() {
-        return submitter;
-    }
-
-    void setSubmitter(FileManagementJobSubmitter submitter) {
-        this.submitter = submitter;
-    }
-
     /**
      * {@inheritDoc}
      */
@@ -366,10 +366,7 @@ public class FileManagementServiceBean implements FileManagementService {
         CaArrayFileSet inputFiles = new CaArrayFileSet(project);
         inputFiles.add(idfFile);
         addFilesToInputSet(inputFiles, project.getFileSet(), FileType.MAGE_TAB_SDRF);
-        MageTabTranslator mtt = (MageTabTranslator)
-            ServiceLocatorFactory.getLocator().lookup(MageTabTranslator.JNDI_NAME);
-        MageTabImporter mti = new MageTabImporter(mtt, CaArrayDaoFactory.INSTANCE);
-        MageTabDocumentSet mTabSet = mti.selectRefFiles(project, inputFiles);
+        MageTabDocumentSet mTabSet = mageTabImporter.selectRefFiles(project, inputFiles);
         // we only care about the sdrf docs connected to the idf
         for (SdrfDocument sdrfDoc : mTabSet.getIdfDocuments().iterator().next().getSdrfDocuments()) {
             filenames.addAll(getRefFileNames(sdrfDoc));

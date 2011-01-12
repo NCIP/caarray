@@ -89,7 +89,7 @@ import gov.nih.nci.caarray.domain.project.ExperimentContact;
 import gov.nih.nci.caarray.domain.search.PersonSortCriterion;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.security.SecurityUtils;
-import gov.nih.nci.caarray.util.UsernameHolder;
+import gov.nih.nci.caarray.util.CaArrayUsernameHolder;
 
 import java.util.Collection;
 
@@ -141,7 +141,7 @@ public class ProjectExperimentContactsAction extends
             if (retrieved == null) {
                 throw new PermissionDeniedException(
                         this.currentExperimentContact,
-                        SecurityUtils.READ_PRIVILEGE, UsernameHolder.getUser());
+                        SecurityUtils.READ_PRIVILEGE, CaArrayUsernameHolder.getUser());
             } else {
                 this.currentExperimentContact = retrieved;
             }

@@ -98,7 +98,7 @@ import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.security.SecurityUtils;
-import gov.nih.nci.caarray.util.UsernameHolder;
+import gov.nih.nci.caarray.util.CaArrayUsernameHolder;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.InvalidDataFileException;
 import gov.nih.nci.caarray.validation.InvalidNumberOfArgsException;
@@ -321,7 +321,7 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
             ArrayDesign retrieved = ServiceLocatorFactory.getArrayDesignService().getArrayDesign(arrayDesign.getId());
             if (retrieved == null) {
                 throw new PermissionDeniedException(getArrayDesign(), SecurityUtils.PERMISSIONS_PRIVILEGE,
-                        UsernameHolder.getUser());
+                        CaArrayUsernameHolder.getUser());
             } else {
                 arrayDesign = retrieved;
             }

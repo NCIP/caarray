@@ -83,14 +83,20 @@
 package gov.nih.nci.caarray.application.file;
 
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
+import gov.nih.nci.caarray.dao.ProjectDao;
+import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileStatus;
+import gov.nih.nci.caarray.domain.project.JobType;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.magetab.MageTabFileSet;
 import gov.nih.nci.caarray.magetab.validator.ValidatorSet;
+import gov.nih.nci.caarray.util.UsernameHolder;
 
 import org.apache.log4j.Logger;
+
+import com.google.inject.Inject;
 
 /**
  * Encapsulates the functionality necessary for re-parsing a set of files that
@@ -104,20 +110,34 @@ final class ProjectFilesReparseJob extends AbstractProjectFilesJob {
     private static final long serialVersionUID = 1L;
     private static final Logger LOG = Logger.getLogger(ProjectFilesReparseJob.class);
 
-    ProjectFilesReparseJob(String username, Project targetProject, CaArrayFileSet fileSet) {
-        super(username, targetProject, fileSet);
+    @SuppressWarnings("PMD.ExcessiveParameterList")
+    @Inject
+    // CHECKSTYLE:OFF more than 7 parameters are okay for injected constructor
+    ProjectFilesReparseJob(String username, UsernameHolder usernameHolder, Project targetProject,
+            CaArrayFileSet fileSet, ArrayDataImporter arrayDataImporter, MageTabImporter mageTabImporter,
+            ProjectDao projectDao, SearchDao searchDao) {
+    // CHECKSTYLE:ON
+        super(username, usernameHolder, targetProject, fileSet,
+                arrayDataImporter, mageTabImporter, projectDao, searchDao);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public JobType getJobType() {
+        return JobType.DATA_FILE_REPARSE;
     }
 
     @Override
-    void execute() {
-        CaArrayFileSet fileSet = getFileSet(getProject());
+    protected void doExecute() {
+        CaArrayFileSet fileSet = getFileSet();
         try {
             getArrayDataImporter().validateFiles(fileSet,
                     new MageTabDocumentSet(new MageTabFileSet(), new ValidatorSet()), true);
-            if (fileSet.getStatus().equals(FileStatus.VALIDATED)
-                    || fileSet.getStatus().equals(FileStatus.VALIDATED_NOT_PARSED)) {
-                getDaoFactory().getProjectDao().flushSession();
-                getDaoFactory().getProjectDao().clearSession();
+            final FileStatus status = getStatus();
+            if (status.equals(FileStatus.VALIDATED) || status.equals(FileStatus.VALIDATED_NOT_PARSED)) {
+                getProjectDao().flushSession();
+                getProjectDao().clearSession();
                 importArrayData(fileSet);
             }
         } finally {
@@ -131,7 +151,7 @@ final class ProjectFilesReparseJob extends AbstractProjectFilesJob {
     }
 
     @Override
-    FileStatus getInProgressStatus() {
+    protected FileStatus getInProgressStatus() {
         return FileStatus.IMPORTING;
     }
 }

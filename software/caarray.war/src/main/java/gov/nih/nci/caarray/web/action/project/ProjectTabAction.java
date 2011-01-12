@@ -9,7 +9,7 @@ import gov.nih.nci.caarray.domain.contact.Person;
 import gov.nih.nci.caarray.domain.project.ExperimentContact;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.security.SecurityUtils;
-import gov.nih.nci.caarray.util.UsernameHolder;
+import gov.nih.nci.caarray.util.CaArrayUsernameHolder;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -56,8 +56,8 @@ public class ProjectTabAction extends AbstractBaseProjectAction {
             Term piRole = VocabularyUtils.getMOTerm(ExperimentContact.PI_ROLE);
             Term mainPocRole = VocabularyUtils.getMOTerm(ExperimentContact.MAIN_POC_ROLE);
             ExperimentContact pi =
-                    new ExperimentContact(getExperiment(), new Person(UsernameHolder.getCsmUser()), Arrays.asList(
-                            piRole, mainPocRole));
+                    new ExperimentContact(getExperiment(), new Person(CaArrayUsernameHolder.getCsmUser()),
+                            Arrays.asList(piRole, mainPocRole));
             getExperiment().getExperimentContacts().add(pi);
         }
         try {
@@ -127,7 +127,7 @@ public class ProjectTabAction extends AbstractBaseProjectAction {
      * @return the result name
      */
     protected String permissionDenied(String roleKey) {
-        if (UsernameHolder.getUser().equals(SecurityUtils.ANONYMOUS_USERNAME)) {
+        if (CaArrayUsernameHolder.getUser().equals(SecurityUtils.ANONYMOUS_USERNAME)) {
             return ProjectTabAction.RELOAD_PROJECT_RESULT;
         } else {
             ActionHelper.saveMessage(getText("project.permissionDenied", new String[] {getText(roleKey) }));

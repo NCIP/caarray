@@ -86,7 +86,7 @@ import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.domain.LSID;
 import gov.nih.nci.caarray.security.SecurityPolicy;
-import gov.nih.nci.caarray.util.UsernameHolder;
+import gov.nih.nci.caarray.util.CaArrayUsernameHolder;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -208,7 +208,7 @@ public abstract class AbstractExternalService {
     protected void applySecurityPolicies(Object entity) {
         if (entity instanceof AbstractCaArrayObject) {
             AbstractCaArrayObject object = (AbstractCaArrayObject) entity;
-            Set<SecurityPolicy> policies = object.getRemoteApiSecurityPolicies(UsernameHolder.getCsmUser());
+            Set<SecurityPolicy> policies = object.getRemoteApiSecurityPolicies(CaArrayUsernameHolder.getCsmUser());
             if (!policies.isEmpty()) {
                 SecurityPolicy.applySecurityPolicies(object, policies);
             }

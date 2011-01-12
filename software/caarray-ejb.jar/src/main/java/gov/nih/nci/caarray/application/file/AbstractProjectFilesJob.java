@@ -82,12 +82,15 @@
  */
 package gov.nih.nci.caarray.application.file;
 
-import gov.nih.nci.caarray.application.ServiceLocatorFactory;
+import gov.nih.nci.caarray.dao.ProjectDao;
+import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
+import gov.nih.nci.caarray.util.UsernameHolder;
+import gov.nih.nci.security.authorization.domainobjects.User;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -96,6 +99,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import com.google.inject.Inject;
 
 /**
  * Encapsulates the data necessary for a project file management job.
@@ -107,24 +112,49 @@ abstract class AbstractProjectFilesJob extends AbstractFileManagementJob {
     private final long projectId;
     private final Set<Long> fileIds = new HashSet<Long>();
 
-    AbstractProjectFilesJob(String username, Project targetProject, CaArrayFileSet fileSet) {
-        super(username);
+    private final ArrayDataImporter arrayDataImporter;
+    private final MageTabImporter mageTabImporter;
+    private final ProjectDao projectDao;
+    private final SearchDao searchDao;
+    private final String experimentName;
+
+    @SuppressWarnings("PMD.ExcessiveParameterList")
+    @Inject
+    // CHECKSTYLE:OFF more than 7 parameters are okay for injected constructor
+    AbstractProjectFilesJob(String username, UsernameHolder usernameHolder, Project targetProject,
+            CaArrayFileSet fileSet, ArrayDataImporter arrayDataImporter, MageTabImporter mageTabImporter,
+            ProjectDao projectDao, SearchDao searchDao) {
+    // CHECKSTYLE:ON
+        super(username, usernameHolder);
         this.projectId = targetProject.getId();
+        this.experimentName = targetProject.getExperiment().getTitle();
+        this.arrayDataImporter = arrayDataImporter;
+        this.mageTabImporter = mageTabImporter;
+        this.projectDao = projectDao;
+        this.searchDao = searchDao;
         for (CaArrayFile file : fileSet.getFiles()) {
             this.fileIds.add(file.getId());
         }
     }
-    
-    CaArrayFileSet getFileSet(Project project) {
-        CaArrayFileSet fileSet = new CaArrayFileSet(project);
-        List<CaArrayFile> files = getDaoFactory().getSearchDao().retrieveByIds(CaArrayFile.class,
+
+    /**
+     * {@inheritDoc}
+     */
+    public String getExperimentName() {
+        return experimentName;
+    }
+   
+    @Override
+    protected CaArrayFileSet getFileSet() {
+        CaArrayFileSet fileSet = new CaArrayFileSet(getProject());
+        List<CaArrayFile> files = searchDao.retrieveByIds(CaArrayFile.class,
                 new ArrayList<Long>(this.fileIds));
         fileSet.addAll(files);
         return fileSet;
     }
 
     Project getProject() {
-        return getDaoFactory().getSearchDao().retrieve(Project.class, this.projectId);
+        return searchDao.retrieve(Project.class, this.projectId);
     }
 
     void doValidate(CaArrayFileSet fileSet) {
@@ -140,17 +170,30 @@ abstract class AbstractProjectFilesJob extends AbstractFileManagementJob {
         getArrayDataImporter().validateFiles(fileSet, mTabSet, false);
     }
 
-    ArrayDataImporter getArrayDataImporter() {
-        return new ArrayDataImporter(ServiceLocatorFactory.getArrayDataService(), getDaoFactory());
+    protected ArrayDataImporter getArrayDataImporter() {
+        return arrayDataImporter;
     }
 
-    MageTabImporter getMageTabImporter() {
-        return new MageTabImporter(ServiceLocatorFactory.getMageTabTranslator(), getDaoFactory());
+    protected MageTabImporter getMageTabImporter() {
+        return mageTabImporter;
     }
-
-    @Override
-    void setInProgressStatus() {
-        setStatus(getInProgressStatus());
+    
+    protected ProjectDao getProjectDao() {
+        return projectDao;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public boolean userHasReadAccess(User user) {
+        return getProject().hasReadPermission(user);    
+    }
+   
+    /**
+     * {@inheritDoc}
+     */
+    public boolean userHasWriteAccess(User user) {
+        return getProject().hasWritePermission(user);
     }
 
     /**
@@ -177,11 +220,4 @@ abstract class AbstractProjectFilesJob extends AbstractFileManagementJob {
         s.setString(i++, getInProgressStatus().toString());
         return s;
     }
-
-    private void setStatus(FileStatus status) {
-        CaArrayFileSet fileSet = getFileSet(getProject());
-        fileSet.updateStatus(status);
-    }
-
-    abstract FileStatus getInProgressStatus();
 }

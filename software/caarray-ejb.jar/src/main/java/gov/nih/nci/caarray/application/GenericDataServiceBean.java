@@ -86,7 +86,7 @@ import gov.nih.nci.caarray.dao.ProjectDao;
 import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.security.Protectable;
 import gov.nih.nci.caarray.security.SecurityUtils;
-import gov.nih.nci.caarray.util.UsernameHolder;
+import gov.nih.nci.caarray.util.CaArrayUsernameHolder;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
 
 import java.io.Serializable;
@@ -175,7 +175,7 @@ public class GenericDataServiceBean implements GenericDataService {
      */
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public void save(PersistentObject entity) {
-        if (entity instanceof Protectable && !SecurityUtils.canWrite(entity, UsernameHolder.getCsmUser())) {
+        if (entity instanceof Protectable && !SecurityUtils.canWrite(entity, CaArrayUsernameHolder.getCsmUser())) {
             throw new IllegalArgumentException("The current user does not have the rights to edit the given object.");
         }
         this.searchDao.save(entity);

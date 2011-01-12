@@ -126,7 +126,6 @@ import static gov.nih.nci.caarray.platforms.genepix.GenepixQuantitationType.SUM_
 import static gov.nih.nci.caarray.platforms.genepix.GenepixQuantitationType.X;
 import static gov.nih.nci.caarray.platforms.genepix.GenepixQuantitationType.Y;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -140,7 +139,6 @@ import gov.nih.nci.caarray.domain.data.DerivedArrayData;
 import gov.nih.nci.caarray.domain.data.FloatColumn;
 import gov.nih.nci.caarray.domain.data.HybridizationData;
 import gov.nih.nci.caarray.domain.data.IntegerColumn;
-import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.data.StringColumn;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
@@ -169,9 +167,6 @@ import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
 import gov.nih.nci.caarray.test.data.arraydesign.AgilentArrayDesignFiles;
 import gov.nih.nci.caarray.test.data.arraydesign.IlluminaArrayDesignFiles;
 import gov.nih.nci.caarray.test.data.arraydesign.NimblegenArrayDesignFiles;
-import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
-import gov.nih.nci.caarray.validation.FileValidationResult;
-import gov.nih.nci.caarray.validation.ValidationMessage;
 
 import java.io.File;
 import java.util.ArrayList;

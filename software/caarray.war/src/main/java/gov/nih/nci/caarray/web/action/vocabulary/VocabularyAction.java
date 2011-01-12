@@ -91,7 +91,7 @@ import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.security.SecurityUtils;
-import gov.nih.nci.caarray.util.UsernameHolder;
+import gov.nih.nci.caarray.util.CaArrayUsernameHolder;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -142,7 +142,7 @@ public class VocabularyAction extends ActionSupport implements Preparable {
             Term retrieved = ServiceLocatorFactory.getVocabularyService().getTerm(getCurrentTerm().getId());
             if (retrieved == null) {
                 throw new PermissionDeniedException(getCurrentTerm(),
-                        SecurityUtils.PERMISSIONS_PRIVILEGE, UsernameHolder.getUser());
+                        SecurityUtils.PERMISSIONS_PRIVILEGE, CaArrayUsernameHolder.getUser());
             } else {
                 setCurrentTerm(retrieved);
             }

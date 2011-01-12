@@ -91,6 +91,7 @@ import liquibase.exception.CustomChangeException;
 
 import gov.nih.nci.caarray.application.ApplicationModule;
 import gov.nih.nci.caarray.application.arraydata.ArrayDataModule;
+import gov.nih.nci.caarray.application.file.FileModule;
 import gov.nih.nci.caarray.services.ServicesModule;
 import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
 
@@ -146,6 +147,7 @@ public abstract class AbstractHibernateBasedCustomChange extends AbstractCustomC
         return new Module[] {
                 new ArrayDataModule(), // identical to ArrayDataModule, includes DaoModule
                 new ServicesModule(),
+                new FileModule(),
                 new ApplicationModule(),
             };
     }

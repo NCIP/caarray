@@ -90,7 +90,7 @@ import gov.nih.nci.caarray.domain.permissions.AccessProfile;
 import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
-import gov.nih.nci.caarray.util.UsernameHolder;
+import gov.nih.nci.caarray.util.CaArrayUsernameHolder;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
 import gov.nih.nci.security.AuthorizationManager;
 import gov.nih.nci.security.authorization.domainobjects.Group;
@@ -154,10 +154,10 @@ public class PermissionsManagementServiceBean implements PermissionsManagementSe
      */
     public void delete(CollaboratorGroup group) throws CSTransactionException {
         LogUtil.logSubsystemEntry(LOG, group);
-        if (!group.getOwner().equals(UsernameHolder.getCsmUser())) {
+        if (!group.getOwner().equals(CaArrayUsernameHolder.getCsmUser())) {
             throw new IllegalArgumentException(
                     String.format("%s cannot delete group %s, because they are not the group owner.",
-                                  UsernameHolder.getUser(), group.getGroup().getGroupName()));
+                                  CaArrayUsernameHolder.getUser(), group.getGroup().getGroupName()));
         }
 
         for (AccessProfile ap : group.getAccessProfiles()) {
@@ -217,7 +217,7 @@ public class PermissionsManagementServiceBean implements PermissionsManagementSe
         group.setGroupDesc("Collaborator Group");
         SecurityUtils.createGroup(group);
 
-        User user = UsernameHolder.getCsmUser();
+        User user = CaArrayUsernameHolder.getCsmUser();
 
         CollaboratorGroup cg = new CollaboratorGroup(group, user);
         collaboratorGroupDao.save(cg);

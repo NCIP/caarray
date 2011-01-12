@@ -84,7 +84,7 @@ package gov.nih.nci.caarray.dao;
 
 import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
 import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
-import gov.nih.nci.caarray.util.UsernameHolder;
+import gov.nih.nci.caarray.util.CaArrayUsernameHolder;
 import gov.nih.nci.security.authorization.domainobjects.Group;
 
 import java.util.List;
@@ -120,7 +120,7 @@ public class CollaboratorGroupDaoImpl extends AbstractCaArrayDaoImpl implements 
      * {@inheritDoc}
      */
     public List<CollaboratorGroup> getAllForCurrentUser() {
-        Long userId = UsernameHolder.getCsmUser().getUserId();
+        Long userId = CaArrayUsernameHolder.getCsmUser().getUserId();
         return getAllForUser(userId);
     }
 

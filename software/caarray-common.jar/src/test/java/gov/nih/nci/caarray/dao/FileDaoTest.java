@@ -110,7 +110,7 @@ import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
-import gov.nih.nci.caarray.util.UsernameHolder;
+import gov.nih.nci.caarray.util.CaArrayUsernameHolder;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -533,7 +533,7 @@ public class FileDaoTest extends AbstractDaoTest {
     
     @Test
     public void testFilePermissions() throws Exception {
-        UsernameHolder.setUser(STANDARD_USER);
+        CaArrayUsernameHolder.setUser(STANDARD_USER);
         Transaction tx = hibernateHelper.beginTransaction();
 
         saveSupportingObjects();
@@ -572,7 +572,7 @@ public class FileDaoTest extends AbstractDaoTest {
         tx.commit();
         
         tx = hibernateHelper.beginTransaction();
-        UsernameHolder.setUser(SecurityUtils.ANONYMOUS_USERNAME);
+        CaArrayUsernameHolder.setUser(SecurityUtils.ANONYMOUS_USERNAME);
         files = CaArrayDaoFactory.INSTANCE.getSearchDao().retrieveAll(CaArrayFile.class, Order.asc("name"));
         assertEquals(2, files.size());
         assertEquals("file2", files.get(0).getName());

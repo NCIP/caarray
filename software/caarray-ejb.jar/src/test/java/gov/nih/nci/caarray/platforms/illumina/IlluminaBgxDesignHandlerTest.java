@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
 import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.application.AbstractServiceTest;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignModule;
@@ -19,6 +20,7 @@ import gov.nih.nci.caarray.application.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.application.vocabulary.VocabularyServiceStub;
 import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.dao.ContactDao;
+import gov.nih.nci.caarray.dao.JobQueueDao;
 import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.dao.VocabularyDao;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
@@ -39,6 +41,7 @@ import gov.nih.nci.caarray.staticinjection.CaArrayEjbStaticInjectionModule;
 import gov.nih.nci.caarray.test.data.arraydesign.IlluminaArrayDesignFiles;
 import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
 import gov.nih.nci.caarray.util.CaArrayHibernateHelperModule;
+import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import gov.nih.nci.caarray.validation.ValidationMessage;
 import gov.nih.nci.caarray.validation.ValidationResult;
@@ -97,6 +100,8 @@ public class IlluminaBgxDesignHandlerTest extends AbstractServiceTest {
         final Module testArrayDesignModule = Modules.override(new ArrayDesignModule()).with(new AbstractModule() {
             @Override
             protected void configure() {
+                bind(UsernameHolder.class).toInstance(mock(UsernameHolder.class));
+                bind(JobQueueDao.class).toInstance(mock(JobQueueDao.class));
                 bind(ContactDao.class).toInstance(caArrayDaoFactoryStub.getContactDao());
                 bind(SearchDao.class).toInstance(caArrayDaoFactoryStub.getSearchDao());
                 bind(ArrayDao.class).toInstance(caArrayDaoFactoryStub.getArrayDao());

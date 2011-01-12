@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.injection;
 
 import gov.nih.nci.caarray.application.ApplicationModule;
 import gov.nih.nci.caarray.application.arraydata.ArrayDataModule;
+import gov.nih.nci.caarray.application.file.FileModule;
 import gov.nih.nci.caarray.services.ServicesModule;
 import gov.nih.nci.caarray.staticinjection.CaArrayEjbStaticInjectionModule;
 import gov.nih.nci.caarray.util.CaArrayHibernateHelperModule;
@@ -91,6 +92,7 @@ import gov.nih.nci.caarray.util.CaArrayHibernateHelperModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Module;
+import com.google.inject.util.Modules;
 
 /**
  * @author jscott
@@ -112,15 +114,7 @@ public final class InjectorFactory {
         private static Injector injector;
 
         static {
-            final Module[] modules = new Module[] {
-                new CaArrayEjbStaticInjectionModule(),
-                new CaArrayHibernateHelperModule(),
-                new ArrayDataModule(), // identical to ArrayDataModule, includes DaoModule
-                new ServicesModule(),
-                new ApplicationModule(),
-            };
-            
-            injector = Guice.createInjector(modules);
+            injector = Guice.createInjector(getModule());
         }
 
         private InjectorSingletonHolder() {
@@ -133,4 +127,23 @@ public final class InjectorFactory {
     public static Injector getInjector() {
         return InjectorSingletonHolder.injector;
     }
+    
+    /**
+     * Intended for integration tests that need to override modules and create
+     * their own injectors.
+     * @return the module used to create the injector singleton;
+     */
+    public static Module getModule() {
+        final Module[] modules = new Module[] {
+            new CaArrayEjbStaticInjectionModule(),
+            new CaArrayHibernateHelperModule(),
+            new ArrayDataModule(), // identical to ArrayDataModule, includes DaoModule
+            new ServicesModule(),
+            new FileModule(),
+            new ApplicationModule(),
+        };
+        
+        return Modules.combine(modules);
+    }
+
 }

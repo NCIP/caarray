@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.upgrade;
 
 import gov.nih.nci.caarray.application.ApplicationModule;
 import gov.nih.nci.caarray.application.arraydata.ArrayDataModule;
+import gov.nih.nci.caarray.application.file.FileModule;
 import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.dao.FileDao;
 import gov.nih.nci.caarray.dao.SearchDao;
@@ -134,7 +135,7 @@ import com.google.inject.util.Types;
  *
  */
 public class FixIlluminaGenotypingCsvDesignProbeNamesMigrator extends AbstractCustomChange {
-
+    
     /**
      * {@inheritDoc}
      */
@@ -251,6 +252,7 @@ public class FixIlluminaGenotypingCsvDesignProbeNamesMigrator extends AbstractCu
         final Module[] modules = new Module[] {
                 new ArrayDataModule(), // identical to ArrayDataModule, includes DaoModule
                 new ServicesModule(),
+                new FileModule(),
                 new ApplicationModule(),
                 localModule,
             };

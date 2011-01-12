@@ -96,7 +96,7 @@ import gov.nih.nci.caarray.security.AttributePolicy;
 import gov.nih.nci.caarray.security.Protectable;
 import gov.nih.nci.caarray.security.SecurityPolicy;
 import gov.nih.nci.caarray.security.SecurityUtils;
-import gov.nih.nci.caarray.util.UsernameHolder;
+import gov.nih.nci.caarray.util.CaArrayUsernameHolder;
 import gov.nih.nci.security.authorization.domainobjects.User;
 
 import java.util.ArrayList;
@@ -454,7 +454,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
     @Transient
     public Set<User> getOwners() {
         if (getId() == null) {
-            return Collections.singleton(UsernameHolder.getCsmUser());
+            return Collections.singleton(CaArrayUsernameHolder.getCsmUser());
         }
         if (this.owners == null) {
             this.owners = SecurityUtils.getOwners(this);

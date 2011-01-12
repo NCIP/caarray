@@ -107,7 +107,7 @@ import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
-import gov.nih.nci.caarray.util.UsernameHolder;
+import gov.nih.nci.caarray.util.CaArrayUsernameHolder;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import gov.nih.nci.security.authorization.domainobjects.User;
 
@@ -302,7 +302,7 @@ public class ProjectManagementServiceIntegrationTest extends AbstractServiceInte
 
     @Test
     public void testChangeProjectOwner() throws Exception {
-        UsernameHolder.setUser(STANDARD_USER);
+        CaArrayUsernameHolder.setUser(STANDARD_USER);
         Transaction tx = hibernateHelper.beginTransaction();
         this.projectManagementService.saveProject(DUMMY_PROJECT_1);
         tx.commit();
@@ -320,7 +320,7 @@ public class ProjectManagementServiceIntegrationTest extends AbstractServiceInte
         
         tx = hibernateHelper.beginTransaction();
         hibernateHelper.getCurrentSession().clear();
-        UsernameHolder.setUser("caarrayuser");
+        CaArrayUsernameHolder.setUser("caarrayuser");
         Project retrieved = this.genericDataService.getPersistentObject(Project.class, DUMMY_PROJECT_1.getId());
         assertNotNull(retrieved);
         assertNotNull(retrieved.getExperiment());
@@ -333,12 +333,12 @@ public class ProjectManagementServiceIntegrationTest extends AbstractServiceInte
     
     @Test(expected = PermissionDeniedException.class)
     public void testDeleteUnownedProject() throws Exception {
-        UsernameHolder.setUser("caarrayuser");
+        CaArrayUsernameHolder.setUser("caarrayuser");
         Transaction tx = hibernateHelper.beginTransaction();
         this.projectManagementService.saveProject(DUMMY_PROJECT_1);
         tx.commit();
         
-        UsernameHolder.setUser(STANDARD_USER);
+        CaArrayUsernameHolder.setUser(STANDARD_USER);
         tx = hibernateHelper.beginTransaction();
         this.projectManagementService.deleteProject(DUMMY_PROJECT_1);
         tx.commit();
@@ -346,7 +346,7 @@ public class ProjectManagementServiceIntegrationTest extends AbstractServiceInte
 
     @Test
     public void testPublicId() throws Exception {
-        UsernameHolder.setUser(STANDARD_USER);
+        CaArrayUsernameHolder.setUser(STANDARD_USER);
         Transaction tx = hibernateHelper.beginTransaction();
         Experiment exp = DUMMY_PROJECT_1.getExperiment();
         assertNull(exp.getPublicIdentifier());

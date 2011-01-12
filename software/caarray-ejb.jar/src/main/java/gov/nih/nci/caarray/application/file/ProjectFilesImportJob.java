@@ -84,12 +84,18 @@ package gov.nih.nci.caarray.application.file;
 
 import gov.nih.nci.caarray.application.arraydata.DataImportOptions;
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
+import gov.nih.nci.caarray.dao.ProjectDao;
+import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileStatus;
+import gov.nih.nci.caarray.domain.project.JobType;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.magetab.MageTabParsingException;
+import gov.nih.nci.caarray.util.UsernameHolder;
 
 import org.apache.log4j.Logger;
+
+import com.google.inject.Inject;
 
 /**
  * Encapsulates the functionality necessary for importing a set of files into a project.
@@ -101,19 +107,32 @@ final class ProjectFilesImportJob extends AbstractProjectFilesJob {
 
     private final DataImportOptions dataImportOptions;
 
-    ProjectFilesImportJob(String username, Project targetProject, CaArrayFileSet fileSet,
-            DataImportOptions dataImportOptions) {
-        super(username, targetProject, fileSet);
+    // CHECKSTYLE:OFF more than 7 parameters are okay for injected constructor
+    @SuppressWarnings("PMD.ExcessiveParameterList")
+    @Inject
+    ProjectFilesImportJob(String username, UsernameHolder usernameHolder, Project targetProject,
+            CaArrayFileSet fileSet, DataImportOptions dataImportOptions, ArrayDataImporter arrayDataImporter,
+            MageTabImporter mageTabImporter, ProjectDao projectDao, SearchDao searchDao) {
+    // CHECKSTYLE:ON
+        super(username, usernameHolder, targetProject, fileSet, arrayDataImporter,
+                mageTabImporter, projectDao, searchDao);
         this.dataImportOptions = dataImportOptions;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    public JobType getJobType() {
+        return JobType.DATA_FILE_IMPORT;
+    }
+
     @Override
-    void execute() {
-        CaArrayFileSet fileSet = getFileSet(getProject());
+    protected void doExecute() {
+        CaArrayFileSet fileSet = getFileSet();
         try {
             doValidate(fileSet);
-            if (fileSet.getStatus().equals(FileStatus.VALIDATED)
-                    || fileSet.getStatus().equals(FileStatus.VALIDATED_NOT_PARSED)) {
+            final FileStatus status = getStatus();
+            if (status.equals(FileStatus.VALIDATED) || status.equals(FileStatus.VALIDATED_NOT_PARSED)) {
                 importAnnotation(fileSet);
                 importArrayData(fileSet);
             }
@@ -128,8 +147,8 @@ final class ProjectFilesImportJob extends AbstractProjectFilesJob {
         } catch (MageTabParsingException e) {
             LOG.error(e.getMessage(), e);
         }
-        getDaoFactory().getProjectDao().flushSession();
-        getDaoFactory().getProjectDao().clearSession();
+        getProjectDao().flushSession();
+        getProjectDao().clearSession();
     }
 
     private void importArrayData(CaArrayFileSet fileSet) {
@@ -138,7 +157,7 @@ final class ProjectFilesImportJob extends AbstractProjectFilesJob {
     }
 
     @Override
-    FileStatus getInProgressStatus() {
+    protected FileStatus getInProgressStatus() {
         return FileStatus.IMPORTING;
     }
 

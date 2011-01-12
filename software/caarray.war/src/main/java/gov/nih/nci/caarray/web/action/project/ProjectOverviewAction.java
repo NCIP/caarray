@@ -90,7 +90,7 @@ import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.project.AssayType;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
-import gov.nih.nci.caarray.util.UsernameHolder;
+import gov.nih.nci.caarray.util.CaArrayUsernameHolder;
 import gov.nih.nci.caarray.web.util.LabelValue;
 
 import java.io.ByteArrayInputStream;
@@ -170,7 +170,7 @@ public class ProjectOverviewAction extends ProjectTabAction {
     @Override
     @SkipValidation
     public String load() {
-        if (isEditMode() && !getProject().hasWritePermission(UsernameHolder.getCsmUser())) {
+        if (isEditMode() && !getProject().hasWritePermission(CaArrayUsernameHolder.getCsmUser())) {
             setEditMode(false);
         }
         if (!isEditMode() && getExperiment() != null && getExperiment().getId() != null) {

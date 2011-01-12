@@ -3,7 +3,7 @@ package gov.nih.nci.caarray.web.action.project;
 import gov.nih.nci.caarray.application.ServiceLocatorFactory;
 import gov.nih.nci.caarray.application.project.ProposalWorkflowException;
 import gov.nih.nci.caarray.security.SecurityUtils;
-import gov.nih.nci.caarray.util.UsernameHolder;
+import gov.nih.nci.caarray.util.CaArrayUsernameHolder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,7 +75,7 @@ public class ProjectAction extends AbstractBaseProjectAction {
      * @return the result name
      */
     private String projectNotFound() {
-        if (UsernameHolder.getUser().equals(SecurityUtils.ANONYMOUS_USERNAME)) {
+        if (CaArrayUsernameHolder.getUser().equals(SecurityUtils.ANONYMOUS_USERNAME)) {
             return loggedinDetails();
         } else {
             ActionHelper.saveMessage(getText("project.notFound"));
@@ -89,7 +89,7 @@ public class ProjectAction extends AbstractBaseProjectAction {
      * @return the result name
      */
     private String permissionDenied(String roleKey) {
-        if (UsernameHolder.getUser().equals(SecurityUtils.ANONYMOUS_USERNAME)) {
+        if (CaArrayUsernameHolder.getUser().equals(SecurityUtils.ANONYMOUS_USERNAME)) {
             return loggedinDetails();
         } else {
             ActionHelper.saveMessage(getText("project.permissionDenied", new String[] {getText(roleKey) }));

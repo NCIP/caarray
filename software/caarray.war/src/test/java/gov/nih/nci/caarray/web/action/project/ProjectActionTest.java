@@ -94,7 +94,7 @@ import gov.nih.nci.caarray.application.project.ProposalWorkflowException;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.security.SecurityUtils;
-import gov.nih.nci.caarray.util.UsernameHolder;
+import gov.nih.nci.caarray.util.CaArrayUsernameHolder;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import gov.nih.nci.caarray.web.AbstractBaseStrutsTest;
 import gov.nih.nci.security.authorization.domainobjects.User;
@@ -223,7 +223,7 @@ public class ProjectActionTest extends AbstractBaseStrutsTest {
     @Test
     public void testDeleteNotFound() {
         this.action.setProject(new Project());
-        UsernameHolder.setUser("someuser");
+        CaArrayUsernameHolder.setUser("someuser");
         assertEquals(WORKSPACE, this.action.delete());
         assertTrue(ActionHelper.getMessages().get(0).contains("project.notFound"));
     }
@@ -231,7 +231,7 @@ public class ProjectActionTest extends AbstractBaseStrutsTest {
     @Test(expected = PermissionDeniedException.class)
     public void testDeleteNoWritePermission() {
         this.action.setProject(this.getTestProject(2l));
-        UsernameHolder.setUser("unauthorizeduser");
+        CaArrayUsernameHolder.setUser("unauthorizeduser");
         this.action.delete();
     }
 
@@ -240,8 +240,8 @@ public class ProjectActionTest extends AbstractBaseStrutsTest {
          * {@inheritDoc}
          */
         public void deleteProject(Project project) throws ProposalWorkflowException {
-            if (UsernameHolder.getUser().equals("unauthorizeduser")) {
-                throw new PermissionDeniedException(project, SecurityUtils.WRITE_PRIVILEGE, UsernameHolder.getUser());
+            if (CaArrayUsernameHolder.getUser().equals("unauthorizeduser")) {
+                throw new PermissionDeniedException(project, SecurityUtils.WRITE_PRIVILEGE, CaArrayUsernameHolder.getUser());
             }
             if (project.isLocked()) {
                 throw new ProposalWorkflowException("Cannot delete unlocked project");

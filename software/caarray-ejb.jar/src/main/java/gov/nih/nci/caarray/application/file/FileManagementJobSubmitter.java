@@ -86,7 +86,7 @@ package gov.nih.nci.caarray.application.file;
  * Passes the job provided to the FileManagementMDB for handling. Implemented as an interface so that
  * unit tests may substitute a non-JMS based approach.
  */
-interface FileManagementJobSubmitter {
+public interface FileManagementJobSubmitter {
 
     /**
      * Submits the job to the FilemanagementMDB.

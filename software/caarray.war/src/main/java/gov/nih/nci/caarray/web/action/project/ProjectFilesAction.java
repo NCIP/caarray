@@ -98,7 +98,7 @@ import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
-import gov.nih.nci.caarray.util.UsernameHolder;
+import gov.nih.nci.caarray.util.CaArrayUsernameHolder;
 import gov.nih.nci.caarray.web.fileupload.MonitoredMultiPartRequest;
 import gov.nih.nci.caarray.web.helper.DownloadHelper;
 
@@ -976,7 +976,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
      * @return true if validation passes
      */
     private boolean validatePermissions() {
-        if (UsernameHolder.getUser().equals(SecurityUtils.ANONYMOUS_USERNAME)) {
+        if (CaArrayUsernameHolder.getUser().equals(SecurityUtils.ANONYMOUS_USERNAME)) {
             ActionHelper.saveMessage(getText("upload.session.expired"));
             return false;
         }

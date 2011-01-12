@@ -231,6 +231,14 @@
             <result name="success">/WEB-INF/pages/project/workspace/myProjects.jsp</result>
         </action>
 
+        <action name="project/viewJobQueue" class="gov.nih.nci.caarray.web.action.project.ProjectJobQueueAction" method="jobQueue">
+            <result name="success">/WEB-INF/pages/project/jobQueue/jobQueue.jsp</result>
+        </action>
+
+        <action name="ajax/project/viewJobQueue" class="gov.nih.nci.caarray.web.action.project.ProjectJobQueueAction" method="jobQueue">
+            <result name="success">/WEB-INF/pages/project/jobQueue/jobQueue.jsp</result>
+        </action>
+        
         <action name="project/create" class="gov.nih.nci.caarray.web.action.project.ProjectAction" method="create">
             <result name="input">/WEB-INF/pages/project/form.jsp</result>
         </action>

@@ -11,7 +11,7 @@ import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.search.SearchSampleCategory;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.security.SecurityUtils;
-import gov.nih.nci.caarray.util.UsernameHolder;
+import gov.nih.nci.caarray.util.CaArrayUsernameHolder;
 import gov.nih.nci.caarray.web.util.LabelValue;
 
 import java.io.UnsupportedEncodingException;
@@ -60,7 +60,7 @@ public class ProjectPermissionsAction extends AbstractBaseProjectAction {
                     CollaboratorGroup.class, this.collaboratorGroup.getId());
             if (retrieved == null) {
                 throw new PermissionDeniedException(this.collaboratorGroup,
-                        SecurityUtils.PERMISSIONS_PRIVILEGE, UsernameHolder.getUser());
+                        SecurityUtils.PERMISSIONS_PRIVILEGE, CaArrayUsernameHolder.getUser());
             } else {
                 this.collaboratorGroup = retrieved;
             }
@@ -70,7 +70,7 @@ public class ProjectPermissionsAction extends AbstractBaseProjectAction {
                     AccessProfile.class, this.accessProfile.getId());
             if (retrieved == null) {
                 throw new PermissionDeniedException(this.accessProfile,
-                        SecurityUtils.PERMISSIONS_PRIVILEGE, UsernameHolder.getUser());
+                        SecurityUtils.PERMISSIONS_PRIVILEGE, CaArrayUsernameHolder.getUser());
             } else {
                 this.accessProfile = retrieved;
             }

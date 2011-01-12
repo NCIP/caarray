@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.application.file;
 
+import static org.mockito.Mockito.mock;
 import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.application.AbstractServiceIntegrationTest;
 import gov.nih.nci.caarray.application.ServiceLocatorFactory;
@@ -92,9 +93,12 @@ import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheStubFactory;
+import gov.nih.nci.caarray.application.translation.TranslationModule;
 import gov.nih.nci.caarray.application.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
+import gov.nih.nci.caarray.dao.JobQueueDao;
 import gov.nih.nci.caarray.dao.VocabularyDao;
+import gov.nih.nci.caarray.dao.stub.JobDaoSingleJobStub;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
@@ -113,8 +117,8 @@ import gov.nih.nci.caarray.magetab.MageTabFileSet;
 import gov.nih.nci.caarray.magetab.TestMageTabSets;
 import gov.nih.nci.caarray.magetab.io.FileRef;
 import gov.nih.nci.caarray.magetab.io.JavaIOFileRef;
-import gov.nih.nci.caarray.test.data.arraydesign.AgilentArrayDesignFiles;
 import gov.nih.nci.caarray.util.CaArrayUtils;
+import gov.nih.nci.caarray.util.CaArrayUsernameHolder;
 import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import gov.nih.nci.caarray.validation.InvalidDataFileException;
@@ -129,9 +133,14 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Order;
 import org.junit.Before;
-import org.mockito.Mockito;
 
+import com.google.inject.AbstractModule;
+import com.google.inject.Guice;
 import com.google.inject.Injector;
+import com.google.inject.Module;
+import com.google.inject.Provider;
+import com.google.inject.util.Modules;
+import com.google.inject.util.Providers;
 
 /**
  * Integration test for the FileManagementService.
@@ -150,6 +159,7 @@ public abstract class AbstractFileManagementServiceIntegrationTest extends Abstr
     private TermSource testTermSource;
     private Category testCategory;
     private Term testTerm;
+    private JobFactory jobFactory;
     
     private Organism getTestOrganism() {
         testOrganism = (Organism) hibernateHelper.getCurrentSession().load(Organism.class, testOrganism.getId());
@@ -196,6 +206,8 @@ public abstract class AbstractFileManagementServiceIntegrationTest extends Abstr
         resetSupportingObjects();
         saveSupportingObjects();       
         reloadSupportingObjects();
+        
+        jobFactory = injector.getInstance(JobFactory.class);
     }
     
     private void resetSupportingObjects() {
@@ -298,10 +310,7 @@ public abstract class AbstractFileManagementServiceIntegrationTest extends Abstr
     }
 
     protected void importDesignAndDataFilesIntoProject(File arrayDesignFile, FileType dataFilesType, File... dataFiles) throws Exception {
-//        Transaction tx = hibernateHelper.beginTransaction();
         ArrayDesign design = importArrayDesign(arrayDesignFile);
-//        tx.commit();
-
         importDataFilesIntoProject(design, dataFilesType, dataFiles);
     }
 
@@ -406,9 +415,8 @@ public abstract class AbstractFileManagementServiceIntegrationTest extends Abstr
     }
 
     protected void importFiles(Project targetProject, CaArrayFileSet fileSet, DataImportOptions dataImportOptions) throws Exception {
-        ProjectFilesImportJob job = new ProjectFilesImportJob(UsernameHolder.getUser(), targetProject, fileSet,
+        ProjectFilesImportJob job = jobFactory.createProjectFilesImportJob(CaArrayUsernameHolder.getUser(), targetProject, fileSet,
                 dataImportOptions);
-        job.setDaoFactory(CaArrayDaoFactory.INSTANCE);
         try {
             job.execute();
         } catch (Exception e) {
@@ -418,8 +426,7 @@ public abstract class AbstractFileManagementServiceIntegrationTest extends Abstr
     }
 
     private void validateFiles(Project targetProject, CaArrayFileSet fileSet) throws Exception {
-        ProjectFilesValidationJob job = new ProjectFilesValidationJob(UsernameHolder.getUser(), targetProject, fileSet);
-        job.setDaoFactory(CaArrayDaoFactory.INSTANCE);
+        ProjectFilesValidationJob job = jobFactory.createProjectFilesValidationJob(CaArrayUsernameHolder.getUser(), targetProject, fileSet);
         try {
             job.execute();
         } catch (Exception e) {
@@ -466,23 +473,42 @@ public abstract class AbstractFileManagementServiceIntegrationTest extends Abstr
     
     @Override
     protected Injector createInjector() {
-        return InjectorFactory.getInjector();       
+        Module overrideModule = Modules.override(InjectorFactory.getModule())
+                .with(new AbstractModule() {
+
+                    @Override
+                    protected void configure() {
+                        install(new TranslationModule());                        
+                        bind(MageTabImporter.class).to(MageTabImporterImpl.class);       
+                        bind(ArrayDataImporter.class).to(ArrayDataImporterImpl.class);       
+                        bind(JobFactory.class).to(JobFactoryImpl.class);
+                        
+                        DirectJobSubmitter submitter = createJobSubmitter();
+                        bind(FileManagementJobSubmitter.class).toInstance(submitter);
+                    }
+
+                    private DirectJobSubmitter createJobSubmitter() {
+                        JobQueueDao jobDao = new JobDaoSingleJobStub();
+                        Provider<UsernameHolder> usernameHolderProvider
+                            = Providers.of(mock(UsernameHolder.class));
+                        FileManagementMDB mdb = new FileManagementMDB(hibernateHelper, jobDao, usernameHolderProvider );
+                        UserTransaction ut = mock(UserTransaction.class);
+                        mdb.setTransaction(ut);
+                        DirectJobSubmitter submitter = new DirectJobSubmitter(mdb, jobDao);
+                        return submitter;
+                    }
+                });
+
+        return Guice.createInjector(overrideModule);
     }
 
     private FileManagementService createFileManagementService(final FileAccessServiceStub fileAccessServiceStub) {
         ServiceLocatorStub locatorStub = ServiceLocatorStub.registerActualImplementations();
         locatorStub.addLookup(FileAccessService.JNDI_NAME, fileAccessServiceStub);
 
-        FileManagementServiceBean bean = (FileManagementServiceBean) injector.getInstance(FileManagementService.class);
-        FileManagementMDB mdb = new FileManagementMDB();
-        UserTransaction ut = Mockito.mock(UserTransaction.class);
-        mdb.setTransaction(ut);
-        DirectJobSubmitter submitter = new DirectJobSubmitter(mdb);
-        bean.setSubmitter(submitter);
-
         TemporaryFileCacheLocator.setTemporaryFileCacheFactory(new TemporaryFileCacheStubFactory(fileAccessServiceStub));
 
-        return bean;
+        return (FileManagementServiceBean) injector.getInstance(FileManagementService.class);
     }
 
     protected void importFiles(MageTabFileSet fileSet) throws Exception {
@@ -523,3 +549,4 @@ public abstract class AbstractFileManagementServiceIntegrationTest extends Abstr
         tx.commit();
     }
 }
+

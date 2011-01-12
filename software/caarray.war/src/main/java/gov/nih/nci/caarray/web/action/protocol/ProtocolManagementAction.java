@@ -87,7 +87,7 @@ import gov.nih.nci.caarray.domain.protocol.Protocol;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.security.SecurityUtils;
-import gov.nih.nci.caarray.util.UsernameHolder;
+import gov.nih.nci.caarray.util.CaArrayUsernameHolder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -138,7 +138,7 @@ public class ProtocolManagementAction extends ActionSupport implements Preparabl
                     this.getProtocol().getId());
             if (retrieved == null) {
                 throw new PermissionDeniedException(this.protocol,
-                        SecurityUtils.PERMISSIONS_PRIVILEGE, UsernameHolder.getUser());
+                        SecurityUtils.PERMISSIONS_PRIVILEGE, CaArrayUsernameHolder.getUser());
             } else {
                 this.setProtocol(retrieved);
             }

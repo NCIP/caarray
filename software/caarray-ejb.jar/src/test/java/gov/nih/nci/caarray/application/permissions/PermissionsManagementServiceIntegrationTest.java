@@ -90,7 +90,7 @@ import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
-import gov.nih.nci.caarray.util.UsernameHolder;
+import gov.nih.nci.caarray.util.CaArrayUsernameHolder;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import gov.nih.nci.security.authorization.domainobjects.User;
 
@@ -136,7 +136,7 @@ public class PermissionsManagementServiceIntegrationTest extends AbstractService
 
     @Test
     public void testChangeOwner() throws Exception {
-        UsernameHolder.setUser(STANDARD_USER);
+        CaArrayUsernameHolder.setUser(STANDARD_USER);
         Transaction tx = hibernateHelper.beginTransaction();
         CollaboratorGroup created = this.permissionsManagementService.create(TEST);
         tx.commit();
@@ -147,7 +147,7 @@ public class PermissionsManagementServiceIntegrationTest extends AbstractService
         tx.commit();
         assertEquals(1, groups.size());
 
-        UsernameHolder.setUser("systemadministrator");
+        CaArrayUsernameHolder.setUser("systemadministrator");
         User caarrayuser = SecurityUtils.getAuthorizationManager().getUser("caarrayuser");
         tx = hibernateHelper.beginTransaction();
         groups = this.permissionsManagementService.getCollaboratorGroupsForOwner(caarrayuser.getUserId());

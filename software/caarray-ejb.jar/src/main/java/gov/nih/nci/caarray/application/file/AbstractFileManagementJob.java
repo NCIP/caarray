@@ -82,13 +82,17 @@
  */
 package gov.nih.nci.caarray.application.file;
 
-import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
-import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
+import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
+import gov.nih.nci.caarray.domain.file.FileStatus;
+import gov.nih.nci.caarray.domain.project.ExecutableJob;
+import gov.nih.nci.caarray.domain.project.JobType;
+import gov.nih.nci.caarray.util.UsernameHolder;
 
 import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Date;
 
 import org.apache.log4j.Logger;
 
@@ -97,59 +101,121 @@ import com.google.inject.Inject;
 /**
  * Base class for file handling jobs.
  */
-public abstract class AbstractFileManagementJob implements Serializable {
+public abstract class AbstractFileManagementJob implements Serializable, ExecutableJob {
 
     private static final Logger LOG = Logger.getLogger(AbstractFileManagementJob.class);
-    @Inject private static CaArrayHibernateHelper hibernateHelper; 
-
     private static final long serialVersionUID = 1L;
-    private final String username;
-    private CaArrayDaoFactory daoFactory;
+    
+    private final String ownerName;
+    private final Date timeRequested;
+    private Date timeStarted;
+    private int position;
 
-    AbstractFileManagementJob(String username) {
-        this.username = username;
+    @Inject
+    AbstractFileManagementJob(String username, UsernameHolder usernameHolder) {
+        this.ownerName = username;
+        this.timeRequested = new Date();
     }
 
-    String getUsername() {
-        return this.username;
+    /**
+     * {@inheritDoc}
+     */
+    public String getOwnerName() {
+        return this.ownerName;
     }
 
-    abstract void execute();
+    /**
+     * Perform the job.
+     */
+    protected abstract void doExecute();
+    
+    /**
+     * Perform the job by delegating to subclasses.
+     */
+    public void execute() {
+        timeStarted = new Date();
+        doExecute();
+    }
+    
+    /**
+     * @return the file set this job is operating on
+     */
+    protected abstract CaArrayFileSet getFileSet();
 
-    CaArrayDaoFactory getDaoFactory() {
-        return this.daoFactory;
+    /**
+     * @return the FileStatus used to indicate that this job is in progress
+     */
+    protected abstract FileStatus getInProgressStatus();
+    
+    /**
+     * Set the appropriate status value indicating that the job is in progress.
+     */
+    public void setInProgressStatus() {
+        getFileSet().updateStatus(getInProgressStatus());
+    }
+    
+    /**
+     * @return the FileStatus used to indicate that this job is in the queue
+     */
+    protected FileStatus getInQueueStatus() {
+        return FileStatus.IN_QUEUE;
+    }
+    
+   /**
+     * Set the appropriate status value indicating that the job is in the queue.
+     */
+    public void setInQueueStatus() {
+        getFileSet().updateStatus(getInQueueStatus());        
+    }
+    
+    /**
+     * @return true if the job is in progress
+     */
+    public boolean isInProgress() {
+        return getStatus().equals(getInProgressStatus());
+    }
+   
+    /**
+     * {@inheritDoc}
+     */
+    public FileStatus getStatus() {
+        return getFileSet().getStatus();
     }
 
-    void setDaoFactory(CaArrayDaoFactory daoFactory) {
-        this.daoFactory = daoFactory;
+    /**
+     * {@inheritDoc}
+     */
+    public abstract PreparedStatement getUnexpectedErrorPreparedStatement(Connection con) throws SQLException;
+
+    /**
+     * {@inheritDoc}
+     */
+    public abstract String getExperimentName();
+
+    /**
+     * {@inheritDoc}
+     */
+    public abstract JobType getJobType();
+
+    /**
+     * {@inheritDoc}
+     */
+    public Date getTimeRequested() {
+         return timeRequested;
     }
 
-    abstract void setInProgressStatus();
-
-    abstract PreparedStatement getUnexpectedErrorPreparedStatement(Connection con) throws SQLException;
-
-    void handleUnexpectedError() {
-        Connection con = null;
-        PreparedStatement ps = null;
-        try {
-            con = hibernateHelper.getNewConnection();
-            con.setAutoCommit(false);
-            ps = getUnexpectedErrorPreparedStatement(con);
-            ps.executeUpdate();
-            con.commit();
-        } catch (SQLException e) {
-            LOG.error("Error while attempting to handle an unexpected error.", e);
-        } finally {
-            try {
-                if (ps != null) {
-                    ps.close();
-                }
-                if (con != null) {
-                    con.close();
-                }
-            } catch (SQLException e) {
-                LOG.error("Error while attempting close the connection after handling an unexpected error.", e);
-            }
-        }
+    /**
+     * {@inheritDoc}
+     */
+    public Date getTimeStarted() {
+        return timeStarted;
     }
+    
+    /**
+     * @param position the position to set
+     */
+    public void setPosition(int position) {
+        this.position = position;
+    }
+
 }

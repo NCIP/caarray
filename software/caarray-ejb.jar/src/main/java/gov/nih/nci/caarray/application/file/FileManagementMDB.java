@@ -85,11 +85,16 @@ package gov.nih.nci.caarray.application.file;
 import gov.nih.nci.caarray.application.ConfigurationHelper;
 import gov.nih.nci.caarray.application.ExceptionLoggingInterceptor;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
+import gov.nih.nci.caarray.dao.JobQueueDao;
 import gov.nih.nci.caarray.domain.ConfigParamEnum;
+import gov.nih.nci.caarray.domain.project.ExecutableJob;
 import gov.nih.nci.caarray.services.HibernateSessionInterceptor;
+import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
 import gov.nih.nci.caarray.util.UsernameHolder;
 
-import java.io.Serializable;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 import javax.annotation.Resource;
 import javax.ejb.ActivationConfigProperty;
@@ -101,7 +106,7 @@ import javax.interceptor.Interceptors;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
-import javax.jms.ObjectMessage;
+import javax.jms.TextMessage;
 import javax.transaction.HeuristicMixedException;
 import javax.transaction.HeuristicRollbackException;
 import javax.transaction.NotSupportedException;
@@ -112,11 +117,14 @@ import javax.transaction.UserTransaction;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import com.google.inject.Inject;
+import com.google.inject.Provider;
+
 /**
  * Singleton MDB that handles file import jobs.
  */
 @MessageDriven(activationConfig = {
-    @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue"),
+    @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Topic"),
     @ActivationConfigProperty(propertyName = "destination", propertyValue = FileManagementMDB.QUEUE_JNDI_NAME),
     @ActivationConfigProperty(propertyName = "maxSession", propertyValue = "1")
     }, messageListenerInterface = MessageListener.class)
@@ -128,13 +136,30 @@ public class FileManagementMDB implements MessageListener {
     private static final int DEFAULT_TIMEOUT_SECONDS = 3600;
 
     /**
-     * JNDI name for file management handling <code>Queue</code>.
+     * JNDI name for file management handling Topic.
      */
-    static final String QUEUE_JNDI_NAME = "queue/caArray/FileManagement";
+    static final String QUEUE_JNDI_NAME = "topic/caArray/FileManagement";
+    private static ThreadLocal<FileManagementMDB> currentMDB = new ThreadLocal<FileManagementMDB>();
 
     private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
     @Resource private UserTransaction transaction;
-    private static ThreadLocal<FileManagementMDB> currentMDB = new ThreadLocal<FileManagementMDB>();
+    private final CaArrayHibernateHelper hibernateHelper;
+    private final JobQueueDao jobDao;
+    private final Provider<UsernameHolder> userHolderProvider;
+    
+    /**
+     * @param hibernateHelper the CaArrayHibernateHelper dependency
+     * @param jobDao the JobDao dependency
+     * @param userHolderProvider provides userHolder objects. Using a provider here to enable a possible
+     *        future enhancement where thread specific userHolders can be provided.
+     */
+    @Inject
+    public FileManagementMDB(CaArrayHibernateHelper hibernateHelper, JobQueueDao jobDao,
+            Provider<UsernameHolder> userHolderProvider) {
+        this.hibernateHelper = hibernateHelper;
+        this.jobDao = jobDao;
+        this.userHolderProvider = userHolderProvider;
+    }
 
     /**
      * Handles file management job message.
@@ -142,28 +167,49 @@ public class FileManagementMDB implements MessageListener {
      * @param message the JMS message to handle.
      */
     public void onMessage(Message message) {
-        if (!(message instanceof ObjectMessage)) {
+        if (!(message instanceof TextMessage)) {
             LOG.error("Invalid message type delivered: " + message.getClass().getName());
             return;
         }
+
         try {
-            currentMDB.set(this);
-            Serializable contents = ((ObjectMessage) message).getObject();
-            if (!(contents instanceof AbstractFileManagementJob)) {
-                LOG.error("Invalid message contents: " + contents.getClass().getName());
+            currentMDB.set(this);            
+            String messageText = ((TextMessage) message).getText();
+            if ("enqueue".equals(messageText)) {
+                UsernameHolder usernameHolder = userHolderProvider.get();
+                ExecutableJob job = getNextJobIfAvailableAndSetToInProgress(usernameHolder);
+                if (null != job) {
+                    String previousUser = usernameHolder.getUser();
+                    usernameHolder.setUser(job.getOwnerName());
+                    try {
+                        performJob(job);
+                        jobDao.dequeue();
+                        LOG.info("Successfully completed job");
+                    } finally {
+                        usernameHolder.setUser(previousUser);
+                    }
+                }
             } else {
-                AbstractFileManagementJob job = (AbstractFileManagementJob) contents;
-                job.setDaoFactory(getDaoFactory());
-                UsernameHolder.setUser(job.getUsername());
-                setInProgressStatus(job);
-                performJob(job);
-                LOG.info("Successfully completed job");
+                LOG.error("Invalid message text: \"" + messageText + "\"");
             }
         } catch (JMSException e) {
             LOG.error("Error handling message", e);
         } finally {
             currentMDB.remove();
         }
+    }
+
+    private ExecutableJob getNextJobIfAvailableAndSetToInProgress(UsernameHolder usernameHolder) {
+        String previousUser = usernameHolder.getUser();
+        beginTransaction();
+        ExecutableJob job = jobDao.getNextJobIfAvailableAndSetInProgress();
+        try {
+            usernameHolder.setUser(job.getOwnerName());
+            commitTransaction();
+        } finally {
+            usernameHolder.setUser(previousUser);
+        }
+        return job;
     }
 
     /**
@@ -235,7 +281,7 @@ public class FileManagementMDB implements MessageListener {
         }
     }
 
-    private void performJob(AbstractFileManagementJob job) {
+    private void performJob(ExecutableJob job) {
         beginTransaction();
         LOG.info("Starting job of type: " + job.getClass().getSimpleName());
         try {
@@ -252,14 +298,29 @@ public class FileManagementMDB implements MessageListener {
      * Handles unexpected errors.
      * @param job the job.
      */
-    protected void handleUnexpectedError(AbstractFileManagementJob job) {
-        job.handleUnexpectedError();
-    }
-
-    private void setInProgressStatus(AbstractFileManagementJob job)  {
-        beginTransaction();
-        job.setInProgressStatus();
-        commitTransaction();
+    protected void handleUnexpectedError(ExecutableJob job) {
+        Connection con = null;
+        PreparedStatement ps = null;
+        try {
+            con = hibernateHelper.getNewConnection();
+            con.setAutoCommit(false);
+            ps = job.getUnexpectedErrorPreparedStatement(con);
+            ps.executeUpdate();
+            con.commit();
+        } catch (SQLException e) {
+            LOG.error("Error while attempting to handle an unexpected error.", e);
+        } finally {
+            try {
+                if (ps != null) {
+                    ps.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException e) {
+                LOG.error("Error while attempting close the connection after handling an unexpected error.", e);
+            }
+        }
     }
 
     CaArrayDaoFactory getDaoFactory() {

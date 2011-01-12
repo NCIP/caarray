@@ -83,7 +83,7 @@
 package gov.nih.nci.caarray.security;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
-import gov.nih.nci.caarray.util.UsernameHolder;
+import gov.nih.nci.caarray.util.CaArrayUsernameHolder;
 
 import java.util.Set;
 
@@ -108,7 +108,7 @@ public class SecurityPolicyPostLoadEventListener implements PostLoadEventListene
         
         if (event.getEntity() instanceof AbstractCaArrayObject) {
             AbstractCaArrayObject object = (AbstractCaArrayObject) event.getEntity();
-            Set<SecurityPolicy> policies = object.getPostLoadSecurityPolicies(UsernameHolder.getCsmUser());
+            Set<SecurityPolicy> policies = object.getPostLoadSecurityPolicies(CaArrayUsernameHolder.getCsmUser());
             if (!policies.isEmpty()) {
                 SecurityPolicy.applySecurityPolicies(object, policies);
             }

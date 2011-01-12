@@ -94,7 +94,7 @@ import gov.nih.nci.caarray.domain.search.FactorSortCriterion;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.security.SecurityUtils;
-import gov.nih.nci.caarray.util.UsernameHolder;
+import gov.nih.nci.caarray.util.CaArrayUsernameHolder;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -137,7 +137,7 @@ public class ProjectFactorsAction extends AbstractProjectListTabAction {
                     this.currentFactor.getId());
             if (retrieved == null) {
                 throw new PermissionDeniedException(this.currentFactor, SecurityUtils.READ_PRIVILEGE,
-                        UsernameHolder.getUser());
+                        CaArrayUsernameHolder.getUser());
             } else {
                 this.currentFactor = retrieved;
             }

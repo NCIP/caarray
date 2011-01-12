@@ -175,7 +175,7 @@ public final class CaArrayHibernateHelperImpl extends CsmEnabledHibernateHelper 
     }
 
     private String[] getGroupNames() {
-        User user = UsernameHolder.getCsmUser();
+        User user = CaArrayUsernameHolder.getCsmUser();
         try {
             Set<Group> groups = SecurityUtils.getAuthorizationManager().getGroups(user.getUserId().toString());
             String[] groupNames = new String[groups.size()];

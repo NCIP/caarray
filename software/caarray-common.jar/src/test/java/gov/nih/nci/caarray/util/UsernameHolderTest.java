@@ -95,9 +95,9 @@ public class UsernameHolderTest extends AbstractCaarrayTest {
 
     @Test
     public void testHolder() {
-        UsernameHolder.setUser(null);
-        assertEquals(SecurityUtils.ANONYMOUS_USERNAME, UsernameHolder.getUser());
-        UsernameHolder.setUser("test");
-        assertEquals("test", UsernameHolder.getUser());
+        CaArrayUsernameHolder.setUser(null);
+        assertEquals(SecurityUtils.ANONYMOUS_USERNAME, CaArrayUsernameHolder.getUser());
+        CaArrayUsernameHolder.setUser("test");
+        assertEquals("test", CaArrayUsernameHolder.getUser());
     }
 }

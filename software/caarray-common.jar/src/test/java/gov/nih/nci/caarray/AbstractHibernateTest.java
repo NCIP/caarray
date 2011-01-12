@@ -86,7 +86,7 @@ import gov.nih.nci.caarray.dao.HibernateIntegrationTestCleanUpUtility;
 import gov.nih.nci.caarray.staticinjection.CaArrayCommonStaticInjectionModule;
 import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
 import gov.nih.nci.caarray.util.CaArrayHibernateHelperModule;
-import gov.nih.nci.caarray.util.UsernameHolder;
+import gov.nih.nci.caarray.util.CaArrayUsernameHolder;
 
 import org.hibernate.HibernateException;
 import org.hibernate.Transaction;
@@ -126,7 +126,7 @@ public abstract class AbstractHibernateTest extends AbstractCaarrayTest {
         injector = createInjector();
         hibernateHelper = injector.getInstance(CaArrayHibernateHelper.class);
         
-        UsernameHolder.setUser(AbstractCaarrayTest.STANDARD_USER);
+        CaArrayUsernameHolder.setUser(AbstractCaarrayTest.STANDARD_USER);
         
         hibernateHelper.setFiltersEnabled(enableFilters);
         hibernateHelper.openAndBindSession();

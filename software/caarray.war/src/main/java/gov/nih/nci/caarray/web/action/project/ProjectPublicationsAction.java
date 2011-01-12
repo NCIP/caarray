@@ -91,7 +91,7 @@ import gov.nih.nci.caarray.domain.search.PublicationSortCriterion;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.security.SecurityUtils;
-import gov.nih.nci.caarray.util.UsernameHolder;
+import gov.nih.nci.caarray.util.CaArrayUsernameHolder;
 
 import java.util.Collection;
 import java.util.Set;
@@ -136,7 +136,7 @@ public class ProjectPublicationsAction extends AbstractProjectListTabAction {
                     this.currentPublication.getId());
             if (retrieved == null) {
                 throw new PermissionDeniedException(this.currentPublication,
-                        SecurityUtils.READ_PRIVILEGE, UsernameHolder.getUser());
+                        SecurityUtils.READ_PRIVILEGE, CaArrayUsernameHolder.getUser());
             } else {
                 this.currentPublication = retrieved;
             }

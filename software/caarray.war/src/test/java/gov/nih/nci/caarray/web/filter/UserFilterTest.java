@@ -84,7 +84,7 @@ package gov.nih.nci.caarray.web.filter;
 
 import static org.junit.Assert.assertEquals;
 import gov.nih.nci.caarray.AbstractCaarrayTest;
-import gov.nih.nci.caarray.util.UsernameHolder;
+import gov.nih.nci.caarray.util.CaArrayUsernameHolder;
 import gov.nih.nci.caarray.web.action.registration.UserRole;
 
 import java.io.IOException;
@@ -111,7 +111,7 @@ public class UserFilterTest extends AbstractCaarrayTest {
         UserFilter uf = new UserFilter();
         uf.init(null);
         uf.doFilter(request, response, chain);
-        assertEquals("test", UsernameHolder.getUser());
+        assertEquals("test", CaArrayUsernameHolder.getUser());
         uf.destroy();
     }
 }

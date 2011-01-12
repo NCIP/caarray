@@ -123,7 +123,7 @@ import gov.nih.nci.caarray.staticinjection.CaArrayEjbStaticInjectionModule;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
 import gov.nih.nci.caarray.util.CaArrayHibernateHelperModule;
-import gov.nih.nci.caarray.util.UsernameHolder;
+import gov.nih.nci.caarray.util.CaArrayUsernameHolder;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import gov.nih.nci.security.authorization.domainobjects.User;
 
@@ -178,7 +178,7 @@ public class ProjectManagementServiceTest extends AbstractServiceTest {
     
     @Before
     public void setUpService() {
-        UsernameHolder.setUser(STANDARD_USER);
+        CaArrayUsernameHolder.setUser(STANDARD_USER);
         ProjectManagementServiceBean projectManagementServiceBean = new ProjectManagementServiceBean(
                 this.daoFactoryStub.getProjectDao(), this.daoFactoryStub.getFileDao(),
                 this.daoFactoryStub.getSampleDao(), this.daoFactoryStub.getSearchDao());
@@ -216,7 +216,7 @@ public class ProjectManagementServiceTest extends AbstractServiceTest {
 
     @Test
     public void testGetProjectsForOwner() {
-        User u = UsernameHolder.getCsmUser();
+        User u = CaArrayUsernameHolder.getCsmUser();
         List<Project> projects = this.projectManagementService.getProjectsForOwner(u);
         assertSame(Collections.EMPTY_LIST, projects);
     }
@@ -359,7 +359,7 @@ public class ProjectManagementServiceTest extends AbstractServiceTest {
         assertEquals(e, this.daoFactoryStub.projectDao.lastDeleted);
 
         project = new Project();
-        UsernameHolder.setUser(SecurityUtils.ANONYMOUS_USERNAME);
+        CaArrayUsernameHolder.setUser(SecurityUtils.ANONYMOUS_USERNAME);
         this.projectManagementService.saveProject(project);
         fail("anonymous user should not have been allowed to save a project");
     }
@@ -517,7 +517,7 @@ public class ProjectManagementServiceTest extends AbstractServiceTest {
         try {
             Method m = SecurityUtils.class.getDeclaredMethod("createProtectionGroup", Protectable.class, User.class);
             m.setAccessible(true);
-            m.invoke(null, project, UsernameHolder.getCsmUser());
+            m.invoke(null, project, CaArrayUsernameHolder.getCsmUser());
         } catch (SecurityException e) {
             e.printStackTrace();
         } catch (NoSuchMethodException e) {

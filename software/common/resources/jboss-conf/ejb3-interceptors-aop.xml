@@ -287,6 +287,9 @@
       <annotation expr="!class(@org.jboss.annotation.ejb.PoolClass)">
          @org.jboss.annotation.ejb.PoolClass (value=org.jboss.ejb3.StrictMaxPool.class, maxSize=30, timeout=10000)
       </annotation>
+      <bind pointcut="execution(public gov.nih.nci.caarray.*.*MDB->new(..))">
+         <interceptor-ref name="gov.nih.nci.caarray.injection.InjectionInterceptor"/>
+      </bind>
    </domain>
    
    <domain name="Consumer Bean">

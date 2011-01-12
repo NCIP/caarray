@@ -86,7 +86,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
 import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
-import gov.nih.nci.caarray.util.UsernameHolder;
+import gov.nih.nci.caarray.util.CaArrayUsernameHolder;
 import gov.nih.nci.security.authorization.domainobjects.Group;
 import gov.nih.nci.security.authorization.domainobjects.User;
 
@@ -123,7 +123,7 @@ public class CollaboratorGroupDaoTest extends AbstractDaoTest {
         assertEquals(1, DAO_OBJECT.getAll().size());
         tx.commit();
 
-        UsernameHolder.setUser("systemadministrator");
+        CaArrayUsernameHolder.setUser("systemadministrator");
         tx = hibernateHelper.beginTransaction();
         s = hibernateHelper.getCurrentSession();
         // user 8 is "systemadministrator"
@@ -138,7 +138,7 @@ public class CollaboratorGroupDaoTest extends AbstractDaoTest {
         assertEquals(2, DAO_OBJECT.getAll().size());
         tx.commit();
 
-        UsernameHolder.setUser(STANDARD_USER);
+        CaArrayUsernameHolder.setUser(STANDARD_USER);
         tx = hibernateHelper.beginTransaction();
         s = hibernateHelper.getCurrentSession();
         assertEquals(1, DAO_OBJECT.getAll().size());
@@ -165,12 +165,12 @@ public class CollaboratorGroupDaoTest extends AbstractDaoTest {
         // user 8 is "systemadministrator"
         User otherOwner = (User) s.load(User.class, 8L);
         Group otherGroup = (Group) s.load(Group.class, 8L);
-        UsernameHolder.setUser(otherOwner.getLoginName());
+        CaArrayUsernameHolder.setUser(otherOwner.getLoginName());
         CollaboratorGroup otherCg = new CollaboratorGroup(otherGroup, otherOwner);
         s.save(otherCg);
         tx.commit();
 
-        UsernameHolder.setUser(STANDARD_USER);
+        CaArrayUsernameHolder.setUser(STANDARD_USER);
 
         tx = hibernateHelper.beginTransaction();
         s = hibernateHelper.getCurrentSession();
@@ -179,7 +179,7 @@ public class CollaboratorGroupDaoTest extends AbstractDaoTest {
         assertEquals(cg.getGroup().getGroupId(), cgs.get(0).getGroup().getGroupId());
         tx.commit();
 
-        UsernameHolder.setUser(otherOwner.getLoginName());
+        CaArrayUsernameHolder.setUser(otherOwner.getLoginName());
 
         tx = hibernateHelper.beginTransaction();
         s = hibernateHelper.getCurrentSession();
@@ -191,7 +191,7 @@ public class CollaboratorGroupDaoTest extends AbstractDaoTest {
         tx = hibernateHelper.beginTransaction();
         s = hibernateHelper.getCurrentSession();
         // user 4 is "researchscientist"
-        UsernameHolder.setUser(((User) s.load(User.class, 4L)).getLoginName());
+        CaArrayUsernameHolder.setUser(((User) s.load(User.class, 4L)).getLoginName());
         cgs = DAO_OBJECT.getAllForCurrentUser();
         assertTrue(cgs.isEmpty());
         tx.commit();
@@ -220,7 +220,7 @@ public class CollaboratorGroupDaoTest extends AbstractDaoTest {
         // user 8 is "systemadministrator"
         User otherOwner = (User) s.load(User.class, 8L);
         Group otherGroup = (Group) s.load(Group.class, 8L);
-        UsernameHolder.setUser(otherOwner.getLoginName());
+        CaArrayUsernameHolder.setUser(otherOwner.getLoginName());
         CollaboratorGroup otherCg = new CollaboratorGroup(otherGroup, otherOwner);
         s.save(otherCg);
         tx.commit();

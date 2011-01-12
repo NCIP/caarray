@@ -88,6 +88,7 @@ import gov.nih.nci.caarray.application.audit.AuditLogService;
 import gov.nih.nci.caarray.application.browse.BrowseService;
 import gov.nih.nci.caarray.application.file.FileManagementService;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
+import gov.nih.nci.caarray.application.jobqueue.JobQueueService;
 import gov.nih.nci.caarray.application.permissions.PermissionsManagementService;
 import gov.nih.nci.caarray.application.project.ProjectManagementService;
 import gov.nih.nci.caarray.application.registration.RegistrationService;
@@ -132,6 +133,14 @@ public final class ServiceLocatorFactory {
      */
     public static ProjectManagementService getProjectManagementService() {
         return (ProjectManagementService) getLocator().lookup(ProjectManagementService.JNDI_NAME);
+    }
+
+    /**
+     * Convenience method for obtaining the singleton service. 
+     * @return the service
+     */
+    public static JobQueueService getJobQueueService() {
+        return (JobQueueService) getLocator().lookup(JobQueueService.JNDI_NAME);
     }
 
     /**

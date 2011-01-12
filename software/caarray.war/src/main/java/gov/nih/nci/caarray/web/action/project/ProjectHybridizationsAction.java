@@ -93,7 +93,7 @@ import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 import gov.nih.nci.caarray.domain.search.HybridizationSortCriterion;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.security.SecurityUtils;
-import gov.nih.nci.caarray.util.UsernameHolder;
+import gov.nih.nci.caarray.util.CaArrayUsernameHolder;
 import gov.nih.nci.caarray.web.helper.DownloadHelper;
 
 import java.io.IOException;
@@ -150,7 +150,7 @@ public class ProjectHybridizationsAction extends AbstractProjectAssociatedAnnota
                     Hybridization.class, this.currentHybridization.getId());
             if (retrieved == null) {
                 throw new PermissionDeniedException(this.currentHybridization,
-                        SecurityUtils.PERMISSIONS_PRIVILEGE, UsernameHolder.getUser());
+                        SecurityUtils.PERMISSIONS_PRIVILEGE, CaArrayUsernameHolder.getUser());
             } else {
                 this.currentHybridization = retrieved;
             }

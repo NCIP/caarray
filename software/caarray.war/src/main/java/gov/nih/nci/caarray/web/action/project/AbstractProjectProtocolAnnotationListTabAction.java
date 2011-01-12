@@ -93,7 +93,7 @@ import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.security.SecurityUtils;
-import gov.nih.nci.caarray.util.UsernameHolder;
+import gov.nih.nci.caarray.util.CaArrayUsernameHolder;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -212,14 +212,14 @@ public abstract class AbstractProjectProtocolAnnotationListTabAction extends Abs
                     example.getId());
             if (retrieved == null) {
                 throw new PermissionDeniedException(example,
-                        SecurityUtils.READ_PRIVILEGE, UsernameHolder.getUser());
+                        SecurityUtils.READ_PRIVILEGE, CaArrayUsernameHolder.getUser());
             }
         } else if (!isEditMode() && example.getExternalId() != null) {
             retrieved = ServiceLocatorFactory.getProjectManagementService().getBiomaterialByExternalId(getProject(),
                     example.getExternalId(), biomaterialClass);
             if (retrieved == null) {
                 throw new ExternalIdPermissionDeniedException(example,
-                        SecurityUtils.READ_PRIVILEGE, UsernameHolder.getUser());
+                        SecurityUtils.READ_PRIVILEGE, CaArrayUsernameHolder.getUser());
             }
         }
         return retrieved;
