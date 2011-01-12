@@ -1,8 +1,10 @@
 <%@ include file="/WEB-INF/pages/common/taglibs.jsp"%>
+<meta http-equiv="refresh" content="30">
 
 <ajax:displayTag id="datatable" ajaxFlag="true" tableClass="searchresults" preFunction="TabUtils.showLoadingTextKeepMainContent" postFunction="TabUtils.hideLoadingText">
     <c:set var="privateExperiment" value="Private Experiment"/>
     <c:set var="privateUser" value="Private User"/>
+    <c:set var="jobQueueDatePattern" value="E MMM d h:mm a" />
     
     <display:table class="searchresults" cellspacing="0" list="${jobs}" requestURI="${sortUrl}" id="row" excludedParams="project.id" style="clear: none;">
         <c:set var="canReadExperiment" value="${row.userHasReadAccess}"/>
@@ -29,9 +31,13 @@
         <display:column sortProperty="POSITION" title="Position" sortable="true" >${row.position}</display:column>
         <display:column sortProperty="USER" title="User" sortable="true" maxLength="30">${userColValue}</display:column>
         <display:column sortProperty="EXPERIMENT" title="Experiment" sortable="true" >${experimentColValue}</display:column>
-        <display:column sortProperty="JOB" title="Job" sortable="true" >${row.jobType}</display:column>
-        <display:column sortProperty="TIME_REQUESTED" title="Time Requested" sortable="true" >${row.timeRequested}</display:column>
-        <display:column sortProperty="TIME_STARTED" title="Time Started" sortable="true" >${row.timeStarted}</display:column>
-        <display:column sortProperty="STATUS" title="Status" sortable="true" >${row.status}</display:column>
+        <display:column sortProperty="JOB" title="Job" sortable="true" >${row.jobType.displayValue}</display:column>
+        <display:column sortProperty="TIME_REQUESTED" title="Time Requested" sortable="true">
+          <fmt:formatDate value="${row.timeRequested}" pattern="${jobQueueDatePattern}"/>
+        </display:column>
+        <display:column sortProperty="TIME_STARTED" title="Time Started" sortable="true" >
+          <fmt:formatDate value="${row.timeStarted}" pattern="${jobQueueDatePattern}"/>
+        </display:column>
+        <display:column sortProperty="STATUS" title="Status" sortable="true" >${row.status.displayValue}</display:column>
     </display:table>
 </ajax:displayTag>

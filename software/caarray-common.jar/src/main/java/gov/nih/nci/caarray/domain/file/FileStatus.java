@@ -93,57 +93,70 @@ public enum FileStatus {
     /**
      * Uploaded, but not yet validated.
      */
-    UPLOADED,
+    UPLOADED("Uploaded"),
 
     /**
      * In the queue awaiting validation or import.
      */
-    IN_QUEUE,
+    IN_QUEUE("In Queue"),
 
     /**
      * In the process of validating.
      */
-    VALIDATING,
+    VALIDATING("Validating"),
 
     /**
      * Included non-parsed data format in validation.
      */
-    VALIDATED_NOT_PARSED,
+    VALIDATED_NOT_PARSED("Validated Not Parsed"),
 
     /**
      * Successfully validated.
      */
-    VALIDATED,
+    VALIDATED("Validated"),
 
     /**
      * Validation uncovered errors.
      */
-    VALIDATION_ERRORS,
+    VALIDATION_ERRORS("Validation Errors"),
 
     /**
      * In the process of importing.
      */
-    IMPORTING,
+    IMPORTING("Importing"),
 
     /**
      * Successfully imported.
      */
-    IMPORTED,
+    IMPORTED("Imported"),
 
     /**
      * Successfully imported but data not parsed.
      */
-    IMPORTED_NOT_PARSED,
+    IMPORTED_NOT_PARSED("Imported Not Parsed"),
 
     /**
      * Failed Import.
      */
-    IMPORT_FAILED,
+    IMPORT_FAILED("Import Failed"),
 
     /**
      * Arbitrary files associated directly with a project.
      */
-    SUPPLEMENTAL;
+    SUPPLEMENTAL("Supplemental");
+    
+    private final String displayName;
+
+    FileStatus(String displayName) {
+        this.displayName = displayName;
+    }
+    
+    /**
+     * @return File status display name.
+     */
+    public String getDisplayValue() {
+        return displayName;
+    }
 
     /**
      * The set of FileStatuses in which a file can be deleted.

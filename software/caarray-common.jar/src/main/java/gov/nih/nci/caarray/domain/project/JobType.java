@@ -91,17 +91,31 @@ public enum JobType {
     /**
      * Indicates a data file import job.
      */
-    DATA_FILE_IMPORT,
+    DATA_FILE_IMPORT("Data File Import"),
     /**
      * Indicates a data file validation job.
      */
-    DATA_FILE_VALIDATION,
+    DATA_FILE_VALIDATION("Data File Validation"),
     /**
      * Indicates a design file import job.
      */
-    DESIGN_FILE_IMPORT,
+    DESIGN_FILE_IMPORT("Design File Import"),
     /**
      * Indicates a data file reparse job.
      */
-    DATA_FILE_REPARSE;
+    DATA_FILE_REPARSE("Data File Reparse");
+    
+    private final String displayName;
+
+    JobType(String displayName) {
+        this.displayName = displayName;
+    }
+    
+    /**
+     * @return File status display name.
+     */
+    public String getDisplayValue() {
+        return displayName;
+    }
+
 }
