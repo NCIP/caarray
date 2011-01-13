@@ -219,6 +219,16 @@ final class DataMatrixCopyNumberHandler extends AbstractDataFileHandler {
             delimitedFileReader.close();
         }
     }
+    
+    private void countProbes(final DelimitedFileReader delimitedFileReader, final ArrayDesign design)
+            throws IOException {
+        countProbesAndOptionallyValidateProbeNames(false, delimitedFileReader, design, null);
+    }
+    
+    private void validateProbeNames(final DelimitedFileReader delimitedFileReader, final ArrayDesign design,
+            final FileValidationResult fileValidationResult) throws IOException {
+        countProbesAndOptionallyValidateProbeNames(true, delimitedFileReader, design, fileValidationResult);
+    }
 
     /**
      * {@inheritDoc}
@@ -229,6 +239,7 @@ final class DataMatrixCopyNumberHandler extends AbstractDataFileHandler {
         try {
             initialize();
             delimitedFileReader = getDelimitedFileReader();
+            countProbes(delimitedFileReader, design);
             dataSet.prepareColumns(types, numberOfProbes);
             if (dataSet.getDesignElementList() == null) {
                 loadDesignElementList(dataSet, delimitedFileReader, design);
@@ -351,25 +362,27 @@ final class DataMatrixCopyNumberHandler extends AbstractDataFileHandler {
         }
     }
     
-    private void validateProbeNamesAndCountProbes(final DelimitedFileReader delimitedFileReader,
-            final ArrayDesign arrayDesign, final FileValidationResult fileValidationResult) throws IOException {
-        if (UNINITIALIZED_INDEX != reporterRefColumnIndex) {
-            positionReaderAtStartOfData(delimitedFileReader);
-            ProbeNamesValidator probeNamesValidator = new ProbeNamesValidator(arrayDao, arrayDesign);
-            List<String> probeNamesBatch = new ArrayList<String>(BATCH_SIZE);
-            numberOfProbes = 0;
-            while (delimitedFileReader.hasNextLine()) {
-                List<String> strings = delimitedFileReader.nextLine();
-                probeNamesBatch.add(strings.get(reporterRefColumnIndex));
-                numberOfProbes++;
+    private void countProbesAndOptionallyValidateProbeNames(final boolean shouldDoValidation,
+            final DelimitedFileReader delimitedFileReader, final ArrayDesign arrayDesign,
+            final FileValidationResult fileValidationResult) throws IOException {
+        positionReaderAtStartOfData(delimitedFileReader);
+        ProbeNamesValidator probeNamesValidator = new ProbeNamesValidator(arrayDao, arrayDesign);
+        List<String> probeNamesBatch = new ArrayList<String>(BATCH_SIZE);
+        numberOfProbes = 0;
+        while (delimitedFileReader.hasNextLine()) {
+            List<String> strings = delimitedFileReader.nextLine();
+            String probeName = strings.get(reporterRefColumnIndex);
+            numberOfProbes++;
+            if (shouldDoValidation) {
+                probeNamesBatch.add(probeName);
                 if (0 == numberOfProbes % BATCH_SIZE) {
                     probeNamesValidator.validateProbeNames(fileValidationResult, probeNamesBatch);
                     probeNamesBatch.clear();
                 }
             }
-            if (!probeNamesBatch.isEmpty()) {
-                probeNamesValidator.validateProbeNames(fileValidationResult, probeNamesBatch);
-            }
+        }
+        if (shouldDoValidation && !probeNamesBatch.isEmpty()) {
+            probeNamesValidator.validateProbeNames(fileValidationResult, probeNamesBatch);
         }
     }
     
@@ -433,7 +446,7 @@ final class DataMatrixCopyNumberHandler extends AbstractDataFileHandler {
             result.addMessage(Type.WARNING, "The column '" + columnName + "' will be ignored during data parsing.");
         }
         try {
-            validateProbeNamesAndCountProbes(getDelimitedFileReader(), design, result);
+            validateProbeNames(getDelimitedFileReader(), design, result);
         } catch (IOException e) {
             throw new PlatformFileReadException(getFile(), "Cannot validate probe names: " + e.getMessage(), e);
         }
