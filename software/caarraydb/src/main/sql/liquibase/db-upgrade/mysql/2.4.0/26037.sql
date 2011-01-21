@@ -150,4 +150,4 @@ insert into csm_pei_sample_id (protection_element_id, attribute_value)
     where  pe.object_id = 'gov.nih.nci.caarray.domain.sample.Sample' and  pe.attribute = 'id' and  pe.application_id = 2 and pe.attribute_value is not null;
 							
 insert into csm_sample_id_group (group_id,privilege_id,attribute_value) 
-  select distinct group_id,privilege_id,attribute_value from csm_vw_sample_id_group;
+  select distinct group_id,privilege_id,attribute_value from csm_vw_sample_id_group where group_id is not null;
