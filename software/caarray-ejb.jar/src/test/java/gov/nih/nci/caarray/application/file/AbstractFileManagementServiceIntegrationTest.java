@@ -339,10 +339,10 @@ public abstract class AbstractFileManagementServiceIntegrationTest extends Abstr
         tx.commit();        
     }
     
-    protected void importFiles(Project project, MageTabFileSet fileSet) throws Exception {
+    protected void importFiles(Project project, MageTabFileSet fileSet, boolean dataMatricesAreCopyNumber) throws Exception {
         Transaction tx = hibernateHelper.beginTransaction();
         project = (Project) hibernateHelper.getCurrentSession().load(Project.class, project.getId());
-        CaArrayFileSet caarrayFileSet = uploadFiles(project, fileSet);
+        CaArrayFileSet caarrayFileSet = uploadFiles(project, fileSet, dataMatricesAreCopyNumber);
         tx.commit();
 
         tx = hibernateHelper.beginTransaction();
@@ -374,10 +374,14 @@ public abstract class AbstractFileManagementServiceIntegrationTest extends Abstr
      * @return
      */
     protected CaArrayFileSet uploadFiles(Project project, MageTabFileSet fileSet) {
+        return uploadFiles(project, fileSet, false);
+    }
+    
+    protected CaArrayFileSet uploadFiles(Project project, MageTabFileSet fileSet, boolean dataMatricesAreCopyNumber) {
         for (FileRef file : fileSet.getAllFiles()) {
             this.getFileAccessService().add(file.getAsFile());
         }
-        CaArrayFileSet caarrayFileSet = TestMageTabSets.getFileSet(fileSet);
+        CaArrayFileSet caarrayFileSet = TestMageTabSets.getFileSet(dataMatricesAreCopyNumber, fileSet);
         for (CaArrayFile file : caarrayFileSet.getFiles()) {
             file.setProject(project);
             project.getFiles().add(file);
@@ -440,21 +444,25 @@ public abstract class AbstractFileManagementServiceIntegrationTest extends Abstr
     }
 
     protected ArrayDesign importArrayDesign(File designFile, FileType fileType) throws IllegalAccessException, InvalidDataFileException {
+        return importArrayDesign(designFile, fileType, "authority:namespace:");
+    }
+
+    protected ArrayDesign importArrayDesign(File designFile, FileType fileType, String namespace) throws IllegalAccessException, InvalidDataFileException {
         Transaction tx = hibernateHelper.beginTransaction();
         try {
-            return doImportDesign(designFile, fileType);
+            return doImportDesign(designFile, fileType, namespace);
         } finally {
             tx.commit();
         }
     }
 
-    private ArrayDesign doImportDesign(File designFile, FileType fileType) {
+    private ArrayDesign doImportDesign(File designFile, FileType fileType, String namespace) {
         ArrayDesign design = new ArrayDesign();
         design.setName(designFile.getName());
         design.setVersion("2.0");
         design.setGeoAccession("GPL0000");
         design.setProvider(getTestOrganization());
-        design.setLsidForEntity("authority:namespace:" + designFile.getName());
+        design.setLsidForEntity(namespace + designFile.getName());
         CaArrayFile caArrayDesignFile = this.getFileAccessService().add(designFile);
         if (fileType != null) {
             caArrayDesignFile.setFileType(fileType);
@@ -512,7 +520,11 @@ public abstract class AbstractFileManagementServiceIntegrationTest extends Abstr
     }
 
     protected void importFiles(MageTabFileSet fileSet) throws Exception {
-        importFiles(testProject, fileSet);
+        importFiles(testProject, fileSet, false);
+    }
+
+    protected void importFiles(MageTabFileSet fileSet, boolean dataMatricesAreCopyNumber) throws Exception {
+        importFiles(testProject, fileSet, dataMatricesAreCopyNumber);
     }
 
     protected void addDesignToExperiment(ArrayDesign design) {

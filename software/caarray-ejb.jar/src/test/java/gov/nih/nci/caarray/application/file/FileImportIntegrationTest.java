@@ -126,6 +126,7 @@ import static gov.nih.nci.caarray.platforms.genepix.GenepixQuantitationType.SUM_
 import static gov.nih.nci.caarray.platforms.genepix.GenepixQuantitationType.X;
 import static gov.nih.nci.caarray.platforms.genepix.GenepixQuantitationType.Y;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -135,6 +136,7 @@ import gov.nih.nci.caarray.domain.array.AbstractDesignElement;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.array.PhysicalProbe;
 import gov.nih.nci.caarray.domain.data.AbstractDataColumn;
+import gov.nih.nci.caarray.domain.data.DataSet;
 import gov.nih.nci.caarray.domain.data.DerivedArrayData;
 import gov.nih.nci.caarray.domain.data.FloatColumn;
 import gov.nih.nci.caarray.domain.data.HybridizationData;
@@ -154,6 +156,7 @@ import gov.nih.nci.caarray.magetab.MageTabFileSet;
 import gov.nih.nci.caarray.magetab.MageTabParser;
 import gov.nih.nci.caarray.magetab.TestMageTabSets;
 import gov.nih.nci.caarray.magetab.io.FileRef;
+import gov.nih.nci.caarray.magetab.io.JavaIOFileRef;
 import gov.nih.nci.caarray.platforms.genepix.GenepixQuantitationType;
 import gov.nih.nci.caarray.platforms.illumina.IlluminaGenotypingProcessedMatrixHandlerTest;
 import gov.nih.nci.caarray.platforms.illumina.IlluminaGenotypingProcessedMatrixQuantitationType;
@@ -167,6 +170,10 @@ import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
 import gov.nih.nci.caarray.test.data.arraydesign.AgilentArrayDesignFiles;
 import gov.nih.nci.caarray.test.data.arraydesign.IlluminaArrayDesignFiles;
 import gov.nih.nci.caarray.test.data.arraydesign.NimblegenArrayDesignFiles;
+import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
+import gov.nih.nci.caarray.validation.FileValidationResult;
+import gov.nih.nci.caarray.validation.InvalidDataFileException;
+import gov.nih.nci.caarray.validation.ValidationMessage;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -177,6 +184,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.hibernate.Transaction;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class FileImportIntegrationTest extends AbstractFileManagementServiceIntegrationTest {
@@ -301,6 +309,35 @@ public class FileImportIntegrationTest extends AbstractFileManagementServiceInte
         assertEquals("cell", testSource.getMaterialType().getValue());
         assertEquals("HG-Focus", project.getExperiment().getHybridizationByName("H_TK6 replicate 1").getArray().getDesign().getName());
         tx.commit();
+    }
+
+    @Test
+    public void testDataMatrixCopyNumberMageTabImportSuccess() throws Exception {
+        ArrayDesign design = importArrayDesign(AgilentArrayDesignFiles.TEST_SHORT_ACGH_XML, FileType.AGILENT_XML);
+        addDesignToExperiment(design);
+        MageTabFileSet fileSet = new MageTabFileSet();
+        fileSet.addIdf(new JavaIOFileRef(MageTabDataFiles.GOOD_DATA_MATRIX_COPY_NUMER_IDF));
+        fileSet.addSdrf(new JavaIOFileRef(MageTabDataFiles.GOOD_DATA_MATRIX_COPY_NUMER_SDRF));
+        fileSet.addDataMatrix(new JavaIOFileRef(MageTabDataFiles.GOOD_DATA_MATRIX_COPY_NUMER_DATA));
+        importFiles(fileSet, true);
+
+        Transaction tx = hibernateHelper.beginTransaction();
+        Project project = getTestProject();
+        assertEquals(FileStatus.IMPORTED, project.getFileSet().getStatus());
+        assertEquals(3, project.getExperiment().getHybridizations().size());
+        tx.commit();
+    }
+    
+    @Test(expected=IndexOutOfBoundsException.class)
+    public void testDataMatrixCopyNumberMageTabImportFailDueToBadSdrfHybCount() throws Exception {
+        ArrayDesign design = importArrayDesign(AgilentArrayDesignFiles.TEST_SHORT_ACGH_XML, FileType.AGILENT_XML);
+        addDesignToExperiment(design);
+        MageTabFileSet fileSet = new MageTabFileSet();
+        fileSet.addIdf(new JavaIOFileRef(MageTabDataFiles.BAD_DATA_MATRIX_COPY_NUMER_WRONG_HYB_COUNT_IDF));
+        fileSet.addSdrf(new JavaIOFileRef(MageTabDataFiles.BAD_DATA_MATRIX_COPY_NUMER_WRONG_HYB_COUNT_SDRF));
+        fileSet.addDataMatrix(new JavaIOFileRef(MageTabDataFiles.GOOD_DATA_MATRIX_COPY_NUMER_DATA));
+        importFiles(fileSet, true);
+        assertEquals(Boolean.TRUE.toString(), Boolean.FALSE.toString());
     }
 
     @Test

@@ -698,11 +698,15 @@ public final class TestMageTabSets {
     }
     
     public static CaArrayFileSet getFileSet(MageTabFileSet inputSet) {
+        return getFileSet(false, inputSet);
+    }
+    
+    public static CaArrayFileSet getFileSet(boolean dataMtricesAreCopyNumber, MageTabFileSet inputSet) {
         CaArrayFileSet fileSet = new CaArrayFileSet();
-        addFiles(fileSet, inputSet.getIdfFiles(), IdfDocument.class);
-        addFiles(fileSet, inputSet.getSdrfFiles(), SdrfDocument.class);
-        addFiles(fileSet, inputSet.getDataMatrixFiles(), DataMatrix.class);
-        addFiles(fileSet, inputSet.getNativeDataFiles(), NativeDataFile.class);
+        addFiles(dataMtricesAreCopyNumber, fileSet, inputSet.getIdfFiles(), IdfDocument.class);
+        addFiles(dataMtricesAreCopyNumber, fileSet, inputSet.getSdrfFiles(), SdrfDocument.class);
+        addFiles(dataMtricesAreCopyNumber, fileSet, inputSet.getDataMatrixFiles(), DataMatrix.class);
+        addFiles(dataMtricesAreCopyNumber, fileSet, inputSet.getNativeDataFiles(), NativeDataFile.class);
         return fileSet;
     }
 
@@ -719,7 +723,14 @@ public final class TestMageTabSets {
         }
     }
     
-    private static FileType guessFileType(String fileName, Class<? extends AbstractMageTabDocument> documentType) {
+    private static void addFiles(boolean dataMatricesAreCopyNumber, CaArrayFileSet fileSet, Collection<FileRef> files,
+            Class<? extends AbstractMageTabDocument> documentType) {
+        for (FileRef file : files) {
+            addFile(dataMatricesAreCopyNumber, fileSet, file.getName(), documentType);
+        }
+    }
+    
+    private static FileType guessFileType(boolean dataMatricesAreCopyNumber, String fileName, Class<? extends AbstractMageTabDocument> documentType) {
         if (IdfDocument.class.equals(documentType)) {
             return FileType.MAGE_TAB_IDF;
         } else if (SdrfDocument.class.equals(documentType)) {
@@ -727,17 +738,25 @@ public final class TestMageTabSets {
         } else if (AdfDocument.class.equals(documentType)) {
             return FileType.MAGE_TAB_ADF;
         } else if (DataMatrix.class.equals(documentType)) {
+            if (dataMatricesAreCopyNumber) {
+                return FileType.MAGE_TAB_DATA_MATRIX_COPY_NUMBER;
+            } else {
             return FileType.MAGE_TAB_DATA_MATRIX;
+            }
         } else {
             return FileExtension.getTypeFromExtension(fileName);
         }         
     }
 
     private static void addFile(CaArrayFileSet fileSet, String name, Class<? extends AbstractMageTabDocument> documentType) {
+        addFile(false, fileSet, name, documentType);
+    }
+
+    private static void addFile(boolean dataMatricesAreCopyNumber, CaArrayFileSet fileSet, String name, Class<? extends AbstractMageTabDocument> documentType) {
         CaArrayFile caArrayFile = new CaArrayFile();
         caArrayFile.setFileStatus(FileStatus.UPLOADED);
         caArrayFile.setName(name);
-        caArrayFile.setFileType(guessFileType(name, documentType));
+        caArrayFile.setFileType(guessFileType(dataMatricesAreCopyNumber, name, documentType));
         fileSet.add(caArrayFile);
     }
      
