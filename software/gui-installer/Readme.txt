@@ -2,8 +2,8 @@ elease Notes
 =============
  
   #Product:#	caArray
-  #Version:#	2.4.0.1
-  #Date:#	January 2011
+  #Version:#	2.4.0.2
+  #Date:#	February 2011
 
 Contents
 --------
@@ -35,6 +35,7 @@ library of assay management.
 Release History
 ------------------------
 
+    * caArray v2.4.0.2          -- February   2011
     * caArray v2.4.0.1		-- January   2011 
     * caArray v2.4.0		-- September 2010 
     * caArray v2.3.1		-- February  2010 
