@@ -25,7 +25,10 @@
       </update>
    </changeSet>
     
-    <changeSet id="26037" author="dkokotov">
+    <changeSet id="26037.1" author="dkokotov">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">select count(id) from databasechangelog where id = '26037'</sqlCheck>
+        </preConditions>
        <comment>GF 26037 - upgrade to CSM 4.2</comment>
        <sqlFile path="db-upgrade/mysql/2.4.0/26037.sql"/>
     </changeSet>    
