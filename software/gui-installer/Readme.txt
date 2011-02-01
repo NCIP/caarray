@@ -1,9 +1,9 @@
-elease Notes
+Release Notes
 =============
  
   #Product:#	caArray
   #Version:#	2.4.0.2
-  #Date:#	February 2011
+  #Date:#		February  2011
 
 Contents
 --------
@@ -34,13 +34,12 @@ library of assay management.
 
 Release History
 ------------------------
-
-    * caArray v2.4.0.2          -- February   2011
+    * caArray v2.4.0.2		-- February  2011 
     * caArray v2.4.0.1		-- January   2011 
     * caArray v2.4.0		-- September 2010 
     * caArray v2.3.1		-- February  2010 
     * caArray v2.3.0.1		-- November  2009   
-    * caArray v2.2.1		-- May	     2009    
+    * caArray v2.2.1		-- May	 2009    
     * caArray v2.2.0		-- January   2009    
     * caArray v2.1.1		-- October   2008    
     * caArray v2.1.0		-- August    2008    
@@ -59,7 +58,7 @@ Features and Defects Addressed in this Release
 -----------------------------------------------
 
 This release represents a feature release of the caArray 2 software. 
-Highlights of caArray 2.4.0.1 are:
+Highlights of caArray 2.4.0.2 are:
 
 * Parsers for several new data types:
   * Agilent raw TXT for aCGH, expression and miRNA assays.
@@ -88,7 +87,7 @@ in the caArray User's Guide.
 
 We gratefully acknowledge our collaborators at Yale and UPMC for their contribution of the Nimblegen parsers to the release.
 
-The 2.4.0.1 release addresses the following issues with the 2.4.0 release:
+The 2.4.0.2 release addresses the following issues with the 2.4.0 release:
 * Fixes out-of-memory errors with the parsers.
 * Fixes null pointer exception in the upgrade installer.
 * Adds probe name validation to the data file parsers.
@@ -102,7 +101,7 @@ Known Issues/Defects
 See the GForge tracker for existing open defects, community requests, resolutions and feature requests.
 The following issues are highlighted. 
 
-https://gforge.nci.nih.gov/tracker/?group_id=305
+https://tracker.nci.nih.gov/browse/ARRAY
 
 * The total import job size (defined as sum of uncompressed file sizes) must be less than 3GB.
 
@@ -121,6 +120,12 @@ https://gforge.nci.nih.gov/tracker/?group_id=305
 
 * Multiple MAGE-TAB imports can result in duplicate persons in the database.
 
+* Experiments with multiple array designs may cause copy number data to be Imported (not parsed).  For more
+  information, please go to https://tracker.nci.nih.gov/browse/ARRAY-1811.
+
+* Data import can fail if experiment is associated with multiple array designs.  For more
+  information, please go to https://tracker.nci.nih.gov/browse/ARRAY-1837
+
 
 Bug Reports, Feature Requests, And Support
 ------------------------------------------
@@ -130,9 +135,9 @@ please visit the Molecular Analysis Tools Knowledge Center resources at:
 
 https://cabig-kc.nci.nih.gov/Molecular/KC/index.php/Main_Page
 
-Existing requests and resolution may be viewed at the caArray GForge URL:
+Existing requests and resolution may be viewed at the caArray issue tracker URL:
 
-https://gforge.nci.nih.gov/tracker/?group_id=305
+https://tracker.nci.nih.gov/browse/ARRAY
 
 
 Documentation And Files
@@ -172,7 +177,6 @@ in a future release.
 
 If, for some reason, you do not wish to use the new Service API yet, you can continue to use the legacy API,
 but you must upgrade to the latest version. To do this, please download the client libraries (caarray-client-legacy.zip).
-
 
 
 FEEDBACK
