@@ -328,6 +328,14 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
     	</updateDatabase>
     </target>
 
+    <target name="upgrade:database:remove-offending-liquibase-changesets">
+    	<!-- since this is an update, the db-env-specific changeset needs to be removed-->
+    	<xmltask source="${db.dir.src}/db-env-specific.xml" dest="${db.dir.src}/db-env-specific.xml">
+			<xmlcatalog refid="bda.xml.catalog"/>
+			<remove path="//*[local-name()='changeSet']"/>
+		</xmltask>
+    </target>
+
     <target name="install:jboss:binaries" description="Unzip JBoss binary" unless="exclude.jboss" depends="common:jboss:init, common:init">
         <jboss-install-binaries jboss.binaries.file="${tools.dir}/${jboss.binaries.file}"/>
         <jboss-nci-customizations/>
@@ -825,7 +833,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
         ">
     </target>
 
-    <target name="upgrade:database" depends="install:database" description="Upgrading and installing db is the same"/>
+    <target name="upgrade:database" depends="upgrade:database:remove-offending-liquibase-changesets,install:database" description="Upgrading and installing db is the same"/>
 
     <target name="upgrade-dac:with-dbinstall" description="Upgrades JBoss and Database"
         depends="
