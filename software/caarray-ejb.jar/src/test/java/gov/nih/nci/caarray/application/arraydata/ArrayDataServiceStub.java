@@ -98,7 +98,13 @@ public class ArrayDataServiceStub implements ArrayDataService {
             throws InvalidDataFileException {
         // no-op
     }
-    
+
+	public void importData(CaArrayFile file, MageTabDocumentSet mTabSet,
+			boolean createAnnotation, DataImportOptions dataImportOptions)
+			throws InvalidDataFileException {
+        // no-op
+	}
+   
     public ArrayDesign getArrayDesign(CaArrayFile file) {
         return null;
     }

@@ -233,7 +233,7 @@ public class FixHybridizationsWithMissingArraysMigrator extends AbstractCustomCh
     }
     
     private ArrayDesign findArrayDesignFromFile(DataFileHandler handler) throws PlatformFileReadException {
-        List<LSID> designLsids = handler.getReferencedArrayDesignCandidateIds();
+        List<LSID> designLsids = handler.getReferencedArrayDesignCandidateIds(null);
         return dao.getFirstArrayDesignFromLsidList(designLsids);
     }
 

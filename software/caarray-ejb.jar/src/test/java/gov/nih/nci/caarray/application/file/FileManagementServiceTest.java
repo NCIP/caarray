@@ -160,7 +160,7 @@ public class FileManagementServiceTest extends AbstractServiceTest {
         };
         fileManagementMDB.setDaoFactory(this.daoFactoryStub);
         fileManagementMDB.setTransaction(new UserTransactionStub());
-        DirectJobSubmitter submitter = new DirectJobSubmitter(fileManagementMDB, jobDao);
+        DirectJobSubmitter submitter = new DirectJobSubmitter(hibernateHelper, fileManagementMDB, jobDao);
         
         ArrayDataService arrayDataService = new LocalArrayDataServiceStub();
         MageTabTranslator mageTabTranslator = new MageTabTranslatorStub();

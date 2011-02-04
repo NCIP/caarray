@@ -109,8 +109,7 @@ public abstract class AbstractFileManagementJob implements Serializable, Executa
     private final String ownerName;
     private final Date timeRequested;
     private Date timeStarted;
-    private int position;
-
+    
     @Inject
     AbstractFileManagementJob(String username, UsernameHolder usernameHolder) {
         this.ownerName = username;
@@ -215,7 +214,6 @@ public abstract class AbstractFileManagementJob implements Serializable, Executa
      * @param position the position to set
      */
     public void setPosition(int position) {
-        this.position = position;
     }
 
 }

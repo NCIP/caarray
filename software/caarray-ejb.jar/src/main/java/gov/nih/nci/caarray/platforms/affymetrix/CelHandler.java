@@ -306,7 +306,7 @@ final class CelHandler extends AbstractDataFileHandler {
         }
     }
 
-    public List<LSID> getReferencedArrayDesignCandidateIds() {
+    public List<LSID> getReferencedArrayDesignCandidateIds(MageTabDocumentSet mTabSet) {
         return Collections.singletonList(new LSID(LSID_AUTHORITY, LSID_NAMESPACE, celData.getChipType()));
     }
 }

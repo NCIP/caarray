@@ -90,6 +90,7 @@ import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.project.JobType;
 import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.magetab.MageTabParsingException;
 import gov.nih.nci.caarray.util.UsernameHolder;
 
@@ -133,27 +134,29 @@ final class ProjectFilesImportJob extends AbstractProjectFilesJob {
             doValidate(fileSet);
             final FileStatus status = getStatus();
             if (status.equals(FileStatus.VALIDATED) || status.equals(FileStatus.VALIDATED_NOT_PARSED)) {
-                importAnnotation(fileSet);
-                importArrayData(fileSet);
+            	MageTabDocumentSet mTabSet = importAnnotation(fileSet);
+                importArrayData(fileSet, mTabSet);
             }
         } finally {
             TemporaryFileCacheLocator.getTemporaryFileCache().closeFiles();
         }
     }
 
-    private void importAnnotation(CaArrayFileSet fileSet) {
+    private MageTabDocumentSet importAnnotation(CaArrayFileSet fileSet) {
+        MageTabDocumentSet mTabSet = null;
         try {
-            getMageTabImporter().importFiles(getProject(), fileSet);
+            mTabSet = getMageTabImporter().importFiles(getProject(), fileSet);
         } catch (MageTabParsingException e) {
             LOG.error(e.getMessage(), e);
         }
         getProjectDao().flushSession();
         getProjectDao().clearSession();
+        return mTabSet;
     }
 
-    private void importArrayData(CaArrayFileSet fileSet) {
+    private void importArrayData(CaArrayFileSet fileSet, MageTabDocumentSet mTabSet) {
         ArrayDataImporter arrayDataImporter = getArrayDataImporter();
-        arrayDataImporter.importFiles(fileSet, this.dataImportOptions);
+        arrayDataImporter.importFiles(fileSet, mTabSet, this.dataImportOptions);
     }
 
     @Override

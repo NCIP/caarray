@@ -103,6 +103,7 @@ import gov.nih.nci.caarray.domain.sample.Extract;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
+import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.platforms.spi.DataFileHandler;
 import gov.nih.nci.caarray.platforms.spi.PlatformFileReadException;
 
@@ -134,12 +135,12 @@ class DataSetImporter extends AbstractArrayDataUtility {
         this.searchDao = searchDao;
     }
     
-    AbstractArrayData importData(CaArrayFile caArrayFile, DataImportOptions dataImportOptions, 
-            boolean createAnnnotation) {
+    AbstractArrayData importData(CaArrayFile caArrayFile, MageTabDocumentSet mTabSet,
+            DataImportOptions dataImportOptions, boolean createAnnnotation) {
         DataFileHandler handler = null;
         try {
-            handler = getHandler(caArrayFile);
-            Helper helper = new Helper(caArrayFile, dataImportOptions, handler);
+            handler = getHandler(caArrayFile, mTabSet);
+            Helper helper = new Helper(caArrayFile, mTabSet, dataImportOptions, handler);
             return helper.importData(createAnnnotation);
         } catch (PlatformFileReadException e) {
             throw new IllegalArgumentException("Error obtaining a handler for file " + caArrayFile.getName(), e);
@@ -158,10 +159,13 @@ class DataSetImporter extends AbstractArrayDataUtility {
     private final class Helper {
         private final CaArrayFile caArrayFile;
         private AbstractArrayData arrayData;
+        private final MageTabDocumentSet mTabSet;
         private final DataImportOptions dataImportOptions;
         private final DataFileHandler handler;
 
-        Helper(CaArrayFile caArrayFile, DataImportOptions dataImportOptions, DataFileHandler handler) {
+        Helper(CaArrayFile caArrayFile, MageTabDocumentSet mTabSet, DataImportOptions dataImportOptions,
+                DataFileHandler handler) {
+            
             if (caArrayFile == null) {
                 throw new IllegalArgumentException("arrayData was null");
             }
@@ -171,6 +175,7 @@ class DataSetImporter extends AbstractArrayDataUtility {
             }
             this.dataImportOptions = dataImportOptions;
             this.caArrayFile = caArrayFile;
+            this.mTabSet = mTabSet;
             this.handler = handler;
         }
 
@@ -219,7 +224,7 @@ class DataSetImporter extends AbstractArrayDataUtility {
                 h.setArray(new Array());
             }
             if (h.getArray().getDesign() == null) {
-                ArrayDesign ad = getArrayDesign(caArrayFile, handler);
+                ArrayDesign ad = getArrayDesign(caArrayFile, mTabSet, handler);
                 if (ad != null) {
                     h.getArray().setDesign(ad);
                 }
@@ -293,7 +298,7 @@ class DataSetImporter extends AbstractArrayDataUtility {
         private Hybridization createHybridization(String hybridizationName) throws PlatformFileReadException {
             Hybridization hybridization = new Hybridization();
             hybridization.setName(hybridizationName);
-            ArrayDesign ad = getArrayDesign(caArrayFile, handler);
+            ArrayDesign ad = getArrayDesign(caArrayFile, mTabSet, handler);
             if (ad != null) {
                 Array array = new Array();
                 array.setDesign(ad);

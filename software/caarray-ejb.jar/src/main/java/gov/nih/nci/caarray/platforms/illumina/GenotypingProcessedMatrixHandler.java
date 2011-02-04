@@ -170,7 +170,7 @@ final class GenotypingProcessedMatrixHandler extends AbstractDataFileHandler {
     /**
      * {@inheritDoc}
      */
-    public List<LSID> getReferencedArrayDesignCandidateIds() {
+    public List<LSID> getReferencedArrayDesignCandidateIds(MageTabDocumentSet mTabSet) {
         // cannot determine from file
         return Collections.emptyList();
     }

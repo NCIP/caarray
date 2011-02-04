@@ -79,13 +79,15 @@
  * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */package gov.nih.nci.caarray.application.arraydata;
+ */
+package gov.nih.nci.caarray.application.arraydata;
 
 import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.domain.LSID;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.project.Experiment;
+import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.platforms.spi.DataFileHandler;
 import gov.nih.nci.caarray.platforms.spi.PlatformFileReadException;
 
@@ -121,10 +123,13 @@ abstract class AbstractArrayDataUtility {
      * Find the appropriate data handler for the given data file, and initialize it.
      * 
      * @param caArrayFile the data file to be processed
+     * @param mTabSet the set of magetab docs associated with the data file.
      * @return the DataFileHandler instance capable of processing that file. That handler will
      * have been initialized with this file.
      */
-    protected DataFileHandler getHandler(CaArrayFile caArrayFile) throws PlatformFileReadException {
+    protected DataFileHandler getHandler(CaArrayFile caArrayFile, MageTabDocumentSet mTabSet)
+        throws PlatformFileReadException {
+        
         DataFileHandler handler = getOpeningHandler(caArrayFile);
         if (handler == null) {
             throw new IllegalArgumentException("Unsupported type " + caArrayFile.getFileType());
@@ -132,7 +137,7 @@ abstract class AbstractArrayDataUtility {
         if (!handler.parsesData()) {
             return handler;
         }
-        ArrayDesign ad = getArrayDesign(caArrayFile, handler);
+        ArrayDesign ad = getArrayDesign(caArrayFile, mTabSet, handler);
         if (ad == null || !ad.isImportedAndParsed()) {
             handler.closeFiles();
             return getUnparsedDataHandler(caArrayFile);
@@ -146,23 +151,26 @@ abstract class AbstractArrayDataUtility {
      * designs associated with the experiment, if there is exactly one such design. 
      * 
      * @param caArrayFile the data file
+     * @param mTabSet the set of magetab docs associated with the data file.
      * @param handler the handler for the data file
      * @return the array design corresponding to the file, or null if it is not found or could 
      * not be determined uniquely from the file or experiment.
      * @throws PlatformFileReadException 
      * 
      */
-    protected ArrayDesign getArrayDesign(CaArrayFile caArrayFile, DataFileHandler handler)
+    protected ArrayDesign getArrayDesign(CaArrayFile caArrayFile, MageTabDocumentSet mTabSet, DataFileHandler handler)
             throws PlatformFileReadException {
-        ArrayDesign ad = findArrayDesignFromFile(handler);
+        ArrayDesign ad = findArrayDesignFromFile(handler, mTabSet);
         if (ad == null) {
             ad = findArrayDesignFromExperiment(caArrayFile.getProject().getExperiment());
         }
         return ad;
     }
     
-    private ArrayDesign findArrayDesignFromFile(DataFileHandler handler) throws PlatformFileReadException {
-        List<LSID> designLsids = handler.getReferencedArrayDesignCandidateIds();
+    private ArrayDesign findArrayDesignFromFile(DataFileHandler handler, MageTabDocumentSet mTabSet)
+            throws PlatformFileReadException {
+        
+        List<LSID> designLsids = handler.getReferencedArrayDesignCandidateIds(mTabSet);
         for (LSID lsid : designLsids) {
             ArrayDesign ad = arrayDao.getArrayDesign(lsid.getAuthority(), lsid.getNamespace(), lsid
                     .getObjectId());

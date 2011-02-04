@@ -82,38 +82,88 @@
  */
 package gov.nih.nci.caarray.application.file;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 import gov.nih.nci.caarray.dao.JobQueueDao;
+import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
 
 import javax.jms.JMSException;
 import javax.jms.TextMessage;
+import javax.transaction.HeuristicMixedException;
+import javax.transaction.HeuristicRollbackException;
+import javax.transaction.InvalidTransactionException;
+import javax.transaction.NotSupportedException;
+import javax.transaction.RollbackException;
+import javax.transaction.SystemException;
+import javax.transaction.Transaction;
+import javax.transaction.TransactionManager;
+import javax.transaction.UserTransaction;
 
 import org.apache.commons.lang.UnhandledException;
+import org.jboss.mq.SpyTextMessage;
+import org.jboss.tm.usertx.client.ClientUserTransaction;
+import org.springframework.transaction.jta.UserTransactionAdapter;
+
+import com.google.inject.Inject;
 
 /**
- * Submitter that circumvents JMS
+ * Submitter that calls the FileManagementMDB directly. For use in testing.
  */
 class DirectJobSubmitter implements FileManagementJobSubmitter {
 
     private final FileManagementMDB fileManagementMDB;
     private final JobQueueDao jobDao;
+	private final CaArrayHibernateHelper hibernateHelper;
 
-    DirectJobSubmitter(FileManagementMDB fileManagementMDB, JobQueueDao jobDao) {
-        this.jobDao = jobDao;
+    @Inject
+    DirectJobSubmitter(CaArrayHibernateHelper hibernateHelper, FileManagementMDB fileManagementMDB, JobQueueDao jobDao) {
+        this.hibernateHelper = hibernateHelper;
+    	this.jobDao = jobDao;
         this.fileManagementMDB = fileManagementMDB;
     }
 
     public void submitJob(AbstractFileManagementJob job) {
         jobDao.enqueue(job);
-        TextMessage message = getMessageStub("enqueue");
+        TextMessage message = createMessage("enqueue");
+ 		UserTransaction transaction = new UserTransaction() {
+ 			
+			private org.hibernate.Transaction internalTransaction;
+
+			public void begin() throws NotSupportedException, SystemException {
+				internalTransaction = hibernateHelper.beginTransaction();				
+			}
+
+			public void commit() throws RollbackException,
+					HeuristicMixedException, HeuristicRollbackException,
+					SecurityException, IllegalStateException, SystemException {
+				internalTransaction.commit();				
+			}
+
+			public int getStatus() throws SystemException {
+				return 0;
+			}
+
+			public void rollback() throws IllegalStateException,
+					SecurityException, SystemException {
+				internalTransaction.rollback();				
+			}
+
+			public void setRollbackOnly() throws IllegalStateException,
+					SystemException {
+				// Empty method
+			}
+
+			public void setTransactionTimeout(int arg0) throws SystemException {
+				// Empty method
+			}			
+ 		};       
+ 		fileManagementMDB.setTransaction(transaction);
+ 		
         fileManagementMDB.onMessage(message);
     }
 
-    private TextMessage getMessageStub(String messageText) {
-        TextMessage message = mock(TextMessage.class);
+    private TextMessage createMessage(String messageText) {
+        TextMessage message = new SpyTextMessage();
         try {
-            when(message.getText()).thenReturn(messageText);
+            message.setText(messageText);
         } catch (JMSException e) {
             throw new UnhandledException(e);
         }

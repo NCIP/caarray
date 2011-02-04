@@ -147,7 +147,8 @@ final class ProjectFilesReparseJob extends AbstractProjectFilesJob {
     
     private void importArrayData(CaArrayFileSet fileSet) {
         ArrayDataImporter arrayDataImporter = getArrayDataImporter();
-        arrayDataImporter.importFiles(fileSet, null); // don't need to specify import options since ArrayData exists
+        arrayDataImporter.importFiles(fileSet, null, null); // don't need to specify import options since ArrayData
+                                                            // exists
     }
 
     @Override

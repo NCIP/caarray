@@ -615,7 +615,7 @@ final class GprHandler extends AbstractDataFileHandler {
     /**
      * {@inheritDoc}
      */
-    public List<LSID> getReferencedArrayDesignCandidateIds() {
+    public List<LSID> getReferencedArrayDesignCandidateIds(MageTabDocumentSet mTabSet) {
         DelimitedFileReader reader = getReader(getFile());
         try {
             return Collections.singletonList(getReferencedArrayDesignLsid(reader));
