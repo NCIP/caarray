@@ -204,9 +204,7 @@ public class FileManagementMDB implements MessageListener {
         beginTransaction();
         ExecutableJob job = jobDao.getNextJobIfAvailableAndSetInProgress();
         try {
-        	if (null != job) {
-        		usernameHolder.setUser(job.getOwnerName());
-        	}
+            usernameHolder.setUser(job.getOwnerName());
             commitTransaction();
         } finally {
             usernameHolder.setUser(previousUser);

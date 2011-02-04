@@ -274,7 +274,7 @@ class ChpHandler extends AbstractDataFileHandler {
         return null;
     }
     
-    public List<LSID> getReferencedArrayDesignCandidateIds(MageTabDocumentSet mTabSet) {
+    public List<LSID> getReferencedArrayDesignCandidateIds() {
         final String lsidObjectId = getChpData(getFile()).getChipType();
         return Collections.singletonList(new LSID(LSID_AUTHORITY, LSID_NAMESPACE_DESIGN, lsidObjectId));
     }

@@ -93,6 +93,6 @@ import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 interface ArrayDataImporter {
 
     void validateFiles(CaArrayFileSet fileSet, MageTabDocumentSet mTabSet, boolean reimport);
-    void importFiles(CaArrayFileSet fileSet,  MageTabDocumentSet mTabSet, DataImportOptions dataImportOptions);
+    void importFiles(CaArrayFileSet fileSet, DataImportOptions dataImportOptions);
 
 }

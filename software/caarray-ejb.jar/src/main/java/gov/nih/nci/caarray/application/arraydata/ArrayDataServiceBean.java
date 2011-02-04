@@ -145,20 +145,11 @@ public class ArrayDataServiceBean implements ArrayDataService {
      * {@inheritDoc}
      */
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public void importData(CaArrayFile caArrayFile,  boolean createAnnnotation,
-            DataImportOptions dataImportOptions) throws InvalidDataFileException {
-        this.importData(caArrayFile, null, createAnnnotation, dataImportOptions);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public void importData(CaArrayFile caArrayFile, MageTabDocumentSet mTabSet, boolean createAnnnotation,
-            DataImportOptions dataImportOptions) throws InvalidDataFileException {
+    public void importData(CaArrayFile caArrayFile, boolean createAnnnotation, DataImportOptions dataImportOptions)
+            throws InvalidDataFileException {
         LogUtil.logSubsystemEntry(LOG, caArrayFile);
-        AbstractArrayData arrayData = dataSetImporter.importData(caArrayFile, mTabSet, dataImportOptions, createAnnnotation);
-        loader.load(arrayData, mTabSet);
+        AbstractArrayData arrayData = dataSetImporter.importData(caArrayFile, dataImportOptions, createAnnnotation);
+        loader.load(arrayData);
         LogUtil.logSubsystemExit(LOG);
     }
 

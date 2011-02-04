@@ -182,7 +182,7 @@ class UnparsedDataHandler extends AbstractDataFileHandler {
     /**
      * {@inheritDoc}
      */
-    public List<LSID> getReferencedArrayDesignCandidateIds(MageTabDocumentSet mTabSet) {
+    public List<LSID> getReferencedArrayDesignCandidateIds() {
         return Collections.emptyList();
     }
     

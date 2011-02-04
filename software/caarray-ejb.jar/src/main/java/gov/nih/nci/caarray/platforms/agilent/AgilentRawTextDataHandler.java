@@ -512,7 +512,7 @@ class AgilentRawTextDataHandler extends AbstractDataFileHandler {
     /**
      * {@inheritDoc}
      */
-    public List<LSID> getReferencedArrayDesignCandidateIds(MageTabDocumentSet mTabSet) {
+    public List<LSID> getReferencedArrayDesignCandidateIds() {
         try {
             readHeader();
             return Collections.singletonList(this.arrayDesignId);

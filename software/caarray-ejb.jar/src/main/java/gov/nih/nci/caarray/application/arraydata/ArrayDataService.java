@@ -130,19 +130,4 @@ public interface ArrayDataService {
      */
     void importData(CaArrayFile file, boolean createAnnotation, DataImportOptions dataImportOptions)
             throws InvalidDataFileException;
-
-    /**
-     * Imports array data from the file given, creating annotation if necessary and requested
-     * by the client.
-     *
-     * @param file the data file to import.
-     * @param mTabSet the set of mage tab docs used in importing the data file.
-     * @param createAnnotation if no annotation is associated with the file, create a chain
-     * of annotation to <code>AbstractArrayData</code>. How the chain is created is controlled
-     * by the dataImportOptions paramter.
-     * @param dataImportOptions options that control creation of the annotion chain
-     * @throws InvalidDataFileException if the file is not a valid data file.
-     */
-    void importData(CaArrayFile file, MageTabDocumentSet mTabSet, boolean createAnnotation,
-            DataImportOptions dataImportOptions) throws InvalidDataFileException;
 }

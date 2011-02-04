@@ -114,13 +114,6 @@ public final class CaArrayFileSet implements Serializable {
     }
 
     /**
-     * @param p project this file set is associated with
-     */
-    public CaArrayFileSet(long projectId) {
-        this.projectId = projectId;
-    }
-
-    /**
      * Construct a new file set, with the same files and associated project.
      * @param baseFileSet file set on which to base the new file set
      */

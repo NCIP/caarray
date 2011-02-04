@@ -94,7 +94,6 @@ import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
-import gov.nih.nci.caarray.magetab.sdrf.SdrfDocument;
 import gov.nih.nci.caarray.platforms.DefaultValueParser;
 import gov.nih.nci.caarray.platforms.DesignElementBuilder;
 import gov.nih.nci.caarray.platforms.FileManager;
@@ -184,20 +183,9 @@ final class DataMatrixCopyNumberHandler extends AbstractDataFileHandler {
     /**
      * {@inheritDoc}
      */
-    public List<LSID> getReferencedArrayDesignCandidateIds(MageTabDocumentSet mTabSet)
-        throws PlatformFileReadException {
-        
-        ArrayList<LSID> arrayDesignLSIDs = new ArrayList<LSID>();
-
-        for (SdrfDocument sdrfDocument : mTabSet.getSdrfDocuments()) {
-            for (gov.nih.nci.caarray.magetab.sdrf.ArrayDesign arrayDesign : sdrfDocument.getAllArrayDesigns()) {
-                arrayDesignLSIDs.add(new LSID(arrayDesign.getValue()));
-            }
-        }
-
-        return arrayDesignLSIDs;
+    public List<LSID> getReferencedArrayDesignCandidateIds() throws PlatformFileReadException {
+        return new ArrayList<LSID>();
     }
-
     
     private DelimitedFileReader getDelimitedFileReader() throws IOException {
         return new DelimitedFileReaderFactoryImpl().createTabDelimitedFileReader(getFile());

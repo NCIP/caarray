@@ -98,7 +98,7 @@ interface MageTabImporter {
 
     MageTabDocumentSet selectRefFiles(Project project, CaArrayFileSet idfFileSet);
 
-    MageTabDocumentSet importFiles(Project targetProject, CaArrayFileSet fileSet)
+    void importFiles(Project targetProject, CaArrayFileSet fileSet)
             throws MageTabParsingException;
 
 }

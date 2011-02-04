@@ -26,12 +26,12 @@ public interface DataFileHandler {
 
     /**
      * If this handler is capable of processing the given file, associate any resources (streams, readers, etc)
-     * necessary to process it. All operations on this interface subsequent to this and until closeFiles() is called
-     * are implicitly assumed to refer to the given file.
+     * necessary to process it. All operations on this interface subsequent to this and until closeFiles() is called are
+     * implicitly assumed to refer to the given file.
      * 
      * @param dataFile the file to process
-     * @return true if this handler is able to process the file, and successfully initialized the resources necessary
-     *         to do so; false if this handler does not process files of this type.
+     * @return true if this handler is able to process the file, and successfully initialized the resources necessary to
+     *         do so; false if this handler does not process files of this type.
      * 
      * @throws PlatformFileReadException if the handler does support this type of file, but there was an error
      *             initializing resources to process it
@@ -59,12 +59,11 @@ public interface DataFileHandler {
      * The LSIDs will be tried in order to locate the array design for the file in the data store, using
      * the first LSID that succeeds.
      * If the array design cannot be determined from the file, return an empty list.
-     * @param mTabSet the set of mage tab docs associated with the data file.
      * 
      * @return the list of candidate design LSIDs, in the order they should be tried.
      * @throws PlatformFileReadException if there is an error processing the file.
      */
-    List<LSID> getReferencedArrayDesignCandidateIds(MageTabDocumentSet mTabSet) throws PlatformFileReadException;
+    List<LSID> getReferencedArrayDesignCandidateIds() throws PlatformFileReadException;
 
     /**
      * Validate the contents of the currently open file. This can include validation against the mage-tab data set,

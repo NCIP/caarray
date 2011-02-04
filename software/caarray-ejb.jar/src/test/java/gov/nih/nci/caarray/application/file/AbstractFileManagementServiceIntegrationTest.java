@@ -502,7 +502,7 @@ public abstract class AbstractFileManagementServiceIntegrationTest extends Abstr
                         FileManagementMDB mdb = new FileManagementMDB(hibernateHelper, jobDao, usernameHolderProvider );
                         UserTransaction ut = mock(UserTransaction.class);
                         mdb.setTransaction(ut);
-                        DirectJobSubmitter submitter = new DirectJobSubmitter(hibernateHelper, mdb, jobDao);
+                        DirectJobSubmitter submitter = new DirectJobSubmitter(mdb, jobDao);
                         return submitter;
                     }
                 });

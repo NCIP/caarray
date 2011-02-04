@@ -582,7 +582,7 @@ class CsvDataHandler extends AbstractDataFileHandler {
     /**
      * {@inheritDoc}
      */
-    public List<LSID> getReferencedArrayDesignCandidateIds(MageTabDocumentSet mTabSet) {
+    public List<LSID> getReferencedArrayDesignCandidateIds() {
         DelimitedFileReader reader = getReader(getFile());
         try {
             String illuminaFile = getArrayContentValue(reader);

@@ -87,7 +87,6 @@ import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
-import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.platforms.spi.DataFileHandler;
 import gov.nih.nci.caarray.platforms.spi.PlatformFileReadException;
 import gov.nih.nci.caarray.validation.FileValidationResult;
@@ -117,13 +116,13 @@ final class DataSetLoader extends AbstractArrayDataUtility {
         super(arrayDao, handlers);
     }
     
-    void load(AbstractArrayData arrayData, MageTabDocumentSet mTabSet) throws InvalidDataFileException {
+    void load(AbstractArrayData arrayData) throws InvalidDataFileException {
         DataFileHandler handler = null;
         try {
             LOG.debug("Parsing required for file " + arrayData.getDataFile().getName());
             try {
-                handler = getHandler(arrayData.getDataFile(), mTabSet);
-                ArrayDesign design = getArrayDesign(arrayData.getDataFile(), mTabSet, handler);
+                handler = getHandler(arrayData.getDataFile());
+                ArrayDesign design = getArrayDesign(arrayData.getDataFile(), handler);
                 List<QuantitationType> types = getQuantitationTypes(handler);
                 handler.loadData(arrayData.getDataSet(), types, design);
             } catch (PlatformFileReadException e) {

@@ -123,15 +123,15 @@ final class DataFileValidator extends AbstractArrayDataUtility {
             File file = fileManager.openFile(caArrayFile);            
             FileValidationResult result = new FileValidationResult(file);
             try {
-                handler = getHandler(caArrayFile, mTabSet);
+                handler = getHandler(caArrayFile);
                 if (!reimport && handler.requiresMageTab()) {
                     validateMageTabPresent(mTabSet, result);
                 }
                 if (result.isValid()) {
-                    ArrayDesign design = getArrayDesign(caArrayFile, mTabSet, handler);
+                    ArrayDesign design = getArrayDesign(caArrayFile, handler);
                     handler.validate(mTabSet, result, design);
                     if (result.isValid()) {
-                        validateArrayDesignInExperiment(caArrayFile, mTabSet, result, handler);
+                        validateArrayDesignInExperiment(caArrayFile, result, handler);
                     }
                 }
             } catch (PlatformFileReadException e) {
@@ -163,9 +163,9 @@ final class DataFileValidator extends AbstractArrayDataUtility {
         }
     }
     
-    private void validateArrayDesignInExperiment(CaArrayFile caArrayFile, MageTabDocumentSet mTabSet,
-            FileValidationResult result, DataFileHandler handler) throws PlatformFileReadException {
-        ArrayDesign design = getArrayDesign(caArrayFile, mTabSet, handler);
+    private void validateArrayDesignInExperiment(CaArrayFile caArrayFile, FileValidationResult result,
+            DataFileHandler handler) throws PlatformFileReadException {
+        ArrayDesign design = getArrayDesign(caArrayFile, handler);
         if (design == null) {
             if (caArrayFile.getFileType().isParseableData()) {
                 result.addMessage(Type.ERROR, "The array design referenced by this data file could not be found.");
