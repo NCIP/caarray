@@ -714,11 +714,11 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
         install:jboss:caarray:re-configure,
         install:jboss:caarray,
         install:jboss:caarray:configure,
-        install:jboss:configure,
-        install:post:jboss,
-        install:jboss:start,
-        install:jboss:validation:post-install
-        " />
+        install:jboss:configure">
+        <antcall target="install:jboss:start"/>
+        <antcall target="install:post:jboss"/>
+        <antcall target="install:jboss:validation:post-install"/>
+    </target>
 
     <!-- Wrapper target to deploy all containers to one server -->
     <target name="install" description="Installs and configures JBOSS, creates database, and deploys application"
@@ -733,12 +733,12 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
 		install:jboss:clean,
         install:database,
         install:jboss,
-        install:post,
-        install:jboss:start,
-        install:carray-grid,
-        install:grid:start,
-        install:jboss:validation:post-install
-        "/>
+        install:carray-grid">
+        <antcall target="install:jboss:start"/>
+        <antcall target="install:grid:start"/>
+        <antcall target="install:post"/>
+        <antcall target="install:jboss:validation:post-install"/>
+    </target>
 
     <!-- Wrapper target to upgrade all container. Does not install or configure binaries -->
     <!--target name="upgrade" description="Deploys application and runs incremental database build"
@@ -772,10 +772,11 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
 		-install:jboss:configure:log4j,
     	-install:jboss:configure:ejb3-interceptors-aop,
 		-install:jboss:configure:disable-credential-caching,
-		upgrade:database,
-		-install:jboss:start-with-config,
-		install:post:jboss
-		"/>
+		upgrade:database">
+		<antcall target="-install:jboss:start-with-config"/>
+		<antcall target="install:post:jboss"/>
+	</target>
+		
 
     <target name="upgrade:tier:grid" description="Upgrades caArray installation on NCICB tier."
     	depends="
@@ -783,10 +784,10 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
 		common:init,
 		common:jboss:init,
 		install:grid:stop,
-		upgrade:carray-grid,
-        install:grid:start,
-        install:jboss:validation:post-install
-        "/>
+		upgrade:carray-grid">
+		<antcall target="install:grid:start"/>
+		<antcall target="install:jboss:validation:post-install"/>
+	</target>
 
     <target name="upgrade" description="Upgrades JBoss and Database" depends="upgrade:common:init,common:init,upgrade-ncm">
     </target>
@@ -811,12 +812,11 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
         install:jboss:caarray,
         install:jboss:caarray:configure,
         -install:jboss:configure:update-runscripts,
-        upgrade:post:jboss,
-        install:post:jboss,
-        -install:jboss:start-with-config,
-        install:jboss:validation:post-install
-        ">
-    </target>
+        upgrade:post:jboss">
+		<antcall target="-install:jboss:start-with-config"/>
+		<antcall target="install:post:jboss"/>
+		<antcall target="install:jboss:validation:post-install"/>
+	</target>
 
     <target name="upgrade-dac" description="Upgrades JBoss and Database"
         depends="
@@ -864,12 +864,11 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
         install:jboss:caarray,
         install:jboss:caarray:configure,
         -install:jboss:configure:update-runscripts,
-        upgrade:post:jboss,
-        install:post:jboss,
-        -install:jboss:start-with-config,
-	install:jboss:validation:post-install
-        ">
-    </target>
+        upgrade:post:jboss">
+		<antcall target="-install:jboss:start-with-config"/>
+		<antcall target="install:post:jboss"/>
+		<antcall target="install:jboss:validation:post-install"/>
+	</target>
 
     <target name="upgrade-cm" description="Upgrades JBoss and Database"
         depends="
@@ -911,10 +910,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
 		install:jboss:stop,
 		install:jboss:validation:pre-install:ports,
         install:jboss:caarray:re-configure,
-        install:jboss:caarray,
-        install:post:jboss,
-        install:jboss:validation:post-install
-        ">
+        install:jboss:caarray">
     </target>
 
     <target name="upgrade-ncm" description="Upgrades JBoss and Database"
@@ -930,9 +926,11 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
         upgrade:jboss,
         upgrade:carray-grid
         ">
-    <antcall target="-install:jboss:start-with-config">
+    	<antcall target="-install:jboss:start-with-config">
             <param name="skip.clean" value="true"/>
         </antcall>
+    	<antcall target="install:post:jboss"/>
+    	<antcall target="install:jboss:validation:post-install"/>
         <antcall target="install:grid:start">
             <param name="skip.clean" value="true"/>
         </antcall>
