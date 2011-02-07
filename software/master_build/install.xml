@@ -327,6 +327,14 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
     	</updateDatabase>
     </target>
 
+    <target name="upgrade:database:remove-offending-liquibase-changesets">
+    	<!-- since this is an update, the db-env-specific changeset needs to be removed-->
+    	<xmltask source="${db.dir.src}/db-env-specific.xml" dest="${db.dir.src}/db-env-specific.xml">
+			<xmlcatalog refid="bda.xml.catalog"/>
+			<remove path="//*[local-name()='changeSet']"/>
+		</xmltask>
+    </target>
+
     <target name="install:jboss:binaries" description="Unzip JBoss binary" unless="exclude.jboss" depends="common:jboss:init, common:init">
         <jboss-install-binaries jboss.binaries.file="${tools.dir}/${jboss.binaries.file}"/>
         <jboss-nci-customizations/>
@@ -499,7 +507,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
         -install:jboss:configure:disable-credential-caching,
         -install:jboss:configure:java_opts,
         -install:jboss:configure:tomcat,
-        -install:jboss:configure:modify-runscripts
+        -install:jboss:configure:update-runscripts
             ">
 		<!-- Calls the following macros
 		    jboss-bindings - configures ports for jboss
@@ -652,21 +660,10 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
          <caarray-jboss-configure-java_opts/>
     </target>
 
-    <target name="-install:jboss:configure:modify-runscripts" description="Updates run.bat and run.sh so remote RMI clients can connect.">
+    <target name="-install:jboss:configure:update-runscripts" description="Updates run.bat and run.sh so remote RMI clients can connect.">
         <set-host-flag-in-start-jboss-scripts 
-            jboss.bin.dir="${jboss.home}/bin" 
-            host.flag.value="${jboss.server.hostname}" 
-            match.expression.value="(org.jboss.Main) (?!--host=)" 
-            replace.expression.value="org.jboss.Main --host=${jboss.server.hostname} "
-            />
-    </target>
-    
-    <target name="-upgrade:jboss:configure:modify-runscripts" description="Updates run.bat and run.sh so remote RMI clients can connect.">
-        <set-host-flag-in-start-jboss-scripts 
-            jboss.bin.dir="${jboss.home}/bin" 
-            host.flag.value="${jboss.server.hostname}"
-            match.expression.value="(org.jboss.Main --host=\S*) " 
-            replace.expression.value="org.jboss.Main --host=${jboss.server.hostname} "
+jboss.bin.dir="${jboss.home}/bin" 
+host.flag.value="${jboss.server.hostname}"
             />
     </target>
 
@@ -719,11 +716,12 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
         install:jboss:caarray:re-configure,
         install:jboss:caarray,
         install:jboss:caarray:configure,
-        install:jboss:configure,
-        install:post:jboss,
-        install:jboss:start,
-        install:jboss:validation:post-install
-        " />
+        install:jboss:configure">
+        <antcall target="install:jboss:start"/>
+        <antcall target="install:post:jboss"/>
+
+<antcall target="install:jboss:validation:post-install"/>
+    </target>
 
     <!-- Wrapper target to deploy all containers to one server -->
     <target name="install" description="Installs and configures JBOSS, creates database, and deploys application"
@@ -738,12 +736,13 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
 		install:jboss:clean,
         install:database,
         install:jboss,
-        install:post,
-        install:jboss:start,
-        install:carray-grid,
-        install:grid:start,
-        install:jboss:validation:post-install
-        "/>
+        install:carray-grid">
+        <antcall target="install:jboss:start"/>
+        <antcall target="install:grid:start"/>
+        <antcall target="install:post"/>
+        <antcall target="install:jboss:validation:post-install"/>
+
+</target>
 
     <!-- Wrapper target to upgrade all container. Does not install or configure binaries -->
     <!--target name="upgrade" description="Deploys application and runs incremental database build"
@@ -760,15 +759,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
         "/-->
     <!-- Generic targets to call appropriate upgrade path targets, just change the depends to use alternate ugprade path -->
     <target name="upgrade:jboss" description="Wrapper target to call all targets required to upgrade jboss container." unless="exclude.jboss" 
-        depends="upgrade:jboss:init,
-        common:init,
-        upgrade-ncm:jboss,
-        -install:jboss:configure:tomcat,
-        -install:jboss:configure:log4j,
-        -install:jboss:configure:ejb3-interceptors-aop,
-        -install:jboss:configure:disable-credential-caching,
-        -install:jboss:configure:api:streaming:port,
-        -upgrade:jboss:configure:modify-runscripts">
+depends="upgrade:jboss:init,common:init,upgrade-ncm:jboss,-install:jboss:configure:tomcat,-install:jboss:configure:log4j,-install:jboss:configure:ejb3-interceptors-aop,-install:jboss:configure:disable-credential-caching,-install:jboss:configure:api:streaming:port">
     </target>
 
     <target name="upgrade:tier:caarray" description="Upgrades caArray installation on NCICB tier."
@@ -786,10 +777,12 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
 		-install:jboss:configure:log4j,
     	-install:jboss:configure:ejb3-interceptors-aop,
 		-install:jboss:configure:disable-credential-caching,
-		upgrade:database,
-		-install:jboss:start-with-config,
-		install:post:jboss
-		"/>
+		upgrade:database">
+		<antcall target="-install:jboss:start-with-config"/>
+		<antcall target="install:post:jboss"/>
+
+</target>
+		
 
     <target name="upgrade:tier:grid" description="Upgrades caArray installation on NCICB tier."
     	depends="
@@ -797,10 +790,11 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
 		common:init,
 		common:jboss:init,
 		install:grid:stop,
-		upgrade:carray-grid,
-        install:grid:start,
-        install:jboss:validation:post-install
-        "/>
+		upgrade:carray-grid">
+		<antcall target="install:grid:start"/>
+		<antcall target="install:jboss:validation:post-install"/>
+
+</target>
 
     <target name="upgrade" description="Upgrades JBoss and Database" depends="upgrade:common:init,common:init,upgrade-ncm">
     </target>
@@ -824,13 +818,12 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
         install:jboss:caarray:re-configure,
         install:jboss:caarray,
         install:jboss:caarray:configure,
-        -install:jboss:configure:modify-runscripts,
-        upgrade:post:jboss,
-        install:post:jboss,
-        -install:jboss:start-with-config,
-        install:jboss:validation:post-install
-        ">
-    </target>
+        -install:jboss:configure:update-runscripts,
+        upgrade:post:jboss">
+    <antcall target="-install:jboss:start-with-config"/>
+		<antcall target="install:post:jboss"/>
+		<antcall target="install:jboss:validation:post-install"/>
+	</target>
 
     <target name="upgrade-dac" description="Upgrades JBoss and Database"
         depends="
@@ -847,7 +840,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
         ">
     </target>
 
-    <target name="upgrade:database" depends="install:database" description="Upgrading and installing db is the same"/>
+    <target name="upgrade:database" depends="upgrade:database:remove-offending-liquibase-changesets,install:database" description="Upgrading and installing db is the same"/>
 
     <target name="upgrade-dac:with-dbinstall" description="Upgrades JBoss and Database"
         depends="
@@ -877,13 +870,12 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
         install:jboss:caarray:re-configure,
         install:jboss:caarray,
         install:jboss:caarray:configure,
-        -install:jboss:configure:modify-runscripts,
-        upgrade:post:jboss,
-        install:post:jboss,
-        -install:jboss:start-with-config,
-	install:jboss:validation:post-install
-        ">
-    </target>
+        -install:jboss:configure:update-runscripts,
+        upgrade:post:jboss">
+    <antcall target="-install:jboss:start-with-config"/>
+		<antcall target="install:post:jboss"/>
+		<antcall target="install:jboss:validation:post-install"/>
+	</target>
 
     <target name="upgrade-cm" description="Upgrades JBoss and Database"
         depends="
@@ -925,10 +917,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
 		install:jboss:stop,
 		install:jboss:validation:pre-install:ports,
         install:jboss:caarray:re-configure,
-        install:jboss:caarray,
-        install:post:jboss,
-        install:jboss:validation:post-install
-        ">
+        install:jboss:caarray">
     </target>
 
     <target name="upgrade-ncm" description="Upgrades JBoss and Database"
@@ -947,6 +936,8 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
     <antcall target="-install:jboss:start-with-config">
             <param name="skip.clean" value="true"/>
         </antcall>
+        <antcall target="install:post:jboss"/>
+    	<antcall target="install:jboss:validation:post-install"/>
         <antcall target="install:grid:start">
             <param name="skip.clean" value="true"/>
         </antcall>
@@ -1540,10 +1531,8 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
     <macrodef name="set-host-flag-in-start-jboss-scripts">
         <attribute name="jboss.bin.dir" />
         <attribute name="host.flag.value" />
-        <attribute name="match.expression.value" />
-        <attribute name="replace.expression.value" />
         <sequential>
-            <replaceregexp match="@{match.expression.value}" replace="@{replace.expression.value}" byline="true">
+            <replaceregexp match="(org.jboss.Main) (?!--host=)" replace="org.jboss.Main --host=@{host.flag.value} " byline="true">
                 <fileset dir="@{jboss.bin.dir}">
                     <include name="run.bat"/>
                     <include name="run.sh"/>
