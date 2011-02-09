@@ -83,7 +83,11 @@
 package gov.nih.nci.caarray.web.action.project;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Matchers.anyObject;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import gov.nih.nci.caarray.application.jobqueue.JobQueueService;
 import gov.nih.nci.caarray.domain.file.FileStatus;
@@ -97,6 +101,7 @@ import gov.nih.nci.security.authorization.domainobjects.User;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -109,32 +114,45 @@ import com.fiveamsolutions.nci.commons.web.displaytag.SortablePaginatedList;
  *
  */
 public class ProjectJobQueueActionTest extends AbstractBaseStrutsTest {
-    private ProjectJobQueueAction action = new ProjectJobQueueAction();
-    private JobQueueService jqService = new LocalJobQueueServiceBean();
+    private ProjectJobQueueAction action;
+    private JobQueueService jqService;
     private User user; 
     private List<Job> jobList;
-    SortablePaginatedList<Job, JobSortCriterion> jobs;
+    private SortablePaginatedList<Job, JobSortCriterion> jobs;
+    private UUID jobIdToCancel;
     
     @Before
     public void setup() throws Exception {
         ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
-        locatorStub.addLookup(JobQueueService.JNDI_NAME, jqService);
         
-        initJobList();
-        action = mock(ProjectJobQueueAction.class);
-        jqService = mock(LocalJobQueueServiceBean.class);
+        action = new ProjectJobQueueAction();
+        jqService = mock(JobQueueService.class);
+        locatorStub.addLookup(JobQueueService.JNDI_NAME, jqService);
         user = mock(User.class);
         
-        when(action.getJobs()).thenReturn(jobs);
-        when(jqService.getJobsForUser(user)).thenReturn(jobList);
-        when(jqService.getJobCount(user)).thenReturn(4);
+        initJobList();
+        jobIdToCancel = jobList.get(1).getJobId();
+        action.setJobId(jobIdToCancel.toString());
+        
+        when(jqService.cancelJob(jobIdToCancel.toString())).thenReturn(true);
    }
-
+    
     @Test
     public void testJobQueue() {
-        action.jobQueue();
-        assertEquals(4, action.getJobs().getList().size());
-        assertEquals(jobList, action.getJobs().getList());
+        when(jqService.getJobsForUser(user)).thenReturn(jobList);
+        when(jqService.getJobCount(user)).thenReturn(jobList.size());
+        
+        assertEquals("success", action.jobQueue());
+        assertNotNull(action.getJobs());
+        assertNotNull(action.getJobs().getList());
+        verify(jqService).getJobsForUser((User) anyObject());
+    }
+    
+    @Test
+    public void testCancelJob() {
+        action.setJobId(jobIdToCancel.toString());
+        assertEquals("success", action.cancelJob());
+        verify(jqService).cancelJob(anyString());
     }
     
     private void initJobList() {
@@ -152,6 +170,7 @@ public class ProjectJobQueueActionTest extends AbstractBaseStrutsTest {
     private Job getJob(int position, String username, String experimentName, JobType jobType, Date timeRequested, 
             Date timeStarted, FileStatus status) {
         JobStub job = new JobStub();
+        job.setJobId(UUID.randomUUID());
         job.setPosition(position);
         job.setUsername(username);
         job.setExperimentName(experimentName);
@@ -160,23 +179,6 @@ public class ProjectJobQueueActionTest extends AbstractBaseStrutsTest {
         job.setTimeStarted(timeStarted);
         job.setStatus(status);
         return job;
-    }
-    
-    private static class LocalJobQueueServiceBean implements JobQueueService {
-
-        /** 
-         * {@inheritDoc}
-         */
-        public List<Job> getJobsForUser(User user) {
-            return null;
-        }
-
-        /** 
-         * {@inheritDoc}
-         */
-        public int getJobCount(User user) {
-             return 0;
-        }
     }
 }
 

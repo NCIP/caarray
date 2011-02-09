@@ -137,4 +137,11 @@ public class JobQueueServiceBean implements JobQueueService {
         return jobQueueDao.getJobsForUser(user).size();
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    public boolean cancelJob(String jobId) {
+        return jobQueueDao.cancelJob(jobId);
+    }
+
 }

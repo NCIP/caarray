@@ -20,7 +20,7 @@
                 <interceptor-ref name="exception" />
                 <interceptor-ref name="alias" />
                 <interceptor-ref name="params">
-				    <!--
+                    <!--
                         Excludes:
                             the jQuery no-cache _ parameter and the Displaytag d-#-X parameter(s)
                             All dojo parameters.
@@ -28,7 +28,7 @@
                                 http://blog.o0o.nu/2010/07/cve-2010-1870-struts2xwork-remote.html
                     -->
                     <param name="excludeParams">_,d-\d+?-[sop],dojo\..*,^struts\..*,.*\\.*,.*\(.*,.*\).*,.*@.*</param>
-				</interceptor-ref>
+                </interceptor-ref>
                 <interceptor-ref name="servletConfig" />
                 <interceptor-ref name="prepare" />
                 <interceptor-ref name="i18n" />
@@ -236,6 +236,10 @@
         </action>
 
         <action name="ajax/project/viewJobQueue" class="gov.nih.nci.caarray.web.action.project.ProjectJobQueueAction" method="jobQueue">
+            <result name="success">/WEB-INF/pages/project/jobQueue/jobQueue.jsp</result>
+        </action>
+        
+        <action name="project/cancelJob" class="gov.nih.nci.caarray.web.action.project.ProjectJobQueueAction" method="cancelJob">
             <result name="success">/WEB-INF/pages/project/jobQueue/jobQueue.jsp</result>
         </action>
         

@@ -85,12 +85,18 @@ package gov.nih.nci.caarray.domain.project;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 
 import java.util.Date;
+import java.util.UUID;
 
 /**
  * @author jscott
  *
  */
 public interface BaseJob {
+    /**
+     * @return the job id
+     */
+    UUID getJobId();
+    
     /**
      * @return the name of the user who owns the job
      */

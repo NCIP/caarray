@@ -145,7 +145,7 @@ abstract class AbstractProjectFilesJob extends AbstractFileManagementJob {
     }
    
     @Override
-    protected CaArrayFileSet getFileSet() {
+    public CaArrayFileSet getFileSet() {
         CaArrayFileSet fileSet = new CaArrayFileSet(getProject());
         List<CaArrayFile> files = searchDao.retrieveByIds(CaArrayFile.class,
                 new ArrayList<Long>(this.fileIds));

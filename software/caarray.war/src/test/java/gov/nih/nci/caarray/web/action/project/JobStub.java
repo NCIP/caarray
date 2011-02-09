@@ -93,6 +93,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Date;
+import java.util.UUID;
 
 import org.apache.commons.lang.NotImplementedException;
 
@@ -112,6 +113,7 @@ public class JobStub extends AbstractCaArrayEntity implements Job {
     private boolean userHasReadAccess;
     private boolean userHasWriteAccess;
     private boolean inProgress;
+    private UUID jobId;
 
     private boolean userHasOwnership;
     
@@ -247,4 +249,20 @@ public class JobStub extends AbstractCaArrayEntity implements Job {
     public void setuserHasOwnership(boolean value) {
         userHasOwnership = value;
     }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public UUID getJobId() {
+        return jobId;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public void setJobId(UUID jobId) {
+        this.jobId = jobId;
+    }
+    
+    
 }

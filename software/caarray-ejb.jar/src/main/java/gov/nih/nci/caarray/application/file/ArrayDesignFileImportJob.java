@@ -157,7 +157,8 @@ final class ArrayDesignFileImportJob extends AbstractFileManagementJob {
         return FileStatus.IMPORTING;
     };
     
-    protected CaArrayFileSet getFileSet() {
+    @Override
+    public CaArrayFileSet getFileSet() {
         return getArrayDesign().getDesignFileSet();
     }
 

@@ -86,6 +86,7 @@ import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.security.authorization.domainobjects.User;
 
 import java.util.Date;
+import java.util.UUID;
 
 /**
  * Represents the read-only state of another job at the time an instance of this
@@ -96,6 +97,7 @@ import java.util.Date;
  */
 public class JobSnapshot implements Job {
     private final BaseJob originalJob;
+    private final UUID jobId;
     private final String ownerName;
     private final String experimentName;
     private final JobType jobType;
@@ -117,6 +119,7 @@ public class JobSnapshot implements Job {
         this.originalJob = originalJob;
         this.position = position;
         
+        this.jobId = originalJob.getJobId();
         ownerName = originalJob.getOwnerName();
         experimentName = originalJob.getExperimentName();
         jobType = originalJob.getJobType();
@@ -129,6 +132,13 @@ public class JobSnapshot implements Job {
         doesUserHaveOwnership = originalJob.getOwnerName().equalsIgnoreCase(user.getLoginName());
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    public UUID getJobId() {
+        return this.jobId;
+    }
+    
     /**
      * {@inheritDoc}
      */

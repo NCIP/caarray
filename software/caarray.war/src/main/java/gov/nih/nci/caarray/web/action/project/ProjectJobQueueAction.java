@@ -90,15 +90,18 @@ import gov.nih.nci.caarray.util.CaArrayUsernameHolder;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 
 import com.fiveamsolutions.nci.commons.web.displaytag.SortablePaginatedList;
+import com.fiveamsolutions.nci.commons.web.struts2.action.ActionHelper;
 import com.opensymphony.xwork2.Action;
+import com.opensymphony.xwork2.ActionSupport;
 
 /**
  * Class to handle the job queue pages.
  *
  * @author Krishna Kanchinadam
  */
-public class ProjectJobQueueAction {
+public class ProjectJobQueueAction extends ActionSupport {
     private static final int PAGE_SIZE = 20;
+    private String jobId;
 
     private final SortablePaginatedList<Job, JobSortCriterion> jobs =
             new SortablePaginatedList<Job, JobSortCriterion>(PAGE_SIZE, JobSortCriterion.POSITION.name(),
@@ -117,11 +120,30 @@ public class ProjectJobQueueAction {
                 getJobCount(CaArrayUsernameHolder.getCsmUser()));
         return Action.SUCCESS;
     }
-
+    
     /**
      * @return the jobs
      */
     public SortablePaginatedList<Job, JobSortCriterion> getJobs() {
         return jobs;
+    }
+    
+    /**
+     * Cancels the job.
+     * @return a boolean value that indicates if the job was cancelled or not.
+     */
+    public String cancelJob() {
+        if (!ServiceLocatorFactory.getJobQueueService().cancelJob(jobId)) {
+            ActionHelper.saveMessage(getText("jobQueue.cancel.unableToCancel"));
+        }
+        return jobQueue();
+    }
+
+    /**
+     * Sets the job id. 
+     * @param jobId the job id to set.
+     */
+    public void setJobId(String jobId) {
+        this.jobId = jobId;
     }
 }

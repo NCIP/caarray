@@ -131,4 +131,8 @@ public class JobDaoSingleJobStub implements JobQueueDao {
             return Collections.emptyList();
         }
     }
+
+    public boolean cancelJob(String jobId) {
+        return true;
+    }
 }

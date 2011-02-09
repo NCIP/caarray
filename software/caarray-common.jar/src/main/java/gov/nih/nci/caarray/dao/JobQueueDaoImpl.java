@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.dao;
 
 
+import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.project.ExecutableJob;
 import gov.nih.nci.caarray.domain.project.Job;
 import gov.nih.nci.caarray.domain.project.JobMessageSender;
@@ -93,6 +94,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import java.util.UUID;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -109,18 +111,21 @@ class JobQueueDaoImpl implements JobQueueDao {
     private final Queue<ExecutableJob> queue = new LinkedList<ExecutableJob>();
     private final JobMessageSender messageSender;
     private final Lock jobLock = new ReentrantLock();
+    private final FileDao fileDao;
 
     /**
      * @param messageSender the MessageSender dependency
      */
     @Inject
-    public JobQueueDaoImpl(JobMessageSender messageSender) {
+    public JobQueueDaoImpl(JobMessageSender messageSender, FileDao fileDao) {
         this.messageSender = messageSender;
+        this.fileDao = fileDao;
     }
 
     public void enqueue(ExecutableJob job) {
         jobLock.lock();
         try {
+            job.setJobId(UUID.randomUUID());
             job.setInQueueStatus();
             queue.add(job);
         } finally {
@@ -210,5 +215,34 @@ class JobQueueDaoImpl implements JobQueueDao {
         } finally {
             jobLock.unlock();
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public boolean cancelJob(String jobId) {
+        jobLock.lock();
+        try {
+            for (ExecutableJob originalJob : getJobList()) {
+                if (originalJob.getJobId().equals(UUID.fromString(jobId))) {
+                    if (originalJob.isInProgress()) {
+                        return false;
+                    }
+                    
+                    if (queue.remove(originalJob)) {
+                        originalJob.setUploadedStatus();
+                        for (CaArrayFile file : originalJob.getFileSet().getFiles()) {
+                            fileDao.saveAndEvict(file);
+                        }
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+            }
+        } finally {
+            jobLock.unlock();
+        }
+        return false;
     }
 }

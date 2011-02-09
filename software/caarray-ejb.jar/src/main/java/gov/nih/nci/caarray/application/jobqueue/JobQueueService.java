@@ -121,4 +121,13 @@ public interface JobQueueService {
      * @return the count of all jobs directly related to the given user.
      */
     int getJobCount(User user);
+    
+    /**
+     * Cancels the given job.
+     * 
+     * @param jobId string representation of the job id to cancel.
+     * @return a boolean value that indicates if the job was canceled or not. true implies that the job was
+     * canceled successfully, whereas a false value indicates that the job could not be canceled. 
+     */
+    boolean cancelJob(String jobId);
 }

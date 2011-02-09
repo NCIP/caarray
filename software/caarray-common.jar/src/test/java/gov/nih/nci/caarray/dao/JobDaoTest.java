@@ -89,7 +89,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import gov.nih.nci.caarray.domain.project.ExecutableJob;
-import gov.nih.nci.caarray.domain.project.Job;
 import gov.nih.nci.caarray.domain.project.JobMessageSender;
 
 import java.util.ArrayList;
@@ -111,7 +110,8 @@ public class JobDaoTest {
     @Before
     public void setUp() {
         jobMessageSender = mock(JobMessageSender.class);
-        systemUnderTest = new JobQueueDaoImpl(jobMessageSender);        
+        FileDao fileDao = mock(FileDao.class);
+        systemUnderTest = new JobQueueDaoImpl(jobMessageSender, fileDao);        
         mockJobs = createMockJobsList(NUMBER_OF_MOCK_JOBS);
         jobIndex = 0;
     }

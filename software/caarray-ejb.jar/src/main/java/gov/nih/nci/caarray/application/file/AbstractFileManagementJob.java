@@ -93,6 +93,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Date;
+import java.util.UUID;
 
 import org.apache.log4j.Logger;
 
@@ -110,6 +111,7 @@ public abstract class AbstractFileManagementJob implements Serializable, Executa
     private final Date timeRequested;
     private Date timeStarted;
     private int position;
+    private UUID jobId;
 
     @Inject
     AbstractFileManagementJob(String username, UsernameHolder usernameHolder) {
@@ -140,12 +142,19 @@ public abstract class AbstractFileManagementJob implements Serializable, Executa
     /**
      * @return the file set this job is operating on
      */
-    protected abstract CaArrayFileSet getFileSet();
+    public abstract CaArrayFileSet getFileSet();
 
     /**
      * @return the FileStatus used to indicate that this job is in progress
      */
     protected abstract FileStatus getInProgressStatus();
+    
+    /**
+     * Set the status to uploaded.
+     */
+    public void setUploadedStatus() {
+        getFileSet().updateStatus(FileStatus.UPLOADED);
+    }
     
     /**
      * Set the appropriate status value indicating that the job is in progress.
@@ -218,4 +227,17 @@ public abstract class AbstractFileManagementJob implements Serializable, Executa
         this.position = position;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    public void setJobId(UUID jobId) {
+        this.jobId = jobId;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public UUID getJobId() {
+        return jobId;
+    }
 }
