@@ -915,28 +915,31 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
 
     <target name="upgrade-ncm" description="Upgrades JBoss and Database"
         depends="
-		upgrade:common:init,
-		common:init,
-		common:jboss:init,
-		install:common:validation:pre-install,
-		install:jboss:validation:pre-install,
-		install:database:validation:pre-install,
-		install:jboss:stop,
-        upgrade:database,
-        upgrade:jboss,
-        upgrade:carray-grid
-        ">
+	    upgrade:common:init,
+	    common:init,
+	    common:jboss:init,
+            install:common:validation:pre-install,
+            install:jboss:validation:pre-install,
+            install:database:validation:pre-install,
+            install:jboss:stop,
+            upgrade:database,
+            upgrade:jboss,
+            upgrade:carray-grid">
     	<antcall target="-install:jboss:start-with-config">
             <param name="skip.clean" value="true"/>
         </antcall>
-    	<antcall target="install:post:jboss"/>
-    	<antcall target="install:jboss:validation:post-install"/>
+    	<antcall target="install:post:jboss">
+            <param name="skip.clean" value="true"/>
+        </antcall>
+    	<antcall target="install:jboss:validation:post-install">
+            <param name="skip.clean" value="true"/>
+        </antcall>
         <antcall target="install:grid:start">
             <param name="skip.clean" value="true"/>
         </antcall>
         <antcall target="install:common:validation:post-install">
             <param name="skip.clean" value="true"/>
-    </antcall>
+        </antcall>
     </target>
 
     <target name="upgrade-ncm:with-dbinstall" description="Upgrades JBoss and Database"
