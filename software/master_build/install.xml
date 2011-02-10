@@ -717,10 +717,6 @@ host.flag.value="${jboss.server.hostname}"
         install:jboss:caarray,
         install:jboss:caarray:configure,
         install:jboss:configure">
-        <antcall target="install:jboss:start"/>
-        <antcall target="install:post:jboss"/>
-
-<antcall target="install:jboss:validation:post-install"/>
     </target>
 
     <!-- Wrapper target to deploy all containers to one server -->
@@ -737,12 +733,19 @@ host.flag.value="${jboss.server.hostname}"
         install:database,
         install:jboss,
         install:carray-grid">
-        <antcall target="install:jboss:start"/>
-        <antcall target="install:grid:start"/>
-        <antcall target="install:post"/>
-        <antcall target="install:jboss:validation:post-install"/>
-
-</target>
+        <antcall target="install:jboss:start">
+            <param name="skip.clean" value="true"/>
+        </antcall>
+        <antcall target="install:grid:start">
+            <param name="skip.clean" value="true"/>
+        </antcall>
+        <antcall target="install:post">
+            <param name="skip.clean" value="true"/>
+        </antcall>
+        <antcall target="install:jboss:validation:post-install">
+            <param name="skip.clean" value="true"/>
+        </antcall>
+    </target>
 
     <!-- Wrapper target to upgrade all container. Does not install or configure binaries -->
     <!--target name="upgrade" description="Deploys application and runs incremental database build"
@@ -778,12 +781,14 @@ depends="upgrade:jboss:init,common:init,upgrade-ncm:jboss,-install:jboss:configu
     	-install:jboss:configure:ejb3-interceptors-aop,
 		-install:jboss:configure:disable-credential-caching,
 		upgrade:database">
-		<antcall target="-install:jboss:start-with-config"/>
-		<antcall target="install:post:jboss"/>
-
-</target>
+		<antcall target="-install:jboss:start-with-config">
+            <param name="skip.clean" value="true"/>
+        </antcall>
+		<antcall target="install:post:jboss">
+            <param name="skip.clean" value="true"/>
+        </antcall>
+    </target>
 		
-
     <target name="upgrade:tier:grid" description="Upgrades caArray installation on NCICB tier."
     	depends="
     	upgrade:jboss:init,
@@ -791,12 +796,27 @@ depends="upgrade:jboss:init,common:init,upgrade-ncm:jboss,-install:jboss:configu
 		common:jboss:init,
 		install:grid:stop,
 		upgrade:carray-grid">
-		<antcall target="install:grid:start"/>
-		<antcall target="install:jboss:validation:post-install"/>
-
-</target>
+		<antcall target="install:grid:start">
+            <param name="skip.clean" value="true"/>
+        </antcall>
+		<antcall target="install:jboss:validation:post-install">
+            <param name="skip.clean" value="true"/>
+        </antcall>
+    </target>
 
     <target name="upgrade" description="Upgrades JBoss and Database" depends="upgrade:common:init,common:init,upgrade-ncm">
+        <antcall target="install:jboss:start">
+            <param name="skip.clean" value="true"/>
+        </antcall>
+        <antcall target="install:grid:start">
+            <param name="skip.clean" value="true"/>
+        </antcall>
+        <antcall target="install:post">
+            <param name="skip.clean" value="true"/>
+        </antcall>
+        <antcall target="install:jboss:validation:post-install">
+            <param name="skip.clean" value="true"/>
+        </antcall>
     </target>
 
     <target name="upgrade-with-dbinstall" description="Upgrades JBoss and Database" depends="upgrade:common:init,common:init,upgrade-ncm:with-dbinstall">
@@ -820,9 +840,6 @@ depends="upgrade:jboss:init,common:init,upgrade-ncm:jboss,-install:jboss:configu
         install:jboss:caarray:configure,
         -install:jboss:configure:update-runscripts,
         upgrade:post:jboss">
-    <antcall target="-install:jboss:start-with-config"/>
-		<antcall target="install:post:jboss"/>
-		<antcall target="install:jboss:validation:post-install"/>
 	</target>
 
     <target name="upgrade-dac" description="Upgrades JBoss and Database"
@@ -853,7 +870,7 @@ depends="upgrade:jboss:init,common:init,upgrade-ncm:jboss,-install:jboss:configu
 		install:jboss:stop,
         install:database,
         upgrade:jboss,
-	install:common:validation:post-install
+	    install:common:validation:post-install
         ">
     </target>
     <!-- Upgrade with Container Modification (CM) -->
@@ -872,9 +889,6 @@ depends="upgrade:jboss:init,common:init,upgrade-ncm:jboss,-install:jboss:configu
         install:jboss:caarray:configure,
         -install:jboss:configure:update-runscripts,
         upgrade:post:jboss">
-    <antcall target="-install:jboss:start-with-config"/>
-		<antcall target="install:post:jboss"/>
-		<antcall target="install:jboss:validation:post-install"/>
 	</target>
 
     <target name="upgrade-cm" description="Upgrades JBoss and Database"
@@ -903,9 +917,10 @@ depends="upgrade:jboss:init,common:init,upgrade-ncm:jboss,-install:jboss:configu
 		install:jboss:stop,
         install:database,
         upgrade:jboss,
-	install:common:validation:post-install
+	    install:common:validation:post-install
         ">
     </target>
+    
     <!-- Upgrade with No Container Modification (NCM) -->
     <target name="upgrade-ncm:jboss" description="Wrapper target to call all targets required to upgrade jboss container." unless="exclude.jboss"
         depends="
@@ -932,23 +947,7 @@ depends="upgrade:jboss:init,common:init,upgrade-ncm:jboss,-install:jboss:configu
         upgrade:database,
         upgrade:jboss,
         upgrade:carray-grid">
-        <antcall target="-install:jboss:start-with-config">
-            <param name="skip.clean" value="true"/>
-        </antcall>
-        <antcall target="install:post:jboss">
-            <param name="skip.clean" value="true"/>
-        </antcall>
-        <antcall target="install:jboss:validation:post-install">
-            <param name="skip.clean" value="true"/>
-        </antcall>
-        <antcall target="install:grid:start">
-            <param name="skip.clean" value="true"/>
-        </antcall>
-        <antcall target="install:common:validation:post-install">
-            <param name="skip.clean" value="true"/>
-        </antcall>
     </target>
-
 
     <target name="upgrade-ncm:with-dbinstall" description="Upgrades JBoss and Database"
         depends="
