@@ -24,13 +24,18 @@
 		<replace dir="${install.path}/${application_installer}" token="basedir}" value="install.path}/${application_installer}">
 			<include name="**/*.xml" />
 			<include name="**/*.properties" />
+			<exclude name="**/sync-gts/**/*"/>
+			<exclude name="**/caGrid-console/**/*"/>
 		</replace>
 		<replace dir="${install.path}/${application_installer}" token="&quot;upgrade.properties&quot;" value="&quot;${install.path}/${application_installer}/upgrade.properties&quot;">
 			<include name="**/*.xml" />
 		</replace>
+		<!-- fix for cagrid-console/build.xml getting wrong path-->
+        <replace dir="${install.path}/${application_installer}/caGrid-console/" token="basedir}" value="install.path}/${application_installer}/caGrid-console">
+            <include name="**/*.xml" />
+        </replace>
 	</target>
-	
-	
+
 	<target name="convert-install-path" >
 		<echo message="application.base.path.target =${application.base.path.target}="/>
 		<pathconvert targetos="unix" property="application.base.path.convert">

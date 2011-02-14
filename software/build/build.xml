@@ -3199,7 +3199,7 @@
 
     <target name="display-properties" depends="init:third-party-paths">
         <echo> Diagnostics...</echo>
-        <echoproperties />
+        <echoproperties><propertyset negate="yes" > <propertyref regex="passw" /> </propertyset></echoproperties>
     </target>
 
     <target name="pre-build-checks" depends="init:third-party-paths">

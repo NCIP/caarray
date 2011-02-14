@@ -93,6 +93,9 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
 
     <property name="db.src.dir" value="${software.dir}/${db.dist.relative.dir}" />
     <property name="jboss-conf.target.dir" value="${caarray.dist.dir}/${jboss-conf.dist.relative.dir}" />
+    
+    <property name="cagrid-console.dest.file" value="${download.dir}/${cagrid-console.binaries.file}" />
+	<property name="cagrid.target.co.dir" location="${target.dir}/cagrid-target"/>
 
     <!-- Used by dist:*:prep to determin list of files to use for incremental build process.
         Directory and files must be in svn to work.
@@ -115,7 +118,8 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
     <!-- this needs to be implemented properly later -->
     <property name="cagrid-libs.dest.file" value="${download.dir}/${cagrid-libs.binaries.file}" />
     <property name="cagrid-base-war.dest.file" value="${download.dir}/${cagrid-base-war.binaries.file}" />
-    
+    <property name="cagrid-console.dest.file" value="${download.dir}/${cagrid-console.binaries.file}" />
+    <property name="cagrid.target.co.dir" location="${target.dir}/cagrid-target"/>
     
     <property name="caarray.dist.dir" value="${dist.exploded.dir}" />
     <property name="db.dir" value="${caarray.dist.dir}/db" />
@@ -229,6 +233,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
         <available file="${tomcat.dest.file}" property="tomcat.tools.exists" />
         <available file="${cagrid-libs.dest.file}" property="cagrid-libs.tools.exists" />
         <available file="${cagrid-base-war.dest.file}" property="cagrid-base-war.tools.exists" />
+        <available file="${cagrid-console.dest.file}" property="cagrid-console.tools.exists" />
 	<!-- If jboss is required to build, then check for jboss in jboss.home, then check for in jboss in working directory, if not found then download it into this that directory.  If found at any point set local.jboss.home to where it is found.  This can be passed to sub-projects so then can compile code against distribution.  This is especially important on AntHillPro server which will not have jboss present, thus will have to use a copy in the working area.  This also makes it easier to start the project, if the developer does not yet have jboss installed, build will download it and install it so build can proceed. -->
 	<if>
 		<equals arg1="${require.jboss}" arg2="true" />
@@ -412,7 +417,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
             dir="${software.dir}/gui-installer">
             <property name="compile.jar.dir" value="${software.dir}/gui-installer/target/izpack-4.3"/>
             <property name="dist.location" value="${dist.dir}"/>
-            <property name="bda-util.dir" value="${bda-utils.dir}"/>
+            <property name="bda-utils.dir" value="${bda-utils.dir}"/>
             <property name="caarray.upgrade.zip.file" value="${caarray.upgrade.zip.file}"/>
             <property name="caarray.install.zip.file" value="${caarray.install.zip.file}"/>
             <property name="caarray.version" value="${caarray.version}"/>
@@ -626,7 +631,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
         <delete dir="${jboss.temp.staging.dir}"/>
     </target>
 
-    <target name="dist:tools:retrieve" depends="retrieve:jboss,retrieve:jboss404,dist:tools:retrieve:cagrid"/>
+    <target name="dist:tools:retrieve" depends="retrieve:jboss,retrieve:jboss404,dist:tools:retrieve:cagrid,dist:tools:retrieve:cagrid-console"/>
 	
     <target name="dist:tools:retrieve:jboss-bindings"  description="Downloads JBOSS bindings filefrom binary repository and verifies checksum">
         <get src="${jboss-bindings.src.url}" dest="${dist.exploded.dir}/${jboss-bindings.file}" />
@@ -643,6 +648,89 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
         build:caarray,
         build:init-sql">
     </target>
+    
+    <target name="dist:tools:retrieve:sync-gts"  description="Downloads synch-gts from binary repository" depends="dist:tools:retrieve:cagrid-target">
+		<if>
+			<not>
+				<available file="${download.dir}/${sync-gts.binaries.file}"/>
+			</not>
+			<then>
+				<get src="${sync-gts.src.url}" dest="${download.dir}/${sync-gts.binaries.file}" />
+			</then>
+		</if>
+		<property name="sync-gts.dist.dir" location="${dist.exploded.dir}/${sync-gts.dist.relative.dir}"/>
+		<unzip src="${download.dir}/${sync-gts.binaries.file}" dest="${sync-gts.dist.dir}"/>
+	</target>
+	
+	<target name="dist:tools:retrieve:cagrid-target">
+		<mkdir dir="${cagrid.target.co.dir}"/>
+		<if>
+			<not>
+				<available file="${cagrid-target.src.url}"/>
+			</not>
+			<then>
+				<mkdir dir="${cagrid.target.co.dir}"/>
+				<svn-co
+					svn.checkout.url="${cagrid-target.src.url}"
+					svn.checkout.dir="${cagrid.target.co.dir}"
+					delete="false"
+					/>
+			</then>
+		</if>
+		<copy todir="${dist.exploded.dir}/cagrid-target">
+			<fileset dir="${cagrid.target.co.dir}"/>
+		</copy>
+	</target>
+	
+	<target name="dist:tools:retrieve:cgmm" if="jboss.cgmm.enable">
+		<ivy-retrieve-cgmm ivy.dir="${bda-utils.dir}/resource/ivy"
+			/>
+		<copy todir="${dist.exploded.dir}/cgmm-libs">
+			<fileset dir="${lib.dir}">
+				<include name="cgmm/*"/>
+				<include name="jboss-default-lib/*"/>
+				<include name="jbossweb-tomcat55-sar-jars/*"/>
+			</fileset>
+		</copy>
+	</target>
+	
+	<target name="deploy:remote:upgrade:ahp" description="Installs and configures the application and required binaries and re-creates the datbase  on a remote machine. Used for NCI tiers (dev, qa, stg, prod)" >
+		<!--
+		  * Will use the target from install.xml specified in ${upgrade.target} (defaults to upgrade unless passed in on command line).
+		  * Requires specifying -Dproperties.file=@file@ on the command line to point installer to correct enviornment to install into.
+		  * Calls ant from exec task to ensure properties are do not carry over from current ant runtime and also to emulate a manual install, if you want properties to be used at install time they must be included in a proeprties file.
+		-->
+		<!-- Call macro to deploy files on desired server -->
+		<echoproperties  prefix="ssh"> <propertyset negate="yes" > <propertyref regex="passw" /> </propertyset> </echoproperties>
+		<deploy-files dist.file="${bda-blueprints-webapp.upgrade.zip.file}" />
+		<override-properties-prep
+			override.properties="@{override.properties}"
+			override.properties.string.property.name="override.properties.string"
+			/>
+		<!-- SSH to machine ant run ant command line to install application -->
+		<remote-ssh remotesshcommand=". .bash_profile;cd ${ssh.dir.temp}; ant -Dproperties.file=${properties.file.name} -Dforce.reinstall=true ${override.properties.string} ${upgrade.target}" />
+	</target>
+    
+    <target name="dist:tools:retrieve:cagrid-console" description="Downloads grid console from binary repository">
+		<if>
+			<not>
+				<available file="${cagrid-console.dest.file}"/>
+			</not>
+			<then>
+				<get src="${cagrid-console.src.url}" dest="${cagrid-console.dest.file}" />
+			</then>
+		</if>
+		<property name="cagrid-console.dist.dir" location="${dist.exploded.dir}/${cagrid-console.dist.relative.dir}"/>
+		<unzip src="${cagrid-console.dest.file}" dest="${dist.exploded.dir}"/>
+		<replaceregexp file="${cagrid-console.dist.dir}/ivy-build.xml" byline="true"
+			match="override=.true."
+			replace=""
+			/>
+		<replaceregexp file="${cagrid-console.dist.dir}/ivy-build.xml" byline="true"
+			match="id=.ivy.instance."
+			replace=""
+			/>
+	</target>
 
     <target name="copy-caarray2-grid-service" depends="run-caarray2-build">
         <copy todir="${caarray.grid.dir}" overwrite="true" flatten="true">
@@ -800,24 +888,6 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
         ">
         <deploy-files dist.file="${caarray.upgrade.zip.file}" />
         <remote-ssh remotesshcommand=". .bash_profile;cd ${ssh.dir.temp}/${caarray.upgrade.name}_${caarray.version}; ant -Dproperties.file=${properties.file.name} -Dforce.reinstall=true ${upgrade.target}" />
-    </target>
-
-    <target name="deploy:remote:upgrade:ahp" description="Installs and configures the application and required binaries and re-creates the datbase  on a remote machine. Used for NCI tiers (dev, qa, stg, prod)" >
-        <!--
-          * Will use the target from install.xml specified in ${upgrade.target} (defaults to upgrade unless passed in on command line).
-          * Requires specifying -Dproperties.file=@file@ on the command line to point installer to correct enviornment to install into.
-          * Calls ant from exec task to ensure properties are do not carry over from current ant runtime and also to emulate a manual install, if you want properties to be used at install time they must be included in a proeprties file.
-        -->
-        <!-- Call macro to deploy files on desired server -->
-        <echoproperties  prefix="ssh"> <propertyset negate="yes" > <propertyref regex="passw" /> </propertyset> </echoproperties>
-           <deploy-files dist.file="${caarray.upgrade.zip.file}" />
-
-        <override-properties-prep
-            override.properties="${override.properties}"
-            override.properties.string.property.name="override.properties.string"
-            />
-        <!-- SSH to machine ant run ant command line to install application -->
-        <remote-ssh remotesshcommand=". .bash_profile;cd ${ssh.dir.temp}/${caarray.upgrade.name}_${caarray.version}; ant -Dproperties.file=${properties.file.name} -Dforce.reinstall=true ${override.properties.string} ${upgrade.target}" />
     </target>
 
     <!-- Upgrades the application on a NCICB tier remotely. Depends on above targets to copy and extract distribution.  -->

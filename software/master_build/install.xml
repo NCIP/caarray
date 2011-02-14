@@ -57,7 +57,10 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
     <!-- grid service-related properties -->
     <property name="caarray-grid-svc.versions" value="legacy,v1_0" />
 
-    <!-- Paths -->
+    <!-- CGMM-related properties -->
+	<property name="cagrid-target.dir" location="${basedir}/cagrid-target"/>
+
+	<!-- Paths -->
     <path id="bda-utils.classpath">
         <fileset dir="${bda-utils.dir}">
             <include name="**/*.jar" />
@@ -117,48 +120,83 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
         		<delete dir="${temp.dir}" />
 			</then>
 		</if>
+	<if>
+			<or>
+				<equals arg1="${exclude.jboss}" arg2="true" />
+				<equals arg1="${jboss.major.version}" arg2="5" />
+			</or>
+			<then>
+				<property name="exclude.jboss.grid" value="true" />
+			</then>
+		</if>
+		<if>
+			<or>
+				<equals arg1="${exclude.tomcat}" arg2="true" />
+				<equals arg1="${tomcat.major.version}" arg2="6" />
+			</or>
+			<then>
+				<property name="exclude.tomcat.grid" value="true" />
+			</then>
+		</if>
 	</target>
 	<!-- Targets begin -->
-	<target name="install:jboss:init" depends="common:init:pre">
+	<target name="install:jboss:init" depends="common:init:pre" unless="exclude.jboss">
 		<!-- determine if port configurations or port lists are being called -->
 		<if>
 			<isset property="jboss.ncicb-standard.port-config"/>
 			<then>
 				<!-- Read some port properties from standard bindings file -->
 				<echo message="Using JBoss NCICB Standard port configurations"/>
-				<property name="jboss.server.binding.template.location" value="${basedir}/${jboss-bindings.file}"/>
+				<if>
+					<equals arg1="${jboss.major.version}" arg2="4" />
+					<then>
+						<property name="jboss.server.binding.template.location" value="${basedir}/${jboss-bindings.file}"/>
 				<jboss-read-ports
-					jboss.server.bindingfile.location="${jboss.server.binding.template.location}"
+jboss.server.bindingfile.location="${jboss.server.binding.template.location}" />
+					<jboss-bindings-validate jboss.server.bindingfile.location="${jboss.server.binding.template.location}"
 					/>
+				</then>
+					<elseif>
+						<equals arg1="${jboss.major.version}" arg2="5" />
+						<then>
+							<property name="jboss.server.bindingfile.location" value="${basedir}/${jboss-bindings.file}" />
+							<property name="temp.ejb.file" value="${temp.dir}/ejb3-connectors-jboss-beans.xml" />
+							<copy tofile="${temp.ejb.file}" file="${bda-utils.dir}/resource/jboss-5.1.0.GA/ejb3-connectors-jboss-beans.xml" />
+							<jboss51-bindings-nci jboss.server.bindingfile.location="${jboss.server.bindingfile.location}" />
+							<jboss51-read-ports-nci jboss.server.bindingfile.location="${jboss.server.bindingfile.location}" jboss.server.ejbfile.location="${temp.ejb.file}" />
+						</then>
+					</elseif>
+				</if>
 				<echo message="http -${jboss.server.port} "/>
 				<echo message="http -${jboss.server.jndi.port} "/>
-				<properties-exist
-					properties.list="jboss.server.jndi.port,jboss.server.port,jboss.server.ports.name"
-					/>
-				<!-- Make sure there are not unexpanded tokens and that the jboss.server.ports.name is a configuration in the bindings file. -->
-				<jboss-bindings-validate
-					jboss.server.bindingfile.location="${jboss.server.binding.template.location}"
-					/>
+				<if>
+					<equals arg1="${jboss.major.version}" arg2="4" />
+					<then>
+					<property name="jboss.server.binding.template.location" value="${bda-utils.dir}/resource/${jboss.binaries.relative.dir}/bindings.xml" 					/>
+				</then>
+				<else>
+					<property name="jboss.server.binding.template.location" value="${bda-utils.dir}/resource/${jboss.binaries.relative.dir}/bindings-jboss-beans.xml" 					/>
 
+			</else>
+				</if>
+				<properties-exist properties.list="jboss.server.jndi.port,jboss.server.port,jboss.server.ports.name" />
 			</then>
 			<else>
 				<!-- else ensure that all ports are set, since these will be removed from install-properties.template we will verify here.  They have to be removed so the validator works with or without the properties or we have to change the format of the file. -->
 				<echo message="Using custom JBoss port configurations"/>
 				<property name="jboss.server.binding.template.location" value="${bda-utils.dir}/resource/${jboss.binaries.relative.dir}/bindings.xml"/>
 				<properties-exist
-					properties.list="jboss.server.jndi.port,jboss.server.port,jboss.cobraorb.port,jboss.hajndi.port,jboss.hajrmi.port,jboss.jmx-rmi.port,jboss.messaging.port,jboss.pooledha.port,jboss.server.bind.port,jboss.server.rmi.port,jboss.service.rmiobject.port,jboss.snmp.port,jboss.snmp-trapd.port,jboss.web.service.port"
-					/>
+properties.list="jboss.server.jndi.port,jboss.server.port,jboss.cobraorb.port,jboss.hajndi.port,jboss.hajrmi.port,jboss.jmx-rmi.port,jboss.messaging.port,jboss.pooledha.port,jboss.server.bind.port,jboss.server.rmi.port,jboss.service.rmiobject.port,jboss.snmp.port,jboss.snmp-trapd.port,jboss.web.service.port,jboss.unifiedinvoker.port,jboss.hajndi.auto.port,jboss.ssl.port,jboss.jms2.netty.port,jboss.jms2.netty-ssl.port,jboss.transaction.recovery.port,jboss.transaction.status.port,jboss.transaction.processid.port"/>
 			</else>
 		</if>
 	</target>
-	<target name="common:jboss:init" depends="common:init:pre" unless="exclude.jboss">
+	<target name="common:jboss:init" depends="common:init:pre,common:jboss:grid:init" unless="exclude.jboss">
 	        <math result="jboss.ssl.port" operand1="${jboss.server.port}" operation="+" operand2="363" datatype="int"/>
 	        <!-- Default to false, properties can override -->
 	        <property name="grid.secure.enable" value="false"/>
 		<property name="jboss.ssl.enable" value="false"/>
 		<property name="jboss.home" value="${application.base.path}/${jboss.relative.path}"/>
-		<jboss-version
-			/>
+		<jboss-version />
 		<if>
 			<equals arg1="${jboss.http-connector.remove}" arg2="true"/>
 			<then>
@@ -179,7 +217,11 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
 
 	<target name="common:init" depends="common:init:pre">
 		<!-- bda-blueprints-webapp can use either Oracle or MySQL or PostgreSQL as its database platform, this is controled by the database.type property.  Based on the value of this property sent several variables for use during install -->
-		<echoproperties prefix="database"/>
+		<echoproperties prefix="database">
+			<propertyset negate="yes" >
+				<propertyref regex="passw" />
+		</propertyset>
+		</echoproperties>
 		<switch value="${database.type}">
 			<case value="oracle">
 				<property name="database.dialect" value="org.hibernate.dialect.OracleDialect"/>
@@ -195,7 +237,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
 			</case>
 			<case value="postgresql">
 				<property name="database.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
-				<property name="database.driver.file" value="${bda-utils.dir}/postgresql-8.3-603.jdbc3.jar"/>
+				<property name="database.driver.file" value="${bda-utils.dir}/postgresql-8.4-701.jdbc3.jar"/>
 				<property name="database.driver" value="org.postgresql.Driver"/>
 				<property name="database.schema" value="public"/>
 			</case>
@@ -209,26 +251,30 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
 		</path>
 
 		<property name="properties.template.file" value="${basedir}/properties.template" />
-		   <filterset id="embedded.filterset">
+		   <property file="${basedir}/cagrid-target/${grid.target}/service_urls.properties" />
+		<property name="grid.index.url" value="${cagrid.master.index.service.url}" />
+		<filterset id="embedded.filterset">
 			<filter token="application.base.path" value="${application.base.path}"/>
 			<filter token="application.url" value="${application.url}"/>
 			<filter token="database.url" value="${database.url}"/>
 			<filter token="database.user" value="${database.user}"/>
 			<filter token="database.password" value="${database.password}"/>
-			<filter token="database.name" value="${database.name}"/>
-			<filter token="database.server" value="${database.server}"/>
-			<filter token="database.port" value="${database.port}"/>
 			<filter token="database.system.url" value="${database.system.url}"/>
 			<!-- added internal properties that may be used in a filtered copy -->
 			<filter token="database.driver" value="${database.driver}"/>
 			<!-- added for liquibase -->
 			<filter token="db-upgrade.run.dir" value="${db-upgrade.dir.dest}/${database.type}"/>
 			<filter token="jboss.home" value="${jboss.home}"/>
+			<filter token="tomcat.home" value="${tomcat.home}" />
 			<filter token="database.dialect" value="${database.dialect}"/>
 			<filter token="hibernate.cfg.file.path" value="${hibernate.cfg.file.path}"/>
 			<filter token="env.LOGNAME" value="${env.LOGNAME}"/>
 			<filter token="env.JAVA_HOME" value="${env.JAVA_HOME}"/>
-			<filter token="project.name" value="project.name"/>
+			<filter token="project.name" value="${project.name}" />
+			<filter token="grid.dorian.name" value="${grid.target}-Dorian" />
+			<filter token="grid.dorian.url" value="${cagrid.master.dorian.service.url}" />
+			<filter token="grid.auth.service.url" value="${grid.auth.service.url}" />
+			<filter token="grid.auth.service.name" value="${grid.auth.service.name}" />
 			<filter token="" value=""/>
 		    </filterset>
 
@@ -260,7 +306,11 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
 	</target>
 
     <target name="diag">
-        <echoproperties/>
+        <echoproperties>
+			<propertyset negate="yes" >
+				<propertyref regex="passw" />
+			</propertyset>
+		</echoproperties>
     </target>
 
     <!-- Clean up destination directory -->
@@ -498,8 +548,31 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
         -->
     </target>
 
-    <target name="install:jboss:configure" description="Configure JBoss (bindings, login-config.xml, ect)" unless="exclude.jboss"
-        depends="
+    <target name="common:jboss:grid:init" depends="common:init:pre" unless="exclude.jboss">
+		<if>
+			<isset property="exclude.jboss.grid" />
+			<then>
+				<property name="jboss.grid.enable" value="false" />
+			</then>
+			<else>
+				<property name="jboss.grid.enable" value="true" />
+			</else>
+		</if>
+	</target>
+	<target name="common:tomcat:grid:init" depends="common:init:pre" unless="exclude.tomcat">
+		<if>
+			<isset property="exclude.tomcat.grid" />
+			<then>
+				<property name="tomcat.grid.enable" value="false" />
+			</then>
+			<else>
+				<property name="tomcat.grid.enable" value="true" />
+			</else>
+		</if>
+	</target>
+
+	<target name="install:jboss:configure" description="Configure JBoss (bindings, login-config.xml, ect)" unless="exclude.jboss"
+depends="
 		common:jboss:init,
 		common:init,
         -install:jboss:configure:log4j,
@@ -522,20 +595,27 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
 		<if>
 			<equals arg1="${jboss.major.version}" arg2="4"/>
 			<then>
-				<jboss-configure/>
+				<jboss-configure jboss.grid.configure="true" />
+				<if>
+					<equals arg1="${jboss.cgmm.enable}" arg2="true" />
+					<then>
+						<jboss-configure-cgmm />
+					</then>
+				</if>
 			</then>
 		</if>
 		<if>
 			<equals arg1="${jboss.major.version}" arg2="5"/>
 			<then>
 				<jboss-configure
-					jboss.grid.configure="true"
-					jboss.server.bindingfile.location="${jboss.home}/server/${jboss.server.name}/conf/bindingservice.beans/META-INF/bindings-jboss-beans.xml"
-					jboss.server.binding.template.location="${bda-utils.dir}/resource/${jboss.binaries.relative.dir}/bindings-jboss-beans.xml"
-					jboss.server-xml.file="${jboss.home}/server/${jboss.server.name}/deploy/jbossweb.sar/server.xml"
-					jboss.server.ports.name="PortsDefaultBindings"
-					proxy.update.connector.port.ssl="${jboss.ssl.port}"
+jboss.grid.configure="true"
+jboss.server.bindingfile.location="${jboss.home}/server/${jboss.server.name}/conf/bindingservice.beans/META-INF/bindings-jboss-beans.xml"
+jboss.server.binding.template.location="${bda-utils.dir}/resource/${jboss.binaries.relative.dir}/bindings-jboss-beans.xml"
+jboss.server-xml.file="${jboss.home}/server/${jboss.server.name}/deploy/jbossweb.sar/server.xml"
+jboss.server.ports.name="PortsDefaultBindings"
+proxy.update.connector.port.ssl="${jboss.ssl.port}"
 					/>
+			<jboss51-encrypt-messaging-passwd />
 			</then>
 		</if>
     </target>
@@ -1067,7 +1147,7 @@ depends="upgrade:jboss:init,common:init,upgrade-ncm:jboss,-install:jboss:configu
         -install:grid:configure:webXml
     "/>
 -->
-    <target name="install:grid:configure" description="Configure caarray" unless="exclude.jboss"
+    <target name="install:grid:configure" description="Configure caarray" unless="exclude.jboss.grid"
         depends="install:jboss:grid-binaries,
         -install:grid:configure:ports,
         -install:grid:configure:wsdl,
@@ -1349,6 +1429,14 @@ depends="upgrade:jboss:init,common:init,upgrade-ncm:jboss,-install:jboss:configu
 
     <target name="upgrade:jboss:init:prep" depends="upgrade:common:init:prep">
 		<property name="jboss.home" value="${application.base.path}/${jboss.relative.path}"/>
+		<if>
+			<not>
+				<available file="${jboss.home}" />
+			</not>
+			<then>
+				<fail message="${jboss.home} must exist during upgrades" />
+			</then>
+		</if>
 		<property name="application.url" value="http://${jboss.server.hostname}:${jboss.server.port}/caarray"/>
         <properties-print
             properties.list="application.base.path,jboss.home,jboss.server.name"
