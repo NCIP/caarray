@@ -122,6 +122,20 @@ final class ArrayDesignFileImportJob extends AbstractFileManagementJob {
     /**
      * {@inheritDoc}
      */
+    public String getJobEntityName() {
+        return arrayDesignName;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public long getJobEntityId() {
+        return arrayDesignId;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
     public JobType getJobType() {
         return JobType.DESIGN_FILE_IMPORT;
     }

@@ -103,9 +103,14 @@ public interface BaseJob {
     String getOwnerName();
     
     /**
-     * @return the experimentName
+     * @return the name of the experiment or array desing related to the job.
      */
-    String getExperimentName();
+    String getJobEntityName();
+    
+    /**
+     * @return the id of the experiment or array design related to the job.
+     */
+    long getJobEntityId();
     
     /**
      * @return the jobType

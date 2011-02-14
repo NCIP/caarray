@@ -173,7 +173,8 @@ public class ProjectJobQueueActionTest extends AbstractBaseStrutsTest {
         job.setJobId(UUID.randomUUID());
         job.setPosition(position);
         job.setUsername(username);
-        job.setExperimentName(experimentName);
+        job.setJobEntityName(experimentName);
+        job.setJobEntityId(position);
         job.setJobType(jobType);
         job.setTimeRequested(timeRequested);
         job.setTimeStarted(timeStarted);

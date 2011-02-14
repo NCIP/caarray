@@ -99,7 +99,8 @@ public class JobSnapshot implements Job {
     private final BaseJob originalJob;
     private final UUID jobId;
     private final String ownerName;
-    private final String experimentName;
+    private final String jobEntityName;
+    private final long jobEntityId;
     private final JobType jobType;
     private final Date timeRequested;
     private final Date timeStarted;
@@ -121,7 +122,8 @@ public class JobSnapshot implements Job {
         
         this.jobId = originalJob.getJobId();
         ownerName = originalJob.getOwnerName();
-        experimentName = originalJob.getExperimentName();
+        jobEntityName = originalJob.getJobEntityName();
+        jobEntityId = originalJob.getJobEntityId();
         jobType = originalJob.getJobType();
         timeRequested = originalJob.getTimeRequested();
         timeStarted = originalJob.getTimeStarted();
@@ -149,8 +151,15 @@ public class JobSnapshot implements Job {
     /**
      * {@inheritDoc}
      */
-    public String getExperimentName() {
-        return this.experimentName;
+    public String getJobEntityName() {
+        return this.jobEntityName;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public long getJobEntityId() {
+        return this.jobEntityId;
     }
 
     /**

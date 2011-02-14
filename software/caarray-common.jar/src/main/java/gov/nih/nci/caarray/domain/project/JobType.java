@@ -117,5 +117,13 @@ public enum JobType {
     public String getDisplayValue() {
         return displayName;
     }
+    
+    /**
+     * Determine if the job is related to an experiment or not.
+     * @return true if array design job, else false. 
+     */
+    public boolean getArrayDesignJob() {
+        return this.equals(JobType.DESIGN_FILE_IMPORT);
+    }
 
 }

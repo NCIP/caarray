@@ -140,8 +140,15 @@ abstract class AbstractProjectFilesJob extends AbstractFileManagementJob {
     /**
      * {@inheritDoc}
      */
-    public String getExperimentName() {
+    public String getJobEntityName() {
         return experimentName;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public long getJobEntityId() {
+        return projectId;
     }
    
     @Override

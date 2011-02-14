@@ -199,7 +199,12 @@ public abstract class AbstractFileManagementJob implements Serializable, Executa
     /**
      * {@inheritDoc}
      */
-    public abstract String getExperimentName();
+    public abstract String getJobEntityName();
+    
+    /**
+     * {@inheritDoc}
+     */
+    public abstract long getJobEntityId();
 
     /**
      * {@inheritDoc}
