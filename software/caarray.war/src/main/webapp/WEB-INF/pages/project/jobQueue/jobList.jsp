@@ -25,7 +25,7 @@
             </c:when>
         </c:choose>
         <c:choose>
-            <c:when test="${!row.originalJob.inProgress && canWriteExperiment}">
+            <c:when test="${!row.originalJob.inProgress && (canWriteExperiment || isSystemAdministrator)}">
                 <c:set var="canCancel" value="true" />
             </c:when>
             <c:otherwise>
