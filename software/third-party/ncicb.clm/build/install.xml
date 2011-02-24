@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+$Id: install.xml 4757 2008-05-15 20:43:31Z zengje $
+$HeadURL: http://gforge.nci.nih.gov/svnroot/llt/trunk/software/install.xml $
+-->
+<project name="clm-llt-installer" default="install" basedir="." 
+	xmlns:ivy="antlib:org.apache.ivy.ant"
+	>
+	<description>
+		TBD
+	</description>
+	<property name="project.name" value="clm" />
+	<property name="llt-webapp.name" value="llt" />
+
+	<import file="install-bda-master.xml" />
+
+	<!-- *-ds.xml and WAR -->
+	<property name="llt.dir.src" value="${basedir}/${llt.dist.relative.dir}" />
+	<property name="llt.ds.file" value="llt-ds.xml" />
+	<property name="llt.war.file" value="llt.war" />
+	<property name="llt.app-sec-conf.file" value="ApplicationSecurityConfig.xml" />
+	<property name="llt.hibernate.file" value="hibernate.cfg.xml" />
+	<property name="clm.jar.file" value="clm-4.2.beta.jar" />
+
+	<property name="jboss.application.url" value="http://${jboss.server.hostname}:${jboss.server.port}/${llt-webapp.name}" />
+
+	<!-- Installer section -->
+	<target name="diag">
+		<echoproperties/>
+	</target>
+
+	<!-- Clean up destination directory -->
+	<target name="install:clean" description="Removes all files from the local filesystem">
+		<sleep seconds="5" />
+		<delete dir="${application.base.path}" quiet="false" />
+	</target>
+
+	<target name="install:jboss:llt" description="Deploy llt llt.ear, llt-api.war and common libraries" unless="exclude.jboss">
+		<!-- added to ensure working.dirs are fresh for our install -->
+		<delete dir="${jboss.home}/server/${jboss.server.name}/tmp"/>
+		<delete dir="${jboss.home}/server/${jboss.server.name}/work"/>
+
+		<copy file="${llt.dir.src}/${llt.war.file}" todir="${jboss.home}/server/${jboss.server.name}/deploy" overwrite="true" />
+		<copy file="${database.driver.file}" todir="${jboss.home}/server/${jboss.server.name}/lib" overwrite="true" />
+		<copy file="${clm.dist.relative.dir}/clmjar/${clm.jar.file}" todir="${jboss.home}/server/${jboss.server.name}/lib" overwrite="true" />
+	</target>
+
+	<target name="install:jboss:llt:configure" description="Configure llt application" unless="exclude.jboss">
+	</target>
+
+	<!-- Wrapper target to configure jboss container, not deployed application -->
+	<target name="install:jboss:configure" description="Configure llt" unless="exclude.jboss"
+		depends="install:jboss:binaries,common:jboss:init">
+
+		<copy todir="${working.dir}/${clm.dist.relative.dir}" overwrite="true" filtering="true">
+			<fileset dir="${clm.dist.relative.dir}">
+				<include name="**/*.xml" />
+			</fileset>
+			<filterset refid="embedded.filterset" />
+			<filterset>
+				<filtersfile file="${properties.file}" />
+				<filtersfile file="project.properties" />
+			</filterset>
+		</copy>
+		<copy todir="${working.dir}/${jboss-conf.dist.relative.dir}" overwrite="true" filtering="true">
+			<fileset dir="${jboss-conf.dist.relative.dir}">
+				<include name="**/*.xml" />
+			</fileset>
+			<filterset refid="embedded.filterset" />
+			<filterset>
+				<filtersfile file="${properties.file}" />
+				<filtersfile file="project.properties" />
+			</filterset>
+		</copy>
+			
+		<jboss-configure jboss.grid.configure="false" 
+						 jboss.ssl.enable="false" 
+						 authentication.type="${authentication.type}" 
+						 login-config.ldap.file="${working.dir}/${clm.dist.relative.dir}/${common.dist.reosurces.relative.dir}/login-config.ldap-block.xml" 
+						 login-config.db.file="${working.dir}/${clm.dist.relative.dir}/${common.dist.reosurces.relative.dir}/login-config.db-block.xml" 
+		/>
+		<switch value="${database.type}">
+			<case value="oracle">
+				<property name="database.driver" value="oracle.jdbc.driver.OracleDriver" />
+			</case>
+			<case value="mysql">
+				<property name="database.driver" value="com.mysql.jdbc.Driver" />
+			</case>
+			<case value="postgresql">
+				<property name="database.driver" value="org.postgresql.Driver" />
+			</case>
+			<default>
+				<fail message="Invalid database type ${database.type}" />
+			</default>
+		</switch>
+
+		<copy file="${working.dir}//${jboss-conf.dist.relative.dir}/${llt.ds.file}" todir="${jboss.home}/server/${jboss.server.name}/deploy" overwrite="true" />
+		<var name="property.block" value="gov.nih.nci.security.configFile=${jboss.home}/server/${jboss.server.name}/csmconfig/ApplicationSecurityConfig.xml${line.separator}" />
+		<copy file="${jboss.home}/server/${jboss.server.name}/deploy/properties-service.xml" tofile="${jboss.home}/server/${jboss.server.name}/deploy/properties-service.xml.orig" overwrite="true" />
+		<jboss-update-properties-service property.block="${property.block}" />
+		<copy file="${working.dir}/${jboss-conf.dist.relative.dir}/${llt.app-sec-conf.file}" todir="${jboss.home}/server/${jboss.server.name}/csmconfig" overwrite="true" />
+		<copy file="${working.dir}/${jboss-conf.dist.relative.dir}/${llt.hibernate.file}" todir="${jboss.home}/server/${jboss.server.name}/csmconfig" overwrite="true" />
+	</target>
+
+	<target name="-install:jboss:configure:login-conf" unless="exclude.jboss">
+		<switch value="${database.type}">
+			<case value="oracle">
+				<property name="database.driver" value="oracle.jdbc.driver.OracleDriver" />
+			</case>
+			<case value="mysql">
+				<property name="database.driver" value="com.mysql.jdbc.Driver" />
+			</case>
+			<case value="postgresql">
+				<property name="database.driver" value="org.postgresql.Driver" />
+			</case>
+			<default>
+				<fail message="Invalid database type ${database.type}" />
+			</default>
+		</switch>
+		<copy todir="${working.dir}/${clm.dist.relative.dir}" overwrite="true" filtering="true">
+			<fileset dir="${clm.dist.relative.dir}">
+				<include name="**/*.xml" />
+			</fileset>
+			<filterset refid="embedded.filterset" />
+			<filterset>
+				<filtersfile file="${properties.file}" />
+				<filtersfile file="project.properties" />
+			</filterset>
+		</copy>
+		<jboss-login-config authentication.type="${authentication.type}" login-config.ldap.file="${working.dir}/${clm.dist.relative.dir}/login-config.ldap-block.xml" login-config.db.file="${working.dir}/${clm.dist.relative.dir}/login-config.db-block.xml" />
+	</target>
+
+	<!-- Configure log4j settings based on contents of llt/software/resrouces/deploy/log4j.block.xml -->
+	<target name="-install:jboss:configure:log4j" unless="exclude.jboss">
+	</target>
+
+
+	<!-- Wrapper target to deploy JBOSS container -->
+	<target name="install:jboss" description="Wrapper scripts that calls all required targets to install the jboss container" unless="exclude.jboss"
+		depends="
+		common:jboss:init,
+		common:init,
+		install:jboss:init,
+		install:jboss:validation:pre-install,
+		install:jboss:stop,
+		install:jboss:validation:pre-install:ports,
+		install:jboss:clean,
+		install:jboss:binaries,
+		install:jboss:llt:re-configure,
+		install:jboss:llt,
+		install:jboss:llt:configure,
+		install:jboss:configure,
+		install:post:jboss,
+		install:jboss:start,
+		install:jboss:validation:post-install
+		" >
+	</target>
+
+	<!-- Fixes hibernate dialect and other configurations in code generated at build time.  This is requred because the properties/options selected at build time can be different than those used at install time. -->
+	<target name="install:jboss:llt:re-configure" unless="exclude.jboss">
+	</target>
+
+	<target name="upgrade:database:readers:bda" depends="upgrade:jboss:init:prep" if="jboss.exists">
+		<!-- Make sure the ${properties.file} has at least the following props -->
+		<properties-exist
+			properties.list="application.base.path,jboss.home,jboss.server.name"
+			/>
+		<jboss-read-dbconfig
+			jboss.home="${rea d.jboss.home}"
+			jboss.ds-xml.file="${llt.ds.file}"
+			/>
+	</target>
+
+	<target name="upgrade:jboss:readers:bda" if="jboss.exists">
+		<!-- Make sure the ${properties.file} has at least the following props -->
+		<properties-exist
+			properties.list="application.base.path,jboss.home,jboss.server.name"
+			/>
+		<!-- Set these -->
+		<osfamily property="os.family"/>
+		<if>
+			<or>
+				<equals arg1="${os.family}" arg2="unix"/>
+				<equals arg1="${os.family}" arg2="mac"/>
+			</or>
+			<then>
+				<property name="jboss.server.hostname" value="${env.HOSTNAME}"/>
+			</then>
+		</if>
+		<if>
+			<equals arg1="${os.family}" arg2="windows"/>
+			<then>
+				<property name="jboss.server.hostname" value="${env.COMPUTERNAME}"/>
+			</then>
+		</if>
+		<!-- Begin JBoss Readers -->
+		<!-- Reader reqiures that you have only one data source defined in each *-ds.xml file -->
+		<jboss-read-dbconfig
+			jboss.home="${read.jboss.home}"
+			jboss.ds-xml.file="${llt.ds.file}"
+			/>
+		<jboss-read-ldapconfig
+			jboss.home="${read.jboss.home}"
+			/>
+		<jboss-read-bindings-file-location
+			jboss.home="${read.jboss.home}"
+			/>
+		<jboss-read-ports
+			/>
+		<jboss-read-external-hostname
+			jboss.home="${read.jboss.home}"
+			/>
+		<!-- for tier installs, should be done first, since it is set first it will be the one used if it exists -->
+		<jboss-read-java_opts
+			jboss.bin.dir="${read.jboss.home}/server/${jboss.server.name}/bin"
+			/>
+		<jboss-read-java_opts
+			jboss.home="${read.jboss.home}"
+			/>
+		<!-- will have to add code to install:post:jboss to copy this back if exists -->
+		<property name="copied.jboss.log4j.dir" value="${working.dir}/copied-log4j"/>
+		<jboss-copy-log4j
+			jboss.home="${read.jboss.home}"
+			copied.jboss.log4j.dir="${copied.jboss.log4j.dir}"
+			/>
+		<read-property-from-properties-service
+			jboss.home="${read.jboss.home}"
+			property.name="property1"
+			/>
+		<read-property-from-properties-service
+			jboss.home="${read.jboss.home}"
+			property.name="property2"
+			/>
+	</target>
+
+	<target name="upgrade-ncm:jboss" description="Wrapper target to call all targets required to upgrade jboss container." unless="exclude.jboss"
+		depends="
+		upgrade:jboss:init,
+		common:init,
+		common:jboss:init,
+		install:jboss:validation:pre-install,
+		install:jboss:stop,
+		install:jboss:validation:pre-install:ports,
+		install:jboss:llt:configure,
+		install:jboss:llt:re-configure,		
+		install:jboss:llt,
+		install:post:jboss,
+		install:jboss:start,
+		install:jboss:validation:post-install
+		">
+	</target>
+</project>

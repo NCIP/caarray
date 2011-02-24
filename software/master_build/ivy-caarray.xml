@@ -154,7 +154,7 @@
 
         <dependency conf="project" name="svntask" org="com.googlecode" rev="1.0.7"/>
 
-        <dependency conf="project" name="clm" org="ncicb" rev="4.0"/>
+        <dependency conf="project" name="clm" org="ncicb" rev="4.2.beta_jboss51-fix" force="true"/>
 
         <dependency conf="project" name="oscache" org="opensymphony" rev="2.4.1"/>
 
