@@ -1,0 +1,46 @@
+<ivysettings>	
+	<property name="nci.ivy.repo" value="http://gforge.nci.nih.gov/svnroot/commonlibrary/trunk/ivy-repo" />
+	<property name="clm.basedir" value="${ivy.settings.dir}/.." />
+
+	<settings defaultCache="${user.home}/.ivy2-${ant.project.name}" defaultResolver="nci-chain" />
+
+	<caches useOrigin="true" />
+
+	<resolvers>
+		<ibiblio name="ibiblio" m2compatible="true" />
+
+		<chain name="nci-chain">
+			
+			<!-- this is where you can publish to, either your own code or for testing new thirdparty files -->
+			<filesystem name="local-repo" local="true">
+				<artifact pattern="${local.repo.dir}/[organisation]/[module]/[revision]/[artifact]-[revision].[ext]" />
+				<ivy pattern="${local.repo.dir}/[organisation]/[module]/[revision]/ivy.xml" />
+			</filesystem> 
+		
+			<url name="ncicb-ivy-repo" m2compatible="false">
+				<ivy pattern="${nci.ivy.repo}/[organisation]/[module]/[revision]/ivy.xml" />
+				<artifact pattern="${nci.ivy.repo}/[organisation]/[module]/[revision]/[artifact]-[revision].[ext]" />
+			</url>
+
+			<!-- begin clm specific stuff -->
+			<filesystem name="api-resolver" local="true">
+				<artifact pattern="${clm.basedir}/lib/[module]/[conf]/[artifact]-[revision].[ext]" />
+				<ivy pattern="${clm.basedir}/[module]/ivy.xml" />
+			</filesystem>
+
+			<filesystem name="llt-resolver" local="true">
+				<artifact pattern="${clm.basedir}/lib/[module]/[conf]/[artifact]-[revision].[ext]" />
+				<ivy pattern="${clm.basedir}/[module]/ivy.xml" />	
+			</filesystem>
+
+			<!-- end clm specific stuff -->
+
+		</chain>
+	</resolvers>
+
+	<modules>
+		<module organisation="ncicb" name="api" resolver="api-resolver" />
+		<module organisation="ncicb" name="llt" resolver="llt-resolver" />
+	</modules>
+
+</ivysettings>

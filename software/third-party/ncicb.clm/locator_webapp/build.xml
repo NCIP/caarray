@@ -1,0 +1,118 @@
+<project name="clm-llt" default="run" basedir="." xmlns:ivy="antlib:org.apache.ivy.ant">
+	<description>CLM LLT Project Build File</description>
+
+	<property name="ivy.settings.dir" value="${basedir}/../common" />
+	<property name="common.dir" value="${basedir}/../" />
+	<property name="target.dir" value="${common.dir}/target/dist/exploded/llt" />
+	<property name="local.repo.dir" value="${common.dir}/local-ivy-repo" />
+	<property name="global.ivy.settings.file" location="${common.dir}/common/ivysettings.xml" />
+
+	<!-- set global properties for this build -->
+	<property name="src.dir" location="${basedir}/src" />
+	<property name="lib.dir" value="${common.dir}/target/lib" />
+
+	<!-- This will be removed once all jars are retrieved from Ivy -->
+	<property name="web.dir"		value="${basedir}/public_html" />
+	<property name="build.dir"		value="build" />
+	<property name="classes.dir"	value="${web.dir}/WEB-INF/classes" />
+	<property name="war.file"		value="llt.war" />
+
+	<!-- Paths -->
+	<path id="common.classpath">
+		<fileset dir="${lib.dir}">
+			<include name="ivy-core-2.0.0-beta2.jar" />
+			<include name="ivy-2.0.0-beta2.jar" />
+		</fileset>
+	</path>
+
+	<path id="project.compile.classpath">
+		<fileset dir="${lib.dir}/llt/compile">
+			<include name="*.jar" />
+		</fileset>
+	</path>
+
+	<!-- Task definitions -->
+	<taskdef resource="org/apache/ivy/ant/antlib.xml" uri="antlib:org.apache.ivy.ant" classpathref="common.classpath" />
+
+	<!-- Targets -->
+
+	<target name="ivy-settings">
+		<ivy:settings file="${global.ivy.settings.file}" />
+	</target>
+
+	<target name="ivy-compile" depends="ivy-settings" description="Updates the local ivy repository">
+		<ivy:resolve refresh="true" conf="compile" />
+		<ivy:retrieve pattern="${lib.dir}/llt/[conf]/[artifact]-[revision].[ext]" conf="compile" />
+	</target>
+
+	<target name="ivy-runtime" depends="ivy-settings" description="Updates the local ivy repository">
+		<ivy:resolve refresh="true" conf="runtime" />
+		<ivy:retrieve pattern="${lib.dir}/llt/[conf]/[artifact]-[revision].[ext]" conf="runtime" />
+	</target>
+	<target name="ivy-clean-cache" description="Cleans local Ivy cache">
+		<delete dir="${user.home}/.ivy-${ant.project.name}" />
+	</target>
+
+	<target name="-pre-clean" depends="ivy-clean-cache" description="Performs all necessary clean-up before a build">
+		<delete dir="${classes.dir}" quiet="false" />
+	</target>
+
+	<target name="-init" description="Initializes the system before a build">
+		<!-- Create the time stamp -->
+		<tstamp />
+		<mkdir dir="${classes.dir}" />
+		<mkdir dir="${build.dir}" />
+		<mkdir dir="${lib.dir}/llt/compile" />
+		<mkdir dir="${lib.dir}/llt/runtime" />
+		<copy todir="${build.dir}">
+			<fileset dir="${web.dir}" />
+		</copy>
+		<copy todir="${build.dir}/WEB-INF/lib">
+			<fileset dir="${lib.dir}/llt/compile" includes="**/*.jar"/>
+			<fileset dir="${lib.dir}/llt/runtime" includes="**/*.jar"/>
+		</copy>
+		<delete quiet="true" file="${build.dir}/WEB-INF/lib/commons-logging-1.0.4.jar"/>
+		<delete quiet="true" file="${build.dir}/WEB-INF/lib/log4j-1.2.9.jar"/>
+	</target>
+
+	<target name="compile" depends="-pre-clean, -init, ivy-compile" description="Compiles all the files in the project">
+		<javac srcdir="${src.dir}" destdir="${build.dir}/WEB-INF/classes" debug="true" deprecation="true" classpathref="project.compile.classpath" />
+		<copy todir="${build.dir}/WEB-INF/classes" >
+			<fileset dir="${src.dir}" excludes="**/*.java" />
+		</copy>
+	</target>
+
+	<target name="-post-compile" depends="compile" description="Post-compile operations">
+		<copy file="${src.dir}/CLM.csm.new.hibernate.cfg.xml" todir="${build.dir}/WEB-INF/classes" />
+		<copy file="${src.dir}/clm.properties" todir="${build.dir}/WEB-INF/classes" />
+	</target>
+
+	<target name="war" depends="compile, -post-compile, ivy-runtime" description="Generate upt.war">
+		<copy todir="${build.dir}/WEB-INF/lib">
+			<fileset dir="${lib.dir}/llt/compile" includes="**/*.jar"/>
+			<fileset dir="${lib.dir}/llt/runtime" includes="**/*.jar"/>
+		</copy>
+		<delete quiet="true" file="${build.dir}/WEB-INF/lib/commons-logging-1.0.4.jar"/>
+		<delete quiet="true" file="${build.dir}/WEB-INF/lib/log4j-1.2.9.jar"/>
+		<jar jarfile="${target.dir}/${war.file}" basedir="${build.dir}" />
+	</target>
+
+	<target name="dist" depends="war" description="generate the distribution">
+		<copy todir="${target.dir}">
+			<fileset dir="resources" />
+		</copy>
+		<copy todir="${target.dir}/common/resources">
+			<fileset dir="../common/resources" />
+		</copy>
+		<copy todir="${target.dir}" file="${lib.dir}/llt/runtime/csmapi-4.2.jar" />
+	</target>
+
+	<target name="-post-clean" description="Performs necessary clean-up after a build">
+		<delete dir="${classes.dir}" quiet="false" />
+		<delete dir="${build.dir}" quiet="false" />
+
+	</target>
+
+	<target name="run" depends="dist, -post-clean" description="Default project target" />
+
+</project>
