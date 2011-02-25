@@ -122,15 +122,6 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
 		</if>
 	<if>
 			<or>
-				<equals arg1="${exclude.jboss}" arg2="true" />
-				<equals arg1="${jboss.major.version}" arg2="5" />
-			</or>
-			<then>
-				<property name="exclude.jboss.grid" value="true" />
-			</then>
-		</if>
-		<if>
-			<or>
 				<equals arg1="${exclude.tomcat}" arg2="true" />
 				<equals arg1="${tomcat.major.version}" arg2="6" />
 			</or>
@@ -494,12 +485,11 @@ properties.list="jboss.server.jndi.port,jboss.server.port,jboss.cobraorb.port,jb
         </copy>
     </target>
 
-    <!-- TODO! -->
     <target name="install:jboss:configure:log4j" description="Configure custom entries in system wide log4j" unless="exclude.jboss"  depends="common:jboss:init, common:init">
         <!--
         <echo message="Configuring Log4J"/>
 
-        <property name="log4j.file.name" value="log4j.xml"/>
+        <property name="log4j.file.name" value="jboss-log4j.xml"/>
         <copy file="${jboss.home}/server/${jboss.server.name}/conf/${log4j.file.name}" tofile="${jboss.home}/server/${jboss.server.name}/conf/${log4j.file.name}.pre"/>
 
         <replaceregexp file="${jboss.home}/server/${jboss.server.name}/conf/${log4j.file.name}"
@@ -579,7 +569,7 @@ depends="
         -install:jboss:configure:ejb3-interceptors-aop,
         -install:jboss:configure:disable-credential-caching,
         -install:jboss:configure:java_opts,
-        -install:jboss:configure:tomcat,
+        -install:jboss:configure:web-container,
         -install:jboss:configure:update-runscripts
             ">
 		<!-- Calls the following macros
@@ -620,12 +610,30 @@ proxy.update.connector.port.ssl="${jboss.ssl.port}"
 		</if>
     </target>
 
-    <target name="-install:jboss:configure:tomcat" description="Configure tomcat web container for caArray JBoss installation.">
-        <!-- set the ldap-related servlet parameters -->
-        <xmltask source="${jboss.home}/server/${jboss.server.name}/deploy/jbossweb-tomcat55.sar/server.xml" dest="${jboss.home}/server/${jboss.server.name}/deploy/jbossweb-tomcat55.sar/server.xml">
+    <target name="-install:jboss:configure:web-container" description="Configure web container for caArray JBoss installation.">
+        <xmltask source="${jboss.home}/server/${jboss.server.name}/deploy/jbossweb.sar/context.xml" dest="${jboss.home}/server/${jboss.server.name}/deploy/jbossweb.sar/context.xml">
             <xmlcatalog refid="bda.xml.catalog"/>
-            <attr path="//Connector" attr="emptySessionPath" value="false"/>
+            <copy path="/Context/SessionCookie" property="session.cookie.contents.present"/>
         </xmltask>
+        <if>
+            <isset property="session.cookie.contents.present"/>
+            <then>
+        <xmltask source="${jboss.home}/server/${jboss.server.name}/deploy/jbossweb.sar/context.xml" dest="${jboss.home}/server/${jboss.server.name}/deploy/jbossweb.sar/context.xml">
+            <xmlcatalog refid="bda.xml.catalog"/>
+            <attr path="/Context/SessionCookie" attr="Path" value="/"/>
+                </xmltask>
+            </then>
+            <else>
+                <xmltask source="${jboss.home}/server/${jboss.server.name}/deploy/jbossweb.sar/context.xml" dest="${jboss.home}/server/${jboss.server.name}/deploy/jbossweb.sar/context.xml">
+                    <xmlcatalog refid="bda.xml.catalog"/>
+        <insert path="/Context">
+                        <![CDATA[
+                        <SessionCookie Path="/"/>
+                        ]]>
+                    </insert>
+                </xmltask>
+    </else>
+        </if>
     </target>
 
     <!-- Calls to bda macros for basic functionality -->
@@ -638,7 +646,7 @@ proxy.update.connector.port.ssl="${jboss.ssl.port}"
         </if>
     </target>
 
-    <target name="-install:jboss:start-with-config" description="Starts jboss" unless="exclude.jboss" depends="common:jboss:init,common:init,-install:jboss:configure:tomcat ">
+    <target name="-install:jboss:start-with-config" description="Starts jboss" unless="exclude.jboss" depends="common:jboss:init,common:init,-install:jboss:configure:web-container ">
         <antcall target="install:jboss:start" inheritAll="false">
         	<param name="skip.clean" value="true"/>
         </antcall>
@@ -842,7 +850,7 @@ host.flag.value="${jboss.server.hostname}"
         "/-->
     <!-- Generic targets to call appropriate upgrade path targets, just change the depends to use alternate ugprade path -->
     <target name="upgrade:jboss" description="Wrapper target to call all targets required to upgrade jboss container." unless="exclude.jboss" 
-depends="upgrade:jboss:init,common:init,upgrade-ncm:jboss,-install:jboss:configure:tomcat,-install:jboss:configure:log4j,-install:jboss:configure:ejb3-interceptors-aop,-install:jboss:configure:disable-credential-caching,-install:jboss:configure:api:streaming:port">
+depends="upgrade:jboss:init,common:init,upgrade-ncm:jboss,-install:jboss:configure:web-container,-install:jboss:configure:log4j,-install:jboss:configure:ejb3-interceptors-aop,-install:jboss:configure:disable-credential-caching,-install:jboss:configure:api:streaming:port">
     </target>
 
     <target name="upgrade:tier:caarray" description="Upgrades caArray installation on NCICB tier."
@@ -855,7 +863,7 @@ depends="upgrade:jboss:init,common:init,upgrade-ncm:jboss,-install:jboss:configu
 		install:jboss:stop,
 		install:jboss:validation:pre-install:ports,
 		install:jboss:caarray:re-configure,
-		-install:jboss:configure:tomcat,
+		-install:jboss:configure:web-container,
 		install:jboss:caarray,
 		-install:jboss:configure:log4j,
     	-install:jboss:configure:ejb3-interceptors-aop,
@@ -1225,11 +1233,11 @@ depends="upgrade:jboss:init,common:init,upgrade-ncm:jboss,-install:jboss:configu
 		</xmltask>
     </target>
 
-    <target name="-install:jboss:configure:log4j" unless="exclude.jboss" description="Configures log4j.xml for caArray JBoss server.">
-		<echo message="Configuring ${jboss.home}/server/${jboss.server.name}/conf/log4j.xml."/>
-        <copy file="${jboss.home}/server/${jboss.server.name}/conf/log4j.xml" tofile="${jboss.home}/server/${jboss.server.name}/conf/log4j.xml.original"/>
+    <target name="-install:jboss:configure:log4j" unless="exclude.jboss" description="Configures jboss-log4j for caArray JBoss server.">
+		<echo message="Configuring ${jboss.home}/server/${jboss.server.name}/conf/jboss-log4j.xml."/>
+        <copy file="${jboss.home}/server/${jboss.server.name}/conf/jboss-log4j.xml" tofile="${jboss.home}/server/${jboss.server.name}/conf/jboss-log4j.xml.original"/>
 		<loadfile property="log4j.fragment" srcFile="common/resources/jboss-conf/log4j.fragment.xml"/>
-		<loadfile property="existing.log4j.contents" srcFile="${jboss.home}/server/${jboss.server.name}/conf/log4j.xml"/>
+		<loadfile property="existing.log4j.contents" srcFile="${jboss.home}/server/${jboss.server.name}/conf/jboss-log4j.xml"/>
 		<propertyregex property="caarray.custom.cfg.target.text"
 			input="${existing.log4j.contents}"
 			regexp="&lt;!-- start caarray custom configuration[\d\D]*end caarray custom configuration --&gt;"
@@ -1239,10 +1247,10 @@ depends="upgrade:jboss:init,common:init,upgrade-ncm:jboss,-install:jboss:configu
 		<if>
 			<isset property="caarray.custom.cfg.target.text" />
 			<then>
-			    <replace file="${jboss.home}/server/${jboss.server.name}/conf/log4j.xml" token="${caarray.custom.cfg.target.text}" value="${log4j.fragment}"/>
+			    <replace file="${jboss.home}/server/${jboss.server.name}/conf/jboss-log4j.xml" token="${caarray.custom.cfg.target.text}" value="${log4j.fragment}"/>
 			</then>
 			<else>
-				<replace file="${jboss.home}/server/${jboss.server.name}/conf/log4j.xml" token="&lt;/log4j:configuration&gt;" value="${log4j.fragment}${line.separator}&lt;/log4j:configuration&gt;"/>
+				<replace file="${jboss.home}/server/${jboss.server.name}/conf/jboss-log4j.xml" token="&lt;/log4j:configuration&gt;" value="${log4j.fragment}${line.separator}&lt;/log4j:configuration&gt;"/>
 			</else>
 		</if>
     </target>
