@@ -64,8 +64,8 @@ public class ObjectStateInterceptor extends EmptyInterceptor
 	 * @see org.hibernate.Interceptor#postFlush(java.util.Iterator)
 	 */
 	public void postFlush(Iterator iterator) throws CallbackException
-	{		
-
+	{
+	    // no impl
 	}
 
 
@@ -77,23 +77,26 @@ public class ObjectStateInterceptor extends EmptyInterceptor
 	public void afterTransactionCompletion(Transaction arg0)
 	{		
 		UserInfo user = (UserInfo) ThreadVariable.get();
-		if (arg0.wasCommitted() && user.getTransactionLogs()!= null )
-		{
-			Iterator it = user.getTransactionLogs().iterator(); 
-			while(it.hasNext()){
-				String str = (String)it.next();
-				logger.log(str);
-				it.remove();
-			}
-		}else
-		{
-			// clear the logs Buffer
-			clearTransactionLogs();
-		}
-		user.setIsIntransaction(false);
+        if (null == user)
+            user = new UserInfo();
+        if (user.getIsIntransaction()) {
+    		if (arg0.wasCommitted() && user.getTransactionLogs() !=  null )
+    		{
+    			Iterator it = user.getTransactionLogs().iterator(); 
+    			while(it.hasNext()){
+    				String str = (String)it.next();
+    				logger.log(str);
+    				it.remove();
+    			}
+    		}
+    		else if (user.getTransactionLogs() !=  null)
+    		{
+    		    user.getTransactionLogs().clear();
+    		}
+    		user.setIsIntransaction(false);
+        }
 		// set back the local thread variable
 		ThreadVariable.set(user);
-
 	}
 
 
@@ -103,25 +106,10 @@ public class ObjectStateInterceptor extends EmptyInterceptor
 	 */
 	public void afterTransactionBegin(Transaction tx)
 	{
-
 		UserInfo userInfo = (UserInfo) ThreadVariable.get();
 		if (null == userInfo)
 			userInfo = new UserInfo();
 		userInfo.setIsIntransaction(true);
 		ThreadVariable.set(userInfo);
 	}
-
-	
-	/**
-	 * 
-	 */
-	private void clearTransactionLogs()
-	{
-		UserInfo user = (UserInfo) ThreadVariable.get();
-		if (user.getTransactionLogs()!= null){
-		user.getTransactionLogs().clear();
-		ThreadVariable.set(user);
-		}
-	}
-
 }
