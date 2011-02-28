@@ -634,7 +634,8 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
     <target name="dist:tools:retrieve" depends="retrieve:jboss,retrieve:jboss404,dist:tools:retrieve:cagrid,dist:tools:retrieve:cagrid-console"/>
 	
     <target name="dist:tools:retrieve:jboss-bindings"  description="Downloads JBOSS bindings filefrom binary repository and verifies checksum">
-        <get src="${jboss-bindings.src.url}" dest="${dist.exploded.dir}/${jboss-bindings.file}" />
+        <get src="${jboss4-bindings.src.url}" dest="${dist.exploded.dir}/${jboss4-bindings.file}" />
+        <get src="${jboss5-bindings.src.url}" dest="${dist.exploded.dir}/${jboss5-bindings.file}" />
     </target>
 
     <target name="dist:tools:retrieve:cagrid" unless="cagrid-libs.tools.exists" description="Downloads JBOSS from binary repository and verifies checksum">

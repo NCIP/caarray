@@ -141,52 +141,45 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
 				<if>
 					<equals arg1="${jboss.major.version}" arg2="4" />
 					<then>
-						<property name="jboss.server.binding.template.location" value="${basedir}/${jboss-bindings.file}"/>
-				<jboss-read-ports
-jboss.server.bindingfile.location="${jboss.server.binding.template.location}" />
-					<jboss-bindings-validate jboss.server.bindingfile.location="${jboss.server.binding.template.location}"
+						<property name="jboss.server.binding.template.location" value="${basedir}/${jboss4-bindings.file}"/>
+						<jboss-read-ports
+							jboss.server.bindingfile.location="${jboss.server.binding.template.location}" />
+						<jboss-bindings-validate jboss.server.bindingfile.location="${jboss.server.binding.template.location}"
 					/>
-				</then>
+					</then>
 					<elseif>
 						<equals arg1="${jboss.major.version}" arg2="5" />
 						<then>
 							<property name="jboss.server.bindingfile.location" value="${basedir}/${jboss-bindings.file}" />
+							<property name="jboss.server.binding.template.location" value="${basedir}/${jboss5-bindings.file}"/>
 							<property name="temp.ejb.file" value="${temp.dir}/ejb3-connectors-jboss-beans.xml" />
 							<copy tofile="${temp.ejb.file}" file="${bda-utils.dir}/resource/jboss-5.1.0.GA/ejb3-connectors-jboss-beans.xml" />
-							<jboss51-bindings-nci jboss.server.bindingfile.location="${jboss.server.bindingfile.location}" />
-							<jboss51-read-ports-nci jboss.server.bindingfile.location="${jboss.server.bindingfile.location}" jboss.server.ejbfile.location="${temp.ejb.file}" />
+							<jboss51-bindings-nci jboss.server.bindingfile.location="${jboss.server.binding.template.location}" />
+							<jboss51-read-ports-nci jboss.server.bindingfile.location="${jboss.server.binding.template.location}" jboss.server.ejbfile.location="${temp.ejb.file}" />
 						</then>
 					</elseif>
 				</if>
 				<echo message="http -${jboss.server.port} "/>
 				<echo message="http -${jboss.server.jndi.port} "/>
+			</then>
+			<else>
+				<echo message="Using custom JBoss port configurations"/>
 				<if>
 					<equals arg1="${jboss.major.version}" arg2="4" />
 					<then>
-					<property name="jboss.server.binding.template.location" value="${bda-utils.dir}/resource/${jboss.binaries.relative.dir}/bindings.xml" 					/>
-				</then>
-				<else>
-					<property name="jboss.server.binding.template.location" value="${bda-utils.dir}/resource/${jboss.binaries.relative.dir}/bindings-jboss-beans.xml" 					/>
+						<property name="jboss.server.binding.template.location" value="${bda-utils.dir}/resource/${jboss.binaries.relative.dir}/bindings.xml" 					/>
+					</then>
+					<else>
+						<property name="jboss.server.binding.template.location" value="${bda-utils.dir}/resource/${jboss.binaries.relative.dir}/bindings-jboss-beans.xml" 					/>
 
-			</else>
+					</else>
 				</if>
 				<properties-exist properties.list="jboss.server.jndi.port,jboss.server.port,jboss.server.ports.name" />
-			</then>
-			<else>
 				<!-- else ensure that all ports are set, since these will be removed from install-properties.template we will verify here.  They have to be removed so the validator works with or without the properties or we have to change the format of the file. -->
-				<echo message="Using custom JBoss port configurations"/>
-				<property name="jboss.server.binding.template.location" value="${bda-utils.dir}/resource/${jboss.binaries.relative.dir}/bindings.xml"/>
 				<properties-exist
 properties.list="jboss.server.jndi.port,jboss.server.port,jboss.cobraorb.port,jboss.hajndi.port,jboss.hajrmi.port,jboss.jmx-rmi.port,jboss.messaging.port,jboss.pooledha.port,jboss.server.bind.port,jboss.server.rmi.port,jboss.service.rmiobject.port,jboss.snmp.port,jboss.snmp-trapd.port,jboss.web.service.port,jboss.unifiedinvoker.port,jboss.hajndi.auto.port,jboss.ssl.port,jboss.jms2.netty.port,jboss.jms2.netty-ssl.port,jboss.transaction.recovery.port,jboss.transaction.status.port,jboss.transaction.processid.port"/>
 			</else>
 		</if>
-	</target>
-	<target name="common:jboss:init" depends="common:init:pre,common:jboss:grid:init" unless="exclude.jboss">
-	        <math result="jboss.ssl.port" operand1="${jboss.server.port}" operation="+" operand2="363" datatype="int"/>
-	        <!-- Default to false, properties can override -->
-	        <property name="grid.secure.enable" value="false"/>
-		<property name="jboss.ssl.enable" value="false"/>
-		<property name="jboss.home" value="${application.base.path}/${jboss.relative.path}"/>
 		<jboss-version />
 		<if>
 			<equals arg1="${jboss.http-connector.remove}" arg2="true"/>
@@ -197,6 +190,13 @@ properties.list="jboss.server.jndi.port,jboss.server.port,jboss.cobraorb.port,jb
 				<property name="jboss.application.url" value="http://${jboss.server.hostname}:${jboss.server.port}/${caarray-webapp.name}"/>
 			</else>
 		</if>
+	</target>
+	<target name="common:jboss:init" depends="common:init:pre,common:jboss:grid:init" unless="exclude.jboss">
+		<!--<math result="jboss.ssl.port" operand1="${jboss.server.port}" operation="+" operand2="363" datatype="int"/>-->
+	        <!-- Default to false, properties can override -->
+	        <property name="grid.secure.enable" value="false"/>
+		<property name="jboss.ssl.enable" value="false"/>
+		<property name="jboss.home" value="${application.base.path}/${jboss.relative.path}"/>
 		<available file="${jboss.home}/server/${jboss.server.name}/conf/jboss-service.xml" property="jboss.exists"/>
 		<basename file="${jboss.ssl.keystore.location}" property="jboss.ssl.keystore.file"/>
 		<dirname file="${jboss.ssl.keystore.location}" property="jboss.ssl.keystore.dir"/>
@@ -222,7 +222,7 @@ properties.list="jboss.server.jndi.port,jboss.server.port,jboss.cobraorb.port,jb
 			</case>
 			<case value="mysql">
 				<property name="database.dialect" value="org.hibernate.dialect.MySQLDialect"/>
-				<property name="database.driver.file" value="${bda-utils.dir}/mysql-connector-java-5.0.8.jar"/>
+				<property name="database.driver.file" value="${bda-utils.dir}/mysql-connector-java-5.1.13.jar"/>
 				<property name="database.driver" value="com.mysql.jdbc.Driver"/>
 				<property name="database.schema" value="${database.name}"/>
 			</case>
@@ -383,7 +383,7 @@ properties.list="jboss.server.jndi.port,jboss.server.port,jboss.cobraorb.port,jb
 
     <target name="install:jboss:grid-binaries" description="Unzip JBoss binary for grid services" unless="exclude.jboss.grid" depends="common:jboss:init, common:init">
         <jboss-install-binaries jboss.binaries.file="${tools.dir}/${jboss.grid-binaries.file}" jboss.server.name="${grid.server.name}"/>
-        <jboss-nci-customizations jboss.home="${grid.home}" jboss.server.name="${grid.server.name}"/>
+	<!--<jboss-nci-customizations jboss.home="${grid.home}" jboss.server.name="${grid.server.name}"/>-->
     </target>
 
     <target name="install:jboss:caarray" description="Deploy caarray caarray.ear" unless="exclude.jboss" depends="common:jboss:init, common:init">
@@ -600,7 +600,7 @@ depends="
 				<jboss-configure
 jboss.grid.configure="true"
 jboss.server.bindingfile.location="${jboss.home}/server/${jboss.server.name}/conf/bindingservice.beans/META-INF/bindings-jboss-beans.xml"
-jboss.server.binding.template.location="${bda-utils.dir}/resource/${jboss.binaries.relative.dir}/bindings-jboss-beans.xml"
+jboss.server.binding.template.location="${jboss.server.binding.template.location}"
 jboss.server-xml.file="${jboss.home}/server/${jboss.server.name}/deploy/jbossweb.sar/server.xml"
 jboss.server.ports.name="PortsDefaultBindings"
 proxy.update.connector.port.ssl="${jboss.ssl.port}"
@@ -1055,6 +1055,7 @@ depends="upgrade:jboss:init,common:init,upgrade-ncm:jboss,-install:jboss:configu
     <target name="install:carray-grid" description="Grouping of caArray Grid application targets" depends="install:jboss:grid-binaries,install:grid:deploy">
 		<jboss-configure
 			jboss.server.bindingfile.location="${grid.home}/bindings/bindings.xml"
+			jboss.server.binding.template.location="${jboss.server.binding.template.location}"
 			jboss.grid.configure="true"
 			jboss.home="${grid.home}"
 			jboss.server.name="${grid.server.name}"
