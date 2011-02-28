@@ -382,7 +382,7 @@ properties.list="jboss.server.jndi.port,jboss.server.port,jboss.cobraorb.port,jb
     </target>
 
     <target name="install:jboss:grid-binaries" description="Unzip JBoss binary for grid services" unless="exclude.jboss.grid" depends="common:jboss:init, common:init">
-        <jboss-install-binaries jboss.binaries.file="${tools.dir}/${jboss.grid-binaries.file}" jboss.server.name="${grid.server.name}"/>
+	    <jboss-install-binaries jboss.binaries.file="${tools.dir}/${jboss.grid-binaries.file}" jboss.server.name="${grid.server.name}" jboss.home="${grid.home}"/>
 	<!--<jboss-nci-customizations jboss.home="${grid.home}" jboss.server.name="${grid.server.name}"/>-->
     </target>
 
@@ -1054,7 +1054,7 @@ depends="upgrade:jboss:init,common:init,upgrade-ncm:jboss,-install:jboss:configu
     <target name="install:carray-grid" description="Grouping of caArray Grid application targets" depends="install:jboss:grid-binaries,install:grid:deploy">
 		<jboss-configure
 			jboss.server.bindingfile.location="${grid.home}/bindings/bindings.xml"
-			jboss.server.binding.template.location="${jboss.server.binding.template.location}"
+			jboss.server.binding.template.location="${bda-utils.dir}/resource/jboss-4.0.4.GA/bindings.xml"
 			jboss.grid.configure="true"
 			jboss.home="${grid.home}"
 			jboss.server.name="${grid.server.name}"
