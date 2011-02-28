@@ -602,7 +602,6 @@ jboss.grid.configure="true"
 jboss.server.bindingfile.location="${jboss.home}/server/${jboss.server.name}/conf/bindingservice.beans/META-INF/bindings-jboss-beans.xml"
 jboss.server.binding.template.location="${jboss.server.binding.template.location}"
 jboss.server-xml.file="${jboss.home}/server/${jboss.server.name}/deploy/jbossweb.sar/server.xml"
-jboss.server.ports.name="PortsDefaultBindings"
 proxy.update.connector.port.ssl="${jboss.ssl.port}"
 					/>
 			<jboss51-encrypt-messaging-passwd />
