@@ -240,7 +240,7 @@
         </action>
         
         <action name="project/cancelJob" class="gov.nih.nci.caarray.web.action.project.ProjectJobQueueAction" method="cancelJob">
-            <result name="success">/WEB-INF/pages/project/jobQueue/jobQueue.jsp</result>
+            <result name="success" type="redirectAction">project/viewJobQueue</result>
         </action>
         
         <action name="project/create" class="gov.nih.nci.caarray.web.action.project.ProjectAction" method="create">

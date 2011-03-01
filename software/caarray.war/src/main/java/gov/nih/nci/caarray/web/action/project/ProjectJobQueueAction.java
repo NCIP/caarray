@@ -136,7 +136,7 @@ public class ProjectJobQueueAction extends ActionSupport {
         if (!ServiceLocatorFactory.getJobQueueService().cancelJob(jobId)) {
             ActionHelper.saveMessage(getText("jobQueue.cancel.unableToCancel"));
         }
-        return jobQueue();
+        return Action.SUCCESS;
     }
 
     /**
