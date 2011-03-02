@@ -27,7 +27,6 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
     <property name="working.dir" value="${basedir}/working" />
     <property name="temp.dir" location="${working.dir}/temp" />
 
-
     <!-- Install Time properties -->
     <!-- Source and target directories -->
     <property name="bda-utils.dir" location="${basedir}/bda-utils" />
@@ -129,6 +128,8 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
 				<property name="exclude.tomcat.grid" value="true" />
 			</then>
 		</if>
+		<mkdir dir="${download.dir}"/> <!-- working around BDA bug -->
+		<validate-pre-build application.base.path="${tools.dir}" wscore.relative.dir="ws-core-4.0.3"/>
 	</target>
 	<!-- Targets begin -->
 	<target name="install:jboss:init" depends="common:init:pre" unless="exclude.jboss">
@@ -378,12 +379,19 @@ properties.list="jboss.server.jndi.port,jboss.server.port,jboss.cobraorb.port,jb
 
     <target name="install:jboss:binaries" description="Unzip JBoss binary" unless="exclude.jboss" depends="common:jboss:init, common:init">
         <jboss-install-binaries jboss.binaries.file="${tools.dir}/${jboss.binaries.file}"/>
+        
+        <!-- this is needed to work-around a BDA macro bug -->
+		<chmod dir="${jboss.home}/bin" perm="ugo+rx" includes="**/*.sh" osfamily="unix"/>
+		<chmod dir="${jboss.home}/bin" perm="ugo+rx" includes="*_jboss" osfamily="unix"/>
+		
         <jboss-nci-customizations/>
     </target>
 
     <target name="install:jboss:grid-binaries" description="Unzip JBoss binary for grid services" unless="exclude.jboss.grid" depends="common:jboss:init, common:init">
 	    <jboss-install-binaries jboss.binaries.file="${tools.dir}/${jboss.grid-binaries.file}" jboss.server.name="${grid.server.name}" jboss.home="${grid.home}"/>
-	<!--<jboss-nci-customizations jboss.home="${grid.home}" jboss.server.name="${grid.server.name}"/>-->
+        
+        <!-- this is needed to work-around a BDA macro bug -->
+		<chmod dir="${grid.home}/bin" perm="ugo+rx" includes="**/*.sh" osfamily="unix"/>
     </target>
 
     <target name="install:jboss:caarray" description="Deploy caarray caarray.ear" unless="exclude.jboss" depends="common:jboss:init, common:init">
@@ -566,7 +574,6 @@ depends="
 		common:jboss:init,
 		common:init,
         -install:jboss:configure:log4j,
-        -install:jboss:configure:ejb3-interceptors-aop,
         -install:jboss:configure:disable-credential-caching,
         -install:jboss:configure:java_opts,
         -install:jboss:configure:web-container,
@@ -619,7 +626,7 @@ proxy.update.connector.port.ssl="${jboss.ssl.port}"
             <then>
         <xmltask source="${jboss.home}/server/${jboss.server.name}/deploy/jbossweb.sar/context.xml" dest="${jboss.home}/server/${jboss.server.name}/deploy/jbossweb.sar/context.xml">
             <xmlcatalog refid="bda.xml.catalog"/>
-            <attr path="/Context/SessionCookie" attr="Path" value="/"/>
+            <attr path="/Context/SessionCookie" attr="path" value="/"/>
                 </xmltask>
             </then>
             <else>
@@ -627,7 +634,7 @@ proxy.update.connector.port.ssl="${jboss.ssl.port}"
                     <xmlcatalog refid="bda.xml.catalog"/>
         <insert path="/Context">
                         <![CDATA[
-                        <SessionCookie Path="/"/>
+                        <SessionCookie path="/"/>
                         ]]>
                     </insert>
                 </xmltask>
@@ -657,7 +664,7 @@ proxy.update.connector.port.ssl="${jboss.ssl.port}"
                 <isset property="exclude.start.servers"/>
             </not>
             <then>
-                <jboss-start-jboss jboss.home="${application.base.path}/${jboss.relative.path}" jboss.server.name="${jboss.server.name}"/>
+                <jboss-start-jboss jboss.home="${application.base.path}/${jboss.relative.path}" jboss.server.name="${jboss.server.name}" jboss.major.version="5"/>
                 <sleep seconds="15"/>
             </then>
         </if>
@@ -737,7 +744,7 @@ proxy.update.connector.port.ssl="${jboss.ssl.port}"
                 <isset property="exclude.start.servers"/>
             </not>
             <then>
-                <jboss-start-jboss jboss.home="${grid.home}" jboss.server.name="${grid.server.name}"/>
+                <jboss-start-jboss jboss.home="${grid.home}" jboss.server.name="${grid.server.name}" jboss.major.version="4"/>
                 <sleep seconds="15"/>
             </then>
         </if>
@@ -849,7 +856,7 @@ host.flag.value="${jboss.server.hostname}"
         "/-->
     <!-- Generic targets to call appropriate upgrade path targets, just change the depends to use alternate ugprade path -->
     <target name="upgrade:jboss" description="Wrapper target to call all targets required to upgrade jboss container." unless="exclude.jboss" 
-depends="upgrade:jboss:init,common:init,upgrade-ncm:jboss,-install:jboss:configure:web-container,-install:jboss:configure:log4j,-install:jboss:configure:ejb3-interceptors-aop,-install:jboss:configure:disable-credential-caching,-install:jboss:configure:api:streaming:port">
+depends="upgrade:jboss:init,common:init,upgrade-ncm:jboss,-install:jboss:configure:web-container,-install:jboss:configure:log4j,-install:jboss:configure:disable-credential-caching,-install:jboss:configure:api:streaming:port">
     </target>
 
     <target name="upgrade:tier:caarray" description="Upgrades caArray installation on NCICB tier."
@@ -865,7 +872,6 @@ depends="upgrade:jboss:init,common:init,upgrade-ncm:jboss,-install:jboss:configu
 		-install:jboss:configure:web-container,
 		install:jboss:caarray,
 		-install:jboss:configure:log4j,
-    	-install:jboss:configure:ejb3-interceptors-aop,
 		-install:jboss:configure:disable-credential-caching,
 		upgrade:database">
 		<antcall target="-install:jboss:start-with-config">

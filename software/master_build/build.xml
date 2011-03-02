@@ -615,7 +615,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
         </if>
     </target>
 
-    <target name="retrieve:jboss404" unless="grid.tools.exists">
+    <target name="retrieve:jboss405" unless="grid.tools.exists">
         <get src="${jboss.grid-src.url}"
             dest="${grid.dest.file}"/>
 
@@ -625,13 +625,13 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
         <unzip src="${grid.dest.file}" dest="${jboss.temp.staging.dir}"/>
         <delete file="${grid.dest.file}"/>
         <!-- be careful as these configurations might not be there in future if zip updated -->
-        <delete dir="${jboss.temp.staging.dir}/jboss-4.0.4.GA/server/all" failonerror="false"/>
-        <delete dir="${jboss.temp.staging.dir}/jboss-4.0.4.GA/server/minimal" failonerror="false"/>
+        <delete dir="${jboss.temp.staging.dir}/${jboss.grid-binaries.relative.dir}/server/all" failonerror="false"/>
+        <delete dir="${jboss.temp.staging.dir}/${jboss.grid-binaries.relative.dir}/server/minimal" failonerror="false"/>
         <zip update="true" destfile="${grid.dest.file}" basedir="${jboss.temp.staging.dir}"/>
         <delete dir="${jboss.temp.staging.dir}"/>
     </target>
 
-    <target name="dist:tools:retrieve" depends="retrieve:jboss,retrieve:jboss404,dist:tools:retrieve:cagrid,dist:tools:retrieve:cagrid-console"/>
+    <target name="dist:tools:retrieve" depends="retrieve:jboss,retrieve:jboss405,dist:tools:retrieve:cagrid,dist:tools:retrieve:cagrid-console"/>
 	
     <target name="dist:tools:retrieve:jboss-bindings"  description="Downloads JBOSS bindings filefrom binary repository and verifies checksum">
         <get src="${jboss4-bindings.src.url}" dest="${dist.exploded.dir}/${jboss4-bindings.file}" />
