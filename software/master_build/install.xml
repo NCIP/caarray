@@ -379,19 +379,11 @@ properties.list="jboss.server.jndi.port,jboss.server.port,jboss.cobraorb.port,jb
 
     <target name="install:jboss:binaries" description="Unzip JBoss binary" unless="exclude.jboss" depends="common:jboss:init, common:init">
         <jboss-install-binaries jboss.binaries.file="${tools.dir}/${jboss.binaries.file}"/>
-        
-        <!-- this is needed to work-around a BDA macro bug -->
-		<chmod dir="${jboss.home}/bin" perm="ugo+rx" includes="**/*.sh" osfamily="unix"/>
-		<chmod dir="${jboss.home}/bin" perm="ugo+rx" includes="*_jboss" osfamily="unix"/>
-		
         <jboss-nci-customizations/>
     </target>
 
     <target name="install:jboss:grid-binaries" description="Unzip JBoss binary for grid services" unless="exclude.jboss.grid" depends="common:jboss:init, common:init">
 	    <jboss-install-binaries jboss.binaries.file="${tools.dir}/${jboss.grid-binaries.file}" jboss.server.name="${grid.server.name}" jboss.home="${grid.home}"/>
-        
-        <!-- this is needed to work-around a BDA macro bug -->
-		<chmod dir="${grid.home}/bin" perm="ugo+rx" includes="**/*.sh" osfamily="unix"/>
     </target>
 
     <target name="install:jboss:caarray" description="Deploy caarray caarray.ear" unless="exclude.jboss" depends="common:jboss:init, common:init">
@@ -759,6 +751,7 @@ proxy.update.connector.port.ssl="${jboss.ssl.port}"
 jboss.bin.dir="${jboss.home}/bin" 
 host.flag.value="${jboss.server.hostname}"
             />
+		<chmod dir="${jboss.home}/bin" perm="ugo+rx" includes="**/*" osfamily="unix"/>
     </target>
 
     <target name="-set:target:port:configuration:file">
