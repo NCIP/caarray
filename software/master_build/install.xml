@@ -27,7 +27,6 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
     <property name="working.dir" value="${basedir}/working" />
     <property name="temp.dir" location="${working.dir}/temp" />
 
-
     <!-- Install Time properties -->
     <!-- Source and target directories -->
     <property name="bda-utils.dir" location="${basedir}/bda-utils" />
@@ -122,15 +121,6 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
 		</if>
 	<if>
 			<or>
-				<equals arg1="${exclude.jboss}" arg2="true" />
-				<equals arg1="${jboss.major.version}" arg2="5" />
-			</or>
-			<then>
-				<property name="exclude.jboss.grid" value="true" />
-			</then>
-		</if>
-		<if>
-			<or>
 				<equals arg1="${exclude.tomcat}" arg2="true" />
 				<equals arg1="${tomcat.major.version}" arg2="6" />
 			</or>
@@ -138,6 +128,8 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
 				<property name="exclude.tomcat.grid" value="true" />
 			</then>
 		</if>
+		<mkdir dir="${download.dir}"/> <!-- working around BDA bug -->
+		<validate-pre-build application.base.path="${tools.dir}" wscore.relative.dir="ws-core-4.0.3"/>
 	</target>
 	<!-- Targets begin -->
 	<target name="install:jboss:init" depends="common:init:pre" unless="exclude.jboss">
@@ -150,52 +142,45 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
 				<if>
 					<equals arg1="${jboss.major.version}" arg2="4" />
 					<then>
-						<property name="jboss.server.binding.template.location" value="${basedir}/${jboss-bindings.file}"/>
-				<jboss-read-ports
-jboss.server.bindingfile.location="${jboss.server.binding.template.location}" />
-					<jboss-bindings-validate jboss.server.bindingfile.location="${jboss.server.binding.template.location}"
+						<property name="jboss.server.binding.template.location" value="${basedir}/${jboss4-bindings.file}"/>
+						<jboss-read-ports
+							jboss.server.bindingfile.location="${jboss.server.binding.template.location}" />
+						<jboss-bindings-validate jboss.server.bindingfile.location="${jboss.server.binding.template.location}"
 					/>
-				</then>
+					</then>
 					<elseif>
 						<equals arg1="${jboss.major.version}" arg2="5" />
 						<then>
 							<property name="jboss.server.bindingfile.location" value="${basedir}/${jboss-bindings.file}" />
+							<property name="jboss.server.binding.template.location" value="${basedir}/${jboss5-bindings.file}"/>
 							<property name="temp.ejb.file" value="${temp.dir}/ejb3-connectors-jboss-beans.xml" />
 							<copy tofile="${temp.ejb.file}" file="${bda-utils.dir}/resource/jboss-5.1.0.GA/ejb3-connectors-jboss-beans.xml" />
-							<jboss51-bindings-nci jboss.server.bindingfile.location="${jboss.server.bindingfile.location}" />
-							<jboss51-read-ports-nci jboss.server.bindingfile.location="${jboss.server.bindingfile.location}" jboss.server.ejbfile.location="${temp.ejb.file}" />
+							<jboss51-bindings-nci jboss.server.bindingfile.location="${jboss.server.binding.template.location}" />
+							<jboss51-read-ports-nci jboss.server.bindingfile.location="${jboss.server.binding.template.location}" jboss.server.ejbfile.location="${temp.ejb.file}" />
 						</then>
 					</elseif>
 				</if>
 				<echo message="http -${jboss.server.port} "/>
 				<echo message="http -${jboss.server.jndi.port} "/>
+			</then>
+			<else>
+				<echo message="Using custom JBoss port configurations"/>
 				<if>
 					<equals arg1="${jboss.major.version}" arg2="4" />
 					<then>
-					<property name="jboss.server.binding.template.location" value="${bda-utils.dir}/resource/${jboss.binaries.relative.dir}/bindings.xml" 					/>
-				</then>
-				<else>
-					<property name="jboss.server.binding.template.location" value="${bda-utils.dir}/resource/${jboss.binaries.relative.dir}/bindings-jboss-beans.xml" 					/>
+						<property name="jboss.server.binding.template.location" value="${bda-utils.dir}/resource/${jboss.binaries.relative.dir}/bindings.xml" 					/>
+					</then>
+					<else>
+						<property name="jboss.server.binding.template.location" value="${bda-utils.dir}/resource/${jboss.binaries.relative.dir}/bindings-jboss-beans.xml" 					/>
 
-			</else>
+					</else>
 				</if>
 				<properties-exist properties.list="jboss.server.jndi.port,jboss.server.port,jboss.server.ports.name" />
-			</then>
-			<else>
 				<!-- else ensure that all ports are set, since these will be removed from install-properties.template we will verify here.  They have to be removed so the validator works with or without the properties or we have to change the format of the file. -->
-				<echo message="Using custom JBoss port configurations"/>
-				<property name="jboss.server.binding.template.location" value="${bda-utils.dir}/resource/${jboss.binaries.relative.dir}/bindings.xml"/>
 				<properties-exist
 properties.list="jboss.server.jndi.port,jboss.server.port,jboss.cobraorb.port,jboss.hajndi.port,jboss.hajrmi.port,jboss.jmx-rmi.port,jboss.messaging.port,jboss.pooledha.port,jboss.server.bind.port,jboss.server.rmi.port,jboss.service.rmiobject.port,jboss.snmp.port,jboss.snmp-trapd.port,jboss.web.service.port,jboss.unifiedinvoker.port,jboss.hajndi.auto.port,jboss.ssl.port,jboss.jms2.netty.port,jboss.jms2.netty-ssl.port,jboss.transaction.recovery.port,jboss.transaction.status.port,jboss.transaction.processid.port"/>
 			</else>
 		</if>
-	</target>
-	<target name="common:jboss:init" depends="common:init:pre,common:jboss:grid:init" unless="exclude.jboss">
-	        <math result="jboss.ssl.port" operand1="${jboss.server.port}" operation="+" operand2="363" datatype="int"/>
-	        <!-- Default to false, properties can override -->
-	        <property name="grid.secure.enable" value="false"/>
-		<property name="jboss.ssl.enable" value="false"/>
-		<property name="jboss.home" value="${application.base.path}/${jboss.relative.path}"/>
 		<jboss-version />
 		<if>
 			<equals arg1="${jboss.http-connector.remove}" arg2="true"/>
@@ -206,6 +191,13 @@ properties.list="jboss.server.jndi.port,jboss.server.port,jboss.cobraorb.port,jb
 				<property name="jboss.application.url" value="http://${jboss.server.hostname}:${jboss.server.port}/${caarray-webapp.name}"/>
 			</else>
 		</if>
+	</target>
+	<target name="common:jboss:init" depends="common:init:pre,common:jboss:grid:init" unless="exclude.jboss">
+		<!--<math result="jboss.ssl.port" operand1="${jboss.server.port}" operation="+" operand2="363" datatype="int"/>-->
+	        <!-- Default to false, properties can override -->
+	        <property name="grid.secure.enable" value="false"/>
+		<property name="jboss.ssl.enable" value="false"/>
+		<property name="jboss.home" value="${application.base.path}/${jboss.relative.path}"/>
 		<available file="${jboss.home}/server/${jboss.server.name}/conf/jboss-service.xml" property="jboss.exists"/>
 		<basename file="${jboss.ssl.keystore.location}" property="jboss.ssl.keystore.file"/>
 		<dirname file="${jboss.ssl.keystore.location}" property="jboss.ssl.keystore.dir"/>
@@ -231,7 +223,7 @@ properties.list="jboss.server.jndi.port,jboss.server.port,jboss.cobraorb.port,jb
 			</case>
 			<case value="mysql">
 				<property name="database.dialect" value="org.hibernate.dialect.MySQLDialect"/>
-				<property name="database.driver.file" value="${bda-utils.dir}/mysql-connector-java-5.0.8.jar"/>
+				<property name="database.driver.file" value="${bda-utils.dir}/mysql-connector-java-5.1.13.jar"/>
 				<property name="database.driver" value="com.mysql.jdbc.Driver"/>
 				<property name="database.schema" value="${database.name}"/>
 			</case>
@@ -391,8 +383,7 @@ properties.list="jboss.server.jndi.port,jboss.server.port,jboss.cobraorb.port,jb
     </target>
 
     <target name="install:jboss:grid-binaries" description="Unzip JBoss binary for grid services" unless="exclude.jboss.grid" depends="common:jboss:init, common:init">
-        <jboss-install-binaries jboss.binaries.file="${tools.dir}/${jboss.grid-binaries.file}" jboss.server.name="${grid.server.name}"/>
-        <jboss-nci-customizations jboss.home="${grid.home}" jboss.server.name="${grid.server.name}"/>
+	    <jboss-install-binaries jboss.binaries.file="${tools.dir}/${jboss.grid-binaries.file}" jboss.server.name="${grid.server.name}" jboss.home="${grid.home}"/>
     </target>
 
     <target name="install:jboss:caarray" description="Deploy caarray caarray.ear" unless="exclude.jboss" depends="common:jboss:init, common:init">
@@ -494,12 +485,11 @@ properties.list="jboss.server.jndi.port,jboss.server.port,jboss.cobraorb.port,jb
         </copy>
     </target>
 
-    <!-- TODO! -->
     <target name="install:jboss:configure:log4j" description="Configure custom entries in system wide log4j" unless="exclude.jboss"  depends="common:jboss:init, common:init">
         <!--
         <echo message="Configuring Log4J"/>
 
-        <property name="log4j.file.name" value="log4j.xml"/>
+        <property name="log4j.file.name" value="jboss-log4j.xml"/>
         <copy file="${jboss.home}/server/${jboss.server.name}/conf/${log4j.file.name}" tofile="${jboss.home}/server/${jboss.server.name}/conf/${log4j.file.name}.pre"/>
 
         <replaceregexp file="${jboss.home}/server/${jboss.server.name}/conf/${log4j.file.name}"
@@ -576,10 +566,9 @@ depends="
 		common:jboss:init,
 		common:init,
         -install:jboss:configure:log4j,
-        -install:jboss:configure:ejb3-interceptors-aop,
         -install:jboss:configure:disable-credential-caching,
         -install:jboss:configure:java_opts,
-        -install:jboss:configure:tomcat,
+        -install:jboss:configure:web-container,
         -install:jboss:configure:update-runscripts
             ">
 		<!-- Calls the following macros
@@ -610,9 +599,8 @@ depends="
 				<jboss-configure
 jboss.grid.configure="true"
 jboss.server.bindingfile.location="${jboss.home}/server/${jboss.server.name}/conf/bindingservice.beans/META-INF/bindings-jboss-beans.xml"
-jboss.server.binding.template.location="${bda-utils.dir}/resource/${jboss.binaries.relative.dir}/bindings-jboss-beans.xml"
+jboss.server.binding.template.location="${jboss.server.binding.template.location}"
 jboss.server-xml.file="${jboss.home}/server/${jboss.server.name}/deploy/jbossweb.sar/server.xml"
-jboss.server.ports.name="PortsDefaultBindings"
 proxy.update.connector.port.ssl="${jboss.ssl.port}"
 					/>
 			<jboss51-encrypt-messaging-passwd />
@@ -620,12 +608,30 @@ proxy.update.connector.port.ssl="${jboss.ssl.port}"
 		</if>
     </target>
 
-    <target name="-install:jboss:configure:tomcat" description="Configure tomcat web container for caArray JBoss installation.">
-        <!-- set the ldap-related servlet parameters -->
-        <xmltask source="${jboss.home}/server/${jboss.server.name}/deploy/jbossweb-tomcat55.sar/server.xml" dest="${jboss.home}/server/${jboss.server.name}/deploy/jbossweb-tomcat55.sar/server.xml">
+    <target name="-install:jboss:configure:web-container" description="Configure web container for caArray JBoss installation.">
+        <xmltask source="${jboss.home}/server/${jboss.server.name}/deploy/jbossweb.sar/context.xml" dest="${jboss.home}/server/${jboss.server.name}/deploy/jbossweb.sar/context.xml">
             <xmlcatalog refid="bda.xml.catalog"/>
-            <attr path="//Connector" attr="emptySessionPath" value="false"/>
+            <copy path="/Context/SessionCookie" property="session.cookie.contents.present"/>
         </xmltask>
+        <if>
+            <isset property="session.cookie.contents.present"/>
+            <then>
+        <xmltask source="${jboss.home}/server/${jboss.server.name}/deploy/jbossweb.sar/context.xml" dest="${jboss.home}/server/${jboss.server.name}/deploy/jbossweb.sar/context.xml">
+            <xmlcatalog refid="bda.xml.catalog"/>
+            <attr path="/Context/SessionCookie" attr="path" value="/"/>
+                </xmltask>
+            </then>
+            <else>
+                <xmltask source="${jboss.home}/server/${jboss.server.name}/deploy/jbossweb.sar/context.xml" dest="${jboss.home}/server/${jboss.server.name}/deploy/jbossweb.sar/context.xml">
+                    <xmlcatalog refid="bda.xml.catalog"/>
+        <insert path="/Context">
+                        <![CDATA[
+                        <SessionCookie path="/"/>
+                        ]]>
+                    </insert>
+                </xmltask>
+    </else>
+        </if>
     </target>
 
     <!-- Calls to bda macros for basic functionality -->
@@ -638,7 +644,7 @@ proxy.update.connector.port.ssl="${jboss.ssl.port}"
         </if>
     </target>
 
-    <target name="-install:jboss:start-with-config" description="Starts jboss" unless="exclude.jboss" depends="common:jboss:init,common:init,-install:jboss:configure:tomcat ">
+    <target name="-install:jboss:start-with-config" description="Starts jboss" unless="exclude.jboss" depends="common:jboss:init,common:init,-install:jboss:configure:web-container ">
         <antcall target="install:jboss:start" inheritAll="false">
         	<param name="skip.clean" value="true"/>
         </antcall>
@@ -650,7 +656,7 @@ proxy.update.connector.port.ssl="${jboss.ssl.port}"
                 <isset property="exclude.start.servers"/>
             </not>
             <then>
-                <jboss-start-jboss jboss.home="${application.base.path}/${jboss.relative.path}" jboss.server.name="${jboss.server.name}"/>
+                <jboss-start-jboss jboss.home="${application.base.path}/${jboss.relative.path}" jboss.server.name="${jboss.server.name}" jboss.major.version="5"/>
                 <sleep seconds="15"/>
             </then>
         </if>
@@ -730,7 +736,7 @@ proxy.update.connector.port.ssl="${jboss.ssl.port}"
                 <isset property="exclude.start.servers"/>
             </not>
             <then>
-                <jboss-start-jboss jboss.home="${grid.home}" jboss.server.name="${grid.server.name}"/>
+                <jboss-start-jboss jboss.home="${grid.home}" jboss.server.name="${grid.server.name}" jboss.major.version="4"/>
                 <sleep seconds="15"/>
             </then>
         </if>
@@ -745,6 +751,7 @@ proxy.update.connector.port.ssl="${jboss.ssl.port}"
 jboss.bin.dir="${jboss.home}/bin" 
 host.flag.value="${jboss.server.hostname}"
             />
+		<chmod dir="${jboss.home}/bin" perm="ugo+rx" includes="**/*" osfamily="unix"/>
     </target>
 
     <target name="-set:target:port:configuration:file">
@@ -842,7 +849,7 @@ host.flag.value="${jboss.server.hostname}"
         "/-->
     <!-- Generic targets to call appropriate upgrade path targets, just change the depends to use alternate ugprade path -->
     <target name="upgrade:jboss" description="Wrapper target to call all targets required to upgrade jboss container." unless="exclude.jboss" 
-depends="upgrade:jboss:init,common:init,upgrade-ncm:jboss,-install:jboss:configure:tomcat,-install:jboss:configure:log4j,-install:jboss:configure:ejb3-interceptors-aop,-install:jboss:configure:disable-credential-caching,-install:jboss:configure:api:streaming:port">
+depends="upgrade:jboss:init,common:init,upgrade-ncm:jboss,-install:jboss:configure:web-container,-install:jboss:configure:log4j,-install:jboss:configure:disable-credential-caching,-install:jboss:configure:api:streaming:port">
     </target>
 
     <target name="upgrade:tier:caarray" description="Upgrades caArray installation on NCICB tier."
@@ -855,10 +862,9 @@ depends="upgrade:jboss:init,common:init,upgrade-ncm:jboss,-install:jboss:configu
 		install:jboss:stop,
 		install:jboss:validation:pre-install:ports,
 		install:jboss:caarray:re-configure,
-		-install:jboss:configure:tomcat,
+		-install:jboss:configure:web-container,
 		install:jboss:caarray,
 		-install:jboss:configure:log4j,
-    	-install:jboss:configure:ejb3-interceptors-aop,
 		-install:jboss:configure:disable-credential-caching,
 		upgrade:database">
 		<antcall target="-install:jboss:start-with-config">
@@ -1047,6 +1053,7 @@ depends="upgrade:jboss:init,common:init,upgrade-ncm:jboss,-install:jboss:configu
     <target name="install:carray-grid" description="Grouping of caArray Grid application targets" depends="install:jboss:grid-binaries,install:grid:deploy">
 		<jboss-configure
 			jboss.server.bindingfile.location="${grid.home}/bindings/bindings.xml"
+			jboss.server.binding.template.location="${bda-utils.dir}/resource/jboss-4.0.4.GA/bindings.xml"
 			jboss.grid.configure="true"
 			jboss.home="${grid.home}"
 			jboss.server.name="${grid.server.name}"
@@ -1225,11 +1232,11 @@ depends="upgrade:jboss:init,common:init,upgrade-ncm:jboss,-install:jboss:configu
 		</xmltask>
     </target>
 
-    <target name="-install:jboss:configure:log4j" unless="exclude.jboss" description="Configures log4j.xml for caArray JBoss server.">
-		<echo message="Configuring ${jboss.home}/server/${jboss.server.name}/conf/log4j.xml."/>
-        <copy file="${jboss.home}/server/${jboss.server.name}/conf/log4j.xml" tofile="${jboss.home}/server/${jboss.server.name}/conf/log4j.xml.original"/>
+    <target name="-install:jboss:configure:log4j" unless="exclude.jboss" description="Configures jboss-log4j for caArray JBoss server.">
+		<echo message="Configuring ${jboss.home}/server/${jboss.server.name}/conf/jboss-log4j.xml."/>
+        <copy file="${jboss.home}/server/${jboss.server.name}/conf/jboss-log4j.xml" tofile="${jboss.home}/server/${jboss.server.name}/conf/jboss-log4j.xml.original"/>
 		<loadfile property="log4j.fragment" srcFile="common/resources/jboss-conf/log4j.fragment.xml"/>
-		<loadfile property="existing.log4j.contents" srcFile="${jboss.home}/server/${jboss.server.name}/conf/log4j.xml"/>
+		<loadfile property="existing.log4j.contents" srcFile="${jboss.home}/server/${jboss.server.name}/conf/jboss-log4j.xml"/>
 		<propertyregex property="caarray.custom.cfg.target.text"
 			input="${existing.log4j.contents}"
 			regexp="&lt;!-- start caarray custom configuration[\d\D]*end caarray custom configuration --&gt;"
@@ -1239,10 +1246,10 @@ depends="upgrade:jboss:init,common:init,upgrade-ncm:jboss,-install:jboss:configu
 		<if>
 			<isset property="caarray.custom.cfg.target.text" />
 			<then>
-			    <replace file="${jboss.home}/server/${jboss.server.name}/conf/log4j.xml" token="${caarray.custom.cfg.target.text}" value="${log4j.fragment}"/>
+			    <replace file="${jboss.home}/server/${jboss.server.name}/conf/jboss-log4j.xml" token="${caarray.custom.cfg.target.text}" value="${log4j.fragment}"/>
 			</then>
 			<else>
-				<replace file="${jboss.home}/server/${jboss.server.name}/conf/log4j.xml" token="&lt;/log4j:configuration&gt;" value="${log4j.fragment}${line.separator}&lt;/log4j:configuration&gt;"/>
+				<replace file="${jboss.home}/server/${jboss.server.name}/conf/jboss-log4j.xml" token="&lt;/log4j:configuration&gt;" value="${log4j.fragment}${line.separator}&lt;/log4j:configuration&gt;"/>
 			</else>
 		</if>
     </target>
