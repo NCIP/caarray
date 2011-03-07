@@ -101,8 +101,16 @@ public class JobDaoSingleJobStub implements JobQueueDao {
     /**
      * {@inheritDoc}
      */
-    public ExecutableJob getNextJobIfAvailableAndSetInProgress() {
+    public ExecutableJob peekAtJobQueue() {
         return job;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public boolean setJobInProgress(ExecutableJob job) {
+        job.setInProgressStatus();
+        return true;
     }
 
     /**
@@ -115,8 +123,8 @@ public class JobDaoSingleJobStub implements JobQueueDao {
     /**
      * {@inheritDoc}
      */
-    public void dequeue() {
-        job = null;
+    public ExecutableJob dequeue() {
+        return job;
     }
 
     /**
