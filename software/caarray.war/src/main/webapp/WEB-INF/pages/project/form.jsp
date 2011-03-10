@@ -69,7 +69,7 @@
                     <s:hidden name="workflowStatus" value="%{#attr.newWorkflowStatus}"/>
                 </s:form>
                 <caarray:linkButton onclick="this.blur(); submitWorkflowForm();"
-                        actionClass="submit_experiment" text="${buttonTitle}" style="float: right; padding-top: 0px; margin-top: -0.3em"/>
+                        actionClass="submit_experiment" text="${buttonTitle}" shouldWrapInListItem="false" style="float: right; padding-top: 0px; margin-top: -0.3em"/>
             </c:if>
         </c:if>
         </jsp:attribute>
