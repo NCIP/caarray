@@ -179,12 +179,14 @@ class JobQueueDaoImpl implements JobQueueDao {
      * {@inheritDoc}
      */
     public List<Job> getJobsForUser(User user) {
-        List<Job> snapshotList = new ArrayList<Job>(getJobList().size());
+        List<Job> snapshotList = new ArrayList<Job>();
         jobQueueLock.lock();
         try {
             int position = 1;
             for (ExecutableJob originalJob : getJobList()) {
-                snapshotList.add(new JobSnapshot(user, originalJob, position++));
+                if (originalJob.userHasReadAccess(user) || originalJob.userHasWriteAccess(user)) {
+                    snapshotList.add(new JobSnapshot(user, originalJob, position++));
+                }
             }
         } finally {
             jobQueueLock.unlock();
