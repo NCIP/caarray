@@ -13,7 +13,7 @@
         $('downloadInProgressMsg').hide();
     }
 </script>
-<div class="tableboxpad" style="overflow:auto; max-height:500px">
+<div class="tableboxpad" style="overflow:auto; max-height:350px">
 <table class="searchresults">
   <tr>
       <td width="80%">
