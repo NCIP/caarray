@@ -74,10 +74,10 @@
       <feature number="28">
         <position x="0.0" y="1.7142300000000001" units="mm"></position>
       </feature>
-      <gene systematic_name="chr7:2275926-2275985" primary_name="SNX8" description="ref|Homo sapiens sorting nexin 8 (SNX8), mRNA.">
+      <gene systematic_name="chr7_test_ARRAY-1872:2275926-2275985" primary_name="SNX8" description="ref|Homo sapiens sorting nexin 8 (SNX8), mRNA.">
         <accession database="ref" id="NM_013321"></accession>
         <other name="accessions" value="ref|NM_013321"></other>
-        <other name="probe_mappings" value="chr7:2275926-2275985"></other>
+        <other name="probe_mappings" value="chr7_test_ARRAY-1872:2275926-2275985"></other>
         <other name="tm" value="79.9"></other>
         <other name="IsHomFiltered" value="0"></other>
         <other name="NumPMHits" value="1"></other>

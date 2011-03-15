@@ -103,7 +103,7 @@ class AgilentGELMParser {
     private static final String IGNORE_CONTROL_GROUP_NAME = "ignore";
 
     private final XMLTokenizer<Token> tokenizer;
-    private final Pattern chromosomePattern = Pattern.compile("chr(\\d{1,2}|X|Y|x|y):(\\d+)-(\\d+)(?:\\|.+){0,1}");
+    private final Pattern chromosomePattern = Pattern.compile("chr(.+):(\\d+)-(\\d+)(?:\\|.+){0,1}");
     private int featureCount;
     private int geneCount;
     private int positionCount;
