@@ -171,17 +171,17 @@ public class FileManagementMDB implements MessageListener {
             LOG.error("Invalid message type delivered: " + message.getClass().getName());
             return;
         }
-
         try {
             currentMDB.set(this);            
             String messageText = ((TextMessage) message).getText();
             if ("enqueue".equals(messageText)) {
                 UsernameHolder usernameHolder = userHolderProvider.get();
-                ExecutableJob job = getNextJobIfAvailableAndSetToInProgress(usernameHolder);
+                ExecutableJob job = jobDao.peekAtJobQueue();
                 if (null != job) {
                     String previousUser = usernameHolder.getUser();
                     usernameHolder.setUser(job.getOwnerName());
                     try {
+                        setJobInProgress(job);
                         performJob(job);
                         jobDao.dequeue();
                         LOG.info("Successfully completed job");
@@ -198,20 +198,13 @@ public class FileManagementMDB implements MessageListener {
             currentMDB.remove();
         }
     }
-
-    private ExecutableJob getNextJobIfAvailableAndSetToInProgress(UsernameHolder usernameHolder) {
-        String previousUser = usernameHolder.getUser();
+    
+    private void setJobInProgress(ExecutableJob job) {
         beginTransaction();
-        ExecutableJob job = jobDao.getNextJobIfAvailableAndSetInProgress();
-        try {
-            usernameHolder.setUser(job.getOwnerName());
-            commitTransaction();
-        } finally {
-            usernameHolder.setUser(previousUser);
-        }
-        return job;
+        job.setInProgressStatus();
+        commitTransaction();
     }
-
+    
     /**
      * Begin the transaction used by the job.
      */

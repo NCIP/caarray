@@ -82,10 +82,11 @@
  */package gov.nih.nci.caarray.dao;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import gov.nih.nci.caarray.domain.project.ExecutableJob;
@@ -119,7 +120,7 @@ public class JobDaoTest {
     @Test
     public void newQueueIsEmpty() {
         assertThat(systemUnderTest.getLength(), is(0));
-        assertThat(systemUnderTest.getNextJobIfAvailableAndSetInProgress(), is(nullValue()));
+        assertThat(getNextJobIfAvailableAndSetInProgress(), is(nullValue()));
         assertThat(systemUnderTest.getJobList().size(), is(0));
     }
     
@@ -133,7 +134,7 @@ public class JobDaoTest {
         systemUnderTest.enqueue(getNextMockJob());
         
         assertThat(systemUnderTest.getLength(), is(1));
-        assertThat(systemUnderTest.getNextJobIfAvailableAndSetInProgress(), isJobIndex(0));
+        assertThat(getNextJobIfAvailableAndSetInProgress(), isJobIndex(0));
         assertThat(systemUnderTest.getJobList(), is(mockJobs.subList(0, 1)));
     }
     
@@ -144,7 +145,7 @@ public class JobDaoTest {
         systemUnderTest.dequeue();
         
         assertThat(systemUnderTest.getLength(), is(0));
-        assertThat(systemUnderTest.getNextJobIfAvailableAndSetInProgress(), is(nullValue()));
+        assertThat(getNextJobIfAvailableAndSetInProgress(), is(nullValue()));
         assertThat(systemUnderTest.getJobList().size(), is(0));
     }
     
@@ -163,7 +164,7 @@ public class JobDaoTest {
         systemUnderTest.enqueue(getNextMockJob());
         
         assertThat(systemUnderTest.getLength(), is(2));
-        assertThat(systemUnderTest.getNextJobIfAvailableAndSetInProgress(), isJobIndex(0));
+        assertThat(getNextJobIfAvailableAndSetInProgress(), isJobIndex(0));
         assertThat(systemUnderTest.getJobList(), is(mockJobs.subList(0, 2)));
     }
     
@@ -175,7 +176,7 @@ public class JobDaoTest {
         systemUnderTest.dequeue();
         
         assertThat(systemUnderTest.getLength(), is(1));
-        assertThat(systemUnderTest.getNextJobIfAvailableAndSetInProgress(), isJobIndex(1));
+        assertThat(getNextJobIfAvailableAndSetInProgress(), isJobIndex(1));
         assertThat(systemUnderTest.getJobList(), is(mockJobs.subList(1, 2)));
     }
     
@@ -188,7 +189,7 @@ public class JobDaoTest {
         systemUnderTest.dequeue();
         
         assertThat(systemUnderTest.getLength(), is(0));
-        assertThat(systemUnderTest.getNextJobIfAvailableAndSetInProgress(), is(nullValue()));
+        assertThat(getNextJobIfAvailableAndSetInProgress(), is(nullValue()));
         assertThat(systemUnderTest.getJobList().size(), is(0));
     }
     
@@ -211,7 +212,7 @@ public class JobDaoTest {
         systemUnderTest.enqueue(getNextMockJob());
         
         assertThat(systemUnderTest.getLength(), is(3));
-        assertThat(systemUnderTest.getNextJobIfAvailableAndSetInProgress(), isJobIndex(0));
+        assertThat(getNextJobIfAvailableAndSetInProgress(), isJobIndex(0));
         assertThat(systemUnderTest.getJobList(), is(mockJobs.subList(0, 3)));
     }
     
@@ -236,22 +237,31 @@ public class JobDaoTest {
         systemUnderTest.enqueue(mockJob);
         when(mockJob.isInProgress()).thenReturn(false);
         
-        ExecutableJob job = systemUnderTest.getNextJobIfAvailableAndSetInProgress();
+        ExecutableJob job = getNextJobIfAvailableAndSetInProgress();
         
         assertThat(job, is(mockJob));
         verify(mockJob).setInProgressStatus();
     }
     
     @Test
-    public void cannotGetTopJobAndSetJobStatusWhenJobIsAlreadyInProgress() {
+    public void getJobWhenJobAlreadyInProgress() {
         ExecutableJob mockJob = getNextMockJob();
         systemUnderTest.enqueue(mockJob);
         when(mockJob.isInProgress()).thenReturn(true);
         
-        ExecutableJob job = systemUnderTest.getNextJobIfAvailableAndSetInProgress();
+        ExecutableJob job = getNextJobIfAvailableAndSetInProgress();
         
-        assertThat(job, is(nullValue()));
-        verify(mockJob, never()).setInProgressStatus();
+        assertThat(job, is(notNullValue()));
+        assertTrue(job.isInProgress());
+    }
+    
+    private ExecutableJob getNextJobIfAvailableAndSetInProgress() {
+        ExecutableJob job = systemUnderTest.peekAtJobQueue();
+        if (job != null) {
+            job.setInProgressStatus();
+            return job;
+        }
+        return null;
     }
 
     private List<ExecutableJob> createMockJobsList(int listSize) {

@@ -110,7 +110,7 @@ import com.google.inject.Singleton;
 class JobQueueDaoImpl implements JobQueueDao {
     private final Queue<ExecutableJob> queue = new LinkedList<ExecutableJob>();
     private final JobMessageSender messageSender;
-    private final Lock jobLock = new ReentrantLock();
+    private final Lock jobQueueLock = new ReentrantLock();
     private final FileDao fileDao;
 
     /**
@@ -123,13 +123,13 @@ class JobQueueDaoImpl implements JobQueueDao {
     }
 
     public void enqueue(ExecutableJob job) {
-        jobLock.lock();
+        job.setJobId(UUID.randomUUID());
+        job.setInQueueStatus();
+        jobQueueLock.lock();
         try {
-            job.setJobId(UUID.randomUUID());
-            job.setInQueueStatus();
             queue.add(job);
         } finally {
-            jobLock.unlock();
+            jobQueueLock.unlock();
         }
         messageSender.sendEnqueueMessage();
     }
@@ -138,21 +138,22 @@ class JobQueueDaoImpl implements JobQueueDao {
      * {@inheritDoc}
      */
     public int getLength() {
-        jobLock.lock();
+        jobQueueLock.lock();
         try {
             return queue.size();
         } finally {
-            jobLock.unlock();
+            jobQueueLock.unlock();
         }
     }
 
     /**
      * {@inheritDoc}
      */
-    public void dequeue() {
-        jobLock.lock();
+    public ExecutableJob dequeue() {
+        ExecutableJob job = null;
+        jobQueueLock.lock();
         try {
-            if (getLength() == 0) {
+            if (queue.size() == 0) {
                 throw new IllegalStateException("the JobQueue is empty");
             }
             
@@ -160,45 +161,33 @@ class JobQueueDaoImpl implements JobQueueDao {
                 throw new IllegalStateException("the job is in progress");
             }
             
-            queue.remove();
+            job = queue.remove();
         } finally {
-            jobLock.unlock();
+            jobQueueLock.unlock();
         }
+        return job;
     }
 
     /**
      * {@inheritDoc}
      */
-    public ExecutableJob getNextJobIfAvailableAndSetInProgress() {
-        jobLock.lock();
-        try {
-            ExecutableJob job = queue.peek();
-        
-            if (null != job && !job.isInProgress()) {
-                job.setInProgressStatus();
-                return job;
-            } else {
-                return null;
-            }
-        } finally {
-            jobLock.unlock();
-        }
+    public ExecutableJob peekAtJobQueue() {
+        return queue.peek();
     }
-
+    
     /**
      * {@inheritDoc}
      */
     public List<Job> getJobsForUser(User user) {
         List<Job> snapshotList = new ArrayList<Job>(getJobList().size());
-
-        jobLock.lock();
+        jobQueueLock.lock();
         try {
             int position = 1;
             for (ExecutableJob originalJob : getJobList()) {
                 snapshotList.add(new JobSnapshot(user, originalJob, position++));
             }
         } finally {
-            jobLock.unlock();
+            jobQueueLock.unlock();
         }
 
         return snapshotList;
@@ -209,11 +198,11 @@ class JobQueueDaoImpl implements JobQueueDao {
      * @return the list of jobs
      */
     protected List<ExecutableJob> getJobList() {
-        jobLock.lock();
+        jobQueueLock.lock();
         try {
             return new ArrayList<ExecutableJob>(queue);
         } finally {
-            jobLock.unlock();
+            jobQueueLock.unlock();
         }
     }
 
@@ -221,9 +210,9 @@ class JobQueueDaoImpl implements JobQueueDao {
      * {@inheritDoc}
      */
     public boolean cancelJob(String jobId) {
-        jobLock.lock();
-        try {
-            for (ExecutableJob originalJob : getJobList()) {
+        for (ExecutableJob originalJob : getJobList()) {
+            jobQueueLock.lock();
+            try {
                 if (originalJob.getJobId().equals(UUID.fromString(jobId))) {
                     if (originalJob.isInProgress()) {
                         return false;
@@ -235,13 +224,11 @@ class JobQueueDaoImpl implements JobQueueDao {
                             fileDao.saveAndEvict(file);
                         }
                         return true;
-                    } else {
-                        return false;
                     }
                 }
+            } finally {
+                jobQueueLock.unlock();
             }
-        } finally {
-            jobLock.unlock();
         }
         return false;
     }

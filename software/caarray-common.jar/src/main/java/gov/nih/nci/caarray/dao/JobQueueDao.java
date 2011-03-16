@@ -104,23 +104,22 @@ public interface JobQueueDao {
     void enqueue(ExecutableJob job);
 
     /**
-     * Return the job at the head of the queue if it is not already in progress,
-     * but do not remove it from the queue. If returning a job, set it to 
-     * "in progress".
-     * @return the job at the head of the queue or null if the queue is empty or
-     *         the job was already in progress
+     * Peek and return the job at the head of the queue, but do not remove it from the queue. 
+     * @return the job at the head of the queue or null if the queue is empty.
      */
-    ExecutableJob getNextJobIfAvailableAndSetInProgress();
-
+    ExecutableJob peekAtJobQueue();
+    
     /**
      * @return the number of jobs in the queue.
      */
     int getLength();
 
     /**
-     * Remove the job at the head of the queue. Do nothing if the queue is empty.
+     * Remove the job at the head of the queue and return it. 
+     * Throws an exception if either the job queue is empty, or if the job is in progress. 
+     * @return the job at the head of the queue.
      */
-    void dequeue();
+    ExecutableJob dequeue();
     
     /**
      * Gets all jobs on the queue as a list. The reqd and write access properties are set
