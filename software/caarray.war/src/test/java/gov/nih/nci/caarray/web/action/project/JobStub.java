@@ -84,8 +84,8 @@
 package gov.nih.nci.caarray.web.action.project;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
-import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.project.Job;
+import gov.nih.nci.caarray.domain.project.JobStatus;
 import gov.nih.nci.caarray.domain.project.JobType;
 
 import java.util.Date;
@@ -104,7 +104,7 @@ public class JobStub extends AbstractCaArrayEntity implements Job {
     private JobType jobType;
     private Date timeRequested;
     private Date timeStarted;
-    private FileStatus status;
+    private JobStatus jobStatus;
     private boolean userHasReadAccess;
     private boolean userHasWriteAccess;
     private boolean inProgress;
@@ -213,15 +213,15 @@ public class JobStub extends AbstractCaArrayEntity implements Job {
     /**
      * {@inheritDoc}
      */
-    public FileStatus getStatus() {
-        return status;
+    public JobStatus getJobStatus() {
+        return jobStatus;
     }
-
+    
     /**
      * {@inheritDoc}
      */
-    public void setStatus(FileStatus status) {
-        this.status = status;
+    public void setJobStatus(JobStatus jobStatus) {
+        this.jobStatus = jobStatus;
     }
 
     /**

@@ -183,9 +183,10 @@ public class FileManagementMDB implements MessageListener {
                     try {
                         setJobInProgress(job);
                         performJob(job);
-                        jobDao.dequeue();
                         LOG.info("Successfully completed job");
                     } finally {
+                        // remove the job from the queue if there is an exception or successfully completed. 
+                        jobDao.dequeue();
                         usernameHolder.setUser(previousUser);
                     }
                 }
@@ -201,7 +202,7 @@ public class FileManagementMDB implements MessageListener {
     
     private void setJobInProgress(ExecutableJob job) {
         beginTransaction();
-        job.setInProgressStatus();
+        job.markAsInProgress();
         commitTransaction();
     }
     

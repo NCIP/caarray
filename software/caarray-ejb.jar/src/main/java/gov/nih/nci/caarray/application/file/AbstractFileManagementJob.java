@@ -85,6 +85,7 @@ package gov.nih.nci.caarray.application.file;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.project.ExecutableJob;
+import gov.nih.nci.caarray.domain.project.JobStatus;
 import gov.nih.nci.caarray.domain.project.JobType;
 import gov.nih.nci.caarray.util.UsernameHolder;
 
@@ -112,6 +113,7 @@ public abstract class AbstractFileManagementJob implements Serializable, Executa
     private Date timeStarted;
     private int position;
     private UUID jobId;
+    private JobStatus jobStatus;
 
     @Inject
     AbstractFileManagementJob(String username, UsernameHolder usernameHolder) {
@@ -150,17 +152,19 @@ public abstract class AbstractFileManagementJob implements Serializable, Executa
     protected abstract FileStatus getInProgressStatus();
     
     /**
-     * Set the status to uploaded.
+     * Set the appropriate fileset and job status value indicating that the job has been cancelled.
      */
-    public void setUploadedStatus() {
-        getFileSet().updateStatus(FileStatus.UPLOADED);
+    public void markAsCancelled() {
+        setFilesetStatus(FileStatus.UPLOADED);
+        setJobStatus(JobStatus.CANCELLED);
     }
     
     /**
-     * Set the appropriate status value indicating that the job is in progress.
+     * Set the appropriate fileset and job status value indicating that the job is in progress.
      */
-    public void setInProgressStatus() {
-        getFileSet().updateStatus(getInProgressStatus());
+    public void markAsInProgress() {
+        setFilesetStatus(getInProgressStatus());
+        setJobStatus(JobStatus.RUNNING);
     }
     
     /**
@@ -171,24 +175,38 @@ public abstract class AbstractFileManagementJob implements Serializable, Executa
     }
     
    /**
-     * Set the appropriate status value indicating that the job is in the queue.
+     * Set the appropriate fileset and job status value indicating that the job is in the queue.
      */
-    public void setInQueueStatus() {
-        getFileSet().updateStatus(getInQueueStatus());        
+    public void markAsInQueue() {
+        setFilesetStatus(getInQueueStatus());    
+        setJobStatus(JobStatus.IN_QUEUE);
+    }
+    
+    private void setFilesetStatus(FileStatus fileStatus) {
+        if (getFileSet() != null) {
+            getFileSet().updateStatus(fileStatus);    
+        }
     }
     
     /**
      * @return true if the job is in progress
      */
     public boolean isInProgress() {
-        return getStatus().equals(getInProgressStatus());
+        return jobStatus.equals(JobStatus.RUNNING);
+    }
+    
+    /**
+     * set the appropriate job status value.
+     */
+    private void setJobStatus(JobStatus status) {
+        jobStatus = status;
     }
    
     /**
      * {@inheritDoc}
      */
-    public FileStatus getStatus() {
-        return getFileSet().getStatus();
+    public JobStatus getJobStatus() {
+        return jobStatus;
     }
 
     /**

@@ -134,7 +134,7 @@ final class ProjectFilesReparseJob extends AbstractProjectFilesJob {
         try {
             getArrayDataImporter().validateFiles(fileSet,
                     new MageTabDocumentSet(new MageTabFileSet(), new ValidatorSet()), true);
-            final FileStatus status = getStatus();
+            final FileStatus status = getFileSet().getStatus();
             if (status.equals(FileStatus.VALIDATED) || status.equals(FileStatus.VALIDATED_NOT_PARSED)) {
                 getProjectDao().flushSession();
                 getProjectDao().clearSession();

@@ -90,8 +90,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import gov.nih.nci.caarray.application.jobqueue.JobQueueService;
-import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.project.Job;
+import gov.nih.nci.caarray.domain.project.JobStatus;
 import gov.nih.nci.caarray.domain.project.JobType;
 import gov.nih.nci.caarray.domain.search.JobSortCriterion;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
@@ -157,10 +157,10 @@ public class ProjectJobQueueActionTest extends AbstractBaseStrutsTest {
     
     private void initJobList() {
         jobList = new ArrayList<Job>();
-        jobList.add(getJob(1, "smith", "Private", JobType.DATA_FILE_VALIDATION, new Date(), new Date(), FileStatus.IMPORTING));
-        jobList.add(getJob(2, "Private", "EXP-12", JobType.DATA_FILE_IMPORT, new Date(), new Date(), FileStatus.IN_QUEUE));
-        jobList.add(getJob(3, "jdoe", "Private", JobType.DATA_FILE_IMPORT, new Date(), new Date(), FileStatus.IN_QUEUE));
-        jobList.add(getJob(4, "jdoe", "EXP-11", JobType.DATA_FILE_VALIDATION, new Date(), new Date(), FileStatus.IN_QUEUE));
+        jobList.add(getJob(1, "smith", "Private", JobType.DATA_FILE_VALIDATION, new Date(), new Date(), JobStatus.RUNNING));
+        jobList.add(getJob(2, "Private", "EXP-12", JobType.DATA_FILE_IMPORT, new Date(), new Date(), JobStatus.IN_QUEUE));
+        jobList.add(getJob(3, "jdoe", "Private", JobType.DATA_FILE_IMPORT, new Date(), new Date(), JobStatus.IN_QUEUE));
+        jobList.add(getJob(4, "jdoe", "EXP-11", JobType.DATA_FILE_VALIDATION, new Date(), new Date(), JobStatus.IN_QUEUE));
         
         jobs =  new SortablePaginatedList<Job, JobSortCriterion>(10, JobSortCriterion.POSITION.name(),
                     JobSortCriterion.class);
@@ -168,7 +168,7 @@ public class ProjectJobQueueActionTest extends AbstractBaseStrutsTest {
     }
     
     private Job getJob(int position, String username, String experimentName, JobType jobType, Date timeRequested, 
-            Date timeStarted, FileStatus status) {
+            Date timeStarted, JobStatus status) {
         JobStub job = new JobStub();
         job.setJobId(UUID.randomUUID());
         job.setPosition(position);
@@ -178,7 +178,7 @@ public class ProjectJobQueueActionTest extends AbstractBaseStrutsTest {
         job.setJobType(jobType);
         job.setTimeRequested(timeRequested);
         job.setTimeStarted(timeStarted);
-        job.setStatus(status);
+        job.setJobStatus(status);
         return job;
     }
 }

@@ -124,7 +124,7 @@ class JobQueueDaoImpl implements JobQueueDao {
 
     public void enqueue(ExecutableJob job) {
         job.setJobId(UUID.randomUUID());
-        job.setInQueueStatus();
+        job.markAsInQueue();
         jobQueueLock.lock();
         try {
             queue.add(job);
@@ -156,11 +156,7 @@ class JobQueueDaoImpl implements JobQueueDao {
             if (queue.size() == 0) {
                 throw new IllegalStateException("the JobQueue is empty");
             }
-            
-            if (queue.peek().isInProgress()) {
-                throw new IllegalStateException("the job is in progress");
-            }
-            
+
             job = queue.remove();
         } finally {
             jobQueueLock.unlock();
@@ -221,7 +217,7 @@ class JobQueueDaoImpl implements JobQueueDao {
                     }
                     
                     if (queue.remove(originalJob)) {
-                        originalJob.setUploadedStatus();
+                        originalJob.markAsCancelled();
                         for (CaArrayFile file : originalJob.getFileSet().getFiles()) {
                             fileDao.saveAndEvict(file);
                         }

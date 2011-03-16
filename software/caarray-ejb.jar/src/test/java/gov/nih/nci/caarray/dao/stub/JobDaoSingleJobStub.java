@@ -109,7 +109,7 @@ public class JobDaoSingleJobStub implements JobQueueDao {
      * {@inheritDoc}
      */
     public boolean setJobInProgress(ExecutableJob job) {
-        job.setInProgressStatus();
+        job.markAsInProgress();
         return true;
     }
 
