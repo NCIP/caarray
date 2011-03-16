@@ -82,7 +82,6 @@
  */
 package gov.nih.nci.caarray.domain.project;
 
-import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.security.authorization.domainobjects.User;
 
 import java.util.Date;
@@ -104,7 +103,7 @@ public class JobSnapshot implements Job {
     private final JobType jobType;
     private final Date timeRequested;
     private final Date timeStarted;
-    private final FileStatus status;
+    private final JobStatus jobStatus;
     private final boolean doesUserHaveReadAccess;
     private final boolean doesUserHaveWriteAccess;
     private final boolean doesUserHaveOwnership;
@@ -127,7 +126,7 @@ public class JobSnapshot implements Job {
         jobType = originalJob.getJobType();
         timeRequested = originalJob.getTimeRequested();
         timeStarted = originalJob.getTimeStarted();
-        status = originalJob.getStatus();
+        jobStatus = originalJob.getJobStatus();
         doesUserHaveReadAccess = originalJob.userHasReadAccess(user);
         doesUserHaveWriteAccess = originalJob.userHasWriteAccess(user);
         inProgress = originalJob.isInProgress();
@@ -186,8 +185,8 @@ public class JobSnapshot implements Job {
     /**
      * {@inheritDoc}
      */
-    public FileStatus getStatus() {
-        return status;
+    public JobStatus getJobStatus() {
+        return jobStatus;
     }
 
     /**

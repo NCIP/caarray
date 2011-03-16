@@ -216,15 +216,6 @@ public class JobDaoTest {
         assertThat(systemUnderTest.getJobList(), is(mockJobs.subList(0, 3)));
     }
     
-    @Test(expected=IllegalStateException.class)
-    public void dequeueOfJobInProgressThrowsException() {
-        ExecutableJob job = getNextMockJob();
-        when(job.isInProgress()).thenReturn(true);
-        systemUnderTest.enqueue(job);
-            
-        systemUnderTest.dequeue();
-    }
-    
     @Test
     public void enqueueSendsMessage() {
         systemUnderTest.enqueue(getNextMockJob());      
@@ -240,7 +231,7 @@ public class JobDaoTest {
         ExecutableJob job = getNextJobIfAvailableAndSetInProgress();
         
         assertThat(job, is(mockJob));
-        verify(mockJob).setInProgressStatus();
+        verify(mockJob).markAsInProgress();
     }
     
     @Test
@@ -258,7 +249,7 @@ public class JobDaoTest {
     private ExecutableJob getNextJobIfAvailableAndSetInProgress() {
         ExecutableJob job = systemUnderTest.peekAtJobQueue();
         if (job != null) {
-            job.setInProgressStatus();
+            job.markAsInProgress();
             return job;
         }
         return null;

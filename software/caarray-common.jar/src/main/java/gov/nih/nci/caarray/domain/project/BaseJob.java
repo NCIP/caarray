@@ -82,8 +82,6 @@
  */
 package gov.nih.nci.caarray.domain.project;
 
-import gov.nih.nci.caarray.domain.file.FileStatus;
-
 import java.util.Date;
 import java.util.UUID;
 
@@ -127,11 +125,11 @@ public interface BaseJob {
      */
     Date getTimeStarted();
     
+    
     /**
-     * @return the status
+     * @return the job status
      */
-    FileStatus getStatus();
-
+    JobStatus getJobStatus();
    
     /**
      * @return true if the job is in progress
