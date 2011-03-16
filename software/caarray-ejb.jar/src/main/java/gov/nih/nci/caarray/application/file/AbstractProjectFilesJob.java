@@ -193,14 +193,23 @@ abstract class AbstractProjectFilesJob extends AbstractFileManagementJob {
      * {@inheritDoc}
      */
     public boolean userHasReadAccess(User user) {
-        return getProject().hasReadPermission(user);    
+       return userCanAccessProject(user, false);
     }
    
     /**
      * {@inheritDoc}
      */
     public boolean userHasWriteAccess(User user) {
-        return getProject().hasWritePermission(user);
+        return userCanAccessProject(user, true);
+    }
+    
+    private boolean userCanAccessProject(User user, boolean checkForWriteAccess) {
+        boolean hasAccess = false;
+        Project p = getProject();
+        if (p != null) {
+            hasAccess = checkForWriteAccess ? p.hasWritePermission(user) : p.hasReadPermission(user);
+        }
+        return hasAccess;
     }
 
     /**
