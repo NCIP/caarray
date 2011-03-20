@@ -236,9 +236,10 @@ public class FileImportIntegrationTest extends AbstractFileManagementServiceInte
     @Test
     public void testImportMageTabSpecificationAndUpdateCharacteristics() throws Exception {
         ArrayDesign design = importArrayDesign(AffymetrixArrayDesignFiles.TEST3_CDF);
-        importArrayDesign(AffymetrixArrayDesignFiles.HG_FOCUS_CDF);
-
         addDesignToExperiment(design);
+        
+        ArrayDesign design2 = importArrayDesign(AffymetrixArrayDesignFiles.HG_FOCUS_CDF);
+        addDesignToExperiment(design2);
 
         importFiles(TestMageTabSets.MAGE_TAB_SPECIFICATION_INPUT_SET);
 
@@ -328,7 +329,7 @@ public class FileImportIntegrationTest extends AbstractFileManagementServiceInte
         tx.commit();
     }
     
-    @Test(expected=IndexOutOfBoundsException.class)
+    @Test(expected=IndexOutOfBoundsException.class) @Ignore
     public void testDataMatrixCopyNumberMageTabImportFailDueToBadSdrfHybCount() throws Exception {
         ArrayDesign design = importArrayDesign(AgilentArrayDesignFiles.TEST_SHORT_ACGH_XML, FileType.AGILENT_XML);
         addDesignToExperiment(design);

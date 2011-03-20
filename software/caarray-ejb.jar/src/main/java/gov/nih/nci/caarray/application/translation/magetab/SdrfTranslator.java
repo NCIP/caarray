@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.application.translation.magetab;
 
 import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
+import gov.nih.nci.caarray.application.util.MessageTemplates;
 import gov.nih.nci.caarray.application.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
@@ -322,16 +323,41 @@ final class SdrfTranslator extends AbstractTranslator {
 
 
     private void validateArrayDesigns(SdrfDocument document) {
-        for (gov.nih.nci.caarray.magetab.sdrf.ArrayDesign sdrfArrayDesign : document.getAllArrayDesigns()) {
-            String arrayDesignName = sdrfArrayDesign.getValue();
-                ArrayDesign arrayDesign = new ArrayDesign();
-                arrayDesign.setLsidForEntity(arrayDesignName);
-                if (getDaoFactory().getArrayDao().queryEntityByExample(arrayDesign).isEmpty()) {
-                    document.addErrorMessage("Your reference to '" + arrayDesignName + "' can not be resolved because "
-                            + "an array design with that LSID is not in caArray.  Please import it and try again.");
-                }
+        Set<String> namesOfArrayDesignsForExperiment = new HashSet<String>();
+        if (null != this.experiment) {
+            for (ArrayDesign experimentArrayDesign : this.experiment
+                    .getArrayDesigns()) {
+                namesOfArrayDesignsForExperiment.add(experimentArrayDesign
+                        .getName());
             }
         }
+        for (gov.nih.nci.caarray.magetab.sdrf.ArrayDesign sdrfArrayDesign : document
+                .getAllArrayDesigns()) {
+            String arrayDesignName = sdrfArrayDesign.getValue();
+            ArrayDesign modelArrayDesign = new ArrayDesign();
+            modelArrayDesign.setLsidForEntity(arrayDesignName);
+            List<ArrayDesign> matchingArrayDesignsAlreadyInSystemList = getDaoFactory()
+                    .getArrayDao().queryEntityByExample(modelArrayDesign);
+            if (null == matchingArrayDesignsAlreadyInSystemList
+                    || matchingArrayDesignsAlreadyInSystemList.isEmpty()) {
+                document.addErrorMessage(
+                        String.format(MessageTemplates.NON_EXISTING_ARRAY_DESIGN_ERROR_MESSAGE_TEMPLATE,
+                                arrayDesignName));
+            }
+            String nameToCheck = arrayDesignName;
+            if (null != matchingArrayDesignsAlreadyInSystemList
+                    && !matchingArrayDesignsAlreadyInSystemList.isEmpty()) {
+                nameToCheck = matchingArrayDesignsAlreadyInSystemList.get(0)
+                        .getName();
+            }
+            if (!namesOfArrayDesignsForExperiment.isEmpty()
+                    && !namesOfArrayDesignsForExperiment.contains(nameToCheck)) {
+                document.addErrorMessage(String.format(
+                        MessageTemplates.ARRAY_DESIGN_NOT_ASSOCIATED_WITH_EXPERIMENT_ERROR_MESSAGE_TEMPLATE,
+                        nameToCheck));
+            }
+        }
+    }
 
     private void translateSdrf(SdrfDocument document) {
         translateNodesToEntities(document);

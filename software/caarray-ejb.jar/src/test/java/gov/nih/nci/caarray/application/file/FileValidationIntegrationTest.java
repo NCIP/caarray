@@ -84,6 +84,8 @@ package gov.nih.nci.caarray.application.file;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import gov.nih.nci.caarray.application.translation.magetab.SdrfTranslatorTest;
+import gov.nih.nci.caarray.application.util.MessageTemplates;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileStatus;
@@ -136,6 +138,22 @@ public class FileValidationIntegrationTest extends AbstractFileManagementService
         String[] expectedErrors = new String[] {"Probe with name 'foo' was not found in array design '022522_D_F_20090107.short' version '2.0'."};
         expectedErrorsList.add(expectedErrors);
         doValidation(dataFiles, design, new FileType[] {FileType.MAGE_TAB_DATA_MATRIX_COPY_NUMBER}, expectedErrorsList);
+    }
+
+    @Test
+    public void testInvalidArrayDesignNameInSdrf() throws Exception {
+        FileFileTypeWrapper[] dataFiles = new FileFileTypeWrapper[3];
+        dataFiles[0] = new FileFileTypeWrapper(MageTabDataFiles.BAD_DATA_MATRIX_COPY_NUMER_BAD_SDRF_IDF, FileType.MAGE_TAB_IDF);
+        dataFiles[1] = new FileFileTypeWrapper(MageTabDataFiles.BAD_DATA_MATRIX_COPY_NUMER_BAD_SDRF_SDRF, FileType.MAGE_TAB_SDRF);
+        dataFiles[2] = new FileFileTypeWrapper(MageTabDataFiles.BAD_DATA_MATRIX_COPY_NUMER_DATA, FileType.MAGE_TAB_DATA_MATRIX_COPY_NUMBER);
+        FileFileTypeWrapper design = new FileFileTypeWrapper(AgilentArrayDesignFiles.TEST_SHORT_ACGH_XML, FileType.AGILENT_XML);
+        String arrayDesignName = "Agilent.com:PhysicalArrayDesign:022522_D_F_20090107";
+        List<String[]> expectedErrorsList = new ArrayList<String[]>();
+        String[] expectedErrors = new String[] {
+                String.format(MessageTemplates.NON_EXISTING_ARRAY_DESIGN_ERROR_MESSAGE_TEMPLATE, arrayDesignName),
+                String.format(MessageTemplates.ARRAY_DESIGN_NOT_ASSOCIATED_WITH_EXPERIMENT_ERROR_MESSAGE_TEMPLATE, arrayDesignName)};
+        expectedErrorsList.add(expectedErrors);
+        doValidation(dataFiles, design, new FileType[] {FileType.MAGE_TAB_SDRF}, expectedErrorsList);
     }
 
     @Test
