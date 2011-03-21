@@ -161,6 +161,7 @@ import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.criterion.Order;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
