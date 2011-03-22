@@ -130,7 +130,7 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
     private int compressedSize;
 
     // transient properties
-    private transient MultiPartBlob multiPartBlob;
+    private transient MultiPartBlob multiPartBlob;    
     
     /**
      * Gets the name.
@@ -248,6 +248,10 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
      * {@inheritDoc}
      */
     public int compareTo(CaArrayFile o) {
+        if (this == o) { 
+            return 0;
+        }
+            
         return new CompareToBuilder()
             .append(getProject(), o.getProject())
             .append(getFileStatus(), o.getFileStatus())

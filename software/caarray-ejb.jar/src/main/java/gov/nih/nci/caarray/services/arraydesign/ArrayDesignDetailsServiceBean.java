@@ -85,6 +85,7 @@ package gov.nih.nci.caarray.services.arraydesign;
 import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
+import gov.nih.nci.caarray.injection.InjectionInterceptor;
 import gov.nih.nci.caarray.services.AuthorizationInterceptor;
 import gov.nih.nci.caarray.services.EntityConfiguringInterceptor;
 import gov.nih.nci.caarray.services.HibernateSessionInterceptor;
@@ -102,16 +103,17 @@ import com.google.inject.Inject;
 @Stateless
 @Remote(ArrayDesignDetailsService.class)
 @PermitAll
-@Interceptors({ AuthorizationInterceptor.class, HibernateSessionInterceptor.class, EntityConfiguringInterceptor.class })
+@Interceptors({ AuthorizationInterceptor.class, HibernateSessionInterceptor.class, EntityConfiguringInterceptor.class,
+    InjectionInterceptor.class})
 public class ArrayDesignDetailsServiceBean implements ArrayDesignDetailsService {
-    private final ArrayDao arrayDao;
+    private ArrayDao arrayDao;
    
     /**
      * 
      * @param arrayDao the ArrayDao dependency
      */
     @Inject
-    public ArrayDesignDetailsServiceBean(ArrayDao arrayDao) {
+    public void setDependencies(ArrayDao arrayDao) {
         this.arrayDao = arrayDao;
     }
     

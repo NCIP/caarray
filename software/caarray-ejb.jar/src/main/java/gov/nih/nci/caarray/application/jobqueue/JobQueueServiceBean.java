@@ -85,6 +85,7 @@ package gov.nih.nci.caarray.application.jobqueue;
 import gov.nih.nci.caarray.application.ExceptionLoggingInterceptor;
 import gov.nih.nci.caarray.dao.JobQueueDao;
 import gov.nih.nci.caarray.domain.project.Job;
+import gov.nih.nci.caarray.injection.InjectionInterceptor;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
 import gov.nih.nci.security.authorization.domainobjects.User;
 
@@ -105,27 +106,29 @@ import com.google.inject.Inject;
  */
 @Local(JobQueueService.class)
 @Stateless
-@Interceptors(ExceptionLoggingInterceptor.class)
+@Interceptors({ ExceptionLoggingInterceptor.class, InjectionInterceptor.class })
 @TransactionAttribute(TransactionAttributeType.SUPPORTS)
 public class JobQueueServiceBean implements JobQueueService {
     private static final Logger LOG = Logger.getLogger(JobQueueServiceBean.class);
-    private final JobQueueDao jobQueueDao;
+    private JobQueueDao jobQueueDao;
 
     /**
-     * constructor.
+     * Set the job queue DAO to use.
+     * 
      * @param jobQueueDao the JobQueueDao dependency
      */
     @Inject
-    public JobQueueServiceBean(JobQueueDao jobQueueDao) {
+    public void setJobQueue(JobQueueDao jobQueueDao) {
         this.jobQueueDao = jobQueueDao;
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public List<Job> getJobsForUser(User user) {
         LogUtil.logSubsystemEntry(LOG);
-        List<Job> result = jobQueueDao.getJobsForUser(user);
+        final List<Job> result = this.jobQueueDao.getJobsForUser(user);
         LogUtil.logSubsystemExit(LOG);
         return result;
     }
@@ -133,15 +136,17 @@ public class JobQueueServiceBean implements JobQueueService {
     /**
      * {@inheritDoc}
      */
+    @Override
     public int getJobCount(User user) {
-        return jobQueueDao.getJobsForUser(user).size();
+        return this.jobQueueDao.getJobsForUser(user).size();
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean cancelJob(String jobId) {
-        return jobQueueDao.cancelJob(jobId);
+        return this.jobQueueDao.cancelJob(jobId);
     }
 
 }

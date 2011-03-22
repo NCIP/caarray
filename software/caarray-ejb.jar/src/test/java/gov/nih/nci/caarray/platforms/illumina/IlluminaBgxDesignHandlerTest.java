@@ -30,6 +30,7 @@ import gov.nih.nci.caarray.domain.array.Gene;
 import gov.nih.nci.caarray.domain.array.PhysicalProbe;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.project.AssayType;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
@@ -52,6 +53,8 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.hibernate.Transaction;
+import org.hibernate.validator.InvalidStateException;
+import org.hibernate.validator.InvalidValue;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -80,7 +83,6 @@ public class IlluminaBgxDesignHandlerTest extends AbstractServiceTest {
     private static Organism DUMMY_ORGANISM = new Organism();
     private static Term DUMMY_TERM = new Term();
     private static AssayType DUMMY_ASSAY_TYPE = new AssayType("microRNA");
-    private static TreeSet<AssayType> assayTypes = new TreeSet<AssayType>();
     
     /**
      * post-construct lifecycle method; intializes the Guice injector that will provide dependencies. 
@@ -126,7 +128,6 @@ public class IlluminaBgxDesignHandlerTest extends AbstractServiceTest {
         DUMMY_TERM.setValue("testval");
         DUMMY_TERM.setCategory(cat);
         DUMMY_TERM.setSource(ts);
-        assayTypes.add(DUMMY_ASSAY_TYPE);
         Transaction transaction = hibernateHelper.beginTransaction();
         hibernateHelper.getCurrentSession().save(DUMMY_ASSAY_TYPE);
         transaction.commit();
@@ -141,7 +142,7 @@ public class IlluminaBgxDesignHandlerTest extends AbstractServiceTest {
         arrayDesign.setTechnologyType(DUMMY_TERM);
         arrayDesign.setOrganism(DUMMY_ORGANISM);
         arrayDesign.setProvider(DUMMY_ORGANIZATION);
-        arrayDesign.setAssayTypes(assayTypes);
+        arrayDesign.getAssayTypes().add(DUMMY_ASSAY_TYPE);
         arrayDesign.setTechnologyType(DUMMY_TERM);
         this.arrayDesignService = createArrayDesignService(injector);
     }
@@ -219,9 +220,12 @@ public class IlluminaBgxDesignHandlerTest extends AbstractServiceTest {
     @Test
     public void testCreateDesignDetails() throws PlatformFileReadException {
         this.transaction = hibernateHelper.beginTransaction();
+        File f = IlluminaArrayDesignFiles.HUMANWG_6_V2_0_R3_11223189_A_BGX;
+        CaArrayFile caArrayDesignFile = this.fileAccessServiceStub.add(f);
+        caArrayDesignFile.setFileType(FileType.ILLUMINA_DESIGN_BGX);
+        arrayDesign.addDesignFile(caArrayDesignFile);
         hibernateHelper.getCurrentSession().save(arrayDesign);
         hibernateHelper.getCurrentSession().flush();
-        File f = IlluminaArrayDesignFiles.HUMANWG_6_V2_0_R3_11223189_A_BGX;
         BgxDesignHandler instance = getHandler(f);
         instance.createDesignDetails(arrayDesign);
         ArrayDesignDetails details = arrayDesign.getDesignDetails();

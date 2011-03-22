@@ -86,6 +86,7 @@ import gov.nih.nci.caarray.dao.DAOException;
 import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.domain.search.ExampleSearchCriteria;
+import gov.nih.nci.caarray.injection.InjectionInterceptor;
 import gov.nih.nci.caarray.services.AuthorizationInterceptor;
 import gov.nih.nci.caarray.services.EntityConfiguringInterceptor;
 import gov.nih.nci.caarray.services.HibernateSessionInterceptor;
@@ -102,7 +103,7 @@ import javax.ejb.TransactionAttributeType;
 import javax.interceptor.Interceptors;
 
 import org.apache.log4j.Logger;
-import org.jboss.annotation.ejb.TransactionTimeout;
+import org.jboss.ejb3.annotation.TransactionTimeout;
 
 import com.google.inject.Inject;
 
@@ -114,7 +115,8 @@ import com.google.inject.Inject;
 @Stateless
 @Remote(CaArraySearchService.class)
 @PermitAll
-@Interceptors({ AuthorizationInterceptor.class, HibernateSessionInterceptor.class, EntityConfiguringInterceptor.class })
+@Interceptors({ AuthorizationInterceptor.class, HibernateSessionInterceptor.class, EntityConfiguringInterceptor.class,
+    InjectionInterceptor.class })
 @TransactionTimeout(CaArraySearchServiceBean.TIMEOUT_SECONDS)
 @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 public class CaArraySearchServiceBean implements CaArraySearchService {
@@ -122,14 +124,14 @@ public class CaArraySearchServiceBean implements CaArraySearchService {
     private static final Logger LOG = Logger.getLogger(CaArraySearchServiceBean.class);
     static final int TIMEOUT_SECONDS = 1800;
     
-    private final SearchDao searchDao;
+    private SearchDao searchDao;
     
     /**
      * 
      * @param searchDao the SearchDao dependency
      */
     @Inject
-    public CaArraySearchServiceBean(SearchDao searchDao) {
+    public void setDependencies(SearchDao searchDao) {
         this.searchDao = searchDao;
     }
     

@@ -18,7 +18,7 @@
 
         <dependency conf="project" name="jmeter" org="apache" rev="2.3"/>
 
-        <dependency conf="project" name="log4j" org="apache" rev="1.2.13"/>
+        <dependency conf="project" name="log4j" org="apache" rev="1.2.14"/>
 
         <dependency conf="project" name="spring" org="springsource" rev="1.2.7"/>
 
@@ -38,7 +38,7 @@
 
         <dependency conf="project" name="ant-contrib" org="apache" rev="1.0b3"/>
 
-        <dependency conf="project" name="javassist" org="javassist" rev="3.3"/>
+        <dependency conf="project" name="javassist" org="javassist" rev="3.9.0.GA"/>
 
         <dependency conf="project" name="antlr" org="org.antlr" rev="2.7.6"/>
 
@@ -90,7 +90,7 @@
 
         <dependency conf="project" name="commons-configuration" org="jakarta" rev="1.5"/>
 
-        <dependency conf="project" name="commons-logging" org="jakarta" rev="1.0.4"/>
+        <dependency conf="project" name="commons-logging" org="jakarta" rev="1.1.0"/>
 
         <dependency conf="project" name="commons-fileupload" org="jakarta" rev="1.2.1"/>
 
@@ -100,35 +100,43 @@
 
         <dependency conf="project" name="dom4j" org="dom4j" rev="1.6.1"/>
 
-        <dependency conf="project" name="hibernate" org="org.hibernate" rev="3.2.0.ga"/>
+        <dependency conf="project" name="hibernate-core" org="org.hibernate" rev="3.3.1.GA"/>
 
         <dependency conf="project" name="hibernate-client" org="org.hibernate" rev="3.2"/>
 
         <dependency conf="project" name="ejb3-persistence" org="org.hibernate" rev="1.0.1"/>
 
-        <dependency conf="project" name="hibernate-annotations" org="org.hibernate" rev="3.2.0.GA"/>
+        <dependency conf="project" name="hibernate-annotations" org="org.hibernate" rev="3.4.0.GA"/>
 
-        <dependency conf="project" name="hibernate-tools" org="org.hibernate" rev="3.2.0.beta9a"/>
+        <dependency conf="project" name="hibernate-validator" org="org.hibernate" rev="3.1.0.GA"/>
+
+        <dependency conf="project" name="hibernate-tools" org="org.hibernate" rev="3.2.4.GA"/>
+        
+        <dependency conf="project" name="hibernate-commons-annotations" org="org.hibernate" rev="3.3.0.GA"/>
+
+        <dependency conf="project" name="hibernate-c3p0" org="org.hibernate" rev="3.3.1.GA"/>
+
+        <dependency conf="project" name="hibernate-jbosscache" org="org.hibernate" rev="3.3.1.GA"/>
+
+        <dependency conf="project" name="slf4j-api" org="org.slf4j" rev="1.5.6"/>
+        
+        <dependency conf="project" name="slf4j-log4j12" org="org.slf4j" rev="1.6.1"/>
 
         <dependency conf="project" name="oro" org="jakarta" rev="2.0.8"/>
 
         <dependency conf="project" name="jaxen" org="jaxen" rev="1.1.1"/>
 
-        <dependency conf="project" name="jboss-aop-client" org="jboss" rev="1.5.2.GA"/>
+        <dependency conf="project" name="jboss-aop-client" org="jboss" rev="2.1.1.GA"/>
 
-        <dependency conf="project" name="jboss-aspect-client" org="jboss" rev="1.5"/>
+        <dependency conf="project" name="jbossall-client" org="jboss" rev="5.1.0.GA"/>
 
-        <dependency conf="project" name="jbossall-client" org="jboss" rev="4.0.5.GA"/>
+        <dependency conf="project" name="jboss-ejb3-ext-api" org="jboss" rev="1.0.0"/>
 
-        <dependency conf="project" name="jboss-ejb3-client" org="jboss" rev="noversion"/>
+        <!--dependency conf="project" name="jboss-annotations-ejb3" org="jboss" rev="1.0"/-->
 
-        <dependency conf="project" name="jboss-ejb3x" org="jboss" rev="4.0.5.GA"/>
+        <!--dependency conf="project" name="jboss-remoting" org="jboss" rev="1.4.6"/-->
 
-        <dependency conf="project" name="jboss-annotations-ejb3" org="jboss" rev="1.0"/>
-
-        <dependency conf="project" name="jboss-remoting" org="jboss" rev="1.4.6"/>
-
-        <dependency conf="project" name="jta" org="javax.transaction" rev="1.0.1B"/>
+        <!--dependency conf="project" name="jta" org="javax.transaction" rev="1.0.1B"/-->
 
         <dependency conf="project" name="junit" org="junit" rev="4.4"/>
 
@@ -178,23 +186,27 @@
 
         <dependency conf="project" name="struts2-core" org="apache" rev="2.1.8"/>
 
-        <dependency conf="project" name="jboss-cache" org="jboss" rev="1.4.0.SP1"/>
+        <dependency conf="project" name="jboss-cache" org="jboss" rev="1.4.1.GA"/>
 
-        <dependency conf="project" name="jboss-common" org="jboss" rev="1.0.0.GA"/>
+        <dependency conf="project" name="jboss-system-jmx-client" org="jboss" rev="5.1.0.GA"/>
 
-        <dependency conf="project" name="jboss-system" org="jboss" rev="4.0.5.GA"/>
+        <dependency conf="project" name="jboss-system-client" org="jboss" rev="5.1.0.GA"/>
 
-        <dependency conf="project" name="jboss-jmx" org="jboss" rev="4.0.5.GA"/>
+        <dependency conf="project" name="jboss-system-jmx" org="jboss" rev="5.1.0.GA"/>
 
-        <dependency conf="project" name="jboss-dependency" org="jboss" rev="4.0.5.GA"/>
+        <dependency conf="project" name="jboss-kernel" org="jboss" rev="5.1.0.GA"/>
+
+        <dependency conf="project" name="jboss-j2se" org="jboss" rev="5.1.0.GA"/>
+
+        <dependency conf="project" name="jboss-common-core" org="jboss" rev="2.2.14.GA"/>
+
+        <dependency conf="project" name="jboss-logging-spi" org="jboss" rev="2.1.0.GA"/>
+
+        <dependency conf="project" name="jboss-dependency" org="jboss" rev="2.0.6.GA"/>
 
         <dependency conf="project" name="jboss-ejb3" org="jboss" rev="4.0.5.GA"/>
 
-        <dependency conf="project" name="jboss-aop-client" org="jboss" rev="1.5.2.GA"/>
-
-        <dependency conf="project" name="jboss-aop-jdk50" org="jboss" rev="1.5.2.GA"/>
-
-        <dependency conf="project" name="jgroups-all" org="jgroups" rev="2.2.9.2"/>
+        <dependency conf="project" name="jgroups" org="jgroups" rev="2.6.10.GA"/>
 
         <dependency conf="project" name="concurrent" org="edu.oswego" rev="1.3.4"/>
 

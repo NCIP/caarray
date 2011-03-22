@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.application;
 
 import gov.nih.nci.caarray.dao.ProjectDao;
 import gov.nih.nci.caarray.dao.SearchDao;
+import gov.nih.nci.caarray.injection.InjectionInterceptor;
 import gov.nih.nci.caarray.security.Protectable;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.CaArrayUsernameHolder;
@@ -97,6 +98,7 @@ import javax.ejb.Local;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import javax.interceptor.Interceptors;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -113,12 +115,13 @@ import com.google.inject.Inject;
 @Local(GenericDataService.class)
 @Stateless
 @TransactionAttribute(TransactionAttributeType.SUPPORTS)
+@Interceptors(InjectionInterceptor.class)
 public class GenericDataServiceBean implements GenericDataService {
 
     private static final Logger LOG = Logger.getLogger(GenericDataServiceBean.class);
     
-    private final SearchDao searchDao;
-    private final ProjectDao projectDao;
+    private SearchDao searchDao;
+    private ProjectDao projectDao;
     
     /**
      * 
@@ -126,7 +129,7 @@ public class GenericDataServiceBean implements GenericDataService {
      * @param projectDao the ProjectDao dependency
      */
     @Inject
-    public GenericDataServiceBean(SearchDao searchDao, ProjectDao projectDao) {
+    public void setDependencies(SearchDao searchDao, ProjectDao projectDao) {
         this.searchDao = searchDao;
         this.projectDao = projectDao;
     }

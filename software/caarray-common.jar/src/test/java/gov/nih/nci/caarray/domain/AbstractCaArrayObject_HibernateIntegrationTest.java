@@ -85,52 +85,20 @@ package gov.nih.nci.caarray.domain;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import gov.nih.nci.caarray.AbstractCaarrayTest;
-import gov.nih.nci.caarray.dao.HibernateIntegrationTestCleanUpUtility;
-import gov.nih.nci.caarray.staticinjection.CaArrayCommonStaticInjectionModule;
-import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
-import gov.nih.nci.caarray.util.CaArrayHibernateHelperModule;
+import gov.nih.nci.caarray.AbstractHibernateTest;
 
 import org.hibernate.Transaction;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
+import org.hibernate.validator.InvalidStateException;
+import org.hibernate.validator.InvalidValue;
 import org.junit.Test;
 
-import com.google.inject.Guice;
-import com.google.inject.Injector;
-
-public abstract class AbstractCaArrayObject_HibernateIntegrationTest extends AbstractCaarrayTest {
-    private static Injector injector;
-    protected static CaArrayHibernateHelper hibernateHelper; 
+public abstract class AbstractCaArrayObject_HibernateIntegrationTest extends AbstractHibernateTest {
     private static int uniqueIntValue = 0;
-    
-    /**
-     * post-construct lifecycle method; intializes the Guice injector that will provide dependencies. 
-     */
-    @BeforeClass
-    public static void init() {
-        injector = createInjector();
-        hibernateHelper = injector.getInstance(CaArrayHibernateHelper.class);
+
+    public AbstractCaArrayObject_HibernateIntegrationTest() {
+        super(true);
     }
     
-    /**
-     * @return a Guice injector from which this will obtain dependencies.
-     */
-    protected static Injector createInjector() {
-        return Guice.createInjector(new CaArrayCommonStaticInjectionModule(), new CaArrayHibernateHelperModule());
-    }
-
-    @Before
-    public void setUp() {
-        hibernateHelper.setFiltersEnabled(true);
-    }
-
-    @After
-    public void tearDown() {
-        HibernateIntegrationTestCleanUpUtility.cleanUp();
-    }
-
     @Test
     public void testSave() {
         AbstractCaArrayObject caArrayObject = createTestObject();

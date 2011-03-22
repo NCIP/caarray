@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.application.arraydata;
 
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.injection.InjectionInterceptor;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
 import gov.nih.nci.caarray.validation.FileValidationResult;
@@ -93,6 +94,7 @@ import javax.ejb.Local;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import javax.interceptor.Interceptors;
 
 import org.apache.log4j.Logger;
 
@@ -107,13 +109,14 @@ import com.google.inject.Inject;
 @Local(ArrayDataService.class)
 @Stateless
 @TransactionAttribute(TransactionAttributeType.SUPPORTS)
+@Interceptors(InjectionInterceptor.class)
 public class ArrayDataServiceBean implements ArrayDataService {
     private static final Logger LOG = Logger.getLogger(ArrayDataServiceBean.class);
     
-    private final TypeRegistrationManager tm;
-    private final DataSetImporter dataSetImporter;
-    private final DataSetLoader loader;
-    private final DataFileValidator dataFileValidator;
+    private TypeRegistrationManager tm;
+    private DataSetImporter dataSetImporter;
+    private DataSetLoader loader;
+    private DataFileValidator dataFileValidator;
    
     /**
      * 
@@ -123,7 +126,7 @@ public class ArrayDataServiceBean implements ArrayDataService {
      * @param dataFileValidator the DataFileValidator dependency
      */
     @Inject
-    public ArrayDataServiceBean(TypeRegistrationManager tm, DataSetImporter dataSetImporter, DataSetLoader loader,
+    public void setDependencies(TypeRegistrationManager tm, DataSetImporter dataSetImporter, DataSetLoader loader,
             DataFileValidator dataFileValidator) {
         this.tm = tm;
         this.dataSetImporter = dataSetImporter;

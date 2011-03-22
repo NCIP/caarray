@@ -180,10 +180,11 @@ public class FileManagementServiceTest extends AbstractServiceTest {
                 mageTabeImporterProvider, projectDaoProvider, searchDaoProvider);
         
         
-        FileManagementServiceBean fileManagementServiceBean =
-            new FileManagementServiceBean(daoFactoryStub.getProjectDao(), daoFactoryStub.getArrayDao(),
-                    daoFactoryStub.getFileDao(), mageTabImporter, daoFactoryStub.getSearchDao(), submitter,
-                    jobFactory);
+        
+        FileManagementServiceBean fileManagementServiceBean = new FileManagementServiceBean();
+        fileManagementServiceBean.setDependencies(this.daoFactoryStub.getProjectDao(), this.daoFactoryStub.getArrayDao(),
+						  this.daoFactoryStub.getFileDao(), this.daoFactoryStub.getSearchDao(), mageTabImporter, submitter, jobFactory);
+        
         ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
         locatorStub.addLookup(FileAccessService.JNDI_NAME, this.fileAccessServiceStub);
         locatorStub.addLookup(ArrayDataService.JNDI_NAME, arrayDataService);

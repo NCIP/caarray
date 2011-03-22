@@ -140,6 +140,9 @@ import org.springframework.core.io.support.ResourcePatternResolver;
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 import com.fiveamsolutions.nci.commons.util.HibernateHelper;
 import com.google.inject.Inject;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.Properties;
 
 /**
  * Utility class containing methods for synchronizing our security data model with CSM, as well as a facade for querying
@@ -189,6 +192,8 @@ public final class SecurityUtils {
     private static User anonymousUser;
     private static InstanceLevelMappingElement projectMapping;
     private static InstanceLevelMappingElement sampleMapping;
+
+    private static final Properties appConfig = new Properties();
     
     private static final ThreadLocal<Boolean> PRIVILEGED_MODE = new ThreadLocal<Boolean>() {
         @Override
@@ -203,9 +208,20 @@ public final class SecurityUtils {
 
     static {
         try {
-            Resource csmHibernateConfig = getCsmHibernateConfig();
-            caarrayAppName = StringUtils.substringBefore(csmHibernateConfig.getFilename(), Constants.FILE_NAME_SUFFIX);
-            authMgr = new AuthorizationManagerImpl(caarrayAppName, csmHibernateConfig.getURL());
+            URL appConfigUrl = SecurityUtils.class.getClassLoader().getResource("app-config.properties");
+            if (appConfigUrl == null) {
+                throw new Error("resource app-config.properties not found in classpath");
+            }
+            InputStream in = appConfigUrl.openStream();
+            appConfig.load(in);
+            in.close();
+            caarrayAppName = appConfig.getProperty("csm.application.name");
+            String csmConfigName = "csm/" + caarrayAppName + Constants.FILE_NAME_SUFFIX;
+            URL csmConfigUrl = SecurityUtils.class.getClassLoader().getResource(csmConfigName);
+            if (csmConfigUrl == null) {
+                throw new Error("resource " + csmConfigName + " not found in classpath");
+            }
+            authMgr = new AuthorizationManagerImpl(caarrayAppName, csmConfigUrl);
         } catch (IOException e) {
             throw new IllegalStateException("Could not initialize CSM: " + e.getMessage(), e);
         } catch (CSConfigurationException e) {
@@ -231,15 +247,15 @@ public final class SecurityUtils {
         }
     }
 
-    private static Resource getCsmHibernateConfig() throws IOException {
-        ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
-        Resource[] resources = resolver.getResources(ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX
-                + CSM_HIBERNATE_CONFIG_PREFIX + Constants.FILE_NAME_SUFFIX);
-        if (resources.length == 0) {
-            throw new IllegalStateException("Could not locate a CSM hibernate configuration");
-        }
-        return resources[0];
-    }
+//    private static Resource getCsmHibernateConfig() throws IOException {
+//        ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
+//        Resource[] resources = resolver.getResources(ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX
+//                + CSM_HIBERNATE_CONFIG_PREFIX + Constants.FILE_NAME_SUFFIX);
+//        if (resources.length == 0) {
+//            throw new IllegalStateException("Could not locate a CSM hibernate configuration");
+//        }
+//        return resources[0];
+//    }
 
     /**
      * @return the CSM AuthorizationManager
@@ -598,7 +614,7 @@ public final class SecurityUtils {
                 protectableIds.add(p.getId().toString());
             }
 
-            String protectableClassName = getNonGLIBClass(protectables.get(0)).getName();
+            String protectableClassName = getUnderlyingEntityClass(protectables.get(0)).getName();
 
             List<Long> protectionElementIds = getProtectionElementIds(protectableIds, protectableClassName);
             List<Long> protectionGroupIds = getProtectionGroupIds(protectableIds, protectableClassName);
@@ -681,7 +697,7 @@ public final class SecurityUtils {
                         + "  AND ugrpg.role.name in (:roleNames)";
         Query q = hibernateHelper.getCurrentSession().createQuery(queryString);
         q.setParameterList("roleNames", new String[]{BROWSE_ROLE, READ_ROLE, WRITE_ROLE, PERMISSIONS_ROLE });
-        q.setString("objectId", getNonGLIBClass(p).getName());
+        q.setString("objectId", getUnderlyingEntityClass(p).getName());
         q.setString("value", p.getId().toString());
         return q.list();
     }
@@ -697,7 +713,7 @@ public final class SecurityUtils {
             s = HibernateSessionFactoryHelper.getAuditSession(ApplicationSessionFactory
                     .getSessionFactory(caarrayAppName));
             Query q = s.createQuery(queryString);
-            q.setString("objectId", getNonGLIBClass(p).getName());
+            q.setString("objectId", getUnderlyingEntityClass(p).getName());
             q.setString("value", p.getId().toString());
             return (ProtectionGroup) q.uniqueResult();
         } catch (Exception e) {
@@ -835,7 +851,7 @@ public final class SecurityUtils {
         }
         try {
             Application app = getApplication();
-            return AuthorizationManagerExtensions.checkPermission(user.getLoginName(), getNonGLIBClass(p).getName(),
+            return AuthorizationManagerExtensions.checkPermission(user.getLoginName(), getUnderlyingEntityClass(p).getName(),
                     "id", p.getId().toString(), privilege, app);
         } catch (CSException e) {
             LOG.warn(String.format(
@@ -864,7 +880,7 @@ public final class SecurityUtils {
         for (Protectable p : protectables) {
             ids.add(p.getId());
         }
-        String className = getNonGLIBClass(protectables.iterator().next()).getName();
+        String className = getUnderlyingEntityClass(protectables.iterator().next()).getName();
 
         InstanceLevelMappingElement mappingElt = findMappingElement(className, "id");
 
@@ -936,12 +952,8 @@ public final class SecurityUtils {
         return permissionsMap;       
     }
     
-    private static Class<?> getNonGLIBClass(Object o) {
-        Class<?> result = o.getClass();
-        if (result.getName().contains("$$EnhancerByCGLIB$$")) {
-            result = result.getSuperclass();
-        }
-        return result;
+    private static Class<?> getUnderlyingEntityClass(Object o) {
+        return hibernateHelper.unwrapProxy(o).getClass();
     }
 
     /**

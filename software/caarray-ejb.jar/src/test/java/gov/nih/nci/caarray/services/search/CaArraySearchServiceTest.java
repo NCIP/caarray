@@ -111,7 +111,10 @@ public class CaArraySearchServiceTest extends AbstractServiceTest {
     @Before
     public void setUp() throws Exception {
         SearchDao searchDao = caArrayDaoFactoryStub.getSearchDao();
-        searchService = new CaArraySearchServiceBean(searchDao);
+        
+        CaArraySearchServiceBean searchServiceBean = new CaArraySearchServiceBean();
+        searchServiceBean.setDependencies(searchDao);
+        searchService = searchServiceBean;
     }
 
     @Test

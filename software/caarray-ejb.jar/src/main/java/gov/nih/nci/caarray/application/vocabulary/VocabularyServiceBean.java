@@ -93,6 +93,7 @@ import gov.nih.nci.caarray.domain.search.ExampleSearchCriteria;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
+import gov.nih.nci.caarray.injection.InjectionInterceptor;
 import gov.nih.nci.caarray.util.CaArrayUtils;
 
 import java.util.ArrayList;
@@ -115,14 +116,14 @@ import com.google.inject.Inject;
  */
 @Local(VocabularyService.class)
 @Stateless
-@Interceptors(ExceptionLoggingInterceptor.class)
+@Interceptors({ ExceptionLoggingInterceptor.class, InjectionInterceptor.class })
 @TransactionAttribute(TransactionAttributeType.SUPPORTS)
 public class VocabularyServiceBean implements VocabularyService {
     private static final String VERSION_FIELD = "version";
     
-    private final SearchDao searchDao;
-    private final ProtocolDao protocolDao;
-    private final VocabularyDao vocabularyDao;
+    private SearchDao searchDao;
+    private ProtocolDao protocolDao;
+    private VocabularyDao vocabularyDao;
     
     /**
      * 
@@ -131,7 +132,7 @@ public class VocabularyServiceBean implements VocabularyService {
      * @param vocabularyDao the VocabularyDao dependency
      */
     @Inject
-    public VocabularyServiceBean(SearchDao searchDao, ProtocolDao protocolDao, VocabularyDao vocabularyDao) {
+    public void setDependencies(SearchDao searchDao, ProtocolDao protocolDao, VocabularyDao vocabularyDao) {
         this.searchDao = searchDao;
         this.protocolDao = protocolDao;
         this.vocabularyDao = vocabularyDao;

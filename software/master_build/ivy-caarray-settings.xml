@@ -26,6 +26,10 @@ and can be overridden via local.properties or -D on the ant command line.
                 <artifact pattern="${local.repo.dir}/[organisation]/[module]/[revision]/[artifact]-[revision].[ext]"/>
                 <ivy pattern="${local.repo.dir}/[organisation]/[module]/[revision]/ivy.xml"/>
             </filesystem>
+            <filesystem name="svn-repo" local="true" checkmodified="true">
+                <artifact pattern="${root.dir}/software/ivy-repo.tmp/[organisation]/[module]/[revision]/[artifact]-[revision].[ext]"/>
+                <ivy pattern="${root.dir}/software/ivy-repo.tmp/[organisation]/[module]/[revision]/ivy.xml"/>
+            </filesystem>
             <url name="ncicb-ivy-repo">
                 <artifact pattern="http://gforge.nci.nih.gov/svnroot/commonlibrary/trunk/ivy-repo/[organisation]/[module]/[revision]/[artifact]-[revision].[ext]"/>
                 <ivy pattern="http://gforge.nci.nih.gov/svnroot/commonlibrary/trunk/ivy-repo/[organisation]/[module]/[revision]/ivy.xml"/>

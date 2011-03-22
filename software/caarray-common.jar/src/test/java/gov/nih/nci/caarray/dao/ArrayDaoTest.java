@@ -473,6 +473,10 @@ public class ArrayDaoTest extends AbstractDaoTest {
             tx = hibernateHelper.beginTransaction();
             retrievedArrayDesign = daoObject.getArrayDesign(DUMMY_ARRAYDESIGN_2.getId());
             assertNotNull(retrievedArrayDesign.getDesignDetails());
+            // force initialization of files collection, otherwise 
+            // get error with MultiPartBlob not processed by flush
+            // GF 30119 tracks a better fix for this
+            retrievedArrayDesign.getFirstDesignFile();
             daoObject.deleteArrayDesignDetails(retrievedArrayDesign);
             tx.commit();
             assertNull(retrievedArrayDesign.getDesignDetails());

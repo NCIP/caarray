@@ -93,19 +93,19 @@ import gov.nih.nci.caarray.platforms.SessionTransactionManager;
  * @author dkokotov
  */
 public class JtaSessionTransactionManager implements SessionTransactionManager {
-    private final FileManagementMDB fileManagementMDB;
-    private final SearchDao searchDao;
+    private FileManagementMDB fileManagementMDB;
+    private SearchDao searchDao;
     
     /**
      * @param fileManagementMDB the FileManagementMDB to use as a proxy to access the JTA transaction
      * @param searchDao the DAO to use to interact with the hibernate session
      */
     @Inject
-    public JtaSessionTransactionManager(FileManagementMDB fileManagementMDB, SearchDao searchDao) {
+    public void setDependencies(FileManagementMDB fileManagementMDB, SearchDao searchDao) {
         this.fileManagementMDB = fileManagementMDB;
         this.searchDao = searchDao;
     }
-
+    
     /**
      * {@inheritDoc}    
      */

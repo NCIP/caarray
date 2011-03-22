@@ -179,9 +179,11 @@ public class ProjectManagementServiceTest extends AbstractServiceTest {
     @Before
     public void setUpService() {
         CaArrayUsernameHolder.setUser(STANDARD_USER);
-        ProjectManagementServiceBean projectManagementServiceBean = new ProjectManagementServiceBean(
+        ProjectManagementServiceBean projectManagementServiceBean = new ProjectManagementServiceBean();
+        projectManagementServiceBean.setDependencies(
                 this.daoFactoryStub.getProjectDao(), this.daoFactoryStub.getFileDao(),
                 this.daoFactoryStub.getSampleDao(), this.daoFactoryStub.getSearchDao());
+        
         ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
         locatorStub.addLookup(FileAccessService.JNDI_NAME, this.fileAccessService);
         locatorStub.addLookup(GenericDataService.JNDI_NAME, this.genericDataService);
@@ -548,8 +550,9 @@ public class ProjectManagementServiceTest extends AbstractServiceTest {
                 };
             }
         };
-        ProjectManagementServiceBean bean = new ProjectManagementServiceBean(daoFactory.getProjectDao(),
-                daoFactory.getFileDao(), daoFactory.getSampleDao(), daoFactory.getSearchDao());
+        ProjectManagementServiceBean bean = new ProjectManagementServiceBean();
+        bean.setDependencies(daoFactory.getProjectDao(), daoFactory.getFileDao(), daoFactory.getSampleDao(),
+                daoFactory.getSearchDao());
 
         Project project = new Project();
         assertNull(bean.getBiomaterialByExternalId(project, "def", Sample.class));
@@ -567,8 +570,9 @@ public class ProjectManagementServiceTest extends AbstractServiceTest {
                 };
             }
         };
-       ProjectManagementServiceBean bean = new ProjectManagementServiceBean(daoFactory.getProjectDao(),
-                   daoFactory.getFileDao(), daoFactory.getSampleDao(), daoFactory.getSearchDao());
+       ProjectManagementServiceBean bean = new ProjectManagementServiceBean();
+       bean.setDependencies(daoFactory.getProjectDao(), daoFactory.getFileDao(), daoFactory.getSampleDao(),
+               daoFactory.getSearchDao());
        
        Project project = new Project();
 
@@ -589,8 +593,9 @@ public class ProjectManagementServiceTest extends AbstractServiceTest {
                 };
             }
         };
-        ProjectManagementServiceBean bean = new ProjectManagementServiceBean(daoFactory.getProjectDao(),
-                daoFactory.getFileDao(), daoFactory.getSampleDao(), daoFactory.getSearchDao());
+        ProjectManagementServiceBean bean = new ProjectManagementServiceBean();
+        bean.setDependencies(daoFactory.getProjectDao(), daoFactory.getFileDao(), daoFactory.getSampleDao(),
+                daoFactory.getSearchDao());
         
         Project project = new Project();
 

@@ -95,9 +95,7 @@ public class StringColumn_HibernateIntegrationTest extends AbstractCaArrayObject
     private QuantitationType stringType;
 
     @Before
-    @Override
-    public void setUp() {
-        super.setUp();
+    public void setUpQuantitationType() {
         stringType = new QuantitationType();
         stringType.setName("string");
         stringType.setTypeClass(String.class);
@@ -105,7 +103,6 @@ public class StringColumn_HibernateIntegrationTest extends AbstractCaArrayObject
 
     @Test
     @Override
-    @SuppressWarnings("PMD")
     public void testSave() {
         super.testSave();
     }

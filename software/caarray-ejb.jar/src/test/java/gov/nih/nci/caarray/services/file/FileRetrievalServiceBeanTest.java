@@ -120,9 +120,18 @@ import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
 public class FileRetrievalServiceBeanTest extends AbstractServiceTest {
     private static Injector injector;
     private static CaArrayHibernateHelper hibernateHelper; 
-    private final LocalDaoFactoryStub daoFactoryStub = new LocalDaoFactoryStub();
-    private final FileRetrievalServiceBean bean = new FileRetrievalServiceBean(daoFactoryStub.getSearchDao());
-    private final LocalFileAccessServiceStub fileAccessServiceStub = new LocalFileAccessServiceStub();
+    private final LocalDaoFactoryStub daoFactoryStub;
+    private final FileRetrievalServiceBean bean;
+    private final LocalFileAccessServiceStub fileAccessServiceStub;
+    
+    public FileRetrievalServiceBeanTest() {
+        daoFactoryStub = new LocalDaoFactoryStub();
+        
+        bean = new FileRetrievalServiceBean();
+        bean.setDependencies(daoFactoryStub.getSearchDao());
+        
+        fileAccessServiceStub = new LocalFileAccessServiceStub();
+    }
     
     /**
      * post-construct lifecycle method; intializes the Guice injector that will provide dependencies. 

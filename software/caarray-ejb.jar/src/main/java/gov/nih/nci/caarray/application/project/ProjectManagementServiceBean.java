@@ -112,6 +112,7 @@ import gov.nih.nci.caarray.domain.search.SearchCategory;
 import gov.nih.nci.caarray.domain.search.SearchSampleCategory;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
+import gov.nih.nci.caarray.injection.InjectionInterceptor;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.CaArrayUsernameHolder;
@@ -134,7 +135,7 @@ import javax.interceptor.Interceptors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.Logger;
-import org.jboss.annotation.ejb.TransactionTimeout;
+import org.jboss.ejb3.annotation.TransactionTimeout;
 
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
@@ -145,7 +146,7 @@ import com.google.inject.Inject;
  */
 @Local(ProjectManagementService.class)
 @Stateless
-@Interceptors(ExceptionLoggingInterceptor.class)
+@Interceptors({ ExceptionLoggingInterceptor.class, InjectionInterceptor.class })
 @TransactionAttribute(TransactionAttributeType.SUPPORTS)
 @SuppressWarnings({"PMD.ExcessiveClassLength", "PMD.TooManyMethods", "PMD.CyclomaticComplexity" })
 public class ProjectManagementServiceBean implements ProjectManagementService {
@@ -157,10 +158,10 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
      */
     static final String PUBLIC_ID_PREFIX = "EXP-";
     
-    private final ProjectDao projectDao;
-    private final FileDao fileDao;
-    private final SampleDao sampleDao;
-    private final SearchDao searchDao;
+    private ProjectDao projectDao;
+    private FileDao fileDao;
+    private SampleDao sampleDao;
+    private SearchDao searchDao;
     
     /**
      * 
@@ -170,7 +171,7 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
      * @param searchDao the SearchDao dependency
      */
     @Inject
-    public ProjectManagementServiceBean(ProjectDao projectDao, FileDao fileDao, SampleDao sampleDao,
+    public void setDependencies(ProjectDao projectDao, FileDao fileDao, SampleDao sampleDao,
             SearchDao searchDao) {
         this.projectDao = projectDao;
         this.fileDao = fileDao;

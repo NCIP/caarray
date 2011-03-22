@@ -85,6 +85,7 @@ package gov.nih.nci.caarray.services.file;
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
 import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.injection.InjectionInterceptor;
 import gov.nih.nci.caarray.services.AuthorizationInterceptor;
 import gov.nih.nci.caarray.services.EntityConfiguringInterceptor;
 import gov.nih.nci.caarray.services.HibernateSessionInterceptor;
@@ -110,20 +111,21 @@ import com.google.inject.Inject;
 @Stateless
 @Remote(FileRetrievalService.class)
 @PermitAll
-@Interceptors({ AuthorizationInterceptor.class, HibernateSessionInterceptor.class, EntityConfiguringInterceptor.class })
+@Interceptors({ AuthorizationInterceptor.class, HibernateSessionInterceptor.class, EntityConfiguringInterceptor.class,
+    InjectionInterceptor.class })
 public class FileRetrievalServiceBean implements FileRetrievalService {
 
     private static final Logger LOG = Logger.getLogger(FileRetrievalServiceBean.class);
     private static final int CHUNK_SIZE = 4096;
     
-    private final SearchDao searchDao;
+    private SearchDao searchDao;
     
     /**
      * 
      * @param searchDao the SearchDao dependency
      */
     @Inject
-    public FileRetrievalServiceBean(SearchDao searchDao) {
+    public void setDependencies(SearchDao searchDao) {
         this.searchDao = searchDao;
     }
     

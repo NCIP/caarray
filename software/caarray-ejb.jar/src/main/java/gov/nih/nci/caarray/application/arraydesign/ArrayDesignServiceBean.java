@@ -92,6 +92,7 @@ import gov.nih.nci.caarray.domain.data.DesignElementList;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.project.AssayType;
+import gov.nih.nci.caarray.injection.InjectionInterceptor;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.InvalidDataFileException;
@@ -108,10 +109,11 @@ import javax.ejb.Local;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import javax.interceptor.Interceptors;
 
 import org.apache.log4j.Logger;
 import org.hibernate.criterion.Order;
-import org.jboss.annotation.ejb.TransactionTimeout;
+import org.jboss.ejb3.annotation.TransactionTimeout;
 
 import com.google.inject.Inject;
 
@@ -124,15 +126,16 @@ import com.google.inject.Inject;
 @TransactionAttribute(TransactionAttributeType.SUPPORTS)
 @TransactionTimeout(ArrayDesignServiceBean.TIMEOUT_SECONDS)
 @SuppressWarnings({"PMD.CyclomaticComplexity", "PMD.TooManyMethods" })
+@Interceptors(InjectionInterceptor.class)
 public class ArrayDesignServiceBean implements ArrayDesignService {
     private static final Logger LOG = Logger.getLogger(ArrayDesignServiceBean.class);
     static final int TIMEOUT_SECONDS = 1800;
     static final int DELETE_ARRAY_DELETE_TIMEOUT_SECONDS = 7200;
 
-    private final ArrayDao arrayDao;
-    private final SearchDao searchDao;
-    private final ContactDao contactDao;
-    private final ArrayDesignPlatformFacade arrayDesignPlatformFacade;
+    private ArrayDao arrayDao;
+    private SearchDao searchDao;
+    private ContactDao contactDao;
+    private ArrayDesignPlatformFacade arrayDesignPlatformFacade;
     
     /**
      * 
@@ -142,7 +145,7 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
      * @param arrayDesignPlatformFacade the ArrayDesignPlatformFacade dependency
      */
     @Inject
-    public ArrayDesignServiceBean(ArrayDao arrayDao, SearchDao searchDao, ContactDao contactDao,
+    public void setDependencies(ArrayDao arrayDao, SearchDao searchDao, ContactDao contactDao,
             ArrayDesignPlatformFacade arrayDesignPlatformFacade) {
         this.arrayDao = arrayDao;
         this.searchDao = searchDao;

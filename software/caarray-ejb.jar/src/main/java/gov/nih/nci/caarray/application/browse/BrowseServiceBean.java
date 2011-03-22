@@ -85,6 +85,7 @@ package gov.nih.nci.caarray.application.browse;
 import gov.nih.nci.caarray.dao.BrowseDao;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.search.BrowseCategory;
+import gov.nih.nci.caarray.injection.InjectionInterceptor;
 
 import java.util.List;
 
@@ -92,6 +93,7 @@ import javax.ejb.Local;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import javax.interceptor.Interceptors;
 
 import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
 import com.google.inject.Inject;
@@ -103,15 +105,16 @@ import com.google.inject.Inject;
 @Local(BrowseService.class)
 @Stateless
 @TransactionAttribute(TransactionAttributeType.SUPPORTS)
+@Interceptors(InjectionInterceptor.class)
 public class BrowseServiceBean implements BrowseService {
-    private final BrowseDao browseDao;
+    private BrowseDao browseDao;
     
     /**
      * 
      * @param browseDao the browseDao dependency
      */
     @Inject
-    public BrowseServiceBean(BrowseDao browseDao) {
+    public void setDependencies(BrowseDao browseDao) {
         this.browseDao = browseDao;
     }
  

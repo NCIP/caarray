@@ -108,6 +108,7 @@ import gov.nih.nci.caarray.external.v1_0.data.FileStreamableContents;
 import gov.nih.nci.caarray.external.v1_0.data.MageTabFileSet;
 import gov.nih.nci.caarray.external.v1_0.data.QuantitationType;
 import gov.nih.nci.caarray.external.v1_0.query.DataSetRequest;
+import gov.nih.nci.caarray.injection.InjectionInterceptor;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.magetab.sdrf.ArrayDataFile;
 import gov.nih.nci.caarray.magetab.sdrf.ArrayDataMatrixFile;
@@ -141,8 +142,8 @@ import org.apache.commons.collections.ListUtils;
 import org.apache.commons.configuration.DataConfiguration;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
-import org.jboss.annotation.ejb.RemoteBinding;
-import org.jboss.annotation.ejb.TransactionTimeout;
+import org.jboss.ejb3.annotation.RemoteBinding;
+import org.jboss.ejb3.annotation.TransactionTimeout;
 
 import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
 import com.google.inject.Inject;
@@ -160,7 +161,7 @@ import com.healthmarketscience.rmiio.SimpleRemoteInputStream;
 @TransactionAttribute(TransactionAttributeType.REQUIRED)
 @TransactionTimeout(DataServiceBean.TIMEOUT_SECONDS)
 @Interceptors({ AuthorizationInterceptor.class, TemporaryFileCleanupInterceptor.class,
-        HibernateSessionInterceptor.class })
+        HibernateSessionInterceptor.class, InjectionInterceptor.class })
 @SuppressWarnings("PMD")
 public class DataServiceBean extends BaseV1_0ExternalService implements DataService {
     private static final Logger LOG = Logger.getLogger(DataServiceBean.class);
@@ -168,8 +169,8 @@ public class DataServiceBean extends BaseV1_0ExternalService implements DataServ
     static final int TIMEOUT_SECONDS = 1800;
     static final long MAX_FILE_REQUEST_SIZE = 1024 * 1024 * 1024; // 1 GB
 
-    private final CaArrayHibernateHelper hibernateHelper;
-    private final ArrayDao arrayDao;
+    private CaArrayHibernateHelper hibernateHelper;
+    private ArrayDao arrayDao;
     
     /**
      * 
@@ -177,7 +178,7 @@ public class DataServiceBean extends BaseV1_0ExternalService implements DataServ
      * @param arrayDao the ArrayDao dependency
      */
     @Inject
-    public DataServiceBean(CaArrayHibernateHelper hibernateHelper, ArrayDao arrayDao) {
+    public void setDependencies(CaArrayHibernateHelper hibernateHelper, ArrayDao arrayDao) {
         this.hibernateHelper = hibernateHelper;
         this.arrayDao = arrayDao;
     }

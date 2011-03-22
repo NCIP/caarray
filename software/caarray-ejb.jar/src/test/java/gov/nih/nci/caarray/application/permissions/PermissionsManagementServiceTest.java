@@ -160,8 +160,8 @@ public class PermissionsManagementServiceTest extends AbstractServiceTest {
     
     @Before
     public void setup() {
-        PermissionsManagementServiceBean bean = new PermissionsManagementServiceBean(hibernateHelper,
-                this.daoFactoryStub.getCollaboratorGroupDao(), this.daoFactoryStub.getSearchDao());
+        PermissionsManagementServiceBean bean = new PermissionsManagementServiceBean();
+        bean.setDependencies(hibernateHelper, this.daoFactoryStub.getCollaboratorGroupDao(), this.daoFactoryStub.getSearchDao());
         bean.setGenericDataService(this.genericDataServiceStub);
 
         this.permissionsManagementService = bean;

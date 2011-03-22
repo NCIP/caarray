@@ -92,6 +92,7 @@ import gov.nih.nci.caarray.domain.data.HybridizationData;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
+import gov.nih.nci.caarray.injection.InjectionInterceptor;
 import gov.nih.nci.caarray.services.AuthorizationInterceptor;
 import gov.nih.nci.caarray.services.HibernateSessionInterceptor;
 
@@ -107,7 +108,7 @@ import javax.interceptor.Interceptors;
 
 import org.apache.commons.collections.ListUtils;
 import org.apache.log4j.Logger;
-import org.jboss.annotation.ejb.TransactionTimeout;
+import org.jboss.ejb3.annotation.TransactionTimeout;
 
 import com.google.inject.Inject;
 
@@ -123,19 +124,19 @@ import com.google.inject.Inject;
 @TransactionAttribute(TransactionAttributeType.REQUIRED)
 @TransactionTimeout(DataRetrievalServiceBean.TIMEOUT_SECONDS)
 @Interceptors({ AuthorizationInterceptor.class, HibernateSessionInterceptor.class,
-    DataSetConfiguringInterceptor.class })
+    DataSetConfiguringInterceptor.class, InjectionInterceptor.class })
 public class DataRetrievalServiceBean implements DataRetrievalService {
     private static final Logger LOG = Logger.getLogger(DataRetrievalServiceBean.class);
 
     static final int TIMEOUT_SECONDS = 1800;
-    private final SearchDao searchDao;
+    private SearchDao searchDao;
     
     /**
      * 
      * @param searchDao the SearchDao dependency
      */
     @Inject
-    public DataRetrievalServiceBean(SearchDao searchDao) {
+    public void setDependencies(SearchDao searchDao) {
         this.searchDao = searchDao;
     }
 

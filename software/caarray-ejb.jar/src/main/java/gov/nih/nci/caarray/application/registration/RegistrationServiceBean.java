@@ -84,12 +84,14 @@ package gov.nih.nci.caarray.application.registration;
 
 import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.domain.register.RegistrationRequest;
+import gov.nih.nci.caarray.injection.InjectionInterceptor;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
 
 import javax.ejb.Local;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import javax.interceptor.Interceptors;
 
 import org.apache.log4j.Logger;
 
@@ -100,16 +102,17 @@ import com.google.inject.Inject;
  */
 @Local(RegistrationService.class)
 @Stateless
+@Interceptors(InjectionInterceptor.class)
 public class RegistrationServiceBean implements RegistrationService {
     private static final Logger LOG = Logger.getLogger(RegistrationServiceBean.class);
-    private final SearchDao searchDao;
+    private SearchDao searchDao;
    
     /**
      * 
      * @param searchDao the SearchDao dependency
      */
     @Inject
-    public RegistrationServiceBean(SearchDao searchDao) {
+    public void setDependencies(SearchDao searchDao) {
         this.searchDao = searchDao;
     }
 

@@ -157,7 +157,9 @@ public class DataRetrievalServiceTest extends AbstractServiceTest {
     }
 
     private void setUpService() {
-        DataRetrievalServiceBean serviceBean = new DataRetrievalServiceBean(daoFactory.getSearchDao());
+        DataRetrievalServiceBean serviceBean = new DataRetrievalServiceBean();
+        serviceBean.setDependencies(daoFactory.getSearchDao());
+        
         ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
         locatorStub.addLookup(ArrayDataService.JNDI_NAME, arrayDataService);
         service = serviceBean;

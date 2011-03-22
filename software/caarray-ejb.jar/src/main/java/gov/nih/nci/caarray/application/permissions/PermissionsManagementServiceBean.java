@@ -88,6 +88,7 @@ import gov.nih.nci.caarray.dao.CollaboratorGroupDao;
 import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.domain.permissions.AccessProfile;
 import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
+import gov.nih.nci.caarray.injection.InjectionInterceptor;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
 import gov.nih.nci.caarray.util.CaArrayUsernameHolder;
@@ -124,7 +125,7 @@ import com.google.inject.Inject;
  */
 @Local(PermissionsManagementService.class)
 @Stateless
-@Interceptors(ExceptionLoggingInterceptor.class)
+@Interceptors({ ExceptionLoggingInterceptor.class, InjectionInterceptor.class })
 @SuppressWarnings("unchecked") // CSM API is unchecked
 public class PermissionsManagementServiceBean implements PermissionsManagementService {
 
@@ -132,9 +133,9 @@ public class PermissionsManagementServiceBean implements PermissionsManagementSe
 
     @EJB private GenericDataService genericDataService;
     
-    private final CaArrayHibernateHelper hibernateHelper; 
-    private final CollaboratorGroupDao collaboratorGroupDao;
-    private final SearchDao searchDao;
+    private CaArrayHibernateHelper hibernateHelper; 
+    private CollaboratorGroupDao collaboratorGroupDao;
+    private SearchDao searchDao;
     
     /**
      * @param hibernateHelper the CaArrayHibernateHelper dependency
@@ -142,7 +143,7 @@ public class PermissionsManagementServiceBean implements PermissionsManagementSe
      * @param searchDao the SearchDao dependency
      */
     @Inject
-    public PermissionsManagementServiceBean(CaArrayHibernateHelper hibernateHelper,
+    public void setDependencies(CaArrayHibernateHelper hibernateHelper,
             CollaboratorGroupDao collaboratorGroupDao, SearchDao searchDao) {
         this.hibernateHelper = hibernateHelper;
         this.collaboratorGroupDao = collaboratorGroupDao;

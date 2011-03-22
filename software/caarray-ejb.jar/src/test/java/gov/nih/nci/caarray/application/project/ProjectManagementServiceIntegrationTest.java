@@ -223,9 +223,15 @@ public class ProjectManagementServiceIntegrationTest extends AbstractServiceInte
     private ProjectManagementService createProjectManagementService(
             final FileAccessServiceStub fileAccessServiceStub) {
         CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
-        genericDataService = new GenericDataServiceBean(daoFactory.getSearchDao(), daoFactory.getProjectDao());
-        ProjectManagementServiceBean bean = new ProjectManagementServiceBean(daoFactory.getProjectDao(),
-                daoFactory.getFileDao(), daoFactory.getSampleDao(), daoFactory.getSearchDao());
+        
+        GenericDataServiceBean genericDataServiceBean = new GenericDataServiceBean();
+        genericDataServiceBean.setDependencies(daoFactory.getSearchDao(), daoFactory.getProjectDao());
+        genericDataService = genericDataServiceBean;
+        
+        ProjectManagementServiceBean bean = new ProjectManagementServiceBean();
+        bean.setDependencies(daoFactory.getProjectDao(), daoFactory.getFileDao(), daoFactory.getSampleDao(),
+                daoFactory.getSearchDao());
+        
         ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
         locatorStub.addLookup(FileAccessService.JNDI_NAME, fileAccessServiceStub);
         locatorStub.addLookup(GenericDataService.JNDI_NAME, genericDataService);

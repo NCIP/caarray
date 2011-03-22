@@ -146,7 +146,11 @@ public class FileAccessServiceTest extends AbstractHibernateTest {
     @Before
     public void setUp() {
         CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
-        this.fileAccessService = new FileAccessServiceBean(daoFactory.getFileDao(), daoFactory.getArrayDao());
+        
+        FileAccessServiceBean fileAccessServiceBean = new FileAccessServiceBean();
+        fileAccessServiceBean.setDependencies(daoFactory.getFileDao(), daoFactory.getArrayDao());;
+        this.fileAccessService = fileAccessServiceBean;
+        
         hibernateHelper.unbindAndCleanupSession();
         hibernateHelper.openAndBindSession();
         

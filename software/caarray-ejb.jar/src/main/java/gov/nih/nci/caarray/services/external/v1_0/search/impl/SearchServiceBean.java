@@ -125,6 +125,7 @@ import gov.nih.nci.caarray.external.v1_0.sample.Characteristic;
 import gov.nih.nci.caarray.external.v1_0.sample.Hybridization;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.Category;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.Term;
+import gov.nih.nci.caarray.injection.InjectionInterceptor;
 import gov.nih.nci.caarray.services.AuthorizationInterceptor;
 import gov.nih.nci.caarray.services.HibernateSessionInterceptor;
 import gov.nih.nci.caarray.services.external.v1_0.InvalidInputException;
@@ -148,8 +149,8 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.interceptor.Interceptors;
 
-import org.jboss.annotation.ejb.RemoteBinding;
-import org.jboss.annotation.ejb.TransactionTimeout;
+import org.jboss.ejb3.annotation.RemoteBinding;
+import org.jboss.ejb3.annotation.TransactionTimeout;
 
 import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
 import com.google.inject.Inject;
@@ -160,7 +161,7 @@ import com.google.inject.Inject;
 @Stateless(name = "SearchServicev1_0")
 @RemoteBinding(jndiBinding = SearchService.JNDI_NAME)
 @PermitAll
-@Interceptors({ AuthorizationInterceptor.class, HibernateSessionInterceptor.class })
+@Interceptors({ AuthorizationInterceptor.class, HibernateSessionInterceptor.class, InjectionInterceptor.class })
 @TransactionTimeout(SearchServiceBean.TIMEOUT_SECONDS)
 @TransactionAttribute(TransactionAttributeType.REQUIRED)
 @SuppressWarnings("PMD.CyclomaticComplexity")
@@ -173,14 +174,14 @@ public class SearchServiceBean extends BaseV1_0ExternalService implements Search
     static final int MAX_FILE_RESULTS = 200;        
     static final int MAX_EXAMPLE_RESULTS = 50;
     
-    private final CaArrayHibernateHelper hibernateHelper;
+    private CaArrayHibernateHelper hibernateHelper;
     
     /**
      * 
      * @param hibernateHelper the CaArrayHibernateHelper dependency
      */
     @Inject
-    public SearchServiceBean(CaArrayHibernateHelper hibernateHelper) {
+    public void setDependencies(CaArrayHibernateHelper hibernateHelper) {
         this.hibernateHelper = hibernateHelper;
     }
     

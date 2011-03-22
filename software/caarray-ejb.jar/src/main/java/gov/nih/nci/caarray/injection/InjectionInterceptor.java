@@ -82,45 +82,29 @@
  */
 package gov.nih.nci.caarray.injection;
 
-import org.jboss.aop.advice.Interceptor;
-import org.jboss.aop.joinpoint.ConstructorInvocation;
-import org.jboss.aop.joinpoint.Invocation;
+import javax.interceptor.AroundInvoke;
+import javax.interceptor.InvocationContext;
 
 import com.google.inject.Injector;
 
 /**
+ * This class provides guice injection to the ejb tier.
  * @author jscott
- *
  */
-public class InjectionInterceptor implements Interceptor {
+public class InjectionInterceptor {
     private final Injector injector = InjectorFactory.getInjector();
  
     /**
-     * @return the name of this intercepter
+     * Allows guice to inject in to the EJB.
+     * @param ctx the context.
+     * @return the object
+     * @throws Exception on error.
      */
-    public String getName() {       
-        return "InjectionInterceptor";
+    @AroundInvoke
+    @SuppressWarnings("PMD.SignatureDeclareThrowsException")
+    public Object injectByGuice(InvocationContext ctx) throws Exception {
+        injector.injectMembers(ctx.getTarget());
+        return ctx.proceed();
     }
-
-    /**
-     * Creates the intercepted bean using dependency injection.
-     * Breaks the chain by NOT calling invocation.invokeNext(), which would have
-     * created the bean using reflection.  This is meant to be the last intercepter
-     * in the chain (currently it is the only.)
-     * 
-     * @param invocation the constructor invocation
-     * @return the constructed bean
-     * @throws Throwable if the bean cannot be constructed
-     */
-    @SuppressWarnings("unchecked")
-    public Object invoke(Invocation invocation) throws Throwable {
-        final ConstructorInvocation constructorInvocation = (ConstructorInvocation) invocation;
-        
-        final Class beanClass = constructorInvocation.getConstructor().getDeclaringClass();
-        final Object bean = injector.getInstance(beanClass);
-        
-        constructorInvocation.setTargetObject(bean);
-        return bean;
-     }
 
 }

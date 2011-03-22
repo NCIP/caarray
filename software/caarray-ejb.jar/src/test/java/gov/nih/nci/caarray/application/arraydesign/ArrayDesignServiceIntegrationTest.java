@@ -112,6 +112,8 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.hibernate.Transaction;
+import org.hibernate.validator.InvalidStateException;
+import org.hibernate.validator.InvalidValue;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -181,20 +183,29 @@ public class ArrayDesignServiceIntegrationTest extends AbstractServiceIntegratio
         hibernateHelper.getCurrentSession().save(DUMMY_ORGANIZATION);
         hibernateHelper.getCurrentSession().save(DUMMY_ORGANISM);
         hibernateHelper.getCurrentSession().save(DUMMY_TERM);
+        hibernateHelper.getCurrentSession().save(DUMMY_ASSAY_TYPE);
 
         ArrayDesign design = new ArrayDesign();
         design.setName("DummyTestArrayDesign1");
         design.setVersion("2.0");
         design.setProvider(DUMMY_ORGANIZATION);
         design.setLsidForEntity("authority:namespace:" + designFiles[0].getName());
-        Set <AssayType>assayTypes = new TreeSet<AssayType>();
+        design.getAssayTypes().add(DUMMY_ASSAY_TYPE);
+        Set<AssayType> assayTypes = new TreeSet<AssayType>();
         assayTypes.add(DUMMY_ASSAY_TYPE);
         for (File designFile : designFiles) {
             design.addDesignFile(getCaArrayFile(designFile));
         }
         design.setTechnologyType(DUMMY_TERM);
         design.setOrganism(DUMMY_ORGANISM);
-        this.arrayDesignService.saveArrayDesign(design);
+        try {
+            this.arrayDesignService.saveArrayDesign(design);
+        } catch (InvalidStateException e) {
+            e.printStackTrace();
+            for (InvalidValue iv : e.getInvalidValues()) {
+                System.out.println("Invalid value: " + iv);
+            }
+        }
         return design;
     }
 
@@ -237,11 +248,7 @@ public class ArrayDesignServiceIntegrationTest extends AbstractServiceIntegratio
         arrayDesignService.deleteArrayDesign(DUMMY_ARRAY_DESIGN);
     }
 
-    private class ArrayDesignServiceLocal extends ArrayDesignServiceBean {
-        public ArrayDesignServiceLocal() {
-            super(null, null, null, null);
-        }
-        
+    private class ArrayDesignServiceLocal extends ArrayDesignServiceBean {        
         @Override
         public boolean isArrayDesignLocked(Long id) {
             return true;

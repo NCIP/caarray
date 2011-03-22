@@ -114,7 +114,7 @@ public class TermBasedCharacteristicTest_HibernateIntegrationTest extends Abstra
         Category category = new Category();
         category.setName("Survival");
         TermSource termSource1 = new TermSource();
-        termSource1.setName("Source 1");
+        termSource1.setName("Source " + getUniqueStringValue());
         category.setSource(termSource1);
         termBasedCharacteristic.setCategory(category);
 
@@ -126,7 +126,7 @@ public class TermBasedCharacteristicTest_HibernateIntegrationTest extends Abstra
 
         //Set values in TermBasedCharacteristic class
         TermSource termSource2 = new TermSource();
-        termSource2.setName("Source 1");
+        termSource2.setName("Source " + getUniqueStringValue());
 
         Term unit = new Term();
         unit.setSource(termSource2);

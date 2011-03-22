@@ -102,7 +102,10 @@ public class ArrayDesignDetailsServiceBeanTest extends AbstractServiceTest {
     @Before
     public void setUp() {
         ArrayDao arrayDao = daoFactoryStub.getArrayDao();
-        arrayDesignDetailsService = new ArrayDesignDetailsServiceBean(arrayDao);
+        
+        ArrayDesignDetailsServiceBean arrayDesignDetailsServiceBean = new ArrayDesignDetailsServiceBean();
+        arrayDesignDetailsServiceBean.setDependencies(arrayDao);       
+        arrayDesignDetailsService = arrayDesignDetailsServiceBean;
     }
 
     @Test

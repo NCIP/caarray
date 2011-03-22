@@ -56,6 +56,7 @@ import org.hibernate.validator.PersistentClassConstraint;
 import org.hibernate.validator.Validator;
 
 import com.google.inject.Inject;
+import org.hibernate.FlushMode;
 
 /**
  * Validator for UniqueConstraint annotation.
@@ -81,48 +82,58 @@ public class UniqueConstraintValidator implements Validator<UniqueConstraint>, P
     public boolean isValid(final Object o) {
         UnfilteredCallback unfilteredCallback = new UnfilteredCallback() {
             public Object doUnfiltered(Session s) {
-                Class<?> classWithConstraint = findClassDeclaringConstraint(hibernateHelper.unwrapProxy(o).getClass()); 
-                Criteria crit = s.createCriteria(classWithConstraint);
-                ClassMetadata metadata = hibernateHelper.getSessionFactory()
-                        .getClassMetadata(classWithConstraint);
-                for (UniqueConstraintField field : uniqueConstraint.fields()) {
-                    Object fieldVal = metadata.getPropertyValue(o, field.name(), EntityMode.POJO);
-                    if (fieldVal == null) {
-                        if (field.nullsEqual()) {
-                            // nulls are equal, so add it to to criteria
-                            crit.add(Restrictions.isNull(field.name()));
+                FlushMode fm = s.getFlushMode();
+                try {
+                    s.setFlushMode(FlushMode.MANUAL);
+                    Class<?> classWithConstraint
+                            = findClassDeclaringConstraint(hibernateHelper.unwrapProxy(o).getClass());
+                    Criteria crit = s.createCriteria(classWithConstraint);
+                    ClassMetadata metadata = hibernateHelper.getSessionFactory()
+                            .getClassMetadata(classWithConstraint);
+                    for (UniqueConstraintField field : uniqueConstraint.fields()) {
+                        Object fieldVal = metadata.getPropertyValue(o, field.name(), EntityMode.POJO);
+                        if (fieldVal == null) {
+                            if (field.nullsEqual()) {
+                                // nulls are equal, so add it to to criteria
+                                crit.add(Restrictions.isNull(field.name()));
+                            } else {
+                                // nulls are never equal, so uniqueness is automatically satisfied
+                                return true;
+                            }
                         } else {
-                            // nulls are never equal, so uniqueness is automatically satisfied
-                            return true;
-                        }
-                    } else {
-                        // special casing for entity-type properties - only include them in the criteria if they are
-                        // already
-                        // persistent
-                        // otherwise, short-circuit the process and return true immediately since if the entity-type
-                        // property
-                        // is not persistent then it will be a new value and thus different from any currently in the
-                        // db, thus
-                        // satisfying uniqueness
-                        ClassMetadata fieldMetadata = hibernateHelper
-                                .getSessionFactory().getClassMetadata(
-                                        hibernateHelper.unwrapProxy(fieldVal).getClass());
-                        if (fieldMetadata == null || fieldMetadata.getIdentifier(fieldVal, EntityMode.POJO) != null) {
-                            crit.add(Restrictions.eq(field.name(), ReflectHelper.getGetter(o.getClass(), field.name())
-                                    .get(o)));
-                        } else {
-                            return true;
+                            // special casing for entity-type properties - only include them in the criteria if they are
+                            // already
+                            // persistent
+                            // otherwise, short-circuit the process and return true immediately since if the
+                            // entity-type property
+                            // is not persistent then it will be a new value and thus different from any currently in 
+                            // the db, thus satisfying uniqueness
+                            ClassMetadata fieldMetadata = hibernateHelper
+                                    .getSessionFactory().getClassMetadata(
+                                            hibernateHelper.unwrapProxy(fieldVal).getClass());
+                            if (fieldMetadata == null
+                                    || fieldMetadata.getIdentifier(fieldVal, EntityMode.POJO) != null) {
+                                crit.add(
+                                        Restrictions.eq(field.name(),
+                                        ReflectHelper.getGetter(o.getClass(),
+                                        field.name())
+                                        .get(o)));
+                            } else {
+                                return true;
+                            }
                         }
                     }
+                    // if object is already persistent, then add condition to exclude it matching itself
+                    Object id = metadata.getIdentifier(o, EntityMode.POJO);
+                    if (id != null) {
+                        crit.add(Restrictions.ne(metadata.getIdentifierPropertyName(), id));
+                    }
+
+                    int numMatches =  crit.list().size();
+                    return numMatches == 0;
+                } finally {
+                    s.setFlushMode(fm);
                 }
-                // if object is already persistent, then add condition to exclude it matching itself
-                Object id = metadata.getIdentifier(o, EntityMode.POJO);
-                if (id != null) {
-                    crit.add(Restrictions.ne(metadata.getIdentifierPropertyName(), id));
-                }
-                
-                int numMatches =  crit.list().size(); 
-                return numMatches == 0;
             }
         };
         return (Boolean) hibernateHelper.doUnfiltered(unfilteredCallback);

@@ -88,6 +88,7 @@ import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.dao.JobQueueDao;
 import gov.nih.nci.caarray.domain.ConfigParamEnum;
 import gov.nih.nci.caarray.domain.project.ExecutableJob;
+import gov.nih.nci.caarray.injection.InjectionInterceptor;
 import gov.nih.nci.caarray.services.HibernateSessionInterceptor;
 import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
 import gov.nih.nci.caarray.util.UsernameHolder;
@@ -128,7 +129,7 @@ import com.google.inject.Provider;
     @ActivationConfigProperty(propertyName = "destination", propertyValue = FileManagementMDB.QUEUE_JNDI_NAME),
     @ActivationConfigProperty(propertyName = "maxSession", propertyValue = "1")
     }, messageListenerInterface = MessageListener.class)
-@Interceptors({ HibernateSessionInterceptor.class, ExceptionLoggingInterceptor.class })
+@Interceptors({ HibernateSessionInterceptor.class, ExceptionLoggingInterceptor.class, InjectionInterceptor.class })
 @TransactionManagement(TransactionManagementType.BEAN)
 public class FileManagementMDB implements MessageListener {
 
@@ -143,9 +144,9 @@ public class FileManagementMDB implements MessageListener {
 
     private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
     @Resource private UserTransaction transaction;
-    private final CaArrayHibernateHelper hibernateHelper;
-    private final JobQueueDao jobDao;
-    private final Provider<UsernameHolder> userHolderProvider;
+    private CaArrayHibernateHelper hibernateHelper;
+    private JobQueueDao jobDao;
+    private Provider<UsernameHolder> userHolderProvider;
     
     /**
      * @param hibernateHelper the CaArrayHibernateHelper dependency
@@ -154,7 +155,7 @@ public class FileManagementMDB implements MessageListener {
      *        future enhancement where thread specific userHolders can be provided.
      */
     @Inject
-    public FileManagementMDB(CaArrayHibernateHelper hibernateHelper, JobQueueDao jobDao,
+    public void setDependencies(CaArrayHibernateHelper hibernateHelper, JobQueueDao jobDao,
             Provider<UsernameHolder> userHolderProvider) {
         this.hibernateHelper = hibernateHelper;
         this.jobDao = jobDao;

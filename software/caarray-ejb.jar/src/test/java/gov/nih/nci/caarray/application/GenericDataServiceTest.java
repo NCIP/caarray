@@ -118,9 +118,11 @@ public class GenericDataServiceTest extends AbstractServiceTest {
 
     @Before
     public void setUpService() {
-        GenericDataServiceBean serviceBean = new GenericDataServiceBean(this.daoFactoryStub.getSearchDao(),
+        GenericDataServiceBean serviceBean = new GenericDataServiceBean();
+        serviceBean.setDependencies(this.daoFactoryStub.getSearchDao(),
                 this.daoFactoryStub.getProjectDao());
         this.service = serviceBean;
+        
         ((SearchDaoStub)this.daoFactoryStub.getSearchDao()).reset();
     }
 

@@ -111,7 +111,7 @@ public class Array_HibernateIntegrationTest extends AbstractCaArrayEntity_Hibern
     @Override
     protected void setValues(AbstractCaArrayObject caArrayObject) {
         TermSource ts = new TermSource();
-        ts.setName("TS 1");
+        ts.setName("TS " + getUniqueStringValue());
         Term term = new Term();
         term.setValue("term");
         term.setSource(ts);

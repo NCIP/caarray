@@ -119,8 +119,9 @@ public class PermissionsManagementServiceIntegrationTest extends AbstractService
     
     private PermissionsManagementService createPermissionsManagementService(GenericDataService genericDataServiceStub) {
         CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
-        PermissionsManagementServiceBean bean = new PermissionsManagementServiceBean(hibernateHelper,
-                daoFactory.getCollaboratorGroupDao(), daoFactory.getSearchDao());
+        PermissionsManagementServiceBean bean = new PermissionsManagementServiceBean();
+        bean.setDependencies(hibernateHelper, daoFactory.getCollaboratorGroupDao(), daoFactory.getSearchDao());
+        
         ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
         locatorStub.addLookup(GenericDataService.JNDI_NAME, genericDataServiceStub);
         MysqlDataSource ds = new MysqlDataSource();

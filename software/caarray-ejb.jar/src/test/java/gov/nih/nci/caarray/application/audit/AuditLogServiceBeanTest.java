@@ -16,7 +16,8 @@ public class AuditLogServiceBeanTest extends AbstractServiceTest {
      */
     @Test
     public void testGetLogsMocks() {
-        AuditLogServiceBean instance = new AuditLogServiceBean(new DaoFactoryStub().getAuditLogDao());
+        AuditLogServiceBean instance = new AuditLogServiceBean();
+        instance.setDependencies(new DaoFactoryStub().getAuditLogDao());
         
         assertTrue(instance.getRecords(null, null).isEmpty());
         assertTrue(instance.getRecordsCount(null) == 0);

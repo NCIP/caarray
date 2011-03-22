@@ -91,7 +91,6 @@ import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.sample.Extract;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 import gov.nih.nci.caarray.domain.sample.Sample;
-import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
 
 import org.hibernate.Transaction;
 import org.junit.Before;
@@ -103,9 +102,7 @@ public class DataSet_HibernateIntegrationTest extends AbstractCaArrayObject_Hibe
     private QuantitationType floatType;
 
     @Before
-    @Override
-    public void setUp() {
-        super.setUp();
+    public void setUpQuantitationTypes() {
         stringType = new QuantitationType();
         stringType.setName("string");
         stringType.setTypeClass(String.class);
@@ -116,7 +113,6 @@ public class DataSet_HibernateIntegrationTest extends AbstractCaArrayObject_Hibe
 
     @Test
     @Override
-    @SuppressWarnings("PMD")
     public void testSave() {
         super.testSave();
     }

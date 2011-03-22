@@ -96,6 +96,7 @@ import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.injection.InjectionInterceptor;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.magetab.sdrf.SdrfDocument;
 import gov.nih.nci.caarray.util.CaArrayUsernameHolder;
@@ -113,7 +114,7 @@ import javax.interceptor.Interceptors;
 
 import org.apache.commons.lang.UnhandledException;
 import org.apache.log4j.Logger;
-import org.jboss.annotation.ejb.TransactionTimeout;
+import org.jboss.ejb3.annotation.TransactionTimeout;
 
 import com.google.inject.Inject;
 
@@ -123,20 +124,20 @@ import com.google.inject.Inject;
  */
 @Local(FileManagementService.class)
 @Stateless
-@Interceptors(ExceptionLoggingInterceptor.class)
+@Interceptors({ ExceptionLoggingInterceptor.class, InjectionInterceptor.class })
 @SuppressWarnings("PMD.TooManyMethods")
 public class FileManagementServiceBean implements FileManagementService {
 
     private static final Logger LOG = Logger.getLogger(FileManagementServiceBean.class);
     private static final int SAVE_ARRAY_DESIGN_TIMEOUT = 1800;
 
-    private final FileManagementJobSubmitter jobSubmitter;
-    private final ProjectDao projectDao;
-    private final ArrayDao arrayDao;
-    private final FileDao fileDao;
-    private final MageTabImporter mageTabImporter;
-    private final SearchDao searchDao;
-    private final JobFactory jobFactory;
+    private FileManagementJobSubmitter jobSubmitter;
+    private ProjectDao projectDao;
+    private ArrayDao arrayDao;
+    private FileDao fileDao;
+    private SearchDao searchDao;
+    private MageTabImporter mageTabImporter;
+    private JobFactory jobFactory;
     
     /**
      * 
@@ -150,8 +151,7 @@ public class FileManagementServiceBean implements FileManagementService {
      */
     @SuppressWarnings("PMD.ExcessiveParameterList")
     @Inject
-    public FileManagementServiceBean(ProjectDao projectDao, ArrayDao arrayDao, FileDao fileDao,
-            MageTabImporter mageTabImporter, SearchDao searchDao, FileManagementJobSubmitter jobSubmitter,
+    public void setDependencies(ProjectDao projectDao, ArrayDao arrayDao, FileDao fileDao, SearchDao searchDao, MageTabImporter mageTabImporter, FileManagementJobSubmitter jobSubmitter,
             JobFactory jobFactory) {
         this.projectDao = projectDao;
         this.arrayDao = arrayDao;

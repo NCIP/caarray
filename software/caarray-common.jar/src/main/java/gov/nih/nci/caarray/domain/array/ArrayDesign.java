@@ -499,7 +499,7 @@ public class ArrayDesign extends AbstractCaArrayEntity {
      * @return the designDetails
      */
     @ManyToOne(fetch = FetchType.LAZY)
-    @Cascade(CascadeType.ALL)
+    @Cascade({ CascadeType.PERSIST, CascadeType.SAVE_UPDATE, CascadeType.LOCK, CascadeType.EVICT})
     @ForeignKey(name = "arraydesign_details_fk")
     public ArrayDesignDetails getDesignDetails() {
         return designDetails;

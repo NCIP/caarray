@@ -126,7 +126,7 @@ public class ArrayDesign_HibernateIntegrationTest extends AbstractCaArrayEntity_
     @Override
     protected void setValues(AbstractCaArrayObject caArrayObject) {
         TermSource ts = new TermSource();
-        ts.setName("TS 1");
+        ts.setName("TS " + getUniqueStringValue());
         Category cat = new Category();
         cat.setName("catName");
         cat.setSource(ts);

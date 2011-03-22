@@ -129,8 +129,11 @@ public class SearchServiceTest extends AbstractServiceTest {
     @Before
     public void setUpService() {
         CaArrayUsernameHolder.setUser(STANDARD_USER);
-        SearchServiceBean searchServiceBean = new SearchServiceBean(null);
+        
+        SearchServiceBean searchServiceBean = new SearchServiceBean();
+        searchServiceBean.setDependencies(null);
         searchServiceBean.setDaoFactory(this.daoFactoryStub);
+        
         ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
         this.searchService = searchServiceBean;
         locatorStub.addLookup(SearchService.JNDI_NAME, this.searchService);

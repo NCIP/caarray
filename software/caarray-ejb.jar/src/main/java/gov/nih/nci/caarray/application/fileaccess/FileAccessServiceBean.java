@@ -91,6 +91,7 @@ import gov.nih.nci.caarray.domain.file.FileExtension;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
+import gov.nih.nci.caarray.injection.InjectionInterceptor;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
 
 import java.io.File;
@@ -118,12 +119,12 @@ import com.google.inject.Inject;
  */
 @Local(FileAccessService.class)
 @Stateless
-@Interceptors(ExceptionLoggingInterceptor.class)
+@Interceptors({ ExceptionLoggingInterceptor.class, InjectionInterceptor.class })
 public class FileAccessServiceBean implements FileAccessService {
 
     private static final Logger LOG = Logger.getLogger(FileAccessServiceBean.class);
-    private final FileDao fileDao;
-    private final ArrayDao arrayDao;
+    private FileDao fileDao;
+    private ArrayDao arrayDao;
     
     /**
      * 
@@ -131,7 +132,7 @@ public class FileAccessServiceBean implements FileAccessService {
      * @param arrayDao the ArrayDao dependency
      */
     @Inject
-    public FileAccessServiceBean(FileDao fileDao, ArrayDao arrayDao) {
+    public void setDependencies(FileDao fileDao, ArrayDao arrayDao) {
         this.fileDao = fileDao;
         this.arrayDao = arrayDao;
     }
