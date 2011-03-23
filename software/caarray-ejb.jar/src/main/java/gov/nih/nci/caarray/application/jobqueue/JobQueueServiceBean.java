@@ -125,7 +125,6 @@ public class JobQueueServiceBean implements JobQueueService {
     /**
      * {@inheritDoc}
      */
-    @Override
     public List<Job> getJobsForUser(User user) {
         LogUtil.logSubsystemEntry(LOG);
         final List<Job> result = this.jobQueueDao.getJobsForUser(user);
@@ -136,7 +135,6 @@ public class JobQueueServiceBean implements JobQueueService {
     /**
      * {@inheritDoc}
      */
-    @Override
     public int getJobCount(User user) {
         return this.jobQueueDao.getJobsForUser(user).size();
     }
@@ -144,7 +142,6 @@ public class JobQueueServiceBean implements JobQueueService {
     /**
      * {@inheritDoc}
      */
-    @Override
     public boolean cancelJob(String jobId) {
         return this.jobQueueDao.cancelJob(jobId);
     }
