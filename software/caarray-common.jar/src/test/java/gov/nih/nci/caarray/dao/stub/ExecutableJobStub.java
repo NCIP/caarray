@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caarray-common.jar
+ * source code form and machine readable, binary, object code form. The caArray
  * Software was developed in conjunction with the National Cancer Institute
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent
  * government employees are authors, any rights in such works shall be subject
  * to Title 17 of the United States Code, section 105.
  *
- * This caarray-common.jar Software License (the License) is between NCI and You. You (or
+ * This caArray Software License (the License) is between NCI and You. You (or
  * Your) shall mean a person or an entity, and all other entities that control,
  * are controlled by, or are under common control with the entity. Control for
  * purposes of this definition means (i) the direct or indirect power to cause
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up,
  * no-charge, irrevocable, transferable and royalty-free right and license in
- * its rights in the caarray-common.jar Software to (i) use, install, access, operate,
+ * its rights in the caArray Software to (i) use, install, access, operate,
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caarray-common.jar Software; (ii) distribute and
- * have distributed to and by third parties the caarray-common.jar Software and any
+ * and prepare derivative works of the caArray Software; (ii) distribute and
+ * have distributed to and by third parties the caArray Software and any
  * modifications and derivative works thereof; and (iii) sublicense the
  * foregoing rights set out in (i) and (ii) to third parties, including the
  * right to license such rights to further third parties. For sake of clarity,
@@ -80,152 +80,215 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.dao;
 
+package gov.nih.nci.caarray.dao.stub;
 
-import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.project.ExecutableJob;
-import gov.nih.nci.caarray.domain.project.Job;
-import gov.nih.nci.caarray.domain.project.JobMessageSender;
-import gov.nih.nci.caarray.domain.project.JobSnapshot;
+import gov.nih.nci.caarray.domain.project.JobStatus;
+import gov.nih.nci.caarray.domain.project.JobType;
 import gov.nih.nci.security.authorization.domainobjects.User;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.Date;
 import java.util.UUID;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
 
 /**
- * Manages a queue of jobs.
- * 
- * @author jscott
- */
-@Singleton
-class JobQueueDaoImpl implements JobQueueDao {
-    private final Queue<ExecutableJob> queue = new LinkedList<ExecutableJob>();
-    private final JobMessageSender messageSender;
-    private final Lock jobQueueLock = new ReentrantLock();
-    private final FileDao fileDao;
+* Stub for ExecutableJob. 
+* @author kkanchinadam
+*/
+public class ExecutableJobStub extends AbstractCaArrayEntity implements ExecutableJob {
+    private static final long serialVersionUID = 1234567890L;
 
-    /**
-     * @param messageSender the MessageSender dependency
-     */
-    @Inject
-    public JobQueueDaoImpl(JobMessageSender messageSender, FileDao fileDao) {
-        this.messageSender = messageSender;
-        this.fileDao = fileDao;
-    }
+    private UUID jobId;
+    private String ownerName;
+    private String jobEntityName;
+    private long jobEntityId;
+    private JobType jobType;
+    private Date timeRequested;
+    private Date timeStarted;
+    private JobStatus jobStatus;
+    private boolean readWriteAccess;
 
-    public void enqueue(ExecutableJob job) {
-        job.setJobId(UUID.randomUUID());
-        job.markAsInQueue();
-        jobQueueLock.lock();
-        try {
-            queue.add(job);
-        } finally {
-            jobQueueLock.unlock();
-        }
-        messageSender.sendEnqueueMessage();
+    public void setReadWriteAccess(boolean readWriteAccess) {
+        this.readWriteAccess = readWriteAccess;
     }
 
     /**
      * {@inheritDoc}
      */
-    public int getLength() {
-        jobQueueLock.lock();
-        try {
-            return queue.size();
-        } finally {
-            jobQueueLock.unlock();
-        }
+    public UUID getJobId() {
+        return jobId;
     }
 
     /**
      * {@inheritDoc}
      */
-    public ExecutableJob dequeue() {
-        ExecutableJob job = null;
-        jobQueueLock.lock();
-        try {
-            if (queue.size() == 0) {
-                throw new IllegalStateException("the JobQueue is empty");
-            }
-
-            job = queue.remove();
-        } finally {
-            jobQueueLock.unlock();
-        }
-        return job;
+    public void setJobId(UUID jobId) {
+        this.jobId = jobId;
     }
 
     /**
      * {@inheritDoc}
      */
-    public ExecutableJob peekAtJobQueue() {
-        return queue.peek();
-    }
-    
-    /**
-     * {@inheritDoc}
-     */
-    public List<Job> getJobsForUser(User user) {
-        List<Job> snapshotList = new ArrayList<Job>();
-        jobQueueLock.lock();
-        try {
-            int position = 1;
-            for (ExecutableJob originalJob : getJobList()) {
-                snapshotList.add(new JobSnapshot(user, originalJob, position++));
-            }
-        } finally {
-            jobQueueLock.unlock();
-        }
-
-        return snapshotList;
-    }
-    
-    /**
-     * Get all the jobs on the queue as a list.
-     * @return the list of jobs
-     */
-    protected List<ExecutableJob> getJobList() {
-        jobQueueLock.lock();
-        try {
-            return new ArrayList<ExecutableJob>(queue);
-        } finally {
-            jobQueueLock.unlock();
-        }
+    public String getOwnerName() {
+        return ownerName;
     }
 
     /**
      * {@inheritDoc}
      */
-    public boolean cancelJob(String jobId) {
-        for (ExecutableJob originalJob : getJobList()) {
-            jobQueueLock.lock();
-            try {
-                if (originalJob.getJobId().equals(UUID.fromString(jobId))) {
-                    if (originalJob.isInProgress()) {
-                        return false;
-                    }
-                    
-                    if (queue.remove(originalJob)) {
-                        originalJob.markAsCancelled();
-                        for (CaArrayFile file : originalJob.getFileSet().getFiles()) {
-                            fileDao.saveAndEvict(file);
-                        }
-                        return true;
-                    }
-                }
-            } finally {
-                jobQueueLock.unlock();
-            }
-        }
+    public void setOwnerName(String ownerName) {
+        this.ownerName = ownerName;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public String getJobEntityName() {
+        return jobEntityName;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void setJobEntityName(String jobEntityName) {
+        this.jobEntityName = jobEntityName;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public long getJobEntityId() {
+        return jobEntityId;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void setJobEntityId(long jobEntityId) {
+        this.jobEntityId = jobEntityId;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public JobType getJobType() {
+        return jobType;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void setJobType(JobType jobType) {
+        this.jobType = jobType;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public Date getTimeRequested() {
+        return timeRequested;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void setTimeRequested(Date timeRequested) {
+        this.timeRequested = timeRequested;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public Date getTimeStarted() {
+        return timeStarted;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void setTimeStarted(Date timeStarted) {
+        this.timeStarted = timeStarted;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public JobStatus getJobStatus() {
+        return jobStatus;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void setJobStatus(JobStatus jobStatus) {
+        this.jobStatus = jobStatus;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public boolean isInProgress() {
         return false;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void execute() {
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void markAsInQueue() {
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void markAsCancelled() {
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void markAsInProgress() {
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public boolean userHasReadAccess(User user) {
+        return readWriteAccess;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public boolean userHasWriteAccess(User user) {
+        return readWriteAccess;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public PreparedStatement getUnexpectedErrorPreparedStatement(
+            Connection connection) throws SQLException {
+        return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public CaArrayFileSet getFileSet() {
+        return new CaArrayFileSet();
+    }
+
+
+
 }
