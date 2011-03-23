@@ -84,16 +84,23 @@
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import gov.nih.nci.caarray.dao.stub.ExecutableJobStub;
 import gov.nih.nci.caarray.domain.project.ExecutableJob;
+import gov.nih.nci.caarray.domain.project.Job;
 import gov.nih.nci.caarray.domain.project.JobMessageSender;
+import gov.nih.nci.caarray.domain.project.JobStatus;
+import gov.nih.nci.security.authorization.domainobjects.User;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -105,7 +112,6 @@ public class JobDaoTest {
     private JobQueueDaoImpl systemUnderTest;
     private List<ExecutableJob> mockJobs;
     private int jobIndex;
-
     private JobMessageSender jobMessageSender;
 
     @Before
@@ -276,4 +282,75 @@ public class JobDaoTest {
     public org.hamcrest.Matcher<ExecutableJob> isJobIndex(int jobIndex) {
         return org.hamcrest.core.Is.is(mockJobs.get(jobIndex)); 
     }   
+    
+    @Test
+    public void testGetJobsForUser() {
+        // setup data for system under test. 
+        setupDataForSystemUnderTest();
+        
+        // Assert that the number of jobs in the snapshot list equals number of queued jobs.
+        List<Job> snapshotList = systemUnderTest.getJobsForUser(mock(User.class));
+        assertEquals(5, snapshotList.size());
+        assertEquals(systemUnderTest.getLength(), snapshotList.size());
+    }
+    
+    @Test
+    public void testCancelJob() {
+        // setup data for system under test. 
+        setupDataForSystemUnderTest();
+        
+        // Assert that the number of jobs in the snapshot list equals number of queued jobs.
+        List<Job> snapshotList = systemUnderTest.getJobsForUser(mock(User.class));
+        assertEquals(5, snapshotList.size());
+        
+        // Get the UUID of a job to cancel. 
+        UUID jobIdToCancel = snapshotList.get(2).getJobId();
+        systemUnderTest.cancelJob(jobIdToCancel.toString());
+        
+        // Assert that the count of queued jobs is now one less than before.
+        snapshotList = systemUnderTest.getJobsForUser(mock(User.class));
+        assertEquals(4, snapshotList.size());
+        assertEquals(snapshotList.size(), systemUnderTest.getLength());
+        assertEquals(snapshotList.size(), systemUnderTest.getJobList().size());
+        
+        // Confirm that the correct job has been cancelled.
+        for (Job job : snapshotList) {
+            assertFalse(jobIdToCancel.equals(job.getJobId()));
+        }
+    }
+    
+    private void setupDataForSystemUnderTest() {
+        List<ExecutableJob> jobs = createExecutableJobsList();
+        assertEquals(5, jobs.size());
+        // enqueue the jobs.
+        for (ExecutableJob job : jobs) {
+            systemUnderTest.enqueue(job);
+        }
+        
+        // assert that count of queued jobs = 5.
+        assertEquals(5, systemUnderTest.getLength());
+        assertEquals(5, systemUnderTest.getJobList().size());
+    }
+    
+    private List<ExecutableJob> createExecutableJobsList() {
+        List<ExecutableJob> jobs = new ArrayList<ExecutableJob>();
+        jobs.add(createExecutableJob("owner1", "exp1", 1, JobStatus.RUNNING, false));
+        jobs.add(createExecutableJob("owner2", "exp2", 2, JobStatus.IN_QUEUE, false));
+        jobs.add(createExecutableJob("owner3", "exp3", 3, JobStatus.IN_QUEUE, true));
+        jobs.add(createExecutableJob("owner1", "exp4", 4, JobStatus.IN_QUEUE, true));
+        jobs.add(createExecutableJob("owner1", "exp5", 5, JobStatus.IN_QUEUE, true));
+        return jobs;
+    }
+    
+    private ExecutableJob createExecutableJob(String ownerName, String jobEntityName, long jobEntityId, JobStatus jobStatus, boolean readWriteAccess) {
+        ExecutableJobStub job = new ExecutableJobStub();
+        job.setJobId(UUID.randomUUID());
+        job.setOwnerName(ownerName);
+        job.setJobEntityName(jobEntityName);
+        job.setJobEntityId(jobEntityId);
+        job.setJobStatus(jobStatus);
+        job.setReadWriteAccess(readWriteAccess);
+        return job;
+    }
+    
 }
