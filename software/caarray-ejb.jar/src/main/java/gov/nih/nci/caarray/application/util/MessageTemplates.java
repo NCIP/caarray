@@ -92,14 +92,13 @@ public final class MessageTemplates {
     /**
      * The message fragment regarding an array design with specified name not in system.
      */
-    public static final String NON_EXISTING_ARRAY_DESIGN_ERROR_MESSAGE_TEMPLATE = "Your reference to '1$' cannot be "
+    public static final String NON_EXISTING_ARRAY_DESIGN_ERROR_MESSAGE_TEMPLATE = "Your reference to %s cannot be "
         + "resolved because an array design with that LSID is not in caArray.  Please import it and try again.";
     
     /**
      * The message fragment regarding a specified array design not being associated with an experiment.
      */
     public static final String ARRAY_DESIGN_NOT_ASSOCIATED_WITH_EXPERIMENT_ERROR_MESSAGE_TEMPLATE =
-        "The array design '1$' is not currently associated with this experiment.  Please correct either your "
-        + "experiment, or your SDRF file.";
+        "The array design %s is not currently associated with this experiment.";
 
 }
