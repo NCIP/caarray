@@ -85,16 +85,16 @@ package gov.nih.nci.caarray.platforms.nimblegen;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
 import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.dao.stub.ArrayDaoStub;
 import gov.nih.nci.caarray.dao.stub.SearchDaoStub;
+import gov.nih.nci.caarray.dataStorage.DataStorageFacade;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
-import gov.nih.nci.caarray.platforms.FileManager;
-import gov.nih.nci.caarray.platforms.MockFileManager;
-import gov.nih.nci.caarray.platforms.SessionTransactionManagerNoOpImpl;
 import gov.nih.nci.caarray.platforms.SessionTransactionManager;
+import gov.nih.nci.caarray.platforms.SessionTransactionManagerNoOpImpl;
 import gov.nih.nci.caarray.platforms.spi.PlatformFileReadException;
 import gov.nih.nci.caarray.staticinjection.CaArrayEjbStaticInjectionModule;
 import gov.nih.nci.caarray.test.data.arraydesign.NimblegenArrayDesignFiles;
@@ -115,132 +115,137 @@ import com.google.inject.Injector;
 
 public class NdfHandlerTest {
     private static Injector injector;
-    private static CaArrayHibernateHelper hibernateHelper; 
+    private static CaArrayHibernateHelper hibernateHelper;
     private NdfHandler handler;
-    private FileAccessServiceStub fasStub;        
-    
+    private FileAccessServiceStub fasStub;
+
     /**
-     * post-construct lifecycle method; intializes the Guice injector that will provide dependencies. 
+     * post-construct lifecycle method; intializes the Guice injector that will provide dependencies.
      */
     @BeforeClass
     public static void init() {
         injector = createInjector();
         hibernateHelper = injector.getInstance(CaArrayHibernateHelper.class);
     }
-    
+
     /**
      * @return a Guice injector from which this will obtain dependencies.
      */
     protected static Injector createInjector() {
         return Guice.createInjector(new CaArrayEjbStaticInjectionModule(), new CaArrayHibernateHelperModule());
     }
-    
+
     @Before
     public void setup() {
-        SessionTransactionManager stm = new SessionTransactionManagerNoOpImpl();
-        fasStub = new FileAccessServiceStub();        
-        FileManager fm = new MockFileManager(fasStub);
-        ArrayDao arrayDao = new ArrayDaoStub();
-        SearchDao searchDao = new SearchDaoStub();
-        handler = new NdfHandler(stm, fm, arrayDao, searchDao, hibernateHelper);
+        final SessionTransactionManager stm = new SessionTransactionManagerNoOpImpl();
+        this.fasStub = new FileAccessServiceStub();
+        final ArrayDao arrayDao = new ArrayDaoStub();
+        final SearchDao searchDao = new SearchDaoStub();
+        final DataStorageFacade dataStorageFacade = mock(DataStorageFacade.class);
+        this.handler = new NdfHandler(stm, dataStorageFacade, arrayDao, searchDao, hibernateHelper);
     }
-    
+
     @Test
     public void testMissingHeader() throws PlatformFileReadException {
-        CaArrayFile missingHeaderFile = fasStub.add(NimblegenArrayDesignFiles.MISSING_HEADER_NDF); 
+        final CaArrayFile missingHeaderFile = this.fasStub.add(NimblegenArrayDesignFiles.MISSING_HEADER_NDF);
         try {
-            handler.openFiles(Collections.singleton(missingHeaderFile));
-            ValidationResult result = new ValidationResult();
-            handler.validate(result);
-            FileValidationResult fvr = result.getFileValidationResult(NimblegenArrayDesignFiles.MISSING_HEADER_NDF);
+            this.handler.openFiles(Collections.singleton(missingHeaderFile));
+            final ValidationResult result = new ValidationResult();
+            this.handler.validate(result);
+            final FileValidationResult fvr = result
+                    .getFileValidationResult(NimblegenArrayDesignFiles.MISSING_HEADER_NDF);
             assertNotNull(fvr);
             assertEquals(1, fvr.getMessages().size());
-            ValidationMessage msg = fvr.getMessages().get(0);
+            final ValidationMessage msg = fvr.getMessages().get(0);
             assertEquals(ValidationMessage.Type.ERROR, msg.getType());
             assertTrue(msg.getMessage().startsWith("Could not find column headers in file"));
         } finally {
-            handler.closeFiles();
+            this.handler.closeFiles();
         }
     }
-    
+
     @Test
     public void testMissingHeaderColumns() throws PlatformFileReadException {
-        CaArrayFile missingHeaderFile = fasStub.add(NimblegenArrayDesignFiles.MISSING_COLUMNS_NDF); 
+        final CaArrayFile missingHeaderFile = this.fasStub.add(NimblegenArrayDesignFiles.MISSING_COLUMNS_NDF);
         try {
-            handler.openFiles(Collections.singleton(missingHeaderFile));
-            ValidationResult result = new ValidationResult();
-            handler.validate(result);
-            FileValidationResult fvr = result.getFileValidationResult(NimblegenArrayDesignFiles.MISSING_COLUMNS_NDF);
+            this.handler.openFiles(Collections.singleton(missingHeaderFile));
+            final ValidationResult result = new ValidationResult();
+            this.handler.validate(result);
+            final FileValidationResult fvr = result
+                    .getFileValidationResult(NimblegenArrayDesignFiles.MISSING_COLUMNS_NDF);
             assertNotNull(fvr);
             assertEquals(1, fvr.getMessages().size());
-            ValidationMessage msg = fvr.getMessages().get(0);
+            final ValidationMessage msg = fvr.getMessages().get(0);
             assertEquals(ValidationMessage.Type.ERROR, msg.getType());
             assertEquals(1, msg.getLine());
             assertEquals(0, msg.getColumn());
             assertEquals("Invalid column header for Nimblegen NDF. Missing SEQ_ID column", msg.getMessage());
         } finally {
-            handler.closeFiles();
+            this.handler.closeFiles();
         }
     }
-    
+
     @Test
     public void testIncompleteRow() throws PlatformFileReadException {
-        CaArrayFile missingHeaderFile = fasStub.add(NimblegenArrayDesignFiles.INCOMPLETE_ROW_NDF); 
+        final CaArrayFile missingHeaderFile = this.fasStub.add(NimblegenArrayDesignFiles.INCOMPLETE_ROW_NDF);
         try {
-            handler.openFiles(Collections.singleton(missingHeaderFile));
-            ValidationResult result = new ValidationResult();
-            handler.validate(result);
-            FileValidationResult fvr = result.getFileValidationResult(NimblegenArrayDesignFiles.INCOMPLETE_ROW_NDF);
+            this.handler.openFiles(Collections.singleton(missingHeaderFile));
+            final ValidationResult result = new ValidationResult();
+            this.handler.validate(result);
+            final FileValidationResult fvr = result
+                    .getFileValidationResult(NimblegenArrayDesignFiles.INCOMPLETE_ROW_NDF);
             assertNotNull(fvr);
             assertEquals(1, fvr.getMessages().size());
-            ValidationMessage msg = fvr.getMessages().get(0);
+            final ValidationMessage msg = fvr.getMessages().get(0);
             assertEquals(ValidationMessage.Type.ERROR, msg.getType());
             assertEquals(8, msg.getLine());
             assertEquals(0, msg.getColumn());
             assertEquals("Row has incorrect number of columns. There were 11 columns in the row, "
                     + "and 12 columns in the header", msg.getMessage());
         } finally {
-            handler.closeFiles();
+            this.handler.closeFiles();
         }
     }
-    
+
     @Test
     public void testMissingColumnValue() throws PlatformFileReadException {
-        CaArrayFile missingHeaderFile = fasStub.add(NimblegenArrayDesignFiles.MISSING_COLUMN_VALUE_NDF); 
+        final CaArrayFile missingHeaderFile = this.fasStub.add(NimblegenArrayDesignFiles.MISSING_COLUMN_VALUE_NDF);
         try {
-            handler.openFiles(Collections.singleton(missingHeaderFile));
-            ValidationResult result = new ValidationResult();
-            handler.validate(result);
-            FileValidationResult fvr = result.getFileValidationResult(NimblegenArrayDesignFiles.MISSING_COLUMN_VALUE_NDF);
+            this.handler.openFiles(Collections.singleton(missingHeaderFile));
+            final ValidationResult result = new ValidationResult();
+            this.handler.validate(result);
+            final FileValidationResult fvr = result
+                    .getFileValidationResult(NimblegenArrayDesignFiles.MISSING_COLUMN_VALUE_NDF);
             assertNotNull(fvr);
             assertEquals(1, fvr.getMessages().size());
-            ValidationMessage msg = fvr.getMessages().get(0);
+            final ValidationMessage msg = fvr.getMessages().get(0);
             assertEquals(ValidationMessage.Type.ERROR, msg.getType());
             assertEquals(8, msg.getLine());
             assertEquals(2, msg.getColumn());
             assertEquals("Empty value for required column CONTAINER", msg.getMessage());
         } finally {
-            handler.closeFiles();
+            this.handler.closeFiles();
         }
     }
-    
+
     @Test
     public void testInvalidColumnValue() throws PlatformFileReadException {
-        CaArrayFile missingHeaderFile = fasStub.add(NimblegenArrayDesignFiles.INVALID_COLUMN_VALUE_NDF); 
+        final CaArrayFile missingHeaderFile = this.fasStub.add(NimblegenArrayDesignFiles.INVALID_COLUMN_VALUE_NDF);
         try {
-            handler.openFiles(Collections.singleton(missingHeaderFile));
-            ValidationResult result = new ValidationResult();
-            handler.validate(result);
-            FileValidationResult fvr = result.getFileValidationResult(NimblegenArrayDesignFiles.INVALID_COLUMN_VALUE_NDF);
+            this.handler.openFiles(Collections.singleton(missingHeaderFile));
+            final ValidationResult result = new ValidationResult();
+            this.handler.validate(result);
+            final FileValidationResult fvr = result
+                    .getFileValidationResult(NimblegenArrayDesignFiles.INVALID_COLUMN_VALUE_NDF);
             assertNotNull(fvr);
             assertEquals(1, fvr.getMessages().size());
-            ValidationMessage msg = fvr.getMessages().get(0);
+            final ValidationMessage msg = fvr.getMessages().get(0);
             assertEquals(ValidationMessage.Type.ERROR, msg.getType());
             assertEquals(8, msg.getLine());
             assertEquals(12, msg.getColumn());
             assertEquals("Expected integer value but found FOO for required column Y", msg.getMessage());
         } finally {
-            handler.closeFiles();
+            this.handler.closeFiles();
         }
     }
 }

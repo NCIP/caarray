@@ -84,7 +84,9 @@
 package gov.nih.nci.caarray.platforms.affymetrix;
 
 import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
+import gov.nih.nci.caarray.dataStorage.DataStorageFacade;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.data.AbstractDataColumn;
 import gov.nih.nci.caarray.domain.data.DataSet;
@@ -93,8 +95,6 @@ import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.data.ShortColumn;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
-import gov.nih.nci.caarray.platforms.MockFileManager;
-import gov.nih.nci.caarray.platforms.affymetrix.AffymetrixCelQuantitationType;
 import gov.nih.nci.caarray.platforms.spi.PlatformFileReadException;
 
 import java.io.ByteArrayOutputStream;
@@ -162,9 +162,10 @@ public class AffymetrixCelHandlerTest {
     }
 
     private void loadsCelFile(final File testFile) {
-        CaArrayFile caArrayFile = fileAccessServiceStub.add(testFile);
+        final CaArrayFile caArrayFile = this.fileAccessServiceStub.add(testFile);
 
-        final CelHandler affymetrixCelHandler = new CelHandler(new MockFileManager(fileAccessServiceStub));        
+        final DataStorageFacade dataStorageFacade = mock(DataStorageFacade.class);
+        final CelHandler affymetrixCelHandler = new CelHandler(dataStorageFacade);
         final DataSet dataSet = callLoadData(caArrayFile, affymetrixCelHandler);
         assertDataSetIsCorrect(dataSet);
     }
@@ -182,15 +183,15 @@ public class AffymetrixCelHandlerTest {
         addQuantitationType(AffymetrixCelQuantitationType.CEL_INTENSITY_STD_DEV, dataSet, quantitationTypes);
         addQuantitationType(AffymetrixCelQuantitationType.CEL_PIXELS, dataSet, quantitationTypes);
 
-        ArrayDesign design = new ArrayDesign();
+        final ArrayDesign design = new ArrayDesign();
         design.setName("Test3");
-        
+
         try {
             if (!affymetrixCelHandler.openFile(testFile)) {
                 fail("Affymetrix handler did not recognize " + testFile.getName() + " as valid CEL");
             }
             affymetrixCelHandler.loadData(dataSet, quantitationTypes, design);
-        } catch (PlatformFileReadException e) {
+        } catch (final PlatformFileReadException e) {
             fail("Could not open CEL file: " + e);
         } finally {
             affymetrixCelHandler.closeFiles();
@@ -199,7 +200,8 @@ public class AffymetrixCelHandlerTest {
         return dataSet;
     }
 
-    private void addQuantitationType(final AffymetrixCelQuantitationType affymetrixQuantitationType, final DataSet dataSet, final List<QuantitationType> quantitationTypes) {
+    private void addQuantitationType(final AffymetrixCelQuantitationType affymetrixQuantitationType,
+            final DataSet dataSet, final List<QuantitationType> quantitationTypes) {
         final QuantitationType quantitationType = new QuantitationType();
 
         quantitationType.setName(affymetrixQuantitationType.getName());
@@ -220,7 +222,8 @@ public class AffymetrixCelHandlerTest {
         assertColumnsHaveCorrectValues(xValues, yValues, intensityValues, stdDevValues, pixelValues);
     }
 
-    private void assertColumnsHaveCorrectNumberOfValues(final short[] xValues, final short[] yValues, final float[] intensityValues, final float[] stdDevValues, final short[] pixelValues) {
+    private void assertColumnsHaveCorrectNumberOfValues(final short[] xValues, final short[] yValues,
+            final float[] intensityValues, final float[] stdDevValues, final short[] pixelValues) {
         Assert.assertEquals(NumberOfCells, xValues.length);
         Assert.assertEquals(NumberOfCells, yValues.length);
         Assert.assertEquals(NumberOfCells, intensityValues.length);
@@ -228,7 +231,8 @@ public class AffymetrixCelHandlerTest {
         Assert.assertEquals(NumberOfCells, pixelValues.length);
     }
 
-    private void assertColumnsHaveCorrectValues(final short[] xValues, final short[] yValues, final float[] intensityValues, final float[] stdDevValues, final short[] pixelValues) {
+    private void assertColumnsHaveCorrectValues(final short[] xValues, final short[] yValues,
+            final float[] intensityValues, final float[] stdDevValues, final short[] pixelValues) {
         for (int y = 0; y < NumberOfColumns; y++) {
             for (int x = 0; x < NumberOfRows; x++) {
 
@@ -272,7 +276,8 @@ public class AffymetrixCelHandlerTest {
         return generateCelFile("command_console_version_1_test", new CommandConsoleVersion1CelFileContentsGenerator());
     }
 
-    private File generateCelFile(final String fileNamePrefix, final CelFileContentsGenerator contentsGenerator) throws IOException {
+    private File generateCelFile(final String fileNamePrefix, final CelFileContentsGenerator contentsGenerator)
+            throws IOException {
         final File testFile = File.createTempFile(fileNamePrefix, ".CEL");
         final FileOutputStream outputStream = new FileOutputStream(testFile);
 
@@ -326,7 +331,8 @@ public class AffymetrixCelHandlerTest {
             writer.println("swapXY=0");
             writer.println("DatHeader=" + DatHeader);
             writer.println("Algorithm=Percentile");
-            writer.format("AlgorithmParameters=Percentile:%d;CellMargin:%d;OutlierHigh:%.3f;OutlierLow:%.3f\n", Percentile, CellMargin, OutlierHigh, OutlierLow);
+            writer.format("AlgorithmParameters=Percentile:%d;CellMargin:%d;OutlierHigh:%.3f;OutlierLow:%.3f\n",
+                    Percentile, CellMargin, OutlierHigh, OutlierLow);
             writer.println();
             writer.println("[INTENSITY]");
             writer.format("NumberCells=%d\n", NumberOfCells);
@@ -380,7 +386,8 @@ public class AffymetrixCelHandlerTest {
             leDataStream.writeInt(header.length);
             leDataStream.write(header);
             writeString(leDataStream, "Percentile");
-            writeString(leDataStream, "Percentile:%d;CellMargin:%d;OutlierHigh:%.3f;OutlierLow:%.3f", Percentile, CellMargin, OutlierHigh, OutlierLow);
+            writeString(leDataStream, "Percentile:%d;CellMargin:%d;OutlierHigh:%.3f;OutlierLow:%.3f", Percentile,
+                    CellMargin, OutlierHigh, OutlierLow);
             leDataStream.writeInt(CellMargin);
             leDataStream.writeInt(NumberOfOutliers);
             leDataStream.writeInt(NumberOfMaskedCells);
@@ -420,7 +427,8 @@ public class AffymetrixCelHandlerTest {
             writer.println("swapXY=0");
             writer.println("DatHeader=" + DatHeader);
             writer.println("Algorithm=Percentile");
-            writer.format("AlgorithmParameters=Percentile:%d;CellMargin:%d;OutlierHigh:%.3f;OutlierLow:%.3f", Percentile, CellMargin, OutlierHigh, OutlierLow);
+            writer.format("AlgorithmParameters=Percentile:%d;CellMargin:%d;OutlierHigh:%.3f;OutlierLow:%.3f",
+                    Percentile, CellMargin, OutlierHigh, OutlierLow);
 
             writer.close();
             return byteArrayOutputStream.toByteArray();
@@ -431,12 +439,12 @@ public class AffymetrixCelHandlerTest {
             leDataStream.write(text.getBytes());
         }
 
-        private void writeString(final LEDataOutputStream leDataStream, final String format, final java.lang.Object... objects) throws IOException {
+        private void writeString(final LEDataOutputStream leDataStream, final String format,
+                final java.lang.Object... objects) throws IOException {
             final String text = String.format(format, objects);
             leDataStream.writeInt(text.length());
             leDataStream.write(text.getBytes());
         }
-
 
     }
 
@@ -468,19 +476,24 @@ public class AffymetrixCelHandlerTest {
                 WriteDataGroupHeader(dataSetFileOffsets[0], dataStream, numberOfDataSets);
 
                 dataSetFileOffsets[0] = getCurrentOffset(dataStream, byteArrayStream);
-                dataSetElementsFileOffsets[0] = WriteFirstDataSet(dataSetElementsFileOffsets[0], dataSetFileOffsets[1], byteArrayStream, dataStream);
+                dataSetElementsFileOffsets[0] = WriteFirstDataSet(dataSetElementsFileOffsets[0], dataSetFileOffsets[1],
+                        byteArrayStream, dataStream);
 
                 dataSetFileOffsets[1] = getCurrentOffset(dataStream, byteArrayStream);
-                dataSetElementsFileOffsets[1] = WriteSecondDataSet(dataSetElementsFileOffsets[1], dataSetFileOffsets[2], byteArrayStream, dataStream);
+                dataSetElementsFileOffsets[1] = WriteSecondDataSet(dataSetElementsFileOffsets[1],
+                        dataSetFileOffsets[2], byteArrayStream, dataStream);
 
                 dataSetFileOffsets[2] = getCurrentOffset(dataStream, byteArrayStream);
-                dataSetElementsFileOffsets[2] = WriteThirdDataSet(dataSetElementsFileOffsets[2], dataSetFileOffsets[3], byteArrayStream, dataStream);
+                dataSetElementsFileOffsets[2] = WriteThirdDataSet(dataSetElementsFileOffsets[2], dataSetFileOffsets[3],
+                        byteArrayStream, dataStream);
 
                 dataSetFileOffsets[3] = getCurrentOffset(dataStream, byteArrayStream);
-                dataSetElementsFileOffsets[3] = WriteFourthDataSet(dataSetElementsFileOffsets[3], dataSetFileOffsets[4], byteArrayStream, dataStream);
+                dataSetElementsFileOffsets[3] = WriteFourthDataSet(dataSetElementsFileOffsets[3],
+                        dataSetFileOffsets[4], byteArrayStream, dataStream);
 
                 dataSetFileOffsets[4] = getCurrentOffset(dataStream, byteArrayStream);
-                dataSetElementsFileOffsets[4] = WriteFifthDataSet(dataSetElementsFileOffsets[4], dataSetFileOffsets[5], byteArrayStream, dataStream);
+                dataSetElementsFileOffsets[4] = WriteFifthDataSet(dataSetElementsFileOffsets[4], dataSetFileOffsets[5],
+                        byteArrayStream, dataStream);
 
                 dataSetFileOffsets[5] = getCurrentOffset(dataStream, byteArrayStream);
 
@@ -491,7 +504,8 @@ public class AffymetrixCelHandlerTest {
             return contents;
         }
 
-        private void WriteFileHeader(final int dataGroupOffset, final DataOutputStream dataStream, final int numberOfDataGroups) throws IOException {
+        private void WriteFileHeader(final int dataGroupOffset, final DataOutputStream dataStream,
+                final int numberOfDataGroups) throws IOException {
             final int magicNumber = 59;
             final int fileVersion = 1;
 
@@ -590,7 +604,8 @@ public class AffymetrixCelHandlerTest {
             dataStream.writeInt(numberOfGreatGrandparentFileHeaders);
         }
 
-        private void WriteDataGroupHeader(final int nextDataSetFileOffset, final DataOutputStream dataStream, final int numberOfDataSets) throws IOException {
+        private void WriteDataGroupHeader(final int nextDataSetFileOffset, final DataOutputStream dataStream,
+                final int numberOfDataSets) throws IOException {
             final String dataGroupName = "Default Group";
             final int nextDataGroupFileOffset = 0; // Because there is no second data group, this is set to zero
 
@@ -600,7 +615,8 @@ public class AffymetrixCelHandlerTest {
             writeWideString(dataStream, dataGroupName);
         }
 
-        private int WriteFirstDataSet(int currentDataSetElementsFileOffset, final int nextDataSetFileOffset, final ByteArrayOutputStream byteArrayStream, final DataOutputStream dataStream) throws IOException {
+        private int WriteFirstDataSet(int currentDataSetElementsFileOffset, final int nextDataSetFileOffset,
+                final ByteArrayOutputStream byteArrayStream, final DataOutputStream dataStream) throws IOException {
             final String dataSetName = "Intensity";
 
             final int numberOfParameters = 0;
@@ -628,7 +644,8 @@ public class AffymetrixCelHandlerTest {
             return currentDataSetElementsFileOffset;
         }
 
-        private int WriteSecondDataSet(int currentDataSetElementsFileOffset, final int nextDataSetFileOffset, final ByteArrayOutputStream byteArrayStream, final DataOutputStream dataStream) throws IOException {
+        private int WriteSecondDataSet(int currentDataSetElementsFileOffset, final int nextDataSetFileOffset,
+                final ByteArrayOutputStream byteArrayStream, final DataOutputStream dataStream) throws IOException {
             final String dataSetName = "StdDev";
 
             final int numberOfParameters = 0;
@@ -656,7 +673,8 @@ public class AffymetrixCelHandlerTest {
             return currentDataSetElementsFileOffset;
         }
 
-        private int WriteThirdDataSet(int currentDataSetElementsFileOffset, final int nextDataSetFileOffset, final ByteArrayOutputStream byteArrayStream, final DataOutputStream dataStream) throws IOException {
+        private int WriteThirdDataSet(int currentDataSetElementsFileOffset, final int nextDataSetFileOffset,
+                final ByteArrayOutputStream byteArrayStream, final DataOutputStream dataStream) throws IOException {
             final String dataSetName = "Pixel";
 
             final int numberOfParameters = 0;
@@ -684,7 +702,8 @@ public class AffymetrixCelHandlerTest {
             return currentDataSetElementsFileOffset;
         }
 
-        private int WriteFourthDataSet(final int currentDataSetElementsFileOffset, int nextDataSetFileOffset, final ByteArrayOutputStream byteArrayStream, final DataOutputStream dataStream) throws IOException {
+        private int WriteFourthDataSet(final int currentDataSetElementsFileOffset, int nextDataSetFileOffset,
+                final ByteArrayOutputStream byteArrayStream, final DataOutputStream dataStream) throws IOException {
             final String dataSetName = "Outlier";
 
             final int numberOfParameters = 0;
@@ -710,7 +729,8 @@ public class AffymetrixCelHandlerTest {
             return nextDataSetFileOffset;
         }
 
-        private int WriteFifthDataSet(int currentDataSetElementsFileOffset, final int nextDataSetFileOffset, final ByteArrayOutputStream byteArrayStream, final DataOutputStream dataStream) throws IOException {
+        private int WriteFifthDataSet(int currentDataSetElementsFileOffset, final int nextDataSetFileOffset,
+                final ByteArrayOutputStream byteArrayStream, final DataOutputStream dataStream) throws IOException {
             final String dataSetName = "Mask";
 
             final int numberOfParameters = 0;
@@ -736,26 +756,30 @@ public class AffymetrixCelHandlerTest {
             return currentDataSetElementsFileOffset;
         }
 
-        private int getCurrentOffset(final DataOutputStream dataStream, final ByteArrayOutputStream byteArrayStream) throws IOException {
+        private int getCurrentOffset(final DataOutputStream dataStream, final ByteArrayOutputStream byteArrayStream)
+                throws IOException {
             int offset;
             dataStream.flush();
             offset = byteArrayStream.size();
             return offset;
         }
 
-        private void writePlainTextParameter(final DataOutputStream dataStream, final String name, final String value) throws IOException {
+        private void writePlainTextParameter(final DataOutputStream dataStream, final String name, final String value)
+                throws IOException {
             writeWideString(dataStream, name);
             dataStream.writeInt(value.length() * 2);
             dataStream.writeChars(value);
             writeWideString(dataStream, "text/plain");
         }
 
-        private void writeAsciiTextParameter(final DataOutputStream dataStream, final String name, final String format, final Object... objects) throws IOException {
+        private void writeAsciiTextParameter(final DataOutputStream dataStream, final String name, final String format,
+                final Object... objects) throws IOException {
             final String value = String.format(format, objects);
             writeAsciiTextParameter(dataStream, name, value);
         }
 
-        private void writeAsciiTextParameter(final DataOutputStream dataStream, final String name, final String value) throws IOException {
+        private void writeAsciiTextParameter(final DataOutputStream dataStream, final String name, final String value)
+                throws IOException {
             writeWideString(dataStream, name);
             writeString(dataStream, value);
             writeWideString(dataStream, "text/ascii");
@@ -771,7 +795,8 @@ public class AffymetrixCelHandlerTest {
             dataStream.writeChars(text);
         }
 
-        private void writeCalvinFloatTextParameter(final DataOutputStream dataStream, final String name, final float value) throws IOException {
+        private void writeCalvinFloatTextParameter(final DataOutputStream dataStream, final String name,
+                final float value) throws IOException {
             writeWideString(dataStream, name);
 
             final int valueSize = 16;
@@ -782,7 +807,8 @@ public class AffymetrixCelHandlerTest {
             writeWideString(dataStream, "text/x-calvin-float");
         }
 
-        private void writeCalvinInteger32Parameter(final DataOutputStream dataStream, final String name, final int value) throws IOException {
+        private void writeCalvinInteger32Parameter(final DataOutputStream dataStream, final String name, final int value)
+                throws IOException {
             writeWideString(dataStream, name);
 
             final int valueSize = 16;
@@ -793,7 +819,8 @@ public class AffymetrixCelHandlerTest {
             writeWideString(dataStream, "text/x-calvin-integer-32");
         }
 
-        private void writeCalvinUnsignedInteger8Parameter(final DataOutputStream dataStream, final String name, final int value) throws IOException {
+        private void writeCalvinUnsignedInteger8Parameter(final DataOutputStream dataStream, final String name,
+                final int value) throws IOException {
             writeWideString(dataStream, name);
 
             final int valueSize = 16;
@@ -810,7 +837,8 @@ public class AffymetrixCelHandlerTest {
             dataStream.writeInt(0);
         }
 
-        private void writeFloatColumnDescriptor(final DataOutputStream dataStream, final String columnName) throws IOException {
+        private void writeFloatColumnDescriptor(final DataOutputStream dataStream, final String columnName)
+                throws IOException {
             final int columnDataType = 6;
             final int columnDataTypeSize = 4;
 
@@ -819,7 +847,8 @@ public class AffymetrixCelHandlerTest {
             dataStream.writeInt(columnDataTypeSize);
         }
 
-        private void writeShortColumnDescriptor(final DataOutputStream dataStream, final String columnName) throws IOException {
+        private void writeShortColumnDescriptor(final DataOutputStream dataStream, final String columnName)
+                throws IOException {
             final int columnDataType = 2;
             final int columnDataTypeSize = 2;
 

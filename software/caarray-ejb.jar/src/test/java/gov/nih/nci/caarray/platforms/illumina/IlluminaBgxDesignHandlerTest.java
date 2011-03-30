@@ -1,4 +1,3 @@
-
 package gov.nih.nci.caarray.platforms.illumina;
 
 import static org.junit.Assert.assertEquals;
@@ -14,8 +13,6 @@ import gov.nih.nci.caarray.application.arraydesign.ArrayDesignServiceBean;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignServiceTest;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
-import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
-import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheStubFactory;
 import gov.nih.nci.caarray.application.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.application.vocabulary.VocabularyServiceStub;
 import gov.nih.nci.caarray.dao.ArrayDao;
@@ -23,6 +20,7 @@ import gov.nih.nci.caarray.dao.ContactDao;
 import gov.nih.nci.caarray.dao.JobQueueDao;
 import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.dao.VocabularyDao;
+import gov.nih.nci.caarray.dataStorage.DataStorageFacade;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
 import gov.nih.nci.caarray.domain.array.ExpressionProbeAnnotation;
@@ -36,7 +34,6 @@ import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.platforms.LocalSessionTransactionManager;
-import gov.nih.nci.caarray.platforms.MockFileManager;
 import gov.nih.nci.caarray.platforms.spi.PlatformFileReadException;
 import gov.nih.nci.caarray.staticinjection.CaArrayEjbStaticInjectionModule;
 import gov.nih.nci.caarray.test.data.arraydesign.IlluminaArrayDesignFiles;
@@ -50,11 +47,8 @@ import gov.nih.nci.caarray.validation.ValidationResult;
 import java.io.File;
 import java.util.Collections;
 import java.util.Set;
-import java.util.TreeSet;
 
 import org.hibernate.Transaction;
-import org.hibernate.validator.InvalidStateException;
-import org.hibernate.validator.InvalidValue;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -67,12 +61,12 @@ import com.google.inject.Module;
 import com.google.inject.util.Modules;
 
 /**
- *
+ * 
  * @author gax
  */
 public class IlluminaBgxDesignHandlerTest extends AbstractServiceTest {
     private static Injector injector;
-    private static CaArrayHibernateHelper hibernateHelper; 
+    private static CaArrayHibernateHelper hibernateHelper;
 
     private ArrayDesignService arrayDesignService;
     private final static ArrayDesignServiceTest.LocalDaoFactoryStub caArrayDaoFactoryStub = new ArrayDesignServiceTest.LocalDaoFactoryStub();
@@ -83,18 +77,18 @@ public class IlluminaBgxDesignHandlerTest extends AbstractServiceTest {
     private static Organism DUMMY_ORGANISM = new Organism();
     private static Term DUMMY_TERM = new Term();
     private static AssayType DUMMY_ASSAY_TYPE = new AssayType("microRNA");
-    
+
     /**
-     * post-construct lifecycle method; intializes the Guice injector that will provide dependencies. 
+     * post-construct lifecycle method; intializes the Guice injector that will provide dependencies.
      */
     @BeforeClass
     public static void init() {
         injector = createInjector();
         hibernateHelper = injector.getInstance(CaArrayHibernateHelper.class);
-        
+
         createDummies();
     }
-    
+
     /**
      * @return a Guice injector from which this will obtain dependencies.
      */
@@ -108,27 +102,27 @@ public class IlluminaBgxDesignHandlerTest extends AbstractServiceTest {
                 bind(SearchDao.class).toInstance(caArrayDaoFactoryStub.getSearchDao());
                 bind(ArrayDao.class).toInstance(caArrayDaoFactoryStub.getArrayDao());
                 bind(VocabularyDao.class).toInstance(caArrayDaoFactoryStub.getVocabularyDao());
-                
+
                 bind(ArrayDesignService.class).to(ArrayDesignServiceBean.class);
             }
         });
         return Guice.createInjector(new CaArrayEjbStaticInjectionModule(), new CaArrayHibernateHelperModule(),
                 testArrayDesignModule);
     }
-    
-     public static void createDummies() {
+
+    public static void createDummies() {
         DUMMY_ORGANIZATION.setName("DummyOrganization");
         DUMMY_ORGANISM.setScientificName("Homo sapiens");
-        TermSource ts = new TermSource();
+        final TermSource ts = new TermSource();
         ts.setName("TS 1");
-        Category cat = new Category();
+        final Category cat = new Category();
         cat.setName("catName");
         cat.setSource(ts);
         DUMMY_ORGANISM.setTermSource(ts);
         DUMMY_TERM.setValue("testval");
         DUMMY_TERM.setCategory(cat);
         DUMMY_TERM.setSource(ts);
-        Transaction transaction = hibernateHelper.beginTransaction();
+        final Transaction transaction = hibernateHelper.beginTransaction();
         hibernateHelper.getCurrentSession().save(DUMMY_ASSAY_TYPE);
         transaction.commit();
     }
@@ -136,24 +130,22 @@ public class IlluminaBgxDesignHandlerTest extends AbstractServiceTest {
     @Before
     public void setUp() {
         hibernateHelper.setFiltersEnabled(false);
-        arrayDesign = new ArrayDesign();
-        arrayDesign.setName("foo"+System.identityHashCode(arrayDesign));
-        arrayDesign.setVersion("ver");
-        arrayDesign.setTechnologyType(DUMMY_TERM);
-        arrayDesign.setOrganism(DUMMY_ORGANISM);
-        arrayDesign.setProvider(DUMMY_ORGANIZATION);
-        arrayDesign.getAssayTypes().add(DUMMY_ASSAY_TYPE);
-        arrayDesign.setTechnologyType(DUMMY_TERM);
+        this.arrayDesign = new ArrayDesign();
+        this.arrayDesign.setName("foo" + System.identityHashCode(this.arrayDesign));
+        this.arrayDesign.setVersion("ver");
+        this.arrayDesign.setTechnologyType(DUMMY_TERM);
+        this.arrayDesign.setOrganism(DUMMY_ORGANISM);
+        this.arrayDesign.setProvider(DUMMY_ORGANIZATION);
+        this.arrayDesign.getAssayTypes().add(DUMMY_ASSAY_TYPE);
+        this.arrayDesign.setTechnologyType(DUMMY_TERM);
         this.arrayDesignService = createArrayDesignService(injector);
     }
-    
-    public ArrayDesignService createArrayDesignService(final Injector injector) {       
+
+    public ArrayDesignService createArrayDesignService(final Injector injector) {
         final ArrayDesignServiceBean bean = (ArrayDesignServiceBean) injector.getInstance(ArrayDesignService.class);
         final ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
-        locatorStub.addLookup(FileAccessService.JNDI_NAME, fileAccessServiceStub);
+        locatorStub.addLookup(FileAccessService.JNDI_NAME, this.fileAccessServiceStub);
         locatorStub.addLookup(VocabularyService.JNDI_NAME, new VocabularyServiceStub());
-        TemporaryFileCacheLocator.setTemporaryFileCacheFactory(new TemporaryFileCacheStubFactory(fileAccessServiceStub));
-        TemporaryFileCacheLocator.resetTemporaryFileCache();
         return bean;
     }
 
@@ -163,14 +155,14 @@ public class IlluminaBgxDesignHandlerTest extends AbstractServiceTest {
     }
 
     private CaArrayFile getFile(File f) {
-        return fileAccessServiceStub.add(f);
+        return this.fileAccessServiceStub.add(f);
     }
 
     private BgxDesignHandler getHandler(File f) throws PlatformFileReadException {
-        BgxDesignHandler h = new BgxDesignHandler(new LocalSessionTransactionManager(),
-                new MockFileManager(fileAccessServiceStub), caArrayDaoFactoryStub.getArrayDao(), caArrayDaoFactoryStub
-                        .getSearchDao());
-        h.openFiles(Collections.singleton(getFile(f)));        
+        final DataStorageFacade dataStorageFacade = mock(DataStorageFacade.class);
+        final BgxDesignHandler h = new BgxDesignHandler(new LocalSessionTransactionManager(), dataStorageFacade,
+                caArrayDaoFactoryStub.getArrayDao(), caArrayDaoFactoryStub.getSearchDao());
+        h.openFiles(Collections.singleton(getFile(f)));
         return h;
     }
 
@@ -178,85 +170,94 @@ public class IlluminaBgxDesignHandlerTest extends AbstractServiceTest {
     public void testImportDesignDetails_IlluminaHUMANWG_6_V2_0_R3_11223189_A_BGX() {
         this.transaction = hibernateHelper.beginTransaction();
 
-        CaArrayFile designFile = getFile(IlluminaArrayDesignFiles.HUMANWG_6_V2_0_R3_11223189_A_BGX);
-        arrayDesign.addDesignFile(designFile);
-        arrayDesignService.importDesign(arrayDesign);
-        arrayDesignService.importDesignDetails(arrayDesign);
-        assertTrue(48701 + 1426 == arrayDesign.getDesignDetails().getProbes().size());
+        final CaArrayFile designFile = getFile(IlluminaArrayDesignFiles.HUMANWG_6_V2_0_R3_11223189_A_BGX);
+        this.arrayDesign.addDesignFile(designFile);
+        this.arrayDesignService.importDesign(this.arrayDesign);
+        this.arrayDesignService.importDesignDetails(this.arrayDesign);
+        assertTrue(48701 + 1426 == this.arrayDesign.getDesignDetails().getProbes().size());
         int mainCount = 0, contolCount = 0;
-        for (PhysicalProbe probe : arrayDesign.getDesignDetails().getProbes()) {
+        for (final PhysicalProbe probe : this.arrayDesign.getDesignDetails().getProbes()) {
             assertNotNull(probe);
             assertNotNull(probe.getName());
             assertNotNull(probe.getAnnotation());
-            ExpressionProbeAnnotation annotation = (ExpressionProbeAnnotation) probe.getAnnotation();
-            Gene gene = annotation.getGene();
+            final ExpressionProbeAnnotation annotation = (ExpressionProbeAnnotation) probe.getAnnotation();
+            final Gene gene = annotation.getGene();
             assertNotNull(gene);
-            assertEquals(arrayDesign.getDesignDetails(), probe.getArrayDesignDetails());
+            assertEquals(this.arrayDesign.getDesignDetails(), probe.getArrayDesignDetails());
             if (probe.getProbeGroup() != null) {
                 assertNotNull("null probe group", probe.getProbeGroup());
-            if (probe.getProbeGroup().getName().equals("Control")) contolCount ++;
-            else if (probe.getProbeGroup().getName().equals("Main")) mainCount ++;
-            else fail("unexpected group name "+probe.getProbeGroup().getName());
+                if (probe.getProbeGroup().getName().equals("Control")) {
+                    contolCount++;
+                } else if (probe.getProbeGroup().getName().equals("Main")) {
+                    mainCount++;
+                } else {
+                    fail("unexpected group name " + probe.getProbeGroup().getName());
+                }
             }
         }
         assertTrue(48701 == mainCount);
         assertTrue(1426 == contolCount);
-        
-        transaction.rollback();
+
+        this.transaction.rollback();
     }
-    
+
     @Test
     public void testLoad() throws PlatformFileReadException {
         this.transaction = hibernateHelper.beginTransaction();
-        File f = IlluminaArrayDesignFiles.HUMANWG_6_V2_0_R3_11223189_A_BGX;
-        BgxDesignHandler instance = getHandler(f);
-        instance.load(arrayDesign);
-        assertEquals("HumanWG-6_V2_0_R3_11223189_A", arrayDesign.getName());
-        assertEquals("URN:LSID:illumina.com:PhysicalArrayDesign:HumanWG-6_V2_0_R3_11223189_A", arrayDesign.getLsid());
-        assertEquals(new Integer(48701 + 1426), arrayDesign.getNumberOfFeatures());
+        final File f = IlluminaArrayDesignFiles.HUMANWG_6_V2_0_R3_11223189_A_BGX;
+        final BgxDesignHandler instance = getHandler(f);
+        instance.load(this.arrayDesign);
+        assertEquals("HumanWG-6_V2_0_R3_11223189_A", this.arrayDesign.getName());
+        assertEquals("URN:LSID:illumina.com:PhysicalArrayDesign:HumanWG-6_V2_0_R3_11223189_A",
+                this.arrayDesign.getLsid());
+        assertEquals(new Integer(48701 + 1426), this.arrayDesign.getNumberOfFeatures());
         this.transaction.rollback();
     }
 
     @Test
     public void testCreateDesignDetails() throws PlatformFileReadException {
         this.transaction = hibernateHelper.beginTransaction();
-        File f = IlluminaArrayDesignFiles.HUMANWG_6_V2_0_R3_11223189_A_BGX;
-        CaArrayFile caArrayDesignFile = this.fileAccessServiceStub.add(f);
+        final File f = IlluminaArrayDesignFiles.HUMANWG_6_V2_0_R3_11223189_A_BGX;
+        final CaArrayFile caArrayDesignFile = this.fileAccessServiceStub.add(f);
         caArrayDesignFile.setFileType(FileType.ILLUMINA_DESIGN_BGX);
-        arrayDesign.addDesignFile(caArrayDesignFile);
-        hibernateHelper.getCurrentSession().save(arrayDesign);
+        this.arrayDesign.addDesignFile(caArrayDesignFile);
+        hibernateHelper.getCurrentSession().save(this.arrayDesign);
         hibernateHelper.getCurrentSession().flush();
-        BgxDesignHandler instance = getHandler(f);
-        instance.createDesignDetails(arrayDesign);
-        ArrayDesignDetails details = arrayDesign.getDesignDetails();
+        final BgxDesignHandler instance = getHandler(f);
+        instance.createDesignDetails(this.arrayDesign);
+        final ArrayDesignDetails details = this.arrayDesign.getDesignDetails();
         assertNotNull(details);
-        Set<PhysicalProbe> probes = details.getProbes();
+        final Set<PhysicalProbe> probes = details.getProbes();
         int mainCount = 0, contolCount = 0;
-        for (PhysicalProbe p : probes) {
+        for (final PhysicalProbe p : probes) {
             assertNotNull("null probe group", p.getProbeGroup());
-            if (p.getProbeGroup().getName().equals("Control")) contolCount ++;
-            else if (p.getProbeGroup().getName().equals("Main")) mainCount ++;
-            else fail("unexpected group name "+p.getProbeGroup().getName());
+            if (p.getProbeGroup().getName().equals("Control")) {
+                contolCount++;
+            } else if (p.getProbeGroup().getName().equals("Main")) {
+                mainCount++;
+            } else {
+                fail("unexpected group name " + p.getProbeGroup().getName());
+            }
         }
         assertTrue(48701 == mainCount);
         assertTrue(1426 == contolCount);
-        transaction.rollback();
+        this.transaction.rollback();
     }
 
     @Test
     public void testValidate() throws PlatformFileReadException {
         this.transaction = hibernateHelper.beginTransaction();
-        File f = IlluminaArrayDesignFiles.HUMANWG_6_V2_0_R3_11223189_A_BGX;
-        BgxDesignHandler instance = getHandler(f);
-        ValidationResult result = new ValidationResult();
+        final File f = IlluminaArrayDesignFiles.HUMANWG_6_V2_0_R3_11223189_A_BGX;
+        final BgxDesignHandler instance = getHandler(f);
+        final ValidationResult result = new ValidationResult();
         instance.validate(result);
 
-        for (ValidationMessage m : result.getMessages()) {
+        for (final ValidationMessage m : result.getMessages()) {
             System.out.println(m.getMessage());
         }
         assertTrue(result.isValid());
         assertTrue(result.getMessages().isEmpty());
-        transaction.rollback();
+        this.transaction.rollback();
     }
 
 }
