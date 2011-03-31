@@ -89,8 +89,6 @@ import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.application.AbstractServiceIntegrationTest;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
-import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
-import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheStubFactory;
 import gov.nih.nci.caarray.application.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.application.vocabulary.VocabularyServiceStub;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
@@ -141,9 +139,9 @@ public class ArrayDesignServiceIntegrationTest extends AbstractServiceIntegratio
 
         DUMMY_ORGANIZATION.setName("DummyOrganization");
         DUMMY_ORGANISM.setScientificName("Homo sapiens");
-        TermSource ts = new TermSource();
+        final TermSource ts = new TermSource();
         ts.setName("TS 1");
-        Category cat = new Category();
+        final Category cat = new Category();
         cat.setName("catName");
         cat.setSource(ts);
         DUMMY_ORGANISM.setTermSource(ts);
@@ -164,45 +162,44 @@ public class ArrayDesignServiceIntegrationTest extends AbstractServiceIntegratio
 
     private ArrayDesignService createArrayDesignService(final FileAccessServiceStub fileAccessServiceStub,
             VocabularyServiceStub vocabularyServiceStub) {
-        ArrayDesignServiceBean bean = (ArrayDesignServiceBean) injector.getInstance(ArrayDesignService.class);
-        ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
+        final ArrayDesignServiceBean bean = (ArrayDesignServiceBean) this.injector
+                .getInstance(ArrayDesignService.class);
+        final ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
         locatorStub.addLookup(FileAccessService.JNDI_NAME, fileAccessServiceStub);
         locatorStub.addLookup(VocabularyService.JNDI_NAME, vocabularyServiceStub);
-        TemporaryFileCacheLocator.setTemporaryFileCacheFactory(new TemporaryFileCacheStubFactory(fileAccessServiceStub));
-        TemporaryFileCacheLocator.resetTemporaryFileCache();
 
         return bean;
     }
-    
+
     @Override
     protected Injector createInjector() {
         return InjectorFactory.getInjector();
     }
 
     private ArrayDesign setupAndSaveDesign(File... designFiles) throws IllegalAccessException, InvalidDataFileException {
-        hibernateHelper.getCurrentSession().save(DUMMY_ORGANIZATION);
-        hibernateHelper.getCurrentSession().save(DUMMY_ORGANISM);
-        hibernateHelper.getCurrentSession().save(DUMMY_TERM);
-        hibernateHelper.getCurrentSession().save(DUMMY_ASSAY_TYPE);
+        this.hibernateHelper.getCurrentSession().save(DUMMY_ORGANIZATION);
+        this.hibernateHelper.getCurrentSession().save(DUMMY_ORGANISM);
+        this.hibernateHelper.getCurrentSession().save(DUMMY_TERM);
+        this.hibernateHelper.getCurrentSession().save(DUMMY_ASSAY_TYPE);
 
-        ArrayDesign design = new ArrayDesign();
+        final ArrayDesign design = new ArrayDesign();
         design.setName("DummyTestArrayDesign1");
         design.setVersion("2.0");
         design.setProvider(DUMMY_ORGANIZATION);
         design.setLsidForEntity("authority:namespace:" + designFiles[0].getName());
         design.getAssayTypes().add(DUMMY_ASSAY_TYPE);
-        Set<AssayType> assayTypes = new TreeSet<AssayType>();
+        final Set<AssayType> assayTypes = new TreeSet<AssayType>();
         assayTypes.add(DUMMY_ASSAY_TYPE);
-        for (File designFile : designFiles) {
+        for (final File designFile : designFiles) {
             design.addDesignFile(getCaArrayFile(designFile));
         }
         design.setTechnologyType(DUMMY_TERM);
         design.setOrganism(DUMMY_ORGANISM);
         try {
             this.arrayDesignService.saveArrayDesign(design);
-        } catch (InvalidStateException e) {
+        } catch (final InvalidStateException e) {
             e.printStackTrace();
-            for (InvalidValue iv : e.getInvalidValues()) {
+            for (final InvalidValue iv : e.getInvalidValues()) {
                 System.out.println("Invalid value: " + iv);
             }
         }
@@ -211,44 +208,44 @@ public class ArrayDesignServiceIntegrationTest extends AbstractServiceIntegratio
 
     @Test
     public void testDeleteArrayDesign() throws Exception {
-        Transaction t = hibernateHelper.beginTransaction();
+        Transaction t = this.hibernateHelper.beginTransaction();
         ArrayDesign design = setupAndSaveDesign(AffymetrixArrayDesignFiles.TEST3_CDF);
         this.arrayDesignService.importDesign(design);
         this.arrayDesignService.importDesignDetails(design);
-        Long id = design.getId();
+        final Long id = design.getId();
         t.commit();
 
-        t = hibernateHelper.beginTransaction();
-        int size = hibernateHelper.getCurrentSession().createCriteria(ArrayDesign.class).list().size();
+        t = this.hibernateHelper.beginTransaction();
+        final int size = this.hibernateHelper.getCurrentSession().createCriteria(ArrayDesign.class).list().size();
         design = this.arrayDesignService.getArrayDesign(id);
-        Long detailsId = design.getDesignDetails().getId();
+        final Long detailsId = design.getDesignDetails().getId();
         this.arrayDesignService.deleteArrayDesign(design);
         t.commit();
 
-        t = hibernateHelper.beginTransaction();
-        assertEquals(size - 1, hibernateHelper.getCurrentSession().createCriteria(ArrayDesign.class).list().size());
-        ArrayDesignDetails details = (ArrayDesignDetails) hibernateHelper.getCurrentSession().get(
+        t = this.hibernateHelper.beginTransaction();
+        assertEquals(size - 1, this.hibernateHelper.getCurrentSession().createCriteria(ArrayDesign.class).list().size());
+        final ArrayDesignDetails details = (ArrayDesignDetails) this.hibernateHelper.getCurrentSession().get(
                 ArrayDesignDetails.class, detailsId);
         assertNull(details);
-        assertTrue(hibernateHelper.getCurrentSession().createCriteria(CaArrayFile.class).list().isEmpty());
+        assertTrue(this.hibernateHelper.getCurrentSession().createCriteria(CaArrayFile.class).list().isEmpty());
         t.commit();
     }
 
     @Test(expected = ArrayDesignDeleteException.class)
     public void testDeleteArrayDesignLocked() throws ArrayDesignDeleteException {
-       ArrayDesignService arrayDesignService = new ArrayDesignServiceLocal();
-       ArrayDesign design = DUMMY_ARRAY_DESIGN;
-       arrayDesignService.deleteArrayDesign(design);
+        final ArrayDesignService arrayDesignService = new ArrayDesignServiceLocal();
+        final ArrayDesign design = DUMMY_ARRAY_DESIGN;
+        arrayDesignService.deleteArrayDesign(design);
     }
 
     @Test(expected = ArrayDesignDeleteException.class)
     public void testDeleteArrayDesignImporting() throws ArrayDesignDeleteException {
-        ArrayDesignService arrayDesignService = new ArrayDesignServiceLocal();
+        final ArrayDesignService arrayDesignService = new ArrayDesignServiceLocal();
         DUMMY_ARRAY_DESIGN.getFirstDesignFile().setFileStatus(FileStatus.IMPORTING);
         arrayDesignService.deleteArrayDesign(DUMMY_ARRAY_DESIGN);
     }
 
-    private class ArrayDesignServiceLocal extends ArrayDesignServiceBean {        
+    private class ArrayDesignServiceLocal extends ArrayDesignServiceBean {
         @Override
         public boolean isArrayDesignLocked(Long id) {
             return true;
@@ -259,17 +256,17 @@ public class ArrayDesignServiceIntegrationTest extends AbstractServiceIntegratio
     public void testImportDesignDetails_AffymetrixTest3() throws Exception {
         Transaction t = null;
         try {
-            t = hibernateHelper.beginTransaction();
+            t = this.hibernateHelper.beginTransaction();
             ArrayDesign design = setupAndSaveDesign(AffymetrixArrayDesignFiles.TEST3_CDF);
             t.commit();
 
-            t = hibernateHelper.beginTransaction();
+            t = this.hibernateHelper.beginTransaction();
             this.arrayDesignService.importDesign(design);
             this.arrayDesignService.importDesignDetails(design);
             t.commit();
 
-            t = hibernateHelper.beginTransaction();
-            design = arrayDesignService.getArrayDesign(design.getId());
+            t = this.hibernateHelper.beginTransaction();
+            design = this.arrayDesignService.getArrayDesign(design.getId());
             assertEquals("Test3", design.getName());
             assertEquals("Affymetrix.com", design.getLsidAuthority());
             assertEquals("PhysicalArrayDesign", design.getLsidNamespace());
@@ -280,13 +277,13 @@ public class ArrayDesignServiceIntegrationTest extends AbstractServiceIntegratio
             assertEquals(15876, design.getNumberOfFeatures().intValue());
 
             // now try to re-import the design over itself
-            t = hibernateHelper.beginTransaction();
+            t = this.hibernateHelper.beginTransaction();
             this.arrayDesignService.importDesign(design);
             this.arrayDesignService.importDesignDetails(design);
             t.commit();
 
-            t = hibernateHelper.beginTransaction();
-            design = arrayDesignService.getArrayDesign(design.getId());
+            t = this.hibernateHelper.beginTransaction();
+            design = this.arrayDesignService.getArrayDesign(design.getId());
             assertEquals("Test3", design.getName());
             assertEquals("Affymetrix.com", design.getLsidAuthority());
             assertEquals("PhysicalArrayDesign", design.getLsidNamespace());
@@ -295,7 +292,7 @@ public class ArrayDesignServiceIntegrationTest extends AbstractServiceIntegratio
             t.commit();
 
             assertEquals(15876, design.getNumberOfFeatures().intValue());
-        } catch (Exception e) {
+        } catch (final Exception e) {
             if (t != null && t.isActive()) {
                 t.rollback();
             }
@@ -304,7 +301,7 @@ public class ArrayDesignServiceIntegrationTest extends AbstractServiceIntegratio
     }
 
     private CaArrayFile getCaArrayFile(File file) {
-        CaArrayFile caArrayFile = this.fileAccessServiceStub.add(file);
+        final CaArrayFile caArrayFile = this.fileAccessServiceStub.add(file);
         return caArrayFile;
     }
 
@@ -312,22 +309,22 @@ public class ArrayDesignServiceIntegrationTest extends AbstractServiceIntegratio
     public void testImportDesignDetails_AffymetrixHuEx() throws Exception {
         Transaction t = null;
         try {
-            t = hibernateHelper.beginTransaction();
+            t = this.hibernateHelper.beginTransaction();
             ArrayDesign design = setupAndSaveDesign(AffymetrixArrayDesignFiles.HUEX_TEST_CLF,
                     AffymetrixArrayDesignFiles.HUEX_TEST_PGF);
             t.commit();
 
-            t = hibernateHelper.beginTransaction();
+            t = this.hibernateHelper.beginTransaction();
             this.arrayDesignService.importDesign(design);
             this.arrayDesignService.importDesignDetails(design);
-            hibernateHelper.getCurrentSession().getTransaction().commit();
+            this.hibernateHelper.getCurrentSession().getTransaction().commit();
 
             assertEquals("HuEx-1_0-st-v1-test", design.getName());
             assertEquals("Affymetrix.com", design.getLsidAuthority());
             assertEquals("PhysicalArrayDesign", design.getLsidNamespace());
             assertEquals("HuEx-1_0-st-v1-test", design.getLsidObjectId());
 
-            t = hibernateHelper.beginTransaction();
+            t = this.hibernateHelper.beginTransaction();
             design = this.arrayDesignService.getArrayDesign(design.getId());
             assertEquals(1024, design.getNumberOfFeatures().intValue());
             assertEquals(94, design.getDesignDetails().getLogicalProbes().size());
@@ -335,10 +332,10 @@ public class ArrayDesignServiceIntegrationTest extends AbstractServiceIntegratio
             assertEquals(1024, design.getDesignDetails().getFeatures().size());
             t.commit();
 
-            t = hibernateHelper.beginTransaction();
+            t = this.hibernateHelper.beginTransaction();
             design = this.arrayDesignService.getArrayDesign(design.getId());
-            ArrayDesign otherDesign = this.arrayDesignService.getArrayDesign("Affymetrix.com", "PhysicalArrayDesign",
-                    "HuEx-1_0-st-ta1-test");
+            final ArrayDesign otherDesign = this.arrayDesignService.getArrayDesign("Affymetrix.com",
+                    "PhysicalArrayDesign", "HuEx-1_0-st-ta1-test");
             assertEquals("HuEx-1_0-st-ta1-test", otherDesign.getName());
             assertEquals("Affymetrix.com", otherDesign.getLsidAuthority());
             assertEquals("PhysicalArrayDesign", otherDesign.getLsidNamespace());
@@ -348,12 +345,12 @@ public class ArrayDesignServiceIntegrationTest extends AbstractServiceIntegratio
             assertEquals(364, otherDesign.getDesignDetails().getProbes().size());
             assertEquals(1024, otherDesign.getDesignDetails().getFeatures().size());
             assertEquals(2, otherDesign.getDesignFiles().size());
-            for (CaArrayFile designFile : design.getDesignFiles()) {
+            for (final CaArrayFile designFile : design.getDesignFiles()) {
                 assertTrue(otherDesign.getDesignFiles().contains(designFile));
             }
             t.commit();
 
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
             if (t != null && t.isActive()) {
                 t.rollback();

@@ -89,13 +89,10 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import gov.nih.nci.caarray.application.AbstractServiceTest;
-import gov.nih.nci.caarray.application.TemporaryCacheFileManager;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignServiceBean;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
-import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
-import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheStubFactory;
 import gov.nih.nci.caarray.application.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.application.vocabulary.VocabularyServiceStub;
 import gov.nih.nci.caarray.dao.ArrayDao;
@@ -126,7 +123,6 @@ import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.magetab.MageTabParsingException;
-import gov.nih.nci.caarray.platforms.FileManager;
 import gov.nih.nci.caarray.platforms.LocalSessionTransactionManager;
 import gov.nih.nci.caarray.platforms.PlatformModule;
 import gov.nih.nci.caarray.platforms.SessionTransactionManager;
@@ -158,7 +154,6 @@ import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.multibindings.Multibinder;
 
-
 /**
  * Tests the ArrayDataService subsystem
  */
@@ -167,7 +162,7 @@ public class ArrayDataServiceTest extends AbstractServiceTest {
     private static final String AFFY_TEST3_LSID_OBJECT_ID = "Test3";
     private static final String HG_FOCUS_LSID_OBJECT_ID = "HG-Focus";
     private static final String AGILENT_ACGH_LSID_OBJECT_ID = "Agilent-aCGH";
-    
+
     private static final DataImportOptions DEFAULT_IMPORT_OPTIONS = DataImportOptions.getAutoCreatePerFileOptions();
 
     public ArrayDataService arrayDataService;
@@ -175,53 +170,51 @@ public class ArrayDataServiceTest extends AbstractServiceTest {
     LocalDaoFactoryStub daoFactoryStub = new LocalDaoFactoryStub();
     LocalSearchDaoStub searchDaoStub = new LocalSearchDaoStub();
     VocabularyServiceStub vocabularyServiceStub = new VocabularyServiceStub();
-    
+
     private long fileIdCounter = 1;
 
     @Before
     public void setUp() throws Exception {
-        ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
+        final ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
         locatorStub.addLookup(FileAccessService.JNDI_NAME, this.fileAccessServiceStub);
-        locatorStub.addLookup(VocabularyService.JNDI_NAME, vocabularyServiceStub);
+        locatorStub.addLookup(VocabularyService.JNDI_NAME, this.vocabularyServiceStub);
 
         final Module testModule = new AbstractModule() {
             @Override
             protected void configure() {
                 bind(ContactDao.class).toInstance(new ContactDaoStub());
-                bind(SearchDao.class).toInstance(daoFactoryStub.getSearchDao());
-                bind(ArrayDao.class).toInstance(daoFactoryStub.getArrayDao());
-                bind(VocabularyService.class).toInstance(vocabularyServiceStub);
-                bind(FileManager.class).toInstance(new TemporaryCacheFileManager());
+                bind(SearchDao.class).toInstance(ArrayDataServiceTest.this.daoFactoryStub.getSearchDao());
+                bind(ArrayDao.class).toInstance(ArrayDataServiceTest.this.daoFactoryStub.getArrayDao());
+                bind(VocabularyService.class).toInstance(ArrayDataServiceTest.this.vocabularyServiceStub);
                 bind(VocabularyDao.class).toInstance(new VocabularyDaoStub());
                 bind(SessionTransactionManager.class).to(LocalSessionTransactionManager.class).asEagerSingleton();
-                
-                Multibinder<ArrayDataTypeDescriptor> arrayDataDescriptorBinder = Multibinder.newSetBinder(binder(),
-                        ArrayDataTypeDescriptor.class);       
+
+                final Multibinder<ArrayDataTypeDescriptor> arrayDataDescriptorBinder = Multibinder.newSetBinder(
+                        binder(), ArrayDataTypeDescriptor.class);
                 arrayDataDescriptorBinder.addBinding().toInstance(TestArrayDescriptor.INSTANCE);
-                
+
                 install(new PlatformModule());
                 bind(ArrayDesignService.class).to(ArrayDesignServiceBean.class);
                 bind(ArrayDataService.class).to(ArrayDataServiceBean.class);
-           }
+            }
         };
-        
-        final Injector injector = Guice.createInjector(new CaArrayEjbStaticInjectionModule(), new CaArrayHibernateHelperModule(),
-                testModule);
-      
-        final ArrayDesignServiceBean arrayDesignServiceBean =
-            (ArrayDesignServiceBean) injector.getInstance(ArrayDesignService.class);
+
+        final Injector injector = Guice.createInjector(new CaArrayEjbStaticInjectionModule(),
+                new CaArrayHibernateHelperModule(), testModule);
+
+        final ArrayDesignServiceBean arrayDesignServiceBean = (ArrayDesignServiceBean) injector
+                .getInstance(ArrayDesignService.class);
 
         locatorStub.addLookup(ArrayDesignService.JNDI_NAME, arrayDesignServiceBean);
-        
-        final ArrayDataServiceBean arrayDataServiceBean = (ArrayDataServiceBean) injector.getInstance(ArrayDataService.class);
+
+        final ArrayDataServiceBean arrayDataServiceBean = (ArrayDataServiceBean) injector
+                .getInstance(ArrayDataService.class);
 
         this.arrayDataService = arrayDataServiceBean;
-        TemporaryFileCacheLocator.setTemporaryFileCacheFactory(new TemporaryFileCacheStubFactory(this.fileAccessServiceStub));
-        TemporaryFileCacheLocator.resetTemporaryFileCache();
-        fileAccessServiceStub.add(AffymetrixArrayDesignFiles.TEST3_CDF);
-        fileAccessServiceStub.add(AffymetrixArrayDesignFiles.TEN_K_CDF);
+        this.fileAccessServiceStub.add(AffymetrixArrayDesignFiles.TEST3_CDF);
+        this.fileAccessServiceStub.add(AffymetrixArrayDesignFiles.TEN_K_CDF);
     }
-    
+
     @Test
     public void testInitialize() {
         this.arrayDataService.initialize();
@@ -233,10 +226,12 @@ public class ArrayDataServiceTest extends AbstractServiceTest {
     public void testImportRawAndDerivedSameName() throws InvalidDataFileException {
         // tests that imports of raw and derived data files with same base name go
         // to the same hybridization chain
-        CaArrayFile focusCel = getCelCaArrayFile(AffymetrixArrayDataFiles.HG_FOCUS_CEL, HG_FOCUS_LSID_OBJECT_ID);
-        CaArrayFile focusCalvinCel = getCelCaArrayFile(AffymetrixArrayDataFiles.HG_FOCUS_CALVIN_CEL, HG_FOCUS_LSID_OBJECT_ID);
-        CaArrayFile focusChp = getChpCaArrayFile(AffymetrixArrayDataFiles.HG_FOCUS_CHP, HG_FOCUS_LSID_OBJECT_ID);
-        CaArrayFile focusCalvinChp = getChpCaArrayFile(AffymetrixArrayDataFiles.HG_FOCUS_CALVIN_CHP, HG_FOCUS_LSID_OBJECT_ID);
+        final CaArrayFile focusCel = getCelCaArrayFile(AffymetrixArrayDataFiles.HG_FOCUS_CEL, HG_FOCUS_LSID_OBJECT_ID);
+        final CaArrayFile focusCalvinCel = getCelCaArrayFile(AffymetrixArrayDataFiles.HG_FOCUS_CALVIN_CEL,
+                HG_FOCUS_LSID_OBJECT_ID);
+        final CaArrayFile focusChp = getChpCaArrayFile(AffymetrixArrayDataFiles.HG_FOCUS_CHP, HG_FOCUS_LSID_OBJECT_ID);
+        final CaArrayFile focusCalvinChp = getChpCaArrayFile(AffymetrixArrayDataFiles.HG_FOCUS_CALVIN_CHP,
+                HG_FOCUS_LSID_OBJECT_ID);
         focusCalvinCel.setProject(focusCel.getProject());
         focusChp.setProject(focusCel.getProject());
         focusCalvinChp.setProject(focusCel.getProject());
@@ -245,9 +240,9 @@ public class ArrayDataServiceTest extends AbstractServiceTest {
         this.arrayDataService.importData(focusChp, true, DEFAULT_IMPORT_OPTIONS);
         this.arrayDataService.importData(focusCalvinChp, true, DEFAULT_IMPORT_OPTIONS);
         checkAnnotation(focusCel, 2);
-        Experiment exp = focusCel.getProject().getExperiment();
+        final Experiment exp = focusCel.getProject().getExperiment();
         assertEquals(2, exp.getHybridizations().size());
-        for (Hybridization h : exp.getHybridizations()) {
+        for (final Hybridization h : exp.getHybridizations()) {
             assertEquals(1, h.getRawDataCollection().size());
             assertEquals(1, h.getDerivedDataCollection().size());
             if (h.getRawDataCollection().iterator().next().getDataFile().equals(focusCel)) {
@@ -263,22 +258,24 @@ public class ArrayDataServiceTest extends AbstractServiceTest {
     @Test
     public void testImportSingleAnnotationChain() throws InvalidDataFileException {
         // tests the import of multiple files to single annotation chain
-        CaArrayFile focusCel = getCelCaArrayFile(AffymetrixArrayDataFiles.HG_FOCUS_CEL, HG_FOCUS_LSID_OBJECT_ID);
-        CaArrayFile focusCalvinCel = getCelCaArrayFile(AffymetrixArrayDataFiles.HG_FOCUS_CALVIN_CEL, HG_FOCUS_LSID_OBJECT_ID);
-        CaArrayFile focusChp = getChpCaArrayFile(AffymetrixArrayDataFiles.HG_FOCUS_CHP, HG_FOCUS_LSID_OBJECT_ID);
-        CaArrayFile focusCalvinChp = getChpCaArrayFile(AffymetrixArrayDataFiles.HG_FOCUS_CALVIN_CHP, HG_FOCUS_LSID_OBJECT_ID);
+        final CaArrayFile focusCel = getCelCaArrayFile(AffymetrixArrayDataFiles.HG_FOCUS_CEL, HG_FOCUS_LSID_OBJECT_ID);
+        final CaArrayFile focusCalvinCel = getCelCaArrayFile(AffymetrixArrayDataFiles.HG_FOCUS_CALVIN_CEL,
+                HG_FOCUS_LSID_OBJECT_ID);
+        final CaArrayFile focusChp = getChpCaArrayFile(AffymetrixArrayDataFiles.HG_FOCUS_CHP, HG_FOCUS_LSID_OBJECT_ID);
+        final CaArrayFile focusCalvinChp = getChpCaArrayFile(AffymetrixArrayDataFiles.HG_FOCUS_CALVIN_CHP,
+                HG_FOCUS_LSID_OBJECT_ID);
         focusCalvinCel.setProject(focusCel.getProject());
         focusChp.setProject(focusCel.getProject());
         focusCalvinChp.setProject(focusCel.getProject());
-        DataImportOptions options = DataImportOptions.getAutoCreateSingleOptions("TEST_NAME");
+        final DataImportOptions options = DataImportOptions.getAutoCreateSingleOptions("TEST_NAME");
         this.arrayDataService.importData(focusCel, true, options);
         this.arrayDataService.importData(focusCalvinCel, true, options);
         this.arrayDataService.importData(focusChp, true, options);
         this.arrayDataService.importData(focusCalvinChp, true, options);
         checkAnnotation(focusCel, 1);
-        Experiment exp = focusCel.getProject().getExperiment();
+        final Experiment exp = focusCel.getProject().getExperiment();
         assertEquals(1, exp.getHybridizations().size());
-        Hybridization h = exp.getHybridizations().iterator().next();
+        final Hybridization h = exp.getHybridizations().iterator().next();
         assertEquals(2, h.getRawDataCollection().size());
         assertEquals(2, h.getDerivedDataCollection().size());
     }
@@ -287,40 +284,41 @@ public class ArrayDataServiceTest extends AbstractServiceTest {
     @Test
     public void testImportToTargetSources() throws InvalidDataFileException {
         // tests the import of multiple files to single annotation chain
-        CaArrayFile focusCel = getCelCaArrayFile(AffymetrixArrayDataFiles.HG_FOCUS_CEL, HG_FOCUS_LSID_OBJECT_ID);
-        CaArrayFile focusCalvinCel = getCelCaArrayFile(AffymetrixArrayDataFiles.HG_FOCUS_CALVIN_CEL, HG_FOCUS_LSID_OBJECT_ID);
-        CaArrayFile focusChp = getChpCaArrayFile(AffymetrixArrayDataFiles.HG_FOCUS_CHP, HG_FOCUS_LSID_OBJECT_ID);
-        CaArrayFile focusCalvinChp = getChpCaArrayFile(AffymetrixArrayDataFiles.HG_FOCUS_CALVIN_CHP, HG_FOCUS_LSID_OBJECT_ID);
+        final CaArrayFile focusCel = getCelCaArrayFile(AffymetrixArrayDataFiles.HG_FOCUS_CEL, HG_FOCUS_LSID_OBJECT_ID);
+        final CaArrayFile focusCalvinCel = getCelCaArrayFile(AffymetrixArrayDataFiles.HG_FOCUS_CALVIN_CEL,
+                HG_FOCUS_LSID_OBJECT_ID);
+        final CaArrayFile focusChp = getChpCaArrayFile(AffymetrixArrayDataFiles.HG_FOCUS_CHP, HG_FOCUS_LSID_OBJECT_ID);
+        final CaArrayFile focusCalvinChp = getChpCaArrayFile(AffymetrixArrayDataFiles.HG_FOCUS_CALVIN_CHP,
+                HG_FOCUS_LSID_OBJECT_ID);
         focusCalvinCel.setProject(focusCel.getProject());
         focusChp.setProject(focusCel.getProject());
         focusCalvinChp.setProject(focusCel.getProject());
 
-        Source targetSrc1 = new Source();
+        final Source targetSrc1 = new Source();
         targetSrc1.setId(1L);
         targetSrc1.setName("targetSrc1");
         targetSrc1.setExperiment(focusCel.getProject().getExperiment());
-        searchDaoStub.save(targetSrc1);
-        Source targetSrc2 = new Source();
+        this.searchDaoStub.save(targetSrc1);
+        final Source targetSrc2 = new Source();
         targetSrc2.setName("targetSrc2");
         targetSrc2.setId(2L);
-        searchDaoStub.save(targetSrc2);
+        this.searchDaoStub.save(targetSrc2);
         targetSrc2.setExperiment(focusCel.getProject().getExperiment());
         focusCel.getProject().getExperiment().getSources().addAll(Arrays.asList(targetSrc1, targetSrc2));
 
-        DataImportOptions options = DataImportOptions.getAssociateToBiomaterialsOptions(
+        final DataImportOptions options = DataImportOptions.getAssociateToBiomaterialsOptions(
                 ExperimentDesignNodeType.SOURCE, Arrays.asList(targetSrc1.getId(), targetSrc2.getId()));
         this.arrayDataService.importData(focusCel, true, options);
         this.arrayDataService.importData(focusCalvinCel, true, options);
         this.arrayDataService.importData(focusChp, true, options);
         this.arrayDataService.importData(focusCalvinChp, true, options);
-        Experiment exp = focusCel.getProject().getExperiment();
+        final Experiment exp = focusCel.getProject().getExperiment();
         assertEquals(2, exp.getSources().size());
         assertEquals(2, exp.getSamples().size());
         assertEquals(2, exp.getHybridizations().size());
         assertEquals(2, targetSrc1.getSamples().size());
         assertEquals(2, targetSrc2.getSamples().size());
     }
-    
 
     @Test
     public void testCreateAnnotation() throws InvalidDataFileException {
@@ -328,9 +326,9 @@ public class ArrayDataServiceTest extends AbstractServiceTest {
     }
 
     private void testExistingAnnotationNotOverwritten() throws InvalidDataFileException {
-        CaArrayFile celFile = getCelCaArrayFile(AffymetrixArrayDataFiles.TEST3_CEL, AFFY_TEST3_LSID_OBJECT_ID);
-        RawArrayData celData = new RawArrayData();
-        Hybridization hybridization = new Hybridization();
+        final CaArrayFile celFile = getCelCaArrayFile(AffymetrixArrayDataFiles.TEST3_CEL, AFFY_TEST3_LSID_OBJECT_ID);
+        final RawArrayData celData = new RawArrayData();
+        final Hybridization hybridization = new Hybridization();
         celData.addHybridization(hybridization);
         hybridization.addArrayData(celData);
         celData.setDataFile(celFile);
@@ -344,40 +342,46 @@ public class ArrayDataServiceTest extends AbstractServiceTest {
 
     @Test
     public void testAgilentRawTextAcghRejectedIfNoMageTab() throws InvalidDataFileException {
-        CaArrayFile expFile = getAgilentRawTextCaArrayFile(AgilentArrayDataFiles.TEST_ACGH_RAW_TEXT, AGILENT_ACGH_LSID_OBJECT_ID);
-        MageTabDocumentSet mTabSet = null;
-        FileValidationResult validationResult = this.arrayDataService.validate(expFile, mTabSet, false);
+        final CaArrayFile expFile = getAgilentRawTextCaArrayFile(AgilentArrayDataFiles.TEST_ACGH_RAW_TEXT,
+                AGILENT_ACGH_LSID_OBJECT_ID);
+        final MageTabDocumentSet mTabSet = null;
+        final FileValidationResult validationResult = this.arrayDataService.validate(expFile, mTabSet, false);
         assertFalse(validationResult.isValid());
     }
 
     @Test
     public void testUnsupportedDataFile() throws InvalidDataFileException {
-        CaArrayFile expFile = getDataCaArrayFile(MageTabDataFiles.UNSUPPORTED_DATA_EXAMPLE_EXP, FileType.AFFYMETRIX_EXP);
+        final CaArrayFile expFile = getDataCaArrayFile(MageTabDataFiles.UNSUPPORTED_DATA_EXAMPLE_EXP,
+                FileType.AFFYMETRIX_EXP);
         this.arrayDataService.importData(expFile, true, DEFAULT_IMPORT_OPTIONS);
         assertEquals(FileStatus.IMPORTED_NOT_PARSED, expFile.getFileStatus());
     }
-    
+
     @Test
     public void testNimblegenUnparsedDataFiles() throws InvalidDataFileException, MageTabParsingException {
         // tests that imports of nimblegen raw and derived data files are successful
-        
+
         // test derived data...
-        CaArrayFile dummyDerivedDataFile =
-            getDataCaArrayFile(NimblegenArrayDataFiles.DERIVED_TXT_DATA_FILE, FileType.NIMBLEGEN_DERIVED_TXT);
-        arrayDataService.importData(dummyDerivedDataFile, true, DEFAULT_IMPORT_OPTIONS);
-        assertEquals("The number of hybridizations is incorrect.", 1, dummyDerivedDataFile.getProject().getExperiment().getHybridizations().size());
-        assertNotNull("The number of hybridizations is incorrect.", dummyDerivedDataFile.getProject().getExperiment().getHybridizationByName("dummy_nimblegen_derived_data"));
-        
+        final CaArrayFile dummyDerivedDataFile = getDataCaArrayFile(NimblegenArrayDataFiles.DERIVED_TXT_DATA_FILE,
+                FileType.NIMBLEGEN_DERIVED_TXT);
+        this.arrayDataService.importData(dummyDerivedDataFile, true, DEFAULT_IMPORT_OPTIONS);
+        assertEquals("The number of hybridizations is incorrect.", 1, dummyDerivedDataFile.getProject().getExperiment()
+                .getHybridizations().size());
+        assertNotNull("The number of hybridizations is incorrect.", dummyDerivedDataFile.getProject().getExperiment()
+                .getHybridizationByName("dummy_nimblegen_derived_data"));
+
         // test raw data
-        CaArrayFile dummyRawDataFile =
-            getDataCaArrayFile(NimblegenArrayDataFiles.RAW_TXT_DATA_FILE, FileType.NIMBLEGEN_RAW_TXT);
-        arrayDataService.importData(dummyRawDataFile, true, DEFAULT_IMPORT_OPTIONS);
-        assertEquals("The number of hybridizations is incorrect.", 1, dummyRawDataFile.getProject().getExperiment().getHybridizations().size());
-        assertNotNull("The number of hybridizations is incorrect.", dummyRawDataFile.getProject().getExperiment().getHybridizationByName("dummy_nimblegen_raw_data"));
+        final CaArrayFile dummyRawDataFile = getDataCaArrayFile(NimblegenArrayDataFiles.RAW_TXT_DATA_FILE,
+                FileType.NIMBLEGEN_RAW_TXT);
+        this.arrayDataService.importData(dummyRawDataFile, true, DEFAULT_IMPORT_OPTIONS);
+        assertEquals("The number of hybridizations is incorrect.", 1, dummyRawDataFile.getProject().getExperiment()
+                .getHybridizations().size());
+        assertNotNull("The number of hybridizations is incorrect.", dummyRawDataFile.getProject().getExperiment()
+                .getHybridizationByName("dummy_nimblegen_raw_data"));
     }
 
     private void checkAnnotation(CaArrayFile dataFile, int numberOfSamples) {
-        Experiment experiment = dataFile.getProject().getExperiment();
+        final Experiment experiment = dataFile.getProject().getExperiment();
         assertEquals(numberOfSamples, experiment.getSources().size());
         assertEquals(numberOfSamples, experiment.getSamples().size());
         assertEquals(numberOfSamples, experiment.getExtracts().size());
@@ -385,36 +389,36 @@ public class ArrayDataServiceTest extends AbstractServiceTest {
     }
 
     private CaArrayFile getChpCaArrayFile(File chp, String lsidObjectId) {
-        CaArrayFile caArrayFile = getDataCaArrayFile(chp, FileType.AFFYMETRIX_CHP);
-        ArrayDesign arrayDesign = daoFactoryStub.getArrayDao().getArrayDesign(null, null, lsidObjectId);
+        final CaArrayFile caArrayFile = getDataCaArrayFile(chp, FileType.AFFYMETRIX_CHP);
+        final ArrayDesign arrayDesign = this.daoFactoryStub.getArrayDao().getArrayDesign(null, null, lsidObjectId);
         caArrayFile.getProject().getExperiment().getArrayDesigns().add(arrayDesign);
         return caArrayFile;
     }
 
     private CaArrayFile getCelCaArrayFile(File cel, String lsidObjectId) {
-        CaArrayFile caArrayFile = getDataCaArrayFile(cel, FileType.AFFYMETRIX_CEL);
-        ArrayDesign arrayDesign = daoFactoryStub.getArrayDao().getArrayDesign(null, null, lsidObjectId);
+        final CaArrayFile caArrayFile = getDataCaArrayFile(cel, FileType.AFFYMETRIX_CEL);
+        final ArrayDesign arrayDesign = this.daoFactoryStub.getArrayDao().getArrayDesign(null, null, lsidObjectId);
         caArrayFile.getProject().getExperiment().getArrayDesigns().add(arrayDesign);
         return caArrayFile;
     }
 
     private CaArrayFile getAgilentRawTextCaArrayFile(File cel, String lsidObjectId) {
-        CaArrayFile caArrayFile = getDataCaArrayFile(cel, FileType.AGILENT_RAW_TXT);
-        ArrayDesign arrayDesign = daoFactoryStub.getArrayDao().getArrayDesign(null, null, lsidObjectId);
+        final CaArrayFile caArrayFile = getDataCaArrayFile(cel, FileType.AGILENT_RAW_TXT);
+        final ArrayDesign arrayDesign = this.daoFactoryStub.getArrayDao().getArrayDesign(null, null, lsidObjectId);
         caArrayFile.getProject().getExperiment().getArrayDesigns().add(arrayDesign);
         return caArrayFile;
     }
 
     @SuppressWarnings("deprecation")
     public CaArrayFile getDataCaArrayFile(File file, FileType type) {
-        CaArrayFile caArrayFile = this.fileAccessServiceStub.add(file);
-        caArrayFile.setId(fileIdCounter++);
+        final CaArrayFile caArrayFile = this.fileAccessServiceStub.add(file);
+        caArrayFile.setId(this.fileIdCounter++);
         caArrayFile.setFileType(type);
         caArrayFile.setProject(new Project());
         caArrayFile.getProject().setExperiment(new Experiment());
         return caArrayFile;
     }
-    
+
     /**
      * Subclasses should override to create array designs as needed
      * 
@@ -424,28 +428,28 @@ public class ArrayDataServiceTest extends AbstractServiceTest {
      * @return
      */
     protected ArrayDesign createArrayDesign(String lsidAuthority, String lsidNamespace, String lsidObjectId) {
-        ArrayDesign arrayDesign = new ArrayDesign();
-        CaArrayFile f = new CaArrayFile();
+        final ArrayDesign arrayDesign = new ArrayDesign();
+        final CaArrayFile f = new CaArrayFile();
         f.setFileStatus(FileStatus.IMPORTED);
         f.setFileType(FileType.AGILENT_XML);
         arrayDesign.getDesignFiles().add(f);
         return arrayDesign;
     }
 
-
     private final class LocalSearchDaoStub extends SearchDaoStub {
-        private Map<Long, PersistentObject> objMap = new HashMap<Long, PersistentObject>();
+        private final Map<Long, PersistentObject> objMap = new HashMap<Long, PersistentObject>();
 
         @Override
-        public void save(PersistentObject caArrayEntity) {
+        public Long save(PersistentObject caArrayEntity) {
             super.save(caArrayEntity);
-            objMap.put(caArrayEntity.getId(), caArrayEntity);
+            this.objMap.put(caArrayEntity.getId(), caArrayEntity);
+            return caArrayEntity.getId();
         }
 
         @SuppressWarnings("unchecked")
         @Override
         public <T extends PersistentObject> T retrieve(Class<T> entityClass, Long entityId) {
-            Object candidate = objMap.get(entityId);
+            final Object candidate = this.objMap.get(entityId);
             if (candidate == null) {
                 return null;
             } else {
@@ -456,19 +460,17 @@ public class ArrayDataServiceTest extends AbstractServiceTest {
 
     public final class LocalDaoFactoryStub extends DaoFactoryStub {
 
-        private final Map<ArrayDataTypeDescriptor, ArrayDataType> dataTypeMap =
-            new HashMap<ArrayDataTypeDescriptor, ArrayDataType>();
+        private final Map<ArrayDataTypeDescriptor, ArrayDataType> dataTypeMap = new HashMap<ArrayDataTypeDescriptor, ArrayDataType>();
 
-        private final Map<QuantitationTypeDescriptor, QuantitationType> quantitationTypeMap =
-            new HashMap<QuantitationTypeDescriptor, QuantitationType>();
+        private final Map<QuantitationTypeDescriptor, QuantitationType> quantitationTypeMap = new HashMap<QuantitationTypeDescriptor, QuantitationType>();
 
         private final Map<Long, AbstractArrayData> fileDataMap = new HashMap<Long, AbstractArrayData>();
 
-        private Map<String, ArrayDesign> arrayDesignMap = new HashMap<String, ArrayDesign>();
+        private final Map<String, ArrayDesign> arrayDesignMap = new HashMap<String, ArrayDesign>();
 
         @Override
         public SearchDao getSearchDao() {
-            return searchDaoStub;
+            return ArrayDataServiceTest.this.searchDaoStub;
         }
 
         @Override
@@ -477,11 +479,11 @@ public class ArrayDataServiceTest extends AbstractServiceTest {
 
                 @Override
                 public ArrayDesign getArrayDesign(String lsidAuthority, String lsidNamespace, String lsidObjectId) {
-                    if (arrayDesignMap.containsKey(lsidObjectId)) {
-                        return arrayDesignMap.get(lsidObjectId);
+                    if (LocalDaoFactoryStub.this.arrayDesignMap.containsKey(lsidObjectId)) {
+                        return LocalDaoFactoryStub.this.arrayDesignMap.get(lsidObjectId);
                     } else {
-                        ArrayDesign design = createArrayDesign(lsidAuthority, lsidNamespace, lsidObjectId);
-                        arrayDesignMap.put(lsidObjectId, design);
+                        final ArrayDesign design = createArrayDesign(lsidAuthority, lsidNamespace, lsidObjectId);
+                        LocalDaoFactoryStub.this.arrayDesignMap.put(lsidObjectId, design);
                         return design;
                     }
                 }
@@ -491,7 +493,7 @@ public class ArrayDataServiceTest extends AbstractServiceTest {
                     if (LocalDaoFactoryStub.this.dataTypeMap.containsKey(descriptor)) {
                         return LocalDaoFactoryStub.this.dataTypeMap.get(descriptor);
                     }
-                    ArrayDataType arrayDataType = new ArrayDataType();
+                    final ArrayDataType arrayDataType = new ArrayDataType();
                     arrayDataType.setName(descriptor.getName());
                     arrayDataType.setVersion(descriptor.getVersion());
                     addQuantitationTypes(arrayDataType, descriptor);
@@ -500,7 +502,8 @@ public class ArrayDataServiceTest extends AbstractServiceTest {
                 }
 
                 private void addQuantitationTypes(ArrayDataType arrayDataType, ArrayDataTypeDescriptor descriptor) {
-                    for (QuantitationTypeDescriptor quantitationTypeDescriptor : descriptor.getQuantitationTypes()) {
+                    for (final QuantitationTypeDescriptor quantitationTypeDescriptor : descriptor
+                            .getQuantitationTypes()) {
                         arrayDataType.getQuantitationTypes().add(getQuantitationType(quantitationTypeDescriptor));
                     }
                 }
@@ -510,7 +513,7 @@ public class ArrayDataServiceTest extends AbstractServiceTest {
                     if (LocalDaoFactoryStub.this.quantitationTypeMap.containsKey(descriptor)) {
                         return LocalDaoFactoryStub.this.quantitationTypeMap.get(descriptor);
                     }
-                    QuantitationType quantitationType = new QuantitationType();
+                    final QuantitationType quantitationType = new QuantitationType();
                     quantitationType.setName(descriptor.getName());
                     quantitationType.setTypeClass(descriptor.getDataType().getTypeClass());
                     LocalDaoFactoryStub.this.quantitationTypeMap.put(descriptor, quantitationType);
@@ -523,15 +526,17 @@ public class ArrayDataServiceTest extends AbstractServiceTest {
                 }
 
                 @Override
-                public void save(PersistentObject caArrayEntity) {
+                public Long save(PersistentObject caArrayEntity) {
                     if (caArrayEntity instanceof AbstractArrayData) {
                         addData((AbstractArrayData) caArrayEntity);
                     }
+                    return caArrayEntity.getId();
                 }
 
                 @Override
-                public DesignElementList getDesignElementList(String lsidAuthority, String lsidNamespace, String lsidObjectId) {
-                    DesignElementList list = new DesignElementList();
+                public DesignElementList getDesignElementList(String lsidAuthority, String lsidNamespace,
+                        String lsidObjectId) {
+                    final DesignElementList list = new DesignElementList();
                     list.setLsidForEntity(lsidAuthority + ":" + lsidNamespace + ":" + lsidObjectId);
                     return list;
                 }
@@ -547,12 +552,13 @@ public class ArrayDataServiceTest extends AbstractServiceTest {
     /**
      * Descriptor for data formats that aren't supported.
      */
-    private static class TestArrayDescriptor implements ArrayDataTypeDescriptor {        
+    private static class TestArrayDescriptor implements ArrayDataTypeDescriptor {
         private static ArrayDataTypeDescriptor INSTANCE = new TestArrayDescriptor();
-        
+
         /**
          * {@inheritDoc}
          */
+        @Override
         public String getName() {
             return "Test";
         }
@@ -560,6 +566,7 @@ public class ArrayDataServiceTest extends AbstractServiceTest {
         /**
          * {@inheritDoc}
          */
+        @Override
         public List<QuantitationTypeDescriptor> getQuantitationTypes() {
             return Collections.singletonList(TestQuantitationDescriptor.INSTANCE);
         }
@@ -567,6 +574,7 @@ public class ArrayDataServiceTest extends AbstractServiceTest {
         /**
          * {@inheritDoc}
          */
+        @Override
         public String getVersion() {
             return null;
         }
@@ -574,18 +582,21 @@ public class ArrayDataServiceTest extends AbstractServiceTest {
         /**
          * {@inheritDoc}
          */
+        @Override
         public boolean isEquivalent(ArrayDataType arrayDataType) {
             return this.equals("Name".equals(arrayDataType.getName()));
         }
     }
-    
+
     private static class TestQuantitationDescriptor implements QuantitationTypeDescriptor {
         private static QuantitationTypeDescriptor INSTANCE = new TestQuantitationDescriptor();
-        
+
+        @Override
         public DataType getDataType() {
             return DataType.BOOLEAN;
         }
-        
+
+        @Override
         public String getName() {
             return "TestQT";
         }

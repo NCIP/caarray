@@ -84,7 +84,7 @@ package gov.nih.nci.caarray.platforms.spi;
 
 import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.dao.SearchDao;
-import gov.nih.nci.caarray.platforms.FileManager;
+import gov.nih.nci.caarray.dataStorage.DataStorageFacade;
 import gov.nih.nci.caarray.platforms.SessionTransactionManager;
 
 /**
@@ -94,7 +94,7 @@ import gov.nih.nci.caarray.platforms.SessionTransactionManager;
  */
 public abstract class AbstractDesignFileHandler implements DesignFileHandler {
     private final SessionTransactionManager sessionTransactionManager;
-    private final FileManager fileManager;
+    private final DataStorageFacade dataStorageFacade;
     private final ArrayDao arrayDao;
     private final SearchDao searchDao;
 
@@ -104,10 +104,10 @@ public abstract class AbstractDesignFileHandler implements DesignFileHandler {
      * @param arrayDao the ArrayDao to use
      * @param searchDao the SearchDao to use
      */
-    protected AbstractDesignFileHandler(SessionTransactionManager sessionTransactionManager, FileManager fileManager,
-            ArrayDao arrayDao, SearchDao searchDao) {
+    protected AbstractDesignFileHandler(SessionTransactionManager sessionTransactionManager,
+            DataStorageFacade dataStorageFacade, ArrayDao arrayDao, SearchDao searchDao) {
         this.sessionTransactionManager = sessionTransactionManager;
-        this.fileManager = fileManager;
+        this.dataStorageFacade = dataStorageFacade;
         this.searchDao = searchDao;
         this.arrayDao = arrayDao;
     }
@@ -116,35 +116,35 @@ public abstract class AbstractDesignFileHandler implements DesignFileHandler {
      * Convenience method to flush and clear the session using this handler's SessionTransactionManager.
      */
     protected void flushAndClearSession() {
-        sessionTransactionManager.flushSession();
-        sessionTransactionManager.clearSession();
+        this.sessionTransactionManager.flushSession();
+        this.sessionTransactionManager.clearSession();
     }
 
     /**
      * @return the SessionTransactionManager
      */
     protected SessionTransactionManager getSessionTransactionManager() {
-        return sessionTransactionManager;
+        return this.sessionTransactionManager;
     }
 
     /**
      * @return the ArrayDao
      */
     protected ArrayDao getArrayDao() {
-        return arrayDao;
+        return this.arrayDao;
     }
 
     /**
      * @return the SearchDao
      */
     protected SearchDao getSearchDao() {
-        return searchDao;
+        return this.searchDao;
     }
 
     /**
      * @return the FileManager
      */
-    protected FileManager getFileManager() {
-        return fileManager;
+    protected DataStorageFacade getDataStorageFacade() {
+        return this.dataStorageFacade;
     }
 }

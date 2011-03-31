@@ -80,7 +80,7 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.util;
+package gov.nih.nci.caarray.services;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -88,7 +88,11 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import gov.nih.nci.caarray.AbstractCaarrayTest;
+import gov.nih.nci.caarray.services.EntityPruner;
 import gov.nih.nci.caarray.staticinjection.CaArrayCommonStaticInjectionModule;
+import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
+import gov.nih.nci.caarray.util.CaArrayHibernateHelperModule;
+import gov.nih.nci.caarray.util.CaArrayUtils;
 import gov.nih.nci.security.authorization.domainobjects.User;
 
 import java.util.ArrayList;

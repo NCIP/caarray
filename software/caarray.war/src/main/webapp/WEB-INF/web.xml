@@ -107,6 +107,10 @@
     </filter>
 
     <filter-mapping>
+           <filter-name>urlrewrite</filter-name>
+           <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
         <filter-name>sessionFixation</filter-name>
         <url-pattern>*.action</url-pattern>
     </filter-mapping>
@@ -117,6 +121,8 @@
     <filter-mapping>
         <filter-name>temporaryFilesFilter</filter-name>
         <url-pattern>*.action</url-pattern>
+        <dispatcher>REQUEST</dispatcher>
+        <dispatcher>FORWARD</dispatcher>
     </filter-mapping>
     <filter-mapping>
         <filter-name>openSessionFilter</filter-name>
@@ -143,10 +149,6 @@
     <filter-mapping>
         <filter-name>longCacheFilter</filter-name>
         <url-pattern>/logos/*</url-pattern>
-    </filter-mapping>
-    <filter-mapping>
-           <filter-name>urlrewrite</filter-name>
-           <url-pattern>/*</url-pattern>
     </filter-mapping>
     <filter-mapping>
         <filter-name>userFilter</filter-name>

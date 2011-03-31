@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caarray-ejb-jar
+ * source code form and machine readable, binary, object code form. The caArray
  * Software was developed in conjunction with the National Cancer Institute
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent
  * government employees are authors, any rights in such works shall be subject
  * to Title 17 of the United States Code, section 105.
  *
- * This caarray-ejb-jar Software License (the License) is between NCI and You. You (or
+ * This caArray Software License (the License) is between NCI and You. You (or
  * Your) shall mean a person or an entity, and all other entities that control,
  * are controlled by, or are under common control with the entity. Control for
  * purposes of this definition means (i) the direct or indirect power to cause
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up,
  * no-charge, irrevocable, transferable and royalty-free right and license in
- * its rights in the caarray-ejb-jar Software to (i) use, install, access, operate,
+ * its rights in the caArray Software to (i) use, install, access, operate,
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caarray-ejb-jar Software; (ii) distribute and
- * have distributed to and by third parties the caarray-ejb-jar Software and any
+ * and prepare derivative works of the caArray Software; (ii) distribute and
+ * have distributed to and by third parties the caArray Software and any
  * modifications and derivative works thereof; and (iii) sublicense the
  * foregoing rights set out in (i) and (ii) to third parties, including the
  * right to license such rights to further third parties. For sake of clarity,
@@ -80,27 +80,78 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.application.fileaccess;
+package gov.nih.nci.caarray.dataStorage;
+
+import gov.nih.nci.caarray.domain.data.AbstractDataColumn;
+import gov.nih.nci.caarray.util.CaArrayUtils;
+
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.Serializable;
+
+import org.apache.commons.io.IOUtils;
+
+import com.google.inject.Inject;
 
 /**
+ * Helper class used to manage loading and saving parsed data to/from the data storage subsystem.
+ * 
  * @author dkokotov
- *
  */
-public class TemporaryFileCacheStubFactory implements TemporaryFileCacheFactory {
-    private final FileAccessServiceStub fileAccessServiceStub;
+public class ParsedDataPersister implements Serializable {
+    private static final long serialVersionUID = 1L;
 
+    private final DataStorageFacade dataStorageFacade;
 
     /**
-     * @param fileAccessServiceStub
+     * Constructor.
+     * 
+     * @param dataStorageFacade the DataStorageFacade to use for interacting with the data storage subsystem.
      */
-    public TemporaryFileCacheStubFactory(FileAccessServiceStub fileAccessServiceStub) {
-        this.fileAccessServiceStub = fileAccessServiceStub;
+    @Inject
+    public ParsedDataPersister(DataStorageFacade dataStorageFacade) {
+        this.dataStorageFacade = dataStorageFacade;
     }
 
     /**
-     * {@inheritDoc}
+     * Load the contents of the given data column from storage. If the column's data handle is null, this method does
+     * nothing; otherwise, it loads the data identified by the column's data handle and sets it into the column.
+     * 
+     * @param column the data column for which to load data from storage.
      */
-    public TemporaryFileCache createTempFileCache() {
-        return this.fileAccessServiceStub;
+    public void loadFromStorage(AbstractDataColumn column) {
+        if (column.getDataHandle() == null) {
+            // no data to load
+            return;
+        }
+        final InputStream is = this.dataStorageFacade.openInputStream(column.getDataHandle(), true);
+        try {
+            final Serializable value = CaArrayUtils.deserialize(is);
+            column.setValuesFromArray(value);
+        } finally {
+            IOUtils.closeQuietly(is);
+        }
+    }
+
+    /**
+     * Save the contents of the given data column to data storage. If the column's data handle is already set, this
+     * method does nothing; otherwise, it writes the column's data to data storage and sets the data handle with the
+     * reference to the written data.
+     * 
+     * @param column the data column for which to save data to storage.
+     */
+    public void saveToStorage(AbstractDataColumn column) {
+        if (column.getDataHandle() != null) {
+            // data is already saved.
+            return;
+        }
+        final byte[] serializedValues = CaArrayUtils.serialize(column.getValuesAsArray());
+        final ByteArrayInputStream bais = new ByteArrayInputStream(serializedValues);
+        try {
+            final StorageMetadata metadata = this.dataStorageFacade.addParsed(bais, true);
+            column.setDataHandle(metadata.getHandle());
+        } finally {
+            IOUtils.closeQuietly(bais);
+        }
     }
 }

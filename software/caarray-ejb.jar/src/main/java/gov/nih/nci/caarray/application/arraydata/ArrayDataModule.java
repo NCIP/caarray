@@ -82,9 +82,7 @@
  */package gov.nih.nci.caarray.application.arraydata;
 
 import gov.nih.nci.caarray.application.JtaSessionTransactionManager;
-import gov.nih.nci.caarray.application.TemporaryCacheFileManager;
 import gov.nih.nci.caarray.dao.DaoModule;
-import gov.nih.nci.caarray.platforms.FileManager;
 import gov.nih.nci.caarray.platforms.PlatformModule;
 import gov.nih.nci.caarray.platforms.SessionTransactionManager;
 
@@ -95,17 +93,16 @@ import com.google.inject.AbstractModule;
  * 
  * @author dkokotov
  */
-public class ArrayDataModule extends AbstractModule {    
+public class ArrayDataModule extends AbstractModule {
     /**
      * {@inheritDoc}
      */
     @Override
     protected void configure() {
         install(new DaoModule());
-        
+
         bind(SessionTransactionManager.class).to(JtaSessionTransactionManager.class);
-        bind(FileManager.class).to(TemporaryCacheFileManager.class);
-        
+
         install(new PlatformModule());
     }
 }

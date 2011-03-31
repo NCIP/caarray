@@ -85,6 +85,7 @@ package gov.nih.nci.caarray.platforms.nimblegen;
 import gov.nih.nci.caarray.application.util.Utils;
 import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.dao.SearchDao;
+import gov.nih.nci.caarray.dataStorage.DataStorageFacade;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
 import gov.nih.nci.caarray.domain.array.Feature;
@@ -93,7 +94,6 @@ import gov.nih.nci.caarray.domain.array.PhysicalProbe;
 import gov.nih.nci.caarray.domain.data.DataType;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileType;
-import gov.nih.nci.caarray.platforms.FileManager;
 import gov.nih.nci.caarray.platforms.SessionTransactionManager;
 import gov.nih.nci.caarray.platforms.spi.AbstractDesignFileHandler;
 import gov.nih.nci.caarray.platforms.spi.PlatformFileReadException;
@@ -157,18 +157,19 @@ class NdfHandler extends AbstractDesignFileHandler {
     private CaArrayFile designFile;
     private File fileOnDisk;
     private DelimitedFileReader reader;
-    private final CaArrayHibernateHelper hibernateHelper; 
+    private final CaArrayHibernateHelper hibernateHelper;
 
     @Inject
-    NdfHandler(SessionTransactionManager sessionTransactionManager, FileManager fileManager,
+    NdfHandler(SessionTransactionManager sessionTransactionManager, DataStorageFacade DataStorageFacade,
             ArrayDao arrayDao, SearchDao searchDao, CaArrayHibernateHelper hibernateHelper) {
-        super(sessionTransactionManager, fileManager, arrayDao, searchDao);
+        super(sessionTransactionManager, DataStorageFacade, arrayDao, searchDao);
         this.hibernateHelper = hibernateHelper;
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean openFiles(Set<CaArrayFile> designFiles) throws PlatformFileReadException {
         if (designFiles == null || designFiles.size() != 1
                 || designFiles.iterator().next().getFileType() != FileType.NIMBLEGEN_NDF) {
@@ -176,22 +177,23 @@ class NdfHandler extends AbstractDesignFileHandler {
         }
 
         this.designFile = designFiles.iterator().next();
-        this.fileOnDisk = getFileManager().openFile(designFile);
+        this.fileOnDisk = getDataStorageFacade().openFile(this.designFile.getDataHandle(), false);
         try {
             this.reader = new DelimitedFileReaderFactoryImpl().createTabDelimitedFileReader(this.fileOnDisk);
             return true;
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new PlatformFileReadException(this.fileOnDisk, "Could not open reader for file "
-                    + designFile.getName(), e);
+                    + this.designFile.getName(), e);
         }
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public void closeFiles() {
-        reader.close();
-        getFileManager().closeFile(this.designFile);
+        this.reader.close();
+        getDataStorageFacade().releaseFile(this.designFile.getDataHandle(), false);
         this.reader = null;
         this.fileOnDisk = null;
         this.designFile = null;
@@ -200,24 +202,25 @@ class NdfHandler extends AbstractDesignFileHandler {
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean parsesData() {
         return true;
     }
 
     private ScrollableResults loadRows(File file) throws IOException {
-        hibernateHelper.getCurrentSession().createSQLQuery(CREATE_TEMP_TABLE_STMT).executeUpdate();
-        String filePath = file.getAbsolutePath().replace('\\', '/');
-        String loadQuery = "load data local infile '" + filePath + "' into table " + TEMP_TABLE_NAME
+        this.hibernateHelper.getCurrentSession().createSQLQuery(CREATE_TEMP_TABLE_STMT).executeUpdate();
+        final String filePath = file.getAbsolutePath().replace('\\', '/');
+        final String loadQuery = "load data local infile '" + filePath + "' into table " + TEMP_TABLE_NAME
                 + " fields terminated by '\t' ignore 1 lines "
                 + "(@c1,CONTAINER,@c3,@c4,SEQ_ID,@c6,@c7,@c8,@c9,@c10,@c11,@c12,PROBE_ID,@c14,@c15,X,Y);";
 
-        SQLQuery q = hibernateHelper.getCurrentSession().createSQLQuery(loadQuery);
+        final SQLQuery q = this.hibernateHelper.getCurrentSession().createSQLQuery(loadQuery);
         q.executeUpdate();
         return getProbes();
     }
 
     ScrollableResults getProbes() {
-        SQLQuery q = hibernateHelper.getCurrentSession().createSQLQuery(
+        final SQLQuery q = this.hibernateHelper.getCurrentSession().createSQLQuery(
                 "select * from " + TEMP_TABLE_NAME + " order by SEQ_ID asc");
         return q.scroll();
     }
@@ -225,24 +228,25 @@ class NdfHandler extends AbstractDesignFileHandler {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void createDesignDetails(ArrayDesign arrayDesign) throws PlatformFileReadException {
-        Map<String, LogicalProbe> logicalProbes = new HashMap<String, LogicalProbe>();
+        final Map<String, LogicalProbe> logicalProbes = new HashMap<String, LogicalProbe>();
         int count = 0;
         try {
-            ArrayDesignDetails details = new ArrayDesignDetails();
+            final ArrayDesignDetails details = new ArrayDesignDetails();
             arrayDesign.setDesignDetails(details);
             getArrayDao().save(arrayDesign);
             getArrayDao().save(details);
 
-            ScrollableResults results = loadRows(this.fileOnDisk);
+            final ScrollableResults results = loadRows(this.fileOnDisk);
             count = loadProbes(details, logicalProbes, results);
             arrayDesign.setNumberOfFeatures(count);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             LOG.error("Error processing line " + count);
-            throw new PlatformFileReadException(fileOnDisk, "Couldn't read file: ", e);
+            throw new PlatformFileReadException(this.fileOnDisk, "Couldn't read file: ", e);
         } finally {
-            hibernateHelper.getCurrentSession().createSQLQuery("DROP TABLE " + TEMP_TABLE_NAME + ";")
-            .executeUpdate();
+            this.hibernateHelper.getCurrentSession().createSQLQuery("DROP TABLE " + TEMP_TABLE_NAME + ";")
+                    .executeUpdate();
         }
     }
 
@@ -252,8 +256,8 @@ class NdfHandler extends AbstractDesignFileHandler {
         results.beforeFirst();
         String lastSeqId = null;
         while (results.next()) {
-            Object[] values = results.get();
-            Map<String, Object> vals = new HashMap<String, Object>();
+            final Object[] values = results.get();
+            final Map<String, Object> vals = new HashMap<String, Object>();
             vals.put(PROBE_ID, values[0]);
             vals.put(SEQ_ID, values[1]);
             vals.put(CONTAINER2, values[2]);
@@ -266,7 +270,7 @@ class NdfHandler extends AbstractDesignFileHandler {
             }
             lastSeqId = (String) vals.get(SEQ_ID);
 
-            PhysicalProbe p = createPhysicalProbe(details, vals, logicalProbes);
+            final PhysicalProbe p = createPhysicalProbe(details, vals, logicalProbes);
             getArrayDao().save(p);
             ++count;
         }
@@ -276,7 +280,7 @@ class NdfHandler extends AbstractDesignFileHandler {
     private LogicalProbe getLogicalProbe(String feature, ArrayDesignDetails details,
             Map<String, LogicalProbe> logicalProbes) {
         if (!logicalProbes.containsKey(feature)) {
-            LogicalProbe p = new LogicalProbe(details);
+            final LogicalProbe p = new LogicalProbe(details);
             p.setName(feature);
             logicalProbes.put(feature, p);
             getArrayDao().save(p);
@@ -288,15 +292,15 @@ class NdfHandler extends AbstractDesignFileHandler {
 
     private PhysicalProbe createPhysicalProbe(ArrayDesignDetails details, Map<String, Object> values,
             Map<String, LogicalProbe> logicalProbes) {
-        String sequenceId = (String) values.get(SEQ_ID);
-        String container = (String) values.get(CONTAINER2);
-        String probeId = (String) values.get(PROBE_ID);
-        LogicalProbe lp = getLogicalProbe(sequenceId, details, logicalProbes);
-        PhysicalProbe p = new PhysicalProbe(details, null);
+        final String sequenceId = (String) values.get(SEQ_ID);
+        final String container = (String) values.get(CONTAINER2);
+        final String probeId = (String) values.get(PROBE_ID);
+        final LogicalProbe lp = getLogicalProbe(sequenceId, details, logicalProbes);
+        final PhysicalProbe p = new PhysicalProbe(details, null);
         lp.addProbe(p);
         p.setName(container + "|" + sequenceId + "|" + probeId);
 
-        Feature f = new Feature(details);
+        final Feature f = new Feature(details);
         f.setColumn(((Integer) values.get(X)).shortValue());
         f.setRow(((Integer) values.get(Y)).shortValue());
 
@@ -308,6 +312,7 @@ class NdfHandler extends AbstractDesignFileHandler {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void load(ArrayDesign arrayDesign) {
         arrayDesign.setName(FilenameUtils.getBaseName(this.designFile.getName()));
         arrayDesign.setLsidForEntity(LSID_AUTHORITY + ":" + LSID_NAMESPACE + ":" + arrayDesign.getName());
@@ -316,21 +321,22 @@ class NdfHandler extends AbstractDesignFileHandler {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void validate(ValidationResult result) throws PlatformFileReadException {
-        FileValidationResult fileResult = result.getOrCreateFileValidationResult(fileOnDisk);
-        designFile.setValidationResult(fileResult);
+        final FileValidationResult fileResult = result.getOrCreateFileValidationResult(this.designFile.getName());
+        this.designFile.setValidationResult(fileResult);
         try {
-            reader.reset();
-            if (!reader.hasNextLine()) {
+            this.reader.reset();
+            if (!this.reader.hasNextLine()) {
                 fileResult.addMessage(ValidationMessage.Type.ERROR, "File was empty");
             }
-            Map<String, Integer> headers = getHeaders();
+            final Map<String, Integer> headers = getHeaders();
             validateHeader(headers, fileResult);
             if (fileResult.isValid()) {
-                validateValues(headers, fileResult);                
+                validateValues(headers, fileResult);
             }
-        } catch (IOException e) {
-            throw new PlatformFileReadException(fileOnDisk, "Unable to read file", e);
+        } catch (final IOException e) {
+            throw new PlatformFileReadException(this.fileOnDisk, "Unable to read file", e);
         }
     }
 
@@ -339,41 +345,41 @@ class NdfHandler extends AbstractDesignFileHandler {
             result.addMessage(ValidationMessage.Type.ERROR, "Could not find column headers in file. Header must "
                     + " contain at least the following column headings: " + NDF_REQUIRED_COLUMNS.keySet());
         } else {
-            Set<String> missing = new HashSet<String>(NDF_REQUIRED_COLUMNS.keySet());
+            final Set<String> missing = new HashSet<String>(NDF_REQUIRED_COLUMNS.keySet());
             missing.removeAll(headers.keySet());
 
-            for (String col : missing) {
+            for (final String col : missing) {
                 result.addMessage(ValidationMessage.Type.ERROR, "Invalid column header for Nimblegen NDF. Missing "
-                        + col + " column", reader.getCurrentLineNumber(), 0);
+                        + col + " column", this.reader.getCurrentLineNumber(), 0);
             }
         }
     }
 
     private void validateValues(Map<String, Integer> headers, FileValidationResult result) throws IOException {
-        while (reader.hasNextLine()) {
-            List<String> values = reader.nextLine();
+        while (this.reader.hasNextLine()) {
+            final List<String> values = this.reader.nextLine();
             validateValuesRow(values, headers, result);
-        }        
+        }
     }
-    
+
     private void validateValuesRow(List<String> values, Map<String, Integer> header, FileValidationResult result) {
         if (values.size() != header.size()) {
-            result.addMessage(ValidationMessage.Type.ERROR, "Row has incorrect number of columns. There were "
-                    + values.size() + " columns in the row, and " + header.size() + " columns in the header", reader
-                    .getCurrentLineNumber(), 0);
+            result.addMessage(ValidationMessage.Type.ERROR,
+                    "Row has incorrect number of columns. There were " + values.size() + " columns in the row, and "
+                            + header.size() + " columns in the header", this.reader.getCurrentLineNumber(), 0);
             return;
         }
-        
-        for (String column : NDF_REQUIRED_COLUMNS.keySet()) {
-            int columnIndex = header.get(column);
-            String value = values.get(columnIndex);
-            DataType columnType = NDF_REQUIRED_COLUMNS.get(column);
+
+        for (final String column : NDF_REQUIRED_COLUMNS.keySet()) {
+            final int columnIndex = header.get(column);
+            final String value = values.get(columnIndex);
+            final DataType columnType = NDF_REQUIRED_COLUMNS.get(column);
             if (StringUtils.isBlank(value)) {
-                result.addMessage(ValidationMessage.Type.ERROR, "Empty value for required column " + column, reader
-                        .getCurrentLineNumber(), columnIndex + 1);
+                result.addMessage(ValidationMessage.Type.ERROR, "Empty value for required column " + column,
+                        this.reader.getCurrentLineNumber(), columnIndex + 1);
             } else if (columnType == DataType.INTEGER && !Utils.isInteger(value)) {
                 result.addMessage(ValidationMessage.Type.ERROR, "Expected integer value but found " + value
-                        + " for required column " + column, reader.getCurrentLineNumber(), columnIndex + 1);
+                        + " for required column " + column, this.reader.getCurrentLineNumber(), columnIndex + 1);
             }
         }
     }
@@ -387,16 +393,16 @@ class NdfHandler extends AbstractDesignFileHandler {
      * @return mapping of header columns to their positions, or null if no header line found
      */
     private Map<String, Integer> getHeaders() throws IOException {
-        while (reader.hasNextLine()) {
-            List<String> values = reader.nextLine();
+        while (this.reader.hasNextLine()) {
+            final List<String> values = this.reader.nextLine();
             if (values.isEmpty()) {
                 // allow blank lines at start
                 continue;
-            }            
+            }
             if (isHeaderLine(values)) {
                 int index = 0;
-                Map<String, Integer> result = new HashMap<String, Integer>();
-                for (String value : values) {
+                final Map<String, Integer> result = new HashMap<String, Integer>();
+                for (final String value : values) {
                     result.put(value.toUpperCase(Locale.getDefault()), index++);
                 }
                 return result;

@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray;
 
+import static org.junit.Assert.assertNotNull;
 import gov.nih.nci.caarray.dao.HibernateIntegrationTestCleanUpUtility;
 import gov.nih.nci.caarray.staticinjection.CaArrayCommonStaticInjectionModule;
 import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
@@ -97,52 +98,55 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 
 /**
- * Base class for tests that require hibernate backed by an actual database.
- * Handles setting up hibernate and cleaning up the database when done.
+ * Base class for tests that require hibernate backed by an actual database. Handles setting up hibernate and cleaning
+ * up the database when done.
  * 
  * @author Steve Lustbader
  */
 public abstract class AbstractHibernateTest extends AbstractCaarrayTest {
     protected Injector injector;
-    protected CaArrayHibernateHelper hibernateHelper; 
+    protected CaArrayHibernateHelper hibernateHelper;
     private final boolean enableFilters;
-        
+
     /**
-     * Subclasses can override this to configure a custom injector, e.g. by overriding some modules with 
-     * stubbed out functionality.
+     * Subclasses can override this to configure a custom injector, e.g. by overriding some modules with stubbed out
+     * functionality.
      * 
      * @return a Guice injector from which this will obtain dependencies.
      */
     protected Injector createInjector() {
         return Guice.createInjector(new CaArrayCommonStaticInjectionModule(), new CaArrayHibernateHelperModule());
     }
-    
+
     protected AbstractHibernateTest(boolean enableFilters) {
         this.enableFilters = enableFilters;
     }
-    
+
     @Before
     public void baseIntegrationSetUp() {
-        injector = createInjector();
-        hibernateHelper = injector.getInstance(CaArrayHibernateHelper.class);
-        
+        System.out.println("Creating injector");
+        this.injector = createInjector();
+        this.hibernateHelper = this.injector.getInstance(CaArrayHibernateHelper.class);
+        System.out.println("Creating hibernate helper: " + this.hibernateHelper);
+        assertNotNull(this.hibernateHelper);
+
         CaArrayUsernameHolder.setUser(AbstractCaarrayTest.STANDARD_USER);
-        
-        hibernateHelper.setFiltersEnabled(enableFilters);
-        hibernateHelper.openAndBindSession();
+
+        this.hibernateHelper.setFiltersEnabled(this.enableFilters);
+        this.hibernateHelper.openAndBindSession();
     }
 
     @After
     public void baseIntegrationTearDown() {
         try {
-            Transaction tx = hibernateHelper.getCurrentSession().getTransaction();
+            final Transaction tx = this.hibernateHelper.getCurrentSession().getTransaction();
             if (tx.isActive()) {
                 tx.rollback();
             }
-        } catch (HibernateException e) {
+        } catch (final HibernateException e) {
             // ok - there was no active transaction
         }
-        hibernateHelper.unbindAndCleanupSession();
+        this.hibernateHelper.unbindAndCleanupSession();
         HibernateIntegrationTestCleanUpUtility.cleanUp();
     }
 

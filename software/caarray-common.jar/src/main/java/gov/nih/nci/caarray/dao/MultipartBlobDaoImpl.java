@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caArray
+ * source code form and machine readable, binary, object code form. The caarray-common.jar
  * Software was developed in conjunction with the National Cancer Institute
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent
  * government employees are authors, any rights in such works shall be subject
  * to Title 17 of the United States Code, section 105.
  *
- * This caArray Software License (the License) is between NCI and You. You (or
+ * This caarray-common.jar Software License (the License) is between NCI and You. You (or
  * Your) shall mean a person or an entity, and all other entities that control,
  * are controlled by, or are under common control with the entity. Control for
  * purposes of this definition means (i) the direct or indirect power to cause
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up,
  * no-charge, irrevocable, transferable and royalty-free right and license in
- * its rights in the caArray Software to (i) use, install, access, operate,
+ * its rights in the caarray-common.jar Software to (i) use, install, access, operate,
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caArray Software; (ii) distribute and
- * have distributed to and by third parties the caArray Software and any
+ * and prepare derivative works of the caarray-common.jar Software; (ii) distribute and
+ * have distributed to and by third parties the caarray-common.jar Software and any
  * modifications and derivative works thereof; and (iii) sublicense the
  * foregoing rights set out in (i) and (ii) to third parties, including the
  * right to license such rights to further third parties. For sake of clarity,
@@ -80,35 +80,80 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.services;
+package gov.nih.nci.caarray.dao;
 
-import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
+import gov.nih.nci.caarray.domain.MultiPartBlob;
+import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
 
-import javax.interceptor.AroundInvoke;
-import javax.interceptor.InvocationContext;
+import java.util.Collection;
+import java.util.List;
+
+import org.apache.log4j.Logger;
+import org.hibernate.Query;
+
+import com.google.common.collect.Lists;
+import com.google.inject.Inject;
 
 /**
- * Calls the TemporaryFileCache.closeFiles() method to make sure any temporary files used by an API call are 
- * cleaned up.
- * 
- * @author dkokotov 
+ * DAO to manipulate file objects.
  */
-public class TemporaryFileCleanupInterceptor {
+class MultipartBlobDaoImpl extends AbstractCaArrayDaoImpl implements MultipartBlobDao {
+    private static final Logger LOG = Logger.getLogger(MultipartBlobDaoImpl.class);
+
     /**
-     * Calls the TemporaryFileCache.closeFiles() method to make sure any temporary files used by an API call are cleaned
-     * up.
      * 
-     * @param invContext the method context
-     * @return the method result
-     * @throws Exception if invoking the method throws an exception.
+     * @param hibernateHelper the CaArrayHibernateHelper dependency
      */
-    @AroundInvoke
-    @SuppressWarnings({"PMD.SignatureDeclareThrowsException", "ucd" }) 
-    public Object prepareReturnValue(InvocationContext invContext) throws Exception {
-        try {
-            return invContext.proceed();
-        } finally {
-            TemporaryFileCacheLocator.getTemporaryFileCache().closeFiles();            
+    @Inject
+    public MultipartBlobDaoImpl(CaArrayHibernateHelper hibernateHelper) {
+        super(hibernateHelper);
+    }
+
+    private List<Long> getBlobPartIds(Collection<Long> mblobIds) {
+        final String sqlProjBlobs = "select blob_parts from multipart_blob_blob_parts mbp "
+                + "where mbp.multipart_blob in (:blobIds)";
+        @SuppressWarnings("unchecked")
+        final List<Long> bpIds = getCurrentSession().createSQLQuery(sqlProjBlobs).setParameterList("blobIds", mblobIds)
+                .list();
+        return bpIds;
+    }
+
+    @Override
+    public void deleteByIds(Iterable<Long> ids) {
+        // we want to avoid loading the MultipartBlobs into memory
+        // and HQL bulk delete doesn't handle associations, so we have to drop to SQL
+        // to delete the blob parts
+        final List<Long> idList = Lists.newArrayList(ids);
+        if (idList.isEmpty()) {
+            // nothing to do
+            return;
         }
+
+        final List<Long> blobPartIds = getBlobPartIds(idList);
+        if (!blobPartIds.isEmpty()) {
+            deleteBlobHolderAssociations(blobPartIds);
+            deleteBlobHolders(blobPartIds);
+        }
+
+        final String hql = "delete from " + MultiPartBlob.class.getName() + " where id in (:blobIds)";
+        final Query q = getCurrentSession().createQuery(hql);
+        q.setParameterList("blobIds", idList);
+        q.executeUpdate();
+        this.flushSession();
+        this.clearSession();
+    }
+
+    private void deleteBlobHolderAssociations(Collection<Long> blobPartIds) {
+        final String sql = "delete from multipart_blob_blob_parts where blob_parts in (:bpIds)";
+        final Query q = getCurrentSession().createSQLQuery(sql);
+        q.setParameterList("bpIds", blobPartIds);
+        q.executeUpdate();
+    }
+
+    private void deleteBlobHolders(Collection<Long> blobPartIds) {
+        final String sql = "delete from blob_holder where id in (:bpIds)";
+        final Query q = getCurrentSession().createSQLQuery(sql);
+        q.setParameterList("bpIds", blobPartIds);
+        q.executeUpdate();
     }
 }

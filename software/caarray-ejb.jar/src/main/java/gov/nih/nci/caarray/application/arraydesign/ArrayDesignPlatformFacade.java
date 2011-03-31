@@ -89,10 +89,9 @@ import gov.nih.nci.caarray.platforms.spi.DesignFileHandler;
 import gov.nih.nci.caarray.platforms.spi.PlatformFileReadException;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.InvalidNumberOfArgsException;
-import gov.nih.nci.caarray.validation.ValidationResult;
 import gov.nih.nci.caarray.validation.ValidationMessage.Type;
+import gov.nih.nci.caarray.validation.ValidationResult;
 
-import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -108,7 +107,7 @@ import com.google.inject.Inject;
 final class ArrayDesignPlatformFacade {
     private final Set<DesignFileHandler> handlers;
     private final ArrayDao arrayDao;
-    
+
     /**
      * @param handlers
      */
@@ -117,40 +116,40 @@ final class ArrayDesignPlatformFacade {
         this.handlers = new HashSet<DesignFileHandler>(handlers);
         this.arrayDao = arrayDao;
     }
-    
+
     private DesignFileHandler getHandler(Set<CaArrayFile> designFiles) throws PlatformFileReadException {
-        for (DesignFileHandler handler : this.handlers) {
+        for (final DesignFileHandler handler : this.handlers) {
             try {
                 if (handler.openFiles(designFiles)) {
                     return handler;
-                }                
-            } catch (PlatformFileReadException e) {
+                }
+            } catch (final PlatformFileReadException e) {
                 handler.closeFiles();
                 throw e;
             }
         }
         throw new InvalidNumberOfArgsException(InvalidNumberOfArgsException.UNSUPPORTED_ARRAY_DESIGN);
     }
-    
+
     @SuppressWarnings({ "PMD.CyclomaticComplexity", "PMD.NPathComplexity", "PMD.ExcessiveMethodLength" })
     ValidationResult validateDesignFiles(Set<CaArrayFile> designFiles) {
-        ValidationResult result = new ValidationResult();
-        for (CaArrayFile designFile : designFiles) {
-            FileValidationResult fileResult = new FileValidationResult(new File(designFile.getName())); 
+        final ValidationResult result = new ValidationResult();
+        for (final CaArrayFile designFile : designFiles) {
+            final FileValidationResult fileResult = new FileValidationResult();
             if (designFile.getType() == null) {
                 designFile.setValidationResult(fileResult);
                 fileResult.addMessage(Type.ERROR,
                         "Array design file type was unrecognized, please select a file format");
-                result.addFile(fileResult.getFile(), fileResult);
+                result.addFile(designFile.getName(), fileResult);
             } else if (!designFile.getFileType().isArrayDesign()) {
                 designFile.setValidationResult(fileResult);
                 fileResult.addMessage(Type.ERROR, "File type " + designFile.getFileType().getName()
                         + " is not an array design type.");
-                result.addFile(fileResult.getFile(), fileResult);
+                result.addFile(designFile.getName(), fileResult);
             }
 
         }
-        
+
         FileStatus validatedStatus = FileStatus.VALIDATED;
         if (result.isValid()) {
             DesignFileHandler handler = null;
@@ -160,15 +159,15 @@ final class ArrayDesignPlatformFacade {
                     validatedStatus = FileStatus.VALIDATED_NOT_PARSED;
                 }
                 handler.validate(result);
-            } catch (PlatformFileReadException e) {
-                CaArrayFile firstDesignFile = designFiles.iterator().next();
+            } catch (final PlatformFileReadException e) {
+                final CaArrayFile firstDesignFile = designFiles.iterator().next();
                 FileValidationResult fileResult = firstDesignFile.getValidationResult();
                 if (fileResult == null) {
-                    fileResult = new FileValidationResult(new File(firstDesignFile.getName()));
+                    fileResult = new FileValidationResult();
                     firstDesignFile.setValidationResult(fileResult);
                 }
                 fileResult.addMessage(Type.ERROR, "Unable to read file");
-                result.addFile(fileResult.getFile(), fileResult);
+                result.addFile(firstDesignFile.getName(), fileResult);
             } finally {
                 if (handler != null) {
                     handler.closeFiles();
@@ -176,45 +175,45 @@ final class ArrayDesignPlatformFacade {
             }
         }
 
-        FileStatus status = result.isValid() ? validatedStatus : FileStatus.VALIDATION_ERRORS;
-        for (CaArrayFile designFile : designFiles) {
+        final FileStatus status = result.isValid() ? validatedStatus : FileStatus.VALIDATION_ERRORS;
+        for (final CaArrayFile designFile : designFiles) {
             designFile.setFileStatus(status);
-            arrayDao.save(designFile);
+            this.arrayDao.save(designFile);
         }
-        arrayDao.flushSession();
-        
+        this.arrayDao.flushSession();
+
         return result;
     }
-    
+
     @SuppressWarnings("PMD.AvoidReassigningParameters")
     void importDesignDetails(ArrayDesign arrayDesign) {
         DesignFileHandler handler = null;
         try {
             handler = getHandler(arrayDesign.getDesignFiles());
             handler.createDesignDetails(arrayDesign);
-        } catch (PlatformFileReadException e) {            
+        } catch (final PlatformFileReadException e) {
             throw new IllegalStateException("Error importing design", e);
         } finally {
             if (handler != null) {
                 handler.closeFiles();
             }
         }
-        
+
         // the handler cleared the session, so we need to merge before we update the status
         // See hibernate bug http://opensource.atlassian.com/projects/hibernate/browse/HHH-511
         // When we upgrade to hibernate 3.2.4+, we can remove the call to merge.
-        arrayDesign = (ArrayDesign) arrayDao.mergeObject(arrayDesign);
+        arrayDesign = (ArrayDesign) this.arrayDao.mergeObject(arrayDesign);
         arrayDesign.getDesignFileSet().updateStatus(
                 handler.parsesData() ? FileStatus.IMPORTED : FileStatus.IMPORTED_NOT_PARSED);
-        arrayDao.save(arrayDesign);        
+        this.arrayDao.save(arrayDesign);
     }
-    
+
     void importDesign(ArrayDesign arrayDesign) {
         DesignFileHandler handler = null;
         try {
             handler = getHandler(arrayDesign.getDesignFiles());
-            handler.load(arrayDesign);            
-        } catch (PlatformFileReadException e) {            
+            handler.load(arrayDesign);
+        } catch (final PlatformFileReadException e) {
             throw new IllegalStateException("Error importing design", e);
         } finally {
             if (handler != null) {

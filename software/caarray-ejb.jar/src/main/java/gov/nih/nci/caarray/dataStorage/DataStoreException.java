@@ -80,45 +80,20 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.domain.data;
+package gov.nih.nci.caarray.dataStorage;
 
-import static org.junit.Assert.*;
+/**
+ * Thrown to indicate there was a problem storing or retrieving data from the data storage.
+ */
+public class DataStoreException extends RuntimeException {
 
-import java.io.Serializable;
+    private static final long serialVersionUID = 3582622697786140397L;
 
-import org.junit.Test;
-
-public class SerializerTest {
-    
-    private static final int[] TEST_ARRAY = new int[] {1, 2, 3};
-
-    @Test
-    public void testGetValue() {
-        Serializer serializer = new Serializer();
-        int[] values = (int[]) serializer.getValue();
-        assertNull(values);
-        serializer.setValue(TEST_ARRAY);
-        checkValues(serializer.getValue());
-        serializer.getSerializedValues();
-        checkValues(serializer.getValue());
+    public DataStoreException(String message, Throwable cause) {
+        super(message, cause);
     }
 
-    private void checkValues(Serializable value) {
-        int[] values = (int[]) value;
-        assertEquals(values.length, TEST_ARRAY.length);
-        for (int i = 0; i < TEST_ARRAY.length; i++) {
-            assertEquals(TEST_ARRAY[i], values[i]);
-        }
+    public DataStoreException(String message) {
+        super(message);
     }
-
-    /**
-     * Test method for {@link gov.nih.nci.caarray.domain.data.Serializer#getSerializedValues()}.
-     */
-    @Test
-    public void testGetSerializedValue() {
-        Serializer serializer = new Serializer();
-        serializer.setValue(TEST_ARRAY);
-        assertNotNull(serializer.getSerializedValues());
-    }
-
 }

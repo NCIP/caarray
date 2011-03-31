@@ -83,9 +83,9 @@
 package gov.nih.nci.caarray.platforms.affymetrix;
 
 import gov.nih.nci.caarray.dao.ArrayDao;
+import gov.nih.nci.caarray.dataStorage.DataStorageFacade;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.data.DesignElementList;
-import gov.nih.nci.caarray.platforms.FileManager;
 import gov.nih.nci.caarray.platforms.SessionTransactionManager;
 import gov.nih.nci.caarray.platforms.spi.PlatformFileReadException;
 
@@ -96,9 +96,9 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import com.google.inject.Inject;
-
 import affymetrix.fusion.cdf.FusionCDFData;
+
+import com.google.inject.Inject;
 
 /**
  * Utility class used to generate and retrieve the singleton <code>DesignElementList</code> to be used for all parsed
@@ -109,7 +109,7 @@ import affymetrix.fusion.cdf.FusionCDFData;
 final class ChpCdfDesignElementListUtility extends AbstractChpDesignElementListUtility {
     private static final Logger LOG = Logger.getLogger(ChpCdfDesignElementListUtility.class);
 
-    private final FileManager fileManager;
+    private final DataStorageFacade dataStorageFacade;
 
     /**
      * Create a new instance.
@@ -119,25 +119,27 @@ final class ChpCdfDesignElementListUtility extends AbstractChpDesignElementListU
      */
     @Inject
     ChpCdfDesignElementListUtility(ArrayDao arrayDao, SessionTransactionManager sessionTransactionManager,
-            FileManager fileManager) {
+            DataStorageFacade dataStorageFacade) {
         super(arrayDao, sessionTransactionManager);
-        this.fileManager = fileManager;
+        this.dataStorageFacade = dataStorageFacade;
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     protected void createDesignElementListEntries(DesignElementList designElementList, ArrayDesign design)
             throws PlatformFileReadException {
-        List<String> probeSetNames = getProbeSetNames(design);
-        List<Long> orderedProbeSetIds = new ArrayList<Long>(BATCH_SIZE);
+        final List<String> probeSetNames = getProbeSetNames(design);
+        final List<Long> orderedProbeSetIds = new ArrayList<Long>(BATCH_SIZE);
         for (int i = 0; i < probeSetNames.size(); i += BATCH_SIZE) {
             LOG.info("Retrieving " + BATCH_SIZE + " probe names starting with #" + i);
-            List<String> probeSetNamesBatch = probeSetNames.subList(i, Math.min(probeSetNames.size(), i + BATCH_SIZE));
-            Map<String, Long> nameToIdMap = getArrayDao().getLogicalProbeNamesToIds(design, probeSetNamesBatch);
+            final List<String> probeSetNamesBatch = probeSetNames.subList(i,
+                    Math.min(probeSetNames.size(), i + BATCH_SIZE));
+            final Map<String, Long> nameToIdMap = getArrayDao().getLogicalProbeNamesToIds(design, probeSetNamesBatch);
             orderedProbeSetIds.clear();
             for (int j = i; j < i + probeSetNamesBatch.size(); j++) {
-                String probeSetName = probeSetNames.get(j);
+                final String probeSetName = probeSetNames.get(j);
                 orderedProbeSetIds.add(nameToIdMap.get(probeSetName));
             }
             getArrayDao().createDesignElementListEntries(designElementList, i, orderedProbeSetIds);
@@ -149,23 +151,22 @@ final class ChpCdfDesignElementListUtility extends AbstractChpDesignElementListU
         CdfReader reader = null;
         File cdfFile = null;
         try {
-            cdfFile = fileManager.openFile(
-                    design.getDesignFiles().iterator().next());
+            cdfFile = this.dataStorageFacade.openFile(design.getDesignFiles().iterator().next().getDataHandle(), false);
             reader = new CdfReader(cdfFile);
-            FusionCDFData fusionCDFData = reader.getCdfData();
-            int numProbeSets = fusionCDFData.getHeader().getNumProbeSets();
-            List<String> probeSetNames = new ArrayList<String>(numProbeSets);
+            final FusionCDFData fusionCDFData = reader.getCdfData();
+            final int numProbeSets = fusionCDFData.getHeader().getNumProbeSets();
+            final List<String> probeSetNames = new ArrayList<String>(numProbeSets);
             for (int index = 0; index < numProbeSets; index++) {
                 probeSetNames.add(fusionCDFData.getProbeSetName(index));
             }
             return probeSetNames;
         } finally {
             if (cdfFile != null) {
-                fileManager.closeFile(design.getDesignFiles().iterator().next());
+                this.dataStorageFacade.releaseFile(design.getDesignFiles().iterator().next().getDataHandle(), false);
             }
             if (reader != null) {
                 reader.close();
-            }            
+            }
         }
     }
 }

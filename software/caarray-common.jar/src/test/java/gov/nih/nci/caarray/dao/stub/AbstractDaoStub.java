@@ -100,6 +100,7 @@ public class AbstractDaoStub implements CaArrayDao {
     /**
      * {@inheritDoc}
      */
+    @Override
     public <T extends PersistentObject> List<T> queryEntityByExample(ExampleSearchCriteria<T> criteria, int maxResults,
             int firstResult, Order... orders) {
         return new ArrayList<T>();
@@ -108,13 +109,15 @@ public class AbstractDaoStub implements CaArrayDao {
     /**
      * {@inheritDoc}
      */
+    @Override
     public <T extends PersistentObject> List<T> queryEntityByExample(ExampleSearchCriteria<T> criteria, Order... orders) {
         return queryEntityByExample(criteria, 0, 0, orders);
     }
-    
+
     /**
      * {@inheritDoc}
      */
+    @Override
     public <T extends PersistentObject> List<T> queryEntityByExample(T entityToMatch, Order... orders) {
         return queryEntityByExample(ExampleSearchCriteria.forEntity(entityToMatch), orders);
     }
@@ -122,6 +125,7 @@ public class AbstractDaoStub implements CaArrayDao {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void remove(PersistentObject caArrayEntity) {
         // no-op
     }
@@ -129,13 +133,15 @@ public class AbstractDaoStub implements CaArrayDao {
     /**
      * {@inheritDoc}
      */
-    public void save(PersistentObject caArrayEntity) {
-        // no-op
+    @Override
+    public Long save(PersistentObject caArrayEntity) {
+        return 1L;
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public void save(Collection<? extends PersistentObject> caArrayEntities) {
         for (PersistentObject entity : caArrayEntities) {
             save(entity);
@@ -146,6 +152,7 @@ public class AbstractDaoStub implements CaArrayDao {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void flushSession() {
         // no-op
     }
@@ -153,6 +160,7 @@ public class AbstractDaoStub implements CaArrayDao {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void clearSession() {
         // no-op
     }
@@ -160,6 +168,7 @@ public class AbstractDaoStub implements CaArrayDao {
     /**
      * {@inheritDoc}
      */
+    @Override
     public Object mergeObject(Object object) {
         return object;
     }
@@ -167,6 +176,7 @@ public class AbstractDaoStub implements CaArrayDao {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void evictObject(Object object) {
         // no-op
     }

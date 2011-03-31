@@ -125,9 +125,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 /**
- * Export valid Experiments to a GEO SOFT format.
- * Note: This class doesn't need to be an EJB.
- *
+ * Export valid Experiments to a GEO SOFT format. Note: This class doesn't need to be an EJB.
+ * 
  * @author gax
  * @since 2.3.1
  */
@@ -140,38 +139,40 @@ public class GeoSoftExporterBean implements GeoSoftExporter {
     // CHECKSTYLE:OFF magic numbers
     private static final int ONE_KB = 1024;
     // CHECKSTYLE:ON
-    
+
+    private FileAccessUtils fileAccessHelper;
+
     /**
      * {@inheritDoc}
      */
+    @Override
     @TransactionAttribute(TransactionAttributeType.SUPPORTS)
     public List<String> validateForExport(Experiment experiment) {
 
-        List<String> errors = new ArrayList<String>();
-        boolean stop = checkArrayDesigns(errors, experiment);
+        final List<String> errors = new ArrayList<String>();
+        final boolean stop = checkArrayDesigns(errors, experiment);
         if (stop) {
             return errors;
         }
 
-        Set<String> protocolErrors = new HashSet<String>();
-        for (Hybridization hyb : experiment.getHybridizations()) {
-            Set<Source> sources = new HashSet<Source>();
-            Set<Sample> samples = new HashSet<Sample>();
-            Set<Extract> extracts = new HashSet<Extract>();
-            Set<LabeledExtract> labeledExtracts = new HashSet<LabeledExtract>();
+        final Set<String> protocolErrors = new HashSet<String>();
+        for (final Hybridization hyb : experiment.getHybridizations()) {
+            final Set<Source> sources = new HashSet<Source>();
+            final Set<Sample> samples = new HashSet<Sample>();
+            final Set<Extract> extracts = new HashSet<Extract>();
+            final Set<LabeledExtract> labeledExtracts = new HashSet<LabeledExtract>();
             GeoSoftFileWriterUtil.collectBioMaterials(hyb, sources, samples, extracts, labeledExtracts);
-            
+
             checkRawData(errors, hyb);
             checkDerivedDataFileType(errors, hyb);
 
             checkBioProtocol(protocolErrors, samples, "nucleic_acid_extraction");
             checkBioProtocol(protocolErrors, extracts, "labeling");
             checkBioProtocol(protocolErrors, labeledExtracts, "hybridization");
-            checkProtocol(protocolErrors, hyb.getProtocolApplications(), "scan" , "image_acquisition");
+            checkProtocol(protocolErrors, hyb.getProtocolApplications(), "scan", "image_acquisition");
             checkDataProcessingProtocol(protocolErrors, hyb.getRawDataCollection());
             checkCharOrFactorValue(errors, hyb, labeledExtracts, extracts, samples, sources);
             checkLabeledExtract(errors, labeledExtracts, extracts);
-
 
         }
         errors.addAll(protocolErrors);
@@ -187,16 +188,16 @@ public class GeoSoftExporterBean implements GeoSoftExporter {
             errors.add("No (" + AFFYMETRIX + ") array design specified");
             return true;
         }
-        for (ArrayDesign ad : experiment.getArrayDesigns()) {
-            //* The array provider should be Affymetrix.
+        for (final ArrayDesign ad : experiment.getArrayDesigns()) {
+            // * The array provider should be Affymetrix.
             if (!AFFYMETRIX.equals(ad.getProvider().getName())) {
                 errors.add(AFFYMETRIX + " is not the provider for array design " + ad.getName());
             }
             if (!errors.isEmpty()) {
                 return true;
             }
-            //* All array designs associated with the experiment must be ones for which the System has the GEO
-            //  accession.
+            // * All array designs associated with the experiment must be ones for which the System has the GEO
+            // accession.
             if (StringUtils.isBlank(ad.getGeoAccession())) {
                 errors.add("Array design " + ad.getName() + " has no GEO accession");
             }
@@ -207,13 +208,10 @@ public class GeoSoftExporterBean implements GeoSoftExporter {
     @SuppressWarnings("PMD.ExcessiveParameterList")
     private void checkCharOrFactorValue(List<String> errors, Hybridization hyb, Set<LabeledExtract> labeledExtracts,
             Set<Extract> extracts, Set<Sample> samples, Set<Source> sources) {
-        //* There must be at least 1 characteristic or factor value that is present in every
-        //  biomaterial-hybridization chain.
-        if (hyb.getFactorValues().isEmpty()
-                && !hasCharacteristics(labeledExtracts)
-                && !hasCharacteristics(extracts)
-                && !hasCharacteristics(samples)
-                && !hasCharacteristics(sources)) {
+        // * There must be at least 1 characteristic or factor value that is present in every
+        // biomaterial-hybridization chain.
+        if (hyb.getFactorValues().isEmpty() && !hasCharacteristics(labeledExtracts) && !hasCharacteristics(extracts)
+                && !hasCharacteristics(samples) && !hasCharacteristics(sources)) {
             errors.add("Hybridization " + hyb.getName()
                     + " and associated biomaterials must have at least one characteristic or factor value");
         }
@@ -221,12 +219,9 @@ public class GeoSoftExporterBean implements GeoSoftExporter {
 
     @SuppressWarnings("empty-statement")
     private static boolean hasCharacteristics(Set<? extends AbstractBioMaterial> bios) {
-        for (AbstractBioMaterial bio : bios) {
-            if (!bio.getCharacteristics().isEmpty()
-                || bio.getTissueSite() != null
-                || bio.getDiseaseState() != null
-                || bio.getCellType() != null
-                || StringUtils.isNotBlank(bio.getExternalId())) {
+        for (final AbstractBioMaterial bio : bios) {
+            if (!bio.getCharacteristics().isEmpty() || bio.getTissueSite() != null || bio.getDiseaseState() != null
+                    || bio.getCellType() != null || StringUtils.isNotBlank(bio.getExternalId())) {
                 return true;
             }
         }
@@ -234,20 +229,20 @@ public class GeoSoftExporterBean implements GeoSoftExporter {
     }
 
     private void checkDerivedDataFileType(List<String> errors, Hybridization hyb) {
-        //* Every hybridization must have a derived data file of type AFFYMETRIX_CHP.
-        for (DerivedArrayData dad : hyb.getDerivedDataCollection()) {
+        // * Every hybridization must have a derived data file of type AFFYMETRIX_CHP.
+        for (final DerivedArrayData dad : hyb.getDerivedDataCollection()) {
             if (FileType.AFFYMETRIX_CHP == dad.getDataFile().getFileType()) {
                 return;
             }
         }
         errors.add("Hybridization " + hyb.getName() + " must have a derived data file of type "
-                        + FileType.AFFYMETRIX_CHP);
+                + FileType.AFFYMETRIX_CHP);
     }
 
     private void checkLabeledExtract(List<String> errors, Set<LabeledExtract> labeledExtracts, Set<Extract> extracts) {
-        //* For every chain, the Material Type of the extract or labeled extract must be present.
+        // * For every chain, the Material Type of the extract or labeled extract must be present.
         boolean foundMaterialType = false;
-        for (LabeledExtract le : labeledExtracts) {
+        for (final LabeledExtract le : labeledExtracts) {
             if (le.getMaterialType() != null) {
                 foundMaterialType = true;
             }
@@ -255,7 +250,7 @@ public class GeoSoftExporterBean implements GeoSoftExporter {
                 errors.add("Labeled Extract " + le.getName() + " must have a label");
             }
         }
-        for (Extract e : extracts) {
+        for (final Extract e : extracts) {
             if (e.getMaterialType() != null) {
                 foundMaterialType = true;
                 break;
@@ -267,18 +262,16 @@ public class GeoSoftExporterBean implements GeoSoftExporter {
     }
 
     private void checkRawData(List<String> errors, Hybridization hyb) {
-        //* Every hybridization must have at least one raw data file.
+        // * Every hybridization must have at least one raw data file.
         if (hyb.getRawDataCollection().isEmpty()) {
-            errors.add("Hybridization " + hyb.getName()
-                    + " must have at least one Raw Data File");
+            errors.add("Hybridization " + hyb.getName() + " must have at least one Raw Data File");
         }
     }
 
-    private void checkProtocol(Set<String> errors, List<ProtocolApplication> protocolApplications,
-            String... protocols) {
-        for (ProtocolApplication pa : protocolApplications) {
-            String pType = pa.getProtocol().getType().getValue();
-            for (String p : protocols) {
+    private void checkProtocol(Set<String> errors, List<ProtocolApplication> protocolApplications, String... protocols) {
+        for (final ProtocolApplication pa : protocolApplications) {
+            final String pType = pa.getProtocol().getType().getValue();
+            for (final String p : protocols) {
                 if (pType.equalsIgnoreCase(p)) {
                     return;
                 }
@@ -288,15 +281,15 @@ public class GeoSoftExporterBean implements GeoSoftExporter {
     }
 
     private void checkBioProtocol(Set<String> errors, Set<? extends AbstractBioMaterial> bios, String... protocols) {
-        List<ProtocolApplication> all = new ArrayList<ProtocolApplication>();
-        for (AbstractBioMaterial bio : bios) {
+        final List<ProtocolApplication> all = new ArrayList<ProtocolApplication>();
+        for (final AbstractBioMaterial bio : bios) {
             all.addAll(bio.getProtocolApplications());
         }
         checkProtocol(errors, all, protocols);
     }
 
     private void checkDataProcessingProtocol(Set<String> errors, Set<RawArrayData> rawDataCollection) {
-        for (RawArrayData rad : rawDataCollection) {
+        for (final RawArrayData rad : rawDataCollection) {
             if (rad.getProtocolApplications().isEmpty()) {
                 errors.add("Missing data processing protocol");
             }
@@ -306,15 +299,16 @@ public class GeoSoftExporterBean implements GeoSoftExporter {
     /**
      * {@inheritDoc}
      */
+    @Override
     @TransactionAttribute(TransactionAttributeType.SUPPORTS)
     public List<PackagingInfo> getAvailablePackagingInfos(Project project) {
-        List<PackagingInfo> infos = new ArrayList<PackagingInfo>();
-        Experiment experiment = project.getExperiment();
+        final List<PackagingInfo> infos = new ArrayList<PackagingInfo>();
+        final Experiment experiment = project.getExperiment();
         String name = experiment.getPublicIdentifier() + PackagingInfo.PackagingMethod.TGZ.getExtension();
         PackagingInfo.PackagingMethod method = PackagingInfo.PackagingMethod.TGZ;
         infos.add(new PackagingInfo(name, method));
 
-        long size = getEstimatedPackageSize(experiment);
+        final long size = getEstimatedPackageSize(experiment);
         if (size < PackagingInfo.MAX_ZIP_SIZE) {
             name = experiment.getPublicIdentifier() + PackagingInfo.PackagingMethod.ZIP.getExtension();
             method = PackagingInfo.PackagingMethod.ZIP;
@@ -326,6 +320,7 @@ public class GeoSoftExporterBean implements GeoSoftExporter {
     /**
      * {@inheritDoc}
      */
+    @Override
     @TransactionAttribute(TransactionAttributeType.SUPPORTS)
     public void writeGeoSoftFile(Project project, String permaLinkUrl, PrintWriter out) throws IOException {
         if (!validateForExport(project.getExperiment()).isEmpty()) {
@@ -337,20 +332,21 @@ public class GeoSoftExporterBean implements GeoSoftExporter {
     /**
      * {@inheritDoc}
      */
+    @Override
     @TransactionAttribute(TransactionAttributeType.SUPPORTS)
-    public void export(Project project, String permaLinkUrl, PackagingInfo.PackagingMethod method,
-            OutputStream out) throws IOException {
+    public void export(Project project, String permaLinkUrl, PackagingInfo.PackagingMethod method, OutputStream out)
+            throws IOException {
 
-        OutputStream closeShield = new CloseShieldOutputStream(out);
-        Experiment experiment = project.getExperiment();
+        final OutputStream closeShield = new CloseShieldOutputStream(out);
+        final Experiment experiment = project.getExperiment();
         boolean addReadMe = false;
         if (method == PackagingInfo.PackagingMethod.TGZ) {
             addReadMe = true;
         } else {
             ensureZippable(project);
         }
-        
-        ArchiveOutputStream arOut = method.createArchiveOutputStream(closeShield);
+
+        final ArchiveOutputStream arOut = method.createArchiveOutputStream(closeShield);
         try {
             exportArchive(experiment, permaLinkUrl, addReadMe, arOut);
         } finally {
@@ -361,8 +357,8 @@ public class GeoSoftExporterBean implements GeoSoftExporter {
     }
 
     private void ensureZippable(Project project) {
-        List<PackagingInfo> infos = getAvailablePackagingInfos(project);
-        for (PackagingInfo pi : infos) {
+        final List<PackagingInfo> infos = getAvailablePackagingInfos(project);
+        for (final PackagingInfo pi : infos) {
             if (pi.getMethod() == PackagingInfo.PackagingMethod.ZIP) {
                 return;
             }
@@ -387,31 +383,30 @@ public class GeoSoftExporterBean implements GeoSoftExporter {
 
     private void generateSoftFile(Experiment experiment, String permaLinkUrl, ArchiveOutputStream zout)
             throws IOException {
-        ByteArrayOutputStream bout = new ByteArrayOutputStream();
-        Writer w = new OutputStreamWriter(bout, "UTF-8");
-        PrintWriter out = new PrintWriter(w);
+        final ByteArrayOutputStream bout = new ByteArrayOutputStream();
+        final Writer w = new OutputStreamWriter(bout, "UTF-8");
+        final PrintWriter out = new PrintWriter(w);
         GeoSoftFileWriterUtil.writeSoftFile(experiment, permaLinkUrl, out);
         out.close();
 
-        ArchiveEntry ae = FileAccessUtils.createArchiveEntry(zout, experiment.getPublicIdentifier() + ".soft.txt",
-                bout.size());
-        zout.putArchiveEntry(ae);        
+        final ArchiveEntry ae = this.fileAccessHelper.createArchiveEntry(zout, experiment.getPublicIdentifier()
+                + ".soft.txt", bout.size());
+        zout.putArchiveEntry(ae);
         bout.writeTo(zout);
         zout.closeArchiveEntry();
     }
 
-    
     private long getEstimatedPackageSize(Experiment experiment) {
         long size = 0;
-        for (Hybridization h : experiment.getHybridizations()) {
-            for (RawArrayData rad : h.getRawDataCollection()) {
+        for (final Hybridization h : experiment.getHybridizations()) {
+            for (final RawArrayData rad : h.getRawDataCollection()) {
                 size += rad.getDataFile().getCompressedSize();
             }
-            for (DerivedArrayData dad : h.getDerivedDataCollection()) {
+            for (final DerivedArrayData dad : h.getDerivedDataCollection()) {
                 size += dad.getDataFile().getCompressedSize();
             }
         }
-        for (CaArrayFile f : experiment.getProject().getSupplementalFiles()) {
+        for (final CaArrayFile f : experiment.getProject().getSupplementalFiles()) {
             size += f.getCompressedSize();
         }
 
@@ -421,30 +416,30 @@ public class GeoSoftExporterBean implements GeoSoftExporter {
     }
 
     private void addDataFiles(Experiment experiment, ArchiveOutputStream zout) throws IOException {
-        for (Hybridization h : experiment.getHybridizations()) {
+        for (final Hybridization h : experiment.getHybridizations()) {
             addDataFiles(h.getRawDataCollection(), zout);
             addDataFiles(h.getDerivedDataCollection(), zout);
         }
-        for (CaArrayFile f : experiment.getProject().getSupplementalFiles()) {
-            FileAccessUtils.addFileToArchive(f, zout);
+        for (final CaArrayFile f : experiment.getProject().getSupplementalFiles()) {
+            this.fileAccessHelper.addFileToArchive(f, zout);
         }
     }
 
     private void addDataFiles(Set<? extends AbstractArrayData> dataCollection, ArchiveOutputStream zout)
             throws IOException {
-        for (AbstractArrayData aad : dataCollection) {
-            CaArrayFile f = aad.getDataFile();
-            FileAccessUtils.addFileToArchive(f, zout);
+        for (final AbstractArrayData aad : dataCollection) {
+            final CaArrayFile f = aad.getDataFile();
+            this.fileAccessHelper.addFileToArchive(f, zout);
         }
     }
 
     private void addReadmeFile(ArchiveOutputStream ar) throws IOException {
-        InputStream is = GeoSoftExporterBean.class.getResourceAsStream("README.txt");
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        final InputStream is = GeoSoftExporterBean.class.getResourceAsStream("README.txt");
+        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
         IOUtils.copy(is, baos);
         is.close();
 
-        ArchiveEntry ae = FileAccessUtils.createArchiveEntry(ar, "README.txt", baos.size());
+        final ArchiveEntry ae = this.fileAccessHelper.createArchiveEntry(ar, "README.txt", baos.size());
         ar.putArchiveEntry(ae);
         baos.writeTo(ar);
         ar.closeArchiveEntry();

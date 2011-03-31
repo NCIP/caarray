@@ -1,12 +1,11 @@
-
 package gov.nih.nci.caarray.application.translation.geosoft;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Iterables;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.AbstractHibernateTest;
 import gov.nih.nci.caarray.application.vocabulary.VocabularyServiceStub;
-import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.array.Array;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.contact.Organization;
@@ -33,12 +32,14 @@ import gov.nih.nci.caarray.domain.sample.UserDefinedCharacteristic;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
-import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
+import gov.nih.nci.caarray.util.CaArrayUtils;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.net.URI;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -47,6 +48,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.zip.GZIPInputStream;
+
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
@@ -55,13 +57,17 @@ import org.hibernate.Transaction;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
+
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
 
 /**
- *
+ * 
  * @author gax
  */
 public class GeoSoftExporterBeanTest extends AbstractHibernateTest {
+    private static final URI DUMMY_HANDLE = CaArrayUtils.makeUriQuietly("foo:baz");
+
     private GeoSoftExporterBean bean;
     VocabularyServiceStub vocab;
     Transaction tx;
@@ -70,59 +76,57 @@ public class GeoSoftExporterBeanTest extends AbstractHibernateTest {
         super(false);
     }
 
-
-
     @Before
     public void setUp() {
-        bean = new GeoSoftExporterBean();
-        vocab  = new VocabularyServiceStub();
-        tx = hibernateHelper.beginTransaction();
+        this.bean = new GeoSoftExporterBean();
+        this.vocab = new VocabularyServiceStub();
+        this.tx = this.hibernateHelper.beginTransaction();
     }
 
     @After
     public void closeTx() {
-        tx.rollback();
+        this.tx.rollback();
     }
 
     Project makeGoodProject() throws Exception {
-        Experiment e = makeGoodExperiment();
+        final Experiment e = makeGoodExperiment();
         return e.getProject();
     }
 
     Experiment makeGoodExperiment() throws Exception {
-        Project prj = new Project();
-        Experiment experiment = new Experiment();
+        final Project prj = new Project();
+        final Experiment experiment = new Experiment();
         prj.setExperiment(experiment);
-        Method setter = Experiment.class.getDeclaredMethod("setProject", Project.class);
+        final Method setter = Experiment.class.getDeclaredMethod("setProject", Project.class);
         setter.setAccessible(true);
         setter.invoke(experiment, prj);
 
-        TermSource src = vocab.getSource("MO", "1.3.1.1");
+        final TermSource src = this.vocab.getSource("MO", "1.3.1.1");
 
         // to ensure consistent order
         experiment.setExperimentDesignTypes(new LinkedHashSet<Term>());
-        experiment.getExperimentDesignTypes().add(vocab.getTerm(src, "test-design-type1"));
-        experiment.getExperimentDesignTypes().add(vocab.getTerm(src, "test-design-type2"));
+        experiment.getExperimentDesignTypes().add(this.vocab.getTerm(src, "test-design-type1"));
+        experiment.getExperimentDesignTypes().add(this.vocab.getTerm(src, "test-design-type2"));
         experiment.setPublicIdentifier("test-exp-id");
         experiment.setTitle("test-title");
-        Publication pub = new Publication();
+        final Publication pub = new Publication();
         pub.setPubMedId("test-pub");
         experiment.getPublications().add(pub);
-        ExperimentContact ec = new ExperimentContact();
-        Person per = new Person();
+        final ExperimentContact ec = new ExperimentContact();
+        final Person per = new Person();
         per.setFirstName("fff");
         per.setMiddleInitials("mmm");
         per.setLastName("lll");
         ec.setPerson(per);
         experiment.getExperimentContacts().add(ec);
-        ArrayDesign ad = new ArrayDesign();
+        final ArrayDesign ad = new ArrayDesign();
         experiment.getArrayDesigns().add(ad);
         ad.setName("test-ad");
         ad.setGeoAccession("test-ga");
-        Organization o = new Organization();
+        final Organization o = new Organization();
         ad.setProvider(o);
         o.setName("Affymetrix");
-        Source source = new Source();
+        final Source source = new Source();
         source.setId(1L);
         source.getProviders().add(o);
         source.setName("test-source");
@@ -136,7 +140,7 @@ public class GeoSoftExporterBeanTest extends AbstractHibernateTest {
         sample.setOrganism(ozm);
         source.getSamples().add(sample);
         sample.getSources().add(source);
-        Extract extract = new Extract();
+        final Extract extract = new Extract();
         extract.setId(3L);
         extract.setName("test-extract");
         sample.getExtracts().add(extract);
@@ -153,137 +157,131 @@ public class GeoSoftExporterBeanTest extends AbstractHibernateTest {
         sample.getSources().add(source);
         sample.getExtracts().add(extract);
         extract.getSamples().add(sample);
-        
-        LabeledExtract lb = new LabeledExtract();
+
+        final LabeledExtract lb = new LabeledExtract();
         lb.setId(5L);
-        lb.setLabel(vocab.getTerm(src, "label"));
-        Term mt = vocab.getTerm(src, "test-mat");
+        lb.setLabel(this.vocab.getTerm(src, "label"));
+        final Term mt = this.vocab.getTerm(src, "test-mat");
         mt.setId(1L);
         mt.setValue("MT val");
         lb.setMaterialType(mt);
         extract.getLabeledExtracts().add(lb);
         lb.getExtracts().add(extract);
-        Hybridization h = new Hybridization();
+        final Hybridization h = new Hybridization();
         h.setId(6L);
-        Array a = new Array();
+        final Array a = new Array();
         a.setDesign(ad);
         h.setArray(a);
         h.setName("test-hyb");
         experiment.getHybridizations().add(h);
         ProtocolApplication pa = new ProtocolApplication();
         pa.setId(7L);
-        Protocol p = vocab.getProtocol("some extract", src);
-        Term type = vocab.getTerm(src, "nucleic_acid_extraction");
+        Protocol p = this.vocab.getProtocol("some extract", src);
+        Term type = this.vocab.getTerm(src, "nucleic_acid_extraction");
         p.setDescription("extract desc");
         p.setType(type);
         pa.setProtocol(p);
         sample.getProtocolApplications().add(pa);
         pa = new ProtocolApplication();
         pa.setId(8L);
-        type = vocab.getTerm(src, "labeling");
-        p = vocab.getProtocol("some label", src);
+        type = this.vocab.getTerm(src, "labeling");
+        p = this.vocab.getProtocol("some label", src);
         p.setDescription("labeling desc");
         p.setType(type);
         pa.setProtocol(p);
         extract.getProtocolApplications().add(pa);
         pa = new ProtocolApplication();
         pa.setId(9L);
-        p = vocab.getProtocol("some hybridization", src);
+        p = this.vocab.getProtocol("some hybridization", src);
         p.setDescription("hybridization desc");
-        type = vocab.getTerm(src, "hybridization");        
+        type = this.vocab.getTerm(src, "hybridization");
         p.setType(type);
         pa.setProtocol(p);
         lb.getProtocolApplications().add(pa);
         pa = new ProtocolApplication();
         pa.setId(10L);
-        p = vocab.getProtocol("some scan", src);
+        p = this.vocab.getProtocol("some scan", src);
         p.setDescription("scan desc");
-        type = vocab.getTerm(src, "scan");        
+        type = this.vocab.getTerm(src, "scan");
         p.setType(type);
         pa.setProtocol(p);
         h.getProtocolApplications().add(pa);
         pa = new ProtocolApplication();
         pa.setId(11L);
-        p = vocab.getProtocol("some treatment", src);
+        p = this.vocab.getProtocol("some treatment", src);
         p.setDescription("treatment desc");
-        type = vocab.getTerm(src, "treatment");        
+        type = this.vocab.getTerm(src, "treatment");
         p.setType(type);
         pa.setProtocol(p);
         h.getProtocolApplications().add(pa);
         pa = new ProtocolApplication();
         pa.setId(12L);
-        p = vocab.getProtocol("another treatment", src);
+        p = this.vocab.getProtocol("another treatment", src);
         p.setDescription("another treatment desc");
-        type = vocab.getTerm(src, "treatment");
+        type = this.vocab.getTerm(src, "treatment");
         p.setType(type);
         pa.setProtocol(p);
         h.getProtocolApplications().add(pa);
         pa = new ProtocolApplication();
         pa.setId(13L);
-        p = vocab.getProtocol("some growth", src);
+        p = this.vocab.getProtocol("some growth", src);
         p.setDescription("growth desc");
-        type = vocab.getTerm(src, "growth");        
+        type = this.vocab.getTerm(src, "growth");
         p.setType(type);
         pa.setProtocol(p);
         h.getProtocolApplications().add(pa);
 
-        
-        RawArrayData rawData = new RawArrayData();
+        final RawArrayData rawData = new RawArrayData();
         pa = new ProtocolApplication();
         pa.setId(14L);
         rawData.setName("raw-array-data");
         rawData.getHybridizations().add(h);
-        p = vocab.getProtocol("data processing", src);
+        p = this.vocab.getProtocol("data processing", src);
         p.setDescription("data proc desc");
         pa.setProtocol(p);
         rawData.getProtocolApplications().add(pa);
-        CaArrayFile rawFile = new CaArrayFile();
-        File data = new File(GeoSoftExporterBeanTest.class.getProtectionDomain().getCodeSource().getLocation().toURI());
-        data = new File(data, GeoSoftExporterBeanTest.class.getName().replace(".", "/") + ".class");
+        final CaArrayFile rawFile = new CaArrayFile();
         rawFile.setCompressedSize(1024);
-        rawFile.setUncompressedSize(1024*2);
+        rawFile.setUncompressedSize(1024 * 2);
         rawFile.setName("raw_file.data");
         rawFile.setFileStatus(FileStatus.IMPORTED);
-        CaArrayDaoFactory.INSTANCE.getFileDao().writeContents(rawFile, new FileInputStream(data));
-        CaArrayDaoFactory.INSTANCE.getFileDao().saveAndEvict(rawFile);
+        rawFile.setDataHandle(DUMMY_HANDLE);
         rawData.setDataFile(rawFile);
         h.getRawDataCollection().add(rawData);
-        DerivedArrayData d = new DerivedArrayData();
-        CaArrayFile derFile = new CaArrayFile();
+        final DerivedArrayData d = new DerivedArrayData();
+        final CaArrayFile derFile = new CaArrayFile();
         derFile.setFileType(FileType.AFFYMETRIX_CHP);
         derFile.setName("derived_file.data");
         derFile.setCompressedSize(1024);
-        derFile.setUncompressedSize(1024*2);
+        derFile.setUncompressedSize(1024 * 2);
         derFile.setFileStatus(FileStatus.IMPORTED);
-        CaArrayDaoFactory.INSTANCE.getFileDao().writeContents(derFile, new FileInputStream(data));
-        CaArrayDaoFactory.INSTANCE.getFileDao().saveAndEvict(derFile);
+        derFile.setDataHandle(DUMMY_HANDLE);
         d.setDataFile(derFile);
         h.getDerivedDataCollection().add(d);
 
-        CaArrayFile suppFile = new CaArrayFile();
+        final CaArrayFile suppFile = new CaArrayFile();
         suppFile.setFileType(FileType.AFFYMETRIX_CHP);
         suppFile.setName("supplimental.data");
         suppFile.setCompressedSize(1024);
-        suppFile.setUncompressedSize(1024*2);
+        suppFile.setUncompressedSize(1024 * 2);
         suppFile.setFileStatus(FileStatus.IMPORTED);
-        CaArrayDaoFactory.INSTANCE.getFileDao().writeContents(suppFile, new FileInputStream(data));
-        CaArrayDaoFactory.INSTANCE.getFileDao().saveAndEvict(suppFile);
-        Field supplementalFilesField = Project.class.getDeclaredField("supplementalFiles");
+        suppFile.setDataHandle(DUMMY_HANDLE);
+        final Field supplementalFilesField = Project.class.getDeclaredField("supplementalFiles");
         supplementalFilesField.setAccessible(true);
-        SortedSet<CaArrayFile> supplementalFiles = (SortedSet<CaArrayFile>) supplementalFilesField.get(prj);
+        final SortedSet<CaArrayFile> supplementalFiles = (SortedSet<CaArrayFile>) supplementalFilesField.get(prj);
         supplementalFiles.add(suppFile);
 
-        Category ca = vocab.getCategory(src, "test-cat");
-        UserDefinedCharacteristic cha = new UserDefinedCharacteristic(ca, "test-val", type);
+        final Category ca = this.vocab.getCategory(src, "test-cat");
+        final UserDefinedCharacteristic cha = new UserDefinedCharacteristic(ca, "test-val", type);
         source.getCharacteristics().add(cha);
-        UserDefinedFactorValue fv = new UserDefinedFactorValue("test-value", type);
-        Factor fact = new Factor();
+        final UserDefinedFactorValue fv = new UserDefinedFactorValue("test-value", type);
+        final Factor fact = new Factor();
         fact.setName("test-factor");
         fv.setFactor(fact);
         h.getFactorValues().add(fv);
-        lb.setTissueSite(vocab.getTerm(src, "some tissue site"));
-        extract.setDiseaseState(vocab.getTerm(src, "some disease state"));
-        source.setCellType(vocab.getTerm(src, "some cell type"));
+        lb.setTissueSite(this.vocab.getTerm(src, "some tissue site"));
+        extract.setDiseaseState(this.vocab.getTerm(src, "some disease state"));
+        source.setCellType(this.vocab.getTerm(src, "some cell type"));
         sample.setExternalId("test external id");
 
         lb.getHybridizations().add(h);
@@ -296,8 +294,8 @@ public class GeoSoftExporterBeanTest extends AbstractHibernateTest {
      */
     @Test
     public void testValidateForExport() throws Exception {
-        Experiment experiment = makeGoodExperiment();
-        List<String> result = bean.validateForExport(experiment);
+        final Experiment experiment = makeGoodExperiment();
+        final List<String> result = this.bean.validateForExport(experiment);
         assertTrue(result.toString(), result.isEmpty());
     }
 
@@ -305,88 +303,82 @@ public class GeoSoftExporterBeanTest extends AbstractHibernateTest {
     public void testBadArrayDesign() throws Exception {
         Experiment experiment = makeGoodExperiment();
         experiment.getArrayDesigns().clear();
-        List<String> result = bean.validateForExport(experiment);
+        List<String> result = this.bean.validateForExport(experiment);
         assertEquals(1, result.size());
         assertEquals("No (Affymetrix) array design specified", result.get(0));
 
         experiment = makeGoodExperiment();
-        ArrayDesign ad = experiment.getArrayDesigns().iterator().next();
+        final ArrayDesign ad = experiment.getArrayDesigns().iterator().next();
         ad.getProvider().setName("foo");
         ad.setGeoAccession(null);
-        result = bean.validateForExport(experiment);
+        result = this.bean.validateForExport(experiment);
         assertEquals(1, result.size());
         assertEquals("Affymetrix is not the provider for array design test-ad", result.get(0));
     }
 
     @Test
     public void testBadSingleChannel() throws Exception {
-        Experiment experiment = makeGoodExperiment();
-        Hybridization h = experiment.getHybridizations().iterator().next();
-        RawArrayData rawData = new RawArrayData();
-        ProtocolApplication pa = new ProtocolApplication();
+        final Experiment experiment = makeGoodExperiment();
+        final Hybridization h = experiment.getHybridizations().iterator().next();
+        final RawArrayData rawData = new RawArrayData();
+        final ProtocolApplication pa = new ProtocolApplication();
         rawData.setName("raw-array-data2");
         rawData.getHybridizations().add(h);
-        Protocol p = vocab.getProtocol("data processing", null);
+        final Protocol p = this.vocab.getProtocol("data processing", null);
         p.setDescription("data proc desc");
         pa.setProtocol(p);
         rawData.getProtocolApplications().add(pa);
         h.getRawDataCollection().add(rawData);
-        List<String> result = bean.validateForExport(experiment);
+        final List<String> result = this.bean.validateForExport(experiment);
         assertEquals(result.toString(), 0, result.size());
     }
 
     @Test
     public void testNoRawData() throws Exception {
-        Experiment experiment = makeGoodExperiment();
-        experiment.getSources()
-                .iterator().next().getSamples()
-                .iterator().next().getExtracts()
-                .iterator().next().getLabeledExtracts()
-                .iterator().next().getHybridizations()
-                .iterator().next().getRawDataCollection().clear();
-        List<String> result = bean.validateForExport(experiment);
+        final Experiment experiment = makeGoodExperiment();
+        experiment.getSources().iterator().next().getSamples().iterator().next().getExtracts().iterator().next()
+                .getLabeledExtracts().iterator().next().getHybridizations().iterator().next().getRawDataCollection()
+                .clear();
+        final List<String> result = this.bean.validateForExport(experiment);
         assertEquals(1, result.size());
         assertEquals("Hybridization test-hyb must have at least one Raw Data File", result.get(0));
     }
 
     @Test
     public void testNoDerivedData() throws Exception {
-        Experiment experiment = makeGoodExperiment();
-        Source source = experiment.getSources().iterator().next();
-        Sample sample1 = source.getSamples().iterator().next();
-        Extract extract = sample1.getExtracts().iterator().next();
-        LabeledExtract lb = extract.getLabeledExtracts().iterator().next();
-        Hybridization hyb = lb.getHybridizations().iterator().next();
+        final Experiment experiment = makeGoodExperiment();
+        final Source source = experiment.getSources().iterator().next();
+        final Sample sample1 = source.getSamples().iterator().next();
+        final Extract extract = sample1.getExtracts().iterator().next();
+        final LabeledExtract lb = extract.getLabeledExtracts().iterator().next();
+        final Hybridization hyb = lb.getHybridizations().iterator().next();
         hyb.getDerivedDataCollection().clear();
-        List<String> result = bean.validateForExport(experiment);
+        final List<String> result = this.bean.validateForExport(experiment);
         assertEquals(1, result.size());
         assertEquals("Hybridization test-hyb must have a derived data file of type AFFYMETRIX_CHP", result.get(0));
     }
 
     @Test
     public void testNoProtocol() throws Exception {
-        Experiment experiment = makeGoodExperiment();
-        experiment.getSources()
-                .iterator().next().getSamples()
-                .iterator().next().getExtracts()
-                .iterator().next().getProtocolApplications().clear();
-                
-        List<String> result = bean.validateForExport(experiment);
+        final Experiment experiment = makeGoodExperiment();
+        experiment.getSources().iterator().next().getSamples().iterator().next().getExtracts().iterator().next()
+                .getProtocolApplications().clear();
+
+        final List<String> result = this.bean.validateForExport(experiment);
         assertEquals(1, result.size());
         assertEquals("Missing protocol (one of [labeling] needed)", result.get(0));
     }
 
     @Test
     public void testNoCharacteristic() throws Exception {
-        Experiment experiment = makeGoodExperiment();
-        Source source = experiment.getSources()
-                .iterator().next();
+        final Experiment experiment = makeGoodExperiment();
+        final Source source = experiment.getSources().iterator().next();
 
-        Iterator<Sample> it = source.getSamples().iterator();
-        Sample sample1 = it.next();
-        Sample sample2 = it.next();
-        Extract e = sample1.getExtracts().iterator().next();
-        LabeledExtract le = e.getLabeledExtracts().iterator().next();
+        final Iterator<Sample> it = source.getSamples().iterator();
+        final Sample sample1 = it.next();
+        final Sample sample2 = it.next();
+        final Extract e = sample1.getExtracts().iterator().next();
+        final LabeledExtract le = e.getLabeledExtracts().iterator().next();
 
         source.getCharacteristics().clear();
         le.getHybridizations().iterator().next().getFactorValues().clear();
@@ -395,37 +387,38 @@ public class GeoSoftExporterBeanTest extends AbstractHibernateTest {
         source.setCellType(null);
         sample1.setExternalId(null);
         sample2.setExternalId(null);
-        
 
-        List<String> result = bean.validateForExport(experiment);
+        final List<String> result = this.bean.validateForExport(experiment);
         assertEquals(1, result.size());
-        assertEquals("Hybridization test-hyb and associated biomaterials must have at least one characteristic or factor value", result.get(0));
+        assertEquals(
+                "Hybridization test-hyb and associated biomaterials must have at least one characteristic or factor value",
+                result.get(0));
     }
 
     @Test
     public void testGetPackageingInfo() throws Exception {
         Project p = makeGoodProject();
         Experiment experiment = p.getExperiment();
-        List<PackagingInfo> infos = bean.getAvailablePackagingInfos(p);
+        List<PackagingInfo> infos = this.bean.getAvailablePackagingInfos(p);
         assertEquals(2, infos.size());
-        for (PackagingInfo pi : infos) {
+        for (final PackagingInfo pi : infos) {
             switch (pi.getMethod()) {
-                case TGZ:
-                    assertEquals("test-exp-id.tgz", pi.getName());
-                    break;
-                case ZIP:
-                    assertEquals("test-exp-id.zip", pi.getName());
-                    break;
-                default:
-                    fail("unexpected method " + pi.getMethod());
+            case TGZ:
+                assertEquals("test-exp-id.tgz", pi.getName());
+                break;
+            case ZIP:
+                assertEquals("test-exp-id.zip", pi.getName());
+                break;
+            default:
+                fail("unexpected method " + pi.getMethod());
             }
         }
         p = makeGoodProject();
         experiment = p.getExperiment();
-        Hybridization h = experiment.getHybridizations().iterator().next();
-        CaArrayFile f = h.getRawDataCollection().iterator().next().getDataFile();
+        final Hybridization h = experiment.getHybridizations().iterator().next();
+        final CaArrayFile f = h.getRawDataCollection().iterator().next().getDataFile();
         f.setCompressedSize(Integer.MAX_VALUE);
-        infos = bean.getAvailablePackagingInfos(p);
+        infos = this.bean.getAvailablePackagingInfos(p);
         assertEquals(1, infos.size());
         assertEquals("test-exp-id.tgz", infos.get(0).getName());
         assertEquals(PackagingInfo.PackagingMethod.TGZ, infos.get(0).getMethod());
@@ -433,48 +426,52 @@ public class GeoSoftExporterBeanTest extends AbstractHibernateTest {
 
     @Test
     public void testExportArchiveZip() throws Exception {
-        Project p = makeGoodProject();
-        List<PackagingInfo> infos = bean.getAvailablePackagingInfos(p);
-        PackagingInfo zipPi = Iterables.find(infos, new Predicate<PackagingInfo>() {
+        final Project p = makeGoodProject();
+        final List<PackagingInfo> infos = this.bean.getAvailablePackagingInfos(p);
+        final PackagingInfo zipPi = Iterables.find(infos, new Predicate<PackagingInfo>() {
+            @Override
             public boolean apply(PackagingInfo t) {
                 return t.getMethod() == PackagingInfo.PackagingMethod.ZIP;
             }
         });
-        File f = File.createTempFile("test", zipPi.getName());
-        FileOutputStream fos = new FileOutputStream(f);
-        
-        bean.export(p, "http://example.com/my_experiemnt", PackagingInfo.PackagingMethod.ZIP, fos);
+        final File f = File.createTempFile("test", zipPi.getName());
+        final FileOutputStream fos = new FileOutputStream(f);
+
+        this.bean.export(p, "http://example.com/my_experiemnt", PackagingInfo.PackagingMethod.ZIP, fos);
         fos.close();
-        ZipFile zf = new ZipFile(f);
-        Enumeration<ZipArchiveEntry> en = zf.getEntries();
-        Set<String> entries = new HashSet<String>();
-        entries.addAll(java.util.Arrays.asList("test-exp-id.soft.txt", "raw_file.data", "derived_file.data", "supplimental.data"));
+        final ZipFile zf = new ZipFile(f);
+        final Enumeration<ZipArchiveEntry> en = zf.getEntries();
+        final Set<String> entries = new HashSet<String>();
+        entries.addAll(java.util.Arrays.asList("test-exp-id.soft.txt", "raw_file.data", "derived_file.data",
+                "supplimental.data"));
         while (en.hasMoreElements()) {
-            ZipArchiveEntry ze = en.nextElement();
+            final ZipArchiveEntry ze = en.nextElement();
             assertTrue(ze.getName() + " unexpected", entries.remove(ze.getName()));
-            
+
         }
         assertTrue(entries.toString() + " not found", entries.isEmpty());
     }
-    
+
     @Test
     public void testExportArchiveTar() throws Exception {
 
-        Project p = makeGoodProject();
-        List<PackagingInfo> infos = bean.getAvailablePackagingInfos(p);
-        PackagingInfo zipPi = Iterables.find(infos, new Predicate<PackagingInfo>() {
+        final Project p = makeGoodProject();
+        final List<PackagingInfo> infos = this.bean.getAvailablePackagingInfos(p);
+        final PackagingInfo zipPi = Iterables.find(infos, new Predicate<PackagingInfo>() {
+            @Override
             public boolean apply(PackagingInfo t) {
                 return t.getMethod() == PackagingInfo.PackagingMethod.ZIP;
             }
         });
-        File f = File.createTempFile("test", zipPi.getName());
-        FileOutputStream fos = new FileOutputStream(f);
-        bean.export(p, "http://example.com/my_experiemnt", PackagingInfo.PackagingMethod.TGZ, fos);
+        final File f = File.createTempFile("test", zipPi.getName());
+        final FileOutputStream fos = new FileOutputStream(f);
+        this.bean.export(p, "http://example.com/my_experiemnt", PackagingInfo.PackagingMethod.TGZ, fos);
         fos.close();
-        GZIPInputStream in = new GZIPInputStream(new FileInputStream(f));
-        TarArchiveInputStream tar = new TarArchiveInputStream(in);
-        Set<String> entries = new HashSet<String>();
-        entries.addAll(java.util.Arrays.asList("test-exp-id.soft.txt", "raw_file.data", "derived_file.data", "supplimental.data", "README.txt"));
+        final GZIPInputStream in = new GZIPInputStream(new FileInputStream(f));
+        final TarArchiveInputStream tar = new TarArchiveInputStream(in);
+        final Set<String> entries = new HashSet<String>();
+        entries.addAll(java.util.Arrays.asList("test-exp-id.soft.txt", "raw_file.data", "derived_file.data",
+                "supplimental.data", "README.txt"));
         TarArchiveEntry e = tar.getNextTarEntry();
         while (e != null) {
             assertTrue(e.getName() + " unexpected", entries.remove(e.getName()));

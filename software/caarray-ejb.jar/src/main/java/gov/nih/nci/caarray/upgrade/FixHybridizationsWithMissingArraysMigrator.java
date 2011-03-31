@@ -88,7 +88,6 @@ import gov.nih.nci.caarray.domain.MultiPartBlob;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileType;
-import gov.nih.nci.caarray.platforms.FileManager;
 import gov.nih.nci.caarray.platforms.PlatformModule;
 import gov.nih.nci.caarray.platforms.SessionTransactionManager;
 import gov.nih.nci.caarray.platforms.SessionTransactionManagerNoOpImpl;
@@ -157,6 +156,7 @@ public class FixHybridizationsWithMissingArraysMigrator extends AbstractCustomCh
     /**
      * {@inheritDoc}
      */
+    @Override
     protected void doExecute(Database db) throws CustomChangeException {
         try {
             final Connection underlyingConnection = db.getConnection().getUnderlyingConnection();
@@ -283,7 +283,7 @@ public class FixHybridizationsWithMissingArraysMigrator extends AbstractCustomCh
         final AbstractModule localModule = new AbstractModule() {
             @Override
             protected void configure() {
-                bind(FileManager.class).toInstance(createFileManager());               
+                // TODO: may need to bind a local implementation of storage in place of this: bind(FileManager.class).toInstance(createFileManager());               
                 bind(SessionTransactionManager.class).toInstance(new SessionTransactionManagerNoOpImpl());
                 bind(CaArrayHibernateHelper.class).toInstance(new SingleConnectionHibernateHelper());
             }
@@ -291,26 +291,28 @@ public class FixHybridizationsWithMissingArraysMigrator extends AbstractCustomCh
         return localModule;
     }
     
-    private FileManager createFileManager() {
-        return new FileManager() {
-            public File openFile(CaArrayFile caArrayFile) {
-                try {
-                    File file = getFile(caArrayFile.getId());
-                    openFileMap.put(caArrayFile.getId(), file);
-                    return file;
-                } catch (SQLException e) {
-                    throw new IllegalStateException("Could not open the file " + caArrayFile);
-                } catch (IOException e) {
-                    throw new IllegalStateException("Could not open the file " + caArrayFile);
-                }
-            }
-
-            public void closeFile(CaArrayFile caArrayFile) {
-                File file = openFileMap.get(caArrayFile.getId());
-                FileUtils.deleteQuietly(file);                            
-            }
-        };
-    }
+// TODO: remove this when appropriate local implementation of storage is created to replace this.  
+// Until then, keeping it here temporarily as a reference. - A Sy 2011-03-30    
+//    private FileManager createFileManager() {
+//        return new FileManager() {
+//            public File openFile(CaArrayFile caArrayFile) {
+//                try {
+//                    File file = getFile(caArrayFile.getId());
+//                    openFileMap.put(caArrayFile.getId(), file);
+//                    return file;
+//                } catch (SQLException e) {
+//                    throw new IllegalStateException("Could not open the file " + caArrayFile);
+//                } catch (IOException e) {
+//                    throw new IllegalStateException("Could not open the file " + caArrayFile);
+//                }
+//            }
+//
+//            public void closeFile(CaArrayFile caArrayFile) {
+//                File file = openFileMap.get(caArrayFile.getId());
+//                FileUtils.deleteQuietly(file);                            
+//            }
+//        };
+//    }
     
     private File getFile(Long fileId) throws SQLException, IOException {
         MultiPartBlob mpb = dao.getFileBlob(fileId);

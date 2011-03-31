@@ -275,11 +275,13 @@
         <dependency conf="project" name="aopalliance" org="aopalliance" rev="1.0"/>
 
         <dependency conf="project" name="woodstox" org="codehaus" rev="4.0.7"/>
+                
+        <dependency conf="project" name="mockito" org="mockito" rev="1.8.4"/>  
 
-        <dependency conf="project" name="mockito" org="mockito" rev="1.8.4"/>
-
-        <dependency conf="project" name="gnu-regexp" org="gnu" rev="1.1.4"/>
-
+        <dependency conf="project" name="hamcrest-library" org="org.hamcrest" rev="1.1"/>  
+                
+        <dependency conf="project" name="gnu-regexp" org="gnu" rev="1.1.4"/> 
+        
         <exclude org="pull-parser" module="pull-parser"/>
     </dependencies>
 </ivy-module>

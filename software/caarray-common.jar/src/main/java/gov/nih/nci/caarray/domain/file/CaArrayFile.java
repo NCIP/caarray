@@ -85,19 +85,17 @@ package gov.nih.nci.caarray.domain.file;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
-import gov.nih.nci.caarray.domain.MultiPartBlob;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.security.Protectable;
 import gov.nih.nci.caarray.security.ProtectableDescendent;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 
-import java.io.File;
+import java.net.URI;
 import java.util.Collection;
 import java.util.Collections;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
@@ -110,9 +108,11 @@ import org.apache.commons.lang.builder.CompareToBuilder;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
+import org.hibernate.annotations.Type;
 import org.hibernate.validator.NotNull;
 
 /**
+ * This class represents metadata about a file managed by caArray.
  */
 @Entity
 @BatchSize(size = AbstractCaArrayObject.DEFAULT_BATCH_SIZE)
@@ -126,15 +126,13 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
     private String status;
     private Project project;
     private FileValidationResult validationResult;
-    private int uncompressedSize;
-    private int compressedSize;
+    private long uncompressedSize;
+    private long compressedSize;
+    private URI dataHandle;
 
-    // transient properties
-    private transient MultiPartBlob multiPartBlob;    
-    
     /**
      * Gets the name.
-     *
+     * 
      * @return the name
      */
     @Column(length = DEFAULT_STRING_COLUMN_SIZE)
@@ -145,13 +143,12 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
 
     /**
      * Sets the name.
-     *
+     * 
      * @param name the name
      */
     public void setName(final String name) {
         this.name = name;
     }
-
 
     /**
      * @return the fileStatus
@@ -211,54 +208,49 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
     /**
      * @return the uncompressed size, in bytes
      */
-    public int getUncompressedSize() {
+    public long getUncompressedSize() {
         return this.uncompressedSize;
     }
 
     /**
-     * This method should generally not be called directly, as file size is calculated when
-     * data is written to the file. It is left public to support use in query by example
-     * and tooling relying on JavaBean property conventions
+     * This method should generally not be called directly, as file size is calculated when data is written to the file.
+     * It is left public to support use in query by example and tooling relying on JavaBean property conventions
      * 
      * @param uncompressedSize the uncompressed size of the file, in bytes
      */
-    public void setUncompressedSize(int uncompressedSize) {
+    public void setUncompressedSize(long uncompressedSize) {
         this.uncompressedSize = uncompressedSize;
     }
 
     /**
      * @return the compressed size, in bytes
      */
-    public int getCompressedSize() {
+    public long getCompressedSize() {
         return this.compressedSize;
     }
 
     /**
-     * This method should generally not be called directly, as file size is calculated when
-     * data is written to the file. It is left public to support use in query by example
-     * and tooling relying on JavaBean property conventions
+     * This method should generally not be called directly, as file size is calculated when data is written to the file.
+     * It is left public to support use in query by example and tooling relying on JavaBean property conventions
      * 
      * @param compressedSize the compressed size of the file, in bytes
      */
-    public void setCompressedSize(int compressedSize) {
+    public void setCompressedSize(long compressedSize) {
         this.compressedSize = compressedSize;
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public int compareTo(CaArrayFile o) {
-        if (this == o) { 
+        if (this == o) {
             return 0;
         }
-            
-        return new CompareToBuilder()
-            .append(getProject(), o.getProject())
-            .append(getFileStatus(), o.getFileStatus())
-            .append(getFileType(), o.getFileType())
-            .append(getName(), o.getName())
-            .append(getId(), o.getId())
-            .toComparison();
+
+        return new CompareToBuilder().append(getProject(), o.getProject()).append(getFileStatus(), o.getFileStatus())
+                .append(getFileType(), o.getFileType()).append(getName(), o.getName()).append(getId(), o.getId())
+                .toComparison();
     }
 
     /**
@@ -331,37 +323,9 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
     }
 
     /**
-     * Returns true if this <code>CaArrayFile</code> wraps access to the given physical
-     * file.
-     *
-     * @param file check if this is the wrapped file
-     * @return true if this is the wrapped file.
-     */
-    boolean isMatch(File file) {
-        return file != null && getName() != null && getName().equals(file.getName());
-    }
-
-    
-
-    /**
-     * @return the multiPartBlob
-     */
-    @Embedded
-    private MultiPartBlob getMultiPartBlob() {
-        return this.multiPartBlob;
-    }
-
-    /**
-     * @param multiPartBlob the multiPartBlob to set
-     */
-    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
-    private void setMultiPartBlob(MultiPartBlob multiPartBlob) {
-        this.multiPartBlob = multiPartBlob;
-    }
-
-    /**
      * {@inheritDoc}
      */
+    @Override
     public Collection<? extends Protectable> relatedProtectables() {
         // we cheat a little bit here - we know the only modification operations allowed on files
         // are deleting and changing file type, and those are only allowed in the unimported status
@@ -372,7 +336,8 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
     }
 
     /**
-     * Check whether this file has status of importable.
+     * Check whether this file is eligible to be imported.
+     * 
      * @return boolean
      */
     @Transient
@@ -381,7 +346,8 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
     }
 
     /**
-     * Check whether this file has status of validatable.
+     * Check whether this file is eligible to be validated.
+     * 
      * @return boolean
      */
     @Transient
@@ -390,14 +356,32 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
     }
 
     /**
-     * Check whether this is a file that was previously imported but not parsed,
-     * but now can be imported and parsed (due to a parsing FileHandler being
-     * implemented for it).
-     * @return true if the file can be re-imported and parsed, false otherwise. 
+     * Check whether this is a file that was previously imported but not parsed, but now can be imported and parsed (due
+     * to a parsing FileHandler being implemented for it).
+     * 
+     * @return true if the file can be re-imported and parsed, false otherwise.
      */
     @Transient
     public boolean isUnparsedAndReimportable() {
         return getFileStatus() == FileStatus.IMPORTED_NOT_PARSED
                 && (getFileType().isParseableArrayDesign() || getFileType().isParseableData());
+    }
+
+    /**
+     * @return the dataHandle
+     */
+    @Column(length = DEFAULT_STRING_COLUMN_SIZE)
+    @NotNull
+    @Index(name = "idx_handle")
+    @Type(type = "uri")
+    public URI getDataHandle() {
+        return this.dataHandle;
+    }
+
+    /**
+     * @param dataHandle the dataHandle to set
+     */
+    public void setDataHandle(URI dataHandle) {
+        this.dataHandle = dataHandle;
     }
 }

@@ -85,7 +85,6 @@ package gov.nih.nci.caarray.domain.array;
 import static org.junit.Assert.assertEquals;
 import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity_HibernateIntegrationTest;
-import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileStatus;
@@ -93,40 +92,37 @@ import gov.nih.nci.caarray.domain.project.AssayType;
 import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
+import gov.nih.nci.caarray.util.CaArrayUtils;
 
+import java.net.URI;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.junit.Test;
-
 @SuppressWarnings("PMD")
-public class Array_HibernateIntegrationTest extends AbstractCaArrayEntity_HibernateIntegrationTest {
-
-    @Test
-    @Override
-    public void testSave() {
-        super.testSave();
-    }
+public class Array_HibernateIntegrationTest extends AbstractCaArrayEntity_HibernateIntegrationTest<Array> {
+    private static final URI DUMMY_HANDLE = CaArrayUtils.makeUriQuietly("foo:baz");
 
     @Override
-    protected void setValues(AbstractCaArrayObject caArrayObject) {
-        TermSource ts = new TermSource();
+    protected void setValues(Array array) {
+        super.setValues(array);
+        final TermSource ts = new TermSource();
         ts.setName("TS " + getUniqueStringValue());
-        Term term = new Term();
+        final Term term = new Term();
         term.setValue("term");
         term.setSource(ts);
 
-        ArrayDesign design = new ArrayDesign();
+        final ArrayDesign design = new ArrayDesign();
         design.setName(getUniqueStringValue());
         design.setTechnologyType(term);
         design.addDesignFile(new CaArrayFile());
         design.getFirstDesignFile().setName("File 1");
         design.getFirstDesignFile().setFileStatus(FileStatus.UPLOADED);
+        design.getFirstDesignFile().setDataHandle(DUMMY_HANDLE);
         design.setVersion(getUniqueStringValue());
         design.setGeoAccession(getUniqueStringValue());
         design.setProvider(new Organization());
-        SortedSet <AssayType>assayTypes = new TreeSet<AssayType>();
-        AssayType type = new AssayType();
+        final SortedSet<AssayType> assayTypes = new TreeSet<AssayType>();
+        final AssayType type = new AssayType();
         save(type);
         assayTypes.add(type);
         design.setAssayTypes(assayTypes);
@@ -134,7 +130,6 @@ public class Array_HibernateIntegrationTest extends AbstractCaArrayEntity_Hibern
         design.getOrganism().setScientificName(getUniqueStringValue());
         design.getOrganism().setTermSource(ts);
 
-        Array array = (Array) caArrayObject;
         array.setBatch(getUniqueStringValue());
         array.setSerialNumber(getUniqueStringValue());
         array.setProduction(new ProtocolApplication());
@@ -144,9 +139,8 @@ public class Array_HibernateIntegrationTest extends AbstractCaArrayEntity_Hibern
     }
 
     @Override
-    protected void compareValues(AbstractCaArrayObject caArrayObject, AbstractCaArrayObject retrievedCaArrayObject) {
-        Array original = (Array) caArrayObject;
-        Array retrieved = (Array) retrievedCaArrayObject;
+    protected void compareValues(Array original, Array retrieved) {
+        super.compareValues(original, retrieved);
         assertEquals(original.getBatch(), retrieved.getBatch());
         assertEquals(original.getSerialNumber(), retrieved.getSerialNumber());
         assertEquals(original.getProduction(), retrieved.getProduction());
@@ -155,8 +149,7 @@ public class Array_HibernateIntegrationTest extends AbstractCaArrayEntity_Hibern
     }
 
     @Override
-    protected void setNullableValuesToNull(AbstractCaArrayObject caArrayObject) {
-        Array array = (Array) caArrayObject;
+    protected void setNullableValuesToNull(Array array) {
         array.setBatch(null);
         array.setSerialNumber(null);
         array.setProduction(null);
@@ -165,8 +158,7 @@ public class Array_HibernateIntegrationTest extends AbstractCaArrayEntity_Hibern
     }
 
     @Override
-    protected AbstractCaArrayObject createTestObject() {
+    protected Array createTestObject() {
         return new Array();
     }
-
 }

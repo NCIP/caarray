@@ -83,14 +83,10 @@
 package gov.nih.nci.caarray.application.fileaccess;
 
 import gov.nih.nci.caarray.application.ConfigurationHelper;
-import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.ConfigParamEnum;
-import gov.nih.nci.caarray.domain.file.CaArrayFile;
-import gov.nih.nci.caarray.util.io.logging.LogUtil;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.rmi.server.UID;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -99,13 +95,13 @@ import java.util.Set;
 
 import org.apache.commons.configuration.DataConfiguration;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 /**
- * Default implementation of TemporaryFileCache. Stores file data in temporary directory.
- * Note: This class is not thead safe.
+ * Default implementation of TemporaryFileCache. Stores file data in temporary directory. Note: This class is not thread
+ * safe.
+ * 
  * @see TemporaryFileCacheLocator
  * 
  * @author dkokotov
@@ -115,71 +111,36 @@ public final class TemporaryFileCacheImpl implements TemporaryFileCache {
     private static final String WORKING_DIRECTORY_PROPERTY_KEY = "caarray.working.directory";
     private static final String TEMP_DIR_PROPERTY_KEY = "java.io.tmpdir";
 
-    private final Map<CaArrayFile, File> compressedOpenFiles = new HashMap<CaArrayFile, File>();
-    private final Map<CaArrayFile, File> uncompressedOpenFiles = new HashMap<CaArrayFile, File>();
-    private final Set<File> createdFiles = new HashSet<File>();
+    private final Map<String, File> createdFiles = new HashMap<String, File>();
     private File sessionWorkingDirectory;
 
-    TemporaryFileCacheImpl() {
+    public TemporaryFileCacheImpl() {
         // nothing to do
     }
 
     /**
      * {@inheritDoc}
      */
-    public File getFile(CaArrayFile caArrayFile) {
-        return getFile(caArrayFile, true);
-    }
-    
-    /**
-     * {@inheritDoc}
-     */
-    public File getFile(CaArrayFile caArrayFile, boolean uncompress) {
-        LogUtil.logSubsystemEntry(LOG, caArrayFile);
-        File file;
-        if (fileAlreadyOpened(caArrayFile, uncompress)) {
-            file = getOpenFile(caArrayFile, uncompress);
-        } else {
-            file = openFile(caArrayFile, uncompress);
-        }
-        LogUtil.logSubsystemExit(LOG);
-        return file;
-    }
-
-    private File openFile(CaArrayFile caArrayFile, boolean uncompress) {
-        File file = new File(getSessionWorkingDirectory(), caArrayFile.getName());
-        try {
-            OutputStream outputStream = FileUtils.openOutputStream(file);
-            CaArrayDaoFactory.INSTANCE.getFileDao().copyContentsToStream(caArrayFile, uncompress, outputStream);
-            IOUtils.closeQuietly(outputStream);
-        } catch (IOException e) {
-            throw new FileAccessException("Couldn't access file contents " + caArrayFile.getName(), e);
-        }
-        getOpenFileMap(uncompress).put(caArrayFile, file);            
-        return file;
-    }
-    
-    private Map<CaArrayFile, File> getOpenFileMap(boolean uncompressed) {
-        return uncompressed ? uncompressedOpenFiles : compressedOpenFiles;
-    }
-
-    /**
-     * Returns a temporary <code>java.io.File</code> with the given name.
-     * The client should eventually call delete() to allow the temporary file to be cleaned up.
-     * Throws FileAccessException if file could not be created.
-     *
-     * @param fileName the name of the file to be created
-     * @return the <code>java.io.File</code> pointing to the temporary file.
-     */
+    @Override
     public File createFile(String fileName) {
         try {
-            File file = new File(getSessionWorkingDirectory(), fileName);
+            final File file = new File(getSessionWorkingDirectory(), fileName);
             file.createNewFile();
-            createdFiles.add(file);
+            this.createdFiles.put(fileName, file);
             return file;
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new FileAccessException("Could not create temporary file " + fileName, e);
         }
+    }
+
+    @Override
+    public boolean fileExists(String fileName) {
+        return this.createdFiles.containsKey(fileName);
+    }
+
+    @Override
+    public File getFile(String fileName) {
+        return this.createdFiles.get(fileName);
     }
 
     private File getSessionWorkingDirectory() {
@@ -190,7 +151,7 @@ public final class TemporaryFileCacheImpl implements TemporaryFileCache {
     }
 
     private void createSessionWorkingDirectory() {
-        String sessionSubdirectoryName = new UID().toString().replace(':', '_').replace('-', '_');
+        final String sessionSubdirectoryName = new UID().toString().replace(':', '_').replace('-', '_');
         this.sessionWorkingDirectory = new File(getWorkingDirectory(), sessionSubdirectoryName);
         if (!this.sessionWorkingDirectory.mkdirs()) {
             LOG.error("Couldn't create directory: " + this.sessionWorkingDirectory.getAbsolutePath());
@@ -200,89 +161,55 @@ public final class TemporaryFileCacheImpl implements TemporaryFileCache {
     }
 
     private File getWorkingDirectory() {
-        DataConfiguration config = ConfigurationHelper.getConfiguration();
+        final DataConfiguration config = ConfigurationHelper.getConfiguration();
         String tempDir = config.getString(ConfigParamEnum.STRUTS_MULTIPART_SAVEDIR.name());
         if (StringUtils.isBlank(tempDir)) {
             tempDir = System.getProperty(TEMP_DIR_PROPERTY_KEY);
         }
-        String workingDirectoryPath = System.getProperty(WORKING_DIRECTORY_PROPERTY_KEY, tempDir);
+        final String workingDirectoryPath = System.getProperty(WORKING_DIRECTORY_PROPERTY_KEY, tempDir);
         return new File(workingDirectoryPath);
-    }
-
-    private boolean fileAlreadyOpened(CaArrayFile caArrayFile, boolean uncompressed) {
-        return getOpenFileMap(uncompressed).containsKey(caArrayFile);
-    }
-
-    private File getOpenFile(CaArrayFile caArrayFile, boolean uncompressed) {
-        return getOpenFileMap(uncompressed).get(caArrayFile);
     }
 
     /**
      * Closes all temporary files opened in the current session and deletes the temporary directory used to store them.
      * This method should always be called at the conclusion of a session of working with file data.
      */
-    public void closeFiles() {
+    @Override
+    public void deleteFiles() {
         if (this.sessionWorkingDirectory == null) {
             LOG.debug("closeFiles called for a temp file cache that has already been closed");
             return;
         }
-        LOG.debug("Cleaning up files for temp file cache in directory " + sessionWorkingDirectory.getAbsolutePath());
+        LOG.debug("Cleaning up files for temp file cache in directory "
+                + this.sessionWorkingDirectory.getAbsolutePath());
 
-        // copy files to a temp set to allow closeFile() to modify the maps we are iterating through.
-        for (CaArrayFile caarrayFile : new HashSet<CaArrayFile>(uncompressedOpenFiles.keySet())) {
-            closeFile(caarrayFile, true);
-        }
-        for (CaArrayFile caarrayFile : new HashSet<CaArrayFile>(compressedOpenFiles.keySet())) {
-            closeFile(caarrayFile, false);
+        final Set<String> createdFilesToClose = new HashSet<String>(this.createdFiles.keySet());
+        for (final String fileName : createdFilesToClose) {
+            delete(fileName);
         }
 
-        Set<File> createdFilesToClose = new HashSet<File>(createdFiles);
-        for (File file : createdFilesToClose) {
-            delete(file);
-        }
-        
-        delete(getSessionWorkingDirectory());
+        FileUtils.deleteQuietly(getSessionWorkingDirectory());
         this.sessionWorkingDirectory = null;
     }
 
     /**
      * {@inheritDoc}
      */
-    public void closeFile(CaArrayFile caarrayFile) {
-        closeFile(caarrayFile, true);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void closeFile(CaArrayFile caarrayFile, boolean uncompressed) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Removing session file in directory: " + getSessionWorkingDirectory() + " for caarray file "
-                    + caarrayFile.getName() + " holding " + (uncompressed ? "uncompressed" : "compressed") + " data");
-        }
-        if (this.sessionWorkingDirectory == null) {
+    @Override
+    public void delete(String fileName) {
+        LOG.debug("Deleting temp file: " + fileName);
+        final File file = this.createdFiles.get(fileName);
+        if (file == null) {
+            // no such file, so ignore
             return;
         }
-        File file = getOpenFile(caarrayFile, uncompressed);
-        if (file != null) {
-            delete(file);
-        }
-        getOpenFileMap(uncompressed).remove(caarrayFile);
-    }
 
-    /**
-     * Deletes the temporary file.
-     * @param file the temporary file to delete.
-     */
-    public void delete(File file) {
-        LOG.debug("Deleting file: " + file.getAbsolutePath());
-                
         if (file.exists() && !FileUtils.deleteQuietly(file)) {
             LOG.warn("Couldn't delete file: " + file.getAbsolutePath());
             FileCleanupThread.getInstance().addFile(file);
             file.deleteOnExit();
         } else {
-            createdFiles.remove(file);
+            this.createdFiles.remove(fileName);
         }
     }
 
@@ -291,7 +218,7 @@ public final class TemporaryFileCacheImpl implements TemporaryFileCache {
      */
     @Override
     protected void finalize() throws Throwable {
-        closeFiles();
+        deleteFiles();
         super.finalize();
     }
 }

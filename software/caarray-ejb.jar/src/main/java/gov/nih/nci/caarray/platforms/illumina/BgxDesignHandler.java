@@ -84,11 +84,11 @@ package gov.nih.nci.caarray.platforms.illumina;
 
 import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.dao.SearchDao;
+import gov.nih.nci.caarray.dataStorage.DataStorageFacade;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileType;
-import gov.nih.nci.caarray.platforms.FileManager;
 import gov.nih.nci.caarray.platforms.SessionTransactionManager;
 import gov.nih.nci.caarray.platforms.spi.AbstractDesignFileHandler;
 import gov.nih.nci.caarray.platforms.spi.PlatformFileReadException;
@@ -112,8 +112,8 @@ import org.apache.log4j.Logger;
 import com.google.inject.Inject;
 
 /**
- *  Illumina BGX array design importer.
- *
+ * Illumina BGX array design importer.
+ * 
  * @author gax
  */
 class BgxDesignHandler extends AbstractDesignFileHandler {
@@ -123,28 +123,31 @@ class BgxDesignHandler extends AbstractDesignFileHandler {
     private File fileOnDisk;
 
     @Inject
-    BgxDesignHandler(SessionTransactionManager sessionTransactionManager, FileManager fileManager,
+    BgxDesignHandler(SessionTransactionManager sessionTransactionManager, DataStorageFacade dataStorageFacade,
             ArrayDao arrayDao, SearchDao searchDao) {
-        super(sessionTransactionManager, fileManager, arrayDao, searchDao);
+        super(sessionTransactionManager, dataStorageFacade, arrayDao, searchDao);
     }
 
+    @Override
     public boolean openFiles(Set<CaArrayFile> designFiles) throws PlatformFileReadException {
         if (designFiles == null || designFiles.size() != 1
                 || designFiles.iterator().next().getFileType() != FileType.ILLUMINA_DESIGN_BGX) {
             return false;
         }
-        
+
         this.designFile = designFiles.iterator().next();
-        this.fileOnDisk = getFileManager().openFile(designFile);
+        this.fileOnDisk = getDataStorageFacade().openFile(this.designFile.getDataHandle(), false);
         return true;
     }
-    
+
+    @Override
     public void closeFiles() {
-        getFileManager().closeFile(designFile);
+        getDataStorageFacade().releaseFile(this.designFile.getDataHandle(), false);
         this.fileOnDisk = null;
         this.designFile = null;
     }
-    
+
+    @Override
     public boolean parsesData() {
         return true;
     }
@@ -152,20 +155,21 @@ class BgxDesignHandler extends AbstractDesignFileHandler {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void load(ArrayDesign arrayDesign) {
-        arrayDesign.setName(FilenameUtils.getBaseName(designFile.getName()));
-        arrayDesign.setLsidForEntity(CsvDesignHandler.LSID_AUTHORITY + ":" 
-                + CsvDesignHandler.LSID_NAMESPACE + ":" + arrayDesign.getName());
+        arrayDesign.setName(FilenameUtils.getBaseName(this.designFile.getName()));
+        arrayDesign.setLsidForEntity(CsvDesignHandler.LSID_AUTHORITY + ":" + CsvDesignHandler.LSID_NAMESPACE + ":"
+                + arrayDesign.getName());
         try {
             arrayDesign.setNumberOfFeatures(getNumberOfFeatures());
-        } catch (IOException e) {
+        } catch (final IOException e) {
             LOG.error(e);
             throw new IllegalStateException("Couldn't read file: ", e);
         }
     }
 
     private int getNumberOfFeatures() throws IOException {
-        LineCountHandler h = new LineCountHandler();
+        final LineCountHandler h = new LineCountHandler();
         processContent(h);
         return h.getCount();
     }
@@ -173,16 +177,17 @@ class BgxDesignHandler extends AbstractDesignFileHandler {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void createDesignDetails(ArrayDesign arrayDesign) {
         try {
-            ArrayDesignDetails details = new ArrayDesignDetails();
+            final ArrayDesignDetails details = new ArrayDesignDetails();
             arrayDesign.setDesignDetails(details);
             getArrayDao().save(details);
-            
-            ProbeHandler h = new ProbeHandler(details, getArrayDao(), getSearchDao());
+
+            final ProbeHandler h = new ProbeHandler(details, getArrayDao(), getSearchDao());
             processContent(h);
             flushAndClearSession();
-        } catch (IOException e) {
+        } catch (final IOException e) {
             LOG.error(e);
             throw new IllegalStateException("Couldn't read file: ", e);
         }
@@ -191,23 +196,24 @@ class BgxDesignHandler extends AbstractDesignFileHandler {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void validate(ValidationResult result) {
         try {
-            FileValidationResult fileResult = result.getOrCreateFileValidationResult(this.fileOnDisk);
-            designFile.setValidationResult(fileResult);
-            
-            BgxValidator h = new BgxValidator(fileResult);
+            final FileValidationResult fileResult = result.getOrCreateFileValidationResult(this.designFile.getName());
+            this.designFile.setValidationResult(fileResult);
+
+            final BgxValidator h = new BgxValidator(fileResult);
             processContent(h);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             LOG.error(e);
             throw new IllegalStateException("Couldn't read file: ", e);
         }
     }
 
     private void processContent(ContentHandler handler) throws IOException {
-        Reader r = openReader();
+        final Reader r = openReader();
         try {
-            SectionParser p = new SectionParser(r, '\t');
+            final SectionParser p = new SectionParser(r, '\t');
             p.parse(handler);
         } finally {
             IOUtils.closeQuietly(r);
@@ -222,18 +228,17 @@ class BgxDesignHandler extends AbstractDesignFileHandler {
             in = new FileInputStream(this.fileOnDisk);
             try {
                 in = new GZIPInputStream(in);
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 // not a gzip
             }
             r = new InputStreamReader(in, "UTF8");
             r = new BufferedReader(r);
             return r;
-        } catch (IOException e) {
+        } catch (final IOException e) {
             IOUtils.closeQuietly(in);
             throw e;
         }
     }
-
 
     /**
      * Sections we know about.

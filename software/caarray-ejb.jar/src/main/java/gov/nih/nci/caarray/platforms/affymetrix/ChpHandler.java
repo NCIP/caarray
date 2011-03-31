@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.platforms.affymetrix;
 
+import gov.nih.nci.caarray.dataStorage.DataStorageFacade;
 import gov.nih.nci.caarray.domain.LSID;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
@@ -92,7 +93,6 @@ import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
-import gov.nih.nci.caarray.platforms.FileManager;
 import gov.nih.nci.caarray.platforms.spi.AbstractDataFileHandler;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.ValidationMessage.Type;
@@ -122,13 +122,13 @@ class ChpHandler extends AbstractDataFileHandler {
     private static final String LSID_NAMESPACE_DESIGN = "PhysicalArrayDesign";
 
     private final AbstractChpDesignElementListUtility chpDesignElementListUtility;
-    
+
     @Inject
-    ChpHandler(FileManager fileManager,
+    ChpHandler(DataStorageFacade dataStorageFacade,
             @Named("cdf") AbstractChpDesignElementListUtility chpDesignElementListUtility) {
-        super(fileManager);
+        super(dataStorageFacade);
         this.chpDesignElementListUtility = chpDesignElementListUtility;
-        
+
         FusionCHPLegacyData.registerReader();
         FusionCHPQuantificationData.registerReader();
         FusionCHPQuantificationDetectionData.registerReader();
@@ -138,6 +138,7 @@ class ChpHandler extends AbstractDataFileHandler {
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean parsesData() {
         return true;
     }
@@ -146,10 +147,11 @@ class ChpHandler extends AbstractDataFileHandler {
     protected boolean acceptFileType(FileType type) {
         return FileType.AFFYMETRIX_CHP == type;
     }
-    
+
     /**
      * {@inheritDoc}
      */
+    @Override
     public ArrayDataTypeDescriptor getArrayDataTypeDescriptor() {
         final AbstractCHPData<?> chpData = getChpData(getFile());
         return chpData.getArrayDataTypeDescriptor();
@@ -158,6 +160,7 @@ class ChpHandler extends AbstractDataFileHandler {
     /**
      * {@inheritDoc}
      */
+    @Override
     public QuantitationTypeDescriptor[] getQuantitationTypeDescriptors() {
         final AbstractCHPData<?> chpData = getChpData(getFile());
         return chpData.getQuantitationTypeDescriptors();
@@ -166,6 +169,7 @@ class ChpHandler extends AbstractDataFileHandler {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void loadData(final DataSet dataSet, final List<QuantitationType> types, ArrayDesign design) {
         final Set<QuantitationType> typeSet = new HashSet<QuantitationType>();
         typeSet.addAll(types);
@@ -179,23 +183,25 @@ class ChpHandler extends AbstractDataFileHandler {
     }
 
     private void getDesignElementList(final DataSet dataSet, ArrayDesign design) {
-        final DesignElementList probeList = chpDesignElementListUtility.getDesignElementList(design);
+        final DesignElementList probeList = this.chpDesignElementListUtility.getDesignElementList(design);
         dataSet.setDesignElementList(probeList);
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public void validate(final MageTabDocumentSet mTabSet, final FileValidationResult result, ArrayDesign design) {
         final AbstractCHPData<?> chpData = getChpData(getFile());
         if (chpData == null) {
             result.addMessage(Type.ERROR, "Couldn't read Affymetrix CHP file: " + getFile().getName());
         }
     }
-    
+
     /**
      * {@inheritDoc}
-     */        
+     */
+    @Override
     public boolean requiresMageTab() {
         // TODO Auto-generated method stub
         return false;
@@ -204,7 +210,7 @@ class ChpHandler extends AbstractDataFileHandler {
     private AbstractCHPData<?> getChpData(final File file) {
         AbstractCHPData<?> chpData = null;
         final FusionCHPData data = FusionCHPDataReg.read(file.getAbsolutePath());
-            
+
         if (data instanceof FusionCHPLegacyData) {
             chpData = getChpLegacyData(data);
         } else if (data instanceof FusionCHPQuantificationData) {
@@ -214,13 +220,13 @@ class ChpHandler extends AbstractDataFileHandler {
         } else if (data instanceof FusionCHPMultiDataData) {
             chpData = getChpMultiDataData(data);
         }
-         
+
         if (chpData == null) {
             throw new IllegalArgumentException("Unsupported Affymetrix CHP type");
         }
 
         return chpData;
-   }
+    }
 
     private AbstractCHPData<?> getChpLegacyData(final FusionCHPData fusionCHPData) {
         final FusionCHPLegacyData fusionCHPLegacyData = FusionCHPLegacyData.fromBase(fusionCHPData);
@@ -236,28 +242,27 @@ class ChpHandler extends AbstractDataFileHandler {
     }
 
     private AbstractCHPData<?> getChpExpressionSignalData(final FusionCHPData fusionCHPData) {
-        final FusionCHPQuantificationData fusionCHPQuantificationData 
-            = FusionCHPQuantificationData.fromBase(fusionCHPData);
+        final FusionCHPQuantificationData fusionCHPQuantificationData = FusionCHPQuantificationData
+                .fromBase(fusionCHPData);
         return new CHPExpressionSignalData(fusionCHPQuantificationData);
     }
 
     private AbstractCHPData<?> getChpExpressionDABGSignalData(final FusionCHPData fusionCHPData) {
-        final FusionCHPQuantificationDetectionData fusionCHPQuantificationData 
-            = FusionCHPQuantificationDetectionData.fromBase(fusionCHPData);
+        final FusionCHPQuantificationDetectionData fusionCHPQuantificationData = FusionCHPQuantificationDetectionData
+                .fromBase(fusionCHPData);
         return new CHPExpressionSignalDetectionData(fusionCHPQuantificationData);
     }
 
     private AbstractCHPData<?> getChpMultiDataData(final FusionCHPData fusionCHPData) {
-        final FusionCHPMultiDataData fusionCHPMultiDataData 
-            = FusionCHPMultiDataData.fromBase(fusionCHPData);
-        
+        final FusionCHPMultiDataData fusionCHPMultiDataData = FusionCHPMultiDataData.fromBase(fusionCHPData);
+
         final String algorithm = fusionCHPMultiDataData.getAlgName();
-        
-        boolean algorithmIsBRLMM = algorithm.startsWith("brlmm");
-        boolean algorithmIsBirdseed = algorithm.startsWith("birdseed");
-        boolean algorithmIsAxiomGT = algorithm.startsWith("axiomgt");
-        boolean algorithmIsCN4 = "CN4".equals(algorithm);
-        boolean algorithmIsCN5 = "Analyzer Server".equals(algorithm);
+
+        final boolean algorithmIsBRLMM = algorithm.startsWith("brlmm");
+        final boolean algorithmIsBirdseed = algorithm.startsWith("birdseed");
+        final boolean algorithmIsAxiomGT = algorithm.startsWith("axiomgt");
+        final boolean algorithmIsCN4 = "CN4".equals(algorithm);
+        final boolean algorithmIsCN5 = "Analyzer Server".equals(algorithm);
 
         if (algorithmIsBRLMM) {
             return new CHPSnpBrlmmData(fusionCHPMultiDataData);
@@ -273,7 +278,8 @@ class ChpHandler extends AbstractDataFileHandler {
 
         return null;
     }
-    
+
+    @Override
     public List<LSID> getReferencedArrayDesignCandidateIds() {
         final String lsidObjectId = getChpData(getFile()).getChipType();
         return Collections.singletonList(new LSID(LSID_AUTHORITY, LSID_NAMESPACE_DESIGN, lsidObjectId));

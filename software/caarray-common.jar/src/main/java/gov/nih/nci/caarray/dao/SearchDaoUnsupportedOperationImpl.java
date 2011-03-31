@@ -101,10 +101,9 @@ import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
 /**
  * Throws UnsupportedOperationException for all SearchDao functions.
  * 
- * Inherit from this class if you need to implement SearchDao in a limited context,
- * such as a test, where not all functions are needed.  Override only the functions
- * needed and rely on an exception being thrown if any unimplemented function is called
- * unexpectedly.
+ * Inherit from this class if you need to implement SearchDao in a limited context, such as a test, where not all
+ * functions are needed. Override only the functions needed and rely on an exception being thrown if any unimplemented
+ * function is called unexpectedly.
  * 
  * @author jscott
  */
@@ -113,6 +112,7 @@ public class SearchDaoUnsupportedOperationImpl implements SearchDao {
     /**
      * {@inheritDoc}
      */
+    @Override
     public int collectionSize(Collection<? extends PersistentObject> collection) {
         throw new UnsupportedOperationException();
     }
@@ -120,14 +120,15 @@ public class SearchDaoUnsupportedOperationImpl implements SearchDao {
     /**
      * {@inheritDoc}
      */
-    public <T extends PersistentObject> List<T> filterCollection(Collection<T> collection, String property
-            , String value) {
+    @Override
+    public <T extends PersistentObject> List<T> filterCollection(Collection<T> collection, String property, String value) {
         throw new UnsupportedOperationException();
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public List<String> findValuesWithSamePrefix(Class<?> entityClass, String fieldName, String prefix) {
         throw new UnsupportedOperationException();
     }
@@ -135,6 +136,7 @@ public class SearchDaoUnsupportedOperationImpl implements SearchDao {
     /**
      * {@inheritDoc}
      */
+    @Override
     public <T extends AbstractCaArrayEntity> T getEntityByLsid(Class<T> entityClass, LSID lsid) {
         throw new UnsupportedOperationException();
     }
@@ -142,6 +144,7 @@ public class SearchDaoUnsupportedOperationImpl implements SearchDao {
     /**
      * {@inheritDoc}
      */
+    @Override
     public <T extends PersistentObject> List<T> pageAndFilterCollection(Collection<T> collection, String property,
             List<? extends Serializable> values, PageSortParams<T> pageSortParams) {
         throw new UnsupportedOperationException();
@@ -150,6 +153,7 @@ public class SearchDaoUnsupportedOperationImpl implements SearchDao {
     /**
      * {@inheritDoc}
      */
+    @Override
     public <T extends PersistentObject> List<T> pageCollection(Collection<T> collection,
             PageSortParams<T> pageSortParams) {
         throw new UnsupportedOperationException();
@@ -158,6 +162,7 @@ public class SearchDaoUnsupportedOperationImpl implements SearchDao {
     /**
      * {@inheritDoc}
      */
+    @Override
     public List<?> query(CQLQuery cqlQuery) {
         throw new UnsupportedOperationException();
     }
@@ -165,6 +170,7 @@ public class SearchDaoUnsupportedOperationImpl implements SearchDao {
     /**
      * {@inheritDoc}
      */
+    @Override
     public <T extends AbstractCaArrayObject> List<T> query(T entityToMatch) {
         throw new UnsupportedOperationException();
     }
@@ -172,6 +178,7 @@ public class SearchDaoUnsupportedOperationImpl implements SearchDao {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void refresh(PersistentObject o) {
         throw new UnsupportedOperationException();
     }
@@ -179,6 +186,7 @@ public class SearchDaoUnsupportedOperationImpl implements SearchDao {
     /**
      * {@inheritDoc}
      */
+    @Override
     public <T extends PersistentObject> T retrieve(Class<T> entityClass, Long entityId) {
         throw new UnsupportedOperationException();
     }
@@ -186,6 +194,7 @@ public class SearchDaoUnsupportedOperationImpl implements SearchDao {
     /**
      * {@inheritDoc}
      */
+    @Override
     public <T extends PersistentObject> T retrieve(Class<T> entityClass, Long entityId, LockMode lockMode) {
         throw new UnsupportedOperationException();
     }
@@ -193,6 +202,7 @@ public class SearchDaoUnsupportedOperationImpl implements SearchDao {
     /**
      * {@inheritDoc}
      */
+    @Override
     public <T extends PersistentObject> List<T> retrieveAll(Class<T> entityClass, Order... orders) {
         throw new UnsupportedOperationException();
     }
@@ -200,6 +210,7 @@ public class SearchDaoUnsupportedOperationImpl implements SearchDao {
     /**
      * {@inheritDoc}
      */
+    @Override
     public <T extends PersistentObject> List<T> retrieveAll(Class<T> entityClass, int maxResults, int firstResult,
             Order... orders) {
         throw new UnsupportedOperationException();
@@ -208,6 +219,7 @@ public class SearchDaoUnsupportedOperationImpl implements SearchDao {
     /**
      * {@inheritDoc}
      */
+    @Override
     public <T extends PersistentObject> List<T> retrieveByIds(Class<T> entityClass, List<? extends Serializable> ids) {
         throw new UnsupportedOperationException();
     }
@@ -215,6 +227,7 @@ public class SearchDaoUnsupportedOperationImpl implements SearchDao {
     /**
      * {@inheritDoc}
      */
+    @Override
     public <T extends PersistentObject> T retrieveUnsecured(Class<T> entityClass, Long entityId) {
         throw new UnsupportedOperationException();
     }
@@ -222,6 +235,7 @@ public class SearchDaoUnsupportedOperationImpl implements SearchDao {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void clearSession() {
         throw new UnsupportedOperationException();
     }
@@ -229,6 +243,7 @@ public class SearchDaoUnsupportedOperationImpl implements SearchDao {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void evictObject(Object object) {
         throw new UnsupportedOperationException();
     }
@@ -236,6 +251,7 @@ public class SearchDaoUnsupportedOperationImpl implements SearchDao {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void flushSession() {
         throw new UnsupportedOperationException();
     }
@@ -243,6 +259,7 @@ public class SearchDaoUnsupportedOperationImpl implements SearchDao {
     /**
      * {@inheritDoc}
      */
+    @Override
     public Object mergeObject(Object object) {
         throw new UnsupportedOperationException();
     }
@@ -250,6 +267,7 @@ public class SearchDaoUnsupportedOperationImpl implements SearchDao {
     /**
      * {@inheritDoc}
      */
+    @Override
     public <T extends PersistentObject> List<T> queryEntityByExample(T entityToMatch, Order... order) {
         throw new UnsupportedOperationException();
     }
@@ -257,14 +275,15 @@ public class SearchDaoUnsupportedOperationImpl implements SearchDao {
     /**
      * {@inheritDoc}
      */
-    public <T extends PersistentObject> List<T> queryEntityByExample(ExampleSearchCriteria<T> criteria
-            , Order... orders) {
+    @Override
+    public <T extends PersistentObject> List<T> queryEntityByExample(ExampleSearchCriteria<T> criteria, Order... orders) {
         throw new UnsupportedOperationException();
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public <T extends PersistentObject> List<T> queryEntityByExample(ExampleSearchCriteria<T> criteria, int maxResults,
             int firstResult, Order... orders) {
         throw new UnsupportedOperationException();
@@ -273,6 +292,7 @@ public class SearchDaoUnsupportedOperationImpl implements SearchDao {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void remove(PersistentObject persistentObject) {
         throw new UnsupportedOperationException();
     }
@@ -280,14 +300,16 @@ public class SearchDaoUnsupportedOperationImpl implements SearchDao {
     /**
      * {@inheritDoc}
      */
-    public void save(PersistentObject persistentObject) {
+    @Override
+    public Long save(PersistentObject persistentObject) {
         throw new UnsupportedOperationException();
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public void save(Collection<? extends PersistentObject> persistentObjects) {
         throw new UnsupportedOperationException();
-    }    
+    }
 }

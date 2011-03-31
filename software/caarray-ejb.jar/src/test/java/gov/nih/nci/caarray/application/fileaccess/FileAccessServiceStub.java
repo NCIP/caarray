@@ -101,14 +101,15 @@ import org.apache.commons.lang.BooleanUtils;
 /**
  * Stub implementation for testing.
  */
-public class FileAccessServiceStub implements FileAccessService, TemporaryFileCache {
+public class FileAccessServiceStub implements FileAccessService {
     private final Map<String, File> nameToFile = new HashMap<String, File>();
     private final Map<String, Boolean> deletables = new HashMap<String, Boolean>();
     private int savedFileCount = 0;
     private int removedFileCount = 0;
 
+    @Override
     public CaArrayFile add(File file) {
-        CaArrayFile caArrayFile = new CaArrayFile();
+        final CaArrayFile caArrayFile = new CaArrayFile();
         caArrayFile.setName(file.getName());
         caArrayFile.setFileStatus(FileStatus.UPLOADED);
         setTypeFromExtension(caArrayFile, file.getName());
@@ -117,7 +118,7 @@ public class FileAccessServiceStub implements FileAccessService, TemporaryFileCa
     }
 
     private void setTypeFromExtension(CaArrayFile caArrayFile, String filename) {
-        FileType type = FileExtension.getTypeFromExtension(filename);
+        final FileType type = FileExtension.getTypeFromExtension(filename);
         if (type != null) {
             caArrayFile.setFileType(type);
         }
@@ -126,7 +127,7 @@ public class FileAccessServiceStub implements FileAccessService, TemporaryFileCa
     public File getFile(CaArrayFile caArrayFile) {
         return getFile(caArrayFile, true);
     }
-    
+
     public File getFile(CaArrayFile caArrayFile, boolean uncompressed) {
         if (this.nameToFile.containsKey(caArrayFile.getName())) {
             return this.nameToFile.get(caArrayFile.getName());
@@ -140,21 +141,23 @@ public class FileAccessServiceStub implements FileAccessService, TemporaryFileCa
     }
 
     public Set<File> getFiles(CaArrayFileSet fileSet) {
-        Set<File> files = new HashSet<File>();
-        for (CaArrayFile caArrayFile : fileSet.getFiles()) {
+        final Set<File> files = new HashSet<File>();
+        for (final CaArrayFile caArrayFile : fileSet.getFiles()) {
             files.add(getFile(caArrayFile));
         }
         return files;
     }
 
+    @Override
     public CaArrayFile add(File file, String filename) {
-        CaArrayFile caArrayFile = new CaArrayFile();
+        final CaArrayFile caArrayFile = new CaArrayFile();
         caArrayFile.setName(filename);
         caArrayFile.setFileStatus(FileStatus.UPLOADED);
         this.nameToFile.put(caArrayFile.getName(), file);
         return caArrayFile;
     }
 
+    @Override
     public boolean remove(CaArrayFile caArrayFile) {
         if (BooleanUtils.isTrue(this.deletables.get(caArrayFile.getName()))) {
             this.removedFileCount++;
@@ -170,7 +173,7 @@ public class FileAccessServiceStub implements FileAccessService, TemporaryFileCa
     }
 
     public void unzipFiles(List<File> uploads, List<String> uploadFileNames) {
-        //do nothing
+        // do nothing
     }
 
     public void reset() {
@@ -179,7 +182,7 @@ public class FileAccessServiceStub implements FileAccessService, TemporaryFileCa
         this.savedFileCount = 0;
         this.removedFileCount = 0;
     }
-    
+
     public void setDeletableStatus(CaArrayFile file, boolean deletable) {
         this.deletables.put(file.getName(), deletable);
     }
@@ -211,15 +214,15 @@ public class FileAccessServiceStub implements FileAccessService, TemporaryFileCa
     public void closeFile(CaArrayFile caarrayFile) {
         closeFile(caarrayFile, true);
     }
-    
+
     public void closeFile(CaArrayFile caarrayFile, boolean uncompressed) {
-        // nothing to do        
+        // nothing to do
     }
 
     /**
      * {@inheritDoc}
      */
-    public void closeFiles() {
+    public void deleteFiles() {
         // nothing to do
     }
 
@@ -233,8 +236,9 @@ public class FileAccessServiceStub implements FileAccessService, TemporaryFileCa
     /**
      * {@inheritDoc}
      */
+    @Override
     public CaArrayFile add(InputStream stream, String filename) {
-        CaArrayFile caArrayFile = new CaArrayFile();
+        final CaArrayFile caArrayFile = new CaArrayFile();
         caArrayFile.setName(filename);
         caArrayFile.setFileStatus(FileStatus.UPLOADED);
         this.nameToFile.put(caArrayFile.getName(), new File(filename));

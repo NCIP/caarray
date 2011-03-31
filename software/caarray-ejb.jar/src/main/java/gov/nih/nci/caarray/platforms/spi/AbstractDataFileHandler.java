@@ -82,9 +82,9 @@
  */
 package gov.nih.nci.caarray.platforms.spi;
 
+import gov.nih.nci.caarray.dataStorage.DataStorageFacade;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileType;
-import gov.nih.nci.caarray.platforms.FileManager;
 
 import java.io.File;
 import java.util.Collections;
@@ -92,58 +92,61 @@ import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
 
-
 /**
- * Base class for DataFileHandler implementations. Provides fields for common dependencies
- * and takes care of basic file management.
+ * Base class for DataFileHandler implementations. Provides fields for common dependencies and takes care of basic file
+ * management.
  * 
  * @author dkokotov
  */
-public abstract class AbstractDataFileHandler implements DataFileHandler {    
-    private final FileManager fileManager;
-    
+public abstract class AbstractDataFileHandler implements DataFileHandler {
+    private final DataStorageFacade dataStorageFacade;
+
     private CaArrayFile caArrayFile;
     private File file;
-    
+
     /**
      * @param fileManager the FileManager to use
      */
-    protected AbstractDataFileHandler(FileManager fileManager) {
-        this.fileManager = fileManager;
+    protected AbstractDataFileHandler(DataStorageFacade dataStorageFacade) {
+        this.dataStorageFacade = dataStorageFacade;
     }
-    
+
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean openFile(CaArrayFile dataFile) throws PlatformFileReadException {
         if (!acceptFileType(dataFile.getFileType())) {
             return false;
         }
-        
+
         this.caArrayFile = dataFile;
-        this.file = fileManager.openFile(dataFile);
+        this.file = this.dataStorageFacade.openFile(dataFile.getDataHandle(), false);
         return true;
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public void closeFiles() {
-        fileManager.closeFile(caArrayFile);
+        this.dataStorageFacade.releaseFile(this.caArrayFile.getDataHandle(), false);
         this.caArrayFile = null;
         this.file = null;
-    }
- 
-    /**
-     * {@inheritDoc}
-     */
-    public List<String> getHybridizationNames() {
-        return Collections.singletonList(FilenameUtils.getBaseName(file.getName()));
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
+    public List<String> getHybridizationNames() {
+        return Collections.singletonList(FilenameUtils.getBaseName(this.file.getName()));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public List<String> getSampleNames(String hybridizationName) {
         return Collections.singletonList(hybridizationName);
     }
@@ -158,7 +161,7 @@ public abstract class AbstractDataFileHandler implements DataFileHandler {
      * @return the caArrayFile
      */
     protected CaArrayFile getCaArrayFile() {
-        return caArrayFile;
+        return this.caArrayFile;
     }
 
     /**
@@ -172,7 +175,7 @@ public abstract class AbstractDataFileHandler implements DataFileHandler {
      * @return the file
      */
     protected File getFile() {
-        return file;
+        return this.file;
     }
 
     /**
@@ -181,6 +184,5 @@ public abstract class AbstractDataFileHandler implements DataFileHandler {
     protected void setFile(File file) {
         this.file = file;
     }
-
 
 }

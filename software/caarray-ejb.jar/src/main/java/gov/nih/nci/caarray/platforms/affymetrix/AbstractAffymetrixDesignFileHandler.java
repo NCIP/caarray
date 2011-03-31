@@ -84,12 +84,12 @@ package gov.nih.nci.caarray.platforms.affymetrix;
 
 import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.dao.SearchDao;
+import gov.nih.nci.caarray.dataStorage.DataStorageFacade;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
 import gov.nih.nci.caarray.domain.array.Feature;
 import gov.nih.nci.caarray.domain.array.ProbeGroup;
 import gov.nih.nci.caarray.domain.file.FileStatus;
-import gov.nih.nci.caarray.platforms.FileManager;
 import gov.nih.nci.caarray.platforms.SessionTransactionManager;
 import gov.nih.nci.caarray.platforms.spi.AbstractDesignFileHandler;
 import gov.nih.nci.caarray.platforms.spi.PlatformFileReadException;
@@ -112,15 +112,17 @@ abstract class AbstractAffymetrixDesignFileHandler extends AbstractDesignFileHan
 
     private boolean[][] featureCreated;
     private ProbeGroup probeGroup;
-    
-    AbstractAffymetrixDesignFileHandler(SessionTransactionManager sessionTransactionManager, FileManager fileManager,
-            ArrayDao arrayDao, SearchDao searchDao, AbstractChpDesignElementListUtility designElementListUtility) {
-        super(sessionTransactionManager, fileManager, arrayDao, searchDao);
+
+    AbstractAffymetrixDesignFileHandler(SessionTransactionManager sessionTransactionManager,
+            DataStorageFacade dataStorageFacade, ArrayDao arrayDao, SearchDao searchDao,
+            AbstractChpDesignElementListUtility designElementListUtility) {
+        super(sessionTransactionManager, dataStorageFacade, arrayDao, searchDao);
         this.designElementListUtility = designElementListUtility;
     }
-    
+
     /**
      * Get the array design name for the design being imported.
+     * 
      * @return array design name
      */
     protected abstract String getArrayDesignName();
@@ -136,15 +138,17 @@ abstract class AbstractAffymetrixDesignFileHandler extends AbstractDesignFileHan
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean parsesData() {
         return true;
     }
-    
+
     /**
      * {@inheritDoc}
      */
+    @Override
     public void load(ArrayDesign arrayDesign) {
-        String arrayDesignName = getArrayDesignName();
+        final String arrayDesignName = getArrayDesignName();
         arrayDesign.setName(arrayDesignName);
         arrayDesign.setLsidForEntity(LSID_AUTHORITY + ":" + LSID_NAMESPACE + ":" + arrayDesignName);
         arrayDesign.setNumberOfFeatures(getNumRows() * getNumCols());
@@ -153,22 +157,23 @@ abstract class AbstractAffymetrixDesignFileHandler extends AbstractDesignFileHan
     /**
      * {@inheritDoc}
      */
+    @Override
     public void createDesignDetails(ArrayDesign arrayDesign) {
         try {
-            ArrayDesignDetails designDetails = createDesignDetailsInstance(arrayDesign);
+            final ArrayDesignDetails designDetails = createDesignDetailsInstance(arrayDesign);
             initializeProbeGroup(designDetails);
             initializeFeaturesCreated();
             populateDesignDetails(designDetails);
             createProbeSetDesignElementList(arrayDesign);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             LOG.error("Unexpected failure to read array design files that previously passed validation", e);
             arrayDesign.getDesignFileSet().updateStatus(FileStatus.IMPORT_FAILED);
             throw new IllegalStateException(e);
-        } 
+        }
     }
 
     private ArrayDesignDetails createDesignDetailsInstance(ArrayDesign arrayDesign) {
-        ArrayDesignDetails designDetails = new ArrayDesignDetails();
+        final ArrayDesignDetails designDetails = new ArrayDesignDetails();
         arrayDesign.setDesignDetails(designDetails);
         getArrayDao().save(arrayDesign);
         getSessionTransactionManager().flushSession();
@@ -182,16 +187,15 @@ abstract class AbstractAffymetrixDesignFileHandler extends AbstractDesignFileHan
         getSearchDao().save(this.probeGroup);
     }
 
-
     void initializeFeaturesCreated() {
-        featureCreated = new boolean[getNumCols()][getNumRows()];
+        this.featureCreated = new boolean[getNumCols()][getNumRows()];
     }
 
     Feature createFeature(int x, int y, ArrayDesignDetails details) {
-        Feature feature = new Feature(details);
+        final Feature feature = new Feature(details);
         feature.setColumn((short) x);
         feature.setRow((short) y);
-        featureCreated[x][y] = true;
+        this.featureCreated[x][y] = true;
         getArrayDao().save(feature);
         return feature;
     }
@@ -202,30 +206,30 @@ abstract class AbstractAffymetrixDesignFileHandler extends AbstractDesignFileHan
      * @param designDetails the ArrayDesignDetails for the array design.
      */
     protected void createMissingFeatures(ArrayDesignDetails designDetails) {
-        for (int x = 0; x < featureCreated.length; x++) {
-            for (int y = 0; y < featureCreated[x].length; y++) {
-                if (!featureCreated[x][y]) {
+        for (int x = 0; x < this.featureCreated.length; x++) {
+            for (int y = 0; y < this.featureCreated[x].length; y++) {
+                if (!this.featureCreated[x][y]) {
                     createFeature(x, y, designDetails);
                 }
             }
             flushAndClearSession();
-            this.probeGroup = getSearchDao().retrieve(ProbeGroup.class, probeGroup.getId());
+            this.probeGroup = getSearchDao().retrieve(ProbeGroup.class, this.probeGroup.getId());
         }
     }
-    
+
     protected void checkForDuplicateDesign(String arrayDesignName, FileValidationResult result) {
-        ArrayDesign existingDesign = getArrayDao().getArrayDesign(LSID_AUTHORITY, LSID_NAMESPACE, arrayDesignName);
+        final ArrayDesign existingDesign = getArrayDao()
+                .getArrayDesign(LSID_AUTHORITY, LSID_NAMESPACE, arrayDesignName);
         if (existingDesign != null) {
             result.addMessage(Type.ERROR, "Affymetrix design " + arrayDesignName + " has already been imported");
         }
     }
 
-
     /**
      * @return the probeGroup
      */
     protected ProbeGroup getProbeGroup() {
-        return probeGroup;
+        return this.probeGroup;
     }
 
     /**
@@ -243,6 +247,6 @@ abstract class AbstractAffymetrixDesignFileHandler extends AbstractDesignFileHan
      * @return the designElementListUtility
      */
     protected AbstractChpDesignElementListUtility getDesignElementListUtility() {
-        return designElementListUtility;
+        return this.designElementListUtility;
     }
 }

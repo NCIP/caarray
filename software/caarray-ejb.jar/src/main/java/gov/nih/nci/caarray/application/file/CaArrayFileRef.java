@@ -82,50 +82,57 @@
  */
 package gov.nih.nci.caarray.application.file;
 
-import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
+import gov.nih.nci.caarray.dataStorage.DataStorageFacade;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.magetab.io.FileRef;
+
 import java.io.File;
+
+import com.google.common.base.Preconditions;
 
 /**
  * CaArrayFile wrapper for magetab API.
+ * 
  * @author gax
  * @since 2.4.0
  */
 public class CaArrayFileRef implements FileRef {
-
     private final CaArrayFile file;
+    private final DataStorageFacade dataStorageFacade;
 
     /**
      * wrapper ctor.
+     * 
      * @param file the CaArrayFile to wrap.
      */
-    public CaArrayFileRef(CaArrayFile file) {
-        if (file == null) {
-            throw new IllegalArgumentException("file cannot be null");
-        }
+    public CaArrayFileRef(CaArrayFile file, DataStorageFacade dataStorageFacade) {
+        Preconditions.checkNotNull(file, "file cannot be null");
         this.file = file;
+        this.dataStorageFacade = dataStorageFacade;
     }
 
     /**
      * @return name the CaArrayFile file.
      */
+    @Override
     public String getName() {
-        return file.getName();
+        return this.file.getName();
     }
 
     /**
-     * @return create a temp file with the contents of the CaArrayFile.
-     * @see TemporaryFileCache#getFile
+     * @return a java.io.File which has the contents of the CaArrayFile this wraps
      */
+    @Override
     public File getAsFile() {
-        return TemporaryFileCacheLocator.getTemporaryFileCache().getFile(file);
+        return this.dataStorageFacade.openFile(this.file.getDataHandle(), false);
     }
 
     /**
      * CaArrayFiles always exist.
+     * 
      * @return true.
      */
+    @Override
     public boolean exists() {
         return true;
     }
@@ -135,8 +142,9 @@ public class CaArrayFileRef implements FileRef {
      */
     @Override
     public String toString() {
-        return file.toString();
+        return this.file.toString();
     }
+
     /**
      * {@inheritDoc}
      */
@@ -153,7 +161,7 @@ public class CaArrayFileRef implements FileRef {
      */
     @Override
     public int hashCode() {
-        return file.hashCode();
+        return this.file.hashCode();
     }
 
 }

@@ -82,23 +82,25 @@
  */
 package gov.nih.nci.caarray.domain.data;
 
-import static org.junit.Assert.assertArrayEquals;
-import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
+import static org.junit.Assert.assertEquals;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject_HibernateIntegrationTest;
+import gov.nih.nci.caarray.util.CaArrayUtils;
+
+import java.net.URI;
 
 import org.junit.Before;
 import org.junit.Test;
 
-public class StringColumn_HibernateIntegrationTest extends AbstractCaArrayObject_HibernateIntegrationTest {
-
+public class StringColumn_HibernateIntegrationTest extends AbstractCaArrayObject_HibernateIntegrationTest<StringColumn> {
+    private static final URI DUMMY_HANDLE = CaArrayUtils.makeUriQuietly("foo:baz");
     private static final int NUMBER_OF_DATA_ROWS = 100;
     private QuantitationType stringType;
 
     @Before
     public void setUpQuantitationType() {
-        stringType = new QuantitationType();
-        stringType.setName("string");
-        stringType.setTypeClass(String.class);
+        this.stringType = new QuantitationType();
+        this.stringType.setName("string");
+        this.stringType.setTypeClass(String.class);
     }
 
     @Test
@@ -108,10 +110,11 @@ public class StringColumn_HibernateIntegrationTest extends AbstractCaArrayObject
     }
 
     @Override
-    protected void setValues(AbstractCaArrayObject caArrayObject) {
-        StringColumn stringColumn = (StringColumn) caArrayObject;
-        stringColumn.initializeArray(NUMBER_OF_DATA_ROWS);
-        setValues(stringColumn.getValues());
+    protected void setValues(StringColumn stringColumn) {
+        super.setValues(stringColumn);
+        // stringColumn.initializeArray(NUMBER_OF_DATA_ROWS);
+        // setValues(stringColumn.getValues());
+        stringColumn.setDataHandle(DUMMY_HANDLE);
     }
 
     private void setValues(String[] values) {
@@ -121,29 +124,27 @@ public class StringColumn_HibernateIntegrationTest extends AbstractCaArrayObject
     }
 
     @Override
-    protected void compareValues(AbstractCaArrayObject caArrayObject, AbstractCaArrayObject retrievedCaArrayObject) {
-        StringColumn original = (StringColumn) caArrayObject;
-        StringColumn retrieved = (StringColumn) retrievedCaArrayObject;
-        assertArrayEquals(original.getValues(), retrieved.getValues());
+    protected void compareValues(StringColumn original, StringColumn retrieved) {
+        super.compareValues(original, retrieved);
+        // assertArrayEquals(original.getValues(), retrieved.getValues());
+        assertEquals(original.getDataHandle(), retrieved.getDataHandle());
     }
 
     @Override
-    protected AbstractCaArrayObject createTestObject() {
-        StringColumn stringColumn = new StringColumn();
-        HybridizationData hybridizationData = new HybridizationData();
+    protected StringColumn createTestObject() {
+        final StringColumn stringColumn = new StringColumn();
+        final HybridizationData hybridizationData = new HybridizationData();
         stringColumn.setHybridizationData(hybridizationData);
         hybridizationData.setDataSet(new DataSet());
         save(hybridizationData.getDataSet());
         save(hybridizationData);
-        save(stringType);
-        stringColumn.setQuantitationType(stringType);
+        save(this.stringType);
+        stringColumn.setQuantitationType(this.stringType);
         return stringColumn;
     }
 
     @Override
-    protected void setNullableValuesToNull(AbstractCaArrayObject caArrayObject) {
-        StringColumn column = (StringColumn) caArrayObject;
+    protected void setNullableValuesToNull(StringColumn column) {
         column.setValues(null);
     }
-
 }

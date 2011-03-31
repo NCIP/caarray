@@ -85,13 +85,17 @@ package gov.nih.nci.caarray.util;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.io.Serializable;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -108,17 +112,21 @@ import java.util.zip.GZIPOutputStream;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 import com.csvreader.CsvReader;
 import com.csvreader.CsvWriter;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
+import com.google.common.io.ByteStreams;
+import com.google.common.io.OutputSupplier;
 
 /**
  * Utility classes for our project.
  */
-@SuppressWarnings({"PMD.CyclomaticComplexity", "PMD.ExcessiveClassLength" })
+@SuppressWarnings({ "PMD.CyclomaticComplexity", "PMD.ExcessiveClassLength" })
 public final class CaArrayUtils {
+    private static final Logger LOG = Logger.getLogger(CaArrayUtils.class);
     private static final SortedSet<Object> EMPTY_SORTED_SET = new TreeSet<Object>();
 
     private CaArrayUtils() {
@@ -127,7 +135,7 @@ public final class CaArrayUtils {
 
     /**
      * Method to take a get a unique result from a set and return it or null.
-     *
+     * 
      * @param <T> the type of the returned object
      * @param results the set of results returned from a query
      * @return the first result in the set or null
@@ -137,9 +145,10 @@ public final class CaArrayUtils {
     }
 
     /**
-     * Returns an empty collection or map of the appropriate type for a given collection class. By default,
-     * returns an empty list, but will return an empty set, empty sorted set, or empty map if the passed
-     * in type is a subclass of Set, SortedSet, or Map respectively.
+     * Returns an empty collection or map of the appropriate type for a given collection class. By default, returns an
+     * empty list, but will return an empty set, empty sorted set, or empty map if the passed in type is a subclass of
+     * Set, SortedSet, or Map respectively.
+     * 
      * @param collectionType the class of whose type to return an empty collection or map
      * @return the empty collection or map
      */
@@ -158,15 +167,17 @@ public final class CaArrayUtils {
     }
 
     /**
-     * Removes matched quotes (single or double) from a string.  Quotes are only removed from the first and last
+     * Removes matched quotes (single or double) from a string. Quotes are only removed from the first and last
      * characters of the string.
+     * 
      * @param string string to dequote
      * @return the dequoted string or the original string, if no changes were made
      */
     public static String dequoteString(String string) {
-        if (string != null && string.length() > 1
-                && ((string.charAt(0) == '"' || string.charAt(0) == '\'')
-                        && string.charAt(string.length() - 1) == string.charAt(0))) {
+        if (string != null
+                && string.length() > 1
+                && ((string.charAt(0) == '"' || string.charAt(0) == '\'') && string.charAt(string.length() - 1) == string
+                        .charAt(0))) {
             return string.substring(1, string.length() - 1);
         }
         return string;
@@ -174,19 +185,19 @@ public final class CaArrayUtils {
 
     /**
      * For given class, returns a ReflectionHelper instance with property accessors for the class.
-     *
+     * 
      * @param clazz the class
      * @return the ReflectionHelper
      */
     public static ReflectionHelper createReflectionHelper(Class<?> clazz) {
-        List<PropertyAccessor> accessors = new ArrayList<PropertyAccessor>();
+        final List<PropertyAccessor> accessors = new ArrayList<PropertyAccessor>();
 
         Class<?> currentClass = clazz;
         while (currentClass != null) {
-            Method[] methods = currentClass.getDeclaredMethods();
-            for (Method getter : methods) {
+            final Method[] methods = currentClass.getDeclaredMethods();
+            for (final Method getter : methods) {
                 if (getter.getName().startsWith("get") && getter.getParameterTypes().length == 0) {
-                    for (Method setter : methods) {
+                    for (final Method setter : methods) {
                         if (setter.getName().equals('s' + getter.getName().substring(1))
                                 && setter.getParameterTypes().length == 1 && Void.TYPE.equals(setter.getReturnType())
                                 && getter.getReturnType().equals(setter.getParameterTypes()[0])) {
@@ -205,38 +216,38 @@ public final class CaArrayUtils {
     }
 
     /**
-     * For each String bean property on o, if o is blank or empty,
-     * converts that property to null.
-     *
+     * For each String bean property on o, if o is blank or empty, converts that property to null.
+     * 
      * @param o object to convert properties on.
      */
     public static void blankStringPropsToNull(Object o) {
         if (o == null) {
             return;
         }
-    
-        ReflectionHelper helper = createReflectionHelper(o.getClass());
-        for (PropertyAccessor accessor : helper.getAccessors()) {
+
+        final ReflectionHelper helper = createReflectionHelper(o.getClass());
+        for (final PropertyAccessor accessor : helper.getAccessors()) {
             if (accessor.getType().equals(String.class)) {
                 try {
                     if (StringUtils.isBlank((String) accessor.get(o))) {
                         accessor.set(o, null);
                     }
-                } catch (IllegalArgumentException e) {
-                    EntityPruner.LOG.debug(e.getMessage(), e);
-                } catch (IllegalAccessException e) {
-                    EntityPruner.LOG.debug(e.getMessage(), e);
-                } catch (InvocationTargetException e) {
-                    EntityPruner.LOG.debug(e.getMessage(), e);
+                } catch (final IllegalArgumentException e) {
+                    LOG.debug(e.getMessage(), e);
+                } catch (final IllegalAccessException e) {
+                    LOG.debug(e.getMessage(), e);
+                } catch (final InvocationTargetException e) {
+                    LOG.debug(e.getMessage(), e);
                 }
             }
         }
     }
-    
+
     /**
-     * <p>Joins the elements of the provided array into a single String
-     * containing the provided list of elements.</p>
-     *
+     * <p>
+     * Joins the elements of the provided array into a single String containing the provided list of elements.
+     * </p>
+     * 
      * @param values the values to join together, may be null (in which case an empty String is returned)
      * @param separator the separator to use
      * @return the joined String, empty if null array input
@@ -245,18 +256,19 @@ public final class CaArrayUtils {
         if (values == null || values.length == 0) {
             return StringUtils.EMPTY;
         }
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         sb.append(values[0]);
         for (int i = 1; i < values.length; i++) {
             sb.append(separator).append(values[i]);
         }
         return sb.toString();
-     }
+    }
 
     /**
-     * <p>Joins the elements of the provided array into a single String
-     * containing the provided list of elements.</p>
-     *
+     * <p>
+     * Joins the elements of the provided array into a single String containing the provided list of elements.
+     * </p>
+     * 
      * @param values the values to join together, may be null (in which case an empty String is returned)
      * @param separator the separator to use
      * @return the joined String, empty if null array input
@@ -265,18 +277,19 @@ public final class CaArrayUtils {
         if (values == null || values.length == 0) {
             return StringUtils.EMPTY;
         }
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         sb.append(values[0]);
         for (int i = 1; i < values.length; i++) {
             sb.append(separator).append(values[i]);
         }
         return sb.toString();
-     }
+    }
 
     /**
-     * <p>Joins the elements of the provided array into a single String
-     * containing the provided list of elements.</p>
-     *
+     * <p>
+     * Joins the elements of the provided array into a single String containing the provided list of elements.
+     * </p>
+     * 
      * @param values the values to join together, may be null (in which case an empty String is returned)
      * @param separator the separator to use
      * @return the joined String, empty if null array input
@@ -285,18 +298,19 @@ public final class CaArrayUtils {
         if (values == null || values.length == 0) {
             return StringUtils.EMPTY;
         }
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         sb.append(values[0]);
         for (int i = 1; i < values.length; i++) {
             sb.append(separator).append(values[i]);
         }
         return sb.toString();
-     }
+    }
 
     /**
-     * <p>Joins the elements of the provided array into a single String
-     * containing the provided list of elements.</p>
-     *
+     * <p>
+     * Joins the elements of the provided array into a single String containing the provided list of elements.
+     * </p>
+     * 
      * @param values the values to join together, may be null (in which case an empty String is returned)
      * @param separator the separator to use
      * @return the joined String, empty if null array input
@@ -305,18 +319,19 @@ public final class CaArrayUtils {
         if (values == null || values.length == 0) {
             return StringUtils.EMPTY;
         }
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         sb.append(values[0]);
         for (int i = 1; i < values.length; i++) {
             sb.append(separator).append(values[i]);
         }
         return sb.toString();
-     }
+    }
 
     /**
-     * <p>Joins the elements of the provided array into a single String
-     * containing the provided list of elements.</p>
-     *
+     * <p>
+     * Joins the elements of the provided array into a single String containing the provided list of elements.
+     * </p>
+     * 
      * @param values the values to join together, may be null (in which case an empty String is returned)
      * @param separator the separator to use
      * @return the joined String, empty if null array input
@@ -325,18 +340,19 @@ public final class CaArrayUtils {
         if (values == null || values.length == 0) {
             return StringUtils.EMPTY;
         }
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         sb.append(values[0]);
         for (int i = 1; i < values.length; i++) {
             sb.append(separator).append(toXmlString(values[i]));
         }
         return sb.toString();
-     }
+    }
 
     /**
-     * <p>Joins the elements of the provided array into a single String
-     * containing the provided list of elements.</p>
-     *
+     * <p>
+     * Joins the elements of the provided array into a single String containing the provided list of elements.
+     * </p>
+     * 
      * @param values the values to join together, may be null (in which case an empty String is returned)
      * @param separator the separator to use
      * @return the joined String, empty if null array input
@@ -345,17 +361,18 @@ public final class CaArrayUtils {
         if (values == null || values.length == 0) {
             return StringUtils.EMPTY;
         }
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         sb.append(values[0]);
         for (int i = 1; i < values.length; i++) {
             sb.append(separator).append(toXmlString(values[i]));
         }
         return sb.toString();
-     }
-    
+    }
+
     /**
-     * Joins the given values as a comma-separated string. Each value will be encoded in this string
-     * by escaping any commas in the value with a backslash.
+     * Joins the given values as a comma-separated string. Each value will be encoded in this string by escaping any
+     * commas in the value with a backslash.
+     * 
      * @param values the values to join (null is acceptable).
      * @return the CSV string consisting of the values. If the values were null, an empty String.
      */
@@ -364,31 +381,35 @@ public final class CaArrayUtils {
             return StringUtils.EMPTY;
         }
         try {
-            StringWriter sw = new StringWriter();
-            CsvWriter csvWriter = new CsvWriter(sw, ',');
+            final StringWriter sw = new StringWriter();
+            final CsvWriter csvWriter = new CsvWriter(sw, ',');
             csvWriter.setEscapeMode(CsvWriter.ESCAPE_MODE_BACKSLASH);
             csvWriter.setUseTextQualifier(false);
             csvWriter.writeRecord(values);
             csvWriter.flush();
             csvWriter.close();
             return sw.toString();
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new IllegalStateException("Could not encode as CSV record: " + e, e);
         }
     }
 
-    
     /**
-     * <p>Splits the provided text into an array of parsed boolean values, using specified separator.</p>
+     * <p>
+     * Splits the provided text into an array of parsed boolean values, using specified separator.
+     * </p>
      * 
-     * <p>Each value should be encoded using the literal representation of the XML Schema xs:boolean type</p>
+     * <p>
+     * Each value should be encoded using the literal representation of the XML Schema xs:boolean type
+     * </p>
+     * 
      * @param s the string to parse
      * @param separator the separator between values
      * @return the array of parsed values
      */
     public static boolean[] splitIntoBooleans(String s, String separator) {
-        String[] splits = StringUtils.split(s, separator);
-        boolean[] values = new boolean[splits.length];
+        final String[] splits = StringUtils.split(s, separator);
+        final boolean[] values = new boolean[splits.length];
         for (int i = 0; i < splits.length; i++) {
             values[i] = xmlStringToBoolean(splits[i]);
         }
@@ -396,16 +417,21 @@ public final class CaArrayUtils {
     }
 
     /**
-     * <p>Splits the provided text into an array of parsed short values, using specified separator.</p>
+     * <p>
+     * Splits the provided text into an array of parsed short values, using specified separator.
+     * </p>
      * 
-     * <p>Each value should be encoded using the literal representation of the XML Schema xs:short type</p>
+     * <p>
+     * Each value should be encoded using the literal representation of the XML Schema xs:short type
+     * </p>
+     * 
      * @param s the string to parse
      * @param separator the separator between values
      * @return the array of parsed values
      */
     public static short[] splitIntoShorts(String s, String separator) {
-        String[] splits = StringUtils.split(s, separator);
-        short[] values = new short[splits.length];
+        final String[] splits = StringUtils.split(s, separator);
+        final short[] values = new short[splits.length];
         for (int i = 0; i < splits.length; i++) {
             values[i] = Short.parseShort(splits[i]);
         }
@@ -413,16 +439,21 @@ public final class CaArrayUtils {
     }
 
     /**
-     * <p>Splits the provided text into an array of parsed long values, using specified separator.</p>
+     * <p>
+     * Splits the provided text into an array of parsed long values, using specified separator.
+     * </p>
      * 
-     * <p>Each value should be encoded using the literal representation of the XML Schema xs:long type</p>
+     * <p>
+     * Each value should be encoded using the literal representation of the XML Schema xs:long type
+     * </p>
+     * 
      * @param s the string to parse
      * @param separator the separator between values
      * @return the array of parsed values
      */
     public static long[] splitIntoLongs(String s, String separator) {
-        String[] splits = StringUtils.split(s, separator);
-        long[] values = new long[splits.length];
+        final String[] splits = StringUtils.split(s, separator);
+        final long[] values = new long[splits.length];
         for (int i = 0; i < splits.length; i++) {
             values[i] = Long.parseLong(splits[i]);
         }
@@ -430,16 +461,21 @@ public final class CaArrayUtils {
     }
 
     /**
-     * <p>Splits the provided text into an array of parsed int values, using specified separator.</p>
+     * <p>
+     * Splits the provided text into an array of parsed int values, using specified separator.
+     * </p>
      * 
-     * <p>Each value should be encoded using the literal representation of the XML Schema xs:int type</p>
+     * <p>
+     * Each value should be encoded using the literal representation of the XML Schema xs:int type
+     * </p>
+     * 
      * @param s the string to parse
      * @param separator the separator between values
      * @return the array of parsed values
      */
     public static int[] splitIntoInts(String s, String separator) {
-        String[] splits = StringUtils.split(s, separator);
-        int[] values = new int[splits.length];
+        final String[] splits = StringUtils.split(s, separator);
+        final int[] values = new int[splits.length];
         for (int i = 0; i < splits.length; i++) {
             values[i] = Integer.parseInt(splits[i]);
         }
@@ -447,16 +483,21 @@ public final class CaArrayUtils {
     }
 
     /**
-     * <p>Splits the provided text into an array of parsed float values, using specified separator.</p>
+     * <p>
+     * Splits the provided text into an array of parsed float values, using specified separator.
+     * </p>
      * 
-     * <p>Each value should be encoded using the literal representation of the XML Schema xs:float type</p>
+     * <p>
+     * Each value should be encoded using the literal representation of the XML Schema xs:float type
+     * </p>
+     * 
      * @param s the string to parse
      * @param separator the separator between values
      * @return the array of parsed values
      */
     public static float[] splitIntoFloats(String s, String separator) {
-        String[] splits = StringUtils.split(s, separator);
-        float[] values = new float[splits.length];
+        final String[] splits = StringUtils.split(s, separator);
+        final float[] values = new float[splits.length];
         for (int i = 0; i < splits.length; i++) {
             values[i] = xmlStringToFloat(splits[i]);
         }
@@ -464,38 +505,46 @@ public final class CaArrayUtils {
     }
 
     /**
-     * <p>Splits the provided text into an array of parsed double values, using specified separator.</p>
+     * <p>
+     * Splits the provided text into an array of parsed double values, using specified separator.
+     * </p>
      * 
-     * <p>Each value should be encoded using the literal representation of the XML Schema xs:double type</p>
+     * <p>
+     * Each value should be encoded using the literal representation of the XML Schema xs:double type
+     * </p>
+     * 
      * @param s the string to parse
      * @param separator the separator between values
      * @return the array of parsed values
      */
     public static double[] splitIntoDoubles(String s, String separator) {
-        String[] splits = StringUtils.split(s, separator);
-        double[] values = new double[splits.length];
+        final String[] splits = StringUtils.split(s, separator);
+        final double[] values = new double[splits.length];
         for (int i = 0; i < splits.length; i++) {
             values[i] = xmlStringToDouble(splits[i]);
         }
         return values;
     }
-    
+
     /**
-     * <p>Splits the provided CSV String into an array of parsed values.</p>
+     * <p>
+     * Splits the provided CSV String into an array of parsed values.
+     * </p>
      * 
      * Each value within the String will be unescaped by converting any backslash-comma combinations back to commas.
+     * 
      * @param s string containing a comma-separated list of strings.
-     * @return the array of parsed Strings. If s did not contain any comma separated Strings, an empty 
-     * String. If s was not a valid CSV string, an IllegalArgumentException is thrown. 
+     * @return the array of parsed Strings. If s did not contain any comma separated Strings, an empty String. If s was
+     *         not a valid CSV string, an IllegalArgumentException is thrown.
      */
     public static String[] splitFromCsv(String s) {
         try {
-            CsvReader csvReader = new CsvReader(new StringReader(s), ',');
+            final CsvReader csvReader = new CsvReader(new StringReader(s), ',');
             csvReader.setEscapeMode(CsvReader.ESCAPE_MODE_BACKSLASH);
             csvReader.setUseTextQualifier(false);
             String[] values = ArrayUtils.EMPTY_STRING_ARRAY;
             if (csvReader.readRecord()) {
-                int length = csvReader.getColumnCount();
+                final int length = csvReader.getColumnCount();
                 values = new String[length];
                 for (int i = 0; i < length; i++) {
                     values[i] = csvReader.get(i);
@@ -503,11 +552,11 @@ public final class CaArrayUtils {
             }
             csvReader.close();
             return values;
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new IllegalArgumentException("Could not parse as CSV record: " + s, e);
-        }        
+        }
     }
-    
+
     private static String toXmlString(float value) {
         if (Float.isNaN(value)) {
             return "NaN";
@@ -515,11 +564,11 @@ public final class CaArrayUtils {
             return "INF";
         } else if (value == Float.NEGATIVE_INFINITY) {
             return "-INF";
-        } else { 
+        } else {
             return Float.toString(value);
         }
     }
-    
+
     private static String toXmlString(double value) {
         if (Double.isNaN(value)) {
             return "NaN";
@@ -527,22 +576,22 @@ public final class CaArrayUtils {
             return "INF";
         } else if (value == Double.NEGATIVE_INFINITY) {
             return "-INF";
-        } else { 
+        } else {
             return Double.toString(value);
         }
     }
-    
-    private static boolean xmlStringToBoolean(String value) {
+
+    public static boolean xmlStringToBoolean(String value) {
         if ("true".equals(value) || "1".equals(value)) {
             return true;
         } else if ("false".equals(value) || "0".equals(value)) {
             return false;
-        } else { 
-            throw new IllegalArgumentException(value + " is not a valid boolean"); 
+        } else {
+            throw new IllegalArgumentException(value + " is not a valid boolean");
         }
     }
-    
-    private static float xmlStringToFloat(String value) {
+
+    public static float xmlStringToFloat(String value) {
         if ("NaN".equals(value)) {
             return Float.NaN;
         } else if ("INF".equals(value)) {
@@ -554,7 +603,7 @@ public final class CaArrayUtils {
         }
     }
 
-    private static double xmlStringToDouble(String value) {
+    public static double xmlStringToDouble(String value) {
         if ("NaN".equals(value)) {
             return Double.NaN;
         } else if ("INF".equals(value)) {
@@ -565,16 +614,17 @@ public final class CaArrayUtils {
             return Double.parseDouble(value);
         }
     }
-    
+
     /**
      * Return the constant names of the given enum instances.
+     * 
      * @param <E> the type of the enum instances
      * @param enums the enum instances whose constant names to return
-     * @return the names, e.g. the set of enum.name() for each enum in enums 
+     * @return the names, e.g. the set of enum.name() for each enum in enums
      */
     public static <E extends Enum<E>> Set<String> namesForEnums(Iterable<E> enums) {
-        Set<String> names = new HashSet<String>();
-        for (Enum<?> oneEnum : enums) {
+        final Set<String> names = new HashSet<String>();
+        for (final Enum<?> oneEnum : enums) {
             names.add(oneEnum.name());
         }
         return names;
@@ -582,12 +632,12 @@ public final class CaArrayUtils {
 
     /**
      * Serializes the given object (zipped) to a byte array.
-     *
+     * 
      * @param serializable object to serialize
      * @return the serialized object as a byte array.
      */
     public static byte[] serialize(Serializable serializable) {
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         GZIPOutputStream gZipOutputStream = null;
         ObjectOutputStream objectOutputStream = null;
         try {
@@ -598,7 +648,7 @@ public final class CaArrayUtils {
             gZipOutputStream.finish();
             gZipOutputStream.flush();
             byteArrayOutputStream.flush();
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new IllegalStateException("Couldn't serialize object", e);
         } finally {
             IOUtils.closeQuietly(objectOutputStream);
@@ -609,32 +659,43 @@ public final class CaArrayUtils {
     }
 
     /**
-     * Deserializes an object from a zipped serialized representation in a byte array.
-     *
-     * @param bytes the byte array
-     * @return the deserialized object.
+     * Deserializes an object from a gzipped serialized representation.
+     * 
+     * @param bytes the byte array containing the gzipped serialized representation of an object
+     * @return the deserialized object
      */
     public static Serializable deserialize(byte[] bytes) {
-        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
+        final ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
+        final Serializable value = deserialize(byteArrayInputStream);
+        IOUtils.closeQuietly(byteArrayInputStream);
+        return value;
+    }
+
+    /**
+     * Deserializes an object from a gzipped serialized representation.
+     * 
+     * @param is the InputStream which will produce the gzipped serialized representation of an object
+     * @return the deserialized object
+     */
+    public static Serializable deserialize(InputStream is) {
         GZIPInputStream gzipInputStream = null;
         ObjectInputStream objectInputStream = null;
         Serializable object = null;
         try {
-            gzipInputStream = new GZIPInputStream(byteArrayInputStream);
+            gzipInputStream = new GZIPInputStream(is);
             objectInputStream = new ObjectInputStream(gzipInputStream);
             object = (Serializable) objectInputStream.readObject();
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new IllegalStateException("Couldn't read object", e);
-        } catch (ClassNotFoundException e) {
+        } catch (final ClassNotFoundException e) {
             throw new IllegalStateException("Couldn't read object", e);
         } finally {
             IOUtils.closeQuietly(objectInputStream);
             IOUtils.closeQuietly(gzipInputStream);
-            IOUtils.closeQuietly(byteArrayInputStream);
         }
         return object;
     }
-    
+
     /**
      * Returns the first element in iterable that satisfies the given predicate, or null if no elements do. This is
      * identical to Iterables.find from Google's Collections library, except it returns null rather than throw
@@ -646,10 +707,79 @@ public final class CaArrayUtils {
      * @return the first element matching the predicate, or null if no matches
      */
     public static <T> T find(Iterable<T> iterable, Predicate<? super T> predicate) {
-       try {
-           return Iterables.find(iterable, predicate);
-       } catch (NoSuchElementException e) {
-           return null;
-       }
+        try {
+            return Iterables.find(iterable, predicate);
+        } catch (final NoSuchElementException e) {
+            return null;
+        }
     }
+
+    /**
+     * Utility method to create a URI from given string without throwing a checked exception. This simply wraps new
+     * URI(uri), throwing a runtime exception if this results in a URISyntaxException. For use with known-good uri
+     * strings, to avoid having a try-catch block.
+     * 
+     * @param uri the URI string
+     * @return the URI corresponding to uri
+     */
+    public static URI makeUriQuietly(String uri) {
+        try {
+            return new URI(uri);
+        } catch (final URISyntaxException e) {
+            throw new IllegalStateException("Couldn't create dummy URI");
+        }
+    }
+
+    /**
+     * Utility method to create a URI from given scheme and scheme specific part without throwing a checked exception.
+     * This simply wraps new URI(scheme, schemeSpecificPart), throwing a runtime exception if this results in a
+     * URISyntaxException. For use with known-good scheme and scheme specific part, to avoid having a try-catch block.
+     * 
+     * @param scheme the scheme
+     * @param schemeSpecificPart the schemeSpecificPart
+     * @return the URI corresponding to scheme:schemeSpecificPart
+     */
+    public static URI makeUriQuietly(String scheme, String schemeSpecificPart) {
+        try {
+            return new URI(scheme, schemeSpecificPart, null);
+        } catch (final URISyntaxException e) {
+            throw new IllegalStateException("Couldn't create dummy URI");
+        }
+    }
+
+    /**
+     * returns a byte array representing the input byte array, gzipped. Use this method with caution - for large arrays,
+     * you should use streams instead.
+     * 
+     * @param input the content to compress
+     * @return the gzipped input
+     * @throws IOException if there is a problem zipping the content
+     */
+    public static byte[] gzip(byte[] input) throws IOException {
+        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ByteStreams.write(input, new OutputSupplier<OutputStream>() {
+            @Override
+            public OutputStream getOutput() throws IOException {
+                return new GZIPOutputStream(baos);
+            }
+        });
+        baos.close();
+        return baos.toByteArray();
+    }
+
+    /**
+     * returns a byte array representing the input byte array, un-gzipped. Use this method with caution - for large
+     * arrays, you should use streams instead.
+     * 
+     * @param input the content to uncompress, should be in gzip format
+     * @return the uncompressed input
+     * @throws IOException if there is a problem uncompressing the content, including if the input is not gzipped
+     */
+    public static byte[] gunzip(byte[] input) throws IOException {
+        final InputStream in = new GZIPInputStream(new ByteArrayInputStream(input));
+        final byte[] output = ByteStreams.toByteArray(in);
+        in.close();
+        return output;
+    }
+
 }

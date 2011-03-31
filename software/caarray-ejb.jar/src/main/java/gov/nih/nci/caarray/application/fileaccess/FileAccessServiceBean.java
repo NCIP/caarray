@@ -85,6 +85,9 @@ package gov.nih.nci.caarray.application.fileaccess;
 import gov.nih.nci.caarray.application.ExceptionLoggingInterceptor;
 import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.dao.FileDao;
+import gov.nih.nci.caarray.dataStorage.DataStorageFacade;
+import gov.nih.nci.caarray.dataStorage.DataStoreException;
+import gov.nih.nci.caarray.dataStorage.StorageMetadata;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileExtension;
@@ -95,23 +98,20 @@ import gov.nih.nci.caarray.injection.InjectionInterceptor;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
+import java.net.URI;
+import java.util.Set;
 
 import javax.ejb.Local;
 import javax.ejb.Stateless;
 import javax.interceptor.Interceptors;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 
+import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 
 /**
@@ -121,28 +121,32 @@ import com.google.inject.Inject;
 @Stateless
 @Interceptors({ ExceptionLoggingInterceptor.class, InjectionInterceptor.class })
 public class FileAccessServiceBean implements FileAccessService {
-
     private static final Logger LOG = Logger.getLogger(FileAccessServiceBean.class);
+    private static final int FIVE_MINS = 300000;
+
     private FileDao fileDao;
     private ArrayDao arrayDao;
-    
+    private DataStorageFacade dataStorageFacade;
+
     /**
      * 
      * @param fileDao the FileDao dependency
      * @param arrayDao the ArrayDao dependency
      */
     @Inject
-    public void setDependencies(FileDao fileDao, ArrayDao arrayDao) {
+    public void setDependencies(FileDao fileDao, ArrayDao arrayDao, DataStorageFacade fileStorageFacade) {
         this.fileDao = fileDao;
         this.arrayDao = arrayDao;
+        this.dataStorageFacade = fileStorageFacade;
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public CaArrayFile add(File file) {
         LogUtil.logSubsystemEntry(LOG, file);
-        CaArrayFile caArrayFile = doAddFile(file, file.getName());
+        final CaArrayFile caArrayFile = add(file, file.getName());
         LogUtil.logSubsystemExit(LOG);
         return caArrayFile;
     }
@@ -150,39 +154,39 @@ public class FileAccessServiceBean implements FileAccessService {
     /**
      * {@inheritDoc}
      */
+    @Override
     public CaArrayFile add(File file, String filename) {
         LogUtil.logSubsystemEntry(LOG, file);
-        CaArrayFile caArrayFile = doAddFile(file, filename);
-        LogUtil.logSubsystemExit(LOG);
-        return caArrayFile;
+        try {
+            final InputStream is = FileUtils.openInputStream(file);
+            final CaArrayFile caArrayFile = add(is, filename);
+            IOUtils.closeQuietly(is);
+            return caArrayFile;
+        } catch (final IOException e) {
+            LogUtil.logSubsystemExit(LOG);
+            throw new FileAccessException("File " + filename + " couldn't be read", e);
+        }
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public CaArrayFile add(InputStream stream, String filename) {
-        CaArrayFile caArrayFile = createCaArrayFile(filename);
+        final CaArrayFile caArrayFile = createCaArrayFile(filename);
         try {
-            fileDao.writeContents(caArrayFile, stream);
-        } catch (IOException e) {
+            final StorageMetadata metadata = this.dataStorageFacade.addFile(stream, false);
+            caArrayFile.setCompressedSize(metadata.getCompressedSize());
+            caArrayFile.setUncompressedSize(metadata.getUncompressedSize());
+            caArrayFile.setDataHandle(metadata.getHandle());
+        } catch (final DataStoreException e) {
             throw new FileAccessException("Stream " + filename + " couldn't be written", e);
         }
         return caArrayFile;
     }
 
-
-    private CaArrayFile doAddFile(File file, String filename) {
-        CaArrayFile caArrayFile = createCaArrayFile(filename);
-        try {
-            fileDao.writeContents(caArrayFile, file);
-        } catch (IOException e) {
-            throw new FileAccessException("File " + file.getAbsolutePath() + " couldn't be written", e);
-        }
-        return caArrayFile;
-    }
-
     private CaArrayFile createCaArrayFile(String filename) {
-        CaArrayFile caArrayFile = new CaArrayFile();
+        final CaArrayFile caArrayFile = new CaArrayFile();
         caArrayFile.setFileStatus(FileStatus.UPLOADED);
         caArrayFile.setName(filename);
         setTypeFromExtension(caArrayFile, filename);
@@ -192,41 +196,35 @@ public class FileAccessServiceBean implements FileAccessService {
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean remove(CaArrayFile caArrayFile) {
         LogUtil.logSubsystemEntry(LOG, caArrayFile);
 
-        AbstractArrayData data = this.arrayDao.getArrayData(caArrayFile.getId());
+        final AbstractArrayData data = this.arrayDao.getArrayData(caArrayFile.getId());
         if (caArrayFile.getProject() != null
-                && !this.fileDao.getDeletableFiles(caArrayFile.getProject().getId()).contains(
-                        caArrayFile)) {
+                && !this.fileDao.getDeletableFiles(caArrayFile.getProject().getId()).contains(caArrayFile)) {
             return false;
         }
 
+        // TODO: verify this is the right thing to do - should we be removing a file's associated
+        // array data entry
         if (data != null) {
-            for (Hybridization h : data.getHybridizations()) {
+            for (final Hybridization h : data.getHybridizations()) {
                 h.removeArrayData(data);
             }
             this.arrayDao.remove(data);
         }
-        
+
         caArrayFile.getProject().getFiles().remove(caArrayFile);
         this.fileDao.remove(caArrayFile);
+        // the data storage will get cleaned up by the reaper
 
         LogUtil.logSubsystemExit(LOG);
         return true;
     }
-    
-    /**
-     * {@inheritDoc}
-     */
-    public void save(CaArrayFile caArrayFile) {
-        LogUtil.logSubsystemEntry(LOG, caArrayFile);
-        this.fileDao.saveAndEvict(caArrayFile);
-        LogUtil.logSubsystemExit(LOG);
-    }
 
     private void setTypeFromExtension(CaArrayFile caArrayFile, String filename) {
-        FileType type = FileExtension.getTypeFromExtension(filename);
+        final FileType type = FileExtension.getTypeFromExtension(filename);
         if (type != null) {
             caArrayFile.setFileType(type);
         }
@@ -235,40 +233,16 @@ public class FileAccessServiceBean implements FileAccessService {
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("PMD.ExcessiveMethodLength")
-    public void unzipFiles(List<File> files, List<String> fileNames) {
-        try {
-            Pattern p = Pattern.compile("\\.zip$");
-            int index = 0;
-            for (int i = 0; i < fileNames.size(); i++) {
-                Matcher m = p.matcher(fileNames.get(i).toLowerCase());
+    @Override
+    public void synchronizeDataStorage() {
+        final Set<URI> references = getActiveReferences();
+        LOG.debug("Currently active references:" + references);
+        this.dataStorageFacade.removeUnreferencedData(references, FIVE_MINS);
+    }
 
-                if (m.find()) {
-                    File file = files.get(i);
-                    String fileName = file.getAbsolutePath();
-                    String directoryPath = file.getParent();
-                    ZipFile zipFile = new ZipFile(fileName);
-                    Enumeration<? extends ZipEntry> entries = zipFile.entries();
-                    while (entries.hasMoreElements()) {
-                        ZipEntry entry = entries.nextElement();
-                        File entryFile = new File(directoryPath + "/" + entry.getName());
-
-                        InputStream fileInputStream = zipFile.getInputStream(entry);
-                        FileOutputStream fileOutputStream = new FileOutputStream(entryFile);
-                        IOUtils.copy(fileInputStream, fileOutputStream);
-                        IOUtils.closeQuietly(fileOutputStream);
-
-                        files.add(entryFile);
-                        fileNames.add(entry.getName());
-                    }
-                    zipFile.close();
-                    files.remove(index);
-                    fileNames.remove(index);
-                }
-                index++;
-            }
-        } catch (IOException e) {
-            throw new FileAccessException("Couldn't unzip archive.", e);
-        }
+    private Set<URI> getActiveReferences() {
+        final Set<URI> references = Sets.newHashSet(this.fileDao.getAllFileHandles());
+        references.addAll(this.arrayDao.getAllParsedDataHandles());
+        return references;
     }
 }

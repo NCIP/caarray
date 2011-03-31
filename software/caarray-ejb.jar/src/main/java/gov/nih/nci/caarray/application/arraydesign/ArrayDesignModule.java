@@ -82,9 +82,7 @@
  */package gov.nih.nci.caarray.application.arraydesign;
 
 import gov.nih.nci.caarray.application.JtaSessionTransactionManager;
-import gov.nih.nci.caarray.application.TemporaryCacheFileManager;
 import gov.nih.nci.caarray.dao.DaoModule;
-import gov.nih.nci.caarray.platforms.FileManager;
 import gov.nih.nci.caarray.platforms.PlatformModule;
 import gov.nih.nci.caarray.platforms.SessionTransactionManager;
 
@@ -102,10 +100,9 @@ public class ArrayDesignModule extends AbstractModule {
     @Override
     protected void configure() {
         install(new DaoModule());
- 
+
         bind(SessionTransactionManager.class).to(JtaSessionTransactionManager.class);
-        bind(FileManager.class).to(TemporaryCacheFileManager.class);
-        
+
         install(new PlatformModule());
     }
 }

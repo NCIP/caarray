@@ -80,102 +80,83 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.domain.data;
+package gov.nih.nci.caarray.domain;
 
-import gov.nih.nci.caarray.domain.MultiPartBlob;
-import gov.nih.nci.caarray.util.CaArrayUtils;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import gov.nih.nci.caarray.AbstractHibernateTest;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.Serializable;
+import org.hibernate.Transaction;
+import org.junit.Test;
 
-import javax.persistence.Embeddable;
-import javax.persistence.Embedded;
-import javax.persistence.Transient;
+import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 
-import org.apache.commons.io.IOUtils;
+public abstract class AbstractHibernateIntegrationTest<T extends PersistentObject> extends AbstractHibernateTest {
+    private static int uniqueIntValue = 0;
 
-/**
- * Manages serialization of Objects to and from a compressed byte[].
- */
-@Embeddable
-class Serializer implements Serializable {
+    public AbstractHibernateIntegrationTest() {
+        super(true);
+    }
 
-    private static final long serialVersionUID = 1L;
+    @Test
+    public void testSave() {
+        final T caArrayObject = createTestObject();
+        // Test once for insert
+        setValues(caArrayObject);
+        saveAndCheckRetrieved(caArrayObject);
+        // ...and again for update
+        setValues(caArrayObject);
+        saveAndCheckRetrieved(caArrayObject);
+        // ...and check that nullable fields work
+        setNullableValuesToNull(caArrayObject);
+        saveAndCheckRetrieved(caArrayObject);
+        // ...and add values again to previously nulled fields
+        setValues(caArrayObject);
+        saveAndCheckRetrieved(caArrayObject);
+    }
 
-    private Serializable value;
-    private MultiPartBlob serializedValue;
+    protected void setNullableValuesToNull(T caArrayObject) {
+        // no-op in the base case - subclasses should override
+    }
 
-    @Transient
-    Serializable getValue() {
-        if (isSerialized()) {
-            deserialize();
+    protected final void saveAndCheckRetrieved(T caArrayObject) {
+        save(caArrayObject);
+        assertNotNull(caArrayObject.getId());
+        assertTrue(caArrayObject.getId() > 0L);
+        final Transaction tx = this.hibernateHelper.beginTransaction();
+        this.hibernateHelper.getCurrentSession().evict(caArrayObject);
+        final T retrievedCaArrayObject = (T) this.hibernateHelper.getCurrentSession().get(caArrayObject.getClass(),
+                caArrayObject.getId());
+        compareValues(caArrayObject, retrievedCaArrayObject);
+        tx.commit();
+    }
+
+    protected final void save(PersistentObject caArrayObject) {
+        final Transaction tx = this.hibernateHelper.beginTransaction();
+        this.hibernateHelper.getCurrentSession().saveOrUpdate(caArrayObject);
+        tx.commit();
+    }
+
+    abstract protected void setValues(T caArrayObject);
+
+    abstract protected void compareValues(T caArrayObject, T retrievedCaArrayObject);
+
+    abstract protected T createTestObject();
+
+    protected String getUniqueStringValue() {
+        return String.valueOf(getUniqueIntValue());
+    }
+
+    protected int getUniqueIntValue() {
+        return uniqueIntValue++;
+    }
+
+    protected <E extends Enum<E>> E getNextValue(E[] values, Enum<E> currentValue) {
+        if (currentValue == null || currentValue.ordinal() == values.length - 1) {
+            return values[0];
+        } else {
+            return values[currentValue.ordinal() + 1];
         }
-        return value;
-    }
-
-    void setValue(Serializable value) {
-        serializedValue = null;
-        this.value = value;
-    }
-
-    @Transient
-    byte[] getSerializedValues() {
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        try {
-            IOUtils.copy(getSerializedValue().readCompressedContents(), outputStream);
-        } catch (IOException e) {
-            throw new IllegalStateException("Couldn't serialize data", e);
-        }
-        return outputStream.toByteArray();
-    }
-
-    void setSerializedValues(byte[] serializedBytes) {
-        ByteArrayInputStream inputStream = new ByteArrayInputStream(serializedBytes);
-        MultiPartBlob multipartBlob = new MultiPartBlob();
-        try {
-            multipartBlob.writeDataUncompressed(inputStream);
-        } catch (IOException e) {
-            throw new IllegalStateException("Couldn't write serialized data", e);
-        }
-        setSerializedValue(multipartBlob);
-    }
-
-    @Transient
-    private boolean isSerialized() {
-        return serializedValue != null;
-    }
-
-    private void serialize() {
-        setSerializedValues(CaArrayUtils.serialize(value));
-        value = null;
-    }
-
-    private void deserialize() {
-        value = CaArrayUtils.deserialize(getSerializedValues());
-        serializedValue = null;
-    }
-    
-    /**
-     * @return the serializedValue
-     */
-    @Embedded
-    @SuppressWarnings("PMD.UnusedPrivateMethod")
-    MultiPartBlob getSerializedValue() {
-        if (!isSerialized()) {
-            serialize();
-        }
-        return this.serializedValue;
-    }
-
-    /**
-     * @param serializedValue the serializedValue to set
-     */
-    @SuppressWarnings("PMD.UnusedPrivateMethod")
-    void setSerializedValue(MultiPartBlob serializedValue) {
-        this.serializedValue = serializedValue;
-        this.value = null;
     }
 
 }

@@ -85,6 +85,7 @@ package gov.nih.nci.caarray.platforms.illumina;
 
 import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.dao.SearchDao;
+import gov.nih.nci.caarray.dataStorage.DataStorageFacade;
 import gov.nih.nci.caarray.domain.LSID;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
@@ -94,7 +95,6 @@ import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.platforms.DefaultValueParser;
-import gov.nih.nci.caarray.platforms.FileManager;
 import gov.nih.nci.caarray.platforms.ValueParser;
 import gov.nih.nci.caarray.platforms.spi.AbstractDataFileHandler;
 import gov.nih.nci.caarray.validation.FileValidationResult;
@@ -136,8 +136,8 @@ final class SampleProbeProfileHandler extends AbstractDataFileHandler {
      * 
      */
     @Inject
-    SampleProbeProfileHandler(FileManager fileManager, ArrayDao arrayDao, SearchDao searchDao) {
-        super(fileManager);
+    SampleProbeProfileHandler(DataStorageFacade dataStorageFacade, ArrayDao arrayDao, SearchDao searchDao) {
+        super(dataStorageFacade);
         this.arrayDao = arrayDao;
         this.searchDao = searchDao;
     }
@@ -145,39 +145,42 @@ final class SampleProbeProfileHandler extends AbstractDataFileHandler {
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean parsesData() {
         return true;
     }
-    
+
     @Override
     protected boolean acceptFileType(FileType type) {
         return FileType.ILLUMINA_SAMPLE_PROBE_PROFILE_TXT == type;
     }
+
     /**
      * {@inheritDoc}
      */
+    @Override
     public QuantitationTypeDescriptor[] getQuantitationTypeDescriptors() {
-        DataHeaderParser p = new DataHeaderParser(null);
+        final DataHeaderParser p = new DataHeaderParser(null);
         processFile(getFile(), p);
         // assume all hybs have the same QTypes as the first.
-        List<SampleProbeProfileQuantitationType> l = p.getLoaders().get(0).getQTypes();
+        final List<SampleProbeProfileQuantitationType> l = p.getLoaders().get(0).getQTypes();
         return l.toArray(new SampleProbeProfileQuantitationType[l.size()]);
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public List<LSID> getReferencedArrayDesignCandidateIds() {
-        InfoHeadingParser p = new InfoHeadingParser();
-        processFile(getFile(), p);        
+        final InfoHeadingParser p = new InfoHeadingParser();
+        processFile(getFile(), p);
         String fileName = p.getValues().get(InfoHeadingParser.KEY_ARRAY_CONTENT);
         if (fileName == null) {
             throw new IllegalStateException("Missing header field '" + InfoHeadingParser.KEY_ARRAY_CONTENT + "'");
         }
-        List<LSID> lsids = new ArrayList<LSID>();
+        final List<LSID> lsids = new ArrayList<LSID>();
         while (!StringUtils.isEmpty(FilenameUtils.getExtension(fileName))) {
-            lsids.add(new LSID(CsvDesignHandler.LSID_AUTHORITY, CsvDesignHandler.LSID_NAMESPACE,
-                    fileName));
+            lsids.add(new LSID(CsvDesignHandler.LSID_AUTHORITY, CsvDesignHandler.LSID_NAMESPACE, fileName));
             fileName = FilenameUtils.getBaseName(fileName);
         }
         lsids.add(new LSID(CsvDesignHandler.LSID_AUTHORITY, CsvDesignHandler.LSID_NAMESPACE, fileName));
@@ -187,17 +190,18 @@ final class SampleProbeProfileHandler extends AbstractDataFileHandler {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void loadData(DataSet dataSet, List<QuantitationType> types, ArrayDesign design) {
         DataHeaderParser header = new DataHeaderParser(design.getFirstDesignFile().getFileType());
-        DesignElementBuilderParser designElementBuilder = new DesignElementBuilderParser(header, dataSet, design,
-                arrayDao, searchDao);
+        final DesignElementBuilderParser designElementBuilder = new DesignElementBuilderParser(header, dataSet, design,
+                this.arrayDao, this.searchDao);
         processFile(getFile(), null, header, designElementBuilder);
         designElementBuilder.finish();
         dataSet.prepareColumns(types, designElementBuilder.getElementCount());
         LOG.info("Pass 1/2 loaded " + designElementBuilder.getElementCount() + " design elements.");
         header = new DataHeaderParser(design.getFirstDesignFile().getFileType());
-        HybDataBuilder<SampleProbeProfileQuantitationType> loader
-                = new HybDataBuilder<SampleProbeProfileQuantitationType>(dataSet, header, this.valueParser);
+        final HybDataBuilder<SampleProbeProfileQuantitationType> loader = new HybDataBuilder<SampleProbeProfileQuantitationType>(
+                dataSet, header, this.valueParser);
         processFile(getFile(), null, header, loader);
         LOG.info("Pass 2/2 loaded data.");
     }
@@ -205,30 +209,32 @@ final class SampleProbeProfileHandler extends AbstractDataFileHandler {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void validate(MageTabDocumentSet mTabSet, FileValidationResult result, ArrayDesign design) {
-        InfoHeadingParser p = new InfoHeadingParser();
+        final InfoHeadingParser p = new InfoHeadingParser();
         processFile(getFile(), p);
-        String magic = p.getValues().get(InfoHeadingParser.MAGIC);
+        final String magic = p.getValues().get(InfoHeadingParser.MAGIC);
         if (magic == null || !magic.startsWith("Illumina Inc. BeadStudio")) {
             LOG.warn("...Not a familiar file format " + magic);
         }
 
         if (design == null) {
-           result.addMessage(Type.ERROR, "Array design not found");
-           return;
+            result.addMessage(Type.ERROR, "Array design not found");
+            return;
         }
 
-        ValidatingHeaderParser headerValidator = new ValidatingHeaderParser(design.getFirstDesignFile().getFileType(),
-                result, mTabSet);
-        HybDataValidator<SampleProbeProfileQuantitationType> dataValidator
-                = new HybDataValidator<SampleProbeProfileQuantitationType>(headerValidator, result, design, arrayDao);
+        final ValidatingHeaderParser headerValidator = new ValidatingHeaderParser(design.getFirstDesignFile()
+                .getFileType(), result, mTabSet);
+        final HybDataValidator<SampleProbeProfileQuantitationType> dataValidator = new HybDataValidator<SampleProbeProfileQuantitationType>(
+                headerValidator, result, design, this.arrayDao);
         processFile(getFile(), null, headerValidator, dataValidator);
         dataValidator.finish();
     }
-    
+
     /**
      * {@inheritDoc}
-     */        
+     */
+    @Override
     public boolean requiresMageTab() {
         return false;
     }
@@ -238,7 +244,7 @@ final class SampleProbeProfileHandler extends AbstractDataFileHandler {
      */
     @Override
     public List<String> getHybridizationNames() {
-        DataHeaderParser proc = new DataHeaderParser(null);
+        final DataHeaderParser proc = new DataHeaderParser(null);
         processFile(getFile(), proc);
         return proc.getHybNames();
     }
@@ -246,6 +252,7 @@ final class SampleProbeProfileHandler extends AbstractDataFileHandler {
     /**
      * {@inheritDoc}
      */
+    @Override
     public ArrayDataTypeDescriptor getArrayDataTypeDescriptor() {
         return IlluminaArrayDataTypes.ILLUMINA_SAMPLE_PROBE_PROFILE;
     }
@@ -253,7 +260,7 @@ final class SampleProbeProfileHandler extends AbstractDataFileHandler {
     private static DelimitedFileReader openReader(File dataFile) {
         try {
             return new DelimitedFileReaderFactoryImpl().createTabDelimitedFileReader(dataFile);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new IllegalStateException("File " + dataFile.getName() + " could not be read", e);
         }
     }
@@ -265,13 +272,13 @@ final class SampleProbeProfileHandler extends AbstractDataFileHandler {
     private void processFile(File file, AbstractHeaderParser header) {
         processFile(file, null, header, null);
     }
-    
+
     private void processFile(File file, InfoHeadingParser info, AbstractHeaderParser header, AbstractParser row) {
-        DelimitedFileReader r = openReader(file);
+        final DelimitedFileReader r = openReader(file);
         try {
             parseHeadingSection(r, info);
             parseDataSection(r, header, row);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new IllegalStateException(AbstractDataFileHandler.READ_FILE_ERROR_MESSAGE, e);
         } finally {
             r.close();
@@ -288,7 +295,7 @@ final class SampleProbeProfileHandler extends AbstractDataFileHandler {
     private static boolean isBlankLine(List<String> line) {
         return line.isEmpty() || (line.size() == 1 && line.get(0).length() == 0);
     }
-    
+
     private void parseHeadingSection(DelimitedFileReader r, InfoHeadingParser info) throws IOException {
         skeepBlankLines(r);
         while (r.hasNextLine()) {
@@ -313,7 +320,7 @@ final class SampleProbeProfileHandler extends AbstractDataFileHandler {
             throws IOException {
         // parse table header
         if (r.hasNextLine() && header != null) {
-            List<String> line = r.nextLine();
+            final List<String> line = r.nextLine();
             boolean keepGoing = header.parse(line, r.getCurrentLineNumber());
             // parse rows
             long ticker = System.currentTimeMillis();
@@ -333,18 +340,18 @@ final class SampleProbeProfileHandler extends AbstractDataFileHandler {
         private final Map<String, String> values = new HashMap<String, String>();
 
         void parse(List<String> line, int lineNum) {
-            String[] pair = line.get(0).split("=");
+            final String[] pair = line.get(0).split("=");
             if (pair.length == 1 && lineNum == 1) {
-                values.put(MAGIC, line.get(0));
-            } else  if (pair.length == 2) {
-                String n = pair[0].trim().toUpperCase(Locale.getDefault());
-                String v = pair[1].trim();
-                values.put(n, v);
+                this.values.put(MAGIC, line.get(0));
+            } else if (pair.length == 2) {
+                final String n = pair[0].trim().toUpperCase(Locale.getDefault());
+                final String v = pair[1].trim();
+                this.values.put(n, v);
             }
         }
 
         public Map<String, String> getValues() {
-            return values;
+            return this.values;
         }
     }
 
@@ -361,9 +368,9 @@ final class SampleProbeProfileHandler extends AbstractDataFileHandler {
 
         @Override
         protected boolean parseLoaders(List<String> line, int lineNum) {
-            boolean ok = super.parseLoaders(line, lineNum);
+            final boolean ok = super.parseLoaders(line, lineNum);
             if (ok) {
-                validateSdrfNames(mTabSet, lineNum);
+                validateSdrfNames(this.mTabSet, lineNum);
                 validateColumnConsistency(lineNum);
             }
             return ok;
@@ -375,43 +382,44 @@ final class SampleProbeProfileHandler extends AbstractDataFileHandler {
      */
     static class DataHeaderParser extends AbstractHeaderParser<SampleProbeProfileQuantitationType> {
         private ColNameFormat format;
-        private int[] rowHeaderindexes = new int[RowHeader.values().length];
+        private final int[] rowHeaderindexes = new int[RowHeader.values().length];
         private final FileType designType;
 
         public DataHeaderParser(FileType designType) {
             super(SampleProbeProfileQuantitationType.class);
             this.designType = designType;
-            Arrays.fill(rowHeaderindexes, -1);
+            Arrays.fill(this.rowHeaderindexes, -1);
         }
 
         protected DataHeaderParser(FileType designType, FileValidationResult result) {
             super(new MessageHandler.ValidationMessageHander(result), SampleProbeProfileQuantitationType.class);
             this.designType = designType;
-            Arrays.fill(rowHeaderindexes, -1);
+            Arrays.fill(this.rowHeaderindexes, -1);
         }
 
+        @Override
         protected boolean parseLoaders(List<String> line, int lineNum) {
-            List<String> hybNames = findHybNames(line, lineNum);
+            final List<String> hybNames = findHybNames(line, lineNum);
             if (hybNames.isEmpty()) {
                 error("No samples found", lineNum, 0);
                 return false;
             }
             // start out with all columns, and remove the ones that are processed/used.
-            List<String> unusedCols = new ArrayList<String>(line);
-            for (String hybName : hybNames) {
-                ValueLoader hyb = addValueLoader(hybName);
+            final List<String> unusedCols = new ArrayList<String>(line);
+            for (final String hybName : hybNames) {
+                final ValueLoader hyb = addValueLoader(hybName);
                 loadQTypeMap(hyb, line, lineNum, unusedCols);
             }
 
             loadCommonColMap(line, lineNum, unusedCols);
-            RowHeader probeIdCol = findProbeIdColumn(lineNum);
+            final RowHeader probeIdCol = findProbeIdColumn(lineNum);
             if (probeIdCol == null) {
                 return false;
             } else {
-                setProbIdColumn(rowHeaderindexes[probeIdCol.ordinal()]);
+                setProbIdColumn(this.rowHeaderindexes[probeIdCol.ordinal()]);
             }
 
-            for (String col : unusedCols) {
+            for (final String col : unusedCols) {
                 warn("Ignored column " + col, lineNum, line.indexOf(col) + 1);
             }
             return true;
@@ -421,17 +429,20 @@ final class SampleProbeProfileHandler extends AbstractDataFileHandler {
          * @param unusedCols used/processed columns should be removed from this list.
          */
         void loadQTypeMap(ValueLoader hyb, List<String> line, int lineNum, List<String> unusedCols) {
-            EnumSet<SampleProbeProfileQuantitationType> mandatory = EnumSet.of(
-                    SampleProbeProfileQuantitationType.DETECTION,
-                    SampleProbeProfileQuantitationType.AVG_SIGNAL); // always present, but ckeck anyway.
+            final EnumSet<SampleProbeProfileQuantitationType> mandatory = EnumSet.of(
+                    SampleProbeProfileQuantitationType.DETECTION, SampleProbeProfileQuantitationType.AVG_SIGNAL); // always
+                                                                                                                  // present,
+                                                                                                                  // but
+                                                                                                                  // ckeck
+                                                                                                                  // anyway.
             for (int i = 0; i < line.size(); i++) {
-                String compositeName = line.get(i);
-                String localName = format.getLocalColName(compositeName, hyb.getHybName());
+                final String compositeName = line.get(i);
+                String localName = this.format.getLocalColName(compositeName, hyb.getHybName());
                 if (localName == null) {
                     continue;
                 }
                 localName = localName.toUpperCase(Locale.getDefault());
-                HybHeader hdr = HybHeader.forAltName(localName);
+                final HybHeader hdr = HybHeader.forAltName(localName);
                 if (hdr != null) {
                     hyb.addMapping(hdr.getQType(), i, lineNum);
                     mandatory.remove(hdr.getQType());
@@ -447,24 +458,24 @@ final class SampleProbeProfileHandler extends AbstractDataFileHandler {
         }
 
         /**
-         * find columns that define the "AVG_SIGNAL" QType, and extract the hyb name from the full column name.
-         * Note that if a hyb is missing the mandatory "AVG_SIGNAL" QType, it will be ignored w/o warning.
+         * find columns that define the "AVG_SIGNAL" QType, and extract the hyb name from the full column name. Note
+         * that if a hyb is missing the mandatory "AVG_SIGNAL" QType, it will be ignored w/o warning.
          */
         @SuppressWarnings("PMD.CompareObjectsWithEquals")
         private List<String> findHybNames(List<String> line, int lineNum) {
-            List<String> l = new ArrayList<String>();
+            final List<String> l = new ArrayList<String>();
             int col = 0;
-            for (String s : line) {
+            for (final String s : line) {
                 col++;
-                ColNameFormat tmp = findFormatIfAVGSignalCol(s);
+                final ColNameFormat tmp = findFormatIfAVGSignalCol(s);
                 if (tmp == null) {
                     continue;
                 } else {
                     l.add(getHybNameFromAVGSignalCol(s, tmp));
                 }
-                if (format == null) {
-                    format = tmp;
-                } else if (format != tmp) { // PMD suppressed
+                if (this.format == null) {
+                    this.format = tmp;
+                } else if (this.format != tmp) { // PMD suppressed
                     error("Mixed column name formats", lineNum, col);
                 }
             }
@@ -481,23 +492,23 @@ final class SampleProbeProfileHandler extends AbstractDataFileHandler {
         private void loadCommonColMap(List<String> line, int lineNum, List<String> unusedCols) {
             for (int i = 0; i < line.size(); i++) {
                 try {
-                    RowHeader h = RowHeader.valueOf(line.get(i).toUpperCase(Locale.getDefault()));
+                    final RowHeader h = RowHeader.valueOf(line.get(i).toUpperCase(Locale.getDefault()));
                     if (isPresent(h)) {
-                        warn("Column " + h + " already defined at column " + (rowHeaderindexes[h.ordinal()] + 1),
+                        warn("Column " + h + " already defined at column " + (this.rowHeaderindexes[h.ordinal()] + 1),
                                 lineNum, i + 1);
                     } else {
-                        rowHeaderindexes[h.ordinal()] = i;
+                        this.rowHeaderindexes[h.ordinal()] = i;
                         unusedCols.remove(line.get(i));
                     }
-                } catch (IllegalArgumentException e) {
+                } catch (final IllegalArgumentException e) {
                     continue;
                 }
             }
-            
+
         }
 
         private static ColNameFormat findFormatIfAVGSignalCol(String compisteName) {
-            String upper = compisteName.toUpperCase(Locale.getDefault());
+            final String upper = compisteName.toUpperCase(Locale.getDefault());
             if (upper.endsWith(".AVG_SIGNAL")) {
                 return DOT_FORMAT;
             } else if (upper.startsWith("AVG_SIGNAL-")) {
@@ -512,16 +523,15 @@ final class SampleProbeProfileHandler extends AbstractDataFileHandler {
         }
 
         private boolean isPresent(RowHeader header) {
-            return rowHeaderindexes[header.ordinal()] != -1;
+            return this.rowHeaderindexes[header.ordinal()] != -1;
         }
 
         private RowHeader findExpectedProbeIdColumn() {
-            if (designType == FileType.ILLUMINA_DESIGN_CSV && isPresent(RowHeader.TARGETID)) {
+            if (this.designType == FileType.ILLUMINA_DESIGN_CSV && isPresent(RowHeader.TARGETID)) {
                 return RowHeader.TARGETID;
             }
-            if (designType == FileType.ILLUMINA_DESIGN_BGX) {
-                return isPresent(RowHeader.PROBE_ID)
-                        ? RowHeader.PROBE_ID
+            if (this.designType == FileType.ILLUMINA_DESIGN_BGX) {
+                return isPresent(RowHeader.PROBE_ID) ? RowHeader.PROBE_ID
                         : (isPresent(RowHeader.ID_REF) ? RowHeader.ID_REF : null);
             }
             return null;
@@ -533,10 +543,10 @@ final class SampleProbeProfileHandler extends AbstractDataFileHandler {
 
             // look for any probe id header.
             if (col == null) {
-                for (RowHeader rh : EnumSet.of(RowHeader.TARGETID, RowHeader.PROBE_ID, RowHeader.ID_REF)) {
+                for (final RowHeader rh : EnumSet.of(RowHeader.TARGETID, RowHeader.PROBE_ID, RowHeader.ID_REF)) {
                     if (isPresent(rh)) {
                         col = rh;
-                        warn("Using column " + col + " with design type " + designType, lineNum, 0);
+                        warn("Using column " + col + " with design type " + this.designType, lineNum, 0);
                         break;
                     }
                 }
@@ -552,6 +562,7 @@ final class SampleProbeProfileHandler extends AbstractDataFileHandler {
          */
         private static interface ColNameFormat {
             String getHybName(String compositeColName, String qTypeName);
+
             String getLocalColName(String compositColName, String hybName);
         }
 
@@ -559,12 +570,15 @@ final class SampleProbeProfileHandler extends AbstractDataFileHandler {
          * "ARRAY_STDEV-1745080067_B" style column names.
          */
         private static final ColNameFormat DASH_FORMAT = new ColNameFormat() {
+            @Override
             public String getHybName(String compositeColName, String localName) {
                 if (compositeColName.toUpperCase(Locale.getDefault()).startsWith(localName + '-')) {
                     return compositeColName.substring(localName.length() + 1);
                 }
                 return null;
             }
+
+            @Override
             public String getLocalColName(String compositColName, String hybName) {
                 if (compositColName.endsWith('-' + hybName)) {
                     return compositColName.substring(0, compositColName.length() - hybName.length() - 1);
@@ -577,12 +591,15 @@ final class SampleProbeProfileHandler extends AbstractDataFileHandler {
          * "Patient 1-Tumor.ARRAY_STDEV" style column names.
          */
         private static final ColNameFormat DOT_FORMAT = new ColNameFormat() {
+            @Override
             public String getHybName(String compositeColName, String localName) {
                 if (compositeColName.toUpperCase(Locale.getDefault()).endsWith('.' + localName)) {
                     return compositeColName.substring(0, compositeColName.length() - localName.length() - 1);
                 }
                 return null;
             }
+
+            @Override
             public String getLocalColName(String compositColName, String hybName) {
                 if (compositColName.startsWith(hybName + '.')) {
                     return compositColName.substring(hybName.length() + 1);
@@ -600,27 +617,21 @@ final class SampleProbeProfileHandler extends AbstractDataFileHandler {
          * Columns per hyb (QTypes).
          */
         private static enum HybHeader {
-            MIN_SIGNAL,
-            AVG_SIGNAL,
-            MAX_SIGNAL,
-            NARRAYS,
-            ARRAY_STDEV,
-            BEAD_STDEV,
-            AVG_NBEADS,
-            DETECTION("DETECTION PVAL", "DETECTIONPVAL");
-            
+            MIN_SIGNAL, AVG_SIGNAL, MAX_SIGNAL, NARRAYS, ARRAY_STDEV, BEAD_STDEV, AVG_NBEADS, DETECTION(
+                    "DETECTION PVAL", "DETECTIONPVAL");
+
             private final SampleProbeProfileQuantitationType qType;
 
             HybHeader(String... altNames) {
                 this.qType = SampleProbeProfileQuantitationType.valueOf(name());
-                for (String n : altNames) {
+                for (final String n : altNames) {
                     HEADER_ALT_NAME_MAP.put(n, this);
                 }
                 HEADER_ALT_NAME_MAP.put(name(), this);
             }
 
             public SampleProbeProfileQuantitationType getQType() {
-                return qType;
+                return this.qType;
             }
 
             static HybHeader forAltName(String name) {
@@ -632,10 +643,8 @@ final class SampleProbeProfileHandler extends AbstractDataFileHandler {
          * Known common/shared column headers.
          */
         private static enum RowHeader {
-            TARGETID,
-            PROBEID, // expected column, but unused.
-            PROBE_ID,
-            ID_REF;
+            TARGETID, PROBEID, // expected column, but unused.
+            PROBE_ID, ID_REF;
         }
-    }    
+    }
 }

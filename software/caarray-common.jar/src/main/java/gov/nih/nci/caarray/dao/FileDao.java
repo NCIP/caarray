@@ -85,93 +85,36 @@ package gov.nih.nci.caarray.dao;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.search.FileSearchCriteria;
 
+import java.net.URI;
 import java.util.List;
 
 import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 
 /**
  * DAO for entities in the <code>gov.nih.nci.caarray.domain.file</code> package.
- *
+ * 
  */
 public interface FileDao extends CaArrayDao {
     /**
-     * Method to delete associated Blobs from a project in anticipation of project
-     * deletion using hql.
-     * @param projectId the id of the project being manipulated
-     */
-    void deleteHqlBlobsByProjectId(Long projectId);
-    
-    /**
      * Performs a query for files by the given criteria.
-     *
+     * 
      * @param params paging and sorting parameters
      * @param criteria the criteria for the search
      * @return a list of matching files
      */
     List<CaArrayFile> searchFiles(PageSortParams<CaArrayFile> params, FileSearchCriteria criteria);
-    
+
     /**
      * Find files belonging to given project that can be deleted.
-     *
+     * 
      * @param projectId id of the project
      * @return a list of deletable files in given project
      */
     List<CaArrayFile> getDeletableFiles(Long projectId);
 
-    /**
-     * Write/fill the blob contents of the CaArrayFile with the contents of the stream.
-     * Once filled The file handle must be persisted explicitly with
-     * {@link #saveAndEvict(gov.nih.nci.caarray.domain.file.CaArrayFile)}.
-     * @param file the target file handle that receives the data.
-     * @param data the source of the data to store.
-     * @throws IOException oops during copy or storage.
-     * @since 2.4.0
-     */
-    void writeContents(CaArrayFile file, InputStream data) throws IOException;
+    List<URI> getFileHandlesForProject(Long projectId);
 
-    /**
-     * Write/fill the blob contents of the CaArrayFile with the contents of the data file.
-     * Once filled The file handle must be persisted explicitly with
-     * {@link #saveAndEvict(gov.nih.nci.caarray.domain.file.CaArrayFile)}.
-     * @param file the target file handle that receives the data.
-     * @param data the source of the data to store.
-     * @throws IOException oops during copy or storage.
-     * @since 2.4.0
-     */
-    void writeContents(CaArrayFile file, File data) throws IOException;
-    
-    /**
-     * copy the inflated data stream stored in a CaArrayFile into a receiving stream (same as
-     * {@link #copyContentsToStream(gov.nih.nci.caarray.domain.file.CaArrayFile, boolean, java.io.OutputStream)}
-     * called with inflate = true).
-     * @param file the file handle.
-     * returned data will remain deflated/compressed.
-     * @param dest the receiving stream.
-     * @throws IOException oops during copy or inflation.
-     * @since 2.4.0
-     */
-    void copyContentsToStream(CaArrayFile file, OutputStream dest) throws IOException;
+    List<URI> getAllFileHandles();
 
-    /**
-     * copy the data stream stored in a CaArrayFile into a receiving stream.
-     * @param file the file handle.
-     * @param inflate if true, the stored data will be deflated/decompressed into it's original form. if false, the
-     * returned data will remain deflated/compressed.
-     * @param dest the receiving stream.
-     * @throws IOException oops during copy or inflation.
-     * @since 2.4.0
-     */
-    void copyContentsToStream(CaArrayFile file, boolean inflate, OutputStream dest) throws IOException;
-
-    /**
-     * Save fully populated file and reclaim memory.
-     * @param file file to saveAndEvict.
-     * @since 2.4.0
-     */
-    void saveAndEvict(CaArrayFile file);
-
+    List<URI> getParsedDataHandlesForProject(Long projectId);
 }

@@ -82,9 +82,8 @@
  */
 package gov.nih.nci.caarray.dao;
 
-import gov.nih.nci.caarray.domain.BlobHolder;
-import gov.nih.nci.caarray.domain.MultiPartBlob;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
+import gov.nih.nci.caarray.domain.data.AbstractDataColumn;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileCategory;
 import gov.nih.nci.caarray.domain.file.FileStatus;
@@ -93,22 +92,14 @@ import gov.nih.nci.caarray.domain.project.AbstractExperimentDesignNode;
 import gov.nih.nci.caarray.domain.search.FileSearchCriteria;
 import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
 import gov.nih.nci.caarray.util.CaArrayUtils;
+import gov.nih.nci.caarray.util.UnfilteredCallback;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.math.BigInteger;
-import java.util.ArrayList;
+import java.net.URI;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
@@ -125,24 +116,6 @@ import com.google.inject.Inject;
 @SuppressWarnings("PMD.CyclomaticComplexity")
 class FileDaoImpl extends AbstractCaArrayDaoImpl implements FileDao {
     private static final Logger LOG = Logger.getLogger(FileDaoImpl.class);
-    private static final Method GET_MULTI_PART_BLOB;
-    private static final Method SET_MULTI_PART_BLOB;
-    private static final Method GET_BLOB_PARTS;
-
-    static {
-        try {
-            GET_MULTI_PART_BLOB = CaArrayFile.class.getDeclaredMethod("getMultiPartBlob");
-            GET_MULTI_PART_BLOB.setAccessible(true);
-            SET_MULTI_PART_BLOB = CaArrayFile.class.getDeclaredMethod("setMultiPartBlob", MultiPartBlob.class);
-            SET_MULTI_PART_BLOB.setAccessible(true);
-            GET_BLOB_PARTS = MultiPartBlob.class.getDeclaredMethod("getBlobParts");
-            GET_BLOB_PARTS.setAccessible(true);
-        } catch (NoSuchMethodException ex) {
-            throw throwError(ex);
-        } catch (SecurityException ex) {
-            throw throwError(ex);
-        }
-    }
 
     /**
      * 
@@ -152,91 +125,64 @@ class FileDaoImpl extends AbstractCaArrayDaoImpl implements FileDao {
     public FileDaoImpl(CaArrayHibernateHelper hibernateHelper) {
         super(hibernateHelper);
     }
-   
-    @SuppressWarnings("PMD.AvoidThrowingRawExceptionTypes")
-    private static Error throwError(Exception ex) {
-        throw new Error(ex);
-    }
 
-    @SuppressWarnings("unchecked")
-    private List<Long> getBlobPartIdsForProject(long projectId) {
-         List<Long> returnVal = new ArrayList<Long>();
-         String sqlProjBlobs = "select b.blob_parts from PROJECT p, CAARRAYFILE c, CAARRAYFILE_BLOB_PARTS b "
-                      + "where p.id = c.project AND b.caarrayfile = c.id AND p.id = :p_id";
-
-         String sqlHybBlobs = "select bp.blob_parts from project p, experiment e, hybridization h, "
-         + "hybridization_data hd, "
-         + "datacolumn d, "
-         + "datacolumn_blob_parts bp "
-         + "where p.id = :p_id "
-         + "and p.experiment = e.id "
-         + "and e.id = h.experiment "
-         + "and hd.id = d.hybridization_data "
-         + "and h.id = hd.hybridization "
-         + "and d.id = bp.datacolumn";
-
-        List filesToProject = getCurrentSession().createSQLQuery(sqlProjBlobs)
-            .setLong("p_id", projectId).list();
-
-        List filesToHyb = getCurrentSession().createSQLQuery(sqlHybBlobs)
-            .setLong("p_id", projectId).list();
-
-        if ((filesToProject != null && !filesToProject.isEmpty()) || (filesToHyb != null && !filesToHyb.isEmpty())) {
-            returnVal.addAll(filesToProject);
-            returnVal.addAll(filesToHyb);
-        }
-
-        return returnVal;
-
-    }
-
-    private int removeAssociationsByBlobHolderId(List<Long> idList) {
-        String sql = "delete from CAARRAYFILE_BLOB_PARTS where blob_parts in (:b_parts)";
-        Query q = getCurrentSession().createSQLQuery(sql);
-        q.setParameterList("b_parts", idList);
-        q.executeUpdate();
-
-        sql = "delete from DATACOLUMN_BLOB_PARTS where blob_parts in (:b_parts)";
-        q = getCurrentSession().createSQLQuery(sql);
-        q.setParameterList("b_parts", idList);
-        return q.executeUpdate();
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<URI> getFileHandlesForProject(Long projectId) {
+        final String hql = "select c.dataHandle from " + CaArrayFile.class.getName()
+                + " c join c.project p where p.id = :projectId";
+        @SuppressWarnings("unchecked")
+        final List<URI> results = getCurrentSession().createQuery(hql).setLong("projectId", projectId).list();
+        return results;
     }
 
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("unchecked")
-    public void deleteHqlBlobsByProjectId(Long projectId) {
-        List list = this.getBlobPartIdsForProject(projectId);
-        if (list != null && !list.isEmpty()) {
-            this.removeAssociationsByBlobHolderId(list);
-            for (int i = 0; i < list.size(); i++) {
-                String hql = "delete from " + BlobHolder.class.getName() + " where id = :bId";
-                Query q = getCurrentSession().createQuery(hql);
-                q.setBigInteger("bId", (BigInteger) list.get(i));
-                q.executeUpdate();
-                this.flushSession();
-                this.clearSession();
+    @Override
+    public List<URI> getAllFileHandles() {
+        @SuppressWarnings("unchecked")
+        final List<URI> results = (List<URI>) getHibernateHelper().doUnfiltered(new UnfilteredCallback() {
+            @Override
+            public Object doUnfiltered(Session s) {
+                final String hql = "select dataHandle from " + CaArrayFile.class.getName();
+                return s.createQuery(hql).list();
             }
-        }
-
+        });
+        return results;
     }
 
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings({"unchecked", "PMD" })
-    public List<CaArrayFile> searchFiles(PageSortParams<CaArrayFile> params, FileSearchCriteria criteria) {        
-        Criteria c = getCurrentSession().createCriteria(CaArrayFile.class);
+    @Override
+    public List<URI> getParsedDataHandlesForProject(Long projectId) {
+        final String hql = "select d.dataHandle from " + AbstractDataColumn.class.getName()
+                + " d join d.hybridizationData hd "
+                + " join hd.hybridization h join h.experiment e join e.project p where p.id = :projectId";
+        @SuppressWarnings("unchecked")
+        final List<URI> results = getCurrentSession().createQuery(hql).setLong("projectId", projectId).list();
+        return results;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @SuppressWarnings({ "unchecked", "PMD" })
+    public List<CaArrayFile> searchFiles(PageSortParams<CaArrayFile> params, FileSearchCriteria criteria) {
+        final Criteria c = getCurrentSession().createCriteria(CaArrayFile.class);
 
         if (criteria.getExperiment() != null) {
             c.add(Restrictions.eq("project", criteria.getExperiment().getProject()));
         }
-        
+
         if (!criteria.getTypes().isEmpty()) {
             c.add(Restrictions.in("type", CaArrayUtils.namesForEnums(criteria.getTypes())));
         }
-        
+
         if (criteria.getExtension() != null) {
             String extension = criteria.getExtension();
             if (!extension.startsWith(".")) {
@@ -246,187 +192,66 @@ class FileDaoImpl extends AbstractCaArrayDaoImpl implements FileDao {
         }
 
         if (!criteria.getCategories().isEmpty()) {
-            Disjunction categoryCriterion = Restrictions.disjunction();
+            final Disjunction categoryCriterion = Restrictions.disjunction();
             if (criteria.getCategories().contains(FileCategory.DERIVED_DATA)) {
-                categoryCriterion.add(Restrictions.in("type", CaArrayUtils
-                        .namesForEnums(FileType.DERIVED_ARRAY_DATA_FILE_TYPES)));
+                categoryCriterion.add(Restrictions.in("type",
+                        CaArrayUtils.namesForEnums(FileType.DERIVED_ARRAY_DATA_FILE_TYPES)));
             }
-            if (criteria.getCategories().contains(FileCategory.RAW_DATA)) {            
-                categoryCriterion.add(Restrictions.in("type", CaArrayUtils
-                        .namesForEnums(FileType.RAW_ARRAY_DATA_FILE_TYPES)));
+            if (criteria.getCategories().contains(FileCategory.RAW_DATA)) {
+                categoryCriterion.add(Restrictions.in("type",
+                        CaArrayUtils.namesForEnums(FileType.RAW_ARRAY_DATA_FILE_TYPES)));
             }
-            if (criteria.getCategories().contains(FileCategory.MAGE_TAB)) {            
-                categoryCriterion.add(Restrictions.in("type", CaArrayUtils
-                        .namesForEnums(FileType.MAGE_TAB_FILE_TYPES)));
+            if (criteria.getCategories().contains(FileCategory.MAGE_TAB)) {
+                categoryCriterion
+                        .add(Restrictions.in("type", CaArrayUtils.namesForEnums(FileType.MAGE_TAB_FILE_TYPES)));
             }
             if (criteria.getCategories().contains(FileCategory.ARRAY_DESIGN)) {
-                categoryCriterion.add(Restrictions.in("type", CaArrayUtils
-                        .namesForEnums(FileType.ARRAY_DESIGN_FILE_TYPES)));
+                categoryCriterion.add(Restrictions.in("type",
+                        CaArrayUtils.namesForEnums(FileType.ARRAY_DESIGN_FILE_TYPES)));
             }
             if (criteria.getCategories().contains(FileCategory.OTHER)) {
                 categoryCriterion.add(Restrictions.isNull("type"));
             }
-            c.add(categoryCriterion);            
+            c.add(categoryCriterion);
         }
-        
+
         if (!criteria.getExperimentNodes().isEmpty()) {
-            Collection<Long> fileIds = new LinkedList<Long>();        
-            for (AbstractExperimentDesignNode node : criteria.getExperimentNodes()) {
-                for (CaArrayFile f : node.getAllDataFiles()) {
+            final Collection<Long> fileIds = new LinkedList<Long>();
+            for (final AbstractExperimentDesignNode node : criteria.getExperimentNodes()) {
+                for (final CaArrayFile f : node.getAllDataFiles()) {
                     fileIds.add(f.getId());
                 }
             }
             if (!fileIds.isEmpty()) {
                 c.add(Restrictions.in("id", fileIds));
             } else {
-                return Collections.emptyList();                
+                return Collections.emptyList();
             }
-        }        
-        
+        }
+
         c.setFirstResult(params.getIndex());
         if (params.getPageSize() > 0) {
             c.setMaxResults(params.getPageSize());
         }
         c.addOrder(toOrder(params));
-        
+
         return c.list();
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     @SuppressWarnings("unchecked")
     public List<CaArrayFile> getDeletableFiles(Long projectId) {
-        String hql = "from " + CaArrayFile.class.getName()
+        final String hql = "from " + CaArrayFile.class.getName()
                 + " f where f.project.id = :projectId and f.status in (:deletableStatuses) "
                 + " and (f.status <> :importedStatus or not exists (select h from " + AbstractArrayData.class.getName()
                 + " ad join ad.hybridizations h where ad.dataFile = f order by f.name))";
-        Query q = getCurrentSession().createQuery(hql);
+        final Query q = getCurrentSession().createQuery(hql);
         q.setLong("projectId", projectId);
         q.setParameterList("deletableStatuses", CaArrayUtils.namesForEnums(FileStatus.DELETABLE_FILE_STATUSES));
         q.setString("importedStatus", FileStatus.IMPORTED.name());
         return q.list();
-    }
-
-   private boolean refreshIfCleared(MultiPartBlob blobs) {
-         List<BlobHolder> list = getBlobParts(blobs);
-         Session s = getCurrentSession();
-         boolean reloaded = false;
-         for (BlobHolder bh : list) {
-             if (bh.getContents() == null) {
-                 s.refresh(bh);
-                 reloaded = true;
-             }
-         }
-         return reloaded;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void copyContentsToStream(CaArrayFile file, OutputStream dest) throws IOException {
-        copyContentsToStream(file, true, dest);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void copyContentsToStream(CaArrayFile file, boolean inflate, OutputStream dest) throws IOException {
-        MultiPartBlob blobs = getMultiPartBlob(file);
-        if (refreshIfCleared(blobs)) {
-            LOG.info("reloaded blobs for " + file.toString());
-        }
-        InputStream in = inflate ? blobs.readUncompressedContents() : blobs.readCompressedContents();
-        try {
-            IOUtils.copy(in, dest);
-        } finally {
-            IOUtils.closeQuietly(in);
-            clearAndEvictBlobs(blobs);
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void writeContents(CaArrayFile ref, File data) throws IOException {
-        InputStream in = FileUtils.openInputStream(data);
-        writeContents(ref, in);
-        IOUtils.closeQuietly(in);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void writeContents(CaArrayFile file, InputStream inputStream) throws IOException {
-        MultiPartBlob multiPartBlob = new MultiPartBlob();
-        MultiPartBlob.MetaData metaData = multiPartBlob.writeDataCompressed(inputStream);
-        file.setUncompressedSize(metaData.getUncompressedBytes());
-        file.setCompressedSize(metaData.getCompressedBytes());
-        setMultiPartBlob(file, multiPartBlob);
-    }
-
-    private void clearAndEvictBlobs(CaArrayFile data) {
-        MultiPartBlob blobs = getMultiPartBlob(data);
-        if (blobs != null) {
-            clearAndEvictBlobs(blobs);
-        }
-    }
-
-    private void clearAndEvictBlobs(MultiPartBlob blobs) {
-        List<BlobHolder> parts = getBlobParts(blobs);
-        if (parts != null) {
-            for (BlobHolder bh : parts) {
-                getCurrentSession().evict(bh);
-                bh.setContents(null);
-            }
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    private static List<BlobHolder> getBlobParts(MultiPartBlob blobs) {
-        return (List<BlobHolder>) get(blobs, GET_BLOB_PARTS);
-    }
-
-
-    private static MultiPartBlob getMultiPartBlob(CaArrayFile file) {
-        return (MultiPartBlob) get(file, GET_MULTI_PART_BLOB);
-    }
-
-    @SuppressWarnings("PMD.AvoidThrowingRawExceptionTypes")
-    private static void setMultiPartBlob(CaArrayFile file, MultiPartBlob blobs) {
-        if (getMultiPartBlob(file) != null) {
-            throw new IllegalStateException("Can't reset the contents of an existing CaArrayFile");
-        }
-        try {
-            SET_MULTI_PART_BLOB.invoke(file, blobs);
-        } catch (IllegalAccessException ex) {
-            throw new RuntimeException(ex);
-        } catch (IllegalArgumentException ex) {
-            throw new RuntimeException(ex);
-        } catch (InvocationTargetException ex) {
-            throw new RuntimeException(ex);
-        }
-    }
-
-    @SuppressWarnings("PMD.AvoidThrowingRawExceptionTypes")
-    private static Object get(Object obj, Method getter) {
-        try {
-            return getter.invoke(obj);
-        } catch (IllegalAccessException ex) {
-            throw new RuntimeException(ex);
-        } catch (IllegalArgumentException ex) {
-            throw new RuntimeException(ex);
-        } catch (InvocationTargetException ex) {
-            throw new RuntimeException(ex);
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void saveAndEvict(CaArrayFile file) {
-        super.save(file);
-        super.flushSession();
-        clearAndEvictBlobs(file);
     }
 }

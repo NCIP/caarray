@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.platforms.affymetrix;
 
 import gov.nih.nci.caarray.application.arraydata.ArrayDataException;
 import gov.nih.nci.caarray.application.arraydata.ArrayDataIOException;
+import gov.nih.nci.caarray.dataStorage.DataStorageFacade;
 import gov.nih.nci.caarray.domain.LSID;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.data.AbstractDataColumn;
@@ -100,7 +101,6 @@ import gov.nih.nci.caarray.domain.data.ShortColumn;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
-import gov.nih.nci.caarray.platforms.FileManager;
 import gov.nih.nci.caarray.platforms.spi.AbstractDataFileHandler;
 import gov.nih.nci.caarray.platforms.spi.PlatformFileReadException;
 import gov.nih.nci.caarray.validation.FileValidationResult;
@@ -121,111 +121,118 @@ import affymetrix.fusion.cel.FusionCELFileEntryType;
 
 import com.google.inject.Inject;
 
-
 /**
  * Array data handler for all versions of the Affymetrix CEL file format.
  */
-@SuppressWarnings({"PMD.CyclomaticComplexity", "PMD.TooManyMethods" }) // Switch-like statement setValue()
+@SuppressWarnings({ "PMD.CyclomaticComplexity", "PMD.TooManyMethods" })
+// Switch-like statement setValue()
 final class CelHandler extends AbstractDataFileHandler {
     private static final Logger LOG = Logger.getLogger(CelHandler.class);
     private static final String LSID_AUTHORITY = "Affymetrix.com";
     private static final String LSID_NAMESPACE = "PhysicalArrayDesign";
 
     private FusionCELData celData;
-    
+
     /**
      * @param fileManager
      */
     @Inject
-    CelHandler(FileManager fileManager) {
-        super(fileManager);
+    CelHandler(DataStorageFacade dataStorageFacade) {
+        super(dataStorageFacade);
     }
-    
+
     @Override
     public boolean openFile(CaArrayFile dataFile) throws PlatformFileReadException {
         if (!super.openFile(dataFile)) {
             return false;
         }
-        celData = new FusionCELData();
-        boolean celValid = readCelData(getFile().getAbsolutePath());
+        this.celData = new FusionCELData();
+        final boolean celValid = readCelData(getFile().getAbsolutePath());
         if (!celValid) {
             throw new PlatformFileReadException(getFile(), "Invalid cel file provided");
         }
         return true;
     }
-    
+
     @Override
     public void closeFiles() {
         super.closeFiles();
-        
+
         // See development tracker issue #9735 and dev tracker #10925 for details on why System.gc() used here
-        celData.close();
-        celData.clear();
-        celData = null;
+        this.celData.close();
+        this.celData.clear();
+        this.celData = null;
         System.gc();
 
     }
+
+    @Override
     public boolean parsesData() {
         return true;
     }
 
+    @Override
     public QuantitationTypeDescriptor[] getQuantitationTypeDescriptors() {
         return AffymetrixCelQuantitationType.values();
     }
-    
+
+    @Override
     public ArrayDataTypeDescriptor getArrayDataTypeDescriptor() {
         return AffymetrixArrayDataTypes.AFFYMETRIX_CEL;
     }
 
+    @Override
     public void validate(final MageTabDocumentSet mTabSet, final FileValidationResult result, ArrayDesign design) {
         validateHeader(result);
         validateAgainstDesign(result, design);
     }
-    
+
     /**
      * {@inheritDoc}
-     */        
+     */
+    @Override
     public boolean requiresMageTab() {
         return false;
     }
-    
+
     private void validateAgainstDesign(final FileValidationResult result, final ArrayDesign design) {
-        if (celData.getCells() != design.getNumberOfFeatures()) {
+        if (this.celData.getCells() != design.getNumberOfFeatures()) {
             result.addMessage(Type.ERROR, "The CEL file is inconsistent with the array design: "
-                    + "the CEL file contains data for " + celData.getCells() + " features, but the "
+                    + "the CEL file contains data for " + this.celData.getCells() + " features, but the "
                     + "array design contains " + design.getNumberOfFeatures() + " features");
         }
     }
-    
+
     /**
      * {@inheritDoc}
      */
     @Override
     protected boolean acceptFileType(FileType fileType) {
         return FileType.AFFYMETRIX_CEL.equals(fileType);
-    }    
+    }
 
     private void validateHeader(final FileValidationResult result) {
-        if (celData.getRows() == 0) {
+        if (this.celData.getRows() == 0) {
             result.addMessage(Type.ERROR, "Invalid CEL file: header specified 0 rows.");
         }
-        if (celData.getCols() == 0) {
+        if (this.celData.getCols() == 0) {
             result.addMessage(Type.ERROR, "Invalid CEL file: header specified 0 columns.");
         }
-        if (celData.getCells() == 0) {
+        if (this.celData.getCells() == 0) {
             result.addMessage(Type.ERROR, "Invalid CEL file: header specified 0 cells.");
         }
-        if (StringUtils.isEmpty(celData.getChipType())) {
+        if (StringUtils.isEmpty(this.celData.getChipType())) {
             result.addMessage(Type.ERROR, "Invalid CEL file: no array design type was specified.");
         }
     }
 
+    @Override
     public void loadData(final DataSet dataSet, final List<QuantitationType> types, ArrayDesign design) {
         LOG.debug("Started loadData for file: " + getFile().getName());
         if (dataSet.getDesignElementList() == null) {
             loadDesignElementList(dataSet);
         }
-        dataSet.prepareColumns(types, celData.getCells());
+        dataSet.prepareColumns(types, this.celData.getCells());
         loadDataIntoColumns(dataSet.getHybridizationDataList().get(0), types);
         LOG.debug("Completed loadData for file: " + getFile().getName());
     }
@@ -240,16 +247,16 @@ final class CelHandler extends AbstractDataFileHandler {
      * @param filename
      */
     private boolean readCelData(final String filename) {
-        celData.setFileName(filename);
-        boolean success = celData.read();
+        this.celData.setFileName(filename);
+        boolean success = this.celData.read();
         if (!success) {
             // This invokes a fileChannel.map call that could possibly fail due to a bug in Java
-            // that causes previous memory mapped files to not be released until after GC.  So
+            // that causes previous memory mapped files to not be released until after GC. So
             // we force a gc here to ensure that is not the cause of our problems
             System.gc();
-            celData.close();
-            celData.clear();
-            success = celData.read();
+            this.celData.close();
+            this.celData.clear();
+            success = this.celData.read();
         }
         return success;
     }
@@ -258,7 +265,7 @@ final class CelHandler extends AbstractDataFileHandler {
         final Set<QuantitationType> typeSet = new HashSet<QuantitationType>();
         typeSet.addAll(types);
         final FusionCELFileEntryType entry = new FusionCELFileEntryType();
-        final int numberOfCells = celData.getCells();
+        final int numberOfCells = this.celData.getCells();
         for (int cellIndex = 0; cellIndex < numberOfCells; cellIndex++) {
             getCelDataEntry(entry, cellIndex);
             handleEntry(hybridizationData, entry, cellIndex, typeSet);
@@ -267,7 +274,7 @@ final class CelHandler extends AbstractDataFileHandler {
 
     private void getCelDataEntry(final FusionCELFileEntryType entry, final int cellIndex) {
         try {
-            celData.getEntry(cellIndex, entry);
+            this.celData.getEntry(cellIndex, entry);
         } catch (final IOException e) {
             throw new ArrayDataIOException(e);
         } catch (final UnsignedOutOfLimitsException e) {
@@ -284,21 +291,22 @@ final class CelHandler extends AbstractDataFileHandler {
         }
     }
 
-    @SuppressWarnings("PMD.CyclomaticComplexity") // Switch-like statement
+    @SuppressWarnings("PMD.CyclomaticComplexity")
+    // Switch-like statement
     private void setValue(final AbstractDataColumn column, final int cellIndex, final FusionCELFileEntryType entry) {
         final QuantitationType quantitationType = column.getQuantitationType();
         if (AffymetrixCelQuantitationType.CEL_X.isEquivalent(quantitationType)) {
-            ((ShortColumn) column).getValues()[cellIndex] = (short) celData.indexToX(cellIndex);
+            ((ShortColumn) column).getValues()[cellIndex] = (short) this.celData.indexToX(cellIndex);
         } else if (AffymetrixCelQuantitationType.CEL_Y.isEquivalent(quantitationType)) {
-            ((ShortColumn) column).getValues()[cellIndex] = (short) celData.indexToY(cellIndex);
+            ((ShortColumn) column).getValues()[cellIndex] = (short) this.celData.indexToY(cellIndex);
         } else if (AffymetrixCelQuantitationType.CEL_INTENSITY.isEquivalent(quantitationType)) {
             ((FloatColumn) column).getValues()[cellIndex] = entry.getIntensity();
         } else if (AffymetrixCelQuantitationType.CEL_INTENSITY_STD_DEV.isEquivalent(quantitationType)) {
             ((FloatColumn) column).getValues()[cellIndex] = entry.getStdv();
         } else if (AffymetrixCelQuantitationType.CEL_MASK.isEquivalent(quantitationType)) {
-            ((BooleanColumn) column).getValues()[cellIndex] = celData.isMasked(cellIndex);
+            ((BooleanColumn) column).getValues()[cellIndex] = this.celData.isMasked(cellIndex);
         } else if (AffymetrixCelQuantitationType.CEL_OUTLIER.isEquivalent(quantitationType)) {
-            ((BooleanColumn) column).getValues()[cellIndex] = celData.isOutlier(cellIndex);
+            ((BooleanColumn) column).getValues()[cellIndex] = this.celData.isOutlier(cellIndex);
         } else if (AffymetrixCelQuantitationType.CEL_PIXELS.isEquivalent(quantitationType)) {
             ((ShortColumn) column).getValues()[cellIndex] = entry.getPixels();
         } else {
@@ -306,9 +314,8 @@ final class CelHandler extends AbstractDataFileHandler {
         }
     }
 
+    @Override
     public List<LSID> getReferencedArrayDesignCandidateIds() {
-        return Collections.singletonList(new LSID(LSID_AUTHORITY, LSID_NAMESPACE, celData.getChipType()));
+        return Collections.singletonList(new LSID(LSID_AUTHORITY, LSID_NAMESPACE, this.celData.getChipType()));
     }
 }
-
-

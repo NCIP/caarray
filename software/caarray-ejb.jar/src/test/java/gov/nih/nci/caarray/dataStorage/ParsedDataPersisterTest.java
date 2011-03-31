@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caarray-ejb-jar
+ * source code form and machine readable, binary, object code form. The caArray
  * Software was developed in conjunction with the National Cancer Institute 
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent 
  * government employees are authors, any rights in such works shall be subject 
  * to Title 17 of the United States Code, section 105. 
  *
- * This caarray-ejb-jar Software License (the License) is between NCI and You. You (or 
+ * This caArray Software License (the License) is between NCI and You. You (or 
  * Your) shall mean a person or an entity, and all other entities that control, 
  * are controlled by, or are under common control with the entity. Control for 
  * purposes of this definition means (i) the direct or indirect power to cause 
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described 
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up, 
  * no-charge, irrevocable, transferable and royalty-free right and license in 
- * its rights in the caarray-ejb-jar Software to (i) use, install, access, operate, 
+ * its rights in the caArray Software to (i) use, install, access, operate, 
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caarray-ejb-jar Software; (ii) distribute and 
- * have distributed to and by third parties the caarray-ejb-jar Software and any 
+ * and prepare derivative works of the caArray Software; (ii) distribute and 
+ * have distributed to and by third parties the caArray Software and any 
  * modifications and derivative works thereof; and (iii) sublicense the 
  * foregoing rights set out in (i) and (ii) to third parties, including the 
  * right to license such rights to further third parties. For sake of clarity, 
@@ -80,77 +80,116 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.application.fileaccess;
+package gov.nih.nci.caarray.dataStorage;
 
-/**
- * Service locator class responsible for creating TemporaryFileCache instances. Clients should obtain
- * TemporaryFileCaches from this class by calling either getTemporaryFileCache() or newTemporaryFileCache(), depending
- * on desired cache lifecycle.
- * 
- * This class maintains a per-thread registry of TemporaryFileCache instances. When needing a TemporaryFileCache whose
- * lifecycle is tied to a request or API method call, clients should obtain it from this class by calling
- * getTemporaryFileCache(), ensuring that the same instance will be returned throughout servicing a single request,
- * avoiding having to recache the file multiple times. Such instances are also monitored by Servlet Filters and EJB
- * interceptors, ensuring that resources are cleaned up once the request or API method call is finished.
- * 
- * If a TemporaryFileCache with a different lifecycle is required, it should be obtained by calling
- * newTemporaryFileCache(). In this case, the client is responsible for ensuring that the cache's resources are cleaned
- * up as promptly as possible once it's finished using it.
- * 
- * @author dkokotov
- */
-public final class TemporaryFileCacheLocator {
-    /**
-     * TemporaryFileCacheFactory that returns the default implementation.
-     */
-    public static final TemporaryFileCacheFactory DEFAULT = new TemporaryFileCacheFactory() {
-        public TemporaryFileCache createTempFileCache() {
-            return new TemporaryFileCacheImpl();
-        }
-    };
-    private static final ThreadLocal<TemporaryFileCache> CACHE = new ThreadLocal<TemporaryFileCache>();
-    private static TemporaryFileCacheFactory tempFileCacheFactory = DEFAULT;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyBoolean;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import gov.nih.nci.caarray.domain.data.IntegerColumn;
+import gov.nih.nci.caarray.util.CaArrayUtils;
 
-    private TemporaryFileCacheLocator() {
-        // empty constructor - utility class
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.net.URI;
+import java.util.Arrays;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+public class ParsedDataPersisterTest {
+    private static final int[] TEST_ARRAY = new int[] { 1, 2, 3 };
+    private static final URI TEST_HANDLE = CaArrayUtils.makeUriQuietly("foo:bar");
+
+    @Mock
+    private DataStorageFacade dataStorageFacade;
+
+    private ParsedDataPersister persister;
+
+    @Before
+    public void setup() {
+        MockitoAnnotations.initMocks(this);
+        this.persister = new ParsedDataPersister(this.dataStorageFacade);
     }
 
-    /**
-     * @return an instance of the TemporaryFileCache for the current thread.
-     */
-    public static TemporaryFileCache getTemporaryFileCache() {
-        TemporaryFileCache cache = CACHE.get();
-        if (cache == null) {
-            cache = tempFileCacheFactory.createTempFileCache();
-            CACHE.set(cache);
-        }
-        return cache;
+    @Test
+    public void testLoadFromStorage() {
+        // given
+        final byte[] serialized = CaArrayUtils.serialize(TEST_ARRAY);
+        final IntegerColumn column = new IntegerColumn();
+        column.setDataHandle(TEST_HANDLE);
+        given(this.dataStorageFacade.openInputStream(TEST_HANDLE, true)).willReturn(
+                new ByteArrayInputStream(serialized));
+
+        // when
+        this.persister.loadFromStorage(column);
+
+        // then
+        assertTrue(Arrays.equals(TEST_ARRAY, column.getValues()));
     }
 
-    /**
-     * @return a new instance of TemporaryFileCache not tied to the current thread.
-     */
-    public static TemporaryFileCache newTemporaryFileCache() {
-        return tempFileCacheFactory.createTempFileCache();
+    @Test
+    public void testLoadFromStorageNoHandle() {
+        final IntegerColumn column = new IntegerColumn();
+
+        // when
+        this.persister.loadFromStorage(column);
+
+        // then
+        verify(this.dataStorageFacade, never()).openInputStream(any(URI.class), anyBoolean());
     }
 
-    /**
-     * Cleans up and resets the temporary file cache associated with current thread, such
-     * that a new instance of it will be created the next time it is requested.
-     */
-    public static void resetTemporaryFileCache() {
-        TemporaryFileCache cache = CACHE.get();
-        if (cache != null) {
-            cache.closeFiles();
-            CACHE.set(null);
-        }
+    @Test(expected = UnsupportedSchemeException.class)
+    public void testLoadFromStorageInvalidHandle() {
+        final IntegerColumn column = new IntegerColumn();
+        column.setDataHandle(TEST_HANDLE);
+        given(this.dataStorageFacade.openInputStream(TEST_HANDLE, true)).willThrow(
+                new UnsupportedSchemeException("foo"));
+
+        // when
+        this.persister.loadFromStorage(column);
+
+        // then
+        verify(this.dataStorageFacade, never()).openInputStream(any(URI.class), anyBoolean());
     }
 
-    /**
-     * Set the factory that should be used to create the instances of TEmporaryFileCache for each thread.
-     * @param factory the factory to use
-     */
-    public static void setTemporaryFileCacheFactory(TemporaryFileCacheFactory factory) {
-        tempFileCacheFactory = factory;
+    @Test
+    public void testSaveToStorage() {
+        // given
+        final IntegerColumn column = new IntegerColumn();
+        column.setValues(TEST_ARRAY);
+        final StorageMetadata sm = new StorageMetadata();
+        sm.setHandle(TEST_HANDLE);
+        given(this.dataStorageFacade.addParsed(any(InputStream.class), eq(true))).willReturn(sm);
+
+        // when
+        this.persister.saveToStorage(column);
+
+        // then
+        assertEquals(TEST_HANDLE, column.getDataHandle());
+
+        final ArgumentCaptor<InputStream> captor = ArgumentCaptor.forClass(InputStream.class);
+        verify(this.dataStorageFacade).addParsed(captor.capture(), eq(true));
+        assertTrue(Arrays.equals(TEST_ARRAY, (int[]) CaArrayUtils.deserialize(captor.getValue())));
     }
+
+    @Test
+    public void testSaveToStorageWithHandleIsNoOp() {
+        final IntegerColumn column = new IntegerColumn();
+        column.setDataHandle(TEST_HANDLE);
+
+        // when
+        this.persister.saveToStorage(column);
+
+        // then
+        verify(this.dataStorageFacade, never()).addParsed(any(InputStream.class), anyBoolean());
+    }
+
 }

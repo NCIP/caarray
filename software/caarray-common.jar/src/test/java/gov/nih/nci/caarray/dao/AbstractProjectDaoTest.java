@@ -25,7 +25,9 @@ import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
+import gov.nih.nci.caarray.util.CaArrayUtils;
 
+import java.net.URI;
 import java.util.Date;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -35,7 +37,8 @@ import org.junit.Before;
 import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
 
 public class AbstractProjectDaoTest extends AbstractDaoTest {
-    
+    protected static final URI DUMMY_HANDLE = CaArrayUtils.makeUriQuietly("foo:baz");
+
     protected static AssayType DUMMY_ASSAYTYPE_1;
     protected static AssayType DUMMY_ASSAYTYPE_2;
 
@@ -88,8 +91,8 @@ public class AbstractProjectDaoTest extends AbstractDaoTest {
     protected static final SearchDao SEARCH_DAO = CaArrayDaoFactory.INSTANCE.getSearchDao();
     protected static final CollaboratorGroupDao COLLAB_DAO = CaArrayDaoFactory.INSTANCE.getCollaboratorGroupDao();
 
-    protected static final PageSortParams<Project> ALL_BY_ID =
-            new PageSortParams<Project>(10000, 0, ProjectSortCriterion.TITLE, false);
+    protected static final PageSortParams<Project> ALL_BY_ID = new PageSortParams<Project>(10000, 0,
+            ProjectSortCriterion.TITLE, false);
 
     /**
      * Define the dummy objects that will be used by the tests.
@@ -214,10 +217,10 @@ public class AbstractProjectDaoTest extends AbstractDaoTest {
     protected static void setExperimentSummary() {
         DUMMY_EXPERIMENT_1.setTitle("DummyExperiment1");
         DUMMY_EXPERIMENT_1.setDescription("DummyExperiment1Desc");
-        Date currDate = new Date();
+        final Date currDate = new Date();
         DUMMY_EXPERIMENT_1.setDate(currDate);
         DUMMY_EXPERIMENT_1.setPublicReleaseDate(currDate);
-        SortedSet <AssayType>assayTypes = new TreeSet<AssayType>();
+        SortedSet<AssayType> assayTypes = new TreeSet<AssayType>();
         assayTypes.add(DUMMY_ASSAYTYPE_1);
         DUMMY_EXPERIMENT_1.setAssayTypes(assayTypes);
         DUMMY_EXPERIMENT_1.setDesignDescription("Working on it");
@@ -282,16 +285,19 @@ public class AbstractProjectDaoTest extends AbstractDaoTest {
         DUMMY_FILE_1.setFileStatus(FileStatus.UPLOADED);
         DUMMY_PROJECT_1.getFiles().add(DUMMY_FILE_1);
         DUMMY_FILE_1.setProject(DUMMY_PROJECT_1);
+        DUMMY_FILE_1.setDataHandle(DUMMY_HANDLE);
 
         DUMMY_FILE_2.setName(MageTabDataFiles.SPECIFICATION_EXAMPLE_SDRF.getName());
         DUMMY_FILE_2.setFileType(FileType.MAGE_TAB_SDRF);
         DUMMY_FILE_2.setFileStatus(FileStatus.SUPPLEMENTAL);
         DUMMY_PROJECT_1.getFiles().add(DUMMY_FILE_2);
         DUMMY_FILE_2.setProject(DUMMY_PROJECT_1);
-        
+        DUMMY_FILE_2.setDataHandle(DUMMY_HANDLE);
+
         DUMMY_DATA_FILE.setName("dummy.cel");
         DUMMY_DATA_FILE.setFileStatus(FileStatus.UPLOADED);
         DUMMY_DATA_FILE.setFileType(FileType.AFFYMETRIX_CEL);
+        DUMMY_DATA_FILE.setDataHandle(DUMMY_HANDLE);
     }
 
     protected static void setPublications() {

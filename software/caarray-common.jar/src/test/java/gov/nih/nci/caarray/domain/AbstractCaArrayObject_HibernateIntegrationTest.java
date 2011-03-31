@@ -83,90 +83,17 @@
 package gov.nih.nci.caarray.domain;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import gov.nih.nci.caarray.AbstractHibernateTest;
 
-import org.hibernate.Transaction;
-import org.hibernate.validator.InvalidStateException;
-import org.hibernate.validator.InvalidValue;
-import org.junit.Test;
-
-public abstract class AbstractCaArrayObject_HibernateIntegrationTest extends AbstractHibernateTest {
-    private static int uniqueIntValue = 0;
-
-    public AbstractCaArrayObject_HibernateIntegrationTest() {
-        super(true);
-    }
-    
-    @Test
-    public void testSave() {
-        AbstractCaArrayObject caArrayObject = createTestObject();
-        // Test once for insert
-        setValues(caArrayObject);
-        saveAndCheckRetrieved(caArrayObject);
-        // ...and again for update
-        setValues(caArrayObject);
-        saveAndCheckRetrieved(caArrayObject);
-        // ...and check that nullable fields work
-        setNullableValuesToNull(caArrayObject);
-        saveAndCheckRetrieved(caArrayObject);
-        // ...and add values again to previously nulled fields
-        setValues(caArrayObject);
-        saveAndCheckRetrieved(caArrayObject);
-    }
-
-    abstract protected void setNullableValuesToNull(AbstractCaArrayObject caArrayObject);
-
-    protected final void saveAndCheckRetrieved(AbstractCaArrayObject caArrayObject) {
-        save(caArrayObject);
-        assertNotNull(caArrayObject.getId());
-        assertTrue(caArrayObject.getId() > 0L);
-        Transaction tx = hibernateHelper.beginTransaction();
-        hibernateHelper.getCurrentSession().evict(caArrayObject);
-        AbstractCaArrayObject retrievedCaArrayObject =
-            (AbstractCaArrayObject) hibernateHelper.getCurrentSession().get(caArrayObject.getClass(), caArrayObject.getId());
-        compareCaArrayObjectValues(caArrayObject, retrievedCaArrayObject);
-        tx.commit();
-    }
-
-    protected final void save(AbstractCaArrayObject caArrayObject) {
-        Transaction tx = hibernateHelper.beginTransaction();
-        hibernateHelper.getCurrentSession().saveOrUpdate(caArrayObject);
-        tx.commit();
-    }
-
-    abstract protected void setValues(AbstractCaArrayObject caArrayObject);
-
-    abstract protected void compareValues(AbstractCaArrayObject caArrayObject, AbstractCaArrayObject retrievedCaArrayObject);
-
-    void setCaArrayObjectValues(AbstractCaArrayObject caArrayObject) {
+public abstract class AbstractCaArrayObject_HibernateIntegrationTest<T extends AbstractCaArrayObject> extends
+        AbstractHibernateIntegrationTest<T> {
+    @Override
+    protected void setValues(T caArrayObject) {
         caArrayObject.setCaBigId(getUniqueStringValue());
-        setValues(caArrayObject);
     }
-    void compareCaArrayObjectValues(AbstractCaArrayObject caArrayObject,
-            AbstractCaArrayObject retrievedCaArrayObject) {
+
+    @Override
+    protected void compareValues(T caArrayObject, T retrievedCaArrayObject) {
         assertEquals(caArrayObject.getId(), retrievedCaArrayObject.getId());
         assertEquals(caArrayObject.getCaBigId(), retrievedCaArrayObject.getCaBigId());
-        compareValues(caArrayObject, retrievedCaArrayObject);
     }
-
-    abstract protected AbstractCaArrayObject createTestObject();
-
-    protected String getUniqueStringValue() {
-        return String.valueOf(getUniqueIntValue());
-    }
-
-    protected int getUniqueIntValue() {
-        return uniqueIntValue++;
-    }
-
-    protected <E extends Enum<E>> E getNextValue(E[] values, Enum<E> currentValue) {
-        if (currentValue == null || currentValue.ordinal() == values.length - 1) {
-            return values[0];
-        } else {
-            return values[currentValue.ordinal() + 1];
-        }
-    }
-
 }

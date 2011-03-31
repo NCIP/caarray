@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caarray2-trunk
+ * source code form and machine readable, binary, object code form. The caArray2
  * Software was developed in conjunction with the National Cancer Institute 
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent 
  * government employees are authors, any rights in such works shall be subject 
  * to Title 17 of the United States Code, section 105. 
  *
- * This caarray2-trunk Software License (the License) is between NCI and You. You (or 
+ * This caArray2 Software License (the License) is between NCI and You. You (or 
  * Your) shall mean a person or an entity, and all other entities that control, 
  * are controlled by, or are under common control with the entity. Control for 
  * purposes of this definition means (i) the direct or indirect power to cause 
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described 
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up, 
  * no-charge, irrevocable, transferable and royalty-free right and license in 
- * its rights in the caarray2-trunk Software to (i) use, install, access, operate, 
+ * its rights in the caArray2 Software to (i) use, install, access, operate, 
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caarray2-trunk Software; (ii) distribute and 
- * have distributed to and by third parties the caarray2-trunk Software and any 
+ * and prepare derivative works of the caArray2 Software; (ii) distribute and 
+ * have distributed to and by third parties the caArray2 Software and any 
  * modifications and derivative works thereof; and (iii) sublicense the 
  * foregoing rights set out in (i) and (ii) to third parties, including the 
  * right to license such rights to further third parties. For sake of clarity, 
@@ -80,69 +80,25 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.platforms;
+package gov.nih.nci.caarray.dataStorage;
 
-import gov.nih.nci.caarray.dao.FileDao;
-import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.PARAMETER;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
+import com.google.inject.BindingAnnotation;
 
 /**
- * Implements a FileManager which obtains the content of a CaArrayFile from a FileDao
- * and uses a temporary directory to serve it to clients.
+ * Binding annotation for the storage scheme that should be used for raw file data
  * 
- * @author jscott
+ * @author dkokotov
  */
-public class FileDaoFileManager implements FileManager {
-    private final FileDao fileDao;
-    private final Map<Long, File> openFileMap = new HashMap<Long, File>();
-
-    /**
-     * @param fileDao for obtaining file content
-     */
-    public FileDaoFileManager(FileDao fileDao) {
-        this.fileDao = fileDao;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public File openFile(CaArrayFile caArrayFile) {
-        try {
-            File file = getFile(caArrayFile);
-            openFileMap.put(caArrayFile.getId(), file);
-            return file;
-        } catch (SQLException e) {
-            throw new IllegalStateException("Could not open the file " + caArrayFile, e);
-        } catch (IOException e) {
-            throw new IllegalStateException("Could not open the file " + caArrayFile, e);
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void closeFile(CaArrayFile caArrayFile) {
-        File file = openFileMap.get(caArrayFile.getId());
-        FileUtils.deleteQuietly(file);
-    }
-
-    private File getFile(CaArrayFile caArrayFile) throws SQLException, IOException {
-        File file = File.createTempFile("datafile", null);
-        FileOutputStream fos = FileUtils.openOutputStream(file);
-
-        fileDao.copyContentsToStream(caArrayFile, fos);
-        IOUtils.closeQuietly(fos);
-
-        return file;
-    }
-
+@BindingAnnotation
+@Target({ FIELD, PARAMETER, METHOD })
+@Retention(RUNTIME)
+public @interface FileData {
 }

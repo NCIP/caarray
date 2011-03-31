@@ -87,7 +87,7 @@ import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 
 /**
  * @author John Pike
- *
+ * 
  */
 @SuppressWarnings("PMD")
 public class VocabularyServiceTest extends AbstractServiceTest {
@@ -107,10 +107,10 @@ public class VocabularyServiceTest extends AbstractServiceTest {
 
     @Before
     public void setUpService() {
-        VocabularyServiceBean vsBean = new VocabularyServiceBean();
+        final VocabularyServiceBean vsBean = new VocabularyServiceBean();
         vsBean.setDependencies(this.daoFactoryStub.getSearchDao(), this.daoFactoryStub.getProtocolDao(),
                 this.daoFactoryStub.getVocabularyDao());
-        vocabularyService = vsBean;
+        this.vocabularyService = vsBean;
 
         source = new TermSource();
         source.setName(SOURCE_NAME);
@@ -120,35 +120,35 @@ public class VocabularyServiceTest extends AbstractServiceTest {
         category.setName(CATEGORY_NAME);
         category.setSource(source);
 
-        Term term1 = new Term();
+        final Term term1 = new Term();
         term1.setCategory(category);
         term1.setSource(source);
         term1.setValue("term1");
-        daoFactoryStub.getVocabularyDao().save(term1);
+        this.daoFactoryStub.getVocabularyDao().save(term1);
 
-        Term term2 = new Term();
+        final Term term2 = new Term();
         term2.setCategory(category);
         term2.setSource(source);
         term2.setValue("term2");
-        daoFactoryStub.getVocabularyDao().save(term2);
+        this.daoFactoryStub.getVocabularyDao().save(term2);
 
-        Term term3 = new Term();
+        final Term term3 = new Term();
         term3.setCategory(category);
         term3.setSource(source);
         term3.setValue("term3");
-        daoFactoryStub.getVocabularyDao().save(term3);
+        this.daoFactoryStub.getVocabularyDao().save(term3);
 
-        Term term4 = new Term();
+        final Term term4 = new Term();
         term4.setCategory(category);
         term4.setSource(source);
         term4.setValue("term4a");
-        daoFactoryStub.getVocabularyDao().save(term4);
+        this.daoFactoryStub.getVocabularyDao().save(term4);
 
-        Term term5 = new Term();
+        final Term term5 = new Term();
         term5.setCategory(category);
         term5.setSource(source);
         term5.setValue("term4b");
-        daoFactoryStub.getVocabularyDao().save(term5);
+        this.daoFactoryStub.getVocabularyDao().save(term5);
     }
 
     /**
@@ -157,21 +157,21 @@ public class VocabularyServiceTest extends AbstractServiceTest {
     @Test
     public void testGetTerms() {
         Set<Term> terms = new HashSet<Term>();
-        TermSource mo = vocabularyService.getSource(SOURCE_NAME, SOURCE_VERSION);
-        Category protocolType = vocabularyService.getCategory(mo, CATEGORY_NAME);
-        terms = vocabularyService.getTerms(protocolType);
+        final TermSource mo = this.vocabularyService.getSource(SOURCE_NAME, SOURCE_VERSION);
+        final Category protocolType = this.vocabularyService.getCategory(mo, CATEGORY_NAME);
+        terms = this.vocabularyService.getTerms(protocolType);
         assertTrue(!terms.isEmpty());
         assertEquals(NUM_PROT_TYPES, terms.size());
 
-        terms = vocabularyService.getTerms(protocolType, "term4");
+        terms = this.vocabularyService.getTerms(protocolType, "term4");
         assertEquals(2, terms.size());
-        terms = vocabularyService.getTerms(protocolType, "term4a");
+        terms = this.vocabularyService.getTerms(protocolType, "term4a");
         assertEquals(1, terms.size());
 
-        terms = vocabularyService.getTerms(protocolType, "gibberish");
+        terms = this.vocabularyService.getTerms(protocolType, "gibberish");
         assertEquals(0, terms.size());
 
-        Term term = vocabularyService.getTerm(source, "term1");
+        final Term term = this.vocabularyService.getTerm(source, "term1");
         assertNotNull(term);
         assertEquals("term1", term.getValue());
         assertEquals(source.getNameAndVersion(), term.getSource().getNameAndVersion());
@@ -182,70 +182,69 @@ public class VocabularyServiceTest extends AbstractServiceTest {
      */
     @Test(expected = IllegalArgumentException.class)
     public void getTermsNullCategory() {
-        vocabularyService.getTerms(null);
+        this.vocabularyService.getTerms(null);
     }
 
     @Test
     public void testGetOrganisms() throws Exception {
-        List<Organism> orgs = vocabularyService.getOrganisms();
+        List<Organism> orgs = this.vocabularyService.getOrganisms();
         assertEquals(0, orgs.size());
 
-        Organism org1 = new Organism();
+        final Organism org1 = new Organism();
         org1.setScientificName("Homo sapiens");
         org1.setTermSource(source);
-        daoFactoryStub.getVocabularyDao().save(org1);
+        this.daoFactoryStub.getVocabularyDao().save(org1);
 
-        Organism org2 = new Organism();
+        final Organism org2 = new Organism();
         org2.setScientificName("Mus musculus");
         org2.setTermSource(source);
-        daoFactoryStub.getVocabularyDao().save(org2);
+        this.daoFactoryStub.getVocabularyDao().save(org2);
 
-        Organism org3 = new Organism();
+        final Organism org3 = new Organism();
         org3.setScientificName("Rattus norvegicus");
         org3.setTermSource(source);
-        daoFactoryStub.getVocabularyDao().save(org3);
+        this.daoFactoryStub.getVocabularyDao().save(org3);
 
-        Organism org4 = new Organism();
+        final Organism org4 = new Organism();
         org4.setScientificName("Rattus rattus");
         org4.setTermSource(source);
-        daoFactoryStub.getVocabularyDao().save(org4);
+        this.daoFactoryStub.getVocabularyDao().save(org4);
 
-        Organism org5 = new Organism();
+        final Organism org5 = new Organism();
         org5.setScientificName("Drosophila melanogaster");
         org5.setTermSource(source);
-        daoFactoryStub.getVocabularyDao().save(org5);
+        this.daoFactoryStub.getVocabularyDao().save(org5);
 
-        orgs = vocabularyService.getOrganisms();
+        orgs = this.vocabularyService.getOrganisms();
         assertEquals(5, orgs.size());
 
-        Organism org = vocabularyService.getOrganism(null, null);
+        Organism org = this.vocabularyService.getOrganism(null, null);
         assertNull(org);
-        org = vocabularyService.getOrganism(null, "");
+        org = this.vocabularyService.getOrganism(null, "");
         assertNull(org);
-        org = vocabularyService.getOrganism(null, "asdf");
+        org = this.vocabularyService.getOrganism(null, "asdf");
         assertNull(org);
-        org = vocabularyService.getOrganism(source, null);
+        org = this.vocabularyService.getOrganism(source, null);
         assertNull(org);
-        org = vocabularyService.getOrganism(source, "");
+        org = this.vocabularyService.getOrganism(source, "");
         assertNull(org);
-        org = vocabularyService.getOrganism(source, "asdf");
+        org = this.vocabularyService.getOrganism(source, "asdf");
         assertNull(org);
-        org = vocabularyService.getOrganism(new TermSource(), org1.getScientificName());
+        org = this.vocabularyService.getOrganism(new TermSource(), org1.getScientificName());
         assertNull(org);
-        org = vocabularyService.getOrganism(source, org1.getScientificName());
+        org = this.vocabularyService.getOrganism(source, org1.getScientificName());
         assertEquals(org1.getScientificName(), org.getScientificName());
         assertEquals(org1.getTermSource(), org.getTermSource());
-        org = vocabularyService.getOrganism(source, org2.getScientificName().toUpperCase());
+        org = this.vocabularyService.getOrganism(source, org2.getScientificName().toUpperCase());
         assertEquals(org2.getScientificName(), org.getScientificName());
         assertEquals(org2.getTermSource(), org.getTermSource());
         assertEquals(org2.getTermSource().toString(), org.getTermSource().toString());
     }
 
-
     @Test
     public void testSearchForCharacteristic() {
-        assertEquals(Collections.EMPTY_LIST, vocabularyService.searchForCharacteristicCategory(
-                TermBasedCharacteristic.class, null));
+        assertEquals(Collections.EMPTY_LIST,
+                this.vocabularyService.searchForCharacteristicCategory(TermBasedCharacteristic.class, null));
     }
 
     // ////// INNER CLASS TEST STUBS///////////////////////
@@ -257,15 +256,16 @@ public class VocabularyServiceTest extends AbstractServiceTest {
          */
         @Override
         public VocabularyDao getVocabularyDao() {
-            return vocabularyDao;
+            return this.vocabularyDao;
         }
-        
+
+        @Override
         public SearchDao getSearchDao() {
             return new SearchDaoStub() {
                 @Override
                 public <T extends PersistentObject> List<T> retrieveAll(Class<T> entityClass, Order... orders) {
                     if (Organism.class.equals(entityClass)) {
-                        return (List<T>) new ArrayList<Organism>(vocabularyDao.orgMap.values());
+                        return (List<T>) new ArrayList<Organism>(LocalDaoFactoryStub.this.vocabularyDao.orgMap.values());
                     }
                     return super.retrieveAll(entityClass, orders);
                 }
@@ -280,12 +280,12 @@ public class VocabularyServiceTest extends AbstractServiceTest {
 
         @Override
         public Set<Term> getTermsRecursive(Category category, String value) {
-            Set<Category> searchCategories = new HashSet<Category>();
+            final Set<Category> searchCategories = new HashSet<Category>();
             searchCategories.add(category);
             addChildren(searchCategories, category);
 
-            Set<Term> terms = new HashSet<Term>();
-            for (Term term : termMap.values()) {
+            final Set<Term> terms = new HashSet<Term>();
+            for (final Term term : termMap.values()) {
                 if (CollectionUtils.containsAny(term.getCategories(), searchCategories)) {
                     if (value == null || term.getValue().toLowerCase().startsWith(value.toLowerCase())) {
                         terms.add(term);
@@ -296,7 +296,7 @@ public class VocabularyServiceTest extends AbstractServiceTest {
         }
 
         private void addChildren(Collection<Category> searchCategories, Category category) {
-            for (Category child : category.getChildren()) {
+            for (final Category child : category.getChildren()) {
                 searchCategories.add(child);
                 addChildren(searchCategories, child);
             }
@@ -307,8 +307,9 @@ public class VocabularyServiceTest extends AbstractServiceTest {
          */
         @Override
         public Category getCategory(TermSource source, String name) {
-            if (SOURCE_NAME.equals(source.getName()) && SOURCE_VERSION.equals(source.getVersion()) && CATEGORY_NAME.equalsIgnoreCase(name)) {
-                Category category = new Category();
+            if (SOURCE_NAME.equals(source.getName()) && SOURCE_VERSION.equals(source.getVersion())
+                    && CATEGORY_NAME.equalsIgnoreCase(name)) {
+                final Category category = new Category();
                 category.setSource(source);
                 category.setName(name);
                 return category;
@@ -321,8 +322,8 @@ public class VocabularyServiceTest extends AbstractServiceTest {
          */
         @Override
         public Term getTerm(TermSource source, String value) {
-            for (Term term : termMap.values()) {
-                if (term.getValue().equalsIgnoreCase(value) && term.getSource().equals(source)){
+            for (final Term term : termMap.values()) {
+                if (term.getValue().equalsIgnoreCase(value) && term.getSource().equals(source)) {
                     return term;
                 }
             }
@@ -334,11 +335,13 @@ public class VocabularyServiceTest extends AbstractServiceTest {
          */
         @Override
         @SuppressWarnings("unchecked")
-        public <T extends PersistentObject> List<T> queryEntityByExample(ExampleSearchCriteria<T> criteria, Order... order) {
+        public <T extends PersistentObject> List<T> queryEntityByExample(ExampleSearchCriteria<T> criteria,
+                Order... order) {
             if (criteria.getExample() instanceof TermSource) {
-                TermSource termSource = (TermSource) criteria.getExample();
-                if (SOURCE_NAME.equalsIgnoreCase(termSource.getName()) && SOURCE_VERSION.equalsIgnoreCase(termSource.getVersion())) {
-                    List list = new ArrayList();
+                final TermSource termSource = (TermSource) criteria.getExample();
+                if (SOURCE_NAME.equalsIgnoreCase(termSource.getName())
+                        && SOURCE_VERSION.equalsIgnoreCase(termSource.getVersion())) {
+                    final List list = new ArrayList();
                     list.add(termSource);
                     return list;
                 }
@@ -352,7 +355,7 @@ public class VocabularyServiceTest extends AbstractServiceTest {
          */
         @Override
         public Organism getOrganism(TermSource source, String scientificName) {
-            for (Organism org : orgMap.values()) {
+            for (final Organism org : orgMap.values()) {
                 if (org.getTermSource().equals(source) && org.getScientificName().equalsIgnoreCase(scientificName)) {
                     return org;
                 }
@@ -363,19 +366,21 @@ public class VocabularyServiceTest extends AbstractServiceTest {
         /**
          * {@inheritDoc}
          */
+        @Override
         @SuppressWarnings("deprecation")
-        public void save(PersistentObject object) {
+        public Long save(PersistentObject object) {
             if (object instanceof Term) {
-                Term term = (Term) object;
+                final Term term = (Term) object;
                 term.setId(nextId++);
-                termMap.put(term.getId(), term);                
-            } else if (object instanceof Organism){
-                Organism org = (Organism) object;
+                termMap.put(term.getId(), term);
+            } else if (object instanceof Organism) {
+                final Organism org = (Organism) object;
                 org.setId(nextId++);
-                orgMap.put(org.getId(), org);                
+                orgMap.put(org.getId(), org);
             } else {
                 throw new IllegalArgumentException("Unsupported object class: " + object.getClass());
             }
+            return object.getId();
         }
     }
 }

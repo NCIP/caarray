@@ -44,7 +44,7 @@
           <include name="cglib-*.jar"/>
           <include name="javacsv-*.jar"/>
           <include name="castor-*.jar"/>
-          <include name="google-collections-*.jar"/>
+          <include name="guava-*.jar"/>
         </fileset>
     </path>
     <path id="service.build.extended.classpath">

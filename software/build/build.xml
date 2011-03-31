@@ -1081,12 +1081,12 @@
         </path>
         <property name="wsdl4j.jar" refid="wsdl4j.jar.fileset" />
 
-        <path id="google-collections.jar.path">
-            <fileset dir="${project.lib}" id="google-collections.jar.fileset">
-                <include name="google-collections-*.jar"/>
+        <path id="guava.jar.path">
+            <fileset dir="${project.lib}" id="guava.jar.fileset">
+                <include name="guava-*.jar"/>
             </fileset>
         </path>
-        <property name="google-collections.jar" refid="google-collections.jar.fileset" />
+        <property name="guava.jar" refid="guava.jar.fileset" />
 
         <path id="liquibase.jar.path">
             <fileset dir="${project.lib}" id="liquibase.jar.fileset">
@@ -1229,7 +1229,7 @@
             <fileset id="common.compile.partial.dependencies.fileset" dir="${project.lib}">
                 <include name="${commons-beanutils.jar}"/>
                 <include name="${commons-collections.jar}"/>
-                <include name="${google-collections.jar}"/>
+                <include name="${guava.jar}"/>
                 <include name="${commons-logging.jar}"/>
                 <include name="${commons-io.jar}"/>
                 <include name="${log4j.jar}"/>
@@ -1243,7 +1243,7 @@
         <path id="external.api.dependencies.path">
             <fileset refid="dozer.jar.fileset"/>
             <fileset refid="rmiio.jar.fileset"/>
-            <fileset refid="google-collections.jar.fileset"/>
+            <fileset refid="guava.jar.fileset"/>
         </path>
         <pathtofileset name="external.api.dependencies.fileset" pathrefid="external.api.dependencies.path" dir="${project.lib}"/>
 
@@ -1357,6 +1357,7 @@
                 <include name="${junit.jar}"/>
                 <include name="${ledatastream.jar}"/>
                 <include name="${mockito.jar}"/>
+            	<include name="hamcrest-*.jar"/>
             </fileset>
         </path>
 
@@ -1444,7 +1445,7 @@
                 <include name="${axis.jar}" />
                 <include name="${javaee.jar}"/>
                 <include name="${wsdl4j.jar}"/>
-                <include name="${google-collections.jar}"/>
+                <include name="${guava.jar}"/>
                 <include name="${nci-commons-core.jar}"/>
                 <include name="${caGrid-cql.jar}"/>
             </fileset>
@@ -2479,7 +2480,7 @@
         </javac>
     </target>
 
-    <target name="test:junit-caarray-ejb.jar" unless="notest" depends="init:third-party-paths,test:compile:caarray-ejb.test.classes,test:instrument:caarray-ejb.jar,compile:caarray-client.jar,compile:caarray-common.jar,test:functional:compile-tests,test:copy-files-to-target-dir-and-unpack-test-data">
+    <target name="test:junit-caarray-ejb.jar" unless="notest" depends="init:third-party-paths,test:compile:caarray-ejb.test.classes,test:instrument:caarray-ejb.jar,compile:caarray-client.jar,compile:caarray-common.jar,test:copy-files-to-target-dir-and-unpack-test-data">
         <caarray-run-junit-tests test.src.dir="${caarray-ejb.test.src.dir}" xml.output.dir="${caarray-ejb.target.dir}/junit" instrumented.classes="${caarray-ejb.instrumented.classes.dir};${caarray-common.instrumented.classes.dir}" classpath="${caarray-ejb.test.classes.dir};${caarray-common.test.classes.dir};${test.data.target.dir};${test.data.classes.dir};${caarray-ejb.test.resources.dir};${caarray-ejb.resources.dir};${caarray-common.test.files.dir};${caarray-ejb.classes.dir};${caarray-client.classes.dir};${caarray-common.classes.dir};" classpathref.id="ejb.test.dependencies.path"/>
     </target>
 

@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.platforms.affymetrix;
 
 import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.dao.SearchDao;
+import gov.nih.nci.caarray.dataStorage.DataStorageFacade;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
 import gov.nih.nci.caarray.domain.array.LogicalProbe;
@@ -91,7 +92,6 @@ import gov.nih.nci.caarray.domain.array.PhysicalProbe;
 import gov.nih.nci.caarray.domain.array.ProbeGroup;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileType;
-import gov.nih.nci.caarray.platforms.FileManager;
 import gov.nih.nci.caarray.platforms.SessionTransactionManager;
 import gov.nih.nci.caarray.platforms.spi.PlatformFileReadException;
 import gov.nih.nci.caarray.validation.FileValidationResult;
@@ -100,8 +100,7 @@ import gov.nih.nci.caarray.validation.ValidationResult;
 import java.io.File;
 import java.util.Set;
 
-import com.google.inject.Inject;
-import com.google.inject.name.Named;
+import org.apache.commons.io.FilenameUtils;
 
 import affymetrix.fusion.cdf.FusionCDFData;
 import affymetrix.fusion.cdf.FusionCDFProbeGroupInformation;
@@ -110,6 +109,9 @@ import affymetrix.fusion.cdf.FusionCDFProbeSetInformation;
 import affymetrix.fusion.cdf.FusionCDFQCProbeInformation;
 import affymetrix.fusion.cdf.FusionCDFQCProbeSetInformation;
 
+import com.google.inject.Inject;
+import com.google.inject.name.Named;
+
 /**
  * Contains logic to read Affymetrix CDF files.
  */
@@ -117,48 +119,52 @@ final class CdfHandler extends AbstractAffymetrixDesignFileHandler {
     private CdfReader cdfReader;
     private CaArrayFile cdfFile;
     private File cdfFileOnDisk;
-    
+
     @Inject
-    CdfHandler(SessionTransactionManager sessionTransactionManager, FileManager fileManager,
+    CdfHandler(SessionTransactionManager sessionTransactionManager, DataStorageFacade dataStorageFacade,
             ArrayDao arrayDao, SearchDao searchDao,
             @Named("cdf") AbstractChpDesignElementListUtility designElementListUtility) {
-        super(sessionTransactionManager, fileManager, arrayDao, searchDao, designElementListUtility);
+        super(sessionTransactionManager, dataStorageFacade, arrayDao, searchDao, designElementListUtility);
     }
-    
+
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean openFiles(Set<CaArrayFile> designFiles) throws PlatformFileReadException {
         if (designFiles == null || designFiles.size() != 1
                 || designFiles.iterator().next().getFileType() != FileType.AFFYMETRIX_CDF) {
             return false;
         }
-        
+
         this.cdfFile = designFiles.iterator().next();
-        this.cdfFileOnDisk = getFileManager().openFile(this.cdfFile);
-        cdfReader = new CdfReader(this.cdfFileOnDisk);
+        this.cdfFileOnDisk = getDataStorageFacade().openFile(this.cdfFile.getDataHandle(), false);
+        this.cdfReader = new CdfReader(this.cdfFileOnDisk);
         return true;
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public void closeFiles() {
-        if (cdfReader != null) {
-            cdfReader.close();
+        if (this.cdfReader != null) {
+            this.cdfReader.close();
         }
         this.cdfReader = null;
-        this.cdfFile = null;
+        getDataStorageFacade().releaseFile(this.cdfFile.getDataHandle(), false);
         this.cdfFileOnDisk = null;
+        this.cdfFile = null;
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public void validate(ValidationResult result) {
-        FileValidationResult fileResult = new FileValidationResult(cdfFileOnDisk);
-        result.addFile(this.cdfFileOnDisk, fileResult);
-        cdfFile.setValidationResult(fileResult);
+        final FileValidationResult fileResult = new FileValidationResult();
+        result.addFile(this.cdfFile.getName(), fileResult);
+        this.cdfFile.setValidationResult(fileResult);
         checkForDuplicateDesign(getArrayDesignName(), fileResult);
     }
 
@@ -167,10 +173,11 @@ final class CdfHandler extends AbstractAffymetrixDesignFileHandler {
      */
     @Override
     protected String getArrayDesignName() {
-        if (cdfReader == null) {
-            throw new IllegalStateException("Must load CDF Reader before retrieving array design name.");
-        }
-        return cdfReader.getCdfData().getChipType();
+        // the CDFData just reports the name of the file as the design name. but the name of the physical file
+        // may not correspond to the original filename. instead get the name from the CaArrayFile, which will
+        // be the original name
+        return FilenameUtils.getBaseName(this.cdfFile.getName());
+
     }
 
     /**
@@ -178,10 +185,10 @@ final class CdfHandler extends AbstractAffymetrixDesignFileHandler {
      */
     @Override
     protected int getNumRows() {
-        if (cdfReader == null) {
+        if (this.cdfReader == null) {
             throw new IllegalStateException("Must load CDF Reader before retrieving row count.");
         }
-        return cdfReader.getCdfData().getHeader().getRows();
+        return this.cdfReader.getCdfData().getHeader().getRows();
     }
 
     /**
@@ -189,17 +196,19 @@ final class CdfHandler extends AbstractAffymetrixDesignFileHandler {
      */
     @Override
     protected int getNumCols() {
-        if (cdfReader == null) {
+        if (this.cdfReader == null) {
             throw new IllegalStateException("Must load CDF Reader before retrieving column count.");
         }
-        return cdfReader.getCdfData().getHeader().getCols();
+        return this.cdfReader.getCdfData().getHeader().getCols();
     }
 
+    @Override
     void createProbeSetDesignElementList(ArrayDesign arrayDesign) throws PlatformFileReadException {
         getDesignElementListUtility().createDesignElementList(getRefreshedDesign(arrayDesign));
         flushAndClearSession();
     }
 
+    @Override
     void populateDesignDetails(ArrayDesignDetails designDetails) {
         handleProbeSets(designDetails);
         handleQCProbeSets(designDetails);
@@ -207,9 +216,9 @@ final class CdfHandler extends AbstractAffymetrixDesignFileHandler {
     }
 
     private void handleProbeSets(ArrayDesignDetails designDetails) {
-        FusionCDFData fusionCDFData = cdfReader.getCdfData();
-        int numProbeSets = fusionCDFData.getHeader().getNumProbeSets();
-        FusionCDFProbeSetInformation probeSetInformation = new FusionCDFProbeSetInformation();
+        final FusionCDFData fusionCDFData = this.cdfReader.getCdfData();
+        final int numProbeSets = fusionCDFData.getHeader().getNumProbeSets();
+        final FusionCDFProbeSetInformation probeSetInformation = new FusionCDFProbeSetInformation();
         for (int index = 0; index < numProbeSets; index++) {
             fusionCDFData.getProbeSetInformation(index, probeSetInformation);
             handleProbeSet(probeSetInformation, fusionCDFData.getProbeSetName(index), designDetails);
@@ -222,27 +231,26 @@ final class CdfHandler extends AbstractAffymetrixDesignFileHandler {
 
     private void handleProbeSet(FusionCDFProbeSetInformation probeSetInformation, String probeSetName,
             ArrayDesignDetails designDetails) {
-        LogicalProbe logicalProbe = new LogicalProbe(designDetails);
+        final LogicalProbe logicalProbe = new LogicalProbe(designDetails);
         logicalProbe.setName(probeSetName);
         getArrayDao().save(logicalProbe);
-        int numLists = probeSetInformation.getNumLists();
+        final int numLists = probeSetInformation.getNumLists();
         for (int listIndex = 0; listIndex < numLists; listIndex++) {
-            PhysicalProbe probe = new PhysicalProbe(designDetails, getProbeGroup());
+            final PhysicalProbe probe = new PhysicalProbe(designDetails, getProbeGroup());
             probe.setName(probeSetName + ".ProbePair" + listIndex);
             getArrayDao().save(probe);
         }
-        int numGroups = probeSetInformation.getNumGroups();
-        FusionCDFProbeGroupInformation probeGroupInformation = new FusionCDFProbeGroupInformation();
+        final int numGroups = probeSetInformation.getNumGroups();
+        final FusionCDFProbeGroupInformation probeGroupInformation = new FusionCDFProbeGroupInformation();
         for (int index = 0; index < numGroups; index++) {
             probeSetInformation.getGroup(index, probeGroupInformation);
             handleProbeGroup(probeGroupInformation, designDetails);
         }
     }
 
-    private void handleProbeGroup(FusionCDFProbeGroupInformation probeGroupInformation,
-            ArrayDesignDetails designDetails) {
-        int numCells = probeGroupInformation.getNumCells();
-        FusionCDFProbeInformation probeInformation = new FusionCDFProbeInformation();
+    private void handleProbeGroup(FusionCDFProbeGroupInformation probeGroupInformation, ArrayDesignDetails designDetails) {
+        final int numCells = probeGroupInformation.getNumCells();
+        final FusionCDFProbeInformation probeInformation = new FusionCDFProbeInformation();
         for (int index = 0; index < numCells; index++) {
             probeGroupInformation.getCell(index, probeInformation);
             handleProbe(probeInformation, designDetails);
@@ -254,9 +262,9 @@ final class CdfHandler extends AbstractAffymetrixDesignFileHandler {
     }
 
     private void handleQCProbeSets(ArrayDesignDetails designDetails) {
-        FusionCDFData fusionCDFData = cdfReader.getCdfData();
-        int numQCProbeSets = fusionCDFData.getHeader().getNumQCProbeSets();
-        FusionCDFQCProbeSetInformation qcProbeSetInformation = new FusionCDFQCProbeSetInformation();
+        final FusionCDFData fusionCDFData = this.cdfReader.getCdfData();
+        final int numQCProbeSets = fusionCDFData.getHeader().getNumQCProbeSets();
+        final FusionCDFQCProbeSetInformation qcProbeSetInformation = new FusionCDFQCProbeSetInformation();
         for (int index = 0; index < numQCProbeSets; index++) {
             fusionCDFData.getQCProbeSetInformation(index, qcProbeSetInformation);
             handleQCProbeSet(qcProbeSetInformation, designDetails);
@@ -267,10 +275,9 @@ final class CdfHandler extends AbstractAffymetrixDesignFileHandler {
         }
     }
 
-    private void handleQCProbeSet(FusionCDFQCProbeSetInformation qcProbeSetInformation,
-            ArrayDesignDetails designDetails) {
-        int numCells = qcProbeSetInformation.getNumCells();
-        FusionCDFQCProbeInformation qcProbeInformation = new FusionCDFQCProbeInformation();
+    private void handleQCProbeSet(FusionCDFQCProbeSetInformation qcProbeSetInformation, ArrayDesignDetails designDetails) {
+        final int numCells = qcProbeSetInformation.getNumCells();
+        final FusionCDFQCProbeInformation qcProbeInformation = new FusionCDFQCProbeInformation();
         for (int index = 0; index < numCells; index++) {
             qcProbeSetInformation.getCell(index, qcProbeInformation);
             handleQCProbe(qcProbeInformation, designDetails);

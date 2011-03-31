@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caArray
+ * source code form and machine readable, binary, object code form. The caarray-common-jar
  * Software was developed in conjunction with the National Cancer Institute
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent
  * government employees are authors, any rights in such works shall be subject
  * to Title 17 of the United States Code, section 105.
  *
- * This caArray Software License (the License) is between NCI and You. You (or
+ * This caarray-common-jar Software License (the License) is between NCI and You. You (or
  * Your) shall mean a person or an entity, and all other entities that control,
  * are controlled by, or are under common control with the entity. Control for
  * purposes of this definition means (i) the direct or indirect power to cause
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up,
  * no-charge, irrevocable, transferable and royalty-free right and license in
- * its rights in the caArray Software to (i) use, install, access, operate,
+ * its rights in the caarray-common-jar Software to (i) use, install, access, operate,
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caArray Software; (ii) distribute and
- * have distributed to and by third parties the caArray Software and any
+ * and prepare derivative works of the caarray-common-jar Software; (ii) distribute and
+ * have distributed to and by third parties the caarray-common-jar Software and any
  * modifications and derivative works thereof; and (iii) sublicense the
  * foregoing rights set out in (i) and (ii) to third parties, including the
  * right to license such rights to further third parties. For sake of clarity,
@@ -79,32 +79,112 @@
  * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */package gov.nih.nci.caarray.platforms;
+ */
+package gov.nih.nci.caarray.dao;
 
-import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import gov.nih.nci.caarray.domain.BlobHolder;
+import gov.nih.nci.caarray.domain.MultiPartBlob;
 
-import java.io.File;
+import java.io.ByteArrayInputStream;
+import java.util.LinkedList;
+import java.util.List;
+
+import org.hibernate.Transaction;
+import org.junit.Before;
+import org.junit.Test;
+
+import com.google.common.io.ByteStreams;
 
 /**
- * Interface allowing platform implementations to obtain File representations of CaArrayFiles.
+ * Tests of MultipartBlobDao
  * 
  * @author dkokotov
  */
-public interface FileManager {
-    /**
-     * Return a file <code>java.io.File</code> which will hold the uncompressed data for the <code>CaArrayFile</code>
-     * object provided. The client should eventually call closeFile() for this <code>CaArrayFile</code> (or
-     * closeFiles()) when it is done with it.
-     * 
-     * @param caArrayFile logical file whose contents are needed
-     * @return the <code>java.io.File</code> with the uncompressed contents of the given logical file.
-     */
-    File openFile(CaArrayFile caArrayFile);
+public class MultipartBlobDaoTest extends AbstractDaoTest {
+    private static MultipartBlobDao DAO_OBJECT;
 
     /**
-     * Close the file corresponding to the given logical file previously opened via this inteface.
-     * 
-     * @param caarrayFile the logical file to close the filesystem file for. 
+     * Define the dummy objects that will be used by the tests.
      */
-    void closeFile(CaArrayFile caarrayFile);
+    @Before
+    public void setup() {
+        DAO_OBJECT = new MultipartBlobDaoImpl(this.hibernateHelper);
+    }
+
+    @Test
+    public void testSaveAndRemove() throws Exception {
+        Transaction tx = this.hibernateHelper.beginTransaction();
+
+        MultiPartBlob mblob = new MultiPartBlob();
+        mblob.writeData(new ByteArrayInputStream("Fake Data 123".getBytes()), true, 5);
+        DAO_OBJECT.save(mblob);
+        this.hibernateHelper.getCurrentSession().flush();
+        tx.commit();
+
+        tx = this.hibernateHelper.beginTransaction();
+        this.hibernateHelper.getCurrentSession().clear();
+        mblob = (MultiPartBlob) this.hibernateHelper.getCurrentSession().get(MultiPartBlob.class, mblob.getId());
+        assertNotNull(mblob);
+        assertTrue(mblob.getBlobParts().size() > 1);
+        final String data = new String(ByteStreams.toByteArray(mblob.readUncompressedContents()));
+        assertEquals("Fake Data 123", data);
+        DAO_OBJECT.remove(mblob);
+        tx.commit();
+
+        tx = this.hibernateHelper.beginTransaction();
+        this.hibernateHelper.getCurrentSession().clear();
+        mblob = (MultiPartBlob) this.hibernateHelper.getCurrentSession().get(MultiPartBlob.class, mblob.getId());
+        assertNull(mblob);
+        tx.commit();
+    }
+
+    @Test
+    public void testDeleteByIds() throws Exception {
+        final List<Long> mblobIds = new LinkedList<Long>();
+        final List<Long> bhIds = new LinkedList<Long>();
+        Transaction tx = this.hibernateHelper.beginTransaction();
+
+        MultiPartBlob mblob = new MultiPartBlob();
+        mblob.writeData(new ByteArrayInputStream("Fake Data 123".getBytes()), true, 5);
+        DAO_OBJECT.save(mblob);
+        this.hibernateHelper.getCurrentSession().flush();
+        mblobIds.add(mblob.getId());
+        for (final BlobHolder bh : mblob.getBlobParts()) {
+            assertNotNull(bh);
+            assertNotNull(bh.getId());
+            bhIds.add(bh.getId());
+        }
+
+        mblob = new MultiPartBlob();
+        mblob.writeData(new ByteArrayInputStream("Fake Data 456".getBytes()), true, 20000);
+        DAO_OBJECT.save(mblob);
+        this.hibernateHelper.getCurrentSession().flush();
+        mblobIds.add(mblob.getId());
+        for (final BlobHolder bh : mblob.getBlobParts()) {
+            assertNotNull(bh);
+            assertNotNull(bh.getId());
+            bhIds.add(bh.getId());
+        }
+        tx.commit();
+
+        // add in a bad id
+        mblobIds.add(10001L);
+        tx = this.hibernateHelper.beginTransaction();
+        this.hibernateHelper.getCurrentSession().clear();
+        DAO_OBJECT.deleteByIds(mblobIds);
+        tx.commit();
+
+        tx = this.hibernateHelper.beginTransaction();
+        for (final Long mblobId : mblobIds) {
+            assertNull(this.hibernateHelper.getCurrentSession().get(MultiPartBlob.class, mblobId));
+        }
+        for (final Long bhId : bhIds) {
+            assertNull(this.hibernateHelper.getCurrentSession().get(BlobHolder.class, bhId));
+        }
+        tx.commit();
+    }
 }

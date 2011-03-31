@@ -84,13 +84,17 @@ package gov.nih.nci.caarray.validation;
 
 import gov.nih.nci.caarray.validation.ValidationMessage.Type;
 
-import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
+import org.apache.commons.lang.builder.ToStringBuilder;
+
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 /**
  * The result of validating a set of files.
@@ -99,7 +103,7 @@ public final class ValidationResult implements Serializable {
 
     private static final long serialVersionUID = -5781574225752015910L;
 
-    private final Map<File, FileValidationResult> fileValidationResults = new HashMap<File, FileValidationResult>();
+    private final Map<String, FileValidationResult> fileValidationResults = Maps.newTreeMap();
 
     /**
      * Instantiates a new, empty result.
@@ -110,11 +114,11 @@ public final class ValidationResult implements Serializable {
 
     /**
      * Returns true if all the documents in the set were valid.
-     *
+     * 
      * @return true if set was valid.
      */
     public boolean isValid() {
-        for (FileValidationResult fileValidationResult : fileValidationResults.values()) {
+        for (final FileValidationResult fileValidationResult : this.fileValidationResults.values()) {
             if (!fileValidationResult.isValid()) {
                 return false;
             }
@@ -124,12 +128,12 @@ public final class ValidationResult implements Serializable {
 
     /**
      * Returns the messages ordered by file, type and location.
-     *
+     * 
      * @return the messages.
      */
     public List<ValidationMessage> getMessages() {
-        List<ValidationMessage> messages = new ArrayList<ValidationMessage>();
-        for (FileValidationResult fileValidationResult : getFileValidationResults()) {
+        final List<ValidationMessage> messages = new ArrayList<ValidationMessage>();
+        for (final FileValidationResult fileValidationResult : getFileValidationResults()) {
             messages.addAll(fileValidationResult.getMessages());
         }
         return Collections.unmodifiableList(messages);
@@ -137,12 +141,13 @@ public final class ValidationResult implements Serializable {
 
     /**
      * Returns the messages of given type, ordered by file and location.
+     * 
      * @param type type of messages to return
      * @return the messages.
      */
     public List<ValidationMessage> getMessages(ValidationMessage.Type type) {
-        List<ValidationMessage> messages = new ArrayList<ValidationMessage>();
-        for (FileValidationResult fileValidationResult : getFileValidationResults()) {
+        final List<ValidationMessage> messages = new ArrayList<ValidationMessage>();
+        for (final FileValidationResult fileValidationResult : getFileValidationResults()) {
             messages.addAll(fileValidationResult.getMessages(type));
         }
         return Collections.unmodifiableList(messages);
@@ -150,86 +155,76 @@ public final class ValidationResult implements Serializable {
 
     /**
      * Returns all the file validation results in order by file.
-     *
+     * 
      * @return the file validation results.
      */
     public List<FileValidationResult> getFileValidationResults() {
-        List<FileValidationResult> fileResultList = new ArrayList<FileValidationResult>(fileValidationResults.size());
-        fileResultList.addAll(fileValidationResults.values());
-        Collections.sort(fileResultList);
-        return Collections.unmodifiableList(fileResultList);
+        return Lists.newArrayList(this.fileValidationResults.values());
+    }
+
+    /**
+     * Returns the names of all the files for which this has validation results.
+     * 
+     * @return set of names of the files for which this contains validation results
+     */
+    public Set<String> getFileNames() {
+        return Collections.unmodifiableSet(this.fileValidationResults.keySet());
     }
 
     /**
      * Adds a new validation message to the result.
-     *
+     * 
      * @param file validation message is associated with this file
      * @param type the type/level of the message
      * @param message the actual message content
      * @return the newly added message, if additional configuration of the message is required.
      */
-    public ValidationMessage addMessage(File file, Type type, String message) {
-        return getOrCreateFileValidationResult(file).addMessage(type, message);
+    public ValidationMessage addMessage(String fileName, Type type, String message) {
+        return getOrCreateFileValidationResult(fileName).addMessage(type, message);
     }
 
     /**
      * Adds a new validation message to the result.
-     *
+     * 
      * @param file validation message is associated with this file
      * @param message the validation message
      */
-    public void addMessage(File file, ValidationMessage message) {
-        getOrCreateFileValidationResult(file).addMessage(message);
+    public void addMessage(String fileName, ValidationMessage message) {
+        getOrCreateFileValidationResult(fileName).addMessage(message);
     }
 
     /**
-     * Returns the <code>FileValidationResult</code> corresponding to the
-     * given file. If one does not exist yet, creates a new one and adds it to this.
-     *
+     * Returns the <code>FileValidationResult</code> corresponding to the given file. If one does not exist yet, creates
+     * a new one and adds it to this.
+     * 
      * @param file get validation results for this file
      * @return an existing or new validation result for the file
      */
-    public FileValidationResult getOrCreateFileValidationResult(File file) {
-        if (!fileValidationResults.containsKey(file)) {
-            fileValidationResults.put(file, new FileValidationResult(file));
+    public FileValidationResult getOrCreateFileValidationResult(String fileName) {
+        if (!this.fileValidationResults.containsKey(fileName)) {
+            this.fileValidationResults.put(fileName, new FileValidationResult());
         }
-        return getFileValidationResult(file);
+        return getFileValidationResult(fileName);
     }
 
     /**
      * Add the results for a file, replacing any previous results for that file.
+     * 
      * @param file file to add
      * @param fileResult results to add
      */
-    public void addFile(File file, FileValidationResult fileResult) {
-        fileValidationResults.put(file, fileResult);
+    public void addFile(String fileName, FileValidationResult fileResult) {
+        this.fileValidationResults.put(fileName, fileResult);
     }
 
     /**
-     * Returns the <code>FileValidationResult</code> corresponding to the
-     * given file, or null if non exists.
-     *
+     * Returns the <code>FileValidationResult</code> corresponding to the given file, or null if non exists.
+     * 
      * @param file get validation results for this file
      * @return the validation result.
      */
-    public FileValidationResult getFileValidationResult(File file) {
-        return fileValidationResults.get(file);
-    }
-    
-    /**
-     * Returns the <code>FileValidationResult</code> corresponding to the
-     * file with given , or null if non exists.
-     *
-     * @param filename get validation results for the file with this name
-     * @return the validation result.
-     */
-    public FileValidationResult getFileValidationResult(String filename) {
-        for (Map.Entry<File, FileValidationResult> resultEntry : fileValidationResults.entrySet()) {
-            if (resultEntry.getKey().getName().equals(filename)) {
-                return resultEntry.getValue();
-            }
-        }
-        return null;
+    public FileValidationResult getFileValidationResult(String fileName) {
+        return this.fileValidationResults.get(fileName);
     }
 
     /**
@@ -237,13 +232,7 @@ public final class ValidationResult implements Serializable {
      */
     @Override
     public String toString() {
-        StringBuffer stringBuffer = new StringBuffer();
-        for (FileValidationResult result : fileValidationResults.values()) {
-            stringBuffer.append(result.getFile().getName());
-            stringBuffer.append(":\n");
-            stringBuffer.append(result.toString());
-        }
-        return stringBuffer.toString();
+        return ToStringBuilder.reflectionToString(this);
     }
 
 }

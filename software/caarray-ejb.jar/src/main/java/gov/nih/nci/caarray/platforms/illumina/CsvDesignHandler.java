@@ -85,19 +85,14 @@ package gov.nih.nci.caarray.platforms.illumina;
 import gov.nih.nci.caarray.application.util.Utils;
 import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.dao.SearchDao;
+import gov.nih.nci.caarray.dataStorage.DataStorageFacade;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileType;
-import gov.nih.nci.caarray.platforms.FileManager;
 import gov.nih.nci.caarray.platforms.SessionTransactionManager;
 import gov.nih.nci.caarray.platforms.spi.AbstractDesignFileHandler;
 import gov.nih.nci.caarray.platforms.spi.PlatformFileReadException;
-import com.fiveamsolutions.nci.commons.util.io.DelimitedFileReader;
-import com.fiveamsolutions.nci.commons.util.io.DelimitedFileReaderFactoryImpl;
-
-import com.google.inject.Inject;
-
 import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.ValidationMessage;
 import gov.nih.nci.caarray.validation.ValidationResult;
@@ -110,6 +105,10 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.io.FilenameUtils;
+
+import com.fiveamsolutions.nci.commons.util.io.DelimitedFileReader;
+import com.fiveamsolutions.nci.commons.util.io.DelimitedFileReaderFactoryImpl;
+import com.google.inject.Inject;
 
 /**
  * Reads Illumina genotyping and gene expression array description files.
@@ -128,42 +127,45 @@ final class CsvDesignHandler extends AbstractDesignFileHandler {
      * 
      */
     @Inject
-    CsvDesignHandler(SessionTransactionManager sessionTransactionManager, FileManager fileManager,
+    CsvDesignHandler(SessionTransactionManager sessionTransactionManager, DataStorageFacade dataStorageFacade,
             ArrayDao arrayDao, SearchDao searchDao) {
-        super(sessionTransactionManager, fileManager, arrayDao, searchDao);
+        super(sessionTransactionManager, dataStorageFacade, arrayDao, searchDao);
     }
 
+    @Override
     public boolean openFiles(Set<CaArrayFile> designFiles) throws PlatformFileReadException {
         if (designFiles == null || designFiles.size() != 1
                 || designFiles.iterator().next().getFileType() != FileType.ILLUMINA_DESIGN_CSV) {
             return false;
         }
-        
+
         this.designFile = designFiles.iterator().next();
-        this.fileOnDisk = getFileManager().openFile(designFile);
+        this.fileOnDisk = getDataStorageFacade().openFile(this.designFile.getDataHandle(), false);
         try {
             this.reader = new DelimitedFileReaderFactoryImpl().createCommaDelimitedFileReader(this.fileOnDisk);
             this.helper = createHelper();
             return true;
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new PlatformFileReadException(this.fileOnDisk, "Could not open reader for file "
-                    + designFile.getName(), e);
+                    + this.designFile.getName(), e);
         }
     }
-    
+
+    @Override
     public void closeFiles() {
-        if (reader != null) {
-            reader.close();
-            this.reader = null;            
+        if (this.reader != null) {
+            this.reader.close();
+            this.reader = null;
         }
         this.helper = null;
         this.fileOnDisk = null;
         if (this.designFile != null) {
-            getFileManager().closeFile(this.designFile);
+            getDataStorageFacade().releaseFile(this.designFile.getDataHandle(), false);
         }
         this.designFile = null;
     }
-    
+
+    @Override
     public boolean parsesData() {
         return true;
     }
@@ -171,26 +173,27 @@ final class CsvDesignHandler extends AbstractDesignFileHandler {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void createDesignDetails(ArrayDesign arrayDesign) {
         try {
             positionAtAnnotation();
-            ArrayDesignDetails details = new ArrayDesignDetails();
+            final ArrayDesignDetails details = new ArrayDesignDetails();
             arrayDesign.setDesignDetails(details);
             getArrayDao().save(arrayDesign);
             getArrayDao().flushSession();
             int count = 0;
-            while (reader.hasNextLine()) {
-                List<String> values = reader.nextLine();
-                if (helper.isLineFollowingAnnotation(values)) {
+            while (this.reader.hasNextLine()) {
+                final List<String> values = this.reader.nextLine();
+                if (this.helper.isLineFollowingAnnotation(values)) {
                     break;
                 }
-                getArrayDao().save(helper.createProbe(details, values));
+                getArrayDao().save(this.helper.createProbe(details, values));
                 if (++count % LOGICAL_PROBE_BATCH_SIZE == 0) {
                     flushAndClearSession();
                 }
             }
             flushAndClearSession();
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new IllegalStateException("Couldn't read file: ", e);
         }
     }
@@ -198,45 +201,45 @@ final class CsvDesignHandler extends AbstractDesignFileHandler {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void validate(ValidationResult result) {
         try {
-            FileValidationResult fileResult = result.getOrCreateFileValidationResult(this.fileOnDisk);
-            designFile.setValidationResult(fileResult);
-            
-            reader.reset();
-            if (!reader.hasNextLine()) {
+            final FileValidationResult fileResult = result.getOrCreateFileValidationResult(this.designFile.getName());
+            this.designFile.setValidationResult(fileResult);
+
+            this.reader.reset();
+            if (!this.reader.hasNextLine()) {
                 fileResult.addMessage(ValidationMessage.Type.ERROR, "Illumina CSV file was empty");
             }
-            List<String> headers = getHeaders();
+            final List<String> headers = getHeaders();
             validateHeader(headers, fileResult);
             if (result.isValid()) {
                 validateContent(fileResult, headers);
             }
-        } catch (IOException e) {
-            result.addMessage(this.fileOnDisk, ValidationMessage.Type.ERROR, "Unable to read file");
+        } catch (final IOException e) {
+            result.addMessage(this.designFile.getName(), ValidationMessage.Type.ERROR, "Unable to read file");
         }
     }
 
     private void validateContent(FileValidationResult result, List<String> headers) throws IOException {
-        while (reader.hasNextLine()) {
-            List<String> values = reader.nextLine();
-            if (helper.isLineFollowingAnnotation(values)) {
+        while (this.reader.hasNextLine()) {
+            final List<String> values = this.reader.nextLine();
+            if (this.helper.isLineFollowingAnnotation(values)) {
                 break;
             }
             if (values.size() != headers.size()) {
-                ValidationMessage error = result.addMessage(ValidationMessage.Type.ERROR,
-                        "Invalid number of fields. Expected "
-                        + headers.size() + " but contained " + values.size());
-                error.setLine(reader.getCurrentLineNumber());
+                final ValidationMessage error = result.addMessage(ValidationMessage.Type.ERROR,
+                        "Invalid number of fields. Expected " + headers.size() + " but contained " + values.size());
+                error.setLine(this.reader.getCurrentLineNumber());
             }
-            helper.validateValues(values, result, reader.getCurrentLineNumber());
+            this.helper.validateValues(values, result, this.reader.getCurrentLineNumber());
         }
     }
 
     void validateFieldLength(List<String> values, Enum header, FileValidationResult result, int lineNumber,
             int expectedLength) throws IOException {
-        int colIdx = helper.indexOf(header);
-        String val = values.get(colIdx);
+        final int colIdx = this.helper.indexOf(header);
+        final String val = values.get(colIdx);
         validateFieldLength(val, header, result, lineNumber, expectedLength, colIdx + 1);
     }
 
@@ -244,9 +247,10 @@ final class CsvDesignHandler extends AbstractDesignFileHandler {
     static void validateFieldLength(String value, Enum header, FileValidationResult result, int lineNumber,
             int expectedLength, int col) {
         if (value.length() != expectedLength) {
-            ValidationMessage error = result.addMessage(ValidationMessage.Type.ERROR,
-                    "Expected size of field for " + header.name() + " to be " + expectedLength
-                    + " but was " + value.length());
+            final ValidationMessage error = result.addMessage(
+                    ValidationMessage.Type.ERROR,
+                    "Expected size of field for " + header.name() + " to be " + expectedLength + " but was "
+                            + value.length());
             error.setLine(lineNumber);
             error.setColumn(col);
         }
@@ -254,57 +258,57 @@ final class CsvDesignHandler extends AbstractDesignFileHandler {
 
     void validateIntegerField(List<String> values, Enum[] headers, Enum header, FileValidationResult result,
             int lineNumber) throws IOException {
-        int colIdx = helper.indexOf(header);
-        String val = values.get(colIdx);
+        final int colIdx = this.helper.indexOf(header);
+        final String val = values.get(colIdx);
         validateIntegerField(val, header, result, lineNumber, colIdx + 1);
     }
 
     static void validateIntegerField(String value, Enum header, FileValidationResult result, int lineNumber, int col) {
         if (!Utils.isInteger(value)) {
-            ValidationMessage error = result.addMessage(ValidationMessage.Type.ERROR,
-                    "Expected integer value for " + header.name() + ", but was " +  value);
+            final ValidationMessage error = result.addMessage(ValidationMessage.Type.ERROR,
+                    "Expected integer value for " + header.name() + ", but was " + value);
             error.setLine(lineNumber);
             error.setColumn(col);
         }
     }
 
-    void validateLongField(List<String> values, Enum header, FileValidationResult result,
-            int lineNumber) throws IOException {
-        int colIdx = helper.indexOf(header);
-        String val = values.get(colIdx);
+    void validateLongField(List<String> values, Enum header, FileValidationResult result, int lineNumber)
+            throws IOException {
+        final int colIdx = this.helper.indexOf(header);
+        final String val = values.get(colIdx);
         validateLongField(val, header, result, lineNumber, colIdx + 1);
     }
 
     static void validateLongField(String value, Enum header, FileValidationResult result, int lineNumber, int col) {
         if (!Utils.isLong(value)) {
-            ValidationMessage error = result.addMessage(ValidationMessage.Type.ERROR,
-                    "Expected long integral value for " + header.name() + ", but was " +  value);
+            final ValidationMessage error = result.addMessage(ValidationMessage.Type.ERROR,
+                    "Expected long integral value for " + header.name() + ", but was " + value);
             error.setLine(lineNumber);
             error.setColumn(col);
         }
     }
 
     private void validateHeader(List<String> headers, FileValidationResult result) throws IOException {
-        Set<? extends Enum> requiredHeaders = helper.getRequiredColumns();
-        Set<Enum> tmp = new HashSet<Enum>(requiredHeaders);
-        for (String v : headers) {
-            for (Enum h : requiredHeaders) {
+        final Set<? extends Enum> requiredHeaders = this.helper.getRequiredColumns();
+        final Set<Enum> tmp = new HashSet<Enum>(requiredHeaders);
+        for (final String v : headers) {
+            for (final Enum h : requiredHeaders) {
                 if (h.name().equalsIgnoreCase(v)) {
                     tmp.remove(h);
                 }
             }
         }
         if (!tmp.isEmpty()) {
-            result.addMessage(ValidationMessage.Type.ERROR,
-                    "Illumina CSV file didn't contain the expected columns " + tmp.toString());
+            result.addMessage(ValidationMessage.Type.ERROR, "Illumina CSV file didn't contain the expected columns "
+                    + tmp.toString());
         }
     }
 
     private List<String> getHeaders() throws IOException {
-        while (reader.hasNextLine()) {
-            List<String> values = reader.nextLine();
-            if (helper.isHeaderLine(values)) {
-                helper.initHeaderIndex(values);
+        while (this.reader.hasNextLine()) {
+            final List<String> values = this.reader.nextLine();
+            if (this.helper.isHeaderLine(values)) {
+                this.helper.initHeaderIndex(values);
                 return values;
             }
         }
@@ -314,12 +318,13 @@ final class CsvDesignHandler extends AbstractDesignFileHandler {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void load(ArrayDesign arrayDesign) {
         arrayDesign.setName(FilenameUtils.getBaseName(this.designFile.getName()));
         arrayDesign.setLsidForEntity(LSID_AUTHORITY + ":" + LSID_NAMESPACE + ":" + arrayDesign.getName());
         try {
             arrayDesign.setNumberOfFeatures(getNumberOfFeatures());
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new IllegalStateException("Couldn't read file: ", e);
         }
     }
@@ -327,8 +332,8 @@ final class CsvDesignHandler extends AbstractDesignFileHandler {
     private int getNumberOfFeatures() throws IOException {
         positionAtAnnotation();
         int numberOfFeatures = 0;
-        while (reader.hasNextLine()) {
-            if (helper.isLineFollowingAnnotation(reader.nextLine())) {
+        while (this.reader.hasNextLine()) {
+            if (this.helper.isLineFollowingAnnotation(this.reader.nextLine())) {
                 break;
             }
             numberOfFeatures++;
@@ -338,10 +343,10 @@ final class CsvDesignHandler extends AbstractDesignFileHandler {
 
     private void positionAtAnnotation() throws IOException {
         reset();
-        while (reader.hasNextLine()) {
-            List<String> line = reader.nextLine();
-            if (helper.isHeaderLine(line)) {
-                helper.initHeaderIndex(line);
+        while (this.reader.hasNextLine()) {
+            final List<String> line = this.reader.nextLine();
+            if (this.helper.isHeaderLine(line)) {
+                this.helper.initHeaderIndex(line);
                 return;
             }
         }
@@ -349,17 +354,17 @@ final class CsvDesignHandler extends AbstractDesignFileHandler {
 
     private void reset() {
         try {
-            reader.reset();
-        } catch (IOException e) {
+            this.reader.reset();
+        } catch (final IOException e) {
             throw new IllegalStateException("Couldn't reset file " + this.designFile.getName(), e);
         }
     }
 
     private AbstractCsvDesignHelper createHelper() throws IOException {
-        List<AbstractCsvDesignHelper> candidateHandlers = getCandidateHandlers();
-        while (reader.hasNextLine()) {
-            List<String> values = reader.nextLine();
-            for (AbstractCsvDesignHelper candidateHandler : candidateHandlers) {
+        final List<AbstractCsvDesignHelper> candidateHandlers = getCandidateHandlers();
+        while (this.reader.hasNextLine()) {
+            final List<String> values = this.reader.nextLine();
+            for (final AbstractCsvDesignHelper candidateHandler : candidateHandlers) {
                 if (candidateHandler.isHeaderLine(values)) {
                     return candidateHandler;
                 }
@@ -369,7 +374,7 @@ final class CsvDesignHandler extends AbstractDesignFileHandler {
     }
 
     private List<AbstractCsvDesignHelper> getCandidateHandlers() {
-        List<AbstractCsvDesignHelper> handlers = new ArrayList<AbstractCsvDesignHelper>();
+        final List<AbstractCsvDesignHelper> handlers = new ArrayList<AbstractCsvDesignHelper>();
         handlers.add(new ExpressionCsvDesignHelper());
         handlers.add(new GenotypingCsvDesignHandler());
         return handlers;

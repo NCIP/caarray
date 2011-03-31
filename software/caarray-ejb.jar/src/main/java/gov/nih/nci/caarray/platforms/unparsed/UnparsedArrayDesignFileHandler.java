@@ -87,23 +87,19 @@ import gov.nih.nci.caarray.domain.LSID;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileType;
-import gov.nih.nci.caarray.platforms.FileManager;
 import gov.nih.nci.caarray.platforms.spi.DesignFileHandler;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.ValidationResult;
 
-import java.io.File;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.io.FilenameUtils;
 
-import com.google.inject.Inject;
-
 /**
  * Common handler implementation of all known unparsed array design types.
- *
+ * 
  * @author Steve Lustbader
  */
 class UnparsedArrayDesignFileHandler implements DesignFileHandler {
@@ -117,18 +113,12 @@ class UnparsedArrayDesignFileHandler implements DesignFileHandler {
         LSID_TEMPLATE_MAP.put(FileType.MAGE_TAB_ADF, CAARRAY_LOCAL_LSID_TEMPLATE);
         LSID_TEMPLATE_MAP.put(FileType.GEO_GPL, CAARRAY_LOCAL_LSID_TEMPLATE);
         LSID_TEMPLATE_MAP.put(FileType.AGILENT_CSV, AGILENT_LSID_TEMPLATE);
-     }
-    
-    private final FileManager fileManager;
-    private CaArrayFile designFile;
-    private File fileOnDisk;
-    private LSID designLsid;
-
-    @Inject
-    public UnparsedArrayDesignFileHandler(FileManager fileManager) {
-        this.fileManager = fileManager;
     }
 
+    private CaArrayFile designFile;
+    private LSID designLsid;
+
+    @Override
     public boolean openFiles(Set<CaArrayFile> designFiles) {
         if (designFiles == null || designFiles.size() != 1
                 || !LSID_TEMPLATE_MAP.containsKey(designFiles.iterator().next().getFileType())) {
@@ -136,16 +126,14 @@ class UnparsedArrayDesignFileHandler implements DesignFileHandler {
         }
 
         this.designFile = designFiles.iterator().next();
-        this.fileOnDisk = fileManager.openFile(designFile);
-        LSID lsidTemplate = LSID_TEMPLATE_MAP.get(designFile.getFileType());
-        designLsid = new LSID(lsidTemplate.getAuthority(), lsidTemplate.getNamespace(), 
-                FilenameUtils.getBaseName(designFile.getName()));
+        final LSID lsidTemplate = LSID_TEMPLATE_MAP.get(this.designFile.getFileType());
+        this.designLsid = new LSID(lsidTemplate.getAuthority(), lsidTemplate.getNamespace(),
+                FilenameUtils.getBaseName(this.designFile.getName()));
         return true;
     }
-    
+
+    @Override
     public void closeFiles() {
-        fileManager.closeFile(this.designFile);
-        this.fileOnDisk = null;
         this.designFile = null;
         this.designLsid = null;
     }
@@ -153,6 +141,7 @@ class UnparsedArrayDesignFileHandler implements DesignFileHandler {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void createDesignDetails(ArrayDesign arrayDesign) {
         // no-op for unknown types
     }
@@ -160,19 +149,22 @@ class UnparsedArrayDesignFileHandler implements DesignFileHandler {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void load(ArrayDesign arrayDesign) {
-        arrayDesign.setName(designLsid.getObjectId());
-        arrayDesign.setLsid(designLsid);
+        arrayDesign.setName(this.designLsid.getObjectId());
+        arrayDesign.setLsid(this.designLsid);
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public void validate(ValidationResult result) {
-        FileValidationResult fileResult = result.getOrCreateFileValidationResult(fileOnDisk);
-        designFile.setValidationResult(fileResult);
+        final FileValidationResult fileResult = result.getOrCreateFileValidationResult(this.designFile.getName());
+        this.designFile.setValidationResult(fileResult);
     }
-    
+
+    @Override
     public boolean parsesData() {
         return false;
     }

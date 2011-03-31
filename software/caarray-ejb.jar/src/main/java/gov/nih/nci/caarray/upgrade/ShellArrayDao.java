@@ -7,15 +7,15 @@ import gov.nih.nci.caarray.domain.array.PhysicalProbe;
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 
 /**
- * Provides a shell of an ArrayDao that does nothing but assign IDs to persistent objects and
- * maintain the reverse relationship between PhysicalProbe and ArrayDesignDetails.
+ * Provides a shell of an ArrayDao that does nothing but assign IDs to persistent objects and maintain the reverse
+ * relationship between PhysicalProbe and ArrayDesignDetails.
  * 
  * @author jscott
- *
+ * 
  */
 class ShellArrayDao extends ArrayDaoUnsupportedOperationImpl {
     private long nextId = 0;
-    
+
     @Override
     public void flushSession() {
         // No-Op
@@ -23,13 +23,15 @@ class ShellArrayDao extends ArrayDaoUnsupportedOperationImpl {
 
     @SuppressWarnings("deprecation")
     @Override
-    public void save(PersistentObject persistentObject) {
-        AbstractCaArrayObject caArrayObject = (AbstractCaArrayObject) persistentObject;
-        caArrayObject.setId(nextId++);
-        
+    public Long save(PersistentObject persistentObject) {
+        final AbstractCaArrayObject caArrayObject = (AbstractCaArrayObject) persistentObject;
+        caArrayObject.setId(this.nextId++);
+
         if (caArrayObject instanceof PhysicalProbe) {
-            PhysicalProbe physicalProbe = (PhysicalProbe) caArrayObject;
+            final PhysicalProbe physicalProbe = (PhysicalProbe) caArrayObject;
             physicalProbe.getArrayDesignDetails().getProbes().add(physicalProbe);
         }
-    }   
+
+        return caArrayObject.getId();
+    }
 }

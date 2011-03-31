@@ -85,8 +85,8 @@ package gov.nih.nci.caarray.services.external.v1_0.data.impl;
 import gov.nih.nci.caarray.application.ConfigurationHelper;
 import gov.nih.nci.caarray.application.ServiceLocatorFactory;
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCache;
-import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
 import gov.nih.nci.caarray.dao.ArrayDao;
+import gov.nih.nci.caarray.dataStorage.DataStorageFacade;
 import gov.nih.nci.caarray.domain.ConfigParamEnum;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.DerivedArrayData;
@@ -117,7 +117,7 @@ import gov.nih.nci.caarray.magetab.sdrf.DerivedArrayDataMatrixFile;
 import gov.nih.nci.caarray.magetab.sdrf.SdrfDocument;
 import gov.nih.nci.caarray.services.AuthorizationInterceptor;
 import gov.nih.nci.caarray.services.HibernateSessionInterceptor;
-import gov.nih.nci.caarray.services.TemporaryFileCleanupInterceptor;
+import gov.nih.nci.caarray.services.StorageInterceptor;
 import gov.nih.nci.caarray.services.external.v1_0.InvalidInputException;
 import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
 import gov.nih.nci.caarray.services.external.v1_0.data.DataService;
@@ -127,8 +127,8 @@ import gov.nih.nci.caarray.services.external.v1_0.impl.BaseV1_0ExternalService;
 import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
 
 import java.io.BufferedInputStream;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -147,7 +147,6 @@ import org.jboss.ejb3.annotation.TransactionTimeout;
 
 import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
 import com.google.inject.Inject;
-import com.healthmarketscience.rmiio.RemoteInputStreamMonitor;
 import com.healthmarketscience.rmiio.RemoteInputStreamServer;
 import com.healthmarketscience.rmiio.SimpleRemoteInputStream;
 
@@ -160,47 +159,53 @@ import com.healthmarketscience.rmiio.SimpleRemoteInputStream;
 @RemoteBinding(jndiBinding = DataService.JNDI_NAME)
 @TransactionAttribute(TransactionAttributeType.REQUIRED)
 @TransactionTimeout(DataServiceBean.TIMEOUT_SECONDS)
-@Interceptors({ AuthorizationInterceptor.class, TemporaryFileCleanupInterceptor.class,
-        HibernateSessionInterceptor.class, InjectionInterceptor.class })
+@Interceptors({ AuthorizationInterceptor.class, StorageInterceptor.class, HibernateSessionInterceptor.class,
+        InjectionInterceptor.class })
 @SuppressWarnings("PMD")
 public class DataServiceBean extends BaseV1_0ExternalService implements DataService {
     private static final Logger LOG = Logger.getLogger(DataServiceBean.class);
-    
+
     static final int TIMEOUT_SECONDS = 1800;
     static final long MAX_FILE_REQUEST_SIZE = 1024 * 1024 * 1024; // 1 GB
 
     private CaArrayHibernateHelper hibernateHelper;
     private ArrayDao arrayDao;
-    
+    private DataStorageFacade dataStorageFacade;
+    private TemporaryFileCache temporaryFileCache;
+
     /**
      * 
      * @param hibernateHelper the CaArrayHibernateHelper dependency
      * @param arrayDao the ArrayDao dependency
      */
     @Inject
-    public void setDependencies(CaArrayHibernateHelper hibernateHelper, ArrayDao arrayDao) {
+    public void setDependencies(CaArrayHibernateHelper hibernateHelper, ArrayDao arrayDao,
+            DataStorageFacade dataStorageFacade, TemporaryFileCache temporaryFileCache) {
         this.hibernateHelper = hibernateHelper;
         this.arrayDao = arrayDao;
+        this.dataStorageFacade = dataStorageFacade;
+        this.temporaryFileCache = temporaryFileCache;
     }
-    
+
     /**
      * {@inheritDoc}
      */
+    @Override
     public DataSet getDataSet(DataSetRequest request) throws InvalidReferenceException, InvalidInputException,
             InconsistentDataSetsException {
         LOG.info("Received data retrieval request");
         checkRequest(request);
-        List<gov.nih.nci.caarray.domain.data.DataSet> dataSets = getDataSets(request);
-        gov.nih.nci.caarray.domain.data.DataSet mergedDataSet = createMergedDataSet(dataSets, request);
+        final List<gov.nih.nci.caarray.domain.data.DataSet> dataSets = getDataSets(request);
+        final gov.nih.nci.caarray.domain.data.DataSet mergedDataSet = createMergedDataSet(dataSets, request);
         LOG.info("Retrieved " + mergedDataSet.getHybridizationDataList().size() + " hybridization data elements, "
                 + mergedDataSet.getQuantitationTypes().size() + " quant types");
-        DataSet externalDataSet = toExternalDataSet(mergedDataSet);
-        hibernateHelper.getCurrentSession().clear();
+        final DataSet externalDataSet = toExternalDataSet(mergedDataSet);
+        this.hibernateHelper.getCurrentSession().clear();
         return externalDataSet;
     }
-    
+
     private DataSet toExternalDataSet(gov.nih.nci.caarray.domain.data.DataSet dataSet) {
-        DataSet externalDataSet = new DataSet();
+        final DataSet externalDataSet = new DataSet();
         mapCollection(dataSet.getQuantitationTypes(), externalDataSet.getQuantitationTypes(), QuantitationType.class);
         mapCollection(dataSet.getDesignElementList().getDesignElements(), externalDataSet.getDesignElements(),
                 DesignElement.class);
@@ -211,10 +216,10 @@ public class DataServiceBean extends BaseV1_0ExternalService implements DataServ
 
     private List<gov.nih.nci.caarray.domain.data.DataSet> getDataSets(DataSetRequest request)
             throws InvalidReferenceException {
-        List<AbstractArrayData> arrayDatas = getArrayDatas(request);
-        List<gov.nih.nci.caarray.domain.data.DataSet> dataSets = new ArrayList<gov.nih.nci.caarray.domain.data.DataSet>(
+        final List<AbstractArrayData> arrayDatas = getArrayDatas(request);
+        final List<gov.nih.nci.caarray.domain.data.DataSet> dataSets = new ArrayList<gov.nih.nci.caarray.domain.data.DataSet>(
                 arrayDatas.size());
-        for (AbstractArrayData data : arrayDatas) {
+        for (final AbstractArrayData data : arrayDatas) {
             dataSets.add(data.getDataSet());
         }
         return dataSets;
@@ -223,7 +228,7 @@ public class DataServiceBean extends BaseV1_0ExternalService implements DataServ
     private gov.nih.nci.caarray.domain.data.DataSet createMergedDataSet(
             List<gov.nih.nci.caarray.domain.data.DataSet> dataSets, DataSetRequest request)
             throws InconsistentDataSetsException, InvalidReferenceException {
-        gov.nih.nci.caarray.domain.data.DataSet dataSet = new gov.nih.nci.caarray.domain.data.DataSet();
+        final gov.nih.nci.caarray.domain.data.DataSet dataSet = new gov.nih.nci.caarray.domain.data.DataSet();
         dataSet.getQuantitationTypes().addAll(getQuantitationTypes(request));
         addDesignElementList(dataSet, dataSets);
         addHybridizationDatas(dataSet, dataSets, request);
@@ -242,9 +247,9 @@ public class DataServiceBean extends BaseV1_0ExternalService implements DataServ
     }
 
     private boolean allDesignElementListsAreConsistent(List<gov.nih.nci.caarray.domain.data.DataSet> dataSets) {
-        DesignElementList firstList = dataSets.get(0).getDesignElementList();
+        final DesignElementList firstList = dataSets.get(0).getDesignElementList();
         for (int i = 1; i < dataSets.size(); i++) {
-            DesignElementList nextList = dataSets.get(i).getDesignElementList();
+            final DesignElementList nextList = dataSets.get(i).getDesignElementList();
             if (!ListUtils.isEqualList(firstList.getDesignElements(), nextList.getDesignElements())) {
                 return false;
             }
@@ -255,8 +260,8 @@ public class DataServiceBean extends BaseV1_0ExternalService implements DataServ
     private void addHybridizationDatas(gov.nih.nci.caarray.domain.data.DataSet dataSet,
             List<gov.nih.nci.caarray.domain.data.DataSet> dataSets, DataSetRequest request)
             throws InvalidReferenceException {
-        for (gov.nih.nci.caarray.domain.data.DataSet nextDataSet : dataSets) {
-            for (HybridizationData nextHybridizationData : nextDataSet.getHybridizationDataList()) {
+        for (final gov.nih.nci.caarray.domain.data.DataSet nextDataSet : dataSets) {
+            for (final HybridizationData nextHybridizationData : nextDataSet.getHybridizationDataList()) {
                 addHybridizationData(dataSet, nextHybridizationData, request);
             }
         }
@@ -264,7 +269,7 @@ public class DataServiceBean extends BaseV1_0ExternalService implements DataServ
 
     private void addHybridizationData(gov.nih.nci.caarray.domain.data.DataSet dataSet,
             HybridizationData copyFromHybridizationData, DataSetRequest request) throws InvalidReferenceException {
-        HybridizationData hybridizationData = new HybridizationData();
+        final HybridizationData hybridizationData = new HybridizationData();
         hybridizationData.setHybridization(copyFromHybridizationData.getHybridization());
         dataSet.getHybridizationDataList().add(hybridizationData);
         copyColumns(hybridizationData, copyFromHybridizationData, getQuantitationTypes(request));
@@ -273,7 +278,7 @@ public class DataServiceBean extends BaseV1_0ExternalService implements DataServ
 
     private void copyColumns(HybridizationData hybridizationData, HybridizationData copyFromHybridizationData,
             List<gov.nih.nci.caarray.domain.data.QuantitationType> quantitationTypes) {
-        for (gov.nih.nci.caarray.domain.data.QuantitationType type : quantitationTypes) {
+        for (final gov.nih.nci.caarray.domain.data.QuantitationType type : quantitationTypes) {
             hybridizationData.getColumns().add(copyFromHybridizationData.getColumn(type));
         }
     }
@@ -289,15 +294,15 @@ public class DataServiceBean extends BaseV1_0ExternalService implements DataServ
     }
 
     private List<AbstractArrayData> getArrayDatas(DataSetRequest request) throws InvalidReferenceException {
-        List<Hybridization> hybridizations = getHybridizations(request);
-        List<CaArrayFile> files = getFiles(request);
-        List<gov.nih.nci.caarray.domain.data.QuantitationType> quantitationTypes = getQuantitationTypes(request);
-        List<AbstractArrayData> arrayDatas = new ArrayList<AbstractArrayData>(hybridizations.size());
+        final List<Hybridization> hybridizations = getHybridizations(request);
+        final List<CaArrayFile> files = getFiles(request);
+        final List<gov.nih.nci.caarray.domain.data.QuantitationType> quantitationTypes = getQuantitationTypes(request);
+        final List<AbstractArrayData> arrayDatas = new ArrayList<AbstractArrayData>(hybridizations.size());
 
-        for (Hybridization hybridization : hybridizations) {
+        for (final Hybridization hybridization : hybridizations) {
             addArrayDatas(arrayDatas, hybridization, quantitationTypes);
         }
-        for (CaArrayFile dataFile : files) {
+        for (final CaArrayFile dataFile : files) {
             addArrayDatas(arrayDatas, dataFile, quantitationTypes);
         }
         return arrayDatas;
@@ -305,12 +310,12 @@ public class DataServiceBean extends BaseV1_0ExternalService implements DataServ
 
     private void addArrayDatas(List<AbstractArrayData> arrayDatas, Hybridization hybridization,
             List<gov.nih.nci.caarray.domain.data.QuantitationType> quantitationTypes) {
-        for (RawArrayData rawArrayData : hybridization.getRawDataCollection()) {
+        for (final RawArrayData rawArrayData : hybridization.getRawDataCollection()) {
             if (shouldAddData(arrayDatas, rawArrayData, quantitationTypes)) {
                 arrayDatas.add(rawArrayData);
             }
         }
-        for (DerivedArrayData derivedArrayData : hybridization.getDerivedDataCollection()) {
+        for (final DerivedArrayData derivedArrayData : hybridization.getDerivedDataCollection()) {
             if (shouldAddData(arrayDatas, derivedArrayData, quantitationTypes)) {
                 arrayDatas.add(derivedArrayData);
             }
@@ -319,7 +324,7 @@ public class DataServiceBean extends BaseV1_0ExternalService implements DataServ
 
     private void addArrayDatas(List<AbstractArrayData> arrayDatas, CaArrayFile dataFile,
             List<gov.nih.nci.caarray.domain.data.QuantitationType> quantitationTypes) {
-        AbstractArrayData arrayData = arrayDao.getArrayData(dataFile.getId());
+        final AbstractArrayData arrayData = this.arrayDao.getArrayData(dataFile.getId());
         if (arrayData != null && shouldAddData(arrayDatas, arrayData, quantitationTypes)) {
             arrayDatas.add(arrayData);
         }
@@ -337,16 +342,16 @@ public class DataServiceBean extends BaseV1_0ExternalService implements DataServ
     }
 
     private List<Hybridization> getHybridizations(DataSetRequest request) throws InvalidReferenceException {
-        List<Hybridization> hybridizations = new ArrayList<Hybridization>(request.getHybridizations().size());
-        for (CaArrayEntityReference hybRef : request.getHybridizations()) {
+        final List<Hybridization> hybridizations = new ArrayList<Hybridization>(request.getHybridizations().size());
+        for (final CaArrayEntityReference hybRef : request.getHybridizations()) {
             hybridizations.add(getRequiredByExternalId(hybRef.getId(), Hybridization.class));
         }
         return hybridizations;
     }
 
     private List<CaArrayFile> getFiles(DataSetRequest request) throws InvalidReferenceException {
-        List<CaArrayFile> files = new ArrayList<CaArrayFile>(request.getDataFiles().size());
-        for (CaArrayEntityReference fileRef : request.getDataFiles()) {
+        final List<CaArrayFile> files = new ArrayList<CaArrayFile>(request.getDataFiles().size());
+        for (final CaArrayEntityReference fileRef : request.getDataFiles()) {
             files.add(getRequiredByExternalId(fileRef.getId(), CaArrayFile.class));
         }
         return files;
@@ -354,9 +359,9 @@ public class DataServiceBean extends BaseV1_0ExternalService implements DataServ
 
     private List<gov.nih.nci.caarray.domain.data.QuantitationType> getQuantitationTypes(DataSetRequest request)
             throws InvalidReferenceException {
-        List<gov.nih.nci.caarray.domain.data.QuantitationType> types = 
-            new ArrayList<gov.nih.nci.caarray.domain.data.QuantitationType>(request.getDataFiles().size());
-        for (CaArrayEntityReference qtRef : request.getQuantitationTypes()) {
+        final List<gov.nih.nci.caarray.domain.data.QuantitationType> types = new ArrayList<gov.nih.nci.caarray.domain.data.QuantitationType>(
+                request.getDataFiles().size());
+        for (final CaArrayEntityReference qtRef : request.getQuantitationTypes()) {
             types.add(getRequiredByExternalId(qtRef.getId(), gov.nih.nci.caarray.domain.data.QuantitationType.class));
         }
         return types;
@@ -365,27 +370,26 @@ public class DataServiceBean extends BaseV1_0ExternalService implements DataServ
     /**
      * {@inheritDoc}
      */
+    @Override
     public FileStreamableContents streamFileContents(CaArrayEntityReference fileRef, boolean compressed)
             throws InvalidReferenceException, DataTransferException {
-        CaArrayFile caarrayFile = getRequiredByExternalId(fileRef.getId(), CaArrayFile.class);
+        final CaArrayFile caarrayFile = getRequiredByExternalId(fileRef.getId(), CaArrayFile.class);
         RemoteInputStreamServer istream = null;
-        TemporaryFileCache tempFileCache = TemporaryFileCacheLocator.newTemporaryFileCache();
-        FileStreamableContents fsContents =  new FileStreamableContents();
+        final FileStreamableContents fsContents = new FileStreamableContents();
         fsContents.setMetadata(mapEntity(caarrayFile, File.class).getMetadata());
         fsContents.setCompressed(compressed);
         try {
-            java.io.File file = tempFileCache.getFile(caarrayFile, !compressed);
-            DataConfiguration config = ConfigurationHelper.getConfiguration();
-            int packetSize = config.getInt(ConfigParamEnum.FILE_RETRIEVAL_API_CHUNK_SIZE.name());
-            istream = new SimpleRemoteInputStream(new BufferedInputStream(new FileInputStream(file)),
-                    new CacheClosingMonitor(tempFileCache), packetSize);
+            final InputStream is = this.dataStorageFacade.openInputStream(caarrayFile.getDataHandle(), compressed);
+            final DataConfiguration config = ConfigurationHelper.getConfiguration();
+            final int packetSize = config.getInt(ConfigParamEnum.FILE_RETRIEVAL_API_CHUNK_SIZE.name());
+            istream = new SimpleRemoteInputStream(new BufferedInputStream(is));
             fsContents.setContentStream(istream.export());
             // after all the hard work, discard the local reference (we are passing
             // responsibility to the client)
             istream = null;
-            
+
             return fsContents;
-        } catch (Exception e) {
+        } catch (final Exception e) {
             LOG.warn("Could not create input stream for file contents", e);
             throw new DataTransferException("Could not create input stream for file contents");
         } finally {
@@ -393,7 +397,7 @@ public class DataServiceBean extends BaseV1_0ExternalService implements DataServ
             // returning an exported stream
             if (istream != null) {
                 istream.close();
-                tempFileCache.closeFiles();
+                // TODO: close out temp files, if any
             }
         }
     }
@@ -401,91 +405,72 @@ public class DataServiceBean extends BaseV1_0ExternalService implements DataServ
     /**
      * {@inheritDoc}
      */
+    @Override
     public MageTabFileSet exportMageTab(CaArrayEntityReference experimentRef) throws InvalidReferenceException,
             DataTransferException {
-        gov.nih.nci.caarray.domain.project.Experiment experiment = getRequiredByExternalId(experimentRef.getId(),
+        final gov.nih.nci.caarray.domain.project.Experiment experiment = getRequiredByExternalId(experimentRef.getId(),
                 gov.nih.nci.caarray.domain.project.Experiment.class);
         try {
-            MageTabFileSet mageTabSet = new MageTabFileSet();
-            MageTabDocumentSet docSet = exportToMageTab(experiment);
+            final MageTabFileSet mageTabSet = new MageTabFileSet();
+            final MageTabDocumentSet docSet = exportToMageTab(experiment);
             mageTabSet.setIdf(toFileContents(docSet.getIdfDocuments().iterator().next().getFile().getAsFile(),
                     FileType.MAGE_TAB_IDF));
             mageTabSet.setSdrf(toFileContents(docSet.getSdrfDocuments().iterator().next().getFile().getAsFile(),
                     FileType.MAGE_TAB_SDRF));
 
-            List<CaArrayFile> dataFiles = getDataFilesReferencedByMageTab(docSet, experiment);
+            final List<CaArrayFile> dataFiles = getDataFilesReferencedByMageTab(docSet, experiment);
             mapCollection(dataFiles, mageTabSet.getDataFiles(), File.class);
 
             return mageTabSet;
-        } catch (IOException e) {
+        } catch (final IOException e) {
             LOG.error("Error exporting to MAGE-TAB", e);
             throw new DataTransferException("Could not generate idf/sdrf");
-        } 
+        }
     }
-    
-    private MageTabDocumentSet exportToMageTab(Experiment experiment) {
-        TemporaryFileCache tempCache = TemporaryFileCacheLocator.getTemporaryFileCache();
 
-        String baseFileName = experiment.getPublicIdentifier();
-        String idfFileName = baseFileName + ".idf";
-        String sdrfFileName = baseFileName + ".sdrf";
-        java.io.File idfFile = tempCache.createFile(idfFileName);
-        java.io.File sdrfFile = tempCache.createFile(sdrfFileName);
+    private MageTabDocumentSet exportToMageTab(Experiment experiment) {
+        final String baseFileName = experiment.getPublicIdentifier();
+        final String idfFileName = baseFileName + ".idf";
+        final String sdrfFileName = baseFileName + ".sdrf";
+        final java.io.File idfFile = this.temporaryFileCache.createFile(idfFileName);
+        final java.io.File sdrfFile = this.temporaryFileCache.createFile(sdrfFileName);
 
         // Translate the experiment and export to the temporary files.
         return ServiceLocatorFactory.getMageTabExporter().exportToMageTab(experiment, idfFile, sdrfFile);
     }
-    
+
     private List<CaArrayFile> getDataFilesReferencedByMageTab(MageTabDocumentSet mageTab, Experiment experiment) {
-        List<String> fileNames = new ArrayList<String>();
-        for (SdrfDocument sdrfDoc : mageTab.getSdrfDocuments()) {
-            for (ArrayDataFile file : sdrfDoc.getAllArrayDataFiles()) {
+        final List<String> fileNames = new ArrayList<String>();
+        for (final SdrfDocument sdrfDoc : mageTab.getSdrfDocuments()) {
+            for (final ArrayDataFile file : sdrfDoc.getAllArrayDataFiles()) {
                 fileNames.add(file.getName());
             }
-            for (DerivedArrayDataFile file : sdrfDoc.getAllDerivedArrayDataFiles()) {
+            for (final DerivedArrayDataFile file : sdrfDoc.getAllDerivedArrayDataFiles()) {
                 fileNames.add(file.getName());
             }
-            for (ArrayDataMatrixFile file : sdrfDoc.getAllArrayDataMatrixFiles()) {
+            for (final ArrayDataMatrixFile file : sdrfDoc.getAllArrayDataMatrixFiles()) {
                 fileNames.add(file.getName());
             }
-            for (DerivedArrayDataMatrixFile file : sdrfDoc.getAllDerivedArrayDataMatrixFiles()) {
+            for (final DerivedArrayDataMatrixFile file : sdrfDoc.getAllDerivedArrayDataMatrixFiles()) {
                 fileNames.add(file.getName());
             }
         }
-        List<CaArrayFile> dataFiles = ServiceLocatorFactory.getGenericDataService().pageAndFilterCollection(
+        final List<CaArrayFile> dataFiles = ServiceLocatorFactory.getGenericDataService().pageAndFilterCollection(
                 experiment.getProject().getFiles(), "name", fileNames,
                 new PageSortParams<CaArrayFile>(-1, 0, new AdHocSortCriterion<CaArrayFile>("name"), false));
         return dataFiles;
     }
-    
+
     private FileContents toFileContents(java.io.File mageTabFile, FileType fileType) throws IOException {
-        FileContents fc = new FileContents();
+        final FileContents fc = new FileContents();
         fc.setContents(FileUtils.readFileToByteArray(mageTabFile));
         fc.setCompressed(false);
-        FileMetadata metadata = new FileMetadata();
+        final FileMetadata metadata = new FileMetadata();
         metadata.setName(mageTabFile.getName());
         metadata.setUncompressedSize(mageTabFile.length());
         metadata.setCompressedSize(-1);
         metadata.setFileType(mapEntity(fileType, gov.nih.nci.caarray.external.v1_0.data.FileType.class));
         fc.setMetadata(metadata);
         return fc;
-    }
-    
-    /**
-     * Remote Stream Monitor that closes the temporary file cache associated with the files, ensuring they
-     * are deleted.
-     * 
-     * @author dkokotov
-     */
-    private static class CacheClosingMonitor extends RemoteInputStreamMonitor {
-        private TemporaryFileCache cache;
-        
-        public CacheClosingMonitor(TemporaryFileCache cache) {
-            this.cache = cache;
-        }
-        
-        public void closed(RemoteInputStreamServer stream, boolean clean) {
-            cache.closeFiles();            
-        }
     }
 }

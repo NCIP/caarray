@@ -84,12 +84,14 @@
 package gov.nih.nci.caarray.domain.data;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
+import gov.nih.nci.caarray.util.URIUserType;
 
 import java.io.Serializable;
+import java.net.URI;
 
+import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
-import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
@@ -99,19 +101,23 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.hibernate.annotations.ForeignKey;
+import org.hibernate.annotations.Index;
 import org.hibernate.annotations.IndexColumn;
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
+import org.hibernate.annotations.TypeDefs;
+import org.hibernate.validator.NotNull;
 
 /**
- * Subclasses of <code>AbstractDataColumn</code> contain the actual array data corresponding
- * to a single <code>QuantitationType</code>.
+ * Subclasses of <code>AbstractDataColumn</code> contain the actual array data corresponding to a single
+ * <code>QuantitationType</code>.
  */
+@TypeDefs(@TypeDef(name = "uri", typeClass = URIUserType.class))
 @Entity
 @Table(name = "datacolumn")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(
-        name = "discriminator",
-        discriminatorType = DiscriminatorType.STRING)
-@SuppressWarnings("PMD.CyclomaticComplexity") // switch-like statement
+@DiscriminatorColumn(name = "discriminator", discriminatorType = DiscriminatorType.STRING)
+@SuppressWarnings("PMD.CyclomaticComplexity")
 public abstract class AbstractDataColumn extends AbstractCaArrayObject {
     private static final long serialVersionUID = 1L;
 
@@ -120,9 +126,10 @@ public abstract class AbstractDataColumn extends AbstractCaArrayObject {
 
     private HybridizationData hybridizationData;
     private QuantitationType quantitationType;
-    private Serializer valuesSerializer = new Serializer();
+    private URI dataHandle;
 
-    @SuppressWarnings("PMD.CyclomaticComplexity") // switch-like statement
+    @SuppressWarnings("PMD.CyclomaticComplexity")
+    // switch-like statement
     static AbstractDataColumn create(QuantitationType type) {
         AbstractDataColumn column = null;
         if (type.getTypeClass().equals(Boolean.class)) {
@@ -152,7 +159,7 @@ public abstract class AbstractDataColumn extends AbstractCaArrayObject {
     @ManyToOne
     @ForeignKey(name = "column_quantitationtype_fk")
     public QuantitationType getQuantitationType() {
-        return quantitationType;
+        return this.quantitationType;
     }
 
     /**
@@ -162,38 +169,14 @@ public abstract class AbstractDataColumn extends AbstractCaArrayObject {
         this.quantitationType = quantitationType;
     }
 
-    @Transient
-    Serializable getValuesAsSerializable() {
-        return valuesSerializer.getValue();
-    }
-
-    void setSerializableValues(Serializable values) {
-        valuesSerializer.setValue(values);
-    }
-    
     /**
-     * Initializes this column to hold the number of values given.
-     *
-     * @param numberOfValues number of values
-     */
-    public abstract void initializeArray(int numberOfValues);
-
-    /**
-     * Indicates whether this column is already loaded, meaning its populated with an array
-     * of values.
-     *
+     * Indicates whether this column is already loaded, meaning its populated with an array of values.
+     * 
      * @return true if data has been loaded.
      */
     @Transient
     public boolean isLoaded() {
-        return valuesSerializer.getValue() != null;
-    }
-
-    /**
-     * Ensure that the values array is deserialized from the stream.
-     */
-    public void loadValues() {
-        valuesSerializer.getValue();
+        return this.getValuesAsArray() != null;
     }
 
     /**
@@ -204,7 +187,7 @@ public abstract class AbstractDataColumn extends AbstractCaArrayObject {
     @ForeignKey(name = "column_hybridizationdata_fk")
     @IndexColumn(name = "column_index")
     public HybridizationData getHybridizationData() {
-        return hybridizationData;
+        return this.hybridizationData;
     }
 
     /**
@@ -215,20 +198,47 @@ public abstract class AbstractDataColumn extends AbstractCaArrayObject {
     }
 
     /**
-     * @return the valuesSerializer
+     * @return the dataHandle
      */
-    @Embedded
-    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
-    private Serializer getValuesSerializer() {
-        return valuesSerializer;
+    @Column(length = DEFAULT_STRING_COLUMN_SIZE)
+    @NotNull
+    @Index(name = "idx_handle")
+    @Type(type = "uri")
+    public URI getDataHandle() {
+        return this.dataHandle;
     }
 
     /**
-     * @param valuesSerializer the valuesSerializer to set
+     * @param dataHandle the dataHandle to set
      */
-    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
-    private void setValuesSerializer(Serializer valuesSerializer) {
-        this.valuesSerializer = valuesSerializer;
+    public void setDataHandle(URI dataHandle) {
+        this.dataHandle = dataHandle;
     }
 
+    @Transient
+    public abstract Serializable getValuesAsArray();
+
+    public abstract void setValuesFromArray(Serializable array);
+
+    /**
+     * @return the values of this column, in a space-separated representation, where each value is encoded using the
+     *         literal representation of the xs:short type defined in the XML Schema standard.
+     */
+    @Transient
+    public abstract String getValuesAsString();
+
+    /**
+     * Set values from a String representation. The string should contain a list of space-separated values, with each
+     * value encoded using the literal representation of the xs:boolean type defined in XML Schema.
+     * 
+     * @param s the string containing the space-separated values
+     */
+    public abstract void setValuesAsString(String s);
+
+    /**
+     * Initializes this column to hold the number of values given.
+     * 
+     * @param numberOfValues number of values
+     */
+    public abstract void initializeArray(int numberOfValues);
 }
