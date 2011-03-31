@@ -42,6 +42,7 @@ class SingleConnectionHibernateHelper extends CaArrayHibernateHelperUnsupportedO
         InputStream configurationStream
         = FixIlluminaGenotypingCsvDesignProbeNamesMigrator.class.getResourceAsStream("/hibernate.cfg.xml");
         SAXReader reader = new SAXReader();
+        reader.setEntityResolver(new org.hibernate.util.DTDEntityResolver());
         Document configurationDocument = null;
         try {
             configurationDocument = reader.read(configurationStream);
