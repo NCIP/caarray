@@ -278,7 +278,7 @@ public final class MageTabDocumentSet implements Serializable {
         // to support this, so the object model will continue to support it
         if (idfDocuments.size() > 1) {
             for (IdfDocument idfDocument : idfDocuments) {
-                getValidationResult().addMessage(idfDocument.getFile().getAsFile(), ValidationMessage.Type.ERROR,
+                getValidationResult().addMessage(idfDocument.getFile().getAsFile().getName(), ValidationMessage.Type.ERROR,
                         "At most one IDF document can be present in an import");
             }
             return;
@@ -504,7 +504,7 @@ public final class MageTabDocumentSet implements Serializable {
     }
 
     ValidationMessage createValidationMessage(FileRef file, ValidationMessage.Type type, String message) {
-        return getValidationResult().addMessage(file.getAsFile(), type, message);
+        return getValidationResult().addMessage(file.getAsFile().getName(), type, message);
     }
 
     private void generateSdrfRefHybs() {

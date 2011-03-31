@@ -169,13 +169,13 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
      * @param persistentObject the entity to save
      */
     @Override
-    public void save(PersistentObject persistentObject) {
+    public Long save(PersistentObject persistentObject) {
         if (persistentObject instanceof Project) {
             // ideally, the lastUpdated property should be updated by AutoPropertiesInterceptor,
             // but it's a lot harder to update the parent project when child objects are updated.
             ((Project) persistentObject).setLastUpdated(new Date());
         }
-        super.save(persistentObject);
+        return super.save(persistentObject);
     }
 
     /**
