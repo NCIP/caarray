@@ -467,6 +467,10 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
         } else {
             id = arrayDesign.getId();
             if (id == null) {
+                // Checks if any uploaded files are zip files. If they are, the files are unzipped,
+                // and the appropriate properties are updated so that the unzipped files are
+                // part of the uploads list.
+                ServiceLocatorFactory.getFileAccessService().unzipFiles(uploads, uploadFileName);
                 arrayDesign.setName(FilenameUtils.getBaseName(uploadFileName.get(0)));
             }
 
@@ -523,10 +527,6 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
             if (arrayDesign.getId() != null && (uploadFileName == null || uploadFileName.isEmpty())) {
                 ServiceLocatorFactory.getArrayDesignService().saveArrayDesign(arrayDesign);
             } else {
-                // Checks if any uploaded files are zip files. If they are, the files are unzipped,
-                // and the appropriate properties are updated so that the unzipped files are
-                // part of the uploads list.
-                ServiceLocatorFactory.getFileAccessService().unzipFiles(uploads, uploadFileName);
                 handleFiles();
             }
         } catch (RuntimeException re) {
