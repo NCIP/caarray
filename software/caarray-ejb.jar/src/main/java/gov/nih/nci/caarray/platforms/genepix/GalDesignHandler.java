@@ -85,6 +85,7 @@ package gov.nih.nci.caarray.platforms.genepix;
 import gov.nih.nci.caarray.application.util.Utils;
 import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.dao.SearchDao;
+import gov.nih.nci.caarray.dataStorage.DataStorageFacade;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
@@ -93,18 +94,13 @@ import gov.nih.nci.caarray.domain.array.PhysicalProbe;
 import gov.nih.nci.caarray.domain.array.ProbeGroup;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileType;
-import gov.nih.nci.caarray.platforms.FileManager;
 import gov.nih.nci.caarray.platforms.SessionTransactionManager;
 import gov.nih.nci.caarray.platforms.spi.AbstractDesignFileHandler;
 import gov.nih.nci.caarray.platforms.spi.PlatformFileReadException;
-import com.fiveamsolutions.nci.commons.util.io.DelimitedFileReader;
-import com.fiveamsolutions.nci.commons.util.io.DelimitedFileReaderFactory;
-import com.fiveamsolutions.nci.commons.util.io.DelimitedFilesModule;
-
 import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.ValidationMessage;
-import gov.nih.nci.caarray.validation.ValidationResult;
 import gov.nih.nci.caarray.validation.ValidationMessage.Type;
+import gov.nih.nci.caarray.validation.ValidationResult;
 
 import java.io.File;
 import java.io.IOException;
@@ -118,13 +114,15 @@ import java.util.Set;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 
+import com.fiveamsolutions.nci.commons.util.io.DelimitedFileReader;
+import com.fiveamsolutions.nci.commons.util.io.DelimitedFileReaderFactory;
+import com.fiveamsolutions.nci.commons.util.io.DelimitedFilesModule;
 import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 
 /**
- * Manages validation and loading of array designs described in the GenePix GAL
- * format.
+ * Manages validation and loading of array designs described in the GenePix GAL format.
  */
 @SuppressWarnings("PMD")
 final class GalDesignHandler extends AbstractDesignFileHandler {
@@ -138,46 +136,48 @@ final class GalDesignHandler extends AbstractDesignFileHandler {
     private static final String COLUMN_HEADER = "Column";
     private static final String ROW_HEADER = "Row";
     private static final String ID_HEADER = "ID";
-    private static final List<String> REQUIRED_DATA_COLUMN_HEADERS = Arrays.asList(
-            new String[] {BLOCK_HEADER, COLUMN_HEADER, ROW_HEADER, ID_HEADER});
+    private static final List<String> REQUIRED_DATA_COLUMN_HEADERS = Arrays.asList(new String[] { BLOCK_HEADER,
+            COLUMN_HEADER, ROW_HEADER, ID_HEADER });
     private static final String BLOCK_INDICATOR = "Block";
 
     private final Map<String, Integer> headerToPositionMap = new HashMap<String, Integer>();
     private final List<BlockInfo> blockInfos = new ArrayList<BlockInfo>();
     private final Map<Short, BlockInfo> numberToBlockMap = new HashMap<Short, BlockInfo>();
-    
+
     private CaArrayFile designFile;
     private File fileOnDisk;
     private DelimitedFileReader reader;
 
     @Inject
-    GalDesignHandler(SessionTransactionManager sessionTransactionManager, FileManager fileManager,
+    GalDesignHandler(SessionTransactionManager sessionTransactionManager, DataStorageFacade dataStorageFacade,
             ArrayDao arrayDao, SearchDao searchDao) {
-        super(sessionTransactionManager, fileManager, arrayDao, searchDao);
+        super(sessionTransactionManager, dataStorageFacade, arrayDao, searchDao);
     }
-    
+
+    @Override
     public boolean openFiles(Set<CaArrayFile> designFiles) throws PlatformFileReadException {
         if (designFiles == null || designFiles.size() != 1
                 || designFiles.iterator().next().getFileType() != FileType.GENEPIX_GAL) {
             return false;
         }
-        
+
         this.designFile = designFiles.iterator().next();
-        this.fileOnDisk = getFileManager().openFile(designFile);
+        this.fileOnDisk = getDataStorageFacade().openFile(this.designFile.getDataHandle(), false);
         try {
-            Injector injector = Guice.createInjector(new DelimitedFilesModule());
-            DelimitedFileReaderFactory readerFactory = injector.getInstance(DelimitedFileReaderFactory.class);
+            final Injector injector = Guice.createInjector(new DelimitedFilesModule());
+            final DelimitedFileReaderFactory readerFactory = injector.getInstance(DelimitedFileReaderFactory.class);
             this.reader = readerFactory.createTabDelimitedFileReader(this.fileOnDisk);
             return true;
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new PlatformFileReadException(this.fileOnDisk, "Could not open reader for file "
-                    + designFile.getName(), e);
+                    + this.designFile.getName(), e);
         }
     }
-    
+
+    @Override
     public void closeFiles() {
-        reader.close();
-        getFileManager().closeFile(this.designFile);
+        this.reader.close();
+        getDataStorageFacade().releaseFile(this.designFile.getDataHandle(), false);
         this.reader = null;
         this.fileOnDisk = null;
         this.designFile = null;
@@ -186,38 +186,40 @@ final class GalDesignHandler extends AbstractDesignFileHandler {
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean parsesData() {
         return true;
     }
-    
+
     /**
      * {@inheritDoc}
      */
+    @Override
     public void createDesignDetails(ArrayDesign arrayDesign) throws PlatformFileReadException {
-        ArrayDesignDetails details = new ArrayDesignDetails();
+        final ArrayDesignDetails details = new ArrayDesignDetails();
         arrayDesign.setDesignDetails(details);
-        
+
         try {
-            ProbeGroup group = new ProbeGroup(details);
+            final ProbeGroup group = new ProbeGroup(details);
             details.getProbeGroups().add(group);
             loadHeaderInformation();
             positionAtDataRecords();
-            while (reader.hasNextLine()) {
-                addToDetails(details, group, reader.nextLine());
+            while (this.reader.hasNextLine()) {
+                addToDetails(details, group, this.reader.nextLine());
             }
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new PlatformFileReadException(this.fileOnDisk, "Couldn't read file", e);
         }
-        
+
         getArrayDao().save(arrayDesign);
         getArrayDao().save(arrayDesign.getDesignDetails());
         getSessionTransactionManager().flushSession();
     }
 
     private void loadHeaderInformation() throws IOException {
-        reader.reset();
+        this.reader.reset();
         while (this.reader.hasNextLine()) {
-            List<String> values = reader.nextLine();
+            final List<String> values = this.reader.nextLine();
             if (isDataHeaderLine(values)) {
                 loadHeaderToPositionMap(values);
                 break;
@@ -228,7 +230,7 @@ final class GalDesignHandler extends AbstractDesignFileHandler {
     }
 
     private void setBlockColumnsAndRows() throws IOException {
-        if (!blockInfos.isEmpty()) {
+        if (!this.blockInfos.isEmpty()) {
             setBlockInfoFromHeaderData();
         } else {
             setBlockInfoFromDataRows();
@@ -238,17 +240,17 @@ final class GalDesignHandler extends AbstractDesignFileHandler {
     private void setBlockInfoFromDataRows() throws IOException {
         positionAtDataRecords();
         short blockCount = 0;
-        while (reader.hasNextLine()) {
-            short blockNumber = getBlockNumber(reader.nextLine());
+        while (this.reader.hasNextLine()) {
+            final short blockNumber = getBlockNumber(this.reader.nextLine());
             if (blockNumber > blockCount) {
                 blockCount = blockNumber;
             }
         }
         for (short i = 1; i <= blockCount; i++) {
-            BlockInfo blockInfo = new BlockInfo(i, 0, 0);
+            final BlockInfo blockInfo = new BlockInfo(i, 0, 0);
             blockInfo.setBlockColumn(i);
             blockInfo.setBlockRow((short) 1);
-            numberToBlockMap.put(i, blockInfo);
+            this.numberToBlockMap.put(i, blockInfo);
         }
     }
 
@@ -256,7 +258,7 @@ final class GalDesignHandler extends AbstractDesignFileHandler {
         short blockRow = 0;
         short blockColumn = 0;
         double currentYOrigin = -1;
-        for (BlockInfo blockInfo : blockInfos) {
+        for (final BlockInfo blockInfo : this.blockInfos) {
             if (blockInfo.getYOrigin() > currentYOrigin) {
                 blockColumn = 0;
                 currentYOrigin = blockInfo.getYOrigin();
@@ -275,9 +277,9 @@ final class GalDesignHandler extends AbstractDesignFileHandler {
     }
 
     private void handleHeaderRecord(String record) {
-        String[] parts = record.split("=");
-        String name = parts[0].trim();
-        String value = parts[1].trim();
+        final String[] parts = record.split("=");
+        final String name = parts[0].trim();
+        final String value = parts[1].trim();
         if (isBlockInformationHeading(name)) {
             handleBlockInformation(name, value);
         }
@@ -298,53 +300,54 @@ final class GalDesignHandler extends AbstractDesignFileHandler {
     }
 
     private void addToDetails(ArrayDesignDetails details, ProbeGroup group, List<String> values) {
-        Feature feature = new Feature(details);
+        final Feature feature = new Feature(details);
         feature.setBlockColumn(getBlockColumn(values));
         feature.setBlockRow(getBlockRow(values));
         feature.setColumn(getColumn(values));
         feature.setRow(getRow(values));
         details.getFeatures().add(feature);
-        PhysicalProbe probe = new PhysicalProbe(details, group);
+        final PhysicalProbe probe = new PhysicalProbe(details, group);
         probe.setName(getId(values));
         probe.getFeatures().add(feature);
         details.getProbes().add(probe);
     }
 
     private String getId(List<String> values) {
-        return values.get(headerToPositionMap.get(ID_HEADER));
+        return values.get(this.headerToPositionMap.get(ID_HEADER));
     }
 
     private short getBlockColumn(List<String> values) {
-        short blockNumber = getBlockNumber(values);
-        return numberToBlockMap.get(blockNumber).getBlockColumn();
+        final short blockNumber = getBlockNumber(values);
+        return this.numberToBlockMap.get(blockNumber).getBlockColumn();
     }
 
     private short getBlockRow(List<String> values) {
-        short blockNumber = getBlockNumber(values);
-        return numberToBlockMap.get(blockNumber).getBlockRow();
+        final short blockNumber = getBlockNumber(values);
+        return this.numberToBlockMap.get(blockNumber).getBlockRow();
     }
 
     private short getBlockNumber(List<String> values) {
-        return Short.parseShort(values.get(headerToPositionMap.get(BLOCK_HEADER)));
+        return Short.parseShort(values.get(this.headerToPositionMap.get(BLOCK_HEADER)));
     }
 
     private short getColumn(List<String> values) {
-        return Short.parseShort(values.get(headerToPositionMap.get(COLUMN_HEADER)));
+        return Short.parseShort(values.get(this.headerToPositionMap.get(COLUMN_HEADER)));
     }
 
     private short getRow(List<String> values) {
-        return Short.parseShort(values.get(headerToPositionMap.get(ROW_HEADER)));
+        return Short.parseShort(values.get(this.headerToPositionMap.get(ROW_HEADER)));
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public void load(ArrayDesign arrayDesign) {
         arrayDesign.setName(FilenameUtils.getBaseName(this.designFile.getName()));
         arrayDesign.setLsidForEntity(LSID_AUTHORITY + ":" + LSID_NAMESPACE + ":" + arrayDesign.getName());
         try {
             arrayDesign.setNumberOfFeatures(getNumberOfFeatures());
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new IllegalStateException("Couldn't read file", e);
         }
     }
@@ -352,19 +355,19 @@ final class GalDesignHandler extends AbstractDesignFileHandler {
     private int getNumberOfFeatures() throws IOException {
         positionAtDataRecords();
         int numberOfFeatures = 0;
-        while (reader.hasNextLine()) {
-            reader.nextLine();
+        while (this.reader.hasNextLine()) {
+            this.reader.nextLine();
             numberOfFeatures++;
         }
         return numberOfFeatures;
     }
 
     private void positionAtDataRecords() throws IOException {
-        reader.reset();
+        this.reader.reset();
         boolean isDataHeaderLine = false;
         List<String> values = null;
-        while (reader.hasNextLine() && !isDataHeaderLine) {
-            values = reader.nextLine();
+        while (this.reader.hasNextLine() && !isDataHeaderLine) {
+            values = this.reader.nextLine();
             isDataHeaderLine = isDataHeaderLine(values);
         }
         if (!isDataHeaderLine) {
@@ -374,7 +377,7 @@ final class GalDesignHandler extends AbstractDesignFileHandler {
 
     private void loadHeaderToPositionMap(List<String> values) {
         for (int position = 0; position < values.size(); position++) {
-            headerToPositionMap.put(values.get(position), position);
+            this.headerToPositionMap.put(values.get(position), position);
         }
     }
 
@@ -385,9 +388,10 @@ final class GalDesignHandler extends AbstractDesignFileHandler {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void validate(ValidationResult result) {
-        FileValidationResult fileResult = result.getOrCreateFileValidationResult(fileOnDisk);
-        designFile.setValidationResult(fileResult);
+        final FileValidationResult fileResult = result.getOrCreateFileValidationResult(this.designFile.getName());
+        this.designFile.setValidationResult(fileResult);
 
         try {
             validateFormat(fileResult);
@@ -397,8 +401,8 @@ final class GalDesignHandler extends AbstractDesignFileHandler {
             if (result.isValid()) {
                 validateData(fileResult);
             }
-        } catch (IOException e) {
-            result.addMessage(this.fileOnDisk, Type.ERROR, "Could not read file: " + e);
+        } catch (final IOException e) {
+            result.addMessage(this.designFile.getName(), Type.ERROR, "Could not read file: " + e);
         }
     }
 
@@ -407,24 +411,24 @@ final class GalDesignHandler extends AbstractDesignFileHandler {
     }
 
     private void validateDataRows(FileValidationResult result) throws IOException {
-        reader.reset();
+        this.reader.reset();
         int numberOfDataColumns = 0;
-        while (reader.hasNextLine()) {
-            List<String> values = reader.nextLine();
+        while (this.reader.hasNextLine()) {
+            final List<String> values = this.reader.nextLine();
             if (isDataHeaderLine(values)) {
                 numberOfDataColumns = values.size();
                 loadHeaderToPositionMap(values);
                 break;
             }
         }
-        while (reader.hasNextLine()) {
-            List<String> values = reader.nextLine();
+        while (this.reader.hasNextLine()) {
+            final List<String> values = this.reader.nextLine();
             if (values.size() != numberOfDataColumns) {
-                ValidationMessage message = result.addMessage(Type.ERROR, "Line "
-                        + reader.getCurrentLineNumber() + " has an incorrect number of columns");
-                message.setLine(reader.getCurrentLineNumber());
+                final ValidationMessage message = result.addMessage(Type.ERROR,
+                        "Line " + this.reader.getCurrentLineNumber() + " has an incorrect number of columns");
+                message.setLine(this.reader.getCurrentLineNumber());
             } else {
-                validateDataValues(values, result, reader.getCurrentLineNumber());
+                validateDataValues(values, result, this.reader.getCurrentLineNumber());
             }
         }
     }
@@ -441,10 +445,10 @@ final class GalDesignHandler extends AbstractDesignFileHandler {
     }
 
     private void validateShortField(List<String> values, String header, FileValidationResult result, int line) {
-        int column = headerToPositionMap.get(header);
+        final int column = this.headerToPositionMap.get(header);
         if (!Utils.isShort(values.get(column))) {
-            ValidationMessage message =
-                result.addMessage(Type.ERROR, "Illegal (non-numeric) value for field " + header + " on line " + line);
+            final ValidationMessage message = result.addMessage(Type.ERROR, "Illegal (non-numeric) value for field "
+                    + header + " on line " + line);
             message.setLine(line);
             message.setColumn(column);
         }
@@ -459,19 +463,19 @@ final class GalDesignHandler extends AbstractDesignFileHandler {
     }
 
     private void validateId(List<String> values, FileValidationResult result, int line) {
-        int column = headerToPositionMap.get(ID_HEADER);
+        final int column = this.headerToPositionMap.get(ID_HEADER);
         if (StringUtils.isBlank(values.get(column))) {
-            ValidationMessage message =
-                result.addMessage(Type.ERROR, "Missing value for ID field on line " + line);
+            final ValidationMessage message = result.addMessage(Type.ERROR, "Missing value for ID field on line "
+                    + line);
             message.setLine(line);
             message.setColumn(column);
         }
     }
 
     private void validateFileHasRowHeader(FileValidationResult result) throws IOException {
-        reader.reset();
-        while (reader.hasNextLine()) {
-            if (isDataHeaderLine(reader.nextLine())) {
+        this.reader.reset();
+        while (this.reader.hasNextLine()) {
+            if (isDataHeaderLine(this.reader.nextLine())) {
                 return;
             }
         }
@@ -479,13 +483,13 @@ final class GalDesignHandler extends AbstractDesignFileHandler {
     }
 
     private void validateFileNotEmpty(FileValidationResult result) {
-        if (!reader.hasNextLine()) {
+        if (!this.reader.hasNextLine()) {
             result.addMessage(Type.ERROR, "The GAL file is empty");
         }
     }
 
     private void validateHeader(FileValidationResult result) throws IOException {
-        reader.reset();
+        this.reader.reset();
         validateFormatHeader(result);
         if (result.isValid()) {
             validateFileHasRowHeader(result);
@@ -499,17 +503,17 @@ final class GalDesignHandler extends AbstractDesignFileHandler {
     }
 
     private void validateFormatHeader(FileValidationResult result) throws IOException {
-        reader.reset();
-        List<String> values = reader.nextLine();
+        this.reader.reset();
+        List<String> values = this.reader.nextLine();
         if (values.size() < 2 || !"ATF".equals(values.get(0))) {
             result.addMessage(Type.ERROR, "The GAL file doesn't begin with the required header (ATF\t1.0).");
             return;
         }
-        if (!reader.hasNextLine()) {
+        if (!this.reader.hasNextLine()) {
             result.addMessage(Type.ERROR, "The file is only one line long.");
             return;
         }
-        values = reader.nextLine();
+        values = this.reader.nextLine();
         if (values.size() < 2) {
             result.addMessage(Type.ERROR, "The second line of the GAL file must contain two numeric fields.");
             return;
@@ -517,40 +521,40 @@ final class GalDesignHandler extends AbstractDesignFileHandler {
     }
 
     private void validateHeaderFields(FileValidationResult result) throws IOException {
-        reader.reset();
-        reader.nextLine();
-        reader.nextLine();
-        while (reader.hasNextLine()) {
-            List<String> values = reader.nextLine();
+        this.reader.reset();
+        this.reader.nextLine();
+        this.reader.nextLine();
+        while (this.reader.hasNextLine()) {
+            final List<String> values = this.reader.nextLine();
             if (isDataHeaderLine(values)) {
                 return;
             }
             if (!values.get(0).contains("=")) {
-                ValidationMessage message =
-                    result.addMessage(Type.ERROR, "Illegal header line; headers must be of the format <name>=<value>");
-                message.setLine(reader.getCurrentLineNumber());
+                final ValidationMessage message = result.addMessage(Type.ERROR,
+                        "Illegal header line; headers must be of the format <name>=<value>");
+                message.setLine(this.reader.getCurrentLineNumber());
             }
         }
     }
 
     private void validateBlockInformation(FileValidationResult result) throws IOException {
-        reader.reset();
-        while (reader.hasNextLine()) {
-            List<String> values = reader.nextLine();
+        this.reader.reset();
+        while (this.reader.hasNextLine()) {
+            final List<String> values = this.reader.nextLine();
             if (isDataHeaderLine(values)) {
                 return;
             }
-            String name = values.get(0).split("=")[0];
+            final String name = values.get(0).split("=")[0];
             if (!values.isEmpty() && isBlockInformationHeading(name)) {
-                validateBlockInformation(values.get(0), reader.getCurrentLineNumber(), result);
+                validateBlockInformation(values.get(0), this.reader.getCurrentLineNumber(), result);
             }
         }
     }
 
     private void validateBlockInformation(String headerField, int line, FileValidationResult result) {
-        String[] parts = headerField.split("=");
-        String name = parts[0];
-        String information = parts[1];
+        final String[] parts = headerField.split("=");
+        final String name = parts[0];
+        final String information = parts[1];
         if (!Utils.isShort(name.substring(BLOCK_INDICATOR.length()))) {
             result.addMessage(Type.ERROR, "Illegal block header name: " + name);
             return;
@@ -603,24 +607,24 @@ final class GalDesignHandler extends AbstractDesignFileHandler {
         }
 
         private short getBlockColumn() {
-            return blockColumn;
+            return this.blockColumn;
         }
 
         private short getBlockNumber() {
-            return blockNumber;
+            return this.blockNumber;
         }
 
         private short getBlockRow() {
-            return blockRow;
+            return this.blockRow;
         }
 
         @SuppressWarnings("unused")
         private double getXOrigin() {
-            return xOrigin;
+            return this.xOrigin;
         }
 
         private double getYOrigin() {
-            return yOrigin;
+            return this.yOrigin;
         }
 
         private void setBlockColumn(short blockColumn) {

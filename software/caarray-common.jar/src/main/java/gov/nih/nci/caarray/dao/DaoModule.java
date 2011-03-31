@@ -79,7 +79,8 @@
  * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */package gov.nih.nci.caarray.dao;
+ */
+package gov.nih.nci.caarray.dao;
 
 import gov.nih.nci.caarray.domain.project.DefaultJobMessageSenderImpl;
 import gov.nih.nci.caarray.domain.project.JobMessageSender;
@@ -110,5 +111,6 @@ public class DaoModule extends AbstractModule {
         bind(VocabularyDao.class).to(VocabularyDaoImpl.class);
         bind(JobMessageSender.class).to(DefaultJobMessageSenderImpl.class);
         bind(JobQueueDao.class).to(JobQueueDaoImpl.class);
+        bind(MultipartBlobDao.class).to(MultipartBlobDaoImpl.class);
     }
 }

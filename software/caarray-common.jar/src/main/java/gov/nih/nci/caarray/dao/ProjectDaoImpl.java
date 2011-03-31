@@ -102,8 +102,8 @@ import gov.nih.nci.caarray.domain.search.SearchCategory;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
-import gov.nih.nci.caarray.util.UnfilteredCallback;
 import gov.nih.nci.caarray.util.CaArrayUsernameHolder;
+import gov.nih.nci.caarray.util.UnfilteredCallback;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionElement;
 import gov.nih.nci.security.authorization.domainobjects.User;
 
@@ -226,8 +226,7 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
     }
 
     @SuppressWarnings({"PMD.ExcessiveMethodLength", "PMD.NPathComplexity" })
-    private Query getProjectsForUserQuery(boolean count,
-            PageSortParams<Project> pageSortParams) {
+    private Query getProjectsForUserQuery(boolean count, PageSortParams<Project> pageSortParams) {
         User user  = CaArrayUsernameHolder.getCsmUser();
         @SuppressWarnings("deprecation")
         SortCriterion<Project> sortCrit = pageSortParams != null ? pageSortParams.getSortCriterion() : null;

@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.platforms.datamatrix;
 
 import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.dao.SearchDao;
+import gov.nih.nci.caarray.dataStorage.DataStorageFacade;
 import gov.nih.nci.caarray.domain.LSID;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.data.AbstractDataColumn;
@@ -96,7 +97,6 @@ import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.platforms.DefaultValueParser;
 import gov.nih.nci.caarray.platforms.DesignElementBuilder;
-import gov.nih.nci.caarray.platforms.FileManager;
 import gov.nih.nci.caarray.platforms.ProbeNamesValidator;
 import gov.nih.nci.caarray.platforms.ValueParser;
 import gov.nih.nci.caarray.platforms.spi.AbstractDataFileHandler;
@@ -120,12 +120,13 @@ import com.google.inject.Inject;
 
 /**
  * Handles reading of data matrix copy number data.
+ * 
  * @author dharley
- *
+ * 
  */
 @SuppressWarnings({ "PMD.CyclomaticComplexity" })
 final class DataMatrixCopyNumberHandler extends AbstractDataFileHandler {
-    
+
     private static final String HYBRIDIZATION_REF = "Hybridization REF";
     private static final String REPORTER_REF = "Reporter REF";
     private static final String CHROMOSOME = "Chromosome";
@@ -137,7 +138,7 @@ final class DataMatrixCopyNumberHandler extends AbstractDataFileHandler {
     private static final int POSITION_DATA_COLUMN_ARRAY_POSITION = 1;
     private static final int LOG2RATIO_DATA_COLUMN_ARRAY_POSITION = 2;
     private static final int BATCH_SIZE = 1000;
-    
+
     private int reporterRefColumnIndex = UNINITIALIZED_INDEX;
     private int chromosomeColumnIndex = UNINITIALIZED_INDEX;
     private int positionColumnIndex = UNINITIALIZED_INDEX;
@@ -152,8 +153,8 @@ final class DataMatrixCopyNumberHandler extends AbstractDataFileHandler {
     private final SearchDao searchDao;
 
     @Inject
-    protected DataMatrixCopyNumberHandler(FileManager fileManager, ArrayDao arrayDao, SearchDao searchDao) {
-        super(fileManager);
+    protected DataMatrixCopyNumberHandler(DataStorageFacade dataStorageFacade, ArrayDao arrayDao, SearchDao searchDao) {
+        super(dataStorageFacade);
         this.arrayDao = arrayDao;
         this.searchDao = searchDao;
     }
@@ -169,6 +170,7 @@ final class DataMatrixCopyNumberHandler extends AbstractDataFileHandler {
     /**
      * {@inheritDoc}
      */
+    @Override
     public ArrayDataTypeDescriptor getArrayDataTypeDescriptor() {
         return DataMatrixCopyNumberDataTypes.MAGE_TAB_DATA_MATRIX_COPY_NUMBER;
     }
@@ -176,6 +178,7 @@ final class DataMatrixCopyNumberHandler extends AbstractDataFileHandler {
     /**
      * {@inheritDoc}
      */
+    @Override
     public QuantitationTypeDescriptor[] getQuantitationTypeDescriptors() {
         return DataMatrixCopyNumberQuantitationTypes.values();
     }
@@ -183,23 +186,24 @@ final class DataMatrixCopyNumberHandler extends AbstractDataFileHandler {
     /**
      * {@inheritDoc}
      */
+    @Override
     public List<LSID> getReferencedArrayDesignCandidateIds() throws PlatformFileReadException {
         return new ArrayList<LSID>();
     }
-    
+
     private DelimitedFileReader getDelimitedFileReader() throws IOException {
         return new DelimitedFileReaderFactoryImpl().createTabDelimitedFileReader(getFile());
     }
-    
+
     private void initialize() throws PlatformFileReadException {
-        if (!hasBeenInitialized) {
+        if (!this.hasBeenInitialized) {
             DelimitedFileReader delimitedFileReader = null;
             try {
                 delimitedFileReader = getDelimitedFileReader();
                 readHybridizationRefNamesAndColumnIndexes(delimitedFileReader);
                 readDataColumnMappings(delimitedFileReader);
-                hasBeenInitialized = true;
-            } catch (IOException e) {
+                this.hasBeenInitialized = true;
+            } catch (final IOException e) {
                 throw new PlatformFileReadException(getFile(), "Cannot initialize: " + e.getMessage(), e);
             } finally {
                 if (null != delimitedFileReader) {
@@ -210,11 +214,11 @@ final class DataMatrixCopyNumberHandler extends AbstractDataFileHandler {
     }
 
     private void unInitializeAndClose(DelimitedFileReader delimitedFileReader) {
-        hasBeenInitialized = false;
-        hybridizations = null;
-        hybridizationNamesToColumnIndexesMapping = null;
-        hybridizationColumnIndexesBasedOnLog2RatioColumnPosition = null;
-        headersOfColumnsToBeIgnored = null;
+        this.hasBeenInitialized = false;
+        this.hybridizations = null;
+        this.hybridizationNamesToColumnIndexesMapping = null;
+        this.hybridizationColumnIndexesBasedOnLog2RatioColumnPosition = null;
+        this.headersOfColumnsToBeIgnored = null;
         if (null != delimitedFileReader) {
             delimitedFileReader.close();
         }
@@ -233,6 +237,7 @@ final class DataMatrixCopyNumberHandler extends AbstractDataFileHandler {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void loadData(DataSet dataSet, List<QuantitationType> types, ArrayDesign design)
             throws PlatformFileReadException {
         DelimitedFileReader delimitedFileReader = null;
@@ -240,52 +245,52 @@ final class DataMatrixCopyNumberHandler extends AbstractDataFileHandler {
             initialize();
             delimitedFileReader = getDelimitedFileReader();
             countProbes(delimitedFileReader, design);
-            dataSet.prepareColumns(types, numberOfProbes);
+            dataSet.prepareColumns(types, this.numberOfProbes);
             if (dataSet.getDesignElementList() == null) {
                 loadDesignElementList(dataSet, delimitedFileReader, design);
             }
-            Set<QuantitationType> typeSet = new HashSet<QuantitationType>();
+            final Set<QuantitationType> typeSet = new HashSet<QuantitationType>();
             typeSet.addAll(types);
             positionReaderAtStartOfData(delimitedFileReader);
             int rowIndex = 0;
             while (delimitedFileReader.hasNextLine()) {
-                List<String> values = delimitedFileReader.nextLine();
-                for (int i = 0; i < hybridizations.length; i++) {
-                    String hybridization = hybridizations[i];
-                    HybridizationData hybridizationData = dataSet.getHybridizationDataList().get(i);
-                    AbstractDataColumn[] orderedColumns = getOrderedColumns(hybridizationData);
-                    valueParser.setValue(orderedColumns[CHROMOSOME_DATA_COLUMN_ARRAY_POSITION], rowIndex,
-                            values.get(chromosomeColumnIndex));
-                    valueParser.setValue(orderedColumns[POSITION_DATA_COLUMN_ARRAY_POSITION], rowIndex,
-                            values.get(positionColumnIndex));
-                    valueParser.setValue(orderedColumns[LOG2RATIO_DATA_COLUMN_ARRAY_POSITION], rowIndex,
-                            values.get(hybridizationNamesToColumnIndexesMapping.get(hybridization).intValue()));
+                final List<String> values = delimitedFileReader.nextLine();
+                for (int i = 0; i < this.hybridizations.length; i++) {
+                    final String hybridization = this.hybridizations[i];
+                    final HybridizationData hybridizationData = dataSet.getHybridizationDataList().get(i);
+                    final AbstractDataColumn[] orderedColumns = getOrderedColumns(hybridizationData);
+                    this.valueParser.setValue(orderedColumns[CHROMOSOME_DATA_COLUMN_ARRAY_POSITION], rowIndex,
+                            values.get(this.chromosomeColumnIndex));
+                    this.valueParser.setValue(orderedColumns[POSITION_DATA_COLUMN_ARRAY_POSITION], rowIndex,
+                            values.get(this.positionColumnIndex));
+                    this.valueParser.setValue(orderedColumns[LOG2RATIO_DATA_COLUMN_ARRAY_POSITION], rowIndex,
+                            values.get(this.hybridizationNamesToColumnIndexesMapping.get(hybridization).intValue()));
                 }
                 rowIndex++;
             }
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new PlatformFileReadException(getFile(), "", e);
         } finally {
             unInitializeAndClose(delimitedFileReader);
         }
     }
-    
+
     private AbstractDataColumn[] getOrderedColumns(HybridizationData hybridizationData) {
         boolean chromosomeWasFound = false;
         boolean positionWasFound = false;
         boolean log2RatioWasFound = false;
-        AbstractDataColumn[] orderedColumns = new AbstractDataColumn[DATA_COLUMN_ORDERED_ARRAY_SIZE];
-        for (AbstractDataColumn column : hybridizationData.getColumns()) {
-            if (column.getQuantitationType().getName().equalsIgnoreCase(
-                    DataMatrixCopyNumberQuantitationTypes.CHROMOSOME.getName())) {
+        final AbstractDataColumn[] orderedColumns = new AbstractDataColumn[DATA_COLUMN_ORDERED_ARRAY_SIZE];
+        for (final AbstractDataColumn column : hybridizationData.getColumns()) {
+            if (column.getQuantitationType().getName()
+                    .equalsIgnoreCase(DataMatrixCopyNumberQuantitationTypes.CHROMOSOME.getName())) {
                 orderedColumns[CHROMOSOME_DATA_COLUMN_ARRAY_POSITION] = column;
                 chromosomeWasFound = true;
-            } else if (column.getQuantitationType().getName().equalsIgnoreCase(
-                    DataMatrixCopyNumberQuantitationTypes.POSITION.getName())) {
+            } else if (column.getQuantitationType().getName()
+                    .equalsIgnoreCase(DataMatrixCopyNumberQuantitationTypes.POSITION.getName())) {
                 orderedColumns[POSITION_DATA_COLUMN_ARRAY_POSITION] = column;
                 positionWasFound = true;
-            } else if (column.getQuantitationType().getName().equalsIgnoreCase(
-                    DataMatrixCopyNumberQuantitationTypes.LOG_2_RATIO.getName())) {
+            } else if (column.getQuantitationType().getName()
+                    .equalsIgnoreCase(DataMatrixCopyNumberQuantitationTypes.LOG_2_RATIO.getName())) {
                 orderedColumns[LOG2RATIO_DATA_COLUMN_ARRAY_POSITION] = column;
                 log2RatioWasFound = true;
             }
@@ -301,21 +306,20 @@ final class DataMatrixCopyNumberHandler extends AbstractDataFileHandler {
         DesignElementBuilder builder = new DesignElementBuilder(dataSet, design, arrayDao, searchDao);        
         positionReaderAtStartOfData(delimitedFileReader);
         while (delimitedFileReader.hasNextLine()) {
-            List<String> values = delimitedFileReader.nextLine();
-            String probeName = values.get(reporterRefColumnIndex);
+            final List<String> values = delimitedFileReader.nextLine();
+            final String probeName = values.get(this.reporterRefColumnIndex);
             builder.addProbe(probeName);
         }
         builder.finish();
     }
-    
-    private void readHybridizationRefNamesAndColumnIndexes(DelimitedFileReader reader)
-            throws PlatformFileReadException {
-        hybridizationNamesToColumnIndexesMapping = new HashMap<String, Integer>();
+
+    private void readHybridizationRefNamesAndColumnIndexes(DelimitedFileReader reader) throws PlatformFileReadException {
+        this.hybridizationNamesToColumnIndexesMapping = new HashMap<String, Integer>();
         while (reader.hasNextLine()) {
             List<String> nextLineValues;
             try {
                 nextLineValues = reader.nextLine();
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 throw new PlatformFileReadException(getFile(), e.getMessage(), e);
             }
             if (!nextLineValues.isEmpty() && !StringUtils.isEmpty(nextLineValues.get(0))) {
@@ -325,20 +329,20 @@ final class DataMatrixCopyNumberHandler extends AbstractDataFileHandler {
                 }
                 for (int i = 1; i < nextLineValues.size(); i++) {
                     if (!StringUtils.isEmpty(nextLineValues.get(i))) {
-                        hybridizationNamesToColumnIndexesMapping.put(nextLineValues.get(i), Integer.valueOf(i));
+                        this.hybridizationNamesToColumnIndexesMapping.put(nextLineValues.get(i), Integer.valueOf(i));
                     }
                 }
             }
             break;
         }
-        hybridizations = new String[hybridizationNamesToColumnIndexesMapping.size()];
+        this.hybridizations = new String[this.hybridizationNamesToColumnIndexesMapping.size()];
         int index = 0;
-        for (String hybridizationName : hybridizationNamesToColumnIndexesMapping.keySet()) {
-            hybridizations[index] = hybridizationName;
+        for (final String hybridizationName : this.hybridizationNamesToColumnIndexesMapping.keySet()) {
+            this.hybridizations[index] = hybridizationName;
             index++;
         }
     }
-    
+
     private boolean listContainsString(String targetString, List<String> listToSearchThrough) {
         for (String string : listToSearchThrough) {
             if (targetString.equalsIgnoreCase(string)) {
@@ -347,21 +351,21 @@ final class DataMatrixCopyNumberHandler extends AbstractDataFileHandler {
         }
         return false;
     }
-    
+
     private void positionReaderAtStartOfData(DelimitedFileReader delimitedFileReader) throws IOException {
         delimitedFileReader.reset();
         while (delimitedFileReader.hasNextLine()) {
-            List<String> peekLineValues = delimitedFileReader.peek();
+            final List<String> peekLineValues = delimitedFileReader.peek();
             if ((!peekLineValues.isEmpty() && !StringUtils.isEmpty(peekLineValues.get(0)))
-                    && (!HYBRIDIZATION_REF.equalsIgnoreCase(peekLineValues.get(0))
-                            && !listContainsString(REPORTER_REF, peekLineValues))) {
+                    && (!HYBRIDIZATION_REF.equalsIgnoreCase(peekLineValues.get(0)) && !listContainsString(REPORTER_REF,
+                            peekLineValues))) {
                 break;
             } else {
                 delimitedFileReader.nextLine();
             }
         }
     }
-    
+
     private void countProbesAndOptionallyValidateProbeNames(final boolean shouldDoValidation,
             final DelimitedFileReader delimitedFileReader, final ArrayDesign arrayDesign,
             final FileValidationResult fileValidationResult) throws IOException {
@@ -385,23 +389,23 @@ final class DataMatrixCopyNumberHandler extends AbstractDataFileHandler {
             probeNamesValidator.validateProbeNames(fileValidationResult, probeNamesBatch);
         }
     }
-    
+
     private void readDataColumnMappings(DelimitedFileReader reader) throws IOException, PlatformFileReadException {
-        headersOfColumnsToBeIgnored = new ArrayList<String>();
-        hybridizationColumnIndexesBasedOnLog2RatioColumnPosition = new HashSet<Integer>();
-        List<String> columnHeaderStrings = reader.nextLine();
+        this.headersOfColumnsToBeIgnored = new ArrayList<String>();
+        this.hybridizationColumnIndexesBasedOnLog2RatioColumnPosition = new HashSet<Integer>();
+        final List<String> columnHeaderStrings = reader.nextLine();
         for (int i = 0; i < columnHeaderStrings.size(); i++) {
-            String columnHeader = columnHeaderStrings.get(i);
+            final String columnHeader = columnHeaderStrings.get(i);
             if (REPORTER_REF.equalsIgnoreCase(columnHeader)) {
-                reporterRefColumnIndex = i;
+                this.reporterRefColumnIndex = i;
             } else if (CHROMOSOME.equalsIgnoreCase(columnHeader)) {
-                chromosomeColumnIndex = i;
+                this.chromosomeColumnIndex = i;
             } else if (POSITION.equalsIgnoreCase(columnHeader)) {
-                positionColumnIndex = i;
+                this.positionColumnIndex = i;
             } else if (LOG_2_RATIO.equalsIgnoreCase(columnHeader)) {
-                hybridizationColumnIndexesBasedOnLog2RatioColumnPosition.add(Integer.valueOf(i));
+                this.hybridizationColumnIndexesBasedOnLog2RatioColumnPosition.add(Integer.valueOf(i));
             } else {
-                headersOfColumnsToBeIgnored.add(columnHeader);
+                this.headersOfColumnsToBeIgnored.add(columnHeader);
             }
         }
     }
@@ -409,6 +413,7 @@ final class DataMatrixCopyNumberHandler extends AbstractDataFileHandler {
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean parsesData() {
         return true;
     }
@@ -416,33 +421,34 @@ final class DataMatrixCopyNumberHandler extends AbstractDataFileHandler {
     /**
      * {@inheritDoc}
      */
+    @Override
     @SuppressWarnings({ "PMD.NPathComplexity" })
     public void validate(MageTabDocumentSet mTabSet, FileValidationResult result, ArrayDesign design)
             throws PlatformFileReadException {
         initialize();
-        if (hybridizationNamesToColumnIndexesMapping.size()
-                != hybridizationColumnIndexesBasedOnLog2RatioColumnPosition.size()) {
+        if (this.hybridizationNamesToColumnIndexesMapping.size() != this.hybridizationColumnIndexesBasedOnLog2RatioColumnPosition
+                .size()) {
             result.addMessage(Type.ERROR, "There must be a one-to-one correspondence between hybridizations and "
-                + LOG_2_RATIO + " columns.");
+                    + LOG_2_RATIO + " columns.");
         } else {
-            for (String hybridizationName : hybridizationNamesToColumnIndexesMapping.keySet()) {
-                if (!hybridizationColumnIndexesBasedOnLog2RatioColumnPosition.contains(
-                        hybridizationNamesToColumnIndexesMapping.get(hybridizationName))) {
-                    result.addMessage(Type.ERROR, "Detected a hybridization name to "
-                        + LOG_2_RATIO + " column misalignment for the hybridization '" + hybridizationName + "'.");
+            for (final String hybridizationName : this.hybridizationNamesToColumnIndexesMapping.keySet()) {
+                if (!this.hybridizationColumnIndexesBasedOnLog2RatioColumnPosition
+                        .contains(this.hybridizationNamesToColumnIndexesMapping.get(hybridizationName))) {
+                    result.addMessage(Type.ERROR, "Detected a hybridization name to " + LOG_2_RATIO
+                            + " column misalignment for the hybridization '" + hybridizationName + "'.");
                 }
             }
         }
-        if (UNINITIALIZED_INDEX == reporterRefColumnIndex) {
+        if (UNINITIALIZED_INDEX == this.reporterRefColumnIndex) {
             result.addMessage(Type.ERROR, "No '" + REPORTER_REF + "' column found.");
         }
-        if (UNINITIALIZED_INDEX == chromosomeColumnIndex) {
+        if (UNINITIALIZED_INDEX == this.chromosomeColumnIndex) {
             result.addMessage(Type.ERROR, "No '" + CHROMOSOME + "' column found.");
         }
-        if (UNINITIALIZED_INDEX == positionColumnIndex) {
+        if (UNINITIALIZED_INDEX == this.positionColumnIndex) {
             result.addMessage(Type.ERROR, "No '" + POSITION + "' column found.");
         }
-        for (String columnName : headersOfColumnsToBeIgnored) {
+        for (final String columnName : this.headersOfColumnsToBeIgnored) {
             result.addMessage(Type.WARNING, "The column '" + columnName + "' will be ignored during data parsing.");
         }
         try {
@@ -454,7 +460,8 @@ final class DataMatrixCopyNumberHandler extends AbstractDataFileHandler {
 
     /**
      * {@inheritDoc}
-     */        
+     */
+    @Override
     public boolean requiresMageTab() {
         return true;
     }

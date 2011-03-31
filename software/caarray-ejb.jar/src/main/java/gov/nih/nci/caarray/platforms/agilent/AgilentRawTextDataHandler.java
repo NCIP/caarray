@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.platforms.agilent;
 
 import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.dao.SearchDao;
+import gov.nih.nci.caarray.dataStorage.DataStorageFacade;
 import gov.nih.nci.caarray.domain.LSID;
 import gov.nih.nci.caarray.domain.array.AbstractDesignElement;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
@@ -101,7 +102,6 @@ import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.platforms.DesignElementBuilder;
-import gov.nih.nci.caarray.platforms.FileManager;
 import gov.nih.nci.caarray.platforms.ProbeLookup;
 import gov.nih.nci.caarray.platforms.ProbeNamesValidator;
 import gov.nih.nci.caarray.platforms.spi.AbstractDataFileHandler;
@@ -183,8 +183,8 @@ class AgilentRawTextDataHandler extends AbstractDataFileHandler {
     private final SearchDao searchDao;
 
     @Inject
-    AgilentRawTextDataHandler(FileManager fileManager, ArrayDao arrayDao, SearchDao searchDao) {
-        super(fileManager);
+    AgilentRawTextDataHandler(DataStorageFacade dataStorageFacade, ArrayDao arrayDao, SearchDao searchDao) {
+        super(dataStorageFacade);
         this.arrayDao = arrayDao;
         this.searchDao = searchDao;
     }
@@ -196,29 +196,31 @@ class AgilentRawTextDataHandler extends AbstractDataFileHandler {
     protected boolean acceptFileType(FileType type) {
         return type == FileType.AGILENT_RAW_TXT;
     }
-    
+
+    @Override
     public ArrayDataTypeDescriptor getArrayDataTypeDescriptor() {
         return AgilentArrayDataTypes.AGLIENT_RAW_TEXT_ACGH;
     }
 
+    @Override
     @SuppressWarnings("PMD.AvoidThrowingRawExceptionTypes")
     public QuantitationTypeDescriptor[] getQuantitationTypeDescriptors() {
         try {
             readHeader();
-            List<QuantitationTypeDescriptor> tmp = new ArrayList<QuantitationTypeDescriptor>();
-            for (AgilentTextQuantitationType qt : AgilentTextQuantitationType.values()) {
-                if (columnNames.contains(qt.getName().toLowerCase(Locale.ENGLISH))) {
+            final List<QuantitationTypeDescriptor> tmp = new ArrayList<QuantitationTypeDescriptor>();
+            for (final AgilentTextQuantitationType qt : AgilentTextQuantitationType.values()) {
+                if (this.columnNames.contains(qt.getName().toLowerCase(Locale.ENGLISH))) {
                     tmp.add(qt);
                 }
             }
             return tmp.toArray(new QuantitationTypeDescriptor[tmp.size()]);
 
-        } catch (PlatformFileReadException ex) {
+        } catch (final PlatformFileReadException ex) {
             throw new RuntimeException(ex);
         }
     }
-    
-     /**
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -236,11 +238,12 @@ class AgilentRawTextDataHandler extends AbstractDataFileHandler {
     private AgilentTextParser openReader(final File file) throws PlatformFileReadException {
         try {
             return new AgilentTextParser(file);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new PlatformFileReadException(file, "Could not create file reader.", e);
         }
     }
-    
+
+    @Override
     public void loadData(DataSet dataSet, List<QuantitationType> types, ArrayDesign design)
             throws PlatformFileReadException {
                
@@ -258,7 +261,7 @@ class AgilentRawTextDataHandler extends AbstractDataFileHandler {
         
         final Set<QuantitationType> typeSet = new HashSet<QuantitationType>(actualProbeCount);
         typeSet.addAll(types);
-        
+
         final HybridizationData hybridizationData = dataSet.getHybridizationDataList().get(0);
         
         readData(getHybridizationDataHandler(hybridizationData, typeSet));
@@ -285,7 +288,7 @@ class AgilentRawTextDataHandler extends AbstractDataFileHandler {
             }            
         };
     }
-    
+
     private void createDesignElementList(final DataSet dataSet, final int expectedListSize) {
         final DesignElementList probeList = new DesignElementList();
         probeList.setDesignElements(new ArrayList<AbstractDesignElement>(expectedListSize));
@@ -295,7 +298,7 @@ class AgilentRawTextDataHandler extends AbstractDataFileHandler {
 
     private void handleProbe(final ProbeData probe, final int index, final HybridizationData hybridizationData,
             final Set<QuantitationType> typeSet) {
-        
+
         for (final AbstractDataColumn column : hybridizationData.getColumns()) {
             if (typeSet.contains(column.getQuantitationType())) {
                 probe.saveIntoColumn(column, index);
@@ -323,22 +326,22 @@ class AgilentRawTextDataHandler extends AbstractDataFileHandler {
     
     private void doReadHeader(AgilentTextParser parser) throws PlatformFileReadException {
         try {
-            while (parser.hasNext()) {
-                parser.next();
-                 
-                if ("FEPARAMS".equalsIgnoreCase(parser.getSectionName())) {
+            while (this.parser.hasNext()) {
+                this.parser.next();
+
+                if ("FEPARAMS".equalsIgnoreCase(this.parser.getSectionName())) {
                     this.arrayDesignId = new LSID("Agilent.com", "PhysicalArrayDesign",
-                            parser.getStringValue("Grid_Name"));
-                } else if ("STATS".equalsIgnoreCase(parser.getSectionName())) {
+                            this.parser.getStringValue("Grid_Name"));
+                } else if ("STATS".equalsIgnoreCase(this.parser.getSectionName())) {
                     // rough estimate of how many unique probe lines we'll find.
-                    expectedRowCount = parser.getIntValue("TotalNumFeatures") / 2;
-                    expectedRowCount = Math.max(expectedRowCount, MIN_EXPECTED_ROW_COUNT);
-                } else if ("FEATURES".equalsIgnoreCase(parser.getSectionName())) {
-                    this.columnNames = parser.getColumnNames();
+                    this.expectedRowCount = this.parser.getIntValue("TotalNumFeatures") / 2;
+                    this.expectedRowCount = Math.max(this.expectedRowCount, MIN_EXPECTED_ROW_COUNT);
+                } else if ("FEATURES".equalsIgnoreCase(this.parser.getSectionName())) {
+                    this.columnNames = this.parser.getColumnNames();
                     break; // Finished reading the header
                 }
             }
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new PlatformFileReadException(getFile(), "Could not parse file", e);
         }
     }
@@ -360,22 +363,23 @@ class AgilentRawTextDataHandler extends AbstractDataFileHandler {
             parser.close();
         }
     }
-    
+
     @SuppressWarnings("PMD.AvoidThrowingRawExceptionTypes")
     private void handleFeatureLine(AgilentTextParser parser, Set<String> probeNamesSet, ProbeHandler handler) {
-        if ("FEATURES".equalsIgnoreCase(parser.getSectionName())) {
+        if ("FEATURES".equalsIgnoreCase(this.parser.getSectionName())) {
             final String probeName = parser.getStringValue(Columns.PROBE_NAME.getName());
             final String systematicName = parser.getStringValue(Columns.SYSTEMATIC_NAME.getName());
             if (!probeNamesSet.contains(probeName)) {
                 probeNamesSet.add(probeName);
                 handler.handle(probeName, systematicName, parser);
             }
-         }
+        }
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public void validate(MageTabDocumentSet mTabSet, FileValidationResult result, ArrayDesign design)
             throws PlatformFileReadException {
         validateHighLevelDetails(result, design); 
@@ -399,7 +403,7 @@ class AgilentRawTextDataHandler extends AbstractDataFileHandler {
             result.addMessage(Type.ERROR, "Array design " + design.getName() + " was not parsed");
         }
     }
-    
+
     private ProbeHandler getValidationHandler(final FileValidationResult result, final ArrayDesign design,
             final Columns[] mandatoryColumns) {
         return new ProbeHandler() {
@@ -434,7 +438,7 @@ class AgilentRawTextDataHandler extends AbstractDataFileHandler {
             return new Columns[0];
         }
     }
-    
+
     private void validateMandatoryColumnsPresent(FileValidationResult result) {
         if (isMiRNA()) {
             result.addMessage(Type.INFO, "Processing as miRNA (found gTotalProbeSignal w/o LogRatio)");
@@ -446,9 +450,9 @@ class AgilentRawTextDataHandler extends AbstractDataFileHandler {
                     + "LogRatio or gTotalProbeSignal)");
         } else {
             result.addMessage(Type.ERROR, "Unable to find column gTotalProbeSignal without a LogRatio column (miRNA)");
-            result.addMessage(Type.ERROR, "Unable to find column LogRatio without a gTotalProbeSignal column " 
+            result.addMessage(Type.ERROR, "Unable to find column LogRatio without a gTotalProbeSignal column "
                     + "(aCGH or 2 color gene expression)");
-            result.addMessage(Type.ERROR, "Unable to find column gProcessedSignal without a LogRatio " 
+            result.addMessage(Type.ERROR, "Unable to find column gProcessedSignal without a LogRatio "
                     + "or gTotalProbeSignal column (single color gene expression)");
         }
         if (!columnExists(Columns.PROBE_NAME)) {
@@ -492,7 +496,7 @@ class AgilentRawTextDataHandler extends AbstractDataFileHandler {
         return columnExists(Columns.G_PROCESSED_SIGNAL) && !columnExists(Columns.LOG_RATIO)
             && !columnExists(Columns.G_TOTAL_PROBE_SIGNAL);
     }
-    
+
     /**
      * @param columnName
      * @return
@@ -508,22 +512,23 @@ class AgilentRawTextDataHandler extends AbstractDataFileHandler {
         readHeader();
         return isTwoColor();
     }
-    
     /**
      * {@inheritDoc}
      */
+    @Override
     public List<LSID> getReferencedArrayDesignCandidateIds() {
         try {
             readHeader();
             return Collections.singletonList(this.arrayDesignId);
-        } catch (PlatformFileReadException e) {
+        } catch (final PlatformFileReadException e) {
             return Collections.emptyList();
         }
     }
-    
+
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean parsesData() {
         return true;
     }
@@ -549,6 +554,8 @@ class AgilentRawTextDataHandler extends AbstractDataFileHandler {
         private boolean gIsGeneDetected;
 
         void loadValuesFromParser(AgilentTextParser parser) {
+        	probeName = parser.getStringValue("ProbeName");
+        	systematicName = parser.getStringValue("SystematicName");
             logRatio = parser.getFloatValue(Columns.LOG_RATIO.getName());
             logRatioError = parser.getFloatValue(Columns.LOG_RATIO_ERROR.getName());
             pValueLogRatio = parser.getFloatValue(Columns.P_VALUE_LOG_RATIO.getName());
@@ -568,37 +575,37 @@ class AgilentRawTextDataHandler extends AbstractDataFileHandler {
         void saveIntoColumn(final AbstractDataColumn column, final int index) {
             final QuantitationType quantitationType = column.getQuantitationType();
             if (AgilentTextQuantitationType.LOG_RATIO.getName().equals(quantitationType.getName())) {
-                ((FloatColumn) column).getValues()[index] = logRatio;
+                ((FloatColumn) column).getValues()[index] = this.logRatio;
             } else if (AgilentTextQuantitationType.LOG_RATIO_ERROR.getName().equals(quantitationType.getName())) {
-                ((FloatColumn) column).getValues()[index] = logRatioError;
+                ((FloatColumn) column).getValues()[index] = this.logRatioError;
             } else if (AgilentTextQuantitationType.P_VALUE_LOG_RATIO.getName().equals(quantitationType.getName())) {
-                ((FloatColumn) column).getValues()[index] = pValueLogRatio;
+                ((FloatColumn) column).getValues()[index] = this.pValueLogRatio;
             } else if (AgilentTextQuantitationType.G_PROCESSED_SIGNAL.getName().equals(quantitationType.getName())) {
-                ((FloatColumn) column).getValues()[index] = gProcessedSignal;
+                ((FloatColumn) column).getValues()[index] = this.gProcessedSignal;
             } else if (AgilentTextQuantitationType.R_PROCESSED_SIGNAL.getName().equals(quantitationType.getName())) {
-                ((FloatColumn) column).getValues()[index] = rProcessedSignal;
+                ((FloatColumn) column).getValues()[index] = this.rProcessedSignal;
             } else if (AgilentTextQuantitationType.G_PROCESSED_SIG_ERROR.getName().equals(quantitationType.getName())) {
-                ((FloatColumn) column).getValues()[index] = gProcessedSigError;
+                ((FloatColumn) column).getValues()[index] = this.gProcessedSigError;
             } else if (AgilentTextQuantitationType.R_PROCESSED_SIG_ERROR.getName().equals(quantitationType.getName())) {
-                ((FloatColumn) column).getValues()[index] = rProcessedSigError;
+                ((FloatColumn) column).getValues()[index] = this.rProcessedSigError;
             } else if (AgilentTextQuantitationType.G_MEDIAN_SIGNAL.getName().equals(quantitationType.getName())) {
-                ((FloatColumn) column).getValues()[index] = gMedianSignal;
+                ((FloatColumn) column).getValues()[index] = this.gMedianSignal;
             } else if (AgilentTextQuantitationType.R_MEDIAN_SIGNAL.getName().equals(quantitationType.getName())) {
-                ((FloatColumn) column).getValues()[index] = rMedianSignal;
+                ((FloatColumn) column).getValues()[index] = this.rMedianSignal;
             } else if (AgilentTextQuantitationType.G_TOTAL_PROBE_SIGNAL.getName().equals(quantitationType.getName())) {
-                ((FloatColumn) column).getValues()[index] = gTotalProbeSignal;
+                ((FloatColumn) column).getValues()[index] = this.gTotalProbeSignal;
             } else if (AgilentTextQuantitationType.G_TOTAL_PROBE_ERROR.getName().equals(quantitationType.getName())) {
-                ((FloatColumn) column).getValues()[index] = gTotalProbeError;
+                ((FloatColumn) column).getValues()[index] = this.gTotalProbeError;
             } else if (AgilentTextQuantitationType.G_TOTAL_GENE_SIGNAL.getName().equals(quantitationType.getName())) {
-                ((FloatColumn) column).getValues()[index] = gTotalGeneSignal;
+                ((FloatColumn) column).getValues()[index] = this.gTotalGeneSignal;
             } else if (AgilentTextQuantitationType.G_TOTAL_GENE_ERROR.getName().equals(quantitationType.getName())) {
-                ((FloatColumn) column).getValues()[index] = gTotalGeneError;
+                ((FloatColumn) column).getValues()[index] = this.gTotalGeneError;
             } else if (AgilentTextQuantitationType.G_IS_GENE_DETECTED.getName().equals(quantitationType.getName())) {
-                ((BooleanColumn) column).getValues()[index] = gIsGeneDetected;
+                ((BooleanColumn) column).getValues()[index] = this.gIsGeneDetected;
             } else {
                 throw new IllegalArgumentException("Unsupported QuantitationType data: " + quantitationType);
             }
-            
+
         }
     }
 }

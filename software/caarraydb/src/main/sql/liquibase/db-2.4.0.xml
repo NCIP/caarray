@@ -82,7 +82,7 @@
       <comment>GF 22060 - [#22060] Source, sample description length limitation - passes validation fails import.</comment>
       <sqlFile path="db-upgrade/mysql/2.4.0/22060.sql"/>
    </changeSet>
-   
+
     <changeSet id="28337" author="jscott">
        <comment>GF-28337 - Fix already-imported Illumina genotyping CSV array designs to use correct probe ids.</comment>
        <customChange class="gov.nih.nci.caarray.upgrade.FixIlluminaGenotypingCsvDesignProbeNamesMigrator"/>

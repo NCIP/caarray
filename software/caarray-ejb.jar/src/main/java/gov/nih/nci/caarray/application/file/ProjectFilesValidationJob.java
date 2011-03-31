@@ -82,7 +82,6 @@
  */
 package gov.nih.nci.caarray.application.file;
 
-import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
 import gov.nih.nci.caarray.dao.ProjectDao;
 import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
@@ -120,13 +119,8 @@ final class ProjectFilesValidationJob extends AbstractProjectFilesJob {
 
     @Override
     protected void doExecute() {
-        try {            
-            doValidate(getFileSet());
-        } finally {
-            TemporaryFileCacheLocator.getTemporaryFileCache().closeFiles();            
-        }
+        doValidate(getFileSet());
     }
-
 
     @Override
     protected FileStatus getInProgressStatus() {

@@ -89,9 +89,13 @@ import gov.nih.nci.caarray.dao.JobQueueDao;
 import gov.nih.nci.caarray.domain.ConfigParamEnum;
 import gov.nih.nci.caarray.domain.project.ExecutableJob;
 import gov.nih.nci.caarray.injection.InjectionInterceptor;
+import gov.nih.nci.caarray.injection.InjectorFactory;
 import gov.nih.nci.caarray.services.HibernateSessionInterceptor;
 import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
+import gov.nih.nci.caarray.services.StorageInterceptor;
 import gov.nih.nci.caarray.util.UsernameHolder;
+import gov.nih.nci.logging.api.logger.util.ThreadVariable;
+import gov.nih.nci.logging.api.user.UserInfo;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -127,9 +131,8 @@ import com.google.inject.Provider;
 @MessageDriven(activationConfig = {
     @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Topic"),
     @ActivationConfigProperty(propertyName = "destination", propertyValue = FileManagementMDB.QUEUE_JNDI_NAME),
-    @ActivationConfigProperty(propertyName = "maxSession", propertyValue = "1")
-    }, messageListenerInterface = MessageListener.class)
-@Interceptors({ HibernateSessionInterceptor.class, ExceptionLoggingInterceptor.class, InjectionInterceptor.class })
+    @ActivationConfigProperty(propertyName = "maxSession", propertyValue = "1") }, messageListenerInterface = MessageListener.class)
+@Interceptors({ HibernateSessionInterceptor.class, ExceptionLoggingInterceptor.class, InjectionInterceptor.class, StorageInterceptor.class })
 @TransactionManagement(TransactionManagementType.BEAN)
 public class FileManagementMDB implements MessageListener {
 
@@ -143,7 +146,8 @@ public class FileManagementMDB implements MessageListener {
     private static ThreadLocal<FileManagementMDB> currentMDB = new ThreadLocal<FileManagementMDB>();
 
     private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
-    @Resource private UserTransaction transaction;
+    @Resource
+    private UserTransaction transaction;
     private CaArrayHibernateHelper hibernateHelper;
     private JobQueueDao jobDao;
     private Provider<UsernameHolder> userHolderProvider;
@@ -164,9 +168,10 @@ public class FileManagementMDB implements MessageListener {
 
     /**
      * Handles file management job message.
-     *
+     * 
      * @param message the JMS message to handle.
      */
+    @Override
     public void onMessage(Message message) {
         if (!(message instanceof TextMessage)) {
             LOG.error("Invalid message type delivered: " + message.getClass().getName());
@@ -194,7 +199,7 @@ public class FileManagementMDB implements MessageListener {
             } else {
                 LOG.error("Invalid message text: \"" + messageText + "\"");
             }
-        } catch (JMSException e) {
+        } catch (final JMSException e) {
             LOG.error("Error handling message", e);
         } finally {
             currentMDB.remove();
@@ -214,10 +219,10 @@ public class FileManagementMDB implements MessageListener {
         try {
             this.transaction.setTransactionTimeout(getBackgroundThreadTransactionTimeout());
             this.transaction.begin();
-        } catch (NotSupportedException e) {
+        } catch (final NotSupportedException e) {
             LOG.error("Unexpected throwable -- transaction is supported", e);
             throw new IllegalStateException(e);
-        } catch (SystemException e) {
+        } catch (final SystemException e) {
             LOG.error("Couldn't start transaction", e);
             throw new EJBException(e);
         }
@@ -225,12 +230,12 @@ public class FileManagementMDB implements MessageListener {
 
     /**
      * Get the background thread timeout.
+     * 
      * @return the timeout val
      */
     protected int getBackgroundThreadTransactionTimeout() {
-        String backgroundThreadTransactionTimeout =
-            ConfigurationHelper.getConfiguration().getString(
-                    ConfigParamEnum.BACKGROUND_THREAD_TRANSACTION_TIMEOUT.name());
+        final String backgroundThreadTransactionTimeout = ConfigurationHelper.getConfiguration().getString(
+                ConfigParamEnum.BACKGROUND_THREAD_TRANSACTION_TIMEOUT.name());
         int timeout = DEFAULT_TIMEOUT_SECONDS;
         if (StringUtils.isNumeric(backgroundThreadTransactionTimeout)) {
             timeout = Integer.parseInt(backgroundThreadTransactionTimeout);
@@ -242,20 +247,20 @@ public class FileManagementMDB implements MessageListener {
     /**
      * Commit the transaction used by the job.
      */
-    public void commitTransaction()  {
+    public void commitTransaction() {
         try {
             this.transaction.commit();
-        } catch (SecurityException e) {
+        } catch (final SecurityException e) {
             LOG.error("Unexpected throwable -- transaction is supported", e);
             throw new IllegalStateException(e);
-        } catch (RollbackException e) {
+        } catch (final RollbackException e) {
             LOG.error("Received rollback condition", e);
             rollbackTransaction();
-        } catch (HeuristicMixedException e) {
+        } catch (final HeuristicMixedException e) {
             rollbackTransaction();
-        } catch (HeuristicRollbackException e) {
+        } catch (final HeuristicRollbackException e) {
             rollbackTransaction();
-        } catch (SystemException e) {
+        } catch (final SystemException e) {
             LOG.error("Couldn't commit transaction", e);
             throw new EJBException(e);
         }
@@ -267,10 +272,10 @@ public class FileManagementMDB implements MessageListener {
     public void rollbackTransaction() {
         try {
             this.transaction.rollback();
-        } catch (SecurityException e) {
+        } catch (final SecurityException e) {
             LOG.error("Unexpected throwable -- transaction is supported", e);
             throw new IllegalStateException(e);
-        } catch (SystemException e) {
+        } catch (final SystemException e) {
             LOG.error("Error rolling back transaction", e);
             throw new EJBException(e);
         }
@@ -281,7 +286,7 @@ public class FileManagementMDB implements MessageListener {
         LOG.info("Starting job of type: " + job.getClass().getSimpleName());
         try {
             job.execute();
-        } catch (RuntimeException e) {
+        } catch (final RuntimeException e) {
             rollbackTransaction();
             handleUnexpectedError(job);
             throw e;
@@ -291,6 +296,7 @@ public class FileManagementMDB implements MessageListener {
 
     /**
      * Handles unexpected errors.
+     * 
      * @param job the job.
      */
     protected void handleUnexpectedError(ExecutableJob job) {
@@ -342,6 +348,7 @@ public class FileManagementMDB implements MessageListener {
 
     /**
      * Get the instance of FileManagementMDB that is processing the current message.
+     * 
      * @return the current instance
      */
     public static FileManagementMDB getCurrentMDB() {

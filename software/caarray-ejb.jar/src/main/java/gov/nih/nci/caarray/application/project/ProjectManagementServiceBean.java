@@ -91,6 +91,7 @@ import gov.nih.nci.caarray.dao.FileDao;
 import gov.nih.nci.caarray.dao.ProjectDao;
 import gov.nih.nci.caarray.dao.SampleDao;
 import gov.nih.nci.caarray.dao.SearchDao;
+import gov.nih.nci.caarray.dataStorage.DataStorageFacade;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
@@ -148,21 +149,22 @@ import com.google.inject.Inject;
 @Stateless
 @Interceptors({ ExceptionLoggingInterceptor.class, InjectionInterceptor.class })
 @TransactionAttribute(TransactionAttributeType.SUPPORTS)
-@SuppressWarnings({"PMD.ExcessiveClassLength", "PMD.TooManyMethods", "PMD.CyclomaticComplexity" })
+@SuppressWarnings({ "PMD.ExcessiveClassLength", "PMD.TooManyMethods", "PMD.CyclomaticComplexity" })
 public class ProjectManagementServiceBean implements ProjectManagementService {
     private static final Logger LOG = Logger.getLogger(ProjectManagementServiceBean.class);
     private static final int UPLOAD_TIMEOUT = 7200;
     private static final int DELETE_TIMEOUT = 3600;
     /**
-     * public id prefix {@value}.
+     * public id prefix {@value} .
      */
     static final String PUBLIC_ID_PREFIX = "EXP-";
-    
+
     private ProjectDao projectDao;
     private FileDao fileDao;
     private SampleDao sampleDao;
     private SearchDao searchDao;
-    
+    private DataStorageFacade dataStorageFacade;
+
     /**
      * 
      * @param projectDao the ProjectDao dependency
@@ -171,20 +173,22 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
      * @param searchDao the SearchDao dependency
      */
     @Inject
-    public void setDependencies(ProjectDao projectDao, FileDao fileDao, SampleDao sampleDao,
-            SearchDao searchDao) {
+    public void setDependencies(ProjectDao projectDao, FileDao fileDao, SampleDao sampleDao, SearchDao searchDao,
+            DataStorageFacade dataStorageFacade) {
         this.projectDao = projectDao;
         this.fileDao = fileDao;
         this.sampleDao = sampleDao;
         this.searchDao = searchDao;
+        this.dataStorageFacade = dataStorageFacade;
     }
-    
+
     /**
      * {@inheritDoc}
      */
+    @Override
     public Project getProjectByPublicId(String publicId) {
         LogUtil.logSubsystemEntry(LOG, publicId);
-        Project project = projectDao.getProjectByPublicId(publicId);
+        final Project project = this.projectDao.getProjectByPublicId(publicId);
         LogUtil.logSubsystemExit(LOG);
         return project;
     }
@@ -192,13 +196,14 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     /**
      * {@inheritDoc}
      */
+    @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     @TransactionTimeout(UPLOAD_TIMEOUT)
     public CaArrayFile addFile(Project project, File file) throws ProposalWorkflowException,
             InconsistentProjectStateException {
         LogUtil.logSubsystemEntry(LOG, project, file);
         checkIfProjectSaveAllowed(project);
-        CaArrayFile caArrayFile = doAddFile(project, file, file.getName());
+        final CaArrayFile caArrayFile = doAddFile(project, file, file.getName());
         LogUtil.logSubsystemExit(LOG);
         return caArrayFile;
     }
@@ -206,13 +211,14 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     /**
      * {@inheritDoc}
      */
+    @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     @TransactionTimeout(UPLOAD_TIMEOUT)
     public CaArrayFile addFile(Project project, File file, String filename) throws ProposalWorkflowException,
             InconsistentProjectStateException {
         LogUtil.logSubsystemEntry(LOG, project, file);
         checkIfProjectSaveAllowed(project);
-        CaArrayFile caArrayFile = doAddFile(project, file, filename);
+        final CaArrayFile caArrayFile = doAddFile(project, file, filename);
         LogUtil.logSubsystemExit(LOG);
         return caArrayFile;
     }
@@ -220,28 +226,29 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     /**
      * {@inheritDoc}
      */
+    @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     @TransactionTimeout(UPLOAD_TIMEOUT)
     public CaArrayFile addFile(Project project, InputStream data, String filename) throws ProposalWorkflowException,
             InconsistentProjectStateException {
         LogUtil.logSubsystemEntry(LOG, project);
         checkIfProjectSaveAllowed(project);
-        CaArrayFile caArrayFile = doAddStream(project, data, filename);
+        final CaArrayFile caArrayFile = doAddStream(project, data, filename);
 
         LogUtil.logSubsystemExit(LOG);
         return caArrayFile;
     }
 
     private CaArrayFile doAddStream(Project project, InputStream stream, String filename)
-            throws ProposalWorkflowException, InconsistentProjectStateException  {
+            throws ProposalWorkflowException, InconsistentProjectStateException {
         checkIfProjectSaveAllowed(project);
-        CaArrayFile caArrayFile = getFileAccessService().add(stream, filename);
+        final CaArrayFile caArrayFile = getFileAccessService().add(stream, filename);
         addCaArrayFileToProject(project, caArrayFile);
         return caArrayFile;
     }
 
     private CaArrayFile doAddFile(Project project, File file, String filename) {
-        CaArrayFile caArrayFile = getFileAccessService().add(file, filename);
+        final CaArrayFile caArrayFile = getFileAccessService().add(file, filename);
         addCaArrayFileToProject(project, caArrayFile);
         return caArrayFile;
     }
@@ -249,16 +256,18 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     private void addCaArrayFileToProject(Project project, CaArrayFile caArrayFile) {
         project.getFiles().add(caArrayFile);
         caArrayFile.setProject(project);
-        getFileAccessService().save(caArrayFile);
+        // TODO: should this save be in FileAccessServiceBean?
+        this.fileDao.save(caArrayFile);
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public void changeProjectLockStatus(long projectId, boolean newStatus) throws ProposalWorkflowException {
         LogUtil.logSubsystemEntry(LOG, projectId);
-        Project project = searchDao.retrieve(Project.class, projectId);
+        final Project project = this.searchDao.retrieve(Project.class, projectId);
         if (!project.isOwner(CaArrayUsernameHolder.getCsmUser())) {
             LogUtil.logSubsystemExit(LOG);
             throw new PermissionDeniedException(project, "WORKFLOW_CHANGE", CaArrayUsernameHolder.getUser());
@@ -269,16 +278,17 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
         }
         project.setLocked(newStatus);
 
-        projectDao.save(project);
+        this.projectDao.save(project);
         LogUtil.logSubsystemExit(LOG);
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public void saveProject(Project project, PersistentObject... orphansToDelete)
-        throws ProposalWorkflowException, InconsistentProjectStateException {
+    public void saveProject(Project project, PersistentObject... orphansToDelete) throws ProposalWorkflowException,
+            InconsistentProjectStateException {
 
         LogUtil.logSubsystemEntry(LOG, project);
         checkIfProjectSaveAllowed(project);
@@ -291,14 +301,14 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
         if (project.getId() == null) {
             // for the initial save, we will need to save experiment first since we need to assign a public
             // identifier, which requires the id to be set
-            Experiment exp = project.getExperiment();
-            projectDao.save(exp);
+            final Experiment exp = project.getExperiment();
+            this.projectDao.save(exp);
             exp.setPublicIdentifier(PUBLIC_ID_PREFIX + String.valueOf(exp.getId()));
         }
-        projectDao.save(project);
-        for (PersistentObject obj : orphansToDelete) {
+        this.projectDao.save(project);
+        for (final PersistentObject obj : orphansToDelete) {
             if (obj != null) {
-                projectDao.remove(obj);
+                this.projectDao.remove(obj);
             }
         }
         LogUtil.logSubsystemExit(LOG);
@@ -307,6 +317,7 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     /**
      * {@inheritDoc}
      */
+    @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     @TransactionTimeout(DELETE_TIMEOUT)
     public void deleteProject(Project project) throws ProposalWorkflowException {
@@ -320,28 +331,26 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
             LogUtil.logSubsystemExit(LOG);
             throw new ProposalWorkflowException("Cannot delete a locked project");
         }
-        // remove the blobs
-        fileDao.deleteHqlBlobsByProjectId(project.getId());
+        // the data storage will get cleaned up by the reaper, so no need to delete explicitly
 
         // refresh project
-        Project freshProject = getSearchDao().retrieve(Project.class, project.getId());
+        final Project freshProject = getSearchDao().retrieve(Project.class, project.getId());
         // both hybridizations and project are trying to delete the saveAndEvict files via cascades, so explicitly
-        //delete hybridizations (and their files) first
+        // delete hybridizations (and their files) first
 
-        for (Hybridization hyb : freshProject.getExperiment().getHybridizations()) {
-            projectDao.remove(hyb);
+        for (final Hybridization hyb : freshProject.getExperiment().getHybridizations()) {
+            this.projectDao.remove(hyb);
         }
 
-        projectDao.remove(freshProject);
+        this.projectDao.remove(freshProject);
 
         LogUtil.logSubsystemExit(LOG);
     }
 
     /**
-     * Checks whether the project has files that are currently importing. if not, does nothing,
-     * otherwise throws an exception because you cannot edit a project while it has
-     * files being imported
-     *
+     * Checks whether the project has files that are currently importing. if not, does nothing, otherwise throws an
+     * exception because you cannot edit a project while it has files being imported
+     * 
      * @param project project to check
      * @throws InconsistentProjectStateException if the project state is not consistent
      */
@@ -352,35 +361,33 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     }
 
     /**
-     * Checks whether the user-specified array designs in the given project are consistent with ones
-     * inferred from actual hybridization data. if they are, does nothing, otherwise throws an exception.
-     *
+     * Checks whether the user-specified array designs in the given project are consistent with ones inferred from
+     * actual hybridization data. if they are, does nothing, otherwise throws an exception.
+     * 
      * @param project project to check
      * @throws InconsistentProjectStateException if the project state is not consistent
      */
     private void checkArrayDesignsConsistent(Project project) throws InconsistentProjectStateException {
-        Set<ArrayDesign> declaredDesigns = project.getExperiment().getArrayDesigns();
-        Set<ArrayDesign> usedDesigns = project.getExperiment().getArrayDesignsFromHybs();
-        Set<String> missingDesignNames = new HashSet<String>();
-        for (ArrayDesign ad : usedDesigns) {
+        final Set<ArrayDesign> declaredDesigns = project.getExperiment().getArrayDesigns();
+        final Set<ArrayDesign> usedDesigns = project.getExperiment().getArrayDesignsFromHybs();
+        final Set<String> missingDesignNames = new HashSet<String>();
+        for (final ArrayDesign ad : usedDesigns) {
             if (!declaredDesigns.contains(ad)) {
                 missingDesignNames.add(ad.getName());
             }
         }
         if (!missingDesignNames.isEmpty()) {
-            throw new InconsistentProjectStateException(Reason.INCONSISTENT_ARRAY_DESIGNS,
-                    missingDesignNames.toArray());
+            throw new InconsistentProjectStateException(Reason.INCONSISTENT_ARRAY_DESIGNS, missingDesignNames.toArray());
         }
     }
 
     private void checkArrayDesignManufacturer(Project project) throws InconsistentProjectStateException {
-        Set<ArrayDesign> designs = project.getExperiment().getArrayDesigns();
-        for (ArrayDesign ad : designs) {
-            if ((project.getExperiment().getManufacturer() != null
-                    && project.getExperiment().getManufacturer() != ad.getProvider())
-                    || (!project.getExperiment().getAssayTypes().isEmpty()
-                            && !CollectionUtils.containsAny(ad.getAssayTypes(),
-                                    project.getExperiment().getAssayTypes()))) {
+        final Set<ArrayDesign> designs = project.getExperiment().getArrayDesigns();
+        for (final ArrayDesign ad : designs) {
+            if ((project.getExperiment().getManufacturer() != null && project.getExperiment().getManufacturer() != ad
+                    .getProvider())
+                    || (!project.getExperiment().getAssayTypes().isEmpty() && !CollectionUtils.containsAny(
+                            ad.getAssayTypes(), project.getExperiment().getAssayTypes()))) {
                 throw new InconsistentProjectStateException(Reason.ARRAY_DESIGNS_DONT_MATCH_MANUF_OR_TYPE,
                         new Object[] {});
             }
@@ -390,11 +397,10 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
 
     /**
      * Checks whether the project can be saved. if it can, does nothing, otherwise throws an exception
-     *
+     * 
      * @param project project to check for being able to saveAndEvict
      * @throws ProposalWorkflowException if the project can't be saved due to workflow state
-     * @throws InconsistentProjectStateException if the project can't be saved because its state
-     * is inconsistent
+     * @throws InconsistentProjectStateException if the project can't be saved because its state is inconsistent
      */
     private void checkIfProjectSaveAllowed(Project project) throws ProposalWorkflowException,
             InconsistentProjectStateException {
@@ -410,9 +416,10 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     /**
      * {@inheritDoc}
      */
+    @Override
     public List<Project> getMyProjects(PageSortParams<Project> pageSortParams) {
         LogUtil.logSubsystemEntry(LOG);
-        List<Project> result = projectDao.getProjectsForCurrentUser(pageSortParams);
+        final List<Project> result = this.projectDao.getProjectsForCurrentUser(pageSortParams);
         LogUtil.logSubsystemExit(LOG);
         return result;
     }
@@ -420,9 +427,10 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     /**
      * {@inheritDoc}
      */
+    @Override
     public int getMyProjectCount() {
         LogUtil.logSubsystemEntry(LOG);
-        int result = projectDao.getProjectCountForCurrentUser();
+        final int result = this.projectDao.getProjectCountForCurrentUser();
         LogUtil.logSubsystemExit(LOG);
         return result;
     }
@@ -430,9 +438,10 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     /**
      * {@inheritDoc}
      */
+    @Override
     public List<Project> getProjectsForOwner(User user) {
         LogUtil.logSubsystemEntry(LOG, user);
-        List<Project> result = projectDao.getProjectsForOwner(user);
+        final List<Project> result = this.projectDao.getProjectsForOwner(user);
         LogUtil.logSubsystemExit(LOG);
         return result;
     }
@@ -440,6 +449,7 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     /**
      * {@inheritDoc}
      */
+    @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public AccessProfile addGroupProfile(Project project, CollaboratorGroup group) throws ProposalWorkflowException {
         LogUtil.logSubsystemEntry(LOG, project, group);
@@ -448,8 +458,8 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
             throw new PermissionDeniedException(project, SecurityUtils.PERMISSIONS_PRIVILEGE, CaArrayUsernameHolder
                     .getUser());
         }
-        AccessProfile profile = project.addGroupProfile(group);
-        projectDao.save(project);
+        final AccessProfile profile = project.addGroupProfile(group);
+        this.projectDao.save(project);
         LogUtil.logSubsystemExit(LOG);
         return profile;
     }
@@ -457,21 +467,22 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     /**
      * {@inheritDoc}
      */
+    @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public Sample copySample(Project project, long sampleId) throws ProposalWorkflowException,
             InconsistentProjectStateException {
         LogUtil.logSubsystemEntry(LOG, project, sampleId);
         checkIfProjectSaveAllowed(project);
-        Sample sample = searchDao.retrieve(Sample.class, sampleId);
-        Sample copy = new Sample();
+        final Sample sample = this.searchDao.retrieve(Sample.class, sampleId);
+        final Sample copy = new Sample();
         copyInto(Sample.class, copy, sample);
-        for (Source source : sample.getSources()) {
+        for (final Source source : sample.getSources()) {
             source.getSamples().add(copy);
             copy.getSources().add(source);
         }
         project.getExperiment().getSamples().add(copy);
         copy.setExperiment(project.getExperiment());
-        projectDao.save(project);
+        this.projectDao.save(project);
         LogUtil.logSubsystemExit(LOG);
         return copy;
     }
@@ -479,21 +490,22 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     /**
      * {@inheritDoc}
      */
+    @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public Extract copyExtract(Project project, long extractId) throws ProposalWorkflowException,
             InconsistentProjectStateException {
         LogUtil.logSubsystemEntry(LOG, project, extractId);
         checkIfProjectSaveAllowed(project);
-        Extract extract = searchDao.retrieve(Extract.class, extractId);
-        Extract copy = new Extract();
+        final Extract extract = this.searchDao.retrieve(Extract.class, extractId);
+        final Extract copy = new Extract();
         copyInto(Extract.class, copy, extract);
         project.getExperiment().getExtracts().add(copy);
         copy.setExperiment(project.getExperiment());
-        for (Sample sample : extract.getSamples()) {
+        for (final Sample sample : extract.getSamples()) {
             sample.getExtracts().add(copy);
             copy.getSamples().add(sample);
         }
-        projectDao.save(project);
+        this.projectDao.save(project);
         LogUtil.logSubsystemExit(LOG);
         return copy;
     }
@@ -501,28 +513,29 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     /**
      * {@inheritDoc}
      */
+    @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public LabeledExtract copyLabeledExtract(Project project, long extractId) throws ProposalWorkflowException,
             InconsistentProjectStateException {
         LogUtil.logSubsystemEntry(LOG, project, extractId);
         checkIfProjectSaveAllowed(project);
-        LabeledExtract le = searchDao.retrieve(LabeledExtract.class, extractId);
-        LabeledExtract copy = new LabeledExtract();
+        final LabeledExtract le = this.searchDao.retrieve(LabeledExtract.class, extractId);
+        final LabeledExtract copy = new LabeledExtract();
         copyInto(LabeledExtract.class, copy, le);
         copy.setLabel(le.getLabel());
         project.getExperiment().getLabeledExtracts().add(copy);
         copy.setExperiment(project.getExperiment());
-        for (Extract e : le.getExtracts()) {
+        for (final Extract e : le.getExtracts()) {
             e.getLabeledExtracts().add(copy);
             copy.getExtracts().add(e);
         }
-        projectDao.save(project);
+        this.projectDao.save(project);
         LogUtil.logSubsystemExit(LOG);
         return copy;
     }
 
     private <T extends AbstractBioMaterial> void copyInto(Class<T> clazz, T to, T from) {
-        String copyName = getGenericDataService().getIncrementingCopyName(clazz, "name", from.getName());
+        final String copyName = getGenericDataService().getIncrementingCopyName(clazz, "name", from.getName());
         to.setName(copyName);
         to.setDescription(from.getDescription());
         to.setMaterialType(from.getMaterialType());
@@ -530,8 +543,8 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
         to.setCellType(from.getCellType());
         to.setDiseaseState(from.getDiseaseState());
         to.setOrganism(from.getOrganism());
-        for (ProtocolApplication pa : from.getProtocolApplications()) {
-            ProtocolApplication newPa = new ProtocolApplication();
+        for (final ProtocolApplication pa : from.getProtocolApplications()) {
+            final ProtocolApplication newPa = new ProtocolApplication();
             newPa.setProtocol(pa.getProtocol());
             to.addProtocolApplication(newPa);
         }
@@ -540,33 +553,35 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     /**
      * {@inheritDoc}
      */
+    @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public Factor copyFactor(Project project, long factorId) throws ProposalWorkflowException,
             InconsistentProjectStateException {
         checkIfProjectSaveAllowed(project);
-        Factor factor = searchDao.retrieve(Factor.class, factorId);
-        Factor copy = new Factor();
-        String copyName = getGenericDataService().getIncrementingCopyName(Factor.class, "name", factor.getName());
+        final Factor factor = this.searchDao.retrieve(Factor.class, factorId);
+        final Factor copy = new Factor();
+        final String copyName = getGenericDataService().getIncrementingCopyName(Factor.class, "name", factor.getName());
         copy.setName(copyName);
         copy.setType(factor.getType());
         project.getExperiment().getFactors().add(copy);
-        projectDao.save(project);
+        this.projectDao.save(project);
         return copy;
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public Source copySource(Project project, long sourceId) throws ProposalWorkflowException,
             InconsistentProjectStateException {
         checkIfProjectSaveAllowed(project);
-        Source source = searchDao.retrieve(Source.class, sourceId);
-        Source copy = new Source();
+        final Source source = this.searchDao.retrieve(Source.class, sourceId);
+        final Source copy = new Source();
         copyInto(Source.class, copy, source);
         project.getExperiment().getSources().add(copy);
         copy.setExperiment(project.getExperiment());
-        projectDao.save(project);
+        this.projectDao.save(project);
         return copy;
     }
 
@@ -581,163 +596,180 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     /**
      * {@inheritDoc}
      */
-    public List<Project> searchByCategory(PageSortParams<Project> params, String keyword,
-            SearchCategory... categories) {
-        return projectDao.searchByCategory(params, keyword, categories);
+    @Override
+    public List<Project> searchByCategory(PageSortParams<Project> params, String keyword, SearchCategory... categories) {
+        return this.projectDao.searchByCategory(params, keyword, categories);
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public List<Experiment> searchByCriteria(PageSortParams<Experiment> params, ExperimentSearchCriteria criteria) {
-        return projectDao.searchByCriteria(params, criteria);
+        return this.projectDao.searchByCriteria(params, criteria);
     }
+
     /**
      * {@inheritDoc}
      */
+    @Override
     public List<Sample> searchSamplesByExperimentAndCategory(String keyword, Experiment e, SearchSampleCategory... c) {
-        return sampleDao.searchSamplesByExperimentAndCategory(keyword, e, c);
+        return this.sampleDao.searchSamplesByExperimentAndCategory(keyword, e, c);
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public int searchCount(String keyword, SearchCategory... categories) {
-        return projectDao.searchCount(keyword, categories);
+        return this.projectDao.searchCount(keyword, categories);
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public List<Term> getCellTypesForExperiment(Experiment experiment) {
-        return projectDao.getCellTypesForExperiment(experiment);
+        return this.projectDao.getCellTypesForExperiment(experiment);
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public List<Term> getDiseaseStatesForExperiment(Experiment experiment) {
-        return projectDao.getDiseaseStatesForExperiment(experiment);
+        return this.projectDao.getDiseaseStatesForExperiment(experiment);
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public List<Term> getMaterialTypesForExperiment(Experiment experiment) {
-        return projectDao.getMaterialTypesForExperiment(experiment);
+        return this.projectDao.getMaterialTypesForExperiment(experiment);
     }
+
     /**
      * {@inheritDoc}
      */
+    @Override
     public List<AssayType> getAssayTypes() {
-        return projectDao.getAssayTypes();
+        return this.projectDao.getAssayTypes();
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public List<Term> getTissueSitesForExperiment(Experiment experiment) {
-        return projectDao.getTissueSitesForExperiment(experiment);
+        return this.projectDao.getTissueSitesForExperiment(experiment);
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public List<CaArrayFile> getDeletableFiles(Long projectId) {
-        return fileDao.getDeletableFiles(projectId);
+        return this.fileDao.getDeletableFiles(projectId);
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public <T extends AbstractBioMaterial> T getBiomaterialByExternalId(Project project, String externalId,
             Class<T> biomaterialClass) {
         T bm;
         try {
             bm = biomaterialClass.newInstance();
-        } catch (InstantiationException e) {
+        } catch (final InstantiationException e) {
             throw new IllegalArgumentException("Could not create new instance of class " + biomaterialClass, e);
-        } catch (IllegalAccessException e) {
+        } catch (final IllegalAccessException e) {
             throw new IllegalArgumentException("Could not create new instance of class " + biomaterialClass, e);
         }
         bm.setExternalId(externalId);
         bm.setExperiment(project.getExperiment());
-        List<T> bms = getSearchDao().query(bm);
+        final List<T> bms = getSearchDao().query(bm);
         if (bms == null || bms.isEmpty()) {
             return null;
         } else if (bms.size() > 1) {
             throw new IllegalStateException("Too many biomaterials found matching external id");
-        } 
+        }
         return bms.get(0);
     }
 
     /**
      * {@inheritDoc}
      */
-    public <T extends AbstractBioMaterial>List<T>  searchByCategory(PageSortParams<T> params, String keyword,
+    @Override
+    public <T extends AbstractBioMaterial> List<T> searchByCategory(PageSortParams<T> params, String keyword,
             Class<T> biomaterialClass, BiomaterialSearchCategory... categories) {
-        return sampleDao.searchByCategory(params, keyword, biomaterialClass, categories);
+        return this.sampleDao.searchByCategory(params, keyword, biomaterialClass, categories);
     }
 
     /**
      * {@inheritDoc}
      */
-    public List<Sample> searchSamplesByCharacteristicCategory(PageSortParams<Sample> params,
-            Category c, String keyword) {
-        return sampleDao.searchSamplesByCharacteristicCategory(params, c, keyword);
+    @Override
+    public List<Sample> searchSamplesByCharacteristicCategory(PageSortParams<Sample> params, Category c, String keyword) {
+        return this.sampleDao.searchSamplesByCharacteristicCategory(params, c, keyword);
     }
 
     /**
      * {@inheritDoc}
      */
-    public List<Source> searchSourcesByCharacteristicCategory(PageSortParams<Source> params,
-            Category c, String keyword) {
-        return sampleDao.searchSourcesByCharacteristicCategory(params, c, keyword);
+    @Override
+    public List<Source> searchSourcesByCharacteristicCategory(PageSortParams<Source> params, Category c, String keyword) {
+        return this.sampleDao.searchSourcesByCharacteristicCategory(params, c, keyword);
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public int countSamplesByCharacteristicCategory(Category c, String keyword) {
-        return sampleDao.countSamplesByCharacteristicCategory(c, keyword);
+        return this.sampleDao.countSamplesByCharacteristicCategory(c, keyword);
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public int countSourcesByCharacteristicCategory(Category c, String keyword) {
-        return sampleDao.countSourcesByCharacteristicCategory(c, keyword);
+        return this.sampleDao.countSourcesByCharacteristicCategory(c, keyword);
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public int searchCount(String keyword, Class<? extends AbstractBioMaterial> biomaterialClass,
             BiomaterialSearchCategory... categories) {
-        return sampleDao.searchCount(keyword, biomaterialClass, categories);
+        return this.sampleDao.searchCount(keyword, biomaterialClass, categories);
     }
-    
+
     /**
      * {@inheritDoc}
      */
+    @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public void changeOwner(Long projectId, String newOwner) throws CSException {
-        Project project = searchDao.retrieve(Project.class, projectId);
-        AuthorizationManager am = SecurityUtils.getAuthorizationManager();
-        User newOwnerUser = am.getUser(newOwner);
+        final Project project = this.searchDao.retrieve(Project.class, projectId);
+        final AuthorizationManager am = SecurityUtils.getAuthorizationManager();
+        final User newOwnerUser = am.getUser(newOwner);
         SecurityUtils.changeOwner(project, newOwnerUser);
     }
 
     private SearchDao getSearchDao() {
-        return searchDao;
+        return this.searchDao;
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public List<Project> getProjectsWithReImportableFiles() {
-        return projectDao.getProjectsWithReImportable();
+        return this.projectDao.getProjectsWithReImportable();
     }
 
-    
 }

@@ -111,6 +111,7 @@ abstract class AbstractProjectFilesJob extends AbstractFileManagementJob {
 
     private final long projectId;
     private final Set<Long> fileIds = new HashSet<Long>();
+    private MageTabImporter mageTabImporter;
 
     private final ArrayDataImporter arrayDataImporter;
     private final MageTabImporter mageTabImporter;
@@ -132,7 +133,7 @@ abstract class AbstractProjectFilesJob extends AbstractFileManagementJob {
         this.mageTabImporter = mageTabImporter;
         this.projectDao = projectDao;
         this.searchDao = searchDao;
-        for (CaArrayFile file : fileSet.getFiles()) {
+        for (final CaArrayFile file : fileSet.getFiles()) {
             this.fileIds.add(file.getId());
         }
     }
@@ -143,7 +144,7 @@ abstract class AbstractProjectFilesJob extends AbstractFileManagementJob {
     public String getJobEntityName() {
         return experimentName;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -165,7 +166,7 @@ abstract class AbstractProjectFilesJob extends AbstractFileManagementJob {
     }
 
     void doValidate(CaArrayFileSet fileSet) {
-        MageTabDocumentSet mTabSet = validateAnnotation(fileSet);
+        final MageTabDocumentSet mTabSet = validateAnnotation(fileSet);
         validateArrayData(fileSet, mTabSet);
     }
 
@@ -175,6 +176,18 @@ abstract class AbstractProjectFilesJob extends AbstractFileManagementJob {
 
     private void validateArrayData(CaArrayFileSet fileSet, MageTabDocumentSet mTabSet) {
         getArrayDataImporter().validateFiles(fileSet, mTabSet, false);
+    }
+
+    MageTabImporter getMageTabImporter() {
+        return this.mageTabImporter;
+    }
+
+    /**
+     * @param mageTabImporter the mageTabImporter to set
+     */
+    @Inject
+    public void setMageTabImporter(MageTabImporter mageTabImporter) {
+        this.mageTabImporter = mageTabImporter;
     }
 
     protected ArrayDataImporter getArrayDataImporter() {
@@ -217,10 +230,10 @@ abstract class AbstractProjectFilesJob extends AbstractFileManagementJob {
      */
     @Override
     public PreparedStatement getUnexpectedErrorPreparedStatement(Connection con) throws SQLException {
-        PreparedStatement s = con.prepareStatement(
-                "update caarrayfile set status = ? where project = ? and status = ?");
+        final PreparedStatement s = con
+                .prepareStatement("update caarrayfile set status = ? where project = ? and status = ?");
         FileStatus newStatus;
-        switch(getInProgressStatus()) {
+        switch (getInProgressStatus()) {
         case IMPORTING:
             newStatus = FileStatus.IMPORT_FAILED;
             break;

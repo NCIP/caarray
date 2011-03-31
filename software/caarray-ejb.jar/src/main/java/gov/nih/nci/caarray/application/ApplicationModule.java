@@ -90,10 +90,11 @@ import gov.nih.nci.caarray.application.audit.AuditLogService;
 import gov.nih.nci.caarray.application.audit.AuditLogServiceBean;
 import gov.nih.nci.caarray.application.browse.BrowseService;
 import gov.nih.nci.caarray.application.browse.BrowseServiceBean;
-import gov.nih.nci.caarray.application.file.FileManagementService;
-import gov.nih.nci.caarray.application.file.FileManagementServiceBean;
-import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
-import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceBean;
+import gov.nih.nci.caarray.application.file.FileManagementModule;
+import gov.nih.nci.caarray.application.fileaccess.ExplicitRequestScope;
+import gov.nih.nci.caarray.application.fileaccess.FileAccessModule;
+import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCache;
+import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheImpl;
 import gov.nih.nci.caarray.application.permissions.PermissionsManagementService;
 import gov.nih.nci.caarray.application.permissions.PermissionsManagementServiceBean;
 import gov.nih.nci.caarray.application.project.ProjectManagementService;
@@ -104,6 +105,7 @@ import gov.nih.nci.caarray.application.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.application.vocabulary.VocabularyServiceBean;
 
 import com.google.inject.AbstractModule;
+import com.google.inject.servlet.RequestScoped;
 
 /**
  * Guice module for the application package.
@@ -117,6 +119,9 @@ public class ApplicationModule extends AbstractModule {
      */
     @Override
     protected void configure() {
+        install(new FileAccessModule());
+        install(new FileManagementModule());
+
         bind(ArrayDataService.class).to(ArrayDataServiceBean.class);
         bind(ArrayDesignService.class).to(ArrayDesignServiceBean.class);
         bind(AuditLogService.class).to(AuditLogServiceBean.class);
@@ -128,6 +133,12 @@ public class ApplicationModule extends AbstractModule {
         bind(ProjectManagementService.class).to(ProjectManagementServiceBean.class);
         bind(RegistrationService.class).to(RegistrationServiceBean.class);
         bind(VocabularyService.class).to(VocabularyServiceBean.class);
+
+        bindScope(RequestScoped.class, new ExplicitRequestScope());
+
+        // a general-purpose instance. it's the responsibility of clients
+        // to explicitly call cleanup on it
+        bind(TemporaryFileCache.class).to(TemporaryFileCacheImpl.class);
     }
 
 }

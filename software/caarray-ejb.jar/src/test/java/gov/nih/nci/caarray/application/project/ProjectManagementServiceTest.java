@@ -88,13 +88,12 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
 import gov.nih.nci.caarray.application.AbstractServiceTest;
 import gov.nih.nci.caarray.application.GenericDataService;
 import gov.nih.nci.caarray.application.GenericDataServiceStub;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
-import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
-import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheStubFactory;
 import gov.nih.nci.caarray.application.project.InconsistentProjectStateException.Reason;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.dao.ProjectDao;
@@ -102,6 +101,7 @@ import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
 import gov.nih.nci.caarray.dao.stub.ProjectDaoStub;
 import gov.nih.nci.caarray.dao.stub.SearchDaoStub;
+import gov.nih.nci.caarray.dataStorage.DataStorageFacade;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.array.Array;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
@@ -152,43 +152,44 @@ import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
 @SuppressWarnings("PMD")
 public class ProjectManagementServiceTest extends AbstractServiceTest {
     private static Injector injector;
-    private static CaArrayHibernateHelper hibernateHelper; 
+    private static CaArrayHibernateHelper hibernateHelper;
 
     private ProjectManagementService projectManagementService;
     private final LocalDaoFactoryStub daoFactoryStub = new LocalDaoFactoryStub();
     private final FileAccessServiceStub fileAccessService = new FileAccessServiceStub();
     private final GenericDataService genericDataService = new GenericDataServiceStub();
     private Transaction transaction;
-    
+
     /**
-     * post-construct lifecycle method; intializes the Guice injector that will provide dependencies. 
+     * post-construct lifecycle method; intializes the Guice injector that will provide dependencies.
      */
     @BeforeClass
     public static void init() {
         injector = createInjector();
         hibernateHelper = injector.getInstance(CaArrayHibernateHelper.class);
     }
-    
+
     /**
      * @return a Guice injector from which this will obtain dependencies.
      */
     protected static Injector createInjector() {
         return Guice.createInjector(new CaArrayEjbStaticInjectionModule(), new CaArrayHibernateHelperModule());
     }
-    
+
     @Before
     public void setUpService() {
         CaArrayUsernameHolder.setUser(STANDARD_USER);
-        ProjectManagementServiceBean projectManagementServiceBean = new ProjectManagementServiceBean();
-        projectManagementServiceBean.setDependencies(
-                this.daoFactoryStub.getProjectDao(), this.daoFactoryStub.getFileDao(),
-                this.daoFactoryStub.getSampleDao(), this.daoFactoryStub.getSearchDao());
-        
-        ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
+        final DataStorageFacade dataStorageFacade = mock(DataStorageFacade.class);
+        final ProjectManagementServiceBean projectManagementServiceBean = new ProjectManagementServiceBean();
+        projectManagementServiceBean.setDependencies(this.daoFactoryStub.getProjectDao(),
+                this.daoFactoryStub.getFileDao(), this.daoFactoryStub.getSampleDao(),
+                this.daoFactoryStub.getSearchDao(), dataStorageFacade);
+
+        final ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
         locatorStub.addLookup(FileAccessService.JNDI_NAME, this.fileAccessService);
         locatorStub.addLookup(GenericDataService.JNDI_NAME, this.genericDataService);
-        MysqlDataSource ds = new MysqlDataSource();
-        Configuration config = hibernateHelper.getConfiguration();
+        final MysqlDataSource ds = new MysqlDataSource();
+        final Configuration config = hibernateHelper.getConfiguration();
         ds.setUrl(config.getProperty("hibernate.connection.url"));
         ds.setUser(config.getProperty("hibernate.connection.username"));
         ds.setPassword(config.getProperty("hibernate.connection.password"));
@@ -196,23 +197,20 @@ public class ProjectManagementServiceTest extends AbstractServiceTest {
         this.projectManagementService = projectManagementServiceBean;
         locatorStub.addLookup(ProjectManagementService.JNDI_NAME, this.projectManagementService);
         hibernateHelper.setFiltersEnabled(false);
-        transaction = hibernateHelper.beginTransaction();
-        TemporaryFileCacheLocator.setTemporaryFileCacheFactory(new TemporaryFileCacheStubFactory(this.fileAccessService));
-        TemporaryFileCacheLocator.resetTemporaryFileCache();
+        this.transaction = hibernateHelper.beginTransaction();
     }
 
     @After
     public void tearDown() {
-        if (transaction != null) {
-            transaction.rollback();
+        if (this.transaction != null) {
+            this.transaction.rollback();
         }
     }
 
     @Test
     public void testGetWorkspaceProjects() {
-        List<Project> projects =
-                this.projectManagementService.getMyProjects(new PageSortParams<Project>(10000, 1,
-                        ProjectSortCriterion.PUBLIC_ID, false));
+        final List<Project> projects = this.projectManagementService.getMyProjects(new PageSortParams<Project>(10000,
+                1, ProjectSortCriterion.PUBLIC_ID, false));
         assertNotNull(projects);
     }
 
@@ -225,21 +223,23 @@ public class ProjectManagementServiceTest extends AbstractServiceTest {
 
     @Test
     public void testAddFile() throws Exception {
-        Project project = this.daoFactoryStub.getSearchDao().retrieve(Project.class, 123L);
-        CaArrayFile file = this.projectManagementService.addFile(project, MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF);
+        final Project project = this.daoFactoryStub.getSearchDao().retrieve(Project.class, 123L);
+        final CaArrayFile file = this.projectManagementService.addFile(project,
+                MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF);
         assertEquals(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF.getName(), file.getName());
         assertEquals(1, project.getFiles().size());
         assertNotNull(project.getFiles().iterator().next().getProject());
         assertContains(project.getFiles(), MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF.getName());
     }
 
-
     @Test
     public void testUploadFiles() throws Exception {
-        Project project = this.daoFactoryStub.getSearchDao().retrieve(Project.class, 123L);
-        List<String> fileNames = new ArrayList<String>();
-        List<File> files = new ArrayList<File>();
-        List<String> filesToUnpack = new ArrayList<String>();
+        final Project project = this.daoFactoryStub.getSearchDao().retrieve(Project.class, 123L);
+        final List<String> fileNames = new ArrayList<String>();
+        final List<File> files = new ArrayList<File>();
+        final List<String> filesToUnpack = new ArrayList<String>();
+        final DataStorageFacade dataStorageFacade = mock(DataStorageFacade.class);
+        final FileUploadUtils fileUploadUtils = new FileUploadUtils(dataStorageFacade);
 
         // add a zip file which contains some non-zip files and 1 zip file (11 in total)
         files.add(MageTabDataFiles.SPECIFICATION_ZIP_WITH_NEXTED_ZIP);
@@ -257,7 +257,7 @@ public class ProjectManagementServiceTest extends AbstractServiceTest {
         // this should cause a conflict
         files.add(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF);
         fileNames.add(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF.getName());
-        FileProcessingResult result = FileUploadUtils.uploadFiles(project, files, fileNames, filesToUnpack);
+        FileProcessingResult result = fileUploadUtils.uploadFiles(project, files, fileNames, filesToUnpack);
         assertEquals(12, result.getCount());
         assertEquals(12, project.getFiles().size());
         assertNotNull(project.getFiles().iterator().next().getProject());
@@ -267,7 +267,7 @@ public class ProjectManagementServiceTest extends AbstractServiceTest {
         assertTrue(result.getConflictingFiles().contains(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF.getName()));
         // attempt to re-upload a bunch of the files that were just uploaded to get
         // to get back nothing, showing that if a file has the same name, we do not add it.
-        result = FileUploadUtils.uploadFiles(project, files, fileNames, filesToUnpack);
+        result = fileUploadUtils.uploadFiles(project, files, fileNames, filesToUnpack);
         assertEquals(0, result.getCount());
         assertEquals(12, project.getFiles().size());
         assertNotNull(project.getFiles().iterator().next().getProject());
@@ -279,21 +279,24 @@ public class ProjectManagementServiceTest extends AbstractServiceTest {
 
     @Test
     public void testUploadFilesDefect13744() throws Exception {
+        final DataStorageFacade dataStorageFacade = mock(DataStorageFacade.class);
+        final FileUploadUtils fileUploadUtils = new FileUploadUtils(dataStorageFacade);
+
         // testing upload of a zip file and a txt file in that order
         // the zip file does not contain the txt file.
         // the txt file should be unknown.
-        Project project = this.daoFactoryStub.getSearchDao().retrieve(Project.class, 123L);
-        List<String> fileNames = new ArrayList<String>();
-        List<File> files = new ArrayList<File>();
+        final Project project = this.daoFactoryStub.getSearchDao().retrieve(Project.class, 123L);
+        final List<String> fileNames = new ArrayList<String>();
+        final List<File> files = new ArrayList<File>();
         files.add(MageTabDataFiles.SPECIFICATION_ZIP);
         fileNames.add("specification.zip");
 
         files.add(MageTabDataFiles.SPECIFICATION_ZIP_WITH_NEXTED_ZIP_TXT_FILE);
         fileNames.add("Test1.txt");
 
-        List<String> filesToUnpack = new ArrayList<String>();
+        final List<String> filesToUnpack = new ArrayList<String>();
         filesToUnpack.add("specification.zip");
-        FileProcessingResult result = FileUploadUtils.uploadFiles(project, files, fileNames, filesToUnpack);
+        final FileProcessingResult result = fileUploadUtils.uploadFiles(project, files, fileNames, filesToUnpack);
         assertEquals(17, result.getCount());
         assertEquals(17, project.getFiles().size());
         assertNotNull(project.getFiles().iterator().next().getProject());
@@ -304,10 +307,13 @@ public class ProjectManagementServiceTest extends AbstractServiceTest {
 
     @Test
     public void testUnpackFiles() throws Exception {
+        final DataStorageFacade dataStorageFacade = mock(DataStorageFacade.class);
+        final FileUploadUtils fileUploadUtils = new FileUploadUtils(dataStorageFacade);
+
         // testing unpacking of a file already in the project
         // add a file
-        Project project = this.daoFactoryStub.getSearchDao().retrieve(Project.class, 123L);
-        CaArrayFile file = this.projectManagementService.addFile(project, MageTabDataFiles.SPECIFICATION_ZIP);
+        final Project project = this.daoFactoryStub.getSearchDao().retrieve(Project.class, 123L);
+        final CaArrayFile file = this.projectManagementService.addFile(project, MageTabDataFiles.SPECIFICATION_ZIP);
         this.fileAccessService.setDeletableStatus(file, true);
         assertEquals(MageTabDataFiles.SPECIFICATION_ZIP.getName(), file.getName());
         assertEquals(1, project.getFiles().size());
@@ -315,13 +321,13 @@ public class ProjectManagementServiceTest extends AbstractServiceTest {
         assertContains(project.getFiles(), MageTabDataFiles.SPECIFICATION_ZIP.getName());
         // unpack zip file
 
-        CaArrayFile myFile = project.getFiles().first();
+        final CaArrayFile myFile = project.getFiles().first();
 
         // now do the unpack
-        List<CaArrayFile> cFileList = new ArrayList<CaArrayFile>();
+        final List<CaArrayFile> cFileList = new ArrayList<CaArrayFile>();
         cFileList.add(myFile);
 
-        FileProcessingResult result = FileUploadUtils.unpackFiles(project, cFileList);
+        final FileProcessingResult result = fileUploadUtils.unpackFiles(project, cFileList);
         // the unpack should have added 10 files and removed the zip archive
         assertEquals(16, result.getCount());
         assertEquals(15, project.getFiles().size() - this.fileAccessService.getRemovedFileCount());
@@ -330,9 +336,8 @@ public class ProjectManagementServiceTest extends AbstractServiceTest {
         assertContains(project.getFiles(), MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF.getName());
     }
 
-
     private void assertContains(Set<CaArrayFile> caArrayFiles, String file) {
-        for (CaArrayFile caArrayFile : caArrayFiles) {
+        for (final CaArrayFile caArrayFile : caArrayFiles) {
             if (file.equals(caArrayFile.getName())) {
                 return;
             }
@@ -341,7 +346,7 @@ public class ProjectManagementServiceTest extends AbstractServiceTest {
     }
 
     private void assertNotContains(Set<CaArrayFile> caArrayFiles, String file) {
-        for (CaArrayFile caArrayFile : caArrayFiles) {
+        for (final CaArrayFile caArrayFile : caArrayFiles) {
             if (file.equals(caArrayFile.getName())) {
                 fail("CaArrayFileSet contains " + file);
             }
@@ -352,10 +357,10 @@ public class ProjectManagementServiceTest extends AbstractServiceTest {
     /**
      * Test method for {@link ProjectManagementService#saveProject(Project, PersistentObject...)}.
      */
-    @Test(expected=PermissionDeniedException.class)
+    @Test(expected = PermissionDeniedException.class)
     public void testSaveProject() throws Exception {
         Project project = new Project();
-        AbstractCaArrayEntity e = new Sample();
+        final AbstractCaArrayEntity e = new Sample();
         this.projectManagementService.saveProject(project, e);
         assertEquals(project, this.daoFactoryStub.projectDao.lastSaved);
         assertEquals(e, this.daoFactoryStub.projectDao.lastDeleted);
@@ -371,22 +376,22 @@ public class ProjectManagementServiceTest extends AbstractServiceTest {
      */
     @Test
     public void testSaveProjectWithInconsistentArrayDesigns() throws Exception {
-        Project project = new Project();
-        ArrayDesign ad1 = new ArrayDesign();
+        final Project project = new Project();
+        final ArrayDesign ad1 = new ArrayDesign();
         ad1.setName("Test1");
-        ArrayDesign ad2 = new ArrayDesign();
+        final ArrayDesign ad2 = new ArrayDesign();
         ad2.setName("Test2");
         project.getExperiment().getArrayDesigns().add(ad1);
         project.getExperiment().getArrayDesigns().add(ad2);
 
-        Hybridization h1 = new Hybridization();
-        Array a1 = new Array();
+        final Hybridization h1 = new Hybridization();
+        final Array a1 = new Array();
         a1.setDesign(ad2);
         h1.setArray(a1);
         project.getExperiment().getHybridizations().add(h1);
 
-        Hybridization h2 = new Hybridization();
-        Array a2 = new Array();
+        final Hybridization h2 = new Hybridization();
+        final Array a2 = new Array();
         h2.setArray(a2);
         project.getExperiment().getHybridizations().add(h2);
         this.projectManagementService.saveProject(project);
@@ -395,7 +400,7 @@ public class ProjectManagementServiceTest extends AbstractServiceTest {
         try {
             this.projectManagementService.saveProject(project);
             fail("Expected to throw inconsistent state exception");
-        } catch (InconsistentProjectStateException e) {
+        } catch (final InconsistentProjectStateException e) {
             assertEquals(Reason.INCONSISTENT_ARRAY_DESIGNS, e.getReason());
             assertEquals(1, e.getArguments().length);
             assertEquals("Test2", e.getArguments()[0]);
@@ -408,10 +413,10 @@ public class ProjectManagementServiceTest extends AbstractServiceTest {
     @Test
     @SuppressWarnings("deprecation")
     public void testSaveProjectWithImportingFiles() throws Exception {
-        Project project = new Project() {
+        final Project project = new Project() {
             @Override
             public boolean isImportingData() {
-                for (CaArrayFile f : this.getFiles()) {
+                for (final CaArrayFile f : this.getFiles()) {
                     if (f.getFileStatus() == FileStatus.IMPORTING) {
                         return true;
                     }
@@ -419,17 +424,17 @@ public class ProjectManagementServiceTest extends AbstractServiceTest {
                 return false;
             }
         };
-        CaArrayFile file1 = new CaArrayFile();
+        final CaArrayFile file1 = new CaArrayFile();
         file1.setName("File1");
         file1.setFileStatus(FileStatus.UPLOADED);
         file1.setProject(project);
         project.getFiles().add(file1);
-        CaArrayFile file2 = new CaArrayFile();
+        final CaArrayFile file2 = new CaArrayFile();
         file2.setName("File2");
         file2.setFileStatus(FileStatus.UPLOADED);
         file2.setProject(project);
         project.getFiles().add(file2);
-        Source source = new Source();
+        final Source source = new Source();
         source.setId(1L);
         source.setExperiment(project.getExperiment());
         project.getExperiment().getSources().add(source);
@@ -440,13 +445,13 @@ public class ProjectManagementServiceTest extends AbstractServiceTest {
         try {
             this.projectManagementService.saveProject(project);
             fail("Expected to throw inconsistent state exception");
-        } catch (InconsistentProjectStateException e) {
+        } catch (final InconsistentProjectStateException e) {
             assertEquals(Reason.IMPORTING_FILES, e.getReason());
         }
         try {
             this.projectManagementService.copySource(project, 1L);
             fail("Expected to throw inconsistent state exception");
-        } catch (InconsistentProjectStateException e) {
+        } catch (final InconsistentProjectStateException e) {
             assertEquals(Reason.IMPORTING_FILES, e.getReason());
         }
 
@@ -455,14 +460,14 @@ public class ProjectManagementServiceTest extends AbstractServiceTest {
         this.projectManagementService.copySource(project, 1L);
     }
 
-   /**
+    /**
      * Test method for {@link ProjectManagementService#copyFactor(Project, long)}.
      */
     @Test
     public void testCopyFactor() throws Exception {
-        Project project = new Project();
+        final Project project = new Project();
         this.projectManagementService.saveProject(project);
-        Factor factor = this.projectManagementService.copyFactor(project, 1);
+        final Factor factor = this.projectManagementService.copyFactor(project, 1);
         assertNotNull(factor);
         assertEquals("Test2", factor.getName());
         assertEquals(1, project.getExperiment().getFactors().size());
@@ -473,9 +478,9 @@ public class ProjectManagementServiceTest extends AbstractServiceTest {
      */
     @Test
     public void testCopySource() throws Exception {
-        Project project = new Project();
+        final Project project = new Project();
         this.projectManagementService.saveProject(project);
-        Source source = this.projectManagementService.copySource(project, 1);
+        final Source source = this.projectManagementService.copySource(project, 1);
         assertNotNull(source);
         assertEquals("Test2", source.getName());
         assertEquals("Test", source.getDescription());
@@ -487,9 +492,9 @@ public class ProjectManagementServiceTest extends AbstractServiceTest {
      */
     @Test
     public void testCopySample() throws Exception {
-        Project project = new Project();
+        final Project project = new Project();
         this.projectManagementService.saveProject(project);
-        Sample sample = this.projectManagementService.copySample(project, 1);
+        final Sample sample = this.projectManagementService.copySample(project, 1);
         assertOnAbstractBioMaterialCopy(sample);
         assertEquals(1, project.getExperiment().getSamples().size());
         assertTrue(!sample.getSources().isEmpty());
@@ -497,9 +502,9 @@ public class ProjectManagementServiceTest extends AbstractServiceTest {
 
     @Test
     public void testCopyExtract() throws ProposalWorkflowException, InconsistentProjectStateException {
-        Project project = new Project();
+        final Project project = new Project();
         this.projectManagementService.saveProject(project);
-        Extract e = this.projectManagementService.copyExtract(project, 1);
+        final Extract e = this.projectManagementService.copyExtract(project, 1);
         assertOnAbstractBioMaterialCopy(e);
         assertEquals(1, project.getExperiment().getExtracts().size());
         assertTrue(!e.getSamples().isEmpty());
@@ -517,18 +522,19 @@ public class ProjectManagementServiceTest extends AbstractServiceTest {
     private void createProtectionGroup(Project project) {
         // Perform voodoo magic
         try {
-            Method m = SecurityUtils.class.getDeclaredMethod("createProtectionGroup", Protectable.class, User.class);
+            final Method m = SecurityUtils.class.getDeclaredMethod("createProtectionGroup", Protectable.class,
+                    User.class);
             m.setAccessible(true);
             m.invoke(null, project, CaArrayUsernameHolder.getCsmUser());
-        } catch (SecurityException e) {
+        } catch (final SecurityException e) {
             e.printStackTrace();
-        } catch (NoSuchMethodException e) {
+        } catch (final NoSuchMethodException e) {
             e.printStackTrace();
-        } catch (IllegalArgumentException e) {
+        } catch (final IllegalArgumentException e) {
             e.printStackTrace();
-        } catch (IllegalAccessException e) {
+        } catch (final IllegalAccessException e) {
             e.printStackTrace();
-        } catch (InvocationTargetException e) {
+        } catch (final InvocationTargetException e) {
             e.printStackTrace();
         }
 
@@ -537,12 +543,14 @@ public class ProjectManagementServiceTest extends AbstractServiceTest {
     @Test(expected = IllegalStateException.class)
     @SuppressWarnings("unchecked")
     public void testGetSampleByExternalIdReturnsNonUniqueResult() throws Exception {
-        CaArrayDaoFactory daoFactory = new DaoFactoryStub(){
+        final CaArrayDaoFactory daoFactory = new DaoFactoryStub() {
             @Override
             public SearchDao getSearchDao() {
-                return new SearchDaoStub(){
-                    public <T extends gov.nih.nci.caarray.domain.AbstractCaArrayObject> java.util.List<T> query(T entityToMatch) {
-                        ArrayList<Sample> arrayList = new ArrayList<Sample>();
+                return new SearchDaoStub() {
+                    @Override
+                    public <T extends gov.nih.nci.caarray.domain.AbstractCaArrayObject> java.util.List<T> query(
+                            T entityToMatch) {
+                        final ArrayList<Sample> arrayList = new ArrayList<Sample>();
                         arrayList.add(new Sample());
                         arrayList.add(new Sample());
                         return (List<T>) arrayList;
@@ -550,75 +558,86 @@ public class ProjectManagementServiceTest extends AbstractServiceTest {
                 };
             }
         };
-        ProjectManagementServiceBean bean = new ProjectManagementServiceBean();
+        final DataStorageFacade dataStorageFacade = mock(DataStorageFacade.class);
+        final ProjectManagementServiceBean bean = new ProjectManagementServiceBean();
         bean.setDependencies(daoFactory.getProjectDao(), daoFactory.getFileDao(), daoFactory.getSampleDao(),
-                daoFactory.getSearchDao());
+                daoFactory.getSearchDao(), dataStorageFacade);
 
-        Project project = new Project();
+        final Project project = new Project();
         assertNull(bean.getBiomaterialByExternalId(project, "def", Sample.class));
     }
 
     @Test
     public void testGetSampleByExternalIdReturnsNull() throws Exception {
-        CaArrayDaoFactory daoFactory = new DaoFactoryStub() {
+        final CaArrayDaoFactory daoFactory = new DaoFactoryStub() {
             @Override
             public SearchDao getSearchDao() {
-                return new SearchDaoStub(){
-                    public <T extends gov.nih.nci.caarray.domain.AbstractCaArrayObject> java.util.List<T> query(T entityToMatch) {
+                return new SearchDaoStub() {
+                    @Override
+                    public <T extends gov.nih.nci.caarray.domain.AbstractCaArrayObject> java.util.List<T> query(
+                            T entityToMatch) {
                         return null;
                     };
                 };
             }
         };
-       ProjectManagementServiceBean bean = new ProjectManagementServiceBean();
-       bean.setDependencies(daoFactory.getProjectDao(), daoFactory.getFileDao(), daoFactory.getSampleDao(),
-               daoFactory.getSearchDao());
-       
-       Project project = new Project();
+        final DataStorageFacade dataStorageFacade = mock(DataStorageFacade.class);
+        final ProjectManagementServiceBean bean = new ProjectManagementServiceBean();
+        bean.setDependencies(daoFactory.getProjectDao(), daoFactory.getFileDao(), daoFactory.getSampleDao(),
+                daoFactory.getSearchDao(), dataStorageFacade);
+
+        final Project project = new Project();
 
         assertNull(bean.getBiomaterialByExternalId(project, "abc", Sample.class));
     }
 
     @Test
     public void testGetSampleByExternalId() throws Exception {
-        CaArrayDaoFactory daoFactory = new DaoFactoryStub() {
+        final CaArrayDaoFactory daoFactory = new DaoFactoryStub() {
             @Override
             public SearchDao getSearchDao() {
-                return new SearchDaoStub(){
-                    public <T extends gov.nih.nci.caarray.domain.AbstractCaArrayObject> java.util.List<T> query(T entityToMatch) {
-                        ArrayList<T> arrayList = new ArrayList<T>();
+                return new SearchDaoStub() {
+                    @Override
+                    public <T extends gov.nih.nci.caarray.domain.AbstractCaArrayObject> java.util.List<T> query(
+                            T entityToMatch) {
+                        final ArrayList<T> arrayList = new ArrayList<T>();
                         arrayList.add(entityToMatch);
                         return arrayList;
                     };
                 };
             }
         };
-        ProjectManagementServiceBean bean = new ProjectManagementServiceBean();
+        final DataStorageFacade dataStorageFacade = mock(DataStorageFacade.class);
+        final ProjectManagementServiceBean bean = new ProjectManagementServiceBean();
         bean.setDependencies(daoFactory.getProjectDao(), daoFactory.getFileDao(), daoFactory.getSampleDao(),
-                daoFactory.getSearchDao());
-        
-        Project project = new Project();
+                daoFactory.getSearchDao(), dataStorageFacade);
 
-        Sample sampleByExternalId = bean.getBiomaterialByExternalId(project, "abc", Sample.class);
+        final Project project = new Project();
+
+        final Sample sampleByExternalId = bean.getBiomaterialByExternalId(project, "abc", Sample.class);
         assertNotNull(sampleByExternalId);
         assertSame(project.getExperiment(), sampleByExternalId.getExperiment());
     }
 
     @Test
     public void testSearchByCategory() {
-        assertEquals(0, this.projectManagementService.searchByCategory(null, "test", Sample.class,
-            SearchSampleCategory.values()).size());
+        assertEquals(
+                0,
+                this.projectManagementService.searchByCategory(null, "test", Sample.class,
+                        SearchSampleCategory.values()).size());
 
     }
 
     @Test
     public void testSearchSamplesByCharacteristicCategory() {
-        assertEquals(Collections.EMPTY_LIST, this.projectManagementService.searchSamplesByCharacteristicCategory(null, null, "test"));
+        assertEquals(Collections.EMPTY_LIST,
+                this.projectManagementService.searchSamplesByCharacteristicCategory(null, null, "test"));
     }
 
     @Test
     public void testSearchSourcesByCharacteristicCategory() {
-        assertEquals(Collections.EMPTY_LIST, this.projectManagementService.searchSourcesByCharacteristicCategory(null, null, "test"));
+        assertEquals(Collections.EMPTY_LIST,
+                this.projectManagementService.searchSourcesByCharacteristicCategory(null, null, "test"));
     }
 
     @Test
@@ -635,7 +654,6 @@ public class ProjectManagementServiceTest extends AbstractServiceTest {
     public void testSearchCount() {
         assertEquals(0, this.projectManagementService.searchCount("test", Sample.class, SearchSampleCategory.values()));
     }
-
 
     private static class LocalDaoFactoryStub extends DaoFactoryStub {
 
@@ -662,9 +680,10 @@ public class ProjectManagementServiceTest extends AbstractServiceTest {
         PersistentObject lastDeleted;
 
         @Override
-        public void save(PersistentObject caArrayObject) {
+        public Long save(PersistentObject caArrayObject) {
             this.lastSaved = caArrayObject;
             this.savedObjects.put(caArrayObject.getId(), caArrayObject);
+            return caArrayObject.getId();
         }
 
         /**
@@ -703,23 +722,21 @@ public class ProjectManagementServiceTest extends AbstractServiceTest {
         @SuppressWarnings("unchecked")
         @Override
         public <T extends PersistentObject> T retrieve(Class<T> entityClass, Long entityId) {
-            PersistentObject po = this.projectDao.savedObjects.get(entityId);
+            final PersistentObject po = this.projectDao.savedObjects.get(entityId);
             if (po != null) {
                 return (T) po;
             }
             if (Sample.class.equals(entityClass)) {
-                Sample s = getSample(entityId);
+                final Sample s = getSample(entityId);
                 return (T) s;
-            }
-            else if (Source.class.equals(entityClass)) {
-                Source s = getSource(entityId);
+            } else if (Source.class.equals(entityClass)) {
+                final Source s = getSource(entityId);
                 return (T) s;
-            }
-            else if (Factor.class.equals(entityClass)) {
-                Factor f = getFactor(entityId);
+            } else if (Factor.class.equals(entityClass)) {
+                final Factor f = getFactor(entityId);
                 return (T) f;
             } else if (Extract.class.equals(entityClass)) {
-                Extract e = getExtract(entityId);
+                final Extract e = getExtract(entityId);
                 return (T) e;
             } else if (Project.class.equals(entityClass)) {
                 return (T) getProject(entityId);
@@ -735,39 +752,39 @@ public class ProjectManagementServiceTest extends AbstractServiceTest {
             if (this.projectDao.savedObjects.containsKey(id)) {
                 return (Project) this.projectDao.savedObjects.get(id);
             }
-            Project project = new Project();
+            final Project project = new Project();
             project.setId(id);
             this.projectDao.save(project);
             return project;
         }
 
         private Extract getExtract(Long entityId) {
-            Extract e = new Extract();
+            final Extract e = new Extract();
             setABM(e, entityId);
-            Sample s = getSample(entityId++);
+            final Sample s = getSample(entityId++);
             e.getSamples().add(s);
             s.getExtracts().add(e);
             return e;
         }
 
         private Sample getSample(Long entityId) {
-            Sample s = new Sample();
+            final Sample s = new Sample();
             setABM(s, entityId);
-            Source source = getSource(entityId++);
+            final Source source = getSource(entityId++);
             s.getSources().add(source);
             source.getSamples().add(s);
             return s;
         }
 
         private Source getSource(Long entityId) {
-            Source s = new Source();
+            final Source s = new Source();
             setABM(s, entityId);
             return s;
         }
 
         @SuppressWarnings("deprecation")
         private Factor getFactor(Long entityId) {
-            Factor f = new Factor();
+            final Factor f = new Factor();
             f.setName("Test");
             f.setId(entityId);
             return f;
@@ -783,13 +800,13 @@ public class ProjectManagementServiceTest extends AbstractServiceTest {
         @Override
         @SuppressWarnings("unchecked")
         public <T extends gov.nih.nci.caarray.domain.AbstractCaArrayObject> java.util.List<T> query(T entityToMatch) {
-            List<T> results = new ArrayList<T>();
+            final List<T> results = new ArrayList<T>();
             if (entityToMatch instanceof Sample) {
-                Sample sampleToMatch = (Sample) entityToMatch;
-                for (PersistentObject po : this.projectDao.savedObjects.values()) {
-                    Project p = (Project) po;
+                final Sample sampleToMatch = (Sample) entityToMatch;
+                for (final PersistentObject po : this.projectDao.savedObjects.values()) {
+                    final Project p = (Project) po;
                     if (sampleToMatch.getExperiment().getProject().getId().equals(p.getId())) {
-                        for (Sample s : p.getExperiment().getSamples()) {
+                        for (final Sample s : p.getExperiment().getSamples()) {
                             if (sampleToMatch.getExternalId().equals(s.getExternalId())) {
                                 results.add((T) s);
                             }

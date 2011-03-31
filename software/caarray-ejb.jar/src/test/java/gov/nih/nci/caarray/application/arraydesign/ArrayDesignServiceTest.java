@@ -92,8 +92,6 @@ import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.application.AbstractServiceTest;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
-import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
-import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheStubFactory;
 import gov.nih.nci.caarray.application.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.application.vocabulary.VocabularyServiceStub;
 import gov.nih.nci.caarray.dao.ArrayDao;
@@ -201,15 +199,16 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
                 bind(ArrayDesignService.class).to(ArrayDesignServiceBean.class);
             }
         });
-        
-        Injector injector = Guice.createInjector(new CaArrayEjbStaticInjectionModule(), new CaArrayHibernateHelperModule(),
-                testArrayDesignModule);
-        CaArrayHibernateHelper hibernateHelper = injector.getInstance(CaArrayHibernateHelper.class);;
-        hibernateHelper.setFiltersEnabled(false);
-        transaction = hibernateHelper.beginTransaction();
 
-        caArrayDaoFactoryStub.clear();
-        arrayDesignService = createArrayDesignService(injector);
+        final Injector injector = Guice.createInjector(new CaArrayEjbStaticInjectionModule(),
+                new CaArrayHibernateHelperModule(), testArrayDesignModule);
+        final CaArrayHibernateHelper hibernateHelper = injector.getInstance(CaArrayHibernateHelper.class);
+        ;
+        hibernateHelper.setFiltersEnabled(false);
+        this.transaction = hibernateHelper.beginTransaction();
+
+        this.caArrayDaoFactoryStub.clear();
+        this.arrayDesignService = createArrayDesignService(injector);
         DUMMY_ORGANIZATION.setName("DummyOrganization");
         DUMMY_ORGANISM.setScientificName("Homo sapiens");
         final TermSource ts = new TermSource();
@@ -223,29 +222,26 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
         DUMMY_TERM.setSource(ts);
     }
 
-    public ArrayDesignService createArrayDesignService(final Injector injector) {       
+    public ArrayDesignService createArrayDesignService(final Injector injector) {
         final ArrayDesignServiceBean bean = (ArrayDesignServiceBean) injector.getInstance(ArrayDesignService.class);
         final ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
-        locatorStub.addLookup(FileAccessService.JNDI_NAME, fileAccessServiceStub);
+        locatorStub.addLookup(FileAccessService.JNDI_NAME, this.fileAccessServiceStub);
         locatorStub.addLookup(VocabularyService.JNDI_NAME, new VocabularyServiceStub());
-        TemporaryFileCacheLocator.setTemporaryFileCacheFactory(new TemporaryFileCacheStubFactory(fileAccessServiceStub));
-        TemporaryFileCacheLocator.resetTemporaryFileCache();
         return bean;
     }
 
     @After
     public void tearDown() {
-        if (transaction != null && transaction.isActive()) {
-            transaction.rollback();
+        if (this.transaction != null && this.transaction.isActive()) {
+            this.transaction.rollback();
         }
     }
-
 
     @Test
     public void testSaveArrayDesign() throws Exception {
         final ArrayDesign design = createDesign(null, null, null,
                 getAffymetrixCdfCaArrayFile(AffymetrixArrayDesignFiles.TEST3_CDF));
-        arrayDesignService.importDesign(design);
+        this.arrayDesignService.importDesign(design);
         assertEquals("Test3", design.getName());
         assertEquals("Affymetrix.com", design.getLsidAuthority());
         assertEquals("PhysicalArrayDesign", design.getLsidNamespace());
@@ -253,15 +249,15 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
         assertNull(design.getDescription());
 
         design.setDescription("new description");
-        arrayDesignService.saveArrayDesign(design);
-        final ArrayDesign updatedDesign = arrayDesignService.getArrayDesign(design.getId());
+        this.arrayDesignService.saveArrayDesign(design);
+        final ArrayDesign updatedDesign = this.arrayDesignService.getArrayDesign(design.getId());
         assertEquals("Test3", updatedDesign.getName());
         assertEquals("Affymetrix.com", updatedDesign.getLsidAuthority());
         assertEquals("PhysicalArrayDesign", updatedDesign.getLsidNamespace());
         assertEquals("Test3", updatedDesign.getLsidObjectId());
         assertEquals("new description", updatedDesign.getDescription());
     }
-    
+
     @Test
     @SuppressWarnings("deprecation")
     public void testSaveLockedArrayDesignAllowedFields() throws Exception {
@@ -269,25 +265,25 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
                 getAffymetrixCdfCaArrayFile(AffymetrixArrayDesignFiles.TEST3_CDF));
         // "lock" this design by setting the ID to 2 but can still update description of locked designs
         design.setId(2L);
-        caArrayDaoFactoryStub.getArrayDao().save(design);
-        arrayDesignService.importDesign(design);
-        
+        this.caArrayDaoFactoryStub.getArrayDao().save(design);
+        this.arrayDesignService.importDesign(design);
+
         design.setDescription("another description");
-        design = arrayDesignService.saveArrayDesign(design);
-        assertEquals(2L, design.getId().longValue());        
-        final ArrayDesign updatedLockedDesign = arrayDesignService.getArrayDesign(design.getId());
+        design = this.arrayDesignService.saveArrayDesign(design);
+        assertEquals(2L, design.getId().longValue());
+        final ArrayDesign updatedLockedDesign = this.arrayDesignService.getArrayDesign(design.getId());
         assertEquals("Test3", updatedLockedDesign.getName());
         assertEquals("Affymetrix.com", updatedLockedDesign.getLsidAuthority());
         assertEquals("PhysicalArrayDesign", updatedLockedDesign.getLsidNamespace());
         assertEquals("Test3", updatedLockedDesign.getLsidObjectId());
-        assertEquals("another description", updatedLockedDesign.getDescription());        
+        assertEquals("another description", updatedLockedDesign.getDescription());
     }
 
-    @Test(expected=IllegalAccessException.class)
+    @Test(expected = IllegalAccessException.class)
     public void testSaveArrayDesignWhileImporting() throws Exception {
         final ArrayDesign design = createDesign(null, null, null,
                 getAffymetrixCdfCaArrayFile(AffymetrixArrayDesignFiles.TEST3_CDF));
-        arrayDesignService.importDesign(design);
+        this.arrayDesignService.importDesign(design);
         assertEquals("Test3", design.getName());
         assertEquals("Affymetrix.com", design.getLsidAuthority());
         assertEquals("PhysicalArrayDesign", design.getLsidNamespace());
@@ -296,79 +292,79 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
 
         design.getFirstDesignFile().setFileStatus(FileStatus.IMPORTING);
         design.setName("new name");
-        arrayDesignService.saveArrayDesign(design);
+        this.arrayDesignService.saveArrayDesign(design);
     }
 
-    @Test(expected=IllegalAccessException.class)
+    @Test(expected = IllegalAccessException.class)
     @SuppressWarnings("deprecation")
     public void testSaveArrayDesignLockedProviderChangeOrganization() throws Exception {
         ArrayDesign design = createDesign(null, null, null,
                 getAffymetrixCdfCaArrayFile(AffymetrixArrayDesignFiles.TEST3_CDF));
         // array designs with ID == 2 are considered locked by the test stub
         design.setId(2L);
-        arrayDesignService.importDesign(design);
+        this.arrayDesignService.importDesign(design);
 
         // since the test DB is in memory, we have to instantiate a new copy of this design to alter it
         design = createDesign(null, null, null, getAffymetrixCdfCaArrayFile(AffymetrixArrayDesignFiles.TEST3_CDF));
         design.setId(2L);
         design.setProvider(new Organization());
-        arrayDesignService.saveArrayDesign(design);
+        this.arrayDesignService.saveArrayDesign(design);
     }
 
-    @Test(expected=IllegalAccessException.class)
+    @Test(expected = IllegalAccessException.class)
     @SuppressWarnings("deprecation")
     public void testSaveArrayDesignLockedProviderChangeAssayType() throws Exception {
         ArrayDesign design = createDesign(null, null, null,
                 getAffymetrixCdfCaArrayFile(AffymetrixArrayDesignFiles.TEST3_CDF));
         // array designs with ID == 2 are considered locked by the test stub
         design.setId(2L);
-        arrayDesignService.importDesign(design);
+        this.arrayDesignService.importDesign(design);
 
         // since the test DB is in memory, we have to instantiate a new copy of this design to alter it
         design = createDesign(null, null, null, getAffymetrixCdfCaArrayFile(AffymetrixArrayDesignFiles.TEST3_CDF));
         design.setId(2L);
-        final SortedSet <AssayType>assayTypes = new TreeSet<AssayType>();
+        final SortedSet<AssayType> assayTypes = new TreeSet<AssayType>();
         assayTypes.add(DUMMY_ASSAY_TYPE);
         design.setAssayTypes(assayTypes);
-        arrayDesignService.saveArrayDesign(design);
+        this.arrayDesignService.saveArrayDesign(design);
     }
 
-    @Test(expected=IllegalAccessException.class)
+    @Test(expected = IllegalAccessException.class)
     @SuppressWarnings("deprecation")
     public void testSaveArrayDesignLockedProviderChangeDesignFile() throws Exception {
         ArrayDesign design = createDesign(null, null, null,
                 getAffymetrixCdfCaArrayFile(AffymetrixArrayDesignFiles.TEST3_CDF));
         // array designs with ID == 2 are considered locked by the test stub
         design.setId(2L);
-        arrayDesignService.importDesign(design);
+        this.arrayDesignService.importDesign(design);
 
         // since the test DB is in memory, we have to instantiate a new copy of this design to alter it
         design = createDesign(null, null, null, getAffymetrixCdfCaArrayFile(AffymetrixArrayDesignFiles.TEST3_CDF));
         design.setId(2L);
         design.getDesignFiles().clear();
         design.addDesignFile(new CaArrayFile());
-        arrayDesignService.saveArrayDesign(design);
+        this.arrayDesignService.saveArrayDesign(design);
     }
 
     @Test
     public void testImportDesignDetails_Genepix() {
         final ArrayDesign design = new ArrayDesign();
-        arrayDesignService.importDesignDetails(design);
+        this.arrayDesignService.importDesignDetails(design);
         assertNull(design.getNumberOfFeatures());
 
         design.addDesignFile(getGenepixCaArrayFile(GenepixArrayDesignFiles.DEMO_GAL));
-        arrayDesignService.importDesign(design);
-        arrayDesignService.importDesignDetails(design);
+        this.arrayDesignService.importDesign(design);
+        this.arrayDesignService.importDesignDetails(design);
         checkGenepixDesign(design, "Demo", 8064, 4, 4);
         design.getDesignFiles().clear();
         design.addDesignFile(getGenepixCaArrayFile(GenepixArrayDesignFiles.MEEBO));
-        arrayDesignService.importDesign(design);
-        arrayDesignService.importDesignDetails(design);
+        this.arrayDesignService.importDesign(design);
+        this.arrayDesignService.importDesignDetails(design);
         checkGenepixDesign(design, "MEEBO", 38880, 16, 13);
     }
 
-    private void checkGenepixDesign(final ArrayDesign design, final String expectedName, final int expectedNumberOfFeatures,
-            final int largestExpectedBlockColumn, final int largestExpectedBlockRow) {
+    private void checkGenepixDesign(final ArrayDesign design, final String expectedName,
+            final int expectedNumberOfFeatures, final int largestExpectedBlockColumn, final int largestExpectedBlockRow) {
         assertEquals(expectedName, design.getName());
         assertEquals(expectedNumberOfFeatures, design.getNumberOfFeatures().intValue());
         assertEquals(expectedNumberOfFeatures, design.getDesignDetails().getFeatures().size());
@@ -391,11 +387,11 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
     @Test
     public void testImportDesign_ArrayDesign() {
         final ArrayDesign design = new ArrayDesign();
-        arrayDesignService.importDesign(design);
+        this.arrayDesignService.importDesign(design);
         assertNull(design.getName());
 
         design.addDesignFile(getAffymetrixCdfCaArrayFile(AffymetrixArrayDesignFiles.TEST3_CDF));
-        arrayDesignService.importDesign(design);
+        this.arrayDesignService.importDesign(design);
         assertEquals("Test3", design.getName());
         assertEquals("Affymetrix.com", design.getLsidAuthority());
         assertEquals("PhysicalArrayDesign", design.getLsidNamespace());
@@ -407,7 +403,7 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
         final CaArrayFile designFile = getAffymetrixCdfCaArrayFile(AffymetrixArrayDesignFiles.TEST3_CDF);
         final ArrayDesign arrayDesign = new ArrayDesign();
         arrayDesign.addDesignFile(designFile);
-        arrayDesignService.importDesign(arrayDesign);
+        this.arrayDesignService.importDesign(arrayDesign);
         assertEquals("Test3", arrayDesign.getName());
         assertEquals("Affymetrix.com", arrayDesign.getLsidAuthority());
         assertEquals("PhysicalArrayDesign", arrayDesign.getLsidNamespace());
@@ -452,8 +448,8 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
         final ArrayDesign design = new ArrayDesign();
         design.setId(0L);
         design.addDesignFile(getAffymetrixCdfCaArrayFile(testFile));
-        arrayDesignService.importDesign(design);
-        arrayDesignService.importDesignDetails(design);
+        this.arrayDesignService.importDesign(design);
+        this.arrayDesignService.importDesignDetails(design);
         assertEquals(name, design.getName());
         assertEquals("Affymetrix.com", design.getLsidAuthority());
         assertEquals("PhysicalArrayDesign", design.getLsidNamespace());
@@ -466,7 +462,7 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
         final CaArrayFile designFile = getAffymetrixCdfCaArrayFile(AffymetrixArrayDesignFiles.TEN_K_CDF);
         final ArrayDesign arrayDesign = new ArrayDesign();
         arrayDesign.addDesignFile(designFile);
-        arrayDesignService.importDesign(arrayDesign);
+        this.arrayDesignService.importDesign(arrayDesign);
         assertEquals("Mapping10K_Xba131-xda", arrayDesign.getName());
         assertEquals("Affymetrix.com", arrayDesign.getLsidAuthority());
         assertEquals("PhysicalArrayDesign", arrayDesign.getLsidNamespace());
@@ -481,7 +477,7 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
         final ArrayDesign arrayDesign = new ArrayDesign();
         arrayDesign.addDesignFile(clfDesignFile);
         arrayDesign.addDesignFile(pgfDesignFile);
-        arrayDesignService.importDesign(arrayDesign);
+        this.arrayDesignService.importDesign(arrayDesign);
         assertEquals("HuEx-1_0-st-v1-test", arrayDesign.getName());
         assertEquals("Affymetrix.com", arrayDesign.getLsidAuthority());
         assertEquals("PhysicalArrayDesign", arrayDesign.getLsidNamespace());
@@ -498,8 +494,8 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
         design.setId(0L);
         design.addDesignFile(clfDesignFile);
         design.addDesignFile(pgfDesignFile);
-        arrayDesignService.importDesign(design);
-        arrayDesignService.importDesignDetails(design);
+        this.arrayDesignService.importDesign(design);
+        this.arrayDesignService.importDesignDetails(design);
         final String arrayDesignName = "HuEx-1_0-st-v1-test";
         assertEquals(arrayDesignName, design.getName());
         assertEquals("Affymetrix.com", design.getLsidAuthority());
@@ -542,7 +538,7 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
         final CaArrayFile designFile = getIlluminaCaArrayFile(IlluminaArrayDesignFiles.HUMAN_WG6_CSV);
         final ArrayDesign arrayDesign = new ArrayDesign();
         arrayDesign.addDesignFile(designFile);
-        arrayDesignService.importDesign(arrayDesign);
+        this.arrayDesignService.importDesign(arrayDesign);
         assertEquals("Human_WG-6", arrayDesign.getName());
         assertEquals("illumina.com", arrayDesign.getLsidAuthority());
         assertEquals("PhysicalArrayDesign", arrayDesign.getLsidNamespace());
@@ -555,8 +551,8 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
         final CaArrayFile designFile = getIlluminaCaArrayFile(IlluminaArrayDesignFiles.HUMAN_WG6_CSV);
         final ArrayDesign arrayDesign = new ArrayDesign();
         arrayDesign.addDesignFile(designFile);
-        arrayDesignService.importDesign(arrayDesign);
-        arrayDesignService.importDesignDetails(arrayDesign);
+        this.arrayDesignService.importDesign(arrayDesign);
+        this.arrayDesignService.importDesignDetails(arrayDesign);
         assertEquals(47296, arrayDesign.getDesignDetails().getProbes().size());
     }
 
@@ -565,7 +561,7 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
         final CaArrayFile designFile = getIlluminaCaArrayFile(IlluminaArrayDesignFiles.HUMAN_HAP_300_CSV);
         final ArrayDesign arrayDesign = new ArrayDesign();
         arrayDesign.addDesignFile(designFile);
-        arrayDesignService.importDesign(arrayDesign);
+        this.arrayDesignService.importDesign(arrayDesign);
         assertEquals("HumanHap300v2_A", arrayDesign.getName());
         assertEquals("illumina.com", arrayDesign.getLsidAuthority());
         assertEquals("PhysicalArrayDesign", arrayDesign.getLsidNamespace());
@@ -578,8 +574,8 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
         final CaArrayFile designFile = getIlluminaCaArrayFile(IlluminaArrayDesignFiles.HUMAN_HAP_300_CSV);
         final ArrayDesign arrayDesign = new ArrayDesign();
         arrayDesign.addDesignFile(designFile);
-        arrayDesignService.importDesign(arrayDesign);
-        arrayDesignService.importDesignDetails(arrayDesign);
+        this.arrayDesignService.importDesign(arrayDesign);
+        this.arrayDesignService.importDesignDetails(arrayDesign);
         assertEquals(318237, arrayDesign.getDesignDetails().getProbes().size());
         for (final LogicalProbe probe : arrayDesign.getDesignDetails().getLogicalProbes()) {
             assertNotNull(probe);
@@ -597,11 +593,11 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
 
     @Test
     public void testImportDesign_NimblegenTestExpression() throws Exception {
-        CaArrayFile designFile = getNimblegenCaArrayFile(NimblegenArrayDesignFiles.SHORT_EXPRESSION_DESIGN);
-        ArrayDesign design = new ArrayDesign();
+        final CaArrayFile designFile = getNimblegenCaArrayFile(NimblegenArrayDesignFiles.SHORT_EXPRESSION_DESIGN);
+        final ArrayDesign design = new ArrayDesign();
         design.addDesignFile(designFile);
-        arrayDesignService.importDesign(design);
-        arrayDesignService.importDesignDetails(design);
+        this.arrayDesignService.importDesign(design);
+        this.arrayDesignService.importDesignDetails(design);
         assertEquals("2006-08-03_HG18_60mer_expr-short", design.getName());
         assertEquals("nimblegen.com", design.getLsidAuthority());
         assertEquals("PhysicalArrayDesign", design.getLsidNamespace());
@@ -613,11 +609,11 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
 
     @Test
     public void testImportDesign_NimblegenTestCGH() throws Exception {
-        CaArrayFile designFile = getNimblegenCaArrayFile(NimblegenArrayDesignFiles.SHORT_CGH_DESIGN);
-        ArrayDesign design = new ArrayDesign();
+        final CaArrayFile designFile = getNimblegenCaArrayFile(NimblegenArrayDesignFiles.SHORT_CGH_DESIGN);
+        final ArrayDesign design = new ArrayDesign();
         design.addDesignFile(designFile);
-        arrayDesignService.importDesign(design);
-        arrayDesignService.importDesignDetails(design);
+        this.arrayDesignService.importDesign(design);
+        this.arrayDesignService.importDesignDetails(design);
         assertEquals("090210_HG18_WG_CGH_v3.1_HX3-short", design.getName());
         assertEquals("nimblegen.com", design.getLsidAuthority());
         assertEquals("PhysicalArrayDesign", design.getLsidNamespace());
@@ -629,18 +625,18 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
 
     @Test
     public void testImportDesign_AgilentGelm() throws Exception {
-        CaArrayFile designFile = getAgilentGelmCaArrayFile(AgilentArrayDesignFiles.TEST_ACGH_XML);
-        ArrayDesign design = new ArrayDesign();
+        final CaArrayFile designFile = getAgilentGelmCaArrayFile(AgilentArrayDesignFiles.TEST_ACGH_XML);
+        final ArrayDesign design = new ArrayDesign();
         design.addDesignFile(designFile);
 
-        arrayDesignService.importDesign(design);
+        this.arrayDesignService.importDesign(design);
 
         assertEquals("022522_D_F_20090107", design.getName());
         assertEquals("Agilent.com", design.getLsidAuthority());
         assertEquals("PhysicalArrayDesign", design.getLsidNamespace());
         assertEquals("022522_D_F_20090107", design.getLsidObjectId());
 
-        arrayDesignService.importDesignDetails(design);
+        this.arrayDesignService.importDesignDetails(design);
 
         assertEquals(180880, design.getNumberOfFeatures().intValue());
         assertEquals(180880, design.getDesignDetails().getFeatures().size());
@@ -655,18 +651,18 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
 
     @Test
     public void testImportDesign_AgilentGeneExpression() throws Exception {
-        CaArrayFile designFile = getAgilentGelmCaArrayFile(AgilentArrayDesignFiles.TEST_GENE_EXPRESSION_1_XML);
-        ArrayDesign design = new ArrayDesign();
+        final CaArrayFile designFile = getAgilentGelmCaArrayFile(AgilentArrayDesignFiles.TEST_GENE_EXPRESSION_1_XML);
+        final ArrayDesign design = new ArrayDesign();
         design.addDesignFile(designFile);
 
-        arrayDesignService.importDesign(design);
+        this.arrayDesignService.importDesign(design);
 
         assertEquals("015354_D_20061130", design.getName());
         assertEquals("Agilent.com", design.getLsidAuthority());
         assertEquals("PhysicalArrayDesign", design.getLsidNamespace());
         assertEquals("015354_D_20061130", design.getLsidObjectId());
 
-        arrayDesignService.importDesignDetails(design);
+        this.arrayDesignService.importDesignDetails(design);
 
         assertEquals(45220, design.getNumberOfFeatures().intValue());
         assertEquals(45220, design.getDesignDetails().getFeatures().size());
@@ -678,18 +674,18 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
 
     @Test
     public void testImportDesign_AgilentMiRNA() throws Exception {
-        CaArrayFile designFile = getAgilentGelmCaArrayFile(AgilentArrayDesignFiles.TEST_MIRNA_1_XML);
-        ArrayDesign design = new ArrayDesign();
+        final CaArrayFile designFile = getAgilentGelmCaArrayFile(AgilentArrayDesignFiles.TEST_MIRNA_1_XML);
+        final ArrayDesign design = new ArrayDesign();
         design.addDesignFile(designFile);
 
-        arrayDesignService.importDesign(design);
+        this.arrayDesignService.importDesign(design);
 
         assertEquals("Human_miRNA_Microarray_3.0", design.getName());
         assertEquals("Agilent.com", design.getLsidAuthority());
         assertEquals("PhysicalArrayDesign", design.getLsidNamespace());
         assertEquals("Human_miRNA_Microarray_3.0", design.getLsidObjectId());
 
-        arrayDesignService.importDesignDetails(design);
+        this.arrayDesignService.importDesignDetails(design);
 
         assertEquals(15744, design.getNumberOfFeatures().intValue());
         assertEquals(15744, design.getDesignDetails().getFeatures().size());
@@ -705,7 +701,7 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
         // Once these file types can be properly parsed, they should be pulled out into their own tests
         CaArrayFile designFile = getCaArrayFile(IlluminaArrayDesignFiles.HUMAN_HAP_300_CSV, FileType.AGILENT_CSV);
         ArrayDesign arrayDesign = createDesign(null, null, null, designFile);
-        arrayDesignService.importDesign(arrayDesign);
+        this.arrayDesignService.importDesign(arrayDesign);
         assertEquals("HumanHap300v2_A", arrayDesign.getName());
         assertEquals("Agilent.com", arrayDesign.getLsidAuthority());
         assertEquals("PhysicalArrayDesign", arrayDesign.getLsidNamespace());
@@ -713,7 +709,7 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
 
         designFile = getCaArrayFile(IlluminaArrayDesignFiles.HUMAN_HAP_300_CSV, FileType.IMAGENE_TPL);
         arrayDesign = createDesign(null, null, null, designFile);
-        arrayDesignService.importDesign(arrayDesign);
+        this.arrayDesignService.importDesign(arrayDesign);
         assertEquals("HumanHap300v2_A", arrayDesign.getName());
         assertEquals("caarray.nci.nih.gov", arrayDesign.getLsidAuthority());
         assertEquals("domain", arrayDesign.getLsidNamespace());
@@ -721,7 +717,7 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
 
         designFile = getCaArrayFile(IlluminaArrayDesignFiles.HUMAN_HAP_300_CSV, FileType.UCSF_SPOT_SPT);
         arrayDesign = createDesign(null, null, null, designFile);
-        arrayDesignService.importDesign(arrayDesign);
+        this.arrayDesignService.importDesign(arrayDesign);
         assertEquals("HumanHap300v2_A", arrayDesign.getName());
         assertEquals("caarray.nci.nih.gov", arrayDesign.getLsidAuthority());
         assertEquals("domain", arrayDesign.getLsidNamespace());
@@ -729,7 +725,7 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
 
         designFile = getCaArrayFile(MageTabDataFiles.SPECIFICATION_EXAMPLE_ADF, FileType.MAGE_TAB_ADF);
         arrayDesign = createDesign(null, null, null, designFile);
-        arrayDesignService.importDesign(arrayDesign);
+        this.arrayDesignService.importDesign(arrayDesign);
         assertEquals("a-mexp-58f_excerpt_v1.0", arrayDesign.getName());
         assertEquals("caarray.nci.nih.gov", arrayDesign.getLsidAuthority());
         assertEquals("domain", arrayDesign.getLsidNamespace());
@@ -739,14 +735,14 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
     @Test
     public void testValidateDesign_AffymetrixTest3() {
         final CaArrayFile designFile = getAffymetrixCdfCaArrayFile(AffymetrixArrayDesignFiles.TEST3_CDF);
-        final ValidationResult result = arrayDesignService.validateDesign(Collections.singleton(designFile));
+        final ValidationResult result = this.arrayDesignService.validateDesign(Collections.singleton(designFile));
         assertTrue(result.isValid());
     }
 
     @Test
     public void testValidateDesign_AffymetrixHG_U133_Plus2() {
         final CaArrayFile designFile = getAffymetrixCdfCaArrayFile(AffymetrixArrayDesignFiles.HG_U133_PLUS_2_CDF);
-        final ValidationResult result = arrayDesignService.validateDesign(Collections.singleton(designFile));
+        final ValidationResult result = this.arrayDesignService.validateDesign(Collections.singleton(designFile));
         assertTrue(result.isValid());
     }
 
@@ -757,72 +753,71 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
         final Set<CaArrayFile> designFiles = new HashSet<CaArrayFile>();
         designFiles.add(pgfDesignFile);
         designFiles.add(clfDesignFile);
-        final ValidationResult result = arrayDesignService.validateDesign(designFiles);
+        final ValidationResult result = this.arrayDesignService.validateDesign(designFiles);
         assertTrue(result.isValid());
     }
 
     @Test
     public void testValidateDesign_Genepix() {
         CaArrayFile designFile = getGenepixCaArrayFile(GenepixArrayDesignFiles.DEMO_GAL);
-        ValidationResult result = arrayDesignService.validateDesign(Collections.singleton(designFile));
+        ValidationResult result = this.arrayDesignService.validateDesign(Collections.singleton(designFile));
         assertTrue(result.toString(), result.isValid());
         designFile = getGenepixCaArrayFile(GenepixArrayDesignFiles.TWO_K_GAL);
-        result = arrayDesignService.validateDesign(Collections.singleton(designFile));
+        result = this.arrayDesignService.validateDesign(Collections.singleton(designFile));
         assertTrue(result.toString(), result.isValid());
         designFile = getGenepixCaArrayFile(GenepixArrayDesignFiles.MEEBO);
-        result = arrayDesignService.validateDesign(Collections.singleton(designFile));
+        result = this.arrayDesignService.validateDesign(Collections.singleton(designFile));
         assertTrue(result.toString(), result.isValid());
     }
 
     @Test
     public void testValidateDesign_IlluminaHumanWG6() {
         CaArrayFile designFile = getIlluminaCaArrayFile(IlluminaArrayDesignFiles.HUMAN_WG6_CSV);
-        ValidationResult result = arrayDesignService.validateDesign(Collections.singleton(designFile));
+        ValidationResult result = this.arrayDesignService.validateDesign(Collections.singleton(designFile));
         assertTrue(result.isValid());
 
         designFile = getIlluminaCaArrayFile(IlluminaArrayDesignFiles.HUMAN_WG6_CSV_INVALID_HEADERS);
 
-        result = arrayDesignService.validateDesign(Collections.singleton(designFile));
+        result = this.arrayDesignService.validateDesign(Collections.singleton(designFile));
         assertFalse(result.isValid());
         assertEquals(1, result.getFileValidationResults().size());
         assertEquals("Unable to read file", result.getFileValidationResults().get(0).getMessages().get(0).getMessage());
         assertEquals("Unable to read file", designFile.getValidationResult().getMessages().get(0).getMessage());
 
         designFile = getIlluminaCaArrayFile(IlluminaArrayDesignFiles.HUMAN_WG6_CSV_INVALID_CONTENT);
-        result = arrayDesignService.validateDesign(Collections.singleton(designFile));
+        result = this.arrayDesignService.validateDesign(Collections.singleton(designFile));
         assertFalse(result.isValid());
 
-
         designFile = getIlluminaCaArrayFile(AffymetrixArrayDataFiles.TEST3_CEL);
-        result = arrayDesignService.validateDesign(Collections.singleton(designFile));
+        result = this.arrayDesignService.validateDesign(Collections.singleton(designFile));
         assertFalse(result.isValid());
     }
 
     @Test
     public void testValidateDesign_IlluminaHumanHap300() {
         final CaArrayFile designFile = getIlluminaCaArrayFile(IlluminaArrayDesignFiles.HUMAN_HAP_300_CSV);
-        final ValidationResult result = arrayDesignService.validateDesign(Collections.singleton(designFile));
+        final ValidationResult result = this.arrayDesignService.validateDesign(Collections.singleton(designFile));
         assertTrue(result.isValid());
     }
 
     @Test
     public void testValidateDesign_InvalidFileType() {
         CaArrayFile invalidDesignFile = getCaArrayFile(AffymetrixArrayDataFiles.TEST3_CEL, FileType.AFFYMETRIX_CEL);
-        ValidationResult result = arrayDesignService.validateDesign(Collections.singleton(invalidDesignFile));
+        ValidationResult result = this.arrayDesignService.validateDesign(Collections.singleton(invalidDesignFile));
         assertFalse(result.isValid());
         invalidDesignFile = getCaArrayFile(AffymetrixArrayDataFiles.TEST3_CEL, FileType.AGILENT_CSV);
-        result = arrayDesignService.validateDesign(Collections.singleton(invalidDesignFile));
+        result = this.arrayDesignService.validateDesign(Collections.singleton(invalidDesignFile));
         assertTrue(result.isValid());
         assertEquals(FileStatus.VALIDATED_NOT_PARSED, invalidDesignFile.getFileStatus());
         invalidDesignFile = getCaArrayFile(AffymetrixArrayDataFiles.TEST3_CEL, null);
-        result = arrayDesignService.validateDesign(Collections.singleton(invalidDesignFile));
+        result = this.arrayDesignService.validateDesign(Collections.singleton(invalidDesignFile));
         assertFalse(result.isValid());
     }
 
     @Test
     public void testValidateDesign_AgilentGelm() {
         final CaArrayFile designFile = getAgilentGelmCaArrayFile(AgilentArrayDesignFiles.TEST_ACGH_XML);
-        final ValidationResult result = arrayDesignService.validateDesign(Collections.singleton(designFile));
+        final ValidationResult result = this.arrayDesignService.validateDesign(Collections.singleton(designFile));
         assertTrue(result.isValid());
     }
 
@@ -830,18 +825,17 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
     public void testDuplicateArrayDesign() {
         final ArrayDesign design = createDesign(null, null, null,
                 getAffymetrixCdfCaArrayFile(AffymetrixArrayDesignFiles.TEST3_CDF));
-        arrayDesignService.importDesign(design);
+        this.arrayDesignService.importDesign(design);
         @SuppressWarnings("unused")
-        final
-        CaArrayFile designFile = getAffymetrixCdfCaArrayFile(AffymetrixArrayDesignFiles.TEST3_CDF);
-        ValidationResult result = arrayDesignService.validateDesign(design);
+        final CaArrayFile designFile = getAffymetrixCdfCaArrayFile(AffymetrixArrayDesignFiles.TEST3_CDF);
+        ValidationResult result = this.arrayDesignService.validateDesign(design);
         assertFalse(result.isValid());
         assertTrue(result.getMessages().iterator().next().getMessage().contains("has already been imported"));
 
-        final ArrayDesign design2 = createDesign(null, null, null, getCaArrayFile(AffymetrixArrayDesignFiles.TEST3_CDF,
-                FileType.UCSF_SPOT_SPT));
-        arrayDesignService.importDesign(design2);
-        result = arrayDesignService.validateDesign(design2);
+        final ArrayDesign design2 = createDesign(null, null, null,
+                getCaArrayFile(AffymetrixArrayDesignFiles.TEST3_CDF, FileType.UCSF_SPOT_SPT));
+        this.arrayDesignService.importDesign(design2);
+        result = this.arrayDesignService.validateDesign(design2);
         assertFalse(result.isValid());
         assertTrue(result.getMessages().iterator().next().getMessage().contains("design already exists with the name"));
     }
@@ -870,13 +864,12 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
         if (caArrayFile == null) {
             caArrayFile = new CaArrayFile();
         }
-        fileAccessServiceStub.save(caArrayFile);
+        this.fileAccessServiceStub.save(caArrayFile);
         arrayDesign.addDesignFile(caArrayFile);
 
         arrayDesign.setTechnologyType(DUMMY_TERM);
         return arrayDesign;
     }
-
 
     private CaArrayFile getGenepixCaArrayFile(final File file) {
         return getCaArrayFile(file, FileType.GENEPIX_GAL);
@@ -902,25 +895,25 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
      * Sets file type based on extension.
      */
     private CaArrayFile getCaArrayFile(final File file) {
-        final CaArrayFile caArrayFile = fileAccessServiceStub.add(file);
+        final CaArrayFile caArrayFile = this.fileAccessServiceStub.add(file);
         return caArrayFile;
     }
 
     private CaArrayFile getCaArrayFile(final File file, final FileType type) {
-        final CaArrayFile caArrayFile = fileAccessServiceStub.add(file);
+        final CaArrayFile caArrayFile = this.fileAccessServiceStub.add(file);
         caArrayFile.setFileType(type);
         return caArrayFile;
     }
 
     @Test
     public void testOrganizations() {
-        assertEquals(0, arrayDesignService.getAllProviders().size());
+        assertEquals(0, this.arrayDesignService.getAllProviders().size());
         final Organization o = new Organization();
         o.setName("Foo");
         o.setProvider(true);
-        caArrayDaoFactoryStub.getSearchDao().save(o);
-        assertEquals(1, arrayDesignService.getAllProviders().size());
-        assertEquals("Foo", arrayDesignService.getAllProviders().get(0).getName());
+        this.caArrayDaoFactoryStub.getSearchDao().save(o);
+        assertEquals(1, this.arrayDesignService.getAllProviders().size());
+        assertEquals("Foo", this.arrayDesignService.getAllProviders().get(0).getName());
     }
 
     public static class LocalDaoFactoryStub extends DaoFactoryStub {
@@ -944,15 +937,15 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
                 }
 
                 @Override
-                public List<ArrayDesign> getArrayDesigns(final Organization provider, final Set<AssayType> assayTypes, final boolean importedOnly) {
+                public List<ArrayDesign> getArrayDesigns(final Organization provider, final Set<AssayType> assayTypes,
+                        final boolean importedOnly) {
                     final List<ArrayDesign> designs = new ArrayList<ArrayDesign>();
-                    for (final PersistentObject entity : objectMap.values()) {
+                    for (final PersistentObject entity : LocalDaoFactoryStub.this.objectMap.values()) {
                         if (entity instanceof ArrayDesign) {
                             final ArrayDesign design = (ArrayDesign) entity;
                             if (ObjectUtils.equals(provider, design.getProvider())
-                                    && (!importedOnly
-                                            || design.getDesignFileSet().getStatus() == FileStatus.IMPORTED
-                                            || design.getDesignFileSet().getStatus() == FileStatus.IMPORTED_NOT_PARSED)) {
+                                    && (!importedOnly || design.getDesignFileSet().getStatus() == FileStatus.IMPORTED || design
+                                            .getDesignFileSet().getStatus() == FileStatus.IMPORTED_NOT_PARSED)) {
                                 designs.add(design);
                             }
                         }
@@ -963,7 +956,7 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
                 @Override
                 public List<Long> getLogicalProbeIds(final ArrayDesign design, final PageSortParams<LogicalProbe> params) {
                     final List<Long> ids = new ArrayList<Long>();
-                    for (final Entry<Long, PersistentObject> entry : objectMap.entrySet()) {
+                    for (final Entry<Long, PersistentObject> entry : LocalDaoFactoryStub.this.objectMap.entrySet()) {
                         if (entry.getValue() instanceof LogicalProbe) {
                             ids.add(entry.getKey());
                         }
@@ -979,7 +972,7 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
 
                 @SuppressWarnings("deprecation")
                 @Override
-                public void save(final PersistentObject object) {
+                public Long save(final PersistentObject object) {
                     if (object instanceof AbstractCaArrayObject) {
                         final AbstractCaArrayObject caArrayObject = (AbstractCaArrayObject) object;
                         if (caArrayObject.getId() == null && !(caArrayObject instanceof Feature)) {
@@ -990,9 +983,9 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
                         }
                         if (caArrayObject instanceof AbstractCaArrayEntity) {
                             final AbstractCaArrayEntity caArrayEntity = (AbstractCaArrayEntity) object;
-                            lsidEntityMap.put(caArrayEntity.getLsid(), caArrayEntity);
+                            LocalDaoFactoryStub.this.lsidEntityMap.put(caArrayEntity.getLsid(), caArrayEntity);
                         }
-                        objectMap.put(caArrayObject.getId(), caArrayObject);
+                        LocalDaoFactoryStub.this.objectMap.put(caArrayObject.getId(), caArrayObject);
                     }
                     // manually create reverse association automatically created by database fk relationship
                     if (object instanceof LogicalProbe) {
@@ -1006,33 +999,37 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
                         feature.getArrayDesignDetails().getFeatures().add(feature);
                     } else if (object instanceof ArrayDesign) {
                         final ArrayDesign ad = (ArrayDesign) object;
-                        for (CaArrayFile f : ad.getDesignFiles()) {
+                        for (final CaArrayFile f : ad.getDesignFiles()) {
                             if (f.getId() == null) {
-                                f.setId(nextId++);                                
+                                f.setId(nextId++);
                             }
                         }
                     }
+                    return object.getId();
                 }
 
                 @Override
-                public ArrayDesign getArrayDesign(final String lsidAuthority, final String lsidNamespace, final String lsidObjectId) {
-                    return (ArrayDesign)
-                    lsidEntityMap.get("URN:LSID:" + lsidAuthority + ":" + lsidNamespace + ":" + lsidObjectId);
+                public ArrayDesign getArrayDesign(final String lsidAuthority, final String lsidNamespace,
+                        final String lsidObjectId) {
+                    return (ArrayDesign) LocalDaoFactoryStub.this.lsidEntityMap.get("URN:LSID:" + lsidAuthority + ":"
+                            + lsidNamespace + ":" + lsidObjectId);
                 }
 
                 @Override
-                public DesignElementList getDesignElementList(final String lsidAuthority, final String lsidNamespace, final String lsidObjectId) {
-                    return (DesignElementList)
-                    lsidEntityMap.get("URN:LSID:" + lsidAuthority + ":" + lsidNamespace + ":" + lsidObjectId);
+                public DesignElementList getDesignElementList(final String lsidAuthority, final String lsidNamespace,
+                        final String lsidObjectId) {
+                    return (DesignElementList) LocalDaoFactoryStub.this.lsidEntityMap.get("URN:LSID:" + lsidAuthority
+                            + ":" + lsidNamespace + ":" + lsidObjectId);
                 }
 
                 @Override
                 public ArrayDesign getArrayDesign(final long id) {
-                    return (ArrayDesign) objectMap.get(id);
+                    return (ArrayDesign) LocalDaoFactoryStub.this.objectMap.get(id);
                 }
 
                 @Override
-                public <T extends PersistentObject> List<T> queryEntityByExample(final T entityToMatch, final Order... order) {
+                public <T extends PersistentObject> List<T> queryEntityByExample(final T entityToMatch,
+                        final Order... order) {
                     final List<T> entities = new ArrayList<T>();
                     entities.add(entityToMatch);
                     return entities;
@@ -1064,8 +1061,8 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
         }
 
         public void clear() {
-            lsidEntityMap.clear();
-            objectMap.clear();
+            this.lsidEntityMap.clear();
+            this.objectMap.clear();
             nextId = 0;
             nextFeatureId = 1;
         }
@@ -1079,18 +1076,19 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
                 @Override
                 @SuppressWarnings("unchecked")
                 public <T extends PersistentObject> T retrieve(final Class<T> entityClass, final Long entityId) {
-                    return (T) objectMap.get(entityId);
+                    return (T) LocalDaoFactoryStub.this.objectMap.get(entityId);
                 }
 
                 @Override
                 @SuppressWarnings("unchecked")
                 public <T extends PersistentObject> T retrieveUnsecured(final Class<T> entityClass, final Long entityId) {
-                    return (T) objectMap.get(entityId);
+                    return (T) LocalDaoFactoryStub.this.objectMap.get(entityId);
                 }
 
                 @Override
-                public void save(final PersistentObject object) {
-                    objectMap.put(object.getId(), object);
+                public Long save(final PersistentObject object) {
+                    LocalDaoFactoryStub.this.objectMap.put(object.getId(), object);
+                    return object.getId();
                 }
             };
         }
@@ -1107,7 +1105,8 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
                 @Override
                 public List<Organization> getAllProviders() {
                     final List<Organization> orgs = new ArrayList<Organization>();
-                    CollectionUtils.select(objectMap.values(), PredicateUtils.instanceofPredicate(Organization.class), orgs);
+                    CollectionUtils.select(LocalDaoFactoryStub.this.objectMap.values(),
+                            PredicateUtils.instanceofPredicate(Organization.class), orgs);
                     return orgs;
                 }
             };
@@ -1120,22 +1119,23 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
         public VocabularyDao getVocabularyDao() {
             return new VocabularyDaoStub() {
                 private final TermSource termSource = new TermSource();
-                private final List<TermSource> termSources = Collections.singletonList(termSource);
+                private final List<TermSource> termSources = Collections.singletonList(this.termSource);
                 private final Term millimeterTerm = new Term();
-
 
                 /**
                  * {@InheritDoc}
                  */
+                @Override
                 @SuppressWarnings("unchecked")
                 public <T extends PersistentObject> List<T> queryEntityByExample(ExampleSearchCriteria<T> criteria,
                         Order... orders) {
-                    return (List<T>) termSources;
+                    return (List<T>) this.termSources;
                 }
 
+                @Override
                 public Term getTerm(TermSource source, String value) {
-                    if (termSource.equals(source) && value.equals("mm")) {
-                        return millimeterTerm;
+                    if (this.termSource.equals(source) && value.equals("mm")) {
+                        return this.millimeterTerm;
                     }
                     return null;
                 }

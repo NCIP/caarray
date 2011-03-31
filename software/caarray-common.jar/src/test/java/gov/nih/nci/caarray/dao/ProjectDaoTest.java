@@ -82,7 +82,7 @@
  */
 package gov.nih.nci.caarray.dao;
 
- import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -158,7 +158,7 @@ import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
 
 /**
  * Unit tests for the Project DAO.
- *
+ * 
  * @author Rashmi Srinivasa
  */
 @SuppressWarnings("PMD")
@@ -174,13 +174,13 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
         Transaction tx = null;
 
         try {
-            tx = hibernateHelper.beginTransaction();
+            tx = this.hibernateHelper.beginTransaction();
             saveSupportingObjects();
-            int size = DAO_OBJECT.getProjectCountForCurrentUser();
+            final int size = DAO_OBJECT.getProjectCountForCurrentUser();
             DAO_OBJECT.save(DUMMY_PROJECT_1);
             tx.commit();
 
-            tx = hibernateHelper.beginTransaction();
+            tx = this.hibernateHelper.beginTransaction();
             Project retrievedProject = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
             assertTrue(DUMMY_PROJECT_1.equals(retrievedProject));
             checkFiles(DUMMY_PROJECT_1, retrievedProject);
@@ -188,18 +188,18 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
             assertEquals(size + 1, DAO_OBJECT.getProjectCountForCurrentUser());
             tx.commit();
 
-            tx = hibernateHelper.beginTransaction();
+            tx = this.hibernateHelper.beginTransaction();
             retrievedProject = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
             DAO_OBJECT.remove(retrievedProject);
             tx.commit();
 
-            tx = hibernateHelper.beginTransaction();
-            Project deletedProject = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
+            tx = this.hibernateHelper.beginTransaction();
+            final Project deletedProject = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
             assertNull(deletedProject);
             assertEquals(size, DAO_OBJECT.getProjectCountForCurrentUser());
             tx.commit();
-        } catch (DAOException e) {
-            hibernateHelper.rollbackTransaction(tx);
+        } catch (final DAOException e) {
+            this.hibernateHelper.rollbackTransaction(tx);
             throw e;
         }
     }
@@ -207,6 +207,7 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
     /**
      * Tests retrieving the <code>Project</code> with the given id. Test encompasses save and delete of a
      * <code>Project</code>.
+     * 
      * @throws CSTransactionException
      */
     @Test
@@ -215,54 +216,55 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
 
         Group group = null;
         try {
-            tx = hibernateHelper.beginTransaction();
+            tx = this.hibernateHelper.beginTransaction();
             saveSupportingObjects();
             DAO_OBJECT.save(DUMMY_PROJECT_1);
             DAO_OBJECT.save(DUMMY_ASSAYTYPE_1);
             DAO_OBJECT.save(DUMMY_ASSAYTYPE_2);
             tx.commit();
 
-            tx = hibernateHelper.beginTransaction();
-            assertEquals(1, DAO_OBJECT.getProjectsForCurrentUser( ALL_BY_ID).size());
+            tx = this.hibernateHelper.beginTransaction();
+            assertEquals(1, DAO_OBJECT.getProjectsForCurrentUser(ALL_BY_ID).size());
             tx.commit();
 
             CaArrayUsernameHolder.setUser("caarrayuser");
-            tx = hibernateHelper.beginTransaction();
+            tx = this.hibernateHelper.beginTransaction();
             assertEquals(0, DAO_OBJECT.getProjectCountForCurrentUser());
             tx.commit();
 
             CaArrayUsernameHolder.setUser(AbstractCaarrayTest.STANDARD_USER);
-            tx = hibernateHelper.beginTransaction();
+            tx = this.hibernateHelper.beginTransaction();
             Project p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
             p.setLocked(false);
             tx.commit();
 
             CaArrayUsernameHolder.setUser("caarrayuser");
-            tx = hibernateHelper.beginTransaction();
+            tx = this.hibernateHelper.beginTransaction();
             assertEquals(0, DAO_OBJECT.getProjectCountForCurrentUser());
             tx.commit();
 
             CaArrayUsernameHolder.setUser(AbstractCaarrayTest.STANDARD_USER);
-            tx = hibernateHelper.beginTransaction();
-             p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
+            tx = this.hibernateHelper.beginTransaction();
+            p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
             p.getPublicProfile().setSecurityLevel(SecurityLevel.READ);
             tx.commit();
 
             CaArrayUsernameHolder.setUser("caarrayuser");
-            tx = hibernateHelper.beginTransaction();
+            tx = this.hibernateHelper.beginTransaction();
             assertEquals(0, DAO_OBJECT.getProjectCountForCurrentUser());
             tx.commit();
 
             CaArrayUsernameHolder.setUser(AbstractCaarrayTest.STANDARD_USER);
-            tx = hibernateHelper.beginTransaction();
-            AuthorizationManager am = SecurityUtils.getAuthorizationManager();
+            tx = this.hibernateHelper.beginTransaction();
+            final AuthorizationManager am = SecurityUtils.getAuthorizationManager();
             group = new Group();
             group.setGroupName("Foo");
             group.setGroupDesc("Collaborator Group");
             group.setApplication(SecurityUtils.getApplication());
             am.createGroup(group);
-            String[] groupMembers = { am.getUser("caarrayuser").getUserId().toString() };
+            final String[] groupMembers = { am.getUser("caarrayuser").getUserId().toString() };
             am.assignUsersToGroup(group.getGroupId().toString(), groupMembers);
+            
             CollaboratorGroup cg = new CollaboratorGroup(group, CaArrayUsernameHolder.getCsmUser());
             COLLAB_DAO.save(cg);
             p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
@@ -270,32 +272,33 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
             tx.commit();
 
             CaArrayUsernameHolder.setUser("caarrayuser");
-            tx = hibernateHelper.beginTransaction();
+            tx = this.hibernateHelper.beginTransaction();
             assertEquals(1, DAO_OBJECT.getProjectsForCurrentUser(ALL_BY_ID).size());
             tx.commit();
 
             CaArrayUsernameHolder.setUser(AbstractCaarrayTest.STANDARD_USER);
-            tx = hibernateHelper.beginTransaction();
+            tx = this.hibernateHelper.beginTransaction();
             p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
             p.setLocked(true);
             tx.commit();
 
-            tx = hibernateHelper.beginTransaction();
+            tx = this.hibernateHelper.beginTransaction();
             assertEquals(1, DAO_OBJECT.getProjectsForCurrentUser(ALL_BY_ID).size());
             tx.commit();
 
             CaArrayUsernameHolder.setUser("caarrayuser");
-            tx = hibernateHelper.beginTransaction();
+            tx = this.hibernateHelper.beginTransaction();
             assertEquals(1, DAO_OBJECT.getProjectsForCurrentUser(ALL_BY_ID).size());
             tx.commit();
 
             CaArrayUsernameHolder.setUser("biostatistician");
-            tx = hibernateHelper.beginTransaction();
+            tx = this.hibernateHelper.beginTransaction();
             assertEquals(0, DAO_OBJECT.getProjectsForCurrentUser(ALL_BY_ID).size());
             tx.commit();
 
             CaArrayUsernameHolder.setUser("caarrayadmin");
-            tx = hibernateHelper.beginTransaction();
+
+            tx = this.hibernateHelper.beginTransaction();
             Map<Long, Privileges> privilegeMap = SecurityUtils.getPrivileges(Arrays.asList(DUMMY_PROJECT_1), CaArrayUsernameHolder.getCsmUser());
             assertEquals(1, privilegeMap.size());
             Privileges privileges = privilegeMap.get(DUMMY_PROJECT_1.getId());
@@ -307,7 +310,7 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
             tx.commit();
 
             CaArrayUsernameHolder.setUser("systemadministrator");
-            tx = hibernateHelper.beginTransaction();
+            tx = this.hibernateHelper.beginTransaction();
             privilegeMap = SecurityUtils.getPrivileges(Arrays.asList(DUMMY_PROJECT_1), CaArrayUsernameHolder.getCsmUser());
             assertEquals(1, privilegeMap.size());
             privileges = privilegeMap.get(DUMMY_PROJECT_1.getId());
@@ -319,7 +322,7 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
             tx.commit();
 
             CaArrayUsernameHolder.setUser("caarrayuser");
-            tx = hibernateHelper.beginTransaction();
+            tx = this.hibernateHelper.beginTransaction();
             privilegeMap = SecurityUtils.getPrivileges(Arrays.asList(DUMMY_PROJECT_1), CaArrayUsernameHolder.getCsmUser());
             assertEquals(1, privilegeMap.size());
             privileges = privilegeMap.get(DUMMY_PROJECT_1.getId());
@@ -329,9 +332,8 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
             assertFalse(privileges.isWrite());
             assertFalse(privileges.isPermissions());
             tx.commit();
-
-        } catch (DAOException e) {
-            hibernateHelper.rollbackTransaction(tx);
+        } catch (final DAOException e) {
+            this.hibernateHelper.rollbackTransaction(tx);
             throw e;
             // fail("DAO exception during save and retrieve of project: " + e.getMessage());
         } finally {
@@ -349,7 +351,7 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
 
     /**
      * Compare 2 experiments to check if they are the same.
-     *
+     * 
      * @return true if the 2 experiments are the same and false otherwise.
      */
     @SuppressWarnings("PMD")
@@ -362,33 +364,33 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
             return false;
         }
         // Contacts
-        Collection<ExperimentContact> contacts = retrievedInv.getExperimentContacts();
+        final Collection<ExperimentContact> contacts = retrievedInv.getExperimentContacts();
         if (contacts.isEmpty() || contacts.size() != 1) {
             return false;
         }
-        Iterator<ExperimentContact> i = contacts.iterator();
-        Person person = i.next().getContact();
+        final Iterator<ExperimentContact> i = contacts.iterator();
+        final Person person = i.next().getContact();
         if (!DUMMY_PERSON.getFirstName().equals(person.getFirstName())) {
             return false;
         }
         // Annotations
-        Collection<Term> retrievedNormTypes = retrievedInv.getNormalizationTypes();
+        final Collection<Term> retrievedNormTypes = retrievedInv.getNormalizationTypes();
         if (retrievedNormTypes.isEmpty() || retrievedNormTypes.size() != 1) {
             return false;
         }
-        Iterator<Term> i2 = retrievedNormTypes.iterator();
-        Term retrievedNormType = i2.next();
+        final Iterator<Term> i2 = retrievedNormTypes.iterator();
+        final Term retrievedNormType = i2.next();
         if (!DUMMY_NORMALIZATION_TYPE.getValue().equals(retrievedNormType.getValue())) {
             return false;
         }
         // Factors
-        Collection<Factor> factors = retrievedInv.getFactors();
+        final Collection<Factor> factors = retrievedInv.getFactors();
         if (factors.isEmpty() || factors.size() != 2) {
             return false;
         }
 
         // Publications
-        Collection<Publication> publications = retrievedInv.getPublications();
+        final Collection<Publication> publications = retrievedInv.getPublications();
         if (publications.isEmpty() || publications.size() != 2) {
             return false;
         }
@@ -396,10 +398,10 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
     }
 
     private void checkHybridizations(Experiment dummyInv, Experiment retrievedInv) {
-        LabeledExtract labeledExtract = retrievedInv.getLabeledExtracts().iterator().next();
-        Hybridization hybridization = labeledExtract.getHybridizations().iterator().next();
+        final LabeledExtract labeledExtract = retrievedInv.getLabeledExtracts().iterator().next();
+        final Hybridization hybridization = labeledExtract.getHybridizations().iterator().next();
         assertEquals(labeledExtract, hybridization.getLabeledExtracts().iterator().next());
-        RawArrayData arrayData = hybridization.getRawDataCollection().iterator().next();
+        final RawArrayData arrayData = hybridization.getRawDataCollection().iterator().next();
         assertNotNull(arrayData);
         assertEquals(hybridization, arrayData.getHybridizations().iterator().next());
     }
@@ -418,24 +420,26 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
     public void testDeepSearchPersonByExample() {
         Transaction tx = null;
         try {
-            tx = hibernateHelper.beginTransaction();
+            tx = this.hibernateHelper.beginTransaction();
             saveSupportingObjects();
             DAO_OBJECT.save(DUMMY_PERSON);
             tx.commit();
-            tx = hibernateHelper.beginTransaction();
-            Person examplePerson = new Person();
+            tx = this.hibernateHelper.beginTransaction();
+            final Person examplePerson = new Person();
             examplePerson.setLastName(DUMMY_PERSON.getLastName());
             examplePerson.getAffiliations().add(DUMMY_ORGANIZATION);
             Person retrievedPerson = null;
-            List<Person> matchingPersons = DAO_OBJECT.queryEntityByExample(examplePerson);
+            final List<Person> matchingPersons = DAO_OBJECT.queryEntityByExample(examplePerson);
             assertNotNull(matchingPersons);
             assertTrue(matchingPersons.size() > 0);
             retrievedPerson = matchingPersons.get(0);
-            assertEquals("Retrieved person is different from saved person.", DUMMY_PERSON.getLastName(), retrievedPerson.getLastName());
-            assertEquals("Retrieved person is different from saved person.", DUMMY_PERSON.getFirstName(), retrievedPerson.getFirstName());
+            assertEquals("Retrieved person is different from saved person.", DUMMY_PERSON.getLastName(),
+                    retrievedPerson.getLastName());
+            assertEquals("Retrieved person is different from saved person.", DUMMY_PERSON.getFirstName(),
+                    retrievedPerson.getFirstName());
             tx.commit();
-        } catch (DAOException e) {
-            hibernateHelper.rollbackTransaction(tx);
+        } catch (final DAOException e) {
+            this.hibernateHelper.rollbackTransaction(tx);
             fail("DAO exception during search of person: " + e.getMessage());
             LOG.error(e.getMessage(), e);
         }
@@ -445,34 +449,34 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
     public void testValidationMessages() {
         Transaction tx = null;
         try {
-            tx = hibernateHelper.beginTransaction();
+            tx = this.hibernateHelper.beginTransaction();
             saveSupportingObjects();
             DAO_OBJECT.save(DUMMY_ASSAYTYPE_1);
             DAO_OBJECT.save(DUMMY_ASSAYTYPE_2);
             DAO_OBJECT.save(DUMMY_PROJECT_1);
             tx.commit();
-            tx = hibernateHelper.beginTransaction();
-            File file = new File("test/path/file.txt");
+            tx = this.hibernateHelper.beginTransaction();
+            final File file = new File("test/path/file.txt");
             DUMMY_FILE_1.setName(file.getName());
-            FileValidationResult result = new FileValidationResult(file);
-            ValidationMessage message1 = result.addMessage(ValidationMessage.Type.INFO, "info message");
-            ValidationMessage message2 = result.addMessage(ValidationMessage.Type.ERROR, "error message");
+            final FileValidationResult result = new FileValidationResult(file);
+            final ValidationMessage message1 = result.addMessage(ValidationMessage.Type.INFO, "info message");
+            final ValidationMessage message2 = result.addMessage(ValidationMessage.Type.ERROR, "error message");
             DUMMY_FILE_1.setValidationResult(result);
             DAO_OBJECT.save(DUMMY_FILE_1);
-            CaArrayFile retrievedFile = DAO_OBJECT.queryEntityByExample(DUMMY_FILE_1).iterator().next();
+            final CaArrayFile retrievedFile = DAO_OBJECT.queryEntityByExample(DUMMY_FILE_1).iterator().next();
             assertNotNull(retrievedFile.getValidationResult());
-            FileValidationResult retrievedResult = retrievedFile.getValidationResult();
+            final FileValidationResult retrievedResult = retrievedFile.getValidationResult();
             assertEquals(2, retrievedResult.getMessages().size());
-            ValidationMessage retrievedMesssage1 = retrievedResult.getMessages().get(0);
-            ValidationMessage retrievedMesssage2 = retrievedResult.getMessages().get(1);
+            final ValidationMessage retrievedMesssage1 = retrievedResult.getMessages().get(0);
+            final ValidationMessage retrievedMesssage2 = retrievedResult.getMessages().get(1);
             // order of messages should be swapped (ERRORs returned before INFOs)
             assertEquals(message2.getType(), retrievedMesssage1.getType());
             assertEquals(message2.getMessage(), retrievedMesssage1.getMessage());
             assertEquals(message1.getType(), retrievedMesssage2.getType());
             assertEquals(message1.getMessage(), retrievedMesssage2.getMessage());
             tx.commit();
-        } catch (DAOException e) {
-            hibernateHelper.rollbackTransaction(tx);
+        } catch (final DAOException e) {
+            this.hibernateHelper.rollbackTransaction(tx);
             fail("DAO exception during search of person: " + e.getMessage());
             LOG.error(e.getMessage(), e);
         }
@@ -480,33 +484,32 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
 
     @Test
     public void testProtectionElements() {
-        Transaction tx = hibernateHelper.beginTransaction();
+        Transaction tx = this.hibernateHelper.beginTransaction();
         saveSupportingObjects();
-        hibernateHelper.getCurrentSession().save(DUMMY_PROJECT_1);
-        hibernateHelper.getCurrentSession().save(DUMMY_ASSAYTYPE_1);
-        hibernateHelper.getCurrentSession().save(DUMMY_ASSAYTYPE_2);
+        this.hibernateHelper.getCurrentSession().save(DUMMY_PROJECT_1);
+        this.hibernateHelper.getCurrentSession().save(DUMMY_ASSAYTYPE_1);
+        this.hibernateHelper.getCurrentSession().save(DUMMY_ASSAYTYPE_2);
         tx.commit();
 
-        tx = hibernateHelper.beginTransaction();
-        String str =
-                "FROM " + ProtectionElement.class.getName() + " pe " + "WHERE pe.objectId = :objId "
-                        + "  AND pe.attribute = :attr " + "  AND pe.value = :value";
-        Query q = hibernateHelper.getCurrentSession().createQuery(str);
+        tx = this.hibernateHelper.beginTransaction();
+        String str = "FROM " + ProtectionElement.class.getName() + " pe " + "WHERE pe.objectId = :objId "
+                + "  AND pe.attribute = :attr " + "  AND pe.value = :value";
+        Query q = this.hibernateHelper.getCurrentSession().createQuery(str);
         q.setParameter("objId", Project.class.getName());
         q.setParameter("attr", "id");
         q.setParameter("value", DUMMY_PROJECT_1.getId().toString());
 
-        ProtectionElement pe = (ProtectionElement) q.uniqueResult();
+        final ProtectionElement pe = (ProtectionElement) q.uniqueResult();
         assertNotNull(pe);
         assertEquals("id", pe.getAttribute());
         assertEquals(DUMMY_PROJECT_1.getId().toString(), pe.getValue());
         assertEquals(((User) pe.getOwners().iterator().next()).getLoginName(), CaArrayUsernameHolder.getUser());
 
         str = "FROM " + ProtectionGroup.class.getName() + " pg " + "WHERE :pe in elements(pg.protectionElements)";
-        q = hibernateHelper.getCurrentSession().createQuery(str);
+        q = this.hibernateHelper.getCurrentSession().createQuery(str);
         q.setParameter("pe", pe);
 
-        ProtectionGroup pg = (ProtectionGroup) q.uniqueResult();
+        final ProtectionGroup pg = (ProtectionGroup) q.uniqueResult();
         assertNotNull(pg);
         assertEquals(pe, pg.getProtectionElements().iterator().next());
         tx.commit();
@@ -517,42 +520,43 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
         Group group = null;
         try {
             CaArrayUsernameHolder.setUser(STANDARD_USER);
-            Transaction tx = hibernateHelper.beginTransaction();
+            Transaction tx = this.hibernateHelper.beginTransaction();
             saveSupportingObjects();
             assertTrue(SecurityUtils.canWrite(DUMMY_PROJECT_1, CaArrayUsernameHolder.getCsmUser()));
-            hibernateHelper.getCurrentSession().save(DUMMY_PROJECT_1);
-            hibernateHelper.getCurrentSession().save(DUMMY_ASSAYTYPE_1);
-            hibernateHelper.getCurrentSession().save(DUMMY_ASSAYTYPE_2);
-            Long experimentId = DUMMY_PROJECT_1.getExperiment().getId();
+            this.hibernateHelper.getCurrentSession().save(DUMMY_PROJECT_1);
+            this.hibernateHelper.getCurrentSession().save(DUMMY_ASSAYTYPE_1);
+            this.hibernateHelper.getCurrentSession().save(DUMMY_ASSAYTYPE_2);
+            final Long experimentId = DUMMY_PROJECT_1.getExperiment().getId();
             tx.commit();
             assertNotNull(experimentId);
             assertEquals(SecurityLevel.NO_VISIBILITY, DUMMY_PROJECT_1.getPublicProfile().getSecurityLevel());
 
             // a new project, in default draft status, will not be visible to the anonymous user
             CaArrayUsernameHolder.setUser(SecurityUtils.ANONYMOUS_USERNAME);
-            tx = hibernateHelper.beginTransaction();
+            tx = this.hibernateHelper.beginTransaction();
             Experiment e = SEARCH_DAO.retrieve(Experiment.class, experimentId);
             assertNull(e);
             assertFalse(SecurityUtils.canRead(DUMMY_PROJECT_1, CaArrayUsernameHolder.getCsmUser()));
             tx.commit();
 
             // after changing the project to visible, it can be browsed
-            tx = hibernateHelper.beginTransaction();
+            tx = this.hibernateHelper.beginTransaction();
             CaArrayUsernameHolder.setUser(STANDARD_USER);
             Project p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
             p.getPublicProfile().setSecurityLevel(SecurityLevel.VISIBLE);
             tx.commit();
 
-
-            tx = hibernateHelper.beginTransaction();
+            tx = this.hibernateHelper.beginTransaction();
             CaArrayUsernameHolder.setUser(SecurityUtils.ANONYMOUS_USERNAME);
-            hibernateHelper.getCurrentSession().clear();
+            this.hibernateHelper.getCurrentSession().clear();
             p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
             assertNotNull(p);
+
             assertFalse(SecurityUtils.canRead(p, CaArrayUsernameHolder.getCsmUser()));
             assertFalse(SecurityUtils.canWrite(p, CaArrayUsernameHolder.getCsmUser()));
             assertFalse(SecurityUtils.canModifyPermissions(p, CaArrayUsernameHolder.getCsmUser()));
             // browse policy no longer applied on post load, but only on remote api.
+
             // verify manually that it would do the right thing
             Set<SecurityPolicy> policies = p.getRemoteApiSecurityPolicies(CaArrayUsernameHolder.getCsmUser());
             assertEquals(1, policies.size());
@@ -564,23 +568,23 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
             SecurityPolicy.applySecurityPolicies(p.getExperiment(), policies);
             assertNull(p.getExperiment().getDesignDescription());
             assertEquals(0, p.getFiles().size());
-            hibernateHelper.getCurrentSession().clear();
+            this.hibernateHelper.getCurrentSession().clear();
             assertNull(SEARCH_DAO.retrieve(CaArrayFile.class, DUMMY_FILE_1.getId()));
             assertNull(SEARCH_DAO.retrieve(CaArrayFile.class, DUMMY_FILE_2.getId()));
             assertNull(SEARCH_DAO.retrieve(CaArrayFile.class, DUMMY_DATA_FILE.getId()));
             assertFalse(SecurityUtils.canRead(p, CaArrayUsernameHolder.getCsmUser()));
             tx.commit();
 
-            tx = hibernateHelper.beginTransaction();
+            tx = this.hibernateHelper.beginTransaction();
             CaArrayUsernameHolder.setUser(STANDARD_USER);
             p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
             assertTrue(SecurityUtils.isOwner(p, CaArrayUsernameHolder.getCsmUser()));
             assertTrue(SecurityUtils.canWrite(DUMMY_SOURCE, CaArrayUsernameHolder.getCsmUser()));
             assertNotNull(p.getPublicProfile());
-            //checkVisible(p);
+            // checkVisible(p);
 
-            //e = SEARCH_DAO.retrieve(Experiment.class, experimentId);
-            //assertNotNull(e);
+            // e = SEARCH_DAO.retrieve(Experiment.class, experimentId);
+            // assertNotNull(e);
 
             assertEquals(2, p.getFiles().size());
             assertNotNull(SEARCH_DAO.retrieve(CaArrayFile.class, DUMMY_FILE_1.getId()));
@@ -610,7 +614,7 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
             p.getPublicProfile().setSecurityLevel(SecurityLevel.NO_VISIBILITY);
             tx.commit();
 
-            tx = hibernateHelper.beginTransaction();
+            tx = this.hibernateHelper.beginTransaction();
             CaArrayUsernameHolder.setUser(SecurityUtils.ANONYMOUS_USERNAME);
             p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
             assertNull(p);
@@ -618,13 +622,13 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
             assertNull(e);
             tx.commit();
 
-            tx = hibernateHelper.beginTransaction();
+            tx = this.hibernateHelper.beginTransaction();
             CaArrayUsernameHolder.setUser(STANDARD_USER);
             p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
             p.getPublicProfile().setSecurityLevel(SecurityLevel.READ);
             tx.commit();
 
-            tx = hibernateHelper.beginTransaction();
+            tx = this.hibernateHelper.beginTransaction();
             CaArrayUsernameHolder.setUser(SecurityUtils.ANONYMOUS_USERNAME);
             p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
             assertNotNull(p);
@@ -653,14 +657,14 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
             assertNotNull(SEARCH_DAO.retrieve(CaArrayFile.class, DUMMY_DATA_FILE.getId()));
             tx.commit();
 
-            tx = hibernateHelper.beginTransaction();
+            tx = this.hibernateHelper.beginTransaction();
             CaArrayUsernameHolder.setUser(STANDARD_USER);
             p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
             p.getPublicProfile().setSecurityLevel(SecurityLevel.READ_SELECTIVE);
             p.getPublicProfile().getSampleSecurityLevels().put(DUMMY_SAMPLE, SampleSecurityLevel.NONE);
             tx.commit();
 
-            tx = hibernateHelper.beginTransaction();
+            tx = this.hibernateHelper.beginTransaction();
             CaArrayUsernameHolder.setUser(SecurityUtils.ANONYMOUS_USERNAME);
             p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
             assertNotNull(p);
@@ -676,14 +680,14 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
             assertNull(SEARCH_DAO.retrieve(CaArrayFile.class, DUMMY_DATA_FILE.getId()));
             tx.commit();
 
-            tx = hibernateHelper.beginTransaction();
+            tx = this.hibernateHelper.beginTransaction();
             CaArrayUsernameHolder.setUser(STANDARD_USER);
             p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
             p.getPublicProfile().setSecurityLevel(SecurityLevel.READ_SELECTIVE);
             p.getPublicProfile().getSampleSecurityLevels().put(DUMMY_SAMPLE, SampleSecurityLevel.READ);
             tx.commit();
 
-            tx = hibernateHelper.beginTransaction();
+            tx = this.hibernateHelper.beginTransaction();
             CaArrayUsernameHolder.setUser(SecurityUtils.ANONYMOUS_USERNAME);
             p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
             assertNotNull(p);
@@ -694,17 +698,17 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
             assertEquals(1, p.getExperiment().getSamples().size());
             tx.commit();
 
-            tx = hibernateHelper.beginTransaction();
+            tx = this.hibernateHelper.beginTransaction();
             CaArrayUsernameHolder.setUser(STANDARD_USER);
             p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
-            Sample s = new Sample();
+            final Sample s = new Sample();
             s.setName("New Sample");
             p.getExperiment().getSamples().add(s);
             s.setExperiment(p.getExperiment());
             DAO_OBJECT.save(p);
             tx.commit();
 
-            tx = hibernateHelper.beginTransaction();
+            tx = this.hibernateHelper.beginTransaction();
             CaArrayUsernameHolder.setUser(SecurityUtils.ANONYMOUS_USERNAME);
             p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
             // because Exp.samples is extra lazy, must initialize it explicitly to verify security
@@ -712,26 +716,27 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
             assertEquals(1, p.getExperiment().getSamples().size());
             tx.commit();
 
-            tx = hibernateHelper.beginTransaction();
+            tx = this.hibernateHelper.beginTransaction();
             CaArrayUsernameHolder.setUser(STANDARD_USER);
-            AuthorizationManager am = SecurityUtils.getAuthorizationManager();
+            final AuthorizationManager am = SecurityUtils.getAuthorizationManager();
             group = new Group();
             group.setGroupName("Foo");
             group.setGroupDesc("Collaborator Group");
             group.setApplication(SecurityUtils.getApplication());
             am.createGroup(group);
-            String[] groupMembers = { am.getUser("caarrayuser").getUserId().toString() };
+            final String[] groupMembers = { am.getUser("caarrayuser").getUserId().toString() };
             am.assignUsersToGroup(group.getGroupId().toString(), groupMembers);
+            
             CollaboratorGroup cg = new CollaboratorGroup(group, CaArrayUsernameHolder.getCsmUser());
             COLLAB_DAO.save(cg);
             p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
-            AccessProfile groupProfile = p.addGroupProfile(cg);
+            final AccessProfile groupProfile = p.addGroupProfile(cg);
             groupProfile.setSecurityLevel(SecurityLevel.READ_WRITE_SELECTIVE);
             groupProfile.getSampleSecurityLevels().put(DUMMY_SAMPLE, SampleSecurityLevel.READ_WRITE);
             groupProfile.getSampleSecurityLevels().put(s, SampleSecurityLevel.READ);
             tx.commit();
 
-            tx = hibernateHelper.beginTransaction();
+            tx = this.hibernateHelper.beginTransaction();
             CaArrayUsernameHolder.setUser("caarrayuser");
             p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
             // because Exp.samples is extra lazy, must initialize it explicitly to verify security
@@ -741,7 +746,7 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
             assertFalse(SecurityUtils.canWrite(s, CaArrayUsernameHolder.getCsmUser()));
             tx.commit();
 
-            tx = hibernateHelper.beginTransaction();
+            tx = this.hibernateHelper.beginTransaction();
             CaArrayUsernameHolder.setUser(SecurityUtils.ANONYMOUS_USERNAME);
             p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
             // because Exp.samples is extra lazy, must initialize it explicitly to verify security
@@ -749,13 +754,13 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
             assertEquals(1, p.getExperiment().getSamples().size());
             tx.commit();
 
-            tx = hibernateHelper.beginTransaction();
+            tx = this.hibernateHelper.beginTransaction();
             CaArrayUsernameHolder.setUser(STANDARD_USER);
             p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
             p.getPublicProfile().setSecurityLevel(SecurityLevel.READ);
             tx.commit();
 
-            tx = hibernateHelper.beginTransaction();
+            tx = this.hibernateHelper.beginTransaction();
             CaArrayUsernameHolder.setUser(SecurityUtils.ANONYMOUS_USERNAME);
             p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
             // because Exp.samples is extra lazy, must initialize it explicitly to verify security
@@ -763,19 +768,19 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
             assertEquals(2, p.getExperiment().getSamples().size());
             tx.commit();
 
-            tx = hibernateHelper.beginTransaction();
+            tx = this.hibernateHelper.beginTransaction();
             CaArrayUsernameHolder.setUser(STANDARD_USER);
             p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
             p.getPublicProfile().setSecurityLevel(SecurityLevel.NO_VISIBILITY);
             tx.commit();
 
-            tx = hibernateHelper.beginTransaction();
+            tx = this.hibernateHelper.beginTransaction();
             CaArrayUsernameHolder.setUser(SecurityUtils.ANONYMOUS_USERNAME);
             p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
             assertNull(p);
             tx.commit();
 
-            tx = hibernateHelper.beginTransaction();
+            tx = this.hibernateHelper.beginTransaction();
             CaArrayUsernameHolder.setUser("caarrayuser");
             p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
             // because Exp.samples is extra lazy, must initialize it explicitly to verify security
@@ -785,13 +790,13 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
             assertFalse(SecurityUtils.canWrite(s, CaArrayUsernameHolder.getCsmUser()));
             tx.commit();
 
-            tx = hibernateHelper.beginTransaction();
+            tx = this.hibernateHelper.beginTransaction();
             CaArrayUsernameHolder.setUser(STANDARD_USER);
             p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
             p.getPublicProfile().setSecurityLevel(SecurityLevel.VISIBLE);
             tx.commit();
 
-            tx = hibernateHelper.beginTransaction();
+            tx = this.hibernateHelper.beginTransaction();
             CaArrayUsernameHolder.setUser(SecurityUtils.ANONYMOUS_USERNAME);
             p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
             assertNotNull(p);
@@ -805,10 +810,10 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
             assertTrue(policies.contains(SecurityPolicy.BROWSE));
             SecurityPolicy.applySecurityPolicies(p.getExperiment(), policies);
             assertNull(p.getExperiment().getDesignDescription());
-            hibernateHelper.getCurrentSession().clear();
+            this.hibernateHelper.getCurrentSession().clear();
             tx.commit();
 
-            tx = hibernateHelper.beginTransaction();
+            tx = this.hibernateHelper.beginTransaction();
             CaArrayUsernameHolder.setUser("caarrayuser");
             p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
             // because Exp.samples is extra lazy, must initialize it explicitly to verify security
@@ -827,16 +832,16 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
     @Test
     public void testInitialProjectPermissions() {
         // create project
-        Transaction tx = hibernateHelper.beginTransaction();
+        Transaction tx = this.hibernateHelper.beginTransaction();
         saveSupportingObjects();
-        hibernateHelper.getCurrentSession().save(DUMMY_PROJECT_1);
-        hibernateHelper.getCurrentSession().save(DUMMY_ASSAYTYPE_1);
-        hibernateHelper.getCurrentSession().save(DUMMY_ASSAYTYPE_2);
+        this.hibernateHelper.getCurrentSession().save(DUMMY_PROJECT_1);
+        this.hibernateHelper.getCurrentSession().save(DUMMY_ASSAYTYPE_1);
+        this.hibernateHelper.getCurrentSession().save(DUMMY_ASSAYTYPE_2);
         tx.commit();
 
-        //check initial settings.. drafts should be not visible
-        tx = hibernateHelper.beginTransaction();
-        Project p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
+        // check initial settings.. drafts should be not visible
+        tx = this.hibernateHelper.beginTransaction();
+        final Project p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
         List<UserGroupRoleProtectionGroup> list = SecurityUtils.getUserGroupRoleProtectionGroups(p);
         assertEquals(8, list.size()); // expect the user-only ones only
         assertTrue(CollectionUtils.exists(list, new AndPredicate(new IsGroupPredicate(), new HasRolePredicate(
@@ -851,7 +856,7 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
         tx.commit();
 
         // check that after changing to visible, the role is reflected.
-        tx = hibernateHelper.beginTransaction();
+        tx = this.hibernateHelper.beginTransaction();
         list = SecurityUtils.getUserGroupRoleProtectionGroups(p);
         assertEquals(9, list.size()); // expect the user-only ones and the anonymous access one
         assertTrue(CollectionUtils.exists(list, new AndPredicate(new IsGroupPredicate(), new HasRolePredicate(
@@ -869,20 +874,20 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
 
     @Test
     public void testProjectWorkflow() {
-        Transaction tx = hibernateHelper.beginTransaction();
+        Transaction tx = this.hibernateHelper.beginTransaction();
         saveSupportingObjects();
-        hibernateHelper.getCurrentSession().save(DUMMY_PROJECT_1);
-        hibernateHelper.getCurrentSession().save(DUMMY_ASSAYTYPE_1);
-        hibernateHelper.getCurrentSession().save(DUMMY_ASSAYTYPE_2);
+        this.hibernateHelper.getCurrentSession().save(DUMMY_PROJECT_1);
+        this.hibernateHelper.getCurrentSession().save(DUMMY_ASSAYTYPE_1);
+        this.hibernateHelper.getCurrentSession().save(DUMMY_ASSAYTYPE_2);
         tx.commit();
 
-        tx = hibernateHelper.beginTransaction();
+        tx = this.hibernateHelper.beginTransaction();
         Project p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
         assertEquals(SecurityLevel.NO_VISIBILITY, p.getPublicProfile().getSecurityLevel());
         p.getPublicProfile().setSecurityLevel(SecurityLevel.NO_VISIBILITY);
         tx.commit();
 
-        tx = hibernateHelper.beginTransaction();
+        tx = this.hibernateHelper.beginTransaction();
         p = SEARCH_DAO.retrieve(Project.class, DUMMY_PROJECT_1.getId());
         assertEquals(SecurityLevel.NO_VISIBILITY, p.getPublicProfile().getSecurityLevel());
         tx.commit();
@@ -890,18 +895,18 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
 
     @Test
     public void testFilters() {
-        Transaction tx = hibernateHelper.beginTransaction();
-        FilterClause searchFilterClause = new FilterClause();
+        final Transaction tx = this.hibernateHelper.beginTransaction();
+        final FilterClause searchFilterClause = new FilterClause();
         searchFilterClause.setClassName("*");
-        SearchCriteria searchCriteria = new FilterClauseSearchCriteria(searchFilterClause);
-        List<?> list = SecurityUtils.getAuthorizationManager().getObjects(searchCriteria);
+        final SearchCriteria searchCriteria = new FilterClauseSearchCriteria(searchFilterClause);
+        final List<?> list = SecurityUtils.getAuthorizationManager().getObjects(searchCriteria);
         assertTrue(list.size() > 0);
         tx.commit();
     }
 
     @Test
     public void testSearchByCategory() {
-        Transaction tx = hibernateHelper.beginTransaction();
+        Transaction tx = this.hibernateHelper.beginTransaction();
         saveSupportingObjects();
         DAO_OBJECT.save(DUMMY_PROJECT_1);
         DAO_OBJECT.save(DUMMY_PROJECT_2);
@@ -909,10 +914,10 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
         DAO_OBJECT.save(DUMMY_ASSAYTYPE_1);
         DAO_OBJECT.save(DUMMY_ASSAYTYPE_2);
         tx.commit();
-        tx = hibernateHelper.beginTransaction();
+        tx = this.hibernateHelper.beginTransaction();
 
         // test search all
-        PageSortParams<Project> psp = new PageSortParams<Project>(20, 0, ProjectSortCriterion.PUBLIC_ID, false);
+        final PageSortParams<Project> psp = new PageSortParams<Project>(20, 0, ProjectSortCriterion.PUBLIC_ID, false);
         List<Project> projects = DAO_OBJECT.searchByCategory(psp, "DummyExperiment", SearchCategory.values());
         assertEquals(3, projects.size());
 
@@ -1001,7 +1006,7 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
 
     @Test
     public void testSearchByCriteria() {
-        Transaction tx = hibernateHelper.beginTransaction();
+        Transaction tx = this.hibernateHelper.beginTransaction();
         DUMMY_SAMPLE.setDiseaseState(DUMMY_NORMALIZATION_TYPE);
         DUMMY_SOURCE.setTissueSite(DUMMY_REPLICATE_TYPE);
         DUMMY_SOURCE.setCellType(DUMMY_FACTOR_TYPE_1);
@@ -1012,11 +1017,11 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
         DAO_OBJECT.save(DUMMY_PROJECT_2);
         DAO_OBJECT.save(DUMMY_PROJECT_3);
         tx.commit();
-        tx = hibernateHelper.beginTransaction();
+        tx = this.hibernateHelper.beginTransaction();
 
         // test search by title
-        PageSortParams<Experiment> psp = new PageSortParams<Experiment>(20, 0, new AdHocSortCriterion<Experiment>(
-                "title"), false);
+        final PageSortParams<Experiment> psp = new PageSortParams<Experiment>(20, 0,
+                new AdHocSortCriterion<Experiment>("title"), false);
         ExperimentSearchCriteria crit = new ExperimentSearchCriteria();
         crit.setTitle(DUMMY_EXPERIMENT_1.getTitle());
         List<Experiment> experiments = DAO_OBJECT.searchByCriteria(psp, crit);
@@ -1050,14 +1055,14 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
 
         // test annotation criteria
         crit = new ExperimentSearchCriteria();
-        Category ds = new Category();
+        final Category ds = new Category();
         ds.setName(ExperimentOntologyCategory.DISEASE_STATE.getCategoryName());
         crit.getAnnotationCriterions().add(new AnnotationCriterion(ds, DUMMY_NORMALIZATION_TYPE.getValue()));
         experiments = DAO_OBJECT.searchByCriteria(psp, crit);
         assertEquals(1, experiments.size());
         assertEquals(DUMMY_EXPERIMENT_1, experiments.get(0));
 
-        Category ts = new Category();
+        final Category ts = new Category();
         ts.setName(ExperimentOntologyCategory.ORGANISM_PART.getCategoryName());
         crit.getAnnotationCriterions().add(new AnnotationCriterion(ts, DUMMY_REPLICATE_TYPE.getValue()));
         experiments = DAO_OBJECT.searchByCriteria(psp, crit);
@@ -1069,7 +1074,7 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
         assertEquals(1, experiments.size());
         assertEquals(DUMMY_EXPERIMENT_1, experiments.get(0));
 
-        Category ct = new Category();
+        final Category ct = new Category();
         ct.setName(ExperimentOntologyCategory.CELL_TYPE.getCategoryName());
         crit.getAnnotationCriterions().add(new AnnotationCriterion(ct, DUMMY_REPLICATE_TYPE.getValue()));
         experiments = DAO_OBJECT.searchByCriteria(psp, crit);
@@ -1087,7 +1092,7 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
 
     @Test
     public void testGetProjectsForCurrentUser() {
-        Transaction tx = hibernateHelper.beginTransaction();
+        Transaction tx = this.hibernateHelper.beginTransaction();
         saveSupportingObjects();
         DAO_OBJECT.save(DUMMY_PROJECT_1);
         DAO_OBJECT.save(DUMMY_PROJECT_2);
@@ -1095,11 +1100,11 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
         DAO_OBJECT.save(DUMMY_ASSAYTYPE_1);
         DAO_OBJECT.save(DUMMY_ASSAYTYPE_2);
         tx.commit();
-        tx = hibernateHelper.beginTransaction();
+        tx = this.hibernateHelper.beginTransaction();
 
         // test search all
-        PageSortParams<Project> psp = new PageSortParams<Project>(20,0, ProjectSortCriterion.TITLE,false);
-        List<Project> projects = DAO_OBJECT.getProjectsForCurrentUser( psp);
+        final PageSortParams<Project> psp = new PageSortParams<Project>(20, 0, ProjectSortCriterion.TITLE, false);
+        List<Project> projects = DAO_OBJECT.getProjectsForCurrentUser(psp);
         assertEquals(3, projects.size());
 
         // test count
@@ -1126,13 +1131,13 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
 
     @Test
     public void testGetProjectsForOwner() {
-        Transaction tx = hibernateHelper.beginTransaction();
+        Transaction tx = this.hibernateHelper.beginTransaction();
         saveSupportingObjects();
         DAO_OBJECT.save(DUMMY_PROJECT_1);
         DAO_OBJECT.save(DUMMY_PROJECT_2);
         DAO_OBJECT.save(DUMMY_PROJECT_3);
         tx.commit();
-        tx = hibernateHelper.beginTransaction();
+        tx = this.hibernateHelper.beginTransaction();
         User u = CaArrayUsernameHolder.getCsmUser();
         List<Project> projects = DAO_OBJECT.getProjectsForOwner(u);
         assertEquals(3, projects.size());
@@ -1143,13 +1148,13 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
     public void testGetTermsForExperiment() {
         Transaction tx = null;
         try {
-            tx = hibernateHelper.beginTransaction();
-            Organism org = new Organism();
+            tx = this.hibernateHelper.beginTransaction();
+            final Organism org = new Organism();
             org.setScientificName("Foo");
             org.setTermSource(DUMMY_TERM_SOURCE);
-            Experiment e = new Experiment();
+            final Experiment e = new Experiment();
             e.setTitle("test title");
-            SortedSet <AssayType>assayTypes = new TreeSet<AssayType>();
+            final SortedSet<AssayType> assayTypes = new TreeSet<AssayType>();
             assayTypes.add(DUMMY_ASSAYTYPE_1);
             e.setAssayTypes(assayTypes);
             e.setManufacturer(new Organization());
@@ -1162,8 +1167,8 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
             assertEquals(0, DAO_OBJECT.getTissueSitesForExperiment(e).size());
             assertEquals(0, DAO_OBJECT.getMaterialTypesForExperiment(e).size());
             tx.commit();
-        } catch (DAOException e) {
-            hibernateHelper.rollbackTransaction(tx);
+        } catch (final DAOException e) {
+            this.hibernateHelper.rollbackTransaction(tx);
             throw e;
         }
     }
@@ -1172,12 +1177,12 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
     public void testGetBioMaterialsForExperiment() throws Exception {
         Transaction tx = null;
         try {
-            tx = hibernateHelper.beginTransaction();
+            tx = this.hibernateHelper.beginTransaction();
             saveSupportingObjects();
             DAO_OBJECT.save(DUMMY_PROJECT_1);
             tx.commit();
 
-            tx = hibernateHelper.beginTransaction();
+            tx = this.hibernateHelper.beginTransaction();
             assertNull(DAO_OBJECT.getSourceForExperiment(null, "DummySource"));
             assertNull(DAO_OBJECT.getSampleForExperiment(null, "DummySample"));
             assertNull(DAO_OBJECT.getExtractForExperiment(null, "DummyExtract"));
@@ -1193,58 +1198,60 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
             assertNotNull(DAO_OBJECT.getExtractForExperiment(DUMMY_EXPERIMENT_1, "DummyExtract"));
             assertNotNull(DAO_OBJECT.getLabeledExtractForExperiment(DUMMY_EXPERIMENT_1, "DummyLabeledExtract"));
 
-            Set<AbstractBioMaterial> bms = DAO_OBJECT.getUnfilteredBiomaterialsForProject(DUMMY_PROJECT_1.getId());
-            int size = bms.size();
+            final Set<AbstractBioMaterial> bms = DAO_OBJECT
+                    .getUnfilteredBiomaterialsForProject(DUMMY_PROJECT_1.getId());
+            final int size = bms.size();
             assertEquals(4, size);
             tx.commit();
-        } catch (DAOException e) {
-            hibernateHelper.rollbackTransaction(tx);
+        } catch (final DAOException e) {
+            this.hibernateHelper.rollbackTransaction(tx);
             throw e;
         }
     }
 
     @Test
     public void testGetProjectsWithReImportable() {
-        Transaction tx = hibernateHelper.beginTransaction();
+        Transaction tx = this.hibernateHelper.beginTransaction();
         saveSupportingObjects();
         DAO_OBJECT.save(DUMMY_PROJECT_1);
-        CaArrayFile f1 = new CaArrayFile();
+        final CaArrayFile f1 = new CaArrayFile();
         f1.setProject(DUMMY_PROJECT_1);
         f1.setName("foo");
         f1.setFileStatus(FileStatus.IMPORTED_NOT_PARSED);
         f1.setFileType(FileType.AGILENT_RAW_TXT);
+        f1.setDataHandle(DUMMY_HANDLE);
         DUMMY_PROJECT_1.getFiles().add(f1);
         DAO_OBJECT.save(f1);
 
-        CaArrayFile f2 = new CaArrayFile();
+        final CaArrayFile f2 = new CaArrayFile();
         f2.setProject(DUMMY_PROJECT_2);
         f2.setName("bar");
         f2.setFileStatus(FileStatus.IMPORTED_NOT_PARSED);
         f2.setFileType(FileType.SCANARRAY_CSV);
+        f2.setDataHandle(DUMMY_HANDLE);
         DUMMY_PROJECT_2.getFiles().add(f2);
         DAO_OBJECT.save(f2);
         DAO_OBJECT.save(DUMMY_PROJECT_2);
 
         tx.commit();
-        tx = hibernateHelper.beginTransaction();
-        hibernateHelper.getCurrentSession().evict(DUMMY_PROJECT_1);
-        hibernateHelper.getCurrentSession().evict(DUMMY_PROJECT_2);
-        DUMMY_PROJECT_1 = (Project) hibernateHelper.getCurrentSession().load(Project.class, DUMMY_PROJECT_1.getId());
-        DUMMY_PROJECT_2 = (Project) hibernateHelper.getCurrentSession().load(Project.class, DUMMY_PROJECT_2.getId());
+        tx = this.hibernateHelper.beginTransaction();
+        this.hibernateHelper.getCurrentSession().evict(DUMMY_PROJECT_1);
+        this.hibernateHelper.getCurrentSession().evict(DUMMY_PROJECT_2);
+        DUMMY_PROJECT_1 = (Project) this.hibernateHelper.getCurrentSession().load(Project.class,
+                DUMMY_PROJECT_1.getId());
+        DUMMY_PROJECT_2 = (Project) this.hibernateHelper.getCurrentSession().load(Project.class,
+                DUMMY_PROJECT_2.getId());
         assertTrue(f1.isUnparsedAndReimportable());
         assertTrue(DUMMY_PROJECT_1.isUnparsedAndReimportable());
         assertFalse(f2.isUnparsedAndReimportable());
         assertFalse(DUMMY_PROJECT_2.isUnparsedAndReimportable());
 
-
-
-        List<Project> projects = DAO_OBJECT.getProjectsWithReImportable();
+        final List<Project> projects = DAO_OBJECT.getProjectsWithReImportable();
         assertEquals(1, projects.size());
         assertEquals(DUMMY_PROJECT_1.getId(), projects.get(0).getId());
 
         tx.commit();
     }
-
 
     private static class HasRolePredicate implements Predicate {
         private final String role;
@@ -1260,8 +1267,9 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
         /**
          * {@inheritDoc}
          */
+        @Override
         public boolean evaluate(Object o) {
-            UserGroupRoleProtectionGroup ugrpg = (UserGroupRoleProtectionGroup) o;
+            final UserGroupRoleProtectionGroup ugrpg = (UserGroupRoleProtectionGroup) o;
             return this.role.equals(ugrpg.getRole().getName());
         }
     }
@@ -1270,8 +1278,9 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
         /**
          * {@inheritDoc}
          */
+        @Override
         public boolean evaluate(Object o) {
-            UserGroupRoleProtectionGroup ugrpg = (UserGroupRoleProtectionGroup) o;
+            final UserGroupRoleProtectionGroup ugrpg = (UserGroupRoleProtectionGroup) o;
             return ugrpg.getGroup() != null;
         }
     }

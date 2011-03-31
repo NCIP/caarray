@@ -83,7 +83,6 @@
 package gov.nih.nci.caarray.application.file;
 
 import gov.nih.nci.caarray.application.arraydata.DataImportOptions;
-import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
 import gov.nih.nci.caarray.dao.ProjectDao;
 import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
@@ -129,22 +128,18 @@ final class ProjectFilesImportJob extends AbstractProjectFilesJob {
     @Override
     protected void doExecute() {
         CaArrayFileSet fileSet = getFileSet();
-        try {
-            doValidate(fileSet);
-            final FileStatus status = getFileSet().getStatus();
-            if (status.equals(FileStatus.VALIDATED) || status.equals(FileStatus.VALIDATED_NOT_PARSED)) {
-                importAnnotation(fileSet);
-                importArrayData(fileSet);
-            }
-        } finally {
-            TemporaryFileCacheLocator.getTemporaryFileCache().closeFiles();
-        }
+		doValidate(fileSet);
+		FileStatus status = getFileSet().getStatus();
+        if (status.equals(FileStatus.VALIDATED) || status.equals(FileStatus.VALIDATED_NOT_PARSED)) {
+        	importAnnotation(fileSet);
+            importArrayData(fileSet);
+		}
     }
 
     private void importAnnotation(CaArrayFileSet fileSet) {
         try {
             getMageTabImporter().importFiles(getProject(), fileSet);
-        } catch (MageTabParsingException e) {
+        } catch (final MageTabParsingException e) {
             LOG.error(e.getMessage(), e);
         }
         getProjectDao().flushSession();
@@ -152,7 +147,7 @@ final class ProjectFilesImportJob extends AbstractProjectFilesJob {
     }
 
     private void importArrayData(CaArrayFileSet fileSet) {
-        ArrayDataImporter arrayDataImporter = getArrayDataImporter();
+        final ArrayDataImporter arrayDataImporter = getArrayDataImporter();
         arrayDataImporter.importFiles(fileSet, this.dataImportOptions);
     }
 

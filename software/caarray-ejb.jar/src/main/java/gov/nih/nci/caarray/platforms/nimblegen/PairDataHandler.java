@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.platforms.nimblegen;
 
 import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.dao.SearchDao;
+import gov.nih.nci.caarray.dataStorage.DataStorageFacade;
 import gov.nih.nci.caarray.domain.LSID;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
@@ -97,7 +98,6 @@ import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.platforms.DefaultValueParser;
-import gov.nih.nci.caarray.platforms.FileManager;
 import gov.nih.nci.caarray.platforms.ProbeLookup;
 import gov.nih.nci.caarray.platforms.ProbeNamesValidator;
 import gov.nih.nci.caarray.platforms.ValueParser;
@@ -141,7 +141,8 @@ class PairDataHandler extends AbstractDataFileHandler {
     protected boolean acceptFileType(FileType type) {
         return FileType.NIMBLEGEN_NORMALIZED_PAIR.equals(type) || FileType.NIMBLEGEN_RAW_PAIR.equals(type);
     }
-    
+
+    @Override
     public boolean parsesData() {
         return true;
     }
@@ -150,8 +151,8 @@ class PairDataHandler extends AbstractDataFileHandler {
      * @param fileManager the FileManager to use
      */
     @Inject
-    PairDataHandler(FileManager fileManager, ArrayDao arrayDao, SearchDao searchDao) {
-        super(fileManager);
+    PairDataHandler(DataStorageFacade dataStorageFacade, ArrayDao arrayDao, SearchDao searchDao) {
+        super(dataStorageFacade);
         this.arrayDao = arrayDao;
         this.searchDao = searchDao;
     }
@@ -159,6 +160,7 @@ class PairDataHandler extends AbstractDataFileHandler {
     /**
      * {@inheritDoc}
      */
+    @Override
     public ArrayDataTypeDescriptor getArrayDataTypeDescriptor() {
         return NimblegenArrayDataTypes.NIMBLEGEN;
     }
@@ -166,6 +168,7 @@ class PairDataHandler extends AbstractDataFileHandler {
     /**
      * {@inheritDoc}
      */
+    @Override
     public QuantitationTypeDescriptor[] getQuantitationTypeDescriptors() {
         return NimblegenQuantitationType.values();
     }
@@ -174,7 +177,7 @@ class PairDataHandler extends AbstractDataFileHandler {
     private List<String> getHeaders(DelimitedFileReader reader) throws IOException {
         reset(reader);
         while (reader.hasNextLine()) {
-            List<String> values = reader.nextLine();
+            final List<String> values = reader.nextLine();
             if (values.get(0).startsWith("#")) {
                 continue;
             }
@@ -188,7 +191,7 @@ class PairDataHandler extends AbstractDataFileHandler {
     private void reset(DelimitedFileReader reader) {
         try {
             reader.reset();
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new IllegalStateException("File could not be reset", e);
         }
     }
@@ -196,7 +199,7 @@ class PairDataHandler extends AbstractDataFileHandler {
     private DelimitedFileReader getReader(File dataFile) {
         try {
             return new DelimitedFileReaderFactoryImpl().createTabDelimitedFileReader(dataFile);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new IllegalStateException("File " + dataFile.getName() + " could not be read", e);
         }
 
@@ -205,17 +208,18 @@ class PairDataHandler extends AbstractDataFileHandler {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void loadData(DataSet dataSet, List<QuantitationType> types, ArrayDesign design) {
-        DelimitedFileReader reader = getReader(getFile());
+        final DelimitedFileReader reader = getReader(getFile());
         try {
             dataSet.prepareColumns(types, getNumberOfDataRows(reader));
             if (dataSet.getDesignElementList() == null) {
                 loadDesignElementList(dataSet, reader, design);
             }
-            for (HybridizationData hybridizationData : dataSet.getHybridizationDataList()) {
+            for (final HybridizationData hybridizationData : dataSet.getHybridizationDataList()) {
                 loadData(hybridizationData, reader);
             }
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new IllegalStateException(READ_FILE_ERROR_MESSAGE, e);
         } finally {
             reader.close();
@@ -251,42 +255,41 @@ class PairDataHandler extends AbstractDataFileHandler {
 
     private void loadDesignElementList(DataSet dataSet, DelimitedFileReader reader, ArrayDesign design)
             throws IOException {
-        DesignElementList probeList = new DesignElementList();
+        final DesignElementList probeList = new DesignElementList();
         probeList.setDesignElementTypeEnum(DesignElementType.PHYSICAL_PROBE);
         dataSet.setDesignElementList(probeList);
-        ArrayDesignDetails designDetails = design.getDesignDetails();
-        ProbeLookup probeLookup = new ProbeLookup(designDetails.getProbes());
-        List<String> headers = getHeaders(reader);
-        int seqIdIndex = headers.indexOf(SEQ_ID_HEADER);
-        int probeIdIndex = headers.indexOf(PROBE_ID_HEADER);
-        int containerIndex = headers.indexOf(CONTAINER_HEADER);
+        final ArrayDesignDetails designDetails = design.getDesignDetails();
+        final ProbeLookup probeLookup = new ProbeLookup(designDetails.getProbes());
+        final List<String> headers = getHeaders(reader);
+        final int seqIdIndex = headers.indexOf(SEQ_ID_HEADER);
+        final int probeIdIndex = headers.indexOf(PROBE_ID_HEADER);
+        final int containerIndex = headers.indexOf(CONTAINER_HEADER);
         while (reader.hasNextLine()) {
-            List<String> values = reader.nextLine();
-            String probeId = values.get(probeIdIndex);
-            String sequenceId = values.get(seqIdIndex);
-            String container = values.get(containerIndex);
-            String probeName = container + "|" + sequenceId + "|" + probeId;
+            final List<String> values = reader.nextLine();
+            final String probeId = values.get(probeIdIndex);
+            final String sequenceId = values.get(seqIdIndex);
+            final String container = values.get(containerIndex);
+            final String probeName = container + "|" + sequenceId + "|" + probeId;
             probeList.getDesignElements().add(probeLookup.getProbe(probeName));
         }
     }
 
     private void loadData(HybridizationData hybridizationData, DelimitedFileReader reader) throws IOException {
-        List<String> headers = getHeaders(reader);
+        final List<String> headers = getHeaders(reader);
         int rowIndex = 0;
         while (reader.hasNextLine()) {
-            List<String> values = reader.nextLine();
+            final List<String> values = reader.nextLine();
             loadData(hybridizationData, values, headers, rowIndex++);
         }
     }
 
-    private void loadData(HybridizationData hybridizationData, List<String> values, List<String> headers, 
-            int rowIndex) {
-        Set<String> types = new HashSet<String>(NimblegenQuantitationType.getTypeNames());
+    private void loadData(HybridizationData hybridizationData, List<String> values, List<String> headers, int rowIndex) {
+        final Set<String> types = new HashSet<String>(NimblegenQuantitationType.getTypeNames());
         for (int valueIndex = 0; valueIndex < values.size(); valueIndex++) {
-            String header = headers.get(valueIndex);
+            final String header = headers.get(valueIndex);
             if (types.contains(header)) {
-                QuantitationTypeDescriptor valueType = NimblegenQuantitationType.valueOf(header);
-                valueParser.setValue(hybridizationData.getColumn(valueType), rowIndex, values.get(valueIndex));
+                final QuantitationTypeDescriptor valueType = NimblegenQuantitationType.valueOf(header);
+                this.valueParser.setValue(hybridizationData.getColumn(valueType), rowIndex, values.get(valueIndex));
             }
         }
     }
@@ -304,6 +307,7 @@ class PairDataHandler extends AbstractDataFileHandler {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void validate(final MageTabDocumentSet mTabSet, final FileValidationResult result, final ArrayDesign design)
             throws PlatformFileReadException {
         try {
@@ -313,10 +317,11 @@ class PairDataHandler extends AbstractDataFileHandler {
                     + ioException.getMessage(), ioException);
         }
     }
-    
+
     /**
      * {@inheritDoc}
-     */        
+     */
+    @Override
     public boolean requiresMageTab() {
         return false;
     }
@@ -324,26 +329,27 @@ class PairDataHandler extends AbstractDataFileHandler {
     /**
      * {@inheritDoc}
      */
+    @Override
     public List<LSID> getReferencedArrayDesignCandidateIds() {
-        DelimitedFileReader reader = getReader(getFile());
+        final DelimitedFileReader reader = getReader(getFile());
         try {
-            Map<String, String> metadata = getHeaderMetadata(reader);
-            String designName = metadata.get("designname");
+            final Map<String, String> metadata = getHeaderMetadata(reader);
+            final String designName = metadata.get("designname");
             return Collections.singletonList(new LSID(LSID_AUTHORITY, LSID_NAMESPACE, designName));
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new IllegalStateException(READ_FILE_ERROR_MESSAGE, e);
         } finally {
             reader.close();
-        }        
+        }
     }
 
     private Map<String, String> getHeaderMetadata(DelimitedFileReader reader) throws IOException {
         reset(reader);
-        Map<String, String> result = new HashMap<String, String>();
-        List<String> line = reader.nextLine();
+        final Map<String, String> result = new HashMap<String, String>();
+        final List<String> line = reader.nextLine();
         line.set(0, line.get(0).substring(2));
-        for (String value : line) {
-            String[] v = value.split("=");
+        for (final String value : line) {
+            final String[] v = value.split("=");
             if (v.length < 2) {
                 continue;
             }
