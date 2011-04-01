@@ -82,7 +82,9 @@
  */
 package gov.nih.nci.caarray.validation;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 
 import gov.nih.nci.caarray.AbstractCaarrayTest;
 
@@ -94,29 +96,29 @@ import org.junit.Test;
 public class ValidationResultTest extends AbstractCaarrayTest {
 
     private static final String TEST_MESSAGE = "message";
-
-    private final File testFile = new File("path/filename.txt");
+    private final String fileName = "path/filename.txt";
+    private final File testFile = new File(fileName);
 
     @Test
     public void testIsValid() {
         ValidationResult result = new ValidationResult();
         assertTrue(result.isValid());
-        result.addMessage(testFile , ValidationMessage.Type.INFO, TEST_MESSAGE + "1");
+        result.addMessage(fileName , ValidationMessage.Type.INFO, TEST_MESSAGE + "1");
         assertTrue(result.isValid());
-        result.addMessage(testFile , ValidationMessage.Type.WARNING, TEST_MESSAGE + "2");
+        result.addMessage(fileName , ValidationMessage.Type.WARNING, TEST_MESSAGE + "2");
         assertTrue(result.isValid());
-        result.addMessage(testFile , ValidationMessage.Type.ERROR, TEST_MESSAGE + "3");
+        result.addMessage(fileName , ValidationMessage.Type.ERROR, TEST_MESSAGE + "3");
         assertFalse(result.isValid());
-        result.addMessage(testFile , ValidationMessage.Type.INFO, TEST_MESSAGE + "4");
+        result.addMessage(fileName , ValidationMessage.Type.INFO, TEST_MESSAGE + "4");
         assertFalse(result.isValid());
     }
 
     @Test
     public void testAddMessage() {
         ValidationResult result = new ValidationResult();
-        ValidationMessage message1 = result.addMessage(testFile, ValidationMessage.Type.INFO, TEST_MESSAGE + "1");
-        ValidationMessage message2 = result.addMessage(testFile, ValidationMessage.Type.WARNING, TEST_MESSAGE + "2");
-        ValidationMessage message3 = result.addMessage(testFile, ValidationMessage.Type.WARNING, TEST_MESSAGE + "3");
+        ValidationMessage message1 = result.addMessage(fileName, ValidationMessage.Type.INFO, TEST_MESSAGE + "1");
+        ValidationMessage message2 = result.addMessage(fileName, ValidationMessage.Type.WARNING, TEST_MESSAGE + "2");
+        ValidationMessage message3 = result.addMessage(fileName, ValidationMessage.Type.WARNING, TEST_MESSAGE + "3");
         message2.setLine(10);
         message3.setLine(1);
         List<FileValidationResult> fileValidationResults = result.getFileValidationResults();
