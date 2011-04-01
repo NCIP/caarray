@@ -260,7 +260,7 @@
 
         <dependency conf="project" name="rmiio" org="com.healthmarketscience" rev="2.0.2"/>
 
-        <dependency conf="project" name="google-collections" org="google" rev="1.0-rc1"/>
+        <dependency conf="project" name="guava" org="google" rev="r07"/>
 
         <dependency conf="project" name="liquibase" org="liquibase" rev="1.9.3"/>
 
@@ -272,10 +272,12 @@
 
         <dependency conf="project" name="guice-assistedinject" org="google" rev="2.0"/>
 
+        <dependency conf="project" name="guice-servlet" org="google" rev="2.0"/>        
+
         <dependency conf="project" name="aopalliance" org="aopalliance" rev="1.0"/>
 
         <dependency conf="project" name="woodstox" org="codehaus" rev="4.0.7"/>
-                
+
         <dependency conf="project" name="mockito" org="mockito" rev="1.8.4"/>  
 
         <dependency conf="project" name="hamcrest-library" org="org.hamcrest" rev="1.1"/>  
