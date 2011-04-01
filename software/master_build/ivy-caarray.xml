@@ -260,7 +260,7 @@
 
         <dependency conf="project" name="rmiio" org="com.healthmarketscience" rev="2.0.2"/>
 
-        <dependency conf="project" name="guava" org="google" rev="r07"/>
+        <dependency conf="project" name="guava" org="com.google.guava" rev="r07"/>
 
         <dependency conf="project" name="liquibase" org="liquibase" rev="1.9.3"/>
 
