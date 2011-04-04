@@ -280,7 +280,7 @@
 
         <dependency conf="project" name="mockito" org="mockito" rev="1.8.4"/>  
 
-        <dependency conf="project" name="hamcrest-library" org="org.hamcrest" rev="1.1"/>  
+        <dependency conf="project" name="hamcrest-library" org="hamcrest" rev="1.1"/>  
                 
         <dependency conf="project" name="gnu-regexp" org="gnu" rev="1.1.4"/> 
         
