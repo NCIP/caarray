@@ -111,10 +111,8 @@ abstract class AbstractProjectFilesJob extends AbstractFileManagementJob {
 
     private final long projectId;
     private final Set<Long> fileIds = new HashSet<Long>();
-    private MageTabImporter mageTabImporter;
-
     private final ArrayDataImporter arrayDataImporter;
-    private final MageTabImporter mageTabImporter;
+    private MageTabImporter mageTabImporter;
     private final ProjectDao projectDao;
     private final SearchDao searchDao;
     private final String experimentName;
@@ -194,10 +192,6 @@ abstract class AbstractProjectFilesJob extends AbstractFileManagementJob {
         return arrayDataImporter;
     }
 
-    protected MageTabImporter getMageTabImporter() {
-        return mageTabImporter;
-    }
-    
     protected ProjectDao getProjectDao() {
         return projectDao;
     }
