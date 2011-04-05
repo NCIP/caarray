@@ -84,7 +84,6 @@ package gov.nih.nci.caarray.application.file;
 
 import gov.nih.nci.caarray.application.arraydata.ArrayDataService;
 import gov.nih.nci.caarray.application.arraydata.DataImportOptions;
-import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
 import gov.nih.nci.caarray.dao.FileDao;
 import gov.nih.nci.caarray.dao.ProjectDao;
 import gov.nih.nci.caarray.dao.SearchDao;
@@ -98,7 +97,6 @@ import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.InvalidDataFileException;
 import gov.nih.nci.caarray.validation.ValidationMessage.Type;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -154,7 +152,6 @@ final class ArrayDataImporterImpl implements ArrayDataImporter {
             file.setValidationResult(e.getFileValidationResult());
         }
         projectDao.save(file);
-        TemporaryFileCacheLocator.getTemporaryFileCache().closeFile(file);
         projectDao.flushSession();
         projectDao.clearSession();
     }
@@ -279,8 +276,7 @@ final class ArrayDataImporterImpl implements ArrayDataImporter {
                 errorMessage.append(mtSdrfNodeNameValues.toString());
                 errorMessage.append(" were not found in data files provided.");
                 if (sdrf.getValidationResult() == null) {
-                    File file = TemporaryFileCacheLocator.getTemporaryFileCache().getFile(sdrf);
-                    sdrf.setValidationResult(new FileValidationResult(file));
+                    sdrf.setValidationResult(new FileValidationResult());
                 }
                 sdrf.getValidationResult()
                     .addMessage(Type.ERROR, errorMessage.toString());
