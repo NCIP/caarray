@@ -88,10 +88,10 @@ import gov.nih.nci.caarray.domain.MaxSerializableSize;
 import gov.nih.nci.caarray.domain.data.AbstractDataColumn;
 import gov.nih.nci.caarray.security.SecurityPolicy;
 import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
+import gov.nih.nci.caarray.util.CaArrayUsernameHolder;
 import gov.nih.nci.caarray.util.CaArrayUtils;
 import gov.nih.nci.caarray.util.PropertyAccessor;
 import gov.nih.nci.caarray.util.ReflectionHelper;
-import gov.nih.nci.caarray.util.UsernameHolder;
 
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
@@ -290,7 +290,7 @@ public final class EntityPruner {
     private void applySecurityPolicies(Object entity) {
         if (entity instanceof AbstractCaArrayObject) {
             final AbstractCaArrayObject object = (AbstractCaArrayObject) entity;
-            final Set<SecurityPolicy> policies = object.getRemoteApiSecurityPolicies(UsernameHolder.getCsmUser());
+            final Set<SecurityPolicy> policies = object.getRemoteApiSecurityPolicies(CaArrayUsernameHolder.getCsmUser());
             if (!policies.isEmpty()) {
                 SecurityPolicy.applySecurityPolicies(object, policies);
             }
