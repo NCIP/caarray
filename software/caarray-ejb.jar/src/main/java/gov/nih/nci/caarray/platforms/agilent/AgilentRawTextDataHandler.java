@@ -326,18 +326,18 @@ class AgilentRawTextDataHandler extends AbstractDataFileHandler {
     
     private void doReadHeader(AgilentTextParser parser) throws PlatformFileReadException {
         try {
-            while (this.parser.hasNext()) {
-                this.parser.next();
+            while (parser.hasNext()) {
+                parser.next();
 
-                if ("FEPARAMS".equalsIgnoreCase(this.parser.getSectionName())) {
+                if ("FEPARAMS".equalsIgnoreCase(parser.getSectionName())) {
                     this.arrayDesignId = new LSID("Agilent.com", "PhysicalArrayDesign",
-                            this.parser.getStringValue("Grid_Name"));
-                } else if ("STATS".equalsIgnoreCase(this.parser.getSectionName())) {
+                            parser.getStringValue("Grid_Name"));
+                } else if ("STATS".equalsIgnoreCase(parser.getSectionName())) {
                     // rough estimate of how many unique probe lines we'll find.
-                    this.expectedRowCount = this.parser.getIntValue("TotalNumFeatures") / 2;
+                    this.expectedRowCount = parser.getIntValue("TotalNumFeatures") / 2;
                     this.expectedRowCount = Math.max(this.expectedRowCount, MIN_EXPECTED_ROW_COUNT);
-                } else if ("FEATURES".equalsIgnoreCase(this.parser.getSectionName())) {
-                    this.columnNames = this.parser.getColumnNames();
+                } else if ("FEATURES".equalsIgnoreCase(parser.getSectionName())) {
+                    this.columnNames = parser.getColumnNames();
                     break; // Finished reading the header
                 }
             }
@@ -366,7 +366,7 @@ class AgilentRawTextDataHandler extends AbstractDataFileHandler {
 
     @SuppressWarnings("PMD.AvoidThrowingRawExceptionTypes")
     private void handleFeatureLine(AgilentTextParser parser, Set<String> probeNamesSet, ProbeHandler handler) {
-        if ("FEATURES".equalsIgnoreCase(this.parser.getSectionName())) {
+        if ("FEATURES".equalsIgnoreCase(parser.getSectionName())) {
             final String probeName = parser.getStringValue(Columns.PROBE_NAME.getName());
             final String systematicName = parser.getStringValue(Columns.SYSTEMATIC_NAME.getName());
             if (!probeNamesSet.contains(probeName)) {
@@ -554,8 +554,6 @@ class AgilentRawTextDataHandler extends AbstractDataFileHandler {
         private boolean gIsGeneDetected;
 
         void loadValuesFromParser(AgilentTextParser parser) {
-        	probeName = parser.getStringValue("ProbeName");
-        	systematicName = parser.getStringValue("SystematicName");
             logRatio = parser.getFloatValue(Columns.LOG_RATIO.getName());
             logRatioError = parser.getFloatValue(Columns.LOG_RATIO_ERROR.getName());
             pValueLogRatio = parser.getFloatValue(Columns.P_VALUE_LOG_RATIO.getName());
