@@ -126,8 +126,6 @@ public class ApplicationModule extends AbstractModule {
         bind(ArrayDesignService.class).to(ArrayDesignServiceBean.class);
         bind(AuditLogService.class).to(AuditLogServiceBean.class);
         bind(BrowseService.class).to(BrowseServiceBean.class);        
-        bind(FileManagementService.class).to(FileManagementServiceBean.class);        
-        bind(FileAccessService.class).to(FileAccessServiceBean.class);
         bind(GenericDataService.class).to(GenericDataServiceBean.class);
         bind(PermissionsManagementService.class).to(PermissionsManagementServiceBean.class);
         bind(ProjectManagementService.class).to(ProjectManagementServiceBean.class);
