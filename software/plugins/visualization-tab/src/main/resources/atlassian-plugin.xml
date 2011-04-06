@@ -1,0 +1,8 @@
+<atlassian-plugin key="visualization-tab" name="Visualization Tab for Project Details" plugins-version="2">
+	<plugin-info>
+		<version>1.0.0</version>
+	</plugin-info>
+	<struts2 key="heatmap-struts2"/>
+ 	<project-tab key="heatmap-tab" label="Heatmap"
+		url="/heatmap/ajax/project/tab/Visualization/load.action" tab-key="visualization"/>	
+</atlassian-plugin>

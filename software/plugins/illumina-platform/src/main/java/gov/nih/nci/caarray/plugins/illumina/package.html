@@ -1,0 +1,108 @@
+<html>
+    <head>
+        <title>Package Documentation</title>
+    </head>
+    <body>
+<p>
+        This package is used by hybridization data loaders that parse derived data
+    from a tabular file.&nbsp;
+    {@link gov.nih.nci.caarray.application.arraydata.IlluminaGenotypingProcessedMatrixHandler}
+    and {@link gov.nih.nci.caarray.application.arraydata.IlluminaSampleProbeProfileHandler}
+    are such loaders.
+</p>
+
+<p>
+    In general, the data files are composed of:
+    <ul>
+        <li>an optional heading section</li>
+        <li>a data table with:
+            <ul>
+                <li>a table header, </li>
+                <li>a table body composed of a sequence of data rows.</li>
+            </ul>
+        </li>
+    </ul>
+</p>
+<p>
+    The data table header identifies:
+    <ul>
+        <li>some columns that are common to all the hybridizations annotated in
+            the file, e.g. the Probe ID of the design probe that is the source
+            of the all the hybridization quatitation values. </li>
+        <li>quantitation values grouped by hybridization.</li>
+    </ul>
+</p>
+<p>
+    Due to the size of the data files, this package provides classes that
+    encourage the processing of the files in an event driven manner, with as
+    few passes through the file as possible. e.i try to extract as much data as
+    possible from each row in order to build the internal data structure, and
+    avoid column-wise processing of the data.
+</p>
+<p>
+        But this is not always possible.&nbsp; For example, the internal data
+    structure requires the allocation of the quantitation columns before it can
+    be populated. This forces us to know the number of rows before we can load
+    their values. In this case, we can make a first pass to count the rows and
+    do other work
+    ({@link gov.nih.nci.caarray.application.arraydata.illumina.DesignElementBuilder like building the design element list}),
+    and a second pass that will
+    {@link gov.nih.nci.caarray.application.arraydata.illumina.HybDataBuilder populate a quantitation values}.
+</p>
+<p>
+        The size and structure of the data file formats also implies that there
+    is a great performance benefits to be gained by building a fast row
+    processor. Such row processor make use of the table header to build a
+    fast lookup map of the values rows.
+</p>
+    <h2>Processing a File</h2>
+<p>    
+        A data loader will iterate though line a the file and, depending on the
+    section it is processing, fire a
+    {@link gov.nih.nci.caarray.application.arraydata.illumina.AbstractParser#parse}
+    event on the appropriate parser.&nbsp; The parser will signal how well
+    it was able to process&nbsp; the line by returning true if all went well,
+    or false if the problems encountered in the current line cause subsequent
+    line to fail.&nbsp; It is also the loader's responsibility to identify
+    the section transitions.
+</p>
+
+    <h2>Processing the Table Header</h2>
+<p>
+    {@link gov.nih.nci.caarray.application.arraydata.illumina.AbstractHeaderParser}
+    is the base class for a table header parser that will:
+    <ul>
+        <li>identify common/shared columns, like the Probe ID,
+            {@link gov.nih.nci.caarray.application.arraydata.illumina.AbstractHeaderParser#setProbIdColumn(int col)}</li>
+        <li>identify samples and their quantitation type columns,
+            {@link gov.nih.nci.caarray.application.arraydata.illumina.AbstractHeaderParser#addValueLoader(String hybName)}</li>
+        <li>verify the validity of the header.</li>
+    </ul>
+</p>
+
+    <h2>Processing Sample Quantitation Type Comlumns</h2>
+<p>
+        After adding a {@link gov.nih.nci.caarray.application.arraydata.illumina.AbstractHeaderParser.ValueLoader}
+    found in the header, the header parser should identify what quantitation
+    types are listed and add&nbsp; mappings to the columns they are found in:
+    {@link gov.nih.nci.caarray.application.arraydata.illumina.AbstractHeaderParser.ValueLoader#addMapping}
+</p>
+    <h2>Processing Data Rows</h2>
+<p>
+        Row processors like {@link gov.nih.nci.caarray.application.arraydata.illumina.HybDataBuilder}
+        and {@link gov.nih.nci.caarray.application.arraydata.illumina.HybDataValidator}
+        will make use of the header parser to quickly lookup the values of
+        interest from a row in the table body for processing, using
+        {@link gov.nih.nci.caarray.application.arraydata.illumina.AbstractHeaderParser.ValueLoader#getValue}.
+</p>
+    <h2>Validation</h2>
+<p>
+        A parser should always signal errors encountered while processing a line
+    using a {@link gov.nih.nci.caarray.application.arraydata.illumina.MessageHandler}.&nbsp; This allows for the construction of a
+    parser that can fail fast (using {@link gov.nih.nci.caarray.application.arraydata.illumina.MessageHandler.DefaultMessageHandler}),
+    or one that can collect as many validation messages as possible (using
+    {@link gov.nih.nci.caarray.application.arraydata.illumina.MessageHandler.ValidationMessageHander}),
+    with the same parsing logic.
+</p>
+    </body>
+</html>
