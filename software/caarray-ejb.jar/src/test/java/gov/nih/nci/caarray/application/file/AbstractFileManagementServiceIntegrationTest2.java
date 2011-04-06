@@ -143,6 +143,19 @@ import com.google.inject.multibindings.MapBinder;
  * 
  * @author Steve Lustbader
  */
+
+//TODO: need to consolidate AbstractFileManagementServiceIntegrationTest.java and AbstractFileManagementServiceIntegrationTest2.java? 
+//These two files actually share a common ancestor (altho this history is not apparent in a svn revision graph), and still share many 
+//commonalities. The common ancestor is /trunk/.../FileManagementServiceIntegrationTest.java@11062. This rev branched off 
+//as /branches/gaxzero-jboss-5.1.0.GA@11110, and evolved into /branches/dkokotov-storage-osgi-consolidation, where it was renamed as 
+//AbstractFileManagementServiceIntegrationTest.java in rev 11485. Meanwhile on trunk, FileManagementServiceIntegrationTest.java was 
+//deleted and refactored into a new AbstractFileManagementServiceIntegrationTest.java and a couple of subclasses. To consolidate 
+//AbstractFileManagementServiceIntegrationTest and AbstractFileManagementServiceIntegrationTest2, we suggest doing a 3 way diff-merge 
+//using /trunk/.../FileManagementServiceIntegrationTest.java@11062 as the common ancestor. Also, note that consolidating 
+//AbstractFileManagementServiceIntegrationTest and AbstractFileManagementServiceIntegrationTest2 will affect their respective 
+//subclasses (which are FileImportIntegrationTest and FileValidationIntegrationTest vs. AffymetrixFileManagementServiceIntegrationTest, 
+//AgilentFileManagementServiceIntegrationTest, IlluminaFileManagementServiceIntegrationTest respectively). 
+
 @SuppressWarnings("PMD")
 public abstract class AbstractFileManagementServiceIntegrationTest2 extends AbstractServiceIntegrationTest {
     protected FileManagementService fileManagementService;
