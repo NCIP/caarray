@@ -83,7 +83,9 @@
 package gov.nih.nci.caarray.injection;
 
 import gov.nih.nci.caarray.application.ApplicationModule;
-import gov.nih.nci.caarray.application.arraydata.ArrayDataModule;
+import gov.nih.nci.caarray.dao.DaoModule;
+import gov.nih.nci.caarray.platforms.PlatformJtaTransactionModule;
+import gov.nih.nci.caarray.platforms.PlatformModule;
 import gov.nih.nci.caarray.application.file.FileModule;
 import gov.nih.nci.caarray.services.ServicesModule;
 import gov.nih.nci.caarray.staticinjection.CaArrayEjbStaticInjectionModule;
@@ -99,14 +101,16 @@ import com.google.inject.util.Modules;
  * 
  */
 public final class InjectorFactory {
+    private static final PlatformModule PLATFORM_MODULE = new PlatformModule();
+    private static Module platformTransactionMoudle = new PlatformJtaTransactionModule();
 
     // Static utility class should not have a default constructor.
     private InjectorFactory() {
     }
 
     /**
-     * Holds a InjectorSingleton reference. Inner classes are initialized only when first used, so the Injector
-     * is not created until needed.
+     * Holds a InjectorSingleton reference. Inner classes are initialized only when first used, so the Injector is not
+     * created until needed.
      * 
      * @author jscott
      */
@@ -114,10 +118,14 @@ public final class InjectorFactory {
         private static Injector injector;
 
         static {
-            injector = Guice.createInjector(getModule());
+        	createInjector();
         }
 
         private InjectorSingletonHolder() {
+        }
+
+        private static void createInjector() {
+            injector = Guice.createInjector(getModule());
         }
     }
 
@@ -136,14 +144,25 @@ public final class InjectorFactory {
     public static Module getModule() {
         final Module[] modules = new Module[] {
             new CaArrayEjbStaticInjectionModule(),
-            new CaArrayHibernateHelperModule(),
-            new ArrayDataModule(), // identical to ArrayDataModule, includes DaoModule
-            new ServicesModule(),
-            new FileModule(),
+            new CaArrayHibernateHelperModule(), 
+            new DaoModule(), 
+            new ServicesModule(), 
             new ApplicationModule(),
+            PLATFORM_MODULE, 
+            platformTransactionMoudle,
         };
         
         return Modules.combine(modules);
+    }
+
+
+    public static void addPlatform(Module platformModule) {
+        PLATFORM_MODULE.addPlatform(platformModule);
+        InjectorSingletonHolder.createInjector();
+    }
+
+    public static void setPlatformTransactionModule(Module platformTransactionModule) {
+        platformTransactionMoudle = platformTransactionModule;
     }
 
 }
