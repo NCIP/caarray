@@ -89,9 +89,8 @@ import gov.nih.nci.caarray.dao.JobQueueDao;
 import gov.nih.nci.caarray.domain.ConfigParamEnum;
 import gov.nih.nci.caarray.domain.project.ExecutableJob;
 import gov.nih.nci.caarray.injection.InjectionInterceptor;
-import gov.nih.nci.caarray.injection.InjectorFactory;
+import gov.nih.nci.caarray.injection.InjectionInterceptor;
 import gov.nih.nci.caarray.services.HibernateSessionInterceptor;
-import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
 import gov.nih.nci.caarray.services.StorageInterceptor;
 import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.logging.api.logger.util.ThreadVariable;
@@ -165,6 +164,7 @@ public class FileManagementMDB implements MessageListener {
         this.jobDao = jobDao;
         this.userHolderProvider = userHolderProvider;
     }
+    private Provider<MageTabImporter> mageTabImporterProvider;
 
     /**
      * Handles file management job message.
@@ -344,6 +344,14 @@ public class FileManagementMDB implements MessageListener {
      */
     public void setTransaction(UserTransaction transaction) {
         this.transaction = transaction;
+    }
+
+    /**
+     * @param mageTabImporterProvider the mageTabImporterProvider to set
+     */
+    @Inject
+    public void setMageTabImporterProvider(Provider<MageTabImporter> mageTabImporterProvider) {
+        this.mageTabImporterProvider = mageTabImporterProvider;
     }
 
     /**

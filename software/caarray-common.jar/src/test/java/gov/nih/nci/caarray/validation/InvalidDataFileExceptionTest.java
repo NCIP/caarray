@@ -82,11 +82,8 @@
  */
 package gov.nih.nci.caarray.validation;
 
-import static org.junit.Assert.*;
-
+import static org.junit.Assert.assertEquals;
 import gov.nih.nci.caarray.AbstractCaarrayTest;
-
-import java.io.File;
 
 import org.junit.Test;
 
@@ -94,11 +91,9 @@ public class InvalidDataFileExceptionTest extends AbstractCaarrayTest {
 
     @Test
     public final void testGetFileValidationResult() {
-        FileValidationResult result = new FileValidationResult(new File("."));
-        result.addMessage(new ValidationMessage(ValidationMessage.Type.ERROR, "foo"));
-        InvalidDataFileException exception = new InvalidDataFileException(result);
+        final FileValidationResult result = new FileValidationResult();
+        final InvalidDataFileException exception = new InvalidDataFileException(result);
         assertEquals(result, exception.getFileValidationResult());
-        assertEquals("The exception message was not as expected.", "ERROR: foo", exception.getMessage().trim());
     }
 
 }

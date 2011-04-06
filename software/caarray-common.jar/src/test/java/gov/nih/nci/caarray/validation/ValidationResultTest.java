@@ -88,7 +88,6 @@ import static org.junit.Assert.assertFalse;
 
 import gov.nih.nci.caarray.AbstractCaarrayTest;
 
-import java.io.File;
 import java.util.List;
 
 import org.junit.Test;
@@ -101,7 +100,7 @@ public class ValidationResultTest extends AbstractCaarrayTest {
 
     @Test
     public void testIsValid() {
-        ValidationResult result = new ValidationResult();
+        final ValidationResult result = new ValidationResult();
         assertTrue(result.isValid());
         result.addMessage(fileName , ValidationMessage.Type.INFO, TEST_MESSAGE + "1");
         assertTrue(result.isValid());
@@ -121,11 +120,10 @@ public class ValidationResultTest extends AbstractCaarrayTest {
         ValidationMessage message3 = result.addMessage(fileName, ValidationMessage.Type.WARNING, TEST_MESSAGE + "3");
         message2.setLine(10);
         message3.setLine(1);
-        List<FileValidationResult> fileValidationResults = result.getFileValidationResults();
+        final List<FileValidationResult> fileValidationResults = result.getFileValidationResults();
         assertEquals(1, fileValidationResults.size());
-        assertEquals(testFile, fileValidationResults.get(0).getFile());
         assertEquals(3, fileValidationResults.get(0).getMessages().size());
-        List<ValidationMessage> messages = result.getMessages();
+        final List<ValidationMessage> messages = result.getMessages();
         assertEquals(3, messages.size());
         assertEquals(ValidationMessage.Type.WARNING, messages.get(0).getType());
         assertEquals(message3.getMessage(), messages.get(0).getMessage());

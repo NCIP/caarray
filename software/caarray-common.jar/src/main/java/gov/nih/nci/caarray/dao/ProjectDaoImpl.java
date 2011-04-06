@@ -83,7 +83,8 @@
 package gov.nih.nci.caarray.dao;
 
 import gov.nih.nci.caarray.domain.file.FileStatus;
-import gov.nih.nci.caarray.domain.file.FileType;
+import gov.nih.nci.caarray.domain.file.FileTypeRegistry;
+import gov.nih.nci.caarray.domain.file.FileTypeRegistryImpl;
 import gov.nih.nci.caarray.domain.permissions.AccessProfile;
 import gov.nih.nci.caarray.domain.permissions.SecurityLevel;
 import gov.nih.nci.caarray.domain.project.AssayType;
@@ -129,6 +130,7 @@ import org.hibernate.criterion.Restrictions;
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
 import com.fiveamsolutions.nci.commons.data.search.SortCriterion;
+import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 
 /**
@@ -152,14 +154,17 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
         }
     }
 
+    private final FileTypeRegistry typeRegistry;
+
     /**
      * 
      * @param hibernateHelper the CaArrayHibernateHelper dependency
      * @return 
      */
     @Inject
-    public ProjectDaoImpl(CaArrayHibernateHelper hibernateHelper) {
+    public ProjectDaoImpl(CaArrayHibernateHelper hibernateHelper, FileTypeRegistry typeRegistry) {
         super(hibernateHelper);
+        this.typeRegistry = typeRegistry;
     }
    
    /**
@@ -552,7 +557,8 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
                 + " p left join p.files f where f.status = :status and f.type in (:types) order by p.id";
         Query query = getCurrentSession().createQuery(q);
         query.setParameter("status",  FileStatus.IMPORTED_NOT_PARSED.name());
-        query.setParameterList("types", PARSEABLE_ARRAY_DATA_FILE_TYPE_NAMES);
+        query.setParameterList("types",
+                Sets.newHashSet(FileTypeRegistryImpl.namesForTypes(this.typeRegistry.getParseableArrayDataTypes())));
         return (List<Project>) query.list();
     }
 }

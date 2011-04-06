@@ -6,8 +6,8 @@
         <attribute name="classpath" default="" />
         <attribute name="instrumented.classes" default="" />
         <attribute name="classpathref.id" default="no.dependencies.path" />
-        <attribute name="source.include" default="${test.source.include}" />	
-        <attribute name="source.exclude" default="${test.source.exclude}" />
+        <attribute name="source.include" default="${test.source.include}" />
+		<attribute name="source.exclude" default="${test.source.exclude}" />
         <element name="extentions" optional="yes"/>
 
         <sequential>

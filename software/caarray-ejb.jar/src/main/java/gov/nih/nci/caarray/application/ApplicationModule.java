@@ -83,26 +83,18 @@
 package gov.nih.nci.caarray.application;
 
 import gov.nih.nci.caarray.application.arraydata.ArrayDataService;
-import gov.nih.nci.caarray.application.arraydata.ArrayDataServiceBean;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
-import gov.nih.nci.caarray.application.arraydesign.ArrayDesignServiceBean;
 import gov.nih.nci.caarray.application.audit.AuditLogService;
-import gov.nih.nci.caarray.application.audit.AuditLogServiceBean;
 import gov.nih.nci.caarray.application.browse.BrowseService;
-import gov.nih.nci.caarray.application.browse.BrowseServiceBean;
 import gov.nih.nci.caarray.application.file.FileManagementModule;
 import gov.nih.nci.caarray.application.fileaccess.ExplicitRequestScope;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessModule;
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCache;
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheImpl;
 import gov.nih.nci.caarray.application.permissions.PermissionsManagementService;
-import gov.nih.nci.caarray.application.permissions.PermissionsManagementServiceBean;
 import gov.nih.nci.caarray.application.project.ProjectManagementService;
-import gov.nih.nci.caarray.application.project.ProjectManagementServiceBean;
 import gov.nih.nci.caarray.application.registration.RegistrationService;
-import gov.nih.nci.caarray.application.registration.RegistrationServiceBean;
 import gov.nih.nci.caarray.application.vocabulary.VocabularyService;
-import gov.nih.nci.caarray.application.vocabulary.VocabularyServiceBean;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.servlet.RequestScoped;
@@ -122,15 +114,26 @@ public class ApplicationModule extends AbstractModule {
         install(new FileAccessModule());
         install(new FileManagementModule());
 
-        bind(ArrayDataService.class).to(ArrayDataServiceBean.class);
-        bind(ArrayDesignService.class).to(ArrayDesignServiceBean.class);
-        bind(AuditLogService.class).to(AuditLogServiceBean.class);
-        bind(BrowseService.class).to(BrowseServiceBean.class);        
-        bind(GenericDataService.class).to(GenericDataServiceBean.class);
-        bind(PermissionsManagementService.class).to(PermissionsManagementServiceBean.class);
-        bind(ProjectManagementService.class).to(ProjectManagementServiceBean.class);
-        bind(RegistrationService.class).to(RegistrationServiceBean.class);
-        bind(VocabularyService.class).to(VocabularyServiceBean.class);
+        bind(ArrayDataService.class).toProvider(
+                ServiceLocatorFactory.serviceProvider(ArrayDataService.class, ArrayDataService.JNDI_NAME));
+        bind(ArrayDesignService.class).toProvider(
+                ServiceLocatorFactory.serviceProvider(ArrayDesignService.class, ArrayDesignService.JNDI_NAME));
+        bind(AuditLogService.class).toProvider(
+                ServiceLocatorFactory.serviceProvider(AuditLogService.class, AuditLogService.JNDI_NAME));
+        bind(BrowseService.class).toProvider(
+                ServiceLocatorFactory.serviceProvider(BrowseService.class, BrowseService.JNDI_NAME));
+        bind(GenericDataService.class).toProvider(
+                ServiceLocatorFactory.serviceProvider(GenericDataService.class, GenericDataService.JNDI_NAME));
+        bind(PermissionsManagementService.class).toProvider(
+                ServiceLocatorFactory.serviceProvider(PermissionsManagementService.class,
+                        PermissionsManagementService.JNDI_NAME));
+        bind(ProjectManagementService.class).toProvider(
+                ServiceLocatorFactory.serviceProvider(ProjectManagementService.class,
+                        ProjectManagementService.JNDI_NAME));
+        bind(RegistrationService.class).toProvider(
+                ServiceLocatorFactory.serviceProvider(RegistrationService.class, RegistrationService.JNDI_NAME));
+        bind(VocabularyService.class).toProvider(
+                ServiceLocatorFactory.serviceProvider(VocabularyService.class, VocabularyService.JNDI_NAME));
 
         bindScope(RequestScoped.class, new ExplicitRequestScope());
 

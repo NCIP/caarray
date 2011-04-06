@@ -87,6 +87,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import gov.nih.nci.caarray.application.AbstractServiceTest;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignServiceTest;
 import gov.nih.nci.caarray.application.file.AbstractFileManagementServiceIntegrationTest;
@@ -104,7 +106,10 @@ import gov.nih.nci.caarray.domain.data.DerivedArrayData;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
+import gov.nih.nci.caarray.domain.file.FileCategory;
 import gov.nih.nci.caarray.domain.file.FileType;
+import gov.nih.nci.caarray.domain.file.FileTypeRegistry;
+import gov.nih.nci.caarray.domain.file.FileTypeRegistryImpl;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.ExperimentContact;
@@ -138,6 +143,8 @@ import gov.nih.nci.caarray.magetab.io.FileRef;
 import gov.nih.nci.caarray.magetab.io.JavaIOFileRef;
 import gov.nih.nci.caarray.magetab.sdrf.AbstractBioMaterial;
 import gov.nih.nci.caarray.magetab.sdrf.SdrfDocument;
+import gov.nih.nci.caarray.platforms.spi.DataFileHandler;
+import gov.nih.nci.caarray.platforms.spi.DesignFileHandler;
 import gov.nih.nci.caarray.test.data.arraydata.GenepixArrayDataFiles;
 import gov.nih.nci.caarray.test.data.arraydesign.AgilentArrayDesignFiles;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
@@ -149,6 +156,7 @@ import gov.nih.nci.caarray.validation.ValidationResult;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -163,23 +171,60 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
+import com.google.common.collect.Sets;
+import com.google.inject.AbstractModule;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 
 /**
  * Test for MAGE tab translator
  */
 @SuppressWarnings("PMD")
 public class MageTabTranslatorTest extends AbstractServiceTest {
+    protected static FileType AFFYMETRIX_CHP = new FileType("AFFYMETRIX_CHP", FileCategory.DERIVED_DATA, true, "CHP");
+    protected static FileType AFFYMETRIX_CEL = new FileType("AFFYMETRIX_CEL", FileCategory.RAW_DATA, true, "CEL");
+    protected static FileType GENEPIX_GPR = new FileType("GENEPIX_GPR", FileCategory.DERIVED_DATA, true, "GPR");
 
     MageTabTranslator translator;
     private final LocalDaoFactoryStub daoFactoryStub = new LocalDaoFactoryStub();
     private final VocabularyServiceStub vocabularyServiceStub = new VocabularyServiceStub();
     private FileAccessServiceStub fileAccessServiceStub;
 
+    protected FileTypeRegistry typeRegistry;
+    protected Injector injector;
+
+    /**
+     * Subclasses can override this to configure a custom injector, e.g. by overriding some modules with stubbed out
+     * functionality.
+     * 
+     * @return a Guice injector from which this will obtain dependencies.
+     */
+    protected Injector createInjector() {
+        System.out.println("Creating injector");
+
+        return Guice.createInjector(new AbstractModule() {
+            @Override
+            protected void configure() {
+                bind(FileTypeRegistry.class).toInstance(MageTabTranslatorTest.this.typeRegistry);
+                requestStaticInjection(CaArrayFile.class);
+                requestStaticInjection(TestMageTabSets.class);
+            }
+        });
+    }
+
     /**
      * Prepares the translator implementation, stubbing out dependencies.
      */
     @Before
     public void setupTranslator() {
+        final DataFileHandler dataHandler = mock(DataFileHandler.class);
+        when(dataHandler.getSupportedTypes()).thenReturn(Sets.newHashSet(AFFYMETRIX_CHP, AFFYMETRIX_CEL, GENEPIX_GPR));
+
+        this.typeRegistry = new FileTypeRegistryImpl(Sets.<DataFileHandler> newHashSet(dataHandler),
+                Collections.<DesignFileHandler> emptySet());
+
+        this.injector = createInjector();
+
         final MageTabTranslatorBean mageTabTranslatorBean = new MageTabTranslatorBean();
         mageTabTranslatorBean.setDaoFactory(this.daoFactoryStub);
         final ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
@@ -198,11 +243,11 @@ public class MageTabTranslatorTest extends AbstractServiceTest {
         assertTrue(docSet.getValidationResult().isValid());
         final CaArrayFileSet fileSet = TestMageTabSets.getFileSet(mageTabSet);
         final CaArrayFile dataFile = fileSet.getFile(MageTabDataFiles.DEFECT_27959_DERIVED_DATA_FILE);
-        dataFile.setType(FileType.ILLUMINA_DERIVED_TXT.getName());
+        dataFile.setFileType(GENEPIX_GPR);
         final ValidationResult result = this.translator.validate(docSet, fileSet);
         assertFalse(result.isValid());
         final FileValidationResult fileResult = result
-                .getFileValidationResult(MageTabDataFiles.DEFECT_27959_DERIVED_DATA_FILE);
+                .getFileValidationResult(MageTabDataFiles.DEFECT_27959_DERIVED_DATA_FILE.getName());
         assertNotNull(fileResult);
         assertFalse(result.isValid());
         assertEquals(1, fileResult.getMessages().size());
@@ -275,12 +320,12 @@ public class MageTabTranslatorTest extends AbstractServiceTest {
         CaArrayFileSet fileSet = TestMageTabSets.getFileSet(TestMageTabSets.DEFECT_17200);
         ValidationResult result = this.translator.validate(docSet, fileSet);
         assertFalse(result.isValid());
-        FileValidationResult fileResult = result.getFileValidationResult(MageTabDataFiles.DEFECT_17200_GPR);
+        FileValidationResult fileResult = result.getFileValidationResult(MageTabDataFiles.DEFECT_17200_GPR.getName());
         assertNotNull(fileResult);
         assertFalse(result.isValid());
         assertEquals(1, fileResult.getMessages().size());
         assertTrue(fileResult.getMessages().get(0).getMessage().startsWith("This file is not correctly referenced"));
-        fileResult = result.getFileValidationResult(GenepixArrayDataFiles.GPR_3_0_6);
+        fileResult = result.getFileValidationResult(GenepixArrayDataFiles.GPR_3_0_6.getName());
         assertNotNull(fileResult);
         assertFalse(result.isValid());
         assertEquals(1, fileResult.getMessages().size());
