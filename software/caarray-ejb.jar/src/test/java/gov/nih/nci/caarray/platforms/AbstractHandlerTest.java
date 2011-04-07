@@ -87,7 +87,6 @@ import static org.mockito.Mockito.mock;
 import gov.nih.nci.caarray.AbstractCaarrayTest;
 import gov.nih.nci.caarray.application.arraydata.ArrayDataService;
 import gov.nih.nci.caarray.application.arraydata.ArrayDataServiceBean;
-import gov.nih.nci.caarray.application.arraydesign.ArrayDesignModule;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignServiceBean;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
@@ -97,11 +96,14 @@ import gov.nih.nci.caarray.application.vocabulary.VocabularyServiceStub;
 import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.dao.ContactDao;
 import gov.nih.nci.caarray.dao.JobQueueDao;
+import gov.nih.nci.caarray.dao.MultipartBlobDao;
 import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.dao.stub.ArrayDaoStub;
 import gov.nih.nci.caarray.dao.stub.ContactDaoStub;
 import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
 import gov.nih.nci.caarray.dao.stub.SearchDaoStub;
+import gov.nih.nci.caarray.dataStorage.DataStorageModule;
+import gov.nih.nci.caarray.dataStorage.spi.DataStorage;
 import gov.nih.nci.caarray.domain.array.Array;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
@@ -144,7 +146,8 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Module;
-import com.google.inject.util.Modules;
+import com.google.inject.multibindings.MapBinder;
+import com.google.inject.name.Names;
 
 /**
  * @author dkokotov
@@ -164,7 +167,7 @@ public abstract class AbstractHandlerTest extends AbstractCaarrayTest {
         locatorStub.addLookup(FileAccessService.JNDI_NAME, this.fileAccessServiceStub);
         locatorStub.addLookup(VocabularyService.JNDI_NAME, new VocabularyServiceStub());
 
-        final Module testModule = Modules.override(new ArrayDesignModule()).with(new AbstractModule() {
+        final Module testModule = new AbstractModule() {
             @Override
             protected void configure() {
                 bind(UsernameHolder.class).toInstance(mock(UsernameHolder.class));
@@ -175,17 +178,44 @@ public abstract class AbstractHandlerTest extends AbstractCaarrayTest {
 
                 bind(ArrayDesignService.class).to(ArrayDesignServiceBean.class);
                 bind(ArrayDataService.class).to(ArrayDataServiceBean.class);
-            }
-        });
 
-        final Injector injector = Guice.createInjector(new CaArrayEjbStaticInjectionModule(),
-                new CaArrayHibernateHelperModule(), testModule);
+                bind(MultipartBlobDao.class).toInstance(mock(MultipartBlobDao.class));
+
+                final MapBinder<String, DataStorage> mapBinder =
+                        MapBinder.newMapBinder(binder(), String.class, DataStorage.class);
+                mapBinder.addBinding(FileAccessServiceStub.SCHEME).toInstance(
+                        AbstractHandlerTest.this.fileAccessServiceStub);
+
+                bind(SessionTransactionManager.class).to(SessionTransactionManagerNoOpImpl.class);
+
+                bind(String.class).annotatedWith(Names.named(DataStorageModule.FILE_DATA_ENGINE)).toInstance(
+                        "file-system");
+                bind(String.class).annotatedWith(Names.named(DataStorageModule.PARSED_DATA_ENGINE)).toInstance(
+                        "file-system");
+            }
+        };
+
+        final PlatformModule platformModule = new PlatformModule();
+        configurePlatforms(platformModule);
+
+        final Injector injector =
+                Guice.createInjector(new CaArrayEjbStaticInjectionModule(), new CaArrayHibernateHelperModule(),
+                        new DataStorageModule(), platformModule, testModule);
 
         locatorStub.addLookup(ArrayDesignService.JNDI_NAME, injector.getInstance(ArrayDesignService.class));
 
         this.arrayDataService = injector.getInstance(ArrayDataService.class);
         this.fileAccessServiceStub.add(AffymetrixArrayDesignFiles.TEST3_CDF);
         this.fileAccessServiceStub.add(AffymetrixArrayDesignFiles.TEN_K_CDF);
+    }
+
+    /**
+     * Strategy method allowing subclasses to add platform implementations to the configuration
+     * 
+     * @param platformModule
+     */
+    protected void configurePlatforms(PlatformModule platformModule) {
+        // no-op by default
     }
 
     protected MageTabDocumentSet genMageTabDocSet(List<File> fl) {
@@ -199,8 +229,8 @@ public abstract class AbstractHandlerTest extends AbstractCaarrayTest {
                 mTabFiles.addNativeData(new JavaIOFileRef(f));
             }
         }
-        final MageTabDocumentSet mTabSet = new MageTabDocumentSet(mTabFiles,
-                MageTabParserImplementation.CAARRAY_VALIDATION_SET);
+        final MageTabDocumentSet mTabSet =
+                new MageTabDocumentSet(mTabFiles, MageTabParserImplementation.CAARRAY_VALIDATION_SET);
         return mTabSet;
     }
 
@@ -305,7 +335,6 @@ public abstract class AbstractHandlerTest extends AbstractCaarrayTest {
             f = new CaArrayFile();
         }
         f.setFileStatus(FileStatus.IMPORTED);
-        f.setFileType(FileType.ILLUMINA_DESIGN_CSV);
         arrayDesign.addDesignFile(f);
 
         final ArrayDesignDetails details = new ArrayDesignDetails();
@@ -348,9 +377,11 @@ public abstract class AbstractHandlerTest extends AbstractCaarrayTest {
     public final class LocalDaoFactoryStub extends DaoFactoryStub {
         private final Map<String, ArrayDesign> arrayDesignMap = new HashMap<String, ArrayDesign>();
 
-        private final Map<ArrayDataTypeDescriptor, ArrayDataType> dataTypeMap = new HashMap<ArrayDataTypeDescriptor, ArrayDataType>();
+        private final Map<ArrayDataTypeDescriptor, ArrayDataType> dataTypeMap =
+                new HashMap<ArrayDataTypeDescriptor, ArrayDataType>();
 
-        private final Map<QuantitationTypeDescriptor, QuantitationType> quantitationTypeMap = new HashMap<QuantitationTypeDescriptor, QuantitationType>();
+        private final Map<QuantitationTypeDescriptor, QuantitationType> quantitationTypeMap =
+                new HashMap<QuantitationTypeDescriptor, QuantitationType>();
 
         private final Map<Long, AbstractArrayData> fileDataMap = new HashMap<Long, AbstractArrayData>();
 

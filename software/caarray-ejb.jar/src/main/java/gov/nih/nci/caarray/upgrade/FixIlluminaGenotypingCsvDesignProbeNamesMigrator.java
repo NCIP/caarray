@@ -83,9 +83,10 @@
 package gov.nih.nci.caarray.upgrade;
 
 import gov.nih.nci.caarray.application.ApplicationModule;
-import gov.nih.nci.caarray.application.arraydata.ArrayDataModule;
+import gov.nih.nci.caarray.application.JtaSessionTransactionManager;
 import gov.nih.nci.caarray.application.file.FileModule;
 import gov.nih.nci.caarray.dao.ArrayDao;
+import gov.nih.nci.caarray.dao.DaoModule;
 import gov.nih.nci.caarray.dao.FileDao;
 import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.dao.SearchDaoUnsupportedOperationImpl;
@@ -93,11 +94,10 @@ import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.array.PhysicalProbe;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
-import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.project.AssayType;
+import gov.nih.nci.caarray.platforms.PlatformModule;
 import gov.nih.nci.caarray.platforms.SessionTransactionManager;
 import gov.nih.nci.caarray.platforms.SessionTransactionManagerNoOpImpl;
-import gov.nih.nci.caarray.platforms.illumina.IlluminaModule;
 import gov.nih.nci.caarray.platforms.spi.DesignFileHandler;
 import gov.nih.nci.caarray.platforms.spi.PlatformFileReadException;
 import gov.nih.nci.caarray.services.ServicesModule;
@@ -133,6 +133,7 @@ import com.google.inject.util.Types;
  *
  */
 public class FixIlluminaGenotypingCsvDesignProbeNamesMigrator extends AbstractCustomChange {
+    private static final String ILLUMINA_DESIGN_CSV_TYPE_NAME = "ILLUMINA_DESIGN_CSV";
     
     /**
      * {@inheritDoc}
@@ -244,18 +245,20 @@ public class FixIlluminaGenotypingCsvDesignProbeNamesMigrator extends AbstractCu
         final Module localModule = new AbstractModule() {
             @Override
             protected void configure() {
-                bind(CaArrayHibernateHelper.class).toInstance(new SingleConnectionHibernateHelper());             
-            }   
+                bind(CaArrayHibernateHelper.class).toInstance(new SingleConnectionHibernateHelper());
+                bind(SessionTransactionManager.class).to(JtaSessionTransactionManager.class);
+            }
         };
         
         final Module[] modules = new Module[] {
                 new ArrayDataModule(), // identical to ArrayDataModule, includes DaoModule
                 new ServicesModule(),
                 new FileModule(),
+                new PlatformModule()
                 new ApplicationModule(),
                 localModule,
             };
-       
+
         return Guice.createInjector(modules);
     }
 
@@ -310,7 +313,6 @@ public class FixIlluminaGenotypingCsvDesignProbeNamesMigrator extends AbstractCu
             @Override
             protected void configure() {
                 // TODO: need something for file storage to replace this: bind(FileManager.class).toInstance(new FileDaoFileManager(fileDao));
-
                 bind(SessionTransactionManager.class).to(SessionTransactionManagerNoOpImpl.class).asEagerSingleton();
 
                 bind(ArrayDao.class).to(ShellArrayDao.class).asEagerSingleton();
@@ -318,7 +320,9 @@ public class FixIlluminaGenotypingCsvDesignProbeNamesMigrator extends AbstractCu
                 bind(SearchDao.class).to(SearchDaoUnsupportedOperationImpl.class).asEagerSingleton();
             }
         };
-        final Injector injector = Guice.createInjector(module, new IlluminaModule());
+        // TODO: need to figure out how to make this work with OSGi plugins
+        final Injector injector = Guice.createInjector(module /** , new IlluminaModule() */
+        );
         final Key<?> key = Key.get(TypeLiteral.get(Types.setOf(DesignFileHandler.class)));
         final Set<DesignFileHandler> handlers = (Set<DesignFileHandler>) injector.getInstance(key);
 
@@ -340,7 +344,7 @@ public class FixIlluminaGenotypingCsvDesignProbeNamesMigrator extends AbstractCu
 
         final List<ArrayDesign> candidateArrayDesigns = arrayDao.getArrayDesigns(provider, assayTypes, true);
         for (final ArrayDesign candidate : candidateArrayDesigns) {
-            if (candidate.getFirstDesignFile().getFileType() == FileType.ILLUMINA_DESIGN_CSV) {
+            if (candidate.getFirstDesignFile().getFileType().getName().equals(ILLUMINA_DESIGN_CSV_TYPE_NAME)) {
                 arrayDesignIds.add(candidate.getId());
             }
         }

@@ -88,19 +88,24 @@ import gov.nih.nci.caarray.domain.MultiPartBlob;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileType;
+import gov.nih.nci.caarray.domain.file.FileTypeRegistryImpl;
+import gov.nih.nci.caarray.domain.file.FileTypeRegistry;
 import gov.nih.nci.caarray.platforms.PlatformModule;
 import gov.nih.nci.caarray.platforms.SessionTransactionManager;
-import gov.nih.nci.caarray.platforms.SessionTransactionManagerNoOpImpl;
 import gov.nih.nci.caarray.platforms.spi.DataFileHandler;
 import gov.nih.nci.caarray.platforms.spi.PlatformFileReadException;
 import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
+import gov.nih.nci.caarray.staticinjection.CaArrayEjbStaticInjectionModule;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -130,7 +135,9 @@ import com.google.inject.util.Types;
  * 
  * @author Dan Kokotov
  */
+@SuppressWarnings({ "PMD.TooManyMethods", "PMD.CyclomaticComplexity" })
 public class FixHybridizationsWithMissingArraysMigrator extends AbstractCustomChange {
+    private Database database;
     private Set<DataFileHandler> handlers;
     private final Map<Long, File> openFileMap = new HashMap<Long, File>();
     private final FixHybridizationsWithMissingArraysDao dao;
@@ -172,7 +179,6 @@ public class FixHybridizationsWithMissingArraysMigrator extends AbstractCustomCh
      */
     public void execute(Connection connection) {
         setup(connection);
-
         try {
             List<Long> hybIdsWithoutArray = dao.getHybIdsWithNoArrayOrNoArrayDesign();
             for (Long hid : hybIdsWithoutArray) {
