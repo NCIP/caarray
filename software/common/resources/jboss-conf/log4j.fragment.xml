@@ -51,4 +51,9 @@
     <category name="freemarker">
         <priority value="ERROR"/>
     </category>
+    
+    <category name="atlassian.plugin" >
+	    <level value="info"/>
+	</category>
+    
     <!-- end caarray custom configuration -->

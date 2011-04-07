@@ -86,16 +86,19 @@ import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.LSID;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.file.FileCategory;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.platforms.spi.DesignFileHandler;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.ValidationResult;
 
-import java.util.EnumMap;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.io.FilenameUtils;
+
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
 /**
  * Common handler implementation of all known unparsed array design types.
@@ -103,20 +106,37 @@ import org.apache.commons.io.FilenameUtils;
  * @author Steve Lustbader
  */
 class UnparsedArrayDesignFileHandler implements DesignFileHandler {
-    private static final Map<FileType, LSID> LSID_TEMPLATE_MAP = new EnumMap<FileType, LSID>(FileType.class);
     private static final LSID CAARRAY_LOCAL_LSID_TEMPLATE = new LSID(AbstractCaArrayEntity.CAARRAY_LSID_AUTHORITY,
             AbstractCaArrayEntity.CAARRAY_LSID_NAMESPACE, null);
     private static final LSID AGILENT_LSID_TEMPLATE = new LSID("Agilent.com", "PhysicalArrayDesign", null);
+
+    static final FileType IMAGENE_TPL = new FileType("IMAGENE_TPL", FileCategory.ARRAY_DESIGN, false, "TPL");
+    static final FileType UCSF_SPOT_SPT = new FileType("UCSF_SPOT_SPT", FileCategory.ARRAY_DESIGN, false, "SPT");
+    static final FileType MAGE_TAB_ADF = new FileType("MAGE_TAB_ADF", FileCategory.ARRAY_DESIGN, false, "ADF");
+    static final FileType GEO_GPL = new FileType("GEO_GPL", FileCategory.ARRAY_DESIGN, false);
+    static final FileType AGILENT_CSV = new FileType("AGILENT_CSV", FileCategory.ARRAY_DESIGN, false);
+    static final Set<FileType> SUPPORTED_TYPES = Sets.newHashSet(IMAGENE_TPL, UCSF_SPOT_SPT, MAGE_TAB_ADF, GEO_GPL,
+            AGILENT_CSV);
+
+    private static final Map<FileType, LSID> LSID_TEMPLATE_MAP = Maps.newHashMap();
     static {
-        LSID_TEMPLATE_MAP.put(FileType.IMAGENE_TPL, CAARRAY_LOCAL_LSID_TEMPLATE);
-        LSID_TEMPLATE_MAP.put(FileType.UCSF_SPOT_SPT, CAARRAY_LOCAL_LSID_TEMPLATE);
-        LSID_TEMPLATE_MAP.put(FileType.MAGE_TAB_ADF, CAARRAY_LOCAL_LSID_TEMPLATE);
-        LSID_TEMPLATE_MAP.put(FileType.GEO_GPL, CAARRAY_LOCAL_LSID_TEMPLATE);
-        LSID_TEMPLATE_MAP.put(FileType.AGILENT_CSV, AGILENT_LSID_TEMPLATE);
+        LSID_TEMPLATE_MAP.put(IMAGENE_TPL, CAARRAY_LOCAL_LSID_TEMPLATE);
+        LSID_TEMPLATE_MAP.put(UCSF_SPOT_SPT, CAARRAY_LOCAL_LSID_TEMPLATE);
+        LSID_TEMPLATE_MAP.put(MAGE_TAB_ADF, CAARRAY_LOCAL_LSID_TEMPLATE);
+        LSID_TEMPLATE_MAP.put(GEO_GPL, CAARRAY_LOCAL_LSID_TEMPLATE);
+        LSID_TEMPLATE_MAP.put(AGILENT_CSV, AGILENT_LSID_TEMPLATE);
     }
 
     private CaArrayFile designFile;
     private LSID designLsid;
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Set<FileType> getSupportedTypes() {
+        return SUPPORTED_TYPES;
+    }
 
     @Override
     public boolean openFiles(Set<CaArrayFile> designFiles) {
@@ -162,10 +182,5 @@ class UnparsedArrayDesignFileHandler implements DesignFileHandler {
     public void validate(ValidationResult result) {
         final FileValidationResult fileResult = result.getOrCreateFileValidationResult(this.designFile.getName());
         this.designFile.setValidationResult(fileResult);
-    }
-
-    @Override
-    public boolean parsesData() {
-        return false;
     }
 }

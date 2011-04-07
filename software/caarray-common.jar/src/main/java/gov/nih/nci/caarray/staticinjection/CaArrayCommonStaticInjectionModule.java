@@ -95,6 +95,7 @@ public class CaArrayCommonStaticInjectionModule extends AbstractModule {
     @Override
     protected void configure() {
         requestStaticInjection(gov.nih.nci.caarray.dao.CaArrayDaoFactoryImpl.class);
+        requestStaticInjection(gov.nih.nci.caarray.domain.file.CaArrayFile.class);
         requestStaticInjection(gov.nih.nci.caarray.domain.permissions.CollaboratorGroup.class);
         requestStaticInjection(gov.nih.nci.caarray.security.AuthorizationManagerExtensions.class);
         requestStaticInjection(gov.nih.nci.caarray.security.SecurityUtils.class);

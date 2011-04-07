@@ -6,8 +6,10 @@ import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.contact.Person;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.file.FileCategory;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
+import gov.nih.nci.caarray.domain.file.FileTypeRegistry;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.AssayType;
 import gov.nih.nci.caarray.domain.project.Experiment;
@@ -281,14 +283,14 @@ public class AbstractProjectDaoTest extends AbstractDaoTest {
 
     protected static void setFiles() {
         DUMMY_FILE_1.setName(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF.getName());
-        DUMMY_FILE_1.setFileType(FileType.MAGE_TAB_IDF);
+        DUMMY_FILE_1.setFileType(FileTypeRegistry.MAGE_TAB_IDF);
         DUMMY_FILE_1.setFileStatus(FileStatus.UPLOADED);
         DUMMY_PROJECT_1.getFiles().add(DUMMY_FILE_1);
         DUMMY_FILE_1.setProject(DUMMY_PROJECT_1);
         DUMMY_FILE_1.setDataHandle(DUMMY_HANDLE);
 
         DUMMY_FILE_2.setName(MageTabDataFiles.SPECIFICATION_EXAMPLE_SDRF.getName());
-        DUMMY_FILE_2.setFileType(FileType.MAGE_TAB_SDRF);
+        DUMMY_FILE_2.setFileType(FileTypeRegistry.MAGE_TAB_SDRF);
         DUMMY_FILE_2.setFileStatus(FileStatus.SUPPLEMENTAL);
         DUMMY_PROJECT_1.getFiles().add(DUMMY_FILE_2);
         DUMMY_FILE_2.setProject(DUMMY_PROJECT_1);
@@ -296,7 +298,7 @@ public class AbstractProjectDaoTest extends AbstractDaoTest {
 
         DUMMY_DATA_FILE.setName("dummy.cel");
         DUMMY_DATA_FILE.setFileStatus(FileStatus.UPLOADED);
-        DUMMY_DATA_FILE.setFileType(FileType.AFFYMETRIX_CEL);
+        DUMMY_DATA_FILE.setFileType(new FileType("AFFYMETRIX_CEL", FileCategory.RAW_DATA, true));
         DUMMY_DATA_FILE.setDataHandle(DUMMY_HANDLE);
     }
 

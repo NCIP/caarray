@@ -91,8 +91,9 @@ import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
-import gov.nih.nci.caarray.domain.file.FileExtension;
 import gov.nih.nci.caarray.domain.file.FileType;
+import gov.nih.nci.caarray.domain.file.FileTypeRegistry;
+import gov.nih.nci.caarray.domain.file.FileTypeRegistryImpl;
 import gov.nih.nci.caarray.domain.file.UnsupportedAffymetrixCdfFiles;
 import gov.nih.nci.caarray.domain.project.AssayType;
 import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
@@ -154,12 +155,13 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
     private boolean editMode;
     private boolean locked;
     private boolean createMode;
+    private FileTypeRegistry fileTypeRegistry;
 
     /**
      * @return the set of array design file types to display in UI.
      */
-    public static Set<FileType> arrayDesignTypes() {
-        return FileType.ARRAY_DESIGN_FILE_TYPES;
+    public Set<FileType> getArrayDesignTypes() {
+        return this.fileTypeRegistry.getArrayDesignTypes();
     }
 
     /**
@@ -322,8 +324,8 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
         this.providers = ServiceLocatorFactory.getArrayDesignService().getAllProviders();
         this.featureTypes = VocabularyUtils.getTermsFromCategory(ExperimentOntologyCategory.TECHNOLOGY_TYPE);
         if (this.arrayDesign != null && this.arrayDesign.getId() != null) {
-            final ArrayDesign retrieved = ServiceLocatorFactory.getArrayDesignService().getArrayDesign(
-                    this.arrayDesign.getId());
+            final ArrayDesign retrieved =
+                    ServiceLocatorFactory.getArrayDesignService().getArrayDesign(this.arrayDesign.getId());
             if (retrieved == null) {
                 throw new PermissionDeniedException(getArrayDesign(), SecurityUtils.PERMISSIONS_PRIVILEGE,
                         CaArrayUsernameHolder.getUser());
@@ -332,6 +334,9 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
             }
             this.locked = ServiceLocatorFactory.getArrayDesignService().isArrayDesignLocked(this.arrayDesign.getId());
         }
+        // should convert to injected
+        final Injector injector = InjectorFactory.getInjector();
+        this.fileTypeRegistry = injector.getInstance(FileTypeRegistryImpl.class);
     }
 
     /**
@@ -399,14 +404,21 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
      * @return success
      */
     @SuppressWarnings("PMD.AvoidDuplicateLiterals")
-    @Validations(fieldExpressions = { @FieldExpressionValidator(fieldName = "arrayDesign.assayTypes", message = "", key = "errors.required", expression = "!arrayDesign.assayTypes.isEmpty") }, requiredStrings = { @RequiredStringValidator(fieldName = "arrayDesign.version", key = "errors.required", message = "") }, requiredFields = {
-            @RequiredFieldValidator(fieldName = "arrayDesign.provider", key = "errors.required", message = ""),
-            @RequiredFieldValidator(fieldName = "arrayDesign.technologyType", key = "errors.required", message = ""),
-            @RequiredFieldValidator(fieldName = "arrayDesign.organism", key = "errors.required", message = "") })
+    @Validations(
+        fieldExpressions = { @FieldExpressionValidator(fieldName = "arrayDesign.assayTypes", message = "",
+            key = "errors.required", expression = "!arrayDesign.assayTypes.isEmpty") },
+        requiredStrings = { @RequiredStringValidator(fieldName = "arrayDesign.version", key = "errors.required",
+            message = "") },
+        requiredFields = {
+                @RequiredFieldValidator(fieldName = "arrayDesign.provider", key = "errors.required", message = ""),
+                @RequiredFieldValidator(fieldName = "arrayDesign.technologyType", 
+                        key = "errors.required", message = ""),
+                @RequiredFieldValidator(fieldName = "arrayDesign.organism", key = "errors.required", message = "") })
     /**
      * Save the array design metadata.
      */
-    public String saveMeta() {
+    public
+            String saveMeta() {
         if (!this.createMode && this.editMode) {
 
             if (ServiceLocatorFactory.getArrayDesignService().isDuplicate(this.arrayDesign)) {
@@ -558,8 +570,8 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
         } catch (final Exception e) {
             LOG.debug("Swallowed exception saving array design file", e);
             if (this.arrayDesign.getId() != null) {
-                this.arrayDesign = ServiceLocatorFactory.getArrayDesignService().getArrayDesign(
-                        this.arrayDesign.getId());
+                this.arrayDesign =
+                        ServiceLocatorFactory.getArrayDesignService().getArrayDesign(this.arrayDesign.getId());
             }
             addFieldError(UPLOAD_FIELD_NAME, getText("arrayDesign.error.importingFile"));
         } finally {
@@ -619,18 +631,19 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
     }
 
     private FileType checkFileType(int index) {
-        if (this.fileFormatTypes != null && !this.fileFormatTypes.isEmpty()
-                && !"".equals(this.fileFormatTypes.get(index))
-                && FileType.valueOf(this.fileFormatTypes.get(index)).isArrayDesign()) {
-
-            return FileType.valueOf(this.fileFormatTypes.get(index));
+        if (this.fileFormatTypes != null && !this.fileFormatTypes.isEmpty()) {
+            final String typeStr = this.fileFormatTypes.get(index);
+            final FileType type = this.fileTypeRegistry.getTypeByName(typeStr);
+            if (type != null && type.isArrayDesign()) {
+                return type;
+            }
         }
 
         return null;
     }
 
     private FileType checkFileExt(String filename) {
-        final FileType ft = FileExtension.getTypeFromExtension(filename);
+        final FileType ft = this.fileTypeRegistry.getTypeFromExtension(filename);
 
         if (ft != null && ft.isArrayDesign()) {
             return ft;
@@ -645,8 +658,8 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
         if (!arrayDesignFiles.isEmpty()) {
             final CaArrayFileSet designFiles = new CaArrayFileSet();
             for (final String fileName : arrayDesignFiles.keySet()) {
-                final CaArrayFile designFile = ServiceLocatorFactory.getFileAccessService().add(
-                        arrayDesignFiles.get(fileName), fileName);
+                final CaArrayFile designFile =
+                        ServiceLocatorFactory.getFileAccessService().add(arrayDesignFiles.get(fileName), fileName);
 
                 designFile.setFileType(arrayDesignFileTypes.get(fileName));
                 designFiles.add(designFile);

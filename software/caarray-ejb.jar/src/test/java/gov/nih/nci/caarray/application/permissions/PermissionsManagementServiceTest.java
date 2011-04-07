@@ -96,7 +96,6 @@ import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
 import gov.nih.nci.caarray.dao.stub.SearchDaoStub;
 import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
 import gov.nih.nci.caarray.security.SecurityUtils;
-import gov.nih.nci.caarray.staticinjection.CaArrayEjbStaticInjectionModule;
 import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
 import gov.nih.nci.caarray.util.CaArrayHibernateHelperModule;
 import gov.nih.nci.caarray.util.CaArrayUsernameHolder;
@@ -125,6 +124,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
+import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 
@@ -155,7 +155,14 @@ public class PermissionsManagementServiceTest extends AbstractServiceTest {
      * @return a Guice injector from which this will obtain dependencies.
      */
     protected static Injector createInjector() {
-        return Guice.createInjector(new CaArrayEjbStaticInjectionModule(), new CaArrayHibernateHelperModule());
+        return Guice.createInjector(new CaArrayHibernateHelperModule(), new AbstractModule() {
+            @Override
+            protected void configure() {
+                requestStaticInjection(gov.nih.nci.caarray.security.AuthorizationManagerExtensions.class);
+                requestStaticInjection(gov.nih.nci.caarray.security.SecurityUtils.class);
+                requestStaticInjection(gov.nih.nci.caarray.domain.permissions.CollaboratorGroup.class);
+            }
+        });
     }
 
     @Before

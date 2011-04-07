@@ -82,40 +82,30 @@
  */
 package gov.nih.nci.caarray.validation;
 
-import static org.junit.Assert.*;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import gov.nih.nci.caarray.AbstractCaarrayTest;
 import gov.nih.nci.caarray.validation.ValidationMessage.Type;
-
-import java.io.File;
 
 import org.junit.Test;
 
 public class FileValidationResultTest extends AbstractCaarrayTest {
 
     @Test
-    public final void testGetFile() {
-        File file = new File(".");
-        FileValidationResult result = new FileValidationResult(file);
-        assertEquals(file, result.getFile());
-    }
-
-    @Test
     public final void testIsValid() {
-        File file = new File(".");
-        FileValidationResult result = new FileValidationResult(file);
+        final FileValidationResult result = new FileValidationResult();
         assertTrue(result.isValid());
         result.addMessage(Type.INFO, "");
         result.addMessage(Type.WARNING, "");
-        assertTrue(result.isValid());    
+        assertTrue(result.isValid());
         result.addMessage(Type.ERROR, "");
-        assertFalse(result.isValid());    
+        assertFalse(result.isValid());
     }
 
     @Test
     public final void testGetMessages() {
-        File file = new File(".");
-        FileValidationResult result = new FileValidationResult(file);
+        final FileValidationResult result = new FileValidationResult();
         result.addMessage(Type.ERROR, "message1");
         result.addMessage(Type.ERROR, "message2");
         result.addMessage(Type.ERROR, "message3");
@@ -124,8 +114,7 @@ public class FileValidationResultTest extends AbstractCaarrayTest {
 
     @Test
     public final void testAddMessage() {
-        File file = new File(".");
-        FileValidationResult result = new FileValidationResult(file);
+        final FileValidationResult result = new FileValidationResult();
         result.addMessage(Type.ERROR, "message1", 1, 2);
         assertEquals(1, result.getMessages().size());
         assertEquals(1, result.getMessages().get(0).getLine());
@@ -134,10 +123,9 @@ public class FileValidationResultTest extends AbstractCaarrayTest {
 
     @Test
     public final void testToString() {
-        File file = new File(".");
-        FileValidationResult result = new FileValidationResult(file);
+        final FileValidationResult result = new FileValidationResult();
         result.addMessage(Type.ERROR, "message1");
-        String messageString = result.toString();
+        final String messageString = result.toString();
         assertEquals(messageString, "ERROR: message1\n");
     }
 

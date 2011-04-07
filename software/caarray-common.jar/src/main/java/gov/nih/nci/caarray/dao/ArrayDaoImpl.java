@@ -102,12 +102,13 @@ import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
 import gov.nih.nci.caarray.domain.file.FileCategory;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
+import gov.nih.nci.caarray.domain.file.FileTypeRegistryImpl;
+import gov.nih.nci.caarray.domain.file.FileTypeRegistry;
 import gov.nih.nci.caarray.domain.project.AssayType;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.search.BrowseCategory;
 import gov.nih.nci.caarray.domain.search.QuantitationTypeSearchCriteria;
 import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
-import gov.nih.nci.caarray.util.CaArrayUtils;
 import gov.nih.nci.caarray.util.UnfilteredCallback;
 
 import java.io.Serializable;
@@ -115,7 +116,6 @@ import java.net.URI;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -132,6 +132,9 @@ import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.Restrictions;
 
 import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
+import com.google.common.base.Function;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 
 /**
@@ -141,25 +144,18 @@ import com.google.inject.Inject;
  */
 @SuppressWarnings({ "PMD.AvoidDuplicateLiterals", "PMD.CyclomaticComplexity", "PMD.TooManyMethods" })
 class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
-
-    private static final List<String> PARSEABLE_ARRAY_DESIGN_FILE_TYPE_NAMES = new ArrayList<String>(
-            FileType.PARSEABLE_ARRAY_DESIGN_FILE_TYPES.size());
-    static {
-        for (final FileType t : FileType.PARSEABLE_ARRAY_DESIGN_FILE_TYPES) {
-            PARSEABLE_ARRAY_DESIGN_FILE_TYPE_NAMES.add(t.getName());
-        }
-    }
-
     private final SearchDao searchDao;
+    private final FileTypeRegistry typeRegistry;
 
     /**
      * 
      * @param hibernateHelper the CaArrayHibernateHelper dependency
      */
     @Inject
-    public ArrayDaoImpl(SearchDao searchDao, CaArrayHibernateHelper hibernateHelper) {
+    public ArrayDaoImpl(SearchDao searchDao, CaArrayHibernateHelper hibernateHelper, FileTypeRegistry typeRegistry) {
         super(hibernateHelper);
         this.searchDao = searchDao;
+        this.typeRegistry = typeRegistry;
     }
 
     /**
@@ -555,18 +551,18 @@ class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
         }
 
         if (!criteria.getFileTypes().isEmpty()) {
-            c.add(Restrictions.in("df.type", CaArrayUtils.namesForEnums(criteria.getFileTypes())));
+            c.add(Restrictions.in("df.type", Sets.newHashSet(FileTypeRegistryImpl.namesForTypes(criteria.getFileTypes()))));
         }
 
         if (!criteria.getFileCategories().isEmpty()) {
             final Disjunction categoryCriterion = Restrictions.disjunction();
             if (criteria.getFileCategories().contains(FileCategory.DERIVED_DATA)) {
                 categoryCriterion.add(Restrictions.in("df.type",
-                        CaArrayUtils.namesForEnums(FileType.DERIVED_ARRAY_DATA_FILE_TYPES)));
+                        Sets.newHashSet(FileTypeRegistryImpl.namesForTypes(this.typeRegistry.getDerivedArrayDataTypes()))));
             }
             if (criteria.getFileCategories().contains(FileCategory.RAW_DATA)) {
                 categoryCriterion.add(Restrictions.in("df.type",
-                        CaArrayUtils.namesForEnums(FileType.RAW_ARRAY_DATA_FILE_TYPES)));
+                        Sets.newHashSet(FileTypeRegistryImpl.namesForTypes(this.typeRegistry.getRawArrayDataTypes()))));
             }
             c.add(categoryCriterion);
         }
@@ -596,7 +592,13 @@ class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
                 + " a left join a.designFiles f where f.status = :status and f.type in (:types) order by a.id";
         final Query query = getCurrentSession().createQuery(q);
         query.setParameter("status", FileStatus.IMPORTED_NOT_PARSED.name());
-        query.setParameterList("types", PARSEABLE_ARRAY_DESIGN_FILE_TYPE_NAMES);
+        query.setParameterList("types", Sets.newHashSet(Iterables.transform(
+                this.typeRegistry.getParseableArrayDesignTypes(), new Function<FileType, String>() {
+                    @Override
+                    public String apply(FileType ft) {
+                        return ft.getName();
+                    }
+                })));
         return query.list();
     }
 

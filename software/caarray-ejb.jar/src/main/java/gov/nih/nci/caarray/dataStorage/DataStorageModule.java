@@ -5,6 +5,8 @@ import gov.nih.nci.caarray.dataStorage.fileSystem.FileSystemStorageModule;
 import gov.nih.nci.caarray.dataStorage.spi.StorageUnitOfWork;
 
 import com.google.inject.AbstractModule;
+import com.google.inject.Key;
+import com.google.inject.name.Names;
 
 /**
  * Guice module that configures the data storage subsystem. This installs all the data storage engine implementation
@@ -18,13 +20,8 @@ import com.google.inject.AbstractModule;
  * @author dkokotov
  */
 public class DataStorageModule extends AbstractModule {
-    private final String fileStorageEngine;
-    private final String parsedStorageEngine;
-
-    public DataStorageModule(String fileStorageEngine, String parsedStorageEngine) {
-        this.fileStorageEngine = fileStorageEngine;
-        this.parsedStorageEngine = parsedStorageEngine;
-    }
+    public static final String FILE_DATA_ENGINE = "dataStorage.fileDataEngine";
+    public static final String PARSED_DATA_ENGINE = "dataStorage.parsedDataEngine";
 
     /**
      * {@inheritDoc}
@@ -37,7 +34,7 @@ public class DataStorageModule extends AbstractModule {
         bind(StorageUnitOfWork.class).to(AggregateStorageUnitOfWork.class);
         bind(DataStorageFacade.class);
 
-        bindConstant().annotatedWith(FileData.class).to(this.fileStorageEngine);
-        bindConstant().annotatedWith(ParsedData.class).to(this.parsedStorageEngine);
+        requireBinding(Key.get(String.class, Names.named(FILE_DATA_ENGINE)));
+        requireBinding(Key.get(String.class, Names.named(PARSED_DATA_ENGINE)));
     }
 }

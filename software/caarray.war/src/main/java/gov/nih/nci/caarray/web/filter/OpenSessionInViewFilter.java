@@ -96,19 +96,20 @@ import javax.servlet.ServletResponse;
 import com.google.inject.Inject;
 
 /**
- * A Filter that enables OpenSessionInView behavior. It leverages the contextual session facility
- * in Hibernate, opening a session at the beginning of a request and closing it at the end
- * For this to take effect you must set the hibernate property "hibernate.current_session_context_class"
- * to have the value "managed"
- *
+ * A Filter that enables OpenSessionInView behavior. It leverages the contextual session facility in Hibernate, opening
+ * a session at the beginning of a request and closing it at the end For this to take effect you must set the hibernate
+ * property "hibernate.current_session_context_class" to have the value "managed"
+ * 
  * @author Dan Kokotov
  */
 public class OpenSessionInViewFilter implements Filter {
-    @Inject private static CaArrayHibernateHelper hibernateHelper; 
+    @Inject
+    private static CaArrayHibernateHelper hibernateHelper;
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public void destroy() {
         // no-op
     }
@@ -116,6 +117,7 @@ public class OpenSessionInViewFilter implements Filter {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
             ServletException {
         // set up a new session at beginning of request and close it afterwards
@@ -130,6 +132,7 @@ public class OpenSessionInViewFilter implements Filter {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void init(FilterConfig arg0) throws ServletException {
         // no-op
     }

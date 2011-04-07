@@ -212,7 +212,7 @@
                             <c:if test="${editMode && !locked}">
                                 <s:file id="upload0" required="%{arrayDesign.id != null}" name="upload" label="Browse to File" tabindex="9"/>
                                 <s:select id="fileFormatType0" name="fileFormatType" key="arrayDesign.designFile.fileType" tabindex="10"
-                                          list="@gov.nih.nci.caarray.web.action.ArrayDesignAction@arrayDesignTypes()"
+                                          list="%{arrayDesignTypes}"
                                           listValue="%{getText('experiment.files.filetype.' + name)}"
                                           listKey="name" headerKey="" headerValue="Automatic"/>                                
                             </c:if>

@@ -92,8 +92,6 @@ import com.google.inject.Injector;
  * @author jscott
  */
 public class InjectionInterceptor {
-    private final Injector injector = InjectorFactory.getInjector();
- 
     /**
      * Allows guice to inject in to the EJB.
      * @param ctx the context.
@@ -103,6 +101,7 @@ public class InjectionInterceptor {
     @AroundInvoke
     @SuppressWarnings("PMD.SignatureDeclareThrowsException")
     public Object injectByGuice(InvocationContext ctx) throws Exception {
+        final Injector injector = InjectorFactory.getInjector();
         injector.injectMembers(ctx.getTarget());
         return ctx.proceed();
     }

@@ -119,8 +119,8 @@ import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
 
 /**
- * Basic stub -- returns null for all methods returning objects. Subclass and override
- * to provide desired functionality in tests.
+ * Basic stub -- returns null for all methods returning objects. Subclass and override to provide desired functionality
+ * in tests.
  */
 @SuppressWarnings("PMD.AvoidDuplicateLiterals")
 public class ProjectManagementServiceStub implements ProjectManagementService {
@@ -154,6 +154,7 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
     /**
      * {@inheritDoc}
      */
+    @Override
     public int getMyProjectCount() {
         return 0;
     }
@@ -161,6 +162,7 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
     /**
      * {@inheritDoc}
      */
+    @Override
     public List<Project> getMyProjects(PageSortParams<Project> pageSortParams) {
         return Collections.emptyList();
     }
@@ -168,12 +170,14 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
     /**
      * {@inheritDoc}
      */
+    @Override
     public List<Project> getProjectsForOwner(User user) {
         return Collections.emptyList();
     }
 
+    @Override
     public Project getProjectByPublicId(String publicId) {
-        Project p = new Project();
+        final Project p = new Project();
         p.getExperiment().setPublicIdentifier(publicId);
         return p;
     }
@@ -181,6 +185,7 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void deleteProject(Project project) throws ProposalWorkflowException {
         // no-op
     }
@@ -193,20 +198,24 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
         // no-op
     }
 
+    @Override
     public void saveProject(Project project, PersistentObject... orphans) throws ProposalWorkflowException,
             InconsistentProjectStateException {
         // no-op
     }
 
+    @Override
     public CaArrayFile addFile(Project project, File file) {
         return null;
     }
 
+    @Override
     public CaArrayFile addFile(Project project, File file, String filename) {
         this.filesAddedCount++;
         return null;
     }
 
+    @Override
     public CaArrayFile addFile(Project project, InputStream data, String filename) throws ProposalWorkflowException,
             InconsistentProjectStateException {
         this.filesAddedCount++;
@@ -216,7 +225,7 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
     public File prepareForDownload(Collection<CaArrayFile> ids) {
         try {
             return File.createTempFile("tmp", ".zip");
-        } catch (IOException e) {
+        } catch (final IOException e) {
             return null;
         }
 
@@ -225,6 +234,7 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
     /**
      * {@inheritDoc}
      */
+    @Override
     public Factor copyFactor(Project project, long factorId) {
         return null;
     }
@@ -232,6 +242,7 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
     /**
      * {@inheritDoc}
      */
+    @Override
     public Sample copySample(Project project, long sampleId) {
         return null;
     }
@@ -239,6 +250,7 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
     /**
      * {@inheritDoc}
      */
+    @Override
     public Source copySource(Project project, long sourceId) {
         return null;
     }
@@ -246,6 +258,7 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
     /**
      * {@inheritDoc}
      */
+    @Override
     public AccessProfile addGroupProfile(Project project, CollaboratorGroup group) {
         return null;
     }
@@ -253,6 +266,7 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void changeProjectLockStatus(long projectId, boolean newStatus) throws ProposalWorkflowException {
         this.changeWorkflowStatusCount++;
         if (projectId == 999) {
@@ -263,6 +277,7 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
     /**
      * {@inheritDoc}
      */
+    @Override
     public List<Project> searchByCategory(PageSortParams<Project> params, String keyword, SearchCategory... categories) {
         return null;
     }
@@ -270,6 +285,7 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
     /**
      * {@inheritDoc}
      */
+    @Override
     public int searchCount(String keyword, SearchCategory... categories) {
         return 0;
     }
@@ -284,6 +300,7 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
     /**
      * {@inheritDoc}
      */
+    @Override
     public Extract copyExtract(Project project, long extractId) throws ProposalWorkflowException {
         return null;
     }
@@ -291,6 +308,7 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
     /**
      * {@inheritDoc}
      */
+    @Override
     public LabeledExtract copyLabeledExtract(Project project, long extractId) throws ProposalWorkflowException {
         return null;
     }
@@ -298,10 +316,11 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
     /**
      * {@inheritDoc}
      */
+    @Override
     @SuppressWarnings("deprecation")
     public List<Term> getCellTypesForExperiment(Experiment experiment) {
-        List<Term> terms = new ArrayList<Term>();
-        Term t1 = new Term();
+        final List<Term> terms = new ArrayList<Term>();
+        final Term t1 = new Term();
         t1.setId(1L);
         terms.add(t1);
         return terms;
@@ -310,10 +329,11 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
     /**
      * {@inheritDoc}
      */
+    @Override
     @SuppressWarnings("deprecation")
     public List<Term> getDiseaseStatesForExperiment(Experiment experiment) {
-        List<Term> terms = new ArrayList<Term>();
-        Term t1 = new Term();
+        final List<Term> terms = new ArrayList<Term>();
+        final Term t1 = new Term();
         t1.setId(1L);
         terms.add(t1);
         return terms;
@@ -322,10 +342,11 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
     /**
      * {@inheritDoc}
      */
+    @Override
     @SuppressWarnings("deprecation")
     public List<Term> getMaterialTypesForExperiment(Experiment experiment) {
-        List<Term> terms = new ArrayList<Term>();
-        Term t1 = new Term();
+        final List<Term> terms = new ArrayList<Term>();
+        final Term t1 = new Term();
         t1.setId(1L);
         terms.add(t1);
         return terms;
@@ -334,10 +355,11 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
     /**
      * {@inheritDoc}
      */
+    @Override
     @SuppressWarnings("deprecation")
     public List<Term> getTissueSitesForExperiment(Experiment experiment) {
-        List<Term> terms = new ArrayList<Term>();
-        Term t1 = new Term();
+        final List<Term> terms = new ArrayList<Term>();
+        final Term t1 = new Term();
         t1.setId(1L);
         terms.add(t1);
         return terms;
@@ -346,10 +368,11 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
     /**
      * {@inheritDoc}
      */
+    @Override
     @SuppressWarnings("deprecation")
     public List<AssayType> getAssayTypes() {
-        List<AssayType> assayTypes = new ArrayList<AssayType>();
-        AssayType a1 = new AssayType();
+        final List<AssayType> assayTypes = new ArrayList<AssayType>();
+        final AssayType a1 = new AssayType();
         a1.setId(1L);
         assayTypes.add(a1);
         return assayTypes;
@@ -358,14 +381,15 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
     /**
      * {@inheritDoc}
      */
+    @Override
     public <T extends AbstractBioMaterial> T getBiomaterialByExternalId(Project project, String externalId,
             Class<T> biomaterialClass) {
         T bm;
         try {
             bm = biomaterialClass.newInstance();
-        } catch (InstantiationException e) {
+        } catch (final InstantiationException e) {
             throw new IllegalArgumentException("Could not create new instance of class " + biomaterialClass);
-        } catch (IllegalAccessException e) {
+        } catch (final IllegalAccessException e) {
             throw new IllegalArgumentException("Could not create new instance of class " + biomaterialClass);
         }
         bm.setExternalId(externalId);
@@ -376,6 +400,7 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
     /**
      * {@inheritDoc}
      */
+    @Override
     public int countSamplesByCharacteristicCategory(Category c, String keyword) {
         return 10;
     }
@@ -383,6 +408,7 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
     /**
      * {@inheritDoc}
      */
+    @Override
     public int countSourcesByCharacteristicCategory(Category c, String keyword) {
         return 10;
     }
@@ -390,37 +416,38 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
     /**
      * {@inheritDoc}
      */
+    @Override
     @SuppressWarnings("unchecked")
     public <T extends AbstractBioMaterial> List<T> searchByCategory(PageSortParams<T> params, String keyword,
             Class<T> biomaterialClass, BiomaterialSearchCategory... categories) {
 
         if (Sample.class.equals(biomaterialClass)) {
-            List<T> returnVal = new ArrayList<T>();
-            returnVal.add((T)new Sample());
-            returnVal.add((T)new Sample());
-            returnVal.add((T)new Sample());
-            returnVal.add((T)new Sample());
+            final List<T> returnVal = new ArrayList<T>();
+            returnVal.add((T) new Sample());
+            returnVal.add((T) new Sample());
+            returnVal.add((T) new Sample());
+            returnVal.add((T) new Sample());
             return returnVal;
         } else if (Source.class.equals(biomaterialClass)) {
-            List<T> returnVal = new ArrayList<T>();
-            returnVal.add((T)new Source());
-            returnVal.add((T)new Source());
-            returnVal.add((T)new Source());
-            returnVal.add((T)new Source());
+            final List<T> returnVal = new ArrayList<T>();
+            returnVal.add((T) new Source());
+            returnVal.add((T) new Source());
+            returnVal.add((T) new Source());
+            returnVal.add((T) new Source());
             return returnVal;
         } else if (Source.class.equals(biomaterialClass)) {
-            List<T> returnVal = new ArrayList<T>();
-            returnVal.add((T)new Extract());
-            returnVal.add((T)new Extract());
-            returnVal.add((T)new Extract());
-            returnVal.add((T)new Extract());
+            final List<T> returnVal = new ArrayList<T>();
+            returnVal.add((T) new Extract());
+            returnVal.add((T) new Extract());
+            returnVal.add((T) new Extract());
+            returnVal.add((T) new Extract());
             return returnVal;
         } else if (Source.class.equals(biomaterialClass)) {
-            List<T> returnVal = new ArrayList<T>();
-            returnVal.add((T)new LabeledExtract());
-            returnVal.add((T)new LabeledExtract());
-            returnVal.add((T)new LabeledExtract());
-            returnVal.add((T)new LabeledExtract());
+            final List<T> returnVal = new ArrayList<T>();
+            returnVal.add((T) new LabeledExtract());
+            returnVal.add((T) new LabeledExtract());
+            returnVal.add((T) new LabeledExtract());
+            returnVal.add((T) new LabeledExtract());
             return returnVal;
         }
         return null;
@@ -429,6 +456,7 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
     /**
      * {@inheritDoc}
      */
+    @Override
     public int searchCount(String keyword, Class<? extends AbstractBioMaterial> biomaterialClass,
             BiomaterialSearchCategory... categories) {
         return 4;
@@ -437,6 +465,7 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
     /**
      * {@inheritDoc}
      */
+    @Override
     public List<Sample> searchSamplesByExperimentAndCategory(String keyword, Experiment e, SearchSampleCategory... c) {
         return Collections.emptyList();
     }
@@ -444,25 +473,27 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
     /**
      * {@inheritDoc}
      */
-    public List<Sample> searchSamplesByCharacteristicCategory(
-            PageSortParams<Sample> params, Category c, String keyword) {
+    @Override
+    public List<Sample> searchSamplesByCharacteristicCategory(PageSortParams<Sample> params, Category c, String keyword) {
         return Collections.emptyList();
     }
 
     /**
      * {@inheritDoc}
      */
-    public List<Source> searchSourcesByCharacteristicCategory(
-            PageSortParams<Source> params, Category c, String keyword) {
+    @Override
+    public List<Source> searchSourcesByCharacteristicCategory(PageSortParams<Source> params, Category c, String keyword) {
         return Collections.emptyList();
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public void changeOwner(Long projectId, String newOwner) throws CSException {
     }
 
+    @Override
     public List<Experiment> searchByCriteria(PageSortParams<Experiment> params, ExperimentSearchCriteria criteria) {
         return Collections.emptyList();
     }
@@ -470,12 +501,19 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
     public List<CaArrayFile> searchFiles(PageSortParams<CaArrayFile> params, FileSearchCriteria criteria) {
         return Collections.emptyList();
     }
-    
+
+    @Override
     public List<CaArrayFile> getDeletableFiles(Long projectId) {
         return Collections.emptyList();
     }
 
+    @Override
     public List<Project> getProjectsWithReImportableFiles() {
-        return Collections.EMPTY_LIST;
+        return Collections.emptyList();
+    }
+
+    @Override
+    public List<Category> getAllCharacteristicCategories(Experiment experiment) {
+        return Collections.emptyList();
     }
 }

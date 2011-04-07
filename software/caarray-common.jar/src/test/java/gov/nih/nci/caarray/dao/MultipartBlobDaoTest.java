@@ -90,6 +90,7 @@ import gov.nih.nci.caarray.domain.BlobHolder;
 import gov.nih.nci.caarray.domain.MultiPartBlob;
 
 import java.io.ByteArrayInputStream;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -121,6 +122,7 @@ public class MultipartBlobDaoTest extends AbstractDaoTest {
 
         MultiPartBlob mblob = new MultiPartBlob();
         mblob.writeData(new ByteArrayInputStream("Fake Data 123".getBytes()), true, 5);
+        mblob.setCreationTimestamp(new Date());
         DAO_OBJECT.save(mblob);
         this.hibernateHelper.getCurrentSession().flush();
         tx.commit();
@@ -150,6 +152,7 @@ public class MultipartBlobDaoTest extends AbstractDaoTest {
 
         MultiPartBlob mblob = new MultiPartBlob();
         mblob.writeData(new ByteArrayInputStream("Fake Data 123".getBytes()), true, 5);
+        mblob.setCreationTimestamp(new Date());
         DAO_OBJECT.save(mblob);
         this.hibernateHelper.getCurrentSession().flush();
         mblobIds.add(mblob.getId());
@@ -161,6 +164,7 @@ public class MultipartBlobDaoTest extends AbstractDaoTest {
 
         mblob = new MultiPartBlob();
         mblob.writeData(new ByteArrayInputStream("Fake Data 456".getBytes()), true, 20000);
+        mblob.setCreationTimestamp(new Date());
         DAO_OBJECT.save(mblob);
         this.hibernateHelper.getCurrentSession().flush();
         mblobIds.add(mblob.getId());

@@ -95,7 +95,6 @@ import gov.nih.nci.caarray.domain.contact.Person;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileStatus;
-import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.permissions.AccessProfile;
 import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
@@ -458,7 +457,7 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
             tx = this.hibernateHelper.beginTransaction();
             final File file = new File("test/path/file.txt");
             DUMMY_FILE_1.setName(file.getName());
-            final FileValidationResult result = new FileValidationResult(file);
+            final FileValidationResult result = new FileValidationResult();
             final ValidationMessage message1 = result.addMessage(ValidationMessage.Type.INFO, "info message");
             final ValidationMessage message2 = result.addMessage(ValidationMessage.Type.ERROR, "error message");
             DUMMY_FILE_1.setValidationResult(result);
@@ -1218,7 +1217,7 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
         f1.setProject(DUMMY_PROJECT_1);
         f1.setName("foo");
         f1.setFileStatus(FileStatus.IMPORTED_NOT_PARSED);
-        f1.setFileType(FileType.AGILENT_RAW_TXT);
+        f1.setFileType(AFFYMETRIX_CEL);
         f1.setDataHandle(DUMMY_HANDLE);
         DUMMY_PROJECT_1.getFiles().add(f1);
         DAO_OBJECT.save(f1);
@@ -1227,7 +1226,7 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
         f2.setProject(DUMMY_PROJECT_2);
         f2.setName("bar");
         f2.setFileStatus(FileStatus.IMPORTED_NOT_PARSED);
-        f2.setFileType(FileType.SCANARRAY_CSV);
+        f2.setFileType(AFFYMETRIX_DAT);
         f2.setDataHandle(DUMMY_HANDLE);
         DUMMY_PROJECT_2.getFiles().add(f2);
         DAO_OBJECT.save(f2);

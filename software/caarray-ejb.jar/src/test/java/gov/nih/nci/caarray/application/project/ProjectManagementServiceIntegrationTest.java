@@ -85,7 +85,6 @@ package gov.nih.nci.caarray.application.project;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.mockito.Mockito.mock;
 import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.application.AbstractServiceIntegrationTest;
 import gov.nih.nci.caarray.application.GenericDataService;
@@ -93,13 +92,11 @@ import gov.nih.nci.caarray.application.GenericDataServiceBean;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
-import gov.nih.nci.caarray.dataStorage.DataStorageFacade;
 import gov.nih.nci.caarray.domain.contact.Address;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.contact.Person;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileStatus;
-import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.project.AssayType;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.ExperimentContact;
@@ -229,10 +226,9 @@ public class ProjectManagementServiceIntegrationTest extends AbstractServiceInte
         genericDataServiceBean.setDependencies(daoFactory.getSearchDao(), daoFactory.getProjectDao());
         this.genericDataService = genericDataServiceBean;
 
-        final DataStorageFacade dataStorageFacade = mock(DataStorageFacade.class);
         final ProjectManagementServiceBean bean = new ProjectManagementServiceBean();
         bean.setDependencies(daoFactory.getProjectDao(), daoFactory.getFileDao(), daoFactory.getSampleDao(),
-                daoFactory.getSearchDao(), dataStorageFacade);
+                daoFactory.getSearchDao(), daoFactory.getVocabularyDao());
 
         final ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
         locatorStub.addLookup(FileAccessService.JNDI_NAME, fileAccessServiceStub);
@@ -249,12 +245,10 @@ public class ProjectManagementServiceIntegrationTest extends AbstractServiceInte
 
     @Test
     public void testDeleteProject() throws Exception {
-
         final File file1 = File.createTempFile("blob1", ".ext");
         file1.deleteOnExit();
         final CaArrayFile caArrayFile1 = new CaArrayFile();
         caArrayFile1.setName("blob1.ext");
-        caArrayFile1.setFileType(FileType.AFFYMETRIX_CDF);
         caArrayFile1.setFileStatus(FileStatus.UPLOADED);
         caArrayFile1.setDataHandle(DUMMY_HANDLE);
 
@@ -262,7 +256,6 @@ public class ProjectManagementServiceIntegrationTest extends AbstractServiceInte
         file2.deleteOnExit();
         final CaArrayFile caArrayFile2 = new CaArrayFile();
         caArrayFile2.setName("blob2.ext");
-        caArrayFile2.setFileType(FileType.AFFYMETRIX_CDF);
         caArrayFile2.setFileStatus(FileStatus.UPLOADED);
         caArrayFile2.setDataHandle(DUMMY_HANDLE);
 

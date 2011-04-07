@@ -88,7 +88,8 @@ import static org.junit.Assert.assertTrue;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Date;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 import com.google.common.io.ByteStreams;
 
@@ -99,7 +100,7 @@ public class MultiPartBlob_HibernateIntegrationTest extends AbstractHibernateInt
             final byte[] originalData = ByteStreams.toByteArray(original.readUncompressedContents());
             final byte[] retrievedData = ByteStreams.toByteArray(original.readUncompressedContents());
             assertTrue(Arrays.equals(originalData, retrievedData));
-            assertEquals(original.getCreationTimestamp(), retrieved.getCreationTimestamp());
+            assertEquals(original.getCreationTimestamp().getTime(), retrieved.getCreationTimestamp().getTime());
             assertEquals(original.getCompressedSize(), retrieved.getCompressedSize());
             assertEquals(original.getUncompressedSize(), retrieved.getUncompressedSize());
         } catch (final IOException e) {
@@ -110,7 +111,9 @@ public class MultiPartBlob_HibernateIntegrationTest extends AbstractHibernateInt
     @Override
     protected void setValues(MultiPartBlob object) {
         try {
-            object.setCreationTimestamp(new Date());
+            final Calendar now = GregorianCalendar.getInstance();
+            now.set(Calendar.MILLISECOND, 0);
+            object.setCreationTimestamp(now.getTime());
             object.writeData(new ByteArrayInputStream("Fake Data 123".getBytes()), true, 5);
         } catch (final IOException e) {
             throw new IllegalStateException("Couldn't write data into blob: ", e);

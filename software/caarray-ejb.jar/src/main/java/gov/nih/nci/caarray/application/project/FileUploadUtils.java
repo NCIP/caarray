@@ -196,8 +196,8 @@ public class FileUploadUtils {
         for (final CaArrayFile caArrayFile : caFiles) {
             try {
                 final InputStream is = this.dataStorageFacade.openInputStream(caArrayFile.getDataHandle(), false);
-                IOUtils.closeQuietly(is);
                 final FileProcessingResult fileResult = unpackFile(project, is);
+                IOUtils.closeQuietly(is);
                 result.incrementCount(fileResult.getCount());
                 result.addConflictingFiles(fileResult.getConflictingFiles());
             } catch (final IOException e) {

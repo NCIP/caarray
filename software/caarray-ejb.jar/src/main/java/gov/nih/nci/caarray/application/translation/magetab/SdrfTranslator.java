@@ -234,18 +234,14 @@ final class SdrfTranslator extends AbstractTranslator {
             final boolean referencedAsRaw = referencedRawFiles.contains(file.getName());
             final boolean isDerived = fileType.isDerivedArrayData();
             final boolean referencedAsDerived = referencedDerivedFiles.contains(file.getName());
-            final boolean isMatrix = (fileType == FileType.MAGE_TAB_DATA_MATRIX)
-                    || (fileType == FileType.MAGE_TAB_DATA_MATRIX_COPY_NUMBER);
+            final boolean isMatrix = fileType.isDataMatrix();
             final boolean referencedAsMatrix = referencedDataMatrixFiles.contains(file.getName());
             final boolean referencedAsAny = referencedAsRaw || referencedAsDerived || referencedAsMatrix;
 
             if (isRaw && !referencedAsRaw) {
                 addFileReferenceError(file, referencedAsAny, SdrfColumnType.ARRAY_DATA_FILE.getDisplayName());
             } else if (isDerived && !referencedAsDerived) {
-                if (fileType != FileType.MAGE_TAB_DATA_MATRIX_COPY_NUMBER) {
-                    addFileReferenceError(file, referencedAsAny,
-                            SdrfColumnType.DERIVED_ARRAY_DATA_FILE.getDisplayName());
-                }
+                addFileReferenceError(file, referencedAsAny, SdrfColumnType.DERIVED_ARRAY_DATA_FILE.getDisplayName());
             } else if (isMatrix && !referencedAsMatrix) {
                 addFileReferenceError(file, referencedAsAny, SdrfColumnType.ARRAY_DATA_MATRIX_FILE.getDisplayName()
                         + " or " + SdrfColumnType.DERIVED_ARRAY_DATA_MATRIX_FILE.getDisplayName());
@@ -1150,8 +1146,7 @@ final class SdrfTranslator extends AbstractTranslator {
                     new Predicate<CaArrayFile>() {
                         @Override
                         public boolean apply(CaArrayFile f) {
-                            return f.getFileType().isArrayData()
-                                    || FileType.MAGE_TAB_DATA_MATRIX.equals(f.getFileType());
+                            return f.getFileType().isArrayData();
                         }
                     }));
         }

@@ -93,6 +93,7 @@ import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
 import gov.nih.nci.caarray.platforms.spi.DataFileHandler;
 import gov.nih.nci.caarray.platforms.spi.PlatformFileReadException;
+import gov.nih.nci.caarray.platforms.unparsed.FallbackUnparsedDataHandler;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.InvalidDataFileException;
 import gov.nih.nci.caarray.validation.ValidationMessage.Type;
@@ -104,6 +105,7 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import com.google.inject.Inject;
+import com.google.inject.Provider;
 
 /**
  * Helper class for ensuring that data columns for a <code>DataSet</code> are loaded. This enables loading of data on
@@ -117,8 +119,9 @@ final class DataSetLoader extends AbstractArrayDataUtility {
     private final ParsedDataPersister parsedDataPersister;
 
     @Inject
-    DataSetLoader(ArrayDao arrayDao, Set<DataFileHandler> handlers, ParsedDataPersister parsedDataPersister) {
-        super(arrayDao, handlers);
+    DataSetLoader(ArrayDao arrayDao, Set<DataFileHandler> handlers, ParsedDataPersister parsedDataPersister,
+            Provider<FallbackUnparsedDataHandler> fallbackHandlerProvider) {
+        super(arrayDao, handlers, fallbackHandlerProvider);
         this.parsedDataPersister = parsedDataPersister;
     }
 

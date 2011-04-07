@@ -89,6 +89,7 @@ import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.platforms.spi.DataFileHandler;
 import gov.nih.nci.caarray.platforms.spi.PlatformFileReadException;
+import gov.nih.nci.caarray.platforms.unparsed.FallbackUnparsedDataHandler;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.ValidationMessage.Type;
 
@@ -97,6 +98,7 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import com.google.inject.Inject;
+import com.google.inject.Provider;
 
 /**
  * Helper class for validating array data files.
@@ -108,8 +110,9 @@ final class DataFileValidator extends AbstractArrayDataUtility {
     private static final Logger LOG = Logger.getLogger(DataFileValidator.class);
 
     @Inject
-    DataFileValidator(ArrayDao arrayDao, Set<DataFileHandler> handlers) {
-        super(arrayDao, handlers);
+    DataFileValidator(ArrayDao arrayDao, Set<DataFileHandler> handlers,
+            Provider<FallbackUnparsedDataHandler> fallbackHandlerProvider) {
+        super(arrayDao, handlers, fallbackHandlerProvider);
     }
 
     void validate(CaArrayFile caArrayFile, MageTabDocumentSet mTabSet, boolean reimport) {
@@ -123,9 +126,14 @@ final class DataFileValidator extends AbstractArrayDataUtility {
                 }
                 if (result.isValid()) {
                     final ArrayDesign design = getArrayDesign(caArrayFile, handler);
-                    handler.validate(mTabSet, result, design);
-                    if (result.isValid()) {
-                        validateArrayDesignInExperiment(caArrayFile, result, handler);
+                    if (design != null && design.isUnparsedAndReimportable()) {
+                        result.addMessage(Type.ERROR, "Associated array design " + design.getName()
+                                + " must be re-parsed");
+                    } else {
+                        handler.validate(mTabSet, result, design);
+                        if (result.isValid()) {
+                            validateArrayDesignInExperiment(caArrayFile, result, handler);
+                        }
                     }
                 }
             } catch (final PlatformFileReadException e) {
@@ -138,8 +146,9 @@ final class DataFileValidator extends AbstractArrayDataUtility {
             }
             caArrayFile.setValidationResult(result);
             if (result.isValid()) {
-                caArrayFile
-                        .setFileStatus(handler.parsesData() ? FileStatus.VALIDATED : FileStatus.VALIDATED_NOT_PARSED);
+                final boolean wasFileParsed = caArrayFile.getFileType().isParsed()
+                        && !(handler instanceof FallbackUnparsedDataHandler);
+                caArrayFile.setFileStatus(wasFileParsed ? FileStatus.VALIDATED : FileStatus.VALIDATED_NOT_PARSED);
             } else {
                 caArrayFile.setFileStatus(FileStatus.VALIDATION_ERRORS);
             }

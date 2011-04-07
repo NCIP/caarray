@@ -20,8 +20,6 @@
 
         <dependency conf="project" name="log4j" org="apache" rev="1.2.14"/>
 
-        <dependency conf="project" name="spring" org="springsource" rev="1.2.7"/>
-
         <dependency conf="project" name="acegi-security" org="acegisecurity" rev="1.0.5"/>
 
         <dependency conf="project" name="acegi-security-jboss" org="acegisecurity" rev="1.0.5"/>
@@ -80,7 +78,7 @@
 
         <dependency conf="project" name="commons-fileupload" org="jakarta" rev="1.2.1"/>
 
-        <dependency conf="project" name="commons-collections" org="jakarta" rev="3.1"/>
+        <dependency conf="project" name="commons-collections" org="jakarta" rev="3.2"/>
 
         <dependency conf="project" name="commons-io" org="jakarta" rev="1.4"/>
 
@@ -90,7 +88,7 @@
 
         <dependency conf="project" name="commons-configuration" org="jakarta" rev="1.5"/>
 
-        <dependency conf="project" name="commons-logging" org="jakarta" rev="1.1.0"/>
+        <dependency conf="project" name="commons-logging" org="jakarta" rev="1.1.1"/>
 
         <dependency conf="project" name="commons-fileupload" org="jakarta" rev="1.2.1"/>
 
@@ -152,9 +150,9 @@
 
         <dependency conf="project" name="selenium-java-client-driver-tests" org="openqa" rev="1.0.1"/>
 
-        <dependency conf="project" name="spring" org="springsource" rev="1.2.7"/>
+        <dependency conf="project" name="spring" org="springsource" rev="2.5.6"/>
 
-        <dependency conf="project" name="spring-mock" org="springsource" rev="1.2.7"/>
+        <dependency conf="project" name="spring-mock" org="springsource" rev="2.0.3"/>
 
         <dependency conf="project" name="javacsv" org="javacsv" rev="1.0"/>
 
@@ -248,8 +246,6 @@
 
         <dependency conf="project" name="jdbc-se" org="jdbc-se" rev="2.0"/>
 
-        <dependency conf="project" name="spring-richclient-full" org="springsource" rev="0.1.0"/>
-
         <dependency conf="project" name="wsdl4j" org="ibm" rev="1.5.1"/>
 
         <dependency conf="project" name="xml-apis" org="apache" rev="1.3"/>
@@ -273,7 +269,7 @@
         <dependency conf="project" name="guice-assistedinject" org="google" rev="2.0"/>
 
         <dependency conf="project" name="guice-servlet" org="google" rev="2.0"/>        
-
+        
         <dependency conf="project" name="aopalliance" org="aopalliance" rev="1.0"/>
 
         <dependency conf="project" name="woodstox" org="codehaus" rev="4.0.7"/>
@@ -284,6 +280,46 @@
                 
         <dependency conf="project" name="gnu-regexp" org="gnu" rev="1.1.4"/> 
         
-        <exclude org="pull-parser" module="pull-parser"/>
+        <dependency conf="project" name="atlassian-core" org="com.atlassian.core" rev="3.12"/>
+        <dependency conf="project" name="atlassian-util-concurrent" org="com.atlassian.util.concurrent" rev="0.0.12"/>
+        <dependency conf="project" name="atlassian-event" org="com.atlassian.event" rev="2.0.2"/>
+        <dependency conf="project" name="atlassian-velocity" org="com.atlassian.velocity" rev="0.8"/>
+        <dependency conf="project" name="atlassian-trusted-apps-core" org="com.atlassian.security.auth.trustedapps" rev="2.2"/>
+        <dependency conf="project" name="atlassian-plugins-core" org="com.atlassian.plugins" rev="2.6.0"/>
+        <dependency conf="project" name="atlassian-plugins-main" org="com.atlassian.plugins" rev="2.6.0"/>
+        <dependency conf="project" name="atlassian-plugins-osgi" org="com.atlassian.plugins" rev="2.6.0"/>
+        <dependency conf="project" name="atlassian-plugins-osgi-bridge" org="com.atlassian.plugins" rev="2.6.0"/>
+        <dependency conf="project" name="atlassian-plugins-osgi-events" org="com.atlassian.plugins" rev="2.6.0"/>
+        <dependency conf="project" name="atlassian-plugins-osgi-spring-extender" org="com.atlassian.plugins" rev="2.6.0"/>
+        <dependency conf="project" name="atlassian-plugins-servlet" org="com.atlassian.plugins" rev="2.6.0"/>
+        <dependency conf="project" name="atlassian-plugins-spring" org="com.atlassian.plugins" rev="2.6.0"/>
+        <dependency conf="project" name="atlassian-plugins-webfragment" org="com.atlassian.plugins" rev="2.6.0"/>
+        <dependency conf="project" name="atlassian-plugins-webresource" org="com.atlassian.plugins" rev="2.6.0"/>
+                
+        <dependency conf="project" name="sal-api" org="com.atlassian.sal" rev="2.2.0"/>
+        
+        <dependency conf="project" name="slf4j-api" org="org.slf4j" rev="1.5.8"/>        
+        <dependency conf="project" name="slf4j-log4j12" org="org.slf4j" rev="1.5.8"/>        
+
+        <dependency conf="project" name="package-scanner" org="org.twdata" rev="0.9.6-SNAPSHOT"/>        
+        
+        <dependency conf="project" name="joda-time" org="joda-time" rev="1.6"/>        
+        
+
+        <dependency conf="project" name="org.apache.felix.framework" org="org.apache.felix" rev="3.0.2"/>                
+        <dependency conf="project" name="bndlib" org="aQute" rev="0.0.255"/>                
+
+        <dependency conf="project" name="spring-osgi-core" org="springsource" rev="1.2.1"/>                        
+        <dependency conf="project" name="spring-osgi-web" org="springsource" rev="1.2.1"/>                        
+        <dependency conf="project" name="spring-osgi-extender" org="springsource" rev="1.2.1"/>                        
+        <dependency conf="project" name="spring-osgi-io" org="springsource" rev="1.2.1"/>                        
+        
+        <dependency conf="project" name="velocity" org="org.apache.velocity" rev="1.4-atlassian-1"/>        
+        <dependency conf="project" name="velocity-tools" org="org.apache.velocity" rev="1.3"/>              
+         
+        <dependency conf="project" name="icu4j" org="com.ibm.icu" rev="4.0.1"/>        
+        <dependency conf="project" name="visualization-datasource" org="com.google" rev="1.0.2"/>              
+
+        <exclude org="pull-parser" module="pull-parser"/>         
     </dependencies>
 </ivy-module>

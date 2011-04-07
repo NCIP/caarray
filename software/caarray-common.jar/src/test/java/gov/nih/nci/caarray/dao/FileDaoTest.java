@@ -108,7 +108,7 @@ import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileCategory;
 import gov.nih.nci.caarray.domain.file.FileStatus;
-import gov.nih.nci.caarray.domain.file.FileType;
+import gov.nih.nci.caarray.domain.file.FileTypeRegistry;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.Project;
@@ -156,7 +156,7 @@ public class FileDaoTest extends AbstractDaoTest {
      */
     @Before
     public void setup() {
-        DAO_OBJECT = new FileDaoImpl(this.hibernateHelper);
+        DAO_OBJECT = new FileDaoImpl(this.hibernateHelper, this.typeRegistry);
         VOCABULARY_DAO = new VocabularyDaoImpl(this.hibernateHelper);
 
         // Experiment
@@ -247,7 +247,7 @@ public class FileDaoTest extends AbstractDaoTest {
         saveSupportingObjects();
         final CaArrayFile DUMMY_FILE_1 = new CaArrayFile();
         DUMMY_FILE_1.setName(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF.getName());
-        DUMMY_FILE_1.setFileType(FileType.MAGE_TAB_IDF);
+        DUMMY_FILE_1.setFileType(FileTypeRegistry.MAGE_TAB_IDF);
         DUMMY_FILE_1.setFileStatus(FileStatus.UPLOADED);
         DUMMY_FILE_1.setDataHandle(DUMMY_DATA_HANDLE);
         DUMMY_FILE_1.setProject(DUMMY_PROJECT_1);
@@ -280,7 +280,7 @@ public class FileDaoTest extends AbstractDaoTest {
 
         final CaArrayFile file1 = new CaArrayFile();
         file1.setName("file1.idf");
-        file1.setFileType(FileType.MAGE_TAB_IDF);
+        file1.setFileType(FileTypeRegistry.MAGE_TAB_IDF);
         file1.setFileStatus(FileStatus.UPLOADED);
         file1.setDataHandle(DUMMY_DATA_HANDLE);
         file1.setProject(DUMMY_PROJECT_1);
@@ -297,7 +297,7 @@ public class FileDaoTest extends AbstractDaoTest {
         rawArrayData.setName("h1");
         final CaArrayFile file2 = new CaArrayFile();
         file2.setName("file2.cel");
-        file2.setFileType(FileType.AFFYMETRIX_CEL);
+        file2.setFileType(AFFYMETRIX_CEL);
         file2.setFileStatus(FileStatus.UPLOADED);
         file2.setDataHandle(DUMMY_DATA_HANDLE);
         file2.setProject(DUMMY_PROJECT_1);
@@ -315,7 +315,7 @@ public class FileDaoTest extends AbstractDaoTest {
         derivedArrayData.addHybridization(h2);
         final CaArrayFile file3 = new CaArrayFile();
         file3.setName("file3.chp");
-        file3.setFileType(FileType.AFFYMETRIX_CHP);
+        file3.setFileType(AFFYMETRIX_CHP);
         file3.setFileStatus(FileStatus.UPLOADED);
         file3.setDataHandle(DUMMY_DATA_HANDLE);
         file3.setProject(DUMMY_PROJECT_1);
@@ -374,7 +374,7 @@ public class FileDaoTest extends AbstractDaoTest {
 
         final CaArrayFile file4 = new CaArrayFile();
         file4.setName("file4.cdf");
-        file4.setFileType(FileType.AFFYMETRIX_CDF);
+        file4.setFileType(AFFYMETRIX_CDF);
         file4.setFileStatus(FileStatus.UPLOADED);
         file4.setDataHandle(DUMMY_DATA_HANDLE);
         DAO_OBJECT.save(file4);
@@ -399,7 +399,7 @@ public class FileDaoTest extends AbstractDaoTest {
 
         final CaArrayFile file6 = new CaArrayFile();
         file6.setName("file6.chp");
-        file6.setFileType(FileType.AFFYMETRIX_CHP);
+        file6.setFileType(AFFYMETRIX_CHP);
         file6.setFileStatus(FileStatus.UPLOADED);
         file6.setDataHandle(DUMMY_DATA_HANDLE);
         DAO_OBJECT.save(file6);
@@ -486,7 +486,7 @@ public class FileDaoTest extends AbstractDaoTest {
         assertEquals(file3.getName(), files.get(0).getName());
 
         criteria.setExtension(null);
-        criteria.getTypes().add(FileType.AFFYMETRIX_CEL);
+        criteria.getTypes().add(AFFYMETRIX_CEL);
         files = DAO_OBJECT.searchFiles(params, criteria);
         assertEquals(1, files.size());
         assertEquals(file2.getName(), files.get(0).getName());
@@ -542,7 +542,7 @@ public class FileDaoTest extends AbstractDaoTest {
 
         final CaArrayFile file1 = new CaArrayFile();
         file1.setName("file1");
-        file1.setFileType(FileType.MAGE_TAB_IDF);
+        file1.setFileType(FileTypeRegistry.MAGE_TAB_IDF);
         file1.setFileStatus(FileStatus.UPLOADED);
         file1.setDataHandle(DUMMY_DATA_HANDLE);
         file1.setProject(DUMMY_PROJECT_1);
@@ -551,14 +551,14 @@ public class FileDaoTest extends AbstractDaoTest {
 
         final CaArrayFile file2 = new CaArrayFile();
         file2.setName("file2");
-        file2.setFileType(FileType.AFFYMETRIX_CDF);
+        file2.setFileType(AFFYMETRIX_CDF);
         file2.setFileStatus(FileStatus.UPLOADED);
         file2.setDataHandle(DUMMY_DATA_HANDLE);
         DAO_OBJECT.save(file2);
 
         final CaArrayFile file3 = new CaArrayFile();
         file3.setName("file3");
-        file3.setFileType(FileType.AFFYMETRIX_CDF);
+        file3.setFileType(AFFYMETRIX_CDF);
         file3.setFileStatus(FileStatus.IMPORTED);
         file3.setDataHandle(DUMMY_DATA_HANDLE);
         DAO_OBJECT.save(file3);
@@ -590,7 +590,7 @@ public class FileDaoTest extends AbstractDaoTest {
         saveSupportingObjects();
         final CaArrayFile f1 = new CaArrayFile();
         f1.setName("dummy1");
-        f1.setFileType(FileType.MAGE_TAB_IDF);
+        f1.setFileType(FileTypeRegistry.MAGE_TAB_IDF);
         f1.setFileStatus(FileStatus.UPLOADED);
         f1.setDataHandle(DUMMY_DATA_HANDLE);
         f1.setProject(DUMMY_PROJECT_1);
@@ -607,7 +607,7 @@ public class FileDaoTest extends AbstractDaoTest {
         arrayData.setName("h1");
         final CaArrayFile f2 = new CaArrayFile();
         f2.setName("dummy2");
-        f2.setFileType(FileType.AFFYMETRIX_DAT);
+        f2.setFileType(AFFYMETRIX_DAT);
         f2.setFileStatus(FileStatus.IMPORTED_NOT_PARSED);
         f2.setDataHandle(DUMMY_DATA_HANDLE);
         f2.setProject(DUMMY_PROJECT_1);
@@ -618,7 +618,7 @@ public class FileDaoTest extends AbstractDaoTest {
 
         final CaArrayFile f3 = new CaArrayFile();
         f3.setName("dummy3");
-        f3.setFileType(FileType.MAGE_TAB_IDF);
+        f3.setFileType(FileTypeRegistry.MAGE_TAB_IDF);
         f3.setFileStatus(FileStatus.IMPORTED);
         f3.setDataHandle(DUMMY_DATA_HANDLE);
         f3.setProject(DUMMY_PROJECT_1);
@@ -632,7 +632,7 @@ public class FileDaoTest extends AbstractDaoTest {
         arrayData.setName("h1");
         final CaArrayFile f4 = new CaArrayFile();
         f4.setName("dummy4");
-        f4.setFileType(FileType.AFFYMETRIX_CHP);
+        f4.setFileType(AFFYMETRIX_CHP);
         f4.setFileStatus(FileStatus.IMPORTED);
         f4.setProject(DUMMY_PROJECT_1);
         f4.setDataHandle(DUMMY_DATA_HANDLE);
@@ -651,7 +651,7 @@ public class FileDaoTest extends AbstractDaoTest {
 
         final CaArrayFile f6 = new CaArrayFile();
         f6.setName("dummy6");
-        f6.setFileType(FileType.AFFYMETRIX_CDF);
+        f6.setFileType(AFFYMETRIX_CDF);
         f6.setFileStatus(FileStatus.IMPORTED);
         f6.setDataHandle(DUMMY_DATA_HANDLE);
         DAO_OBJECT.save(f6);
@@ -675,7 +675,7 @@ public class FileDaoTest extends AbstractDaoTest {
         saveSupportingObjects();
         final CaArrayFile f1 = new CaArrayFile();
         f1.setName("dummy1");
-        f1.setFileType(FileType.MAGE_TAB_IDF);
+        f1.setFileType(FileTypeRegistry.MAGE_TAB_IDF);
         f1.setFileStatus(FileStatus.UPLOADED);
         f1.setDataHandle(DUMMY_DATA_HANDLE);
         f1.setProject(DUMMY_PROJECT_1);
@@ -698,7 +698,7 @@ public class FileDaoTest extends AbstractDaoTest {
         arrayData.setName("h1");
         final CaArrayFile f2 = new CaArrayFile();
         f2.setName("dummy2");
-        f2.setFileType(FileType.AFFYMETRIX_DAT);
+        f2.setFileType(AFFYMETRIX_DAT);
         f2.setFileStatus(FileStatus.IMPORTED_NOT_PARSED);
         f2.setDataHandle(DUMMY_DATA_HANDLE);
         f2.setProject(DUMMY_PROJECT_1);
@@ -709,7 +709,7 @@ public class FileDaoTest extends AbstractDaoTest {
 
         final CaArrayFile f3 = new CaArrayFile();
         f3.setName("dummy3");
-        f3.setFileType(FileType.MAGE_TAB_IDF);
+        f3.setFileType(FileTypeRegistry.MAGE_TAB_IDF);
         f3.setFileStatus(FileStatus.IMPORTED);
         f3.setDataHandle(DUMMY_DATA_HANDLE);
         f3.setProject(DUMMY_PROJECT_1);
@@ -727,7 +727,7 @@ public class FileDaoTest extends AbstractDaoTest {
         arrayData.setName("h1");
         final CaArrayFile f4 = new CaArrayFile();
         f4.setName("dummy4");
-        f4.setFileType(FileType.AFFYMETRIX_CHP);
+        f4.setFileType(AFFYMETRIX_CHP);
         f4.setFileStatus(FileStatus.IMPORTED);
         f4.setProject(DUMMY_PROJECT_1);
         f4.setDataHandle(DUMMY_DATA_HANDLE);
@@ -755,7 +755,7 @@ public class FileDaoTest extends AbstractDaoTest {
         saveSupportingObjects();
         final CaArrayFile DUMMY_FILE_1 = new CaArrayFile();
         DUMMY_FILE_1.setName(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF.getName());
-        DUMMY_FILE_1.setFileType(FileType.MAGE_TAB_IDF);
+        DUMMY_FILE_1.setFileType(FileTypeRegistry.MAGE_TAB_IDF);
         DUMMY_FILE_1.setFileStatus(FileStatus.UPLOADED);
         DUMMY_FILE_1.setDataHandle(DUMMY_DATA_HANDLE);
         DUMMY_FILE_1.setProject(DUMMY_PROJECT_1);
@@ -765,7 +765,7 @@ public class FileDaoTest extends AbstractDaoTest {
         final CaArrayFile f2 = new CaArrayFile();
         final URI f2handle = CaArrayUtils.makeUriQuietly("db:db2");
         f2.setName("foo");
-        f2.setFileType(FileType.AFFYMETRIX_CDF);
+        f2.setFileType(AFFYMETRIX_CDF);
         f2.setFileStatus(FileStatus.UPLOADED);
         f2.setDataHandle(f2handle);
         DAO_OBJECT.save(f2);

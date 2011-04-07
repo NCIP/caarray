@@ -88,8 +88,10 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import gov.nih.nci.caarray.AbstractCaarrayTest;
-import gov.nih.nci.caarray.services.EntityPruner;
-import gov.nih.nci.caarray.staticinjection.CaArrayCommonStaticInjectionModule;
+import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
+import gov.nih.nci.caarray.dataStorage.DataStorageFacade;
+import gov.nih.nci.caarray.domain.data.HybridizationData;
+import gov.nih.nci.caarray.domain.data.IntegerColumn;
 import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
 import gov.nih.nci.caarray.util.CaArrayHibernateHelperModule;
 import gov.nih.nci.caarray.util.CaArrayUtils;
@@ -105,41 +107,48 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
 
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
+import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import gov.nih.nci.caarray.domain.data.HybridizationData;
-import gov.nih.nci.caarray.domain.data.IntegerColumn;
 
 /**
  * Test cases for the entity pruner
  */
 public class EntityPrunerTest extends AbstractCaarrayTest {
-    private static Injector injector;
-    private static CaArrayHibernateHelper hibernateHelper; 
-    
+    private Injector injector;
+    private CaArrayHibernateHelper hibernateHelper;
+    private FileAccessServiceStub fasStub;
+
     /**
-     * post-construct lifecycle method; intializes the Guice injector that will provide dependencies. 
+     * post-construct lifecycle method; intializes the Guice injector that will provide dependencies.
      */
-    @BeforeClass
-    public static void init() {
-        injector = createInjector();
-        hibernateHelper = injector.getInstance(CaArrayHibernateHelper.class);
+    @Before
+    public void init() {
+        this.fasStub = new FileAccessServiceStub();
+        this.injector = createInjector();
+        this.hibernateHelper = this.injector.getInstance(CaArrayHibernateHelper.class);
     }
-    
+
     /**
      * @return a Guice injector from which this will obtain dependencies.
      */
-    protected static Injector createInjector() {
-        return Guice.createInjector(new CaArrayCommonStaticInjectionModule(), new CaArrayHibernateHelperModule());
+    protected Injector createInjector() {
+        return Guice.createInjector(new CaArrayHibernateHelperModule(), new AbstractModule() {
+            @Override
+            protected void configure() {
+                bind(DataStorageFacade.class).toInstance(EntityPrunerTest.this.fasStub.createStorageFacade());
+                requestStaticInjection(gov.nih.nci.caarray.services.EntityPruner.class);
+            }
+        });
     }
 
     @Test
     public void testNullSetter() {
-        User u = new User();
+        final User u = new User();
         u.setFirstName("");
         u.setLastName(" \t");
         u.setOrganization(" test ");
@@ -151,9 +160,9 @@ public class EntityPrunerTest extends AbstractCaarrayTest {
 
     @Test
     public void testMakeLeaf() {
-        EntityPruner pruner = new EntityPruner();
-        hibernateHelper.beginTransaction();
-        B b = new B();
+        final EntityPruner pruner = new EntityPruner();
+        this.hibernateHelper.beginTransaction();
+        final B b = new B();
         pruner.makeLeaf(b);
 
         assertEquals(1L, b.getId().longValue());
@@ -172,9 +181,9 @@ public class EntityPrunerTest extends AbstractCaarrayTest {
 
     @Test
     public void testMakeChildrenLeaves() {
-        EntityPruner pruner = new EntityPruner();
-        hibernateHelper.beginTransaction();
-        B b = new B();
+        final EntityPruner pruner = new EntityPruner();
+        this.hibernateHelper.beginTransaction();
+        final B b = new B();
         pruner.makeChildrenLeaves(b);
         assertTrue(b.fooAccessed || b.iAccessed);
 
@@ -200,11 +209,11 @@ public class EntityPrunerTest extends AbstractCaarrayTest {
 
     @Test
     public void testMap() {
-        EntityPruner pruner = new EntityPruner();
-        C c = new C();
+        final EntityPruner pruner = new EntityPruner();
+        final C c = new C();
         pruner.makeChildrenLeaves(c);
         assertNotNull(c.getMapA());
-        A a = c.getMapA().get(c.getMapA().keySet().iterator().next());
+        final A a = c.getMapA().get(c.getMapA().keySet().iterator().next());
         assertNull(a.getA());
     }
 
@@ -213,19 +222,18 @@ public class EntityPrunerTest extends AbstractCaarrayTest {
         IntegerColumn col = new IntegerColumn();
         col.initializeArray(10);
         assertEquals(10, col.getValues().length);
-        EntityPruner pruner = new EntityPruner();
+        final EntityPruner pruner = new EntityPruner();
         pruner.makeChildrenLeaves(col);
         assertEquals("need data", 10, col.getValues().length);
 
         col = new IntegerColumn();
         col.initializeArray(10);
         assertEquals(10, col.getValues().length);
-        HybridizationData data = new HybridizationData();
+        final HybridizationData data = new HybridizationData();
         data.getColumns().add(col);
         pruner.makeChildrenLeaves(data);
         assertEquals("should be pruned", 0, col.getValues().length);
     }
-
 
     public static class A implements PersistentObject, Comparable<A> {
         private static final long serialVersionUID = 1L;
@@ -238,12 +246,13 @@ public class EntityPrunerTest extends AbstractCaarrayTest {
 
         private A(boolean recurse) {
             if (recurse) {
-                aToo = new A(false);
+                this.aToo = new A(false);
             }
         }
 
+        @Override
         public Long getId() {
-            return id;
+            return this.id;
         }
 
         public void setId(Long id) {
@@ -251,7 +260,7 @@ public class EntityPrunerTest extends AbstractCaarrayTest {
         }
 
         public A getA() {
-            return aToo;
+            return this.aToo;
         }
 
         public void setA(A a) {
@@ -261,6 +270,7 @@ public class EntityPrunerTest extends AbstractCaarrayTest {
         /**
          * {@inheritDoc}
          */
+        @Override
         public int compareTo(A o) {
             return 0;
         }
@@ -284,9 +294,8 @@ public class EntityPrunerTest extends AbstractCaarrayTest {
         private D unserializable;
         private Set<D> unserializables = new HashSet<D>();
 
-
         public Set<User> getUsers() {
-            return users;
+            return this.users;
         }
 
         public void setUsers(Set<User> users) {
@@ -294,7 +303,7 @@ public class EntityPrunerTest extends AbstractCaarrayTest {
         }
 
         public User getUser() {
-            return user;
+            return this.user;
         }
 
         public void setUser(User user) {
@@ -302,8 +311,8 @@ public class EntityPrunerTest extends AbstractCaarrayTest {
         }
 
         private String getFoo() {
-            fooAccessed = true;
-            return foo;
+            this.fooAccessed = true;
+            return this.foo;
         }
 
         @SuppressWarnings("unused")
@@ -312,19 +321,19 @@ public class EntityPrunerTest extends AbstractCaarrayTest {
         }
 
         public B() {
-            other = new A();
-            otherList.add(new A());
-            otherSet.add(new A());
-            otherMap.put(1, new A());
-            otherCollection.add(new A());
-            users.add(new User());
-            sortedSet.add(new A());
-            unserializable = new D();
-            unserializables.add(new D());
+            this.other = new A();
+            this.otherList.add(new A());
+            this.otherSet.add(new A());
+            this.otherMap.put(1, new A());
+            this.otherCollection.add(new A());
+            this.users.add(new User());
+            this.sortedSet.add(new A());
+            this.unserializable = new D();
+            this.unserializables.add(new D());
         }
 
         public A getOther() {
-            return other;
+            return this.other;
         }
 
         public void setOther(A other) {
@@ -332,7 +341,7 @@ public class EntityPrunerTest extends AbstractCaarrayTest {
         }
 
         public List<A> getOtherList() {
-            return otherList;
+            return this.otherList;
         }
 
         public void setOtherList(List<A> otherList) {
@@ -340,7 +349,7 @@ public class EntityPrunerTest extends AbstractCaarrayTest {
         }
 
         public Set<A> getOtherSet() {
-            return otherSet;
+            return this.otherSet;
         }
 
         public void setOtherSet(Set<A> otherSet) {
@@ -348,7 +357,7 @@ public class EntityPrunerTest extends AbstractCaarrayTest {
         }
 
         public Map<Integer, A> getOtherMap() {
-            return otherMap;
+            return this.otherMap;
         }
 
         public void setOtherMap(Map<Integer, A> otherMap) {
@@ -356,7 +365,7 @@ public class EntityPrunerTest extends AbstractCaarrayTest {
         }
 
         public Collection<A> getOtherCollection() {
-            return otherCollection;
+            return this.otherCollection;
         }
 
         @SuppressWarnings("unused")
@@ -366,8 +375,8 @@ public class EntityPrunerTest extends AbstractCaarrayTest {
         }
 
         public int getI() {
-            iAccessed = true;
-            return i;
+            this.iAccessed = true;
+            return this.i;
         }
 
         public void setI(int i) {
@@ -375,7 +384,7 @@ public class EntityPrunerTest extends AbstractCaarrayTest {
         }
 
         public SortedSet<A> getSortedSet() {
-            return sortedSet;
+            return this.sortedSet;
         }
 
         public void setSortedSet(SortedSet<A> sortedSet) {
@@ -383,7 +392,7 @@ public class EntityPrunerTest extends AbstractCaarrayTest {
         }
 
         public D getUnserializable() {
-            return unserializable;
+            return this.unserializable;
         }
 
         public void setUnserializable(D unserializable) {
@@ -391,7 +400,7 @@ public class EntityPrunerTest extends AbstractCaarrayTest {
         }
 
         public Set<D> getUnserializables() {
-            return unserializables;
+            return this.unserializables;
         }
 
         public void setUnserializables(Set<D> unserializables) {
@@ -405,14 +414,16 @@ public class EntityPrunerTest extends AbstractCaarrayTest {
         private Map<Long, A> mapA = new HashMap<Long, A>();
 
         public C() {
-            mapA.put(1L, new A());
+            this.mapA.put(1L, new A());
         }
+
+        @Override
         public Long getId() {
             return 1L;
         }
 
         public Map<Long, A> getMapA() {
-            return mapA;
+            return this.mapA;
         }
 
         public void setMapA(Map<Long, A> mapA) {
@@ -425,7 +436,7 @@ public class EntityPrunerTest extends AbstractCaarrayTest {
         private String foo = "bar";
 
         public String getFoo() {
-            return foo;
+            return this.foo;
         }
 
         public void setFoo(String foo) {

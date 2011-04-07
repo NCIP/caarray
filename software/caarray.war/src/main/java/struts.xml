@@ -4,6 +4,16 @@
     "http://struts.apache.org/dtds/struts-2.0.dtd">
 
 <struts>
+    <constant name="struts.objectFactory" value="osgi" />
+    <constant name="struts.objectFactory.delegate" value="struts" />
+    	
+    <bean type="gov.nih.nci.caarray.web.plugins.DefaultBundleAccessor" class="gov.nih.nci.caarray.web.plugins.DefaultBundleAccessor" />
+    <bean type="gov.nih.nci.caarray.web.plugins.BundlePackageLoader" class="gov.nih.nci.caarray.web.plugins.BundlePackageLoader" />
+    
+    <bean name="osgi" type="com.opensymphony.xwork2.ObjectFactory" class="gov.nih.nci.caarray.web.plugins.DelegatingObjectFactory" />
+    <bean name="osgi" type="com.opensymphony.xwork2.config.PackageProvider" class="gov.nih.nci.caarray.web.plugins.OsgiConfigurationProvider" />
+    <bean name="osgi" type="com.opensymphony.xwork2.util.finder.ClassLoaderInterface" class="gov.nih.nci.caarray.web.plugins.BundleClassLoaderInterface" />
+    
     <!-- Configuration for the default package. -->
     <package name="default" extends="struts-default">
         <interceptors>
@@ -162,6 +172,22 @@
             <result name="protocolAutoCompleterValues">/WEB-INF/pages/protocol/protocolAutoCompleterValues.jsp</result>
         </action>
 
+        <action name="ajax/project/pluginTab/*/*"
+            class="gov.nih.nci.caarray.web.action.project.ProjectTabPluginAction">
+            <param name="key">{1}</param>
+            <param name="method">{2}</param>            
+            <result name="input">/WEB-INF/pages/project/tab{1}.jsp</result>
+            <result name="success">/WEB-INF/pages/project/tab{1}.jsp</result>
+            <result name="workspace">/WEB-INF/pages/project/backToWorkspace.jsp</result>
+            <result name="reload-project">/WEB-INF/pages/project/reloadProject.jsp</result>
+            <result name="xmlArrayDesigns" type="stream">
+                <param name="contentType">text/xml;charset=UTF-8</param>
+                <param name="inputName">arrayDesignsAsXml</param>
+                <param name="bufferSize">4096</param>
+            </result>
+            <result name="protocolAutoCompleterValues">/WEB-INF/pages/protocol/protocolAutoCompleterValues.jsp</result>
+        </action>
+
         <action name="ajax/project/listTab/*/*"
             class="gov.nih.nci.caarray.web.action.project.Project{1}Action" method="{2}">
             <result name="input">/WEB-INF/pages/project/tab{1}/edit.jsp</result>
@@ -215,6 +241,11 @@
             <result name="input">/WEB-INF/pages/project/export/details.jsp</result>
             <result name="success">/WEB-INF/pages/project/export/{1}.jsp</result>
         </action>
+        
+		<action name="plugins/*" class="gov.nih.nci.caarray.web.action.PluginsAction" method="{1}">
+            <result name="success">/WEB-INF/pages/plugins.jsp</result>
+        </action>
+        
     </package>
 
     <package name="protected" namespace="/protected" extends="default">

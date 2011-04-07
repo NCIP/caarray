@@ -118,4 +118,9 @@ public class FileDaoStub extends AbstractDaoStub implements FileDao {
     public List<URI> getParsedDataHandlesForProject(Long projectId) {
         return Collections.emptyList();
     }
+
+    @Override
+    public List<URI> getAllFileHandles() {
+        return Collections.emptyList();
+    }
 }

@@ -150,14 +150,10 @@ final class ArrayDesignPlatformFacade {
 
         }
 
-        FileStatus validatedStatus = FileStatus.VALIDATED;
         if (result.isValid()) {
             DesignFileHandler handler = null;
             try {
                 handler = getHandler(designFiles);
-                if (!handler.parsesData()) {
-                    validatedStatus = FileStatus.VALIDATED_NOT_PARSED;
-                }
                 handler.validate(result);
             } catch (final PlatformFileReadException e) {
                 final CaArrayFile firstDesignFile = designFiles.iterator().next();
@@ -175,7 +171,7 @@ final class ArrayDesignPlatformFacade {
             }
         }
 
-        final FileStatus status = result.isValid() ? validatedStatus : FileStatus.VALIDATION_ERRORS;
+        final FileStatus status = result.isValid() ? getValidStatus(designFiles) : FileStatus.VALIDATION_ERRORS;
         for (final CaArrayFile designFile : designFiles) {
             designFile.setFileStatus(status);
             this.arrayDao.save(designFile);
@@ -183,6 +179,11 @@ final class ArrayDesignPlatformFacade {
         this.arrayDao.flushSession();
 
         return result;
+    }
+
+    private static FileStatus getValidStatus(Set<CaArrayFile> designFiles) {
+        return designFiles.iterator().next().getFileType().isParsed() ? FileStatus.VALIDATED
+                : FileStatus.VALIDATED_NOT_PARSED;
     }
 
     @SuppressWarnings("PMD.AvoidReassigningParameters")
@@ -204,7 +205,8 @@ final class ArrayDesignPlatformFacade {
         // When we upgrade to hibernate 3.2.4+, we can remove the call to merge.
         arrayDesign = (ArrayDesign) this.arrayDao.mergeObject(arrayDesign);
         arrayDesign.getDesignFileSet().updateStatus(
-                handler.parsesData() ? FileStatus.IMPORTED : FileStatus.IMPORTED_NOT_PARSED);
+                arrayDesign.getDesignFiles().iterator().next().getFileType().isParsed() ? FileStatus.IMPORTED
+                        : FileStatus.IMPORTED_NOT_PARSED);
         this.arrayDao.save(arrayDesign);
     }
 

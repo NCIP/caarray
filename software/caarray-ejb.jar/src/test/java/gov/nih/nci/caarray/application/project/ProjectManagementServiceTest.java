@@ -89,6 +89,7 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import gov.nih.nci.caarray.application.AbstractServiceTest;
 import gov.nih.nci.caarray.application.GenericDataService;
 import gov.nih.nci.caarray.application.GenericDataServiceStub;
@@ -119,7 +120,6 @@ import gov.nih.nci.caarray.domain.search.SearchSampleCategory;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.security.Protectable;
 import gov.nih.nci.caarray.security.SecurityUtils;
-import gov.nih.nci.caarray.staticinjection.CaArrayEjbStaticInjectionModule;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
 import gov.nih.nci.caarray.util.CaArrayHibernateHelperModule;
@@ -136,6 +136,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.io.FileUtils;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 import org.junit.After;
@@ -145,6 +146,7 @@ import org.junit.Test;
 
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
+import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
@@ -173,7 +175,14 @@ public class ProjectManagementServiceTest extends AbstractServiceTest {
      * @return a Guice injector from which this will obtain dependencies.
      */
     protected static Injector createInjector() {
-        return Guice.createInjector(new CaArrayEjbStaticInjectionModule(), new CaArrayHibernateHelperModule());
+        return Guice.createInjector(new CaArrayHibernateHelperModule(), new AbstractModule() {
+            @Override
+            protected void configure() {
+                requestStaticInjection(gov.nih.nci.caarray.security.AuthorizationManagerExtensions.class);
+                requestStaticInjection(gov.nih.nci.caarray.security.SecurityUtils.class);
+                requestStaticInjection(gov.nih.nci.caarray.domain.permissions.CollaboratorGroup.class);
+            }
+        });
     }
 
     @Before
@@ -183,7 +192,7 @@ public class ProjectManagementServiceTest extends AbstractServiceTest {
         final ProjectManagementServiceBean projectManagementServiceBean = new ProjectManagementServiceBean();
         projectManagementServiceBean.setDependencies(this.daoFactoryStub.getProjectDao(),
                 this.daoFactoryStub.getFileDao(), this.daoFactoryStub.getSampleDao(),
-                this.daoFactoryStub.getSearchDao(), dataStorageFacade);
+                this.daoFactoryStub.getSearchDao(), this.daoFactoryStub.getVocabularyDao());
 
         final ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
         locatorStub.addLookup(FileAccessService.JNDI_NAME, this.fileAccessService);
@@ -307,9 +316,6 @@ public class ProjectManagementServiceTest extends AbstractServiceTest {
 
     @Test
     public void testUnpackFiles() throws Exception {
-        final DataStorageFacade dataStorageFacade = mock(DataStorageFacade.class);
-        final FileUploadUtils fileUploadUtils = new FileUploadUtils(dataStorageFacade);
-
         // testing unpacking of a file already in the project
         // add a file
         final Project project = this.daoFactoryStub.getSearchDao().retrieve(Project.class, 123L);
@@ -323,6 +329,11 @@ public class ProjectManagementServiceTest extends AbstractServiceTest {
 
         final CaArrayFile myFile = project.getFiles().first();
 
+        final DataStorageFacade dataStorageFacade = mock(DataStorageFacade.class);
+        when(dataStorageFacade.openInputStream(myFile.getDataHandle(), false)).thenReturn(
+                FileUtils.openInputStream(MageTabDataFiles.SPECIFICATION_ZIP));
+        final FileUploadUtils fileUploadUtils = new FileUploadUtils(dataStorageFacade);
+
         // now do the unpack
         final List<CaArrayFile> cFileList = new ArrayList<CaArrayFile>();
         cFileList.add(myFile);
@@ -330,7 +341,8 @@ public class ProjectManagementServiceTest extends AbstractServiceTest {
         final FileProcessingResult result = fileUploadUtils.unpackFiles(project, cFileList);
         // the unpack should have added 10 files and removed the zip archive
         assertEquals(16, result.getCount());
-        assertEquals(15, project.getFiles().size() - this.fileAccessService.getRemovedFileCount());
+        assertEquals(1, this.fileAccessService.getRemovedFileCount());
+        assertEquals(16, project.getFiles().size());
         assertNotNull(project.getFiles().iterator().next().getProject());
         assertNotContains(project.getFiles(), "specification.zip");
         assertContains(project.getFiles(), MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF.getName());
@@ -558,10 +570,9 @@ public class ProjectManagementServiceTest extends AbstractServiceTest {
                 };
             }
         };
-        final DataStorageFacade dataStorageFacade = mock(DataStorageFacade.class);
         final ProjectManagementServiceBean bean = new ProjectManagementServiceBean();
         bean.setDependencies(daoFactory.getProjectDao(), daoFactory.getFileDao(), daoFactory.getSampleDao(),
-                daoFactory.getSearchDao(), dataStorageFacade);
+                daoFactory.getSearchDao(), daoFactory.getVocabularyDao());
 
         final Project project = new Project();
         assertNull(bean.getBiomaterialByExternalId(project, "def", Sample.class));
@@ -581,10 +592,9 @@ public class ProjectManagementServiceTest extends AbstractServiceTest {
                 };
             }
         };
-        final DataStorageFacade dataStorageFacade = mock(DataStorageFacade.class);
         final ProjectManagementServiceBean bean = new ProjectManagementServiceBean();
         bean.setDependencies(daoFactory.getProjectDao(), daoFactory.getFileDao(), daoFactory.getSampleDao(),
-                daoFactory.getSearchDao(), dataStorageFacade);
+                daoFactory.getSearchDao(), daoFactory.getVocabularyDao());
 
         final Project project = new Project();
 
@@ -607,10 +617,9 @@ public class ProjectManagementServiceTest extends AbstractServiceTest {
                 };
             }
         };
-        final DataStorageFacade dataStorageFacade = mock(DataStorageFacade.class);
         final ProjectManagementServiceBean bean = new ProjectManagementServiceBean();
         bean.setDependencies(daoFactory.getProjectDao(), daoFactory.getFileDao(), daoFactory.getSampleDao(),
-                daoFactory.getSearchDao(), dataStorageFacade);
+                daoFactory.getSearchDao(), daoFactory.getVocabularyDao());
 
         final Project project = new Project();
 

@@ -95,7 +95,7 @@ import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
 
 /**
  * @author dkokotov
- *
+ * 
  */
 public class GenericDataServiceStub implements GenericDataService {
     private PersistentObject deletedObject = null;
@@ -104,6 +104,7 @@ public class GenericDataServiceStub implements GenericDataService {
     /**
      * {@inheritDoc}
      */
+    @Override
     public String getIncrementingCopyName(Class<?> entityClass, String fieldName, String name) {
         return name + "2";
     }
@@ -111,10 +112,12 @@ public class GenericDataServiceStub implements GenericDataService {
     /**
      * {@inheritDoc}
      */
+    @Override
     public <T extends PersistentObject> T getPersistentObject(Class<T> entityClass, Long entityId) {
         return null;
     }
 
+    @Override
     public <T extends PersistentObject> List<T> retrieveByIds(Class<T> entityClass, List<? extends Serializable> ids) {
         return new ArrayList<T>();
     }
@@ -122,6 +125,7 @@ public class GenericDataServiceStub implements GenericDataService {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void delete(PersistentObject object) {
         this.deletedObject = object;
     }
@@ -136,6 +140,7 @@ public class GenericDataServiceStub implements GenericDataService {
     /**
      * {@inheritDoc}
      */
+    @Override
     public <T extends PersistentObject> List<T> filterCollection(Collection<T> collection, String property, String value) {
         return null;
     }
@@ -143,6 +148,7 @@ public class GenericDataServiceStub implements GenericDataService {
     /**
      * {@inheritDoc}
      */
+    @Override
     public int collectionSize(Collection<? extends PersistentObject> collection) {
         return 0;
     }
@@ -150,6 +156,7 @@ public class GenericDataServiceStub implements GenericDataService {
     /**
      * {@inheritDoc}
      */
+    @Override
     public <T extends PersistentObject> List<T> pageCollection(Collection<T> collection,
             PageSortParams<T> pageSortParams) {
         return new ArrayList<T>(collection);
@@ -158,6 +165,7 @@ public class GenericDataServiceStub implements GenericDataService {
     /**
      * {@inheritDoc}
      */
+    @Override
     public <T extends PersistentObject> List<T> pageAndFilterCollection(Collection<T> collection, String property,
             List<? extends Serializable> values, PageSortParams<T> pageSortParams) {
         return new ArrayList<T>(collection);
@@ -166,6 +174,7 @@ public class GenericDataServiceStub implements GenericDataService {
     /**
      * {@inheritDoc}
      */
+    @Override
     public <T extends PersistentObject> List<T> retrieveAll(Class<T> entityClass, Order... orders) {
         return new ArrayList<T>();
     }
@@ -173,6 +182,7 @@ public class GenericDataServiceStub implements GenericDataService {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void save(PersistentObject object) {
         this.savedObject = object;
     }
@@ -184,8 +194,14 @@ public class GenericDataServiceStub implements GenericDataService {
         return this.savedObject;
     }
 
+    @Override
     public <T extends PersistentObject> List<T> retrieveAll(Class<T> entityClass, int maxResults, int firstResult,
             Order... orders) {
         return Collections.emptyList();
+    }
+
+    @Override
+    public void refresh(PersistentObject object) {
+        // no op
     }
 }

@@ -87,11 +87,12 @@ import gov.nih.nci.caarray.application.GenericDataService;
 import gov.nih.nci.caarray.application.ServiceLocatorFactory;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.application.project.InconsistentProjectStateException.Reason;
+import gov.nih.nci.caarray.application.vocabulary.VocabularyUtils;
 import gov.nih.nci.caarray.dao.FileDao;
 import gov.nih.nci.caarray.dao.ProjectDao;
 import gov.nih.nci.caarray.dao.SampleDao;
 import gov.nih.nci.caarray.dao.SearchDao;
-import gov.nih.nci.caarray.dataStorage.DataStorageFacade;
+import gov.nih.nci.caarray.dao.VocabularyDao;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
@@ -99,10 +100,12 @@ import gov.nih.nci.caarray.domain.permissions.AccessProfile;
 import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
 import gov.nih.nci.caarray.domain.project.AssayType;
 import gov.nih.nci.caarray.domain.project.Experiment;
+import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
 import gov.nih.nci.caarray.domain.project.Factor;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.protocol.ProtocolApplication;
 import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
+import gov.nih.nci.caarray.domain.sample.AbstractCharacteristic;
 import gov.nih.nci.caarray.domain.sample.Extract;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 import gov.nih.nci.caarray.domain.sample.Sample;
@@ -124,6 +127,7 @@ import gov.nih.nci.security.exceptions.CSException;
 
 import java.io.File;
 import java.io.InputStream;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -163,7 +167,7 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     private FileDao fileDao;
     private SampleDao sampleDao;
     private SearchDao searchDao;
-    private DataStorageFacade dataStorageFacade;
+    private VocabularyDao vocabularyDao;
 
     /**
      * 
@@ -174,12 +178,12 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
      */
     @Inject
     public void setDependencies(ProjectDao projectDao, FileDao fileDao, SampleDao sampleDao, SearchDao searchDao,
-            DataStorageFacade dataStorageFacade) {
+            VocabularyDao vocabularyDao) {
         this.projectDao = projectDao;
         this.fileDao = fileDao;
         this.sampleDao = sampleDao;
         this.searchDao = searchDao;
-        this.dataStorageFacade = dataStorageFacade;
+        this.vocabularyDao = vocabularyDao;
     }
 
     /**
@@ -772,4 +776,17 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
         return this.projectDao.getProjectsWithReImportable();
     }
 
+    @Override
+    public List<Category> getAllCharacteristicCategories(Experiment experiment) {
+        final List<gov.nih.nci.caarray.domain.vocabulary.Category> categories = this.vocabularyDao
+                .searchForCharacteristicCategory(experiment, AbstractCharacteristic.class, null);
+        // add in the standard categories
+        for (final ExperimentOntologyCategory cat : EnumSet.of(ExperimentOntologyCategory.ORGANISM_PART,
+                ExperimentOntologyCategory.DISEASE_STATE, ExperimentOntologyCategory.CELL_TYPE,
+                ExperimentOntologyCategory.MATERIAL_TYPE, ExperimentOntologyCategory.LABEL_COMPOUND,
+                ExperimentOntologyCategory.EXTERNAL_ID)) {
+            categories.add(VocabularyUtils.getCategory(cat));
+        }
+        return categories;
+    }
 }

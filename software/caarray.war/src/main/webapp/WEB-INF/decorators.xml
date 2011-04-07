@@ -7,6 +7,7 @@
         <pattern>/resources/*</pattern>
         <pattern>/help/*</pattern>
         <pattern>/login.action*</pattern>
+        <pattern>/heatmap/*</pattern>
     </excludes>
     <decorator name="default" page="/WEB-INF/pages/decorators/default.jsp">
         <pattern>/*</pattern>

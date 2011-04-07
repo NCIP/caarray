@@ -92,13 +92,13 @@ import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
+import gov.nih.nci.caarray.domain.file.FileTypeRegistry;
 import gov.nih.nci.caarray.domain.project.AbstractExperimentDesignNode;
 import gov.nih.nci.caarray.domain.project.ExperimentDesignNodeType;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
 import gov.nih.nci.caarray.injection.InjectorFactory;
 import gov.nih.nci.caarray.security.SecurityUtils;
-import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
 import gov.nih.nci.caarray.util.CaArrayUsernameHolder;
 import gov.nih.nci.caarray.web.fileupload.MonitoredMultiPartRequest;
 import gov.nih.nci.caarray.web.helper.DownloadHelper;
@@ -142,10 +142,14 @@ import com.opensymphony.xwork2.validator.annotations.Validations;
  */
 @SuppressWarnings({ "unchecked", "PMD.ExcessiveClassLength", "PMD.CyclomaticComplexity", "PMD.TooManyFields",
         "PMD.TooManyMethods" })
-@Validations(expressions = @ExpressionValidator(message = "Files must be selected for this operation.", expression = "selectedFiles.size() > 0"))
+@Validations(expressions = @ExpressionValidator(message = "Files must be selected for this operation.",
+    expression = "selectedFiles.size() > 0"))
 public class ProjectFilesAction extends AbstractBaseProjectAction implements Preparable {
-    @Inject
-    private static CaArrayHibernateHelper hibernateHelper;
+    private static final String ASSOC_NODES_EXPR =
+            "@gov.nih.nci.caarray.application.arraydata.DataImportTargetAnnotationOption@ASSOCIATE_TO_NODES";
+    private static final String AUTOCREATE_SINGLE_EXPR =
+            "@gov.nih.nci.caarray.application.arraydata.DataImportTargetAnnotationOption@AUTOCREATE_SINGLE";
+
     private static final Logger LOG = Logger.getLogger(ProjectFilesAction.class);
 
     /**
@@ -198,6 +202,9 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
     private static final String NODE_TYPE_PROPERTY = "nodeType";
     private static final String LEAF_PROPERTY = "leaf";
 
+    @Inject
+    private static FileTypeRegistry fileTypeRegistry;
+
     private List<Long> selectedFilesToUnpack = new ArrayList<Long>();
     private List<File> uploads = new ArrayList<File>();
     private List<String> uploadFileNames = new ArrayList<String>();
@@ -236,7 +243,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
         setFiles(new HashSet<CaArrayFile>());
         for (final CaArrayFile f : getProject().getImportedFiles()) {
             if (getFileType() == null
-                    || (f.getFileType() != null && f.getFileType().toString().equals(getFileType())
+                    || (f.getFileType() != null && f.getFileType().getName().equals(getFileType())
                             || (KNOWN_FILE_TYPE.equals(getFileType()) && f.getFileType() != null) || (UNKNOWN_FILE_TYPE
                             .equals(getFileType()) && f.getFileType() == null))) {
                 getFiles().add(f);
@@ -248,8 +255,8 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
     }
 
     private void findDeletableFiles() {
-        final List<CaArrayFile> deletables = ServiceLocatorFactory.getProjectManagementService().getDeletableFiles(
-                getProject().getId());
+        final List<CaArrayFile> deletables =
+                ServiceLocatorFactory.getProjectManagementService().getDeletableFiles(getProject().getId());
         this.deletableFiles.clear();
         for (final CaArrayFile f : getFiles()) {
             this.deletableFiles.put(f, deletables.contains(f));
@@ -278,13 +285,9 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
         downloadFiles();
         final Iterator<String> it = getFileTypes().iterator();
         while (it.hasNext()) {
-            final String type = it.next();
-            try {
-                final FileType t = FileType.valueOf(type);
-                if (!t.isDerivedArrayData() && !t.isRawArrayData()) {
-                    it.remove();
-                }
-            } catch (final IllegalArgumentException e) {
+            final String typeStr = it.next();
+            final FileType type = fileTypeRegistry.getTypeByName(typeStr);
+            if (type == null || !type.isArrayData()) {
                 it.remove();
             }
         }
@@ -294,12 +297,13 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
     private void setFilesMatchingTypeAndStatus(SortedSet<CaArrayFile> fileSet) {
         setFiles(new HashSet<CaArrayFile>());
         for (final CaArrayFile f : fileSet) {
-            final boolean fileStatusMatch = (getFileStatus() == null || getFileStatus()
-                    .equals(f.getFileStatus().name()));
-            final boolean fileTypeMatch = (getFileType() == null || (f.getFileType() != null
-                    && f.getFileType().toString().equals(getFileType())
-                    || (KNOWN_FILE_TYPE.equals(getFileType()) && f.getFileType() != null) || (UNKNOWN_FILE_TYPE
-                    .equals(getFileType()) && f.getFileType() == null)));
+            final boolean fileStatusMatch =
+                    (getFileStatus() == null || getFileStatus().equals(f.getFileStatus().name()));
+            final boolean fileTypeMatch =
+                    (getFileType() == null || (f.getFileType() != null
+                            && f.getFileType().getName().equals(getFileType())
+                            || (KNOWN_FILE_TYPE.equals(getFileType()) && f.getFileType() != null) || (UNKNOWN_FILE_TYPE
+                            .equals(getFileType()) && f.getFileType() == null)));
             if (fileStatusMatch && fileTypeMatch) {
                 getFiles().add(f);
             }
@@ -560,7 +564,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
     public String changeFileType() {
         if (!getSelectedFiles().isEmpty()) {
             for (final CaArrayFile caArrayFile : getSelectedFiles()) {
-                caArrayFile.setFileType(FileType.valueOf(this.getChangeToFileType()));
+                caArrayFile.setFileType(fileTypeRegistry.getTypeByName(this.getChangeToFileType()));
             }
         }
         return saveFiles();
@@ -573,7 +577,8 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
      */
     @SuppressWarnings({ "PMD.ExcessiveMethodLength", "PMD.NPathComplexity" })
     // validation checks can't be easily refactored to smaller methods.
-    public String validateFiles() {
+            public
+            String validateFiles() {
         final ErrorCounts errors = new ErrorCounts();
         final CaArrayFileSet fileSet = new CaArrayFileSet(getProject());
         for (final CaArrayFile file : getSelectedFiles()) {
@@ -610,7 +615,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
         // check that there is only 1 file and that it is the idf file
         if (getSelectedFiles().size() > 1) {
             ActionHelper.saveMessage(getText("project.selectRefFile.error.moreThanOneFile"));
-        } else if (!getSelectedFiles().get(0).getFileType().equals(FileType.MAGE_TAB_IDF)) {
+        } else if (!getSelectedFiles().get(0).getFileType().equals(FileTypeRegistry.MAGE_TAB_IDF)) {
             ActionHelper.saveMessage(getText("project.selectRefFile.error.notIdf"));
         } else {
             generateRefFileList(getSelectedFiles().get(0));
@@ -630,8 +635,8 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
         if (idfFile != null) {
             this.selectedFiles.add(idfFile);
             // find files ref'ing sdrf file.
-            final List<String> filenames = ServiceLocatorFactory.getFileManagementService().findIdfRefFileNames(
-                    idfFile, getProject());
+            final List<String> filenames =
+                    ServiceLocatorFactory.getFileManagementService().findIdfRefFileNames(idfFile, getProject());
             if (!filenames.isEmpty() && validateReferencedFilesPresent(filenames)) {
                 findFilesByName(filenames);
                 boolean addErrorMessage = false;
@@ -726,11 +731,11 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
      */
     @SuppressWarnings("PMD.ExcessiveMethodLength")
     @Validations(expressions = {
-            @ExpressionValidator(message = "You must select at least one biomaterial or hybridization.", expression = "targetNodeIds.size() > 0 || targetAnnotationOption != "
-                    + "@gov.nih.nci.caarray.application.arraydata.DataImportTargetAnnotationOption@ASSOCIATE_TO_NODES"),
-            @ExpressionValidator(message = "You must enter a new annotation name.", expression = "newAnnotationName != null && "
-                    + " newAnnotationName.length() > 0 || targetAnnotationOption != "
-                    + "@gov.nih.nci.caarray.application.arraydata.DataImportTargetAnnotationOption@AUTOCREATE_SINGLE") })
+            @ExpressionValidator(message = "You must select at least one biomaterial or hybridization.",
+                expression = "targetNodeIds.size() > 0 || targetAnnotationOption != " + ASSOC_NODES_EXPR),
+            @ExpressionValidator(message = "You must enter a new annotation name.",
+                expression = "newAnnotationName != null && "
+                        + " newAnnotationName.length() > 0 || targetAnnotationOption != " + AUTOCREATE_SINGLE_EXPR) })
     public String importFiles() {
         final ErrorCounts errors = new ErrorCounts();
         final CaArrayFileSet fileSet = checkImportFiles(errors);
@@ -739,10 +744,11 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
         } else {
             if (!fileSet.getFiles().isEmpty()) {
                 final List<Long> entityIds = new ArrayList<Long>(this.targetNodeIds);
-                final ExperimentDesignNodeType targetNodeType = (this.nodeType == null ? null : this.nodeType
-                        .getNodeType());
-                final DataImportOptions dataImportOptions = DataImportOptions.getDataImportOptions(
-                        this.targetAnnotationOption, this.newAnnotationName, targetNodeType, entityIds);
+                final ExperimentDesignNodeType targetNodeType =
+                        (this.nodeType == null ? null : this.nodeType.getNodeType());
+                final DataImportOptions dataImportOptions =
+                        DataImportOptions.getDataImportOptions(this.targetAnnotationOption, this.newAnnotationName,
+                                targetNodeType, entityIds);
                 ServiceLocatorFactory.getFileManagementService().importFiles(getProject(), fileSet, dataImportOptions);
             }
             ActionHelper.saveMessage(getText("project.fileImport.success",
@@ -842,7 +848,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
      * This method refreshes the project from the db. It is in its own method to allow test cases to overwrite this.
      */
     protected void refreshProject() {
-        hibernateHelper.getCurrentSession().refresh(getProject());
+        ServiceLocatorFactory.getGenericDataService().refresh(getProject());
     }
 
     /**
@@ -865,8 +871,9 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
         final FileUploadUtils fileUploadUtils = injector.getInstance(FileUploadUtils.class);
         if (validateUpload()) {
             try {
-                final FileProcessingResult uploadResult = fileUploadUtils.uploadFiles(getProject(), getUpload(),
-                        getUploadFileName(), fileNamesToUnpack());
+                final FileProcessingResult uploadResult =
+                        fileUploadUtils
+                                .uploadFiles(getProject(), getUpload(), getUploadFileName(), fileNamesToUnpack());
 
                 for (final String conflict : uploadResult.getConflictingFiles()) {
                     ActionHelper.saveMessage(getText("experiment.files.upload.filename.exists",
@@ -874,8 +881,9 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
                 }
                 ActionHelper.saveMessage(uploadResult.getCount() + " file(s) uploaded.");
             } catch (final InvalidFileException ue) {
-                final String errorKey = fileNamesToUnpack().contains(ue.getFile()) ? "errors.uploadingErrorWithZip"
-                        : "errors.uploadingErrorWithAdding";
+                final String errorKey =
+                        fileNamesToUnpack().contains(ue.getFile()) ? "errors.uploadingErrorWithZip"
+                                : "errors.uploadingErrorWithAdding";
                 ActionHelper
                         .saveMessage(getText(errorKey, new String[] { ue.getFile(), getText(ue.getResourceKey()) }));
                 ActionHelper.saveMessage(getText("errors.unpackingErrorWithZip", new String[] { ue.getFile(),
@@ -952,8 +960,8 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
      * @return the filename
      */
     public static StringBuilder determineDownloadFileName(Project project) {
-        final StringBuilder name = new StringBuilder("caArray_").append(project.getExperiment().getPublicIdentifier())
-                .append("_files");
+        final StringBuilder name =
+                new StringBuilder("caArray_").append(project.getExperiment().getPublicIdentifier()).append("_files");
         return name;
     }
 
@@ -1010,10 +1018,12 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
             } else if (this.nodeType.isBiomaterialRootNode()) {
                 // the node id of an associated biomaterials container node will end in [number]_[type]
                 // where [type] is the container type and [number] is the id of the biomaterial parent
-                final Long biomaterialParentId = Long.parseLong(StringUtils.substringAfterLast(
-                        StringUtils.substringBeforeLast(this.nodeId, "_"), "_"));
-                final AbstractBioMaterial bioMaterialParent = ServiceLocatorFactory.getGenericDataService()
-                        .getPersistentObject(AbstractBioMaterial.class, biomaterialParentId);
+                final Long biomaterialParentId =
+                        Long.parseLong(StringUtils.substringAfterLast(
+                                StringUtils.substringBeforeLast(this.nodeId, "_"), "_"));
+                final AbstractBioMaterial bioMaterialParent =
+                        ServiceLocatorFactory.getGenericDataService().getPersistentObject(AbstractBioMaterial.class,
+                                biomaterialParentId);
                 addJsonForExperimentDesignNodes(jsArray, this.nodeType.getChildrenNodeType(),
                         this.nodeType.getContainedNodes(bioMaterialParent), this.nodeId);
             } else if (this.nodeType.isBiomaterialNode()) {
@@ -1072,7 +1082,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
         jsonArray.element(json);
     }
 
-    private void addJsonForBiomaterialSamplesRoot(JSONArray jsonArray, AbstractBioMaterial parent, String nodeIdPrefix) {
+    private void addJsonForSamplesRoot(JSONArray jsonArray, AbstractBioMaterial parent, String nodeIdPrefix) {
         JSONObject json = new JSONObject();
         json = new JSONObject();
         json.element(ID_PROPERTY, nodeIdPrefix + "_Samples");
@@ -1084,7 +1094,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
         jsonArray.element(json);
     }
 
-    private void addJsonForBiomaterialExtractsRoot(JSONArray jsonArray, AbstractBioMaterial parent, String nodeIdPrefix) {
+    private void addJsonForExtractsRoot(JSONArray jsonArray, AbstractBioMaterial parent, String nodeIdPrefix) {
         final JSONObject json = new JSONObject();
         json.element(ID_PROPERTY, nodeIdPrefix + "_Extracts");
         json.element(TEXT_PROPERTY, "Associated Extracts");
@@ -1095,8 +1105,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
         jsonArray.element(json);
     }
 
-    private void addJsonForBiomaterialLabeledExtractsRoot(JSONArray jsonArray, AbstractBioMaterial parent,
-            String nodeIdPrefix) {
+    private void addJsonForLabeledExtractsRoot(JSONArray jsonArray, AbstractBioMaterial parent, String nodeIdPrefix) {
         final JSONObject json = new JSONObject();
         json.element(ID_PROPERTY, nodeIdPrefix + "_LabeledExtracts");
         json.element(TEXT_PROPERTY, "Associated Labeled Extracts");
@@ -1107,8 +1116,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
         jsonArray.element(json);
     }
 
-    private void addJsonForBiomaterialHybridizationsRoot(JSONArray jsonArray, AbstractBioMaterial parent,
-            String nodeIdPrefix) {
+    private void addJsonForHybridizationsRoot(JSONArray jsonArray, AbstractBioMaterial parent, String nodeIdPrefix) {
         final JSONObject json = new JSONObject();
         json.element(ID_PROPERTY, nodeIdPrefix + "_Hybridizations");
         json.element(TEXT_PROPERTY, "Associated Hybridizations");
@@ -1134,18 +1142,18 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
 
             final JSONArray associatedRoots = new JSONArray();
             if (newNodesType == ExperimentDesignTreeNodeType.SOURCE) {
-                addJsonForBiomaterialSamplesRoot(associatedRoots, (AbstractBioMaterial) node, newNodeId);
+                addJsonForSamplesRoot(associatedRoots, (AbstractBioMaterial) node, newNodeId);
             }
             if (EnumSet.of(ExperimentDesignTreeNodeType.SOURCE, ExperimentDesignTreeNodeType.SAMPLE).contains(
                     newNodesType)) {
-                addJsonForBiomaterialExtractsRoot(associatedRoots, (AbstractBioMaterial) node, newNodeId);
+                addJsonForExtractsRoot(associatedRoots, (AbstractBioMaterial) node, newNodeId);
             }
             if (EnumSet.range(ExperimentDesignTreeNodeType.SOURCE, ExperimentDesignTreeNodeType.EXTRACT).contains(
                     newNodesType)) {
-                addJsonForBiomaterialLabeledExtractsRoot(associatedRoots, (AbstractBioMaterial) node, newNodeId);
+                addJsonForLabeledExtractsRoot(associatedRoots, (AbstractBioMaterial) node, newNodeId);
             }
             if (newNodesType.isBiomaterialNode()) {
-                addJsonForBiomaterialHybridizationsRoot(associatedRoots, (AbstractBioMaterial) node, newNodeId);
+                addJsonForHybridizationsRoot(associatedRoots, (AbstractBioMaterial) node, newNodeId);
             }
 
             if (associatedRoots.isEmpty()) {
@@ -1232,8 +1240,9 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
      */
     public void setSelectedFileIds(Set<Long> selectedFileIds) {
         this.selectedFileIds = selectedFileIds;
-        this.selectedFiles = ServiceLocatorFactory.getGenericDataService().retrieveByIds(CaArrayFile.class,
-                new ArrayList(selectedFileIds));
+        this.selectedFiles =
+                ServiceLocatorFactory.getGenericDataService().retrieveByIds(CaArrayFile.class,
+                        new ArrayList(selectedFileIds));
     }
 
     /**
@@ -1510,5 +1519,12 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
      */
     public Map<CaArrayFile, Boolean> getDeletableFiles() {
         return this.deletableFiles;
+    }
+
+    /**
+     * @return the set of files types currently known to caArray.
+     */
+    public Set<FileType> getAvailableFileTypes() {
+        return fileTypeRegistry.getAllTypes();
     }
 }

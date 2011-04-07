@@ -3,8 +3,12 @@ package gov.nih.nci.caarray.application.translation.geosoft;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.AbstractHibernateTest;
+import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
+import gov.nih.nci.caarray.application.fileaccess.FileAccessUtils;
 import gov.nih.nci.caarray.application.vocabulary.VocabularyServiceStub;
 import gov.nih.nci.caarray.domain.array.Array;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
@@ -13,8 +17,11 @@ import gov.nih.nci.caarray.domain.contact.Person;
 import gov.nih.nci.caarray.domain.data.DerivedArrayData;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.file.FileCategory;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
+import gov.nih.nci.caarray.domain.file.FileTypeRegistry;
+import gov.nih.nci.caarray.domain.file.FileTypeRegistryImpl;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.ExperimentContact;
@@ -32,14 +39,15 @@ import gov.nih.nci.caarray.domain.sample.UserDefinedCharacteristic;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
-import gov.nih.nci.caarray.util.CaArrayUtils;
+import gov.nih.nci.caarray.platforms.spi.DataFileHandler;
+import gov.nih.nci.caarray.platforms.spi.DesignFileHandler;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.net.URI;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -53,6 +61,7 @@ import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipFile;
+import org.apache.commons.io.FileUtils;
 import org.hibernate.Transaction;
 import org.junit.After;
 import org.junit.Before;
@@ -60,31 +69,64 @@ import org.junit.Test;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Sets;
 
 /**
  * 
  * @author gax
  */
 public class GeoSoftExporterBeanTest extends AbstractHibernateTest {
-    private static final URI DUMMY_HANDLE = CaArrayUtils.makeUriQuietly("foo:baz");
+    protected static FileType AFFYMETRIX_CHP = new FileType("AFFYMETRIX_CHP", FileCategory.DERIVED_DATA, true, "CHP");
+
+    private static final String TEST_DATA = "Test data";
 
     private GeoSoftExporterBean bean;
     VocabularyServiceStub vocab;
     Transaction tx;
+    private FileAccessServiceStub fasStub;
+
+    private File rawFile;
+    private File derivedFile;
+    private File supplementalFile;
 
     public GeoSoftExporterBeanTest() {
         super(false);
     }
 
     @Before
-    public void setUp() {
+    public void setUp() throws IOException {
         this.bean = new GeoSoftExporterBean();
         this.vocab = new VocabularyServiceStub();
         this.tx = this.hibernateHelper.beginTransaction();
+
+        final DataFileHandler chpHandler = mock(DataFileHandler.class);
+        when(chpHandler.getSupportedTypes()).thenReturn(Sets.newHashSet(AFFYMETRIX_CHP));
+        final FileTypeRegistry typeRegistry = new FileTypeRegistryImpl(Sets.newHashSet(chpHandler),
+                Sets.<DesignFileHandler> newHashSet());
+        this.fasStub = new FileAccessServiceStub(typeRegistry);
+        this.bean.setFileAccessHelper(new FileAccessUtils(this.fasStub.createStorageFacade()));
+
+        createFiles();
+    }
+
+    private void createFiles() throws IOException {
+        this.rawFile = writeTempFile("raw-data", ".data");
+        this.derivedFile = writeTempFile("raw-data", ".data");
+        this.supplementalFile = writeTempFile("raw-data", ".data");
+    }
+
+    private File writeTempFile(String name, String suffix) throws IOException {
+        final File file = File.createTempFile(name, suffix);
+        FileUtils.writeByteArrayToFile(file, TEST_DATA.getBytes());
+        return file;
     }
 
     @After
     public void closeTx() {
+        FileUtils.deleteQuietly(this.rawFile);
+        FileUtils.deleteQuietly(this.derivedFile);
+        FileUtils.deleteQuietly(this.supplementalFile);
+
         this.tx.rollback();
     }
 
@@ -240,36 +282,31 @@ public class GeoSoftExporterBeanTest extends AbstractHibernateTest {
         p.setDescription("data proc desc");
         pa.setProtocol(p);
         rawData.getProtocolApplications().add(pa);
-        final CaArrayFile rawFile = new CaArrayFile();
-        rawFile.setCompressedSize(1024);
-        rawFile.setUncompressedSize(1024 * 2);
-        rawFile.setName("raw_file.data");
-        rawFile.setFileStatus(FileStatus.IMPORTED);
-        rawFile.setDataHandle(DUMMY_HANDLE);
-        rawData.setDataFile(rawFile);
+        final CaArrayFile rawCaArrayFile = this.fasStub.add(this.rawFile);
+        rawCaArrayFile.setUncompressedSize(TEST_DATA.getBytes().length);
+        rawCaArrayFile.setName("raw_file.data");
+        rawCaArrayFile.setFileStatus(FileStatus.IMPORTED);
+        rawData.setDataFile(rawCaArrayFile);
         h.getRawDataCollection().add(rawData);
         final DerivedArrayData d = new DerivedArrayData();
-        final CaArrayFile derFile = new CaArrayFile();
-        derFile.setFileType(FileType.AFFYMETRIX_CHP);
-        derFile.setName("derived_file.data");
-        derFile.setCompressedSize(1024);
-        derFile.setUncompressedSize(1024 * 2);
-        derFile.setFileStatus(FileStatus.IMPORTED);
-        derFile.setDataHandle(DUMMY_HANDLE);
-        d.setDataFile(derFile);
+        final CaArrayFile derCaArrayFile = this.fasStub.add(this.derivedFile);
+        derCaArrayFile.setFileType(AFFYMETRIX_CHP);
+        derCaArrayFile.setName("derived_file.data");
+        derCaArrayFile.setCompressedSize(1024);
+        derCaArrayFile.setUncompressedSize(TEST_DATA.getBytes().length);
+        derCaArrayFile.setFileStatus(FileStatus.IMPORTED);
+        d.setDataFile(derCaArrayFile);
         h.getDerivedDataCollection().add(d);
 
-        final CaArrayFile suppFile = new CaArrayFile();
-        suppFile.setFileType(FileType.AFFYMETRIX_CHP);
-        suppFile.setName("supplimental.data");
-        suppFile.setCompressedSize(1024);
-        suppFile.setUncompressedSize(1024 * 2);
-        suppFile.setFileStatus(FileStatus.IMPORTED);
-        suppFile.setDataHandle(DUMMY_HANDLE);
+        final CaArrayFile suppCaArrayFile = this.fasStub.add(this.supplementalFile);
+        suppCaArrayFile.setName("supplimental.data");
+        suppCaArrayFile.setCompressedSize(1024);
+        suppCaArrayFile.setUncompressedSize(TEST_DATA.getBytes().length);
+        suppCaArrayFile.setFileStatus(FileStatus.IMPORTED);
         final Field supplementalFilesField = Project.class.getDeclaredField("supplementalFiles");
         supplementalFilesField.setAccessible(true);
         final SortedSet<CaArrayFile> supplementalFiles = (SortedSet<CaArrayFile>) supplementalFilesField.get(prj);
-        supplementalFiles.add(suppFile);
+        supplementalFiles.add(suppCaArrayFile);
 
         final Category ca = this.vocab.getCategory(src, "test-cat");
         final UserDefinedCharacteristic cha = new UserDefinedCharacteristic(ca, "test-val", type);

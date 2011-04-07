@@ -82,99 +82,79 @@
  */
 package gov.nih.nci.caarray.platforms.unparsed;
 
+import gov.nih.nci.caarray.dataStorage.DataStorageFacade;
 import gov.nih.nci.caarray.domain.LSID;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
 import gov.nih.nci.caarray.domain.data.DataSet;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
+import gov.nih.nci.caarray.domain.file.FileCategory;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
-import gov.nih.nci.caarray.platforms.spi.AbstractDataFileHandler;
+import gov.nih.nci.caarray.platforms.AbstractDataFileHandler;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 
 import java.util.Collections;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
+import com.google.common.collect.Sets;
 import com.google.inject.Inject;
-import gov.nih.nci.caarray.domain.file.CaArrayFile;
-import gov.nih.nci.caarray.platforms.spi.PlatformFileReadException;
-import org.apache.commons.io.FilenameUtils;
 
 /**
  * Handler for unparsed data formats.
  */
-class UnparsedDataHandler extends AbstractDataFileHandler {    
-    private static final Set<FileType> UNPARSED_FILE_TYPES = EnumSet.of(FileType.ILLUMINA_IDAT,
-            FileType.AFFYMETRIX_DAT, FileType.AGILENT_TSV, FileType.IMAGENE_TIF,
-            FileType.GEO_SOFT, FileType.GEO_GSM, FileType.SCANARRAY_CSV, FileType.ILLUMINA_RAW_TXT,
-            FileType.AFFYMETRIX_EXP, FileType.AFFYMETRIX_TXT, FileType.AFFYMETRIX_RPT, FileType.ILLUMINA_DERIVED_TXT,
-            FileType.IMAGENE_TXT, FileType.AGILENT_DERIVED_TXT, FileType.NIMBLEGEN_GFF, FileType.NIMBLEGEN_DERIVED_TXT,
-            FileType.NIMBLEGEN_RAW_TXT);
+class UnparsedDataHandler extends AbstractDataFileHandler {
+    private static final Set<FileType> SUPPORTED_TYPES = Sets.newHashSet(new FileType("ILLUMINA_IDAT",
+            FileCategory.RAW_DATA, false, "IDAT"), new FileType("AFFYMETRIX_DAT", FileCategory.RAW_DATA, false, "DAT"),
+            new FileType("AFFYMETRIX_EXP", FileCategory.DERIVED_DATA, false, "EXP"), new FileType("AFFYMETRIX_TXT",
+                    FileCategory.DERIVED_DATA, false), new FileType("AFFYMETRIX_RPT", FileCategory.DERIVED_DATA, false,
+                    "RPT"), new FileType("IMAGENE_TIF", FileCategory.RAW_DATA, false), new FileType("GEO_SOFT",
+                    FileCategory.RAW_DATA, false), new FileType("GEO_GSM", FileCategory.RAW_DATA, false), new FileType(
+                    "SCANARRAY_CSV", FileCategory.RAW_DATA, false), new FileType("ILLUMINA_RAW_TXT",
+                    FileCategory.RAW_DATA, false), new FileType("ILLUMINA_DERIVED_TXT", FileCategory.DERIVED_DATA,
+                    false), new FileType("IMAGENE_TXT", FileCategory.DERIVED_DATA, false), new FileType(
+                    "AGILENT_DERIVED_TXT", FileCategory.DERIVED_DATA, false), new FileType("NIMBLEGEN_GFF",
+                    FileCategory.DERIVED_DATA, false, "GFF"), new FileType("NIMBLEGEN_DERIVED_TXT",
+                    FileCategory.DERIVED_DATA, false), new FileType("NIMBLEGEN_RAW_TXT", FileCategory.RAW_DATA, false),
+            new FileType("AGILENT_TSV", FileCategory.RAW_DATA, false, "TSV"), new FileType("MAGE_TAB_DATA_MATRIX",
+                    FileCategory.RAW_DATA, false, true, "DATA"));
 
     @Inject
-    UnparsedDataHandler() {
-        super(null);
+    UnparsedDataHandler(DataStorageFacade dataStorageFacade) {
+        super(dataStorageFacade);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public boolean openFile(CaArrayFile dataFile) throws PlatformFileReadException {
-        if (!acceptFileType(dataFile.getFileType())) {
-            return false;
-        }
-
-        this.setCaArrayFile(dataFile);
-        return true;
+    public Set<FileType> getSupportedTypes() {
+        return SUPPORTED_TYPES;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public void closeFiles() {
-        this.setCaArrayFile(null);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<String> getHybridizationNames() {
-        return Collections.singletonList(FilenameUtils.getBaseName(getCaArrayFile().getName()));
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected boolean acceptFileType(FileType type) {
-        return UNPARSED_FILE_TYPES.contains(type);
-    }
-    
     public ArrayDataTypeDescriptor getArrayDataTypeDescriptor() {
         return UnsupportedDataFormatDescriptor.INSTANCE;
     }
 
+    @Override
     public QuantitationTypeDescriptor[] getQuantitationTypeDescriptors() {
         return new QuantitationTypeDescriptor[] {};
     }
 
+    @Override
     public void loadData(DataSet dataSet, List<QuantitationType> types, ArrayDesign design) {
         // no-op, data parsing not supported for the current type
     }
 
+    @Override
     public void validate(MageTabDocumentSet mTabSet, FileValidationResult result, ArrayDesign design) {
         // no-op, data parsing not supported for the current type
     }
-    
+
     /**
      * {@inheritDoc}
-     */        
+     */
+    @Override
     public boolean requiresMageTab() {
         return false;
     }
@@ -182,11 +162,8 @@ class UnparsedDataHandler extends AbstractDataFileHandler {
     /**
      * {@inheritDoc}
      */
+    @Override
     public List<LSID> getReferencedArrayDesignCandidateIds() {
         return Collections.emptyList();
-    }
-    
-    public boolean parsesData() {
-        return false;
     }
 }

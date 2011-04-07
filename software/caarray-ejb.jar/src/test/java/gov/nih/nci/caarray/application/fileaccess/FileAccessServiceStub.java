@@ -82,30 +82,60 @@
  */
 package gov.nih.nci.caarray.application.fileaccess;
 
+import gov.nih.nci.caarray.dataStorage.DataStorageFacade;
+import gov.nih.nci.caarray.dataStorage.DataStoreException;
+import gov.nih.nci.caarray.dataStorage.StorageMetadata;
+import gov.nih.nci.caarray.dataStorage.UnsupportedSchemeException;
+import gov.nih.nci.caarray.dataStorage.spi.DataStorage;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
-import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
-import gov.nih.nci.caarray.domain.file.FileExtension;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
+import gov.nih.nci.caarray.domain.file.FileTypeRegistry;
+import gov.nih.nci.caarray.domain.file.FileTypeRegistryImpl;
+import gov.nih.nci.caarray.platforms.spi.DataFileHandler;
+import gov.nih.nci.caarray.platforms.spi.DesignFileHandler;
+import gov.nih.nci.caarray.util.CaArrayUtils;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.input.AutoCloseInputStream;
 import org.apache.commons.lang.BooleanUtils;
+
+import com.google.inject.Inject;
+import com.google.inject.internal.Lists;
+import com.google.inject.internal.Maps;
 
 /**
  * Stub implementation for testing.
  */
-public class FileAccessServiceStub implements FileAccessService {
+public class FileAccessServiceStub implements FileAccessService, DataStorage {
+    public static final String SCHEME = "fsstub";
+
     private final Map<String, File> nameToFile = new HashMap<String, File>();
     private final Map<String, Boolean> deletables = new HashMap<String, Boolean>();
     private int savedFileCount = 0;
     private int removedFileCount = 0;
+    private FileTypeRegistry typeRegistry;
+
+    public FileAccessServiceStub() {
+        this(new FileTypeRegistryImpl(Collections.<DataFileHandler> emptySet(),
+                Collections.<DesignFileHandler> emptySet()));
+    }
+
+    @Inject
+    public FileAccessServiceStub(FileTypeRegistry typeRegistry) {
+        this.typeRegistry = typeRegistry;
+    }
 
     @Override
     public CaArrayFile add(File file) {
@@ -114,38 +144,20 @@ public class FileAccessServiceStub implements FileAccessService {
         caArrayFile.setFileStatus(FileStatus.UPLOADED);
         setTypeFromExtension(caArrayFile, file.getName());
         this.nameToFile.put(caArrayFile.getName(), file);
+        caArrayFile.setDataHandle(CaArrayUtils.makeUriQuietly(SCHEME, file.getName()));
         return caArrayFile;
     }
 
     private void setTypeFromExtension(CaArrayFile caArrayFile, String filename) {
-        final FileType type = FileExtension.getTypeFromExtension(filename);
+        final FileType type = this.typeRegistry.getTypeFromExtension(filename);
         if (type != null) {
             caArrayFile.setFileType(type);
         }
     }
 
-    public File getFile(CaArrayFile caArrayFile) {
-        return getFile(caArrayFile, true);
-    }
-
-    public File getFile(CaArrayFile caArrayFile, boolean uncompressed) {
-        if (this.nameToFile.containsKey(caArrayFile.getName())) {
-            return this.nameToFile.get(caArrayFile.getName());
-        }
-        return new File(caArrayFile.getName());
-    }
-
     public File createFile(String fileName) {
         this.savedFileCount++;
         return new File(fileName);
-    }
-
-    public Set<File> getFiles(CaArrayFileSet fileSet) {
-        final Set<File> files = new HashSet<File>();
-        for (final CaArrayFile caArrayFile : fileSet.getFiles()) {
-            files.add(getFile(caArrayFile));
-        }
-        return files;
     }
 
     @Override
@@ -161,6 +173,9 @@ public class FileAccessServiceStub implements FileAccessService {
     public boolean remove(CaArrayFile caArrayFile) {
         if (BooleanUtils.isTrue(this.deletables.get(caArrayFile.getName()))) {
             this.removedFileCount++;
+        }
+        if (caArrayFile.getProject() != null) {
+            caArrayFile.getProject().getFiles().remove(caArrayFile);
         }
         return false;
     }
@@ -243,5 +258,93 @@ public class FileAccessServiceStub implements FileAccessService {
         caArrayFile.setFileStatus(FileStatus.UPLOADED);
         this.nameToFile.put(caArrayFile.getName(), new File(filename));
         return caArrayFile;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void synchronizeDataStorage() {
+        // no-op
+    }
+
+    @Override
+    public StorageMetadata add(InputStream stream, boolean compressed) throws DataStoreException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Iterable<StorageMetadata> list() {
+        final List<StorageMetadata> metadatas = Lists.newArrayList();
+        for (final Map.Entry<String, File> fileEntry : this.nameToFile.entrySet()) {
+            final StorageMetadata metadata = new StorageMetadata();
+            metadata.setHandle(CaArrayUtils.makeUriQuietly(SCHEME, fileEntry.getKey()));
+            metadata.setCreationTimestamp(new Date(fileEntry.getValue().lastModified()));
+            metadata.setCompressedSize(fileEntry.getValue().length());
+            metadata.setUncompressedSize(fileEntry.getValue().length());
+            metadatas.add(metadata);
+        }
+        return metadatas;
+    }
+
+    @Override
+    public File openFile(URI handle, boolean compressed) throws DataStoreException {
+        checkScheme(handle);
+        return this.nameToFile.get(handle.getSchemeSpecificPart());
+    }
+
+    @Override
+    public InputStream openInputStream(URI handle, boolean compressed) throws DataStoreException {
+        checkScheme(handle);
+        try {
+            return new AutoCloseInputStream(FileUtils.openInputStream(openFile(handle, compressed)));
+        } catch (final IOException e) {
+            throw new DataStoreException("Could not open input stream for data " + handle + ":", e);
+        }
+    }
+
+    @Override
+    public void releaseFile(URI handle, boolean compressed) {
+        // no-op
+    }
+
+    @Override
+    public void remove(Collection<URI> handles) throws DataStoreException {
+        // no-op
+    }
+
+    @Override
+    public void remove(URI handle) throws DataStoreException {
+        // no-op
+    }
+
+    private void checkScheme(URI handle) {
+        if (!SCHEME.equals(handle.getScheme())) {
+            throw new UnsupportedSchemeException("Unsupported scheme: " + handle.getScheme());
+        }
+    }
+
+    /**
+     * @param typeRegistry the typeRegistry to set
+     */
+    public void setTypeRegistry(FileTypeRegistry typeRegistry) {
+        this.typeRegistry = typeRegistry;
+    }
+
+    /**
+     * @return the typeRegistry
+     */
+    public FileTypeRegistry getTypeRegistry() {
+        return this.typeRegistry;
+    }
+
+    /**
+     * @return a DataStorageFacade that knows about a single storage engine - this stub class
+     */
+    public DataStorageFacade createStorageFacade() {
+        final Map<String, DataStorage> engines = Maps.newHashMap();
+        engines.put(FileAccessServiceStub.SCHEME, this);
+        return new DataStorageFacade(engines, FileAccessServiceStub.SCHEME, FileAccessServiceStub.SCHEME);
     }
 }

@@ -95,6 +95,7 @@ import gov.nih.nci.caarray.domain.data.HybridizationData;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileType;
+import gov.nih.nci.caarray.domain.file.FileTypeRegistry;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.search.AdHocSortCriterion;
@@ -414,9 +415,9 @@ public class DataServiceBean extends BaseV1_0ExternalService implements DataServ
             final MageTabFileSet mageTabSet = new MageTabFileSet();
             final MageTabDocumentSet docSet = exportToMageTab(experiment);
             mageTabSet.setIdf(toFileContents(docSet.getIdfDocuments().iterator().next().getFile().getAsFile(),
-                    FileType.MAGE_TAB_IDF));
+                    FileTypeRegistry.MAGE_TAB_IDF));
             mageTabSet.setSdrf(toFileContents(docSet.getSdrfDocuments().iterator().next().getFile().getAsFile(),
-                    FileType.MAGE_TAB_SDRF));
+                    FileTypeRegistry.MAGE_TAB_SDRF));
 
             final List<CaArrayFile> dataFiles = getDataFilesReferencedByMageTab(docSet, experiment);
             mapCollection(dataFiles, mageTabSet.getDataFiles(), File.class);
@@ -434,7 +435,6 @@ public class DataServiceBean extends BaseV1_0ExternalService implements DataServ
         final String sdrfFileName = baseFileName + ".sdrf";
         final java.io.File idfFile = this.temporaryFileCache.createFile(idfFileName);
         final java.io.File sdrfFile = this.temporaryFileCache.createFile(sdrfFileName);
-
         // Translate the experiment and export to the temporary files.
         return ServiceLocatorFactory.getMageTabExporter().exportToMageTab(experiment, idfFile, sdrfFile);
     }

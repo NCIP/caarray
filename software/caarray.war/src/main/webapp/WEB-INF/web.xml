@@ -56,7 +56,13 @@
         <param-name>ldap.install</param-name>
         <param-value>@ldap.install@</param-value>
     </context-param>
-
+	<context-param>
+            <param-name>contextConfigLocation</param-name>
+            <param-value>
+                classpath:/applicationContext-plugins.xml
+            </param-value>
+    </context-param>
+    
     <filter>
         <filter-name>temporaryFilesFilter</filter-name>
         <filter-class>gov.nih.nci.caarray.web.filter.TemporaryFilesCleanupFilter</filter-class>
@@ -85,6 +91,154 @@
         <filter-name>action2-cleanup</filter-name>
         <filter-class>org.apache.struts2.dispatcher.ActionContextCleanUp</filter-class>
     </filter>
+    
+    <filter>
+        <filter-name>filter-plugin-dispatcher-after-encoding-request</filter-name>
+        <filter-class>com.atlassian.plugin.servlet.filter.ServletFilterModuleContainerFilter</filter-class>
+        <init-param>
+            <param-name>location</param-name>
+            <param-value>after-encoding</param-value>
+        </init-param>
+        <init-param>
+            <param-name>dispatcher</param-name>
+            <param-value>REQUEST</param-value>
+        </init-param>
+    </filter>
+    <filter>
+        <filter-name>filter-plugin-dispatcher-after-encoding-forward</filter-name>
+        <filter-class>com.atlassian.plugin.servlet.filter.ServletFilterModuleContainerFilter</filter-class>
+        <init-param>
+            <param-name>location</param-name>
+            <param-value>after-encoding</param-value>
+        </init-param>
+        <init-param>
+            <param-name>dispatcher</param-name>
+            <param-value>FORWARD</param-value>
+        </init-param>
+    </filter>
+    <filter>
+        <filter-name>filter-plugin-dispatcher-after-encoding-include</filter-name>
+        <filter-class>com.atlassian.plugin.servlet.filter.ServletFilterModuleContainerFilter</filter-class>
+        <init-param>
+            <param-name>location</param-name>
+            <param-value>after-encoding</param-value>
+        </init-param>
+        <init-param>
+            <param-name>dispatcher</param-name>
+            <param-value>INCLUDE</param-value>
+        </init-param>
+    </filter>
+    <filter>
+        <filter-name>filter-plugin-dispatcher-after-encoding-error</filter-name>
+        <filter-class>com.atlassian.plugin.servlet.filter.ServletFilterModuleContainerFilter</filter-class>
+        <init-param>
+            <param-name>location</param-name>
+            <param-value>after-encoding</param-value>
+        </init-param>
+        <init-param>
+            <param-name>dispatcher</param-name>
+            <param-value>ERROR</param-value>
+        </init-param>
+    </filter>
+    
+    <filter>
+        <filter-name>filter-plugin-dispatcher-before-login-request</filter-name>
+        <filter-class>com.atlassian.plugin.servlet.filter.ServletFilterModuleContainerFilter</filter-class>
+        <init-param>
+            <param-name>location</param-name>
+            <param-value>before-login</param-value>
+        </init-param>
+        <init-param>
+            <param-name>dispatcher</param-name>
+            <param-value>REQUEST</param-value>
+        </init-param>
+    </filter>
+    <filter>
+        <filter-name>filter-plugin-dispatcher-before-login-forward</filter-name>
+        <filter-class>com.atlassian.plugin.servlet.filter.ServletFilterModuleContainerFilter</filter-class>
+        <init-param>
+            <param-name>location</param-name>
+            <param-value>before-login</param-value>
+        </init-param>
+        <init-param>
+            <param-name>dispatcher</param-name>
+            <param-value>FORWARD</param-value>
+        </init-param>
+    </filter>
+    <filter>
+        <filter-name>filter-plugin-dispatcher-before-login-include</filter-name>
+        <filter-class>com.atlassian.plugin.servlet.filter.ServletFilterModuleContainerFilter</filter-class>
+        <init-param>
+            <param-name>location</param-name>
+            <param-value>before-login</param-value>
+        </init-param>
+        <init-param>
+            <param-name>dispatcher</param-name>
+            <param-value>INCLUDE</param-value>
+        </init-param>
+    </filter>
+    <filter>
+        <filter-name>filter-plugin-dispatcher-before-login-error</filter-name>
+        <filter-class>com.atlassian.plugin.servlet.filter.ServletFilterModuleContainerFilter</filter-class>
+        <init-param>
+            <param-name>location</param-name>
+            <param-value>before-login</param-value>
+        </init-param>
+        <init-param>
+            <param-name>dispatcher</param-name>
+            <param-value>ERROR</param-value>
+        </init-param>
+    </filter>
+    
+    <filter>
+        <filter-name>filter-plugin-dispatcher-before-decoration-request</filter-name>
+        <filter-class>com.atlassian.plugin.servlet.filter.ServletFilterModuleContainerFilter</filter-class>
+        <init-param>
+            <param-name>location</param-name>
+            <param-value>before-decoration</param-value>
+        </init-param>
+        <init-param>
+            <param-name>dispatcher</param-name>
+            <param-value>REQUEST</param-value>
+        </init-param>
+    </filter>
+    <filter>
+        <filter-name>filter-plugin-dispatcher-before-decoration-forward</filter-name>
+        <filter-class>com.atlassian.plugin.servlet.filter.ServletFilterModuleContainerFilter</filter-class>
+        <init-param>
+            <param-name>location</param-name>
+            <param-value>before-decoration</param-value>
+        </init-param>
+        <init-param>
+            <param-name>dispatcher</param-name>
+            <param-value>FORWARD</param-value>
+        </init-param>
+    </filter>
+    <filter>
+        <filter-name>filter-plugin-dispatcher-before-decoration-include</filter-name>
+        <filter-class>com.atlassian.plugin.servlet.filter.ServletFilterModuleContainerFilter</filter-class>
+        <init-param>
+            <param-name>location</param-name>
+            <param-value>before-decoration</param-value>
+        </init-param>
+        <init-param>
+            <param-name>dispatcher</param-name>
+            <param-value>INCLUDE</param-value>
+        </init-param>
+    </filter>
+    <filter>
+        <filter-name>filter-plugin-dispatcher-before-decoration-error</filter-name>
+        <filter-class>com.atlassian.plugin.servlet.filter.ServletFilterModuleContainerFilter</filter-class>
+        <init-param>
+            <param-name>location</param-name>
+            <param-value>before-decoration</param-value>
+        </init-param>
+        <init-param>
+            <param-name>dispatcher</param-name>
+            <param-value>ERROR</param-value>
+        </init-param>
+    </filter>
+    
     <filter>
         <filter-name>sitemesh</filter-name>
         <filter-class>com.opensymphony.module.sitemesh.filter.PageFilter</filter-class>
@@ -101,6 +255,57 @@
             <param-value>true</param-value>
         </init-param>
     </filter>
+    
+        <filter>
+        <filter-name>filter-plugin-dispatcher-before-dispatch-request</filter-name>
+        <filter-class>com.atlassian.plugin.servlet.filter.ServletFilterModuleContainerFilter</filter-class>
+        <init-param>
+            <param-name>location</param-name>
+            <param-value>before-dispatch</param-value>
+        </init-param>
+        <init-param>
+            <param-name>dispatcher</param-name>
+            <param-value>REQUEST</param-value>
+        </init-param>
+    </filter>
+    <filter>
+        <filter-name>filter-plugin-dispatcher-before-dispatch-forward</filter-name>
+        <filter-class>com.atlassian.plugin.servlet.filter.ServletFilterModuleContainerFilter</filter-class>
+        <init-param>
+            <param-name>location</param-name>
+            <param-value>before-dispatch</param-value>
+        </init-param>
+        <init-param>
+            <param-name>dispatcher</param-name>
+            <param-value>FORWARD</param-value>
+        </init-param>
+    </filter>
+    <filter>
+        <filter-name>filter-plugin-dispatcher-before-dispatch-include</filter-name>
+        <filter-class>com.atlassian.plugin.servlet.filter.ServletFilterModuleContainerFilter</filter-class>
+        <init-param>
+            <param-name>location</param-name>
+            <param-value>before-dispatch</param-value>
+        </init-param>
+        <init-param>
+            <param-name>dispatcher</param-name>
+            <param-value>INCLUDE</param-value>
+        </init-param>
+    </filter>
+    <filter>
+        <filter-name>filter-plugin-dispatcher-before-dispatch-error</filter-name>
+        <filter-class>com.atlassian.plugin.servlet.filter.ServletFilterModuleContainerFilter</filter-class>
+        <init-param>
+            <param-name>location</param-name>
+            <param-value>before-dispatch</param-value>
+        </init-param>
+        <init-param>
+            <param-name>dispatcher</param-name>
+            <param-value>ERROR</param-value>
+        </init-param>
+    </filter>
+    
+    
     <filter>
         <filter-name>sessionFixation</filter-name>
         <filter-class>com.fiveamsolutions.nci.commons.web.filter.SessionFixationProtectionFilter</filter-class>
@@ -110,6 +315,27 @@
            <filter-name>urlrewrite</filter-name>
            <url-pattern>/*</url-pattern>
     </filter-mapping>
+    <filter-mapping>
+        <filter-name>filter-plugin-dispatcher-after-encoding-request</filter-name>
+        <url-pattern>/*</url-pattern>
+        <dispatcher>REQUEST</dispatcher>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>filter-plugin-dispatcher-after-encoding-forward</filter-name>
+        <url-pattern>/*</url-pattern>
+        <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>filter-plugin-dispatcher-after-encoding-include</filter-name>
+        <url-pattern>/*</url-pattern>
+        <dispatcher>INCLUDE</dispatcher>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>filter-plugin-dispatcher-after-encoding-error</filter-name>
+        <url-pattern>/*</url-pattern>
+        <dispatcher>ERROR</dispatcher>
+    </filter-mapping>
+
     <filter-mapping>
         <filter-name>sessionFixation</filter-name>
         <url-pattern>*.action</url-pattern>
@@ -151,6 +377,27 @@
         <url-pattern>/logos/*</url-pattern>
     </filter-mapping>
     <filter-mapping>
+        <filter-name>filter-plugin-dispatcher-before-login-request</filter-name>
+        <url-pattern>/*</url-pattern>
+        <dispatcher>REQUEST</dispatcher>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>filter-plugin-dispatcher-before-login-forward</filter-name>
+        <url-pattern>/*</url-pattern>
+        <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>filter-plugin-dispatcher-before-login-include</filter-name>
+        <url-pattern>/*</url-pattern>
+        <dispatcher>INCLUDE</dispatcher>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>filter-plugin-dispatcher-before-login-error</filter-name>
+        <url-pattern>/*</url-pattern>
+        <dispatcher>ERROR</dispatcher>
+    </filter-mapping>
+    
+    <filter-mapping>
         <filter-name>userFilter</filter-name>
         <url-pattern>/*</url-pattern>
         <dispatcher>REQUEST</dispatcher>
@@ -162,10 +409,54 @@
         <dispatcher>REQUEST</dispatcher>
         <dispatcher>FORWARD</dispatcher>
     </filter-mapping>
+    
+    <filter-mapping>
+        <filter-name>filter-plugin-dispatcher-before-decoration-request</filter-name>
+        <url-pattern>/*</url-pattern>
+        <dispatcher>REQUEST</dispatcher>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>filter-plugin-dispatcher-before-decoration-forward</filter-name>
+        <url-pattern>/*</url-pattern>
+        <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>filter-plugin-dispatcher-before-decoration-include</filter-name>
+        <url-pattern>/*</url-pattern>
+        <dispatcher>INCLUDE</dispatcher>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>filter-plugin-dispatcher-before-decoration-error</filter-name>
+        <url-pattern>/*</url-pattern>
+        <dispatcher>ERROR</dispatcher>
+    </filter-mapping>
+    
     <filter-mapping>
         <filter-name>sitemesh</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
+    
+    <filter-mapping>
+        <filter-name>filter-plugin-dispatcher-before-dispatch-request</filter-name>
+        <url-pattern>/*</url-pattern>
+        <dispatcher>REQUEST</dispatcher>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>filter-plugin-dispatcher-before-dispatch-forward</filter-name>
+        <url-pattern>/*</url-pattern>
+        <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>filter-plugin-dispatcher-before-dispatch-include</filter-name>
+        <url-pattern>/*</url-pattern>
+        <dispatcher>INCLUDE</dispatcher>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>filter-plugin-dispatcher-before-dispatch-error</filter-name>
+        <url-pattern>/*</url-pattern>
+        <dispatcher>ERROR</dispatcher>
+    </filter-mapping>
+    
     <filter-mapping>
         <filter-name>struts2</filter-name>
         <url-pattern>/*</url-pattern>
@@ -191,9 +482,20 @@
             <param-value>true</param-value>
         </init-param>
     </servlet>
+    
+    <servlet>
+        <servlet-name>plugins</servlet-name>
+        <servlet-class>com.atlassian.plugin.servlet.ServletModuleContainerServlet</servlet-class>
+    </servlet>
+    
     <servlet-mapping>
         <servlet-name>dwr</servlet-name>
         <url-pattern>/dwr/*</url-pattern>
+    </servlet-mapping>
+    
+    <servlet-mapping>
+        <servlet-name>plugins</servlet-name>
+        <url-pattern>/plugins/servlet/*</url-pattern>
     </servlet-mapping>
     
     <session-config>

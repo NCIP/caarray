@@ -90,18 +90,24 @@ import gov.nih.nci.caarray.dataStorage.DataStoreException;
 import gov.nih.nci.caarray.dataStorage.StorageMetadata;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
-import gov.nih.nci.caarray.domain.file.FileExtension;
 import gov.nih.nci.caarray.domain.file.FileStatus;
-import gov.nih.nci.caarray.domain.file.FileType;
+import gov.nih.nci.caarray.domain.file.FileTypeRegistry;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.injection.InjectionInterceptor;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.util.Enumeration;
+import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import javax.ejb.Local;
 import javax.ejb.Stateless;
@@ -121,12 +127,15 @@ import com.google.inject.Inject;
 @Stateless
 @Interceptors({ ExceptionLoggingInterceptor.class, InjectionInterceptor.class })
 public class FileAccessServiceBean implements FileAccessService {
+    /** Minimum age of a data block that can be removed if it is unreferenced */
+    public static final int MIN_UNREFERENCABLE_DATA_AGE = 300000;
+
     private static final Logger LOG = Logger.getLogger(FileAccessServiceBean.class);
-    private static final int FIVE_MINS = 300000;
 
     private FileDao fileDao;
     private ArrayDao arrayDao;
     private DataStorageFacade dataStorageFacade;
+    private FileTypeRegistry typeRegistry;
 
     /**
      * 
@@ -134,10 +143,12 @@ public class FileAccessServiceBean implements FileAccessService {
      * @param arrayDao the ArrayDao dependency
      */
     @Inject
-    public void setDependencies(FileDao fileDao, ArrayDao arrayDao, DataStorageFacade fileStorageFacade) {
+    public void setDependencies(FileDao fileDao, ArrayDao arrayDao, DataStorageFacade fileStorageFacade,
+            FileTypeRegistry typeRegistry) {
         this.fileDao = fileDao;
         this.arrayDao = arrayDao;
         this.dataStorageFacade = fileStorageFacade;
+        this.typeRegistry = typeRegistry;
     }
 
     /**
@@ -189,7 +200,7 @@ public class FileAccessServiceBean implements FileAccessService {
         final CaArrayFile caArrayFile = new CaArrayFile();
         caArrayFile.setFileStatus(FileStatus.UPLOADED);
         caArrayFile.setName(filename);
-        setTypeFromExtension(caArrayFile, filename);
+        caArrayFile.setFileType(this.typeRegistry.getTypeFromExtension(filename));
         return caArrayFile;
     }
 
@@ -200,14 +211,12 @@ public class FileAccessServiceBean implements FileAccessService {
     public boolean remove(CaArrayFile caArrayFile) {
         LogUtil.logSubsystemEntry(LOG, caArrayFile);
 
-        final AbstractArrayData data = this.arrayDao.getArrayData(caArrayFile.getId());
         if (caArrayFile.getProject() != null
                 && !this.fileDao.getDeletableFiles(caArrayFile.getProject().getId()).contains(caArrayFile)) {
             return false;
         }
 
-        // TODO: verify this is the right thing to do - should we be removing a file's associated
-        // array data entry
+        final AbstractArrayData data = this.arrayDao.getArrayData(caArrayFile.getId());
         if (data != null) {
             for (final Hybridization h : data.getHybridizations()) {
                 h.removeArrayData(data);
@@ -223,13 +232,6 @@ public class FileAccessServiceBean implements FileAccessService {
         return true;
     }
 
-    private void setTypeFromExtension(CaArrayFile caArrayFile, String filename) {
-        final FileType type = FileExtension.getTypeFromExtension(filename);
-        if (type != null) {
-            caArrayFile.setFileType(type);
-        }
-    }
-
     /**
      * {@inheritDoc}
      */
@@ -237,12 +239,49 @@ public class FileAccessServiceBean implements FileAccessService {
     public void synchronizeDataStorage() {
         final Set<URI> references = getActiveReferences();
         LOG.debug("Currently active references:" + references);
-        this.dataStorageFacade.removeUnreferencedData(references, FIVE_MINS);
+        this.dataStorageFacade.removeUnreferencedData(references, MIN_UNREFERENCABLE_DATA_AGE);
     }
 
     private Set<URI> getActiveReferences() {
         final Set<URI> references = Sets.newHashSet(this.fileDao.getAllFileHandles());
         references.addAll(this.arrayDao.getAllParsedDataHandles());
         return references;
+    }
+
+    @SuppressWarnings("PMD.ExcessiveMethodLength")
+    public void unzipFiles(List<File> files, List<String> fileNames) {
+        try {
+            final Pattern p = Pattern.compile("\\.zip$");
+            int index = 0;
+            for (int i = 0; i < fileNames.size(); i++) {
+                final Matcher m = p.matcher(fileNames.get(i).toLowerCase());
+
+                if (m.find()) {
+                    final File file = files.get(i);
+                    final String fileName = file.getAbsolutePath();
+                    final String directoryPath = file.getParent();
+                    final ZipFile zipFile = new ZipFile(fileName);
+                    final Enumeration<? extends ZipEntry> entries = zipFile.entries();
+                    while (entries.hasMoreElements()) {
+                        final ZipEntry entry = entries.nextElement();
+                        final File entryFile = new File(directoryPath + "/" + entry.getName());
+
+                        final InputStream fileInputStream = zipFile.getInputStream(entry);
+                        final FileOutputStream fileOutputStream = new FileOutputStream(entryFile);
+                        IOUtils.copy(fileInputStream, fileOutputStream);
+                        IOUtils.closeQuietly(fileOutputStream);
+
+                        files.add(entryFile);
+                        fileNames.add(entry.getName());
+                    }
+                    zipFile.close();
+                    files.remove(index);
+                    fileNames.remove(index);
+                }
+                index++;
+            }
+        } catch (final IOException e) {
+            throw new FileAccessException("Couldn't unzip archive.", e);
+        }
     }
 }

@@ -21,7 +21,8 @@ and can be overridden via local.properties or -D on the ant command line.
     <resolvers>
         <!-- this is where you read from -->
         <chain name="ncicb-chain">
-            <!-- this is the local repository, in case don't have network access, or trying new modules -->
+			<!-- Local project level repo -->
+            <!-- this is the local copy of ncicb repository, in case don't have network access -->
             <filesystem name="local-repo" local="true" checkmodified="true">
                 <artifact pattern="${local.repo.dir}/[organisation]/[module]/[revision]/[artifact]-[revision].[ext]"/>
                 <ivy pattern="${local.repo.dir}/[organisation]/[module]/[revision]/ivy.xml"/>

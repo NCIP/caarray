@@ -96,20 +96,23 @@ public class UnparsedModule extends AbstractModule {
      * {@inheritDoc}
      */
     @Override
-    protected void configure() {        
+    protected void configure() {
         // data files
-        Multibinder<DataFileHandler> dataFileBinder = Multibinder.newSetBinder(binder(),
-                DataFileHandler.class);
+        final Multibinder<DataFileHandler> dataFileBinder = Multibinder.newSetBinder(binder(), DataFileHandler.class);
         dataFileBinder.addBinding().to(UnparsedDataHandler.class);
-        
+
+        // special fallback handler used to handle normally parsable files that can't temporarily be parsed due to
+        // missing or faulty designs. we bind it separately.
+        bind(FallbackUnparsedDataHandler.class);
+
         // design files
-        Multibinder<DesignFileHandler> designFileBinder = Multibinder.newSetBinder(binder(),
+        final Multibinder<DesignFileHandler> designFileBinder = Multibinder.newSetBinder(binder(),
                 DesignFileHandler.class);
         designFileBinder.addBinding().to(UnparsedArrayDesignFileHandler.class);
-        
-        //array data descriptors
-        Multibinder<ArrayDataTypeDescriptor> arrayDataDescriptorBinder = Multibinder.newSetBinder(binder(),
-                ArrayDataTypeDescriptor.class);       
+
+        // array data descriptors
+        final Multibinder<ArrayDataTypeDescriptor> arrayDataDescriptorBinder = Multibinder.newSetBinder(binder(),
+                ArrayDataTypeDescriptor.class);
         arrayDataDescriptorBinder.addBinding().toInstance(UnsupportedDataFormatDescriptor.INSTANCE);
     }
 }

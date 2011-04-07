@@ -82,31 +82,43 @@
  */package gov.nih.nci.caarray.platforms;
 
 import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
-import gov.nih.nci.caarray.util.CaArrayHibernateHelperFactory;
+
+import com.google.inject.Inject;
 
 /**
  * @author dkokotov
- *
+ * 
  */
 public class LocalSessionTransactionManager implements SessionTransactionManager {
-    private static final CaArrayHibernateHelper hibernateHelper = CaArrayHibernateHelperFactory.getCaArrayHibernateHelper(); 
+    private final CaArrayHibernateHelper hibernateHelper;
+
+    @Inject
+    public LocalSessionTransactionManager(CaArrayHibernateHelper hibernateHelper) {
+        this.hibernateHelper = hibernateHelper;
+    }
+
+    @Override
     public void beginTransaction() {
-        hibernateHelper.beginTransaction();
+        this.hibernateHelper.beginTransaction();
     }
 
+    @Override
     public void clearSession() {
-        hibernateHelper.getCurrentSession().clear();
+        this.hibernateHelper.getCurrentSession().clear();
     }
 
+    @Override
     public void commitTransaction() {
-        hibernateHelper.getCurrentSession().getTransaction().commit();
+        this.hibernateHelper.getCurrentSession().getTransaction().commit();
     }
 
+    @Override
     public void flushSession() {
-        hibernateHelper.getCurrentSession().clear();        
+        this.hibernateHelper.getCurrentSession().flush();
     }
 
+    @Override
     public void rollbackTransaction() {
-        hibernateHelper.getCurrentSession().getTransaction().rollback();
+        this.hibernateHelper.getCurrentSession().getTransaction().rollback();
     }
 }

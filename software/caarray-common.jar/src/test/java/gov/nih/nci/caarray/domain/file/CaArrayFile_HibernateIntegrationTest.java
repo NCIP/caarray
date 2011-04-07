@@ -92,7 +92,6 @@ import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.util.CaArrayUtils;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 
-import java.io.File;
 import java.net.URI;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -135,9 +134,9 @@ public class CaArrayFile_HibernateIntegrationTest extends AbstractCaArrayEntity_
             caArrayFile.getProject().getExperiment().setManufacturer(new Organization());
             save(caArrayFile.getProject());
         }
-        caArrayFile.setFileType(FileType.AFFYMETRIX_CDF);
+        caArrayFile.setFileType(FileTypeRegistry.MAGE_TAB_IDF);
         caArrayFile.setDataHandle(DUMMY_HANDLE);
-        caArrayFile.setValidationResult(new FileValidationResult(new File(caArrayFile.getName())));
+        caArrayFile.setValidationResult(new FileValidationResult());
     }
 
     @Override

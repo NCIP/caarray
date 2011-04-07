@@ -126,7 +126,7 @@ public class FilesystemDataStorage implements DataStorage {
     private final String baseDir;
 
     @Inject
-    public FilesystemDataStorage(@Named("dataStorage.fileSystem.baseDir") String baseDir) {
+    public FilesystemDataStorage(@Named(FileSystemStorageModule.BASE_DIR_KEY) String baseDir) {
         this.baseDir = baseDir;
     }
 

@@ -88,23 +88,24 @@ import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.platforms.spi.DataFileHandler;
 import gov.nih.nci.caarray.platforms.spi.PlatformFileReadException;
+import gov.nih.nci.caarray.platforms.unparsed.FallbackUnparsedDataHandler;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import com.google.inject.Inject;
-import gov.nih.nci.caarray.platforms.unparsed.FallbackUnparsedDataHandler;
+import com.google.inject.Provider;
 
 /**
- * Base class for array data helper classes that interface with the platform handlers. Contains
- * common functionality.
+ * Base class for array data helper classes that interface with the platform handlers. Contains common functionality.
  * 
  * @author dkokotov
  */
 abstract class AbstractArrayDataUtility {
     private final ArrayDao arrayDao;
     private final Set<DataFileHandler> handlers;
+    private final Provider<FallbackUnparsedDataHandler> fallbackHandlerProvider;
 
     /**
      * @param arrayDao
@@ -112,44 +113,43 @@ abstract class AbstractArrayDataUtility {
      * @param handlers
      */
     @Inject
-    AbstractArrayDataUtility(ArrayDao arrayDao, Set<DataFileHandler> handlers) {
+    AbstractArrayDataUtility(ArrayDao arrayDao, Set<DataFileHandler> handlers,
+            Provider<FallbackUnparsedDataHandler> fallbackHandlerProvider) {
         this.arrayDao = arrayDao;
         this.handlers = new HashSet<DataFileHandler>(handlers);
-    }    
+        this.fallbackHandlerProvider = fallbackHandlerProvider;
+    }
 
     /**
      * Find the appropriate data handler for the given data file, and initialize it.
      * 
      * @param caArrayFile the data file to be processed
-     * @return the DataFileHandler instance capable of processing that file. That handler will
-     * have been initialized with this file.
+     * @return the DataFileHandler instance capable of processing that file. That handler will have been initialized
+     *         with this file.
      */
     protected DataFileHandler getHandler(CaArrayFile caArrayFile) throws PlatformFileReadException {
-        DataFileHandler handler = getOpeningHandler(caArrayFile);
+        final DataFileHandler handler = getOpeningHandler(caArrayFile);
         if (handler == null) {
             throw new IllegalArgumentException("Unsupported type " + caArrayFile.getFileType());
         }
-        if (!handler.parsesData()) {
-            return handler;
-        }
-        ArrayDesign ad = getArrayDesign(caArrayFile, handler);
+        final ArrayDesign ad = getArrayDesign(caArrayFile, handler);
         if (ad == null || !ad.isImportedAndParsed()) {
             handler.closeFiles();
             return getUnparsedDataHandler(caArrayFile);
         }
-        return handler;        
+        return handler;
     }
 
     /**
-     * Find the array design corresponding to the given data file. Tries to determine the design from
-     * the file; if the file does not encode a design reference, tries to determine it based on the 
-     * designs associated with the experiment, if there is exactly one such design. 
+     * Find the array design corresponding to the given data file. Tries to determine the design from the file; if the
+     * file does not encode a design reference, tries to determine it based on the designs associated with the
+     * experiment, if there is exactly one such design.
      * 
      * @param caArrayFile the data file
      * @param handler the handler for the data file
-     * @return the array design corresponding to the file, or null if it is not found or could 
-     * not be determined uniquely from the file or experiment.
-     * @throws PlatformFileReadException 
+     * @return the array design corresponding to the file, or null if it is not found or could not be determined
+     *         uniquely from the file or experiment.
+     * @throws PlatformFileReadException
      * 
      */
     protected ArrayDesign getArrayDesign(CaArrayFile caArrayFile, DataFileHandler handler)
@@ -160,12 +160,12 @@ abstract class AbstractArrayDataUtility {
         }
         return ad;
     }
-    
+
     private ArrayDesign findArrayDesignFromFile(DataFileHandler handler) throws PlatformFileReadException {
-        List<LSID> designLsids = handler.getReferencedArrayDesignCandidateIds();
-        for (LSID lsid : designLsids) {
-            ArrayDesign ad = arrayDao.getArrayDesign(lsid.getAuthority(), lsid.getNamespace(), lsid
-                    .getObjectId());
+        final List<LSID> designLsids = handler.getReferencedArrayDesignCandidateIds();
+        for (final LSID lsid : designLsids) {
+            final ArrayDesign ad = this.arrayDao.getArrayDesign(lsid.getAuthority(), lsid.getNamespace(),
+                    lsid.getObjectId());
             if (ad != null) {
                 return ad;
             }
@@ -174,30 +174,30 @@ abstract class AbstractArrayDataUtility {
     }
 
     private ArrayDesign findArrayDesignFromExperiment(Experiment experiment) {
-        Set<ArrayDesign> experimentDesigns = experiment.getArrayDesigns();
+        final Set<ArrayDesign> experimentDesigns = experiment.getArrayDesigns();
         if (experimentDesigns.size() == 1) {
             return experimentDesigns.iterator().next();
         }
         return null;
     }
-    
+
     protected ArrayDao getArrayDao() {
         return this.arrayDao;
     }
 
     private DataFileHandler getUnparsedDataHandler(CaArrayFile caArrayFile) throws PlatformFileReadException {
-        DataFileHandler handler = new FallbackUnparsedDataHandler();
+        final DataFileHandler handler = this.fallbackHandlerProvider.get();
         handler.openFile(caArrayFile);
         return handler;
     }
 
     private DataFileHandler getOpeningHandler(CaArrayFile caArrayFile) throws PlatformFileReadException {
-        for (DataFileHandler handler : this.handlers) {
+        for (final DataFileHandler handler : this.handlers) {
             try {
                 if (handler.openFile(caArrayFile)) {
                     return handler;
                 }
-            } catch (PlatformFileReadException e) {
+            } catch (final PlatformFileReadException e) {
                 handler.closeFiles();
                 throw e;
             }

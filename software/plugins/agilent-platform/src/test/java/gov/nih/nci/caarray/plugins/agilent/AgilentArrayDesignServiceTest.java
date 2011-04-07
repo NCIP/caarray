@@ -130,6 +130,9 @@ public class AgilentArrayDesignServiceTest extends AbstractArrayDesignServiceTes
         assertEquals(0, design.getDesignDetails().getLogicalProbes().size());
 
         assertEquals(FileStatus.IMPORTED, design.getDesignFileSet().getStatus());
+        //this will be addressed with GForge issue:
+        //[#29984] need to fix incorrect probe groups return in ArrayDesignServiceTest.testImportDesign_AgilentGelm() test case.
+        //assertEquals("The number of probe groups in incorrect.", 2, design.getDesignDetails().getProbeGroups().size());
     }
 
     @Test

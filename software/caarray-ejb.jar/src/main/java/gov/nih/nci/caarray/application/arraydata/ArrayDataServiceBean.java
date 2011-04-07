@@ -100,7 +100,6 @@ import org.apache.log4j.Logger;
 
 import com.google.inject.Inject;
 
-
 /**
  * Entry point to the ArrayDataService subsystem.
  * 
@@ -112,12 +111,12 @@ import com.google.inject.Inject;
 @Interceptors(InjectionInterceptor.class)
 public class ArrayDataServiceBean implements ArrayDataService {
     private static final Logger LOG = Logger.getLogger(ArrayDataServiceBean.class);
-    
+
     private TypeRegistrationManager tm;
     private DataSetImporter dataSetImporter;
     private DataSetLoader loader;
     private DataFileValidator dataFileValidator;
-   
+
     /**
      * 
      * @param tm the TypeRegistrationManager dependency
@@ -128,6 +127,24 @@ public class ArrayDataServiceBean implements ArrayDataService {
     @Inject
     public void setDependencies(TypeRegistrationManager tm, DataSetImporter dataSetImporter, DataSetLoader loader,
             DataFileValidator dataFileValidator) {
+        LOG.debug("Constructing");
+        this.tm = tm;
+        this.dataSetImporter = dataSetImporter;
+        this.loader = loader;
+        this.dataFileValidator = dataFileValidator;
+    }
+
+    /**
+     * 
+     * @param tm the TypeRegistrationManager dependency
+     * @param dataSetImporter the DataSetImporter dependency
+     * @param loader the DataSetLoader dependency
+     * @param dataFileValidator the DataFileValidator dependency
+     */
+    @Inject
+    public void setPlatformDependencies(TypeRegistrationManager tm, DataSetImporter dataSetImporter,
+            DataSetLoader loader, DataFileValidator dataFileValidator) {
+        LOG.debug("Setting platform deps");
         this.tm = tm;
         this.dataSetImporter = dataSetImporter;
         this.loader = loader;
@@ -137,31 +154,35 @@ public class ArrayDataServiceBean implements ArrayDataService {
     /**
      * {@inheritDoc}
      */
+    @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public void initialize() {
         LogUtil.logSubsystemEntry(LOG);
-        tm.registerNewTypes();
+        this.tm.registerNewTypes();
         LogUtil.logSubsystemExit(LOG);
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public void importData(CaArrayFile caArrayFile, boolean createAnnnotation, DataImportOptions dataImportOptions)
             throws InvalidDataFileException {
         LogUtil.logSubsystemEntry(LOG, caArrayFile);
-        AbstractArrayData arrayData = dataSetImporter.importData(caArrayFile, dataImportOptions, createAnnnotation);
-        loader.load(arrayData);
+        final AbstractArrayData arrayData = this.dataSetImporter.importData(caArrayFile, dataImportOptions,
+                createAnnnotation);
+        this.loader.load(arrayData);
         LogUtil.logSubsystemExit(LOG);
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public FileValidationResult validate(CaArrayFile arrayDataFile, MageTabDocumentSet mTabSet, boolean reimport) {
-        dataFileValidator.validate(arrayDataFile, mTabSet, reimport);
+        this.dataFileValidator.validate(arrayDataFile, mTabSet, reimport);
         return arrayDataFile.getValidationResult();
     }
 }

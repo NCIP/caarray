@@ -3,7 +3,6 @@ package gov.nih.nci.caarray.web.helper;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessUtils;
 import gov.nih.nci.caarray.application.translation.geosoft.PackagingInfo;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
-import gov.nih.nci.caarray.injection.InjectorFactory;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -21,7 +20,7 @@ import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
 
-import com.google.inject.Injector;
+import com.google.inject.Inject;
 
 /**
  * Helper for actions that implement download of files.
@@ -32,6 +31,8 @@ import com.google.inject.Injector;
 public final class DownloadHelper {
     private static final String DOWNLOAD_CONTENT_TYPE = "application/zip";
     private static final Logger LOG = Logger.getLogger(DownloadHelper.class);
+    @Inject
+    private static FileAccessUtils fileAccessUtils;
 
     /**
      * an instance of a Comparator that compares CaArrayFile instances by name.
@@ -63,8 +64,6 @@ public final class DownloadHelper {
      */
     public static void downloadFiles(Collection<CaArrayFile> files, String baseFilename) throws IOException {
         final HttpServletResponse response = ServletActionContext.getResponse();
-        final Injector injector = InjectorFactory.getInjector();
-        final FileAccessUtils fileAccessUtils = injector.getInstance(FileAccessUtils.class);
 
         try {
             final PackagingInfo info = getPreferedPackageInfo(files, baseFilename);
@@ -90,7 +89,7 @@ public final class DownloadHelper {
                 }
             }
         } catch (final Exception e) {
-            LOG.error("Error streaming download", e);
+            LOG.error("Error streaming download of files " + files, e);
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
         }
     }

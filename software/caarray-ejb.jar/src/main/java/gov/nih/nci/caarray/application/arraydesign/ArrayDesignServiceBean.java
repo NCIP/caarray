@@ -146,9 +146,19 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
     @Inject
     public void setDependencies(ArrayDao arrayDao, SearchDao searchDao, ContactDao contactDao,
             ArrayDesignPlatformFacade arrayDesignPlatformFacade) {
+        LOG.debug("Constructing");
         this.arrayDao = arrayDao;
         this.searchDao = searchDao;
         this.contactDao = contactDao;
+        this.arrayDesignPlatformFacade = arrayDesignPlatformFacade;
+    }
+
+    /**
+     * @param arrayDesignPlatformFacade the arrayDesignPlatformFacade to set
+     */
+    @Inject
+    public void setPlatformDependencies(ArrayDesignPlatformFacade arrayDesignPlatformFacade) {
+        LOG.debug("Setting Platform Deps");
         this.arrayDesignPlatformFacade = arrayDesignPlatformFacade;
     }
 

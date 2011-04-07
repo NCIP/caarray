@@ -82,13 +82,13 @@
  */
 package gov.nih.nci.caarray.application.translation.geosoft;
 
+import gov.nih.nci.caarray.application.ExceptionLoggingInterceptor;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessUtils;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.DerivedArrayData;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
-import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.Project;
@@ -98,6 +98,7 @@ import gov.nih.nci.caarray.domain.sample.Extract;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
+import gov.nih.nci.caarray.injection.InjectionInterceptor;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -115,6 +116,7 @@ import javax.ejb.Local;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import javax.interceptor.Interceptors;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
@@ -124,6 +126,8 @@ import org.apache.commons.io.output.CloseShieldOutputStream;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import com.google.inject.Inject;
+
 /**
  * Export valid Experiments to a GEO SOFT format. Note: This class doesn't need to be an EJB.
  * 
@@ -132,12 +136,15 @@ import org.apache.log4j.Logger;
  */
 @Local(GeoSoftExporter.class)
 @Stateless
+@Interceptors({ ExceptionLoggingInterceptor.class, InjectionInterceptor.class })
 public class GeoSoftExporterBean implements GeoSoftExporter {
-
     private static final Logger LOG = Logger.getLogger(GeoSoftExporterBean.class);
-    private static final String AFFYMETRIX = "Affymetrix";
+    private static final String AFFYMETRIX_PROVIDER = "Affymetrix";
+    static final String AFFYMETRIX_CHP_TYPE_NAME = "AFFYMETRIX_CHP";
+
     // CHECKSTYLE:OFF magic numbers
     private static final int ONE_KB = 1024;
+
     // CHECKSTYLE:ON
 
     private FileAccessUtils fileAccessHelper;
@@ -185,13 +192,13 @@ public class GeoSoftExporterBean implements GeoSoftExporter {
      */
     private boolean checkArrayDesigns(List<String> errors, Experiment experiment) {
         if (experiment.getArrayDesigns().isEmpty()) {
-            errors.add("No (" + AFFYMETRIX + ") array design specified");
+            errors.add("No (" + AFFYMETRIX_PROVIDER + ") array design specified");
             return true;
         }
         for (final ArrayDesign ad : experiment.getArrayDesigns()) {
             // * The array provider should be Affymetrix.
-            if (!AFFYMETRIX.equals(ad.getProvider().getName())) {
-                errors.add(AFFYMETRIX + " is not the provider for array design " + ad.getName());
+            if (!AFFYMETRIX_PROVIDER.equals(ad.getProvider().getName())) {
+                errors.add(AFFYMETRIX_PROVIDER + " is not the provider for array design " + ad.getName());
             }
             if (!errors.isEmpty()) {
                 return true;
@@ -231,12 +238,12 @@ public class GeoSoftExporterBean implements GeoSoftExporter {
     private void checkDerivedDataFileType(List<String> errors, Hybridization hyb) {
         // * Every hybridization must have a derived data file of type AFFYMETRIX_CHP.
         for (final DerivedArrayData dad : hyb.getDerivedDataCollection()) {
-            if (FileType.AFFYMETRIX_CHP == dad.getDataFile().getFileType()) {
+            if (AFFYMETRIX_CHP_TYPE_NAME.equals(dad.getDataFile().getFileType().getName())) {
                 return;
             }
         }
         errors.add("Hybridization " + hyb.getName() + " must have a derived data file of type "
-                + FileType.AFFYMETRIX_CHP);
+                + AFFYMETRIX_CHP_TYPE_NAME);
     }
 
     private void checkLabeledExtract(List<String> errors, Set<LabeledExtract> labeledExtracts, Set<Extract> extracts) {
@@ -352,7 +359,7 @@ public class GeoSoftExporterBean implements GeoSoftExporter {
         } finally {
             // note that the caller's stream is shielded from the close(),
             // but this is the only way to finish and flush the (gzip) stream.
-            arOut.close();
+            IOUtils.closeQuietly(arOut);
         }
     }
 
@@ -443,5 +450,15 @@ public class GeoSoftExporterBean implements GeoSoftExporter {
         ar.putArchiveEntry(ae);
         baos.writeTo(ar);
         ar.closeArchiveEntry();
+    }
+
+    /**
+     * Injectable dependency on FileAccessUtils instance
+     * 
+     * @param fileAccessHelper the fileAccessHelper to set
+     */
+    @Inject
+    public void setFileAccessHelper(FileAccessUtils fileAccessHelper) {
+        this.fileAccessHelper = fileAccessHelper;
     }
 }

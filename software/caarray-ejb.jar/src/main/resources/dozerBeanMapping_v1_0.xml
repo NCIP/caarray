@@ -363,7 +363,7 @@
             <a>uncompressedSize</a>
             <b>metadata.uncompressedSize</b>
         </field>
-        <field custom-converter="gov.nih.nci.caarray.services.external.FileTypeConverter">
+        <field>
             <a>fileType</a>
             <b>metadata.fileType</b>
         </field>

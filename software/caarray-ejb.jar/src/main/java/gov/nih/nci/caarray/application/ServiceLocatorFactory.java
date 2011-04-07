@@ -92,10 +92,15 @@ import gov.nih.nci.caarray.application.jobqueue.JobQueueService;
 import gov.nih.nci.caarray.application.permissions.PermissionsManagementService;
 import gov.nih.nci.caarray.application.project.ProjectManagementService;
 import gov.nih.nci.caarray.application.registration.RegistrationService;
+import gov.nih.nci.caarray.application.translation.gct.GctExporter;
 import gov.nih.nci.caarray.application.translation.geosoft.GeoSoftExporter;
 import gov.nih.nci.caarray.application.translation.magetab.MageTabExporter;
 import gov.nih.nci.caarray.application.translation.magetab.MageTabTranslator;
 import gov.nih.nci.caarray.application.vocabulary.VocabularyService;
+import gov.nih.nci.caarray.services.data.DataRetrievalService;
+import gov.nih.nci.caarray.services.search.CaArraySearchService;
+
+import com.google.inject.Provider;
 
 /**
  * Provides access to a <code>ServiceLocator</code>.
@@ -110,7 +115,7 @@ public final class ServiceLocatorFactory {
 
     /**
      * Returns a <code>ServiceLocator</code> instance.
-     *
+     * 
      * @return the locator
      */
     public static ServiceLocator getLocator() {
@@ -118,9 +123,9 @@ public final class ServiceLocatorFactory {
     }
 
     /**
-     * Allows registration of a <code>ServiceLocator</code> instance; should only
-     * be used in test code to replace the actual locator with a test stub.
-     *
+     * Allows registration of a <code>ServiceLocator</code> instance; should only be used in test code to replace the
+     * actual locator with a test stub.
+     * 
      * @param locator the locator to set
      */
     public static void setLocator(ServiceLocator locator) {
@@ -128,7 +133,8 @@ public final class ServiceLocatorFactory {
     }
 
     /**
-     * Convenience method for obtaining the singleton service. 
+     * Convenience method for obtaining the singleton service.
+     * 
      * @return the service
      */
     public static ProjectManagementService getProjectManagementService() {
@@ -136,7 +142,8 @@ public final class ServiceLocatorFactory {
     }
 
     /**
-     * Convenience method for obtaining the singleton service. 
+     * Convenience method for obtaining the singleton service.
+     * 
      * @return the service
      */
     public static JobQueueService getJobQueueService() {
@@ -152,7 +159,8 @@ public final class ServiceLocatorFactory {
     }
 
     /**
-     * Convenience method for obtaining the singleton service. 
+     * Convenience method for obtaining the singleton service.
+     * 
      * @return the service
      */
     public static FileAccessService getFileAccessService() {
@@ -160,7 +168,8 @@ public final class ServiceLocatorFactory {
     }
 
     /**
-     * Convenience method for obtaining the singleton service. 
+     * Convenience method for obtaining the singleton service.
+     * 
      * @return the service
      */
     public static FileManagementService getFileManagementService() {
@@ -168,7 +177,8 @@ public final class ServiceLocatorFactory {
     }
 
     /**
-     * Convenience method for obtaining the singleton service. 
+     * Convenience method for obtaining the singleton service.
+     * 
      * @return the service
      */
     public static VocabularyService getVocabularyService() {
@@ -176,7 +186,8 @@ public final class ServiceLocatorFactory {
     }
 
     /**
-     * Convenience method for obtaining the singleton service. 
+     * Convenience method for obtaining the singleton service.
+     * 
      * @return the service
      */
     public static GenericDataService getGenericDataService() {
@@ -184,7 +195,8 @@ public final class ServiceLocatorFactory {
     }
 
     /**
-     * Convenience method for obtaining the singleton service. 
+     * Convenience method for obtaining the singleton service.
+     * 
      * @return the service
      */
     public static ArrayDesignService getArrayDesignService() {
@@ -192,7 +204,8 @@ public final class ServiceLocatorFactory {
     }
 
     /**
-     * Convenience method for obtaining the singleton service. 
+     * Convenience method for obtaining the singleton service.
+     * 
      * @return the service
      */
     public static ArrayDataService getArrayDataService() {
@@ -200,7 +213,8 @@ public final class ServiceLocatorFactory {
     }
 
     /**
-     * Convenience method for obtaining the singleton service. 
+     * Convenience method for obtaining the singleton service.
+     * 
      * @return the service
      */
     public static RegistrationService getRegistrationService() {
@@ -208,7 +222,8 @@ public final class ServiceLocatorFactory {
     }
 
     /**
-     * Convenience method for obtaining the singleton service. 
+     * Convenience method for obtaining the singleton service.
+     * 
      * @return the service
      */
     public static BrowseService getBrowseService() {
@@ -216,7 +231,8 @@ public final class ServiceLocatorFactory {
     }
 
     /**
-     * Convenience method for obtaining the singleton service. 
+     * Convenience method for obtaining the singleton service.
+     * 
      * @return the service
      */
     public static AuditLogService getAuditLogService() {
@@ -225,6 +241,7 @@ public final class ServiceLocatorFactory {
 
     /**
      * Convenience method for obtaining the MAGE-TAB Exporter singleton service.
+     * 
      * @return the MAGE-TAB Exporter service
      */
     public static MageTabExporter getMageTabExporter() {
@@ -233,6 +250,7 @@ public final class ServiceLocatorFactory {
 
     /**
      * Convenience method for obtaining the GEO SOFT Exporter singleton service.
+     * 
      * @return the GEO SOFT Exporter service
      */
     public static GeoSoftExporter getGeoSoftExporter() {
@@ -240,10 +258,48 @@ public final class ServiceLocatorFactory {
     }
 
     /**
+     * Convenience method for obtaining the GCT Exporter singleton service.
+     * 
+     * @return the GCT Exporter service
+     */
+    public static GctExporter getGctExporter() {
+        return (GctExporter) getLocator().lookup(GctExporter.JNDI_NAME);
+    }
+
+    /**
      * Convenience method for obtaining the MAGE-TAB Translator singleton service.
+     * 
      * @return the MAGE-TAB Exporter service
      */
     public static MageTabTranslator getMageTabTranslator() {
         return (MageTabTranslator) getLocator().lookup(MageTabTranslator.JNDI_NAME);
+    }
+
+    /**
+     * Convenience method for obtaining the DataRetrievalService singleton service.
+     * 
+     * @return the DataRetrievalService
+     */
+    public static DataRetrievalService getDataRetrievalService() {
+        return (DataRetrievalService) getLocator().lookup(DataRetrievalService.JNDI_NAME);
+    }
+
+    /**
+     * Convenience method for obtaining the DataRetrievalService singleton service.
+     * 
+     * @return the DataRetrievalService
+     */
+    public static CaArraySearchService getCaArraySearchService() {
+        return (CaArraySearchService) getLocator().lookup(CaArraySearchService.JNDI_NAME);
+    }
+
+    public static <T> Provider<T> serviceProvider(Class<T> service, final String serviceJndiName) {
+        return new Provider<T>() {
+            @Override
+            @SuppressWarnings("unchecked")
+            public T get() {
+                return (T) getLocator().lookup(serviceJndiName);
+            }
+        };
     }
 }

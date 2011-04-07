@@ -104,6 +104,28 @@ public class StorageMetadata implements Serializable {
     private Date creationTimestamp;
 
     /**
+     * Empty constructor
+     */
+    public StorageMetadata() {
+        // empty
+    }
+
+    /**
+     * Create new storage metadata with given parameters
+     * 
+     * @param compressedSize compressed size of data block
+     * @param uncompressedSize uncompressed size of data block
+     * @param handle handle identifying the block
+     * @param creationTimestamp when the data block was added
+     */
+    public StorageMetadata(long compressedSize, long uncompressedSize, URI handle, Date creationTimestamp) {
+        this.compressedSize = compressedSize;
+        this.uncompressedSize = uncompressedSize;
+        this.handle = handle;
+        this.creationTimestamp = creationTimestamp;
+    }
+
+    /**
      * @return the compressedSize
      */
     public long getCompressedSize() {

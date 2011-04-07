@@ -86,40 +86,29 @@ import gov.nih.nci.caarray.application.ServiceLocatorFactory;
 import gov.nih.nci.caarray.application.arraydata.ArrayDataService;
 import gov.nih.nci.caarray.application.fileaccess.DataStorageCleanupThread;
 import gov.nih.nci.caarray.application.fileaccess.FileCleanupThread;
+import gov.nih.nci.caarray.injection.InjectorFactory;
+import gov.nih.nci.caarray.plugins.CaArrayPluginsFacade;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.staticinjection.CaArrayWarStaticInjectionModule;
 import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
-import gov.nih.nci.caarray.util.CaArrayHibernateHelperModule;
 
 import java.util.Timer;
 
+import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
-import com.google.inject.Guice;
-import com.google.inject.Inject;
+import org.springframework.context.ApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
+
 import com.google.inject.Injector;
 
 /**
  * Performs initialization operations required at startup of the caArray application.
  */
 public class StartupListener implements ServletContextListener {
-    @Inject
-    private static CaArrayHibernateHelper hibernateHelper;
     private static final int TIMER_INTERVAL_FIFTEEN_MINS = 900000;
     private static final int TIMER_INTERVAL_ONE_MIN = 60000;
-
-    private Injector injector;
-
-    /**
-     * Subclasses can override this to configure a custom injector, e.g. by overriding some modules with stubbed out
-     * functionality.
-     * 
-     * @return a Guice injector from which this will obtain dependencies.
-     */
-    protected Injector createInjector() {
-        return Guice.createInjector(new CaArrayWarStaticInjectionModule(), new CaArrayHibernateHelperModule());
-    }
 
     /**
      * Creates connection to DataService as well as sets configuration in application scope. Initiates scheduled task to
@@ -129,8 +118,10 @@ public class StartupListener implements ServletContextListener {
      */
     @Override
     public void contextInitialized(ServletContextEvent event) {
-        this.injector = createInjector();
+        final Injector injector = InjectorFactory.getInjector().createChildInjector(
+                new CaArrayWarStaticInjectionModule());
 
+        final CaArrayHibernateHelper hibernateHelper = injector.getInstance(CaArrayHibernateHelper.class);
         hibernateHelper.openAndBindSession();
         final ArrayDataService arrayDataService = (ArrayDataService) ServiceLocatorFactory.getLocator().lookup(
                 ArrayDataService.JNDI_NAME);
@@ -143,9 +134,18 @@ public class StartupListener implements ServletContextListener {
                 TIMER_INTERVAL_FIFTEEN_MINS);
 
         final Timer dataStorageCleanupTimer = new Timer(true);
-        final DataStorageCleanupThread dataStorageCleanupThread = this.injector
-                .getInstance(DataStorageCleanupThread.class);
+        final DataStorageCleanupThread dataStorageCleanupThread = injector.getInstance(DataStorageCleanupThread.class);
         dataStorageCleanupTimer.schedule(dataStorageCleanupThread, TIMER_INTERVAL_ONE_MIN, TIMER_INTERVAL_FIFTEEN_MINS);
+
+        initAtlassianPlugins(event.getServletContext());
+    }
+
+    private void initAtlassianPlugins(ServletContext servletContext) {
+        final ApplicationContext appContext = WebApplicationContextUtils
+                .getRequiredWebApplicationContext(servletContext);
+        final CaArrayPluginsFacade plugins = (CaArrayPluginsFacade) appContext.getBean("pluginsFacade");
+        plugins.start();
+        CaArrayPluginsFacade.INSTANCE = plugins;
     }
 
     /**

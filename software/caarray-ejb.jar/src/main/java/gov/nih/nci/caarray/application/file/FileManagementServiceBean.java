@@ -95,6 +95,7 @@ import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
+import gov.nih.nci.caarray.domain.file.FileTypeRegistry;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.injection.InjectionInterceptor;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
@@ -373,10 +374,10 @@ public class FileManagementServiceBean implements FileManagementService {
     @Override
     public List<String> findIdfRefFileNames(CaArrayFile idfFile, Project project) {
         final List<String> filenames = new ArrayList<String>();
-        checkForFileType(idfFile, FileType.MAGE_TAB_IDF);
+        checkForFileType(idfFile, FileTypeRegistry.MAGE_TAB_IDF);
         final CaArrayFileSet inputFiles = new CaArrayFileSet(project);
         inputFiles.add(idfFile);
-        addFilesToInputSet(inputFiles, project.getFileSet(), FileType.MAGE_TAB_SDRF);
+        addFilesToInputSet(inputFiles, project.getFileSet(), FileTypeRegistry.MAGE_TAB_SDRF);
         MageTabDocumentSet mTabSet = mageTabImporter.selectRefFiles(project, inputFiles);
         // we only care about the sdrf docs connected to the idf
         for (final SdrfDocument sdrfDoc : mTabSet.getIdfDocuments().iterator().next().getSdrfDocuments()) {

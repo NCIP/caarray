@@ -100,6 +100,8 @@ import gov.nih.nci.caarray.domain.search.SearchCategory;
 import gov.nih.nci.caarray.domain.search.SearchSampleCategory;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
+import gov.nih.nci.caarray.external.v1_0.CaArrayEntityReference;
+import gov.nih.nci.caarray.services.external.v1_0.InvalidReferenceException;
 import gov.nih.nci.security.authorization.domainobjects.User;
 import gov.nih.nci.security.exceptions.CSException;
 
@@ -503,4 +505,6 @@ public interface ProjectManagementService {
      * @since 2.4.0
      */
     List<Project> getProjectsWithReImportableFiles();
+    
+    public List<Category> getAllCharacteristicCategories(Experiment experiment);
 }

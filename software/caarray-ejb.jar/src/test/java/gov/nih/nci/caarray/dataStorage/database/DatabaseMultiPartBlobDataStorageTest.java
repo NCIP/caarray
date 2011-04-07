@@ -119,6 +119,7 @@ import org.mockito.MockitoAnnotations;
 import com.google.common.collect.Sets;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.Files;
+import com.google.inject.Provider;
 
 /**
  * @author dkokotov
@@ -141,7 +142,13 @@ public class DatabaseMultiPartBlobDataStorageTest extends AbstractDataStorageTes
     public void setupStorage() {
         this.tempDir = Files.createTempDir();
         MockitoAnnotations.initMocks(this);
-        this.DS = new DatabaseMultipartBlobDataStorage(this.blobDao, this.searchDao, this.temporaryFileCache);
+        this.DS = new DatabaseMultipartBlobDataStorage(this.blobDao, this.searchDao,
+                new Provider<TemporaryFileCache>() {
+                    @Override
+                    public TemporaryFileCache get() {
+                        return DatabaseMultiPartBlobDataStorageTest.this.temporaryFileCache;
+                    }
+                });
     }
 
     @After

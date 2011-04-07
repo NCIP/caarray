@@ -90,7 +90,7 @@ import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileStatus;
-import gov.nih.nci.caarray.domain.file.FileType;
+import gov.nih.nci.caarray.domain.file.FileTypeRegistry;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.magetab.sdrf.AbstractSampleDataRelationshipNode;
 import gov.nih.nci.caarray.validation.FileValidationResult;
@@ -158,7 +158,7 @@ final class ArrayDataImporterImpl implements ArrayDataImporter {
 
     public void validateFiles(CaArrayFileSet fileSet, MageTabDocumentSet mTabSet, boolean reimport) {
         Set<CaArrayFile> dataFiles = fileSet.getArrayDataFiles();
-        Set<CaArrayFile> sdrfFiles = fileSet.getFilesByType(FileType.MAGE_TAB_SDRF);
+        Set<CaArrayFile> sdrfFiles = fileSet.getFilesByType(FileTypeRegistry.MAGE_TAB_SDRF);
         int fileCount = 0;
         int totalNumberOfFiles = dataFiles.size();
         for (CaArrayFile file : dataFiles) {

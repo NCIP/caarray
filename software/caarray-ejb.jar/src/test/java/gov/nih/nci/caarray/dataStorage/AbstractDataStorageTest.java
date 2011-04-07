@@ -84,8 +84,6 @@ package gov.nih.nci.caarray.dataStorage;
 
 import gov.nih.nci.caarray.dataStorage.spi.DataStorage;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.net.URI;
 import java.util.Collections;
 
@@ -98,11 +96,6 @@ public abstract class AbstractDataStorageTest {
     protected DataStorage DS;
 
     protected abstract URI getInvalidUri();
-
-    @Test(expected = DataStoreException.class)
-    public void testAddUncompressedAsCompressed() throws IOException {
-        this.DS.add(new ByteArrayInputStream("Fake Data 123".getBytes()), true);
-    }
 
     @Test(expected = UnsupportedSchemeException.class)
     public void testOpenFileInvalidScheme() {

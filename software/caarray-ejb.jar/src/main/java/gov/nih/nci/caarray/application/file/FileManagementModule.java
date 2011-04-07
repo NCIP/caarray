@@ -18,7 +18,8 @@ public class FileManagementModule extends AbstractModule {
      */
     @Override
     protected void configure() {
-        bind(FileManagementService.class).to(FileManagementServiceBean.class);
+        bind(FileManagementService.class).toProvider(
+                ServiceLocatorFactory.serviceProvider(FileManagementService.class, FileManagementService.JNDI_NAME));
         bind(MageTabImporter.class);
     }
 

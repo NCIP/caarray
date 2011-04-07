@@ -101,7 +101,6 @@ import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileStatus;
-import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.project.AssayType;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
@@ -595,8 +594,7 @@ public class ArrayDaoTest extends AbstractDaoTest {
             f1.setName("foo");
             f1.setFileStatus(FileStatus.IMPORTED_NOT_PARSED);
             f1.setDataHandle(DUMMY_HANDLE);
-            assertTrue("AGILENT_XML should be parsable", FileType.AGILENT_XML.isParseableArrayDesign());
-            f1.setFileType(FileType.AGILENT_XML);
+            f1.setFileType(AFFYMETRIX_CDF);
             DUMMY_ARRAYDESIGN_1.getDesignFiles().clear();
             DUMMY_ARRAYDESIGN_1.addDesignFile(f1);
             this.daoObject.save(f1);
@@ -605,8 +603,7 @@ public class ArrayDaoTest extends AbstractDaoTest {
             final CaArrayFile f2 = new CaArrayFile();
             f2.setName("bar");
             f2.setFileStatus(FileStatus.IMPORTED_NOT_PARSED);
-            assertFalse("GEO_GSM has become parsable, use one that's not", FileType.GEO_GSM.isParseableArrayDesign());
-            f2.setFileType(FileType.GEO_GSM);
+            f2.setFileType(AFFYMETRIX_DAT);
             f2.setDataHandle(DUMMY_HANDLE);
             DUMMY_ARRAYDESIGN_2.getDesignFiles().clear();
             DUMMY_ARRAYDESIGN_2.addDesignFile(f2);

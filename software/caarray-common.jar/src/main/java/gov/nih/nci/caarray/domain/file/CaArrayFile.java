@@ -111,6 +111,9 @@ import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
 import org.hibernate.validator.NotNull;
 
+import com.google.common.base.Preconditions;
+import com.google.inject.Inject;
+
 /**
  * This class represents metadata about a file managed by caArray.
  */
@@ -129,6 +132,9 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
     private long uncompressedSize;
     private long compressedSize;
     private URI dataHandle;
+
+    @Inject
+    public static transient FileTypeRegistry typeRegistry;
 
     /**
      * Gets the name.
@@ -174,7 +180,7 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
      */
     @Transient
     public FileType getFileType() {
-        return getType() != null ? FileType.valueOf(getType()) : null;
+        return getType() != null ? typeRegistry.getTypeByName(getType()) : null;
     }
 
     /**
@@ -182,7 +188,7 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
      */
     public void setFileType(FileType fileType) {
         if (fileType != null) {
-            setType(fileType.name());
+            setType(fileType.getName());
         } else {
             setType(null);
         }
@@ -301,9 +307,7 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
     }
 
     private void checkForLegalTypeValue(String checkType) {
-        if (checkType != null) {
-            FileType.valueOf(checkType);
-        }
+        Preconditions.checkArgument(checkType == null || typeRegistry.getTypeByName(checkType) != null);
     }
 
     /**
@@ -338,6 +342,7 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
     /**
      * Check whether this file is eligible to be imported.
      * 
+     * 
      * @return boolean
      */
     @Transient
@@ -347,6 +352,7 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
 
     /**
      * Check whether this file is eligible to be validated.
+     * 
      * 
      * @return boolean
      */

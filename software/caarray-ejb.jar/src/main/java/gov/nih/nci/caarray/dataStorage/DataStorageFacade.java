@@ -101,6 +101,7 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
 import com.google.inject.Inject;
+import com.google.inject.name.Named;
 
 /**
  * Facade class to the data storage subsystem. Application code should inject and use this class to interact with the
@@ -130,8 +131,9 @@ public class DataStorageFacade {
      *            <i>dataStorageEngines</i>
      */
     @Inject
-    public DataStorageFacade(Map<String, DataStorage> dataStorageEngines, @FileData String fileDataStorage,
-            @ParsedData String parsedDataStorage) {
+    public DataStorageFacade(Map<String, DataStorage> dataStorageEngines,
+            @Named(DataStorageModule.FILE_DATA_ENGINE) String fileDataStorage,
+            @Named(DataStorageModule.PARSED_DATA_ENGINE) String parsedDataStorage) {
         this.dataStorageEngines = dataStorageEngines;
         this.fileDataStorage = fileDataStorage;
         this.parsedDataStorage = parsedDataStorage;
@@ -203,7 +205,7 @@ public class DataStorageFacade {
             throw new DataStoreException("No storage engine found for handle: " + handle);
         }
 
-        return ds.openFile(handle, false);
+        return ds.openFile(handle, compressed);
     }
 
     /**
@@ -237,7 +239,7 @@ public class DataStorageFacade {
             throw new DataStoreException("No storage engine found for handle: " + handle);
         }
 
-        return ds.openInputStream(handle, false);
+        return ds.openInputStream(handle, compressed);
     }
 
     /**

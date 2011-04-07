@@ -87,7 +87,8 @@ import gov.nih.nci.caarray.domain.data.AbstractDataColumn;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileCategory;
 import gov.nih.nci.caarray.domain.file.FileStatus;
-import gov.nih.nci.caarray.domain.file.FileType;
+import gov.nih.nci.caarray.domain.file.FileTypeRegistryImpl;
+import gov.nih.nci.caarray.domain.file.FileTypeRegistry;
 import gov.nih.nci.caarray.domain.project.AbstractExperimentDesignNode;
 import gov.nih.nci.caarray.domain.search.FileSearchCriteria;
 import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
@@ -108,6 +109,7 @@ import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.Restrictions;
 
 import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
+import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 
 /**
@@ -117,13 +119,16 @@ import com.google.inject.Inject;
 class FileDaoImpl extends AbstractCaArrayDaoImpl implements FileDao {
     private static final Logger LOG = Logger.getLogger(FileDaoImpl.class);
 
+    private final FileTypeRegistry typeRegistry;
+
     /**
      * 
      * @param hibernateHelper the CaArrayHibernateHelper dependency
      */
     @Inject
-    public FileDaoImpl(CaArrayHibernateHelper hibernateHelper) {
+    public FileDaoImpl(CaArrayHibernateHelper hibernateHelper, FileTypeRegistry typeRegistry) {
         super(hibernateHelper);
+        this.typeRegistry = typeRegistry;
     }
 
     /**
@@ -180,7 +185,7 @@ class FileDaoImpl extends AbstractCaArrayDaoImpl implements FileDao {
         }
 
         if (!criteria.getTypes().isEmpty()) {
-            c.add(Restrictions.in("type", CaArrayUtils.namesForEnums(criteria.getTypes())));
+            c.add(Restrictions.in("type", Sets.newHashSet(FileTypeRegistryImpl.namesForTypes(criteria.getTypes()))));
         }
 
         if (criteria.getExtension() != null) {
@@ -195,19 +200,19 @@ class FileDaoImpl extends AbstractCaArrayDaoImpl implements FileDao {
             final Disjunction categoryCriterion = Restrictions.disjunction();
             if (criteria.getCategories().contains(FileCategory.DERIVED_DATA)) {
                 categoryCriterion.add(Restrictions.in("type",
-                        CaArrayUtils.namesForEnums(FileType.DERIVED_ARRAY_DATA_FILE_TYPES)));
+                        Sets.newHashSet(FileTypeRegistryImpl.namesForTypes(this.typeRegistry.getDerivedArrayDataTypes()))));
             }
             if (criteria.getCategories().contains(FileCategory.RAW_DATA)) {
                 categoryCriterion.add(Restrictions.in("type",
-                        CaArrayUtils.namesForEnums(FileType.RAW_ARRAY_DATA_FILE_TYPES)));
+                        Sets.newHashSet(FileTypeRegistryImpl.namesForTypes(this.typeRegistry.getRawArrayDataTypes()))));
             }
             if (criteria.getCategories().contains(FileCategory.MAGE_TAB)) {
-                categoryCriterion
-                        .add(Restrictions.in("type", CaArrayUtils.namesForEnums(FileType.MAGE_TAB_FILE_TYPES)));
+                categoryCriterion.add(Restrictions.in("type",
+                        Sets.newHashSet(FileTypeRegistryImpl.namesForTypes(this.typeRegistry.getMageTabTypes()))));
             }
             if (criteria.getCategories().contains(FileCategory.ARRAY_DESIGN)) {
                 categoryCriterion.add(Restrictions.in("type",
-                        CaArrayUtils.namesForEnums(FileType.ARRAY_DESIGN_FILE_TYPES)));
+                        Sets.newHashSet(FileTypeRegistryImpl.namesForTypes(this.typeRegistry.getArrayDesignTypes()))));
             }
             if (criteria.getCategories().contains(FileCategory.OTHER)) {
                 categoryCriterion.add(Restrictions.isNull("type"));
