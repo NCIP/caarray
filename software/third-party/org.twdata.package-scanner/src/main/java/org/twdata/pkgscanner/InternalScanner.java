@@ -1,13 +1,25 @@
 package org.twdata.pkgscanner;
 
-import java.net.URL;
+import java.io.File;
+import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.*;
+import java.net.URL;
+import java.rmi.server.UID;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-import java.io.IOException;
-import java.io.File;
 
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,9 +28,9 @@ import org.slf4j.LoggerFactory;
  */
 class InternalScanner {
     private final Logger log = LoggerFactory.getLogger(InternalScanner.class);
-    private Map<String,Set<String>> jarContentCache = new HashMap<String,Set<String>>();
-    private ClassLoader classloader;
-    private PackageScanner.VersionMapping[] versionMappings;
+    private final Map<String,Set<String>> jarContentCache = new HashMap<String,Set<String>>();
+    private final ClassLoader classloader;
+    private final PackageScanner.VersionMapping[] versionMappings;
     private OsgiVersionConverter versionConverter = new DefaultOsgiVersionConverter();
     private final boolean debug;
 
@@ -30,9 +42,9 @@ class InternalScanner {
 
     InternalScanner(ClassLoader cl, PackageScanner.VersionMapping[] versionMappings, boolean debug) {
         this.classloader = cl;
-        for (PackageScanner.VersionMapping mapping : versionMappings)
+        for (final PackageScanner.VersionMapping mapping : versionMappings)
         {
-            mapping.toVersion(versionConverter.getVersion(mapping.getVersion()));
+            mapping.toVersion(this.versionConverter.getVersion(mapping.getVersion()));
         }
         this.versionMappings = versionMappings;
         this.debug = debug;
@@ -44,9 +56,9 @@ class InternalScanner {
 
     Collection<ExportPackage> findInPackages(Test test, String... roots) {
         // ExportPackageListBuilder weans out duplicates with some smarts
-        ExportPackageListBuilder exportPackageListBuilder = new ExportPackageListBuilder();
-        for (String pkg : roots) {
-            for (ExportPackage export : findInPackage(test, pkg)) {
+        final ExportPackageListBuilder exportPackageListBuilder = new ExportPackageListBuilder();
+        for (final String pkg : roots) {
+            for (final ExportPackage export : findInPackage(test, pkg)) {
                 exportPackageListBuilder.add(export);
             }
         }
@@ -57,9 +69,9 @@ class InternalScanner {
 
     Collection<ExportPackage> findInUrls(Test test, URL... urls) {
         // ExportPackageListBuilder weans out duplicates with some smarts
-        ExportPackageListBuilder exportPackageListBuilder = new ExportPackageListBuilder();
-        Vector<URL> list = new Vector<URL>(Arrays.asList(urls));
-        for (ExportPackage export : findInPackageWithUrls(test, "", list.elements())) {
+        final ExportPackageListBuilder exportPackageListBuilder = new ExportPackageListBuilder();
+        final Vector<URL> list = new Vector<URL>(Arrays.asList(urls));
+        for (final ExportPackage export : findInPackageWithUrls(test, "", list.elements())) {
             exportPackageListBuilder.add(export);
         }
 
@@ -78,21 +90,21 @@ class InternalScanner {
      * @return List of packages to export.
      */
     List<ExportPackage> findInPackage(Test test, String packageName) {
-        List<ExportPackage> localExports = new ArrayList<ExportPackage>();
+        final List<ExportPackage> localExports = new ArrayList<ExportPackage>();
 
         packageName = packageName.replace('.', '/');
         Enumeration<URL> urls;
 
         try {
-            urls = classloader.getResources(packageName);
+            urls = this.classloader.getResources(packageName);
             // test for empty
             if (!urls.hasMoreElements())
             {
-                log.warn("Unable to find any resources for package '" + packageName + "'");
+                this.log.warn("Unable to find any resources for package '" + packageName + "'");
             }
         }
-        catch (IOException ioe) {
-            log.warn("Could not read package: " + packageName);
+        catch (final IOException ioe) {
+            this.log.warn("Could not read package: " + packageName);
             return localExports;
         }
 
@@ -101,14 +113,37 @@ class InternalScanner {
 
     List<ExportPackage> findInPackageWithUrls(Test test, String packageName, Enumeration<URL> urls)
     {
-        List<ExportPackage> localExports = new ArrayList<ExportPackage>();
+        final List<ExportPackage> localExports = new ArrayList<ExportPackage>();
+
+        final String tempDirName = new UID().toString().replace(':', '_').replace('-', '_');
+        final File tempDir = new File(new File(System.getProperty("java.io.tmpdir")), tempDirName);
+        if (!tempDir.mkdirs()) {
+            throw new IllegalStateException("Couldn't create directory: " + tempDir.getAbsolutePath());
+        }
+
         while (urls.hasMoreElements()) {
             try {
-                URL url = urls.nextElement();
+                final URL url = urls.nextElement();
                 String urlPath = url.getPath();
 
-                // it's in a JAR, grab the path to the jar
-                if (urlPath.lastIndexOf('!') > 0) {
+                // special handling for jboss VFS - we cache the jar to a local copy, use it to do the scanning
+                // as usual then discard it.
+                // it's somewhat inefficient, but requires less rewriting of other parts of the code which make
+                // assumptions that a JAR can be accessed as a file.
+                // should consider eventually rewriting this to use jboss-vfs API directly for jar inspection
+                // a possible starting point is http://community.jboss.org/message/8432
+                if (url.getProtocol().startsWith("vfs")) {
+                    final String pathToJar = urlPath.substring(0, urlPath.lastIndexOf(".jar") + 4);
+                    final String jarName = pathToJar.substring(pathToJar.lastIndexOf("/") + 1, pathToJar.length());
+
+                    final File tmp = new File(tempDir, jarName);
+                    tmp.deleteOnExit();
+
+                    final URL jarUrl = new URL(url.getProtocol() + ":" + pathToJar);
+                    FileUtils.copyURLToFile(jarUrl, tmp);
+                    urlPath = "file:" + tmp.getAbsolutePath();
+                } else if (urlPath.lastIndexOf('!') > 0) {
+                    // it's in a JAR, grab the path to the jar
                     urlPath = urlPath.substring(0, urlPath.lastIndexOf('!'));
                     if (urlPath.startsWith("/"))
                     {
@@ -118,18 +153,19 @@ class InternalScanner {
                     urlPath = "file:"+urlPath;
                 }
 
-                log.debug("Scanning for packages in [" + urlPath + "].");
+                this.log.debug("Scanning for packages in [" + urlPath + "].");
                 File file = null;
                 try
                 {
-                    URL fileURL = new URL(urlPath);
+                    final URL fileURL = new URL(urlPath);
                     // only scan elements in the classpath that are local files
-                    if("file".equals(fileURL.getProtocol().toLowerCase()))
+                    if("file".equals(fileURL.getProtocol().toLowerCase())) {
                         file = new File(fileURL.toURI());
-                    else
-                        log.info("Skipping non file classpath element [ "+urlPath+ " ]");
+                    } else {
+                        this.log.info("Skipping non file classpath element [ "+urlPath+ " ]");
+                    }
                 }
-                catch (URISyntaxException e)
+                catch (final URISyntaxException e)
                 {
                     //Yugh, this is necessary as the URL might not be convertible to a URI, so resolve it by the file path
                     file = new File(urlPath.substring("file:".length()));
@@ -143,10 +179,11 @@ class InternalScanner {
                     }
                 }
             }
-            catch (IOException ioe) {
-                log.error("could not read entries: " + ioe);
+            catch (final IOException ioe) {
+                this.log.error("could not read entries: " + ioe);
             }
         }
+        FileUtils.deleteQuietly(tempDir);
         return localExports;
     }
 
@@ -165,12 +202,12 @@ class InternalScanner {
      * @return List of packages to export.
      */
     List<ExportPackage> loadImplementationsInDirectory(Test test, String parent, File location) {
-        log.debug("Scanning directory " + location.getAbsolutePath() + " parent: '" + parent + "'.");
-        File[] files = location.listFiles();
-        List<ExportPackage> localExports = new ArrayList<ExportPackage>();
-        Set<String> scanned = new HashSet<String>();
+        this.log.debug("Scanning directory " + location.getAbsolutePath() + " parent: '" + parent + "'.");
+        final File[] files = location.listFiles();
+        final List<ExportPackage> localExports = new ArrayList<ExportPackage>();
+        final Set<String> scanned = new HashSet<String>();
 
-        for (File file : files) {
+        for (final File file : files) {
             final String packageOrClass;
             if (parent == null || parent.length() == 0)
             {
@@ -184,19 +221,19 @@ class InternalScanner {
             if (file.isDirectory()) {
                 localExports.addAll(loadImplementationsInDirectory(test, packageOrClass, file));
 
-            // If the parent is empty, then assume the directory's jars should be searched
+                // If the parent is empty, then assume the directory's jars should be searched
             } else if ("".equals(parent) && file.getName().endsWith(".jar") && test.matchesJar(file.getName())) {
                 localExports.addAll(loadImplementationsInJar(test, file));
             } else {
                 String pkg = packageOrClass;
-                int lastSlash = pkg.lastIndexOf('/');
+                final int lastSlash = pkg.lastIndexOf('/');
                 if (lastSlash > 0) {
                     pkg = pkg.substring(0, lastSlash);
                 }
                 pkg = pkg.replace('/', '.');
                 if (!scanned.contains(pkg)) {
                     if (test.matchesPackage(pkg)) {
-                        log.debug(String.format("loadImplementationsInDirectory: [%s] %s", pkg, file));
+                        this.log.debug(String.format("loadImplementationsInDirectory: [%s] %s", pkg, file));
                         localExports.add(new ExportPackage(pkg, determinePackageVersion(null, pkg), location));
                     }
                     scanned.add(pkg);
@@ -217,48 +254,48 @@ class InternalScanner {
      */
     List<ExportPackage> loadImplementationsInJar(Test test, File file) {
 
-        List<ExportPackage> localExports = new ArrayList<ExportPackage>();
-        Set<String> packages = jarContentCache.get(file.getPath());
+        final List<ExportPackage> localExports = new ArrayList<ExportPackage>();
+        Set<String> packages = this.jarContentCache.get(file.getPath());
         if (packages == null)
         {
             packages = new HashSet<String>();
             try {
-                JarFile jarFile = new JarFile(file);
+                final JarFile jarFile = new JarFile(file);
 
 
-                for (Enumeration<JarEntry> e = jarFile.entries(); e.hasMoreElements(); ) {
-                    JarEntry entry = e.nextElement();
-                    String name = entry.getName();
+                for (final Enumeration<JarEntry> e = jarFile.entries(); e.hasMoreElements(); ) {
+                    final JarEntry entry = e.nextElement();
+                    final String name = entry.getName();
                     if (!entry.isDirectory()) {
                         String pkg = name;
-                        int pos = pkg.lastIndexOf('/');
+                        final int pos = pkg.lastIndexOf('/');
                         if (pos > -1) {
                             pkg = pkg.substring(0, pos);
                         }
                         pkg = pkg.replace('/', '.');
-                        boolean newlyAdded = packages.add(pkg);
-                        if (newlyAdded && log.isDebugEnabled())
+                        final boolean newlyAdded = packages.add(pkg);
+                        if (newlyAdded && this.log.isDebugEnabled())
                         {
                             // Use newlyAdded as we don't want to log duplicates
-                            log.debug(String.format("Found package '%s' in jar file [%s]", pkg, file));
+                            this.log.debug(String.format("Found package '%s' in jar file [%s]", pkg, file));
                         }
-                     }
+                    }
                 }
             }
-            catch (IOException ioe) {
-                log.error("Could not search jar file '" + file + "' for classes matching criteria: " +
+            catch (final IOException ioe) {
+                this.log.error("Could not search jar file '" + file + "' for classes matching criteria: " +
                         test + " due to an IOException" + ioe);
                 return Collections.emptyList();
             }
             finally
             {
                 // set the cache, even if the scan produced an error
-                jarContentCache.put(file.getPath(), packages);
+                this.jarContentCache.put(file.getPath(), packages);
             }
         }
 
-        Set<String> scanned = new HashSet<String>();
-        for (String pkg : packages)
+        final Set<String> scanned = new HashSet<String>();
+        for (final String pkg : packages)
         {
             if (!scanned.contains(pkg)) {
                 if (test.matchesPackage(pkg)) {
@@ -274,7 +311,7 @@ class InternalScanner {
     String determinePackageVersion(File jar, String pkg) {
         // Look for an explicit mapping
         String version = null;
-        for (PackageScanner.VersionMapping mapping : versionMappings) {
+        for (final PackageScanner.VersionMapping mapping : this.versionMappings) {
             if (mapping.matches(pkg)) {
                 version = mapping.getVersion();
             }
@@ -283,19 +320,19 @@ class InternalScanner {
             // TODO: Look for osgi headers
 
             // Try to guess the version from the jar name
-            String name = jar.getName();
+            final String name = jar.getName();
             version = extractVersion(name);
         }
 
-        if (version == null && debug)
+        if (version == null && this.debug)
         {
             if (jar != null)
             {
-                log.warn("Unable to determine version for '" + pkg + "' in jar '" + jar.getPath() + "'");
+                this.log.warn("Unable to determine version for '" + pkg + "' in jar '" + jar.getPath() + "'");
             }
             else
             {
-                log.warn("Unable to determine version for '" + pkg + "'");
+                this.log.warn("Unable to determine version for '" + pkg + "'");
             }
         }
 
@@ -314,26 +351,30 @@ class InternalScanner {
         boolean lastWasSeparator = false;
         for (int x=0; x<filename.length(); x++)
         {
-            char c = filename.charAt(x);
-            if (c == '-' || c == '_')
+            final char c = filename.charAt(x);
+            if (c == '-' || c == '_') {
                 lastWasSeparator = true;
-            else
+            } else
             {
-                if (Character.isDigit(c) && lastWasSeparator && version == null)
+                if (Character.isDigit(c) && lastWasSeparator && version == null) {
                     version = new StringBuilder();
+                }
                 lastWasSeparator = false;
             }
 
-            if (version != null)
+            if (version != null) {
                 version.append(c);
+            }
         }
 
         if (version != null)
         {
-            if (".jar".equals(version.substring(version.length() - 4)))
+            if (".jar".equals(version.substring(version.length() - 4))) {
                 version.delete(version.length() - 4, version.length());
-            return versionConverter.getVersion(version.toString());
-        } else
+            }
+            return this.versionConverter.getVersion(version.toString());
+        } else {
             return null;
+        }
     }
 }
