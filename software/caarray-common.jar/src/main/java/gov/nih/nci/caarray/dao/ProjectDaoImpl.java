@@ -103,8 +103,8 @@ import gov.nih.nci.caarray.domain.search.SearchCategory;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
-import gov.nih.nci.caarray.util.CaArrayUsernameHolder;
 import gov.nih.nci.caarray.util.UnfilteredCallback;
+import gov.nih.nci.caarray.util.CaArrayUsernameHolder;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionElement;
 import gov.nih.nci.security.authorization.domainobjects.User;
 
@@ -135,7 +135,7 @@ import com.google.inject.Inject;
 
 /**
  * DAO for entities in the <code>gov.nih.nci.caarray.domain.project</code> package.
- *
+ * 
  * @author Rashmi Srinivasa
  */
 @SuppressWarnings("PMD.CyclomaticComplexity")
@@ -143,34 +143,27 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
     private static final String UNCHECKED = "unchecked";
     private static final String EXP_ID_PARAM = "expId";
     private static final String SOURCES = "sources";
-    private static final String[] BIOMATERIALS = {"sources", "samples", "extracts", "labeledExtracts" };
+    private static final String[] BIOMATERIALS = { "sources", "samples", "extracts", "labeledExtracts" };
     private static final String TERM_FOR_EXPERIMENT_HSQL = "select distinct s.{0} from " + Experiment.class.getName()
-        + " e left join e.{1} s where e.id = :" + EXP_ID_PARAM + " and s.{0} is not null";
-    private static final List<String> PARSEABLE_ARRAY_DATA_FILE_TYPE_NAMES
-            = new ArrayList<String>(FileType.PARSEABLE_ARRAY_DATA_FILE_TYPES.size());
-    static {
-        for (FileType t : FileType.PARSEABLE_ARRAY_DATA_FILE_TYPES) {
-            PARSEABLE_ARRAY_DATA_FILE_TYPE_NAMES.add(t.getName());
-        }
-    }
+            + " e left join e.{1} s where e.id = :" + EXP_ID_PARAM + " and s.{0} is not null";
 
     private final FileTypeRegistry typeRegistry;
 
     /**
      * 
      * @param hibernateHelper the CaArrayHibernateHelper dependency
-     * @return 
+     * @return
      */
     @Inject
     public ProjectDaoImpl(CaArrayHibernateHelper hibernateHelper, FileTypeRegistry typeRegistry) {
         super(hibernateHelper);
         this.typeRegistry = typeRegistry;
     }
-   
-   /**
+
+    /**
      * Saves a project by first updating the lastUpdated field, and then saves the entity to persistent storage,
      * updating or inserting as necessary.
-     *
+     * 
      * @param persistentObject the entity to save
      */
     @Override
@@ -186,15 +179,17 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
     /**
      * {@inheritDoc}
      */
+    @Override
     public Project getProjectByPublicId(String publicId) {
-        Criteria c = getCurrentSession().createCriteria(Project.class);
+        final Criteria c = getCurrentSession().createCriteria(Project.class);
         c.createCriteria("experiment").add(Restrictions.eq("publicIdentifier", publicId).ignoreCase());
         return (Project) c.uniqueResult();
     }
 
+    @Override
     @SuppressWarnings(UNCHECKED)
     public List<Project> getProjectsForCurrentUser(PageSortParams pageSortParams) {
-        Query q = getProjectsForUserQuery(false, pageSortParams);
+        final Query q = getProjectsForUserQuery(false, pageSortParams);
         q.setFirstResult(pageSortParams.getIndex());
         q.setMaxResults(pageSortParams.getPageSize());
         return q.list();
@@ -203,56 +198,55 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
     /**
      * {@inheritDoc}
      */
-    
+
+    @Override
     public List<Project> getProjectsForOwner(User user) {
         final String q = "SELECT DISTINCT p FROM " + Project.class.getName()
-                + " p left join fetch p.experiment e where p.id in"
-                + "(select pe.value from " + ProtectionElement.class.getName()
-                        + " pe where pe.objectId = :objectId and pe.attribute = :attribute and "
-                        + " pe.application = :application and :user in elements(pe.owners)) ";
+                + " p left join fetch p.experiment e where p.id in" + "(select pe.value from "
+                + ProtectionElement.class.getName()
+                + " pe where pe.objectId = :objectId and pe.attribute = :attribute and "
+                + " pe.application = :application and :user in elements(pe.owners)) ";
 
-        Query query = getCurrentSession().createQuery(q);
+        final Query query = getCurrentSession().createQuery(q);
         query.setString("objectId", Project.class.getName());
         query.setString("attribute", "id");
         query.setEntity("application", SecurityUtils.getApplication());
         query.setEntity("user", user);
 
         @SuppressWarnings("unchecked")
-        List<Project> projects = query.list(); 
+        final List<Project> projects = query.list();
         return projects; // NOPMD
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public int getProjectCountForCurrentUser() {
-        Query q = getProjectsForUserQuery(true, null);
+        final Query q = getProjectsForUserQuery(true, null);
         return ((Number) q.uniqueResult()).intValue();
     }
 
-    @SuppressWarnings({"PMD.ExcessiveMethodLength", "PMD.NPathComplexity" })
+    @SuppressWarnings({ "PMD.ExcessiveMethodLength", "PMD.NPathComplexity" })
     private Query getProjectsForUserQuery(boolean count, PageSortParams<Project> pageSortParams) {
-        User user  = CaArrayUsernameHolder.getCsmUser();
+        final User user = CaArrayUsernameHolder.getCsmUser();
         @SuppressWarnings("deprecation")
-        SortCriterion<Project> sortCrit = pageSortParams != null ? pageSortParams.getSortCriterion() : null;
-        String ownerSubqueryStr =
-                "(select pe.value from " + ProtectionElement.class.getName()
-                        + " pe where pe.objectId = :objectId and pe.attribute = :attribute and "
-                        + " pe.application = :application and :user in elements(pe.owners)) ";
-        String collabSubqueryStr =
-                "(select ap.projectForGroupProfile.id from "
-                        + AccessProfile.class.getName()
-                        + " ap join ap.group cg, Group g "
-                        + " where ap.securityLevelInternal != :noneSecLevel and cg.groupId = g.groupId "
-                        + " and :user in elements(g.users))";
-        String selectClause = count ? "SELECT COUNT(DISTINCT p)" : "SELECT DISTINCT p";
-        StringBuilder queryStr =
-                new StringBuilder(selectClause).append(" from ").append(Project.class.getName()).append(" p ");
+        final SortCriterion<Project> sortCrit = pageSortParams != null ? pageSortParams.getSortCriterion() : null;
+        final String ownerSubqueryStr = "(select pe.value from " + ProtectionElement.class.getName()
+                + " pe where pe.objectId = :objectId and pe.attribute = :attribute and "
+                + " pe.application = :application and :user in elements(pe.owners)) ";
+        final String collabSubqueryStr = "(select ap.projectForGroupProfile.id from " + AccessProfile.class.getName()
+                + " ap join ap.group cg, Group g "
+                + " where ap.securityLevelInternal != :noneSecLevel and cg.groupId = g.groupId "
+                + " and :user in elements(g.users))";
+        final String selectClause = count ? "SELECT COUNT(DISTINCT p)" : "SELECT DISTINCT p";
+        final StringBuilder queryStr = new StringBuilder(selectClause).append(" from ").append(Project.class.getName())
+                .append(" p ");
         if (!count) {
             queryStr.append(" left join fetch p.experiment e");
         }
-        queryStr.append(" where (p.id in ").append(ownerSubqueryStr).append(" or p.id in ").append(
-                        collabSubqueryStr).append(")");
+        queryStr.append(" where (p.id in ").append(ownerSubqueryStr).append(" or p.id in ").append(collabSubqueryStr)
+                .append(")");
         if (!count && sortCrit != null) {
             queryStr.append(" ORDER BY p.").append(sortCrit.getOrderField());
             if (pageSortParams.isDesc()) {
@@ -260,7 +254,7 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
             }
         }
 
-        Query query = getCurrentSession().createQuery(queryStr.toString());
+        final Query query = getCurrentSession().createQuery(queryStr.toString());
         query.setString("objectId", Project.class.getName());
         query.setString("attribute", "id");
         query.setEntity("application", SecurityUtils.getApplication());
@@ -272,10 +266,10 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
     /**
      * {@inheritDoc}
      */
+    @Override
     @SuppressWarnings(UNCHECKED)
-    public List<Project> searchByCategory(PageSortParams<Project> params, String keyword,
-            SearchCategory... categories) {
-        Query q = getSearchQuery(false, params, keyword, categories);
+    public List<Project> searchByCategory(PageSortParams<Project> params, String keyword, SearchCategory... categories) {
+        final Query q = getSearchQuery(false, params, keyword, categories);
         q.setFirstResult(params.getIndex());
         if (params.getPageSize() > 0) {
             q.setMaxResults(params.getPageSize());
@@ -286,18 +280,17 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
     /**
      * {@inheritDoc}
      */
+    @Override
     public int searchCount(String keyword, SearchCategory... categories) {
-        Query q = getSearchQuery(true, null, keyword, categories);
+        final Query q = getSearchQuery(true, null, keyword, categories);
         return ((Number) q.uniqueResult()).intValue();
     }
-
-
 
     private Query getSearchQuery(boolean count, PageSortParams<Project> params, String keyword,
             SearchCategory... categories) {
         @SuppressWarnings("deprecation")
-        SortCriterion<Project> sortCrit = params != null ? params.getSortCriterion() : null;
-        StringBuffer sb = new StringBuffer();
+        final SortCriterion<Project> sortCrit = params != null ? params.getSortCriterion() : null;
+        final StringBuffer sb = new StringBuffer();
         if (count) {
             sb.append("SELECT COUNT(DISTINCT p)");
         } else {
@@ -315,7 +308,7 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
                 sb.append(" desc");
             }
         }
-        Query q = getCurrentSession().createQuery(sb.toString());
+        final Query q = getCurrentSession().createQuery(sb.toString());
         q.setString("keyword", "%" + StringUtils.defaultString(keyword) + "%");
         return q;
     }
@@ -323,12 +316,13 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings({UNCHECKED, "PMD" })
+    @Override
+    @SuppressWarnings({ UNCHECKED, "PMD" })
     public List<Experiment> searchByCriteria(PageSortParams<Experiment> params, ExperimentSearchCriteria criteria) {
-        StringBuilder from = new StringBuilder("SELECT distinct e FROM ").append(Experiment.class.getName()).append(
-                " e");
-        StringBuilder where = new StringBuilder("WHERE (1=1)");
-        Map<String, Object> queryParams = new HashMap<String, Object>();
+        final StringBuilder from = new StringBuilder("SELECT distinct e FROM ").append(Experiment.class.getName())
+                .append(" e");
+        final StringBuilder where = new StringBuilder("WHERE (1=1)");
+        final Map<String, Object> queryParams = new HashMap<String, Object>();
         if (criteria.getTitle() != null) {
             where.append(" AND upper(e.title) = upper(:title)");
             queryParams.put("title", criteria.getTitle());
@@ -340,17 +334,17 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
         if (criteria.getOrganism() != null) {
             from.append(" INNER JOIN e.organism o");
             where.append(" AND o.id = :organism_id");
-            queryParams.put("organism_id", criteria.getOrganism().getId());            
+            queryParams.put("organism_id", criteria.getOrganism().getId());
         }
         if (criteria.getAssayType() != null) {
             from.append(" INNER JOIN e.assayTypes at");
             where.append(" AND at.id = :assay_type_id");
-            queryParams.put("assay_type_id", criteria.getAssayType().getId());            
+            queryParams.put("assay_type_id", criteria.getAssayType().getId());
         }
         if (criteria.getArrayProvider() != null) {
             from.append(" INNER JOIN e.manufacturer m");
             where.append(" AND m.id = :array_provider_id");
-            queryParams.put("array_provider_id", criteria.getArrayProvider().getId());            
+            queryParams.put("array_provider_id", criteria.getArrayProvider().getId());
         }
         if (!criteria.getPrincipalInvestigators().isEmpty()) {
             from.append(" INNER JOIN e.experimentContacts ec INNER JOIN ec.roles r INNER JOIN ec.contact p");
@@ -359,11 +353,11 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
             queryParams.put("pis", criteria.getPrincipalInvestigators());
         }
         if (!criteria.getAnnotationCriterions().isEmpty()) {
-            List<String> diseaseStates = new LinkedList<String>();
-            List<String> tissueSites = new LinkedList<String>();
-            List<String> cellTypes = new LinkedList<String>();
-            List<String> materialTypes = new LinkedList<String>();
-            for (AnnotationCriterion ac : criteria.getAnnotationCriterions()) {
+            final List<String> diseaseStates = new LinkedList<String>();
+            final List<String> tissueSites = new LinkedList<String>();
+            final List<String> cellTypes = new LinkedList<String>();
+            final List<String> materialTypes = new LinkedList<String>();
+            for (final AnnotationCriterion ac : criteria.getAnnotationCriterions()) {
                 if (ac.getCategory().getName().equals(ExperimentOntologyCategory.DISEASE_STATE.getCategoryName())) {
                     diseaseStates.add(ac.getValue());
                 } else if (ac.getCategory().getName().equals(ExperimentOntologyCategory.CELL_TYPE.getCategoryName())) {
@@ -371,15 +365,14 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
                 } else if (ac.getCategory().getName()
                         .equals(ExperimentOntologyCategory.MATERIAL_TYPE.getCategoryName())) {
                     materialTypes.add(ac.getValue());
-                } else if (ac.getCategory().getName().equals(
-                        ExperimentOntologyCategory.ORGANISM_PART.getCategoryName())) {
+                } else if (ac.getCategory().getName()
+                        .equals(ExperimentOntologyCategory.ORGANISM_PART.getCategoryName())) {
                     tissueSites.add(ac.getValue());
                 }
             }
-              
-            if (!diseaseStates.isEmpty() || !tissueSites.isEmpty() || !cellTypes.isEmpty() 
-                    || !materialTypes.isEmpty()) {
-                Map<String, List<? extends Serializable>> blocks = new HashMap<String, List<? extends Serializable>>();
+
+            if (!diseaseStates.isEmpty() || !tissueSites.isEmpty() || !cellTypes.isEmpty() || !materialTypes.isEmpty()) {
+                final Map<String, List<? extends Serializable>> blocks = new HashMap<String, List<? extends Serializable>>();
                 addAnnotationCriterionValues(where, from, diseaseStates, "diseaseState", "ds", blocks);
                 addAnnotationCriterionValues(where, from, tissueSites, "tissueSite", "ts", blocks);
                 addAnnotationCriterionValues(where, from, materialTypes, "materialType", "mt", blocks);
@@ -388,8 +381,8 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
                 queryParams.putAll(blocks);
             }
         }
-        
-        Query q = getCurrentSession().createQuery(
+
+        final Query q = getCurrentSession().createQuery(
                 from.append(" ").append(where).append(" ").append(toHqlOrder(params)).toString());
         getHibernateHelper().setQueryParams(queryParams, q);
         q.setFirstResult(params.getIndex());
@@ -398,35 +391,35 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
         }
         return q.list();
     }
-    
+
     @SuppressWarnings("PMD.ExcessiveParameterList")
     private void addAnnotationCriterionValues(StringBuilder where, StringBuilder from, List<String> values,
             String assocPath, String alias, Map<String, List<? extends Serializable>> blocks) {
-        String bmAlias = "b_" + alias;
-        if (!values.isEmpty()) {            
+        final String bmAlias = "b_" + alias;
+        if (!values.isEmpty()) {
             from.append(" INNER JOIN e.biomaterials ").append(bmAlias);
             from.append(" INNER JOIN ").append(bmAlias).append(".").append(assocPath).append(" ").append(alias);
             where.append(" AND (").append(getHibernateHelper().buildInClauses(values, alias + ".value", blocks))
-                .append(")");
+                    .append(")");
         }
     }
 
     private static String getJoinClause(SearchCategory... categories) {
-        LinkedHashSet<String> joins = new LinkedHashSet<String>();
-        for (SearchCategory category : categories) {
+        final LinkedHashSet<String> joins = new LinkedHashSet<String>();
+        for (final SearchCategory category : categories) {
             joins.addAll(Arrays.asList(category.getJoins()));
         }
-        StringBuffer sb = new StringBuffer();
-        for (String table : joins) {
+        final StringBuffer sb = new StringBuffer();
+        for (final String table : joins) {
             sb.append(" LEFT JOIN ").append(table);
         }
         return sb.toString();
     }
 
     private String getWhereClause(SearchCategory... categories) {
-        StringBuffer sb = new StringBuffer();
+        final StringBuffer sb = new StringBuffer();
         int i = 0;
-        for (SearchCategory category : categories) {
+        for (final SearchCategory category : categories) {
             sb.append(i++ == 0 ? " WHERE (" : " OR (").append(category.getWhereClause()).append(')');
         }
         return sb.toString();
@@ -435,46 +428,46 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
     /**
      * {@inheritDoc}
      */
+    @Override
     @SuppressWarnings(UNCHECKED)
     public List<Term> getCellTypesForExperiment(Experiment experiment) {
-        String hsql = MessageFormat.format(TERM_FOR_EXPERIMENT_HSQL, "cellType", SOURCES);
-        return getCurrentSession().createQuery(hsql)
-        .setLong(EXP_ID_PARAM, experiment.getId()).list();
+        final String hsql = MessageFormat.format(TERM_FOR_EXPERIMENT_HSQL, "cellType", SOURCES);
+        return getCurrentSession().createQuery(hsql).setLong(EXP_ID_PARAM, experiment.getId()).list();
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     @SuppressWarnings(UNCHECKED)
     public List<Term> getDiseaseStatesForExperiment(Experiment experiment) {
-        String hsql = MessageFormat.format(TERM_FOR_EXPERIMENT_HSQL, "diseaseState", SOURCES);
-        return getCurrentSession().createQuery(hsql)
-        .setLong(EXP_ID_PARAM, experiment.getId()).list();
+        final String hsql = MessageFormat.format(TERM_FOR_EXPERIMENT_HSQL, "diseaseState", SOURCES);
+        return getCurrentSession().createQuery(hsql).setLong(EXP_ID_PARAM, experiment.getId()).list();
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     @SuppressWarnings(UNCHECKED)
     public List<Term> getTissueSitesForExperiment(Experiment experiment) {
-        String hsql = MessageFormat.format(TERM_FOR_EXPERIMENT_HSQL, "tissueSite", SOURCES);
-        return getCurrentSession().createQuery(hsql)
-        .setLong(EXP_ID_PARAM, experiment.getId()).list();
+        final String hsql = MessageFormat.format(TERM_FOR_EXPERIMENT_HSQL, "tissueSite", SOURCES);
+        return getCurrentSession().createQuery(hsql).setLong(EXP_ID_PARAM, experiment.getId()).list();
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     @SuppressWarnings(UNCHECKED)
     public List<Term> getMaterialTypesForExperiment(Experiment experiment) {
         // DEVELOPER NOTE: it is faster to use separate queries to retrieve the material types from each
         // biomaterial type. doing it in one query requires either multiple subselects or a cartesian product
         // join, both of which are very slow
-        Set<Term> types = new HashSet<Term>();
-        for (String biomaterial : BIOMATERIALS) {
-            String hsql = MessageFormat.format(TERM_FOR_EXPERIMENT_HSQL, "materialType", biomaterial);
-            types.addAll(getCurrentSession().createQuery(hsql)
-                    .setLong(EXP_ID_PARAM, experiment.getId()).list());
+        final Set<Term> types = new HashSet<Term>();
+        for (final String biomaterial : BIOMATERIALS) {
+            final String hsql = MessageFormat.format(TERM_FOR_EXPERIMENT_HSQL, "materialType", biomaterial);
+            types.addAll(getCurrentSession().createQuery(hsql).setLong(EXP_ID_PARAM, experiment.getId()).list());
         }
         return new ArrayList<Term>(types);
     }
@@ -482,33 +475,37 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
     /**
      * {@inheritDoc}
      */
+    @Override
     @SuppressWarnings(UNCHECKED)
     public List<AssayType> getAssayTypes() {
-        String queryString = "from " + AssayType.class.getName() + " c order by c.name asc";
+        final String queryString = "from " + AssayType.class.getName() + " c order by c.name asc";
         return getCurrentSession().createQuery(queryString).setCacheable(true).list();
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public Set<AbstractBioMaterial> getUnfilteredBiomaterialsForProject(final Long projectId) {
-        UnfilteredCallback unfilteredCallback = new UnfilteredCallback() {
+        final UnfilteredCallback unfilteredCallback = new UnfilteredCallback() {
+            @Override
             public Object doUnfiltered(Session s) {
-                Query q = s.createQuery("FROM " + AbstractBioMaterial.class.getName()
+                final Query q = s.createQuery("FROM " + AbstractBioMaterial.class.getName()
                         + " bm WHERE bm.experiment.project.id = ?");
-                q.setParameter(0, projectId);                    
+                q.setParameter(0, projectId);
                 return q.list();
             }
         };
-        @SuppressWarnings(UNCHECKED)        
-        List<AbstractBioMaterial> bms = (List<AbstractBioMaterial>) getHibernateHelper()
-        .doUnfiltered(unfilteredCallback);
+        @SuppressWarnings(UNCHECKED)
+        final List<AbstractBioMaterial> bms = (List<AbstractBioMaterial>) getHibernateHelper().doUnfiltered(
+                unfilteredCallback);
         return new HashSet<AbstractBioMaterial>(bms);
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public Source getSourceForExperiment(Experiment experiment, String sourceName) {
         return getBioMaterialForExperiment(experiment, sourceName, Source.class);
     }
@@ -516,6 +513,7 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
     /**
      * {@inheritDoc}
      */
+    @Override
     public Sample getSampleForExperiment(Experiment experiment, String sampleName) {
         return getBioMaterialForExperiment(experiment, sampleName, Sample.class);
     }
@@ -523,6 +521,7 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
     /**
      * {@inheritDoc}
      */
+    @Override
     public Extract getExtractForExperiment(Experiment experiment, String extractName) {
         return getBioMaterialForExperiment(experiment, extractName, Extract.class);
     }
@@ -530,19 +529,20 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
     /**
      * {@inheritDoc}
      */
+    @Override
     public LabeledExtract getLabeledExtractForExperiment(Experiment experiment, String labeledExtractName) {
         return getBioMaterialForExperiment(experiment, labeledExtractName, LabeledExtract.class);
     }
 
     @SuppressWarnings("unchecked")
-    private <T extends AbstractBioMaterial> T getBioMaterialForExperiment(Experiment experiment, String bioMaterialName,
-            Class<T> bioMaterialClass) {
+    private <T extends AbstractBioMaterial> T getBioMaterialForExperiment(Experiment experiment,
+            String bioMaterialName, Class<T> bioMaterialClass) {
         if (experiment == null) {
             return null;
         }
-        String queryString = "from " + bioMaterialClass.getName()
+        final String queryString = "from " + bioMaterialClass.getName()
                 + " b where b.experiment = :experiment and b.name = :name";
-        Query query = getCurrentSession().createQuery(queryString);
+        final Query query = getCurrentSession().createQuery(queryString);
         query.setParameter("experiment", experiment);
         query.setString("name", bioMaterialName);
         return (T) query.uniqueResult();
@@ -551,14 +551,15 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
     /**
      * {@inheritDoc}
      */
+    @Override
     @SuppressWarnings("unchecked")
     public List<Project> getProjectsWithReImportable() {
-        String q = "select distinct p from " + Project.class.getName()
+        final String q = "select distinct p from " + Project.class.getName()
                 + " p left join p.files f where f.status = :status and f.type in (:types) order by p.id";
-        Query query = getCurrentSession().createQuery(q);
-        query.setParameter("status",  FileStatus.IMPORTED_NOT_PARSED.name());
+        final Query query = getCurrentSession().createQuery(q);
+        query.setParameter("status", FileStatus.IMPORTED_NOT_PARSED.name());
         query.setParameterList("types",
                 Sets.newHashSet(FileTypeRegistryImpl.namesForTypes(this.typeRegistry.getParseableArrayDataTypes())));
-        return (List<Project>) query.list();
+        return query.list();
     }
 }
