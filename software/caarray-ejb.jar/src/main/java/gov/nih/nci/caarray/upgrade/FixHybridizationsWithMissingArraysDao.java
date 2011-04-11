@@ -182,15 +182,8 @@ public class FixHybridizationsWithMissingArraysDao {
      * @return the file type or null
      * @throws SQLException on error
      */
-    public FileType getFileType(Long fileId) throws SQLException {
-        String sql = "select type from caarrayfile where id = ?";
-        PreparedStatement ps = connection.prepareStatement(sql);
-        ps.setLong(1, fileId);
-        ResultSet rs = ps.executeQuery();
-        if (rs.next()) {
-            return FileType.valueOf(rs.getString(1));
-        }
-        return null;
+    public FileType getFileType(Long fileId)  {
+        throw new UnsupportedOperationException("Operation supported only for v2.4.x.");
     }
 
     /**
