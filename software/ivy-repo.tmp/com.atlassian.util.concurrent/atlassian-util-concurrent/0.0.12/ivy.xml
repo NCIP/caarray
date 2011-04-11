@@ -6,7 +6,7 @@
             xsi:noNamespaceSchemaLocation="http://ant.apache.org/ivy/schemas/ivy.xsd">
 
   <info organisation="com.atlassian.util.concurrent"
-        module="atlassian.util.concurrent"
+        module="atlassian-util-concurrent"
         revision="0.0.12"/>
 
   <configurations>
@@ -16,7 +16,7 @@
   </configurations>
 
   <publications>
-    <artifact name="atlassian.util.concurrent" type="jar" conf="master"/>
+    <artifact name="atlassian-util-concurrent" type="jar" conf="master"/>
   </publications>
 
 </ivy-module>
