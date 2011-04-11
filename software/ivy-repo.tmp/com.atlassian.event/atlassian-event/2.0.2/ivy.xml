@@ -5,7 +5,7 @@
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
             xsi:noNamespaceSchemaLocation="http://ant.apache.org/ivy/schemas/ivy.xsd">
 
-  <info organisation="com.atlassian-event"
+  <info organisation="com.atlassian.event"
         module="atlassian-event"
         revision="2.0.2"/>
 
