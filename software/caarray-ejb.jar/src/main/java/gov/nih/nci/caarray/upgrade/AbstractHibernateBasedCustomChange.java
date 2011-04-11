@@ -82,18 +82,18 @@
  */
 package gov.nih.nci.caarray.upgrade;
 
-import java.sql.Connection;
+import gov.nih.nci.caarray.application.ApplicationModule;
+import gov.nih.nci.caarray.application.file.FileModule;
+import gov.nih.nci.caarray.dao.DaoModule;
+import gov.nih.nci.caarray.services.ServicesModule;
+import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
 
-import org.hibernate.Transaction;
+import java.sql.Connection;
 
 import liquibase.database.Database;
 import liquibase.exception.CustomChangeException;
 
-import gov.nih.nci.caarray.application.ApplicationModule;
-import gov.nih.nci.caarray.application.arraydata.ArrayDataModule;
-import gov.nih.nci.caarray.application.file.FileModule;
-import gov.nih.nci.caarray.services.ServicesModule;
-import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
+import org.hibernate.Transaction;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
@@ -145,7 +145,7 @@ public abstract class AbstractHibernateBasedCustomChange extends AbstractCustomC
      */
     protected Module[] getGuiceModules() {
         return new Module[] {
-                new ArrayDataModule(), // identical to ArrayDataModule, includes DaoModule
+                new DaoModule(), 
                 new ServicesModule(),
                 new FileModule(),
                 new ApplicationModule(),

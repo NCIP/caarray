@@ -89,12 +89,10 @@ import gov.nih.nci.caarray.dao.JobQueueDao;
 import gov.nih.nci.caarray.domain.ConfigParamEnum;
 import gov.nih.nci.caarray.domain.project.ExecutableJob;
 import gov.nih.nci.caarray.injection.InjectionInterceptor;
-import gov.nih.nci.caarray.injection.InjectionInterceptor;
 import gov.nih.nci.caarray.services.HibernateSessionInterceptor;
 import gov.nih.nci.caarray.services.StorageInterceptor;
+import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
 import gov.nih.nci.caarray.util.UsernameHolder;
-import gov.nih.nci.logging.api.logger.util.ThreadVariable;
-import gov.nih.nci.logging.api.user.UserInfo;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

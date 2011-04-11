@@ -128,7 +128,7 @@ import com.google.inject.Inject;
  * Responsible for importing parsed MAGE-TAB data into caArray.
  */
 @SuppressWarnings("PMD.TooManyMethods")
-class MageTabImporter {
+class MageTabImporterImpl implements MageTabImporter {
 
     private static final Logger LOG = Logger.getLogger(MageTabImporter.class);
 
@@ -138,7 +138,7 @@ class MageTabImporter {
     private final DataStorageFacade dataStorageFacade;
 
     @Inject
-    MageTabImporter(MageTabTranslator translator, SearchDao searchDao, ProjectDao projectDao,
+    MageTabImporterImpl(MageTabTranslator translator, SearchDao searchDao, ProjectDao projectDao,
             DataStorageFacade dataStorageFacade) {
         this.translator = translator;
         this.searchDao = searchDao;
@@ -221,7 +221,7 @@ class MageTabImporter {
         }
     }
 
-    void importFiles(Project targetProject, CaArrayFileSet fileSet) throws MageTabParsingException {
+    public void importFiles(Project targetProject, CaArrayFileSet fileSet) throws MageTabParsingException {
         LOG.info("Importing MAGE-TAB document set");
         updateFileStatus(fileSet, FileStatus.IMPORTING);
         final MageTabFileSet inputSet = getInputFileSet(targetProject, fileSet);

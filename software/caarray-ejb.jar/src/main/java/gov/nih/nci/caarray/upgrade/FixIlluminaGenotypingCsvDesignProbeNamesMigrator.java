@@ -251,10 +251,10 @@ public class FixIlluminaGenotypingCsvDesignProbeNamesMigrator extends AbstractCu
         };
         
         final Module[] modules = new Module[] {
-                new ArrayDataModule(), // identical to ArrayDataModule, includes DaoModule
+                new DaoModule(), 
                 new ServicesModule(),
                 new FileModule(),
-                new PlatformModule()
+                new PlatformModule(), 
                 new ApplicationModule(),
                 localModule,
             };
