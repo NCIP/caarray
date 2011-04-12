@@ -184,6 +184,23 @@ public class FixHybridizationsWithMissingArraysDao {
      */
     public FileType getFileType(Long fileId)  {
         throw new UnsupportedOperationException("Operation supported only for v2.4.x.");
+        
+//TODO: temporarily replaced code below with code above in order to avoid compile error with FileType.valueOf() call, 
+//which is no longer defined after Dan's plugin redesign. To fix the compile error requires non-trivial 
+//implementation of new code in FileType and/or FileTypeRegistry, which we are deferring. 
+//A bigger questions, however, is whether or not to support "upgrade/migration fix" from v2.3 to v2.5. 
+//If not, then this class (and a bunch of other classes) under gov.nih.nci.caarray.upgrade package
+//may be deleted. 
+        
+//        String sql = "select type from caarrayfile where id = ?";
+//        PreparedStatement ps = connection.prepareStatement(sql);
+//        ps.setLong(1, fileId);
+//        ResultSet rs = ps.executeQuery();
+//        if (rs.next()) {
+//            return FileType.valueOf(rs.getString(1));
+//        }
+//        return null;
+        
     }
 
     /**
