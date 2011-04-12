@@ -1456,7 +1456,6 @@
     <property name="jboss-mail-service.file" value="mail-service.xml" />
     <property name="jboss-aop.file" value="ejb3-interceptors-aop.xml" />
     <property name="jboss-globus-serverinstance-config.zip" location="${resource.dir}/deploy/jboss-globus-serverinstance-config.zip" />
-    <property name="caArrayOnlineHelp.zip" location="${caarray-war.dir}/src/main/help/caArrayOnlineHelp.zip" />
 
     <filterset id="caarray.filterset" onmissingfiltersfile="warn">
         <filtersfile file="${build.dir}/default.properties" />
@@ -1958,15 +1957,6 @@
 
     <target name="build:functional:caarray-ejb.jar" depends="build:caarray-ejb.jar, test:instrument-functional:caarray-ejb.jar" />
 
-    <target name="prepare:caarray.war:onlinehelp">
-        <mkdir dir="${caarray-war.target.dir}/help" />
-        <unzip src="${caArrayOnlineHelp.zip}" dest="${caarray-war.target.dir}/help">
-            <patternset>
-                <include name="caArray Online Help/Output/WebWorks Help 5.0/caArray Online Help/**" />
-            </patternset>
-        </unzip>
-    </target>
-
     <target name="build:caarray.war:scriptsAndStyles:minify" depends="init:third-party-paths">
         <if>
             <equals arg1="${minify}" arg2="true" />
@@ -2010,7 +2000,7 @@
 
     <target name="build:caarray.war:scriptsAndStyles" depends="build:caarray.war:scriptsAndStyles:copy-files,build:caarray.war:scriptsAndStyles:minify"/>
 
-    <target name="build:caarray.war" depends="init:third-party-paths,compile:caarray.war, prepare:caarray.war:onlinehelp,svn:getinfo,build:caarray.war:scriptsAndStyles">
+    <target name="build:caarray.war" depends="init:third-party-paths,compile:caarray.war,svn:getinfo,build:caarray.war:scriptsAndStyles">
         <mkdir dir="${caarray-war.target.dir}" />
         <copy todir="${caarray-war.target.dir}/xml" file="${caarray-war.webapp.dir}/WEB-INF/web.xml" overwrite="true">
             <filterset>
@@ -2048,7 +2038,6 @@
                 </section>
             </manifest>
             <lib refid="war.compile.war-provided.depenendencies.fileset"/>
-            <zipfileset dir="${caarray-war.target.dir}/help/caArray Online Help/Output/WebWorks Help 5.0/caArray Online Help" prefix="help" />
         </war>
     </target>
 
