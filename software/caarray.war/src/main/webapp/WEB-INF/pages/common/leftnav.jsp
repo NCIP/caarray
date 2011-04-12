@@ -49,7 +49,7 @@
         <li><a href='${initParam["releaseNotesUrl"]}' target="_blank">Release Notes</a></li>
         <li><a href="http://caarray.nci.nih.gov/" target="_blank">Technical Documentation</a></li>
         <li><a href="http://ncicb.nci.nih.gov/training/caarray/" target="_blank">Training</a></li>
-        <li><a href="javascript:openHelpWindow('')">Help</a></li>
+        <li><a href="javascript:openHelpWindow()">Help</a></li>
     </ul>
     <ul class="quicklinks">
         <li class="liheader">Global Quick Links</li>
