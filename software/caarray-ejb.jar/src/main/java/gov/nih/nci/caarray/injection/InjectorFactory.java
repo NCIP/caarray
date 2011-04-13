@@ -82,11 +82,10 @@
  */
 package gov.nih.nci.caarray.injection;
 
-import gov.nih.nci.caarray.application.ApplicationModule;
+import gov.nih.nci.caarray.application.file.FileModule;
 import gov.nih.nci.caarray.dao.DaoModule;
 import gov.nih.nci.caarray.platforms.PlatformJtaTransactionModule;
 import gov.nih.nci.caarray.platforms.PlatformModule;
-import gov.nih.nci.caarray.application.file.FileModule;
 import gov.nih.nci.caarray.services.ServicesModule;
 import gov.nih.nci.caarray.staticinjection.CaArrayEjbStaticInjectionModule;
 import gov.nih.nci.caarray.util.CaArrayHibernateHelperModule;
