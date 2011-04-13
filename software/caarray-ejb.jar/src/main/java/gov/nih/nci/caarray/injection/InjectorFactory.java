@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.injection;
 
+import gov.nih.nci.caarray.application.ApplicationModule;
 import gov.nih.nci.caarray.application.file.FileModule;
 import gov.nih.nci.caarray.dao.DaoModule;
 import gov.nih.nci.caarray.platforms.PlatformJtaTransactionModule;
@@ -147,6 +148,7 @@ public final class InjectorFactory {
             new DaoModule(), 
             new ServicesModule(), 
             new FileModule(),
+            new ApplicationModule(), 
             PLATFORM_MODULE, 
             platformTransactionMoudle,
         };
