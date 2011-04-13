@@ -147,7 +147,7 @@ public final class InjectorFactory {
             new CaArrayHibernateHelperModule(), 
             new DaoModule(), 
             new ServicesModule(), 
-            new ApplicationModule(),
+            new FileModule(),
             PLATFORM_MODULE, 
             platformTransactionMoudle,
         };
