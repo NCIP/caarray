@@ -85,6 +85,7 @@ package gov.nih.nci.caarray.upgrade;
 import gov.nih.nci.caarray.application.ApplicationModule;
 import gov.nih.nci.caarray.application.file.FileModule;
 import gov.nih.nci.caarray.dao.DaoModule;
+import gov.nih.nci.caarray.platforms.PlatformModule;
 import gov.nih.nci.caarray.services.ServicesModule;
 import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
 
@@ -108,6 +109,7 @@ import com.google.inject.Module;
 public abstract class AbstractHibernateBasedCustomChange extends AbstractCustomChange {
     
     private Injector defaultInjector;
+    private static final PlatformModule PLATFORM_MODULE = new PlatformModule();
     
     /**
      * {@inheritDoc}
@@ -149,6 +151,7 @@ public abstract class AbstractHibernateBasedCustomChange extends AbstractCustomC
                 new ServicesModule(),
                 new FileModule(),
                 new ApplicationModule(),
+                PLATFORM_MODULE,
             };
     }
     

@@ -80,6 +80,9 @@
        <comment>GF 18908 - create audit log trail for experiments</comment>
        <sqlFile path="db-upgrade/mysql/2.3.0/18908.sql"/>
     </changeSet>
+<!-- 
+    Guice errors when running the changeset. Probably ok to comment out when upgrading from 2.4.0 to 2.5.0
+    Might have to change if a decision was made to allow upgrade from 2.4.0-prior versions directly to 2.5.0.
     <changeSet id="19498" author="dkokotov">
         <preConditions onFail="MARK_RAN">
             <sqlCheck expectedResult="2.2.0.rc3">SELECT raw_value from config_parameter where param='SCHEMA_VERSION'</sqlCheck>
@@ -87,6 +90,7 @@
        <comment>GF 19498 - fix hybs with missing array designs</comment>
        <customChange class="gov.nih.nci.caarray.upgrade.FixHybridizationsWithMissingArraysMigrator"/>
     </changeSet>    
+ -->
     <changeSet id="21544" author="dkokotov">
         <preConditions onFail="MARK_RAN">
             <sqlCheck expectedResult="2.2.0.rc3">SELECT raw_value from config_parameter where param='SCHEMA_VERSION'</sqlCheck>

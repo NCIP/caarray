@@ -82,7 +82,6 @@
  */
 package gov.nih.nci.caarray.application.file;
 
-import gov.nih.nci.caarray.application.translation.TranslationModule;
 import gov.nih.nci.caarray.domain.project.DefaultJobMessageSenderImpl;
 import gov.nih.nci.caarray.util.UsernameHolderModule;
 
@@ -100,7 +99,7 @@ public class FileModule extends AbstractModule {
      */
     @Override
     protected void configure() {
-        install(new TranslationModule());
+        // install(new TranslationModule());
         install(new UsernameHolderModule());
         
         bind(MageTabImporter.class).to(MageTabImporterImpl.class);       

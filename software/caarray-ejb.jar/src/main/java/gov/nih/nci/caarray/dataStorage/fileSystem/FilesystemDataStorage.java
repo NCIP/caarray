@@ -168,14 +168,16 @@ public class FilesystemDataStorage implements DataStorage {
     public Iterable<StorageMetadata> list() {
         final Set<StorageMetadata> metadatas = Sets.newHashSet();
         final File[] files = baseStorageDir().listFiles(new PatternFilenameFilter(".*\\.unc"));
-        for (final File file : files) {
-            final StorageMetadata sm = new StorageMetadata();
-            sm.setCreationTimestamp(new Date(file.lastModified()));
-            sm.setHandle(handleFromFile(file));
-            sm.setUncompressedSize(file.length());
-            metadatas.add(sm);
+        if (files != null) {
+            for (final File file : files) {
+                final StorageMetadata sm = new StorageMetadata();
+                sm.setCreationTimestamp(new Date(file.lastModified()));
+                sm.setHandle(handleFromFile(file));
+                sm.setUncompressedSize(file.length());
+                metadatas.add(sm);
+            }
+            // TODO: add compressed size
         }
-        // TODO: add compressed size
         return metadatas;
     }
 
