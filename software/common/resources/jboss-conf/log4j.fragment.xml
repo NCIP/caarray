@@ -53,7 +53,7 @@
     </category>
     
     <category name="atlassian.plugin" >
-	    <level value="info"/>
+	    <level value="WARN"/>
 	</category>
     
     <!-- end caarray custom configuration -->
