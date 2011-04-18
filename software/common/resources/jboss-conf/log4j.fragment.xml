@@ -52,7 +52,7 @@
         <priority value="ERROR"/>
     </category>
     
-    <category name="atlassian.plugin" >
+    <category name="com.atlassian.plugin" >
 	    <level value="WARN"/>
 	</category>
     
