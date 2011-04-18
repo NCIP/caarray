@@ -185,7 +185,8 @@ public class FixHybridizationsWithMissingArraysDao {
     public FileType getFileType(Long fileId)  {
         throw new UnsupportedOperationException("Operation supported only for v2.4.x.");
         
-//TODO: temporarily replaced code below with code above in order to avoid compile error with FileType.valueOf() call, 
+//TODO: JIRA# ARRAY-1934: Follow-on tasks stemming from decision whether or not to support direct upgrade from v2.3 to v2.5
+//temporarily replaced code below with code above in order to avoid compile error with FileType.valueOf() call, 
 //which is no longer defined after Dan's plugin redesign. To fix the compile error requires non-trivial 
 //implementation of new code in FileType and/or FileTypeRegistry, which we are deferring. 
 //A bigger questions, however, is whether or not to support "upgrade/migration fix" from v2.3 to v2.5. 
