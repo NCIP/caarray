@@ -384,6 +384,12 @@ public class MageTabDataFiles {
     
     public static final File DEFECT_13164_SDRF = new File(MageTabDataFiles.class.getResource(
     "/magetab/test_organism_term_source/test.sdrf").getFile());
+
+    public static final File DEFECT_13164_GOOD_IDF = new File(MageTabDataFiles.class.getResource(
+    "/magetab/test_organism_term_source/test.good.idf").getFile());
+    
+    public static final File DEFECT_13164_GOOD_SDRF = new File(MageTabDataFiles.class.getResource(
+    "/magetab/test_organism_term_source/test.good.sdrf").getFile());
     
     public static final File DEFECT_13164_CEL = new File(MageTabDataFiles.class.getResource(
     "/magetab/test_organism_term_source/Test3.CEL").getFile());

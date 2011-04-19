@@ -241,7 +241,12 @@ public final class TestMageTabSets {
     /**
      * Document set parsed ...
      */
-    public static final MageTabFileSet DEFECT_13164 = getDefect13164InputSet();
+    public static final MageTabFileSet DEFECT_13164_GOOD = getDefect13164GoodInputSet();
+
+    /**
+     * Document set parsed ...
+     */
+    public static final MageTabFileSet DEFECT_13164_BAD = getDefect13164BadInputSet();
 
     /**
      * Document set parsed ...
@@ -780,12 +785,21 @@ public final class TestMageTabSets {
         return fileSet;
     }
     
-    private static MageTabFileSet getDefect13164InputSet() {
+    private static MageTabFileSet getDefect13164GoodInputSet() {
+        MageTabFileSet fileSet = new MageTabFileSet();
+        fileSet.addIdf(new JavaIOFileRef(MageTabDataFiles.DEFECT_13164_GOOD_IDF));
+        fileSet.addSdrf(new JavaIOFileRef(MageTabDataFiles.DEFECT_13164_GOOD_SDRF));
+        addCelFiles(fileSet, MageTabDataFiles.DEFECT_13164_SDRF.getParentFile());
+        addChpFiles(fileSet, MageTabDataFiles.DEFECT_13164_SDRF.getParentFile());
+        return fileSet;
+    }
+    
+    private static MageTabFileSet getDefect13164BadInputSet() {
         MageTabFileSet fileSet = new MageTabFileSet();
         fileSet.addIdf(new JavaIOFileRef(MageTabDataFiles.DEFECT_13164_IDF));
         fileSet.addSdrf(new JavaIOFileRef(MageTabDataFiles.DEFECT_13164_SDRF));
-        addCelFiles(fileSet, MageTabDataFiles.SPECIFICATION_DERIVED_DATA_EXAMPLE_DATA_FILE.getParentFile());
-        addChpFiles(fileSet, MageTabDataFiles.SPECIFICATION_DERIVED_DATA_EXAMPLE_DATA_FILE.getParentFile());
+        addCelFiles(fileSet, MageTabDataFiles.DEFECT_13164_SDRF.getParentFile());
+        addChpFiles(fileSet, MageTabDataFiles.DEFECT_13164_SDRF.getParentFile());
         return fileSet;
     }
 
