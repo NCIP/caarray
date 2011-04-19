@@ -241,12 +241,7 @@ public final class TestMageTabSets {
     /**
      * Document set parsed ...
      */
-    public static final MageTabFileSet BAD_VOCABULARY_TERM_SOURCES_FILE_SET = getBadVocabularyTermSourcesFileSet();
-
-    /**
-     * Document set parsed ...
-     */
-    public static final MageTabFileSet GOOD_VOCABULARY_TERM_SOURCES_FILE_SET = getGoodVocabularyTermSourcesFileSet();
+    public static final MageTabFileSet DEFECT_13164 = getDefect13164InputSet();
 
     /**
      * Document set parsed ...
@@ -785,21 +780,12 @@ public final class TestMageTabSets {
         return fileSet;
     }
     
-    private static MageTabFileSet getBadVocabularyTermSourcesFileSet() {
+    private static MageTabFileSet getDefect13164InputSet() {
         MageTabFileSet fileSet = new MageTabFileSet();
-        fileSet.addIdf(new JavaIOFileRef(MageTabDataFiles.BAD_VOCABULARY_TERM_SOURCES_IDF));
-        fileSet.addSdrf(new JavaIOFileRef(MageTabDataFiles.BAD_VOCABULARY_TERM_SOURCES_SDRF));
-        fileSet.addNativeData(new JavaIOFileRef(MageTabDataFiles.TESTING_VOCABULARY_TERM_SOURCES_CEL));
-        fileSet.addNativeData(new JavaIOFileRef(MageTabDataFiles.TESTING_VOCABULARY_TERM_SOURCES_CHP));
-        return fileSet;
-    }
-    
-    private static MageTabFileSet getGoodVocabularyTermSourcesFileSet() {
-        MageTabFileSet fileSet = new MageTabFileSet();
-        fileSet.addIdf(new JavaIOFileRef(MageTabDataFiles.GOOD_VOCABULARY_TERM_SOURCES_IDF));
-        fileSet.addSdrf(new JavaIOFileRef(MageTabDataFiles.GOOD_VOCABULARY_TERM_SOURCES_SDRF));
-        fileSet.addNativeData(new JavaIOFileRef(MageTabDataFiles.TESTING_VOCABULARY_TERM_SOURCES_CEL));
-        fileSet.addNativeData(new JavaIOFileRef(MageTabDataFiles.TESTING_VOCABULARY_TERM_SOURCES_CHP));
+        fileSet.addIdf(new JavaIOFileRef(MageTabDataFiles.DEFECT_13164_IDF));
+        fileSet.addSdrf(new JavaIOFileRef(MageTabDataFiles.DEFECT_13164_SDRF));
+        addCelFiles(fileSet, MageTabDataFiles.SPECIFICATION_DERIVED_DATA_EXAMPLE_DATA_FILE.getParentFile());
+        addChpFiles(fileSet, MageTabDataFiles.SPECIFICATION_DERIVED_DATA_EXAMPLE_DATA_FILE.getParentFile());
         return fileSet;
     }
 

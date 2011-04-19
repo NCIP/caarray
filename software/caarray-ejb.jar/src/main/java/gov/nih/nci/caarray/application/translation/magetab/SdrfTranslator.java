@@ -273,14 +273,6 @@ final class SdrfTranslator extends AbstractTranslator {
 
     private void validateSamples(SdrfDocument document, Set<String> externalIds) {
         for (gov.nih.nci.caarray.magetab.sdrf.AbstractBioMaterial sdrfBm : document.getAllBiomaterials()) {
-            if (null != sdrfBm.getMaterialType() && null != sdrfBm.getMaterialType().getTermSource()
-                    && !ExperimentOntology.MGED_ONTOLOGY.getOntologyName().equals(
-                            sdrfBm.getMaterialType().getTermSource().getName())) {
-                document.addErrorMessage("The Material Type '" + sdrfBm.getMaterialType().getValue()
-                        + "' has an associated Term Source '" + sdrfBm.getMaterialType().getTermSource().getName()
-                        + "', which is invalid, as all Material " + "Types must come from the '"
-                        + ExperimentOntology.MGED_ONTOLOGY.getOntologyName() + "' Term Source.");
-            }
             for (Characteristic sdrfCharacteristic : sdrfBm.getCharacteristics()) {
                 String category = sdrfCharacteristic.getCategory();
                 boolean isExternalId = ExperimentOntologyCategory.EXTERNAL_SAMPLE_ID.getCategoryName().equals(category)
@@ -295,11 +287,11 @@ final class SdrfTranslator extends AbstractTranslator {
                 }
                 if (ExperimentOntologyCategory.ORGANISM.getCategoryName().equalsIgnoreCase(category)
                         && (null != sdrfCharacteristic.getTerm().getTermSource()
-                                && (!sdrfCharacteristic.getTerm().getTermSource().getName().equals(
-                                ExperimentOntology.NCBI.getOntologyName())))) {
+                                && !sdrfCharacteristic.getTerm().getTermSource().getName().equals(
+                                ExperimentOntology.NCBI.getOntologyName()))) {
                     document.addErrorMessage("The Characteristics [" + category + "] associated Term Source '"
                             + sdrfCharacteristic.getTerm().getTermSource().getName() + "' is invalid.  It must be '"
-                            + ExperimentOntology.NCBI.getOntologyName() + "', or the Term Source should be omitted"
+                            + ExperimentOntology.NCBI.getOntologyName() + "', or the Term Source should be ommitted"
                             + ", so the system can then auto-assign the " + ExperimentOntology.NCBI.getOntologyName()
                             + " Term Source.");
                 }
@@ -549,47 +541,37 @@ final class SdrfTranslator extends AbstractTranslator {
                 bioMaterial.addProtocolApplication(protocolApplication);
             }
         }
-        Term materialTypeTerm = getTerm(sdrfBiomaterial.getMaterialType());
-        if (null != materialTypeTerm && null == materialTypeTerm.getSource()) {
-            materialTypeTerm.setSource(this.vocabularyService.getSource(
-                    ExperimentOntology.MGED_ONTOLOGY.getOntologyName(), ExperimentOntology.MGED_ONTOLOGY.getVersion()));
-        }
-        bioMaterial.setMaterialType(materialTypeTerm);
+        bioMaterial.setMaterialType(getTerm(sdrfBiomaterial.getMaterialType()));
         for (Characteristic sdrfCharacteristic : sdrfBiomaterial.getCharacteristics()) {
-            processSdrfCharacteristic(bioMaterial, sdrfCharacteristic);
-        }
-    }
-    
-    private void processSdrfCharacteristic(final AbstractBioMaterial bioMaterial,
-            final Characteristic sdrfCharacteristic) {
-        AbstractCharacteristic characteristic = translateCharacteristic(sdrfCharacteristic);
-        String category = characteristic.getCategory().getName();
-        if (ExperimentOntologyCategory.ORGANISM_PART.getCategoryName().equals(category)) {
-            bioMaterial.setTissueSite(forceToTerm(characteristic));
-        } else if (ExperimentOntologyCategory.CELL_TYPE.getCategoryName().equals(category)) {
-            bioMaterial.setCellType(forceToTerm(characteristic));
-        } else if (ExperimentOntologyCategory.DISEASE_STATE.getCategoryName().equals(category)) {
-            bioMaterial.setDiseaseState(forceToTerm(characteristic));
-        } else if (ExperimentOntologyCategory.ORGANISM.getCategoryName().equals(category)) {
-            Organism organism = getOrganism(forceToTerm(characteristic));
-            if (null == organism.getTermSource()) {
-                organism.setTermSource(this.vocabularyService.getSource(
-                        ExperimentOntology.NCBI.getOntologyName(), ExperimentOntology.NCBI.getVersion()));
-            }
-            bioMaterial.setOrganism(organism);
-        } else if (ExperimentOntologyCategory.EXTERNAL_SAMPLE_ID.getCategoryName().equals(category)
-                || ExperimentOntologyCategory.EXTERNAL_ID.getCategoryName().equals(category)) {
-            bioMaterial.setExternalId(sdrfCharacteristic.getValue());
-        } else {
-            for (AbstractCharacteristic existingCharacteristic : bioMaterial.getCharacteristics()) {
-                if (existingCharacteristic.getCategory().equals(characteristic.getCategory())) {
-                    bioMaterial.getCharacteristics().remove(existingCharacteristic);
-                    getProjectDao().remove(existingCharacteristic);
-                    break;
+            AbstractCharacteristic characteristic = translateCharacteristic(sdrfCharacteristic);
+            String category = characteristic.getCategory().getName();
+            if (ExperimentOntologyCategory.ORGANISM_PART.getCategoryName().equals(category)) {
+                bioMaterial.setTissueSite(forceToTerm(characteristic));
+            } else if (ExperimentOntologyCategory.CELL_TYPE.getCategoryName().equals(category)) {
+                bioMaterial.setCellType(forceToTerm(characteristic));
+            } else if (ExperimentOntologyCategory.DISEASE_STATE.getCategoryName().equals(category)) {
+                bioMaterial.setDiseaseState(forceToTerm(characteristic));
+            } else if (ExperimentOntologyCategory.ORGANISM.getCategoryName().equals(category)) {
+                Organism organism = getOrganism(forceToTerm(characteristic));
+                if (null == organism.getTermSource()) {
+                    organism.setTermSource(this.vocabularyService.getSource(
+                            ExperimentOntology.NCBI.getOntologyName(), ExperimentOntology.NCBI.getVersion()));
                 }
+                bioMaterial.setOrganism(organism);
+            } else if (ExperimentOntologyCategory.EXTERNAL_SAMPLE_ID.getCategoryName().equals(category)
+                    || ExperimentOntologyCategory.EXTERNAL_ID.getCategoryName().equals(category)) {
+                bioMaterial.setExternalId(sdrfCharacteristic.getValue());
+            } else {
+                for (AbstractCharacteristic existingCharacteristic : bioMaterial.getCharacteristics()) {
+                    if (existingCharacteristic.getCategory().equals(characteristic.getCategory())) {
+                        bioMaterial.getCharacteristics().remove(existingCharacteristic);
+                        getProjectDao().remove(existingCharacteristic);
+                        break;
+                    }
+                }
+                bioMaterial.getCharacteristics().add(characteristic);
+                characteristic.setBioMaterial(bioMaterial);
             }
-            bioMaterial.getCharacteristics().add(characteristic);
-            characteristic.setBioMaterial(bioMaterial);
         }
     }
     
@@ -655,8 +637,8 @@ final class SdrfTranslator extends AbstractTranslator {
         if (mageTabProtocol.getTermSource() != null) {
             termSource = getTranslationResult().getSource(mageTabProtocol.getTermSource());
         } else {
-            termSource = this.vocabularyService.getSource(ExperimentOntology.MGED_ONTOLOGY.getOntologyName(),
-                    ExperimentOntology.MGED_ONTOLOGY.getVersion());
+            termSource = this.vocabularyService.getSource(ExperimentOntology.CAARRAY.getOntologyName(),
+                    ExperimentOntology.CAARRAY.getVersion());
         }
         Protocol p = new Protocol(mageTabProtocol.getName(), type, termSource);
         p.setContact(mageTabProtocol.getContact());
