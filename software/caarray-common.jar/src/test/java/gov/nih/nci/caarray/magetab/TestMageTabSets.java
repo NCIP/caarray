@@ -754,6 +754,14 @@ public final class TestMageTabSets {
         }
     }
     
+    
+//TODO: ARRAY-1942 follow-on tasks for <ARRAY-1896 Merge dkokotov_storage_osgi_consolidation Branch to trunk>
+//This method depends on string literals (such as "MAGE_TAB_ADF" and "MAGE_TAB_DATA_MATRIX_COPY_NUMBER") 
+//instead of relying on the appropriate named constants. We could not depend on the named constants because 
+//they are defined in modules/packages that this class should not depend on. E.g. MAGE_TAB_ADF is defined in 
+//gov.nih.nci.caarray.platforms.unparsed.UnparsedArrayDesignFileHandler in module caarray-ejb.jar
+//Some refactoring needs to be done to correctly align the dependencies. 
+//Note that the purpose of the method below is to map a AbstractMageTabDocument type to its corresponding FileType. 
     private static FileType guessFileType(boolean dataMatricesAreCopyNumber, String fileName, Class<? extends AbstractMageTabDocument> documentType) {
         if (IdfDocument.class.equals(documentType)) {
             return FileTypeRegistry.MAGE_TAB_IDF;
@@ -763,9 +771,9 @@ public final class TestMageTabSets {
             return typeRegistry.getTypeByName("MAGE_TAB_ADF");
         } else if (DataMatrix.class.equals(documentType)) {
             if (dataMatricesAreCopyNumber) {
-                return FileType.MAGE_TAB_DATA_MATRIX_COPY_NUMBER;
+                return typeRegistry.getTypeByName("MAGE_TAB_DATA_MATRIX_COPY_NUMBER");
             } else {
-            return typeRegistry.getTypeByName("MAGE_TAB_DATA_MATRIX");
+                return typeRegistry.getTypeByName("MAGE_TAB_DATA_MATRIX");
             }
         } else {
             return typeRegistry.getTypeFromExtension(fileName);

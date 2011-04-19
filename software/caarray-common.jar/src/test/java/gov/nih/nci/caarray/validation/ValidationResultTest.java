@@ -96,7 +96,6 @@ public class ValidationResultTest extends AbstractCaarrayTest {
 
     private static final String TEST_MESSAGE = "message";
     private final String fileName = "path/filename.txt";
-    private final File testFile = new File(fileName);
 
     @Test
     public void testIsValid() {
