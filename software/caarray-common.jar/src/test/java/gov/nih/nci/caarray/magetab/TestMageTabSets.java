@@ -318,6 +318,11 @@ public final class TestMageTabSets {
      * MAGE-TAB input set for testing renaming of term sources upon import (GForge 27244)
      */
     public static final MageTabFileSet RENAMING_TERM_SOURCES_INPUT_SET = getRenamingTermSourcesInputSet();
+    
+    /**
+     * MAGE-TAB input set for testing that a term source with same name and different url results in a new term source, not a rename (jira issue: https://tracker.nci.nih.gov/browse/ARRAY-1927)
+     */
+    public static final MageTabFileSet GETS_NEW_TERM_SOURCE_INPUT_SET = getTestGetsNewTermSourceInputSet();
 
     public static final MageTabFileSet MULTI_DERIVED_1_INPUT_SET = getSdrfTestInputSet(SdrfTestFiles.MULTI_DERIVED_1_IDF, SdrfTestFiles.MULTI_DERIVED_1_SDRF);
     public static final MageTabFileSet MULTI_NORMALIZATION_1_INPUT_SET = getSdrfTestInputSet(SdrfTestFiles.MULTI_NORMALIZATION_1_IDF, SdrfTestFiles.MULTI_NORMALIZATION_1_SDRF);
@@ -774,6 +779,14 @@ public final class TestMageTabSets {
         fileSet.addSdrf(new JavaIOFileRef(MageTabDataFiles.RENAMING_TERM_SOURCES_SDRF));
         addCelFiles(fileSet, MageTabDataFiles.RENAMING_TERM_SOURCES_DIRECTORY);
         addChpFiles(fileSet, MageTabDataFiles.RENAMING_TERM_SOURCES_DIRECTORY);
+        return fileSet;
+    }
+     
+    private static MageTabFileSet getTestGetsNewTermSourceInputSet() {
+        MageTabFileSet fileSet = new MageTabFileSet();
+        fileSet.addIdf(new JavaIOFileRef(MageTabDataFiles.GETS_NEW_TERM_SOURCE_IDF));
+        fileSet.addSdrf(new JavaIOFileRef(MageTabDataFiles.GETS_NEW_TERM_SOURCE_SDRF));
+        addCelFiles(fileSet, MageTabDataFiles.GETS_NEW_TERM_SOURCE_SDRF.getParentFile());
         return fileSet;
     }
      

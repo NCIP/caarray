@@ -129,7 +129,7 @@ final class TermSourceTranslator extends AbstractTranslator {
             return lookupSourceByNameUrlAndVersion(termSource.getName(), termSource.getFile(), termSource
                     .getVersion());
         } else if (hasFile && !hasVersion) {
-            return lookupSourceByNameAndUrl(termSource.getName(), termSource.getFile());
+            return lookupSourceByUrl(termSource.getName(), termSource.getFile());
         } else if (!hasFile && hasVersion) {
             return lookupSourceByNameAndVersion(termSource.getName(), termSource.getVersion());
         } else {
@@ -162,14 +162,15 @@ final class TermSourceTranslator extends AbstractTranslator {
      * @param file
      * @return
      */
-    private TermSource lookupSourceByNameAndUrl(String name, String url) {
+    private TermSource lookupSourceByUrl(String name, String url) {
         Set<TermSource> matches = vocabularyService.getSourcesByUrl(url);
         if (!matches.isEmpty()) {
             return getBestMatch(matches);
         } else {
-            TermSource result = lookupSourceByNameOnly(name);
-            result.setUrl(url);
-            return result;
+            TermSource newSource = new TermSource();
+            newSource.setName(name);
+            newSource.setUrl(url);
+            return newSource;
         }
     }
 
