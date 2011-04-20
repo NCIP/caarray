@@ -116,7 +116,7 @@ final class ProjectFilesReparseJob extends AbstractProjectFilesJob {
             CaArrayFileSet fileSet, ArrayDataImporter arrayDataImporter, MageTabImporter mageTabImporter,
             ProjectDao projectDao, SearchDao searchDao) {
     // CHECKSTYLE:ON
-        super(username, usernameHolder, targetProject, fileSet,
+        super(username, targetProject, fileSet,
                 arrayDataImporter, mageTabImporter, projectDao, searchDao);
     }
 
@@ -134,10 +134,10 @@ final class ProjectFilesReparseJob extends AbstractProjectFilesJob {
         new MageTabDocumentSet(new MageTabFileSet(), new ValidatorSet()), true);
         final FileStatus status = getFileSet().getStatus();
         if (status.equals(FileStatus.VALIDATED) || status.equals(FileStatus.VALIDATED_NOT_PARSED)) {
-        	getProjectDao().flushSession();
+            getProjectDao().flushSession();
             getProjectDao().clearSession();
             importArrayData(fileSet);
-     	}
+         }
     }
 
     private void importArrayData(CaArrayFileSet fileSet) {

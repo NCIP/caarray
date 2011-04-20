@@ -82,7 +82,6 @@
  */package gov.nih.nci.caarray.platforms;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import gov.nih.nci.caarray.AbstractCaarrayTest;
 import gov.nih.nci.caarray.application.arraydata.ArrayDataService;
@@ -234,25 +233,19 @@ public abstract class AbstractHandlerTest extends AbstractCaarrayTest {
         return mTabSet;
     }
 
-    protected void testValidFile(CaArrayFile caArrayFile, MageTabDocumentSet mTabSet, boolean probeNameValidationErrorsAreAcceptable) {
+    protected void testValidFile(CaArrayFile caArrayFile, MageTabDocumentSet mTabSet) {
         assertEquals(FileStatus.UPLOADED, caArrayFile.getFileStatus());
         this.arrayDataService.validate(caArrayFile, mTabSet, false);
         if (FileStatus.VALIDATION_ERRORS.equals(caArrayFile.getFileStatus())) {
             System.out.println(caArrayFile.getValidationResult());
         }
-        if (probeNameValidationErrorsAreAcceptable) {
-            assertTrue("The file is only allowed to have probe name validation errors, but other errors were found.", onlyAcceptableValidationErrorsArePresent(caArrayFile.getValidationResult(), new String[] {" was not found in array design '"}));
-        } else {
-            assertEquals(FileStatus.VALIDATED, caArrayFile.getFileStatus());
-        }
+        assertEquals(FileStatus.VALIDATED, caArrayFile.getFileStatus());
     }
-
-    protected void testInvalidFile(CaArrayFile caArrayFile, MageTabDocumentSet mTabSet, final String[] acceptableErrorMessageFragments) {
+    
+    protected void testInvalidFile(CaArrayFile caArrayFile, MageTabDocumentSet mTabSet) {
         assertEquals(FileStatus.UPLOADED, caArrayFile.getFileStatus());
         this.arrayDataService.validate(caArrayFile, mTabSet, false);
         assertEquals(FileStatus.VALIDATION_ERRORS, caArrayFile.getFileStatus());
-        System.out.println("caArrayFile.getValidationResult().getMessages() =" + caArrayFile.getValidationResult().getMessages() + "=");
-        assertTrue("The file should should have additional validation errors.", !onlyAcceptableValidationErrorsArePresent(caArrayFile.getValidationResult(), acceptableErrorMessageFragments));
     }
     
     private static boolean onlyAcceptableValidationErrorsArePresent(final FileValidationResult fileValidationResult, String[] acceptableErrorMessageFragments) {

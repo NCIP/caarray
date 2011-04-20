@@ -68,7 +68,7 @@ public class IlluminaGenotypingProcessedMatrixHandlerIntegrationTest extends Abs
         }
     }
 
-    static ArrayDesign buildArrayDesign() {
+    public static ArrayDesign buildArrayDesign() {
         final ArrayDesign design = new ArrayDesign();
         design.setName("foo");
         design.setVersion("99");

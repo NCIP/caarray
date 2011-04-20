@@ -156,6 +156,7 @@ import gov.nih.nci.caarray.magetab.TestMageTabSets;
 import gov.nih.nci.caarray.magetab.io.FileRef;
 import gov.nih.nci.caarray.magetab.io.JavaIOFileRef;
 import gov.nih.nci.caarray.plugins.genepix.GenepixQuantitationType;
+import gov.nih.nci.caarray.plugins.illumina.IlluminaGenotypingProcessedMatrixHandlerIntegrationTest;
 import gov.nih.nci.caarray.plugins.illumina.IlluminaGenotypingProcessedMatrixQuantitationType;
 import gov.nih.nci.caarray.plugins.illumina.SampleProbeProfileQuantitationType;
 import gov.nih.nci.caarray.plugins.nimblegen.NimblegenQuantitationType;
@@ -550,7 +551,7 @@ public class FileImportIntegrationTest extends AbstractFileManagementServiceInte
     @Test
     public void testIlluminaGenotypingProcessedMatrixImport() throws Exception {
         Transaction tx = hibernateHelper.beginTransaction();
-        ArrayDesign design = IlluminaGenotypingProcessedMatrixHandlerTest.buildArrayDesign();
+        ArrayDesign design = IlluminaGenotypingProcessedMatrixHandlerIntegrationTest.buildArrayDesign();
         hibernateHelper.getCurrentSession().save(design);        
         tx.commit();
 

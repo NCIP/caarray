@@ -84,7 +84,7 @@ package gov.nih.nci.caarray.plugins.illumina;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import gov.nih.nci.caarray.application.file.AbstractFileManagementServiceIntegrationTest;
+import gov.nih.nci.caarray.application.file.AbstractFileManagementServiceIntegrationTest2;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileStatus;

@@ -194,7 +194,7 @@ public class FileManagementServiceTest extends AbstractServiceTest {
                 this.daoFactoryStub.getSearchDao(), mageTabImporterProvider);
 
         fileManagementServiceBean.setSubmitter(submitter);
-
+        
         final ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
         locatorStub.addLookup(FileAccessService.JNDI_NAME, this.fileAccessServiceStub);
         locatorStub.addLookup(ArrayDataService.JNDI_NAME, new LocalArrayDataServiceStub());
