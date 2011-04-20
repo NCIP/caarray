@@ -151,6 +151,7 @@ import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.sample.Extract;
 import gov.nih.nci.caarray.domain.sample.Source;
+import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.magetab.MageTabFileSet;
 import gov.nih.nci.caarray.magetab.MageTabParser;
@@ -183,6 +184,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.hibernate.Query;
 import org.hibernate.Transaction;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -230,6 +232,29 @@ public class FileImportIntegrationTest extends AbstractFileManagementServiceInte
                 .getRawDataCollection().iterator().next().getType().getName());
         CaArrayFile imported = project.getImportedFiles().iterator().next();
         assertEquals(FileStatus.IMPORTED, imported.getFileStatus());
+        tx.commit();
+    }
+
+    @Test
+    public void testImportMageTabCausesNewTermSourceCreationForSameNameDifferentUrl() throws Exception {
+        ArrayDesign design = importArrayDesign(AffymetrixArrayDesignFiles.TEST3_CDF);
+        addDesignToExperiment(design);
+
+        importFiles(TestMageTabSets.GETS_NEW_TERM_SOURCE_INPUT_SET);
+
+        Transaction tx = hibernateHelper.beginTransaction();
+        Project project = getTestProject();
+        assertEquals(FileStatus.IMPORTED, project.getFileSet().getStatus());
+        Set<Extract> extracts = project.getExperiment().getExtracts();
+        assertEquals("this number of extracts is incorrect.", 1, extracts.size());
+        Extract extract = extracts.iterator().next();
+        assertTrue("The term source URL is incorrect.", extract.getMaterialType().getSource().getName().equals("MO"));
+        assertTrue("The term source URL is incorrect.", extract.getMaterialType().getSource().getUrl().equals("http://foobar.com"));
+        assertTrue("The term source URL is incorrect.", extract.getMaterialType().getSource().getVersion().equals("9001"));
+        
+        // verify both MO term sources are now present
+        Query query = hibernateHelper.getCurrentSession().createQuery("from " + TermSource.class.getName() + " where name = 'MO'");
+        assertEquals("The number of term sources is incorrect.", 2, query.list().size());
         tx.commit();
     }
 

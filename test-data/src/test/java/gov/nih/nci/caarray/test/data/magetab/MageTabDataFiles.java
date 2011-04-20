@@ -602,8 +602,14 @@ public class MageTabDataFiles {
             .getResource("/magetab/renaming_term_sources/20297.idf").getFile());
 
     public static final File RENAMING_TERM_SOURCES_SDRF = new File(MageTabDataFiles.class
-            .getResource("/magetab/renaming_term_sources/20297.sdrf").getFile());
+            .getResource("/magetab/renaming_term_sources/20297.sdrf").getFile()); 
 
     public static final File RENAMING_TERM_SOURCES_DIRECTORY = new File(MageTabDataFiles.class
-            .getResource("/magetab/renaming_term_sources").getFile());
+            .getResource("/magetab/renaming_term_sources").getFile());  
+
+    public static final File GETS_NEW_TERM_SOURCE_IDF = new File(MageTabDataFiles.class
+            .getResource("/magetab/test_gets_new_term_source/test.idf").getFile());
+
+    public static final File GETS_NEW_TERM_SOURCE_SDRF = new File(MageTabDataFiles.class
+            .getResource("/magetab/test_gets_new_term_source/test.sdrf").getFile());
 }
