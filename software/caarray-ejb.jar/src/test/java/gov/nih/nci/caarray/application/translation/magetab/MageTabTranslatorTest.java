@@ -214,6 +214,38 @@ public class MageTabTranslatorTest extends AbstractServiceTest {
     }
     
     @Test
+    public void testDefect13164_positive() throws InvalidDataException, MageTabParsingException {
+        MageTabFileSet mageTabSet = TestMageTabSets.DEFECT_13164_GOOD;
+        for (FileRef f : mageTabSet.getAllFiles()) {
+            fileAccessServiceStub.add(f.getAsFile());
+        }
+        MageTabDocumentSet docSet = MageTabParser.INSTANCE.parse(mageTabSet);
+        assertTrue(docSet.getValidationResult().isValid());
+        CaArrayFileSet fileSet = TestMageTabSets.getFileSet(mageTabSet);
+        ValidationResult result = this.translator.validate(docSet, fileSet);
+        assertTrue(result.isValid());
+    }
+    
+    @Test
+    public void testDefect13164_negative() throws InvalidDataException, MageTabParsingException {
+        MageTabFileSet mageTabSet = TestMageTabSets.DEFECT_13164_BAD;
+        for (FileRef f : mageTabSet.getAllFiles()) {
+            fileAccessServiceStub.add(f.getAsFile());
+        }
+        MageTabDocumentSet docSet = MageTabParser.INSTANCE.parse(mageTabSet);
+        assertTrue(docSet.getValidationResult().isValid());
+        CaArrayFileSet fileSet = TestMageTabSets.getFileSet(mageTabSet);
+        ValidationResult result = this.translator.validate(docSet, fileSet);
+        assertFalse(result.isValid());
+        FileValidationResult fileResult = result.getFileValidationResult(
+                MageTabDataFiles.DEFECT_13164_SDRF);
+        assertNotNull(fileResult);
+        assertFalse(result.isValid());
+        assertEquals(1, fileResult.getMessages().size());
+        assertTrue(fileResult.getMessages().get(0).getMessage().indexOf("or the Term Source should be omitted") >= 0);
+    }
+    
+    @Test
     public void testVocabularyTermSources() throws InvalidDataException, MageTabParsingException {
         // negative testing
         MageTabFileSet badMageTabFileSet = TestMageTabSets.BAD_VOCABULARY_TERM_SOURCES_FILE_SET;
