@@ -112,7 +112,7 @@ final class ArrayDesignFileImportJob extends AbstractFileManagementJob {
     @SuppressWarnings("PMD.ExcessiveParameterList")
     ArrayDesignFileImportJob(String username, UsernameHolder usernameHolder,
             ArrayDesign arrayDesign, ArrayDao arrayDao) {
-        super(username, usernameHolder);
+        super(username);
         this.arrayDesignId = arrayDesign.getId();
         this.arrayDesignName = arrayDesign.getName();
         this.arrayDao = arrayDao;
@@ -154,7 +154,7 @@ final class ArrayDesignFileImportJob extends AbstractFileManagementJob {
     protected void doExecute() {
         ArrayDesign arrayDesign = getArrayDesign();
         ArrayDesignImporter importer = new ArrayDesignImporter(ServiceLocatorFactory.getArrayDesignService());
-		importer.importArrayDesign(arrayDesign);
+        importer.importArrayDesign(arrayDesign);
     }
 
     private ArrayDesign getArrayDesign() {

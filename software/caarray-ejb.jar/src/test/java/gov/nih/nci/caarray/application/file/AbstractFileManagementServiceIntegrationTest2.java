@@ -97,7 +97,9 @@ import gov.nih.nci.caarray.application.translation.magetab.MageTabTranslatorBean
 import gov.nih.nci.caarray.application.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.application.vocabulary.VocabularyServiceBean;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
+import gov.nih.nci.caarray.dao.JobQueueDao;
 import gov.nih.nci.caarray.dao.VocabularyDao;
+import gov.nih.nci.caarray.dao.stub.JobDaoSingleJobStub;
 import gov.nih.nci.caarray.dataStorage.spi.DataStorage;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.contact.Organization;
@@ -116,8 +118,8 @@ import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.injection.InjectorFactory;
 import gov.nih.nci.caarray.magetab.MageTabFileSet;
 import gov.nih.nci.caarray.magetab.io.FileRef;
+import gov.nih.nci.caarray.util.CaArrayUsernameHolder;
 import gov.nih.nci.caarray.util.CaArrayUtils;
-import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import gov.nih.nci.caarray.validation.InvalidDataFileException;
 
@@ -155,6 +157,7 @@ import com.google.inject.multibindings.MapBinder;
 //AbstractFileManagementServiceIntegrationTest and AbstractFileManagementServiceIntegrationTest2 will affect their respective 
 //subclasses (which are FileImportIntegrationTest and FileValidationIntegrationTest vs. AffymetrixFileManagementServiceIntegrationTest, 
 //AgilentFileManagementServiceIntegrationTest, IlluminaFileManagementServiceIntegrationTest respectively). 
+//TODO: ARRAY-1942 follow-on tasks for <ARRAY-1896 Merge dkokotov_storage_osgi_consolidation Branch to trunk>
 
 @SuppressWarnings("PMD")
 public abstract class AbstractFileManagementServiceIntegrationTest2 extends AbstractServiceIntegrationTest {
@@ -339,10 +342,9 @@ public abstract class AbstractFileManagementServiceIntegrationTest2 extends Abst
 
     protected void importFiles(Project targetProject, CaArrayFileSet fileSet, DataImportOptions dataImportOptions)
             throws Exception {
-        final ProjectFilesImportJob job = new ProjectFilesImportJob(UsernameHolder.getUser(), targetProject, fileSet,
-                dataImportOptions);
-        job.setDaoFactory(CaArrayDaoFactory.INSTANCE);
-        job.setMageTabImporter(this.injector.getInstance(MageTabImporter.class));
+        final ProjectFilesImportJob job = new ProjectFilesImportJob(CaArrayUsernameHolder.getUser(), targetProject, fileSet,
+                dataImportOptions, this.injector.getInstance(ArrayDataImporter.class), this.injector.getInstance(MageTabImporter.class),
+                CaArrayDaoFactory.INSTANCE.getProjectDao(), CaArrayDaoFactory.INSTANCE.getSearchDao());
         try {
             job.execute();
         } catch (final Exception e) {
@@ -352,10 +354,9 @@ public abstract class AbstractFileManagementServiceIntegrationTest2 extends Abst
     }
 
     protected void validateFiles(Project targetProject, CaArrayFileSet fileSet) throws Exception {
-        final ProjectFilesValidationJob job = new ProjectFilesValidationJob(UsernameHolder.getUser(), targetProject,
-                fileSet);
-        job.setDaoFactory(CaArrayDaoFactory.INSTANCE);
-        job.setMageTabImporter(this.injector.getInstance(MageTabImporter.class));
+        final ProjectFilesValidationJob job = new ProjectFilesValidationJob(CaArrayUsernameHolder.getUser(), targetProject,
+                fileSet, this.injector.getInstance(ArrayDataImporter.class), this.injector.getInstance(MageTabImporter.class),
+                CaArrayDaoFactory.INSTANCE.getProjectDao(), CaArrayDaoFactory.INSTANCE.getSearchDao());
         try {
             job.execute();
         } catch (final Exception e) {
@@ -442,8 +443,9 @@ public abstract class AbstractFileManagementServiceIntegrationTest2 extends Abst
         this.injector.injectMembers(mdb);
         final UserTransaction ut = Mockito.mock(UserTransaction.class);
         mdb.setTransaction(ut);
-        final DirectJobSubmitter submitter = new DirectJobSubmitter(mdb);
-        bean.setSubmitter(submitter);
+        JobQueueDao jobDao = new JobDaoSingleJobStub();
+        final DirectJobSubmitter submitter = new DirectJobSubmitter(mdb, jobDao);
+      //  bean.setSubmitter(submitter);
 
         return bean;
     }

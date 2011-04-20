@@ -89,7 +89,6 @@ import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
-import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.security.authorization.domainobjects.User;
 
 import java.sql.Connection;
@@ -120,11 +119,11 @@ abstract class AbstractProjectFilesJob extends AbstractFileManagementJob {
     @SuppressWarnings("PMD.ExcessiveParameterList")
     @Inject
     // CHECKSTYLE:OFF more than 7 parameters are okay for injected constructor
-    AbstractProjectFilesJob(String username, UsernameHolder usernameHolder, Project targetProject,
+    AbstractProjectFilesJob(String username, Project targetProject,
             CaArrayFileSet fileSet, ArrayDataImporter arrayDataImporter, MageTabImporter mageTabImporter,
             ProjectDao projectDao, SearchDao searchDao) {
     // CHECKSTYLE:ON
-        super(username, usernameHolder);
+        super(username);
         this.projectId = targetProject.getId();
         this.experimentName = targetProject.getExperiment().getTitle();
         this.arrayDataImporter = arrayDataImporter;

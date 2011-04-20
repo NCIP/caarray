@@ -91,8 +91,6 @@ import gov.nih.nci.caarray.application.arraydata.DataImportOptions;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
-import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
-import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheStubFactory;
 import gov.nih.nci.caarray.application.translation.TranslationModule;
 import gov.nih.nci.caarray.application.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
@@ -117,8 +115,8 @@ import gov.nih.nci.caarray.magetab.MageTabFileSet;
 import gov.nih.nci.caarray.magetab.TestMageTabSets;
 import gov.nih.nci.caarray.magetab.io.FileRef;
 import gov.nih.nci.caarray.magetab.io.JavaIOFileRef;
-import gov.nih.nci.caarray.util.CaArrayUtils;
 import gov.nih.nci.caarray.util.CaArrayUsernameHolder;
+import gov.nih.nci.caarray.util.CaArrayUtils;
 import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import gov.nih.nci.caarray.validation.InvalidDataFileException;
@@ -499,7 +497,7 @@ public abstract class AbstractFileManagementServiceIntegrationTest extends Abstr
                         JobQueueDao jobDao = new JobDaoSingleJobStub();
                         Provider<UsernameHolder> usernameHolderProvider
                             = Providers.of(mock(UsernameHolder.class));
-                        FileManagementMDB mdb = new FileManagementMDB(hibernateHelper, jobDao, usernameHolderProvider );
+                        FileManagementMDB mdb = new FileManagementMDB();
                         UserTransaction ut = mock(UserTransaction.class);
                         mdb.setTransaction(ut);
                         DirectJobSubmitter submitter = new DirectJobSubmitter(mdb, jobDao);
@@ -511,11 +509,8 @@ public abstract class AbstractFileManagementServiceIntegrationTest extends Abstr
     }
 
     private FileManagementService createFileManagementService(final FileAccessServiceStub fileAccessServiceStub) {
-        ServiceLocatorStub locatorStub = ServiceLocatorStub.registerActualImplementations();
+        ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
         locatorStub.addLookup(FileAccessService.JNDI_NAME, fileAccessServiceStub);
-
-        TemporaryFileCacheLocator.setTemporaryFileCacheFactory(new TemporaryFileCacheStubFactory(fileAccessServiceStub));
-
         return (FileManagementServiceBean) injector.getInstance(FileManagementService.class);
     }
 

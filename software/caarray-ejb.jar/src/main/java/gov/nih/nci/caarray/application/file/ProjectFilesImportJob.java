@@ -90,7 +90,6 @@ import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.project.JobType;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.magetab.MageTabParsingException;
-import gov.nih.nci.caarray.util.UsernameHolder;
 
 import org.apache.log4j.Logger;
 
@@ -109,11 +108,11 @@ final class ProjectFilesImportJob extends AbstractProjectFilesJob {
     // CHECKSTYLE:OFF more than 7 parameters are okay for injected constructor
     @SuppressWarnings("PMD.ExcessiveParameterList")
     @Inject
-    ProjectFilesImportJob(String username, UsernameHolder usernameHolder, Project targetProject,
+    ProjectFilesImportJob(String username, Project targetProject,
             CaArrayFileSet fileSet, DataImportOptions dataImportOptions, ArrayDataImporter arrayDataImporter,
             MageTabImporter mageTabImporter, ProjectDao projectDao, SearchDao searchDao) {
     // CHECKSTYLE:ON
-        super(username, usernameHolder, targetProject, fileSet, arrayDataImporter,
+        super(username, targetProject, fileSet, arrayDataImporter,
                 mageTabImporter, projectDao, searchDao);
         this.dataImportOptions = dataImportOptions;
     }
@@ -128,12 +127,12 @@ final class ProjectFilesImportJob extends AbstractProjectFilesJob {
     @Override
     protected void doExecute() {
         CaArrayFileSet fileSet = getFileSet();
-		doValidate(fileSet);
-		FileStatus status = getFileSet().getStatus();
+        doValidate(fileSet);
+        FileStatus status = getFileSet().getStatus();
         if (status.equals(FileStatus.VALIDATED) || status.equals(FileStatus.VALIDATED_NOT_PARSED)) {
-        	importAnnotation(fileSet);
+            importAnnotation(fileSet);
             importArrayData(fileSet);
-		}
+        }
     }
 
     private void importAnnotation(CaArrayFileSet fileSet) {

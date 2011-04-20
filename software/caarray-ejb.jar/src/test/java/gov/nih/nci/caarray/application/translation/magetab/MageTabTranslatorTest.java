@@ -90,8 +90,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import gov.nih.nci.caarray.application.AbstractServiceTest;
-import gov.nih.nci.caarray.application.arraydesign.ArrayDesignServiceTest;
-import gov.nih.nci.caarray.application.file.AbstractFileManagementServiceIntegrationTest;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
 import gov.nih.nci.caarray.application.translation.CaArrayTranslationResult;
 import gov.nih.nci.caarray.application.vocabulary.VocabularyService;
@@ -113,7 +111,6 @@ import gov.nih.nci.caarray.domain.file.FileTypeRegistryImpl;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.ExperimentContact;
-import gov.nih.nci.caarray.domain.project.ExperimentOntology;
 import gov.nih.nci.caarray.domain.project.MeasurementFactorValue;
 import gov.nih.nci.caarray.domain.project.TermBasedFactorValue;
 import gov.nih.nci.caarray.domain.project.UserDefinedFactorValue;
@@ -146,7 +143,6 @@ import gov.nih.nci.caarray.magetab.sdrf.SdrfDocument;
 import gov.nih.nci.caarray.platforms.spi.DataFileHandler;
 import gov.nih.nci.caarray.platforms.spi.DesignFileHandler;
 import gov.nih.nci.caarray.test.data.arraydata.GenepixArrayDataFiles;
-import gov.nih.nci.caarray.test.data.arraydesign.AgilentArrayDesignFiles;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import gov.nih.nci.caarray.validation.FileValidationResult;
@@ -167,7 +163,6 @@ import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.criterion.Order;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
@@ -259,54 +254,55 @@ public class MageTabTranslatorTest extends AbstractServiceTest {
         // negative testing
         MageTabFileSet badMageTabFileSet = TestMageTabSets.BAD_VOCABULARY_TERM_SOURCES_FILE_SET;
         for (FileRef f : badMageTabFileSet.getAllFiles()) {
-            fileAccessServiceStub.add(f.getAsFile());
-        MageTabDocumentSet badMageTabDocumentSet = MageTabParser.INSTANCE.parse(badMageTabFileSet);
-        assertTrue(badMageTabDocumentSet.getValidationResult().isValid());
-        CaArrayFileSet badCaarrayFileSet = TestMageTabSets.getFileSet(badMageTabFileSet);
-        ValidationResult badValidationResult = this.translator.validate(badMageTabDocumentSet, badCaarrayFileSet);
-        FileValidationResult badSdrfFileValidationResult = badValidationResult.getFileValidationResult(
-                MageTabDataFiles.BAD_VOCABULARY_TERM_SOURCES_SDRF);
-        assertNotNull(badSdrfFileValidationResult);
-        assertFalse(badValidationResult.isValid());
-        assertEquals(2, badSdrfFileValidationResult.getMessages().size());
-        assertTrue(badSdrfFileValidationResult.getMessages().get(0).getMessage().indexOf("all Material Types must come from the") >= 0);
-        assertTrue(badSdrfFileValidationResult.getMessages().get(1).getMessage().indexOf("or the Term Source should be omitted") >= 0);
-        FileValidationResult badIdfFileValidationResult = badValidationResult.getFileValidationResult(MageTabDataFiles.BAD_VOCABULARY_TERM_SOURCES_IDF);
-        assertNotNull(badIdfFileValidationResult);
-        assertEquals(1, badIdfFileValidationResult.getMessages().size());
-        assertTrue(badIdfFileValidationResult.getMessages().get(0).getMessage().indexOf("All Protocol Types must come from the") >= 0);
-
-        // positive testing
-        MageTabFileSet goodMageTabFileSet = TestMageTabSets.GOOD_VOCABULARY_TERM_SOURCES_FILE_SET;
-        for (FileRef f : goodMageTabFileSet.getAllFiles()) {
-            fileAccessServiceStub.add(f.getAsFile());
+                fileAccessServiceStub.add(f.getAsFile());
+            MageTabDocumentSet badMageTabDocumentSet = MageTabParser.INSTANCE.parse(badMageTabFileSet);
+            assertTrue(badMageTabDocumentSet.getValidationResult().isValid());
+            CaArrayFileSet badCaarrayFileSet = TestMageTabSets.getFileSet(badMageTabFileSet);
+            ValidationResult badValidationResult = this.translator.validate(badMageTabDocumentSet, badCaarrayFileSet);
+            FileValidationResult badSdrfFileValidationResult = badValidationResult.getFileValidationResult(
+                    MageTabDataFiles.BAD_VOCABULARY_TERM_SOURCES_SDRF.getName());
+            assertNotNull(badSdrfFileValidationResult);
+            assertFalse(badValidationResult.isValid());
+            assertEquals(2, badSdrfFileValidationResult.getMessages().size());
+            assertTrue(badSdrfFileValidationResult.getMessages().get(0).getMessage().indexOf("all Material Types must come from the") >= 0);
+            assertTrue(badSdrfFileValidationResult.getMessages().get(1).getMessage().indexOf("or the Term Source should be omitted") >= 0);
+            FileValidationResult badIdfFileValidationResult = badValidationResult.getFileValidationResult(MageTabDataFiles.BAD_VOCABULARY_TERM_SOURCES_IDF.getName());
+            assertNotNull(badIdfFileValidationResult);
+            assertEquals(1, badIdfFileValidationResult.getMessages().size());
+            assertTrue(badIdfFileValidationResult.getMessages().get(0).getMessage().indexOf("All Protocol Types must come from the") >= 0);
+    
+            // positive testing
+            MageTabFileSet goodMageTabFileSet = TestMageTabSets.GOOD_VOCABULARY_TERM_SOURCES_FILE_SET;
+            for (FileRef fref : goodMageTabFileSet.getAllFiles()) {
+                fileAccessServiceStub.add(fref.getAsFile());
+            }
+            MageTabDocumentSet goodMageTabDocumentSet = MageTabParser.INSTANCE.parse(goodMageTabFileSet);
+            assertTrue(goodMageTabDocumentSet.getValidationResult().isValid());
+            CaArrayFileSet goodCaarrayFileSet = TestMageTabSets.getFileSet(goodMageTabFileSet);
+            ValidationResult goodValidationResult = this.translator.validate(goodMageTabDocumentSet, goodCaarrayFileSet);
+            FileValidationResult goodSdrfFileValidationResult = goodValidationResult.getFileValidationResult(
+                    MageTabDataFiles.GOOD_VOCABULARY_TERM_SOURCES_SDRF.getName());
+            assertNull(goodSdrfFileValidationResult);
+            
+            CaArrayTranslationResult goodCaArrayTranslationResult = this.translator.translate(goodMageTabDocumentSet, goodCaarrayFileSet);
+            Collection<Experiment> investigationsCollection = goodCaArrayTranslationResult.getInvestigations();
+            assertTrue("There should only be one experiment.", investigationsCollection.size() == 1);
+            Experiment experiment = investigationsCollection.iterator().next();
+            Investigation investigation = goodMageTabDocumentSet.getIdfDocument(MageTabDataFiles.GOOD_VOCABULARY_TERM_SOURCES_IDF.getName()).getInvestigation();
+            List<Protocol> protocols = investigation.getProtocols();
+            Protocol protocol = protocols.get(0);
+            String protocolTypeTermSourceUrl = protocol.getType().getTermSource().getFile();
+            assertEquals("The protocol term source is incorrect.", "http://mged.sourceforge.net/ontologies/MGEDOntology1.1.8.daml", protocolTypeTermSourceUrl);
+            Set<Sample> samplesSet = experiment.getSamples();
+            assertTrue("There should only be one sample.", samplesSet.size() == 1);
+            Set<Source> sourcesSet = experiment.getSources();
+            assertTrue("There should only be one source.", sourcesSet.size() == 1);
+            Sample sample = samplesSet.iterator().next();
+            Source source = sourcesSet.iterator().next();
+            assertEquals("The sample organism is incorrect.", "Homo sapiens", sample.getOrganism().getScientificName());
+            assertEquals("The sample organism term source is incorrect.", "http://ncicb.nci.nih.gov/", sample.getOrganism().getTermSource().getUrl());
+            assertEquals("The source material type term source is incorrect.", "http://mged.sourceforge.net/ontologies/MGEDOntology1.1.8.daml", source.getMaterialType().getSource().getUrl());
         }
-        MageTabDocumentSet goodMageTabDocumentSet = MageTabParser.INSTANCE.parse(goodMageTabFileSet);
-        assertTrue(goodMageTabDocumentSet.getValidationResult().isValid());
-        CaArrayFileSet goodCaarrayFileSet = TestMageTabSets.getFileSet(goodMageTabFileSet);
-        ValidationResult goodValidationResult = this.translator.validate(goodMageTabDocumentSet, goodCaarrayFileSet);
-        FileValidationResult goodSdrfFileValidationResult = goodValidationResult.getFileValidationResult(
-                MageTabDataFiles.GOOD_VOCABULARY_TERM_SOURCES_SDRF);
-        assertNull(goodSdrfFileValidationResult);
-        
-        CaArrayTranslationResult goodCaArrayTranslationResult = this.translator.translate(goodMageTabDocumentSet, goodCaarrayFileSet);
-        Collection<Experiment> investigationsCollection = goodCaArrayTranslationResult.getInvestigations();
-        assertTrue("There should only be one experiment.", investigationsCollection.size() == 1);
-        Experiment experiment = investigationsCollection.iterator().next();
-        Investigation investigation = goodMageTabDocumentSet.getIdfDocument(MageTabDataFiles.GOOD_VOCABULARY_TERM_SOURCES_IDF.getName()).getInvestigation();
-        List<Protocol> protocols = investigation.getProtocols();
-        Protocol protocol = protocols.get(0);
-        String protocolTypeTermSourceUrl = protocol.getType().getTermSource().getFile();
-        assertEquals("The protocol term source is incorrect.", "http://mged.sourceforge.net/ontologies/MGEDOntology1.1.8.daml", protocolTypeTermSourceUrl);
-        Set<Sample> samplesSet = experiment.getSamples();
-        assertTrue("There should only be one sample.", samplesSet.size() == 1);
-        Set<Source> sourcesSet = experiment.getSources();
-        assertTrue("There should only be one source.", sourcesSet.size() == 1);
-        Sample sample = samplesSet.iterator().next();
-        Source source = sourcesSet.iterator().next();
-        assertEquals("The sample organism is incorrect.", "Homo sapiens", sample.getOrganism().getScientificName());
-        assertEquals("The sample organism term source is incorrect.", "http://ncicb.nci.nih.gov/", sample.getOrganism().getTermSource().getUrl());
-        assertEquals("The source material type term source is incorrect.", "http://mged.sourceforge.net/ontologies/MGEDOntology1.1.8.daml", source.getMaterialType().getSource().getUrl());
     }
 
     @Test

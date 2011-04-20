@@ -69,12 +69,9 @@ import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
 import gov.nih.nci.caarray.application.translation.magetab.MageTabTranslator;
 import gov.nih.nci.caarray.application.translation.magetab.MageTabTranslatorStub;
 import gov.nih.nci.caarray.dao.ArrayDao;
-import gov.nih.nci.caarray.dao.JobQueueDao;
-import gov.nih.nci.caarray.dao.ProjectDao;
 import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.dao.stub.ArrayDaoStub;
 import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
-import gov.nih.nci.caarray.dao.stub.JobDaoSingleJobStub;
 import gov.nih.nci.caarray.dao.stub.SearchDaoStub;
 import gov.nih.nci.caarray.dataStorage.DataStorageFacade;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
@@ -91,8 +88,8 @@ import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.file.FileTypeRegistry;
 import gov.nih.nci.caarray.domain.file.FileTypeRegistryImpl;
-import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.ExecutableJob;
+import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.magetab.MageTabFileSet;
@@ -107,8 +104,6 @@ import gov.nih.nci.caarray.test.data.arraydata.AffymetrixArrayDataFiles;
 import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
 import gov.nih.nci.caarray.test.data.arraydesign.GenepixArrayDesignFiles;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
-import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
-import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.InvalidDataFileException;
@@ -161,7 +156,7 @@ public class FileManagementServiceTest extends AbstractServiceTest {
             public void handleUnexpectedError(ExecutableJob job) {
                 if (job instanceof AbstractProjectFilesJob) {
                     final AbstractProjectFilesJob projectFilesJob = (AbstractProjectFilesJob) job;
-                    for (final CaArrayFile file : projectFilesJob.getFileSet(projectFilesJob.getProject()).getFiles()) {
+                    for (final CaArrayFile file : projectFilesJob.getFileSet().getFiles()) {
                         file.setFileStatus(FileStatus.IMPORT_FAILED);
                     }
                 } else if (job instanceof ArrayDesignFileImportJob) {
@@ -189,7 +184,7 @@ public class FileManagementServiceTest extends AbstractServiceTest {
         final Provider<MageTabImporter> mageTabImporterProvider = new Provider<MageTabImporter>() {
             @Override
             public MageTabImporter get() {
-                return new MageTabImporter(ServiceLocatorFactory.getMageTabTranslator(),
+                return new MageTabImporterImpl(ServiceLocatorFactory.getMageTabTranslator(),
                         FileManagementServiceTest.this.daoFactoryStub.getSearchDao(),
                         FileManagementServiceTest.this.daoFactoryStub.getProjectDao(), dataStorageFacade);
             }
