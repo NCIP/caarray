@@ -69,9 +69,12 @@ import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
 import gov.nih.nci.caarray.application.translation.magetab.MageTabTranslator;
 import gov.nih.nci.caarray.application.translation.magetab.MageTabTranslatorStub;
 import gov.nih.nci.caarray.dao.ArrayDao;
+import gov.nih.nci.caarray.dao.JobQueueDao;
+import gov.nih.nci.caarray.dao.ProjectDao;
 import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.dao.stub.ArrayDaoStub;
 import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
+import gov.nih.nci.caarray.dao.stub.JobDaoSingleJobStub;
 import gov.nih.nci.caarray.dao.stub.SearchDaoStub;
 import gov.nih.nci.caarray.dataStorage.DataStorageFacade;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
@@ -104,6 +107,7 @@ import gov.nih.nci.caarray.test.data.arraydata.AffymetrixArrayDataFiles;
 import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
 import gov.nih.nci.caarray.test.data.arraydesign.GenepixArrayDesignFiles;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
+import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.InvalidDataFileException;
@@ -132,6 +136,7 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Provider;
 import com.google.inject.multibindings.Multibinder;
+import com.google.inject.util.Providers;
 
 @SuppressWarnings("PMD")
 public class FileManagementServiceTest extends AbstractServiceTest {
@@ -177,7 +182,8 @@ public class FileManagementServiceTest extends AbstractServiceTest {
         
         fileManagementMDB.setDaoFactory(this.daoFactoryStub);
         fileManagementMDB.setTransaction(new UserTransactionStub());
-        final DirectJobSubmitter submitter = new DirectJobSubmitter(fileManagementMDB);
+        JobQueueDao jobDao = new JobDaoSingleJobStub();        
+        final DirectJobSubmitter submitter = new DirectJobSubmitter(fileManagementMDB, jobDao);
         final DataStorageFacade dataStorageFacade = this.fileAccessServiceStub.createStorageFacade();
 
         final FileManagementServiceBean fileManagementServiceBean = new FileManagementServiceBean();
@@ -189,12 +195,31 @@ public class FileManagementServiceTest extends AbstractServiceTest {
                         FileManagementServiceTest.this.daoFactoryStub.getProjectDao(), dataStorageFacade);
             }
         };
+        
+        
+        MageTabTranslator mageTabTranslator = new MageTabTranslatorStub();
+        MageTabImporter mageTabImporter = new MageTabImporterImpl(mageTabTranslator,
+                daoFactoryStub.getSearchDao(), daoFactoryStub.getProjectDao(), dataStorageFacade);
+        
+        ArrayDataService arrayDataService = new LocalArrayDataServiceStub();
+        ArrayDataImporter arrayDataImporter = new ArrayDataImporterImpl(arrayDataService, daoFactoryStub.getFileDao(),
+                daoFactoryStub.getProjectDao(), daoFactoryStub.getSearchDao());
+        
+        Provider<ArrayDao> arrayDaoProvider = Providers.of(daoFactoryStub.getArrayDao());
+        Provider<ArrayDataImporter> arrayDataImporterProvider = Providers.of(arrayDataImporter);
+        Provider<MageTabImporter> mageTabeImporterProvider = Providers.of(mageTabImporter);
+        Provider<ProjectDao> projectDaoProvider = Providers.of(daoFactoryStub.getProjectDao());
+        Provider<SearchDao> searchDaoProvider = Providers.of(daoFactoryStub.getSearchDao());
+        Provider<UsernameHolder> usernameHolderProvider = Providers.of(mock(UsernameHolder.class));
+        
+        JobFactory jobFactory = new JobFactoryImpl(usernameHolderProvider, arrayDaoProvider, arrayDataImporterProvider,
+                mageTabeImporterProvider, projectDaoProvider, searchDaoProvider);
+        
+        
         fileManagementServiceBean.setDependencies(this.daoFactoryStub.getProjectDao(),
                 this.daoFactoryStub.getArrayDao(), this.daoFactoryStub.getFileDao(),
-                this.daoFactoryStub.getSearchDao(), mageTabImporterProvider);
+                this.daoFactoryStub.getSearchDao(), mageTabImporter ,submitter, jobFactory, mageTabImporterProvider);
 
-        fileManagementServiceBean.setSubmitter(submitter);
-        
         final ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
         locatorStub.addLookup(FileAccessService.JNDI_NAME, this.fileAccessServiceStub);
         locatorStub.addLookup(ArrayDataService.JNDI_NAME, new LocalArrayDataServiceStub());

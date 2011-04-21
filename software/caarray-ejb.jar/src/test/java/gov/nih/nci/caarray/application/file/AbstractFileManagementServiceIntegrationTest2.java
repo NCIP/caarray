@@ -443,9 +443,12 @@ public abstract class AbstractFileManagementServiceIntegrationTest2 extends Abst
         this.injector.injectMembers(mdb);
         final UserTransaction ut = Mockito.mock(UserTransaction.class);
         mdb.setTransaction(ut);
-        JobQueueDao jobDao = new JobDaoSingleJobStub();
-        final DirectJobSubmitter submitter = new DirectJobSubmitter(mdb, jobDao);
-      //  bean.setSubmitter(submitter);
+        
+        //TODO: ARRAY-1942 follow-on tasks for <ARRAY-1896 Merge dkokotov_storage_osgi_consolidation Branch to trunk>
+        //cleanup the below if no longer needed. 
+        //JobQueueDao jobDao = new JobDaoSingleJobStub();
+        //final DirectJobSubmitter submitter = new DirectJobSubmitter(mdb, jobDao);
+        //bean.setSubmitter(submitter);
 
         return bean;
     }
