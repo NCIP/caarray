@@ -84,13 +84,14 @@ package gov.nih.nci.caarray.application.file;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import gov.nih.nci.caarray.application.translation.magetab.SdrfTranslatorTest;
 import gov.nih.nci.caarray.application.util.MessageTemplates;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
+import gov.nih.nci.caarray.domain.file.FileTypeRegistry;
 import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.plugins.illumina.CsvDataHandler;
 import gov.nih.nci.caarray.test.data.arraydata.AgilentArrayDataFiles;
 import gov.nih.nci.caarray.test.data.arraydata.GenepixArrayDataFiles;
 import gov.nih.nci.caarray.test.data.arraydata.IlluminaArrayDataFiles;
@@ -112,14 +113,16 @@ import org.hibernate.Transaction;
 import org.junit.Ignore;
 import org.junit.Test;
 
+//TODO: ARRAY-1942 follow-on tasks for <ARRAY-1896 Merge dkokotov_storage_osgi_consolidation Branch to trunk>
+//Need to fix: This class has ton of dependencies on FileType named constants defined in vendor plugins. 
 public class FileValidationIntegrationTest extends AbstractFileManagementServiceIntegrationTest {
     
     @Test
     public void testInvalidHybridizationsInSDRF() throws Exception {
         FileFileTypeWrapper[] dataFiles = new FileFileTypeWrapper[3];
-        dataFiles[0] = new FileFileTypeWrapper(IlluminaArrayDataFiles.DEFECT_18652_IDF, FileType.MAGE_TAB_IDF);
-        dataFiles[1] = new FileFileTypeWrapper(IlluminaArrayDataFiles.DEFECT_18652_SDRF, FileType.MAGE_TAB_SDRF);
-        dataFiles[2] = new FileFileTypeWrapper(IlluminaArrayDataFiles.HUMAN_WG6_SMALL, FileType.ILLUMINA_DATA_CSV);
+        dataFiles[0] = new FileFileTypeWrapper(IlluminaArrayDataFiles.DEFECT_18652_IDF, FileTypeRegistry.MAGE_TAB_IDF);
+        dataFiles[1] = new FileFileTypeWrapper(IlluminaArrayDataFiles.DEFECT_18652_SDRF, FileTypeRegistry.MAGE_TAB_SDRF);
+        dataFiles[2] = new FileFileTypeWrapper(IlluminaArrayDataFiles.HUMAN_WG6_SMALL, CsvDataHandler.DATA_CSV_FILE_TYPE);
         FileFileTypeWrapper design = new FileFileTypeWrapper(IlluminaArrayDesignFiles.HUMAN_WG6_CSV, FileType.ILLUMINA_DESIGN_CSV);
         List<String[]> expectedErrorsList = new ArrayList<String[]>();
         String[] expectedSdrfErrors = new String[] {"Hybridization(s) [WRONG] were not found in data files provided."};
