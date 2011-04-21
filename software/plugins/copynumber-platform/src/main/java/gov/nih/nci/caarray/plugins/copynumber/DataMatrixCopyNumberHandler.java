@@ -139,8 +139,8 @@ public final class DataMatrixCopyNumberHandler extends AbstractDataFileHandler {
     private static final int POSITION_DATA_COLUMN_ARRAY_POSITION = 1;
     private static final int LOG2RATIO_DATA_COLUMN_ARRAY_POSITION = 2;
     
-    public static final FileType COPY_NUMBER_FILE_TYPE = new FileType(
-            "MAGE_TAB_DATA_MATRIX_COPY_NUMBER", FileCategory.DERIVED_DATA, true, true, "CNDATA"); 
+    public static final FileType COPY_NUMBER_FILE_TYPE = new FileType("MAGE_TAB_DATA_MATRIX_COPY_NUMBER", 
+            FileCategory.DERIVED_DATA, true, true, "CNDATA"); 
         
     private static final Set<FileType> SUPPORTED_TYPES = Sets.newHashSet(COPY_NUMBER_FILE_TYPE);
 

@@ -109,7 +109,7 @@ public class IlluminaModule extends AbstractModule {
         Multibinder<DesignFileHandler> designFileBinder = Multibinder.newSetBinder(binder(),
                 DesignFileHandler.class);
         designFileBinder.addBinding().to(BgxDesignHandler.class);
-        designFileBinder.addBinding().to(CsvDesignHandler.class);
+        designFileBinder.addBinding().to(IlluminaCsvDesignHandler.class);
         
         //array data descriptors
         Multibinder<ArrayDataTypeDescriptor> arrayDataDescriptorBinder = Multibinder.newSetBinder(binder(),

@@ -91,7 +91,17 @@ import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.file.FileTypeRegistry;
 import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.plugins.agilent.AgilentRawTextDataHandler;
+import gov.nih.nci.caarray.plugins.agilent.AgilentXmlDesignFileHandler;
+import gov.nih.nci.caarray.plugins.copynumber.DataMatrixCopyNumberHandler;
+import gov.nih.nci.caarray.plugins.genepix.GalDesignHandler;
+import gov.nih.nci.caarray.plugins.genepix.GprHandler;
+import gov.nih.nci.caarray.plugins.illumina.BgxDesignHandler;
 import gov.nih.nci.caarray.plugins.illumina.CsvDataHandler;
+import gov.nih.nci.caarray.plugins.illumina.IlluminaCsvDesignHandler;
+import gov.nih.nci.caarray.plugins.illumina.GenotypingProcessedMatrixHandler;
+import gov.nih.nci.caarray.plugins.nimblegen.NdfHandler;
+import gov.nih.nci.caarray.plugins.nimblegen.PairDataHandler;
 import gov.nih.nci.caarray.test.data.arraydata.AgilentArrayDataFiles;
 import gov.nih.nci.caarray.test.data.arraydata.GenepixArrayDataFiles;
 import gov.nih.nci.caarray.test.data.arraydata.IlluminaArrayDataFiles;
@@ -123,75 +133,75 @@ public class FileValidationIntegrationTest extends AbstractFileManagementService
         dataFiles[0] = new FileFileTypeWrapper(IlluminaArrayDataFiles.DEFECT_18652_IDF, FileTypeRegistry.MAGE_TAB_IDF);
         dataFiles[1] = new FileFileTypeWrapper(IlluminaArrayDataFiles.DEFECT_18652_SDRF, FileTypeRegistry.MAGE_TAB_SDRF);
         dataFiles[2] = new FileFileTypeWrapper(IlluminaArrayDataFiles.HUMAN_WG6_SMALL, CsvDataHandler.DATA_CSV_FILE_TYPE);
-        FileFileTypeWrapper design = new FileFileTypeWrapper(IlluminaArrayDesignFiles.HUMAN_WG6_CSV, FileType.ILLUMINA_DESIGN_CSV);
+        FileFileTypeWrapper design = new FileFileTypeWrapper(IlluminaArrayDesignFiles.HUMAN_WG6_CSV, IlluminaCsvDesignHandler.DESIGN_CSV_FILE_TYPE);
         List<String[]> expectedErrorsList = new ArrayList<String[]>();
         String[] expectedSdrfErrors = new String[] {"Hybridization(s) [WRONG] were not found in data files provided."};
         expectedErrorsList.add(expectedSdrfErrors);
-        doValidation(dataFiles, design, new FileType[] {FileType.MAGE_TAB_SDRF}, expectedErrorsList);
+        doValidation(dataFiles, design, new FileType[] {FileTypeRegistry.MAGE_TAB_SDRF}, expectedErrorsList);
     }
 
     @Test
     public void testInvalidProbeNamesForDataMatrixCopyNumberData() throws Exception {
         FileFileTypeWrapper[] dataFiles = new FileFileTypeWrapper[3];
-        dataFiles[0] = new FileFileTypeWrapper(MageTabDataFiles.BAD_DATA_MATRIX_COPY_NUMER_IDF, FileType.MAGE_TAB_IDF);
-        dataFiles[1] = new FileFileTypeWrapper(MageTabDataFiles.BAD_DATA_MATRIX_COPY_NUMER_SDRF, FileType.MAGE_TAB_SDRF);
-        dataFiles[2] = new FileFileTypeWrapper(MageTabDataFiles.BAD_DATA_MATRIX_COPY_NUMER_DATA, FileType.MAGE_TAB_DATA_MATRIX_COPY_NUMBER);
-        FileFileTypeWrapper design = new FileFileTypeWrapper(AgilentArrayDesignFiles.TEST_SHORT_ACGH_XML, FileType.AGILENT_XML);
+        dataFiles[0] = new FileFileTypeWrapper(MageTabDataFiles.BAD_DATA_MATRIX_COPY_NUMER_IDF, FileTypeRegistry.MAGE_TAB_IDF);
+        dataFiles[1] = new FileFileTypeWrapper(MageTabDataFiles.BAD_DATA_MATRIX_COPY_NUMER_SDRF, FileTypeRegistry.MAGE_TAB_SDRF);
+        dataFiles[2] = new FileFileTypeWrapper(MageTabDataFiles.BAD_DATA_MATRIX_COPY_NUMER_DATA, DataMatrixCopyNumberHandler.COPY_NUMBER_FILE_TYPE);
+        FileFileTypeWrapper design = new FileFileTypeWrapper(AgilentArrayDesignFiles.TEST_SHORT_ACGH_XML, AgilentXmlDesignFileHandler.XML_FILE_TYPE);
         List<String[]> expectedErrorsList = new ArrayList<String[]>();
         String[] expectedErrors = new String[] {"Probe with name 'foo' was not found in array design '022522_D_F_20090107.short' version '2.0'."};
         expectedErrorsList.add(expectedErrors);
-        doValidation(dataFiles, design, new FileType[] {FileType.MAGE_TAB_DATA_MATRIX_COPY_NUMBER}, expectedErrorsList);
+        doValidation(dataFiles, design, new FileType[] {DataMatrixCopyNumberHandler.COPY_NUMBER_FILE_TYPE}, expectedErrorsList);
     }
 
     @Test
     public void testInvalidArrayDesignNameInSdrf() throws Exception {
         FileFileTypeWrapper[] dataFiles = new FileFileTypeWrapper[3];
-        dataFiles[0] = new FileFileTypeWrapper(MageTabDataFiles.BAD_DATA_MATRIX_COPY_NUMER_BAD_SDRF_IDF, FileType.MAGE_TAB_IDF);
-        dataFiles[1] = new FileFileTypeWrapper(MageTabDataFiles.BAD_DATA_MATRIX_COPY_NUMER_BAD_SDRF_SDRF, FileType.MAGE_TAB_SDRF);
-        dataFiles[2] = new FileFileTypeWrapper(MageTabDataFiles.BAD_DATA_MATRIX_COPY_NUMER_DATA, FileType.MAGE_TAB_DATA_MATRIX_COPY_NUMBER);
-        FileFileTypeWrapper design = new FileFileTypeWrapper(AgilentArrayDesignFiles.TEST_SHORT_ACGH_XML, FileType.AGILENT_XML);
+        dataFiles[0] = new FileFileTypeWrapper(MageTabDataFiles.BAD_DATA_MATRIX_COPY_NUMER_BAD_SDRF_IDF, FileTypeRegistry.MAGE_TAB_IDF);
+        dataFiles[1] = new FileFileTypeWrapper(MageTabDataFiles.BAD_DATA_MATRIX_COPY_NUMER_BAD_SDRF_SDRF, FileTypeRegistry.MAGE_TAB_SDRF);
+        dataFiles[2] = new FileFileTypeWrapper(MageTabDataFiles.BAD_DATA_MATRIX_COPY_NUMER_DATA, DataMatrixCopyNumberHandler.COPY_NUMBER_FILE_TYPE);
+        FileFileTypeWrapper design = new FileFileTypeWrapper(AgilentArrayDesignFiles.TEST_SHORT_ACGH_XML, AgilentXmlDesignFileHandler.XML_FILE_TYPE);
         String arrayDesignName = "Agilent.com:PhysicalArrayDesign:022522_D_F_20090107";
         List<String[]> expectedErrorsList = new ArrayList<String[]>();
         String[] expectedErrors = new String[] {
                 String.format(MessageTemplates.NON_EXISTING_ARRAY_DESIGN_ERROR_MESSAGE_TEMPLATE, arrayDesignName),
                 String.format(MessageTemplates.ARRAY_DESIGN_NOT_ASSOCIATED_WITH_EXPERIMENT_ERROR_MESSAGE_TEMPLATE, arrayDesignName)};
         expectedErrorsList.add(expectedErrors);
-        doValidation(dataFiles, design, new FileType[] {FileType.MAGE_TAB_SDRF}, expectedErrorsList);
+        doValidation(dataFiles, design, new FileType[] {FileTypeRegistry.MAGE_TAB_SDRF}, expectedErrorsList);
     }
 
     @Test
     public void testInvalidProbeNamesForNiblegenPairData() throws Exception {
         FileFileTypeWrapper[] dataFiles = new FileFileTypeWrapper[1];
-        dataFiles[0] = new FileFileTypeWrapper(NimblegenArrayDataFiles.BAD_SHORT_HUMAN_EXPRESSION, FileType.NIMBLEGEN_NORMALIZED_PAIR);
-        FileFileTypeWrapper design = new FileFileTypeWrapper(NimblegenArrayDesignFiles.SHORT_EXPRESSION_DESIGN, FileType.NIMBLEGEN_NDF);
+        dataFiles[0] = new FileFileTypeWrapper(NimblegenArrayDataFiles.BAD_SHORT_HUMAN_EXPRESSION, PairDataHandler.NORMALIZED_PAIR_FILE_TYPE);
+        FileFileTypeWrapper design = new FileFileTypeWrapper(NimblegenArrayDesignFiles.SHORT_EXPRESSION_DESIGN, NdfHandler.NDF_FILE_TYPE);
         List<String[]> expectedErrorsList = new ArrayList<String[]>();
         String[] expectedSdrfErrors = new String[] {"Probe with name 'BLOCK1|NM_001932|foo' was not found in array design '2006-08-03_HG18_60mer_expr-short' version '2.0'."};
         expectedErrorsList.add(expectedSdrfErrors);
-        doValidation(dataFiles, design, new FileType[] {FileType.NIMBLEGEN_NORMALIZED_PAIR}, expectedErrorsList);
+        doValidation(dataFiles, design, new FileType[] {PairDataHandler.NORMALIZED_PAIR_FILE_TYPE}, expectedErrorsList);
     }
 
     @Test
     public void testInvalidProbeNamesForIlluminaGenotypingProcessedMatrixData() throws Exception {
         FileFileTypeWrapper[] dataFiles = new FileFileTypeWrapper[1];
-        dataFiles[0] = new FileFileTypeWrapper(IlluminaArrayDataFiles.BAD_ILLUMINA_DERIVED_1_HYB, FileType.ILLUMINA_GENOTYPING_PROCESSED_MATRIX_TXT);
-        FileFileTypeWrapper design = new FileFileTypeWrapper(IlluminaArrayDesignFiles.ILLUMINA_SMALL_BGX_TXT, FileType.ILLUMINA_DESIGN_BGX);
+        dataFiles[0] = new FileFileTypeWrapper(IlluminaArrayDataFiles.BAD_ILLUMINA_DERIVED_1_HYB, GenotypingProcessedMatrixHandler.GENOTYPING_MATRIX_FILE_TYPE);
+        FileFileTypeWrapper design = new FileFileTypeWrapper(IlluminaArrayDesignFiles.ILLUMINA_SMALL_BGX_TXT, BgxDesignHandler.BGX_FILE_TYPE);
         List<String[]> expectedErrorsList = new ArrayList<String[]>();
         String[] expectedErrors = new String[] {"Probe with name 'ILMN_0000000' was not found in array design 'illumina-small.bgx' version '2.0'."};
         expectedErrorsList.add(expectedErrors);
-        doValidation(dataFiles, design, new FileType[] {FileType.ILLUMINA_GENOTYPING_PROCESSED_MATRIX_TXT}, expectedErrorsList);
+        doValidation(dataFiles, design, new FileType[] {GenotypingProcessedMatrixHandler.GENOTYPING_MATRIX_FILE_TYPE}, expectedErrorsList);
     }
 
     @Test
     public void testInvalidProbeNamesForGenepixGprData() throws Exception {
         FileFileTypeWrapper[] dataFiles = new FileFileTypeWrapper[3];
-        dataFiles[0] = new FileFileTypeWrapper(GenepixArrayDataFiles.BAD_SMALL_IDF, FileType.MAGE_TAB_IDF);
-        dataFiles[1] = new FileFileTypeWrapper(GenepixArrayDataFiles.BAD_SMALL_SDRF, FileType.MAGE_TAB_SDRF);
-        dataFiles[2] = new FileFileTypeWrapper(GenepixArrayDataFiles.BAD_GPR_4_1_1, FileType.GENEPIX_GPR);
-        FileFileTypeWrapper design = new FileFileTypeWrapper(GenepixArrayDataFiles.JOE_DERISI_FIX, FileType.GENEPIX_GAL);
+        dataFiles[0] = new FileFileTypeWrapper(GenepixArrayDataFiles.BAD_SMALL_IDF, FileTypeRegistry.MAGE_TAB_IDF);
+        dataFiles[1] = new FileFileTypeWrapper(GenepixArrayDataFiles.BAD_SMALL_SDRF, FileTypeRegistry.MAGE_TAB_SDRF);
+        dataFiles[2] = new FileFileTypeWrapper(GenepixArrayDataFiles.BAD_GPR_4_1_1, GprHandler.GPR_FILE_TYPE);
+        FileFileTypeWrapper design = new FileFileTypeWrapper(GenepixArrayDataFiles.JOE_DERISI_FIX, GalDesignHandler.GAL_FILE_TYPE);
         List<String[]> expectedErrorsList = new ArrayList<String[]>();
         String[] expectedErrors = new String[] {"Probe with name 'FOO' was not found in array design 'JoeDeRisi-fix' version '2.0'."};
         expectedErrorsList.add(expectedErrors);
-        doValidation(dataFiles, design, new FileType[] {FileType.GENEPIX_GPR}, expectedErrorsList);
+        doValidation(dataFiles, design, new FileType[] {GprHandler.GPR_FILE_TYPE}, expectedErrorsList);
     }
 
     @Test
@@ -199,14 +209,14 @@ public class FileValidationIntegrationTest extends AbstractFileManagementService
     public void testInvalidProbeNamesForAgilentRawTextData() throws Exception {
         // for some reason the IDF and SDRF are not being added for agilent raw text data, need to investigate further
         FileFileTypeWrapper[] dataFiles = new FileFileTypeWrapper[3];
-        dataFiles[0] = new FileFileTypeWrapper(AgilentArrayDataFiles.TEST_ACGH_RAW_TEXT, FileType.AGILENT_RAW_TXT);
-        dataFiles[1] = new FileFileTypeWrapper(AgilentArrayDataFiles.TINY_IDF, FileType.MAGE_TAB_IDF);
-        dataFiles[2] = new FileFileTypeWrapper(AgilentArrayDataFiles.TINY_IDF, FileType.MAGE_TAB_SDRF);
-        FileFileTypeWrapper design = new FileFileTypeWrapper(AgilentArrayDesignFiles.TEST_GENE_EXPRESSION_1_XML, FileType.AGILENT_XML);
+        dataFiles[0] = new FileFileTypeWrapper(AgilentArrayDataFiles.TEST_ACGH_RAW_TEXT, AgilentRawTextDataHandler.RAW_TXT_FILE_TYPE);
+        dataFiles[1] = new FileFileTypeWrapper(AgilentArrayDataFiles.TINY_IDF, FileTypeRegistry.MAGE_TAB_IDF);
+        dataFiles[2] = new FileFileTypeWrapper(AgilentArrayDataFiles.TINY_IDF, FileTypeRegistry.MAGE_TAB_SDRF);
+        FileFileTypeWrapper design = new FileFileTypeWrapper(AgilentArrayDesignFiles.TEST_GENE_EXPRESSION_1_XML, AgilentXmlDesignFileHandler.XML_FILE_TYPE);
         List<String[]> expectedErrorsList = new ArrayList<String[]>();
         String[] expectedErrors = new String[] {"TBD"};
         expectedErrorsList.add(expectedErrors);
-        doValidation(dataFiles, design, new FileType[] {FileType.AGILENT_RAW_TXT}, expectedErrorsList);
+        doValidation(dataFiles, design, new FileType[] {AgilentRawTextDataHandler.RAW_TXT_FILE_TYPE}, expectedErrorsList);
     }
     
     static final class FileFileTypeWrapper {

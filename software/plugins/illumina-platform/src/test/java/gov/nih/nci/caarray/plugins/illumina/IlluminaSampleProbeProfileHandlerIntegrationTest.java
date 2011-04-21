@@ -156,7 +156,7 @@ public class IlluminaSampleProbeProfileHandlerIntegrationTest extends AbstractSe
         final String[] header = { "Probe_Id", "Foo", "Hyb1.MIN_Signal", "Hyb1.AVG_Signal" };
         final String[] messages = { "Missing quantitation type(s) [DETECTION] for sample Hyb1",
                 "Using column PROBE_ID with design type ILLUMINA_DESIGN_CSV", "Ignored column Foo" };
-        processHeader(header, messages, null, CsvDesignHandler.DESIGN_CSV_FILE_TYPE);
+        processHeader(header, messages, null, IlluminaCsvDesignHandler.DESIGN_CSV_FILE_TYPE);
     }
 
     @Test

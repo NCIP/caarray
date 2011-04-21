@@ -87,7 +87,7 @@ public class IlluminaGenotypingProcessedMatrixHandlerIntegrationTest extends Abs
         detail.getProbes().add(p);
         final CaArrayFile f = new CaArrayFile();
         f.setFileStatus(FileStatus.IMPORTED);
-        f.setFileType(CsvDesignHandler.DESIGN_CSV_FILE_TYPE);
+        f.setFileType(IlluminaCsvDesignHandler.DESIGN_CSV_FILE_TYPE);
         design.getDesignFiles().add(f);
         return design;
     }

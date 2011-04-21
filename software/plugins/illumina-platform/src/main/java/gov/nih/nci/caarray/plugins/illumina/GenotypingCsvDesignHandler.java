@@ -141,13 +141,13 @@ final class GenotypingCsvDesignHandler extends AbstractCsvDesignHelper<Genotypin
     @Override
     void validateValues(List<String> values, FileValidationResult result, int lineNumber) {
         int colIdx = indexOf(Header.SNP);
-        CsvDesignHandler.validateFieldLength(values.get(colIdx), Header.SNP, result, lineNumber,
+        IlluminaCsvDesignHandler.validateFieldLength(values.get(colIdx), Header.SNP, result, lineNumber,
                 SNP_FIELD_LENGTH, colIdx + 1);
         colIdx = indexOf(Header.MAPINFO);
-        CsvDesignHandler.validateLongField(values.get(colIdx), Header.MAPINFO, result, lineNumber, colIdx + 1);
+        IlluminaCsvDesignHandler.validateLongField(values.get(colIdx), Header.MAPINFO, result, lineNumber, colIdx + 1);
         if (isDbSnpEntry(values)) {
             colIdx = indexOf(Header.SOURCEVERSION);
-            CsvDesignHandler.validateIntegerField(values.get(colIdx), Header.SOURCEVERSION, result, lineNumber,
+            IlluminaCsvDesignHandler.validateIntegerField(values.get(colIdx), Header.SOURCEVERSION, result, lineNumber,
                     colIdx + 1);
         }
     }

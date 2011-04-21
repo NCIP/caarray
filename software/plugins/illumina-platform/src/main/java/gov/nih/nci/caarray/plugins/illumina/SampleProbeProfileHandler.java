@@ -182,10 +182,10 @@ public final class SampleProbeProfileHandler extends AbstractDataFileHandler {
         }
         final List<LSID> lsids = new ArrayList<LSID>();
         while (!StringUtils.isEmpty(FilenameUtils.getExtension(fileName))) {
-            lsids.add(new LSID(CsvDesignHandler.LSID_AUTHORITY, CsvDesignHandler.LSID_NAMESPACE, fileName));
+            lsids.add(new LSID(IlluminaCsvDesignHandler.LSID_AUTHORITY, IlluminaCsvDesignHandler.LSID_NAMESPACE, fileName));
             fileName = FilenameUtils.getBaseName(fileName);
         }
-        lsids.add(new LSID(CsvDesignHandler.LSID_AUTHORITY, CsvDesignHandler.LSID_NAMESPACE, fileName));
+        lsids.add(new LSID(IlluminaCsvDesignHandler.LSID_AUTHORITY, IlluminaCsvDesignHandler.LSID_NAMESPACE, fileName));
         return lsids;
     }
 
@@ -529,7 +529,7 @@ public final class SampleProbeProfileHandler extends AbstractDataFileHandler {
         }
 
         private RowHeader findExpectedProbeIdColumn() {
-            if (CsvDesignHandler.DESIGN_CSV_FILE_TYPE.equals(this.designType) && isPresent(RowHeader.TARGETID)) {
+            if (IlluminaCsvDesignHandler.DESIGN_CSV_FILE_TYPE.equals(this.designType) && isPresent(RowHeader.TARGETID)) {
                 return RowHeader.TARGETID;
             }
             if (BgxDesignHandler.BGX_FILE_TYPE.equals(this.designType)) {

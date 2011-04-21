@@ -104,6 +104,7 @@ import gov.nih.nci.caarray.domain.project.AssayType;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
+import gov.nih.nci.caarray.plugins.illumina.IlluminaCsvDesignHandler;
 import gov.nih.nci.caarray.staticinjection.CaArrayCommonStaticInjectionModule;
 import gov.nih.nci.caarray.util.CaArrayHibernateHelperModule;
 
@@ -232,7 +233,7 @@ public class DesignElementBuilderIntegrationTest extends AbstractHibernateTest {
         
         CaArrayFile f = new CaArrayFile();
         f.setFileStatus(FileStatus.IMPORTED);
-        f.setFileType(FileType.ILLUMINA_DESIGN_CSV);
+        f.setFileType(IlluminaCsvDesignHandler.DESIGN_CSV_FILE_TYPE);
         design.addDesignFile(f);
         return design;
     }

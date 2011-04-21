@@ -202,6 +202,6 @@ public class IlluminaArrayDesignServiceTest extends AbstractArrayDesignServiceTe
     }
 
     private CaArrayFile getIlluminaCaArrayFile(final File file) {
-        return getCaArrayFile(file, CsvDesignHandler.DESIGN_CSV_FILE_TYPE);
+        return getCaArrayFile(file, IlluminaCsvDesignHandler.DESIGN_CSV_FILE_TYPE);
     }
 }

@@ -115,7 +115,7 @@ import com.google.inject.Inject;
 /**
  * Reads Illumina genotyping and gene expression array description files.
  */
-public final class CsvDesignHandler extends AbstractDesignFileHandler {
+public final class IlluminaCsvDesignHandler extends AbstractDesignFileHandler {
     static final String LSID_AUTHORITY = "illumina.com";
     static final String LSID_NAMESPACE = "PhysicalArrayDesign";
     private static final int LOGICAL_PROBE_BATCH_SIZE = 1000;
@@ -133,7 +133,7 @@ public final class CsvDesignHandler extends AbstractDesignFileHandler {
      * 
      */
     @Inject
-    CsvDesignHandler(SessionTransactionManager sessionTransactionManager, DataStorageFacade dataStorageFacade,
+    IlluminaCsvDesignHandler(SessionTransactionManager sessionTransactionManager, DataStorageFacade dataStorageFacade,
             ArrayDao arrayDao, SearchDao searchDao) {
         super(sessionTransactionManager, dataStorageFacade, arrayDao, searchDao);
     }

@@ -120,7 +120,7 @@ public class IlluminaFileManagementServiceIntegrationTest extends AbstractFileMa
         Transaction tx = this.hibernateHelper.beginTransaction();
         saveSupportingObjects();
         final ArrayDesign design = importArrayDesign(IlluminaArrayDesignFiles.HUMAN_WG6_CSV,
-                CsvDesignHandler.DESIGN_CSV_FILE_TYPE);
+                IlluminaCsvDesignHandler.DESIGN_CSV_FILE_TYPE);
         tx.commit();
 
         tx = this.hibernateHelper.beginTransaction();

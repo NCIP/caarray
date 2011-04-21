@@ -167,7 +167,7 @@ public class BgxDesignHandler extends AbstractDesignFileHandler {
     @Override
     public void load(ArrayDesign arrayDesign) {
         arrayDesign.setName(FilenameUtils.getBaseName(this.designFile.getName()));
-        arrayDesign.setLsidForEntity(CsvDesignHandler.LSID_AUTHORITY + ":" + CsvDesignHandler.LSID_NAMESPACE + ":"
+        arrayDesign.setLsidForEntity(IlluminaCsvDesignHandler.LSID_AUTHORITY + ":" + IlluminaCsvDesignHandler.LSID_NAMESPACE + ":"
                 + arrayDesign.getName());
         try {
             arrayDesign.setNumberOfFeatures(getNumberOfFeatures());
