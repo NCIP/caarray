@@ -122,7 +122,7 @@ import com.google.inject.Inject;
 /**
  * Handles reading of nimblegen data.
  */
-class PairDataHandler extends AbstractDataFileHandler {
+public class PairDataHandler extends AbstractDataFileHandler {
     private static final String LSID_AUTHORITY = "nimblegen.com";
     private static final String LSID_NAMESPACE = "PhysicalArrayDesign";
 
@@ -130,9 +130,9 @@ class PairDataHandler extends AbstractDataFileHandler {
     private static final String PROBE_ID_HEADER = "PROBE_ID";
     private static final String CONTAINER_HEADER = "GENE_EXPR_OPTION";
 
-    static final FileType NORMALIZED_PAIR_FILE_TYPE = new FileType("NIMBLEGEN_NORMALIZED_PAIR",
+    public static final FileType NORMALIZED_PAIR_FILE_TYPE = new FileType("NIMBLEGEN_NORMALIZED_PAIR",
             FileCategory.DERIVED_DATA, true);
-    static final FileType RAW_PAIR_FILE_TYPE = new FileType("NIMBLEGEN_RAW_PAIR", FileCategory.RAW_DATA, true);
+    public static final FileType RAW_PAIR_FILE_TYPE = new FileType("NIMBLEGEN_RAW_PAIR", FileCategory.RAW_DATA, true);
     static final Set<FileType> SUPPORTED_TYPES = Sets.newHashSet(NORMALIZED_PAIR_FILE_TYPE, RAW_PAIR_FILE_TYPE);
 
     private final ValueParser valueParser = new DefaultValueParser();

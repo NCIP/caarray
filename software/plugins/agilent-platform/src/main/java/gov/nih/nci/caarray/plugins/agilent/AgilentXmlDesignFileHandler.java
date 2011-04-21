@@ -118,11 +118,11 @@ import com.google.inject.Inject;
  * @author jscott
  * 
  */
-class AgilentXmlDesignFileHandler extends AbstractDesignFileHandler {
+public class AgilentXmlDesignFileHandler extends AbstractDesignFileHandler {
     static final String LSID_AUTHORITY = "Agilent.com";
     static final String LSID_NAMESPACE = "PhysicalArrayDesign";
 
-    static final FileType XML_FILE_TYPE = new FileType("AGILENT_XML", FileCategory.ARRAY_DESIGN, true);
+    public static final FileType XML_FILE_TYPE = new FileType("AGILENT_XML", FileCategory.ARRAY_DESIGN, true);
     static final Set<FileType> SUPPORTED_TYPES = Sets.newHashSet(XML_FILE_TYPE);
 
     private final VocabularyDao vocabularyDao;

@@ -130,7 +130,7 @@ import com.google.inject.Inject;
  * @author Jim McCusker
  */
 @SuppressWarnings("PMD.TooManyMethods")
-class NdfHandler extends AbstractDesignFileHandler {
+public class NdfHandler extends AbstractDesignFileHandler {
     private static final String LSID_AUTHORITY = "nimblegen.com";
     private static final String LSID_NAMESPACE = "PhysicalArrayDesign";
     private static final Logger LOG = Logger.getLogger(NdfHandler.class);
@@ -155,7 +155,7 @@ class NdfHandler extends AbstractDesignFileHandler {
         NDF_REQUIRED_COLUMNS.put(Y, DataType.INTEGER);
     }
 
-    static final FileType NDF_FILE_TYPE = new FileType("NIMBLEGEN_NDF", FileCategory.ARRAY_DESIGN, true, "NDF");
+    public static final FileType NDF_FILE_TYPE = new FileType("NIMBLEGEN_NDF", FileCategory.ARRAY_DESIGN, true, "NDF");
     static final Set<FileType> SUPPORTED_TYPES = Sets.newHashSet(NDF_FILE_TYPE);
 
     private CaArrayFile designFile;

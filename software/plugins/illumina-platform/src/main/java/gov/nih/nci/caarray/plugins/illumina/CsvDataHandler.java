@@ -128,7 +128,7 @@ import com.google.inject.Inject;
 /**
  * Handles reading of Illumina data.
  */
-class CsvDataHandler extends AbstractDataFileHandler {
+public class CsvDataHandler extends AbstractDataFileHandler {
     private static final String TARGET_ID = "TargetID";
     private static final String ARRAY_CONTENT_HEADER = "Array Content";
     private static final String LSID_AUTHORITY = "illumina.com";
@@ -137,7 +137,7 @@ class CsvDataHandler extends AbstractDataFileHandler {
     private static final Map<String, IlluminaExpressionQuantitationType> EXPRESSION_TYPE_MAP = new HashMap<String, IlluminaExpressionQuantitationType>();
     private static final Map<String, IlluminaGenotypingQuantitationType> SNP_TYPE_MAP = new HashMap<String, IlluminaGenotypingQuantitationType>();
 
-    static final FileType DATA_CSV_FILE_TYPE = new FileType("ILLUMINA_DATA_CSV", FileCategory.DERIVED_DATA, true);
+    public static final FileType DATA_CSV_FILE_TYPE = new FileType("ILLUMINA_DATA_CSV", FileCategory.DERIVED_DATA, true);
     private static final Set<FileType> SUPPORTED_TYPES = Sets.newHashSet(DATA_CSV_FILE_TYPE);
 
     static {

@@ -105,16 +105,16 @@ import com.google.common.collect.Sets;
  * 
  * @author Steve Lustbader
  */
-class UnparsedArrayDesignFileHandler implements DesignFileHandler {
+public class UnparsedArrayDesignFileHandler implements DesignFileHandler {
     private static final LSID CAARRAY_LOCAL_LSID_TEMPLATE = new LSID(AbstractCaArrayEntity.CAARRAY_LSID_AUTHORITY,
             AbstractCaArrayEntity.CAARRAY_LSID_NAMESPACE, null);
     private static final LSID AGILENT_LSID_TEMPLATE = new LSID("Agilent.com", "PhysicalArrayDesign", null);
 
-    static final FileType IMAGENE_TPL = new FileType("IMAGENE_TPL", FileCategory.ARRAY_DESIGN, false, "TPL");
-    static final FileType UCSF_SPOT_SPT = new FileType("UCSF_SPOT_SPT", FileCategory.ARRAY_DESIGN, false, "SPT");
-    static final FileType MAGE_TAB_ADF = new FileType("MAGE_TAB_ADF", FileCategory.ARRAY_DESIGN, false, "ADF");
-    static final FileType GEO_GPL = new FileType("GEO_GPL", FileCategory.ARRAY_DESIGN, false);
-    static final FileType AGILENT_CSV = new FileType("AGILENT_CSV", FileCategory.ARRAY_DESIGN, false);
+    public static final FileType IMAGENE_TPL = new FileType("IMAGENE_TPL", FileCategory.ARRAY_DESIGN, false, "TPL");
+    public static final FileType UCSF_SPOT_SPT = new FileType("UCSF_SPOT_SPT", FileCategory.ARRAY_DESIGN, false, "SPT");
+    public static final FileType MAGE_TAB_ADF = new FileType("MAGE_TAB_ADF", FileCategory.ARRAY_DESIGN, false, "ADF");
+    public static final FileType GEO_GPL = new FileType("GEO_GPL", FileCategory.ARRAY_DESIGN, false);
+    public static final FileType AGILENT_CSV = new FileType("AGILENT_CSV", FileCategory.ARRAY_DESIGN, false);
     static final Set<FileType> SUPPORTED_TYPES = Sets.newHashSet(IMAGENE_TPL, UCSF_SPOT_SPT, MAGE_TAB_ADF, GEO_GPL,
             AGILENT_CSV);
 

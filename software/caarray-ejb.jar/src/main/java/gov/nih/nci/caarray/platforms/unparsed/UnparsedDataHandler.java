@@ -105,21 +105,48 @@ import com.google.inject.Inject;
 /**
  * Handler for unparsed data formats.
  */
-class UnparsedDataHandler extends AbstractDataFileHandler {
-    private static final Set<FileType> SUPPORTED_TYPES = Sets.newHashSet(new FileType("ILLUMINA_IDAT",
-            FileCategory.RAW_DATA, false, "IDAT"), new FileType("AFFYMETRIX_DAT", FileCategory.RAW_DATA, false, "DAT"),
-            new FileType("AFFYMETRIX_EXP", FileCategory.DERIVED_DATA, false, "EXP"), new FileType("AFFYMETRIX_TXT",
-                    FileCategory.DERIVED_DATA, false), new FileType("AFFYMETRIX_RPT", FileCategory.DERIVED_DATA, false,
-                    "RPT"), new FileType("IMAGENE_TIF", FileCategory.RAW_DATA, false), new FileType("GEO_SOFT",
-                    FileCategory.RAW_DATA, false), new FileType("GEO_GSM", FileCategory.RAW_DATA, false), new FileType(
-                    "SCANARRAY_CSV", FileCategory.RAW_DATA, false), new FileType("ILLUMINA_RAW_TXT",
-                    FileCategory.RAW_DATA, false), new FileType("ILLUMINA_DERIVED_TXT", FileCategory.DERIVED_DATA,
-                    false), new FileType("IMAGENE_TXT", FileCategory.DERIVED_DATA, false), new FileType(
-                    "AGILENT_DERIVED_TXT", FileCategory.DERIVED_DATA, false), new FileType("NIMBLEGEN_GFF",
-                    FileCategory.DERIVED_DATA, false, "GFF"), new FileType("NIMBLEGEN_DERIVED_TXT",
-                    FileCategory.DERIVED_DATA, false), new FileType("NIMBLEGEN_RAW_TXT", FileCategory.RAW_DATA, false),
-            new FileType("AGILENT_TSV", FileCategory.RAW_DATA, false, "TSV"), new FileType("MAGE_TAB_DATA_MATRIX",
-                    FileCategory.RAW_DATA, false, true, "DATA"));
+public class UnparsedDataHandler extends AbstractDataFileHandler {
+//TODO: ARRAY-1942 follow-on tasks for <ARRAY-1896 Merge dkokotov_storage_osgi_consolidation Branch to trunk>
+//Vendor specific file types should be moved to respective vendor plugin packages.     
+    public static final FileType FILE_TYPE_ILLUMINA_IDAT = new FileType("ILLUMINA_IDAT", FileCategory.RAW_DATA, false, "IDAT");
+    public static final FileType FILE_TYPE_AFFYMETRIX_DAT = new FileType("AFFYMETRIX_DAT", FileCategory.RAW_DATA, false, "DAT");
+    public static final FileType FILE_TYPE_AFFYMETRIX_EXP = new FileType("AFFYMETRIX_EXP", FileCategory.DERIVED_DATA, false, "EXP");
+    public static final FileType FILE_TYPE_AFFYMETRIX_TXT = new FileType("AFFYMETRIX_TXT", FileCategory.DERIVED_DATA, false);
+    public static final FileType FILE_TYPE_AFFYMETRIX_RPT = new FileType("AFFYMETRIX_RPT", FileCategory.DERIVED_DATA, false, "RPT");
+    public static final FileType FILE_TYPE_IMAGENE_TIF = new FileType("IMAGENE_TIF", FileCategory.RAW_DATA, false);
+    public static final FileType FILE_TYPE_GEO_SOFT = new FileType("GEO_SOFT", FileCategory.RAW_DATA, false);
+    public static final FileType FILE_TYPE_GEO_GSM = new FileType("GEO_GSM", FileCategory.RAW_DATA, false);
+    public static final FileType FILE_TYPE_SCANARRAY_CSV = new FileType("SCANARRAY_CSV", FileCategory.RAW_DATA, false);
+    public static final FileType FILE_TYPE_ILLUMINA_RAW_TXT = new FileType("ILLUMINA_RAW_TXT", FileCategory.RAW_DATA, false);
+    public static final FileType FILE_TYPE_ILLUMINA_DERIVED_TXT = new FileType("ILLUMINA_DERIVED_TXT", FileCategory.DERIVED_DATA, false);
+    public static final FileType FILE_TYPE_IMAGENE_TXT = new FileType("IMAGENE_TXT", FileCategory.DERIVED_DATA, false);
+    public static final FileType FILE_TYPE_AGILENT_DERIVED_TXT = new FileType("AGILENT_DERIVED_TXT", FileCategory.DERIVED_DATA, false);
+    public static final FileType FILE_TYPE_NIMBLEGEN_GFF = new FileType("NIMBLEGEN_GFF", FileCategory.DERIVED_DATA, false, "GFF");
+    public static final FileType FILE_TYPE_NIMBLEGEN_DERIVED_TXT = new FileType("NIMBLEGEN_DERIVED_TXT", FileCategory.DERIVED_DATA, false);
+    public static final FileType FILE_TYPE_NIMBLEGEN_RAW_TXT = new FileType("NIMBLEGEN_RAW_TXT", FileCategory.RAW_DATA, false);
+    public static final FileType FILE_TYPE_AGILENT_TSV = new FileType("AGILENT_TSV", FileCategory.RAW_DATA, false, "TSV");
+    public static final FileType FILE_TYPE_MAGE_TAB_DATA_MATRIX = new FileType("MAGE_TAB_DATA_MATRIX", FileCategory.RAW_DATA, false, true, "DATA");
+
+    private static final Set<FileType> SUPPORTED_TYPES = Sets.newHashSet(
+            FILE_TYPE_ILLUMINA_IDAT,
+            FILE_TYPE_AFFYMETRIX_DAT,
+            FILE_TYPE_AFFYMETRIX_EXP,
+            FILE_TYPE_AFFYMETRIX_TXT,
+            FILE_TYPE_AFFYMETRIX_RPT,
+            FILE_TYPE_IMAGENE_TIF,
+            FILE_TYPE_GEO_SOFT,
+            FILE_TYPE_GEO_GSM,
+            FILE_TYPE_SCANARRAY_CSV,
+            FILE_TYPE_ILLUMINA_RAW_TXT,
+            FILE_TYPE_ILLUMINA_DERIVED_TXT,
+            FILE_TYPE_IMAGENE_TXT,
+            FILE_TYPE_AGILENT_DERIVED_TXT,
+            FILE_TYPE_NIMBLEGEN_GFF,
+            FILE_TYPE_NIMBLEGEN_DERIVED_TXT,
+            FILE_TYPE_NIMBLEGEN_RAW_TXT,
+            FILE_TYPE_AGILENT_TSV,
+            FILE_TYPE_MAGE_TAB_DATA_MATRIX
+            );
 
     @Inject
     UnparsedDataHandler(DataStorageFacade dataStorageFacade) {

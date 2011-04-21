@@ -122,11 +122,11 @@ import com.google.inject.Inject;
  * @since 2.4.0
  * @author gax
  */
-final class GenotypingProcessedMatrixHandler extends AbstractDataFileHandler {
+public final class GenotypingProcessedMatrixHandler extends AbstractDataFileHandler {
     private static final Logger LOG = Logger.getLogger(GenotypingProcessedMatrixHandler.class);
     private static final long ONE_MINUTE = 1000L * 60L;
 
-    static final FileType GENOTYPING_MATRIX_FILE_TYPE = new FileType("ILLUMINA_GENOTYPING_PROCESSED_MATRIX_TXT",
+    public static final FileType GENOTYPING_MATRIX_FILE_TYPE = new FileType("ILLUMINA_GENOTYPING_PROCESSED_MATRIX_TXT",
             FileCategory.DERIVED_DATA, true);
     static final Set<FileType> SUPPORTED_TYPES = Sets.newHashSet(GENOTYPING_MATRIX_FILE_TYPE);
 

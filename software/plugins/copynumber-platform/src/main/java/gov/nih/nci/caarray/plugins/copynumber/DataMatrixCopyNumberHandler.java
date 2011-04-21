@@ -126,7 +126,7 @@ import com.google.inject.Inject;
  * 
  */
 @SuppressWarnings({ "PMD.CyclomaticComplexity" })
-final class DataMatrixCopyNumberHandler extends AbstractDataFileHandler {
+public final class DataMatrixCopyNumberHandler extends AbstractDataFileHandler {
 
     private static final String HYBRIDIZATION_REF = "Hybridization REF";
     private static final String REPORTER_REF = "Reporter REF";
@@ -138,9 +138,11 @@ final class DataMatrixCopyNumberHandler extends AbstractDataFileHandler {
     private static final int CHROMOSOME_DATA_COLUMN_ARRAY_POSITION = 0;
     private static final int POSITION_DATA_COLUMN_ARRAY_POSITION = 1;
     private static final int LOG2RATIO_DATA_COLUMN_ARRAY_POSITION = 2;
-
-    private static final Set<FileType> SUPPORTED_TYPES = Sets.newHashSet(new FileType(
-            "MAGE_TAB_DATA_MATRIX_COPY_NUMBER", FileCategory.DERIVED_DATA, true, true, "CNDATA"));
+    
+    public static final FileType COPY_NUMBER_FILE_TYPE = new FileType(
+            "MAGE_TAB_DATA_MATRIX_COPY_NUMBER", FileCategory.DERIVED_DATA, true, true, "CNDATA"); 
+        
+    private static final Set<FileType> SUPPORTED_TYPES = Sets.newHashSet(COPY_NUMBER_FILE_TYPE);
 
     private int reporterRefColumnIndex = UNINITIALIZED_INDEX;
     private int chromosomeColumnIndex = UNINITIALIZED_INDEX;

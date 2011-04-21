@@ -123,12 +123,12 @@ import com.google.inject.name.Named;
  * @author Steve Lustbader
  */
 @SuppressWarnings("PMD.TooManyMethods")
-final class PgfClfDesignHandler extends AbstractAffymetrixDesignFileHandler {
+public final class PgfClfDesignHandler extends AbstractAffymetrixDesignFileHandler {
     private static final int TRANSACTION_SIZE = 5000;
     private static final Logger LOG = Logger.getLogger(PgfClfDesignHandler.class);
 
-    static final FileType PGF_FILE_TYPE = new FileType("AFFYMETRIX_PGF", FileCategory.ARRAY_DESIGN, true, "PGF");
-    static final FileType CLF_FILE_TYPE = new FileType("AFFYMETRIX_CLF", FileCategory.ARRAY_DESIGN, true, "CLF");
+    public static final FileType PGF_FILE_TYPE = new FileType("AFFYMETRIX_PGF", FileCategory.ARRAY_DESIGN, true, "PGF");
+    public static final FileType CLF_FILE_TYPE = new FileType("AFFYMETRIX_CLF", FileCategory.ARRAY_DESIGN, true, "CLF");
     static final Set<FileType> SUPPORTED_TYPES = Sets.newHashSet(PGF_FILE_TYPE, CLF_FILE_TYPE);
 
     // Shared headers, commented-out headers are unused at this time

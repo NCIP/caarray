@@ -115,12 +115,12 @@ import com.google.inject.Inject;
 /**
  * Reads Illumina genotyping and gene expression array description files.
  */
-final class CsvDesignHandler extends AbstractDesignFileHandler {
+public final class CsvDesignHandler extends AbstractDesignFileHandler {
     static final String LSID_AUTHORITY = "illumina.com";
     static final String LSID_NAMESPACE = "PhysicalArrayDesign";
     private static final int LOGICAL_PROBE_BATCH_SIZE = 1000;
 
-    static final FileType DESIGN_CSV_FILE_TYPE = new FileType("ILLUMINA_DESIGN_CSV", FileCategory.ARRAY_DESIGN, true,
+    public static final FileType DESIGN_CSV_FILE_TYPE = new FileType("ILLUMINA_DESIGN_CSV", FileCategory.ARRAY_DESIGN, true,
             "CSV");
     static final Set<FileType> SUPPORTED_TYPES = Sets.newHashSet(DESIGN_CSV_FILE_TYPE);
 

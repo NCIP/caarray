@@ -155,11 +155,21 @@ import gov.nih.nci.caarray.magetab.MageTabParser;
 import gov.nih.nci.caarray.magetab.TestMageTabSets;
 import gov.nih.nci.caarray.magetab.io.FileRef;
 import gov.nih.nci.caarray.magetab.io.JavaIOFileRef;
+import gov.nih.nci.caarray.platforms.unparsed.UnparsedArrayDesignFileHandler;
+import gov.nih.nci.caarray.platforms.unparsed.UnparsedDataHandler;
+import gov.nih.nci.caarray.plugins.affymetrix.CelHandler;
+import gov.nih.nci.caarray.plugins.agilent.AgilentRawTextDataHandler;
+import gov.nih.nci.caarray.plugins.agilent.AgilentXmlDesignFileHandler;
 import gov.nih.nci.caarray.plugins.genepix.GenepixQuantitationType;
+import gov.nih.nci.caarray.plugins.genepix.GprHandler;
+import gov.nih.nci.caarray.plugins.illumina.CsvDataHandler;
+import gov.nih.nci.caarray.plugins.illumina.GenotypingProcessedMatrixHandler;
 import gov.nih.nci.caarray.plugins.illumina.IlluminaGenotypingProcessedMatrixHandlerIntegrationTest;
 import gov.nih.nci.caarray.plugins.illumina.IlluminaGenotypingProcessedMatrixQuantitationType;
+import gov.nih.nci.caarray.plugins.illumina.SampleProbeProfileHandler;
 import gov.nih.nci.caarray.plugins.illumina.SampleProbeProfileQuantitationType;
 import gov.nih.nci.caarray.plugins.nimblegen.NimblegenQuantitationType;
+import gov.nih.nci.caarray.plugins.nimblegen.PairDataHandler;
 import gov.nih.nci.caarray.test.data.arraydata.AgilentArrayDataFiles;
 import gov.nih.nci.caarray.test.data.arraydata.GenepixArrayDataFiles;
 import gov.nih.nci.caarray.test.data.arraydata.IlluminaArrayDataFiles;
@@ -182,15 +192,17 @@ import org.hibernate.Transaction;
 import org.junit.Ignore;
 import org.junit.Test;
 
+//TODO: ARRAY-1942 follow-on tasks for <ARRAY-1896 Merge dkokotov_storage_osgi_consolidation Branch to trunk>
+//Need to fix: This class has ton of dependencies on FileType named constants defined in vendor plugins. 
 public class FileImportIntegrationTest extends AbstractFileManagementServiceIntegrationTest {
     
     @Test
     public void testReimportProjectFiles() throws Exception {
-        ArrayDesign design = importArrayDesign(AgilentArrayDesignFiles.TEST_MIRNA_1_XML_SMALL, FileType.AGILENT_XML);
+        ArrayDesign design = importArrayDesign(AgilentArrayDesignFiles.TEST_MIRNA_1_XML_SMALL, AgilentXmlDesignFileHandler.XML_FILE_TYPE);
         addDesignToExperiment(design);
 
         Map<File, FileType> files = new HashMap<File, FileType>();
-        files.put(AgilentArrayDataFiles.MIRNA, FileType.ILLUMINA_RAW_TXT);
+        files.put(AgilentArrayDataFiles.MIRNA, UnparsedDataHandler.FILE_TYPE_ILLUMINA_RAW_TXT);
 
         CaArrayFileSet fileSet = uploadFiles(files);
 
@@ -204,7 +216,7 @@ public class FileImportIntegrationTest extends AbstractFileManagementServiceInte
         assertEquals(1, project.getImportedFiles().size());
         assertEquals(FileStatus.IMPORTED_NOT_PARSED, project.getImportedFiles().iterator().next().getFileStatus());
         CaArrayFile f  = project.getImportedFiles().iterator().next();
-        f.setFileType(FileType.AGILENT_RAW_TXT);
+        f.setFileType(AgilentRawTextDataHandler.RAW_TXT_FILE_TYPE);
         hibernateHelper.getCurrentSession().save(f);
 
         tx.commit();
@@ -309,7 +321,7 @@ public class FileImportIntegrationTest extends AbstractFileManagementServiceInte
 
     @Test
     public void testDataMatrixCopyNumberMageTabImportSuccess() throws Exception {
-        ArrayDesign design = importArrayDesign(AgilentArrayDesignFiles.TEST_SHORT_ACGH_XML, FileType.AGILENT_XML);
+        ArrayDesign design = importArrayDesign(AgilentArrayDesignFiles.TEST_SHORT_ACGH_XML, AgilentXmlDesignFileHandler.XML_FILE_TYPE);
         addDesignToExperiment(design);
         MageTabFileSet fileSet = new MageTabFileSet();
         fileSet.addIdf(new JavaIOFileRef(MageTabDataFiles.GOOD_DATA_MATRIX_COPY_NUMER_IDF));
@@ -326,7 +338,7 @@ public class FileImportIntegrationTest extends AbstractFileManagementServiceInte
     
     @Test(expected=IndexOutOfBoundsException.class) @Ignore
     public void testDataMatrixCopyNumberMageTabImportFailDueToBadSdrfHybCount() throws Exception {
-        ArrayDesign design = importArrayDesign(AgilentArrayDesignFiles.TEST_SHORT_ACGH_XML, FileType.AGILENT_XML);
+        ArrayDesign design = importArrayDesign(AgilentArrayDesignFiles.TEST_SHORT_ACGH_XML, AgilentXmlDesignFileHandler.XML_FILE_TYPE);
         addDesignToExperiment(design);
         MageTabFileSet fileSet = new MageTabFileSet();
         fileSet.addIdf(new JavaIOFileRef(MageTabDataFiles.BAD_DATA_MATRIX_COPY_NUMER_WRONG_HYB_COUNT_IDF));
@@ -361,8 +373,8 @@ public class FileImportIntegrationTest extends AbstractFileManagementServiceInte
         CaArrayFileSet fileSet = uploadFiles(TestMageTabSets.EXTENDED_FACTOR_VALUES_INPUT_SET);
         
         Transaction tx = hibernateHelper.beginTransaction();
-        for (CaArrayFile file : fileSet.getFilesByType(FileType.AFFYMETRIX_CEL)) {
-            file.setFileType(FileType.AFFYMETRIX_DAT);
+        for (CaArrayFile file : fileSet.getFilesByType(CelHandler.CEL_FILE_TYPE)) {
+            file.setFileType(UnparsedDataHandler.FILE_TYPE_AFFYMETRIX_DAT);
         }
         tx.commit();
 
@@ -396,8 +408,8 @@ public class FileImportIntegrationTest extends AbstractFileManagementServiceInte
         CaArrayFileSet fileSet = uploadFiles(inputFiles);
         
         Transaction tx = hibernateHelper.beginTransaction();
-        for (CaArrayFile file : fileSet.getFilesByType(FileType.AFFYMETRIX_CEL)) {
-            file.setFileType(FileType.AFFYMETRIX_DAT);
+        for (CaArrayFile file : fileSet.getFilesByType(CelHandler.CEL_FILE_TYPE)) {
+            file.setFileType(UnparsedDataHandler.FILE_TYPE_AFFYMETRIX_DAT);
         }
         tx.commit();
 
@@ -415,11 +427,11 @@ public class FileImportIntegrationTest extends AbstractFileManagementServiceInte
 
     @Test
     public void testReimport() throws Exception {
-        ArrayDesign design = importArrayDesign(AgilentArrayDesignFiles.TEST_GENE_EXPRESSION_1_XML, FileType.AGILENT_CSV);
+        ArrayDesign design = importArrayDesign(AgilentArrayDesignFiles.TEST_GENE_EXPRESSION_1_XML, UnparsedArrayDesignFileHandler.AGILENT_CSV);
         assertNull(design.getDesignDetails());
 
         Transaction tx = hibernateHelper.beginTransaction();
-        design.getFirstDesignFile().setFileType(FileType.AGILENT_XML);
+        design.getFirstDesignFile().setFileType(AgilentXmlDesignFileHandler.XML_FILE_TYPE);
         hibernateHelper.getCurrentSession().saveOrUpdate(design);
         tx.commit();
 
@@ -438,13 +450,13 @@ public class FileImportIntegrationTest extends AbstractFileManagementServiceInte
 
     @Test
     public void testReimportWithReferencingExperiment() throws Exception {
-        ArrayDesign design = importArrayDesign(AgilentArrayDesignFiles.TEST_GENE_EXPRESSION_1_XML, FileType.AGILENT_CSV);
+        ArrayDesign design = importArrayDesign(AgilentArrayDesignFiles.TEST_GENE_EXPRESSION_1_XML, UnparsedArrayDesignFileHandler.AGILENT_CSV);
         assertNull(design.getDesignDetails());
 
         addDesignToExperiment(design);
 
         Transaction tx = hibernateHelper.beginTransaction();
-        design.getFirstDesignFile().setFileType(FileType.AGILENT_XML);
+        design.getFirstDesignFile().setFileType(AgilentXmlDesignFileHandler.XML_FILE_TYPE);
         hibernateHelper.getCurrentSession().saveOrUpdate(design);
         tx.commit();
 
@@ -465,7 +477,7 @@ public class FileImportIntegrationTest extends AbstractFileManagementServiceInte
     public void testIlluminaCsvDataImport() throws Exception {
         final int numberOfProbes = 10;
         importDesignAndDataFilesIntoProject(IlluminaArrayDesignFiles.HUMAN_WG6_CSV,
-                FileType.ILLUMINA_DATA_CSV, IlluminaArrayDataFiles.HUMAN_WG6_SMALL);
+                CsvDataHandler.DATA_CSV_FILE_TYPE, IlluminaArrayDataFiles.HUMAN_WG6_SMALL);
         Transaction tx = hibernateHelper.beginTransaction();
         Project project = getTestProject();
         ArrayDesign design = project.getExperiment().getArrayDesigns().iterator().next();
@@ -506,7 +518,7 @@ public class FileImportIntegrationTest extends AbstractFileManagementServiceInte
     @Test
     public void testIlluminaSampleProbeProfileImport() throws Exception {
         importDesignAndDataFilesIntoProject(IlluminaArrayDesignFiles.MOUSE_REF_8,
-                FileType.ILLUMINA_SAMPLE_PROBE_PROFILE_TXT, IlluminaArrayDataFiles.SAMPLE_PROBE_PROFILE);
+                SampleProbeProfileHandler.SAMPLE_PROBE_PROFILE_FILE_TYPE, IlluminaArrayDataFiles.SAMPLE_PROBE_PROFILE);
         Transaction tx = hibernateHelper.beginTransaction();
         Project project = getTestProject();
         ArrayDesign design = project.getExperiment().getArrayDesigns().iterator().next();
@@ -555,7 +567,7 @@ public class FileImportIntegrationTest extends AbstractFileManagementServiceInte
         hibernateHelper.getCurrentSession().save(design);        
         tx.commit();
 
-        importDataFilesIntoProject(design, FileType.ILLUMINA_GENOTYPING_PROCESSED_MATRIX_TXT,
+        importDataFilesIntoProject(design, GenotypingProcessedMatrixHandler.GENOTYPING_MATRIX_FILE_TYPE,
                 IlluminaArrayDataFiles.ILLUMINA_DERIVED_1_HYB);
         tx = hibernateHelper.beginTransaction();
         Project project = getTestProject();
@@ -597,7 +609,7 @@ public class FileImportIntegrationTest extends AbstractFileManagementServiceInte
 
     @Test
     public void testGenepixGprImport() throws Exception {
-        importDesignAndDataFilesIntoProject(GenepixArrayDataFiles.JOE_DERISI_FIX, FileType.GENEPIX_GPR,
+        importDesignAndDataFilesIntoProject(GenepixArrayDataFiles.JOE_DERISI_FIX, GprHandler.GPR_FILE_TYPE,
                 GenepixArrayDataFiles.SMALL_IDF, GenepixArrayDataFiles.SMALL_SDRF, GenepixArrayDataFiles.GPR_4_1_1);
         Transaction tx = hibernateHelper.beginTransaction();
         Project project = getTestProject();
@@ -633,7 +645,7 @@ public class FileImportIntegrationTest extends AbstractFileManagementServiceInte
 
     @Test
     public void testNimblegenPairImport() throws Exception {
-        importDesignAndDataFilesIntoProject(NimblegenArrayDesignFiles.SHORT_EXPRESSION_DESIGN, FileType.NIMBLEGEN_NORMALIZED_PAIR,
+        importDesignAndDataFilesIntoProject(NimblegenArrayDesignFiles.SHORT_EXPRESSION_DESIGN, PairDataHandler.NORMALIZED_PAIR_FILE_TYPE,
                 NimblegenArrayDataFiles.SHORT_HUMAN_EXPRESSION);
         Transaction tx = hibernateHelper.beginTransaction();
         Project project = getTestProject();

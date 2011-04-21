@@ -117,8 +117,8 @@ import com.google.inject.name.Named;
 /**
  * Contains logic to read Affymetrix CDF files.
  */
-final class CdfHandler extends AbstractAffymetrixDesignFileHandler {
-    static final FileType CDF_FILE_TYPE = new FileType("AFFYMETRIX_CDF", FileCategory.ARRAY_DESIGN, true, "CDF");
+public final class CdfHandler extends AbstractAffymetrixDesignFileHandler {
+    public static final FileType CDF_FILE_TYPE = new FileType("AFFYMETRIX_CDF", FileCategory.ARRAY_DESIGN, true, "CDF");
     static final Set<FileType> SUPPORTED_TYPES = Sets.newHashSet(CDF_FILE_TYPE);
 
     private CdfReader cdfReader;

@@ -93,6 +93,8 @@ import java.util.Set;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
+import com.google.common.base.Preconditions;
+
 /**
  * Provides functionality to handle multiple <code>CaArrayFiles</code> as a single set.
  */
@@ -163,13 +165,14 @@ public final class CaArrayFileSet implements Serializable {
     /**
      * Get a subset of CaArrayFile objects with file type specified.
      * 
-     * @param ft File type
+     * @param ft File type must not be null
      * @return set of CaArrayFile objects
      */
     public Set<CaArrayFile> getFilesByType(FileType ft) {
+        Preconditions.checkNotNull(ft);        
         final Set<CaArrayFile> sdrfFiles = new HashSet<CaArrayFile>();
         for (final CaArrayFile fileIt : this.files) {
-            if (fileIt.getFileType() == ft) {
+            if (ft.equals(fileIt.getFileType())) {
                 sdrfFiles.add(fileIt);
             }
         }

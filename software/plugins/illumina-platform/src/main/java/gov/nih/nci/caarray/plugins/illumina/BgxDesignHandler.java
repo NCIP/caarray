@@ -118,10 +118,10 @@ import com.google.inject.Inject;
  * 
  * @author gax
  */
-class BgxDesignHandler extends AbstractDesignFileHandler {
+public class BgxDesignHandler extends AbstractDesignFileHandler {
     private static final Logger LOG = Logger.getLogger(BgxDesignHandler.class);
 
-    static final FileType BGX_FILE_TYPE = new FileType("ILLUMINA_DESIGN_BGX", FileCategory.ARRAY_DESIGN, true,
+    public static final FileType BGX_FILE_TYPE = new FileType("ILLUMINA_DESIGN_BGX", FileCategory.ARRAY_DESIGN, true,
             "BGX", "BGX.TXT");
     static final Set<FileType> SUPPORTED_TYPES = Sets.newHashSet(BGX_FILE_TYPE);
 

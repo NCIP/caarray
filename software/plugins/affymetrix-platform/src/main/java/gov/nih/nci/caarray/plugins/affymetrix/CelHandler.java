@@ -128,12 +128,12 @@ import com.google.inject.Inject;
  */
 @SuppressWarnings({ "PMD.CyclomaticComplexity", "PMD.TooManyMethods" })
 // Switch-like statement setValue()
-final class CelHandler extends AbstractDataFileHandler {
+public final class CelHandler extends AbstractDataFileHandler {
     private static final Logger LOG = Logger.getLogger(CelHandler.class);
     private static final String LSID_AUTHORITY = "Affymetrix.com";
     private static final String LSID_NAMESPACE = "PhysicalArrayDesign";
 
-    static final FileType CEL_FILE_TYPE = new FileType("AFFYMETRIX_CEL", FileCategory.RAW_DATA, true, "CEL");
+    public static final FileType CEL_FILE_TYPE = new FileType("AFFYMETRIX_CEL", FileCategory.RAW_DATA, true, "CEL");
     static final Set<FileType> SUPPORTED_TYPES = Sets.newHashSet(CEL_FILE_TYPE);
 
     private FusionCELData celData;

@@ -124,7 +124,7 @@ import com.google.inject.Inject;
  * Validates and reads data from all versions of Genepix GPR data files.
  */
 @SuppressWarnings({ "PMD.CyclomaticComplexity", "PMD.ExcessiveClassLength", "PMD.TooManyMethods" })
-final class GprHandler extends AbstractDataFileHandler {
+public final class GprHandler extends AbstractDataFileHandler {
     private static final String LSID_AUTHORITY = AbstractCaArrayEntity.CAARRAY_LSID_AUTHORITY;
     private static final String LSID_NAMESPACE = AbstractCaArrayEntity.CAARRAY_LSID_NAMESPACE;
 
@@ -179,7 +179,7 @@ final class GprHandler extends AbstractDataFileHandler {
         STANDARD_HEADERS = Collections.unmodifiableSet(tmpSet);
     }
 
-    static final FileType GPR_FILE_TYPE = new FileType("GENEPIX_GPR", FileCategory.DERIVED_DATA, true, "GPR");
+    public static final FileType GPR_FILE_TYPE = new FileType("GENEPIX_GPR", FileCategory.DERIVED_DATA, true, "GPR");
     static final Set<FileType> SUPPORTED_TYPES = Sets.newHashSet(GPR_FILE_TYPE);
 
     private final ValueParser valueParser = new GenepixValueParser();

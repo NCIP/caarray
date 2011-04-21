@@ -127,7 +127,7 @@ import com.google.inject.Injector;
  * Manages validation and loading of array designs described in the GenePix GAL format.
  */
 @SuppressWarnings("PMD")
-final class GalDesignHandler extends AbstractDesignFileHandler {
+public final class GalDesignHandler extends AbstractDesignFileHandler {
     private static final String LSID_AUTHORITY = AbstractCaArrayEntity.CAARRAY_LSID_AUTHORITY;
     private static final String LSID_NAMESPACE = AbstractCaArrayEntity.CAARRAY_LSID_NAMESPACE;
 
@@ -142,7 +142,7 @@ final class GalDesignHandler extends AbstractDesignFileHandler {
             COLUMN_HEADER, ROW_HEADER, ID_HEADER });
     private static final String BLOCK_INDICATOR = "Block";
 
-    static final FileType GAL_FILE_TYPE = new FileType("GENEPIX_GAL", FileCategory.ARRAY_DESIGN, true, "GAL");
+    public static final FileType GAL_FILE_TYPE = new FileType("GENEPIX_GAL", FileCategory.ARRAY_DESIGN, true, "GAL");
     static final Set<FileType> SUPPORTED_TYPES = Sets.newHashSet(GAL_FILE_TYPE);
 
     private final Map<String, Integer> headerToPositionMap = new HashMap<String, Integer>();

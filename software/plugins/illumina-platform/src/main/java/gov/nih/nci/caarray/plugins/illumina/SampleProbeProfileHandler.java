@@ -128,10 +128,10 @@ import com.google.inject.Inject;
  * @author gax
  */
 @SuppressWarnings("PMD.ExcessiveClassLength")
-final class SampleProbeProfileHandler extends AbstractDataFileHandler {
+public final class SampleProbeProfileHandler extends AbstractDataFileHandler {
     private static final Logger LOG = Logger.getLogger(SampleProbeProfileHandler.class);
 
-    static final FileType SAMPLE_PROBE_PROFILE_FILE_TYPE = new FileType("ILLUMINA_SAMPLE_PROBE_PROFILE_TXT",
+    public static final FileType SAMPLE_PROBE_PROFILE_FILE_TYPE = new FileType("ILLUMINA_SAMPLE_PROBE_PROFILE_TXT",
             FileCategory.DERIVED_DATA, true);
     static final Set<FileType> SUPPORTED_TYPES = Sets.newHashSet(SAMPLE_PROBE_PROFILE_FILE_TYPE);
 

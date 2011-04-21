@@ -119,11 +119,11 @@ import com.google.inject.name.Named;
 /**
  * Array data handler for all versions and types of the Affymetrix CHP file format.
  */
-class ChpHandler extends AbstractDataFileHandler {
+public class ChpHandler extends AbstractDataFileHandler {
     private static final String LSID_AUTHORITY = "Affymetrix.com";
     private static final String LSID_NAMESPACE_DESIGN = "PhysicalArrayDesign";
 
-    static final FileType CHP_FILE_TYPE = new FileType("AFFYMETRIX_CHP", FileCategory.DERIVED_DATA, true, "CHP",
+    public static final FileType CHP_FILE_TYPE = new FileType("AFFYMETRIX_CHP", FileCategory.DERIVED_DATA, true, "CHP",
             "CNCHP");
     static final Set<FileType> SUPPORTED_TYPES = Sets.newHashSet(CHP_FILE_TYPE);
 

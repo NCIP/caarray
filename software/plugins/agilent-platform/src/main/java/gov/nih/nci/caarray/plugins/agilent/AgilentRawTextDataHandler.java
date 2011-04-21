@@ -128,7 +128,7 @@ import com.google.inject.Inject;
  */
 @SuppressWarnings("PMD.CyclomaticComplexity")
 // Switch-like statement
-class AgilentRawTextDataHandler extends AbstractDataFileHandler {
+public class AgilentRawTextDataHandler extends AbstractDataFileHandler {
 
     private static final int MIN_EXPECTED_ROW_COUNT = 1024;
     private static final Logger LOG = Logger.getLogger(AgilentRawTextDataHandler.class);
@@ -136,7 +136,7 @@ class AgilentRawTextDataHandler extends AbstractDataFileHandler {
     private static final String[] MANDATORY_2_COLOR = { "ProbeName", "LogRatio" };
     private static final String[] MANDATORY_1_COLOR = { "ProbeName", "gProcessedSignal" };
 
-    static final FileType RAW_TXT_FILE_TYPE = new FileType("AGILENT_RAW_TXT", FileCategory.RAW_DATA, true);
+    public static final FileType RAW_TXT_FILE_TYPE = new FileType("AGILENT_RAW_TXT", FileCategory.RAW_DATA, true);
     static final Set<FileType> SUPPORTED_TYPES = Sets.newHashSet(RAW_TXT_FILE_TYPE);
 
     private List<RowData> probes;
