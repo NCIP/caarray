@@ -2595,6 +2595,16 @@
                 <pathelement location="${caarray-common.classes.dir}" />
                 <pathelement location="${caarray-common.test.classes.dir}" />
                 <pathelement location="${test.data.classes.dir}" />
+            	
+            	<!-- 
+            	//TODO: ARRAY-1942 follow-on tasks for <ARRAY-1896 Merge dkokotov_storage_osgi_consolidation Branch to trunk>
+            	//The below <fileset> is only temporary. Some caarray-ejb test classes have dependencies on vendor specific 
+            	//plugin classes (mainly having to do with FileType) that need to be fixed. Once they are fixed, the below
+            	//can be removed. 
+            	-->     
+            	<dirset dir="${caarray-plugins.dir}">
+                    <include name="**/classes"/>
+                </dirset>
             </classpath>
             <classpath refid="ejb.test.dependencies.path" />
             <classpath refid="mysql-connector-java.jar.path" />
