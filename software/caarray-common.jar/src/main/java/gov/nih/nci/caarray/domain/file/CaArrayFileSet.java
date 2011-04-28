@@ -97,7 +97,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  * Provides functionality to handle multiple <code>CaArrayFiles</code> as a single set.
  */
 @SuppressWarnings("PMD.CyclomaticComplexity") // Complex rules for checking aggregate file status
-public final class CaArrayFileSet implements Serializable {
+public class CaArrayFileSet implements Serializable {
 
     private static final long serialVersionUID = -831461553674445009L;
     private final Set<CaArrayFile> files = new HashSet<CaArrayFile>();
