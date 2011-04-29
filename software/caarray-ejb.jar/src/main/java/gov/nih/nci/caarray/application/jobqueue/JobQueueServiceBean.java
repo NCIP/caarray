@@ -83,8 +83,8 @@
 package gov.nih.nci.caarray.application.jobqueue;
 
 import gov.nih.nci.caarray.application.ExceptionLoggingInterceptor;
-import gov.nih.nci.caarray.dao.JobQueueDao;
 import gov.nih.nci.caarray.domain.project.Job;
+import gov.nih.nci.caarray.jobqueue.JobQueue;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
 import gov.nih.nci.security.authorization.domainobjects.User;
 
@@ -109,15 +109,15 @@ import com.google.inject.Inject;
 @TransactionAttribute(TransactionAttributeType.SUPPORTS)
 public class JobQueueServiceBean implements JobQueueService {
     private static final Logger LOG = Logger.getLogger(JobQueueServiceBean.class);
-    private final JobQueueDao jobQueueDao;
+    private final JobQueue jobQueue;
 
     /**
      * constructor.
-     * @param jobQueueDao the JobQueueDao dependency
+     * @param jobQueue the jobQueue dependency
      */
     @Inject
-    public JobQueueServiceBean(JobQueueDao jobQueueDao) {
-        this.jobQueueDao = jobQueueDao;
+    public JobQueueServiceBean(JobQueue jobQueue) {
+        this.jobQueue = jobQueue;
     }
 
     /**
@@ -125,7 +125,7 @@ public class JobQueueServiceBean implements JobQueueService {
      */
     public List<Job> getJobsForUser(User user) {
         LogUtil.logSubsystemEntry(LOG);
-        List<Job> result = jobQueueDao.getJobsForUser(user);
+        List<Job> result = jobQueue.getJobsForUser(user);
         LogUtil.logSubsystemExit(LOG);
         return result;
     }
@@ -134,14 +134,14 @@ public class JobQueueServiceBean implements JobQueueService {
      * {@inheritDoc}
      */
     public int getJobCount(User user) {
-        return jobQueueDao.getJobsForUser(user).size();
+        return jobQueue.getJobsForUser(user).size();
     }
 
     /**
      * {@inheritDoc}
      */
-    public boolean cancelJob(String jobId) {
-        return jobQueueDao.cancelJob(jobId);
+    public boolean cancelJob(String jobId, User user) {
+        return jobQueue.cancelJob(jobId, user);
     }
 
 }

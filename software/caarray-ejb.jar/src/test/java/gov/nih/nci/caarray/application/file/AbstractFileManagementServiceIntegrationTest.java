@@ -96,7 +96,6 @@ import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheStubFactory;
 import gov.nih.nci.caarray.application.translation.TranslationModule;
 import gov.nih.nci.caarray.application.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
-import gov.nih.nci.caarray.dao.JobQueueDao;
 import gov.nih.nci.caarray.dao.VocabularyDao;
 import gov.nih.nci.caarray.dao.stub.JobDaoSingleJobStub;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
@@ -113,12 +112,13 @@ import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.injection.InjectorFactory;
+import gov.nih.nci.caarray.jobqueue.JobQueue;
 import gov.nih.nci.caarray.magetab.MageTabFileSet;
 import gov.nih.nci.caarray.magetab.TestMageTabSets;
 import gov.nih.nci.caarray.magetab.io.FileRef;
 import gov.nih.nci.caarray.magetab.io.JavaIOFileRef;
-import gov.nih.nci.caarray.util.CaArrayUtils;
 import gov.nih.nci.caarray.util.CaArrayUsernameHolder;
+import gov.nih.nci.caarray.util.CaArrayUtils;
 import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import gov.nih.nci.caarray.validation.InvalidDataFileException;
@@ -496,13 +496,13 @@ public abstract class AbstractFileManagementServiceIntegrationTest extends Abstr
                     }
 
                     private DirectJobSubmitter createJobSubmitter() {
-                        JobQueueDao jobDao = new JobDaoSingleJobStub();
+                        JobQueue jobQueue = new JobDaoSingleJobStub();
                         Provider<UsernameHolder> usernameHolderProvider
                             = Providers.of(mock(UsernameHolder.class));
-                        FileManagementMDB mdb = new FileManagementMDB(hibernateHelper, jobDao, usernameHolderProvider );
+                        FileManagementMDB mdb = new FileManagementMDB(hibernateHelper, jobQueue, usernameHolderProvider );
                         UserTransaction ut = mock(UserTransaction.class);
                         mdb.setTransaction(ut);
-                        DirectJobSubmitter submitter = new DirectJobSubmitter(mdb, jobDao);
+                        DirectJobSubmitter submitter = new DirectJobSubmitter(mdb, jobQueue);
                         return submitter;
                     }
                 });

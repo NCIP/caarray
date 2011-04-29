@@ -85,9 +85,9 @@ package gov.nih.nci.caarray.application.file;
 import gov.nih.nci.caarray.application.ConfigurationHelper;
 import gov.nih.nci.caarray.application.ExceptionLoggingInterceptor;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
-import gov.nih.nci.caarray.dao.JobQueueDao;
 import gov.nih.nci.caarray.domain.ConfigParamEnum;
 import gov.nih.nci.caarray.domain.project.ExecutableJob;
+import gov.nih.nci.caarray.jobqueue.JobQueue;
 import gov.nih.nci.caarray.services.HibernateSessionInterceptor;
 import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
 import gov.nih.nci.caarray.util.UsernameHolder;
@@ -144,20 +144,20 @@ public class FileManagementMDB implements MessageListener {
     private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
     @Resource private UserTransaction transaction;
     private final CaArrayHibernateHelper hibernateHelper;
-    private final JobQueueDao jobDao;
+    private final JobQueue jobQueue;
     private final Provider<UsernameHolder> userHolderProvider;
     
     /**
      * @param hibernateHelper the CaArrayHibernateHelper dependency
-     * @param jobDao the JobDao dependency
+     * @param jobQueue the JobQueue dependency
      * @param userHolderProvider provides userHolder objects. Using a provider here to enable a possible
      *        future enhancement where thread specific userHolders can be provided.
      */
     @Inject
-    public FileManagementMDB(CaArrayHibernateHelper hibernateHelper, JobQueueDao jobDao,
+    public FileManagementMDB(CaArrayHibernateHelper hibernateHelper, JobQueue jobQueue,
             Provider<UsernameHolder> userHolderProvider) {
         this.hibernateHelper = hibernateHelper;
-        this.jobDao = jobDao;
+        this.jobQueue = jobQueue;
         this.userHolderProvider = userHolderProvider;
     }
 
@@ -176,7 +176,7 @@ public class FileManagementMDB implements MessageListener {
             String messageText = ((TextMessage) message).getText();
             if ("enqueue".equals(messageText)) {
                 UsernameHolder usernameHolder = userHolderProvider.get();
-                ExecutableJob job = jobDao.peekAtJobQueue();
+                ExecutableJob job = jobQueue.peekAtJobQueue();
                 if (null != job) {
                     String previousUser = usernameHolder.getUser();
                     usernameHolder.setUser(job.getOwnerName());
@@ -186,7 +186,7 @@ public class FileManagementMDB implements MessageListener {
                         LOG.info("Successfully completed job");
                     } finally {
                         // remove the job from the queue if there is an exception or successfully completed. 
-                        jobDao.dequeue();
+                        jobQueue.dequeue();
                         usernameHolder.setUser(previousUser);
                     }
                 }

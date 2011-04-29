@@ -69,7 +69,6 @@ import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheStubFactory;
 import gov.nih.nci.caarray.application.translation.magetab.MageTabTranslator;
 import gov.nih.nci.caarray.application.translation.magetab.MageTabTranslatorStub;
 import gov.nih.nci.caarray.dao.ArrayDao;
-import gov.nih.nci.caarray.dao.JobQueueDao;
 import gov.nih.nci.caarray.dao.ProjectDao;
 import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.dao.stub.ArrayDaoStub;
@@ -82,9 +81,10 @@ import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
-import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.ExecutableJob;
+import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.jobqueue.JobQueue;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.magetab.TestMageTabSets;
 import gov.nih.nci.caarray.test.data.arraydata.AffymetrixArrayDataFiles;
@@ -127,11 +127,11 @@ public class FileManagementServiceTest extends AbstractServiceTest {
     @Before
     public void setUp() {
         CaArrayHibernateHelper hibernateHelper = mock(CaArrayHibernateHelper.class);
-        JobQueueDao jobDao = new JobDaoSingleJobStub();
+        JobQueue jobQueue = new JobDaoSingleJobStub();
         Provider<UsernameHolder> usernameHolderProvider =
             Providers.of(mock(UsernameHolder.class));
 
-        FileManagementMDB fileManagementMDB = new FileManagementMDB(hibernateHelper, jobDao, usernameHolderProvider) {
+        FileManagementMDB fileManagementMDB = new FileManagementMDB(hibernateHelper, jobQueue, usernameHolderProvider) {
 
             /**
              * {@inheritDoc}
@@ -160,7 +160,7 @@ public class FileManagementServiceTest extends AbstractServiceTest {
         };
         fileManagementMDB.setDaoFactory(this.daoFactoryStub);
         fileManagementMDB.setTransaction(new UserTransactionStub());
-        DirectJobSubmitter submitter = new DirectJobSubmitter(fileManagementMDB, jobDao);
+        DirectJobSubmitter submitter = new DirectJobSubmitter(fileManagementMDB, jobQueue);
         
         ArrayDataService arrayDataService = new LocalArrayDataServiceStub();
         MageTabTranslator mageTabTranslator = new MageTabTranslatorStub();

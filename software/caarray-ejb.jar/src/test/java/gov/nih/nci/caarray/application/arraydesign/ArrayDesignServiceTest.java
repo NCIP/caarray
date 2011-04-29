@@ -98,7 +98,6 @@ import gov.nih.nci.caarray.application.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.application.vocabulary.VocabularyServiceStub;
 import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.dao.ContactDao;
-import gov.nih.nci.caarray.dao.JobQueueDao;
 import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.dao.VocabularyDao;
 import gov.nih.nci.caarray.dao.stub.ArrayDaoStub;
@@ -124,6 +123,7 @@ import gov.nih.nci.caarray.domain.search.ExampleSearchCriteria;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
+import gov.nih.nci.caarray.jobqueue.JobQueue;
 import gov.nih.nci.caarray.platforms.spi.PlatformFileReadException;
 import gov.nih.nci.caarray.staticinjection.CaArrayEjbStaticInjectionModule;
 import gov.nih.nci.caarray.test.data.arraydata.AffymetrixArrayDataFiles;
@@ -192,7 +192,7 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
             @Override
             protected void configure() {
                 bind(UsernameHolder.class).toInstance(mock(UsernameHolder.class));
-                bind(JobQueueDao.class).toInstance(mock(JobQueueDao.class));
+                bind(JobQueue.class).toInstance(mock(JobQueue.class));
                 bind(ContactDao.class).toInstance(caArrayDaoFactoryStub.getContactDao());
                 bind(SearchDao.class).toInstance(caArrayDaoFactoryStub.getSearchDao());
                 bind(ArrayDao.class).toInstance(caArrayDaoFactoryStub.getArrayDao());

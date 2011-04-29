@@ -80,9 +80,10 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.dao;
+package gov.nih.nci.caarray.jobqueue;
 
 
+import gov.nih.nci.caarray.dao.FileDao;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.project.ExecutableJob;
 import gov.nih.nci.caarray.domain.project.Job;
@@ -107,21 +108,25 @@ import com.google.inject.Singleton;
  * @author jscott
  */
 @Singleton
-class JobQueueDaoImpl implements JobQueueDao {
+public class JobQueueImpl implements JobQueue {
     private final Queue<ExecutableJob> queue = new LinkedList<ExecutableJob>();
     private final JobMessageSender messageSender;
     private final Lock jobQueueLock = new ReentrantLock();
     private final FileDao fileDao;
 
     /**
-     * @param messageSender the MessageSender dependency
+     * @param messageSender the MessageSender dependency.
+     * @param fileDao the file dao.
      */
     @Inject
-    public JobQueueDaoImpl(JobMessageSender messageSender, FileDao fileDao) {
+    public JobQueueImpl(JobMessageSender messageSender, FileDao fileDao) {
         this.messageSender = messageSender;
         this.fileDao = fileDao;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void enqueue(ExecutableJob job) {
         job.setJobId(UUID.randomUUID());
         job.markAsInQueue();
@@ -205,12 +210,13 @@ class JobQueueDaoImpl implements JobQueueDao {
     /**
      * {@inheritDoc}
      */
-    public boolean cancelJob(String jobId) {
+    public boolean cancelJob(String jobId, User user) {
         for (ExecutableJob originalJob : getJobList()) {
             jobQueueLock.lock();
             try {
                 if (originalJob.getJobId().equals(UUID.fromString(jobId))) {
-                    if (originalJob.isInProgress()) {
+                    if (originalJob.isInProgress() 
+                            || !originalJob.getOwnerName().equalsIgnoreCase(user.getLoginName())) {
                         return false;
                     }
                     

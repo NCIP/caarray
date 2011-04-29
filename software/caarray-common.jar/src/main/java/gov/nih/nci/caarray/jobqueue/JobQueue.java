@@ -81,7 +81,7 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package gov.nih.nci.caarray.dao;
+package gov.nih.nci.caarray.jobqueue;
 
 
 import gov.nih.nci.caarray.domain.project.ExecutableJob;
@@ -95,7 +95,7 @@ import java.util.List;
  * @author jscott
  *
  */
-public interface JobQueueDao {
+public interface JobQueue {
 
     /**
      * Adds a job to the end of the queue.
@@ -133,8 +133,9 @@ public interface JobQueueDao {
      * Cancels the given job.
      * 
      * @param jobId string representation of the job id to cancel.
+     * @param user the logged in user.
      * @return a boolean value that indicates if the job was canceled or not. true implies that the job was
      * canceled successfully, whereas a false value indicates that the job could not be canceled. 
      */
-    boolean cancelJob(String jobId);
+    boolean cancelJob(String jobId, User user);
 }

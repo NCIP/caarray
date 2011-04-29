@@ -233,7 +233,7 @@ public class ExecutableJobStub extends AbstractCaArrayEntity implements Executab
      * {@inheritDoc}
      */
     public boolean isInProgress() {
-        return false;
+        return jobStatus.equals(JobStatus.RUNNING);
     }
 
     /**

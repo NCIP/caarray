@@ -7,11 +7,8 @@
     <c:set var="jobQueueDatePattern" value="E MMM d h:mm a" />
     
     <display:table class="searchresults" cellspacing="0" list="${jobs}" requestURI="${sortUrl}" id="row" excludedParams="project.id" style="clear: none;">
-        <c:set var="canReadExperiment" value="${row.userHasReadAccess}"/>
-        <c:set var="canWriteExperiment" value="${row.userHasWriteAccess}"/>
-        <c:set var="arrayDesignJob" value="${row.jobType.arrayDesignJob}"/>
         <c:choose>
-            <c:when test="${!canReadExperiment && !canWriteExperiment}">
+            <c:when test="${!row.userHasReadAccess && !row.userHasWriteAccess}">
                 <c:set var="experimentColValue" value="Private Experiment" />
                 <c:set var="userColValue" value="Private User" />
             </c:when>
@@ -19,31 +16,23 @@
                 <c:set var="experimentColValue" value="${row.jobEntityName}" />
                 <c:set var="userColValue" value="${row.ownerName}" />
             </c:when>
-            <c:when test="${!row.userHasOwnership && canReadExperiment}">
+            <c:when test="${!row.userHasOwnership && row.userHasReadAccess}">
                 <c:set var="experimentColValue" value="${row.jobEntityName}" />
                 <c:set var="userColValue" value="${row.ownerName}" />
             </c:when>
         </c:choose>
         <c:choose>
-            <c:when test="${!row.originalJob.inProgress && (canWriteExperiment || isSystemAdministrator)}">
-                <c:set var="canCancel" value="true" />
-            </c:when>
-            <c:otherwise>
-                <c:set var="canCancel" value="false" />
-            </c:otherwise>
-        </c:choose>
-        <c:choose>
-            <c:when test="${arrayDesignJob}">
+            <c:when test="${row.jobType.arrayDesignJob}">
                 <c:url var="viewEditUrl" value="/protected/arrayDesign/view.action">
                     <c:param name="arrayDesign.id" value="${row.jobEntityId}"/>
                 </c:url>
             </c:when>
-            <c:when test="${!arrayDesignJob && canWriteExperiment}">
+            <c:when test="${!row.jobType.arrayDesignJob && row.userHasWriteAccess}">
                 <c:url var="viewEditUrl" value="/protected/project/edit.action">
                     <c:param name="project.id" value="${row.jobEntityId}"/>
                 </c:url>
             </c:when>
-            <c:when test="${!arrayDesignJob && !canWriteExperiment && canReadExperiment}">
+            <c:when test="${!row.jobType.arrayDesignJob && !row.userHasWriteAccess && row.userHasReadAccess}">
                 <c:url var="viewEditUrl" value="/project/details.action">
                     <c:param name="project.id" value="${row.jobEntityId}"/>
                 </c:url>
@@ -58,7 +47,7 @@
         <display:column sortProperty="USER" title="User" sortable="true" maxLength="30">${userColValue}</display:column>
         <display:column sortProperty="EXPERIMENT" title="Experiment/Array Design" sortable="true" >
             <c:choose>
-                <c:when test="${canReadExperiment || canWriteExperiment}">
+                <c:when test="${row.userHasReadAccess || row.userHasWriteAccess}">
                     <a href="${viewEditUrl}">${experimentColValue}</a>
                 </c:when>
                 <c:otherwise>${experimentColValue}</c:otherwise>
@@ -76,7 +65,7 @@
             <c:param name="jobId" value="${row.jobId}" />     
         </c:url>
         <display:column title="Action" sortable="false" >
-            <c:if test="${canCancel}">
+            <c:if test="${row.userCanCancelJob}">
                 <a href="${cancelJobUrl}"><img src="<c:url value="/images/ico_cancel.gif"/>" alt="Cancel" /></a>
             </c:if>
         </display:column>

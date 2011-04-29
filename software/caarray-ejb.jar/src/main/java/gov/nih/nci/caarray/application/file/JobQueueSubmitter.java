@@ -82,7 +82,7 @@
  */
 package gov.nih.nci.caarray.application.file;
 
-import gov.nih.nci.caarray.dao.JobQueueDao;
+import gov.nih.nci.caarray.jobqueue.JobQueue;
 
 import com.google.inject.Inject;
 
@@ -90,20 +90,20 @@ import com.google.inject.Inject;
  * Submits jobs via the job queue.
  */
 public class JobQueueSubmitter implements FileManagementJobSubmitter {    
-    private final JobQueueDao jobDao;
+    private final JobQueue jobQueue;
     
     /**
-     * @param jobDao the Provider&lt;JobDao&gt; dependency
+     * @param jobQueue the Provider&lt;JobQueue&gt; dependency
      */
     @Inject
-    public JobQueueSubmitter(JobQueueDao jobDao) {
-        this.jobDao = jobDao;
+    public JobQueueSubmitter(JobQueue jobQueue) {
+        this.jobQueue = jobQueue;
     }
 
     /**
      * {@inheritDoc}
      */
     public void submitJob(AbstractFileManagementJob job) {
-        jobDao.enqueue(job);
+        jobQueue.enqueue(job);
     }
 }
