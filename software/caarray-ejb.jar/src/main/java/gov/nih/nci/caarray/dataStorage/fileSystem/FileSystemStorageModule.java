@@ -14,7 +14,7 @@ import com.google.inject.name.Names;
  */
 public class FileSystemStorageModule extends AbstractModule {
     /**
-     * configuration constant name for the directory where files should be stored
+     * configuration constant name for the directory where files should be stored.
      */
     public static final String BASE_DIR_KEY = "dataStorage.fileSystem.baseDir";
 

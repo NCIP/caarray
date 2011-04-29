@@ -167,7 +167,7 @@ public class OsgiConfigurationProvider implements PackageProvider, BundleListene
         final Set<String> bundleNames = new HashSet<String>();
 
         // iterate over the bundles and load packages from them
-        for (final Bundle bundle : CaArrayPluginsFacade.INSTANCE.getOsgiContainerManager().getBundles()) {
+        for (final Bundle bundle : CaArrayPluginsFacade.getInstance().getOsgiContainerManager().getBundles()) {
             final String bundleName = bundle.getSymbolicName();
             if (shouldProcessBundle(bundle) && !bundleNames.contains(bundleName)) {
                 bundleNames.add(bundleName);
@@ -185,6 +185,7 @@ public class OsgiConfigurationProvider implements PackageProvider, BundleListene
      * 
      * @param bundle bundle to load from
      */
+    @SuppressWarnings("PMD.ExcessiveMethodLength")
     protected void loadConfigFromBundle(Bundle bundle) {
         final String bundleName = bundle.getSymbolicName();
         if (LOG.isDebugEnabled()) {

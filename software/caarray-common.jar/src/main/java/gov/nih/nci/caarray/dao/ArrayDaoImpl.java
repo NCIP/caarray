@@ -142,7 +142,7 @@ import com.google.inject.Inject;
  * 
  * @author Rashmi Srinivasa
  */
-@SuppressWarnings({ "PMD.AvoidDuplicateLiterals", "PMD.CyclomaticComplexity", "PMD.TooManyMethods" })
+@SuppressWarnings({"PMD.AvoidDuplicateLiterals", "PMD.CyclomaticComplexity", "PMD.TooManyMethods" })
 class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
     private final SearchDao searchDao;
     private final FileTypeRegistry typeRegistry;
@@ -490,13 +490,15 @@ class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
                 try {
                     stmt.close();
                 } catch (final SQLException e) {
-                } // NOPMD
+                    // close quietly
+                }
             }
             if (conn != null) {
                 try {
                     conn.close();
                 } catch (final SQLException e) {
-                } // NOPMD
+                    // close quietly
+                }
             }
         }
     }
@@ -542,7 +544,7 @@ class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
      * {@inheritDoc}
      */
     @Override
-    @SuppressWarnings({ "unchecked", "PMD.ExcessiveMethodLength", "PMD.NPathComplexity" })
+    @SuppressWarnings({"unchecked", "PMD.ExcessiveMethodLength", "PMD.NPathComplexity" })
     public List<QuantitationType> searchForQuantitationTypes(PageSortParams<QuantitationType> params,
             QuantitationTypeSearchCriteria criteria) {
         final Criteria c = getCurrentSession().createCriteria(HybridizationData.class);

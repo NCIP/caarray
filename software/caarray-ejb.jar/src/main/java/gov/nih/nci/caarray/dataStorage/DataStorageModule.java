@@ -20,7 +20,13 @@ import com.google.inject.name.Names;
  * @author dkokotov
  */
 public class DataStorageModule extends AbstractModule {
+    /**
+     * key under which the name of the storage engine to use for storing new file data is found.
+     */
     public static final String FILE_DATA_ENGINE = "dataStorage.fileDataEngine";
+    /**
+     * key under which the name of the storage engine to use for storing new parsed data is found.
+     */
     public static final String PARSED_DATA_ENGINE = "dataStorage.parsedDataEngine";
 
     /**

@@ -85,7 +85,6 @@ package gov.nih.nci.caarray.plugins.visualizationTab.action;
 import gov.nih.nci.caarray.application.GenericDataService;
 import gov.nih.nci.caarray.application.ServiceLocatorFactory;
 import gov.nih.nci.caarray.application.project.ProjectManagementService;
-import gov.nih.nci.caarray.application.translation.gct.GctExporter;
 import gov.nih.nci.caarray.domain.array.AbstractDesignElement;
 import gov.nih.nci.caarray.domain.array.AbstractProbe;
 import gov.nih.nci.caarray.domain.data.DataRetrievalRequest;
@@ -147,10 +146,11 @@ import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.validator.annotations.CustomValidator;
 
 /**
- * Action implementing the samples tab.
+ * Action implementing the visualization tab.
  * 
  * @author Dan Kokotov
  */
+@SuppressWarnings("PMD")
 public class ProjectVisualizationAction implements Preparable {
     private static final long serialVersionUID = 1L;
 
@@ -158,7 +158,7 @@ public class ProjectVisualizationAction implements Preparable {
 
     private static final String SAMPLE_NAME = "sample_name";
 
-    private static final ColumnDescription[] QUANT_COLUMNS = new ColumnDescription[] { new ColumnDescription(
+    private static final ColumnDescription[] QUANT_COLUMNS = new ColumnDescription[] {new ColumnDescription(
             SAMPLE_NAME, ValueType.TEXT, "Name of sample"), };
 
     private static final int MAX_ZOOM_LEVEL = 5;
@@ -179,11 +179,13 @@ public class ProjectVisualizationAction implements Preparable {
     public void prepare() {
         Project retrieved = null;
         if (this.project.getId() != null) {
-            retrieved = ServiceLocatorFactory.getGenericDataService().getPersistentObject(Project.class,
-                    this.project.getId());
+            retrieved =
+                    ServiceLocatorFactory.getGenericDataService().getPersistentObject(Project.class,
+                            this.project.getId());
         } else if (this.project.getExperiment().getPublicIdentifier() != null) {
-            retrieved = ServiceLocatorFactory.getProjectManagementService().getProjectByPublicId(
-                    this.project.getExperiment().getPublicIdentifier());
+            retrieved =
+                    ServiceLocatorFactory.getProjectManagementService().getProjectByPublicId(
+                            this.project.getExperiment().getPublicIdentifier());
         }
         if (retrieved != null) {
             this.project = retrieved;
@@ -220,8 +222,9 @@ public class ProjectVisualizationAction implements Preparable {
             igvResp = in.readLine();
             LOG.debug("genome socket response: " + igvResp);
 
-            StringBuilder url = new StringBuilder("/ajax/project/tab/Visualization/gct.action?project.id=")
-                    .append(getProject().getId());
+            StringBuilder url =
+                    new StringBuilder("/ajax/project/tab/Visualization/gct.action?project.id=").append(getProject()
+                            .getId());
             for (final Hybridization h : this.hybridizations) {
                 url.append("&hybridizations.id=" + h.getId());
             }
@@ -232,8 +235,9 @@ public class ProjectVisualizationAction implements Preparable {
             igvResp = in.readLine();
             LOG.debug("load socket response: " + igvResp);
 
-            url = new StringBuilder("/ajax/project/tab/Visualization/sampleInfo.action?project.id=")
-                    .append(getProject().getId());
+            url =
+                    new StringBuilder("/ajax/project/tab/Visualization/sampleInfo.action?project.id=")
+                            .append(getProject().getId());
             for (final Hybridization h : this.hybridizations) {
                 url.append("&hybridizations.id=" + h.getId());
             }
@@ -311,13 +315,14 @@ public class ProjectVisualizationAction implements Preparable {
             pw.print(h.getName());
             for (final Category cat : categories) {
                 final Set<AbstractCharacteristic> chars = h.getCharacteristicsRecursively(cat);
-                final String charValue = StringUtils.join(
-                        Iterators.transform(chars.iterator(), new Function<AbstractCharacteristic, String>() {
-                            @Override
-                            public String apply(AbstractCharacteristic c) {
-                                return c.getDisplayValue();
-                            }
-                        }), ", ");
+                final String charValue =
+                        StringUtils.join(
+                                Iterators.transform(chars.iterator(), new Function<AbstractCharacteristic, String>() {
+                                    @Override
+                                    public String apply(AbstractCharacteristic c) {
+                                        return c.getDisplayValue();
+                                    }
+                                }), ", ");
                 pw.print(String.format("\t%s", charValue));
             }
             pw.println();
@@ -346,14 +351,14 @@ public class ProjectVisualizationAction implements Preparable {
                 final DataTable data = generateMyDataTable(query.getDataSourceQuery());
 
                 // Apply the completion query to the data table.
-                final DataTable newData = DataSourceHelper.applyQuery(query.getCompletionQuery(), data,
-                        dsRequest.getUserLocale());
+                final DataTable newData =
+                        DataSourceHelper.applyQuery(query.getCompletionQuery(), data, dsRequest.getUserLocale());
 
                 DataSourceHelper.setServletResponse(newData, dsRequest, resp);
             } catch (final RuntimeException rte) {
                 LOG.error("A runtime exception has occured", rte);
-                final ResponseStatus status = new ResponseStatus(StatusType.ERROR, ReasonType.INTERNAL_ERROR,
-                        rte.getMessage());
+                final ResponseStatus status =
+                        new ResponseStatus(StatusType.ERROR, ReasonType.INTERNAL_ERROR, rte.getMessage());
                 if (dsRequest == null) {
                     dsRequest = DataSourceRequest.getDefaultDataSourceRequest(req);
                 }
@@ -404,13 +409,14 @@ public class ProjectVisualizationAction implements Preparable {
                         continue;
                     }
                     final Set<AbstractCharacteristic> chars = h.getCharacteristicsRecursively(cat);
-                    final String charValue = StringUtils.join(
-                            Iterators.transform(chars.iterator(), new Function<AbstractCharacteristic, String>() {
-                                @Override
-                                public String apply(AbstractCharacteristic c) {
-                                    return c.getDisplayValue();
-                                }
-                            }), ", ");
+                    final String charValue =
+                            StringUtils.join(Iterators.transform(chars.iterator(),
+                                    new Function<AbstractCharacteristic, String>() {
+                                        @Override
+                                        public String apply(AbstractCharacteristic c) {
+                                            return c.getDisplayValue();
+                                        }
+                                    }), ", ");
 
                     row.addCell(new TableCell(new NumberValue(charValue.hashCode()), charValue));
                 }
@@ -522,7 +528,8 @@ public class ProjectVisualizationAction implements Preparable {
     private List<ColumnDescription> getRequiredHeatmapColumns(Query query, List<AbstractDesignElement> elements,
             int window, int groupSize) {
         final List<ColumnDescription> requiredColumns = Lists.newArrayList();
-        for (int i = this.startProbeIndex; i < Math.min(this.startProbeIndex + window, elements.size() - groupSize); i += groupSize) {
+        for (int i = this.startProbeIndex; i < Math.min(this.startProbeIndex + window, elements.size() - groupSize); i +=
+                groupSize) {
             final int endIndex = Math.min(i + groupSize, elements.size());
             final ColumnDescription cd = createHeatmapColumn(elements.subList(i, endIndex), i);
             cd.setCustomProperty("startIndex", String.valueOf(i));
@@ -535,11 +542,12 @@ public class ProjectVisualizationAction implements Preparable {
         final AbstractProbe firstProbe = (AbstractProbe) subList.get(0);
         final AbstractProbe lastProbe = (AbstractProbe) subList.get(subList.size() - 1);
         final String columnId = "column" + startIndex;
-        final String columnName = (firstProbe == lastProbe) ? StringUtils.substring(firstProbe.getName(), 0, 20)
-                : StringUtils.substring(firstProbe.getName(), 0, 10) + ".."
-                        + StringUtils.substring(lastProbe.getName(), 0, 10);
-        final String columnDescription = (firstProbe == lastProbe) ? firstProbe.getName() : firstProbe.getName()
-                + " - " + lastProbe.getName() + " (" + subList.size() + " probes)";
+        final String columnName =
+                (firstProbe == lastProbe) ? StringUtils.substring(firstProbe.getName(), 0, 20) : StringUtils.substring(
+                        firstProbe.getName(), 0, 10) + ".." + StringUtils.substring(lastProbe.getName(), 0, 10);
+        final String columnDescription =
+                (firstProbe == lastProbe) ? firstProbe.getName() : firstProbe.getName() + " - " + lastProbe.getName()
+                        + " (" + subList.size() + " probes)";
         final ColumnDescription cd = new ColumnDescription(columnId, ValueType.NUMBER, columnName);
         cd.setCustomProperty("description", columnDescription);
         return cd;

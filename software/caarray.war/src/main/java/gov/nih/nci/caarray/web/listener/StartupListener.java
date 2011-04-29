@@ -118,13 +118,13 @@ public class StartupListener implements ServletContextListener {
      */
     @Override
     public void contextInitialized(ServletContextEvent event) {
-        final Injector injector = InjectorFactory.getInjector().createChildInjector(
-                new CaArrayWarStaticInjectionModule());
+        final Injector injector =
+                InjectorFactory.getInjector().createChildInjector(new CaArrayWarStaticInjectionModule());
 
         final CaArrayHibernateHelper hibernateHelper = injector.getInstance(CaArrayHibernateHelper.class);
         hibernateHelper.openAndBindSession();
-        final ArrayDataService arrayDataService = (ArrayDataService) ServiceLocatorFactory.getLocator().lookup(
-                ArrayDataService.JNDI_NAME);
+        final ArrayDataService arrayDataService =
+                (ArrayDataService) ServiceLocatorFactory.getLocator().lookup(ArrayDataService.JNDI_NAME);
         arrayDataService.initialize();
         SecurityUtils.init();
         hibernateHelper.unbindAndCleanupSession();
@@ -141,11 +141,11 @@ public class StartupListener implements ServletContextListener {
     }
 
     private void initAtlassianPlugins(ServletContext servletContext) {
-        final ApplicationContext appContext = WebApplicationContextUtils
-                .getRequiredWebApplicationContext(servletContext);
+        final ApplicationContext appContext =
+                WebApplicationContextUtils.getRequiredWebApplicationContext(servletContext);
         final CaArrayPluginsFacade plugins = (CaArrayPluginsFacade) appContext.getBean("pluginsFacade");
         plugins.start();
-        CaArrayPluginsFacade.INSTANCE = plugins;
+        CaArrayPluginsFacade.setInstance(plugins);
     }
 
     /**

@@ -123,6 +123,9 @@ public class ChpHandler extends AbstractDataFileHandler {
     private static final String LSID_AUTHORITY = "Affymetrix.com";
     private static final String LSID_NAMESPACE_DESIGN = "PhysicalArrayDesign";
 
+    /**
+     * FileType instance for CHP file type.
+     */
     public static final FileType CHP_FILE_TYPE = new FileType("AFFYMETRIX_CHP", FileCategory.DERIVED_DATA, true, "CHP",
             "CNCHP");
     static final Set<FileType> SUPPORTED_TYPES = Sets.newHashSet(CHP_FILE_TYPE);
@@ -243,14 +246,14 @@ public class ChpHandler extends AbstractDataFileHandler {
     }
 
     private AbstractCHPData<?> getChpExpressionSignalData(final FusionCHPData fusionCHPData) {
-        final FusionCHPQuantificationData fusionCHPQuantificationData = FusionCHPQuantificationData
-                .fromBase(fusionCHPData);
+        final FusionCHPQuantificationData fusionCHPQuantificationData =
+                FusionCHPQuantificationData.fromBase(fusionCHPData);
         return new CHPExpressionSignalData(fusionCHPQuantificationData);
     }
 
     private AbstractCHPData<?> getChpExpressionDABGSignalData(final FusionCHPData fusionCHPData) {
-        final FusionCHPQuantificationDetectionData fusionCHPQuantificationData = FusionCHPQuantificationDetectionData
-                .fromBase(fusionCHPData);
+        final FusionCHPQuantificationDetectionData fusionCHPQuantificationData =
+                FusionCHPQuantificationDetectionData.fromBase(fusionCHPData);
         return new CHPExpressionSignalDetectionData(fusionCHPQuantificationData);
     }
 
@@ -280,6 +283,9 @@ public class ChpHandler extends AbstractDataFileHandler {
         return null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<LSID> getReferencedArrayDesignCandidateIds() {
         final String lsidObjectId = getChpData(getFile()).getChipType();

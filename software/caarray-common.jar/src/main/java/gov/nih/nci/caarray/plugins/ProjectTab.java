@@ -83,35 +83,54 @@
 package gov.nih.nci.caarray.plugins;
 
 /**
- * @author dkokotov
+ * Simple bean class to represent a project tab, consisting of resource key, label and url for loading tab contents.
  * 
+ * @author dkokotov
  */
 public class ProjectTab {
     private String label;
     private String url;
     private String key;
 
-    public String getKey() {
-        return key;
-    }
-
-    public void setKey(String key) {
-        this.key = key;
-    }
-
+    /**
+     * @return the label
+     */
     public String getLabel() {
-        return label;
+        return this.label;
     }
 
+    /**
+     * @param label the label to set
+     */
     public void setLabel(String label) {
         this.label = label;
     }
 
+    /**
+     * @return the url
+     */
     public String getUrl() {
-        return url;
+        return this.url;
     }
 
+    /**
+     * @param url the url to set
+     */
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    /**
+     * @return the key
+     */
+    public String getKey() {
+        return this.key;
+    }
+
+    /**
+     * @param key the key to set
+     */
+    public void setKey(String key) {
+        this.key = key;
     }
 }

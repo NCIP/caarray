@@ -130,12 +130,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.google.inject.Inject;
-
 import org.hibernate.criterion.Order;
 
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 import com.fiveamsolutions.nci.commons.data.search.SortCriterion;
+import com.google.inject.Inject;
 
 /**
  * Base service for v1_0 external services.
@@ -193,15 +192,19 @@ public class BaseV1_0ExternalService extends AbstractExternalService {
                 Organization.class, Order.asc("name")));
     }
 
+    /**
+     * @param fileTypeRegistry the file type registry to use
+     */
     @Inject
     public void setFileTypeRegistry(FileTypeRegistry fileTypeRegistry) {
-	this.fileTypeRegistry = fileTypeRegistry;
+        this.fileTypeRegistry = fileTypeRegistry;
     }
 
     /**
      * Map of BiomaterialType to the corresponding AbstractBiomaterial subclass in the internal model.
      */
-    protected static final Map<BiomaterialType, Class<? extends AbstractBioMaterial>> BIOMATERIAL_TYPE_TO_CLASS_MAP = new HashMap<BiomaterialType, Class<? extends AbstractBioMaterial>>();
+    protected static final Map<BiomaterialType, Class<? extends AbstractBioMaterial>> BIOMATERIAL_TYPE_TO_CLASS_MAP =
+            new HashMap<BiomaterialType, Class<? extends AbstractBioMaterial>>();
     static {
         BIOMATERIAL_TYPE_TO_CLASS_MAP.put(BiomaterialType.SOURCE, Source.class);
         BIOMATERIAL_TYPE_TO_CLASS_MAP.put(BiomaterialType.SAMPLE, Sample.class);
@@ -220,8 +223,9 @@ public class BaseV1_0ExternalService extends AbstractExternalService {
      */
     protected <T> com.fiveamsolutions.nci.commons.data.search.PageSortParams<T> toInternalParams(LimitOffset params,
             SortCriterion<T> sortCriterion, boolean desc) {
-        final com.fiveamsolutions.nci.commons.data.search.PageSortParams<T> internalParams = new com.fiveamsolutions.nci.commons.data.search.PageSortParams<T>(
-                params.getLimit(), params.getOffset(), sortCriterion, desc);
+        final com.fiveamsolutions.nci.commons.data.search.PageSortParams<T> internalParams =
+                new com.fiveamsolutions.nci.commons.data.search.PageSortParams<T>(params.getLimit(),
+                        params.getOffset(), sortCriterion, desc);
         return internalParams;
     }
 
@@ -241,8 +245,8 @@ public class BaseV1_0ExternalService extends AbstractExternalService {
     }
 
     /**
-     * convert given external paging params instance into internal paging params. Use this version to explicitly specify
-     * the class of the target entity, when it cannot be deduced by the compiler.
+     * convert given external paging params instance into internal ones. Use this version to explicitly specify the
+     * class of the target entity, when it cannot be deduced by the compiler.
      * 
      * @param <T> type being iterated over.
      * @param params the external params
@@ -274,9 +278,10 @@ public class BaseV1_0ExternalService extends AbstractExternalService {
      */
     @SuppressWarnings(UNCHECKED)
     protected java.lang.Object getByExternalId(String externalId) {
-        final Class<? extends AbstractCaArrayEntity> entityClass = (Class<? extends AbstractCaArrayEntity>) getClassFromExternalId(externalId);
-        final EntityHandler<? extends AbstractCaArrayEntity> resolver = this.entityHandlerRegistry
-                .getResolver(entityClass);
+        final Class<? extends AbstractCaArrayEntity> entityClass =
+                (Class<? extends AbstractCaArrayEntity>) getClassFromExternalId(externalId);
+        final EntityHandler<? extends AbstractCaArrayEntity> resolver =
+                this.entityHandlerRegistry.getResolver(entityClass);
         if (resolver == null) {
             return null;
         }
@@ -290,7 +295,7 @@ public class BaseV1_0ExternalService extends AbstractExternalService {
      * @param externalId the the external id of entity to retrieve
      * @param type the class for the entity type
      * @return the entity
-     * @throws InvalidReferenceException if no entity exists with given external id or the entity is not of the expected
+     * @throws InvalidReferenceException if no entity exists with given external id or the entity is not of expected
      *             type.
      */
     protected <T> T getRequiredByExternalId(String externalId, Class<T> type) throws InvalidReferenceException {
@@ -367,9 +372,11 @@ public class BaseV1_0ExternalService extends AbstractExternalService {
      * @author dkokotov
      */
     protected static class EntityHandlerRegistry {
-        private final Map<Class<?>, EntityHandler<? extends AbstractCaArrayEntity>> resolvers = new HashMap<Class<?>, EntityHandler<? extends AbstractCaArrayEntity>>();
+        private final Map<Class<?>, EntityHandler<? extends AbstractCaArrayEntity>> resolvers =
+                new HashMap<Class<?>, EntityHandler<? extends AbstractCaArrayEntity>>();
 
-        private <T extends AbstractCaArrayEntity, S> void addResolver(Class<T> externalClass, EntityHandler<T> resolver) {
+        private <T extends AbstractCaArrayEntity, S> void
+                addResolver(Class<T> externalClass, EntityHandler<T> resolver) {
             this.resolvers.put(externalClass, resolver);
         }
 
@@ -450,15 +457,17 @@ public class BaseV1_0ExternalService extends AbstractExternalService {
         @Override
         @SuppressWarnings(UNCHECKED)
         public List<T> queryByExample(ExampleSearchCriteria<T> criteria, LimitOffset pagingParams) {
-            final List<? extends PersistentObject> results = getDaoFactory().getSearchDao().queryEntityByExample(
-                    toInternalCriteria(criteria), pagingParams.getLimit(), pagingParams.getOffset(), this.orders);
+            final List<? extends PersistentObject> results =
+                    getDaoFactory().getSearchDao().queryEntityByExample(toInternalCriteria(criteria),
+                            pagingParams.getLimit(), pagingParams.getOffset(), this.orders);
             return mapCollection(results, (Class<T>) criteria.getExample().getClass());
         }
 
-        protected gov.nih.nci.caarray.domain.search.ExampleSearchCriteria<? extends PersistentObject> toInternalCriteria(
-                ExampleSearchCriteria<T> criteria) {
-            final gov.nih.nci.caarray.domain.search.ExampleSearchCriteria<? extends PersistentObject> intCriteria = gov.nih.nci.caarray.domain.search.ExampleSearchCriteria
-                    .forEntity(toInternalExample(criteria.getExample()));
+        protected gov.nih.nci.caarray.domain.search.ExampleSearchCriteria<? extends PersistentObject>
+                toInternalCriteria(ExampleSearchCriteria<T> criteria) {
+            final gov.nih.nci.caarray.domain.search.ExampleSearchCriteria<? extends PersistentObject> intCriteria =
+                    gov.nih.nci.caarray.domain.search.ExampleSearchCriteria.forEntity(toInternalExample(criteria
+                            .getExample()));
             intCriteria.setMatchMode(getHibernateMatchMode(criteria.getMatchMode().name()));
             intCriteria.setExcludeNulls(criteria.isExcludeNulls());
             intCriteria.setExcludeZeroes(criteria.isExcludeZeroes());
@@ -503,8 +512,9 @@ public class BaseV1_0ExternalService extends AbstractExternalService {
 
         @Override
         protected PersistentObject toInternalExample(Biomaterial bm) {
-            final Class<? extends PersistentObject> klass = bm.getType() == null ? AbstractBioMaterialWrapper.class
-                    : BIOMATERIAL_TYPE_TO_CLASS_MAP.get(bm.getType());
+            final Class<? extends PersistentObject> klass =
+                    bm.getType() == null ? AbstractBioMaterialWrapper.class : BIOMATERIAL_TYPE_TO_CLASS_MAP.get(bm
+                            .getType());
             return mapEntity(bm, klass);
         }
     }
@@ -534,7 +544,8 @@ public class BaseV1_0ExternalService extends AbstractExternalService {
         public List<gov.nih.nci.caarray.external.v1_0.data.FileType> queryByExample(
                 ExampleSearchCriteria<gov.nih.nci.caarray.external.v1_0.data.FileType> criteria,
                 LimitOffset pagingParams) {
-            final List<gov.nih.nci.caarray.external.v1_0.data.FileType> results = new ArrayList<gov.nih.nci.caarray.external.v1_0.data.FileType>();
+            final List<gov.nih.nci.caarray.external.v1_0.data.FileType> results =
+                    new ArrayList<gov.nih.nci.caarray.external.v1_0.data.FileType>();
             for (final FileType type : BaseV1_0ExternalService.this.fileTypeRegistry.getAllTypes()) {
                 if (nameMatches(type, criteria)) {
                     results.add(mapEntity(type, gov.nih.nci.caarray.external.v1_0.data.FileType.class));

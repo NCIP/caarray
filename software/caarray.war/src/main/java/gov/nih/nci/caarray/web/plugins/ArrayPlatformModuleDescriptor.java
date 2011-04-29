@@ -140,8 +140,6 @@ public class ArrayPlatformModuleDescriptor extends AbstractModuleDescriptor<Void
     public void enabled() {
         super.enabled();
 
-        System.out.println("Enabling platform module: " + this.moduleClassName);
-
         final Class<Module> moduleClass = loadClass(this.moduleClassName);
         Module platformModule = null;
         try {

@@ -119,7 +119,7 @@ public class DefaultBundleAccessor {
 
     private static final Logger LOG = Logger.getLogger(DefaultBundleAccessor.class);
 
-    private static DefaultBundleAccessor self;
+    private static DefaultBundleAccessor self; // NOPMD - on-purpose usage as a quasi-singleton field
 
     private final Map<String, String> packageToBundle = new HashMap<String, String>();
     private final Map<Bundle, Set<String>> packagesByBundle = new HashMap<Bundle, Set<String>>();
@@ -279,7 +279,7 @@ public class DefaultBundleAccessor {
 
     private static Map<String, Bundle> getActiveBundles() {
         final Map<String, Bundle> bundles = new HashMap<String, Bundle>();
-        for (final Bundle bundle : CaArrayPluginsFacade.INSTANCE.getOsgiContainerManager().getBundles()) {
+        for (final Bundle bundle : CaArrayPluginsFacade.getInstance().getOsgiContainerManager().getBundles()) {
             if (bundle.getState() == Bundle.ACTIVE) {
                 bundles.put(bundle.getSymbolicName(), bundle);
             }

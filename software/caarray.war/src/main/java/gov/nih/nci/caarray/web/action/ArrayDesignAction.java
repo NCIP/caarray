@@ -529,6 +529,7 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
         }
     }
 
+    @SuppressWarnings("PMD.ExcessiveMethodLength")
     private void saveImportFile() {
         final Injector injector = InjectorFactory.getInjector();
         final FileAccessUtils fileAccessUtils = injector.getInstance(FileAccessUtils.class);

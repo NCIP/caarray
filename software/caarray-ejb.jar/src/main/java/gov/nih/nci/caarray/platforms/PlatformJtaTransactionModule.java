@@ -87,7 +87,7 @@ import gov.nih.nci.caarray.application.JtaSessionTransactionManager;
 import com.google.inject.AbstractModule;
 
 /**
- * Module configuring JTA transactions for platforms
+ * Module configuring JTA transactions for platforms.
  * 
  * @author dkokotov
  */

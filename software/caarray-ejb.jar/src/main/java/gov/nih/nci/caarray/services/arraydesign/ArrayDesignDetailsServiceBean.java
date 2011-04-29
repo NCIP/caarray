@@ -103,25 +103,26 @@ import com.google.inject.Inject;
 @Stateless
 @Remote(ArrayDesignDetailsService.class)
 @PermitAll
-@Interceptors({ AuthorizationInterceptor.class, HibernateSessionInterceptor.class, EntityConfiguringInterceptor.class,
-    InjectionInterceptor.class})
+@Interceptors({AuthorizationInterceptor.class, HibernateSessionInterceptor.class, EntityConfiguringInterceptor.class,
+        InjectionInterceptor.class })
 public class ArrayDesignDetailsServiceBean implements ArrayDesignDetailsService {
     private ArrayDao arrayDao;
-   
+
     /**
      * 
      * @param arrayDao the ArrayDao dependency
      */
     @Inject
-    public void setDependencies(ArrayDao arrayDao) {
+    public void setArrayDao(ArrayDao arrayDao) {
         this.arrayDao = arrayDao;
     }
-    
+
     /**
      * {@inheritDoc}
      */
+    @Override
     public ArrayDesignDetails getDesignDetails(ArrayDesign design) {
-        ArrayDesign retrievedDesign = arrayDao.getArrayDesign(design.getId());
+        final ArrayDesign retrievedDesign = this.arrayDao.getArrayDesign(design.getId());
         if (retrievedDesign != null) {
             return retrievedDesign.getDesignDetails();
         } else {

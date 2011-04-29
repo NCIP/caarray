@@ -118,7 +118,11 @@ import com.google.inject.name.Named;
  * Contains logic to read Affymetrix CDF files.
  */
 public final class CdfHandler extends AbstractAffymetrixDesignFileHandler {
+    /**
+     * FileType instance for CDF file type.
+     */
     public static final FileType CDF_FILE_TYPE = new FileType("AFFYMETRIX_CDF", FileCategory.ARRAY_DESIGN, true, "CDF");
+
     static final Set<FileType> SUPPORTED_TYPES = Sets.newHashSet(CDF_FILE_TYPE);
 
     private CdfReader cdfReader;
@@ -260,7 +264,8 @@ public final class CdfHandler extends AbstractAffymetrixDesignFileHandler {
         }
     }
 
-    private void handleProbeGroup(FusionCDFProbeGroupInformation probeGroupInformation, ArrayDesignDetails designDetails) {
+    private void
+            handleProbeGroup(FusionCDFProbeGroupInformation probeGroupInformation, ArrayDesignDetails designDetails) {
         final int numCells = probeGroupInformation.getNumCells();
         final FusionCDFProbeInformation probeInformation = new FusionCDFProbeInformation();
         for (int index = 0; index < numCells; index++) {
@@ -287,7 +292,8 @@ public final class CdfHandler extends AbstractAffymetrixDesignFileHandler {
         }
     }
 
-    private void handleQCProbeSet(FusionCDFQCProbeSetInformation qcProbeSetInformation, ArrayDesignDetails designDetails) {
+    private void
+            handleQCProbeSet(FusionCDFQCProbeSetInformation qcProbeSetInformation, ArrayDesignDetails designDetails) {
         final int numCells = qcProbeSetInformation.getNumCells();
         final FusionCDFQCProbeInformation qcProbeInformation = new FusionCDFQCProbeInformation();
         for (int index = 0; index < numCells; index++) {

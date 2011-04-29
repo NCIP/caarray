@@ -3073,6 +3073,9 @@
             <fileset dir="${caarray-ejb.src.dir}" includes="**/*.java" excludes="${checkstyle-caarray-ejb-excludes}" />
             <fileset dir="${caarray-war.src.dir}" includes="**/*.java" />
         	<fileset dir="${cn2magetab.src.dir}" includes="**/*.java" />
+            <fileset dir="${caarray-plugins.dir}">
+                <include name="*/${caarray-plugins.src.subdir}/**/*.java" />
+            </fileset>
         </checkstyle>
         <xslt in="${site.dir}/checkstyle/checkstyle.xml" out="${site.dir}/checkstyle/checkstyle.html" style="${resource.dir}/checkstyle-frames-errors.xsl">
             <param name="output.dir" expression="${site.dir}/checkstyle" />
@@ -3096,6 +3099,9 @@
             </fileset>
             <fileset dir="${caarray-ejb.src.dir}">
                 <include name="**/*.java" />
+            </fileset>
+            <fileset dir="${caarray-plugins.dir}">
+                <include name="*/${caarray-plugins.src.subdir}/**/*.java" />
             </fileset>
             <fileset dir="${cn2magetab.src.dir}">
                 <include name="**/*.java" />

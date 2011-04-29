@@ -106,7 +106,7 @@ public abstract class AbstractDataFileHandler implements DataFileHandler {
     private File file;
 
     /**
-     * @param fileManager the FileManager to use
+     * @param dataStorageFacade data storage facade for retrieving file data
      */
     protected AbstractDataFileHandler(DataStorageFacade dataStorageFacade) {
         this.dataStorageFacade = dataStorageFacade;
@@ -126,6 +126,13 @@ public abstract class AbstractDataFileHandler implements DataFileHandler {
         return true;
     }
 
+    /**
+     * Returns whether the given file is supported by this data handler, based on whether the file's type is among this
+     * handlers's supported types.
+     * 
+     * @param dataFile the file to check
+     * @return whether this handler supports this file
+     */
     protected boolean isFileSupported(CaArrayFile dataFile) {
         return getSupportedTypes().contains(dataFile.getFileType());
     }

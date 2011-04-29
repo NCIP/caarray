@@ -125,6 +125,11 @@ public class FilesystemDataStorage implements DataStorage {
 
     private final String baseDir;
 
+    /**
+     * Create a FilesystemDataStorage that uses the given directory to store the data.
+     * 
+     * @param baseDir the directory where where data will be stored as files
+     */
     @Inject
     public FilesystemDataStorage(@Named(FileSystemStorageModule.BASE_DIR_KEY) String baseDir) {
         this.baseDir = baseDir;
@@ -164,6 +169,9 @@ public class FilesystemDataStorage implements DataStorage {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Iterable<StorageMetadata> list() {
         final Set<StorageMetadata> metadatas = Sets.newHashSet();
@@ -244,6 +252,9 @@ public class FilesystemDataStorage implements DataStorage {
         FileUtils.deleteQuietly(uncompressedFile(handle.getSchemeSpecificPart()));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void remove(Collection<URI> handles) {
         for (final URI handle : handles) {
@@ -264,6 +275,9 @@ public class FilesystemDataStorage implements DataStorage {
         return file;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public InputStream openInputStream(URI handle, boolean compressed) throws DataStoreException {
         checkScheme(handle);

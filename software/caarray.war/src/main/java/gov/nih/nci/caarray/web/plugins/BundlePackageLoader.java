@@ -141,15 +141,11 @@ public class BundlePackageLoader {
      * XmlConfigurationProvider implementation that loads struts2 xml config files from an OSGi bundle.
      */
     private static class BundleConfigurationProvider extends XmlConfigurationProvider {
-        private Bundle bundle;
+        private final Bundle bundle;
 
         public BundleConfigurationProvider(String filename, Bundle bundle) {
             super(filename, false);
             this.bundle = bundle;
-        }
-
-        public BundleConfigurationProvider(String filename) {
-            super(filename);
         }
 
         @Override
@@ -163,7 +159,7 @@ public class BundlePackageLoader {
      * Adapts an anumeration to an Iterator interface.
      */
     private static class EnumeratorIterator<E> implements Iterator<E> {
-        private Enumeration<E> e = null;
+        private final Enumeration<E> e;
 
         public EnumeratorIterator(Enumeration<E> e) {
             this.e = e;

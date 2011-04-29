@@ -93,8 +93,10 @@ import com.google.inject.Provider;
 import com.google.inject.Singleton;
 
 /**
- * @author dkokotov
+ * A StorageUnitOfWork which handles initializing and cleaning up the temporary file cache used to cache data from
+ * database to disk.
  * 
+ * @author dkokotov
  */
 @Singleton
 public class DatabaseStorageUnitOfWork implements StorageUnitOfWork, Provider<TemporaryFileCache> {
@@ -133,6 +135,9 @@ public class DatabaseStorageUnitOfWork implements StorageUnitOfWork, Provider<Te
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public TemporaryFileCache get() {
         final TemporaryFileCache fc = this.tempCache.get();

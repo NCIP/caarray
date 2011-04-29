@@ -284,7 +284,8 @@ public class FileManagementServiceBean implements FileManagementService {
      */
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public void reimportAndParseArrayDesign(Long arrayDesignId) throws InvalidDataFileException, IllegalAccessException {
+    public void reimportAndParseArrayDesign(Long arrayDesignId) 
+    throws InvalidDataFileException, IllegalAccessException {
         ArrayDesign arrayDesign = this.searchDao.retrieve(ArrayDesign.class, arrayDesignId);
         if (!arrayDesign.isUnparsedAndReimportable()) {
             throw new IllegalAccessException("This array design is not eligible for reimport");

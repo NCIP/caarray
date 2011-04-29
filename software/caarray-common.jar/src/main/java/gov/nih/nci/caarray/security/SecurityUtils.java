@@ -206,7 +206,7 @@ public final class SecurityUtils {
         try {
             final URL appConfigUrl = SecurityUtils.class.getClassLoader().getResource("app-config.properties");
             if (appConfigUrl == null) {
-                throw new Error("resource app-config.properties not found in classpath");
+                throw new IllegalStateException("resource app-config.properties not found in classpath");
             }
             final InputStream in = appConfigUrl.openStream();
             final Properties appConfig = new Properties();
@@ -216,7 +216,7 @@ public final class SecurityUtils {
             final String csmConfigName = "csm/" + caarrayAppName + Constants.FILE_NAME_SUFFIX;
             final URL csmConfigUrl = SecurityUtils.class.getClassLoader().getResource(csmConfigName);
             if (csmConfigUrl == null) {
-                throw new Error("resource " + csmConfigName + " not found in classpath");
+                throw new IllegalStateException("resource " + csmConfigName + " not found in classpath");
             }
             authMgr = new AuthorizationManagerImpl(caarrayAppName, csmConfigUrl);
         } catch (final IOException e) {

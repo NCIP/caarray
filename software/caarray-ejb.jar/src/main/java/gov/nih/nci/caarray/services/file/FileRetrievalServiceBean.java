@@ -111,7 +111,7 @@ import com.google.inject.Inject;
 @Stateless
 @Remote(FileRetrievalService.class)
 @PermitAll
-@Interceptors({ AuthorizationInterceptor.class, HibernateSessionInterceptor.class, EntityConfiguringInterceptor.class,
+@Interceptors({AuthorizationInterceptor.class, HibernateSessionInterceptor.class, EntityConfiguringInterceptor.class,
         InjectionInterceptor.class, StorageInterceptor.class })
 public class FileRetrievalServiceBean implements FileRetrievalService {
     private static final Logger LOG = Logger.getLogger(FileRetrievalServiceBean.class);
@@ -119,16 +119,6 @@ public class FileRetrievalServiceBean implements FileRetrievalService {
 
     private SearchDao searchDao;
     private DataStorageFacade dataStorageFacade;
-
-    /**
-     * 
-     * @param searchDao the SearchDao dependency
-     */
-    @Inject
-    public void setDependencies(SearchDao searchDao, DataStorageFacade dataStorageFacade) {
-        this.searchDao = searchDao;
-        this.dataStorageFacade = dataStorageFacade;
-    }
 
     /**
      * {@inheritDoc}
@@ -154,5 +144,21 @@ public class FileRetrievalServiceBean implements FileRetrievalService {
         } finally {
             IOUtils.closeQuietly(is);
         }
+    }
+
+    /**
+     * @param searchDao the searchDao to set
+     */
+    @Inject
+    public void setSearchDao(SearchDao searchDao) {
+        this.searchDao = searchDao;
+    }
+
+    /**
+     * @param dataStorageFacade the dataStorageFacade to set
+     */
+    @Inject
+    public void setDataStorageFacade(DataStorageFacade dataStorageFacade) {
+        this.dataStorageFacade = dataStorageFacade;
     }
 }

@@ -127,7 +127,7 @@ import com.google.inject.Inject;
 @Stateless
 @Interceptors({ExceptionLoggingInterceptor.class, InjectionInterceptor.class })
 public class FileAccessServiceBean implements FileAccessService {
-    /** Minimum age of a data block that can be removed if it is unreferenced */
+    /** Minimum age of a data block that can be removed if it is unreferenced. */
     public static final int MIN_UNREFERENCABLE_DATA_AGE = 300000;
 
     private static final Logger LOG = Logger.getLogger(FileAccessServiceBean.class);
@@ -234,6 +234,13 @@ public class FileAccessServiceBean implements FileAccessService {
         return references;
     }
 
+    /**
+     * Goes through given list of files, and for any file which is a zip file, removes it from the list, unzips it, and
+     * adds the files which were within the zip to the list.
+     * 
+     * @param files list of files to process
+     * @param fileNames the names of the files, matched by index to the file list
+     */
     @SuppressWarnings("PMD.ExcessiveMethodLength")
     public void unzipFiles(List<File> files, List<String> fileNames) {
         try {

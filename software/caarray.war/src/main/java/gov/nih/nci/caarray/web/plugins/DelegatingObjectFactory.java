@@ -53,6 +53,7 @@ public class DelegatingObjectFactory extends ObjectFactory implements ObjectFact
      * {@inheritDoc}
      */
     @Override
+    @SuppressWarnings("PMD.SignatureDeclareThrowsException")
     public Object buildBean(Class clazz, Map extraContext) throws Exception {
         initDelegate();
         return this.delegateObjectFactory.buildBean(clazz, extraContext);
@@ -62,6 +63,7 @@ public class DelegatingObjectFactory extends ObjectFactory implements ObjectFact
      * {@inheritDoc}
      */
     @Override
+    @SuppressWarnings("PMD.SignatureDeclareThrowsException")
     public Object buildBean(String className, Map<String, Object> extraContext, boolean injectInternal)
             throws Exception {
         initDelegate();

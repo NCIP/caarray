@@ -150,11 +150,13 @@ public abstract class AbstractBaseProjectAction extends ActionSupport implements
     public void prepare() {
         Project retrieved = null;
         if (this.project.getId() != null) {
-            retrieved = ServiceLocatorFactory.getGenericDataService().getPersistentObject(Project.class,
-                    this.project.getId());
+            retrieved =
+                    ServiceLocatorFactory.getGenericDataService().getPersistentObject(Project.class,
+                            this.project.getId());
         } else if (this.project.getExperiment().getPublicIdentifier() != null) {
-            retrieved = ServiceLocatorFactory.getProjectManagementService().getProjectByPublicId(
-                    this.project.getExperiment().getPublicIdentifier());
+            retrieved =
+                    ServiceLocatorFactory.getProjectManagementService().getProjectByPublicId(
+                            this.project.getExperiment().getPublicIdentifier());
         }
         if (retrieved != null) {
             this.project = retrieved;
@@ -239,7 +241,7 @@ public abstract class AbstractBaseProjectAction extends ActionSupport implements
      */
     public Collection<ProjectTab> getProjectTabs() {
         final List<ProjectTab> projectTabs = new ArrayList<ProjectTab>();
-        for (final Plugin plugin : CaArrayPluginsFacade.INSTANCE.getPlugins()) {
+        for (final Plugin plugin : CaArrayPluginsFacade.getInstance().getPlugins()) {
             for (final ModuleDescriptor<?> md : plugin.getModuleDescriptors()) {
                 if (md instanceof ProjectTabModuleDescriptor) {
                     projectTabs.add(((ProjectTabModuleDescriptor) md).getTab());

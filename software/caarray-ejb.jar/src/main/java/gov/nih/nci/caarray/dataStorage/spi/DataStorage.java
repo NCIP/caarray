@@ -107,10 +107,11 @@ public interface DataStorage {
      * Add a new block of data to the storage system.
      * 
      * @param stream a stream from which data will be read
-     * @param boolean compressed whether the data in the stream is compressed or not. If the data is compressed, GZip
-     *        compression should be used.
+     * @param compressed whether the data in the stream is compressed or not. If the data is compressed, GZip
+     *            compression should be used.
      * @return a StorageMetadata object describing the added block of data, including a handle for later access to the
      *         data
+     * @throws DataStoreException if there is an error storing the data
      */
     StorageMetadata add(InputStream stream, boolean compressed) throws DataStoreException;
 
@@ -126,6 +127,7 @@ public interface DataStorage {
      * Remove a block of data from storage.
      * 
      * @param handle the handle referencing the data to be removed.
+     * @throws DataStoreException if there is an error removing the data
      */
     void remove(URI handle) throws DataStoreException;
 
@@ -134,6 +136,7 @@ public interface DataStorage {
      * blocks at a time, and thus may have an optimized implementation of this method.
      * 
      * @param handles the handles referencing the datas to be removed.
+     * @throws DataStoreException if there is an error removing the data
      */
     void remove(Collection<URI> handles) throws DataStoreException;
 
@@ -145,6 +148,7 @@ public interface DataStorage {
      * @param compressed whether the file should hold the compressed (if true) or uncompressed (if false) view of the
      *            data. Compressed data uses GZip compression.
      * @return the <code>java.io.File</code> with the referenced data, possibly compressed.
+     * @throws DataStoreException if there is an error retrieving the data
      */
     File openFile(URI handle, boolean compressed) throws DataStoreException;
 
@@ -157,6 +161,7 @@ public interface DataStorage {
      * @param compressed whether the stream should hold the compressed (if true) or uncompressed (if false) view of the
      *            data. Compressed data uses GZip compression.
      * @return the <code>java.io.InputStream</code> with the referenced data, possibly compressed.
+     * @throws DataStoreException if there is an error retrieving the data
      */
     InputStream openInputStream(URI handle, boolean compressed) throws DataStoreException;
 

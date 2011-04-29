@@ -79,7 +79,8 @@
  * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */package gov.nih.nci.caarray.platforms;
+ */
+package gov.nih.nci.caarray.platforms;
 
 import gov.nih.nci.caarray.domain.file.FileTypeRegistry;
 import gov.nih.nci.caarray.domain.file.FileTypeRegistryImpl;
@@ -100,9 +101,12 @@ import com.google.inject.Module;
  * 
  * @author dkokotov
  */
-public class PlatformModule extends AbstractModule {
+public final class PlatformModule extends AbstractModule {
     private final Set<Module> modules = Sets.newHashSet();
 
+    /**
+     * Constructor, creates a new Platform module with only unparsed implementation module registered.
+     */
     public PlatformModule() {
         addPlatform(new UnparsedModule());
     }
@@ -119,6 +123,12 @@ public class PlatformModule extends AbstractModule {
         bind(FileTypeRegistry.class).to(FileTypeRegistryImpl.class);
     }
 
+    /**
+     * Register a new platform implementation module with this. The module will be installed when this module is
+     * processed by Guice.
+     * 
+     * @param platformModule module to register
+     */
     public void addPlatform(Module platformModule) {
         this.modules.add(platformModule);
     }

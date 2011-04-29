@@ -136,6 +136,14 @@ public class DatabaseMultipartBlobDataStorage implements DataStorage {
     private final int blobPartSize = DEFAULT_BLOB_SIZE;
     private final Provider<TemporaryFileCache> tempFileCacheSource;
 
+    /**
+     * Constructor.
+     * 
+     * @param blobDao MultipartBlobDao dependency
+     * @param searchDao SearchDao dependency
+     * @param tempFileCacheSource Provider which will generate TemporaryfileCache instances as needed, used for caching
+     *            blob data to disk.
+     */
     @Inject
     public DatabaseMultipartBlobDataStorage(MultipartBlobDao blobDao, SearchDao searchDao,
             @Named("dbMultipartStorageTempCache") Provider<TemporaryFileCache> tempFileCacheSource) {
@@ -144,6 +152,9 @@ public class DatabaseMultipartBlobDataStorage implements DataStorage {
         this.tempFileCacheSource = tempFileCacheSource;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public StorageMetadata add(InputStream stream, boolean compressed) throws DataStoreException {
         try {
@@ -151,9 +162,6 @@ public class DatabaseMultipartBlobDataStorage implements DataStorage {
             multiPartBlob.setCreationTimestamp(new Date());
             multiPartBlob.writeData(stream, !compressed, this.blobPartSize);
             this.blobDao.save(multiPartBlob);
-            // TODO: move below to unit of work
-            // this.blobDao.flushSession();
-            // clearAndEvictBlobs(multiPartBlob);
 
             final StorageMetadata metadata = new StorageMetadata();
             metadata.setHandle(makeHandle(multiPartBlob.getId()));
@@ -171,6 +179,9 @@ public class DatabaseMultipartBlobDataStorage implements DataStorage {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void remove(Collection<URI> handles) throws DataStoreException {
         final List<Long> blobIds = new ArrayList<Long>();
@@ -181,11 +192,17 @@ public class DatabaseMultipartBlobDataStorage implements DataStorage {
         this.blobDao.deleteByIds(blobIds);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void remove(URI handle) throws DataStoreException {
         remove(Collections.singleton(handle));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void releaseFile(URI handle, boolean compressed) {
         checkScheme(handle);
@@ -193,6 +210,9 @@ public class DatabaseMultipartBlobDataStorage implements DataStorage {
         this.tempFileCacheSource.get().delete(tempFileName);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public File openFile(URI handle, boolean compressed) throws DataStoreException {
         checkScheme(handle);
@@ -203,8 +223,8 @@ public class DatabaseMultipartBlobDataStorage implements DataStorage {
             return tempFile;
         } else {
             tempFile = tempFileCache.createFile(tempFileName);
-            final MultiPartBlob blob = this.searchDao.retrieve(MultiPartBlob.class,
-                    Long.valueOf(handle.getSchemeSpecificPart()));
+            final MultiPartBlob blob =
+                    this.searchDao.retrieve(MultiPartBlob.class, Long.valueOf(handle.getSchemeSpecificPart()));
             if (blob == null) {
                 throw new DataStoreException("No data found for handle " + handle);
             }
@@ -219,6 +239,9 @@ public class DatabaseMultipartBlobDataStorage implements DataStorage {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public InputStream openInputStream(URI handle, boolean compressed) throws DataStoreException {
         checkScheme(handle);
@@ -276,6 +299,9 @@ public class DatabaseMultipartBlobDataStorage implements DataStorage {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Iterable<StorageMetadata> list() {
         final Set<StorageMetadata> metadatas = Sets.newHashSet();

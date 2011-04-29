@@ -22,14 +22,14 @@ public class VelocityBundleResourceLoader extends ClasspathResourceLoader {
             throw new ResourceNotFoundException("No template name provided");
         }
 
-        if (name.startsWith("/")) {
+        if (name.charAt(0) == '/') {
             name = name.substring(1);
         }
 
         try {
             return DefaultBundleAccessor.getInstance().loadResourceAsStream(name);
         } catch (final Exception e) {
-            throw new ResourceNotFoundException(e.getMessage());
+            throw new ResourceNotFoundException(e);
         }
     }
 }

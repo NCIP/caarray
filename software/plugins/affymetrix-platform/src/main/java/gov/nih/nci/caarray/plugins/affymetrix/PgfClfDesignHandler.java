@@ -127,7 +127,13 @@ public final class PgfClfDesignHandler extends AbstractAffymetrixDesignFileHandl
     private static final int TRANSACTION_SIZE = 5000;
     private static final Logger LOG = Logger.getLogger(PgfClfDesignHandler.class);
 
+    /**
+     * FileType instance for PGF file type.
+     */
     public static final FileType PGF_FILE_TYPE = new FileType("AFFYMETRIX_PGF", FileCategory.ARRAY_DESIGN, true, "PGF");
+    /**
+     * FileType instance for CLF file type.
+     */
     public static final FileType CLF_FILE_TYPE = new FileType("AFFYMETRIX_CLF", FileCategory.ARRAY_DESIGN, true, "CLF");
     static final Set<FileType> SUPPORTED_TYPES = Sets.newHashSet(PGF_FILE_TYPE, CLF_FILE_TYPE);
 
@@ -178,6 +184,9 @@ public final class PgfClfDesignHandler extends AbstractAffymetrixDesignFileHandl
         this.hibernateHelper = hibernateHelper;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Set<FileType> getSupportedTypes() {
         return SUPPORTED_TYPES;
@@ -486,8 +495,8 @@ public final class PgfClfDesignHandler extends AbstractAffymetrixDesignFileHandl
 
     private void linkPhysicalProbeToLogicalProbe(String atomId, LogicalProbe logicalProbe) {
         LOG.debug("Linking physical probe atom #" + atomId + " to logical probe " + logicalProbe.getId());
-        final PhysicalProbe physicalProbe = getSearchDao().retrieveUnsecured(PhysicalProbe.class,
-                this.vendorIdDesignElementMap.get(atomId));
+        final PhysicalProbe physicalProbe =
+                getSearchDao().retrieveUnsecured(PhysicalProbe.class, this.vendorIdDesignElementMap.get(atomId));
         logicalProbe.addProbe(physicalProbe);
     }
 

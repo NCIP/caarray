@@ -79,65 +79,78 @@
  * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */package gov.nih.nci.caarray.application;
-
-import com.google.inject.Inject;
+ */
+package gov.nih.nci.caarray.application;
 
 import gov.nih.nci.caarray.application.file.FileManagementMDB;
 import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.platforms.SessionTransactionManager;
 
+import com.google.inject.Inject;
+
 /**
- * Implementation of SessionTransactionManager that forwards to the current Hibernate session 
- * and JTA transaction manager (via FileManagementMDB).
+ * Implementation of SessionTransactionManager that forwards to the current Hibernate session and JTA transaction
+ * manager (via FileManagementMDB).
+ * 
  * @author dkokotov
  */
 public class JtaSessionTransactionManager implements SessionTransactionManager {
     private FileManagementMDB fileManagementMDB;
     private SearchDao searchDao;
-    
+
     /**
-     * @param fileManagementMDB the FileManagementMDB to use as a proxy to access the JTA transaction
-     * @param searchDao the DAO to use to interact with the hibernate session
+     * {@inheritDoc}
+     */
+    @Override
+    public void beginTransaction() {
+        this.fileManagementMDB.beginTransaction();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void clearSession() {
+        this.searchDao.clearSession();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void commitTransaction() {
+        this.fileManagementMDB.commitTransaction();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void flushSession() {
+        this.searchDao.flushSession();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void rollbackTransaction() {
+        this.fileManagementMDB.rollbackTransaction();
+    }
+
+    /**
+     * @param fileManagementMDB the fileManagementMDB to set
      */
     @Inject
-    public void setDependencies(FileManagementMDB fileManagementMDB, SearchDao searchDao) {
+    public void setFileManagementMDB(FileManagementMDB fileManagementMDB) {
         this.fileManagementMDB = fileManagementMDB;
+    }
+
+    /**
+     * @param searchDao the searchDao to set
+     */
+    @Inject
+    public void setSearchDao(SearchDao searchDao) {
         this.searchDao = searchDao;
-    }
-    
-    /**
-     * {@inheritDoc}    
-     */
-    public void beginTransaction() {
-        fileManagementMDB.beginTransaction();
-    }
-
-    /**
-     * {@inheritDoc}    
-     */
-    public void clearSession() {
-        searchDao.clearSession();
-    }
-
-    /**
-     * {@inheritDoc}    
-     */
-    public void commitTransaction() {
-        fileManagementMDB.commitTransaction();
-    }
-
-    /**
-     * {@inheritDoc}    
-     */
-    public void flushSession() {
-        searchDao.flushSession();
-    }
-
-    /**
-     * {@inheritDoc}    
-     */
-    public void rollbackTransaction() {
-        fileManagementMDB.rollbackTransaction();
     }
 }

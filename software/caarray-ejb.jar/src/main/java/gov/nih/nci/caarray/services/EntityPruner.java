@@ -290,7 +290,8 @@ public final class EntityPruner {
     private void applySecurityPolicies(Object entity) {
         if (entity instanceof AbstractCaArrayObject) {
             final AbstractCaArrayObject object = (AbstractCaArrayObject) entity;
-            final Set<SecurityPolicy> policies = object.getRemoteApiSecurityPolicies(CaArrayUsernameHolder.getCsmUser());
+            final Set<SecurityPolicy> policies =
+                    object.getRemoteApiSecurityPolicies(CaArrayUsernameHolder.getCsmUser());
             if (!policies.isEmpty()) {
                 SecurityPolicy.applySecurityPolicies(object, policies);
             }

@@ -125,7 +125,7 @@ public class URIUserType implements UserType {
      */
     @Override
     public boolean equals(Object x, Object y) {
-        return (x == y) || (x != null && y != null && (x.equals(y)));
+        return (x == y) || (x != null && y != null && (x.equals(y))); // NOPMD - on purpose == comparison
     }
 
     /**

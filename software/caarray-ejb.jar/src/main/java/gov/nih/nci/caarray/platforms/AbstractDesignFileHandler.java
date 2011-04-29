@@ -105,13 +105,16 @@ public abstract class AbstractDesignFileHandler implements DesignFileHandler {
     @Inject
     private SearchDao searchDao;
 
+    /**
+     * Empty constructor, needed sometimes when we have to get dependencies injected.
+     */
     protected AbstractDesignFileHandler() {
         // empty on purpose
     }
 
     /**
      * @param sessionTransactionManager the SessionTransactionManager to use
-     * @param fileManager the FileManager to use
+     * @param dataStorageFacade data storage facade to use
      * @param arrayDao the ArrayDao to use
      * @param searchDao the SearchDao to use
      */

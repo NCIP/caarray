@@ -281,7 +281,8 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
         checkIfProjectSaveAllowed(project);
         // make sure that an anonymous user cannot create a new project
         if (project.getId() == null && CaArrayUsernameHolder.getUser().equals(SecurityUtils.ANONYMOUS_USERNAME)) {
-            throw new PermissionDeniedException(project, SecurityUtils.WRITE_PRIVILEGE, CaArrayUsernameHolder.getUser());
+            throw new PermissionDeniedException(project, SecurityUtils.WRITE_PRIVILEGE, 
+                    CaArrayUsernameHolder.getUser());
         }
 
         if (project.getId() == null) {
@@ -310,7 +311,8 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
         LogUtil.logSubsystemEntry(LOG, project);
         if (!project.isOwner(CaArrayUsernameHolder.getCsmUser())) {
             LogUtil.logSubsystemExit(LOG);
-            throw new PermissionDeniedException(project, SecurityUtils.WRITE_PRIVILEGE, CaArrayUsernameHolder.getUser());
+            throw new PermissionDeniedException(project, SecurityUtils.WRITE_PRIVILEGE, 
+                    CaArrayUsernameHolder.getUser());
         }
         if (project.isLocked()) {
             LogUtil.logSubsystemExit(LOG);
@@ -362,7 +364,8 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
             }
         }
         if (!missingDesignNames.isEmpty()) {
-            throw new InconsistentProjectStateException(Reason.INCONSISTENT_ARRAY_DESIGNS, missingDesignNames.toArray());
+            throw new InconsistentProjectStateException(Reason.INCONSISTENT_ARRAY_DESIGNS, 
+                    missingDesignNames.toArray());
         }
     }
 
@@ -582,8 +585,8 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
      * {@inheritDoc}
      */
     @Override
-    public List<Project> searchByCategory(PageSortParams<Project> params, String keyword, SearchCategory... categories) {
-        return this.projectDao.searchByCategory(params, keyword, categories);
+    public List<Project> searchByCategory(PageSortParams<Project> params, String keyword, SearchCategory... cats) {
+        return this.projectDao.searchByCategory(params, keyword, cats);
     }
 
     /**

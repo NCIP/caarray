@@ -124,7 +124,7 @@ import com.google.inject.Inject;
  */
 @TransactionAttribute(TransactionAttributeType.REQUIRED)
 @TransactionTimeout(DataRetrievalServiceBean.TIMEOUT_SECONDS)
-@Interceptors({ AuthorizationInterceptor.class, HibernateSessionInterceptor.class, DataSetConfiguringInterceptor.class,
+@Interceptors({AuthorizationInterceptor.class, HibernateSessionInterceptor.class, DataSetConfiguringInterceptor.class,
         InjectionInterceptor.class, StorageInterceptor.class })
 public class DataRetrievalServiceBean implements DataRetrievalService {
     private static final Logger LOG = Logger.getLogger(DataRetrievalServiceBean.class);
@@ -137,7 +137,7 @@ public class DataRetrievalServiceBean implements DataRetrievalService {
      * @param searchDao the SearchDao dependency
      */
     @Inject
-    public void setDependencies(SearchDao searchDao) {
+    public void setSearchDao(SearchDao searchDao) {
         this.searchDao = searchDao;
     }
 

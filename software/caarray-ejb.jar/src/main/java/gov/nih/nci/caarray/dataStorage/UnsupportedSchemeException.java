@@ -89,10 +89,21 @@ public class UnsupportedSchemeException extends DataStoreException {
 
     private static final long serialVersionUID = 3582622697786140397L;
 
+    /**
+     * Constructor with message and cause.
+     * 
+     * @param message error message
+     * @param cause the underlying exception which caused the error
+     */
     public UnsupportedSchemeException(String message, Throwable cause) {
         super(message, cause);
     }
 
+    /**
+     * Constructor with message.
+     * 
+     * @param message error message
+     */
     public UnsupportedSchemeException(String message) {
         super(message);
     }

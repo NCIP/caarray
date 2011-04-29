@@ -336,7 +336,8 @@ final class SdrfTranslator extends AbstractTranslator {
             if (null != matchingArrayDesignsAlreadyInSystemList && !matchingArrayDesignsAlreadyInSystemList.isEmpty()) {
                 nameToCheck = matchingArrayDesignsAlreadyInSystemList.get(0).getName();
             }
-            if (!namesOfArrayDesignsForExperiment.isEmpty() && !namesOfArrayDesignsForExperiment.contains(nameToCheck)) {
+            if (!namesOfArrayDesignsForExperiment.isEmpty() 
+                    && !namesOfArrayDesignsForExperiment.contains(nameToCheck)) {
                 document.addErrorMessage(String.format(
                         MessageTemplates.ARRAY_DESIGN_NOT_ASSOCIATED_WITH_EXPERIMENT_ERROR_MESSAGE_TEMPLATE,
                         nameToCheck));
@@ -861,9 +862,9 @@ final class SdrfTranslator extends AbstractTranslator {
 
     private void associateProtocolApplications(Collection<ProtocolApplication> dest,
             Collection<gov.nih.nci.caarray.magetab.ProtocolApplication> sdrfProtocolapplications) {
-        for (final gov.nih.nci.caarray.magetab.ProtocolApplication mageTabProtocolApplication : sdrfProtocolapplications) {
+        for (final gov.nih.nci.caarray.magetab.ProtocolApplication mtProtocolApp : sdrfProtocolapplications) {
             final ProtocolApplication protocolApplication =
-                    getProtocolApplicationFromMageTabProtocolApplication(mageTabProtocolApplication);
+                    getProtocolApplicationFromMageTabProtocolApplication(mtProtocolApp);
             dest.add(protocolApplication);
 
         }

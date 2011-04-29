@@ -99,18 +99,11 @@ public class ProjectTabModuleDescriptor extends AbstractModuleDescriptor<Void> {
     private ProjectTab tab;
 
     /**
-     * Constructor.
-     */
-    public ProjectTabModuleDescriptor() {
-    }
-
-    /**
      * {@inheritDoc}
      */
     @Override
     public void init(Plugin plugin, Element element) throws PluginParseException {
         super.init(plugin, element);
-        System.out.println("Initializing tab plugin");
 
         this.tab = new ProjectTab();
         this.tab.setLabel(element.attributeValue("label"));

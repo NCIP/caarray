@@ -183,7 +183,8 @@ public class DataStorageFacade {
         final Set<URI> urisToRemove = Sets.newHashSet();
         final Iterable<StorageMetadata> existingMetadatas = ds.list();
         for (final StorageMetadata metadata : existingMetadatas) {
-            if (metadata.getCreationTimestamp().before(creationThreshold) && !references.contains(metadata.getHandle())) {
+            if (metadata.getCreationTimestamp().before(creationThreshold) 
+                    && !references.contains(metadata.getHandle())) {
                 urisToRemove.add(metadata.getHandle());
             }
         }
@@ -263,9 +264,9 @@ public class DataStorageFacade {
     /**
      * Add a new block of raw file data to the storage system. This should correspond to the contents of a CaArrayFile.
      * 
-     * @param stream a stream from which data will be read
-     * @param boolean compressed whether the data in the stream is compressed or not. If the data is compressed, GZip
-     *        compression should be used.
+     * @param in a stream from which data will be read
+     * @param compressed whether the data in the stream is compressed or not. If the data is compressed, GZip
+     *            compression should be used.
      * @return a StorageMetadata object describing the added block of data, including a handle for later access to the
      *         data
      */
@@ -277,9 +278,9 @@ public class DataStorageFacade {
      * Add a new block of parsed data to the storage system. This should correspond to the contents of a
      * AbstractDataColumn.
      * 
-     * @param stream a stream from which data will be read
-     * @param boolean compressed whether the data in the stream is compressed or not. If the data is compressed, GZip
-     *        compression should be used.
+     * @param in a stream from which data will be read
+     * @param compressed whether the data in the stream is compressed or not. If the data is compressed, GZip
+     *            compression should be used.
      * @return a StorageMetadata object describing the added block of data, including a handle for later access to the
      *         data
      */

@@ -102,12 +102,17 @@ public class FallbackUnparsedDataHandler extends UnparsedDataHandler {
 
     /**
      * default ctor.
+     * 
+     * @param dataStorageFacade data storage facade for retrieving data
      */
     @Inject
     public FallbackUnparsedDataHandler(DataStorageFacade dataStorageFacade) {
         super(dataStorageFacade);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected boolean isFileSupported(CaArrayFile dataFile) {
         return true;

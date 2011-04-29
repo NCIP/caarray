@@ -14,7 +14,7 @@ import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
  * 
  */
 class ShellArrayDao extends ArrayDaoUnsupportedOperationImpl {
-    private long nextId = 0;
+    private long nextId = 0; // NOPMD - PMD erroneously thinks this can be final
 
     @Override
     public void flushSession() {

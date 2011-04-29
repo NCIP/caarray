@@ -126,14 +126,17 @@ import com.google.inject.Inject;
 /**
  * Array data handler for all versions of the Affymetrix CEL file format.
  */
-@SuppressWarnings({ "PMD.CyclomaticComplexity", "PMD.TooManyMethods" })
-// Switch-like statement setValue()
+@SuppressWarnings({"PMD.CyclomaticComplexity", "PMD.TooManyMethods" })
 public final class CelHandler extends AbstractDataFileHandler {
     private static final Logger LOG = Logger.getLogger(CelHandler.class);
     private static final String LSID_AUTHORITY = "Affymetrix.com";
     private static final String LSID_NAMESPACE = "PhysicalArrayDesign";
 
+    /**
+     * FileType instance for CEL file type.
+     */
     public static final FileType CEL_FILE_TYPE = new FileType("AFFYMETRIX_CEL", FileCategory.RAW_DATA, true, "CEL");
+
     static final Set<FileType> SUPPORTED_TYPES = Sets.newHashSet(CEL_FILE_TYPE);
 
     private FusionCELData celData;
@@ -146,11 +149,17 @@ public final class CelHandler extends AbstractDataFileHandler {
         super(dataStorageFacade);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Set<FileType> getSupportedTypes() {
         return SUPPORTED_TYPES;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean openFile(CaArrayFile dataFile) throws PlatformFileReadException {
         if (!super.openFile(dataFile)) {
@@ -164,6 +173,9 @@ public final class CelHandler extends AbstractDataFileHandler {
         return true;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void closeFiles() {
         super.closeFiles();
@@ -176,16 +188,25 @@ public final class CelHandler extends AbstractDataFileHandler {
 
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public QuantitationTypeDescriptor[] getQuantitationTypeDescriptors() {
         return AffymetrixCelQuantitationType.values();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ArrayDataTypeDescriptor getArrayDataTypeDescriptor() {
         return AffymetrixArrayDataTypes.AFFYMETRIX_CEL;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void validate(final MageTabDocumentSet mTabSet, final FileValidationResult result, ArrayDesign design) {
         validateHeader(result);
@@ -223,6 +244,9 @@ public final class CelHandler extends AbstractDataFileHandler {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void loadData(final DataSet dataSet, final List<QuantitationType> types, ArrayDesign design) {
         LOG.debug("Started loadData for file: " + getFile().getName());
@@ -290,7 +314,8 @@ public final class CelHandler extends AbstractDataFileHandler {
 
     @SuppressWarnings("PMD.CyclomaticComplexity")
     // Switch-like statement
-    private void setValue(final AbstractDataColumn column, final int cellIndex, final FusionCELFileEntryType entry) {
+            private
+            void setValue(final AbstractDataColumn column, final int cellIndex, final FusionCELFileEntryType entry) {
         final QuantitationType quantitationType = column.getQuantitationType();
         if (AffymetrixCelQuantitationType.CEL_X.isEquivalent(quantitationType)) {
             ((ShortColumn) column).getValues()[cellIndex] = (short) this.celData.indexToX(cellIndex);
@@ -311,6 +336,9 @@ public final class CelHandler extends AbstractDataFileHandler {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<LSID> getReferencedArrayDesignCandidateIds() {
         return Collections.singletonList(new LSID(LSID_AUTHORITY, LSID_NAMESPACE, this.celData.getChipType()));

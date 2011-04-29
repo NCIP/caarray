@@ -132,9 +132,9 @@ public class AgilentRawTextDataHandler extends AbstractDataFileHandler {
 
     private static final int MIN_EXPECTED_ROW_COUNT = 1024;
     private static final Logger LOG = Logger.getLogger(AgilentRawTextDataHandler.class);
-    private static final String[] MANDATORY_MIRNA = { "ProbeName", "gTotalProbeSignal" };
-    private static final String[] MANDATORY_2_COLOR = { "ProbeName", "LogRatio" };
-    private static final String[] MANDATORY_1_COLOR = { "ProbeName", "gProcessedSignal" };
+    private static final String[] MANDATORY_MIRNA = {"ProbeName", "gTotalProbeSignal" };
+    private static final String[] MANDATORY_2_COLOR = {"ProbeName", "LogRatio" };
+    private static final String[] MANDATORY_1_COLOR = {"ProbeName", "gProcessedSignal" };
 
     public static final FileType RAW_TXT_FILE_TYPE = new FileType("AGILENT_RAW_TXT", FileCategory.RAW_DATA, true);
     static final Set<FileType> SUPPORTED_TYPES = Sets.newHashSet(RAW_TXT_FILE_TYPE);
@@ -204,14 +204,6 @@ public class AgilentRawTextDataHandler extends AbstractDataFileHandler {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void closeFiles() {
-        super.closeFiles();
-    }
-
     @Override
     public void loadData(DataSet dataSet, List<QuantitationType> types, ArrayDesign design)
             throws PlatformFileReadException {
@@ -272,8 +264,8 @@ public class AgilentRawTextDataHandler extends AbstractDataFileHandler {
                 this.parser.next();
 
                 if ("FEPARAMS".equalsIgnoreCase(this.parser.getSectionName())) {
-                    this.arrayDesignId = new LSID("Agilent.com", "PhysicalArrayDesign",
-                            this.parser.getStringValue("Grid_Name"));
+                    this.arrayDesignId =
+                            new LSID("Agilent.com", "PhysicalArrayDesign", this.parser.getStringValue("Grid_Name"));
                 } else if ("STATS".equalsIgnoreCase(this.parser.getSectionName())) {
                     // rough estimate of how many unique probe lines we'll find.
                     this.expectedRowCount = this.parser.getIntValue("TotalNumFeatures") / 2;

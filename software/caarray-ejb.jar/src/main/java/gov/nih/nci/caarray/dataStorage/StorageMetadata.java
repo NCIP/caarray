@@ -104,14 +104,14 @@ public class StorageMetadata implements Serializable {
     private Date creationTimestamp;
 
     /**
-     * Empty constructor
+     * Empty constructor.
      */
     public StorageMetadata() {
         // empty
     }
 
     /**
-     * Create new storage metadata with given parameters
+     * Create new storage metadata with given parameters.
      * 
      * @param compressedSize compressed size of data block
      * @param uncompressedSize uncompressed size of data block
