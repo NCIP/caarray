@@ -98,35 +98,37 @@ import com.google.inject.Inject;
 
 /**
  * Simple bean to wrap the DAO.
+ * 
  * @author gax
  */
 @Stateless
 @Interceptors(InjectionInterceptor.class)
 public class AuditLogServiceBean implements AuditLogService {
     private AuditLogDao auditLogDao;
-    
+
     /**
      * 
      * @param auditLogDao the AuditLogDao dependency
      */
     @Inject
-    public void setDependencies(AuditLogDao auditLogDao) {
+    public void setAuditLogDao(AuditLogDao auditLogDao) {
         this.auditLogDao = auditLogDao;
     }
-    
+
     /**
      * {@inheritDoc}
      */
-    public List<AuditLogRecord> getRecords(AuditLogSearchCriteria criteria,
-            PageSortParams<AuditLogRecord> sort) {
-        return auditLogDao.getRecords(criteria, sort);
+    @Override
+    public List<AuditLogRecord> getRecords(AuditLogSearchCriteria criteria, PageSortParams<AuditLogRecord> sort) {
+        return this.auditLogDao.getRecords(criteria, sort);
     }
-    
+
     /**
      * {@inheritDoc}
      */
+    @Override
     public int getRecordsCount(AuditLogSearchCriteria criteria) {
-        return auditLogDao.getRecordsCount(criteria);
+        return this.auditLogDao.getRecordsCount(criteria);
     }
 
 }

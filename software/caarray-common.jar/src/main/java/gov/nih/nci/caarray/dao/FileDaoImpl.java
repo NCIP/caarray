@@ -83,12 +83,11 @@
 package gov.nih.nci.caarray.dao;
 
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
-import gov.nih.nci.caarray.domain.data.AbstractDataColumn;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileCategory;
 import gov.nih.nci.caarray.domain.file.FileStatus;
-import gov.nih.nci.caarray.domain.file.FileTypeRegistryImpl;
 import gov.nih.nci.caarray.domain.file.FileTypeRegistry;
+import gov.nih.nci.caarray.domain.file.FileTypeRegistryImpl;
 import gov.nih.nci.caarray.domain.project.AbstractExperimentDesignNode;
 import gov.nih.nci.caarray.domain.search.FileSearchCriteria;
 import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
@@ -135,18 +134,6 @@ class FileDaoImpl extends AbstractCaArrayDaoImpl implements FileDao {
      * {@inheritDoc}
      */
     @Override
-    public List<URI> getFileHandlesForProject(Long projectId) {
-        final String hql = "select c.dataHandle from " + CaArrayFile.class.getName()
-                + " c join c.project p where p.id = :projectId";
-        @SuppressWarnings("unchecked")
-        final List<URI> results = getCurrentSession().createQuery(hql).setLong("projectId", projectId).list();
-        return results;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public List<URI> getAllFileHandles() {
         @SuppressWarnings("unchecked")
         final List<URI> results = (List<URI>) getHibernateHelper().doUnfiltered(new UnfilteredCallback() {
@@ -156,19 +143,6 @@ class FileDaoImpl extends AbstractCaArrayDaoImpl implements FileDao {
                 return s.createQuery(hql).list();
             }
         });
-        return results;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<URI> getParsedDataHandlesForProject(Long projectId) {
-        final String hql = "select d.dataHandle from " + AbstractDataColumn.class.getName()
-                + " d join d.hybridizationData hd "
-                + " join hd.hybridization h join h.experiment e join e.project p where p.id = :projectId";
-        @SuppressWarnings("unchecked")
-        final List<URI> results = getCurrentSession().createQuery(hql).setLong("projectId", projectId).list();
         return results;
     }
 
@@ -199,8 +173,8 @@ class FileDaoImpl extends AbstractCaArrayDaoImpl implements FileDao {
         if (!criteria.getCategories().isEmpty()) {
             final Disjunction categoryCriterion = Restrictions.disjunction();
             if (criteria.getCategories().contains(FileCategory.DERIVED_DATA)) {
-                categoryCriterion.add(Restrictions.in("type",
-                        Sets.newHashSet(FileTypeRegistryImpl.namesForTypes(this.typeRegistry.getDerivedArrayDataTypes()))));
+                categoryCriterion.add(Restrictions.in("type", Sets.newHashSet(FileTypeRegistryImpl
+                        .namesForTypes(this.typeRegistry.getDerivedArrayDataTypes()))));
             }
             if (criteria.getCategories().contains(FileCategory.RAW_DATA)) {
                 categoryCriterion.add(Restrictions.in("type",
@@ -249,10 +223,12 @@ class FileDaoImpl extends AbstractCaArrayDaoImpl implements FileDao {
     @Override
     @SuppressWarnings("unchecked")
     public List<CaArrayFile> getDeletableFiles(Long projectId) {
-        final String hql = "from " + CaArrayFile.class.getName()
-                + " f where f.project.id = :projectId and f.status in (:deletableStatuses) "
-                + " and (f.status <> :importedStatus or not exists (select h from " + AbstractArrayData.class.getName()
-                + " ad join ad.hybridizations h where ad.dataFile = f order by f.name))";
+        final String hql =
+                "from " + CaArrayFile.class.getName()
+                        + " f where f.project.id = :projectId and f.status in (:deletableStatuses) "
+                        + " and (f.status <> :importedStatus or not exists (select h from "
+                        + AbstractArrayData.class.getName()
+                        + " ad join ad.hybridizations h where ad.dataFile = f order by f.name))";
         final Query q = getCurrentSession().createQuery(hql);
         q.setLong("projectId", projectId);
         q.setParameterList("deletableStatuses", CaArrayUtils.namesForEnums(FileStatus.DELETABLE_FILE_STATUSES));

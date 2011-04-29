@@ -106,23 +106,24 @@ import com.google.inject.Inject;
 public class RegistrationServiceBean implements RegistrationService {
     private static final Logger LOG = Logger.getLogger(RegistrationServiceBean.class);
     private SearchDao searchDao;
-   
+
     /**
      * 
      * @param searchDao the SearchDao dependency
      */
     @Inject
-    public void setDependencies(SearchDao searchDao) {
+    public void setSearchDao(SearchDao searchDao) {
         this.searchDao = searchDao;
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public void register(RegistrationRequest registrationRequest) {
         LogUtil.logSubsystemEntry(LOG, registrationRequest);
-        searchDao.save(registrationRequest);
+        this.searchDao.save(registrationRequest);
         LogUtil.logSubsystemExit(LOG);
     }
 }

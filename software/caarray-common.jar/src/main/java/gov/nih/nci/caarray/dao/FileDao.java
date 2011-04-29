@@ -112,9 +112,10 @@ public interface FileDao extends CaArrayDao {
      */
     List<CaArrayFile> getDeletableFiles(Long projectId);
 
-    List<URI> getFileHandlesForProject(Long projectId);
-
+    /**
+     * Get the data handles for all file data in the persistent store.
+     * 
+     * @return a List of URIs for the data handles corresponding to the data underlying all CaArrayFiles in the system
+     */
     List<URI> getAllFileHandles();
-
-    List<URI> getParsedDataHandlesForProject(Long projectId);
 }

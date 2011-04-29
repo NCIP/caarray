@@ -121,7 +121,8 @@ public class SearchDaoUnsupportedOperationImpl implements SearchDao {
      * {@inheritDoc}
      */
     @Override
-    public <T extends PersistentObject> List<T> filterCollection(Collection<T> collection, String property, String value) {
+    public <T extends PersistentObject> List<T>
+            filterCollection(Collection<T> collection, String property, String value) {
         throw new UnsupportedOperationException();
     }
 
@@ -276,7 +277,8 @@ public class SearchDaoUnsupportedOperationImpl implements SearchDao {
      * {@inheritDoc}
      */
     @Override
-    public <T extends PersistentObject> List<T> queryEntityByExample(ExampleSearchCriteria<T> criteria, Order... orders) {
+    public <T extends PersistentObject> List<T>
+            queryEntityByExample(ExampleSearchCriteria<T> criteria, Order... orders) {
         throw new UnsupportedOperationException();
     }
 

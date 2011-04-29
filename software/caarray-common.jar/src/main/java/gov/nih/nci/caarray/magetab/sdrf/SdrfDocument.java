@@ -143,13 +143,16 @@ public final class SdrfDocument extends AbstractMageTabDocument {
     private IdfDocument idfDocument;
     private final SdrfColumns columns = new SdrfColumns();
     private List<String> currentLine;
-    private final Map<NodeKey, AbstractSampleDataRelationshipNode> nodeCache = new HashMap<NodeKey, AbstractSampleDataRelationshipNode>();
-    private final Map<NodeKey, AbstractSampleDataRelationshipNode> lineNodeCache = new HashMap<NodeKey, AbstractSampleDataRelationshipNode>();
+    private final Map<NodeKey, AbstractSampleDataRelationshipNode> nodeCache =
+            new HashMap<NodeKey, AbstractSampleDataRelationshipNode>();
+    private final Map<NodeKey, AbstractSampleDataRelationshipNode> lineNodeCache =
+            new HashMap<NodeKey, AbstractSampleDataRelationshipNode>();
     private AbstractSampleDataRelationshipNode currentNode;
     private Unitable currentUnitable;
     private TermSourceable currentTermSourceable;
     private AbstractBioMaterial currentBioMaterial;
-    private final List<AbstractSampleDataRelationshipNode> leftmostNodes = new ArrayList<AbstractSampleDataRelationshipNode>();
+    private final List<AbstractSampleDataRelationshipNode> leftmostNodes =
+            new ArrayList<AbstractSampleDataRelationshipNode>();
     private ProtocolApplication currentProtocolApp;
     private Hybridization currentHybridization;
     private Scan currentScan;
@@ -170,7 +173,8 @@ public final class SdrfDocument extends AbstractMageTabDocument {
     private final List<ArrayDataFile> allArrayDataFiles = new ArrayList<ArrayDataFile>();
     private final List<DerivedArrayDataFile> allDerivedArrayDataFiles = new ArrayList<DerivedArrayDataFile>();
     private final List<ArrayDataMatrixFile> allArrayDataMatrixFiles = new ArrayList<ArrayDataMatrixFile>();
-    private final List<DerivedArrayDataMatrixFile> allDerivedArrayDataMatrixFiles = new ArrayList<DerivedArrayDataMatrixFile>();
+    private final List<DerivedArrayDataMatrixFile> allDerivedArrayDataMatrixFiles =
+            new ArrayList<DerivedArrayDataMatrixFile>();
     private final List<Image> allImages = new ArrayList<Image>();
 
     // Inclusion of columns in the SDRF
@@ -179,10 +183,14 @@ public final class SdrfDocument extends AbstractMageTabDocument {
     private final Set<SdrfColumnType> allExtractColumns = new HashSet<SdrfColumnType>();
     private final Set<SdrfColumnType> allLabeledExtractColumns = new HashSet<SdrfColumnType>();
     // The ordering of the characteristics in the SDRF.
-    private final Map<String, SdrfCharacteristic> allSourceCharacteristics = new LinkedHashMap<String, SdrfCharacteristic>();
-    private final Map<String, SdrfCharacteristic> allSampleCharacteristics = new LinkedHashMap<String, SdrfCharacteristic>();
-    private final Map<String, SdrfCharacteristic> allExtractCharacteristics = new LinkedHashMap<String, SdrfCharacteristic>();
-    private final Map<String, SdrfCharacteristic> allLabeledExtractCharacteristics = new LinkedHashMap<String, SdrfCharacteristic>();
+    private final Map<String, SdrfCharacteristic> allSourceCharacteristics =
+            new LinkedHashMap<String, SdrfCharacteristic>();
+    private final Map<String, SdrfCharacteristic> allSampleCharacteristics =
+            new LinkedHashMap<String, SdrfCharacteristic>();
+    private final Map<String, SdrfCharacteristic> allExtractCharacteristics =
+            new LinkedHashMap<String, SdrfCharacteristic>();
+    private final Map<String, SdrfCharacteristic> allLabeledExtractCharacteristics =
+            new LinkedHashMap<String, SdrfCharacteristic>();
 
     /**
      * Creates a new SDRF from an existing file.
@@ -274,7 +282,8 @@ public final class SdrfDocument extends AbstractMageTabDocument {
         writeRow(headerRow, writer);
 
         // Generate and write all non-header rows.
-        final List<AbstractSampleDataRelationshipNode> currentRowNodes = new ArrayList<AbstractSampleDataRelationshipNode>();
+        final List<AbstractSampleDataRelationshipNode> currentRowNodes =
+                new ArrayList<AbstractSampleDataRelationshipNode>();
         for (final AbstractSampleDataRelationshipNode source : this.leftmostNodes) {
             generateEntry(source, currentRowNodes, writer);
         }
@@ -405,8 +414,8 @@ public final class SdrfDocument extends AbstractMageTabDocument {
             headerRow.add(SdrfColumnType.LABEL.toString());
             headerRow.add(SdrfColumnType.TERM_SOURCE_REF.toString());
         }
-        final boolean addMaterialTypeColumn = addBiomaterialHeaders(headerRow, this.allLabeledExtracts,
-                SdrfNodeType.LABELED_EXTRACT);
+        final boolean addMaterialTypeColumn =
+                addBiomaterialHeaders(headerRow, this.allLabeledExtracts, SdrfNodeType.LABELED_EXTRACT);
         if (addMaterialTypeColumn) {
             this.allLabeledExtractColumns.add(SdrfColumnType.MATERIAL_TYPE);
             headerRow.add(SdrfColumnType.MATERIAL_TYPE.toString());
@@ -465,8 +474,8 @@ public final class SdrfDocument extends AbstractMageTabDocument {
     }
 
     private void addNewCharacteristic(List<String> headerRow, SdrfCharacteristic sdrfCharacteristic) {
-        final String columnHeader = SdrfColumnType.CHARACTERISTICS.toString() + "[" + sdrfCharacteristic.getCategory()
-                + "]";
+        final String columnHeader =
+                SdrfColumnType.CHARACTERISTICS.toString() + "[" + sdrfCharacteristic.getCategory() + "]";
         headerRow.add(columnHeader);
         if (sdrfCharacteristic.isHasTerm()) {
             headerRow.add(SdrfColumnType.TERM_SOURCE_REF.toString());
@@ -965,9 +974,9 @@ public final class SdrfDocument extends AbstractMageTabDocument {
                 this.currentUnitable = characteristic;
             }
         } else {
-            if (ExperimentOntologyCategory.ORGANISM.getCategoryName().equals(
-                    currentColumn.getHeading().getQualifier())) {
-                OntologyTerm term = addOntologyTerm(characteristic.getCategory(), value);
+            if (ExperimentOntologyCategory.ORGANISM.getCategoryName().
+                    equals(currentColumn.getHeading().getQualifier())) {
+                final OntologyTerm term = addOntologyTerm(characteristic.getCategory(), value);
                 characteristic.setTerm(term);
             }
             characteristic.setValue(value);
@@ -1012,7 +1021,8 @@ public final class SdrfDocument extends AbstractMageTabDocument {
         }
     }
 
-    private void handleParameterValue(SdrfColumn column, String value, SdrfColumn nextColumn, SdrfColumn nextNextColumn) {
+    private void
+            handleParameterValue(SdrfColumn column, String value, SdrfColumn nextColumn, SdrfColumn nextNextColumn) {
         final ParameterValue parameterValue = new ParameterValue();
         final Parameter param = new Parameter();
         param.setName(column.getHeading().getQualifier());
@@ -1077,8 +1087,8 @@ public final class SdrfDocument extends AbstractMageTabDocument {
 
     private AbstractSampleDataRelationshipNode createNode(SdrfColumn column, String value) {
         try {
-            final AbstractSampleDataRelationshipNode node = (AbstractSampleDataRelationshipNode) column.getType()
-                    .getNodeClass().newInstance();
+            final AbstractSampleDataRelationshipNode node =
+                    (AbstractSampleDataRelationshipNode) column.getType().getNodeClass().newInstance();
             node.setName(value);
             node.addToSdrfList(this);
             return node;

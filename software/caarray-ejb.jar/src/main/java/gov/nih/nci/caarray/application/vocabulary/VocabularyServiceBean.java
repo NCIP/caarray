@@ -116,32 +116,20 @@ import com.google.inject.Inject;
  */
 @Local(VocabularyService.class)
 @Stateless
-@Interceptors({ ExceptionLoggingInterceptor.class, InjectionInterceptor.class })
+@Interceptors({ExceptionLoggingInterceptor.class, InjectionInterceptor.class })
 @TransactionAttribute(TransactionAttributeType.SUPPORTS)
 public class VocabularyServiceBean implements VocabularyService {
     private static final String VERSION_FIELD = "version";
-    
+
     private SearchDao searchDao;
     private ProtocolDao protocolDao;
     private VocabularyDao vocabularyDao;
-    
+
     /**
      * 
-     * @param searchDao the SearchDao dependency
-     * @param protocolDao the ProtocolDao dependency
-     * @param vocabularyDao the VocabularyDao dependency
-     */
-    @Inject
-    public void setDependencies(SearchDao searchDao, ProtocolDao protocolDao, VocabularyDao vocabularyDao) {
-        this.searchDao = searchDao;
-        this.protocolDao = protocolDao;
-        this.vocabularyDao = vocabularyDao;
-    }
- 
-    /**
-     *
      * {@inheritDoc}
      */
+    @Override
     public Set<Term> getTerms(final Category category) {
         return getTerms(category, null);
     }
@@ -149,30 +137,34 @@ public class VocabularyServiceBean implements VocabularyService {
     /**
      * {@inheritDoc}
      */
+    @Override
     public Set<Term> getTerms(final Category category, String value) {
         if (category == null) {
             throw new IllegalArgumentException("Category is null");
         }
-        return vocabularyDao.getTermsRecursive(category, value);
+        return this.vocabularyDao.getTermsRecursive(category, value);
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public Term getTerm(TermSource source, String value) {
-        return vocabularyDao.getTerm(source, value);
+        return this.vocabularyDao.getTerm(source, value);
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public Organism getOrganism(TermSource source, String scientificName) {
-        return vocabularyDao.getOrganism(source, scientificName);
+        return this.vocabularyDao.getOrganism(source, scientificName);
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public List<Organism> getOrganisms() {
         return this.searchDao.retrieveAll(Organism.class, Order.asc("scientificName"));
     }
@@ -180,11 +172,12 @@ public class VocabularyServiceBean implements VocabularyService {
     /**
      * {@inheritDoc}
      */
+    @Override
     public TermSource getSource(String name, String version) {
-        TermSource querySource = new TermSource();
+        final TermSource querySource = new TermSource();
         querySource.setName(name);
         querySource.setVersion(version);
-        return CaArrayUtils.uniqueResult(vocabularyDao.queryEntityByExample(
+        return CaArrayUtils.uniqueResult(this.vocabularyDao.queryEntityByExample(
                 ExampleSearchCriteria.forEntity(querySource).includeNulls().excludeProperties("url"),
                 Order.desc(VERSION_FIELD)));
     }
@@ -192,21 +185,23 @@ public class VocabularyServiceBean implements VocabularyService {
     /**
      * {@inheritDoc}
      */
+    @Override
     public Set<TermSource> getSources(String name) {
-        TermSource querySource = new TermSource();
+        final TermSource querySource = new TermSource();
         querySource.setName(name);
-        return new LinkedHashSet<TermSource>(vocabularyDao.queryEntityByExample(querySource,
+        return new LinkedHashSet<TermSource>(this.vocabularyDao.queryEntityByExample(querySource,
                 Order.desc(VERSION_FIELD)));
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public TermSource getSourceByUrl(String url, String version) {
-        TermSource querySource = new TermSource();
+        final TermSource querySource = new TermSource();
         querySource.setUrl(url);
         querySource.setVersion(version);
-        return CaArrayUtils.uniqueResult(vocabularyDao.queryEntityByExample(
+        return CaArrayUtils.uniqueResult(this.vocabularyDao.queryEntityByExample(
                 ExampleSearchCriteria.forEntity(querySource).includeNulls().excludeProperties("name"),
                 Order.desc(VERSION_FIELD)));
     }
@@ -214,17 +209,19 @@ public class VocabularyServiceBean implements VocabularyService {
     /**
      * {@inheritDoc}
      */
+    @Override
     public Set<TermSource> getSourcesByUrl(String url) {
-        TermSource querySource = new TermSource();
+        final TermSource querySource = new TermSource();
         querySource.setUrl(url);
-        return new LinkedHashSet<TermSource>(vocabularyDao.queryEntityByExample(querySource,
+        return new LinkedHashSet<TermSource>(this.vocabularyDao.queryEntityByExample(querySource,
                 Order.desc(VERSION_FIELD)));
     }
 
     /**
-     *
+     * 
      * {@inheritDoc}
      */
+    @Override
     public List<TermSource> getAllSources() {
         return this.searchDao.retrieveAll(TermSource.class, Order.asc("name"));
     }
@@ -232,20 +229,23 @@ public class VocabularyServiceBean implements VocabularyService {
     /**
      * {@inheritDoc}
      */
+    @Override
     public Category getCategory(TermSource source, String categoryName) {
-        return vocabularyDao.getCategory(source, categoryName);
+        return this.vocabularyDao.getCategory(source, categoryName);
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public Term getTerm(Long id) {
-        return vocabularyDao.getTermById(id);
+        return this.vocabularyDao.getTermById(id);
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public List<Protocol> getProtocolsByProtocolType(Term type, String name) {
         if (type == null) {
             return new ArrayList<Protocol>();
@@ -256,6 +256,7 @@ public class VocabularyServiceBean implements VocabularyService {
     /**
      * {@inheritDoc}
      */
+    @Override
     public Protocol getProtocol(String name, TermSource source) {
         return this.protocolDao.getProtocol(name, source);
     }
@@ -263,23 +264,50 @@ public class VocabularyServiceBean implements VocabularyService {
     /**
      * {@inheritDoc}
      */
+    @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public void saveTerm(Term term) {
-        vocabularyDao.save(term);
+        this.vocabularyDao.save(term);
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public Term findTermInAllTermSourceVersions(TermSource termSource, String value) {
-        return vocabularyDao.findTermInAllTermSourceVersions(termSource, value);
+        return this.vocabularyDao.findTermInAllTermSourceVersions(termSource, value);
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public <T extends AbstractCharacteristic> List<Category> searchForCharacteristicCategory(
             Class<T> characteristicClass, String keyword) {
-        return vocabularyDao.searchForCharacteristicCategory(null, characteristicClass, keyword);
+        return this.vocabularyDao.searchForCharacteristicCategory(null, characteristicClass, keyword);
+    }
+
+    /**
+     * @param searchDao the searchDao to set
+     */
+    @Inject
+    public void setSearchDao(SearchDao searchDao) {
+        this.searchDao = searchDao;
+    }
+
+    /**
+     * @param protocolDao the protocolDao to set
+     */
+    @Inject
+    public void setProtocolDao(ProtocolDao protocolDao) {
+        this.protocolDao = protocolDao;
+    }
+
+    /**
+     * @param vocabularyDao the vocabularyDao to set
+     */
+    @Inject
+    public void setVocabularyDao(VocabularyDao vocabularyDao) {
+        this.vocabularyDao = vocabularyDao;
     }
 }

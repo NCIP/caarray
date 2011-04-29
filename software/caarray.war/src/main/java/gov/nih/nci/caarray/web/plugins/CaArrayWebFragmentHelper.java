@@ -180,8 +180,8 @@ public class CaArrayWebFragmentHelper implements WebFragmentHelper, I18nResolver
          * {@inheritDoc}
          */
         @Override
-        public void addAll(List<Message> messages) {
-            this.messages.addAll(messages);
+        public void addAll(List<Message> msgs) {
+            this.messages.addAll(msgs);
         }
 
         /**

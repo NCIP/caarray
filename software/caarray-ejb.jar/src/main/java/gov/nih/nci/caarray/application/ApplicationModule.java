@@ -87,7 +87,6 @@ import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
 import gov.nih.nci.caarray.application.audit.AuditLogService;
 import gov.nih.nci.caarray.application.browse.BrowseService;
 import gov.nih.nci.caarray.application.file.FileManagementModule;
-import gov.nih.nci.caarray.application.fileaccess.ExplicitRequestScope;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessModule;
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCache;
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheImpl;
@@ -97,7 +96,6 @@ import gov.nih.nci.caarray.application.registration.RegistrationService;
 import gov.nih.nci.caarray.application.vocabulary.VocabularyService;
 
 import com.google.inject.AbstractModule;
-import com.google.inject.servlet.RequestScoped;
 
 /**
  * Guice module for the application package.
@@ -134,8 +132,6 @@ public class ApplicationModule extends AbstractModule {
                 ServiceLocatorFactory.serviceProvider(RegistrationService.class, RegistrationService.JNDI_NAME));
         bind(VocabularyService.class).toProvider(
                 ServiceLocatorFactory.serviceProvider(VocabularyService.class, VocabularyService.JNDI_NAME));
-
-        bindScope(RequestScoped.class, new ExplicitRequestScope());
 
         // a general-purpose instance. it's the responsibility of clients
         // to explicitly call cleanup on it

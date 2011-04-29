@@ -27,11 +27,11 @@ public class DelegatingObjectFactory extends ObjectFactory implements ObjectFact
     private String delegate = "struts";
 
     /**
-     * @param delegate the root ObjectFactory, which will first try to load classes.
+     * @param delegateObjectFactory the root ObjectFactory, which will first try to load classes.
      */
     @Inject("struts.objectFactory.delegate")
-    public void setDelegateObjectFactory(String delegate) {
-        this.delegate = delegate;
+    public void setDelegateObjectFactory(String delegateObjectFactory) {
+        this.delegate = delegateObjectFactory;
     }
 
     /**

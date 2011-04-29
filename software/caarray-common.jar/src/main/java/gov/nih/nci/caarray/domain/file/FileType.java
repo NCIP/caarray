@@ -94,7 +94,8 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import com.google.inject.internal.Sets;
 
 /**
- *
+ * Describes a type of file that can be uploaded to caArray. This is not a persistent bean - instances of this class are
+ * registered with FileTypeRegistry by platform plugins which know how to parse particular file types.
  */
 public class FileType implements Comparable<FileType> {
     private String name;
@@ -112,11 +113,13 @@ public class FileType implements Comparable<FileType> {
     }
 
     /**
+     * Constructs a file type with given properties.
      * 
-     * @param name
-     * @param extensions
-     * @param category
-     * @param parsed
+     * @param name type name. Names should be unique across all types registered in the type registry
+     * @param extensions the extensions associated with this type. files whose names end in these extensions should be
+     *            considered to have this type.
+     * @param category the category to which files of this type belong.
+     * @param parsed whether this type can be parsed
      */
     public FileType(String name, FileCategory category, boolean parsed, String... extensions) {
         this.name = name;
@@ -126,19 +129,22 @@ public class FileType implements Comparable<FileType> {
     }
 
     /**
+     * Constructs a file type with given properties.
      * 
-     * @param name
-     * @param extensions
-     * @param category
-     * @param parsed
+     * @param name type name. Names should be unique across all types registered in the type registry
+     * @param extensions the extensions associated with this type. files whose names end in these extensions should be
+     *            considered to have this type.
+     * @param category the category to which files of this type belong.
+     * @param parsed whether this type can be parsed
+     * @param dataMatrix whether files of this type are data matrices
      */
-    public FileType(String name, FileCategory category, boolean parsed, boolean dataMatrix, String... extension) {
-        this(name, category, parsed, extension);
+    public FileType(String name, FileCategory category, boolean parsed, boolean dataMatrix, String... extensions) {
+        this(name, category, parsed, extensions);
         this.dataMatrix = dataMatrix;
     }
 
     /**
-     * @return the dataMatrix
+     * @return whether this is a data matrix type
      */
     public boolean isDataMatrix() {
         return this.dataMatrix;
@@ -152,7 +158,7 @@ public class FileType implements Comparable<FileType> {
     }
 
     /**
-     * @return the extensions
+     * @return the extensions associated with this type
      */
     public Set<String> getExtensions() {
         return this.extensions;
@@ -166,7 +172,7 @@ public class FileType implements Comparable<FileType> {
     }
 
     /**
-     * @return the category
+     * @return the category to which files of this type belong
      */
     public FileCategory getCategory() {
         return this.category;
@@ -180,7 +186,7 @@ public class FileType implements Comparable<FileType> {
     }
 
     /**
-     * @return the name
+     * @return the name of the type
      */
     public String getName() {
         return this.name;
@@ -194,7 +200,7 @@ public class FileType implements Comparable<FileType> {
     }
 
     /**
-     * @return the parsed
+     * @return whether files of this type can be parsed
      */
     public boolean isParsed() {
         return this.parsed;
@@ -256,6 +262,9 @@ public class FileType implements Comparable<FileType> {
         return isRawArrayData() || isDerivedArrayData();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof FileType)) {
@@ -265,16 +274,25 @@ public class FileType implements Comparable<FileType> {
         return new EqualsBuilder().append(this.name, other.name).isEquals();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int hashCode() {
         return new HashCodeBuilder().append(this.name).toHashCode();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int compareTo(FileType ft) {
         return new CompareToBuilder().append(this.name, ft.name).toComparison();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this);

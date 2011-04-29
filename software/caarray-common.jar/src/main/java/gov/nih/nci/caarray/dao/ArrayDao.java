@@ -220,7 +220,9 @@ public interface ArrayDao extends CaArrayDao {
      * @param startIndex the starting index in the list at which the entries should be saved
      * @param logicalProbeIds the ids of the design elements which should be added to the list starting at given index
      */
-    void createDesignElementListEntries(DesignElementList designElementList, int startIndex, List<Long> logicalProbeIds);
+    void
+            createDesignElementListEntries(DesignElementList designElementList, int startIndex,
+                    List<Long> logicalProbeIds);
 
     /**
      * Delete array design detail.
@@ -276,5 +278,11 @@ public interface ArrayDao extends CaArrayDao {
      */
     List<ArrayDesign> getArrayDesignsWithReImportable();
 
+    /**
+     * Get the data handles for all parsed data in the persistent store.
+     * 
+     * @return a List of URIs for the data handles corresponding to the data underlying all AbstractDataColumns in the
+     *         system
+     */
     List<URI> getAllParsedDataHandles();
 }

@@ -125,17 +125,6 @@ public class GenericDataServiceBean implements GenericDataService {
     private ProjectDao projectDao;
 
     /**
-     * 
-     * @param searchDao the SearchDao dependency
-     * @param projectDao the ProjectDao dependency
-     */
-    @Inject
-    public void setDependencies(SearchDao searchDao, ProjectDao projectDao) {
-        this.searchDao = searchDao;
-        this.projectDao = projectDao;
-    }
-
-    /**
      * {@inheritDoc}
      */
     @Override
@@ -219,7 +208,8 @@ public class GenericDataServiceBean implements GenericDataService {
      * {@inheritDoc}
      */
     @Override
-    public <T extends PersistentObject> List<T> filterCollection(Collection<T> collection, String property, String value) {
+    public <T extends PersistentObject> List<T>
+            filterCollection(Collection<T> collection, String property, String value) {
         return this.searchDao.filterCollection(collection, property, value);
     }
 
@@ -249,8 +239,27 @@ public class GenericDataServiceBean implements GenericDataService {
         return this.searchDao.collectionSize(collection);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void refresh(PersistentObject object) {
         this.searchDao.refresh(object);
+    }
+
+    /**
+     * @param searchDao the searchDao to set
+     */
+    @Inject
+    public void setSearchDao(SearchDao searchDao) {
+        this.searchDao = searchDao;
+    }
+
+    /**
+     * @param projectDao the projectDao to set
+     */
+    @Inject
+    public void setProjectDao(ProjectDao projectDao) {
+        this.projectDao = projectDao;
     }
 }

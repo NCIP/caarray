@@ -103,6 +103,11 @@ public final class DataStorageCleanupThread extends TimerTask {
 
     private final CaArrayHibernateHelper hibernateHelper;
 
+    /**
+     * Constructor.
+     * 
+     * @param hibernateHelper hibernate helper to use
+     */
     @Inject
     public DataStorageCleanupThread(CaArrayHibernateHelper hibernateHelper) {
         this.hibernateHelper = hibernateHelper;

@@ -140,7 +140,7 @@ import com.opensymphony.xwork2.validator.annotations.Validations;
  * @author Scott Miller
  * 
  */
-@SuppressWarnings({ "unchecked", "PMD.ExcessiveClassLength", "PMD.CyclomaticComplexity", "PMD.TooManyFields",
+@SuppressWarnings({"unchecked", "PMD.ExcessiveClassLength", "PMD.CyclomaticComplexity", "PMD.TooManyFields",
         "PMD.TooManyMethods" })
 @Validations(expressions = @ExpressionValidator(message = "Files must be selected for this operation.",
     expression = "selectedFiles.size() > 0"))
@@ -171,7 +171,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
         List<String> getMessages() {
             final List<String> messages = new ArrayList<String>();
             for (final String key : this.counts.keySet()) {
-                messages.add(getText(key, new String[] { this.counts.get(key).toString() }));
+                messages.add(getText(key, new String[] {this.counts.get(key).toString() }));
             }
             return messages;
         }
@@ -486,12 +486,12 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
             final FileProcessingResult result = fileUploadUtils.unpackFiles(getProject(), this.getSelectedFiles());
 
             for (final String conflict : result.getConflictingFiles()) {
-                ActionHelper.saveMessage(getText("experiment.files.unpack.filename.exists", new String[] { conflict }));
+                ActionHelper.saveMessage(getText("experiment.files.unpack.filename.exists", new String[] {conflict }));
             }
             ActionHelper.saveMessage(result.getCount() + " file(s) unpacked.");
         } catch (final InvalidFileException ue) {
             ActionHelper.saveMessage(getText("errors.unpackingErrorWithZip",
-                    new String[] { ue.getFile(), getText(ue.getResourceKey()) }));
+                    new String[] {ue.getFile(), getText(ue.getResourceKey()) }));
         } catch (final Exception e) {
             final String msg = "Unable to unpack file: " + e.getMessage();
             LOG.error(msg, e);
@@ -575,7 +575,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
      * 
      * @return the string matching the result to follow
      */
-    @SuppressWarnings({ "PMD.ExcessiveMethodLength", "PMD.NPathComplexity" })
+    @SuppressWarnings({"PMD.ExcessiveMethodLength", "PMD.NPathComplexity" })
     // validation checks can't be easily refactored to smaller methods.
             public
             String validateFiles() {
@@ -596,7 +596,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
             ServiceLocatorFactory.getFileManagementService().validateFiles(getProject(), fileSet);
         }
         ActionHelper.saveMessage(getText("project.fileValidate.success",
-                new String[] { String.valueOf(fileSet.getFiles().size()) }));
+                new String[] {String.valueOf(fileSet.getFiles().size()) }));
         for (final String msg : errors.getMessages()) {
             ActionHelper.saveMessage(msg);
         }
@@ -622,7 +622,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
         }
 
         ActionHelper.saveMessage(getText("project.selectRefFile.success",
-                new String[] { String.valueOf(this.selectedFiles.size()) }));
+                new String[] {String.valueOf(this.selectedFiles.size()) }));
 
         this.clearCheckboxes = false;
         return prepListUnimportedPage();
@@ -663,7 +663,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
             if (!fileNames.contains(referencedFileName)) {
                 noFilesAreMissing = false;
                 ActionHelper.saveMessage(getText("project.selectRefFile.error.validation.missingFile",
-                        new String[] { "'" + referencedFileName + "'" }));
+                        new String[] {"'" + referencedFileName + "'" }));
             }
         }
         return noFilesAreMissing;
@@ -752,7 +752,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
                 ServiceLocatorFactory.getFileManagementService().importFiles(getProject(), fileSet, dataImportOptions);
             }
             ActionHelper.saveMessage(getText("project.fileImport.success",
-                    new String[] { String.valueOf(fileSet.getFiles().size()) }));
+                    new String[] {String.valueOf(fileSet.getFiles().size()) }));
             for (final String msg : errors.getMessages()) {
                 ActionHelper.saveMessage(msg);
             }
@@ -818,7 +818,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
                 ServiceLocatorFactory.getFileManagementService().reimportAndParseProjectFiles(getProject(), fileSet);
             }
             ActionHelper.saveMessage(getText("project.fileImport.success",
-                    new String[] { String.valueOf(fileSet.getFiles().size()) }));
+                    new String[] {String.valueOf(fileSet.getFiles().size()) }));
             refreshProject();
         }
 
@@ -877,17 +877,16 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
 
                 for (final String conflict : uploadResult.getConflictingFiles()) {
                     ActionHelper.saveMessage(getText("experiment.files.upload.filename.exists",
-                            new String[] { conflict }));
+                            new String[] {conflict }));
                 }
                 ActionHelper.saveMessage(uploadResult.getCount() + " file(s) uploaded.");
             } catch (final InvalidFileException ue) {
                 final String errorKey =
                         fileNamesToUnpack().contains(ue.getFile()) ? "errors.uploadingErrorWithZip"
                                 : "errors.uploadingErrorWithAdding";
-                ActionHelper
-                        .saveMessage(getText(errorKey, new String[] { ue.getFile(), getText(ue.getResourceKey()) }));
-                ActionHelper.saveMessage(getText("errors.unpackingErrorWithZip", new String[] { ue.getFile(),
-                        getText(ue.getResourceKey()) }));
+                ActionHelper.saveMessage(getText(errorKey, new String[] {ue.getFile(), getText(ue.getResourceKey()) }));
+                ActionHelper.saveMessage(getText("errors.unpackingErrorWithZip",
+                        new String[] {ue.getFile(), getText(ue.getResourceKey()) }));
             } catch (final Exception e) {
                 final String msg = "Unable to upload file: " + e.getMessage();
                 LOG.error(msg, e);
@@ -994,7 +993,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
             return false;
         }
         if (!getProject().hasWritePermission(getCsmUser())) {
-            ActionHelper.saveMessage(getText("project.permissionDenied", new String[] { getText("role.write") }));
+            ActionHelper.saveMessage(getText("project.permissionDenied", new String[] {getText("role.write") }));
             return false;
         }
         return true;

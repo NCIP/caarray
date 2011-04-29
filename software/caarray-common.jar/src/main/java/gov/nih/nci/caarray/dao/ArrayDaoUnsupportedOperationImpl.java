@@ -302,7 +302,8 @@ public class ArrayDaoUnsupportedOperationImpl implements ArrayDao {
      * {@inheritDoc}
      */
     @Override
-    public <T extends PersistentObject> List<T> queryEntityByExample(ExampleSearchCriteria<T> criteria, Order... orders) {
+    public <T extends PersistentObject> List<T>
+            queryEntityByExample(ExampleSearchCriteria<T> criteria, Order... orders) {
         throw new UnsupportedOperationException();
     }
 

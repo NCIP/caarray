@@ -151,7 +151,8 @@ public final class ServiceLocatorFactory {
     }
 
     /**
-     * Convenience method for obtaining the singleton service. 
+     * Convenience method for obtaining the singleton service.
+     * 
      * @return the service
      */
     public static PermissionsManagementService getPermissionsManagementService() {
@@ -293,6 +294,15 @@ public final class ServiceLocatorFactory {
         return (CaArraySearchService) getLocator().lookup(CaArraySearchService.JNDI_NAME);
     }
 
+    /**
+     * Create a Guice provider that will provide instances of given service by looking them up in this locator using the
+     * given JNDI name.
+     * 
+     * @param <T> service type
+     * @param service the service for which a provider will be created
+     * @param serviceJndiName the JNDI name by which to lookup the service
+     * @return the guice provider
+     */
     public static <T> Provider<T> serviceProvider(Class<T> service, final String serviceJndiName) {
         return new Provider<T>() {
             @Override

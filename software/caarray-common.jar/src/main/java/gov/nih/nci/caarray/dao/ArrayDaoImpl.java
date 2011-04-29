@@ -102,8 +102,8 @@ import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
 import gov.nih.nci.caarray.domain.file.FileCategory;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
-import gov.nih.nci.caarray.domain.file.FileTypeRegistryImpl;
 import gov.nih.nci.caarray.domain.file.FileTypeRegistry;
+import gov.nih.nci.caarray.domain.file.FileTypeRegistryImpl;
 import gov.nih.nci.caarray.domain.project.AssayType;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.search.BrowseCategory;
@@ -198,8 +198,9 @@ class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
 
     private StringBuilder generateArrayDesignQuery(Organization provider, boolean containsAssayType,
             Set<AssayType> assayTypes, boolean importedOnly) {
-        final StringBuilder queryStr = new StringBuilder("select distinct ad from " + ArrayDesign.class.getName()
-                + " ad join ad.designFiles designFile join ad.assayTypes assayType where");
+        final StringBuilder queryStr =
+                new StringBuilder("select distinct ad from " + ArrayDesign.class.getName()
+                        + " ad join ad.designFiles designFile join ad.assayTypes assayType where");
         if (provider != null) {
             queryStr.append(" ad.provider = :provider ");
             if (containsAssayType) {
@@ -251,8 +252,9 @@ class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
     @SuppressWarnings("unchecked")
     public AbstractArrayData getArrayData(Long fileId) {
         final Session session = getCurrentSession();
-        final Query query = session.createQuery("select distinct arrayData from " + AbstractArrayData.class.getName()
-                + " arrayData join arrayData.dataFile f where f.id = :fileId");
+        final Query query =
+                session.createQuery("select distinct arrayData from " + AbstractArrayData.class.getName()
+                        + " arrayData join arrayData.dataFile f where f.id = :fileId");
         query.setLong("fileId", fileId);
         final List<AbstractArrayData> results = query.list();
         return results.isEmpty() ? null : results.get(0);
@@ -322,8 +324,9 @@ class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
     @Override
     @SuppressWarnings("unchecked")
     public Map<String, Long> getLogicalProbeNamesToIds(ArrayDesign design, List<String> names) {
-        final String queryString = "select lp.name, lp.id from " + LogicalProbe.class.getName()
-                + " lp where lp.name in (:names) and lp.arrayDesignDetails = :details";
+        final String queryString =
+                "select lp.name, lp.id from " + LogicalProbe.class.getName()
+                        + " lp where lp.name in (:names) and lp.arrayDesignDetails = :details";
         final Query query = getCurrentSession().createQuery(queryString);
         query.setParameterList("names", names);
         query.setParameter("details", design.getDesignDetails());
@@ -345,8 +348,9 @@ class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
         }
         final Map<String, List<? extends Serializable>> inParams = new HashMap<String, List<? extends Serializable>>();
         final String inClause = getHibernateHelper().buildInClauses(names, "pp.name", inParams);
-        final String queryString = "select pp from " + PhysicalProbe.class.getName()
-                + " pp where pp.arrayDesignDetails = :details and " + inClause;
+        final String queryString =
+                "select pp from " + PhysicalProbe.class.getName() + " pp where pp.arrayDesignDetails = :details and "
+                        + inClause;
         final Query query = getCurrentSession().createQuery(queryString);
         query.setParameter("details", design.getDesignDetails());
         for (final Map.Entry<String, List<? extends Serializable>> e : inParams.entrySet()) {
@@ -371,8 +375,9 @@ class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
             deleteDesignElementList(detailsId);
             deleteDesignElements(detailsId);
             deleteProbeGroup(probeGroupIdsList);
-            final StringBuilder unlinkDesignDetailsQuery = new StringBuilder("update ").append(
-                    ArrayDesign.class.getName()).append(" ad set ad.designDetails = null where ad.id  = :id");
+            final StringBuilder unlinkDesignDetailsQuery =
+                    new StringBuilder("update ").append(ArrayDesign.class.getName()).append(
+                            " ad set ad.designDetails = null where ad.id  = :id");
             getCurrentSession().createQuery(unlinkDesignDetailsQuery.toString()).setLong("id", design.getId())
                     .executeUpdate();
             remove(design.getDesignDetails());
@@ -383,8 +388,9 @@ class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
 
     @SuppressWarnings("unchecked")
     private List<Long> getProbeGroupIds(Long detailsId) {
-        final StringBuilder probeGroupIdsQuery = new StringBuilder("select id from ")
-                .append(ProbeGroup.class.getName()).append(" where arrayDesignDetails.id = :detailsId");
+        final StringBuilder probeGroupIdsQuery =
+                new StringBuilder("select id from ").append(ProbeGroup.class.getName()).append(
+                        " where arrayDesignDetails.id = :detailsId");
         return getCurrentSession().createQuery(probeGroupIdsQuery.toString()).setLong("detailsId", detailsId).list();
     }
 
@@ -398,18 +404,20 @@ class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
 
     @SuppressWarnings("unchecked")
     private void deleteDesignElementList(Long detailsId) {
-        final StringBuilder elementIdsQuery = new StringBuilder("select distinct designelementlist_id from ")
-                .append("designelementlist_designelement dd inner join design_element de ")
-                .append("on dd.designelement_id=de.id and (de.logicalprobe_details_id = :id")
-                .append(" or de.feature_details_id = :id or de.physicalprobe_details_id = :id)");
+        final StringBuilder elementIdsQuery =
+                new StringBuilder("select distinct designelementlist_id from ")
+                        .append("designelementlist_designelement dd inner join design_element de ")
+                        .append("on dd.designelement_id=de.id and (de.logicalprobe_details_id = :id")
+                        .append(" or de.feature_details_id = :id or de.physicalprobe_details_id = :id)");
 
-        final List<Long> designElementListIds = getCurrentSession().createSQLQuery(elementIdsQuery.toString())
-                .addScalar("designelementlist_id", Hibernate.LONG).setLong("id", detailsId).list();
+        final List<Long> designElementListIds =
+                getCurrentSession().createSQLQuery(elementIdsQuery.toString())
+                        .addScalar("designelementlist_id", Hibernate.LONG).setLong("id", detailsId).list();
 
         if (!designElementListIds.isEmpty()) {
-            final StringBuilder deleteFromDesignElementListLkup = new StringBuilder(
-                    "delete from designelementlist_designelement ")
-                    .append("where designelementlist_id  in (:designIds)");
+            final StringBuilder deleteFromDesignElementListLkup =
+                    new StringBuilder("delete from designelementlist_designelement ")
+                            .append("where designelementlist_id  in (:designIds)");
             getCurrentSession().createSQLQuery(deleteFromDesignElementListLkup.toString())
                     .setParameterList("designIds", designElementListIds).executeUpdate();
             getCurrentSession().createSQLQuery("delete from design_element_list where id in ( :designIds )")
@@ -426,15 +434,16 @@ class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
     }
 
     private void deleteDesignElement(Class<? extends AbstractDesignElement> designElementClass, Long detailsId) {
-        final String query = "delete from " + designElementClass.getName()
-                + " de where de.arrayDesignDetails = :detailsId";
+        final String query =
+                "delete from " + designElementClass.getName() + " de where de.arrayDesignDetails = :detailsId";
         getCurrentSession().createQuery(query).setLong("detailsId", detailsId).executeUpdate();
     }
 
     private void deleteJoinTable(String jointablename, String designElementFkName, String detailsIdColumn,
             Long detailsId) {
-        final String query = "delete from " + jointablename + " where " + designElementFkName
-                + " in (select id from design_element where " + detailsIdColumn + " = :detailsId)";
+        final String query =
+                "delete from " + jointablename + " where " + designElementFkName
+                        + " in (select id from design_element where " + detailsIdColumn + " = :detailsId)";
         getCurrentSession().createSQLQuery(query).setLong("detailsId", detailsId).executeUpdate();
     }
 
@@ -444,8 +453,10 @@ class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
     @Override
     @SuppressWarnings("unchecked")
     public List<Long> getLogicalProbeIds(ArrayDesign design, PageSortParams<LogicalProbe> params) {
-        final Query query = getCurrentSession().createQuery(
-                "select id from " + LogicalProbe.class.getName() + " where arrayDesignDetails = :details order by id");
+        final Query query =
+                getCurrentSession().createQuery(
+                        "select id from " + LogicalProbe.class.getName()
+                                + " where arrayDesignDetails = :details order by id");
         query.setParameter("details", design.getDesignDetails());
         query.setFirstResult(params.getIndex());
         query.setMaxResults(params.getPageSize());
@@ -461,8 +472,9 @@ class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
         final Connection conn = getCurrentSession().connection();
         PreparedStatement stmt = null;
         try {
-            stmt = conn.prepareStatement("insert into designelementlist_designelement "
-                    + "(designelementlist_id, designelement_id, designelement_index) values (?, ?, ?)");
+            stmt =
+                    conn.prepareStatement("insert into designelementlist_designelement "
+                            + "(designelementlist_id, designelement_id, designelement_index) values (?, ?, ?)");
             int i = startIndex;
             for (final Long probeId : logicalProbeIds) {
                 stmt.setLong(1, designElementList.getId());
@@ -506,8 +518,8 @@ class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
      */
     @Override
     public Long getFirstFeatureId(ArrayDesignDetails designDetails) {
-        final String queryString = "select min(id) from " + Feature.class.getName()
-                + " where arrayDesignDetails = :details";
+        final String queryString =
+                "select min(id) from " + Feature.class.getName() + " where arrayDesignDetails = :details";
         final Query query = getCurrentSession().createQuery(queryString);
         query.setParameter("details", designDetails);
         return (Long) query.uniqueResult();
@@ -519,8 +531,8 @@ class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
     @Override
     @SuppressWarnings("unchecked")
     public List<ArrayDesign> getArrayDesigns(ArrayDesignDetails arrayDesignDetails) {
-        final String queryString = "from " + ArrayDesign.class.getName()
-                + " ad where ad.designDetails = :designDetails";
+        final String queryString =
+                "from " + ArrayDesign.class.getName() + " ad where ad.designDetails = :designDetails";
         final Query query = getCurrentSession().createQuery(queryString);
         query.setParameter("designDetails", arrayDesignDetails);
         return query.list();
@@ -551,14 +563,15 @@ class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
         }
 
         if (!criteria.getFileTypes().isEmpty()) {
-            c.add(Restrictions.in("df.type", Sets.newHashSet(FileTypeRegistryImpl.namesForTypes(criteria.getFileTypes()))));
+            c.add(Restrictions.in("df.type",
+                    Sets.newHashSet(FileTypeRegistryImpl.namesForTypes(criteria.getFileTypes()))));
         }
 
         if (!criteria.getFileCategories().isEmpty()) {
             final Disjunction categoryCriterion = Restrictions.disjunction();
             if (criteria.getFileCategories().contains(FileCategory.DERIVED_DATA)) {
-                categoryCriterion.add(Restrictions.in("df.type",
-                        Sets.newHashSet(FileTypeRegistryImpl.namesForTypes(this.typeRegistry.getDerivedArrayDataTypes()))));
+                categoryCriterion.add(Restrictions.in("df.type", Sets.newHashSet(FileTypeRegistryImpl
+                        .namesForTypes(this.typeRegistry.getDerivedArrayDataTypes()))));
             }
             if (criteria.getFileCategories().contains(FileCategory.RAW_DATA)) {
                 categoryCriterion.add(Restrictions.in("df.type",
@@ -588,8 +601,9 @@ class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
     @Override
     @SuppressWarnings("unchecked")
     public List<ArrayDesign> getArrayDesignsWithReImportable() {
-        final String q = "select distinct a from " + ArrayDesign.class.getName()
-                + " a left join a.designFiles f where f.status = :status and f.type in (:types) order by a.id";
+        final String q =
+                "select distinct a from " + ArrayDesign.class.getName()
+                        + " a left join a.designFiles f where f.status = :status and f.type in (:types) order by a.id";
         final Query query = getCurrentSession().createQuery(q);
         query.setParameter("status", FileStatus.IMPORTED_NOT_PARSED.name());
         query.setParameterList("types", Sets.newHashSet(Iterables.transform(

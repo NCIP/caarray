@@ -126,7 +126,7 @@ import com.google.inject.Provider;
  */
 @Local(FileManagementService.class)
 @Stateless
-@Interceptors({ ExceptionLoggingInterceptor.class, InjectionInterceptor.class })
+@Interceptors({ExceptionLoggingInterceptor.class, InjectionInterceptor.class })
 @SuppressWarnings("PMD.TooManyMethods")
 public class FileManagementServiceBean implements FileManagementService {
 
@@ -138,33 +138,8 @@ public class FileManagementServiceBean implements FileManagementService {
     private ArrayDao arrayDao;
     private FileDao fileDao;
     private SearchDao searchDao;
-    private MageTabImporter mageTabImporter;
     private JobFactory jobFactory;
     private Provider<MageTabImporter> mageTabImporterProvider;
-
-    /**
-     * 
-     * @param projectDao the ProjectDao dependency
-     * @param arrayDao the ArrayDao dependency
-     * @param fileDao the FileDao dependency
-     * @param mageTabImporter the MageTabImporter dependency
-     * @param searchDao the SearchDao dependency
-     * @param jobSubmitter the JobSubmitter dependency
-     * @param jobFactory the JobFactory dependency
-     */
-    @SuppressWarnings("PMD.ExcessiveParameterList")
-    @Inject
-    public void setDependencies(ProjectDao projectDao, ArrayDao arrayDao, FileDao fileDao, SearchDao searchDao, MageTabImporter mageTabImporter, FileManagementJobSubmitter jobSubmitter,
-            JobFactory jobFactory, Provider<MageTabImporter> mageTabImporterProvider) {
-        this.projectDao = projectDao;
-        this.arrayDao = arrayDao;
-        this.fileDao = fileDao;
-        this.mageTabImporter = mageTabImporter;
-        this.searchDao = searchDao;
-        this.jobSubmitter = jobSubmitter;
-        this.jobFactory = jobFactory;
-        this.mageTabImporterProvider = mageTabImporterProvider;
-    }
 
     private void checkForReparse(CaArrayFileSet fileSet) {
         for (final CaArrayFile caArrayFile : fileSet.getFiles()) {
@@ -227,11 +202,12 @@ public class FileManagementServiceBean implements FileManagementService {
         }
     }
 
-    private void sendImportJobMessage(Project targetProject, CaArrayFileSet fileSet,
-            DataImportOptions dataImportOptions) {
-        ProjectFilesImportJob job = jobFactory.createProjectFilesImportJob(CaArrayUsernameHolder.getUser(),
-                targetProject, fileSet, dataImportOptions);
-        jobSubmitter.submitJob(job);
+    private void
+            sendImportJobMessage(Project targetProject, CaArrayFileSet fileSet, DataImportOptions dataImportOptions) {
+        final ProjectFilesImportJob job =
+                this.jobFactory.createProjectFilesImportJob(CaArrayUsernameHolder.getUser(), targetProject, fileSet,
+                        dataImportOptions);
+        this.jobSubmitter.submitJob(job);
     }
 
     /**
@@ -245,9 +221,9 @@ public class FileManagementServiceBean implements FileManagementService {
     }
 
     private void sendValidationJobMessage(Project project, CaArrayFileSet fileSet) {
-        ProjectFilesValidationJob job = jobFactory.createProjectFilesValidationJob(CaArrayUsernameHolder.getUser(),
-                project, fileSet);
-        jobSubmitter.submitJob(job);
+        final ProjectFilesValidationJob job =
+                this.jobFactory.createProjectFilesValidationJob(CaArrayUsernameHolder.getUser(), project, fileSet);
+        this.jobSubmitter.submitJob(job);
     }
 
     /**
@@ -298,9 +274,9 @@ public class FileManagementServiceBean implements FileManagementService {
     public void importArrayDesignDetails(ArrayDesign arrayDesign) {
         arrayDesign.getDesignFileSet().updateStatus(FileStatus.IN_QUEUE);
         this.projectDao.save(arrayDesign.getDesignFiles());
-        AbstractFileManagementJob job =
-            jobFactory.createArrayDesignFileImportJob(CaArrayUsernameHolder.getUser(), arrayDesign);
-        jobSubmitter.submitJob(job);
+        final AbstractFileManagementJob job =
+                this.jobFactory.createArrayDesignFileImportJob(CaArrayUsernameHolder.getUser(), arrayDesign);
+        this.jobSubmitter.submitJob(job);
     }
 
     /**
@@ -343,10 +319,10 @@ public class FileManagementServiceBean implements FileManagementService {
         checkForReparse(fileSet);
         clearValidationMessages(fileSet);
         fileSet.updateStatus(FileStatus.IN_QUEUE);
-        
-        ProjectFilesReparseJob job = jobFactory.createProjectFilesReparseJob(CaArrayUsernameHolder.getUser(),
-                targetProject, fileSet);
-        jobSubmitter.submitJob(job);
+
+        final ProjectFilesReparseJob job =
+                this.jobFactory.createProjectFilesReparseJob(CaArrayUsernameHolder.getUser(), targetProject, fileSet);
+        this.jobSubmitter.submitJob(job);
 
         LogUtil.logSubsystemExit(LOG);
     }
@@ -378,7 +354,8 @@ public class FileManagementServiceBean implements FileManagementService {
         final CaArrayFileSet inputFiles = new CaArrayFileSet(project);
         inputFiles.add(idfFile);
         addFilesToInputSet(inputFiles, project.getFileSet(), FileTypeRegistry.MAGE_TAB_SDRF);
-        MageTabDocumentSet mTabSet = mageTabImporter.selectRefFiles(project, inputFiles);
+        final MageTabImporter mti = this.mageTabImporterProvider.get();
+        final MageTabDocumentSet mTabSet = mti.selectRefFiles(project, inputFiles);
         // we only care about the sdrf docs connected to the idf
         for (final SdrfDocument sdrfDoc : mTabSet.getIdfDocuments().iterator().next().getSdrfDocuments()) {
             filenames.addAll(getRefFileNames(sdrfDoc));
@@ -395,5 +372,61 @@ public class FileManagementServiceBean implements FileManagementService {
         filenames.addAll(sdrfDoc.getReferencedRawFileNames());
 
         return filenames;
+    }
+
+    /**
+     * @param jobSubmitter the jobSubmitter to set
+     */
+    @Inject
+    public void setJobSubmitter(FileManagementJobSubmitter jobSubmitter) {
+        this.jobSubmitter = jobSubmitter;
+    }
+
+    /**
+     * @param projectDao the projectDao to set
+     */
+    @Inject
+    public void setProjectDao(ProjectDao projectDao) {
+        this.projectDao = projectDao;
+    }
+
+    /**
+     * @param arrayDao the arrayDao to set
+     */
+    @Inject
+    public void setArrayDao(ArrayDao arrayDao) {
+        this.arrayDao = arrayDao;
+    }
+
+    /**
+     * @param fileDao the fileDao to set
+     */
+    @Inject
+    public void setFileDao(FileDao fileDao) {
+        this.fileDao = fileDao;
+    }
+
+    /**
+     * @param searchDao the searchDao to set
+     */
+    @Inject
+    public void setSearchDao(SearchDao searchDao) {
+        this.searchDao = searchDao;
+    }
+
+    /**
+     * @param jobFactory the jobFactory to set
+     */
+    @Inject
+    public void setJobFactory(JobFactory jobFactory) {
+        this.jobFactory = jobFactory;
+    }
+
+    /**
+     * @param mageTabImporterProvider the mageTabImporterProvider to set
+     */
+    @Inject
+    public void setMageTabImporterProvider(Provider<MageTabImporter> mageTabImporterProvider) {
+        this.mageTabImporterProvider = mageTabImporterProvider;
     }
 }

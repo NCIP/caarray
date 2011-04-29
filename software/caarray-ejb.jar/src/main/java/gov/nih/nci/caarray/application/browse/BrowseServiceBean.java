@@ -100,7 +100,7 @@ import com.google.inject.Inject;
 
 /**
  * @author Winston Cheng
- *
+ * 
  */
 @Local(BrowseService.class)
 @Stateless
@@ -108,54 +108,61 @@ import com.google.inject.Inject;
 @Interceptors(InjectionInterceptor.class)
 public class BrowseServiceBean implements BrowseService {
     private BrowseDao browseDao;
-    
+
     /**
      * 
      * @param browseDao the browseDao dependency
      */
     @Inject
-    public void setDependencies(BrowseDao browseDao) {
+    public void setBrowseDao(BrowseDao browseDao) {
         this.browseDao = browseDao;
     }
- 
+
     /**
      * {@inheritDoc}
      */
+    @Override
     public int countByBrowseCategory(BrowseCategory cat) {
-        return browseDao.countByBrowseCategory(cat);
+        return this.browseDao.countByBrowseCategory(cat);
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public int hybridizationCount() {
-        return browseDao.hybridizationCount();
+        return this.browseDao.hybridizationCount();
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public int userCount() {
-        return browseDao.userCount();
+        return this.browseDao.userCount();
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public List<Object[]> tabList(BrowseCategory cat) {
-        return browseDao.tabList(cat);
-    }
-    /**
-     * {@inheritDoc}
-     */
-    public List<Project> browseList(PageSortParams<Project> params, BrowseCategory cat, Number fieldId) {
-        return browseDao.browseList(params, cat, fieldId);
+        return this.browseDao.tabList(cat);
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
+    public List<Project> browseList(PageSortParams<Project> params, BrowseCategory cat, Number fieldId) {
+        return this.browseDao.browseList(params, cat, fieldId);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public int browseCount(BrowseCategory cat, Number fieldId) {
-        return browseDao.browseCount(cat, fieldId);
+        return this.browseDao.browseCount(cat, fieldId);
     }
 }

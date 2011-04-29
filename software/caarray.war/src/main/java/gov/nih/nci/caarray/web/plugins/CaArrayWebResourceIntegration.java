@@ -119,7 +119,7 @@ public class CaArrayWebResourceIntegration implements WebResourceIntegration, Se
     };
 
     /**
-     * Constructor
+     * Constructor.
      * 
      * @param pluginAccessor PluginAccessor instance to use for locating plugins
      */

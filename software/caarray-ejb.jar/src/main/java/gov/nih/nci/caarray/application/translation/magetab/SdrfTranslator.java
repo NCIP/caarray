@@ -161,7 +161,7 @@ import com.google.common.collect.Collections2;
 /**
  * Translates entities in SDRF documents into caArray entities.
  */
-@SuppressWarnings({ "PMD.CyclomaticComplexity", "PMD.TooManyMethods", "PMD.ExcessiveClassLength" })
+@SuppressWarnings({"PMD.CyclomaticComplexity", "PMD.TooManyMethods", "PMD.ExcessiveClassLength" })
 final class SdrfTranslator extends AbstractTranslator {
 
     private static final Logger LOG = Logger.getLogger(SdrfTranslator.class);
@@ -170,8 +170,10 @@ final class SdrfTranslator extends AbstractTranslator {
     private static final String GENERATED_EXTRACT_PREFIX = "GeneratedExtract.";
     private static final String GENERATED_LABELED_EXTRACT_PREFIX = "GeneratedLabeledExtract.";
 
-    private final Map<AbstractSampleDataRelationshipNode, AbstractCaArrayEntity> nodeTranslations = new HashMap<AbstractSampleDataRelationshipNode, AbstractCaArrayEntity>();
-    private final Map<AbstractSampleDataRelationshipNode, Boolean> isNodeLinked = new HashMap<AbstractSampleDataRelationshipNode, Boolean>();
+    private final Map<AbstractSampleDataRelationshipNode, AbstractCaArrayEntity> nodeTranslations =
+            new HashMap<AbstractSampleDataRelationshipNode, AbstractCaArrayEntity>();
+    private final Map<AbstractSampleDataRelationshipNode, Boolean> isNodeLinked =
+            new HashMap<AbstractSampleDataRelationshipNode, Boolean>();
     private final List<Source> allSources = new ArrayList<Source>();
     private final List<Sample> allSamples = new ArrayList<Sample>();
     private final List<Extract> allExtracts = new ArrayList<Extract>();
@@ -250,9 +252,10 @@ final class SdrfTranslator extends AbstractTranslator {
     }
 
     private void addFileReferenceError(CaArrayFile caArrayFile, boolean referencedAsAny, String correctColumn) {
-        final String message = referencedAsAny ? "This file is not correctly referenced from an SDRF file. "
-                + "It should be referenced using an " + correctColumn + " column"
-                : "This data file is not referenced from an SDRF file.";
+        final String message =
+                referencedAsAny ? "This file is not correctly referenced from an SDRF file. "
+                        + "It should be referenced using an " + correctColumn + " column"
+                        : "This data file is not referenced from an SDRF file.";
         getDocumentSet().getValidationResult().addMessage(caArrayFile.getName(), Type.ERROR, message);
     }
 
@@ -262,8 +265,9 @@ final class SdrfTranslator extends AbstractTranslator {
     }
 
     private void validateSamples(SdrfDocument document, Set<String> externalIds) {
-        for (gov.nih.nci.caarray.magetab.sdrf.AbstractBioMaterial sdrfBm : document.getAllBiomaterials()) {
-            if (null != sdrfBm.getMaterialType() && null != sdrfBm.getMaterialType().getTermSource()
+        for (final gov.nih.nci.caarray.magetab.sdrf.AbstractBioMaterial sdrfBm : document.getAllBiomaterials()) {
+            if (null != sdrfBm.getMaterialType()
+                    && null != sdrfBm.getMaterialType().getTermSource()
                     && !ExperimentOntology.MGED_ONTOLOGY.getOntologyName().equals(
                             sdrfBm.getMaterialType().getTermSource().getName())) {
                 document.addErrorMessage("The Material Type '" + sdrfBm.getMaterialType().getValue()
@@ -271,10 +275,11 @@ final class SdrfTranslator extends AbstractTranslator {
                         + "', which is invalid, as all Material " + "Types must come from the '"
                         + ExperimentOntology.MGED_ONTOLOGY.getOntologyName() + "' Term Source.");
             }
-            for (Characteristic sdrfCharacteristic : sdrfBm.getCharacteristics()) {
-                String category = sdrfCharacteristic.getCategory();
-                boolean isExternalId = ExperimentOntologyCategory.EXTERNAL_SAMPLE_ID.getCategoryName().equals(category)
-                        || ExperimentOntologyCategory.EXTERNAL_ID.getCategoryName().equals(category); 
+            for (final Characteristic sdrfCharacteristic : sdrfBm.getCharacteristics()) {
+                final String category = sdrfCharacteristic.getCategory();
+                final boolean isExternalId =
+                        ExperimentOntologyCategory.EXTERNAL_SAMPLE_ID.getCategoryName().equals(category)
+                                || ExperimentOntologyCategory.EXTERNAL_ID.getCategoryName().equals(category);
                 if (isExternalId && !StringUtils.isEmpty(sdrfCharacteristic.getValue())) {
                     final boolean added = externalIds.add(sdrfCharacteristic.getValue());
                     if (!added) {
@@ -284,9 +289,8 @@ final class SdrfTranslator extends AbstractTranslator {
                     }
                 }
                 if (ExperimentOntologyCategory.ORGANISM.getCategoryName().equalsIgnoreCase(category)
-                        && (null != sdrfCharacteristic.getTerm().getTermSource()
-                                && (!sdrfCharacteristic.getTerm().getTermSource().getName().equals(
-                                ExperimentOntology.NCBI.getOntologyName())))) {
+                        && (null != sdrfCharacteristic.getTerm().getTermSource() && (!sdrfCharacteristic.getTerm()
+                                .getTermSource().getName().equals(ExperimentOntology.NCBI.getOntologyName())))) {
                     document.addErrorMessage("The Characteristics [" + category + "] associated Term Source '"
                             + sdrfCharacteristic.getTerm().getTermSource().getName() + "' is invalid.  It must be '"
                             + ExperimentOntology.NCBI.getOntologyName() + "', or the Term Source should be omitted"
@@ -299,8 +303,8 @@ final class SdrfTranslator extends AbstractTranslator {
 
     private Set<String> getExistingExternalIdsForCurrentExperiment() {
         final Set<String> results = new HashSet<String>();
-        final Set<AbstractBioMaterial> persistedBms = getProjectDao().getUnfilteredBiomaterialsForProject(
-                getFileSet().getProjectId());
+        final Set<AbstractBioMaterial> persistedBms =
+                getProjectDao().getUnfilteredBiomaterialsForProject(getFileSet().getProjectId());
         for (final AbstractBioMaterial bm : persistedBms) {
             if (bm.getExternalId() != null && !results.add(bm.getExternalId())) {
                 throw new IllegalStateException("System contains samples with duplicate external sample id " + "("
@@ -312,35 +316,27 @@ final class SdrfTranslator extends AbstractTranslator {
     }
 
     private void validateArrayDesigns(SdrfDocument document) {
-        Set<String> namesOfArrayDesignsForExperiment = new HashSet<String>();
+        final Set<String> namesOfArrayDesignsForExperiment = new HashSet<String>();
         if (null != this.experiment) {
-            for (ArrayDesign experimentArrayDesign : this.experiment
-                    .getArrayDesigns()) {
-                namesOfArrayDesignsForExperiment.add(experimentArrayDesign
-                        .getName());
+            for (final ArrayDesign experimentArrayDesign : this.experiment.getArrayDesigns()) {
+                namesOfArrayDesignsForExperiment.add(experimentArrayDesign.getName());
             }
         }
-        for (gov.nih.nci.caarray.magetab.sdrf.ArrayDesign sdrfArrayDesign : document
-                .getAllArrayDesigns()) {
-            String arrayDesignName = sdrfArrayDesign.getValue();
-            ArrayDesign modelArrayDesign = new ArrayDesign();
+        for (final gov.nih.nci.caarray.magetab.sdrf.ArrayDesign sdrfArrayDesign : document.getAllArrayDesigns()) {
+            final String arrayDesignName = sdrfArrayDesign.getValue();
+            final ArrayDesign modelArrayDesign = new ArrayDesign();
             modelArrayDesign.setLsidForEntity(arrayDesignName);
-            List<ArrayDesign> matchingArrayDesignsAlreadyInSystemList = getDaoFactory()
-                    .getArrayDao().queryEntityByExample(modelArrayDesign);
-            if (null == matchingArrayDesignsAlreadyInSystemList
-                    || matchingArrayDesignsAlreadyInSystemList.isEmpty()) {
-                document.addErrorMessage(
-                        String.format(MessageTemplates.NON_EXISTING_ARRAY_DESIGN_ERROR_MESSAGE_TEMPLATE,
-                                arrayDesignName));
+            final List<ArrayDesign> matchingArrayDesignsAlreadyInSystemList =
+                    getDaoFactory().getArrayDao().queryEntityByExample(modelArrayDesign);
+            if (null == matchingArrayDesignsAlreadyInSystemList || matchingArrayDesignsAlreadyInSystemList.isEmpty()) {
+                document.addErrorMessage(String.format(
+                        MessageTemplates.NON_EXISTING_ARRAY_DESIGN_ERROR_MESSAGE_TEMPLATE, arrayDesignName));
             }
             String nameToCheck = arrayDesignName;
-            if (null != matchingArrayDesignsAlreadyInSystemList
-                    && !matchingArrayDesignsAlreadyInSystemList.isEmpty()) {
-                nameToCheck = matchingArrayDesignsAlreadyInSystemList.get(0)
-                        .getName();
+            if (null != matchingArrayDesignsAlreadyInSystemList && !matchingArrayDesignsAlreadyInSystemList.isEmpty()) {
+                nameToCheck = matchingArrayDesignsAlreadyInSystemList.get(0).getName();
             }
-            if (!namesOfArrayDesignsForExperiment.isEmpty()
-                    && !namesOfArrayDesignsForExperiment.contains(nameToCheck)) {
+            if (!namesOfArrayDesignsForExperiment.isEmpty() && !namesOfArrayDesignsForExperiment.contains(nameToCheck)) {
                 document.addErrorMessage(String.format(
                         MessageTemplates.ARRAY_DESIGN_NOT_ASSOCIATED_WITH_EXPERIMENT_ERROR_MESSAGE_TEMPLATE,
                         nameToCheck));
@@ -464,8 +460,8 @@ final class SdrfTranslator extends AbstractTranslator {
     private void translateLabeledExtracts(SdrfDocument document) {
         for (final gov.nih.nci.caarray.magetab.sdrf.LabeledExtract sdrfLabeledExtract : document
                 .getAllLabeledExtracts()) {
-            LabeledExtract labeledExtract = getProjectDao().getLabeledExtractForExperiment(this.experiment,
-                    sdrfLabeledExtract.getName());
+            LabeledExtract labeledExtract =
+                    getProjectDao().getLabeledExtractForExperiment(this.experiment, sdrfLabeledExtract.getName());
             if (labeledExtract == null) {
                 labeledExtract = new LabeledExtract();
             }
@@ -535,25 +531,26 @@ final class SdrfTranslator extends AbstractTranslator {
             bioMaterial.setDescription(sdrfBiomaterial.getDescription());
             for (final gov.nih.nci.caarray.magetab.ProtocolApplication mageTabProtocolApplication : sdrfBiomaterial
                     .getProtocolApplications()) {
-                final ProtocolApplication protocolApplication = getProtocolApplicationFromMageTabProtocolApplication(mageTabProtocolApplication);
+                final ProtocolApplication protocolApplication =
+                        getProtocolApplicationFromMageTabProtocolApplication(mageTabProtocolApplication);
                 bioMaterial.addProtocolApplication(protocolApplication);
             }
         }
-        Term materialTypeTerm = getTerm(sdrfBiomaterial.getMaterialType());
+        final Term materialTypeTerm = getTerm(sdrfBiomaterial.getMaterialType());
         if (null != materialTypeTerm && null == materialTypeTerm.getSource()) {
             materialTypeTerm.setSource(this.vocabularyService.getSource(
                     ExperimentOntology.MGED_ONTOLOGY.getOntologyName(), ExperimentOntology.MGED_ONTOLOGY.getVersion()));
         }
         bioMaterial.setMaterialType(materialTypeTerm);
-        for (Characteristic sdrfCharacteristic : sdrfBiomaterial.getCharacteristics()) {
+        for (final Characteristic sdrfCharacteristic : sdrfBiomaterial.getCharacteristics()) {
             processSdrfCharacteristic(bioMaterial, sdrfCharacteristic);
         }
     }
-    
+
     private void processSdrfCharacteristic(final AbstractBioMaterial bioMaterial,
             final Characteristic sdrfCharacteristic) {
-        AbstractCharacteristic characteristic = translateCharacteristic(sdrfCharacteristic);
-        String category = characteristic.getCategory().getName();
+        final AbstractCharacteristic characteristic = translateCharacteristic(sdrfCharacteristic);
+        final String category = characteristic.getCategory().getName();
         if (ExperimentOntologyCategory.ORGANISM_PART.getCategoryName().equals(category)) {
             bioMaterial.setTissueSite(forceToTerm(characteristic));
         } else if (ExperimentOntologyCategory.CELL_TYPE.getCategoryName().equals(category)) {
@@ -561,17 +558,17 @@ final class SdrfTranslator extends AbstractTranslator {
         } else if (ExperimentOntologyCategory.DISEASE_STATE.getCategoryName().equals(category)) {
             bioMaterial.setDiseaseState(forceToTerm(characteristic));
         } else if (ExperimentOntologyCategory.ORGANISM.getCategoryName().equals(category)) {
-            Organism organism = getOrganism(forceToTerm(characteristic));
+            final Organism organism = getOrganism(forceToTerm(characteristic));
             if (null == organism.getTermSource()) {
-                organism.setTermSource(this.vocabularyService.getSource(
-                        ExperimentOntology.NCBI.getOntologyName(), ExperimentOntology.NCBI.getVersion()));
+                organism.setTermSource(this.vocabularyService.getSource(ExperimentOntology.NCBI.getOntologyName(),
+                        ExperimentOntology.NCBI.getVersion()));
             }
             bioMaterial.setOrganism(organism);
         } else if (ExperimentOntologyCategory.EXTERNAL_SAMPLE_ID.getCategoryName().equals(category)
                 || ExperimentOntologyCategory.EXTERNAL_ID.getCategoryName().equals(category)) {
             bioMaterial.setExternalId(sdrfCharacteristic.getValue());
         } else {
-            for (AbstractCharacteristic existingCharacteristic : bioMaterial.getCharacteristics()) {
+            for (final AbstractCharacteristic existingCharacteristic : bioMaterial.getCharacteristics()) {
                 if (existingCharacteristic.getCategory().equals(characteristic.getCategory())) {
                     bioMaterial.getCharacteristics().remove(existingCharacteristic);
                     getProjectDao().remove(existingCharacteristic);
@@ -596,8 +593,9 @@ final class SdrfTranslator extends AbstractTranslator {
     }
 
     private Term getUnknownProtocolType() {
-        final TermSource source = this.vocabularyService.getSource(ExperimentOntology.MGED_ONTOLOGY.getOntologyName(),
-                ExperimentOntology.MGED_ONTOLOGY.getVersion());
+        final TermSource source =
+                this.vocabularyService.getSource(ExperimentOntology.MGED_ONTOLOGY.getOntologyName(),
+                        ExperimentOntology.MGED_ONTOLOGY.getVersion());
         return this.vocabularyService.getTerm(source, VocabularyService.UNKNOWN_PROTOCOL_TYPE_NAME);
     }
 
@@ -645,8 +643,9 @@ final class SdrfTranslator extends AbstractTranslator {
         if (mageTabProtocol.getTermSource() != null) {
             termSource = getTranslationResult().getSource(mageTabProtocol.getTermSource());
         } else {
-            termSource = this.vocabularyService.getSource(ExperimentOntology.MGED_ONTOLOGY.getOntologyName(),
-                    ExperimentOntology.MGED_ONTOLOGY.getVersion());
+            termSource =
+                    this.vocabularyService.getSource(ExperimentOntology.MGED_ONTOLOGY.getOntologyName(),
+                            ExperimentOntology.MGED_ONTOLOGY.getVersion());
         }
         Protocol p = new Protocol(mageTabProtocol.getName(), type, termSource);
         p.setContact(mageTabProtocol.getContact());
@@ -705,8 +704,9 @@ final class SdrfTranslator extends AbstractTranslator {
 
     @SuppressWarnings("PMD.EmptyCatchBlock")
     private AbstractCharacteristic translateCharacteristic(Characteristic sdrfCharacteristic) {
-        final Category category = TermTranslator.getOrCreateCategory(this.vocabularyService,
-                this.getTranslationResult(), sdrfCharacteristic.getCategory());
+        final Category category =
+                TermTranslator.getOrCreateCategory(this.vocabularyService, this.getTranslationResult(),
+                        sdrfCharacteristic.getCategory());
 
         final Term unit = getTerm(sdrfCharacteristic.getUnit());
         AbstractCharacteristic chr = null;
@@ -797,7 +797,8 @@ final class SdrfTranslator extends AbstractTranslator {
             caArrayData.setName(fileName);
             caArrayData.setDataFile(dataFile);
 
-            final Set<gov.nih.nci.caarray.magetab.ProtocolApplication> all = new HashSet<gov.nih.nci.caarray.magetab.ProtocolApplication>();
+            final Set<gov.nih.nci.caarray.magetab.ProtocolApplication> all =
+                    new HashSet<gov.nih.nci.caarray.magetab.ProtocolApplication>();
             all.addAll(sdrfData.getProtocolApplications());
             for (final DerivedArrayDataFile df : sdrfData.getSuccessorDerivedArrayDataFiles()) {
                 all.addAll(getAllProtocols(df.getPredecessorNormalizations()));
@@ -845,8 +846,8 @@ final class SdrfTranslator extends AbstractTranslator {
 
     private void setDerivedFromData(gov.nih.nci.caarray.magetab.sdrf.AbstractSampleDataRelationshipNode sdrfData,
             DerivedArrayData caArrayData) {
-        final List<AbstractSampleDataRelationshipNode> allArrayData = new ArrayList<AbstractSampleDataRelationshipNode>(
-                sdrfData.getPredecessorArrayDataFiles());
+        final List<AbstractSampleDataRelationshipNode> allArrayData =
+                new ArrayList<AbstractSampleDataRelationshipNode>(sdrfData.getPredecessorArrayDataFiles());
 
         allArrayData.addAll(sdrfData.getPredecessorArrayDataMatrixFiles());
         allArrayData.addAll(sdrfData.getPredecessorDerivedArrayDataFiles());
@@ -861,7 +862,8 @@ final class SdrfTranslator extends AbstractTranslator {
     private void associateProtocolApplications(Collection<ProtocolApplication> dest,
             Collection<gov.nih.nci.caarray.magetab.ProtocolApplication> sdrfProtocolapplications) {
         for (final gov.nih.nci.caarray.magetab.ProtocolApplication mageTabProtocolApplication : sdrfProtocolapplications) {
-            final ProtocolApplication protocolApplication = getProtocolApplicationFromMageTabProtocolApplication(mageTabProtocolApplication);
+            final ProtocolApplication protocolApplication =
+                    getProtocolApplicationFromMageTabProtocolApplication(mageTabProtocolApplication);
             dest.add(protocolApplication);
 
         }
@@ -869,7 +871,8 @@ final class SdrfTranslator extends AbstractTranslator {
 
     private static Set<gov.nih.nci.caarray.magetab.ProtocolApplication> getAllProtocols(
             Set<? extends AbstractSampleDataRelationshipNode> nodes) {
-        final HashSet<gov.nih.nci.caarray.magetab.ProtocolApplication> all = new HashSet<gov.nih.nci.caarray.magetab.ProtocolApplication>();
+        final HashSet<gov.nih.nci.caarray.magetab.ProtocolApplication> all =
+                new HashSet<gov.nih.nci.caarray.magetab.ProtocolApplication>();
         for (final AbstractSampleDataRelationshipNode n : nodes) {
             all.addAll(n.getProtocolApplications());
         }
@@ -904,7 +907,8 @@ final class SdrfTranslator extends AbstractTranslator {
     }
 
     // Link a node with one successor.
-    private void linkTwoNodes(AbstractSampleDataRelationshipNode leftNode, AbstractSampleDataRelationshipNode rightNode) {
+    private void
+            linkTwoNodes(AbstractSampleDataRelationshipNode leftNode, AbstractSampleDataRelationshipNode rightNode) {
         final AbstractCaArrayObject leftCaArrayNode = this.nodeTranslations.get(leftNode);
         final AbstractCaArrayObject rightCaArrayNode = this.nodeTranslations.get(rightNode);
         final SdrfNodeType leftNodeType = leftNode.getNodeType();
@@ -1020,7 +1024,8 @@ final class SdrfTranslator extends AbstractTranslator {
             if (rightNodeType.equals(SdrfNodeType.EXTRACT)) {
                 linkSampleAndExtract((Sample) leftCaArrayNode, (Extract) rightCaArrayNode);
             } else {
-                final Extract generatedExtract = generateExtractAndLink(baseGeneratedNodeName, (Sample) leftCaArrayNode);
+                final Extract generatedExtract =
+                        generateExtractAndLink(baseGeneratedNodeName, (Sample) leftCaArrayNode);
                 reassociateProtocolApplications(generatedExtract, protocolApplications);
                 linkBioMaterial(generatedExtract, rightCaArrayNode, SdrfNodeType.EXTRACT, rightNodeType,
                         baseGeneratedNodeName, protocolApplications);
@@ -1029,8 +1034,8 @@ final class SdrfTranslator extends AbstractTranslator {
             if (rightNodeType.equals(SdrfNodeType.LABELED_EXTRACT)) {
                 linkExtractAndLabeledExtract((Extract) leftCaArrayNode, (LabeledExtract) rightCaArrayNode);
             } else {
-                final LabeledExtract generatedLabeledExtract = generateLabeledExtractAndLink(baseGeneratedNodeName,
-                        (Extract) leftCaArrayNode);
+                final LabeledExtract generatedLabeledExtract =
+                        generateLabeledExtractAndLink(baseGeneratedNodeName, (Extract) leftCaArrayNode);
                 reassociateProtocolApplications(generatedLabeledExtract, protocolApplications);
                 linkBioMaterial(generatedLabeledExtract, rightCaArrayNode, SdrfNodeType.LABELED_EXTRACT, rightNodeType,
                         baseGeneratedNodeName, protocolApplications);
@@ -1097,8 +1102,8 @@ final class SdrfTranslator extends AbstractTranslator {
         final String labeledExtractName = GENERATED_LABELED_EXTRACT_PREFIX + baseGeneratedNodeName;
         LabeledExtract generatedLabeledExtract = (LabeledExtract) this.generatedNodes.get(labeledExtractName);
         if (generatedLabeledExtract == null) {
-            generatedLabeledExtract = getProjectDao().getLabeledExtractForExperiment(this.experiment,
-                    labeledExtractName);
+            generatedLabeledExtract =
+                    getProjectDao().getLabeledExtractForExperiment(this.experiment, labeledExtractName);
             if (generatedLabeledExtract == null) {
                 generatedLabeledExtract = new LabeledExtract();
                 generatedLabeledExtract.setName(labeledExtractName);

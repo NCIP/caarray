@@ -124,7 +124,7 @@ import com.google.inject.Inject;
 @Stateless
 @TransactionAttribute(TransactionAttributeType.SUPPORTS)
 @TransactionTimeout(ArrayDesignServiceBean.TIMEOUT_SECONDS)
-@SuppressWarnings({ "PMD.CyclomaticComplexity", "PMD.TooManyMethods" })
+@SuppressWarnings({"PMD.CyclomaticComplexity", "PMD.TooManyMethods" })
 @Interceptors(InjectionInterceptor.class)
 public class ArrayDesignServiceBean implements ArrayDesignService {
     private static final Logger LOG = Logger.getLogger(ArrayDesignServiceBean.class);
@@ -135,32 +135,6 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
     private SearchDao searchDao;
     private ContactDao contactDao;
     private ArrayDesignPlatformFacade arrayDesignPlatformFacade;
-
-    /**
-     * 
-     * @param arrayDao the ArrayDao dependency
-     * @param searchDao the SearchDao dependency
-     * @param contactDao the ContactDao dependency
-     * @param arrayDesignPlatformFacade the ArrayDesignPlatformFacade dependency
-     */
-    @Inject
-    public void setDependencies(ArrayDao arrayDao, SearchDao searchDao, ContactDao contactDao,
-            ArrayDesignPlatformFacade arrayDesignPlatformFacade) {
-        LOG.debug("Constructing");
-        this.arrayDao = arrayDao;
-        this.searchDao = searchDao;
-        this.contactDao = contactDao;
-        this.arrayDesignPlatformFacade = arrayDesignPlatformFacade;
-    }
-
-    /**
-     * @param arrayDesignPlatformFacade the arrayDesignPlatformFacade to set
-     */
-    @Inject
-    public void setPlatformDependencies(ArrayDesignPlatformFacade arrayDesignPlatformFacade) {
-        LOG.debug("Setting Platform Deps");
-        this.arrayDesignPlatformFacade = arrayDesignPlatformFacade;
-    }
 
     /**
      * {@inheritDoc}
@@ -211,8 +185,8 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
     @Override
     public boolean isDuplicate(ArrayDesign arrayDesign) {
         final List<ArrayDesign> providerDesigns = this.arrayDao.getArrayDesigns(arrayDesign.getProvider(), null, false);
-        for (final ArrayDesign providerDesign : providerDesigns) {
-            if (!arrayDesign.equals(providerDesign) && arrayDesign.getName().equalsIgnoreCase(providerDesign.getName())) {
+        for (final ArrayDesign provDesign : providerDesigns) {
+            if (!arrayDesign.equals(provDesign) && arrayDesign.getName().equalsIgnoreCase(provDesign.getName())) {
                 return true;
             }
         }
@@ -339,7 +313,8 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
      */
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public ArrayDesign saveArrayDesign(ArrayDesign arrayDesign) throws IllegalAccessException, InvalidDataFileException {
+    public ArrayDesign saveArrayDesign(ArrayDesign arrayDesign) 
+    throws IllegalAccessException, InvalidDataFileException {
         LogUtil.logSubsystemEntry(LOG, arrayDesign);
         final FileStatus fileSetStatus = arrayDesign.getDesignFileSet().getStatus();
         if (fileSetStatus == FileStatus.IMPORTING || fileSetStatus == FileStatus.IMPORTED) {
@@ -427,5 +402,37 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
     @Override
     public List<ArrayDesign> getArrayDesignsWithReImportableFiles() {
         return this.arrayDao.getArrayDesignsWithReImportable();
+    }
+
+    /**
+     * @param arrayDao the arrayDao to set
+     */
+    @Inject
+    public void setArrayDao(ArrayDao arrayDao) {
+        this.arrayDao = arrayDao;
+    }
+
+    /**
+     * @param searchDao the searchDao to set
+     */
+    @Inject
+    public void setSearchDao(SearchDao searchDao) {
+        this.searchDao = searchDao;
+    }
+
+    /**
+     * @param contactDao the contactDao to set
+     */
+    @Inject
+    public void setContactDao(ContactDao contactDao) {
+        this.contactDao = contactDao;
+    }
+
+    /**
+     * @param arrayDesignPlatformFacade the arrayDesignPlatformFacade to set
+     */
+    @Inject
+    public void setArrayDesignPlatformFacade(ArrayDesignPlatformFacade arrayDesignPlatformFacade) {
+        this.arrayDesignPlatformFacade = arrayDesignPlatformFacade;
     }
 }

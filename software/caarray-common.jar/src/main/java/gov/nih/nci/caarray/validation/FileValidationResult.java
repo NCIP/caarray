@@ -124,10 +124,6 @@ public class FileValidationResult implements Serializable {
     private Set<ValidationMessage> messageSet = new HashSet<ValidationMessage>();
     private final transient Map<String, Object> validationProperties = new HashMap<String, Object>();
 
-    public FileValidationResult() {
-        super();
-    }
-
     /**
      * Returns true if all the documents in the set were valid.
      * 
@@ -221,19 +217,19 @@ public class FileValidationResult implements Serializable {
         return this.messageSet;
     }
 
-    @SuppressWarnings({ UNUSED, "PMD.UnusedPrivateMethod" })
+    @SuppressWarnings({UNUSED, "PMD.UnusedPrivateMethod" })
     private void setMessageSet(Set<ValidationMessage> messageSet) {
         this.messageSet = messageSet;
     }
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @SuppressWarnings({ UNUSED, "PMD.UnusedPrivateMethod" })
+    @SuppressWarnings({UNUSED, "PMD.UnusedPrivateMethod" })
     private Long getId() {
         return this.id;
     }
 
-    @SuppressWarnings({ UNUSED, "PMD.UnusedPrivateMethod" })
+    @SuppressWarnings({UNUSED, "PMD.UnusedPrivateMethod" })
     private void setId(Long id) {
         this.id = id;
     }

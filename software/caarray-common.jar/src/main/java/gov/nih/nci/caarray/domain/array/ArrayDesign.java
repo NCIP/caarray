@@ -129,10 +129,10 @@ import com.google.common.collect.Iterables;
  * The design details for a type of microarray.
  */
 @Entity
-@Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "name", "provider" }) })
+@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"name", "provider" }) })
 @SuppressWarnings("PMD.TooManyFields")
 public class ArrayDesign extends AbstractCaArrayEntity {
-    
+
     private static final long serialVersionUID = 1234567890L;
 
     private String name;
@@ -160,7 +160,8 @@ public class ArrayDesign extends AbstractCaArrayEntity {
     }
 
     /**
-     * Copy constructor.  The newly created array design will be a shallow copy of the given design.
+     * Copy constructor. The newly created array design will be a shallow copy of the given design.
+     * 
      * @param arrayDesign existing array design on which to base the new array design.
      */
     public ArrayDesign(ArrayDesign arrayDesign) {
@@ -185,18 +186,18 @@ public class ArrayDesign extends AbstractCaArrayEntity {
 
     /**
      * Gets the name.
-     *
+     * 
      * @return the name
      */
     @NotNull
     @Length(min = 1, max = DEFAULT_STRING_COLUMN_SIZE)
     public String getName() {
-        return name;
+        return this.name;
     }
 
     /**
      * Sets the name.
-     *
+     * 
      * @param nameVal the name
      */
     public void setName(final String nameVal) {
@@ -205,84 +206,88 @@ public class ArrayDesign extends AbstractCaArrayEntity {
 
     /**
      * Gets the numberOfFeatures.
-     *
+     * 
      * @return the numberOfFeatures
      */
     public Integer getNumberOfFeatures() {
-        return numberOfFeatures;
+        return this.numberOfFeatures;
     }
 
     /**
      * Sets the numberOfFeatures.
-     *
+     * 
      * @param numberOfFeaturesVal the numberOfFeatures
      */
     public void setNumberOfFeatures(final Integer numberOfFeaturesVal) {
         this.numberOfFeatures = numberOfFeaturesVal;
     }
+
     /**
      * Gets the polymerType.
-     *
+     * 
      * @return the polymerType
      */
     @ManyToOne
     @Cascade(CascadeType.SAVE_UPDATE)
     @ForeignKey(name = "arraydesign_polymer_fk")
     public Term getPolymerType() {
-        return polymerType;
+        return this.polymerType;
     }
 
     /**
      * Sets the polymerType.
-     *
+     * 
      * @param polymerTypeVal the polymerType
      */
     public void setPolymerType(final Term polymerTypeVal) {
         this.polymerType = polymerTypeVal;
     }
+
     /**
      * Gets the substrateType.
-     *
+     * 
      * @return the substrateType
      */
     @ManyToOne
     @Cascade(CascadeType.SAVE_UPDATE)
     @ForeignKey(name = "arraydesign_substrae_fk")
     public Term getSubstrateType() {
-        return substrateType;
+        return this.substrateType;
     }
 
     /**
      * Sets the substrateType.
-     *
+     * 
      * @param substrateTypeVal the substrateType
      */
     public void setSubstrateType(final Term substrateTypeVal) {
         this.substrateType = substrateTypeVal;
     }
+
     /**
      * Gets the surfaceType.
-     *
+     * 
      * @return the surfaceType
      */
     @ManyToOne
     @Cascade(CascadeType.SAVE_UPDATE)
     @ForeignKey(name = "arraydesign_surface_fk")
     public Term getSurfaceType() {
-        return surfaceType;
+        return this.surfaceType;
     }
 
     /**
      * Sets the surfaceType.
-     *
+     * 
      * @param surfaceTypeVal the surfaceType
      */
     public void setSurfaceType(final Term surfaceTypeVal) {
         this.surfaceType = surfaceTypeVal;
     }
+
     /**
      * Gets the technologyType.
-     *
+     * 
      * @return the technologyType
      */
     @NotNull
@@ -290,31 +295,32 @@ public class ArrayDesign extends AbstractCaArrayEntity {
     @Cascade(CascadeType.SAVE_UPDATE)
     @ForeignKey(name = "arraydesign_technology_fk")
     public Term getTechnologyType() {
-        return technologyType;
+        return this.technologyType;
     }
 
     /**
      * Sets the technologyType.
-     *
+     * 
      * @param technologyTypeVal the technologyType
      */
     public void setTechnologyType(final Term technologyTypeVal) {
         this.technologyType = technologyTypeVal;
     }
+
     /**
      * Gets the version.
-     *
+     * 
      * @return the version
      */
     @NotNull
     @Column(length = DEFAULT_STRING_COLUMN_SIZE)
     public String getVersion() {
-        return version;
+        return this.version;
     }
 
     /**
      * Sets the version.
-     *
+     * 
      * @param versionVal the version
      */
     public void setVersion(final String versionVal) {
@@ -323,7 +329,7 @@ public class ArrayDesign extends AbstractCaArrayEntity {
 
     /**
      * Gets the provider.
-     *
+     * 
      * @return the provider
      */
     @NotNull
@@ -331,12 +337,12 @@ public class ArrayDesign extends AbstractCaArrayEntity {
     @Cascade(CascadeType.SAVE_UPDATE)
     @ForeignKey(name = "arraydesign_provider_fk")
     public Organization getProvider() {
-        return provider;
+        return this.provider;
     }
 
     /**
      * Sets the provider.
-     *
+     * 
      * @param providerVal the provider
      */
     public void setProvider(final Organization providerVal) {
@@ -345,19 +351,19 @@ public class ArrayDesign extends AbstractCaArrayEntity {
 
     /**
      * Gets the printing.
-     *
+     * 
      * @return the printing
      */
     @ManyToOne
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     @ForeignKey(name = "arraydesign_printing_fk")
     public ProtocolApplication getPrinting() {
-        return printing;
+        return this.printing;
     }
 
     /**
      * Sets the printing.
-     *
+     * 
      * @param printingVal the printing
      */
     public void setPrinting(final ProtocolApplication printingVal) {
@@ -370,14 +376,12 @@ public class ArrayDesign extends AbstractCaArrayEntity {
     @NotNull
     @Size(min = 1)
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "array_design_design_file",
-               joinColumns = @JoinColumn(name = "array_design"),
-               inverseJoinColumns = @JoinColumn(name = "design_file"))
-    @ForeignKey(name = "array_design_fk",
-                inverseName = "design_file_fk")
+    @JoinTable(name = "array_design_design_file", joinColumns = @JoinColumn(name = "array_design"),
+        inverseJoinColumns = @JoinColumn(name = "design_file"))
+    @ForeignKey(name = "array_design_fk", inverseName = "design_file_fk")
     @Cascade(org.hibernate.annotations.CascadeType.ALL)
     public Set<CaArrayFile> getDesignFiles() {
-        return designFiles;
+        return this.designFiles;
     }
 
     /**
@@ -385,13 +389,14 @@ public class ArrayDesign extends AbstractCaArrayEntity {
      */
     @Transient
     public CaArrayFileSet getDesignFileSet() {
-        CaArrayFileSet fileSet = new CaArrayFileSet();
+        final CaArrayFileSet fileSet = new CaArrayFileSet();
         fileSet.addAll(this.designFiles);
         return fileSet;
     }
 
     /**
      * Set the design files of this array design to the ones contained in the given set.
+     * 
      * @param designFileSet files to set
      */
     public void setDesignFileSet(CaArrayFileSet designFileSet) {
@@ -409,6 +414,7 @@ public class ArrayDesign extends AbstractCaArrayEntity {
 
     /**
      * Add a new design file to this design.
+     * 
      * @param designFile design file to add
      */
     public void addDesignFile(CaArrayFile designFile) {
@@ -417,14 +423,15 @@ public class ArrayDesign extends AbstractCaArrayEntity {
 
     /**
      * Gets the first (or only) design file.
+     * 
      * @return the design file
      */
     @Transient
     public CaArrayFile getFirstDesignFile() {
-        if (designFiles.isEmpty()) {
+        if (this.designFiles.isEmpty()) {
             return null;
         } else {
-            return designFiles.iterator().next();
+            return this.designFiles.iterator().next();
         }
     }
 
@@ -442,7 +449,7 @@ public class ArrayDesign extends AbstractCaArrayEntity {
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     @ForeignKey(name = "annotation_file_fk")
     public CaArrayFile getAnnotationFile() {
-        return annotationFile;
+        return this.annotationFile;
     }
 
     /**
@@ -455,7 +462,7 @@ public class ArrayDesign extends AbstractCaArrayEntity {
 
     /**
      * Gets the assay type for this Experiment.
-     *
+     * 
      * @return the assay type
      */
     @ManyToMany(fetch = FetchType.LAZY)
@@ -485,7 +492,7 @@ public class ArrayDesign extends AbstractCaArrayEntity {
     @Cascade(CascadeType.SAVE_UPDATE)
     @ForeignKey(name = "arraydesign_organism_fk")
     public Organism getOrganism() {
-        return organism;
+        return this.organism;
     }
 
     /**
@@ -499,10 +506,10 @@ public class ArrayDesign extends AbstractCaArrayEntity {
      * @return the designDetails
      */
     @ManyToOne(fetch = FetchType.LAZY)
-    @Cascade({ CascadeType.PERSIST, CascadeType.SAVE_UPDATE, CascadeType.LOCK, CascadeType.EVICT})
+    @Cascade({CascadeType.PERSIST, CascadeType.SAVE_UPDATE, CascadeType.LOCK, CascadeType.EVICT })
     @ForeignKey(name = "arraydesign_details_fk")
     public ArrayDesignDetails getDesignDetails() {
-        return designDetails;
+        return this.designDetails;
     }
 
     /**
@@ -517,7 +524,7 @@ public class ArrayDesign extends AbstractCaArrayEntity {
      */
     @Length(max = LARGE_TEXT_FIELD_LENGTH)
     public String getDescription() {
-        return description;
+        return this.description;
     }
 
     /**
@@ -529,12 +536,12 @@ public class ArrayDesign extends AbstractCaArrayEntity {
 
     /**
      * GEO accession.
-     *
+     * 
      * @return the GEO accession.
      */
     @Length(max = DEFAULT_STRING_COLUMN_SIZE)
     public String getGeoAccession() {
-        return geoAccession;
+        return this.geoAccession;
     }
 
     /**
@@ -554,10 +561,11 @@ public class ArrayDesign extends AbstractCaArrayEntity {
     @Transient
     public boolean isUnparsedAndReimportable() {
         return Iterables.any(getDesignFiles(), new Predicate<CaArrayFile>() {
-           public boolean apply(CaArrayFile file) {
+            @Override
+            public boolean apply(CaArrayFile file) {
                 return file.isUnparsedAndReimportable();
-            } 
-        }); 
+            }
+        });
     }
 
     /**
@@ -569,9 +577,10 @@ public class ArrayDesign extends AbstractCaArrayEntity {
     @Transient
     public boolean isImportedAndParsed() {
         return Iterables.any(getDesignFiles(), new Predicate<CaArrayFile>() {
-           public boolean apply(CaArrayFile file) {
+            @Override
+            public boolean apply(CaArrayFile file) {
                 return file.getFileStatus() == FileStatus.IMPORTED;
-            } 
-        }); 
+            }
+        });
     }
 }

@@ -1462,6 +1462,21 @@
                 <include name="${spring-mock.jar}"/>
             </fileset>
         </path>
+    	
+        <path id="grid.dependencies.lib.path">
+            <fileset dir="${project.lib}" id="grid.dependencies.lib.fileset">
+                <include name="${addressing.jar}" />
+                <include name="${cog-axis.jar}" />
+                <include name="${cog-jglobus.jar}" />
+                <include name="${commons-discovery.jar}" />
+                <include name="${jce.jar}" />
+                <include name="${wsrf_core_enum.jar}"/>
+                <include name="${wsrf_core_stubs_enum.jar}"/>
+                <include name="${wss4j.jar}" />
+                <include name="${xercesImpl.jar}" />
+                <include name="${castor.jar}" />
+            </fileset>
+        </path>
         
         <path id="test.grid.dependencies.path">
             <fileset refid="grid.compile.dependencies.fileset"/>
@@ -1549,22 +1564,7 @@
             <fileset refid="caarray-client.common.grid.dependencies.fileset"/>
         </path>
         <pathtofileset name="caarray-client.external.v1_0.grid.dependencies.fileset" pathrefid="caarray-client.external.v1_0.grid.dependencies.path" dir="${project.lib}"/>
-
-        <path id="grid.dependencies.lib.path">
-            <fileset dir="${project.lib}" id="grid.dependencies.lib.fileset">
-                <include name="${addressing.jar}" />
-                <include name="${cog-axis.jar}" />
-                <include name="${cog-jglobus.jar}" />
-                <include name="${commons-discovery.jar}" />
-                <include name="${jce.jar}" />
-                <include name="${wsrf_core_enum.jar}"/>
-                <include name="${wsrf_core_stubs_enum.jar}"/>
-                <include name="${wss4j.jar}" />
-                <include name="${xercesImpl.jar}" />
-                <include name="${castor.jar}" />
-            </fileset>
-        </path>
-
+    	
         <taskdef resource="checkstyletask.properties">
             <classpath refid="checkstyle.jar.path"/>
             <classpath refid="commons-beanutils.jar.path"/>

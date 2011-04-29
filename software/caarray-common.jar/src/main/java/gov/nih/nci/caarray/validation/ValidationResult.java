@@ -174,7 +174,7 @@ public final class ValidationResult implements Serializable {
     /**
      * Adds a new validation message to the result.
      * 
-     * @param file validation message is associated with this file
+     * @param fileName validation message is associated with the file of this name
      * @param type the type/level of the message
      * @param message the actual message content
      * @return the newly added message, if additional configuration of the message is required.
@@ -186,7 +186,7 @@ public final class ValidationResult implements Serializable {
     /**
      * Adds a new validation message to the result.
      * 
-     * @param file validation message is associated with this file
+     * @param fileName validation message is associated with the file of this name
      * @param message the validation message
      */
     public void addMessage(String fileName, ValidationMessage message) {
@@ -194,10 +194,10 @@ public final class ValidationResult implements Serializable {
     }
 
     /**
-     * Returns the <code>FileValidationResult</code> corresponding to the given file. If one does not exist yet, creates
-     * a new one and adds it to this.
+     * Returns the <code>FileValidationResult</code> corresponding to the file with given name. If one does not exist
+     * yet, creates a new one and adds it to this.
      * 
-     * @param file get validation results for this file
+     * @param fileName get or create validation results for the file of this name
      * @return an existing or new validation result for the file
      */
     public FileValidationResult getOrCreateFileValidationResult(String fileName) {
@@ -210,7 +210,7 @@ public final class ValidationResult implements Serializable {
     /**
      * Add the results for a file, replacing any previous results for that file.
      * 
-     * @param file file to add
+     * @param fileName name of file to add
      * @param fileResult results to add
      */
     public void addFile(String fileName, FileValidationResult fileResult) {
@@ -220,7 +220,7 @@ public final class ValidationResult implements Serializable {
     /**
      * Returns the <code>FileValidationResult</code> corresponding to the given file, or null if non exists.
      * 
-     * @param file get validation results for this file
+     * @param fileName get validation results for the file with this name
      * @return the validation result.
      */
     public FileValidationResult getFileValidationResult(String fileName) {

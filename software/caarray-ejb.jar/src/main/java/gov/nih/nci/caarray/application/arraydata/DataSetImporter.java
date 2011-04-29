@@ -125,7 +125,7 @@ import com.google.inject.Provider;
  * 
  * @author dkokotov
  */
-@SuppressWarnings({ "PMD.CyclomaticComplexity", "PMD.TooManyMethods" })
+@SuppressWarnings({"PMD.CyclomaticComplexity", "PMD.TooManyMethods" })
 class DataSetImporter extends AbstractArrayDataUtility {
     private final SearchDao searchDao;
 
@@ -136,7 +136,8 @@ class DataSetImporter extends AbstractArrayDataUtility {
         this.searchDao = searchDao;
     }
 
-    AbstractArrayData importData(CaArrayFile caArrayFile, DataImportOptions dataImportOptions, boolean createAnnnotation) {
+    AbstractArrayData
+            importData(CaArrayFile caArrayFile, DataImportOptions dataImportOptions, boolean createAnnnotation) {
         DataFileHandler handler = null;
         try {
             handler = getHandler(caArrayFile);
@@ -230,16 +231,17 @@ class DataSetImporter extends AbstractArrayDataUtility {
 
         @SuppressWarnings("PMD.CyclomaticComplexity")
         private void createArrayData(boolean createAnnnotation) throws PlatformFileReadException {
-            this.arrayData = this.caArrayFile.getFileType().isRawArrayData() ? new RawArrayData()
-                    : new DerivedArrayData();
+            this.arrayData =
+                    this.caArrayFile.getFileType().isRawArrayData() ? new RawArrayData() : new DerivedArrayData();
             this.arrayData.setDataFile(this.caArrayFile);
 
             List<Hybridization> hybs = null;
             switch (this.dataImportOptions.getTargetAnnotationOption()) {
             case ASSOCIATE_TO_NODES:
                 if (this.dataImportOptions.getTargetNodeType() == ExperimentDesignNodeType.HYBRIDIZATION) {
-                    hybs = DataSetImporter.this.searchDao.retrieveByIds(Hybridization.class,
-                            this.dataImportOptions.getTargetNodeIds());
+                    hybs =
+                            DataSetImporter.this.searchDao.retrieveByIds(Hybridization.class,
+                                    this.dataImportOptions.getTargetNodeIds());
                     break;
                 }
                 // intentional fallthrough - for target nodes other than hybs
@@ -247,8 +249,9 @@ class DataSetImporter extends AbstractArrayDataUtility {
                 hybs = lookupOrCreateHybridizations(this.handler.getHybridizationNames(), createAnnnotation);
                 break;
             case AUTOCREATE_SINGLE:
-                hybs = Collections.singletonList(lookupOrCreateHybridization(
-                        this.dataImportOptions.getNewAnnotationName(), createAnnnotation));
+                hybs =
+                        Collections.singletonList(lookupOrCreateHybridization(
+                                this.dataImportOptions.getNewAnnotationName(), createAnnnotation));
                 break;
             default:
                 throw new IllegalStateException("Unsupported annotation option: "
@@ -334,12 +337,13 @@ class DataSetImporter extends AbstractArrayDataUtility {
             case ASSOCIATE_TO_NODES:
                 AbstractExperimentDesignNode newChainStart = hybridization;
                 if (this.dataImportOptions.getTargetNodeType() != ExperimentDesignNodeType.LABELED_EXTRACT) {
-                    newChainStart = createAnnotationChain(hybridization, this.dataImportOptions.getTargetNodeType()
-                            .getSuccessorType(), hybridization.getName());
+                    newChainStart =
+                            createAnnotationChain(hybridization, this.dataImportOptions.getTargetNodeType()
+                                    .getSuccessorType(), hybridization.getName());
                 }
                 for (final Long targetId : this.dataImportOptions.getTargetNodeIds()) {
-                    final AbstractBioMaterial target = DataSetImporter.this.searchDao.retrieve(
-                            AbstractBioMaterial.class, targetId);
+                    final AbstractBioMaterial target =
+                            DataSetImporter.this.searchDao.retrieve(AbstractBioMaterial.class, targetId);
                     target.addDirectSuccessor(newChainStart);
                 }
                 break;
@@ -431,8 +435,8 @@ class DataSetImporter extends AbstractArrayDataUtility {
             if (nextNodeType == ExperimentDesignNodeType.HYBRIDIZATION) {
                 target.addDirectSuccessor(hybridization);
             } else {
-                final AbstractBioMaterial nextNode = createAnnotationChain(hybridization, nextNodeType,
-                        newAnnotationName);
+                final AbstractBioMaterial nextNode =
+                        createAnnotationChain(hybridization, nextNodeType, newAnnotationName);
                 target.addDirectSuccessor(nextNode);
             }
         }

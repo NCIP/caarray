@@ -98,13 +98,21 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 /**
- * @author dkokotov
+ * Default implementation of FileTypeRegistry.
  * 
+ * @author dkokotov
  */
 @Singleton
 public class FileTypeRegistryImpl implements FileTypeRegistry {
     private final Set<FileType> types = Sets.newTreeSet();
 
+    /**
+     * Create a FileTypeRegistryImpl with the set of types provided by the given array data and array design file
+     * handlers.
+     * 
+     * @param dataHandlers the known array data handlers, each of which provides types to be added to the registry
+     * @param designHandlers the known array design handlers, each of which provides types to be added to the registry
+     */
     @Inject
     public FileTypeRegistryImpl(Set<DataFileHandler> dataHandlers, Set<DesignFileHandler> designHandlers) {
         for (final DataFileHandler handler : dataHandlers) {

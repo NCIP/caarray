@@ -103,8 +103,8 @@ import gov.nih.nci.caarray.domain.search.SearchCategory;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
-import gov.nih.nci.caarray.util.UnfilteredCallback;
 import gov.nih.nci.caarray.util.CaArrayUsernameHolder;
+import gov.nih.nci.caarray.util.UnfilteredCallback;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionElement;
 import gov.nih.nci.security.authorization.domainobjects.User;
 
@@ -143,7 +143,7 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
     private static final String UNCHECKED = "unchecked";
     private static final String EXP_ID_PARAM = "expId";
     private static final String SOURCES = "sources";
-    private static final String[] BIOMATERIALS = { "sources", "samples", "extracts", "labeledExtracts" };
+    private static final String[] BIOMATERIALS = {"sources", "samples", "extracts", "labeledExtracts" };
     private static final String TERM_FOR_EXPERIMENT_HSQL = "select distinct s.{0} from " + Experiment.class.getName()
             + " e left join e.{1} s where e.id = :" + EXP_ID_PARAM + " and s.{0} is not null";
 
@@ -201,11 +201,11 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
 
     @Override
     public List<Project> getProjectsForOwner(User user) {
-        final String q = "SELECT DISTINCT p FROM " + Project.class.getName()
-                + " p left join fetch p.experiment e where p.id in" + "(select pe.value from "
-                + ProtectionElement.class.getName()
-                + " pe where pe.objectId = :objectId and pe.attribute = :attribute and "
-                + " pe.application = :application and :user in elements(pe.owners)) ";
+        final String q =
+                "SELECT DISTINCT p FROM " + Project.class.getName() + " p left join fetch p.experiment e where p.id in"
+                        + "(select pe.value from " + ProtectionElement.class.getName()
+                        + " pe where pe.objectId = :objectId and pe.attribute = :attribute and "
+                        + " pe.application = :application and :user in elements(pe.owners)) ";
 
         final Query query = getCurrentSession().createQuery(q);
         query.setString("objectId", Project.class.getName());
@@ -227,21 +227,23 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
         return ((Number) q.uniqueResult()).intValue();
     }
 
-    @SuppressWarnings({ "PMD.ExcessiveMethodLength", "PMD.NPathComplexity" })
+    @SuppressWarnings({"PMD.ExcessiveMethodLength", "PMD.NPathComplexity" })
     private Query getProjectsForUserQuery(boolean count, PageSortParams<Project> pageSortParams) {
         final User user = CaArrayUsernameHolder.getCsmUser();
         @SuppressWarnings("deprecation")
         final SortCriterion<Project> sortCrit = pageSortParams != null ? pageSortParams.getSortCriterion() : null;
-        final String ownerSubqueryStr = "(select pe.value from " + ProtectionElement.class.getName()
-                + " pe where pe.objectId = :objectId and pe.attribute = :attribute and "
-                + " pe.application = :application and :user in elements(pe.owners)) ";
-        final String collabSubqueryStr = "(select ap.projectForGroupProfile.id from " + AccessProfile.class.getName()
-                + " ap join ap.group cg, Group g "
-                + " where ap.securityLevelInternal != :noneSecLevel and cg.groupId = g.groupId "
-                + " and :user in elements(g.users))";
+        final String ownerSubqueryStr =
+                "(select pe.value from " + ProtectionElement.class.getName()
+                        + " pe where pe.objectId = :objectId and pe.attribute = :attribute and "
+                        + " pe.application = :application and :user in elements(pe.owners)) ";
+        final String collabSubqueryStr =
+                "(select ap.projectForGroupProfile.id from " + AccessProfile.class.getName()
+                        + " ap join ap.group cg, Group g "
+                        + " where ap.securityLevelInternal != :noneSecLevel and cg.groupId = g.groupId "
+                        + " and :user in elements(g.users))";
         final String selectClause = count ? "SELECT COUNT(DISTINCT p)" : "SELECT DISTINCT p";
-        final StringBuilder queryStr = new StringBuilder(selectClause).append(" from ").append(Project.class.getName())
-                .append(" p ");
+        final StringBuilder queryStr =
+                new StringBuilder(selectClause).append(" from ").append(Project.class.getName()).append(" p ");
         if (!count) {
             queryStr.append(" left join fetch p.experiment e");
         }
@@ -268,8 +270,8 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
      */
     @Override
     @SuppressWarnings(UNCHECKED)
-    public List<Project> searchByCategory(PageSortParams<Project> params, String keyword, SearchCategory... categories) {
-        final Query q = getSearchQuery(false, params, keyword, categories);
+    public List<Project> searchByCategory(PageSortParams<Project> params, String keyword, SearchCategory... cats) {
+        final Query q = getSearchQuery(false, params, keyword, cats);
         q.setFirstResult(params.getIndex());
         if (params.getPageSize() > 0) {
             q.setMaxResults(params.getPageSize());
@@ -317,10 +319,10 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
      * {@inheritDoc}
      */
     @Override
-    @SuppressWarnings({ UNCHECKED, "PMD" })
+    @SuppressWarnings({UNCHECKED, "PMD" })
     public List<Experiment> searchByCriteria(PageSortParams<Experiment> params, ExperimentSearchCriteria criteria) {
-        final StringBuilder from = new StringBuilder("SELECT distinct e FROM ").append(Experiment.class.getName())
-                .append(" e");
+        final StringBuilder from =
+                new StringBuilder("SELECT distinct e FROM ").append(Experiment.class.getName()).append(" e");
         final StringBuilder where = new StringBuilder("WHERE (1=1)");
         final Map<String, Object> queryParams = new HashMap<String, Object>();
         if (criteria.getTitle() != null) {
@@ -353,43 +355,48 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
             queryParams.put("pis", criteria.getPrincipalInvestigators());
         }
         if (!criteria.getAnnotationCriterions().isEmpty()) {
-            final List<String> diseaseStates = new LinkedList<String>();
-            final List<String> tissueSites = new LinkedList<String>();
-            final List<String> cellTypes = new LinkedList<String>();
-            final List<String> materialTypes = new LinkedList<String>();
-            for (final AnnotationCriterion ac : criteria.getAnnotationCriterions()) {
-                if (ac.getCategory().getName().equals(ExperimentOntologyCategory.DISEASE_STATE.getCategoryName())) {
-                    diseaseStates.add(ac.getValue());
-                } else if (ac.getCategory().getName().equals(ExperimentOntologyCategory.CELL_TYPE.getCategoryName())) {
-                    cellTypes.add(ac.getValue());
-                } else if (ac.getCategory().getName()
-                        .equals(ExperimentOntologyCategory.MATERIAL_TYPE.getCategoryName())) {
-                    materialTypes.add(ac.getValue());
-                } else if (ac.getCategory().getName()
-                        .equals(ExperimentOntologyCategory.ORGANISM_PART.getCategoryName())) {
-                    tissueSites.add(ac.getValue());
-                }
-            }
-
-            if (!diseaseStates.isEmpty() || !tissueSites.isEmpty() || !cellTypes.isEmpty() || !materialTypes.isEmpty()) {
-                final Map<String, List<? extends Serializable>> blocks = new HashMap<String, List<? extends Serializable>>();
-                addAnnotationCriterionValues(where, from, diseaseStates, "diseaseState", "ds", blocks);
-                addAnnotationCriterionValues(where, from, tissueSites, "tissueSite", "ts", blocks);
-                addAnnotationCriterionValues(where, from, materialTypes, "materialType", "mt", blocks);
-                addAnnotationCriterionValues(where, from, cellTypes, "cellType", "ct", blocks);
-                where.append(" )");
-                queryParams.putAll(blocks);
-            }
+            addAnnotationCriteria(criteria, where, from, queryParams);
         }
 
-        final Query q = getCurrentSession().createQuery(
-                from.append(" ").append(where).append(" ").append(toHqlOrder(params)).toString());
+        final Query q =
+                getCurrentSession().createQuery(
+                        from.append(" ").append(where).append(" ").append(toHqlOrder(params)).toString());
         getHibernateHelper().setQueryParams(queryParams, q);
         q.setFirstResult(params.getIndex());
         if (params.getPageSize() > 0) {
             q.setMaxResults(params.getPageSize());
         }
         return q.list();
+    }
+
+    private void addAnnotationCriteria(ExperimentSearchCriteria criteria, StringBuilder where, StringBuilder from,
+            Map<String, Object> queryParams) {
+        final List<String> diseaseStates = new LinkedList<String>();
+        final List<String> tissueSites = new LinkedList<String>();
+        final List<String> cellTypes = new LinkedList<String>();
+        final List<String> materialTypes = new LinkedList<String>();
+        for (final AnnotationCriterion ac : criteria.getAnnotationCriterions()) {
+            if (ac.getCategory().getName().equals(ExperimentOntologyCategory.DISEASE_STATE.getCategoryName())) {
+                diseaseStates.add(ac.getValue());
+            } else if (ac.getCategory().getName().equals(ExperimentOntologyCategory.CELL_TYPE.getCategoryName())) {
+                cellTypes.add(ac.getValue());
+            } else if (ac.getCategory().getName().equals(ExperimentOntologyCategory.MATERIAL_TYPE.getCategoryName())) {
+                materialTypes.add(ac.getValue());
+            } else if (ac.getCategory().getName().equals(ExperimentOntologyCategory.ORGANISM_PART.getCategoryName())) {
+                tissueSites.add(ac.getValue());
+            }
+        }
+
+        if (!diseaseStates.isEmpty() || !tissueSites.isEmpty() || !cellTypes.isEmpty() || !materialTypes.isEmpty()) {
+            final Map<String, List<? extends Serializable>> blocks =
+                    new HashMap<String, List<? extends Serializable>>();
+            addAnnotationCriterionValues(where, from, diseaseStates, "diseaseState", "ds", blocks);
+            addAnnotationCriterionValues(where, from, tissueSites, "tissueSite", "ts", blocks);
+            addAnnotationCriterionValues(where, from, materialTypes, "materialType", "mt", blocks);
+            addAnnotationCriterionValues(where, from, cellTypes, "cellType", "ct", blocks);
+            where.append(" )");
+            queryParams.putAll(blocks);
+        }
     }
 
     @SuppressWarnings("PMD.ExcessiveParameterList")
@@ -490,15 +497,16 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
         final UnfilteredCallback unfilteredCallback = new UnfilteredCallback() {
             @Override
             public Object doUnfiltered(Session s) {
-                final Query q = s.createQuery("FROM " + AbstractBioMaterial.class.getName()
-                        + " bm WHERE bm.experiment.project.id = ?");
+                final Query q =
+                        s.createQuery("FROM " + AbstractBioMaterial.class.getName()
+                                + " bm WHERE bm.experiment.project.id = ?");
                 q.setParameter(0, projectId);
                 return q.list();
             }
         };
         @SuppressWarnings(UNCHECKED)
-        final List<AbstractBioMaterial> bms = (List<AbstractBioMaterial>) getHibernateHelper().doUnfiltered(
-                unfilteredCallback);
+        final List<AbstractBioMaterial> bms =
+                (List<AbstractBioMaterial>) getHibernateHelper().doUnfiltered(unfilteredCallback);
         return new HashSet<AbstractBioMaterial>(bms);
     }
 
@@ -540,8 +548,8 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
         if (experiment == null) {
             return null;
         }
-        final String queryString = "from " + bioMaterialClass.getName()
-                + " b where b.experiment = :experiment and b.name = :name";
+        final String queryString =
+                "from " + bioMaterialClass.getName() + " b where b.experiment = :experiment and b.name = :name";
         final Query query = getCurrentSession().createQuery(queryString);
         query.setParameter("experiment", experiment);
         query.setString("name", bioMaterialName);
@@ -554,8 +562,9 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
     @Override
     @SuppressWarnings("unchecked")
     public List<Project> getProjectsWithReImportable() {
-        final String q = "select distinct p from " + Project.class.getName()
-                + " p left join p.files f where f.status = :status and f.type in (:types) order by p.id";
+        final String q =
+                "select distinct p from " + Project.class.getName()
+                        + " p left join p.files f where f.status = :status and f.type in (:types) order by p.id";
         final Query query = getCurrentSession().createQuery(q);
         query.setParameter("status", FileStatus.IMPORTED_NOT_PARSED.name());
         query.setParameterList("types",

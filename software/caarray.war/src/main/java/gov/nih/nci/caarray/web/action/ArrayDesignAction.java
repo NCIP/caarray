@@ -136,7 +136,7 @@ import com.opensymphony.xwork2.validator.annotations.Validations;
 /**
  * @author Winston Cheng
  */
-@SuppressWarnings({ "PMD.CyclomaticComplexity", "PMD.ExcessiveClassLength" })
+@SuppressWarnings({"PMD.CyclomaticComplexity", "PMD.ExcessiveClassLength" })
 public class ArrayDesignAction extends ActionSupport implements Preparable {
     private static final String UPLOAD_FIELD_NAME = "upload";
 
@@ -405,14 +405,13 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
      */
     @SuppressWarnings("PMD.AvoidDuplicateLiterals")
     @Validations(
-        fieldExpressions = { @FieldExpressionValidator(fieldName = "arrayDesign.assayTypes", message = "",
+        fieldExpressions = {@FieldExpressionValidator(fieldName = "arrayDesign.assayTypes", message = "",
             key = "errors.required", expression = "!arrayDesign.assayTypes.isEmpty") },
-        requiredStrings = { @RequiredStringValidator(fieldName = "arrayDesign.version", key = "errors.required",
+        requiredStrings = {@RequiredStringValidator(fieldName = "arrayDesign.version", key = "errors.required",
             message = "") },
         requiredFields = {
                 @RequiredFieldValidator(fieldName = "arrayDesign.provider", key = "errors.required", message = ""),
-                @RequiredFieldValidator(fieldName = "arrayDesign.technologyType", 
-                        key = "errors.required", message = ""),
+                @RequiredFieldValidator(fieldName = "arrayDesign.technologyType", key = "errors.required", message = ""),
                 @RequiredFieldValidator(fieldName = "arrayDesign.organism", key = "errors.required", message = "") })
     /**
      * Save the array design metadata.
@@ -422,7 +421,7 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
         if (!this.createMode && this.editMode) {
 
             if (ServiceLocatorFactory.getArrayDesignService().isDuplicate(this.arrayDesign)) {
-                ActionHelper.saveMessage(getText("arraydesign.duplicate", new String[] { getArrayDesign().getName() }));
+                ActionHelper.saveMessage(getText("arraydesign.duplicate", new String[] {getArrayDesign().getName() }));
                 return Action.INPUT;
             }
 
@@ -511,7 +510,7 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
         try {
             ServiceLocatorFactory.getArrayDesignService().deleteArrayDesign(getArrayDesign());
             ActionHelper
-                    .saveMessage(getText("arrayDesign.deletionSuccess", new String[] { getArrayDesign().getName() }));
+                    .saveMessage(getText("arrayDesign.deletionSuccess", new String[] {getArrayDesign().getName() }));
         } catch (final ArrayDesignDeleteException e) {
             ActionHelper.saveMessage(e.getMessage());
         }

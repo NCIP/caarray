@@ -125,7 +125,7 @@ import com.google.inject.Inject;
  */
 @Local(FileAccessService.class)
 @Stateless
-@Interceptors({ ExceptionLoggingInterceptor.class, InjectionInterceptor.class })
+@Interceptors({ExceptionLoggingInterceptor.class, InjectionInterceptor.class })
 public class FileAccessServiceBean implements FileAccessService {
     /** Minimum age of a data block that can be removed if it is unreferenced */
     public static final int MIN_UNREFERENCABLE_DATA_AGE = 300000;
@@ -136,20 +136,6 @@ public class FileAccessServiceBean implements FileAccessService {
     private ArrayDao arrayDao;
     private DataStorageFacade dataStorageFacade;
     private FileTypeRegistry typeRegistry;
-
-    /**
-     * 
-     * @param fileDao the FileDao dependency
-     * @param arrayDao the ArrayDao dependency
-     */
-    @Inject
-    public void setDependencies(FileDao fileDao, ArrayDao arrayDao, DataStorageFacade fileStorageFacade,
-            FileTypeRegistry typeRegistry) {
-        this.fileDao = fileDao;
-        this.arrayDao = arrayDao;
-        this.dataStorageFacade = fileStorageFacade;
-        this.typeRegistry = typeRegistry;
-    }
 
     /**
      * {@inheritDoc}
@@ -283,5 +269,37 @@ public class FileAccessServiceBean implements FileAccessService {
         } catch (final IOException e) {
             throw new FileAccessException("Couldn't unzip archive.", e);
         }
+    }
+
+    /**
+     * @param fileDao the fileDao to set
+     */
+    @Inject
+    public void setFileDao(FileDao fileDao) {
+        this.fileDao = fileDao;
+    }
+
+    /**
+     * @param arrayDao the arrayDao to set
+     */
+    @Inject
+    public void setArrayDao(ArrayDao arrayDao) {
+        this.arrayDao = arrayDao;
+    }
+
+    /**
+     * @param dataStorageFacade the dataStorageFacade to set
+     */
+    @Inject
+    public void setDataStorageFacade(DataStorageFacade dataStorageFacade) {
+        this.dataStorageFacade = dataStorageFacade;
+    }
+
+    /**
+     * @param typeRegistry the typeRegistry to set
+     */
+    @Inject
+    public void setTypeRegistry(FileTypeRegistry typeRegistry) {
+        this.typeRegistry = typeRegistry;
     }
 }

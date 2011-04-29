@@ -126,10 +126,12 @@ import com.google.inject.Provider;
  * Singleton MDB that handles file import jobs.
  */
 @MessageDriven(activationConfig = {
-    @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Topic"),
-    @ActivationConfigProperty(propertyName = "destination", propertyValue = FileManagementMDB.QUEUE_JNDI_NAME),
-    @ActivationConfigProperty(propertyName = "maxSession", propertyValue = "1") }, messageListenerInterface = MessageListener.class)
-@Interceptors({ HibernateSessionInterceptor.class, ExceptionLoggingInterceptor.class, InjectionInterceptor.class, StorageInterceptor.class })
+        @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Topic"),
+        @ActivationConfigProperty(propertyName = "destination", propertyValue = FileManagementMDB.QUEUE_JNDI_NAME),
+        @ActivationConfigProperty(propertyName = "maxSession", propertyValue = "1") },
+    messageListenerInterface = MessageListener.class)
+@Interceptors({HibernateSessionInterceptor.class, ExceptionLoggingInterceptor.class, InjectionInterceptor.class,
+        StorageInterceptor.class })
 @TransactionManagement(TransactionManagementType.BEAN)
 public class FileManagementMDB implements MessageListener {
 
@@ -148,21 +150,6 @@ public class FileManagementMDB implements MessageListener {
     private CaArrayHibernateHelper hibernateHelper;
     private JobQueueDao jobDao;
     private Provider<UsernameHolder> userHolderProvider;
-    
-    /**
-     * @param hibernateHelper the CaArrayHibernateHelper dependency
-     * @param jobDao the JobDao dependency
-     * @param userHolderProvider provides userHolder objects. Using a provider here to enable a possible
-     *        future enhancement where thread specific userHolders can be provided.
-     */
-    @Inject
-    public void setDependencies(CaArrayHibernateHelper hibernateHelper, JobQueueDao jobDao,
-            Provider<UsernameHolder> userHolderProvider) {
-        this.hibernateHelper = hibernateHelper;
-        this.jobDao = jobDao;
-        this.userHolderProvider = userHolderProvider;
-    }
-    private Provider<MageTabImporter> mageTabImporterProvider;
 
     /**
      * Handles file management job message.
@@ -176,21 +163,21 @@ public class FileManagementMDB implements MessageListener {
             return;
         }
         try {
-            currentMDB.set(this);            
-            String messageText = ((TextMessage) message).getText();
+            currentMDB.set(this);
+            final String messageText = ((TextMessage) message).getText();
             if ("enqueue".equals(messageText)) {
-                UsernameHolder usernameHolder = userHolderProvider.get();
-                ExecutableJob job = jobDao.peekAtJobQueue();
+                final UsernameHolder usernameHolder = this.userHolderProvider.get();
+                final ExecutableJob job = this.jobDao.peekAtJobQueue();
                 if (null != job) {
-                    String previousUser = usernameHolder.getUser();
+                    final String previousUser = usernameHolder.getUser();
                     usernameHolder.setUser(job.getOwnerName());
                     try {
                         setJobInProgress(job);
                         performJob(job);
                         LOG.info("Successfully completed job");
                     } finally {
-                        // remove the job from the queue if there is an exception or successfully completed. 
-                        jobDao.dequeue();
+                        // remove the job from the queue if there is an exception or successfully completed.
+                        this.jobDao.dequeue();
                         usernameHolder.setUser(previousUser);
                     }
                 }
@@ -203,13 +190,13 @@ public class FileManagementMDB implements MessageListener {
             currentMDB.remove();
         }
     }
-    
+
     private void setJobInProgress(ExecutableJob job) {
         beginTransaction();
         job.markAsInProgress();
         commitTransaction();
     }
-    
+
     /**
      * Begin the transaction used by the job.
      */
@@ -232,8 +219,9 @@ public class FileManagementMDB implements MessageListener {
      * @return the timeout val
      */
     protected int getBackgroundThreadTransactionTimeout() {
-        final String backgroundThreadTransactionTimeout = ConfigurationHelper.getConfiguration().getString(
-                ConfigParamEnum.BACKGROUND_THREAD_TRANSACTION_TIMEOUT.name());
+        final String backgroundThreadTransactionTimeout =
+                ConfigurationHelper.getConfiguration().getString(
+                        ConfigParamEnum.BACKGROUND_THREAD_TRANSACTION_TIMEOUT.name());
         int timeout = DEFAULT_TIMEOUT_SECONDS;
         if (StringUtils.isNumeric(backgroundThreadTransactionTimeout)) {
             timeout = Integer.parseInt(backgroundThreadTransactionTimeout);
@@ -301,12 +289,12 @@ public class FileManagementMDB implements MessageListener {
         Connection con = null;
         PreparedStatement ps = null;
         try {
-            con = hibernateHelper.getNewConnection();
+            con = this.hibernateHelper.getNewConnection();
             con.setAutoCommit(false);
             ps = job.getUnexpectedErrorPreparedStatement(con);
             ps.executeUpdate();
             con.commit();
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             LOG.error("Error while attempting to handle an unexpected error.", e);
         } finally {
             try {
@@ -316,7 +304,7 @@ public class FileManagementMDB implements MessageListener {
                 if (con != null) {
                     con.close();
                 }
-            } catch (SQLException e) {
+            } catch (final SQLException e) {
                 LOG.error("Error while attempting close the connection after handling an unexpected error.", e);
             }
         }
@@ -345,20 +333,36 @@ public class FileManagementMDB implements MessageListener {
     }
 
     /**
-     * @param mageTabImporterProvider the mageTabImporterProvider to set
-     */
-    @Inject
-    public void setMageTabImporterProvider(Provider<MageTabImporter> mageTabImporterProvider) {
-        this.mageTabImporterProvider = mageTabImporterProvider;
-    }
-
-    /**
      * Get the instance of FileManagementMDB that is processing the current message.
      * 
      * @return the current instance
      */
     public static FileManagementMDB getCurrentMDB() {
         return currentMDB.get();
+    }
+
+    /**
+     * @param hibernateHelper the hibernateHelper to set
+     */
+    @Inject
+    public void setHibernateHelper(CaArrayHibernateHelper hibernateHelper) {
+        this.hibernateHelper = hibernateHelper;
+    }
+
+    /**
+     * @param jobDao the jobDao to set
+     */
+    @Inject
+    public void setJobDao(JobQueueDao jobDao) {
+        this.jobDao = jobDao;
+    }
+
+    /**
+     * @param userHolderProvider the userHolderProvider to set
+     */
+    @Inject
+    public void setUserHolderProvider(Provider<UsernameHolder> userHolderProvider) {
+        this.userHolderProvider = userHolderProvider;
     }
 
 }

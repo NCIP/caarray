@@ -130,7 +130,8 @@ public abstract class AbstractDataColumn extends AbstractCaArrayObject {
 
     @SuppressWarnings("PMD.CyclomaticComplexity")
     // switch-like statement
-    static AbstractDataColumn create(QuantitationType type) {
+            static
+            AbstractDataColumn create(QuantitationType type) {
         AbstractDataColumn column = null;
         if (type.getTypeClass().equals(Boolean.class)) {
             column = new BooleanColumn();
@@ -215,9 +216,18 @@ public abstract class AbstractDataColumn extends AbstractCaArrayObject {
         this.dataHandle = dataHandle;
     }
 
+    /**
+     * @return the values in this column as an array. Subclasses should return an array of the appropriate primitive
+     *         type or String.
+     */
     @Transient
     public abstract Serializable getValuesAsArray();
 
+    /**
+     * Set the values of this column from a value array.
+     * 
+     * @param array the values for this column. Should be an array of the appropriate primitive or String type.
+     */
     public abstract void setValuesFromArray(Serializable array);
 
     /**

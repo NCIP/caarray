@@ -238,9 +238,9 @@ public interface GenericDataService extends com.fiveamsolutions.nci.commons.serv
     int collectionSize(Collection<? extends PersistentObject> collection);
 
     /**
-     * Refresh the state of the given persistent object from the data store
+     * Refresh the state of the given persistent object from the data store.
      * 
-     * @param object the object to referesh
+     * @param object the object to refresh.
      */
     void refresh(PersistentObject object);
 }

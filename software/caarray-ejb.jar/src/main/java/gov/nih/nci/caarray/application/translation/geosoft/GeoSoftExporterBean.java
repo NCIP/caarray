@@ -136,7 +136,7 @@ import com.google.inject.Inject;
  */
 @Local(GeoSoftExporter.class)
 @Stateless
-@Interceptors({ ExceptionLoggingInterceptor.class, InjectionInterceptor.class })
+@Interceptors({ExceptionLoggingInterceptor.class, InjectionInterceptor.class })
 public class GeoSoftExporterBean implements GeoSoftExporter {
     private static final Logger LOG = Logger.getLogger(GeoSoftExporterBean.class);
     private static final String AFFYMETRIX_PROVIDER = "Affymetrix";
@@ -275,8 +275,8 @@ public class GeoSoftExporterBean implements GeoSoftExporter {
         }
     }
 
-    private void checkProtocol(Set<String> errors, List<ProtocolApplication> protocolApplications, String... protocols) {
-        for (final ProtocolApplication pa : protocolApplications) {
+    private void checkProtocol(Set<String> errors, List<ProtocolApplication> protocolApps, String... protocols) {
+        for (final ProtocolApplication pa : protocolApps) {
             final String pType = pa.getProtocol().getType().getValue();
             for (final String p : protocols) {
                 if (pType.equalsIgnoreCase(p)) {
@@ -374,7 +374,7 @@ public class GeoSoftExporterBean implements GeoSoftExporter {
 
     }
 
-    @SuppressWarnings({ "PMD.AvoidInstanceofChecksInCatchClause", "PMD.AvoidThrowingRawExceptionTypes" })
+    @SuppressWarnings({"PMD.AvoidInstanceofChecksInCatchClause", "PMD.AvoidThrowingRawExceptionTypes" })
     private void exportArchive(Experiment experiment, String permaLinkUrl, boolean addReadme, ArchiveOutputStream ar)
             throws IOException {
         if (!validateForExport(experiment).isEmpty()) {
@@ -396,8 +396,9 @@ public class GeoSoftExporterBean implements GeoSoftExporter {
         GeoSoftFileWriterUtil.writeSoftFile(experiment, permaLinkUrl, out);
         out.close();
 
-        final ArchiveEntry ae = this.fileAccessHelper.createArchiveEntry(zout, experiment.getPublicIdentifier()
-                + ".soft.txt", bout.size());
+        final ArchiveEntry ae =
+                this.fileAccessHelper.createArchiveEntry(zout, experiment.getPublicIdentifier() + ".soft.txt",
+                        bout.size());
         zout.putArchiveEntry(ae);
         bout.writeTo(zout);
         zout.closeArchiveEntry();
@@ -453,8 +454,6 @@ public class GeoSoftExporterBean implements GeoSoftExporter {
     }
 
     /**
-     * Injectable dependency on FileAccessUtils instance
-     * 
      * @param fileAccessHelper the fileAccessHelper to set
      */
     @Inject

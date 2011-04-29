@@ -85,7 +85,6 @@ package gov.nih.nci.caarray.dao;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 import java.net.URI;
 import java.util.Date;
@@ -100,7 +99,6 @@ import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
 
 import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.domain.contact.Organization;
-import gov.nih.nci.caarray.domain.data.DataSet;
 import gov.nih.nci.caarray.domain.data.DataType;
 import gov.nih.nci.caarray.domain.data.DerivedArrayData;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
@@ -257,8 +255,8 @@ public class FileDaoTest extends AbstractDaoTest {
 
         tx = this.hibernateHelper.beginTransaction();
         this.hibernateHelper.getCurrentSession().clear();
-        CaArrayFile retrieved = (CaArrayFile) this.hibernateHelper.getCurrentSession().get(CaArrayFile.class,
-                DUMMY_FILE_1.getId());
+        CaArrayFile retrieved =
+                (CaArrayFile) this.hibernateHelper.getCurrentSession().get(CaArrayFile.class, DUMMY_FILE_1.getId());
         assertNotNull(retrieved);
         assertEquals(DUMMY_DATA_HANDLE, retrieved.getDataHandle());
         DAO_OBJECT.remove(retrieved);
@@ -407,11 +405,11 @@ public class FileDaoTest extends AbstractDaoTest {
         tx.commit();
 
         tx = this.hibernateHelper.beginTransaction();
-        final Experiment e = CaArrayDaoFactory.INSTANCE.getSearchDao().retrieve(Experiment.class,
-                DUMMY_EXPERIMENT_1.getId());
+        final Experiment e =
+                CaArrayDaoFactory.INSTANCE.getSearchDao().retrieve(Experiment.class, DUMMY_EXPERIMENT_1.getId());
 
-        final PageSortParams<CaArrayFile> params = new PageSortParams<CaArrayFile>(5, 0,
-                new AdHocSortCriterion<CaArrayFile>("name"), false);
+        final PageSortParams<CaArrayFile> params =
+                new PageSortParams<CaArrayFile>(5, 0, new AdHocSortCriterion<CaArrayFile>("name"), false);
         final FileSearchCriteria criteria = new FileSearchCriteria();
         criteria.getCategories().add(FileCategory.RAW_DATA);
         criteria.getCategories().add(FileCategory.DERIVED_DATA);
@@ -566,8 +564,8 @@ public class FileDaoTest extends AbstractDaoTest {
         tx.commit();
 
         tx = this.hibernateHelper.beginTransaction();
-        List<CaArrayFile> files = CaArrayDaoFactory.INSTANCE.getSearchDao().retrieveAll(CaArrayFile.class,
-                Order.asc("name"));
+        List<CaArrayFile> files =
+                CaArrayDaoFactory.INSTANCE.getSearchDao().retrieveAll(CaArrayFile.class, Order.asc("name"));
         assertEquals(3, files.size());
         assertEquals("file1", files.get(0).getName());
         assertEquals("file2", files.get(1).getName());
@@ -665,118 +663,6 @@ public class FileDaoTest extends AbstractDaoTest {
         assertEquals(f2, files.get(1));
         assertEquals(f3, files.get(2));
         assertEquals(f5, files.get(3));
-        tx.commit();
-    }
-
-    @Test
-    public void testParsedDataHandlesForProject() throws Exception {
-        Transaction tx = this.hibernateHelper.beginTransaction();
-
-        saveSupportingObjects();
-        final CaArrayFile f1 = new CaArrayFile();
-        f1.setName("dummy1");
-        f1.setFileType(FileTypeRegistry.MAGE_TAB_IDF);
-        f1.setFileStatus(FileStatus.UPLOADED);
-        f1.setDataHandle(DUMMY_DATA_HANDLE);
-        f1.setProject(DUMMY_PROJECT_1);
-        DUMMY_PROJECT_1.getFiles().add(f1);
-        DAO_OBJECT.save(f1);
-
-        final Hybridization h1 = new Hybridization();
-        h1.setName("h1");
-        DUMMY_EXPERIMENT_1.getHybridizations().add(h1);
-        h1.setExperiment(DUMMY_EXPERIMENT_1);
-        final DerivedArrayData arrayData = new DerivedArrayData();
-        h1.addArrayData(arrayData);
-        arrayData.addHybridization(h1);
-        arrayData.setDataSet(new DataSet());
-        arrayData.getDataSet().addHybridizationData(h1);
-        arrayData.getDataSet().addQuantitationType(DUMMY_QUANT_TYPE);
-        arrayData.getDataSet().getHybridizationDataList().get(0).getColumn(DUMMY_QUANT_TYPE)
-                .setDataHandle(DUMMY_DATA_HANDLE);
-
-        arrayData.setName("h1");
-        final CaArrayFile f2 = new CaArrayFile();
-        f2.setName("dummy2");
-        f2.setFileType(AFFYMETRIX_DAT);
-        f2.setFileStatus(FileStatus.IMPORTED_NOT_PARSED);
-        f2.setDataHandle(DUMMY_DATA_HANDLE);
-        f2.setProject(DUMMY_PROJECT_1);
-        arrayData.setDataFile(f2);
-        DUMMY_PROJECT_1.getFiles().add(f2);
-        DAO_OBJECT.save(f2);
-        DAO_OBJECT.save(arrayData);
-
-        final CaArrayFile f3 = new CaArrayFile();
-        f3.setName("dummy3");
-        f3.setFileType(FileTypeRegistry.MAGE_TAB_IDF);
-        f3.setFileStatus(FileStatus.IMPORTED);
-        f3.setDataHandle(DUMMY_DATA_HANDLE);
-        f3.setProject(DUMMY_PROJECT_1);
-        DUMMY_PROJECT_1.getFiles().add(f3);
-        DAO_OBJECT.save(f3);
-
-        final URI handle2 = CaArrayUtils.makeUriQuietly("db:db2");
-        final RawArrayData arrayData2 = new RawArrayData();
-        h1.addArrayData(arrayData2);
-        arrayData2.addHybridization(h1);
-        arrayData2.setDataSet(new DataSet());
-        arrayData2.getDataSet().addHybridizationData(h1);
-        arrayData2.getDataSet().addQuantitationType(DUMMY_QUANT_TYPE);
-        arrayData2.getDataSet().getHybridizationDataList().get(0).getColumn(DUMMY_QUANT_TYPE).setDataHandle(handle2);
-        arrayData.setName("h1");
-        final CaArrayFile f4 = new CaArrayFile();
-        f4.setName("dummy4");
-        f4.setFileType(AFFYMETRIX_CHP);
-        f4.setFileStatus(FileStatus.IMPORTED);
-        f4.setProject(DUMMY_PROJECT_1);
-        f4.setDataHandle(DUMMY_DATA_HANDLE);
-        arrayData2.setDataFile(f4);
-        DUMMY_PROJECT_1.getFiles().add(f4);
-        DAO_OBJECT.save(f4);
-        DAO_OBJECT.save(arrayData2);
-
-        tx.commit();
-
-        tx = this.hibernateHelper.beginTransaction();
-        final List<URI> handles = DAO_OBJECT.getParsedDataHandlesForProject(DUMMY_PROJECT_1.getId());
-        assertEquals(2, handles.size());
-        assertTrue(handles.contains(DUMMY_DATA_HANDLE));
-        assertTrue(handles.contains(handle2));
-
-        assertEquals(0, DAO_OBJECT.getParsedDataHandlesForProject(100001L).size());
-        tx.commit();
-    }
-
-    @Test
-    public void testFileHandlesForProject() throws Exception {
-        Transaction tx = this.hibernateHelper.beginTransaction();
-
-        saveSupportingObjects();
-        final CaArrayFile DUMMY_FILE_1 = new CaArrayFile();
-        DUMMY_FILE_1.setName(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF.getName());
-        DUMMY_FILE_1.setFileType(FileTypeRegistry.MAGE_TAB_IDF);
-        DUMMY_FILE_1.setFileStatus(FileStatus.UPLOADED);
-        DUMMY_FILE_1.setDataHandle(DUMMY_DATA_HANDLE);
-        DUMMY_FILE_1.setProject(DUMMY_PROJECT_1);
-        DUMMY_PROJECT_1.getFiles().add(DUMMY_FILE_1);
-        DAO_OBJECT.save(DUMMY_FILE_1);
-
-        final CaArrayFile f2 = new CaArrayFile();
-        final URI f2handle = CaArrayUtils.makeUriQuietly("db:db2");
-        f2.setName("foo");
-        f2.setFileType(AFFYMETRIX_CDF);
-        f2.setFileStatus(FileStatus.UPLOADED);
-        f2.setDataHandle(f2handle);
-        DAO_OBJECT.save(f2);
-        tx.commit();
-
-        tx = this.hibernateHelper.beginTransaction();
-        final List<URI> handles = DAO_OBJECT.getFileHandlesForProject(DUMMY_PROJECT_1.getId());
-        assertEquals(1, handles.size());
-        assertEquals(DUMMY_DATA_HANDLE, handles.get(0));
-
-        assertEquals(0, DAO_OBJECT.getFileHandlesForProject(100001L).size());
         tx.commit();
     }
 }

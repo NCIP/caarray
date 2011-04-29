@@ -131,9 +131,9 @@ public class OsgiConfigurationProvider implements PackageProvider, BundleListene
      * {@inheritDoc}
      */
     @Override
-    public void init(Configuration configuration) throws ConfigurationException {
+    public void init(Configuration config) throws ConfigurationException {
         this.bundleAccessor = new DefaultBundleAccessor();
-        this.configuration = configuration;
+        this.configuration = config;
 
         // this class loader interface can be used by other plugins to lookup resources
         // from the bundles. A temporary class loader interface is set during other configuration
@@ -248,6 +248,10 @@ public class OsgiConfigurationProvider implements PackageProvider, BundleListene
     /**
      * Test for whether we should try to extract Struts2 configs from a bundle. Currently a hack - checks whether the
      * name contains caarray. Should be fixed to do something more generic.
+     * 
+     * @param bundle bundle to check
+     * 
+     * @return whether to process the bundle
      */
     protected boolean shouldProcessBundle(Bundle bundle) {
         return bundle.getSymbolicName().contains("caarray");
@@ -306,12 +310,14 @@ public class OsgiConfigurationProvider implements PackageProvider, BundleListene
             case BundleEvent.STOPPED:
                 onBundleStopped(bundle);
                 break;
+            default:
+                break;
             }
         }
     }
 
     /**
-     * This method is called when a bundle is stopped, so the config that is related to it is removed
+     * This method is called when a bundle is stopped, so the config that is related to it is removed.
      * 
      * @param bundle the bundle that stopped
      */

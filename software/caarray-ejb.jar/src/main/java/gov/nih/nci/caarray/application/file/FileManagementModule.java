@@ -23,6 +23,9 @@ public class FileManagementModule extends AbstractModule {
         // bind(MageTabImporter.class);
     }
 
+    /**
+     * @return a MageTabTranslator instance
+     */
     @Provides
     public MageTabTranslator getMageTabTranslator() {
         return ServiceLocatorFactory.getMageTabTranslator();

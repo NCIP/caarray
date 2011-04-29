@@ -187,8 +187,9 @@ final class GeoSoftFileWriterUtil {
         out.print("!Series_title=");
         out.println(experiment.getTitle());
         out.print("!Series_summary=");
-        final String desc = StringUtils.isNotBlank(experiment.getDescription()) ? experiment.getDescription()
-                : experiment.getTitle();
+        final String desc =
+                StringUtils.isNotBlank(experiment.getDescription()) ? experiment.getDescription() : experiment
+                        .getTitle();
         out.println(desc);
         writeExperimentDesignTypes(experiment, desc, out);
         for (final Publication pub : experiment.getPublications()) {
@@ -349,7 +350,8 @@ final class GeoSoftFileWriterUtil {
         }
     }
 
-    private static void writeProtocolsForData(Iterable<? extends AbstractArrayData> data, String label, PrintWriter out) {
+    private static void
+            writeProtocolsForData(Iterable<? extends AbstractArrayData> data, String label, PrintWriter out) {
         final List<ProtocolApplication> l = new ArrayList<ProtocolApplication>();
         for (final AbstractArrayData d : data) {
             l.addAll(d.getProtocolApplications());

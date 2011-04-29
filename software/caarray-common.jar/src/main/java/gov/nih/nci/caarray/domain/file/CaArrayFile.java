@@ -134,7 +134,7 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
     private URI dataHandle;
 
     @Inject
-    public static transient FileTypeRegistry typeRegistry;
+    private static transient FileTypeRegistry typeRegistry;
 
     /**
      * Gets the name.

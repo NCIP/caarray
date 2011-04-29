@@ -149,20 +149,28 @@ public class MageTabExporterBean implements MageTabExporter {
     private static final Logger LOG = Logger.getLogger(MageTabExporterBean.class);
 
     // Generated SDRF nodes
-    private final Set<gov.nih.nci.caarray.magetab.sdrf.Source> allSources = new HashSet<gov.nih.nci.caarray.magetab.sdrf.Source>();
-    private final Set<gov.nih.nci.caarray.magetab.sdrf.Sample> allSamples = new HashSet<gov.nih.nci.caarray.magetab.sdrf.Sample>();
-    private final Set<gov.nih.nci.caarray.magetab.sdrf.Extract> allExtracts = new HashSet<gov.nih.nci.caarray.magetab.sdrf.Extract>();
-    private final Set<gov.nih.nci.caarray.magetab.sdrf.LabeledExtract> allLabeledExtracts = new HashSet<gov.nih.nci.caarray.magetab.sdrf.LabeledExtract>();
-    private final Set<gov.nih.nci.caarray.magetab.sdrf.Hybridization> allHybridizations = new HashSet<gov.nih.nci.caarray.magetab.sdrf.Hybridization>();
+    private final Set<gov.nih.nci.caarray.magetab.sdrf.Source> allSources =
+            new HashSet<gov.nih.nci.caarray.magetab.sdrf.Source>();
+    private final Set<gov.nih.nci.caarray.magetab.sdrf.Sample> allSamples =
+            new HashSet<gov.nih.nci.caarray.magetab.sdrf.Sample>();
+    private final Set<gov.nih.nci.caarray.magetab.sdrf.Extract> allExtracts =
+            new HashSet<gov.nih.nci.caarray.magetab.sdrf.Extract>();
+    private final Set<gov.nih.nci.caarray.magetab.sdrf.LabeledExtract> allLabeledExtracts =
+            new HashSet<gov.nih.nci.caarray.magetab.sdrf.LabeledExtract>();
+    private final Set<gov.nih.nci.caarray.magetab.sdrf.Hybridization> allHybridizations =
+            new HashSet<gov.nih.nci.caarray.magetab.sdrf.Hybridization>();
     private final Set<ArrayDataFile> allArrayDataFiles = new HashSet<ArrayDataFile>();
     private final Set<DerivedArrayDataFile> allDerivedArrayDataFiles = new HashSet<DerivedArrayDataFile>();
     private final Set<ArrayDataMatrixFile> allArrayDataMatrixFiles = new HashSet<ArrayDataMatrixFile>();
-    private final Set<DerivedArrayDataMatrixFile> allDerivedArrayDataMatrixFiles = new HashSet<DerivedArrayDataMatrixFile>();
+    private final Set<DerivedArrayDataMatrixFile> allDerivedArrayDataMatrixFiles =
+            new HashSet<DerivedArrayDataMatrixFile>();
 
     // Temporary caches
-    private final Map<NodeKey, AbstractSampleDataRelationshipNode> nodeCache = new HashMap<NodeKey, AbstractSampleDataRelationshipNode>();
+    private final Map<NodeKey, AbstractSampleDataRelationshipNode> nodeCache =
+            new HashMap<NodeKey, AbstractSampleDataRelationshipNode>();
     private final Map<Term, OntologyTerm> termMap = new HashMap<Term, OntologyTerm>();
-    private final Map<gov.nih.nci.caarray.domain.vocabulary.TermSource, TermSource> termSourceMap = new HashMap<gov.nih.nci.caarray.domain.vocabulary.TermSource, TermSource>();
+    private final Map<gov.nih.nci.caarray.domain.vocabulary.TermSource, TermSource> termSourceMap =
+            new HashMap<gov.nih.nci.caarray.domain.vocabulary.TermSource, TermSource>();
 
     /**
      * {@inheritDoc}
@@ -323,22 +331,24 @@ public class MageTabExporterBean implements MageTabExporter {
         term = biomaterial.getDiseaseState();
         if (term != null) {
             sdrfTerm = getSdrfTerm(term);
-            final Characteristic sdrfTermBasedCharacteristic = createSdrfTermBasedCharacteristic(
-                    ExperimentOntologyCategory.DISEASE_STATE.getCategoryName(), sdrfTerm);
+            final Characteristic sdrfTermBasedCharacteristic =
+                    createSdrfTermBasedCharacteristic(ExperimentOntologyCategory.DISEASE_STATE.getCategoryName(),
+                            sdrfTerm);
             sdrfBiomaterial.getCharacteristics().add(sdrfTermBasedCharacteristic);
         }
         term = biomaterial.getCellType();
         if (term != null) {
             sdrfTerm = getSdrfTerm(term);
-            final Characteristic sdrfTermBasedCharacteristic = createSdrfTermBasedCharacteristic(
-                    ExperimentOntologyCategory.CELL_TYPE.getCategoryName(), sdrfTerm);
+            final Characteristic sdrfTermBasedCharacteristic =
+                    createSdrfTermBasedCharacteristic(ExperimentOntologyCategory.CELL_TYPE.getCategoryName(), sdrfTerm);
             sdrfBiomaterial.getCharacteristics().add(sdrfTermBasedCharacteristic);
         }
         term = biomaterial.getTissueSite();
         if (term != null) {
             sdrfTerm = getSdrfTerm(term);
-            final Characteristic sdrfTermBasedCharacteristic = createSdrfTermBasedCharacteristic(
-                    ExperimentOntologyCategory.ORGANISM_PART.getCategoryName(), sdrfTerm);
+            final Characteristic sdrfTermBasedCharacteristic =
+                    createSdrfTermBasedCharacteristic(ExperimentOntologyCategory.ORGANISM_PART.getCategoryName(),
+                            sdrfTerm);
             sdrfBiomaterial.getCharacteristics().add(sdrfTermBasedCharacteristic);
         }
     }
@@ -492,8 +502,9 @@ public class MageTabExporterBean implements MageTabExporter {
 
     @SuppressWarnings("PMD")
     // warnings suppressed due to long switch statement
-    private AbstractSampleDataRelationshipNode createNode(
-            gov.nih.nci.caarray.domain.project.AbstractExperimentDesignNode caarrayNode) {
+            private
+            AbstractSampleDataRelationshipNode createNode(
+                    gov.nih.nci.caarray.domain.project.AbstractExperimentDesignNode caarrayNode) {
         AbstractSampleDataRelationshipNode node = null;
         switch (caarrayNode.getNodeType()) {
         case SOURCE:

@@ -112,44 +112,10 @@ import com.google.inject.Inject;
 public class ArrayDataServiceBean implements ArrayDataService {
     private static final Logger LOG = Logger.getLogger(ArrayDataServiceBean.class);
 
-    private TypeRegistrationManager tm;
+    private TypeRegistrationManager typeRegistrationManager;
     private DataSetImporter dataSetImporter;
     private DataSetLoader loader;
     private DataFileValidator dataFileValidator;
-
-    /**
-     * 
-     * @param tm the TypeRegistrationManager dependency
-     * @param dataSetImporter the DataSetImporter dependency
-     * @param loader the DataSetLoader dependency
-     * @param dataFileValidator the DataFileValidator dependency
-     */
-    @Inject
-    public void setDependencies(TypeRegistrationManager tm, DataSetImporter dataSetImporter, DataSetLoader loader,
-            DataFileValidator dataFileValidator) {
-        LOG.debug("Constructing");
-        this.tm = tm;
-        this.dataSetImporter = dataSetImporter;
-        this.loader = loader;
-        this.dataFileValidator = dataFileValidator;
-    }
-
-    /**
-     * 
-     * @param tm the TypeRegistrationManager dependency
-     * @param dataSetImporter the DataSetImporter dependency
-     * @param loader the DataSetLoader dependency
-     * @param dataFileValidator the DataFileValidator dependency
-     */
-    @Inject
-    public void setPlatformDependencies(TypeRegistrationManager tm, DataSetImporter dataSetImporter,
-            DataSetLoader loader, DataFileValidator dataFileValidator) {
-        LOG.debug("Setting platform deps");
-        this.tm = tm;
-        this.dataSetImporter = dataSetImporter;
-        this.loader = loader;
-        this.dataFileValidator = dataFileValidator;
-    }
 
     /**
      * {@inheritDoc}
@@ -158,7 +124,7 @@ public class ArrayDataServiceBean implements ArrayDataService {
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public void initialize() {
         LogUtil.logSubsystemEntry(LOG);
-        this.tm.registerNewTypes();
+        this.typeRegistrationManager.registerNewTypes();
         LogUtil.logSubsystemExit(LOG);
     }
 
@@ -170,8 +136,8 @@ public class ArrayDataServiceBean implements ArrayDataService {
     public void importData(CaArrayFile caArrayFile, boolean createAnnnotation, DataImportOptions dataImportOptions)
             throws InvalidDataFileException {
         LogUtil.logSubsystemEntry(LOG, caArrayFile);
-        final AbstractArrayData arrayData = this.dataSetImporter.importData(caArrayFile, dataImportOptions,
-                createAnnnotation);
+        final AbstractArrayData arrayData =
+                this.dataSetImporter.importData(caArrayFile, dataImportOptions, createAnnnotation);
         this.loader.load(arrayData);
         LogUtil.logSubsystemExit(LOG);
     }
@@ -184,5 +150,37 @@ public class ArrayDataServiceBean implements ArrayDataService {
     public FileValidationResult validate(CaArrayFile arrayDataFile, MageTabDocumentSet mTabSet, boolean reimport) {
         this.dataFileValidator.validate(arrayDataFile, mTabSet, reimport);
         return arrayDataFile.getValidationResult();
+    }
+
+    /**
+     * @param dataSetImporter the dataSetImporter to set
+     */
+    @Inject
+    public void setDataSetImporter(DataSetImporter dataSetImporter) {
+        this.dataSetImporter = dataSetImporter;
+    }
+
+    /**
+     * @param loader the loader to set
+     */
+    @Inject
+    public void setLoader(DataSetLoader loader) {
+        this.loader = loader;
+    }
+
+    /**
+     * @param dataFileValidator the dataFileValidator to set
+     */
+    @Inject
+    public void setDataFileValidator(DataFileValidator dataFileValidator) {
+        this.dataFileValidator = dataFileValidator;
+    }
+
+    /**
+     * @param typeRegistrationManager the typeRegistrationManager to set
+     */
+    @Inject
+    public void setTypeRegistrationManager(TypeRegistrationManager typeRegistrationManager) {
+        this.typeRegistrationManager = typeRegistrationManager;
     }
 }

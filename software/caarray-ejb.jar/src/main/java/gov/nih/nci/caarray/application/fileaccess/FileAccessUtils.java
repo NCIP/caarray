@@ -116,6 +116,11 @@ import com.google.inject.Inject;
 public class FileAccessUtils {
     private final DataStorageFacade dataStorageFacade;
 
+    /**
+     * Constructor.
+     * 
+     * @param fileStorageFacade file storage facade to use for retrieving file data.
+     */
     @Inject
     public FileAccessUtils(DataStorageFacade fileStorageFacade) {
         this.dataStorageFacade = fileStorageFacade;

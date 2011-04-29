@@ -104,6 +104,7 @@ public class CaArrayFileRef implements FileRef {
      * wrapper ctor.
      * 
      * @param file the CaArrayFile to wrap.
+     * @param dataStorageFacade the dataStorageFacade to use for retrieving data for the file
      */
     public CaArrayFileRef(CaArrayFile file, DataStorageFacade dataStorageFacade) {
         Preconditions.checkNotNull(file, "file cannot be null");

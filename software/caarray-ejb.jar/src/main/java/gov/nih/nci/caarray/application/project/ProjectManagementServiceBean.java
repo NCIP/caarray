@@ -151,9 +151,9 @@ import com.google.inject.Inject;
  */
 @Local(ProjectManagementService.class)
 @Stateless
-@Interceptors({ ExceptionLoggingInterceptor.class, InjectionInterceptor.class })
+@Interceptors({ExceptionLoggingInterceptor.class, InjectionInterceptor.class })
 @TransactionAttribute(TransactionAttributeType.SUPPORTS)
-@SuppressWarnings({ "PMD.ExcessiveClassLength", "PMD.TooManyMethods", "PMD.CyclomaticComplexity" })
+@SuppressWarnings({"PMD.ExcessiveClassLength", "PMD.TooManyMethods", "PMD.CyclomaticComplexity" })
 public class ProjectManagementServiceBean implements ProjectManagementService {
     private static final Logger LOG = Logger.getLogger(ProjectManagementServiceBean.class);
     private static final int UPLOAD_TIMEOUT = 7200;
@@ -168,23 +168,6 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     private SampleDao sampleDao;
     private SearchDao searchDao;
     private VocabularyDao vocabularyDao;
-
-    /**
-     * 
-     * @param projectDao the ProjectDao dependency
-     * @param fileDao the FileDao dependency
-     * @param sampleDao the SampleDao dependency
-     * @param searchDao the SearchDao dependency
-     */
-    @Inject
-    public void setDependencies(ProjectDao projectDao, FileDao fileDao, SampleDao sampleDao, SearchDao searchDao,
-            VocabularyDao vocabularyDao) {
-        this.projectDao = projectDao;
-        this.fileDao = fileDao;
-        this.sampleDao = sampleDao;
-        this.searchDao = searchDao;
-        this.vocabularyDao = vocabularyDao;
-    }
 
     /**
      * {@inheritDoc}
@@ -298,8 +281,7 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
         checkIfProjectSaveAllowed(project);
         // make sure that an anonymous user cannot create a new project
         if (project.getId() == null && CaArrayUsernameHolder.getUser().equals(SecurityUtils.ANONYMOUS_USERNAME)) {
-            throw new PermissionDeniedException(project, SecurityUtils.WRITE_PRIVILEGE,
-                    CaArrayUsernameHolder.getUser());
+            throw new PermissionDeniedException(project, SecurityUtils.WRITE_PRIVILEGE, CaArrayUsernameHolder.getUser());
         }
 
         if (project.getId() == null) {
@@ -328,8 +310,7 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
         LogUtil.logSubsystemEntry(LOG, project);
         if (!project.isOwner(CaArrayUsernameHolder.getCsmUser())) {
             LogUtil.logSubsystemExit(LOG);
-            throw new PermissionDeniedException(project, SecurityUtils.WRITE_PRIVILEGE,
-                    CaArrayUsernameHolder.getUser());
+            throw new PermissionDeniedException(project, SecurityUtils.WRITE_PRIVILEGE, CaArrayUsernameHolder.getUser());
         }
         if (project.isLocked()) {
             LogUtil.logSubsystemExit(LOG);
@@ -459,8 +440,8 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
         LogUtil.logSubsystemEntry(LOG, project, group);
         if (!project.canModifyPermissions(CaArrayUsernameHolder.getCsmUser())) {
             LogUtil.logSubsystemExit(LOG);
-            throw new PermissionDeniedException(project, SecurityUtils.PERMISSIONS_PRIVILEGE, CaArrayUsernameHolder
-                    .getUser());
+            throw new PermissionDeniedException(project, SecurityUtils.PERMISSIONS_PRIVILEGE,
+                    CaArrayUsernameHolder.getUser());
         }
         final AccessProfile profile = project.addGroupProfile(group);
         this.projectDao.save(project);
@@ -715,7 +696,8 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
      * {@inheritDoc}
      */
     @Override
-    public List<Sample> searchSamplesByCharacteristicCategory(PageSortParams<Sample> params, Category c, String keyword) {
+    public List<Sample>
+            searchSamplesByCharacteristicCategory(PageSortParams<Sample> params, Category c, String keyword) {
         return this.sampleDao.searchSamplesByCharacteristicCategory(params, c, keyword);
     }
 
@@ -723,7 +705,8 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
      * {@inheritDoc}
      */
     @Override
-    public List<Source> searchSourcesByCharacteristicCategory(PageSortParams<Source> params, Category c, String keyword) {
+    public List<Source>
+            searchSourcesByCharacteristicCategory(PageSortParams<Source> params, Category c, String keyword) {
         return this.sampleDao.searchSourcesByCharacteristicCategory(params, c, keyword);
     }
 
@@ -776,10 +759,13 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
         return this.projectDao.getProjectsWithReImportable();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<Category> getAllCharacteristicCategories(Experiment experiment) {
-        final List<gov.nih.nci.caarray.domain.vocabulary.Category> categories = this.vocabularyDao
-                .searchForCharacteristicCategory(experiment, AbstractCharacteristic.class, null);
+        final List<gov.nih.nci.caarray.domain.vocabulary.Category> categories =
+                this.vocabularyDao.searchForCharacteristicCategory(experiment, AbstractCharacteristic.class, null);
         // add in the standard categories
         for (final ExperimentOntologyCategory cat : EnumSet.of(ExperimentOntologyCategory.ORGANISM_PART,
                 ExperimentOntologyCategory.DISEASE_STATE, ExperimentOntologyCategory.CELL_TYPE,
@@ -788,5 +774,45 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
             categories.add(VocabularyUtils.getCategory(cat));
         }
         return categories;
+    }
+
+    /**
+     * @param projectDao the projectDao to set
+     */
+    @Inject
+    public void setProjectDao(ProjectDao projectDao) {
+        this.projectDao = projectDao;
+    }
+
+    /**
+     * @param fileDao the fileDao to set
+     */
+    @Inject
+    public void setFileDao(FileDao fileDao) {
+        this.fileDao = fileDao;
+    }
+
+    /**
+     * @param sampleDao the sampleDao to set
+     */
+    @Inject
+    public void setSampleDao(SampleDao sampleDao) {
+        this.sampleDao = sampleDao;
+    }
+
+    /**
+     * @param searchDao the searchDao to set
+     */
+    @Inject
+    public void setSearchDao(SearchDao searchDao) {
+        this.searchDao = searchDao;
+    }
+
+    /**
+     * @param vocabularyDao the vocabularyDao to set
+     */
+    @Inject
+    public void setVocabularyDao(VocabularyDao vocabularyDao) {
+        this.vocabularyDao = vocabularyDao;
     }
 }

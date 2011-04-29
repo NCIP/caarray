@@ -88,7 +88,7 @@ package gov.nih.nci.caarray.dao;
  */
 public interface MultipartBlobDao extends CaArrayDao {
     /**
-     * Delete all multipart blobs (and their contents) with given ids
+     * Delete all multipart blobs (and their contents) with given ids.
      * 
      * @param ids the ids of the blobs to delte
      */

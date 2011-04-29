@@ -96,29 +96,41 @@ import org.hibernate.Hibernate;
 import org.hibernate.usertype.UserType;
 
 /**
- * @author dkokotov
+ * Custom Hibernate Type for URIs. simply stores the URI in a varchar column using its string representation.
  * 
+ * @author dkokotov
  */
-
 public class URIUserType implements UserType {
     private static final Logger LOG = Logger.getLogger(URIUserType.class);
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int[] sqlTypes() {
-        return new int[] { Types.VARCHAR };
+        return new int[] {Types.VARCHAR };
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @SuppressWarnings("unchecked")
     public Class<?> returnedClass() {
         return URI.class;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean equals(Object x, Object y) {
         return (x == y) || (x != null && y != null && (x.equals(y)));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Object nullSafeGet(ResultSet inResultSet, String[] names, Object o) throws SQLException {
         final String val = (String) Hibernate.STRING.nullSafeGet(inResultSet, names[0]);
@@ -133,6 +145,9 @@ public class URIUserType implements UserType {
         return uri;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void nullSafeSet(PreparedStatement inPreparedStatement, Object o, int i) throws SQLException {
         final URI val = (URI) o;
@@ -140,6 +155,9 @@ public class URIUserType implements UserType {
         inPreparedStatement.setString(i, uri);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Object deepCopy(Object o) {
         if (o == null) {
@@ -156,26 +174,41 @@ public class URIUserType implements UserType {
 
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isMutable() {
         return true;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Object assemble(Serializable cached, Object owner) {
         return deepCopy(cached);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Serializable disassemble(Object value) {
         return (Serializable) deepCopy(value);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Object replace(Object original, Object target, Object owner) {
         return deepCopy(original);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int hashCode(Object x) {
         return x.hashCode();

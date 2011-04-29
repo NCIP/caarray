@@ -113,7 +113,7 @@ import com.opensymphony.xwork2.config.entities.ActionConfig;
  */
 public class DefaultBundleAccessor {
     /**
-     * Key under which the current bundle is stored in the Struts2 ActionContext
+     * Key under which the current bundle is stored in the Struts2 ActionContext.
      */
     public static final String CURRENT_BUNDLE_NAME = "__bundle_name__";
 
@@ -134,14 +134,14 @@ public class DefaultBundleAccessor {
 
     /**
      * @return the currently active instance of this. a hack, but cannot use a true singleton because this class is
-     *         created by the struts2 container
+     *         created by the struts2 container.
      */
     public static DefaultBundleAccessor getInstance() {
         return self;
     }
 
     /**
-     * Add as Bundle -> Package mapping
+     * Add as Bundle -> Package mapping.
      * 
      * @param bundle the bundle where the package was loaded from
      * @param packageName the anme of the loaded package
@@ -190,7 +190,7 @@ public class DefaultBundleAccessor {
     }
 
     /**
-     * load all resources with given name from the current bundle
+     * load all resources with given name from the current bundle.
      * 
      * @param name name of resource to load
      * @param translate whether translate from bundle URL to JAR url
@@ -231,12 +231,11 @@ public class DefaultBundleAccessor {
     }
 
     /**
-     * load the first resource with given name from the current bundle
+     * load the first resource with given name from the current bundle.
      * 
      * @param name name of resource to load
      * @param translate whether translate from bundle URL to JAR url
      * @return the resource as URL if found, null otherwise
-     * @throws IOException on error
      */
     public URL loadResource(String name, boolean translate) {
         final Bundle bundle = getCurrentBundle();
@@ -254,7 +253,7 @@ public class DefaultBundleAccessor {
     }
 
     /**
-     * Get the struts2 packages that were loaded from the given bundle, if any
+     * Get the struts2 packages that were loaded from the given bundle, if any.
      * 
      * @param bundle the bundle to check
      * @return the struts2 packages loaded from the bundle, null if none
@@ -264,7 +263,7 @@ public class DefaultBundleAccessor {
     }
 
     /**
-     * load the first resource with given name from the current bundle
+     * load the first resource with given name from the current bundle.
      * 
      * @param name name of resource to load
      * @return the InputStream for the resource if found, null otherwise

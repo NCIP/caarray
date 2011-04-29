@@ -12,7 +12,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.name.Names;
 
 /**
- * Guice module for the file access subsystem
+ * Guice module for the file access subsystem.
  * 
  * @author jscott
  */

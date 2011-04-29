@@ -107,8 +107,6 @@ import com.google.inject.Inject;
 /**
  * Utility class for handling a set of uploaded files.
  * 
- * TODO: should some of these be moved into a service and be part of a transaction?
- * 
  * @author kokotovd
  */
 @SuppressWarnings("PMD.CyclomaticComplexity")
@@ -118,6 +116,11 @@ public class FileUploadUtils {
 
     private final DataStorageFacade dataStorageFacade;
 
+    /**
+     * Constructor.
+     * 
+     * @param dataStorageFacade data storage facade to use for looking up file data.
+     */
     @Inject
     public FileUploadUtils(DataStorageFacade dataStorageFacade) {
         this.dataStorageFacade = dataStorageFacade;

@@ -204,7 +204,8 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
      * {@inheritDoc}
      */
     @Override
-    public <T extends PersistentObject> List<T> queryEntityByExample(ExampleSearchCriteria<T> criteria, Order... orders) {
+    public <T extends PersistentObject> List<T>
+            queryEntityByExample(ExampleSearchCriteria<T> criteria, Order... orders) {
         return queryEntityByExample(criteria, 0, 0, orders);
     }
 
@@ -235,8 +236,9 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
         final T entityToMatch = criteria.getExample();
         CaArrayUtils.blankStringPropsToNull(entityToMatch);
 
-        final Criteria c = getCurrentSession().createCriteria(getPersistentClass(entityToMatch.getClass()))
-                .setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
+        final Criteria c =
+                getCurrentSession().createCriteria(getPersistentClass(entityToMatch.getClass())).setResultTransformer(
+                        CriteriaSpecification.DISTINCT_ROOT_ENTITY);
         c.add(createExample(entityToMatch, criteria.getMatchMode(), criteria.isExcludeNulls(),
                 criteria.isExcludeZeroes(), criteria.getExcludeProperties()));
         new SearchCriteriaHelper<T>(this, c, criteria).addCriteriaForAssociations();
@@ -402,15 +404,16 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
          * 
          * @param entityToMatch the root entity being searched on.
          * @param hibCriteria the root Criteria to add to.
-         * @param prop the association to be matched.
+         * @param property the association to be matched.
          */
-        private void addCriterionForAssociation(Property prop) throws IllegalAccessException, InvocationTargetException {
+        private void addCriterionForAssociation(Property property) throws IllegalAccessException,
+                InvocationTargetException {
             Object valueOfAssociation = null;
 
             try {
-                valueOfAssociation = PropertyUtils.getProperty(this.exampleCriteria.getExample(), prop.getName());
+                valueOfAssociation = PropertyUtils.getProperty(this.exampleCriteria.getExample(), property.getName());
             } catch (final NoSuchMethodException e) {
-                LOG.error("No getter method for property " + prop.getName(), e);
+                LOG.error("No getter method for property " + property.getName(), e);
             }
 
             if (valueOfAssociation == null) {
@@ -423,10 +426,10 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
                     for (final Object value : collValue) {
                         or.add(createExample(value));
                     }
-                    this.hibCriteria.createCriteria(prop.getName()).add(or);
+                    this.hibCriteria.createCriteria(property.getName()).add(or);
                 }
             } else {
-                this.hibCriteria.createCriteria(prop.getName()).add(createExample(valueOfAssociation));
+                this.hibCriteria.createCriteria(property.getName()).add(createExample(valueOfAssociation));
             }
 
         }

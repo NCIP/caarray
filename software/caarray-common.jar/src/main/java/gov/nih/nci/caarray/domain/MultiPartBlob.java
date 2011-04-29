@@ -186,7 +186,6 @@ public class MultiPartBlob implements PersistentObject {
      * @param data the input stream to store.
      * @param compress true to compress the data, false to leave it uncompressed
      * @param blobPartSize the maximum size of a single blob
-     * @return metadata about the written data (sizes, etc)
      * @throws IOException on error reading from the stream.
      */
     public void writeData(InputStream data, boolean compress, int blobPartSize) throws IOException {
