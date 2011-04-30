@@ -2589,22 +2589,14 @@
         <javac srcdir="${caarray-ejb.test.src.dir}" destdir="${caarray-ejb.test.classes.dir}" debug="true">
         	<include name="**/*"/>
         	<exclude name="**/FileManagementServiceIntegrationTest*"/>
+        	<exclude name="**/FileImportIntegrationTest*"/>
+        	<exclude name="**/FileValidationIntegrationTest*"/>
             <classpath>
                 <pathelement location="${caarray-ejb.classes.dir}" />
                 <pathelement location="${caarray-client.classes.dir}" />
                 <pathelement location="${caarray-common.classes.dir}" />
                 <pathelement location="${caarray-common.test.classes.dir}" />
-                <pathelement location="${test.data.classes.dir}" />
-            	
-            	<!-- 
-            	//TODO: ARRAY-1942 follow-on tasks for <ARRAY-1896 Merge dkokotov_storage_osgi_consolidation Branch to trunk>
-            	//The below <fileset> is only temporary. Some caarray-ejb test classes have dependencies on vendor specific 
-            	//plugin classes (mainly having to do with FileType) that need to be fixed. Once they are fixed, the below
-            	//can be removed. 
-            	-->     
-            	<dirset dir="${caarray-plugins.dir}">
-                    <include name="**/classes"/>
-                </dirset>
+                <pathelement location="${test.data.classes.dir}" />            	
             </classpath>
             <classpath refid="ejb.test.dependencies.path" />
             <classpath refid="mysql-connector-java.jar.path" />
@@ -2612,7 +2604,12 @@
     </target>
 
     <target name="test:junit-caarray-ejb.jar" unless="notest" depends="init:third-party-paths,test:compile:caarray-ejb.test.classes,test:instrument:caarray-ejb.jar,compile:caarray-client.jar,compile:caarray-common.jar,test:copy-files-to-target-dir-and-unpack-test-data">
-        <caarray-run-junit-tests test.src.dir="${caarray-ejb.test.src.dir}" xml.output.dir="${caarray-ejb.target.dir}/junit" instrumented.classes="${caarray-ejb.instrumented.classes.dir};${caarray-common.instrumented.classes.dir}" classpath="${caarray-ejb.test.classes.dir};${caarray-common.test.classes.dir};${test.data.target.dir};${test.data.classes.dir};${caarray-ejb.test.resources.dir};${caarray-ejb.resources.dir};${caarray-common.test.files.dir};${caarray-ejb.classes.dir};${caarray-client.classes.dir};${caarray-common.classes.dir};" classpathref.id="ejb.test.dependencies.path"/>
+    	<propertyfile file="${caarray-ejb.test.classes.dir}/dataStorage.properties">
+    		<entry key="dataStorage.fileSystem.baseDir" value="${dataStorage.fileSystem.testBaseDir}"/>
+    	    <entry key="dataStorage.fileDataEngine" value="${dataStorage.fileDataEngine}"/>
+    	    <entry key="dataStorage.parsedDataEngine" value="${dataStorage.parsedDataEngine}"/>
+	    </propertyfile>
+    	<caarray-run-junit-tests test.src.dir="${caarray-ejb.test.src.dir}" xml.output.dir="${caarray-ejb.target.dir}/junit" instrumented.classes="${caarray-ejb.instrumented.classes.dir};${caarray-common.instrumented.classes.dir}" classpath="${caarray-ejb.test.classes.dir};${caarray-common.test.classes.dir};${test.data.target.dir};${test.data.classes.dir};${caarray-ejb.test.resources.dir};${caarray-ejb.resources.dir};${caarray-common.test.files.dir};${caarray-ejb.classes.dir};${caarray-client.classes.dir};${caarray-common.classes.dir};" classpathref.id="ejb.test.dependencies.path"/>
     </target>
 
 	<!-- caarray-plugins -->

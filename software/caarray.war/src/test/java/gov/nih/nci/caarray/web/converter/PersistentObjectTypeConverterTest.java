@@ -99,19 +99,20 @@ import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 
 /**
  * Test for the persistent object type converter.
+ * 
  * @author Scott Miller
  */
 public class PersistentObjectTypeConverterTest extends AbstractCaarrayTest {
 
     @Test
     public void testConverter() {
-        PersistentObjectTypeConverter converter = new PersistentObjectTypeConverter();
+        final PersistentObjectTypeConverter converter = new PersistentObjectTypeConverter();
         PersistentObjectTypeConverter.setServiceLocator(new MockServiceLocator());
 
-        Project p = (Project) converter.convertFromString(null, new String[] {"2"}, Project.class);
+        Project p = (Project) converter.convertFromString(null, new String[] {"2" }, Project.class);
         assertEquals(null, p);
 
-        p = (Project) converter.convertFromString(null, new String[] {"1"}, Project.class);
+        p = (Project) converter.convertFromString(null, new String[] {"1" }, Project.class);
         assertEquals("FOO", p.getCaBigId());
 
         String idString = converter.convertToString(null, p);
@@ -134,11 +135,12 @@ public class PersistentObjectTypeConverterTest extends AbstractCaarrayTest {
         /**
          * {@inheritDoc}
          */
+        @Override
         public Object lookup(String jndiName) {
             if (GenericDataService.JNDI_NAME.equals(jndiName)) {
-                GenericDataServiceBean serviceBean = new GenericDataServiceBean();
-                serviceBean.setDependencies(this.daoFactoryStub.getSearchDao(),
-                        this.daoFactoryStub.getProjectDao());
+                final GenericDataServiceBean serviceBean = new GenericDataServiceBean();
+                serviceBean.setSearchDao(this.daoFactoryStub.getSearchDao());
+                serviceBean.setProjectDao(this.daoFactoryStub.getProjectDao());
                 return serviceBean;
             }
             return null;
@@ -164,11 +166,11 @@ public class PersistentObjectTypeConverterTest extends AbstractCaarrayTest {
         /**
          * {@inheritDoc}
          */
-        @SuppressWarnings({ "unchecked", "deprecation" })
+        @SuppressWarnings({"unchecked", "deprecation" })
         @Override
         public <T extends PersistentObject> T retrieve(Class<T> entityClass, Long entityId) {
             if (Project.class.equals(entityClass) && Long.valueOf(1L).equals(entityId)) {
-                Project p = new Project();
+                final Project p = new Project();
                 p.setCaBigId("FOO");
                 p.setId(1l);
                 return (T) p;

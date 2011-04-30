@@ -107,6 +107,7 @@ import gov.nih.nci.caarray.test.data.arraydata.AffymetrixArrayDataFiles;
 import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
 import gov.nih.nci.caarray.test.data.arraydesign.GenepixArrayDesignFiles;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
+import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
 import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import gov.nih.nci.caarray.validation.FileValidationResult;
@@ -179,10 +180,10 @@ public class FileManagementServiceTest extends AbstractServiceTest {
                 return 3600;
             }
         };
-        
+
         fileManagementMDB.setDaoFactory(this.daoFactoryStub);
         fileManagementMDB.setTransaction(new UserTransactionStub());
-        JobQueueDao jobDao = new JobDaoSingleJobStub();        
+        final JobQueueDao jobDao = new JobDaoSingleJobStub();
         final DirectJobSubmitter submitter = new DirectJobSubmitter(fileManagementMDB, jobDao);
         final DataStorageFacade dataStorageFacade = this.fileAccessServiceStub.createStorageFacade();
 
@@ -195,30 +196,35 @@ public class FileManagementServiceTest extends AbstractServiceTest {
                         FileManagementServiceTest.this.daoFactoryStub.getProjectDao(), dataStorageFacade);
             }
         };
-        
-        
-        MageTabTranslator mageTabTranslator = new MageTabTranslatorStub();
-        MageTabImporter mageTabImporter = new MageTabImporterImpl(mageTabTranslator,
-                daoFactoryStub.getSearchDao(), daoFactoryStub.getProjectDao(), dataStorageFacade);
-        
-        ArrayDataService arrayDataService = new LocalArrayDataServiceStub();
-        ArrayDataImporter arrayDataImporter = new ArrayDataImporterImpl(arrayDataService, daoFactoryStub.getFileDao(),
-                daoFactoryStub.getProjectDao(), daoFactoryStub.getSearchDao());
-        
-        Provider<ArrayDao> arrayDaoProvider = Providers.of(daoFactoryStub.getArrayDao());
-        Provider<ArrayDataImporter> arrayDataImporterProvider = Providers.of(arrayDataImporter);
-        Provider<MageTabImporter> mageTabeImporterProvider = Providers.of(mageTabImporter);
-        Provider<ProjectDao> projectDaoProvider = Providers.of(daoFactoryStub.getProjectDao());
-        Provider<SearchDao> searchDaoProvider = Providers.of(daoFactoryStub.getSearchDao());
-        Provider<UsernameHolder> usernameHolderProvider = Providers.of(mock(UsernameHolder.class));
-        
-        JobFactory jobFactory = new JobFactoryImpl(usernameHolderProvider, arrayDaoProvider, arrayDataImporterProvider,
-                mageTabeImporterProvider, projectDaoProvider, searchDaoProvider);
-        
-        
-        fileManagementServiceBean.setDependencies(this.daoFactoryStub.getProjectDao(),
-                this.daoFactoryStub.getArrayDao(), this.daoFactoryStub.getFileDao(),
-                this.daoFactoryStub.getSearchDao(), mageTabImporter ,submitter, jobFactory, mageTabImporterProvider);
+
+        final MageTabTranslator mageTabTranslator = new MageTabTranslatorStub();
+        final MageTabImporter mageTabImporter =
+                new MageTabImporterImpl(mageTabTranslator, this.daoFactoryStub.getSearchDao(),
+                        this.daoFactoryStub.getProjectDao(), dataStorageFacade);
+
+        final ArrayDataService arrayDataService = new LocalArrayDataServiceStub();
+        final ArrayDataImporter arrayDataImporter =
+                new ArrayDataImporterImpl(arrayDataService, this.daoFactoryStub.getFileDao(),
+                        this.daoFactoryStub.getProjectDao(), this.daoFactoryStub.getSearchDao());
+
+        final Provider<ArrayDao> arrayDaoProvider = Providers.of(this.daoFactoryStub.getArrayDao());
+        final Provider<ArrayDataImporter> arrayDataImporterProvider = Providers.of(arrayDataImporter);
+        final Provider<MageTabImporter> mageTabeImporterProvider = Providers.of(mageTabImporter);
+        final Provider<ProjectDao> projectDaoProvider = Providers.of(this.daoFactoryStub.getProjectDao());
+        final Provider<SearchDao> searchDaoProvider = Providers.of(this.daoFactoryStub.getSearchDao());
+        final Provider<UsernameHolder> usernameHolderProvider = Providers.of(mock(UsernameHolder.class));
+
+        final JobFactory jobFactory =
+                new JobFactoryImpl(usernameHolderProvider, arrayDaoProvider, arrayDataImporterProvider,
+                        mageTabeImporterProvider, projectDaoProvider, searchDaoProvider);
+
+        fileManagementServiceBean.setArrayDao(this.daoFactoryStub.getArrayDao());
+        fileManagementServiceBean.setFileDao(this.daoFactoryStub.getFileDao());
+        fileManagementServiceBean.setProjectDao(this.daoFactoryStub.getProjectDao());
+        fileManagementServiceBean.setSearchDao(this.daoFactoryStub.getSearchDao());
+        fileManagementServiceBean.setJobFactory(jobFactory);
+        fileManagementServiceBean.setJobSubmitter(submitter);
+        fileManagementServiceBean.setMageTabImporterProvider(mageTabImporterProvider);
 
         final ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
         locatorStub.addLookup(FileAccessService.JNDI_NAME, this.fileAccessServiceStub);
@@ -233,13 +239,13 @@ public class FileManagementServiceTest extends AbstractServiceTest {
             @Override
             protected void configure() {
                 // data files
-                final Multibinder<DataFileHandler> dataFileBinder = Multibinder.newSetBinder(binder(),
-                        DataFileHandler.class);
+                final Multibinder<DataFileHandler> dataFileBinder =
+                        Multibinder.newSetBinder(binder(), DataFileHandler.class);
                 dataFileBinder.addBinding().to(TestDataHandler.class);
 
                 // design files
-                final Multibinder<DesignFileHandler> designFileBinder = Multibinder.newSetBinder(binder(),
-                        DesignFileHandler.class);
+                final Multibinder<DesignFileHandler> designFileBinder =
+                        Multibinder.newSetBinder(binder(), DesignFileHandler.class);
                 designFileBinder.addBinding().toInstance(affyDesignHandler);
 
                 bind(FileTypeRegistry.class).to(FileTypeRegistryImpl.class);
@@ -248,6 +254,10 @@ public class FileManagementServiceTest extends AbstractServiceTest {
                 bind(MageTabImporter.class).toProvider(mageTabImporterProvider);
                 requestStaticInjection(CaArrayFile.class);
                 requestStaticInjection(TestMageTabSets.class);
+
+                bind(JobQueueDao.class).toInstance(jobDao);
+                bind(CaArrayHibernateHelper.class).toInstance(mock(CaArrayHibernateHelper.class));
+                bind(UsernameHolder.class).toProvider(usernameHolderProvider);
             }
         }, new UnparsedModule());
         this.fileAccessServiceStub.setTypeRegistry(injector.getInstance(FileTypeRegistry.class));
@@ -361,8 +371,9 @@ public class FileManagementServiceTest extends AbstractServiceTest {
     @Test
     public void testUpdateAnnotationsFromMageTabFiles() throws Exception {
         final Project project = getMageTabSpecProject();
-        final CaArrayFileSet newFiles = getFileSet(TestMageTabSets.MAGE_TAB_SPECIFICATION_UPDATE_ANNOTATIONS_INPUT_SET,
-                this.fileAccessServiceStub);
+        final CaArrayFileSet newFiles =
+                getFileSet(TestMageTabSets.MAGE_TAB_SPECIFICATION_UPDATE_ANNOTATIONS_INPUT_SET,
+                        this.fileAccessServiceStub);
         addFiles(project, newFiles.getFiles());
         this.fileManagementService.importFiles(project, newFiles, null);
         // import should fail on update_annotations sdrf, but all original spec files should still be uploaded
@@ -414,8 +425,8 @@ public class FileManagementServiceTest extends AbstractServiceTest {
     }
 
     private Project getMageTabSpecProject() throws Exception {
-        final ArrayDesign design = importArrayDesign("design name", AffymetrixArrayDesignFiles.TEST3_CDF,
-                AFFYMETRIX_CDF);
+        final ArrayDesign design =
+                importArrayDesign("design name", AffymetrixArrayDesignFiles.TEST3_CDF, AFFYMETRIX_CDF);
 
         final Project project = new Project();
         project.getExperiment().getArrayDesigns().add(design);
@@ -666,7 +677,8 @@ public class FileManagementServiceTest extends AbstractServiceTest {
         }
 
         @Override
-        public <T extends PersistentObject> List<T> retrieveByIds(Class<T> entityClass, List<? extends Serializable> ids) {
+        public <T extends PersistentObject> List<T>
+                retrieveByIds(Class<T> entityClass, List<? extends Serializable> ids) {
             final List<T> list = new ArrayList<T>();
             for (final Serializable id : ids) {
                 final T t = this.retrieve(entityClass, (Long) id);

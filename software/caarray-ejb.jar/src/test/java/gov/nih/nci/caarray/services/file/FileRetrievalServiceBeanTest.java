@@ -131,7 +131,8 @@ public class FileRetrievalServiceBeanTest extends AbstractServiceTest {
 
         final FileRetrievalServiceBean bean = new FileRetrievalServiceBean();
         final DataStorageFacade dataStorageFacade = fasStub.createStorageFacade();
-        bean.setDependencies(searchDao, dataStorageFacade);
+        bean.setSearchDao(searchDao);
+        bean.setDataStorageFacade(dataStorageFacade);
 
         final CaArrayFile caArrayFile = new CaArrayFile();
         final byte[] bytes = bean.readFile(caArrayFile);

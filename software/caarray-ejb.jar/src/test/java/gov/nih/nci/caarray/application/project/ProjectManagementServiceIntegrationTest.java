@@ -224,12 +224,16 @@ public class ProjectManagementServiceIntegrationTest extends AbstractServiceInte
         final CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
 
         final GenericDataServiceBean genericDataServiceBean = new GenericDataServiceBean();
-        genericDataServiceBean.setDependencies(daoFactory.getSearchDao(), daoFactory.getProjectDao());
+        genericDataServiceBean.setProjectDao(daoFactory.getProjectDao());
+        genericDataServiceBean.setSearchDao(daoFactory.getSearchDao());
         this.genericDataService = genericDataServiceBean;
 
         final ProjectManagementServiceBean bean = new ProjectManagementServiceBean();
-        bean.setDependencies(daoFactory.getProjectDao(), daoFactory.getFileDao(), daoFactory.getSampleDao(),
-                daoFactory.getSearchDao(), daoFactory.getVocabularyDao());
+        bean.setProjectDao(daoFactory.getProjectDao());
+        bean.setFileDao(daoFactory.getFileDao());
+        bean.setSampleDao(daoFactory.getSampleDao());
+        bean.setSearchDao(daoFactory.getSearchDao());
+        bean.setVocabularyDao(daoFactory.getVocabularyDao());
 
         final ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
         locatorStub.addLookup(FileAccessService.JNDI_NAME, fileAccessServiceStub);
@@ -273,8 +277,8 @@ public class ProjectManagementServiceIntegrationTest extends AbstractServiceInte
             t.commit();
 
             t = this.hibernateHelper.beginTransaction();
-            DUMMY_PROJECT_1 = (Project) this.hibernateHelper.getCurrentSession().load(Project.class,
-                    DUMMY_PROJECT_1.getId());
+            DUMMY_PROJECT_1 =
+                    (Project) this.hibernateHelper.getCurrentSession().load(Project.class, DUMMY_PROJECT_1.getId());
             DUMMY_PROJECT_1.setLocked(false);
             this.hibernateHelper.getCurrentSession().refresh(DUMMY_PROJECT_1);
             this.projectManagementService.saveProject(DUMMY_PROJECT_1);
@@ -285,8 +289,8 @@ public class ProjectManagementServiceIntegrationTest extends AbstractServiceInte
             t.commit();
 
             t = this.hibernateHelper.beginTransaction();
-            final Project retrieved = this.genericDataService.getPersistentObject(Project.class,
-                    DUMMY_PROJECT_1.getId());
+            final Project retrieved =
+                    this.genericDataService.getPersistentObject(Project.class, DUMMY_PROJECT_1.getId());
             t.commit();
             assertNull(retrieved);
 

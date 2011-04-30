@@ -92,7 +92,6 @@ import gov.nih.nci.caarray.application.jobqueue.JobQueueService;
 import gov.nih.nci.caarray.application.permissions.PermissionsManagementService;
 import gov.nih.nci.caarray.application.project.ProjectManagementService;
 import gov.nih.nci.caarray.application.registration.RegistrationService;
-import gov.nih.nci.caarray.application.translation.gct.GctExporter;
 import gov.nih.nci.caarray.application.translation.geosoft.GeoSoftExporter;
 import gov.nih.nci.caarray.application.translation.magetab.MageTabExporter;
 import gov.nih.nci.caarray.application.translation.magetab.MageTabTranslator;
@@ -256,15 +255,6 @@ public final class ServiceLocatorFactory {
      */
     public static GeoSoftExporter getGeoSoftExporter() {
         return (GeoSoftExporter) getLocator().lookup(GeoSoftExporter.JNDI_NAME);
-    }
-
-    /**
-     * Convenience method for obtaining the GCT Exporter singleton service.
-     * 
-     * @return the GCT Exporter service
-     */
-    public static GctExporter getGctExporter() {
-        return (GctExporter) getLocator().lookup(GctExporter.JNDI_NAME);
     }
 
     /**

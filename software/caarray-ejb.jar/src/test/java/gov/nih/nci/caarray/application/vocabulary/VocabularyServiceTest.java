@@ -108,8 +108,9 @@ public class VocabularyServiceTest extends AbstractServiceTest {
     @Before
     public void setUpService() {
         final VocabularyServiceBean vsBean = new VocabularyServiceBean();
-        vsBean.setDependencies(this.daoFactoryStub.getSearchDao(), this.daoFactoryStub.getProtocolDao(),
-                this.daoFactoryStub.getVocabularyDao());
+        vsBean.setProtocolDao(this.daoFactoryStub.getProtocolDao());
+        vsBean.setSearchDao(this.daoFactoryStub.getSearchDao());
+        vsBean.setVocabularyDao(this.daoFactoryStub.getVocabularyDao());
         this.vocabularyService = vsBean;
 
         source = new TermSource();

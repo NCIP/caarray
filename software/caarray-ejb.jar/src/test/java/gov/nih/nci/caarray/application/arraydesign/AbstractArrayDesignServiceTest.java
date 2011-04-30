@@ -101,6 +101,7 @@ import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
 import gov.nih.nci.caarray.dao.stub.SearchDaoStub;
 import gov.nih.nci.caarray.dao.stub.VocabularyDaoStub;
 import gov.nih.nci.caarray.dataStorage.DataStorageModule;
+import gov.nih.nci.caarray.dataStorage.fileSystem.FileSystemStorageModule;
 import gov.nih.nci.caarray.dataStorage.spi.DataStorage;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
@@ -217,6 +218,8 @@ public class AbstractArrayDesignServiceTest extends AbstractServiceTest {
 
                 bind(SessionTransactionManager.class).to(SessionTransactionManagerNoOpImpl.class);
 
+                bind(String.class).annotatedWith(Names.named(FileSystemStorageModule.BASE_DIR_KEY)).toInstance(
+                        System.getProperty("java.io.tmpdir"));
                 bind(String.class).annotatedWith(Names.named(DataStorageModule.FILE_DATA_ENGINE)).toInstance(
                         "file-system");
                 bind(String.class).annotatedWith(Names.named(DataStorageModule.PARSED_DATA_ENGINE)).toInstance(

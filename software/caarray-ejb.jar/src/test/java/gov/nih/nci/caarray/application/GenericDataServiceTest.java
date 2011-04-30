@@ -106,7 +106,7 @@ import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 
 /**
  * Class to test the generic service.
- *
+ * 
  * @author Scott Miller
  */
 @SuppressWarnings("PMD.AvoidDuplicateLiterals")
@@ -118,12 +118,12 @@ public class GenericDataServiceTest extends AbstractServiceTest {
 
     @Before
     public void setUpService() {
-        GenericDataServiceBean serviceBean = new GenericDataServiceBean();
-        serviceBean.setDependencies(this.daoFactoryStub.getSearchDao(),
-                this.daoFactoryStub.getProjectDao());
+        final GenericDataServiceBean serviceBean = new GenericDataServiceBean();
+        serviceBean.setProjectDao(this.daoFactoryStub.getProjectDao());
+        serviceBean.setSearchDao(this.daoFactoryStub.getSearchDao());
         this.service = serviceBean;
-        
-        ((SearchDaoStub)this.daoFactoryStub.getSearchDao()).reset();
+
+        ((SearchDaoStub) this.daoFactoryStub.getSearchDao()).reset();
     }
 
     @Test
@@ -133,17 +133,14 @@ public class GenericDataServiceTest extends AbstractServiceTest {
 
         obj = this.service.getPersistentObject(Project.class, 1l);
 
-        if(!((Project)obj).isLocked())
-        {
+        if (!((Project) obj).isLocked()) {
             assertEquals(SecurityLevel.NO_VISIBILITY, ((Project) obj).getPublicProfile().getSecurityLevel());
-        }
-        else
-        {
+        } else {
             assertEquals(SecurityLevel.VISIBLE, ((Project) obj).getPublicProfile().getSecurityLevel());
         }
 
     }
-    
+
     @Test
     public void testRetrieveByIds() throws IllegalAccessException, InstantiationException {
         List<Project> lst = this.service.retrieveByIds(Project.class, Collections.singletonList(1L));
@@ -152,7 +149,6 @@ public class GenericDataServiceTest extends AbstractServiceTest {
         lst = this.service.retrieveByIds(Project.class, Collections.singletonList(9L));
         assertEquals(0, lst.size());
     }
-    
 
     @Test
     public void testGetIncrementingCopyName() {
@@ -166,7 +162,7 @@ public class GenericDataServiceTest extends AbstractServiceTest {
 
     @Test
     public void testDelete() {
-        Project p = new Project();
+        final Project p = new Project();
         this.service.delete(p);
         assertEquals(p, ((LocalProjectDaoStub) this.daoFactoryStub.getProjectDao()).deletedObject);
     }
@@ -174,13 +170,13 @@ public class GenericDataServiceTest extends AbstractServiceTest {
     @Test
     public void testFilterCollection() {
         this.service.filterCollection(null, null, null);
-        assertEquals(1, ((SearchDaoStub)this.daoFactoryStub.getSearchDao()).getCallsToFiltercollection());
+        assertEquals(1, ((SearchDaoStub) this.daoFactoryStub.getSearchDao()).getCallsToFiltercollection());
     }
 
     @Test
     public void testPageAndFilterCollection() {
         this.service.pageAndFilterCollection(new ArrayList<Sample>(), "name", null, null);
-        assertEquals(1, ((SearchDaoStub)this.daoFactoryStub.getSearchDao()).getCallsToPageAndFilterCollection());
+        assertEquals(1, ((SearchDaoStub) this.daoFactoryStub.getSearchDao()).getCallsToPageAndFilterCollection());
     }
 
     private static class LocalDaoFactoryStub extends DaoFactoryStub {
@@ -224,7 +220,6 @@ public class GenericDataServiceTest extends AbstractServiceTest {
             this.deletedObject = caArrayEntity;
         }
 
-
         /**
          * @return last 'deleted' object, if any
          */
@@ -247,17 +242,18 @@ public class GenericDataServiceTest extends AbstractServiceTest {
             }
             return null;
         }
-        
+
         @Override
-        public <T extends PersistentObject> List<T> retrieveByIds(Class<T> entityClass, List<? extends Serializable> ids) {
-            List<T> list = new ArrayList<T>();
+        public <T extends PersistentObject> List<T>
+                retrieveByIds(Class<T> entityClass, List<? extends Serializable> ids) {
+            final List<T> list = new ArrayList<T>();
             if (Project.class.equals(entityClass)) {
                 if (ids.contains(1L)) {
                     try {
                         list.add(entityClass.newInstance());
-                    } catch (InstantiationException e) { // NOPMD
-                        // nothing to do - test will fail 
-                    } catch (IllegalAccessException e) { // NOPMD
+                    } catch (final InstantiationException e) { // NOPMD
+                        // nothing to do - test will fail
+                    } catch (final IllegalAccessException e) { // NOPMD
                         // nothing to do - test will fail
                     }
                 }

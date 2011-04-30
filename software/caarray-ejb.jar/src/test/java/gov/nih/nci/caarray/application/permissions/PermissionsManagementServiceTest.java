@@ -168,8 +168,9 @@ public class PermissionsManagementServiceTest extends AbstractServiceTest {
     @Before
     public void setup() {
         final PermissionsManagementServiceBean bean = new PermissionsManagementServiceBean();
-        bean.setDependencies(hibernateHelper, this.daoFactoryStub.getCollaboratorGroupDao(),
-                this.daoFactoryStub.getSearchDao());
+        bean.setHibernateHelper(hibernateHelper);
+        bean.setCollaboratorGroupDao(this.daoFactoryStub.getCollaboratorGroupDao());
+        bean.setSearchDao(this.daoFactoryStub.getSearchDao());
         bean.setGenericDataService(this.genericDataServiceStub);
 
         this.permissionsManagementService = bean;
@@ -304,8 +305,9 @@ public class PermissionsManagementServiceTest extends AbstractServiceTest {
                 return ((User) o).getLoginName().equals(SecurityUtils.ANONYMOUS_USERNAME);
             }
         };
-        final Group g = (Group) hibernateHelper.getCurrentSession().load(Group.class,
-                SecurityUtils.findGroupByName(SecurityUtils.ANONYMOUS_GROUP).getGroupId());
+        final Group g =
+                (Group) hibernateHelper.getCurrentSession().load(Group.class,
+                        SecurityUtils.findGroupByName(SecurityUtils.ANONYMOUS_GROUP).getGroupId());
         assertTrue(CollectionUtils.exists(g.getUsers(), anonUserExists));
         this.permissionsManagementService.addUsers(SecurityUtils.ANONYMOUS_GROUP, "biostatistician");
         hibernateHelper.getCurrentSession().refresh(g);
@@ -315,8 +317,9 @@ public class PermissionsManagementServiceTest extends AbstractServiceTest {
 
     @Test
     public void testGetUsers() {
-        final Number count = (Number) hibernateHelper.getCurrentSession().createCriteria(User.class)
-                .setProjection(Projections.rowCount()).uniqueResult();
+        final Number count =
+                (Number) hibernateHelper.getCurrentSession().createCriteria(User.class)
+                        .setProjection(Projections.rowCount()).uniqueResult();
         final List<User> users = this.permissionsManagementService.getUsers(null);
         assertNotNull(users);
         assertEquals(count.intValue(), users.size());
@@ -324,8 +327,9 @@ public class PermissionsManagementServiceTest extends AbstractServiceTest {
 
     @Test
     public void testGetCollaboratorGroupsForOwner() throws Exception {
-        User u = CaArrayUsernameHolder.getCsmUser();
-        List<CollaboratorGroup> l = this.permissionsManagementService.getCollaboratorGroupsForOwner(u.getUserId().longValue());
+        final User u = CaArrayUsernameHolder.getCsmUser();
+        final List<CollaboratorGroup> l =
+                this.permissionsManagementService.getCollaboratorGroupsForOwner(u.getUserId().longValue());
         assertSame(Collections.EMPTY_LIST, l);
     }
 

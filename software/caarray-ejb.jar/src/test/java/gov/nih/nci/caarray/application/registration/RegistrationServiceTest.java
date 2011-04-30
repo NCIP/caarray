@@ -92,7 +92,7 @@ import org.junit.Test;
 
 /**
  * @author John Hedden (Amentra, Inc.)
- *
+ * 
  */
 public class RegistrationServiceTest extends AbstractServiceTest {
 
@@ -101,16 +101,16 @@ public class RegistrationServiceTest extends AbstractServiceTest {
     @Before
     public void setUp() {
         final DaoFactoryStub daoFactory = new DaoFactoryStub();
-        
-        RegistrationServiceBean registrationServiceBean = new RegistrationServiceBean();
-        registrationServiceBean.setDependencies(daoFactory.getSearchDao());
-        
+
+        final RegistrationServiceBean registrationServiceBean = new RegistrationServiceBean();
+        registrationServiceBean.setSearchDao(daoFactory.getSearchDao());
+
         this.registrationService = registrationServiceBean;
     }
 
     @Test
     public void testRegister() {
-        RegistrationRequest registrationRequest = new RegistrationRequest();
+        final RegistrationRequest registrationRequest = new RegistrationRequest();
         registrationRequest.setFirstName("test");
         registrationRequest.setLastName("test");
         registrationRequest.setAddress1("test address1");
@@ -120,7 +120,7 @@ public class RegistrationServiceTest extends AbstractServiceTest {
         registrationRequest.setRole("test role");
         registrationRequest.setCity("test city");
         registrationRequest.setZip("12345");
-        Country country = new Country();
+        final Country country = new Country();
         country.setCode("US");
         registrationRequest.setCountry(country);
         this.registrationService.register(registrationRequest);

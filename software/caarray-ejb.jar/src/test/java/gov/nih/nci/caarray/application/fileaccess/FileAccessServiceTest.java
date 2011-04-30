@@ -148,10 +148,13 @@ public class FileAccessServiceTest extends AbstractServiceTest {
         when(this.dataStorageFacade.addFile(any(InputStream.class), anyBoolean())).thenReturn(TEST_METADATA);
 
         this.fileAccessService = new FileAccessServiceBean();
-        final FileTypeRegistry typeRegistry = new FileTypeRegistryImpl(Collections.<DataFileHandler> emptySet(),
-                Collections.<DesignFileHandler> emptySet());
-        this.fileAccessService.setDependencies(this.fileDao, this.arrayDao, this.dataStorageFacade, typeRegistry);
-
+        final FileTypeRegistry typeRegistry =
+                new FileTypeRegistryImpl(Collections.<DataFileHandler> emptySet(),
+                        Collections.<DesignFileHandler> emptySet());
+        this.fileAccessService.setFileDao(this.fileDao);
+        this.fileAccessService.setArrayDao(this.arrayDao);
+        this.fileAccessService.setDataStorageFacade(this.dataStorageFacade);
+        this.fileAccessService.setTypeRegistry(typeRegistry);
     }
 
     @Test
@@ -196,8 +199,8 @@ public class FileAccessServiceTest extends AbstractServiceTest {
     @Test
     public void testAddKnownTypeWithInputStream() throws IOException, FileAccessException {
         final String contents = "test";
-        final CaArrayFile caArrayFile = this.fileAccessService.add(new ByteArrayInputStream(contents.getBytes()),
-                "testfile1.idf");
+        final CaArrayFile caArrayFile =
+                this.fileAccessService.add(new ByteArrayInputStream(contents.getBytes()), "testfile1.idf");
         assertEquals("testfile1.idf", caArrayFile.getName());
         assertEquals(FileStatus.UPLOADED, caArrayFile.getFileStatus());
         assertEquals(FileTypeRegistry.MAGE_TAB_IDF, caArrayFile.getFileType());

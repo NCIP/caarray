@@ -188,65 +188,64 @@ import org.hibernate.Transaction;
 import org.junit.Ignore;
 import org.junit.Test;
 
-//TODO: ARRAY-1942 follow-on tasks for <ARRAY-1896 Merge dkokotov_storage_osgi_consolidation Branch to trunk>
-//Need to fix: This class has ton of dependencies on FileType named constants defined in vendor plugins. 
 public class FileImportIntegrationTest extends AbstractFileManagementServiceIntegrationTest {
-    
     @Test
     public void testReimportProjectFiles() throws Exception {
-        ArrayDesign design = importArrayDesign(AgilentArrayDesignFiles.TEST_MIRNA_1_XML_SMALL, AgilentXmlDesignFileHandler.XML_FILE_TYPE);
+        final ArrayDesign design =
+                importArrayDesign(AgilentArrayDesignFiles.TEST_MIRNA_1_XML_SMALL,
+                        AgilentXmlDesignFileHandler.XML_FILE_TYPE);
         addDesignToExperiment(design);
 
-        Map<File, FileType> files = new HashMap<File, FileType>();
+        final Map<File, FileType> files = new HashMap<File, FileType>();
         files.put(AgilentArrayDataFiles.MIRNA, UnparsedDataHandler.FILE_TYPE_ILLUMINA_RAW_TXT);
 
         CaArrayFileSet fileSet = uploadFiles(files);
 
         importFiles(fileSet);
 
-        Transaction tx = hibernateHelper.beginTransaction();
+        Transaction tx = this.hibernateHelper.beginTransaction();
         Project project = getTestProject();
         assertEquals(1, project.getExperiment().getHybridizations().size());
         assertEquals(1, project.getExperiment().getHybridizations().iterator().next().getRawDataCollection().size());
 
         assertEquals(1, project.getImportedFiles().size());
         assertEquals(FileStatus.IMPORTED_NOT_PARSED, project.getImportedFiles().iterator().next().getFileStatus());
-        CaArrayFile f  = project.getImportedFiles().iterator().next();
+        final CaArrayFile f = project.getImportedFiles().iterator().next();
         f.setFileType(AgilentRawTextDataHandler.RAW_TXT_FILE_TYPE);
-        hibernateHelper.getCurrentSession().save(f);
+        this.hibernateHelper.getCurrentSession().save(f);
 
         tx.commit();
 
-        tx = hibernateHelper.beginTransaction();
+        tx = this.hibernateHelper.beginTransaction();
         project = getTestProject();
         fileSet = new CaArrayFileSet();
         fileSet.addAll(project.getImportedFiles());
         this.getFileManagementService().reimportAndParseProjectFiles(project, fileSet);
         tx.commit();
 
-        tx = hibernateHelper.beginTransaction();
+        tx = this.hibernateHelper.beginTransaction();
         project = getTestProject();
         assertEquals(1, project.getImportedFiles().size());
         assertEquals(1, project.getExperiment().getHybridizations().size());
         assertEquals(1, project.getExperiment().getHybridizations().iterator().next().getRawDataCollection().size());
         assertEquals("Agilent Raw Text", project.getExperiment().getHybridizations().iterator().next()
                 .getRawDataCollection().iterator().next().getType().getName());
-        CaArrayFile imported = project.getImportedFiles().iterator().next();
+        final CaArrayFile imported = project.getImportedFiles().iterator().next();
         assertEquals(FileStatus.IMPORTED, imported.getFileStatus());
         tx.commit();
     }
 
     @Test
     public void testImportMageTabSpecificationAndUpdateCharacteristics() throws Exception {
-        ArrayDesign design = importArrayDesign(AffymetrixArrayDesignFiles.TEST3_CDF);
+        final ArrayDesign design = importArrayDesign(AffymetrixArrayDesignFiles.TEST3_CDF);
         addDesignToExperiment(design);
-        
-        ArrayDesign design2 = importArrayDesign(AffymetrixArrayDesignFiles.HG_FOCUS_CDF);
+
+        final ArrayDesign design2 = importArrayDesign(AffymetrixArrayDesignFiles.HG_FOCUS_CDF);
         addDesignToExperiment(design2);
 
         importFiles(TestMageTabSets.MAGE_TAB_SPECIFICATION_INPUT_SET);
 
-        Transaction tx = hibernateHelper.beginTransaction();
+        Transaction tx = this.hibernateHelper.beginTransaction();
         Project project = getTestProject();
         assertEquals(FileStatus.IMPORTED, project.getFileSet().getStatus());
         assertTrue(project.getExperiment().getDescription().endsWith("MDR1 overexpression."));
@@ -262,13 +261,14 @@ public class FileImportIntegrationTest extends AbstractFileManagementServiceInte
         assertEquals("cell", testSource.getMaterialType().getValue());
         assertEquals("B_lymphoblast", testSource.getCellType().getValue());
         assertNull(testSource.getTissueSite());
-        assertEquals("Test3", project.getExperiment().getHybridizationByName("H_TK6 replicate 1").getArray().getDesign().getName());
+        assertEquals("Test3", project.getExperiment().getHybridizationByName("H_TK6 replicate 1").getArray()
+                .getDesign().getName());
         tx.commit();
 
         // now try to update annotations of existing biomaterials
         importFiles(TestMageTabSets.MAGE_TAB_SPECIFICATION_UPDATE_ANNOTATIONS_INPUT_SET);
 
-        tx = hibernateHelper.beginTransaction();
+        tx = this.hibernateHelper.beginTransaction();
         project = getTestProject();
         assertEquals(FileStatus.IMPORTED, project.getFileSet().getStatus());
         assertTrue(project.getExperiment().getDescription().endsWith("This sentence is added to the description."));
@@ -286,13 +286,14 @@ public class FileImportIntegrationTest extends AbstractFileManagementServiceInte
         testSource = findSource(project, "TK6neo replicate 2");
         assertEquals("B_lymphoblast", testSource.getCellType().getValue());
         assertNull(findSource(project, "TK6neo replicate 3"));
-        assertEquals("Test3", project.getExperiment().getHybridizationByName("H_TK6 replicate 1").getArray().getDesign().getName());
+        assertEquals("Test3", project.getExperiment().getHybridizationByName("H_TK6 replicate 1").getArray()
+                .getDesign().getName());
         tx.commit();
 
         // now try to add a new biomaterial while update existing biomaterials
         importFiles(TestMageTabSets.MAGE_TAB_SPECIFICATION_UPDATE_ANNOTATIONS_ADD_BM_INPUT_SET);
 
-        tx = hibernateHelper.beginTransaction();
+        tx = this.hibernateHelper.beginTransaction();
         project = getTestProject();
         assertEquals(FileStatus.IMPORTED, project.getFileSet().getStatus());
         assertTrue(project.getExperiment().getDescription().endsWith("This sentence is added to the description."));
@@ -311,32 +312,38 @@ public class FileImportIntegrationTest extends AbstractFileManagementServiceInte
         assertEquals("B_lymphoblast3", testSource.getCellType().getValue());
         testSource = findSource(project, "TK6neo replicate 3");
         assertEquals("cell", testSource.getMaterialType().getValue());
-        assertEquals("HG-Focus", project.getExperiment().getHybridizationByName("H_TK6 replicate 1").getArray().getDesign().getName());
+        assertEquals("HG-Focus", project.getExperiment().getHybridizationByName("H_TK6 replicate 1").getArray()
+                .getDesign().getName());
         tx.commit();
     }
 
     @Test
     public void testDataMatrixCopyNumberMageTabImportSuccess() throws Exception {
-        ArrayDesign design = importArrayDesign(AgilentArrayDesignFiles.TEST_SHORT_ACGH_XML, AgilentXmlDesignFileHandler.XML_FILE_TYPE);
+        final ArrayDesign design =
+                importArrayDesign(AgilentArrayDesignFiles.TEST_SHORT_ACGH_XML,
+                        AgilentXmlDesignFileHandler.XML_FILE_TYPE);
         addDesignToExperiment(design);
-        MageTabFileSet fileSet = new MageTabFileSet();
+        final MageTabFileSet fileSet = new MageTabFileSet();
         fileSet.addIdf(new JavaIOFileRef(MageTabDataFiles.GOOD_DATA_MATRIX_COPY_NUMER_IDF));
         fileSet.addSdrf(new JavaIOFileRef(MageTabDataFiles.GOOD_DATA_MATRIX_COPY_NUMER_SDRF));
         fileSet.addDataMatrix(new JavaIOFileRef(MageTabDataFiles.GOOD_DATA_MATRIX_COPY_NUMER_DATA));
         importFiles(fileSet, true);
 
-        Transaction tx = hibernateHelper.beginTransaction();
-        Project project = getTestProject();
+        final Transaction tx = this.hibernateHelper.beginTransaction();
+        final Project project = getTestProject();
         assertEquals(FileStatus.IMPORTED, project.getFileSet().getStatus());
         assertEquals(3, project.getExperiment().getHybridizations().size());
         tx.commit();
     }
-    
-    @Test(expected=IndexOutOfBoundsException.class) @Ignore
+
+    @Test(expected = IndexOutOfBoundsException.class)
+    @Ignore
     public void testDataMatrixCopyNumberMageTabImportFailDueToBadSdrfHybCount() throws Exception {
-        ArrayDesign design = importArrayDesign(AgilentArrayDesignFiles.TEST_SHORT_ACGH_XML, AgilentXmlDesignFileHandler.XML_FILE_TYPE);
+        final ArrayDesign design =
+                importArrayDesign(AgilentArrayDesignFiles.TEST_SHORT_ACGH_XML,
+                        AgilentXmlDesignFileHandler.XML_FILE_TYPE);
         addDesignToExperiment(design);
-        MageTabFileSet fileSet = new MageTabFileSet();
+        final MageTabFileSet fileSet = new MageTabFileSet();
         fileSet.addIdf(new JavaIOFileRef(MageTabDataFiles.BAD_DATA_MATRIX_COPY_NUMER_WRONG_HYB_COUNT_IDF));
         fileSet.addSdrf(new JavaIOFileRef(MageTabDataFiles.BAD_DATA_MATRIX_COPY_NUMER_WRONG_HYB_COUNT_SDRF));
         fileSet.addDataMatrix(new JavaIOFileRef(MageTabDataFiles.GOOD_DATA_MATRIX_COPY_NUMER_DATA));
@@ -346,41 +353,41 @@ public class FileImportIntegrationTest extends AbstractFileManagementServiceInte
 
     @Test
     public void testImportMageTabWithoutArrayDesignRef() throws Exception {
-        ArrayDesign design = importArrayDesign(AffymetrixArrayDesignFiles.TEST3_CDF);
+        final ArrayDesign design = importArrayDesign(AffymetrixArrayDesignFiles.TEST3_CDF);
         addDesignToExperiment(design);
 
         importFiles(TestMageTabSets.EXTENDED_FACTOR_VALUES_INPUT_SET);
 
-        Transaction tx = hibernateHelper.beginTransaction();
-        Project project = getTestProject();
+        final Transaction tx = this.hibernateHelper.beginTransaction();
+        final Project project = getTestProject();
         assertEquals(5, project.getImportedFiles().size());
         assertEquals(3, project.getExperiment().getHybridizations().size());
-        for (Hybridization h : project.getExperiment().getHybridizations()) {
+        for (final Hybridization h : project.getExperiment().getHybridizations()) {
             assertEquals("Test3", h.getArray().getDesign().getName());
         }
-        tx.commit();        
+        tx.commit();
     }
 
     @Test
     public void testImportMageTabWithoutArrayDesignRef2() throws Exception {
-        ArrayDesign design = importArrayDesign(AffymetrixArrayDesignFiles.TEST3_CDF);
+        final ArrayDesign design = importArrayDesign(AffymetrixArrayDesignFiles.TEST3_CDF);
         addDesignToExperiment(design);
 
-        CaArrayFileSet fileSet = uploadFiles(TestMageTabSets.EXTENDED_FACTOR_VALUES_INPUT_SET);
-        
-        Transaction tx = hibernateHelper.beginTransaction();
-        for (CaArrayFile file : fileSet.getFilesByType(CelHandler.CEL_FILE_TYPE)) {
+        final CaArrayFileSet fileSet = uploadFiles(TestMageTabSets.EXTENDED_FACTOR_VALUES_INPUT_SET);
+
+        Transaction tx = this.hibernateHelper.beginTransaction();
+        for (final CaArrayFile file : fileSet.getFilesByType(CelHandler.CEL_FILE_TYPE)) {
             file.setFileType(UnparsedDataHandler.FILE_TYPE_AFFYMETRIX_DAT);
         }
         tx.commit();
 
         importFiles(fileSet, null);
 
-        tx = hibernateHelper.beginTransaction();
-        Project project = getTestProject();
+        tx = this.hibernateHelper.beginTransaction();
+        final Project project = getTestProject();
         assertEquals(5, project.getImportedFiles().size());
         assertEquals(3, project.getExperiment().getHybridizations().size());
-        for (Hybridization h : project.getExperiment().getHybridizations()) {
+        for (final Hybridization h : project.getExperiment().getHybridizations()) {
             assertEquals("Test3", h.getArray().getDesign().getName());
         }
         tx.commit();
@@ -388,34 +395,35 @@ public class FileImportIntegrationTest extends AbstractFileManagementServiceInte
 
     @Test
     public void testImportNonMageTabWithoutArrayDesign() throws Exception {
-        ArrayDesign design = importArrayDesign(AffymetrixArrayDesignFiles.TEST3_CDF);
+        final ArrayDesign design = importArrayDesign(AffymetrixArrayDesignFiles.TEST3_CDF);
         addDesignToExperiment(design);
 
-        MageTabFileSet inputFiles = new MageTabFileSet();
-        for (FileRef f : TestMageTabSets.EXTENDED_FACTOR_VALUES_INPUT_SET.getAllFiles()) {
+        final MageTabFileSet inputFiles = new MageTabFileSet();
+        for (final FileRef f : TestMageTabSets.EXTENDED_FACTOR_VALUES_INPUT_SET.getAllFiles()) {
             if (f.getName().endsWith("CEL")) {
                 inputFiles.addNativeData(f);
             }
         }
-        MageTabDocumentSet docSet = MageTabParser.INSTANCE.parse(TestMageTabSets.EXTENDED_FACTOR_VALUES_INPUT_SET); 
+        final MageTabDocumentSet docSet =
+                MageTabParser.INSTANCE.parse(TestMageTabSets.EXTENDED_FACTOR_VALUES_INPUT_SET);
         docSet.getIdfDocuments().clear();
         docSet.getSdrfDocuments().clear();
 
-        CaArrayFileSet fileSet = uploadFiles(inputFiles);
-        
-        Transaction tx = hibernateHelper.beginTransaction();
-        for (CaArrayFile file : fileSet.getFilesByType(CelHandler.CEL_FILE_TYPE)) {
+        final CaArrayFileSet fileSet = uploadFiles(inputFiles);
+
+        Transaction tx = this.hibernateHelper.beginTransaction();
+        for (final CaArrayFile file : fileSet.getFilesByType(CelHandler.CEL_FILE_TYPE)) {
             file.setFileType(UnparsedDataHandler.FILE_TYPE_AFFYMETRIX_DAT);
         }
         tx.commit();
 
         importFiles(fileSet, DataImportOptions.getAutoCreatePerFileOptions());
 
-        tx = hibernateHelper.beginTransaction();
-        Project project = getTestProject();
+        tx = this.hibernateHelper.beginTransaction();
+        final Project project = getTestProject();
         assertEquals(3, project.getImportedFiles().size());
         assertEquals(3, project.getExperiment().getHybridizations().size());
-        for (Hybridization h : project.getExperiment().getHybridizations()) {
+        for (final Hybridization h : project.getExperiment().getHybridizations()) {
             assertEquals("Test3", h.getArray().getDesign().getName());
         }
         tx.commit();
@@ -423,21 +431,23 @@ public class FileImportIntegrationTest extends AbstractFileManagementServiceInte
 
     @Test
     public void testReimport() throws Exception {
-        ArrayDesign design = importArrayDesign(AgilentArrayDesignFiles.TEST_GENE_EXPRESSION_1_XML, UnparsedArrayDesignFileHandler.AGILENT_CSV);
+        ArrayDesign design =
+                importArrayDesign(AgilentArrayDesignFiles.TEST_GENE_EXPRESSION_1_XML,
+                        UnparsedArrayDesignFileHandler.AGILENT_CSV);
         assertNull(design.getDesignDetails());
 
-        Transaction tx = hibernateHelper.beginTransaction();
+        Transaction tx = this.hibernateHelper.beginTransaction();
         design.getFirstDesignFile().setFileType(AgilentXmlDesignFileHandler.XML_FILE_TYPE);
-        hibernateHelper.getCurrentSession().saveOrUpdate(design);
+        this.hibernateHelper.getCurrentSession().saveOrUpdate(design);
         tx.commit();
 
-        tx = hibernateHelper.beginTransaction();
-        hibernateHelper.getCurrentSession().evict(design);        
-        this.getFileManagementService().reimportAndParseArrayDesign(design.getId());        
+        tx = this.hibernateHelper.beginTransaction();
+        this.hibernateHelper.getCurrentSession().evict(design);
+        this.getFileManagementService().reimportAndParseArrayDesign(design.getId());
         tx.commit();
 
-        tx = hibernateHelper.beginTransaction();
-        design = (ArrayDesign) hibernateHelper.getCurrentSession().load(ArrayDesign.class, design.getId());
+        tx = this.hibernateHelper.beginTransaction();
+        design = (ArrayDesign) this.hibernateHelper.getCurrentSession().load(ArrayDesign.class, design.getId());
         assertNotNull(design.getDesignDetails());
         assertEquals(45220, design.getNumberOfFeatures().intValue());
         assertEquals(45220, design.getDesignDetails().getFeatures().size());
@@ -446,23 +456,25 @@ public class FileImportIntegrationTest extends AbstractFileManagementServiceInte
 
     @Test
     public void testReimportWithReferencingExperiment() throws Exception {
-        ArrayDesign design = importArrayDesign(AgilentArrayDesignFiles.TEST_GENE_EXPRESSION_1_XML, UnparsedArrayDesignFileHandler.AGILENT_CSV);
+        ArrayDesign design =
+                importArrayDesign(AgilentArrayDesignFiles.TEST_GENE_EXPRESSION_1_XML,
+                        UnparsedArrayDesignFileHandler.AGILENT_CSV);
         assertNull(design.getDesignDetails());
 
         addDesignToExperiment(design);
 
-        Transaction tx = hibernateHelper.beginTransaction();
+        Transaction tx = this.hibernateHelper.beginTransaction();
         design.getFirstDesignFile().setFileType(AgilentXmlDesignFileHandler.XML_FILE_TYPE);
-        hibernateHelper.getCurrentSession().saveOrUpdate(design);
+        this.hibernateHelper.getCurrentSession().saveOrUpdate(design);
         tx.commit();
 
-        tx = hibernateHelper.beginTransaction();
-        hibernateHelper.getCurrentSession().evict(design);        
-        this.getFileManagementService().reimportAndParseArrayDesign(design.getId());        
+        tx = this.hibernateHelper.beginTransaction();
+        this.hibernateHelper.getCurrentSession().evict(design);
+        this.getFileManagementService().reimportAndParseArrayDesign(design.getId());
         tx.commit();
 
-        tx = hibernateHelper.beginTransaction();
-        design = (ArrayDesign) hibernateHelper.getCurrentSession().load(ArrayDesign.class, design.getId());
+        tx = this.hibernateHelper.beginTransaction();
+        design = (ArrayDesign) this.hibernateHelper.getCurrentSession().load(ArrayDesign.class, design.getId());
         assertNotNull(design.getDesignDetails());
         assertEquals(45220, design.getNumberOfFeatures().intValue());
         assertEquals(45220, design.getDesignDetails().getFeatures().size());
@@ -472,228 +484,247 @@ public class FileImportIntegrationTest extends AbstractFileManagementServiceInte
     @Test
     public void testIlluminaCsvDataImport() throws Exception {
         final int numberOfProbes = 10;
-        importDesignAndDataFilesIntoProject(IlluminaArrayDesignFiles.HUMAN_WG6_CSV,
-                CsvDataHandler.DATA_CSV_FILE_TYPE, IlluminaArrayDataFiles.HUMAN_WG6_SMALL);
-        Transaction tx = hibernateHelper.beginTransaction();
-        Project project = getTestProject();
-        ArrayDesign design = project.getExperiment().getArrayDesigns().iterator().next();
-        Hybridization hyb = project.getExperiment().getHybridizations().iterator().next();
-        List<AbstractDesignElement> l = hyb.getDerivedDataCollection().iterator().next().getDataSet().getDesignElementList().getDesignElements();
+        importDesignAndDataFilesIntoProject(IlluminaArrayDesignFiles.HUMAN_WG6_CSV, CsvDataHandler.DATA_CSV_FILE_TYPE,
+                IlluminaArrayDataFiles.HUMAN_WG6_SMALL);
+        final Transaction tx = this.hibernateHelper.beginTransaction();
+        final Project project = getTestProject();
+        final ArrayDesign design = project.getExperiment().getArrayDesigns().iterator().next();
+        final Hybridization hyb = project.getExperiment().getHybridizations().iterator().next();
+        final List<AbstractDesignElement> l =
+                hyb.getDerivedDataCollection().iterator().next().getDataSet().getDesignElementList()
+                        .getDesignElements();
         assertEquals(numberOfProbes, l.size());
-        for (AbstractDesignElement de : l) {
-            PhysicalProbe p = (PhysicalProbe) de;
+        for (final AbstractDesignElement de : l) {
+            final PhysicalProbe p = (PhysicalProbe) de;
             assertTrue(design.getDesignDetails().getProbes().contains(p));
         }
-        List<HybridizationData> hdl = hyb.getDerivedDataCollection().iterator().next().getDataSet().getHybridizationDataList();
+        final List<HybridizationData> hdl =
+                hyb.getDerivedDataCollection().iterator().next().getDataSet().getHybridizationDataList();
         assertEquals(19, hdl.size());
-        for (HybridizationData hd : hdl){
+        for (final HybridizationData hd : hdl) {
             assertEquals(4, hd.getColumns().size());
-            List<String> intColumns = new ArrayList<String>(Arrays.asList(
-                    SampleProbeProfileQuantitationType.AVG_NBEADS.getName()));
-            List<String> floatColumns = new ArrayList<String>(Arrays.asList(
-                    SampleProbeProfileQuantitationType.AVG_SIGNAL.getName(),
-                    SampleProbeProfileQuantitationType.BEAD_STDEV.getName(),
-                    SampleProbeProfileQuantitationType.DETECTION.getName()));
-            for (AbstractDataColumn c : hd.getColumns()) {
-                String name = c.getQuantitationType().getName();
+            final List<String> intColumns =
+                    new ArrayList<String>(Arrays.asList(SampleProbeProfileQuantitationType.AVG_NBEADS.getName()));
+            final List<String> floatColumns =
+                    new ArrayList<String>(Arrays.asList(SampleProbeProfileQuantitationType.AVG_SIGNAL.getName(),
+                            SampleProbeProfileQuantitationType.BEAD_STDEV.getName(),
+                            SampleProbeProfileQuantitationType.DETECTION.getName()));
+            for (final AbstractDataColumn c : hd.getColumns()) {
+                final String name = c.getQuantitationType().getName();
                 if (intColumns.contains(name)) {
                     assertEquals(numberOfProbes, ((IntegerColumn) c).getValues().length);
-                    assertTrue("missing " + c.getQuantitationType(), intColumns.remove(c.getQuantitationType().getName()));                                        
+                    assertTrue("missing " + c.getQuantitationType(),
+                            intColumns.remove(c.getQuantitationType().getName()));
                 } else if (floatColumns.contains(name)) {
                     assertEquals(numberOfProbes, ((FloatColumn) c).getValues().length);
-                    assertTrue("missing " + c.getQuantitationType(), floatColumns.remove(c.getQuantitationType().getName()));                    
+                    assertTrue("missing " + c.getQuantitationType(),
+                            floatColumns.remove(c.getQuantitationType().getName()));
                 } else {
                     fail("unexpected column: " + name);
                 }
             }
             assertTrue("not all columns present", intColumns.isEmpty() && floatColumns.isEmpty());
         }
-        tx.commit();        
+        tx.commit();
     }
 
     @Test
     public void testIlluminaSampleProbeProfileImport() throws Exception {
         importDesignAndDataFilesIntoProject(IlluminaArrayDesignFiles.MOUSE_REF_8,
                 SampleProbeProfileHandler.SAMPLE_PROBE_PROFILE_FILE_TYPE, IlluminaArrayDataFiles.SAMPLE_PROBE_PROFILE);
-        Transaction tx = hibernateHelper.beginTransaction();
-        Project project = getTestProject();
-        ArrayDesign design = project.getExperiment().getArrayDesigns().iterator().next();
-        Hybridization hyb = project.getExperiment().getHybridizations().iterator().next();
-        List<AbstractDesignElement> l = hyb.getDerivedDataCollection().iterator().next().getDataSet().getDesignElementList().getDesignElements();
+        final Transaction tx = this.hibernateHelper.beginTransaction();
+        final Project project = getTestProject();
+        final ArrayDesign design = project.getExperiment().getArrayDesigns().iterator().next();
+        final Hybridization hyb = project.getExperiment().getHybridizations().iterator().next();
+        final List<AbstractDesignElement> l =
+                hyb.getDerivedDataCollection().iterator().next().getDataSet().getDesignElementList()
+                        .getDesignElements();
         assertEquals(3, l.size());
-        for (AbstractDesignElement de : l) {
-            PhysicalProbe p = (PhysicalProbe) de;
+        for (final AbstractDesignElement de : l) {
+            final PhysicalProbe p = (PhysicalProbe) de;
             assertTrue(design.getDesignDetails().getProbes().contains(p));
         }
-        List<HybridizationData> hdl = hyb.getDerivedDataCollection().iterator().next().getDataSet().getHybridizationDataList();
+        final List<HybridizationData> hdl =
+                hyb.getDerivedDataCollection().iterator().next().getDataSet().getHybridizationDataList();
         assertEquals(16, hdl.size());
-        for (HybridizationData hd : hdl){
+        for (final HybridizationData hd : hdl) {
             assertEquals(8, hd.getColumns().size());
-            List<String> intColumns = new ArrayList<String>(Arrays.asList(
-                    SampleProbeProfileQuantitationType.NARRAYS.getName(),
-                    SampleProbeProfileQuantitationType.AVG_NBEADS.getName()));
-            List<String> floatColumns = new ArrayList<String>(Arrays.asList(
-                    SampleProbeProfileQuantitationType.MIN_SIGNAL.getName(),
-                    SampleProbeProfileQuantitationType.AVG_SIGNAL.getName(),
-                    SampleProbeProfileQuantitationType.MAX_SIGNAL.getName(),
-                    SampleProbeProfileQuantitationType.ARRAY_STDEV.getName(),
-                    SampleProbeProfileQuantitationType.BEAD_STDEV.getName(),
-                    SampleProbeProfileQuantitationType.DETECTION.getName()));
-            for (AbstractDataColumn c : hd.getColumns()) {
-                String name = c.getQuantitationType().getName();
+            final List<String> intColumns =
+                    new ArrayList<String>(Arrays.asList(SampleProbeProfileQuantitationType.NARRAYS.getName(),
+                            SampleProbeProfileQuantitationType.AVG_NBEADS.getName()));
+            final List<String> floatColumns =
+                    new ArrayList<String>(Arrays.asList(SampleProbeProfileQuantitationType.MIN_SIGNAL.getName(),
+                            SampleProbeProfileQuantitationType.AVG_SIGNAL.getName(),
+                            SampleProbeProfileQuantitationType.MAX_SIGNAL.getName(),
+                            SampleProbeProfileQuantitationType.ARRAY_STDEV.getName(),
+                            SampleProbeProfileQuantitationType.BEAD_STDEV.getName(),
+                            SampleProbeProfileQuantitationType.DETECTION.getName()));
+            for (final AbstractDataColumn c : hd.getColumns()) {
+                final String name = c.getQuantitationType().getName();
                 if (intColumns.contains(name)) {
                     assertEquals(3, ((IntegerColumn) c).getValues().length);
-                    assertTrue("missing " + c.getQuantitationType(), intColumns.remove(c.getQuantitationType().getName()));                                        
+                    assertTrue("missing " + c.getQuantitationType(),
+                            intColumns.remove(c.getQuantitationType().getName()));
                 } else if (floatColumns.contains(name)) {
                     assertEquals(3, ((FloatColumn) c).getValues().length);
-                    assertTrue("missing " + c.getQuantitationType(), floatColumns.remove(c.getQuantitationType().getName()));                    
+                    assertTrue("missing " + c.getQuantitationType(),
+                            floatColumns.remove(c.getQuantitationType().getName()));
                 } else {
                     fail("unexpected column: " + name);
                 }
             }
             assertTrue("not all columns present", intColumns.isEmpty() && floatColumns.isEmpty());
         }
-        tx.commit();        
+        tx.commit();
     }
 
- //TODO: ARRAY-1942 follow-on tasks for <ARRAY-1896 Merge dkokotov_storage_osgi_consolidation Branch to trunk>
- //Temporarily comment out the below test. It needs to be moved to vendor plugin specific test package.   
- //Otherwise ant targets test:compile:caarray-plugins.test.classes and test:compile:caarray-ejb.test.classes 
- //would have circular dependency that cause them to fail.     
-//    @Test
-//    public void testIlluminaGenotypingProcessedMatrixImport() throws Exception {
-//        Transaction tx = hibernateHelper.beginTransaction();
-//        ArrayDesign design = IlluminaGenotypingProcessedMatrixHandlerIntegrationTest.buildArrayDesign();
-//        hibernateHelper.getCurrentSession().save(design);        
-//        tx.commit();
-//
-//        importDataFilesIntoProject(design, GenotypingProcessedMatrixHandler.GENOTYPING_MATRIX_FILE_TYPE,
-//                IlluminaArrayDataFiles.ILLUMINA_DERIVED_1_HYB);
-//        tx = hibernateHelper.beginTransaction();
-//        Project project = getTestProject();
-//        design = (ArrayDesign) hibernateHelper.getCurrentSession().load(ArrayDesign.class, design.getId());
-//        Hybridization hyb = project.getExperiment().getHybridizations().iterator().next();        
-//        List<AbstractDesignElement> l = hyb.getDerivedDataCollection().iterator().next().getDataSet().getDesignElementList().getDesignElements();
-//        assertEquals(3, l.size());
-//        for (AbstractDesignElement de : l) {
-//            PhysicalProbe p = (PhysicalProbe) de;
-//            assertTrue(design.getDesignDetails().getProbes().contains(p));
-//        }
-//        List<HybridizationData> hdl = hyb.getDerivedDataCollection().iterator().next().getDataSet().getHybridizationDataList();
-//        assertEquals(1, hdl.size());
-//        assertEquals(6, hdl.get(0).getColumns().size());
-//        List<String> stringColumns = new ArrayList<String>(
-//                Arrays.asList(IlluminaGenotypingProcessedMatrixQuantitationType.ALLELE.getName()));
-//        List<String> floatColumns = new ArrayList<String>(Arrays.asList(
-//                IlluminaGenotypingProcessedMatrixQuantitationType.B_ALLELE_FREQ.getName(),
-//                IlluminaGenotypingProcessedMatrixQuantitationType.GC_SCORE.getName(),
-//                IlluminaGenotypingProcessedMatrixQuantitationType.LOG_R_RATIO.getName(),
-//                IlluminaGenotypingProcessedMatrixQuantitationType.R.getName(),
-//                IlluminaGenotypingProcessedMatrixQuantitationType.THETA.getName()));
-//        for (AbstractDataColumn c : hdl.get(0).getColumns()) {
-//            String name = c.getQuantitationType().getName();
-//            if (stringColumns.contains(name)) {
-//                assertEquals(3, ((StringColumn) c).getValues().length);
-//                assertTrue("missing " + c.getQuantitationType(),
-//                        stringColumns.remove(c.getQuantitationType().getName()));
-//            } else if (floatColumns.contains(name)) {
-//                assertEquals(3, ((FloatColumn) c).getValues().length);
-//                assertTrue("missing " + c.getQuantitationType(), floatColumns.remove(c.getQuantitationType().getName()));
-//            } else {
-//                fail("unexpected column: " + name);
-//            }
-//        }
-//        assertTrue("not all columns present", stringColumns.isEmpty() && floatColumns.isEmpty());
-//        tx.commit();                
-//    }
+    // TODO: ARRAY-1942 follow-on tasks for <ARRAY-1896 Merge dkokotov_storage_osgi_consolidation Branch to trunk>
+    // Temporarily comment out the below test. It needs to be moved to vendor plugin specific test package.
+    // Otherwise ant targets test:compile:caarray-plugins.test.classes and test:compile:caarray-ejb.test.classes
+    // would have circular dependency that cause them to fail.
+    // @Test
+    // public void testIlluminaGenotypingProcessedMatrixImport() throws Exception {
+    // Transaction tx = hibernateHelper.beginTransaction();
+    // ArrayDesign design = IlluminaGenotypingProcessedMatrixHandlerIntegrationTest.buildArrayDesign();
+    // hibernateHelper.getCurrentSession().save(design);
+    // tx.commit();
+    //
+    // importDataFilesIntoProject(design, GenotypingProcessedMatrixHandler.GENOTYPING_MATRIX_FILE_TYPE,
+    // IlluminaArrayDataFiles.ILLUMINA_DERIVED_1_HYB);
+    // tx = hibernateHelper.beginTransaction();
+    // Project project = getTestProject();
+    // design = (ArrayDesign) hibernateHelper.getCurrentSession().load(ArrayDesign.class, design.getId());
+    // Hybridization hyb = project.getExperiment().getHybridizations().iterator().next();
+    // List<AbstractDesignElement> l =
+    // hyb.getDerivedDataCollection().iterator().next().getDataSet().getDesignElementList().getDesignElements();
+    // assertEquals(3, l.size());
+    // for (AbstractDesignElement de : l) {
+    // PhysicalProbe p = (PhysicalProbe) de;
+    // assertTrue(design.getDesignDetails().getProbes().contains(p));
+    // }
+    // List<HybridizationData> hdl =
+    // hyb.getDerivedDataCollection().iterator().next().getDataSet().getHybridizationDataList();
+    // assertEquals(1, hdl.size());
+    // assertEquals(6, hdl.get(0).getColumns().size());
+    // List<String> stringColumns = new ArrayList<String>(
+    // Arrays.asList(IlluminaGenotypingProcessedMatrixQuantitationType.ALLELE.getName()));
+    // List<String> floatColumns = new ArrayList<String>(Arrays.asList(
+    // IlluminaGenotypingProcessedMatrixQuantitationType.B_ALLELE_FREQ.getName(),
+    // IlluminaGenotypingProcessedMatrixQuantitationType.GC_SCORE.getName(),
+    // IlluminaGenotypingProcessedMatrixQuantitationType.LOG_R_RATIO.getName(),
+    // IlluminaGenotypingProcessedMatrixQuantitationType.R.getName(),
+    // IlluminaGenotypingProcessedMatrixQuantitationType.THETA.getName()));
+    // for (AbstractDataColumn c : hdl.get(0).getColumns()) {
+    // String name = c.getQuantitationType().getName();
+    // if (stringColumns.contains(name)) {
+    // assertEquals(3, ((StringColumn) c).getValues().length);
+    // assertTrue("missing " + c.getQuantitationType(),
+    // stringColumns.remove(c.getQuantitationType().getName()));
+    // } else if (floatColumns.contains(name)) {
+    // assertEquals(3, ((FloatColumn) c).getValues().length);
+    // assertTrue("missing " + c.getQuantitationType(), floatColumns.remove(c.getQuantitationType().getName()));
+    // } else {
+    // fail("unexpected column: " + name);
+    // }
+    // }
+    // assertTrue("not all columns present", stringColumns.isEmpty() && floatColumns.isEmpty());
+    // tx.commit();
+    // }
 
     @Test
     public void testGenepixGprImport() throws Exception {
         importDesignAndDataFilesIntoProject(GenepixArrayDataFiles.JOE_DERISI_FIX, GprHandler.GPR_FILE_TYPE,
                 GenepixArrayDataFiles.SMALL_IDF, GenepixArrayDataFiles.SMALL_SDRF, GenepixArrayDataFiles.GPR_4_1_1);
-        Transaction tx = hibernateHelper.beginTransaction();
-        Project project = getTestProject();
-        ArrayDesign design = project.getExperiment().getArrayDesigns().iterator().next();
-        Hybridization hyb = project.getExperiment().getHybridizations().iterator().next();
+        final Transaction tx = this.hibernateHelper.beginTransaction();
+        final Project project = getTestProject();
+        final ArrayDesign design = project.getExperiment().getArrayDesigns().iterator().next();
+        final Hybridization hyb = project.getExperiment().getHybridizations().iterator().next();
 
-        List<AbstractDesignElement> l = hyb.getDerivedDataCollection().iterator().next().getDataSet().getDesignElementList().getDesignElements();
+        final List<AbstractDesignElement> l =
+                hyb.getDerivedDataCollection().iterator().next().getDataSet().getDesignElementList()
+                        .getDesignElements();
         assertEquals(6528, l.size());
-        for (AbstractDesignElement de : l) {
-            PhysicalProbe p = (PhysicalProbe) de;
+        for (final AbstractDesignElement de : l) {
+            final PhysicalProbe p = (PhysicalProbe) de;
             assertTrue(design.getDesignDetails().getProbes().contains(p));
         }
-        List<HybridizationData> hdl = hyb.getDerivedDataCollection().iterator().next().getDataSet().getHybridizationDataList();
+        final List<HybridizationData> hdl =
+                hyb.getDerivedDataCollection().iterator().next().getDataSet().getHybridizationDataList();
         assertEquals(1, hdl.size());
 
-        GenepixQuantitationType[] expectedTypes = new GenepixQuantitationType[] {
-                X, Y, DIA, F635_MEDIAN, F635_MEAN,
-                F635_SD, B635_MEDIAN, B635_MEAN, B635_SD, PERCENT_GT_B635_1SD, PERCENT_GT_B635_2SD, F635_PERCENT_SAT,
-                F532_MEDIAN, F532_MEAN, F532_SD, B532_MEDIAN, B532_MEAN, B532_SD, PERCENT_GT_B532_1SD,
-                PERCENT_GT_B532_2SD, F532_PERCENT_SAT, RATIO_OF_MEDIANS_635_532, RATIO_OF_MEANS_635_532,
-                MEDIAN_OF_RATIOS_635_532, MEAN_OF_RATIOS_635_532, RATIOS_SD_635_532, RGN_RATIO_635_532, RGN_R2_635_532,
-                F_PIXELS, B_PIXELS, SUM_OF_MEDIANS_635_532, SUM_OF_MEANS_635_532, LOG_RATIO_635_532, F635_MEDIAN_B635,
-                F532_MEDIAN_B532, F635_MEAN_B635, F532_MEAN_B532, F635_TOTAL_INTENSITY, F532_TOTAL_INTENSITY, SNR_635,
-                SNR_532, FLAGS, NORMALIZE };
-        for (HybridizationData hd : hdl){
+        final GenepixQuantitationType[] expectedTypes =
+                new GenepixQuantitationType[] {X, Y, DIA, F635_MEDIAN, F635_MEAN, F635_SD, B635_MEDIAN, B635_MEAN,
+                        B635_SD, PERCENT_GT_B635_1SD, PERCENT_GT_B635_2SD, F635_PERCENT_SAT, F532_MEDIAN, F532_MEAN,
+                        F532_SD, B532_MEDIAN, B532_MEAN, B532_SD, PERCENT_GT_B532_1SD, PERCENT_GT_B532_2SD,
+                        F532_PERCENT_SAT, RATIO_OF_MEDIANS_635_532, RATIO_OF_MEANS_635_532, MEDIAN_OF_RATIOS_635_532,
+                        MEAN_OF_RATIOS_635_532, RATIOS_SD_635_532, RGN_RATIO_635_532, RGN_R2_635_532, F_PIXELS,
+                        B_PIXELS, SUM_OF_MEDIANS_635_532, SUM_OF_MEANS_635_532, LOG_RATIO_635_532, F635_MEDIAN_B635,
+                        F532_MEDIAN_B532, F635_MEAN_B635, F532_MEAN_B532, F635_TOTAL_INTENSITY, F532_TOTAL_INTENSITY,
+                        SNR_635, SNR_532, FLAGS, NORMALIZE };
+        for (final HybridizationData hd : hdl) {
             assertEquals(expectedTypes.length, hd.getColumns().size());
             for (int i = 0; i < expectedTypes.length; i++) {
                 assertEquals(expectedTypes[i].getName(), hd.getColumns().get(i).getQuantitationType().getName());
             }
         }
-        tx.commit();                
+        tx.commit();
     }
 
     @Test
     public void testNimblegenPairImport() throws Exception {
-        importDesignAndDataFilesIntoProject(NimblegenArrayDesignFiles.SHORT_EXPRESSION_DESIGN, PairDataHandler.NORMALIZED_PAIR_FILE_TYPE,
-                NimblegenArrayDataFiles.SHORT_HUMAN_EXPRESSION);
-        Transaction tx = hibernateHelper.beginTransaction();
-        Project project = getTestProject();
-        ArrayDesign design = project.getExperiment().getArrayDesigns().iterator().next();
-        Hybridization hyb = project.getExperiment().getHybridizations().iterator().next();
+        importDesignAndDataFilesIntoProject(NimblegenArrayDesignFiles.SHORT_EXPRESSION_DESIGN,
+                PairDataHandler.NORMALIZED_PAIR_FILE_TYPE, NimblegenArrayDataFiles.SHORT_HUMAN_EXPRESSION);
+        final Transaction tx = this.hibernateHelper.beginTransaction();
+        final Project project = getTestProject();
+        final ArrayDesign design = project.getExperiment().getArrayDesigns().iterator().next();
+        final Hybridization hyb = project.getExperiment().getHybridizations().iterator().next();
 
-        List<AbstractDesignElement> l = hyb.getDerivedDataCollection().iterator().next().getDataSet().getDesignElementList().getDesignElements();
+        final List<AbstractDesignElement> l =
+                hyb.getDerivedDataCollection().iterator().next().getDataSet().getDesignElementList()
+                        .getDesignElements();
         assertEquals(3, l.size());
-        for (AbstractDesignElement de : l) {
-            PhysicalProbe p = (PhysicalProbe) de;
+        for (final AbstractDesignElement de : l) {
+            final PhysicalProbe p = (PhysicalProbe) de;
             assertTrue(design.getDesignDetails().getProbes().contains(p));
         }
-        List<HybridizationData> hdl = hyb.getDerivedDataCollection().iterator().next().getDataSet().getHybridizationDataList();
+        final List<HybridizationData> hdl =
+                hyb.getDerivedDataCollection().iterator().next().getDataSet().getHybridizationDataList();
         assertEquals(1, hdl.size());
-        for (HybridizationData hd : hdl){
+        for (final HybridizationData hd : hdl) {
             assertEquals(5, hd.getColumns().size());
-            List<String> intColumns = new ArrayList<String>(Arrays.asList(
-                    NimblegenQuantitationType.MATCH_INDEX.getName(),
-                    NimblegenQuantitationType.X.getName(),
-                    NimblegenQuantitationType.Y.getName()));
-            List<String> floatColumns = new ArrayList<String>(Arrays.asList(
-                    NimblegenQuantitationType.MM.getName(),
-                    NimblegenQuantitationType.PM.getName()));
-            for (AbstractDataColumn c : hd.getColumns()) {
-                String name = c.getQuantitationType().getName();
+            final List<String> intColumns =
+                    new ArrayList<String>(Arrays.asList(NimblegenQuantitationType.MATCH_INDEX.getName(),
+                            NimblegenQuantitationType.X.getName(), NimblegenQuantitationType.Y.getName()));
+            final List<String> floatColumns =
+                    new ArrayList<String>(Arrays.asList(NimblegenQuantitationType.MM.getName(),
+                            NimblegenQuantitationType.PM.getName()));
+            for (final AbstractDataColumn c : hd.getColumns()) {
+                final String name = c.getQuantitationType().getName();
                 if (intColumns.contains(name)) {
                     assertEquals(3, ((IntegerColumn) c).getValues().length);
-                    assertTrue("missing " + c.getQuantitationType(), intColumns.remove(c.getQuantitationType().getName()));                                        
+                    assertTrue("missing " + c.getQuantitationType(),
+                            intColumns.remove(c.getQuantitationType().getName()));
                 } else if (floatColumns.contains(name)) {
                     assertEquals(3, ((FloatColumn) c).getValues().length);
-                    assertTrue("missing " + c.getQuantitationType(), floatColumns.remove(c.getQuantitationType().getName()));                    
+                    assertTrue("missing " + c.getQuantitationType(),
+                            floatColumns.remove(c.getQuantitationType().getName()));
                 } else {
                     fail("unexpected column: " + name);
                 }
             }
             assertTrue("not all columns present", intColumns.isEmpty() && floatColumns.isEmpty());
         }
-        tx.commit();                
+        tx.commit();
     }
 
     @Test
     public void testUpdateBioMaterialChain() throws Exception {
-        ArrayDesign design = importArrayDesign(AffymetrixArrayDesignFiles.TEST3_CDF);
+        final ArrayDesign design = importArrayDesign(AffymetrixArrayDesignFiles.TEST3_CDF);
         addDesignToExperiment(design);
 
         importFiles(TestMageTabSets.UPDATE_BIO_MATERIAL_CHAIN_BASELINE_INPUT_SET);
 
-        Transaction tx = hibernateHelper.beginTransaction();
+        Transaction tx = this.hibernateHelper.beginTransaction();
         Project project = getTestProject();
         assertEquals(FileStatus.IMPORTED, project.getFileSet().getStatus());
         assertEquals(1, project.getExperiment().getSources().size());
@@ -709,7 +740,7 @@ public class FileImportIntegrationTest extends AbstractFileManagementServiceInte
         // now try to add new biomaterials in the middle of the existing chains
         importFiles(TestMageTabSets.UPDATE_BIO_MATERIAL_CHAIN_NEW_BIO_MATERIALS_INPUT_SET);
 
-        tx = hibernateHelper.beginTransaction();
+        tx = this.hibernateHelper.beginTransaction();
         project = getTestProject();
         assertEquals(FileStatus.IMPORTED, project.getFileSet().getStatus());
         assertEquals(2, project.getExperiment().getSources().size());
@@ -727,7 +758,7 @@ public class FileImportIntegrationTest extends AbstractFileManagementServiceInte
         // now try to add a data files to existing hybs
         importFiles(TestMageTabSets.UPDATE_BIO_MATERIAL_CHAIN_NEW_DATA_FILES_INPUT_SET);
 
-        tx = hibernateHelper.beginTransaction();
+        tx = this.hibernateHelper.beginTransaction();
         project = getTestProject();
         assertEquals(FileStatus.IMPORTED, project.getFileSet().getStatus());
         assertEquals(2, project.getExperiment().getSources().size());
@@ -745,12 +776,12 @@ public class FileImportIntegrationTest extends AbstractFileManagementServiceInte
 
     @Test
     public void testUpdateFiles() throws Exception {
-        ArrayDesign design = importArrayDesign(AffymetrixArrayDesignFiles.TEST3_CDF);
+        final ArrayDesign design = importArrayDesign(AffymetrixArrayDesignFiles.TEST3_CDF);
         addDesignToExperiment(design);
 
         importFiles(TestMageTabSets.UPDATE_FILES_BASELINE_INPUT_SET);
 
-        Transaction tx = hibernateHelper.beginTransaction();
+        Transaction tx = this.hibernateHelper.beginTransaction();
         Project project = getTestProject();
         assertEquals(FileStatus.IMPORTED, project.getFileSet().getStatus());
         assertEquals(1, project.getExperiment().getSources().size());
@@ -763,8 +794,10 @@ public class FileImportIntegrationTest extends AbstractFileManagementServiceInte
         assertEquals(2, project.getExperiment().getHybridizationByName("Hyb 1").getAllDataFiles().size());
         assertEquals(1, project.getExperiment().getHybridizationByName("Hyb 1").getRawDataCollection().size());
         assertEquals(1, project.getExperiment().getHybridizationByName("Hyb 1").getDerivedDataCollection().size());
-        RawArrayData raw = project.getExperiment().getHybridizationByName("Hyb 1").getRawDataCollection().iterator().next();
-        DerivedArrayData derived = project.getExperiment().getHybridizationByName("Hyb 1").getDerivedDataCollection().iterator().next();
+        RawArrayData raw =
+                project.getExperiment().getHybridizationByName("Hyb 1").getRawDataCollection().iterator().next();
+        DerivedArrayData derived =
+                project.getExperiment().getHybridizationByName("Hyb 1").getDerivedDataCollection().iterator().next();
         assertEquals(1, derived.getDerivedFromArrayDataCollection().size());
         assertEquals(raw, derived.getDerivedFromArrayDataCollection().iterator().next());
         tx.commit();
@@ -772,7 +805,7 @@ public class FileImportIntegrationTest extends AbstractFileManagementServiceInte
         // now try to add data files to existing hybs, which also reference existing data files
         importFiles(TestMageTabSets.UPDATE_FILES_NEW_INPUT_SET);
 
-        tx = hibernateHelper.beginTransaction();
+        tx = this.hibernateHelper.beginTransaction();
         project = getTestProject();
         assertEquals(FileStatus.IMPORTED, project.getFileSet().getStatus());
         assertEquals(1, project.getExperiment().getSources().size());
@@ -785,7 +818,7 @@ public class FileImportIntegrationTest extends AbstractFileManagementServiceInte
         derived = project.getExperiment().getHybridizationByName("Hyb 1").getDerivedDataCollection().iterator().next();
         assertEquals("BM1.EXP", derived.getDataFile().getName());
         assertEquals(2, derived.getDerivedFromArrayDataCollection().size());
-        for (RawArrayData oneRaw : project.getExperiment().getHybridizationByName("Hyb 1").getRawDataCollection()) {
+        for (final RawArrayData oneRaw : project.getExperiment().getHybridizationByName("Hyb 1").getRawDataCollection()) {
             assertTrue(Arrays.asList("BM1.CEL", "BM1a.CEL").contains(oneRaw.getDataFile().getName()));
             assertTrue("BM1.EXP is not derived from " + oneRaw.getName(), derived.getDerivedFromArrayDataCollection()
                     .contains(oneRaw));
@@ -796,7 +829,7 @@ public class FileImportIntegrationTest extends AbstractFileManagementServiceInte
         assertEquals(2, project.getExperiment().getHybridizationByName("Hyb 2").getDerivedDataCollection().size());
         raw = project.getExperiment().getHybridizationByName("Hyb 2").getRawDataCollection().iterator().next();
         assertEquals("BM2.CEL", raw.getDataFile().getName());
-        for (DerivedArrayData oneDerived : project.getExperiment().getHybridizationByName("Hyb 2")
+        for (final DerivedArrayData oneDerived : project.getExperiment().getHybridizationByName("Hyb 2")
                 .getDerivedDataCollection()) {
             assertTrue(Arrays.asList("BM2.EXP", "BM2a.EXP").contains(oneDerived.getDataFile().getName()));
             assertEquals(1, oneDerived.getDerivedFromArrayDataCollection().size());

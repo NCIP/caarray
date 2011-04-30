@@ -79,7 +79,8 @@
  * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */package gov.nih.nci.caarray.services.external.v1_0.search;
+ */
+package gov.nih.nci.caarray.services.external.v1_0.search;
 
 import static org.junit.Assert.assertEquals;
 import gov.nih.nci.caarray.application.AbstractServiceTest;
@@ -131,7 +132,6 @@ public class SearchServiceTest extends AbstractServiceTest {
         CaArrayUsernameHolder.setUser(STANDARD_USER);
 
         final SearchServiceBean searchServiceBean = new SearchServiceBean();
-        searchServiceBean.setDependencies(null);
         searchServiceBean.setDaoFactory(this.daoFactoryStub);
 
         final ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
@@ -158,8 +158,8 @@ public class SearchServiceTest extends AbstractServiceTest {
 
     @Test
     public void testGetAllPrincipalInvestigators() {
-        final List<gov.nih.nci.caarray.external.v1_0.experiment.Person> pis = this.searchService
-                .getAllPrincipalInvestigators();
+        final List<gov.nih.nci.caarray.external.v1_0.experiment.Person> pis =
+                this.searchService.getAllPrincipalInvestigators();
         assertEquals(2, pis.size());
         assertEquivalent(PI1, pis.get(0));
         assertEquivalent(PI2, pis.get(1));

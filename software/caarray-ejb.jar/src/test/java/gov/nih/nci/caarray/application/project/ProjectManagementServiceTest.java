@@ -189,10 +189,13 @@ public class ProjectManagementServiceTest extends AbstractServiceTest {
     public void setUpService() {
         CaArrayUsernameHolder.setUser(STANDARD_USER);
         final DataStorageFacade dataStorageFacade = mock(DataStorageFacade.class);
-        final ProjectManagementServiceBean projectManagementServiceBean = new ProjectManagementServiceBean();
-        projectManagementServiceBean.setDependencies(this.daoFactoryStub.getProjectDao(),
-                this.daoFactoryStub.getFileDao(), this.daoFactoryStub.getSampleDao(),
-                this.daoFactoryStub.getSearchDao(), this.daoFactoryStub.getVocabularyDao());
+        final ProjectManagementServiceBean pmsBean = new ProjectManagementServiceBean();
+
+        pmsBean.setProjectDao(this.daoFactoryStub.getProjectDao());
+        pmsBean.setFileDao(this.daoFactoryStub.getFileDao());
+        pmsBean.setSampleDao(this.daoFactoryStub.getSampleDao());
+        pmsBean.setSearchDao(this.daoFactoryStub.getSearchDao());
+        pmsBean.setVocabularyDao(this.daoFactoryStub.getVocabularyDao());
 
         final ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
         locatorStub.addLookup(FileAccessService.JNDI_NAME, this.fileAccessService);
@@ -203,7 +206,7 @@ public class ProjectManagementServiceTest extends AbstractServiceTest {
         ds.setUser(config.getProperty("hibernate.connection.username"));
         ds.setPassword(config.getProperty("hibernate.connection.password"));
         locatorStub.addLookup("java:jdbc/CaArrayDataSource", ds);
-        this.projectManagementService = projectManagementServiceBean;
+        this.projectManagementService = pmsBean;
         locatorStub.addLookup(ProjectManagementService.JNDI_NAME, this.projectManagementService);
         hibernateHelper.setFiltersEnabled(false);
         this.transaction = hibernateHelper.beginTransaction();
@@ -218,23 +221,24 @@ public class ProjectManagementServiceTest extends AbstractServiceTest {
 
     @Test
     public void testGetWorkspaceProjects() {
-        final List<Project> projects = this.projectManagementService.getMyProjects(new PageSortParams<Project>(10000,
-                1, ProjectSortCriterion.PUBLIC_ID, false));
+        final List<Project> projects =
+                this.projectManagementService.getMyProjects(new PageSortParams<Project>(10000, 1,
+                        ProjectSortCriterion.PUBLIC_ID, false));
         assertNotNull(projects);
     }
 
     @Test
     public void testGetProjectsForOwner() {
-        User u = CaArrayUsernameHolder.getCsmUser();
-        List<Project> projects = this.projectManagementService.getProjectsForOwner(u);
+        final User u = CaArrayUsernameHolder.getCsmUser();
+        final List<Project> projects = this.projectManagementService.getProjectsForOwner(u);
         assertSame(Collections.EMPTY_LIST, projects);
     }
 
     @Test
     public void testAddFile() throws Exception {
         final Project project = this.daoFactoryStub.getSearchDao().retrieve(Project.class, 123L);
-        final CaArrayFile file = this.projectManagementService.addFile(project,
-                MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF);
+        final CaArrayFile file =
+                this.projectManagementService.addFile(project, MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF);
         assertEquals(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF.getName(), file.getName());
         assertEquals(1, project.getFiles().size());
         assertNotNull(project.getFiles().iterator().next().getProject());
@@ -534,8 +538,8 @@ public class ProjectManagementServiceTest extends AbstractServiceTest {
     private void createProtectionGroup(Project project) {
         // Perform voodoo magic
         try {
-            final Method m = SecurityUtils.class.getDeclaredMethod("createProtectionGroup", Protectable.class,
-                    User.class);
+            final Method m =
+                    SecurityUtils.class.getDeclaredMethod("createProtectionGroup", Protectable.class, User.class);
             m.setAccessible(true);
             m.invoke(null, project, CaArrayUsernameHolder.getCsmUser());
         } catch (final SecurityException e) {
@@ -570,12 +574,15 @@ public class ProjectManagementServiceTest extends AbstractServiceTest {
                 };
             }
         };
-        final ProjectManagementServiceBean bean = new ProjectManagementServiceBean();
-        bean.setDependencies(daoFactory.getProjectDao(), daoFactory.getFileDao(), daoFactory.getSampleDao(),
-                daoFactory.getSearchDao(), daoFactory.getVocabularyDao());
+        final ProjectManagementServiceBean pmsBean = new ProjectManagementServiceBean();
+        pmsBean.setProjectDao(daoFactory.getProjectDao());
+        pmsBean.setFileDao(daoFactory.getFileDao());
+        pmsBean.setSampleDao(daoFactory.getSampleDao());
+        pmsBean.setSearchDao(daoFactory.getSearchDao());
+        pmsBean.setVocabularyDao(daoFactory.getVocabularyDao());
 
         final Project project = new Project();
-        assertNull(bean.getBiomaterialByExternalId(project, "def", Sample.class));
+        assertNull(pmsBean.getBiomaterialByExternalId(project, "def", Sample.class));
     }
 
     @Test
@@ -592,13 +599,16 @@ public class ProjectManagementServiceTest extends AbstractServiceTest {
                 };
             }
         };
-        final ProjectManagementServiceBean bean = new ProjectManagementServiceBean();
-        bean.setDependencies(daoFactory.getProjectDao(), daoFactory.getFileDao(), daoFactory.getSampleDao(),
-                daoFactory.getSearchDao(), daoFactory.getVocabularyDao());
+        final ProjectManagementServiceBean pmsBean = new ProjectManagementServiceBean();
+        pmsBean.setProjectDao(daoFactory.getProjectDao());
+        pmsBean.setFileDao(daoFactory.getFileDao());
+        pmsBean.setSampleDao(daoFactory.getSampleDao());
+        pmsBean.setSearchDao(daoFactory.getSearchDao());
+        pmsBean.setVocabularyDao(daoFactory.getVocabularyDao());
 
         final Project project = new Project();
 
-        assertNull(bean.getBiomaterialByExternalId(project, "abc", Sample.class));
+        assertNull(pmsBean.getBiomaterialByExternalId(project, "abc", Sample.class));
     }
 
     @Test
@@ -617,13 +627,16 @@ public class ProjectManagementServiceTest extends AbstractServiceTest {
                 };
             }
         };
-        final ProjectManagementServiceBean bean = new ProjectManagementServiceBean();
-        bean.setDependencies(daoFactory.getProjectDao(), daoFactory.getFileDao(), daoFactory.getSampleDao(),
-                daoFactory.getSearchDao(), daoFactory.getVocabularyDao());
+        final ProjectManagementServiceBean pmsBean = new ProjectManagementServiceBean();
+        pmsBean.setProjectDao(daoFactory.getProjectDao());
+        pmsBean.setFileDao(daoFactory.getFileDao());
+        pmsBean.setSampleDao(daoFactory.getSampleDao());
+        pmsBean.setSearchDao(daoFactory.getSearchDao());
+        pmsBean.setVocabularyDao(daoFactory.getVocabularyDao());
 
         final Project project = new Project();
 
-        final Sample sampleByExternalId = bean.getBiomaterialByExternalId(project, "abc", Sample.class);
+        final Sample sampleByExternalId = pmsBean.getBiomaterialByExternalId(project, "abc", Sample.class);
         assertNotNull(sampleByExternalId);
         assertSame(project.getExperiment(), sampleByExternalId.getExperiment());
     }

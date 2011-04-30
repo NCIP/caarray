@@ -82,7 +82,6 @@
  */
 package gov.nih.nci.caarray.services.search;
 
-import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -103,6 +102,8 @@ import org.hibernate.criterion.Order;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
+
 public class CaArraySearchServiceTest extends AbstractServiceTest {
 
     private CaArraySearchService searchService;
@@ -110,20 +111,20 @@ public class CaArraySearchServiceTest extends AbstractServiceTest {
 
     @Before
     public void setUp() throws Exception {
-        SearchDao searchDao = caArrayDaoFactoryStub.getSearchDao();
-        
-        CaArraySearchServiceBean searchServiceBean = new CaArraySearchServiceBean();
-        searchServiceBean.setDependencies(searchDao);
-        searchService = searchServiceBean;
+        final SearchDao searchDao = this.caArrayDaoFactoryStub.getSearchDao();
+
+        final CaArraySearchServiceBean searchServiceBean = new CaArraySearchServiceBean();
+        searchServiceBean.setSearchDao(searchDao);
+        this.searchService = searchServiceBean;
     }
 
     @Test
     public void testSearch() {
         Project exampleProject = null;
-        List<Project> projects = searchService.search(exampleProject);
+        List<Project> projects = this.searchService.search(exampleProject);
         assertTrue(projects.isEmpty());
         exampleProject = new Project();
-        projects = searchService.search(exampleProject);
+        projects = this.searchService.search(exampleProject);
         assertEquals(1, projects.size());
         assertEquals(exampleProject, projects.get(0));
     }
@@ -131,10 +132,10 @@ public class CaArraySearchServiceTest extends AbstractServiceTest {
     @Test
     public void testSearch2() {
         Project exampleProject = null;
-        List<Project> projects = searchService.search(exampleProject, true, true);
+        List<Project> projects = this.searchService.search(exampleProject, true, true);
         assertTrue(projects.isEmpty());
         exampleProject = new Project();
-        projects = searchService.search(exampleProject, true, true);
+        projects = this.searchService.search(exampleProject, true, true);
         assertEquals(1, projects.size());
         assertEquals(exampleProject, projects.get(0));
     }
@@ -142,10 +143,10 @@ public class CaArraySearchServiceTest extends AbstractServiceTest {
     @Test
     public void testSearchCQLQuery() {
         CQLQuery query = null;
-        List results = searchService.search(query);
+        List results = this.searchService.search(query);
         assertTrue(results.isEmpty());
         query = new CQLQuery();
-        results = searchService.search(query);
+        results = this.searchService.search(query);
         assertFalse(results.isEmpty());
     }
 
@@ -157,23 +158,23 @@ public class CaArraySearchServiceTest extends AbstractServiceTest {
 
                 @Override
                 public <T extends AbstractCaArrayObject> List<T> query(T entityToMatch) {
-                    ArrayList<T> list = new ArrayList<T>();
+                    final ArrayList<T> list = new ArrayList<T>();
                     list.add(entityToMatch);
                     return list;
                 }
 
                 @Override
                 public List<AbstractCaArrayObject> query(CQLQuery cqlQuery) {
-                    ArrayList<AbstractCaArrayObject> list = new ArrayList<AbstractCaArrayObject>();
+                    final ArrayList<AbstractCaArrayObject> list = new ArrayList<AbstractCaArrayObject>();
                     list.add(new Project());
                     return list;
                 }
 
                 @Override
-                public <T extends PersistentObject> List<T> queryEntityByExample(ExampleSearchCriteria<T> criteria, int maxResults,
-                    int firstResult, Order... orders) {
-                return Collections.singletonList(criteria.getExample());
-            }
+                public <T extends PersistentObject> List<T> queryEntityByExample(ExampleSearchCriteria<T> criteria,
+                        int maxResults, int firstResult, Order... orders) {
+                    return Collections.singletonList(criteria.getExample());
+                }
 
             };
         }

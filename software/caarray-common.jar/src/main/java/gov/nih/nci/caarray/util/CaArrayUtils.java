@@ -103,6 +103,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Properties;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -120,11 +121,13 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.OutputSupplier;
+import com.google.inject.Binder;
+import com.google.inject.name.Names;
 
 /**
  * Utility classes for our project.
  */
-@SuppressWarnings({ "PMD.CyclomaticComplexity", "PMD.ExcessiveClassLength" })
+@SuppressWarnings({"PMD.CyclomaticComplexity", "PMD.ExcessiveClassLength" })
 public final class CaArrayUtils {
     private static final Logger LOG = Logger.getLogger(CaArrayUtils.class);
     private static final SortedSet<Object> EMPTY_SORTED_SET = new TreeSet<Object>();
@@ -780,4 +783,20 @@ public final class CaArrayUtils {
         return output;
     }
 
+    /**
+     * Load a properties file from given classpath resource, and create a constant binding to @Named(key) for each
+     * property using the given binder. If the resource cannot be loaded, does nothing.
+     * 
+     * @param resourceName the resource to load. it is loaded using the classloader of this class.
+     * @param binder the binder to use for pinding the key=property values
+     */
+    public static void bindPropertiesAsNamed(String resourceName, Binder binder) {
+        final Properties props = new Properties();
+        try {
+            props.load(CaArrayUtils.class.getResourceAsStream(resourceName));
+        } catch (final IOException e) {
+            LOG.warn("Could not load properties from " + resourceName);
+        }
+        Names.bindProperties(binder, props);
+    }
 }
