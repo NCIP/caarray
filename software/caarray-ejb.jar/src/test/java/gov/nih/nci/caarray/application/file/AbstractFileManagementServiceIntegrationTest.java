@@ -119,8 +119,10 @@ import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.injection.InjectorFactory;
 import gov.nih.nci.caarray.magetab.MageTabFileSet;
+import gov.nih.nci.caarray.magetab.TestMageTabSets;
 import gov.nih.nci.caarray.magetab.io.FileRef;
 import gov.nih.nci.caarray.magetab.io.JavaIOFileRef;
+import gov.nih.nci.caarray.platforms.unparsed.UnparsedDataHandler;
 import gov.nih.nci.caarray.util.CaArrayUsernameHolder;
 import gov.nih.nci.caarray.util.CaArrayUtils;
 import gov.nih.nci.caarray.util.UsernameHolder;
@@ -367,11 +369,10 @@ public abstract class AbstractFileManagementServiceIntegrationTest extends Abstr
         tx.commit();
     }
 
-    protected void importFiles(Project project, MageTabFileSet fileSet, boolean dataMatricesAreCopyNumber)
-            throws Exception {
+    protected void importFiles(Project project, MageTabFileSet fileSet, FileType dataMatrixFileType) throws Exception {
         Transaction tx = this.hibernateHelper.beginTransaction();
         project = (Project) this.hibernateHelper.getCurrentSession().load(Project.class, project.getId());
-        final CaArrayFileSet caarrayFileSet = uploadFiles(project, fileSet, dataMatricesAreCopyNumber);
+        final CaArrayFileSet caarrayFileSet = uploadFiles(project, fileSet, dataMatrixFileType);
         tx.commit();
 
         tx = this.hibernateHelper.beginTransaction();
@@ -404,13 +405,16 @@ public abstract class AbstractFileManagementServiceIntegrationTest extends Abstr
      * @return
      */
     protected CaArrayFileSet uploadFiles(Project project, MageTabFileSet fileSet) {
-        return uploadFiles(project, fileSet, false);
+        return uploadFiles(project, fileSet, UnparsedDataHandler.FILE_TYPE_MAGE_TAB_DATA_MATRIX);
     }
 
-    protected CaArrayFileSet uploadFiles(Project project, MageTabFileSet fileSet, boolean dataMatricesAreCopyNumber) {
+    protected CaArrayFileSet uploadFiles(Project project, MageTabFileSet fileSet, FileType dataMatrixFileType) {
         final CaArrayFileSet fset = new CaArrayFileSet(project);
         for (final FileRef file : fileSet.getAllFiles()) {
             final CaArrayFile caArrayFile = this.fileAccessService.add(file.getAsFile());
+            if (TestMageTabSets.isDataMatrix(file, fileSet)) {
+                caArrayFile.setFileType(dataMatrixFileType);
+            }
             caArrayFile.setProject(project);
             project.getFiles().add(caArrayFile);
             this.hibernateHelper.getCurrentSession().save(caArrayFile);
@@ -592,11 +596,11 @@ public abstract class AbstractFileManagementServiceIntegrationTest extends Abstr
     }
 
     protected void importFiles(MageTabFileSet fileSet) throws Exception {
-        importFiles(this.testProject, fileSet, false);
+        importFiles(this.testProject, fileSet, UnparsedDataHandler.FILE_TYPE_MAGE_TAB_DATA_MATRIX);
     }
 
-    protected void importFiles(MageTabFileSet fileSet, boolean dataMatricesAreCopyNumber) throws Exception {
-        importFiles(this.testProject, fileSet, dataMatricesAreCopyNumber);
+    protected void importFiles(MageTabFileSet fileSet, FileType dataMatrixFileType) throws Exception {
+        importFiles(this.testProject, fileSet, dataMatrixFileType);
     }
 
     protected void addDesignToExperiment(ArrayDesign design) {

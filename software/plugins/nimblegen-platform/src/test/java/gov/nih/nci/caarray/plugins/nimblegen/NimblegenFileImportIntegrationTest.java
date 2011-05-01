@@ -80,54 +80,92 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.application.file;
+package gov.nih.nci.caarray.plugins.nimblegen;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import gov.nih.nci.caarray.application.file.AbstractFileManagementServiceIntegrationTest;
+import gov.nih.nci.caarray.dataStorage.ParsedDataPersister;
+import gov.nih.nci.caarray.domain.array.AbstractDesignElement;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
-import gov.nih.nci.caarray.domain.file.FileStatus;
+import gov.nih.nci.caarray.domain.array.PhysicalProbe;
+import gov.nih.nci.caarray.domain.data.AbstractDataColumn;
+import gov.nih.nci.caarray.domain.data.FloatColumn;
+import gov.nih.nci.caarray.domain.data.HybridizationData;
+import gov.nih.nci.caarray.domain.data.IntegerColumn;
+import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Project;
-import gov.nih.nci.caarray.magetab.MageTabFileSet;
-import gov.nih.nci.caarray.magetab.io.JavaIOFileRef;
-import gov.nih.nci.caarray.plugins.agilent.AgilentXmlDesignFileHandler;
-import gov.nih.nci.caarray.test.data.arraydesign.AgilentArrayDesignFiles;
-import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
+import gov.nih.nci.caarray.injection.InjectorFactory;
+import gov.nih.nci.caarray.test.data.arraydata.NimblegenArrayDataFiles;
+import gov.nih.nci.caarray.test.data.arraydesign.NimblegenArrayDesignFiles;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import org.hibernate.Transaction;
-import org.junit.Ignore;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
-public class FileImportIntegrationTest extends AbstractFileManagementServiceIntegrationTest {
-    @Test
-    public void testDataMatrixCopyNumberMageTabImportSuccess() throws Exception {
-        final ArrayDesign design =
-                importArrayDesign(AgilentArrayDesignFiles.TEST_SHORT_ACGH_XML,
-                        AgilentXmlDesignFileHandler.XML_FILE_TYPE);
-        addDesignToExperiment(design);
-        final MageTabFileSet fileSet = new MageTabFileSet();
-        fileSet.addIdf(new JavaIOFileRef(MageTabDataFiles.GOOD_DATA_MATRIX_COPY_NUMER_IDF));
-        fileSet.addSdrf(new JavaIOFileRef(MageTabDataFiles.GOOD_DATA_MATRIX_COPY_NUMER_SDRF));
-        fileSet.addDataMatrix(new JavaIOFileRef(MageTabDataFiles.GOOD_DATA_MATRIX_COPY_NUMER_DATA));
-        importFiles(fileSet, true);
-
-        final Transaction tx = this.hibernateHelper.beginTransaction();
-        final Project project = getTestProject();
-        assertEquals(FileStatus.IMPORTED, project.getFileSet().getStatus());
-        assertEquals(3, project.getExperiment().getHybridizations().size());
-        tx.commit();
+/**
+ * Integration test for file import of nimblegen data files
+ * 
+ * @author dkokotov, jscott
+ */
+public class NimblegenFileImportIntegrationTest extends AbstractFileManagementServiceIntegrationTest {
+    @BeforeClass
+    public static void configurePlatforms() {
+        InjectorFactory.addPlatform(new NimblegenModule());
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
-    @Ignore
-    public void testDataMatrixCopyNumberMageTabImportFailDueToBadSdrfHybCount() throws Exception {
-        final ArrayDesign design =
-                importArrayDesign(AgilentArrayDesignFiles.TEST_SHORT_ACGH_XML,
-                        AgilentXmlDesignFileHandler.XML_FILE_TYPE);
-        addDesignToExperiment(design);
-        final MageTabFileSet fileSet = new MageTabFileSet();
-        fileSet.addIdf(new JavaIOFileRef(MageTabDataFiles.BAD_DATA_MATRIX_COPY_NUMER_WRONG_HYB_COUNT_IDF));
-        fileSet.addSdrf(new JavaIOFileRef(MageTabDataFiles.BAD_DATA_MATRIX_COPY_NUMER_WRONG_HYB_COUNT_SDRF));
-        fileSet.addDataMatrix(new JavaIOFileRef(MageTabDataFiles.GOOD_DATA_MATRIX_COPY_NUMER_DATA));
-        importFiles(fileSet, true);
-        assertEquals(Boolean.TRUE.toString(), Boolean.FALSE.toString());
+    @Test
+    public void testNimblegenPairImport() throws Exception {
+        importDesignAndDataFilesIntoProject(NimblegenArrayDesignFiles.SHORT_EXPRESSION_DESIGN,
+                PairDataHandler.NORMALIZED_PAIR_FILE_TYPE, NimblegenArrayDataFiles.SHORT_HUMAN_EXPRESSION);
+        final Transaction tx = this.hibernateHelper.beginTransaction();
+        final Project project = getTestProject();
+        final ArrayDesign design = project.getExperiment().getArrayDesigns().iterator().next();
+        final Hybridization hyb = project.getExperiment().getHybridizations().iterator().next();
+
+        final ParsedDataPersister pdp = this.injector.getInstance(ParsedDataPersister.class);
+
+        final List<AbstractDesignElement> l =
+                hyb.getDerivedDataCollection().iterator().next().getDataSet().getDesignElementList()
+                        .getDesignElements();
+        assertEquals(3, l.size());
+        for (final AbstractDesignElement de : l) {
+            final PhysicalProbe p = (PhysicalProbe) de;
+            assertTrue(design.getDesignDetails().getProbes().contains(p));
+        }
+        final List<HybridizationData> hdl =
+                hyb.getDerivedDataCollection().iterator().next().getDataSet().getHybridizationDataList();
+        assertEquals(1, hdl.size());
+        for (final HybridizationData hd : hdl) {
+            assertEquals(5, hd.getColumns().size());
+            final List<String> intColumns =
+                    new ArrayList<String>(Arrays.asList(NimblegenQuantitationType.MATCH_INDEX.getName(),
+                            NimblegenQuantitationType.X.getName(), NimblegenQuantitationType.Y.getName()));
+            final List<String> floatColumns =
+                    new ArrayList<String>(Arrays.asList(NimblegenQuantitationType.MM.getName(),
+                            NimblegenQuantitationType.PM.getName()));
+            for (final AbstractDataColumn c : hd.getColumns()) {
+                pdp.loadFromStorage(c);
+                final String name = c.getQuantitationType().getName();
+                if (intColumns.contains(name)) {
+                    assertEquals(3, ((IntegerColumn) c).getValues().length);
+                    assertTrue("missing " + c.getQuantitationType(),
+                            intColumns.remove(c.getQuantitationType().getName()));
+                } else if (floatColumns.contains(name)) {
+                    assertEquals(3, ((FloatColumn) c).getValues().length);
+                    assertTrue("missing " + c.getQuantitationType(),
+                            floatColumns.remove(c.getQuantitationType().getName()));
+                } else {
+                    fail("unexpected column: " + name);
+                }
+            }
+            assertTrue("not all columns present", intColumns.isEmpty() && floatColumns.isEmpty());
+        }
+        tx.commit();
     }
 }

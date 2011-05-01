@@ -144,7 +144,6 @@ final class ArrayDataImporterImpl implements ArrayDataImporter {
     }
 
     private void importFile(CaArrayFile file, DataImportOptions dataImportOptions) {
-        System.out.println("Importing file " + file.getName());
         try {
             this.searchDao.refresh(file);
             this.arrayDataService.importData(file, true, dataImportOptions);
@@ -155,7 +154,6 @@ final class ArrayDataImporterImpl implements ArrayDataImporter {
         this.projectDao.save(file);
         this.projectDao.flushSession();
         this.projectDao.clearSession();
-        System.out.println("Done importing file " + file.getName());
     }
 
     @Override

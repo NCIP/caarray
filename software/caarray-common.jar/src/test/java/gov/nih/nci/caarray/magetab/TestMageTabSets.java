@@ -140,22 +140,26 @@ public final class TestMageTabSets {
     /**
      * Example set of documents included with MAGE-TAB specification.
      */
-    public static final MageTabFileSet MAGE_TAB_SPECIFICATION_CASE_SENSITIVITY_INPUT_SET = getSpecificationCaseSensitivityInputSet();
+    public static final MageTabFileSet MAGE_TAB_SPECIFICATION_CASE_SENSITIVITY_INPUT_SET =
+            getSpecificationCaseSensitivityInputSet();
 
     /**
      * Example set of documents based on the MAGE-TAB specification example, with no array design ref in the SDRF.
      */
-    public static final MageTabFileSet MAGE_TAB_SPECIFICATION_NO_ARRAY_DESIGN_INPUT_SET = getSpecificationNoArrayDesignInputSet();
+    public static final MageTabFileSet MAGE_TAB_SPECIFICATION_NO_ARRAY_DESIGN_INPUT_SET =
+            getSpecificationNoArrayDesignInputSet();
 
     /**
      * Example set of documents based on the MAGE-TAB specification example, with no experiment description in the IDF.
      */
-    public static final MageTabFileSet MAGE_TAB_SPECIFICATION_NO_EXP_DESC_INPUT_SET = getSpecificationNoExpDescInputSet();
+    public static final MageTabFileSet MAGE_TAB_SPECIFICATION_NO_EXP_DESC_INPUT_SET =
+            getSpecificationNoExpDescInputSet();
 
     /**
      * Example set of documents included with MAGE-TAB specification, minus the data matrix
      */
-    public static final MageTabFileSet MAGE_TAB_SPECIFICATION_NO_DATA_MATRIX_INPUT_SET = getSpecificationWithoutDataMatrixInputSet();
+    public static final MageTabFileSet MAGE_TAB_SPECIFICATION_NO_DATA_MATRIX_INPUT_SET =
+            getSpecificationWithoutDataMatrixInputSet();
 
     /**
      * Example set of documents with ERRORS based on the MAGE-TAB specification.
@@ -176,7 +180,7 @@ public final class TestMageTabSets {
      * good MAGE-TAB data matrix copy number data import files.
      */
     public static final MageTabFileSet GOOD_DATA_MATRIX_COPY_NUMBER_INPUT_SET = getDataMatrixCopyNumberGoodInputSet();
-    
+
     /**
      * bad MAGE-TAB data matrix copy number data import files.
      */
@@ -230,7 +234,8 @@ public final class TestMageTabSets {
     /**
      * Invalid MAGE-TAB input set containing multiple IDF files.
      */
-    public static final MageTabFileSet INVALID_DUPLICATE_TERM_SOURCES_INPUT_SET = getInvalidDuplicateTermSourcesInputSet();
+    public static final MageTabFileSet INVALID_DUPLICATE_TERM_SOURCES_INPUT_SET =
+            getInvalidDuplicateTermSourcesInputSet();
 
     /**
      * Document set parsed ...
@@ -285,29 +290,34 @@ public final class TestMageTabSets {
     /**
      * MAGE-TAB input set based on the base specification set with some changes.
      */
-    public static final MageTabFileSet MAGE_TAB_SPECIFICATION_UPDATE_ANNOTATIONS_INPUT_SET = getSpecificationUpdateAnnotationsInputSet();
+    public static final MageTabFileSet MAGE_TAB_SPECIFICATION_UPDATE_ANNOTATIONS_INPUT_SET =
+            getSpecificationUpdateAnnotationsInputSet();
 
     /**
      * MAGE-TAB input set based on the base specification set with some changes, as well as an additional biomaterial
      * chain.
      */
-    public static final MageTabFileSet MAGE_TAB_SPECIFICATION_UPDATE_ANNOTATIONS_ADD_BM_INPUT_SET = getSpecificationUpdateAnnotationsAddBmInputSet();
+    public static final MageTabFileSet MAGE_TAB_SPECIFICATION_UPDATE_ANNOTATIONS_ADD_BM_INPUT_SET =
+            getSpecificationUpdateAnnotationsAddBmInputSet();
 
     /**
      * MAGE-TAB input set to use as the baseline for later changes to the biomaterial chain.
      */
-    public static final MageTabFileSet UPDATE_BIO_MATERIAL_CHAIN_BASELINE_INPUT_SET = getUpdateBioMaterialChainBaselineInputSet();
+    public static final MageTabFileSet UPDATE_BIO_MATERIAL_CHAIN_BASELINE_INPUT_SET =
+            getUpdateBioMaterialChainBaselineInputSet();
 
     /**
      * MAGE-TAB input set to use to update the biomaterial chain defined in UPDATE_BIO_MATERIAL_CHAIN_BASELINE_SET.
      */
-    public static final MageTabFileSet UPDATE_BIO_MATERIAL_CHAIN_NEW_BIO_MATERIALS_INPUT_SET = getUpdateBioMaterialChainNewBioMaterialsInputSet();
+    public static final MageTabFileSet UPDATE_BIO_MATERIAL_CHAIN_NEW_BIO_MATERIALS_INPUT_SET =
+            getUpdateBioMaterialChainNewBioMaterialsInputSet();
 
     /**
      * MAGE-TAB input set to use to add new data files to the biomaterial chain defined in
      * UPDATE_BIO_MATERIAL_CHAIN_BASELINE_SET.
      */
-    public static final MageTabFileSet UPDATE_BIO_MATERIAL_CHAIN_NEW_DATA_FILES_INPUT_SET = getUpdateBioMaterialChainNewDataFilesInputSet();
+    public static final MageTabFileSet UPDATE_BIO_MATERIAL_CHAIN_NEW_DATA_FILES_INPUT_SET =
+            getUpdateBioMaterialChainNewDataFilesInputSet();
 
     /**
      * MAGE-TAB input set to use as the baseline for later changes to the files
@@ -442,9 +452,9 @@ public final class TestMageTabSets {
         fileSet.addDataMatrix(new JavaIOFileRef(MageTabDataFiles.GOOD_DATA_MATRIX_COPY_NUMER_DATA));
         return fileSet;
     }
-    
+
     private static MageTabFileSet getDataMatrixCopyNumberBadInputSet() {
-        MageTabFileSet fileSet = new MageTabFileSet();
+        final MageTabFileSet fileSet = new MageTabFileSet();
         fileSet.addIdf(new JavaIOFileRef(MageTabDataFiles.BAD_DATA_MATRIX_COPY_NUMER_IDF));
         fileSet.addSdrf(new JavaIOFileRef(MageTabDataFiles.BAD_DATA_MATRIX_COPY_NUMER_SDRF));
         fileSet.addDataMatrix(new JavaIOFileRef(MageTabDataFiles.BAD_DATA_MATRIX_COPY_NUMER_DATA));
@@ -455,7 +465,6 @@ public final class TestMageTabSets {
         final MageTabFileSet fileSet = new MageTabFileSet();
         fileSet.addIdf(new JavaIOFileRef(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF));
         fileSet.addSdrf(new JavaIOFileRef(MageTabDataFiles.SPECIFICATION_EXAMPLE_SDRF));
-        fileSet.addAdf(new JavaIOFileRef(MageTabDataFiles.SPECIFICATION_EXAMPLE_ADF));
         fileSet.addDataMatrix(new JavaIOFileRef(MageTabDataFiles.SPECIFICATION_EXAMPLE_DATA_MATRIX));
         addCelFiles(fileSet, MageTabDataFiles.SPECIFICATION_EXAMPLE_DIRECTORY);
         return fileSet;
@@ -724,7 +733,7 @@ public final class TestMageTabSets {
     public static CaArrayFileSet getFileSet(MageTabFileSet inputSet) {
         return getFileSet(false, inputSet);
     }
-    
+
     public static CaArrayFileSet getFileSet(boolean dataMtricesAreCopyNumber, MageTabFileSet inputSet) {
         final CaArrayFileSet fileSet = new CaArrayFileSet();
         addFiles(dataMtricesAreCopyNumber, fileSet, inputSet.getIdfFiles(), IdfDocument.class);
@@ -734,7 +743,8 @@ public final class TestMageTabSets {
         return fileSet;
     }
 
-    private static void addFiles(CaArrayFileSet fileSet, Collection<? extends AbstractMageTabDocument> mageTabDocuments) {
+    private static void
+            addFiles(CaArrayFileSet fileSet, Collection<? extends AbstractMageTabDocument> mageTabDocuments) {
         for (final AbstractMageTabDocument mageTabDocument : mageTabDocuments) {
             addFile(fileSet, mageTabDocument.getFile().getName(), mageTabDocument.getClass());
         }
@@ -749,20 +759,20 @@ public final class TestMageTabSets {
 
     private static void addFiles(boolean dataMatricesAreCopyNumber, CaArrayFileSet fileSet, Collection<FileRef> files,
             Class<? extends AbstractMageTabDocument> documentType) {
-        for (FileRef file : files) {
+        for (final FileRef file : files) {
             addFile(dataMatricesAreCopyNumber, fileSet, file.getName(), documentType);
         }
     }
-    
-    
-//TODO: ARRAY-1942 follow-on tasks for <ARRAY-1896 Merge dkokotov_storage_osgi_consolidation Branch to trunk>
-//This method depends on string literals (such as "MAGE_TAB_ADF" and "MAGE_TAB_DATA_MATRIX_COPY_NUMBER") 
-//instead of relying on the appropriate named constants. We could not depend on the named constants because 
-//they are defined in modules/packages that this class should not depend on. E.g. MAGE_TAB_ADF is defined in 
-//gov.nih.nci.caarray.platforms.unparsed.UnparsedArrayDesignFileHandler in module caarray-ejb.jar
-//Some refactoring needs to be done to correctly align the dependencies. 
-//Note that the purpose of the method below is to map a AbstractMageTabDocument type to its corresponding FileType. 
-    private static FileType guessFileType(boolean dataMatricesAreCopyNumber, String fileName, Class<? extends AbstractMageTabDocument> documentType) {
+
+    // TODO: ARRAY-1942 follow-on tasks for <ARRAY-1896 Merge dkokotov_storage_osgi_consolidation Branch to trunk>
+    // This method depends on string literals (such as "MAGE_TAB_ADF" and "MAGE_TAB_DATA_MATRIX_COPY_NUMBER")
+    // instead of relying on the appropriate named constants. We could not depend on the named constants because
+    // they are defined in modules/packages that this class should not depend on. E.g. MAGE_TAB_ADF is defined in
+    // gov.nih.nci.caarray.platforms.unparsed.UnparsedArrayDesignFileHandler in module caarray-ejb.jar
+    // Some refactoring needs to be done to correctly align the dependencies.
+    // Note that the purpose of the method below is to map a AbstractMageTabDocument type to its corresponding FileType.
+    private static FileType guessFileType(boolean dataMatricesAreCopyNumber, String fileName,
+            Class<? extends AbstractMageTabDocument> documentType) {
         if (IdfDocument.class.equals(documentType)) {
             return FileTypeRegistry.MAGE_TAB_IDF;
         } else if (SdrfDocument.class.equals(documentType)) {
@@ -780,12 +790,21 @@ public final class TestMageTabSets {
         }
     }
 
-    private static void addFile(CaArrayFileSet fileSet, String name, Class<? extends AbstractMageTabDocument> documentType) {
+    /**
+     * @return whether the given fileRef refers to a data matrix file within the given mage-tab fileset
+     */
+    public static boolean isDataMatrix(FileRef fileRef, MageTabFileSet fileSet) {
+        return fileSet.getDataMatrixFiles().contains(fileRef);
+    }
+
+    private static void addFile(CaArrayFileSet fileSet, String name,
+            Class<? extends AbstractMageTabDocument> documentType) {
         addFile(false, fileSet, name, documentType);
     }
 
-    private static void addFile(boolean dataMatricesAreCopyNumber, CaArrayFileSet fileSet, String name, Class<? extends AbstractMageTabDocument> documentType) {
-        CaArrayFile caArrayFile = new CaArrayFile();
+    private static void addFile(boolean dataMatricesAreCopyNumber, CaArrayFileSet fileSet, String name,
+            Class<? extends AbstractMageTabDocument> documentType) {
+        final CaArrayFile caArrayFile = new CaArrayFile();
         caArrayFile.setFileStatus(FileStatus.UPLOADED);
         caArrayFile.setName(name);
         caArrayFile.setFileType(guessFileType(dataMatricesAreCopyNumber, name, documentType));
@@ -818,14 +837,14 @@ public final class TestMageTabSets {
     }
 
     private static MageTabFileSet getBadVocabularyTermSourcesFileSet() {
-        MageTabFileSet fileSet = new MageTabFileSet();
+        final MageTabFileSet fileSet = new MageTabFileSet();
         fileSet.addIdf(new JavaIOFileRef(MageTabDataFiles.BAD_VOCABULARY_TERM_SOURCES_IDF));
         fileSet.addSdrf(new JavaIOFileRef(MageTabDataFiles.BAD_VOCABULARY_TERM_SOURCES_SDRF));
         fileSet.addNativeData(new JavaIOFileRef(MageTabDataFiles.TESTING_VOCABULARY_TERM_SOURCES_CEL));
         fileSet.addNativeData(new JavaIOFileRef(MageTabDataFiles.TESTING_VOCABULARY_TERM_SOURCES_CHP));
         return fileSet;
     }
-    
+
     private static MageTabFileSet getGoodVocabularyTermSourcesFileSet() {
         final MageTabFileSet fileSet = new MageTabFileSet();
         fileSet.addIdf(new JavaIOFileRef(MageTabDataFiles.GOOD_VOCABULARY_TERM_SOURCES_IDF));

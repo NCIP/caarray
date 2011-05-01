@@ -240,13 +240,13 @@ final class SdrfTranslator extends AbstractTranslator {
             final boolean referencedAsMatrix = referencedDataMatrixFiles.contains(file.getName());
             final boolean referencedAsAny = referencedAsRaw || referencedAsDerived || referencedAsMatrix;
 
-            if (isRaw && !referencedAsRaw) {
-                addFileReferenceError(file, referencedAsAny, SdrfColumnType.ARRAY_DATA_FILE.getDisplayName());
-            } else if (isDerived && !referencedAsDerived) {
-                addFileReferenceError(file, referencedAsAny, SdrfColumnType.DERIVED_ARRAY_DATA_FILE.getDisplayName());
-            } else if (isMatrix && !referencedAsMatrix) {
+            if (isMatrix && !referencedAsMatrix) {
                 addFileReferenceError(file, referencedAsAny, SdrfColumnType.ARRAY_DATA_MATRIX_FILE.getDisplayName()
                         + " or " + SdrfColumnType.DERIVED_ARRAY_DATA_MATRIX_FILE.getDisplayName());
+            } else if (isRaw && !isMatrix && !referencedAsRaw) {
+                addFileReferenceError(file, referencedAsAny, SdrfColumnType.ARRAY_DATA_FILE.getDisplayName());
+            } else if (isDerived && !isMatrix && !referencedAsDerived) {
+                addFileReferenceError(file, referencedAsAny, SdrfColumnType.DERIVED_ARRAY_DATA_FILE.getDisplayName());
             }
         }
     }
@@ -336,8 +336,7 @@ final class SdrfTranslator extends AbstractTranslator {
             if (null != matchingArrayDesignsAlreadyInSystemList && !matchingArrayDesignsAlreadyInSystemList.isEmpty()) {
                 nameToCheck = matchingArrayDesignsAlreadyInSystemList.get(0).getName();
             }
-            if (!namesOfArrayDesignsForExperiment.isEmpty() 
-                    && !namesOfArrayDesignsForExperiment.contains(nameToCheck)) {
+            if (!namesOfArrayDesignsForExperiment.isEmpty() && !namesOfArrayDesignsForExperiment.contains(nameToCheck)) {
                 document.addErrorMessage(String.format(
                         MessageTemplates.ARRAY_DESIGN_NOT_ASSOCIATED_WITH_EXPERIMENT_ERROR_MESSAGE_TEMPLATE,
                         nameToCheck));

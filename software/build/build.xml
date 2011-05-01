@@ -124,6 +124,14 @@
     <property name="caarray-plugins.deploy.bundleCache.dir" value="${plugins.deploy.baseDir}/bundle-cache" />
     <property name="caarray-plugins.bundledPlugins.zip" value="${plugins.deploy.baseDir}/caarray-bundled-plugins.zip" />
     <property name="caarray-plugins.properties.file" value="${caarray-war.classes.dir}/caarray-plugins.properties" />
+	
+	<!-- plugin dependencies on each other go here -->    	
+	<property name="caarray-plugins.copynumber-platform.requires" value="agilent-platform" />
+	<property name="caarray-plugins.agilent-platform.requires" value="" />
+	<property name="caarray-plugins.affymetrix-platform.requires" value="" />
+	<property name="caarray-plugins.illumina-platform.requires" value="" />
+	<property name="caarray-plugins.genepix-platform.requires" value="" />
+	<property name="caarray-plugins.nimblegen-platform.requires" value="" />
 
     <!-- ******************************************************************* -->
     <!-- ** 3RD PARTY DEPENDENCY MANAGMENT                                ** -->
@@ -2645,9 +2653,19 @@
         <for param="plugin" list="${caarray-plugins.pluginList}">
             <sequential>
                 <mkdir dir="${caarray-plugins.dir}/@{plugin}/${caarray-plugins.test.classes.subdir}" />
+	            <propertycopy property="requiredPlugins" override="true" from="caarray-plugins.@{plugin}.requires"/>
+                <var name="plugin.classpath" value="${caarray-plugins.dir}/@{plugin}/${caarray-plugins.classes.subdir};" />
+            	<echo message="required plugins: ${requiredPlugins}"/>
+                <for param="requiredPlugin" list="${requiredPlugins}">
+    				<sequential>            		
+    		    		<var name="plugin.classpath" value="${plugin.classpath}${caarray-plugins.dir}/@{requiredPlugin}/${caarray-plugins.classes.subdir};"/>
+                	</sequential>
+                </for>
+				<echo message="plugin cp: ${plugin.classpath}"/>
+            	
                 <javac srcdir="${caarray-plugins.dir}/@{plugin}/${caarray-plugins.test.src.subdir}" destdir="${caarray-plugins.dir}/@{plugin}/${caarray-plugins.test.classes.subdir}" debug="true">
                     <classpath>
-                        <pathelement location="${caarray-plugins.dir}/@{plugin}/${caarray-plugins.classes.subdir}" />
+                        <pathelement path="${plugin.classpath}" />
                         <pathelement location="${caarray-ejb.classes.dir}" />
                         <pathelement location="${caarray-client.classes.dir}" />
                         <pathelement location="${caarray-common.classes.dir}" />
@@ -2665,10 +2683,18 @@
     <target name="test:junit-caarray-plugins" unless="notest" depends="init:third-party-paths,test:compile:caarray-plugins.test.classes,test:instrument:caarray-plugins,test:copy-files-to-target-dir-and-unpack-test-data">
         <for param="plugin" list="${caarray-plugins.pluginList}">
             <sequential>
+            	<var name="plugin.test.classpath" value="${caarray-plugins.dir}/@{plugin}/${caarray-plugins.test.classes.subdir};${caarray-ejb.test.classes.dir};${caarray-common.test.classes.dir};${test.data.target.dir};${test.data.classes.dir};${caarray-plugins.dir}/@{plugin}/${caarray-plugins.test.resources.subdir};${caarray-plugins.dir}/@{plugin}/${caarray-plugins.resources.subdir};${caarray-ejb.test.resources.dir};${caarray-ejb.resources.dir};${caarray-common.test.files.dir};${caarray-plugins.dir}/@{plugin}/${caarray-plugins.classes.subdir};${caarray-ejb.classes.dir};${caarray-client.classes.dir};${caarray-common.classes.dir};"/>
+            	<propertycopy property="requiredPlugins" override="true" from="caarray-plugins.@{plugin}.requires"/>
+            	<echo message="required plugins: ${requiredPlugins}"/>
+            	<for param="requiredPlugin" list="${requiredPlugins}">
+					<sequential>            		
+		            	<var name="plugin.test.classpath" value="${plugin.test.classpath}${caarray-plugins.dir}/@{requiredPlugin}/${caarray-plugins.classes.subdir};"/>
+            		</sequential>
+            	</for>
                 <caarray-run-junit-tests test.src.dir="${caarray-plugins.dir}/@{plugin}/${caarray-plugins.test.src.subdir}" 
                 	xml.output.dir="${caarray-plugins.dir}/@{plugin}/${caarray-plugins.target.subdir}/junit" 
                 	instrumented.classes="${caarray-plugins.dir}/@{plugin}/${caarray-plugins.instrumented.classes.subdir};${caarray-ejb.instrumented.classes.dir};${caarray-common.instrumented.classes.dir}" 
-                	classpath="${caarray-plugins.dir}/@{plugin}/${caarray-plugins.test.classes.subdir};${caarray-ejb.test.classes.dir};${caarray-common.test.classes.dir};${test.data.target.dir};${test.data.classes.dir};${caarray-plugins.dir}/@{plugin}/${caarray-plugins.test.resources.subdir};${caarray-plugins.dir}/@{plugin}/${caarray-plugins.resources.subdir};${caarray-ejb.test.resources.dir};${caarray-ejb.resources.dir};${caarray-common.test.files.dir};${caarray-plugins.dir}/@{plugin}/${caarray-plugins.classes.subdir};${caarray-ejb.classes.dir};${caarray-client.classes.dir};${caarray-common.classes.dir};" classpathref.id="ejb.test.dependencies.path"
+                	classpath="${plugin.test.classpath}" classpathref.id="ejb.test.dependencies.path"
                 	forkmode="perTest"/>
             </sequential>
         </for>
