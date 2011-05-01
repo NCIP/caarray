@@ -79,9 +79,11 @@
  * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */package gov.nih.nci.caarray.platforms;
+ */
+package gov.nih.nci.caarray.platforms;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import gov.nih.nci.caarray.AbstractCaarrayTest;
 import gov.nih.nci.caarray.application.arraydata.ArrayDataService;
@@ -102,6 +104,7 @@ import gov.nih.nci.caarray.dao.stub.ContactDaoStub;
 import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
 import gov.nih.nci.caarray.dao.stub.SearchDaoStub;
 import gov.nih.nci.caarray.dataStorage.DataStorageModule;
+import gov.nih.nci.caarray.dataStorage.fileSystem.FileSystemStorageModule;
 import gov.nih.nci.caarray.dataStorage.spi.DataStorage;
 import gov.nih.nci.caarray.domain.array.Array;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
@@ -187,6 +190,8 @@ public abstract class AbstractHandlerTest extends AbstractCaarrayTest {
 
                 bind(SessionTransactionManager.class).to(SessionTransactionManagerNoOpImpl.class);
 
+                bind(String.class).annotatedWith(Names.named(FileSystemStorageModule.BASE_DIR_KEY)).toInstance(
+                        System.getProperty("java.io.tmpdir"));
                 bind(String.class).annotatedWith(Names.named(DataStorageModule.FILE_DATA_ENGINE)).toInstance(
                         "file-system");
                 bind(String.class).annotatedWith(Names.named(DataStorageModule.PARSED_DATA_ENGINE)).toInstance(
@@ -233,29 +238,43 @@ public abstract class AbstractHandlerTest extends AbstractCaarrayTest {
         return mTabSet;
     }
 
-    protected void testValidFile(CaArrayFile caArrayFile, MageTabDocumentSet mTabSet) {
+    protected void testValidFile(CaArrayFile caArrayFile, MageTabDocumentSet mTabSet,
+            boolean probeNameValidationErrorsAreAcceptable) {
         assertEquals(FileStatus.UPLOADED, caArrayFile.getFileStatus());
         this.arrayDataService.validate(caArrayFile, mTabSet, false);
         if (FileStatus.VALIDATION_ERRORS.equals(caArrayFile.getFileStatus())) {
             System.out.println(caArrayFile.getValidationResult());
         }
-        assertEquals(FileStatus.VALIDATED, caArrayFile.getFileStatus());
+        if (probeNameValidationErrorsAreAcceptable) {
+            assertTrue(
+                    "The file is only allowed to have probe name validation errors, but other errors were found.",
+                    onlyAcceptableValidationErrorsArePresent(caArrayFile.getValidationResult(),
+                            new String[] {" was not found in array design '" }));
+        } else {
+            assertEquals(FileStatus.VALIDATED, caArrayFile.getFileStatus());
+        }
     }
-    
-    protected void testInvalidFile(CaArrayFile caArrayFile, MageTabDocumentSet mTabSet) {
+
+    protected void testInvalidFile(CaArrayFile caArrayFile, MageTabDocumentSet mTabSet,
+            final String[] acceptableErrorMessageFragments) {
         assertEquals(FileStatus.UPLOADED, caArrayFile.getFileStatus());
         this.arrayDataService.validate(caArrayFile, mTabSet, false);
         assertEquals(FileStatus.VALIDATION_ERRORS, caArrayFile.getFileStatus());
+        assertTrue(
+                "The file should should have additional validation errors.",
+                !onlyAcceptableValidationErrorsArePresent(caArrayFile.getValidationResult(),
+                        acceptableErrorMessageFragments));
     }
-    
-    private static boolean onlyAcceptableValidationErrorsArePresent(final FileValidationResult fileValidationResult, String[] acceptableErrorMessageFragments) {
+
+    private static boolean onlyAcceptableValidationErrorsArePresent(final FileValidationResult fileValidationResult,
+            String[] acceptableErrorMessageFragments) {
         boolean onlyAcceptableValidationErrorsArePresent = true;
-        for (ValidationMessage validationMessage : fileValidationResult.getMessages(ValidationMessage.Type.ERROR)) {
-            if (null == acceptableErrorMessageFragments ||  0 == acceptableErrorMessageFragments.length) {
+        for (final ValidationMessage validationMessage : fileValidationResult.getMessages(ValidationMessage.Type.ERROR)) {
+            if (null == acceptableErrorMessageFragments || 0 == acceptableErrorMessageFragments.length) {
                 onlyAcceptableValidationErrorsArePresent = false;
-                break;                                                                                                                          
+                break;
             } else {
-                for (String acceptableErrorMessageFragment : acceptableErrorMessageFragments) {
+                for (final String acceptableErrorMessageFragment : acceptableErrorMessageFragments) {
                     if (!validationMessage.getMessage().contains(acceptableErrorMessageFragment)) {
                         onlyAcceptableValidationErrorsArePresent = false;
                         break;
@@ -440,8 +459,8 @@ public abstract class AbstractHandlerTest extends AbstractCaarrayTest {
                     if (caArrayEntity instanceof AbstractArrayData) {
                         addData((AbstractArrayData) caArrayEntity);
                     } else if (caArrayEntity instanceof DesignElementReference) {
-                        DesignElementReference reference = (DesignElementReference) caArrayEntity;                        
-                        DesignElementList designElementList = reference.getDesignElementList();
+                        final DesignElementReference reference = (DesignElementReference) caArrayEntity;
+                        final DesignElementList designElementList = reference.getDesignElementList();
                         designElementList.getDesignElementReferences().add(reference);
                         designElementList.getDesignElements().add(reference.getDesignElement());
                     }

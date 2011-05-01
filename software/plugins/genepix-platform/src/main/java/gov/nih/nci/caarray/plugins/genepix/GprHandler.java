@@ -82,14 +82,14 @@
  */
 package gov.nih.nci.caarray.plugins.genepix;
 
+import gov.nih.nci.caarray.dao.ArrayDao;
+import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.dataStorage.DataStorageFacade;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.LSID;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
 import gov.nih.nci.caarray.domain.data.DataSet;
-import gov.nih.nci.caarray.domain.data.DesignElementList;
-import gov.nih.nci.caarray.domain.data.DesignElementType;
 import gov.nih.nci.caarray.domain.data.HybridizationData;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
@@ -97,7 +97,8 @@ import gov.nih.nci.caarray.domain.file.FileCategory;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.platforms.AbstractDataFileHandler;
-import gov.nih.nci.caarray.platforms.ProbeLookup;
+import gov.nih.nci.caarray.platforms.DesignElementBuilder;
+import gov.nih.nci.caarray.platforms.ProbeNamesValidator;
 import gov.nih.nci.caarray.platforms.ValueParser;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.ValidationMessage.Type;
@@ -123,8 +124,12 @@ import com.google.inject.Inject;
 /**
  * Validates and reads data from all versions of Genepix GPR data files.
  */
-@SuppressWarnings({ "PMD.CyclomaticComplexity", "PMD.ExcessiveClassLength", "PMD.TooManyMethods" })
+@SuppressWarnings({"PMD.CyclomaticComplexity", "PMD.ExcessiveClassLength", "PMD.TooManyMethods" })
 public final class GprHandler extends AbstractDataFileHandler {
+    /**
+     * 
+     */
+    private static final int BATCH_SIZE = 1000;
     private static final String LSID_AUTHORITY = AbstractCaArrayEntity.CAARRAY_LSID_AUTHORITY;
     private static final String LSID_NAMESPACE = AbstractCaArrayEntity.CAARRAY_LSID_NAMESPACE;
 
@@ -183,13 +188,17 @@ public final class GprHandler extends AbstractDataFileHandler {
     static final Set<FileType> SUPPORTED_TYPES = Sets.newHashSet(GPR_FILE_TYPE);
 
     private final ValueParser valueParser = new GenepixValueParser();
+    private final ArrayDao arrayDao;
+    private final SearchDao searchDao;
 
     /**
      * @param fileManager the FileManager to use
      */
     @Inject
-    GprHandler(DataStorageFacade dataStorageFacade) {
+    GprHandler(DataStorageFacade dataStorageFacade, ArrayDao arrayDao, SearchDao searchDao) {
         super(dataStorageFacade);
+        this.arrayDao = arrayDao;
+        this.searchDao = searchDao;
     }
 
     @Override
@@ -231,13 +240,15 @@ public final class GprHandler extends AbstractDataFileHandler {
     }
 
     private Map<String, QuantitationTypeDescriptor> getHeaderToDescriptorMap(List<String> headers) {
-        final Map<String, QuantitationTypeDescriptor> headerDescriptorMap = new HashMap<String, QuantitationTypeDescriptor>();
+        final Map<String, QuantitationTypeDescriptor> headerDescriptorMap =
+                new HashMap<String, QuantitationTypeDescriptor>();
         for (final String header : headers) {
             headerDescriptorMap.put(header, NAME_TO_TYPE_MAP.get(header));
         }
         return headerDescriptorMap;
     }
 
+    // returns the column headers in the file, and positions reader at start of data
     private List<String> getColumnHeaders(DelimitedFileReader reader) throws IOException {
         reset(reader);
         while (reader.hasNextLine()) {
@@ -250,8 +261,9 @@ public final class GprHandler extends AbstractDataFileHandler {
     }
 
     @SuppressWarnings("PMD.PositionLiteralsFirstInComparisons")
-    // PMD check gives false positive
-    private boolean areColumnHeaders(List<String> values) {
+    // bogus warning from PMD
+            private
+            boolean areColumnHeaders(List<String> values) {
         return values.size() > REQUIRED_INITIAL_ROW_HEADER_LENGTH && BLOCK_HEADER.equals(values.get(0))
                 && COLUMN_HEADER.equals(values.get(1)) && ROW_HEADER.equals(values.get(2));
     }
@@ -322,17 +334,15 @@ public final class GprHandler extends AbstractDataFileHandler {
 
     private void loadDesignElementList(DataSet dataSet, DelimitedFileReader reader, ArrayDesign design)
             throws IOException {
-        final DesignElementList probeList = new DesignElementList();
-        probeList.setDesignElementTypeEnum(DesignElementType.PHYSICAL_PROBE);
-        dataSet.setDesignElementList(probeList);
-        final ProbeLookup probeLookup = new ProbeLookup(design.getDesignDetails().getProbes());
-        final List<String> headers = getColumnHeaders(reader);
+        final DesignElementBuilder builder = new DesignElementBuilder(dataSet, design, this.arrayDao, this.searchDao);
+        final List<String> headers = getColumnHeaders(reader); // resets reader to start of data
         final int idIndex = headers.indexOf(ID_HEADER);
         while (reader.hasNextLine()) {
             final List<String> values = reader.nextLine();
             final String probeName = values.get(idIndex);
-            probeList.getDesignElements().add(probeLookup.getProbe(probeName));
+            builder.addProbe(probeName);
         }
+        builder.finish();
     }
 
     private Set<QuantitationTypeDescriptor> getDescriptorSet(List<QuantitationType> types) {
@@ -345,7 +355,7 @@ public final class GprHandler extends AbstractDataFileHandler {
 
     private void loadData(HybridizationData hybridizationData, Set<QuantitationTypeDescriptor> descriptors,
             DelimitedFileReader reader) throws IOException {
-        final List<String> headers = getColumnHeaders(reader);
+        final List<String> headers = getColumnHeaders(reader); // resets reader to start of data
         int rowIndex = 0;
         while (reader.hasNextLine()) {
             final List<String> values = reader.nextLine();
@@ -382,7 +392,7 @@ public final class GprHandler extends AbstractDataFileHandler {
         try {
             validateHeader(reader, result);
             if (result.isValid()) {
-                validateData(reader, result);
+                validateData(reader, result, design);
             }
         } catch (final IOException e) {
             throw new IllegalStateException(READ_FILE_ERROR_MESSAGE, e);
@@ -399,7 +409,9 @@ public final class GprHandler extends AbstractDataFileHandler {
         return true;
     }
 
-    private void validateData(DelimitedFileReader reader, FileValidationResult result) throws IOException {
+    private void validateData(DelimitedFileReader reader, FileValidationResult result, ArrayDesign arrayDesign)
+            throws IOException {
+        validateProbeNames(reader, arrayDesign, result);
         final List<String> headers = getColumnHeaders(reader);
         final Map<String, QuantitationTypeDescriptor> headerToDescriptorMap = getHeaderToDescriptorMap(headers);
         while (reader.hasNextLine()) {
@@ -410,6 +422,28 @@ public final class GprHandler extends AbstractDataFileHandler {
             } else {
                 validateValues(values, headers, headerToDescriptorMap, result, reader.getCurrentLineNumber());
             }
+        }
+    }
+
+    private void validateProbeNames(final DelimitedFileReader delimitedFileReader, final ArrayDesign arrayDesign,
+            final FileValidationResult fileValidationResult) throws IOException {
+        final ProbeNamesValidator probeNamesValidator = new ProbeNamesValidator(this.arrayDao, arrayDesign);
+        final List<String> probeNamesBatch = new ArrayList<String>(BATCH_SIZE);
+        int probeCounter = 0;
+        final List<String> headers = getColumnHeaders(delimitedFileReader); // resets reader to start of data
+        final int idIndex = headers.indexOf(ID_HEADER);
+        while (delimitedFileReader.hasNextLine()) {
+            final List<String> values = delimitedFileReader.nextLine();
+            final String probeName = values.get(idIndex);
+            probeNamesBatch.add(probeName);
+            probeCounter++;
+            if (0 == probeCounter % BATCH_SIZE) {
+                probeNamesValidator.validateProbeNames(fileValidationResult, probeNamesBatch);
+                probeNamesBatch.clear();
+            }
+        }
+        if (!probeNamesBatch.isEmpty()) {
+            probeNamesValidator.validateProbeNames(fileValidationResult, probeNamesBatch);
         }
     }
 
@@ -545,8 +579,9 @@ public final class GprHandler extends AbstractDataFileHandler {
     }
 
     private void readAndValidateCountLine(DelimitedFileReader reader, FileValidationResult result) throws IOException {
-        final String errorMessage = "GPR file must contain two tab-separated integer values on the second line "
-                + "corresponding to the number of optional header records and data field columns";
+        final String errorMessage =
+                "GPR file must contain two tab-separated integer values on the second line "
+                        + "corresponding to the number of optional header records and data field columns";
         final List<String> values = reader.nextLine();
         if (values.size() != 2) {
             result.addMessage(Type.ERROR, errorMessage);

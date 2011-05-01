@@ -103,7 +103,7 @@ class AgilentGELMParser {
     private static final String IGNORE_CONTROL_GROUP_NAME = "ignore";
 
     private final XMLTokenizer<Token> tokenizer;
-    private final Pattern chromosomePattern = Pattern.compile("chr(\\d{1,2}|X|Y|x|y):(\\d+)-(\\d+)(?:\\|.+){0,1}");
+    private final Pattern chromosomePattern = Pattern.compile("chr(.+):(\\d+)-(\\d+)(?:\\|.+){0,1}");
     private int featureCount;
     private int geneCount;
     private int positionCount;
@@ -122,7 +122,7 @@ class AgilentGELMParser {
      * @return true if the validation parse succeeds; false otherwise
      */
     boolean validate() {
-        ValidatingArrayDesignBuilder arrayDesignBuilder = new ValidatingArrayDesignBuilder();
+        final ValidatingArrayDesignBuilder arrayDesignBuilder = new ValidatingArrayDesignBuilder();
         return parse(arrayDesignBuilder);
     }
 
@@ -136,7 +136,7 @@ class AgilentGELMParser {
         try {
             parseDocument(arrayDesignBuilder);
             expect(Token.EOF);
-        } catch (ParseException e) {
+        } catch (final ParseException e) {
             return false;
         }
 
@@ -159,8 +159,8 @@ class AgilentGELMParser {
         accept(Token.NAME);
         accept(Token.ORGANIZATION);
 
-        while (Token.END != tokenizer.getCurrentToken()) {
-            switch (tokenizer.getCurrentToken()) {
+        while (Token.END != this.tokenizer.getCurrentToken()) {
+            switch (this.tokenizer.getCurrentToken()) {
 
             case BIOSEQUENCE_START:
                 parseBiosequence(arrayDesignBuilder);
@@ -199,14 +199,14 @@ class AgilentGELMParser {
         accept(Token.SEQUENCEDB);
         final String species = expectTokenWithStringValue(Token.SPECIES);
         accept(Token.TYPE);
-        
-        BiosequenceBuilder biosequenceBuilder = arrayDesignBuilder.createBiosequenceBuilder(controlType, species);
 
-        while (Token.END != tokenizer.getCurrentToken()) {
-            switch (tokenizer.getCurrentToken()) {
+        final BiosequenceBuilder biosequenceBuilder = arrayDesignBuilder.createBiosequenceBuilder(controlType, species);
+
+        while (Token.END != this.tokenizer.getCurrentToken()) {
+            switch (this.tokenizer.getCurrentToken()) {
 
             case ACCESSION_START:
-                 parseAccession(biosequenceBuilder);
+                parseAccession(biosequenceBuilder);
                 break;
 
             case ALIAS_START:
@@ -223,7 +223,7 @@ class AgilentGELMParser {
         }
 
         expect(Token.END);
-        
+
         biosequenceBuilder.finish();
     }
 
@@ -233,7 +233,7 @@ class AgilentGELMParser {
         final String database = acceptTokenWithStringValue(Token.DATABASE, "");
         final String identifier = expectTokenWithStringValue(Token.IDENTIFIER);
         final String species = expectTokenWithStringValue(Token.SPECIES);
-        
+
         physicalProbeBuilder.setBiosequenceRef(database, species, identifier);
 
         expect(Token.END);
@@ -253,8 +253,8 @@ class AgilentGELMParser {
         accept(Token.RUN_DESCRIPTION);
         accept(Token.TYPE);
 
-        while (Token.END != tokenizer.getCurrentToken()) {
-            switch (tokenizer.getCurrentToken()) {
+        while (Token.END != this.tokenizer.getCurrentToken()) {
+            switch (this.tokenizer.getCurrentToken()) {
 
             case CHIP_START:
                 chipCount++;
@@ -284,8 +284,8 @@ class AgilentGELMParser {
         accept(Token.PREPARED_FOR);
         accept(Token.PREPARED_FOR_ORG);
 
-        while (Token.END != tokenizer.getCurrentToken()) {
-            switch (tokenizer.getCurrentToken()) {
+        while (Token.END != this.tokenizer.getCurrentToken()) {
+            switch (this.tokenizer.getCurrentToken()) {
 
             case OTHER_START:
                 parseOther();
@@ -312,8 +312,8 @@ class AgilentGELMParser {
         accept(Token.TYPE);
         accept(Token.TYPE_ID);
 
-        while (Token.END != tokenizer.getCurrentToken()) {
-            switch (tokenizer.getCurrentToken()) {
+        while (Token.END != this.tokenizer.getCurrentToken()) {
+            switch (this.tokenizer.getCurrentToken()) {
 
             case GRID_LAYOUT_START:
                 parseGridLayout();
@@ -355,8 +355,8 @@ class AgilentGELMParser {
     }
 
     private void parseReporter(ArrayDesignBuilder arrayDesignBuilder) {
-        featureCount = 0;
-        geneCount = 0;
+        this.featureCount = 0;
+        this.geneCount = 0;
 
         expect(Token.REPORTER_START);
 
@@ -368,37 +368,37 @@ class AgilentGELMParser {
 
         final ControlType controlType = validateReporterControlType(controlTypeValue, name);
 
-        PhysicalProbeBuilder physicalProbeBuilder = arrayDesignBuilder.findOrCreatePhysicalProbeBuilder(name);
+        final PhysicalProbeBuilder physicalProbeBuilder = arrayDesignBuilder.findOrCreatePhysicalProbeBuilder(name);
         addPhysicalProbeToProbeGroup(physicalProbeBuilder, controlType);
 
         parseReporterContents(physicalProbeBuilder);
 
         expect(Token.END);
 
-        if (featureCount == 0) {
+        if (this.featureCount == 0) {
             throw new ParseException("Expected at least one \"feature\" element.");
         }
 
-        if (geneCount > 1) {
+        if (this.geneCount > 1) {
             throw new ParseException("Expected no more than one \"gene\" element.");
         }
     }
 
     private void parseReporterContents(PhysicalProbeBuilder physicalProbeBuilder) {
-        while (Token.END != tokenizer.getCurrentToken()) {
-            switch (tokenizer.getCurrentToken()) {
+        while (Token.END != this.tokenizer.getCurrentToken()) {
+            switch (this.tokenizer.getCurrentToken()) {
 
             case BIOSEQUENCE_REF_START:
                 parseBiosequenceRef(physicalProbeBuilder);
                 break;
 
             case FEATURE_START:
-                featureCount++;
+                this.featureCount++;
                 parseFeature(physicalProbeBuilder);
                 break;
 
             case GENE_START:
-                geneCount++;
+                this.geneCount++;
                 parseGene(physicalProbeBuilder);
                 break;
 
@@ -412,8 +412,7 @@ class AgilentGELMParser {
         }
     }
 
-    private void addPhysicalProbeToProbeGroup(PhysicalProbeBuilder physicalProbeBuilder,
-            final ControlType controlType) {
+    private void addPhysicalProbeToProbeGroup(PhysicalProbeBuilder physicalProbeBuilder, final ControlType controlType) {
         switch (controlType) {
         case IGNORE:
             physicalProbeBuilder.addToProbeGroup(IGNORE_CONTROL_GROUP_NAME);
@@ -465,40 +464,40 @@ class AgilentGELMParser {
     }
 
     private void parseFeature(PhysicalProbeBuilder physicalProbeBuilder) {
-        positionCount = 0;
-        penCount = 0;
+        this.positionCount = 0;
+        this.penCount = 0;
 
         expect(Token.FEATURE_START);
 
         accept(Token.CTRL_FOR_FEAT_NUM);
-        int featureNumber = acceptTokenWithIntValue(Token.NUMBER, 0);
+        final int featureNumber = acceptTokenWithIntValue(Token.NUMBER, 0);
 
-        FeatureBuilder featureBuilder = physicalProbeBuilder.createFeatureBuilder(featureNumber);
+        final FeatureBuilder featureBuilder = physicalProbeBuilder.createFeatureBuilder(featureNumber);
 
         parseFeatureContents(featureBuilder);
 
         expect(Token.END);
 
-        if (positionCount != 1) {
+        if (this.positionCount != 1) {
             throw new ParseException("Expected no more than one \"position\" element.");
         }
 
-        if (penCount > 1) {
+        if (this.penCount > 1) {
             throw new ParseException("Expected no more than one \"pen\" element.");
         }
     }
 
     private void parseFeatureContents(FeatureBuilder featureBuilder) {
-        while (Token.END != tokenizer.getCurrentToken()) {
-            switch (tokenizer.getCurrentToken()) {
+        while (Token.END != this.tokenizer.getCurrentToken()) {
+            switch (this.tokenizer.getCurrentToken()) {
 
             case POSITION_START:
-                positionCount++;
+                this.positionCount++;
                 parsePosition(featureBuilder);
                 break;
 
             case PEN_START:
-                penCount++;
+                this.penCount++;
                 parsePen();
                 break;
 
@@ -508,7 +507,7 @@ class AgilentGELMParser {
 
             default:
                 throwTokenError();
-           }
+            }
         }
     }
 
@@ -519,15 +518,15 @@ class AgilentGELMParser {
         accept(Token.DESCRIPTION);
         accept(Token.MAP_POSITION);
 
-        String name = expectTokenWithStringValue(Token.PRIMARY_NAME);
+        final String name = expectTokenWithStringValue(Token.PRIMARY_NAME);
 
         accept(Token.SPECIES);
         accept(Token.SYSTEMATIC_NAME);
 
-        GeneBuilder geneBuilder = physicalProbeBuilder.createGeneBuilder(name);
- 
-        while (Token.END != tokenizer.getCurrentToken()) {
-            switch (tokenizer.getCurrentToken()) {
+        final GeneBuilder geneBuilder = physicalProbeBuilder.createGeneBuilder(name);
+
+        while (Token.END != this.tokenizer.getCurrentToken()) {
+            switch (this.tokenizer.getCurrentToken()) {
 
             case ACCESSION_START:
                 parseAccession(geneBuilder);
@@ -552,12 +551,12 @@ class AgilentGELMParser {
     private void parsePosition(FeatureBuilder featureBuilder) {
         expect(Token.POSITION_START);
 
-        String units = expectTokenWithStringValue(Token.UNITS);
-        double x = expectTokenWithDoubleValue(Token.X);
-        double y = expectTokenWithDoubleValue(Token.Y);
+        final String units = expectTokenWithStringValue(Token.UNITS);
+        final double x = expectTokenWithDoubleValue(Token.X);
+        final double y = expectTokenWithDoubleValue(Token.Y);
 
-        while (Token.END != tokenizer.getCurrentToken()) {
-            switch (tokenizer.getCurrentToken()) {
+        while (Token.END != this.tokenizer.getCurrentToken()) {
+            switch (this.tokenizer.getCurrentToken()) {
 
             case OTHER_START:
                 parseOther();
@@ -579,8 +578,8 @@ class AgilentGELMParser {
         expect(Token.X);
         expect(Token.Y);
 
-        while (Token.END != tokenizer.getCurrentToken()) {
-            switch (tokenizer.getCurrentToken()) {
+        while (Token.END != this.tokenizer.getCurrentToken()) {
+            switch (this.tokenizer.getCurrentToken()) {
 
             case OTHER_START:
                 parseOther();
@@ -596,12 +595,12 @@ class AgilentGELMParser {
 
     private void parseAccession(AccessionBuilder accessionBuilder) {
         expect(Token.ACCESSION_START);
-        
-        final String database = expectTokenWithStringValue(Token.DATABASE);       
+
+        final String database = expectTokenWithStringValue(Token.DATABASE);
         final String id = parseAccessionName();
 
-        while (Token.END != tokenizer.getCurrentToken()) {
-            switch (tokenizer.getCurrentToken()) {
+        while (Token.END != this.tokenizer.getCurrentToken()) {
+            switch (this.tokenizer.getCurrentToken()) {
 
             case OTHER_START:
                 parseOther();
@@ -629,18 +628,18 @@ class AgilentGELMParser {
         expect(Token.END);
     }
 
-    private String parseAccessionName() {      
+    private String parseAccessionName() {
         final String defaultValue = "default value 9238BE1D-CA35-40F7-631264F9DCFB7ABA";
         String id = acceptTokenWithStringValue(Token.ID, defaultValue);
-        
+
         if (defaultValue.equals(id)) {
             id = acceptTokenWithStringValue(Token.IDENTIFIER, defaultValue);
         }
-        
+
         if (defaultValue.equals(id)) {
             throw new ParseException("Missing accession.");
         }
-        
+
         return id;
     }
 
@@ -648,8 +647,8 @@ class AgilentGELMParser {
         expect(Token.ALIAS_START);
         expect(Token.NAME);
 
-        while (Token.END != tokenizer.getCurrentToken()) {
-            switch (tokenizer.getCurrentToken()) {
+        while (Token.END != this.tokenizer.getCurrentToken()) {
+            switch (this.tokenizer.getCurrentToken()) {
 
             case OTHER_START:
                 parseOther();
@@ -665,13 +664,13 @@ class AgilentGELMParser {
 
     private void parseProbeMappingsOrOther(GeneBuilder geneBuilder) {
         expect(Token.OTHER_START);
-        String name = expectTokenWithStringValue(Token.NAME);
+        final String name = expectTokenWithStringValue(Token.NAME);
 
         if (!"probe_mappings".equalsIgnoreCase(name)) {
             parseOtherContents();
         } else {
-            String value = expectTokenWithStringValue(Token.VALUE);
-            Matcher m = chromosomePattern.matcher(value);
+            final String value = expectTokenWithStringValue(Token.VALUE);
+            final Matcher m = this.chromosomePattern.matcher(value);
             if (!m.matches()) {
                 throw new ParseException(String.format("Unrecognized chromosome name \"%s\".", value));
             }
@@ -694,8 +693,8 @@ class AgilentGELMParser {
     private void parseOtherContents() {
         expect(Token.VALUE);
 
-        while (Token.END != tokenizer.getCurrentToken()) {
-            switch (tokenizer.getCurrentToken()) {
+        while (Token.END != this.tokenizer.getCurrentToken()) {
+            switch (this.tokenizer.getCurrentToken()) {
 
             case OTHER_START:
                 parseOther();
@@ -710,67 +709,66 @@ class AgilentGELMParser {
     }
 
     private void throwTokenError() {
-        throw new ParseException(String.format("Unexpected token \"%s\".", tokenizer.getCurrentToken().toString()));
+        throw new ParseException(String.format("Unexpected token \"%s\".", this.tokenizer.getCurrentToken().toString()));
     }
 
     private void accept(Token token) {
-        if (tokenizer.getCurrentToken() == token) {
-            tokenizer.advance();
+        if (this.tokenizer.getCurrentToken() == token) {
+            this.tokenizer.advance();
         }
     }
 
     private int acceptTokenWithIntValue(Token token, int defaultValue) {
-        if (tokenizer.getCurrentToken() != token) {
+        if (this.tokenizer.getCurrentToken() != token) {
             return defaultValue;
         }
 
-        int value = tokenizer.getIntValue();
-        tokenizer.advance();
+        final int value = this.tokenizer.getIntValue();
+        this.tokenizer.advance();
         return value;
     }
 
     private String acceptTokenWithStringValue(Token token, String defaultValue) {
-        if (tokenizer.getCurrentToken() != token) {
+        if (this.tokenizer.getCurrentToken() != token) {
             return defaultValue;
         }
 
-        String value = tokenizer.getStringValue();
-        tokenizer.advance();
+        final String value = this.tokenizer.getStringValue();
+        this.tokenizer.advance();
         return value;
     }
 
     private void expect(Token token) {
-        if (tokenizer.getCurrentToken() != token) {
+        if (this.tokenizer.getCurrentToken() != token) {
             throwTokenError(token);
         }
 
-        tokenizer.advance();
+        this.tokenizer.advance();
     }
 
     private double expectTokenWithDoubleValue(Token token) {
-        if (tokenizer.getCurrentToken() != token) {
+        if (this.tokenizer.getCurrentToken() != token) {
             throwTokenError(token);
         }
 
-        double value = tokenizer.getDoubleValue();
-        tokenizer.advance();
+        final double value = this.tokenizer.getDoubleValue();
+        this.tokenizer.advance();
         return value;
     }
 
     private String expectTokenWithStringValue(Token token) {
-        if (tokenizer.getCurrentToken() != token) {
+        if (this.tokenizer.getCurrentToken() != token) {
             throwTokenError(token);
         }
 
-        String value = tokenizer.getStringValue();
-        tokenizer.advance();
+        final String value = this.tokenizer.getStringValue();
+        this.tokenizer.advance();
         return value;
     }
 
     private void throwTokenError(Token token) {
-        throw new ParseException(
-                String.format("Unexepected token \"%s\".  Expected \"%s\"",
-                        tokenizer.getCurrentToken(), token.toString()));
+        throw new ParseException(String.format("Unexepected token \"%s\".  Expected \"%s\"",
+                this.tokenizer.getCurrentToken(), token.toString()));
     }
 
     /***
@@ -803,8 +801,8 @@ class AgilentGELMParser {
      */
     private class ParseException extends RuntimeException {
         private static final long serialVersionUID = 1L;
-        
-       /**
+
+        /**
          * @param message the exception message.
          */
         public ParseException(String message) {

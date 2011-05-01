@@ -1637,6 +1637,7 @@
         clean:target.dir,
         clean:caarray-grid-common,
         clean:caarray-grid-svc,
+    	clean:caarray-plugins,
         clean:caarraydb,
     	clean-cn2magetab" description="Deletes all of the target directories" />
 
@@ -1792,7 +1793,8 @@
       compile:caarray-common.jar,
         compile:caarray-ejb.jar,
         compile:caarray.war,
-        compile:caarray-grid-svc" />
+        compile:caarray-grid-svc,
+    	compile:caarray-plugins" />
     
     <target name="compile:cn2magetab" depends="init:third-party-paths">
         <mkdir dir="${cn2magetab.classes.dir}" />
@@ -1922,6 +1924,7 @@
         build:caarray.war,
         build:caarray.ear,
         build:caarray-grid-svc,
+    	build:caarray-plugins,
     	build:cn2magetab"/>
 
     <target name="build-functional" depends="init:third-party-paths,
@@ -2588,7 +2591,7 @@
         <mkdir dir="${caarray-ejb.test.classes.dir}" />
         <javac srcdir="${caarray-ejb.test.src.dir}" destdir="${caarray-ejb.test.classes.dir}" debug="true">
         	<include name="**/*"/>
-        	<exclude name="**/FileManagementServiceIntegrationTest*"/>
+        	<exclude name="**/AbstractFileManagementServiceIntegrationTest2*"/>
         	<exclude name="**/FileImportIntegrationTest*"/>
         	<exclude name="**/FileValidationIntegrationTest*"/>
             <classpath>
@@ -2665,7 +2668,8 @@
                 <caarray-run-junit-tests test.src.dir="${caarray-plugins.dir}/@{plugin}/${caarray-plugins.test.src.subdir}" 
                 	xml.output.dir="${caarray-plugins.dir}/@{plugin}/${caarray-plugins.target.subdir}/junit" 
                 	instrumented.classes="${caarray-plugins.dir}/@{plugin}/${caarray-plugins.instrumented.classes.subdir};${caarray-ejb.instrumented.classes.dir};${caarray-common.instrumented.classes.dir}" 
-                	classpath="${caarray-plugins.dir}/@{plugin}/${caarray-plugins.test.classes.subdir};${caarray-ejb.test.classes.dir};${caarray-common.test.classes.dir};${test.data.target.dir};${test.data.classes.dir};${caarray-plugins.dir}/@{plugin}/${caarray-plugins.test.resources.subdir};${caarray-plugins.dir}/@{plugin}/${caarray-plugins.resources.subdir};${caarray-ejb.test.resources.dir};${caarray-ejb.resources.dir};${caarray-common.test.files.dir};${caarray-plugins.dir}/@{plugin}/${caarray-plugins.classes.subdir};${caarray-ejb.classes.dir};${caarray-client.classes.dir};${caarray-common.classes.dir};" classpathref.id="ejb.test.dependencies.path"/>
+                	classpath="${caarray-plugins.dir}/@{plugin}/${caarray-plugins.test.classes.subdir};${caarray-ejb.test.classes.dir};${caarray-common.test.classes.dir};${test.data.target.dir};${test.data.classes.dir};${caarray-plugins.dir}/@{plugin}/${caarray-plugins.test.resources.subdir};${caarray-plugins.dir}/@{plugin}/${caarray-plugins.resources.subdir};${caarray-ejb.test.resources.dir};${caarray-ejb.resources.dir};${caarray-common.test.files.dir};${caarray-plugins.dir}/@{plugin}/${caarray-plugins.classes.subdir};${caarray-ejb.classes.dir};${caarray-client.classes.dir};${caarray-common.classes.dir};" classpathref.id="ejb.test.dependencies.path"
+                	forkmode="perTest"/>
             </sequential>
         </for>
     </target>

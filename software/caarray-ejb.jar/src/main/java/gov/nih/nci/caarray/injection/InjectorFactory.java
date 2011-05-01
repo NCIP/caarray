@@ -145,7 +145,7 @@ public final class InjectorFactory {
         final Module[] modules =
                 new Module[] {new CaArrayEjbStaticInjectionModule(), new CaArrayHibernateHelperModule(),
                         new DaoModule(), new ServicesModule(), new FileModule(), new ApplicationModule(),
-                        PLATFORM_MODULE, platformTransactionMoudle, };
+                        PLATFORM_MODULE, platformTransactionMoudle };
 
         return Modules.combine(modules);
     }

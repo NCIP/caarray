@@ -82,14 +82,14 @@
  */
 package gov.nih.nci.caarray.plugins.illumina;
 
+import gov.nih.nci.caarray.dao.ArrayDao;
+import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.dataStorage.DataStorageFacade;
 import gov.nih.nci.caarray.domain.LSID;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.data.AbstractDataColumn;
 import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
 import gov.nih.nci.caarray.domain.data.DataSet;
-import gov.nih.nci.caarray.domain.data.DesignElementList;
-import gov.nih.nci.caarray.domain.data.DesignElementType;
 import gov.nih.nci.caarray.domain.data.HybridizationData;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
@@ -99,7 +99,8 @@ import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.magetab.sdrf.Hybridization;
 import gov.nih.nci.caarray.platforms.AbstractDataFileHandler;
 import gov.nih.nci.caarray.platforms.DefaultValueParser;
-import gov.nih.nci.caarray.platforms.ProbeLookup;
+import gov.nih.nci.caarray.platforms.DesignElementBuilder;
+import gov.nih.nci.caarray.platforms.ProbeNamesValidator;
 import gov.nih.nci.caarray.platforms.ValueParser;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.ValidationMessage;
@@ -134,10 +135,14 @@ public class CsvDataHandler extends AbstractDataFileHandler {
     private static final String LSID_AUTHORITY = "illumina.com";
     private static final String LSID_NAMESPACE = "PhysicalArrayDesign";
     private static final String GROUP_ID_HEADER = "GroupID";
-    private static final Map<String, IlluminaExpressionQuantitationType> EXPRESSION_TYPE_MAP = new HashMap<String, IlluminaExpressionQuantitationType>();
-    private static final Map<String, IlluminaGenotypingQuantitationType> SNP_TYPE_MAP = new HashMap<String, IlluminaGenotypingQuantitationType>();
+    private static final Map<String, IlluminaExpressionQuantitationType> EXPRESSION_TYPE_MAP =
+            new HashMap<String, IlluminaExpressionQuantitationType>();
+    private static final Map<String, IlluminaGenotypingQuantitationType> SNP_TYPE_MAP =
+            new HashMap<String, IlluminaGenotypingQuantitationType>();
+    private static final int BATCH_SIZE = 1000;
 
-    public static final FileType DATA_CSV_FILE_TYPE = new FileType("ILLUMINA_DATA_CSV", FileCategory.DERIVED_DATA, true);
+    public static final FileType DATA_CSV_FILE_TYPE =
+            new FileType("ILLUMINA_DATA_CSV", FileCategory.DERIVED_DATA, true);
     private static final Set<FileType> SUPPORTED_TYPES = Sets.newHashSet(DATA_CSV_FILE_TYPE);
 
     static {
@@ -151,13 +156,17 @@ public class CsvDataHandler extends AbstractDataFileHandler {
     }
 
     private final ValueParser valueParser = new DefaultValueParser();
+    private final ArrayDao arrayDao;
+    private final SearchDao searchDao;
 
     /**
      * 
      */
     @Inject
-    CsvDataHandler(DataStorageFacade dataStorageFacade) {
+    CsvDataHandler(DataStorageFacade dataStorageFacade, ArrayDao arrayDao, SearchDao searchDao) {
         super(dataStorageFacade);
+        this.arrayDao = arrayDao;
+        this.searchDao = searchDao;
     }
 
     /**
@@ -204,7 +213,8 @@ public class CsvDataHandler extends AbstractDataFileHandler {
 
     @SuppressWarnings("PMD.PositionLiteralsFirstInComparisons")
     // false report from PMD
-    private List<QuantitationTypeDescriptor> getTypeDescriptors(DelimitedFileReader reader) throws IOException {
+            private
+            List<QuantitationTypeDescriptor> getTypeDescriptors(DelimitedFileReader reader) throws IOException {
         final List<String> headers = getHeaders(reader);
         if (TARGET_ID.equals(headers.get(0))) {
             return getExpressionTypeDescriptors(headers);
@@ -278,8 +288,8 @@ public class CsvDataHandler extends AbstractDataFileHandler {
     public QuantitationTypeDescriptor[] getQuantitationTypeDescriptors() {
         final DelimitedFileReader reader = getReader(getFile());
         try {
-            final QuantitationTypeDescriptor[] descriptors = getTypeDescriptors(reader).toArray(
-                    new QuantitationTypeDescriptor[] {});
+            final QuantitationTypeDescriptor[] descriptors =
+                    getTypeDescriptors(reader).toArray(new QuantitationTypeDescriptor[] {});
             return descriptors;
         } catch (final IOException e) {
             throw new IllegalStateException(AbstractDataFileHandler.READ_FILE_ERROR_MESSAGE, e);
@@ -383,8 +393,9 @@ public class CsvDataHandler extends AbstractDataFileHandler {
             }
 
             if (!sdrfHybStrs.containsAll(fileHybNames)) {
-                final StringBuilder sb = new StringBuilder("This data file contains the following hybridization names"
-                        + " that are not referenced in the SDRF document:");
+                final StringBuilder sb =
+                        new StringBuilder("This data file contains the following hybridization names"
+                                + " that are not referenced in the SDRF document:");
                 sdrfHybStrs.removeAll(fileHybNames);
                 sb.append(StringUtils.join(sdrfHybStrs.iterator(), ','));
                 result.addMessage(Type.ERROR, sb.toString());
@@ -395,16 +406,14 @@ public class CsvDataHandler extends AbstractDataFileHandler {
     private void loadDesignElementList(DataSet dataSet, DelimitedFileReader reader, List<String> headers,
             ArrayDesign design) throws IOException {
         final int indexOfTargetId = headers.indexOf(TARGET_ID);
-        final DesignElementList probeList = new DesignElementList();
-        probeList.setDesignElementTypeEnum(DesignElementType.PHYSICAL_PROBE);
-        dataSet.setDesignElementList(probeList);
-        final ProbeLookup probeLookup = new ProbeLookup(design.getDesignDetails().getProbes());
+        final DesignElementBuilder builder = new DesignElementBuilder(dataSet, design, this.arrayDao, this.searchDao);
         positionAtData(reader);
         while (reader.hasNextLine()) {
             final List<String> values = reader.nextLine();
             final String probeName = values.get(indexOfTargetId);
-            probeList.getDesignElements().add(probeLookup.getProbe(probeName));
+            builder.addProbe(probeName);
         }
+        builder.finish();
     }
 
     @SuppressWarnings("PMD.ExcessiveParameterList")
@@ -422,15 +431,16 @@ public class CsvDataHandler extends AbstractDataFileHandler {
 
     private void setValue(HybridizationData hybridizationData, String typeHeader, String value,
             Set<QuantitationType> typeSet, int rowIndex) {
-        final QuantitationTypeDescriptor typeDescriptor = IlluminaExpressionQuantitationType.valueOf(typeHeader
-                .toUpperCase(Locale.getDefault()));
+        final QuantitationTypeDescriptor typeDescriptor =
+                IlluminaExpressionQuantitationType.valueOf(typeHeader.toUpperCase(Locale.getDefault()));
         final AbstractDataColumn column = getColumn(hybridizationData, typeDescriptor);
         if (typeSet.contains(column.getQuantitationType())) {
             this.valueParser.setValue(column, rowIndex, value);
         }
     }
 
-    private AbstractDataColumn getColumn(HybridizationData hybridizationData, QuantitationTypeDescriptor typeDescriptor) {
+    private AbstractDataColumn
+            getColumn(HybridizationData hybridizationData, QuantitationTypeDescriptor typeDescriptor) {
         for (final AbstractDataColumn column : hybridizationData.getColumns()) {
             if (column.getQuantitationType().getName().equals(typeDescriptor.getName())) {
                 return column;
@@ -476,7 +486,7 @@ public class CsvDataHandler extends AbstractDataFileHandler {
             }
 
             if (result.isValid()) {
-                validateData(reader, result);
+                validateData(reader, result, design);
             }
             result.addValidationProperties(FileValidationResult.HYB_NAME, hybNames);
         } catch (final IOException e) {
@@ -550,14 +560,29 @@ public class CsvDataHandler extends AbstractDataFileHandler {
         }
     }
 
-    private void validateData(DelimitedFileReader reader, FileValidationResult result) throws IOException {
+    private void validateData(final DelimitedFileReader reader, final FileValidationResult result,
+            final ArrayDesign arrayDesign) throws IOException {
         final List<String> headers = getHeaders(reader);
+        final int targetIdColumnIndex = headers.indexOf(TARGET_ID);
         positionAtData(reader);
+        final ProbeNamesValidator probeNamesValidator = new ProbeNamesValidator(this.arrayDao, arrayDesign);
+        final List<String> probeNamesBatch = new ArrayList<String>(BATCH_SIZE);
+        int probeCounter = 0;
         while (reader.hasNextLine()) {
-            if (reader.nextLine().size() != headers.size()) {
+            final List<String> nextLineValues = reader.nextLine();
+            if (nextLineValues.size() != headers.size()) {
                 final ValidationMessage message = result.addMessage(Type.ERROR, "Invalid number of values in row");
                 message.setLine(reader.getCurrentLineNumber());
             }
+            probeNamesBatch.add(nextLineValues.get(targetIdColumnIndex));
+            probeCounter++;
+            if (0 == probeCounter % BATCH_SIZE) {
+                probeNamesValidator.validateProbeNames(result, probeNamesBatch);
+                probeNamesBatch.clear();
+            }
+        }
+        if (!probeNamesBatch.isEmpty()) {
+            probeNamesValidator.validateProbeNames(result, probeNamesBatch);
         }
     }
 

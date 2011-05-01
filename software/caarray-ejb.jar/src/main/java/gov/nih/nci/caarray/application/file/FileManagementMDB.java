@@ -84,7 +84,6 @@ package gov.nih.nci.caarray.application.file;
 
 import gov.nih.nci.caarray.application.ConfigurationHelper;
 import gov.nih.nci.caarray.application.ExceptionLoggingInterceptor;
-import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.dao.JobQueueDao;
 import gov.nih.nci.caarray.domain.ConfigParamEnum;
 import gov.nih.nci.caarray.domain.project.ExecutableJob;
@@ -144,7 +143,6 @@ public class FileManagementMDB implements MessageListener {
     static final String QUEUE_JNDI_NAME = "topic/caArray/FileManagement";
     private static ThreadLocal<FileManagementMDB> currentMDB = new ThreadLocal<FileManagementMDB>();
 
-    private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
     @Resource
     private UserTransaction transaction;
     private CaArrayHibernateHelper hibernateHelper;
@@ -308,14 +306,6 @@ public class FileManagementMDB implements MessageListener {
                 LOG.error("Error while attempting close the connection after handling an unexpected error.", e);
             }
         }
-    }
-
-    CaArrayDaoFactory getDaoFactory() {
-        return this.daoFactory;
-    }
-
-    void setDaoFactory(CaArrayDaoFactory daoFactory) {
-        this.daoFactory = daoFactory;
     }
 
     /**

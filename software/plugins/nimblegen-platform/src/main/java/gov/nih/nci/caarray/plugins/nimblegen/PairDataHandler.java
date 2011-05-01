@@ -82,6 +82,8 @@
  */
 package gov.nih.nci.caarray.plugins.nimblegen;
 
+import gov.nih.nci.caarray.dao.ArrayDao;
+import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.dataStorage.DataStorageFacade;
 import gov.nih.nci.caarray.domain.LSID;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
@@ -99,12 +101,14 @@ import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.platforms.AbstractDataFileHandler;
 import gov.nih.nci.caarray.platforms.DefaultValueParser;
 import gov.nih.nci.caarray.platforms.ProbeLookup;
+import gov.nih.nci.caarray.platforms.ProbeNamesValidator;
 import gov.nih.nci.caarray.platforms.ValueParser;
 import gov.nih.nci.caarray.platforms.spi.PlatformFileReadException;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -129,6 +133,7 @@ public class PairDataHandler extends AbstractDataFileHandler {
     private static final String SEQ_ID_HEADER = "SEQ_ID";
     private static final String PROBE_ID_HEADER = "PROBE_ID";
     private static final String CONTAINER_HEADER = "GENE_EXPR_OPTION";
+    private static final int BATCH_SIZE = 1000;
 
     public static final FileType NORMALIZED_PAIR_FILE_TYPE = new FileType("NIMBLEGEN_NORMALIZED_PAIR",
             FileCategory.DERIVED_DATA, true);
@@ -136,6 +141,8 @@ public class PairDataHandler extends AbstractDataFileHandler {
     static final Set<FileType> SUPPORTED_TYPES = Sets.newHashSet(NORMALIZED_PAIR_FILE_TYPE, RAW_PAIR_FILE_TYPE);
 
     private final ValueParser valueParser = new DefaultValueParser();
+    private final ArrayDao arrayDao;
+    private final SearchDao searchDao;
 
     @Override
     public Set<FileType> getSupportedTypes() {
@@ -146,8 +153,10 @@ public class PairDataHandler extends AbstractDataFileHandler {
      * @param dataStorageFacade dataStorageFacade to use
      */
     @Inject
-    PairDataHandler(DataStorageFacade dataStorageFacade) {
+    PairDataHandler(DataStorageFacade dataStorageFacade, ArrayDao arrayDao, SearchDao searchDao) {
         super(dataStorageFacade);
+        this.arrayDao = arrayDao;
+        this.searchDao = searchDao;
     }
 
     /**
@@ -166,6 +175,7 @@ public class PairDataHandler extends AbstractDataFileHandler {
         return NimblegenQuantitationType.values();
     }
 
+    // returns the column headers in the file, and positions reader at start of data
     private List<String> getHeaders(DelimitedFileReader reader) throws IOException {
         reset(reader);
         while (reader.hasNextLine()) {
@@ -275,7 +285,39 @@ public class PairDataHandler extends AbstractDataFileHandler {
     @Override
     public void validate(MageTabDocumentSet mTabSet, FileValidationResult result, ArrayDesign design)
             throws PlatformFileReadException {
-        // no validation implemented yet
+        try {
+            validateProbeNames(getReader(getFile()), design, result);
+        } catch (final IOException ioException) {
+            throw new PlatformFileReadException(getFile(), "Cannot validate pair data file: "
+                    + ioException.getMessage(), ioException);
+        }
+    }
+
+    private void validateProbeNames(final DelimitedFileReader reader, final ArrayDesign design,
+            final FileValidationResult fileValidationResult) throws IOException {
+        final ProbeNamesValidator probeNamesValidator = new ProbeNamesValidator(this.arrayDao, design);
+        final List<String> probeNamesBatch = new ArrayList<String>();
+        int probeCounter = 0;
+        final List<String> headers = getHeaders(reader);
+        final int seqIdIndex = headers.indexOf(SEQ_ID_HEADER);
+        final int probeIdIndex = headers.indexOf(PROBE_ID_HEADER);
+        final int containerIndex = headers.indexOf(CONTAINER_HEADER);
+        while (reader.hasNextLine()) {
+            final List<String> values = reader.nextLine();
+            final String probeId = values.get(probeIdIndex);
+            final String sequenceId = values.get(seqIdIndex);
+            final String container = values.get(containerIndex);
+            final String probeName = container + "|" + sequenceId + "|" + probeId;
+            probeNamesBatch.add(probeName);
+            probeCounter++;
+            if (0 == probeCounter % BATCH_SIZE) {
+                probeNamesValidator.validateProbeNames(fileValidationResult, probeNamesBatch);
+                probeNamesBatch.clear();
+            }
+        }
+        if (!probeNamesBatch.isEmpty()) {
+            probeNamesValidator.validateProbeNames(fileValidationResult, probeNamesBatch);
+        }
     }
 
     /**

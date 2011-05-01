@@ -80,20 +80,23 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.plugins.illumina;
+package gov.nih.nci.caarray.plugins.agilent;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import gov.nih.nci.caarray.application.file.AbstractFileManagementServiceIntegrationTest2;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import gov.nih.nci.caarray.application.file.AbstractFileManagementServiceIntegrationTest;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
-import gov.nih.nci.caarray.domain.file.FileTypeRegistry;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.injection.InjectorFactory;
-import gov.nih.nci.caarray.test.data.arraydata.IlluminaArrayDataFiles;
-import gov.nih.nci.caarray.test.data.arraydesign.IlluminaArrayDesignFiles;
+import gov.nih.nci.caarray.platforms.unparsed.UnparsedArrayDesignFileHandler;
+import gov.nih.nci.caarray.platforms.unparsed.UnparsedDataHandler;
+import gov.nih.nci.caarray.test.data.arraydata.AgilentArrayDataFiles;
+import gov.nih.nci.caarray.test.data.arraydesign.AgilentArrayDesignFiles;
 
 import java.io.File;
 import java.util.HashMap;
@@ -104,49 +107,109 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
- * Integration test for the FileManagementService.
+ * Integration test for file import of agilent data files
  * 
- * @author Steve Lustbader
+ * @author dkokotov, jscott
  */
-@SuppressWarnings("PMD")
-public class IlluminaFileManagementServiceIntegrationTest extends AbstractFileManagementServiceIntegrationTest2 {
+public class AgilentFileImportIntegrationTest extends AbstractFileManagementServiceIntegrationTest {
     @BeforeClass
     public static void configurePlatforms() {
-        InjectorFactory.addPlatform(new IlluminaModule());
+        InjectorFactory.addPlatform(new AgilentModule());
     }
 
     @Test
-    public void testValidateDefect18625Hybes() throws Exception {
-        Transaction tx = this.hibernateHelper.beginTransaction();
-        saveSupportingObjects();
-        final ArrayDesign design = importArrayDesign(IlluminaArrayDesignFiles.HUMAN_WG6_CSV,
-                IlluminaCsvDesignHandler.DESIGN_CSV_FILE_TYPE);
-        tx.commit();
+    public void testReimportProjectFiles() throws Exception {
+        final ArrayDesign design =
+                importArrayDesign(AgilentArrayDesignFiles.TEST_MIRNA_1_XML_SMALL,
+                        AgilentXmlDesignFileHandler.XML_FILE_TYPE);
+        addDesignToExperiment(design);
 
-        tx = this.hibernateHelper.beginTransaction();
-        DUMMY_EXPERIMENT_1.getArrayDesigns().add(design);
-        this.hibernateHelper.getCurrentSession().save(DUMMY_PROJECT_1);
-        tx.commit();
         final Map<File, FileType> files = new HashMap<File, FileType>();
-        files.put(IlluminaArrayDataFiles.DEFECT_18652_IDF, FileTypeRegistry.MAGE_TAB_IDF);
-        files.put(IlluminaArrayDataFiles.DEFECT_18652_SDRF, FileTypeRegistry.MAGE_TAB_SDRF);
-        files.put(IlluminaArrayDataFiles.HUMAN_WG6_SMALL, CsvDataHandler.DATA_CSV_FILE_TYPE);
+        files.put(AgilentArrayDataFiles.MIRNA, UnparsedDataHandler.FILE_TYPE_ILLUMINA_RAW_TXT);
 
-        uploadAndValidateFiles(DUMMY_PROJECT_1, files);
+        CaArrayFileSet fileSet = uploadFiles(files);
+        importFiles(fileSet);
 
-        tx = this.hibernateHelper.beginTransaction();
-        final Project project = (Project) this.hibernateHelper.getCurrentSession().load(Project.class,
-                DUMMY_PROJECT_1.getId());
-        for (final CaArrayFile file : project.getFiles()) {
-            if (!file.getFileType().equals(FileTypeRegistry.MAGE_TAB_SDRF)) {
-                assertEquals(FileStatus.VALIDATED, file.getFileStatus());
-            } else {
-                assertEquals(FileStatus.VALIDATION_ERRORS, file.getFileStatus());
-                assertEquals(1, file.getValidationResult().getMessages().size());
-                assertTrue(file.getValidationResult().getMessages().get(0).getMessage().contains("WRONG"));
-            }
-        }
+        Transaction tx = this.hibernateHelper.beginTransaction();
+        Project project = getTestProject();
+        assertEquals(1, project.getExperiment().getHybridizations().size());
+        assertEquals(1, project.getExperiment().getHybridizations().iterator().next().getRawDataCollection().size());
+
+        assertEquals(1, project.getImportedFiles().size());
+        assertEquals(FileStatus.IMPORTED_NOT_PARSED, project.getImportedFiles().iterator().next().getFileStatus());
+        final CaArrayFile f = project.getImportedFiles().iterator().next();
+        f.setFileType(AgilentRawTextDataHandler.RAW_TXT_FILE_TYPE);
+        this.hibernateHelper.getCurrentSession().save(f);
+
         tx.commit();
 
+        tx = this.hibernateHelper.beginTransaction();
+        project = getTestProject();
+        fileSet = new CaArrayFileSet();
+        fileSet.addAll(project.getImportedFiles());
+        getFileManagementService().reimportAndParseProjectFiles(project, fileSet);
+        tx.commit();
+
+        tx = this.hibernateHelper.beginTransaction();
+        project = getTestProject();
+        assertEquals(1, project.getImportedFiles().size());
+        assertEquals(1, project.getExperiment().getHybridizations().size());
+        assertEquals(1, project.getExperiment().getHybridizations().iterator().next().getRawDataCollection().size());
+        assertEquals("Agilent Raw Text", project.getExperiment().getHybridizations().iterator().next()
+                .getRawDataCollection().iterator().next().getType().getName());
+        final CaArrayFile imported = project.getImportedFiles().iterator().next();
+        assertEquals(FileStatus.IMPORTED, imported.getFileStatus());
+        tx.commit();
+    }
+
+    @Test
+    public void testReimport() throws Exception {
+        ArrayDesign design =
+                importArrayDesign(AgilentArrayDesignFiles.TEST_GENE_EXPRESSION_1_XML,
+                        UnparsedArrayDesignFileHandler.AGILENT_CSV);
+        assertNull(design.getDesignDetails());
+
+        Transaction tx = this.hibernateHelper.beginTransaction();
+        design.getFirstDesignFile().setFileType(AgilentXmlDesignFileHandler.XML_FILE_TYPE);
+        this.hibernateHelper.getCurrentSession().saveOrUpdate(design);
+        tx.commit();
+
+        tx = this.hibernateHelper.beginTransaction();
+        this.hibernateHelper.getCurrentSession().evict(design);
+        getFileManagementService().reimportAndParseArrayDesign(design.getId());
+        tx.commit();
+
+        tx = this.hibernateHelper.beginTransaction();
+        design = (ArrayDesign) this.hibernateHelper.getCurrentSession().load(ArrayDesign.class, design.getId());
+        assertNotNull(design.getDesignDetails());
+        assertEquals(45220, design.getNumberOfFeatures().intValue());
+        assertEquals(45220, design.getDesignDetails().getFeatures().size());
+        tx.commit();
+    }
+
+    @Test
+    public void testReimportWithReferencingExperiment() throws Exception {
+        ArrayDesign design =
+                importArrayDesign(AgilentArrayDesignFiles.TEST_GENE_EXPRESSION_1_XML,
+                        UnparsedArrayDesignFileHandler.AGILENT_CSV);
+        assertNull(design.getDesignDetails());
+        addDesignToExperiment(design);
+
+        Transaction tx = this.hibernateHelper.beginTransaction();
+        design.getFirstDesignFile().setFileType(AgilentXmlDesignFileHandler.XML_FILE_TYPE);
+        this.hibernateHelper.getCurrentSession().saveOrUpdate(design);
+        tx.commit();
+
+        tx = this.hibernateHelper.beginTransaction();
+        this.hibernateHelper.getCurrentSession().evict(design);
+        getFileManagementService().reimportAndParseArrayDesign(design.getId());
+        tx.commit();
+
+        tx = this.hibernateHelper.beginTransaction();
+        design = (ArrayDesign) this.hibernateHelper.getCurrentSession().load(ArrayDesign.class, design.getId());
+        assertNotNull(design.getDesignDetails());
+        assertEquals(45220, design.getNumberOfFeatures().intValue());
+        assertEquals(45220, design.getDesignDetails().getFeatures().size());
+        tx.commit();
     }
 }

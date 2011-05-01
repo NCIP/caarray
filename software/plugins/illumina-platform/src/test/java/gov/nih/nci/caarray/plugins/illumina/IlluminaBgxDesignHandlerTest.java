@@ -16,11 +16,13 @@ import gov.nih.nci.caarray.application.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.application.vocabulary.VocabularyServiceStub;
 import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.dao.ContactDao;
+import gov.nih.nci.caarray.dao.JobQueueDao;
 import gov.nih.nci.caarray.dao.MultipartBlobDao;
 import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.dao.VocabularyDao;
 import gov.nih.nci.caarray.dataStorage.DataStorageFacade;
 import gov.nih.nci.caarray.dataStorage.DataStorageModule;
+import gov.nih.nci.caarray.dataStorage.fileSystem.FileSystemStorageModule;
 import gov.nih.nci.caarray.dataStorage.spi.DataStorage;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
@@ -41,6 +43,7 @@ import gov.nih.nci.caarray.staticinjection.CaArrayEjbStaticInjectionModule;
 import gov.nih.nci.caarray.test.data.arraydesign.IlluminaArrayDesignFiles;
 import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
 import gov.nih.nci.caarray.util.CaArrayHibernateHelperModule;
+import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import gov.nih.nci.caarray.validation.ValidationMessage;
 import gov.nih.nci.caarray.validation.ValidationResult;
@@ -87,6 +90,8 @@ public class IlluminaBgxDesignHandlerTest extends AbstractServiceTest {
         final Module testArrayDesignModule = new AbstractModule() {
             @Override
             protected void configure() {
+                bind(UsernameHolder.class).toInstance(mock(UsernameHolder.class));
+                bind(JobQueueDao.class).toInstance(mock(JobQueueDao.class));
                 bind(ContactDao.class).toInstance(caArrayDaoFactoryStub.getContactDao());
                 bind(SearchDao.class).toInstance(caArrayDaoFactoryStub.getSearchDao());
                 bind(ArrayDao.class).toInstance(caArrayDaoFactoryStub.getArrayDao());
@@ -101,6 +106,8 @@ public class IlluminaBgxDesignHandlerTest extends AbstractServiceTest {
                 bind(ArrayDesignService.class).to(ArrayDesignServiceBean.class);
                 bind(SessionTransactionManager.class).to(SessionTransactionManagerNoOpImpl.class);
 
+                bind(String.class).annotatedWith(Names.named(FileSystemStorageModule.BASE_DIR_KEY)).toInstance(
+                        System.getProperty("java.io.tmpdir"));
                 bind(String.class).annotatedWith(Names.named(DataStorageModule.FILE_DATA_ENGINE)).toInstance(
                         "file-system");
                 bind(String.class).annotatedWith(Names.named(DataStorageModule.PARSED_DATA_ENGINE)).toInstance(

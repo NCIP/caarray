@@ -87,15 +87,13 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import gov.nih.nci.caarray.application.arraydata.DataImportOptions;
-import gov.nih.nci.caarray.application.file.AbstractFileManagementServiceIntegrationTest2;
+import gov.nih.nci.caarray.application.file.AbstractFileManagementServiceIntegrationTest;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.data.DerivedArrayData;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
-import gov.nih.nci.caarray.domain.file.FileCategory;
 import gov.nih.nci.caarray.domain.file.FileStatus;
-import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.sample.Extract;
@@ -106,6 +104,7 @@ import gov.nih.nci.caarray.magetab.MageTabFileSet;
 import gov.nih.nci.caarray.magetab.MageTabParser;
 import gov.nih.nci.caarray.magetab.TestMageTabSets;
 import gov.nih.nci.caarray.magetab.io.FileRef;
+import gov.nih.nci.caarray.platforms.unparsed.UnparsedDataHandler;
 import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
 
 import java.util.Arrays;
@@ -121,7 +120,7 @@ import org.junit.Test;
  * @author Steve Lustbader
  */
 @SuppressWarnings("PMD")
-public class AffymetrixFileManagementServiceIntegrationTest extends AbstractFileManagementServiceIntegrationTest2 {
+public class AffymetrixFileImportIntegrationTest extends AbstractFileManagementServiceIntegrationTest {
     @BeforeClass
     public static void configurePlatforms() {
         InjectorFactory.addPlatform(new AffymetrixModule());
@@ -129,26 +128,17 @@ public class AffymetrixFileManagementServiceIntegrationTest extends AbstractFile
 
     @Test
     public void testImportMageTabSpecificationAndUpdateCharacteristics() throws Exception {
-        Transaction tx = this.hibernateHelper.beginTransaction();
-        saveSupportingObjects();
         final ArrayDesign design = importArrayDesign(AffymetrixArrayDesignFiles.TEST3_CDF, CdfHandler.CDF_FILE_TYPE);
-        tx.commit();
+        addDesignToExperiment(design);
 
-        tx = this.hibernateHelper.beginTransaction();
-        saveSupportingObjects();
-        importArrayDesign(AffymetrixArrayDesignFiles.HG_FOCUS_CDF, CdfHandler.CDF_FILE_TYPE);
-        tx.commit();
+        final ArrayDesign design2 =
+                importArrayDesign(AffymetrixArrayDesignFiles.HG_FOCUS_CDF, CdfHandler.CDF_FILE_TYPE);
+        addDesignToExperiment(design2);
 
-        tx = this.hibernateHelper.beginTransaction();
-        DUMMY_EXPERIMENT_1.getArrayDesigns().add(design);
-        this.hibernateHelper.getCurrentSession().save(DUMMY_PROJECT_1);
-        tx.commit();
+        importFiles(TestMageTabSets.MAGE_TAB_SPECIFICATION_INPUT_SET);
 
-        importFiles(DUMMY_PROJECT_1, TestMageTabSets.MAGE_TAB_SPECIFICATION_INPUT_SET);
-
-        tx = this.hibernateHelper.beginTransaction();
-        Project project = (Project) this.hibernateHelper.getCurrentSession().load(Project.class,
-                DUMMY_PROJECT_1.getId());
+        Transaction tx = this.hibernateHelper.beginTransaction();
+        Project project = getTestProject();
         assertEquals(FileStatus.IMPORTED, project.getFileSet().getStatus());
         assertTrue(project.getExperiment().getDescription().endsWith("MDR1 overexpression."));
         assertEquals(1, project.getExperiment().getFactors().size());
@@ -168,10 +158,10 @@ public class AffymetrixFileManagementServiceIntegrationTest extends AbstractFile
         tx.commit();
 
         // now try to update annotations of existing biomaterials
-        importFiles(project, TestMageTabSets.MAGE_TAB_SPECIFICATION_UPDATE_ANNOTATIONS_INPUT_SET);
+        importFiles(TestMageTabSets.MAGE_TAB_SPECIFICATION_UPDATE_ANNOTATIONS_INPUT_SET);
 
         tx = this.hibernateHelper.beginTransaction();
-        project = (Project) this.hibernateHelper.getCurrentSession().load(Project.class, DUMMY_PROJECT_1.getId());
+        project = getTestProject();
         assertEquals(FileStatus.IMPORTED, project.getFileSet().getStatus());
         assertTrue(project.getExperiment().getDescription().endsWith("This sentence is added to the description."));
         assertEquals(2, project.getExperiment().getFactors().size());
@@ -193,10 +183,10 @@ public class AffymetrixFileManagementServiceIntegrationTest extends AbstractFile
         tx.commit();
 
         // now try to add a new biomaterial while update existing biomaterials
-        importFiles(project, TestMageTabSets.MAGE_TAB_SPECIFICATION_UPDATE_ANNOTATIONS_ADD_BM_INPUT_SET);
+        importFiles(TestMageTabSets.MAGE_TAB_SPECIFICATION_UPDATE_ANNOTATIONS_ADD_BM_INPUT_SET);
 
         tx = this.hibernateHelper.beginTransaction();
-        project = (Project) this.hibernateHelper.getCurrentSession().load(Project.class, DUMMY_PROJECT_1.getId());
+        project = getTestProject();
         assertEquals(FileStatus.IMPORTED, project.getFileSet().getStatus());
         assertTrue(project.getExperiment().getDescription().endsWith("This sentence is added to the description."));
         assertEquals(2, project.getExperiment().getFactors().size());
@@ -221,21 +211,13 @@ public class AffymetrixFileManagementServiceIntegrationTest extends AbstractFile
 
     @Test
     public void testImportMageTabWithoutArrayDesignRef() throws Exception {
-        Transaction tx = this.hibernateHelper.beginTransaction();
-        saveSupportingObjects();
         final ArrayDesign design = importArrayDesign(AffymetrixArrayDesignFiles.TEST3_CDF, CdfHandler.CDF_FILE_TYPE);
-        tx.commit();
+        addDesignToExperiment(design);
 
-        tx = this.hibernateHelper.beginTransaction();
-        DUMMY_EXPERIMENT_1.getArrayDesigns().add(design);
-        this.hibernateHelper.getCurrentSession().save(DUMMY_PROJECT_1);
-        tx.commit();
+        importFiles(TestMageTabSets.EXTENDED_FACTOR_VALUES_INPUT_SET);
 
-        importFiles(DUMMY_PROJECT_1, TestMageTabSets.EXTENDED_FACTOR_VALUES_INPUT_SET);
-
-        tx = this.hibernateHelper.beginTransaction();
-        final Project project = (Project) this.hibernateHelper.getCurrentSession().load(Project.class,
-                DUMMY_PROJECT_1.getId());
+        final Transaction tx = this.hibernateHelper.beginTransaction();
+        final Project project = getTestProject();
         assertEquals(5, project.getImportedFiles().size());
         assertEquals(3, project.getExperiment().getHybridizations().size());
         for (final Hybridization h : project.getExperiment().getHybridizations()) {
@@ -246,32 +228,21 @@ public class AffymetrixFileManagementServiceIntegrationTest extends AbstractFile
 
     @Test
     public void testImportMageTabWithoutArrayDesignRef2() throws Exception {
-        Transaction tx = this.hibernateHelper.beginTransaction();
-        saveSupportingObjects();
         final ArrayDesign design = importArrayDesign(AffymetrixArrayDesignFiles.TEST3_CDF, CdfHandler.CDF_FILE_TYPE);
-        tx.commit();
+        addDesignToExperiment(design);
 
-        tx = this.hibernateHelper.beginTransaction();
-        DUMMY_EXPERIMENT_1.getArrayDesigns().add(design);
-        this.hibernateHelper.getCurrentSession().save(DUMMY_PROJECT_1);
-        tx.commit();
+        final CaArrayFileSet fileSet = uploadFiles(TestMageTabSets.EXTENDED_FACTOR_VALUES_INPUT_SET);
 
-        tx = this.hibernateHelper.beginTransaction();
-        Project project = (Project) this.hibernateHelper.getCurrentSession().load(Project.class,
-                DUMMY_PROJECT_1.getId());
-        final CaArrayFileSet fileSet = uploadFiles(project, TestMageTabSets.EXTENDED_FACTOR_VALUES_INPUT_SET);
+        Transaction tx = this.hibernateHelper.beginTransaction();
         for (final CaArrayFile file : fileSet.getFilesByType(CelHandler.CEL_FILE_TYPE)) {
-            file.setFileType(new FileType("AFFYMETRIX_DAT", FileCategory.RAW_DATA, false, "DAT"));
+            file.setFileType(UnparsedDataHandler.FILE_TYPE_AFFYMETRIX_DAT);
         }
         tx.commit();
 
-        tx = this.hibernateHelper.beginTransaction();
-        project = (Project) this.hibernateHelper.getCurrentSession().load(Project.class, project.getId());
-        importFiles(project, fileSet, null);
-        tx.commit();
+        importFiles(fileSet, null);
 
         tx = this.hibernateHelper.beginTransaction();
-        project = (Project) this.hibernateHelper.getCurrentSession().load(Project.class, DUMMY_PROJECT_1.getId());
+        final Project project = getTestProject();
         assertEquals(5, project.getImportedFiles().size());
         assertEquals(3, project.getExperiment().getHybridizations().size());
         for (final Hybridization h : project.getExperiment().getHybridizations()) {
@@ -282,15 +253,8 @@ public class AffymetrixFileManagementServiceIntegrationTest extends AbstractFile
 
     @Test
     public void testImportNonMageTabWithoutArrayDesign() throws Exception {
-        Transaction tx = this.hibernateHelper.beginTransaction();
-        saveSupportingObjects();
         final ArrayDesign design = importArrayDesign(AffymetrixArrayDesignFiles.TEST3_CDF, CdfHandler.CDF_FILE_TYPE);
-        tx.commit();
-
-        tx = this.hibernateHelper.beginTransaction();
-        DUMMY_EXPERIMENT_1.getArrayDesigns().add(design);
-        this.hibernateHelper.getCurrentSession().save(DUMMY_PROJECT_1);
-        tx.commit();
+        addDesignToExperiment(design);
 
         final MageTabFileSet inputFiles = new MageTabFileSet();
         for (final FileRef f : TestMageTabSets.EXTENDED_FACTOR_VALUES_INPUT_SET.getAllFiles()) {
@@ -298,27 +262,23 @@ public class AffymetrixFileManagementServiceIntegrationTest extends AbstractFile
                 inputFiles.addNativeData(f);
             }
         }
-        final MageTabDocumentSet docSet = MageTabParser.INSTANCE
-                .parse(TestMageTabSets.EXTENDED_FACTOR_VALUES_INPUT_SET);
+        final MageTabDocumentSet docSet =
+                MageTabParser.INSTANCE.parse(TestMageTabSets.EXTENDED_FACTOR_VALUES_INPUT_SET);
         docSet.getIdfDocuments().clear();
         docSet.getSdrfDocuments().clear();
 
-        tx = this.hibernateHelper.beginTransaction();
-        Project project = (Project) this.hibernateHelper.getCurrentSession().load(Project.class,
-                DUMMY_PROJECT_1.getId());
-        final CaArrayFileSet fileSet = uploadFiles(project, inputFiles);
+        final CaArrayFileSet fileSet = uploadFiles(inputFiles);
+
+        Transaction tx = this.hibernateHelper.beginTransaction();
         for (final CaArrayFile file : fileSet.getFilesByType(CelHandler.CEL_FILE_TYPE)) {
-            file.setFileType(new FileType("AFFYMETRIX_DAT", FileCategory.RAW_DATA, false, "DAT"));
+            file.setFileType(UnparsedDataHandler.FILE_TYPE_AFFYMETRIX_DAT);
         }
         tx.commit();
 
-        tx = this.hibernateHelper.beginTransaction();
-        project = (Project) this.hibernateHelper.getCurrentSession().load(Project.class, project.getId());
-        importFiles(project, fileSet, DataImportOptions.getAutoCreatePerFileOptions());
-        tx.commit();
+        importFiles(fileSet, DataImportOptions.getAutoCreatePerFileOptions());
 
         tx = this.hibernateHelper.beginTransaction();
-        project = (Project) this.hibernateHelper.getCurrentSession().load(Project.class, project.getId());
+        final Project project = getTestProject();
         assertEquals(3, project.getImportedFiles().size());
         assertEquals(3, project.getExperiment().getHybridizations().size());
         for (final Hybridization h : project.getExperiment().getHybridizations()) {
@@ -329,21 +289,13 @@ public class AffymetrixFileManagementServiceIntegrationTest extends AbstractFile
 
     @Test
     public void testUpdateBioMaterialChain() throws Exception {
-        Transaction tx = this.hibernateHelper.beginTransaction();
-        saveSupportingObjects();
         final ArrayDesign design = importArrayDesign(AffymetrixArrayDesignFiles.TEST3_CDF, CdfHandler.CDF_FILE_TYPE);
-        tx.commit();
+        addDesignToExperiment(design);
 
-        tx = this.hibernateHelper.beginTransaction();
-        DUMMY_EXPERIMENT_1.getArrayDesigns().add(design);
-        this.hibernateHelper.getCurrentSession().save(DUMMY_PROJECT_1);
-        tx.commit();
+        importFiles(TestMageTabSets.UPDATE_BIO_MATERIAL_CHAIN_BASELINE_INPUT_SET);
 
-        importFiles(DUMMY_PROJECT_1, TestMageTabSets.UPDATE_BIO_MATERIAL_CHAIN_BASELINE_INPUT_SET);
-
-        tx = this.hibernateHelper.beginTransaction();
-        Project project = (Project) this.hibernateHelper.getCurrentSession().load(Project.class,
-                DUMMY_PROJECT_1.getId());
+        Transaction tx = this.hibernateHelper.beginTransaction();
+        Project project = getTestProject();
         assertEquals(FileStatus.IMPORTED, project.getFileSet().getStatus());
         assertEquals(1, project.getExperiment().getSources().size());
         assertEquals(1, project.getExperiment().getSamples().size());
@@ -356,10 +308,10 @@ public class AffymetrixFileManagementServiceIntegrationTest extends AbstractFile
         tx.commit();
 
         // now try to add new biomaterials in the middle of the existing chains
-        importFiles(project, TestMageTabSets.UPDATE_BIO_MATERIAL_CHAIN_NEW_BIO_MATERIALS_INPUT_SET);
+        importFiles(TestMageTabSets.UPDATE_BIO_MATERIAL_CHAIN_NEW_BIO_MATERIALS_INPUT_SET);
 
         tx = this.hibernateHelper.beginTransaction();
-        project = (Project) this.hibernateHelper.getCurrentSession().load(Project.class, DUMMY_PROJECT_1.getId());
+        project = getTestProject();
         assertEquals(FileStatus.IMPORTED, project.getFileSet().getStatus());
         assertEquals(2, project.getExperiment().getSources().size());
         assertEquals(2, project.getExperiment().getSamples().size());
@@ -374,10 +326,10 @@ public class AffymetrixFileManagementServiceIntegrationTest extends AbstractFile
         tx.commit();
 
         // now try to add a data files to existing hybs
-        importFiles(project, TestMageTabSets.UPDATE_BIO_MATERIAL_CHAIN_NEW_DATA_FILES_INPUT_SET);
+        importFiles(TestMageTabSets.UPDATE_BIO_MATERIAL_CHAIN_NEW_DATA_FILES_INPUT_SET);
 
         tx = this.hibernateHelper.beginTransaction();
-        project = (Project) this.hibernateHelper.getCurrentSession().load(Project.class, DUMMY_PROJECT_1.getId());
+        project = getTestProject();
         assertEquals(FileStatus.IMPORTED, project.getFileSet().getStatus());
         assertEquals(2, project.getExperiment().getSources().size());
         assertEquals(2, project.getExperiment().getSamples().size());
@@ -394,21 +346,13 @@ public class AffymetrixFileManagementServiceIntegrationTest extends AbstractFile
 
     @Test
     public void testUpdateFiles() throws Exception {
-        Transaction tx = this.hibernateHelper.beginTransaction();
-        saveSupportingObjects();
         final ArrayDesign design = importArrayDesign(AffymetrixArrayDesignFiles.TEST3_CDF, CdfHandler.CDF_FILE_TYPE);
-        tx.commit();
+        addDesignToExperiment(design);
 
-        tx = this.hibernateHelper.beginTransaction();
-        DUMMY_EXPERIMENT_1.getArrayDesigns().add(design);
-        this.hibernateHelper.getCurrentSession().save(DUMMY_PROJECT_1);
-        tx.commit();
+        importFiles(TestMageTabSets.UPDATE_FILES_BASELINE_INPUT_SET);
 
-        importFiles(DUMMY_PROJECT_1, TestMageTabSets.UPDATE_FILES_BASELINE_INPUT_SET);
-
-        tx = this.hibernateHelper.beginTransaction();
-        Project project = (Project) this.hibernateHelper.getCurrentSession().load(Project.class,
-                DUMMY_PROJECT_1.getId());
+        Transaction tx = this.hibernateHelper.beginTransaction();
+        Project project = getTestProject();
         assertEquals(FileStatus.IMPORTED, project.getFileSet().getStatus());
         assertEquals(1, project.getExperiment().getSources().size());
         assertEquals(1, project.getExperiment().getSamples().size());
@@ -420,19 +364,19 @@ public class AffymetrixFileManagementServiceIntegrationTest extends AbstractFile
         assertEquals(2, project.getExperiment().getHybridizationByName("Hyb 1").getAllDataFiles().size());
         assertEquals(1, project.getExperiment().getHybridizationByName("Hyb 1").getRawDataCollection().size());
         assertEquals(1, project.getExperiment().getHybridizationByName("Hyb 1").getDerivedDataCollection().size());
-        RawArrayData raw = project.getExperiment().getHybridizationByName("Hyb 1").getRawDataCollection().iterator()
-                .next();
-        DerivedArrayData derived = project.getExperiment().getHybridizationByName("Hyb 1").getDerivedDataCollection()
-                .iterator().next();
+        RawArrayData raw =
+                project.getExperiment().getHybridizationByName("Hyb 1").getRawDataCollection().iterator().next();
+        DerivedArrayData derived =
+                project.getExperiment().getHybridizationByName("Hyb 1").getDerivedDataCollection().iterator().next();
         assertEquals(1, derived.getDerivedFromArrayDataCollection().size());
         assertEquals(raw, derived.getDerivedFromArrayDataCollection().iterator().next());
         tx.commit();
 
         // now try to add data files to existing hybs, which also reference existing data files
-        importFiles(project, TestMageTabSets.UPDATE_FILES_NEW_INPUT_SET);
+        importFiles(TestMageTabSets.UPDATE_FILES_NEW_INPUT_SET);
 
         tx = this.hibernateHelper.beginTransaction();
-        project = (Project) this.hibernateHelper.getCurrentSession().load(Project.class, DUMMY_PROJECT_1.getId());
+        project = getTestProject();
         assertEquals(FileStatus.IMPORTED, project.getFileSet().getStatus());
         assertEquals(1, project.getExperiment().getSources().size());
         assertEquals(1, project.getExperiment().getSamples().size());

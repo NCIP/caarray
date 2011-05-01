@@ -84,16 +84,17 @@
 package gov.nih.nci.caarray.plugins.illumina;
 
 import gov.nih.nci.caarray.validation.FileValidationResult;
+
 import java.util.List;
 
 /**
- * Parse tabular data.
- * NOTE: The parsers are generally for a single pass through the data file, and cannot be reused or reset after one
- * pass.
+ * Parse tabular data. NOTE: The parsers are generally for a single pass through the data file, and cannot be reused or
+ * reset after one pass.
+ * 
  * @author gax
  * @since 2.4.0
  */
-public abstract class AbstractParser {
+abstract class AbstractParser {
     private final MessageHandler messages;
 
     /**
@@ -104,8 +105,8 @@ public abstract class AbstractParser {
     }
 
     /**
-     * @param result where the paser should collect validation messages
-     * (using {@link MessageHandler.ValidationMessageHander})
+     * @param result where the paser should collect validation messages (using
+     *            {@link MessageHandler.ValidationMessageHander})
      */
     protected AbstractParser(FileValidationResult result) {
         this(new MessageHandler.ValidationMessageHander(result));
@@ -113,6 +114,7 @@ public abstract class AbstractParser {
 
     /**
      * Default ctor.
+     * 
      * @see MessageHandler.DefaultMessageHandler
      */
     protected AbstractParser() {
@@ -121,40 +123,44 @@ public abstract class AbstractParser {
 
     /**
      * Parse one row of the data table.
+     * 
      * @param row the content of the row.
      * @param lineNum the line number in the file.
      * @return true when the line was parsed correctly, or the rest of the file can be read.
      */
-    public abstract boolean parse(List<String> row, int lineNum);
+    abstract boolean parse(List<String> row, int lineNum);
 
     /**
      * called when an error is detected while parsing the header.
+     * 
      * @param msg error message.
      * @param line the responsible line.
      * @param col the responsible column.
      */
     protected void error(String msg, int line, int col) {
-        messages.error(msg, line, col);
+        this.messages.error(msg, line, col);
     }
 
     /**
      * called when an warning is detected while parsing the header.
+     * 
      * @param msg warning message.
      * @param line the responsible line.
      * @param col the responsible column.
      */
     protected void warn(String msg, int line, int col) {
-        messages.warn(msg, line, col);
+        this.messages.warn(msg, line, col);
     }
 
     /**
      * called when an info is detected while parsing the header.
+     * 
      * @param msg info message.
      * @param line the responsible line.
      * @param col the responsible column.
      */
     protected void info(String msg, int line, int col) {
-        messages.info(msg, line, col);
+        this.messages.info(msg, line, col);
     }
 
 }

@@ -88,7 +88,9 @@ import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.array.PhysicalProbe;
 import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
+import gov.nih.nci.caarray.platforms.ProbeNamesValidator;
 import gov.nih.nci.caarray.validation.FileValidationResult;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -96,11 +98,12 @@ import java.util.Set;
 
 /**
  * Validates values in the table.
+ * 
  * @param <QT> QuantitationTypeDescriptor
  * @author gax
  * @since 2.4.0
  */
-public class HybDataValidator <QT extends Enum<QT> & QuantitationTypeDescriptor> extends AbstractParser {
+public class HybDataValidator<QT extends Enum<QT> & QuantitationTypeDescriptor> extends AbstractParser {
     private static final int MAX_ERROR_MESSAGES = 1000;
     static final int BATCH_SIZE = 1000;
 
@@ -112,7 +115,7 @@ public class HybDataValidator <QT extends Enum<QT> & QuantitationTypeDescriptor>
     private final ArrayDao arrayDao;
     private final Set<String> lookup = new HashSet<String>(BATCH_SIZE);
     private int entryCount;
-    
+
     /**
      * @param header header info.
      * @param result collector for of validation messages.
@@ -133,73 +136,71 @@ public class HybDataValidator <QT extends Enum<QT> & QuantitationTypeDescriptor>
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean parse(List<String> row, int lineNum) {
-        if (row.size() != header.getRowWidth()) {
-            error("Expected " + header.getRowWidth() + " columns, but found " + row.size(), lineNum, 0);
+        if (row.size() != this.header.getRowWidth()) {
+            error("Expected " + this.header.getRowWidth() + " columns, but found " + row.size(), lineNum, 0);
         }
-        String probeName = header.parseProbeId(row, lineNum);
-        probeNames.add(probeName);
-        if (probeNames.size() == BATCH_SIZE) {
-            batchLineNumber = lineNum - BATCH_SIZE;
+        final String probeName = this.header.parseProbeId(row, lineNum);
+        this.probeNames.add(probeName);
+        if (this.probeNames.size() == BATCH_SIZE) {
+            this.batchLineNumber = lineNum - BATCH_SIZE;
             processBatch();
         }
-        
+
         checkDataFormats(row, lineNum);
-        entryCount++;
+        this.entryCount++;
         // stop processing before we have too many messages to deal with.
-        return errorCount < MAX_ERROR_MESSAGES;
+        return this.errorCount < MAX_ERROR_MESSAGES;
     }
 
     private void processBatch() {
-        List<PhysicalProbe> batchProbes = arrayDao.getPhysicalProbeByNames(design, probeNames);
-        ArrayList<PhysicalProbe> tmp = new ArrayList<PhysicalProbe>(batchProbes.size());
+        final List<PhysicalProbe> batchProbes = this.arrayDao.getPhysicalProbeByNames(this.design, this.probeNames);
+        final ArrayList<PhysicalProbe> tmp = new ArrayList<PhysicalProbe>(batchProbes.size());
         tmp.addAll(batchProbes);
-        for (PhysicalProbe p : tmp) {
-            lookup.add(p.getName());
-            arrayDao.evictObject(p);
-            arrayDao.evictObject(p.getArrayDesignDetails());
-            arrayDao.evictObject(p.getProbeGroup());
-            arrayDao.evictObject(p.getAnnotation());
+        for (final PhysicalProbe p : tmp) {
+            this.lookup.add(p.getName());
+            this.arrayDao.evictObject(p);
+            this.arrayDao.evictObject(p.getArrayDesignDetails());
+            this.arrayDao.evictObject(p.getProbeGroup());
+            this.arrayDao.evictObject(p.getAnnotation());
 
         }
-        for (String n : probeNames) {
-            if (!lookup.contains(n)) {
-                error("Probe " + n + " not found in design " + design.getName() + " ver. " + design.getVersion(),
-                    batchLineNumber, 0);
+        for (final String n : this.probeNames) {
+            if (!this.lookup.contains(n)) {
+                error(ProbeNamesValidator.formatErrorMessage(new String[] {n }, this.design), this.batchLineNumber, 0);
             }
-            batchLineNumber++;
+            this.batchLineNumber++;
         }
-        probeNames.clear();
-        lookup.clear();
+        this.probeNames.clear();
+        this.lookup.clear();
     }
 
     /**
      * to be called when all lines are parsed, to flush remaining batch.
      */
     void finish() {
-        if (entryCount == 0) {
+        if (this.entryCount == 0) {
             error("Not data rows found", 0, 0);
         }
         processBatch();
     }
 
-
-
     private void checkDataFormats(List<String> row, int lineNum) {
         int col = 1;
-        for (AbstractHeaderParser<QT>.ValueLoader h : header.getLoaders()) {
-            for (QT qt : h.getQTypes()) {
+        for (final AbstractHeaderParser<QT>.ValueLoader h : this.header.getLoaders()) {
+            for (final QT qt : h.getQTypes()) {
                 if (qt != null) {
                     boolean malformed = false;
-                    String val = h.getValue(qt, row);
+                    final String val = h.getValue(qt, row);
                     switch (qt.getDataType()) {
-                        case FLOAT:
-                            malformed = !Utils.isFloat(val);
-                            break;
-                        case STRING:
-                            break;
-                        default:
-                            // add a new case:{} for this new type and validated it.
+                    case FLOAT:
+                        malformed = !Utils.isFloat(val);
+                        break;
+                    case STRING:
+                        break;
+                    default:
+                        // add a new case:{} for this new type and validated it.
                     }
                     if (malformed) {
                         error("Malformed value " + val + " for Quantitation Type " + qt + " (expected a "
@@ -216,7 +217,7 @@ public class HybDataValidator <QT extends Enum<QT> & QuantitationTypeDescriptor>
      */
     @Override
     protected void error(String msg, int line, int col) {
-        errorCount++;
+        this.errorCount++;
         super.error(msg, line, col);
     }
 }

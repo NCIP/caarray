@@ -85,22 +85,10 @@ package gov.nih.nci.caarray.application.file;
 import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.application.AbstractServiceIntegrationTest;
 import gov.nih.nci.caarray.application.ServiceLocatorFactory;
-import gov.nih.nci.caarray.application.arraydata.ArrayDataService;
-import gov.nih.nci.caarray.application.arraydata.ArrayDataServiceBean;
 import gov.nih.nci.caarray.application.arraydata.DataImportOptions;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
-import gov.nih.nci.caarray.application.arraydesign.ArrayDesignServiceBean;
-import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
-import gov.nih.nci.caarray.application.translation.magetab.MageTabTranslator;
-import gov.nih.nci.caarray.application.translation.magetab.MageTabTranslatorBean;
-import gov.nih.nci.caarray.application.vocabulary.VocabularyService;
-import gov.nih.nci.caarray.application.vocabulary.VocabularyServiceBean;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
-import gov.nih.nci.caarray.dao.JobQueueDao;
-import gov.nih.nci.caarray.dao.VocabularyDao;
-import gov.nih.nci.caarray.dao.stub.JobDaoSingleJobStub;
-import gov.nih.nci.caarray.dataStorage.spi.DataStorage;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
@@ -108,37 +96,19 @@ import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.project.AssayType;
 import gov.nih.nci.caarray.domain.project.Experiment;
-import gov.nih.nci.caarray.domain.project.ExperimentOntology;
 import gov.nih.nci.caarray.domain.project.Project;
-import gov.nih.nci.caarray.domain.sample.Source;
-import gov.nih.nci.caarray.domain.search.ExampleSearchCriteria;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
-import gov.nih.nci.caarray.injection.InjectorFactory;
 import gov.nih.nci.caarray.magetab.MageTabFileSet;
 import gov.nih.nci.caarray.magetab.io.FileRef;
 import gov.nih.nci.caarray.util.CaArrayUsernameHolder;
-import gov.nih.nci.caarray.util.CaArrayUtils;
-import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import gov.nih.nci.caarray.validation.InvalidDataFileException;
 
 import java.io.File;
-import java.util.Date;
 import java.util.Map;
-import java.util.Random;
-
-import javax.transaction.UserTransaction;
 
 import org.hibernate.Transaction;
-import org.hibernate.criterion.Order;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.mockito.Mockito;
-
-import com.google.inject.AbstractModule;
-import com.google.inject.Injector;
-import com.google.inject.multibindings.MapBinder;
 
 /**
  * Integration test for the FileManagementService.
@@ -146,18 +116,28 @@ import com.google.inject.multibindings.MapBinder;
  * @author Steve Lustbader
  */
 
-//TODO: need to consolidate AbstractFileManagementServiceIntegrationTest.java and AbstractFileManagementServiceIntegrationTest2.java? 
-//These two files actually share a common ancestor (altho this history is not apparent in a svn revision graph), and still share many 
-//commonalities. The common ancestor is /trunk/.../FileManagementServiceIntegrationTest.java@11062. This rev branched off 
-//as /branches/gaxzero-jboss-5.1.0.GA@11110, and evolved into /branches/dkokotov-storage-osgi-consolidation, where it was renamed as 
-//AbstractFileManagementServiceIntegrationTest.java in rev 11485. Meanwhile on trunk, FileManagementServiceIntegrationTest.java was 
-//deleted and refactored into a new AbstractFileManagementServiceIntegrationTest.java and a couple of subclasses. To consolidate 
-//AbstractFileManagementServiceIntegrationTest and AbstractFileManagementServiceIntegrationTest2, we suggest doing a 3 way diff-merge 
-//using /trunk/.../FileManagementServiceIntegrationTest.java@11062 as the common ancestor. Also, note that consolidating 
-//AbstractFileManagementServiceIntegrationTest and AbstractFileManagementServiceIntegrationTest2 will affect their respective 
-//subclasses (which are FileImportIntegrationTest and FileValidationIntegrationTest vs. AffymetrixFileManagementServiceIntegrationTest, 
-//AgilentFileManagementServiceIntegrationTest, IlluminaFileManagementServiceIntegrationTest respectively). 
-//TODO: ARRAY-1942 follow-on tasks for <ARRAY-1896 Merge dkokotov_storage_osgi_consolidation Branch to trunk>
+// TODO: need to consolidate AbstractFileManagementServiceIntegrationTest.java and
+// AbstractFileManagementServiceIntegrationTest2.java?
+// These two files actually share a common ancestor (altho this history is not apparent in a svn revision graph), and
+// still share many
+// commonalities. The common ancestor is /trunk/.../FileManagementServiceIntegrationTest.java@11062. This rev branched
+// off
+// as /branches/gaxzero-jboss-5.1.0.GA@11110, and evolved into /branches/dkokotov-storage-osgi-consolidation, where it
+// was renamed as
+// AbstractFileManagementServiceIntegrationTest.java in rev 11485. Meanwhile on trunk,
+// FileManagementServiceIntegrationTest.java was
+// deleted and refactored into a new AbstractFileManagementServiceIntegrationTest.java and a couple of subclasses. To
+// consolidate
+// AbstractFileManagementServiceIntegrationTest and AbstractFileManagementServiceIntegrationTest2, we suggest doing a 3
+// way diff-merge
+// using /trunk/.../FileManagementServiceIntegrationTest.java@11062 as the common ancestor. Also, note that
+// consolidating
+// AbstractFileManagementServiceIntegrationTest and AbstractFileManagementServiceIntegrationTest2 will affect their
+// respective
+// subclasses (which are FileImportIntegrationTest and FileValidationIntegrationTest vs.
+// AffymetrixFileManagementServiceIntegrationTest,
+// AgilentFileManagementServiceIntegrationTest, IlluminaFileManagementServiceIntegrationTest respectively).
+// TODO: ARRAY-1942 follow-on tasks for <ARRAY-1896 Merge dkokotov_storage_osgi_consolidation Branch to trunk>
 
 @SuppressWarnings("PMD")
 public abstract class AbstractFileManagementServiceIntegrationTest2 extends AbstractServiceIntegrationTest {
@@ -174,103 +154,6 @@ public abstract class AbstractFileManagementServiceIntegrationTest2 extends Abst
     protected static Category DUMMY_CATEGORY = new Category();
     protected static Term DUMMY_TERM = new Term();
     protected static AssayType DUMMY_ASSAY_TYPE = new AssayType("Gene Expression");
-
-    @Before
-    public void setUp() {
-        this.fileManagementService = createFileManagementService();
-
-        final Transaction tx = this.hibernateHelper.beginTransaction();
-        final ArrayDataService ads = ServiceLocatorFactory.getArrayDataService();
-        ads.initialize();
-        tx.commit();
-
-        resetData();
-    }
-
-    protected static void resetData() {
-        DUMMY_ORGANISM = new Organism();
-        DUMMY_PROVIDER = new Organization();
-        DUMMY_PROJECT_1 = new Project();
-
-        DUMMY_EXPERIMENT_1 = new Experiment();
-
-        DUMMY_TERM_SOURCE = new TermSource();
-        DUMMY_CATEGORY = new Category();
-        DUMMY_TERM = new Term();
-        DUMMY_ASSAY_TYPE = new AssayType("Gene Expression");
-
-        // Initialize all the dummy objects needed for the tests.
-        initializeProjects();
-    }
-
-    private static void initializeProjects() {
-        setExperimentSummary();
-        DUMMY_TERM_SOURCE.setName("dummy source " + new Random().nextInt());
-        DUMMY_CATEGORY.setName("Dummy Category");
-        DUMMY_CATEGORY.setSource(DUMMY_TERM_SOURCE);
-        DUMMY_ORGANISM.setScientificName("Foo");
-        DUMMY_ORGANISM.setTermSource(DUMMY_TERM_SOURCE);
-        DUMMY_TERM.setValue("testval");
-        DUMMY_TERM.setCategory(DUMMY_CATEGORY);
-        DUMMY_TERM.setSource(DUMMY_TERM_SOURCE);
-
-        DUMMY_PROJECT_1.setExperiment(DUMMY_EXPERIMENT_1);
-        DUMMY_EXPERIMENT_1.setOrganism(DUMMY_ORGANISM);
-        DUMMY_EXPERIMENT_1.setManufacturer(DUMMY_PROVIDER);
-        DUMMY_PROJECT_1.setLocked(false);
-    }
-
-    private static void setExperimentSummary() {
-        DUMMY_EXPERIMENT_1.setTitle("DummyExperiment1");
-        DUMMY_EXPERIMENT_1.setDescription("DummyExperiment1Desc");
-        final Date currDate = new Date();
-        DUMMY_EXPERIMENT_1.setDate(currDate);
-        DUMMY_EXPERIMENT_1.setPublicReleaseDate(currDate);
-        DUMMY_EXPERIMENT_1.setDesignDescription("Working on it");
-    }
-
-    protected void saveSupportingObjects() {
-        final TermSource caarraySource = new TermSource();
-        caarraySource.setName(ExperimentOntology.CAARRAY.getOntologyName());
-        caarraySource.setVersion(ExperimentOntology.CAARRAY.getVersion());
-
-        final VocabularyDao vocabularyDao = CaArrayDaoFactory.INSTANCE.getVocabularyDao();
-        if (CaArrayUtils.uniqueResult(vocabularyDao.queryEntityByExample(ExampleSearchCriteria.forEntity(caarraySource)
-                .includeNulls().excludeProperties("url"), Order.desc("version"))) == null) {
-            this.hibernateHelper.getCurrentSession().save(caarraySource);
-        }
-
-        final TermSource mgedOntology = new TermSource();
-        mgedOntology.setName(ExperimentOntology.MGED_ONTOLOGY.getOntologyName());
-        mgedOntology.setVersion(ExperimentOntology.MGED_ONTOLOGY.getVersion());
-
-        TermSource savedMgedOntology = CaArrayUtils.uniqueResult(vocabularyDao.queryEntityByExample(
-                ExampleSearchCriteria.forEntity(mgedOntology).includeNulls().excludeProperties("url"),
-                Order.desc("version")));
-        if (savedMgedOntology == null) {
-            this.hibernateHelper.getCurrentSession().save(mgedOntology);
-            savedMgedOntology = mgedOntology;
-        }
-
-        if (vocabularyDao.getTerm(savedMgedOntology, VocabularyService.UNKNOWN_PROTOCOL_TYPE_NAME) == null) {
-            final Term unknownProtocolType = new Term();
-            unknownProtocolType.setValue(VocabularyService.UNKNOWN_PROTOCOL_TYPE_NAME);
-            unknownProtocolType.setSource(savedMgedOntology);
-            this.hibernateHelper.getCurrentSession().save(unknownProtocolType);
-        }
-
-        if (vocabularyDao.getTerm(savedMgedOntology, "mm") == null) {
-            final Term mm = new Term();
-            mm.setValue("mm");
-            mm.setSource(savedMgedOntology);
-            this.hibernateHelper.getCurrentSession().save(mm);
-        }
-
-        this.hibernateHelper.getCurrentSession().save(DUMMY_PROVIDER);
-        this.hibernateHelper.getCurrentSession().save(DUMMY_ORGANISM);
-        this.hibernateHelper.getCurrentSession().save(DUMMY_TERM);
-        this.hibernateHelper.getCurrentSession().save(DUMMY_ASSAY_TYPE);
-    }
 
     @SuppressWarnings("PMD")
     protected void importFiles(Project project, MageTabFileSet fileSet) throws Exception {
@@ -336,15 +219,13 @@ public abstract class AbstractFileManagementServiceIntegrationTest2 extends Abst
         return project.getFileSet();
     }
 
-    protected Source findSource(Project project, String name) {
-        return CaArrayDaoFactory.INSTANCE.getProjectDao().getSourceForExperiment(project.getExperiment(), name);
-    }
-
     protected void importFiles(Project targetProject, CaArrayFileSet fileSet, DataImportOptions dataImportOptions)
             throws Exception {
-        final ProjectFilesImportJob job = new ProjectFilesImportJob(CaArrayUsernameHolder.getUser(), targetProject, fileSet,
-                dataImportOptions, this.injector.getInstance(ArrayDataImporter.class), this.injector.getInstance(MageTabImporter.class),
-                CaArrayDaoFactory.INSTANCE.getProjectDao(), CaArrayDaoFactory.INSTANCE.getSearchDao());
+        final ProjectFilesImportJob job =
+                new ProjectFilesImportJob(CaArrayUsernameHolder.getUser(), targetProject, fileSet, dataImportOptions,
+                        this.injector.getInstance(ArrayDataImporter.class),
+                        this.injector.getInstance(MageTabImporter.class), CaArrayDaoFactory.INSTANCE.getProjectDao(),
+                        CaArrayDaoFactory.INSTANCE.getSearchDao());
         try {
             job.execute();
         } catch (final Exception e) {
@@ -354,9 +235,11 @@ public abstract class AbstractFileManagementServiceIntegrationTest2 extends Abst
     }
 
     protected void validateFiles(Project targetProject, CaArrayFileSet fileSet) throws Exception {
-        final ProjectFilesValidationJob job = new ProjectFilesValidationJob(CaArrayUsernameHolder.getUser(), targetProject,
-                fileSet, this.injector.getInstance(ArrayDataImporter.class), this.injector.getInstance(MageTabImporter.class),
-                CaArrayDaoFactory.INSTANCE.getProjectDao(), CaArrayDaoFactory.INSTANCE.getSearchDao());
+        final ProjectFilesValidationJob job =
+                new ProjectFilesValidationJob(CaArrayUsernameHolder.getUser(), targetProject, fileSet,
+                        this.injector.getInstance(ArrayDataImporter.class),
+                        this.injector.getInstance(MageTabImporter.class), CaArrayDaoFactory.INSTANCE.getProjectDao(),
+                        CaArrayDaoFactory.INSTANCE.getSearchDao());
         try {
             job.execute();
         } catch (final Exception e) {
@@ -393,64 +276,4 @@ public abstract class AbstractFileManagementServiceIntegrationTest2 extends Abst
         resetData();
         return design;
     }
-
-    @Override
-    protected Injector createInjector() {
-        return InjectorFactory.getInjector();
-    }
-
-    @BeforeClass
-    public static void regiserFileAccessServiceStub() {
-        final ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
-        locatorStub.addLookup(FileAccessService.JNDI_NAME, new FileAccessServiceStub());
-        InjectorFactory.addPlatform(new AbstractModule() {
-            @Override
-            protected void configure() {
-                final MapBinder<String, DataStorage> mapBinder = MapBinder.newMapBinder(binder(), String.class,
-                        DataStorage.class);
-                mapBinder.addBinding(FileAccessServiceStub.SCHEME)
-                        .toProvider(
-                                ServiceLocatorFactory.serviceProvider(FileAccessServiceStub.class,
-                                        FileAccessService.JNDI_NAME));
-            }
-        });
-    }
-
-    private FileManagementService createFileManagementService() {
-        this.fileAccessService = this.injector.getInstance(FileAccessServiceStub.class);
-        final ServiceLocatorStub locatorStub = (ServiceLocatorStub) ServiceLocatorFactory.getLocator();
-        locatorStub.addLookup(FileAccessService.JNDI_NAME, this.fileAccessService);
-
-        final MageTabTranslator mtt = new MageTabTranslatorBean();
-        this.injector.injectMembers(mtt);
-        locatorStub.addLookup(MageTabTranslator.JNDI_NAME, mtt);
-
-        final ArrayDesignService ads = new ArrayDesignServiceBean();
-        this.injector.injectMembers(ads);
-        locatorStub.addLookup(ArrayDesignService.JNDI_NAME, ads);
-
-        final ArrayDataService datas = new ArrayDataServiceBean();
-        this.injector.injectMembers(datas);
-        locatorStub.addLookup(ArrayDataService.JNDI_NAME, datas);
-
-        final VocabularyService vs = new VocabularyServiceBean();
-        this.injector.injectMembers(vs);
-        locatorStub.addLookup(VocabularyService.JNDI_NAME, vs);
-
-        final FileManagementServiceBean bean = new FileManagementServiceBean();
-        this.injector.injectMembers(bean);
-        final FileManagementMDB mdb = new FileManagementMDB();
-        this.injector.injectMembers(mdb);
-        final UserTransaction ut = Mockito.mock(UserTransaction.class);
-        mdb.setTransaction(ut);
-        
-        //TODO: ARRAY-1942 follow-on tasks for <ARRAY-1896 Merge dkokotov_storage_osgi_consolidation Branch to trunk>
-        //cleanup the below if no longer needed. 
-        //JobQueueDao jobDao = new JobDaoSingleJobStub();
-        //final DirectJobSubmitter submitter = new DirectJobSubmitter(mdb, jobDao);
-        //bean.setSubmitter(submitter);
-
-        return bean;
-    }
-
 }

@@ -85,6 +85,7 @@ package gov.nih.nci.caarray.plugins.agilent;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
@@ -139,7 +140,7 @@ public class AgilentRawTextDataHandlerTest extends AbstractHandlerTest {
     private static final LSID TINY_DESIGN = new LSID("Agilent.com", "PhysicalArrayDesign", "Agilent_Tiny");
     private ArrayDesign arrayDesign;
 
-    private static final AgilentTextQuantitationType[] ACGH_COLS = { AgilentTextQuantitationType.G_MEDIAN_SIGNAL,
+    private static final AgilentTextQuantitationType[] ACGH_COLS = {AgilentTextQuantitationType.G_MEDIAN_SIGNAL,
             AgilentTextQuantitationType.G_PROCESSED_SIG_ERROR, AgilentTextQuantitationType.G_PROCESSED_SIGNAL,
             AgilentTextQuantitationType.LOG_RATIO_ERROR, AgilentTextQuantitationType.LOG_RATIO,
             AgilentTextQuantitationType.P_VALUE_LOG_RATIO, AgilentTextQuantitationType.R_MEDIAN_SIGNAL,
@@ -149,7 +150,7 @@ public class AgilentRawTextDataHandlerTest extends AbstractHandlerTest {
             AgilentTextQuantitationType.G_PROCESSED_SIGNAL, AgilentTextQuantitationType.G_PROCESSED_SIG_ERROR,
             AgilentTextQuantitationType.G_MEDIAN_SIGNAL };
 
-    private static final AgilentTextQuantitationType[] MIRNA_COLS = { AgilentTextQuantitationType.G_PROCESSED_SIGNAL,
+    private static final AgilentTextQuantitationType[] MIRNA_COLS = {AgilentTextQuantitationType.G_PROCESSED_SIGNAL,
             AgilentTextQuantitationType.G_PROCESSED_SIG_ERROR, AgilentTextQuantitationType.G_MEDIAN_SIGNAL,
             AgilentTextQuantitationType.G_TOTAL_PROBE_SIGNAL, AgilentTextQuantitationType.G_TOTAL_PROBE_ERROR,
             AgilentTextQuantitationType.G_TOTAL_GENE_SIGNAL, AgilentTextQuantitationType.G_TOTAL_GENE_ERROR,
@@ -192,7 +193,8 @@ public class AgilentRawTextDataHandlerTest extends AbstractHandlerTest {
         addProbeToDesign("Agilent_Tiny_1");
         addProbeToDesign("Agilent_Tiny_2");
 
-        assertInvalid(TINY_DESIGN, AgilentArrayDataFiles.TEST_ACGH_RAW_TEXT);
+        assertInvalid(new String[] {PROBE_WAS_NOT_FOUND_IN_ARRAY_DESIGN_FRAGMENT }, TINY_DESIGN,
+                AgilentArrayDataFiles.TEST_ACGH_RAW_TEXT);
     }
 
     @Test
@@ -201,7 +203,8 @@ public class AgilentRawTextDataHandlerTest extends AbstractHandlerTest {
         addProbeToDesign("Agilent_Tiny_1");
         addProbeToDesign("Agilent_Tiny_2");
 
-        assertInvalid(TINY_DESIGN, AgilentArrayDataFiles.TINY_RAW_TEXT, AgilentArrayDataFiles.TINY_SDRF);
+        assertInvalid(new String[] {PROBE_WAS_NOT_FOUND_IN_ARRAY_DESIGN_FRAGMENT }, TINY_DESIGN,
+                AgilentArrayDataFiles.TINY_RAW_TEXT, AgilentArrayDataFiles.TINY_SDRF);
     }
 
     @Test
@@ -210,7 +213,8 @@ public class AgilentRawTextDataHandlerTest extends AbstractHandlerTest {
         addProbeToDesign("Agilent_Tiny_1");
         addProbeToDesign("Agilent_Tiny_2");
 
-        assertInvalid(TINY_DESIGN, AgilentArrayDataFiles.TINY_RAW_TEXT, AgilentArrayDataFiles.TINY_IDF);
+        assertInvalid(new String[] {PROBE_WAS_NOT_FOUND_IN_ARRAY_DESIGN_FRAGMENT }, TINY_DESIGN,
+                AgilentArrayDataFiles.TINY_RAW_TEXT, AgilentArrayDataFiles.TINY_IDF);
     }
 
     @Test
@@ -218,8 +222,8 @@ public class AgilentRawTextDataHandlerTest extends AbstractHandlerTest {
         setupArrayDesign(TINY_DESIGN);
         addProbeToDesign("Agilent_Tiny_1");
 
-        assertInvalid(TINY_DESIGN, AgilentArrayDataFiles.TINY_RAW_TEXT, AgilentArrayDataFiles.TINY_IDF,
-                AgilentArrayDataFiles.TINY_SDRF);
+        assertInvalid(new String[] {}, TINY_DESIGN, AgilentArrayDataFiles.TINY_RAW_TEXT,
+                AgilentArrayDataFiles.TINY_IDF, AgilentArrayDataFiles.TINY_SDRF);
     }
 
     public void assertValid(LSID designLsid, final File rawTextFile, final File... files) {
@@ -227,15 +231,16 @@ public class AgilentRawTextDataHandlerTest extends AbstractHandlerTest {
 
         final CaArrayFile caArrayFile = getCaArrayFile(rawTextFile, designLsid.getObjectId());
 
-        testValidFile(caArrayFile, genMageTabDocSet(fileList));
+        testValidFile(caArrayFile, genMageTabDocSet(fileList), true);
     }
 
-    public void assertInvalid(LSID designLsid, final File rawTextFile, final File... files) {
+    public void assertInvalid(final String[] acceptableErrorMessageFragments, final LSID designLsid,
+            final File rawTextFile, final File... files) {
         final List<File> fileList = makeFileList(rawTextFile, files);
 
         final CaArrayFile caArrayFile = getCaArrayFile(rawTextFile, designLsid.getObjectId());
 
-        testInvalidFile(caArrayFile, genMageTabDocSet(fileList));
+        testInvalidFile(caArrayFile, genMageTabDocSet(fileList), acceptableErrorMessageFragments);
     }
 
     @Test
@@ -254,8 +259,8 @@ public class AgilentRawTextDataHandlerTest extends AbstractHandlerTest {
 
         assertEquals(FileStatus.IMPORTED, caArrayFile.getFileStatus());
 
-        final RawArrayData rawArrayData = (RawArrayData) this.daoFactoryStub.getArrayDao().getArrayData(
-                caArrayFile.getId());
+        final RawArrayData rawArrayData =
+                (RawArrayData) this.daoFactoryStub.getArrayDao().getArrayData(caArrayFile.getId());
         final DataSet dataSet = rawArrayData.getDataSet();
         assertNotNull(dataSet.getDesignElementList());
 
@@ -348,8 +353,8 @@ public class AgilentRawTextDataHandlerTest extends AbstractHandlerTest {
 
     private CaArrayFile getCaArrayFile(File file, String designLsidObjectId) {
         final CaArrayFile caArrayFile = getDataCaArrayFile(file, AgilentRawTextDataHandler.RAW_TXT_FILE_TYPE);
-        final ArrayDesign arrayDesign = this.daoFactoryStub.getArrayDao()
-                .getArrayDesign(null, null, designLsidObjectId);
+        final ArrayDesign arrayDesign =
+                this.daoFactoryStub.getArrayDao().getArrayDesign(null, null, designLsidObjectId);
         caArrayFile.getProject().getExperiment().getArrayDesigns().add(arrayDesign);
         return caArrayFile;
     }
@@ -372,18 +377,14 @@ public class AgilentRawTextDataHandlerTest extends AbstractHandlerTest {
         final String lsidString = lsid.toString();
         final String arrayDesignLsidString = this.arrayDesign.getLsid().toString();
 
-        if (arrayDesignLsidString.equals(lsidString)) {
-            return this.arrayDesign;
-        } else {
-            throw new IllegalArgumentException("Unsupported request design " + arrayDesignLsidString + " is not "
-                    + lsidString);
-        }
+        return this.arrayDesign;
     }
 
     private void setupArrayDesign(LSID designLsid) {
         this.arrayDesign = new ArrayDesign();
         this.arrayDesign.setDesignDetails(new ArrayDesignDetails());
         this.arrayDesign.setLsid(designLsid);
+        this.arrayDesign.setName(designLsid.toString());
         final CaArrayFile f = new CaArrayFile();
         f.setFileStatus(FileStatus.IMPORTED);
         f.setFileType(AgilentXmlDesignFileHandler.XML_FILE_TYPE);
@@ -403,12 +404,13 @@ public class AgilentRawTextDataHandlerTest extends AbstractHandlerTest {
         addProbeToDesign("GE_BrightCorner");
         addProbeToDesign("DarkCorner");
 
-        final CaArrayFile caArrayFile = getCaArrayFile(AgilentArrayDataFiles.GENE_EXPRESSION, DESIGN_LSID.getObjectId());
+        final CaArrayFile caArrayFile =
+                getCaArrayFile(AgilentArrayDataFiles.GENE_EXPRESSION, DESIGN_LSID.getObjectId());
         this.arrayDataService.importData(caArrayFile, true, DEFAULT_IMPORT_OPTIONS);
         assertEquals(FileStatus.IMPORTED, caArrayFile.getFileStatus());
 
-        final RawArrayData rawArrayData = (RawArrayData) this.daoFactoryStub.getArrayDao().getArrayData(
-                caArrayFile.getId());
+        final RawArrayData rawArrayData =
+                (RawArrayData) this.daoFactoryStub.getArrayDao().getArrayData(caArrayFile.getId());
         final DataSet dataSet = rawArrayData.getDataSet();
         assertNotNull(dataSet.getDesignElementList());
 
@@ -444,8 +446,8 @@ public class AgilentRawTextDataHandlerTest extends AbstractHandlerTest {
         this.arrayDataService.importData(caArrayFile, true, DEFAULT_IMPORT_OPTIONS);
         assertEquals(FileStatus.IMPORTED, caArrayFile.getFileStatus());
 
-        final RawArrayData rawArrayData = (RawArrayData) this.daoFactoryStub.getArrayDao().getArrayData(
-                caArrayFile.getId());
+        final RawArrayData rawArrayData =
+                (RawArrayData) this.daoFactoryStub.getArrayDao().getArrayData(caArrayFile.getId());
         final DataSet dataSet = rawArrayData.getDataSet();
         assertNotNull(dataSet.getDesignElementList());
 
@@ -479,16 +481,28 @@ public class AgilentRawTextDataHandlerTest extends AbstractHandlerTest {
         final FileValidationResult results = this.arrayDataService.validate(caArrayFile, null, false);
         assertEquals(FileStatus.VALIDATION_ERRORS, caArrayFile.getFileStatus());
 
-        int i = 0;
-        final String[] expected = {
-                "ERROR File is not a valid file of type " + AgilentRawTextDataHandler.RAW_TXT_FILE_TYPE
-                        + ": Could not parse file L=0 C=0", "ERROR Missing or blank ProbeName L=13 C=7",
-                "ERROR Missing or blank gTotalProbeSignal L=14 C=27" };
-        assertEquals(expected.length, results.getMessages().size());
-        for (final ValidationMessage m : results.getMessages()) {
-            final String msg = m.getType().name() + " " + m.getMessage() + " L=" + m.getLine() + " C=" + m.getColumn();
-            assertEquals(expected[i], msg);
-            i++;
+        final int i = 0;
+        final String[] expectedErrors = {"Missing or blank ProbeName", "Missing or blank gTotalProbeSignal" };
+        final String[] expectedInfo = {"Processing as miRNA (found gTotalProbeSignal w/o LogRatio)" };
+        validateValidationMessages(expectedErrors, results.getMessages(ValidationMessage.Type.ERROR));
+        validateValidationMessages(expectedInfo, results.getMessages(ValidationMessage.Type.INFO));
+    }
+
+    private static void validateValidationMessages(final String[] expectedMessages,
+            final List<ValidationMessage> validationMessages) {
+        assertEquals("The validation messages length is incorrect.", expectedMessages.length, validationMessages.size());
+        for (final String expectedMessage : expectedMessages) {
+            System.out.println("expectedMessage =" + expectedMessage + "=");
+            boolean wasFound = false;
+            for (final ValidationMessage validationMessage : validationMessages) {
+                System.out.println("validationMessage.getMessage().trim() =" + validationMessage.getMessage().trim()
+                        + "=");
+                if (expectedMessage.equals(validationMessage.getMessage().trim())) {
+                    wasFound = true;
+                    break;
+                }
+            }
+            assertTrue("This message was not found: " + expectedMessage, wasFound);
         }
     }
 
@@ -498,13 +512,13 @@ public class AgilentRawTextDataHandlerTest extends AbstractHandlerTest {
         addProbeToDesign("HsCGHBrightCorner");
         addProbeToDesign("DarkCorner");
 
-        final CaArrayFile caArrayFile = getCaArrayFile(AgilentArrayDataFiles.ERRONEOUS_LINE_ENDINGS,
-                DESIGN_LSID.getObjectId());
+        final CaArrayFile caArrayFile =
+                getCaArrayFile(AgilentArrayDataFiles.ERRONEOUS_LINE_ENDINGS, DESIGN_LSID.getObjectId());
         this.arrayDataService.importData(caArrayFile, true, DEFAULT_IMPORT_OPTIONS);
         assertEquals(FileStatus.IMPORTED, caArrayFile.getFileStatus());
 
-        final RawArrayData rawArrayData = (RawArrayData) this.daoFactoryStub.getArrayDao().getArrayData(
-                caArrayFile.getId());
+        final RawArrayData rawArrayData =
+                (RawArrayData) this.daoFactoryStub.getArrayDao().getArrayData(caArrayFile.getId());
         final DataSet dataSet = rawArrayData.getDataSet();
         assertNotNull(dataSet.getDesignElementList());
 

@@ -82,14 +82,14 @@
  */
 package gov.nih.nci.caarray.plugins.copynumber;
 
+import gov.nih.nci.caarray.dao.ArrayDao;
+import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.dataStorage.DataStorageFacade;
 import gov.nih.nci.caarray.domain.LSID;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.data.AbstractDataColumn;
 import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
 import gov.nih.nci.caarray.domain.data.DataSet;
-import gov.nih.nci.caarray.domain.data.DesignElementList;
-import gov.nih.nci.caarray.domain.data.DesignElementType;
 import gov.nih.nci.caarray.domain.data.HybridizationData;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
@@ -98,7 +98,8 @@ import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.platforms.AbstractDataFileHandler;
 import gov.nih.nci.caarray.platforms.DefaultValueParser;
-import gov.nih.nci.caarray.platforms.ProbeLookup;
+import gov.nih.nci.caarray.platforms.DesignElementBuilder;
+import gov.nih.nci.caarray.platforms.ProbeNamesValidator;
 import gov.nih.nci.caarray.platforms.ValueParser;
 import gov.nih.nci.caarray.platforms.spi.PlatformFileReadException;
 import gov.nih.nci.caarray.validation.FileValidationResult;
@@ -125,7 +126,7 @@ import com.google.inject.Inject;
  * @author dharley
  * 
  */
-@SuppressWarnings({ "PMD.CyclomaticComplexity" })
+@SuppressWarnings({"PMD.CyclomaticComplexity" })
 public final class DataMatrixCopyNumberHandler extends AbstractDataFileHandler {
 
     private static final String HYBRIDIZATION_REF = "Hybridization REF";
@@ -138,10 +139,11 @@ public final class DataMatrixCopyNumberHandler extends AbstractDataFileHandler {
     private static final int CHROMOSOME_DATA_COLUMN_ARRAY_POSITION = 0;
     private static final int POSITION_DATA_COLUMN_ARRAY_POSITION = 1;
     private static final int LOG2RATIO_DATA_COLUMN_ARRAY_POSITION = 2;
-    
-    public static final FileType COPY_NUMBER_FILE_TYPE = new FileType("MAGE_TAB_DATA_MATRIX_COPY_NUMBER", 
-            FileCategory.DERIVED_DATA, true, true, "CNDATA"); 
-        
+    private static final int BATCH_SIZE = 1000;
+
+    public static final FileType COPY_NUMBER_FILE_TYPE = new FileType("MAGE_TAB_DATA_MATRIX_COPY_NUMBER",
+            FileCategory.DERIVED_DATA, true, true, "CNDATA");
+
     private static final Set<FileType> SUPPORTED_TYPES = Sets.newHashSet(COPY_NUMBER_FILE_TYPE);
 
     private int reporterRefColumnIndex = UNINITIALIZED_INDEX;
@@ -154,10 +156,14 @@ public final class DataMatrixCopyNumberHandler extends AbstractDataFileHandler {
     private boolean hasBeenInitialized = false;
     private int numberOfProbes = UNINITIALIZED_INDEX;
     private final ValueParser valueParser = new DefaultValueParser();
+    private final ArrayDao arrayDao;
+    private final SearchDao searchDao;
 
     @Inject
-    protected DataMatrixCopyNumberHandler(DataStorageFacade dataStorageFacade) {
+    protected DataMatrixCopyNumberHandler(DataStorageFacade dataStorageFacade, ArrayDao arrayDao, SearchDao searchDao) {
         super(dataStorageFacade);
+        this.arrayDao = arrayDao;
+        this.searchDao = searchDao;
     }
 
     /**
@@ -203,7 +209,6 @@ public final class DataMatrixCopyNumberHandler extends AbstractDataFileHandler {
                 delimitedFileReader = getDelimitedFileReader();
                 readHybridizationRefNamesAndColumnIndexes(delimitedFileReader);
                 readDataColumnMappings(delimitedFileReader);
-                countNumberOfProbes(delimitedFileReader);
                 this.hasBeenInitialized = true;
             } catch (final IOException e) {
                 throw new PlatformFileReadException(getFile(), "Cannot initialize: " + e.getMessage(), e);
@@ -226,6 +231,16 @@ public final class DataMatrixCopyNumberHandler extends AbstractDataFileHandler {
         }
     }
 
+    private void countProbes(final DelimitedFileReader delimitedFileReader, final ArrayDesign design)
+            throws IOException {
+        countProbesAndOptionallyValidateProbeNames(false, delimitedFileReader, design, null);
+    }
+
+    private void validateProbeNames(final DelimitedFileReader delimitedFileReader, final ArrayDesign design,
+            final FileValidationResult fileValidationResult) throws IOException {
+        countProbesAndOptionallyValidateProbeNames(true, delimitedFileReader, design, fileValidationResult);
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -236,6 +251,7 @@ public final class DataMatrixCopyNumberHandler extends AbstractDataFileHandler {
         try {
             initialize();
             delimitedFileReader = getDelimitedFileReader();
+            countProbes(delimitedFileReader, design);
             dataSet.prepareColumns(types, this.numberOfProbes);
             if (dataSet.getDesignElementList() == null) {
                 loadDesignElementList(dataSet, delimitedFileReader, design);
@@ -294,16 +310,14 @@ public final class DataMatrixCopyNumberHandler extends AbstractDataFileHandler {
 
     private void loadDesignElementList(DataSet dataSet, DelimitedFileReader delimitedFileReader, ArrayDesign design)
             throws IOException {
-        final DesignElementList probeList = new DesignElementList();
-        probeList.setDesignElementTypeEnum(DesignElementType.PHYSICAL_PROBE);
-        dataSet.setDesignElementList(probeList);
-        final ProbeLookup probeLookup = new ProbeLookup(design.getDesignDetails().getProbes());
+        final DesignElementBuilder builder = new DesignElementBuilder(dataSet, design, this.arrayDao, this.searchDao);
         positionReaderAtStartOfData(delimitedFileReader);
         while (delimitedFileReader.hasNextLine()) {
             final List<String> values = delimitedFileReader.nextLine();
             final String probeName = values.get(this.reporterRefColumnIndex);
-            probeList.getDesignElements().add(probeLookup.getProbe(probeName));
+            builder.addProbe(probeName);
         }
+        builder.finish();
     }
 
     private void readHybridizationRefNamesAndColumnIndexes(DelimitedFileReader reader) throws PlatformFileReadException {
@@ -337,13 +351,12 @@ public final class DataMatrixCopyNumberHandler extends AbstractDataFileHandler {
     }
 
     private boolean listContainsString(String targetString, List<String> listToSearchThrough) {
-        boolean listContainsString = false;
         for (final String string : listToSearchThrough) {
             if (targetString.equalsIgnoreCase(string)) {
-                listContainsString = true;
+                return true;
             }
         }
-        return listContainsString;
+        return false;
     }
 
     private void positionReaderAtStartOfData(DelimitedFileReader delimitedFileReader) throws IOException {
@@ -360,14 +373,28 @@ public final class DataMatrixCopyNumberHandler extends AbstractDataFileHandler {
         }
     }
 
-    private void countNumberOfProbes(DelimitedFileReader delimitedFileReader) throws IOException {
+    private void countProbesAndOptionallyValidateProbeNames(final boolean shouldDoValidation,
+            final DelimitedFileReader delimitedFileReader, final ArrayDesign arrayDesign,
+            final FileValidationResult fileValidationResult) throws IOException {
         positionReaderAtStartOfData(delimitedFileReader);
-        int probeCount = 0;
+        final ProbeNamesValidator probeNamesValidator = new ProbeNamesValidator(this.arrayDao, arrayDesign);
+        final List<String> probeNamesBatch = new ArrayList<String>(BATCH_SIZE);
+        this.numberOfProbes = 0;
         while (delimitedFileReader.hasNextLine()) {
-            delimitedFileReader.nextLine();
-            probeCount++;
+            final List<String> strings = delimitedFileReader.nextLine();
+            final String probeName = strings.get(this.reporterRefColumnIndex);
+            this.numberOfProbes++;
+            if (shouldDoValidation) {
+                probeNamesBatch.add(probeName);
+                if (0 == this.numberOfProbes % BATCH_SIZE) {
+                    probeNamesValidator.validateProbeNames(fileValidationResult, probeNamesBatch);
+                    probeNamesBatch.clear();
+                }
+            }
         }
-        this.numberOfProbes = probeCount;
+        if (shouldDoValidation && !probeNamesBatch.isEmpty()) {
+            probeNamesValidator.validateProbeNames(fileValidationResult, probeNamesBatch);
+        }
     }
 
     private void readDataColumnMappings(DelimitedFileReader reader) throws IOException, PlatformFileReadException {
@@ -394,7 +421,7 @@ public final class DataMatrixCopyNumberHandler extends AbstractDataFileHandler {
      * {@inheritDoc}
      */
     @Override
-    @SuppressWarnings({ "PMD.NPathComplexity" })
+    @SuppressWarnings({"PMD.NPathComplexity" })
     public void validate(MageTabDocumentSet mTabSet, FileValidationResult result, ArrayDesign design)
             throws PlatformFileReadException {
         initialize();
@@ -422,6 +449,11 @@ public final class DataMatrixCopyNumberHandler extends AbstractDataFileHandler {
         }
         for (final String columnName : this.headersOfColumnsToBeIgnored) {
             result.addMessage(Type.WARNING, "The column '" + columnName + "' will be ignored during data parsing.");
+        }
+        try {
+            validateProbeNames(getDelimitedFileReader(), design, result);
+        } catch (final IOException e) {
+            throw new PlatformFileReadException(getFile(), "Cannot validate probe names: " + e.getMessage(), e);
         }
     }
 

@@ -85,33 +85,22 @@ package gov.nih.nci.caarray.plugins.illumina;
 
 import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.dao.SearchDao;
-import gov.nih.nci.caarray.domain.array.AbstractDesignElement;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
-import gov.nih.nci.caarray.domain.array.PhysicalProbe;
 import gov.nih.nci.caarray.domain.data.DataSet;
 import gov.nih.nci.caarray.domain.data.DesignElementList;
-import gov.nih.nci.caarray.domain.data.DesignElementType;
-import java.util.ArrayList;
-import java.util.HashMap;
+import gov.nih.nci.caarray.platforms.DesignElementBuilder;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * Builds a design element list.
+ * 
  * @author gax
  * @since 2.4.0
  */
-public class DesignElementBuilder extends AbstractParser {
+class DesignElementBuilderParser extends AbstractParser {
     private final AbstractHeaderParser<?> header;
-    private final ArrayDao arrayDao;
-    private final SearchDao searchDao;
-    private final List<String> batch = new ArrayList<String>();
-    private final ArrayDesign design;
-    private final DataSet dataSet;
-    private DesignElementList probeList;
-    private int elementCount = 0;
-    private final Map<String, PhysicalProbe> lookup = new HashMap<String, PhysicalProbe>(HybDataValidator.BATCH_SIZE);
+    private final DesignElementBuilder builder;
 
     /**
      * @param header table header info.
@@ -120,71 +109,33 @@ public class DesignElementBuilder extends AbstractParser {
      * @param arrayDao dao for prob lookup.
      * @param searchDao dao to evict and reload probes and design element lists.
      */
-    public DesignElementBuilder(AbstractHeaderParser<?> header, DataSet dataSet, ArrayDesign design,
-            ArrayDao arrayDao, SearchDao searchDao) {
+    DesignElementBuilderParser(AbstractHeaderParser<?> header, DataSet dataSet, ArrayDesign design, ArrayDao arrayDao,
+            SearchDao searchDao) {
         this.header = header;
-        this.design = design;
-        this.dataSet = dataSet;
-        this.arrayDao = arrayDao;
-        this.searchDao = searchDao;
-        probeList = new DesignElementList();
-        probeList.setDesignElementTypeEnum(DesignElementType.PHYSICAL_PROBE);
+        this.builder = new DesignElementBuilder(dataSet, design, arrayDao, searchDao);
     }
 
     /**
      * {@inheritDoc}
      */
-    public boolean parse(List<String> row, int lineNum) {
-        String probeId = header.parseProbeId(row, lineNum);
-        batch.add(probeId);
-        if (batch.size() == HybDataValidator.BATCH_SIZE) {
-            processBatch();
-        }
-        elementCount++;
+    @Override
+    boolean parse(List<String> row, int lineNum) {
+        final String probeId = this.header.parseProbeId(row, lineNum);
+        this.builder.addProbe(probeId);
         return true;
-    }
-
-    private void processBatch() {
-        
-        for (PhysicalProbe p : arrayDao.getPhysicalProbeByNames(design, batch)) {
-            lookup.put(p.getName(), p);
-        }
-        if (probeList.getId() != null) {
-            probeList = searchDao.retrieve(DesignElementList.class, probeList.getId());
-        }
-        List<AbstractDesignElement> list = probeList.getDesignElements();
-        for (String n : batch) {
-            PhysicalProbe p = lookup.get(n);
-            list.add(p);
-        }
-        batch.clear();
-        
-        searchDao.save(probeList);
-        searchDao.evictObject(probeList);
-        for (PhysicalProbe p : lookup.values()) {
-            searchDao.evictObject(p.getArrayDesignDetails());
-            searchDao.evictObject(p.getProbeGroup());
-            searchDao.evictObject(p.getAnnotation());
-            searchDao.evictObject(p);
-        }
-        lookup.clear();
     }
 
     /**
      * to be called when all lines are parsed, to flush remaining batch.
      */
     void finish() {
-        processBatch();
-        if (probeList.getId() != null) {
-            probeList = searchDao.retrieve(DesignElementList.class, probeList.getId());
-        }
-        dataSet.setDesignElementList(probeList);
+        this.builder.finish();
     }
 
     /**
      * @return list of the created design elements.
      */
     public int getElementCount() {
-        return elementCount;
+        return this.builder.getElementCount();
     }
 }

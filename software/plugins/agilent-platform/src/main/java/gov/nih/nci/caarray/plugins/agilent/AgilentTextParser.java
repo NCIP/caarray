@@ -82,9 +82,6 @@
  */
 package gov.nih.nci.caarray.plugins.agilent;
 
-import com.fiveamsolutions.nci.commons.util.io.DelimitedFileReader;
-import com.fiveamsolutions.nci.commons.util.io.DelimitedFileReaderFactoryImpl;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
@@ -92,6 +89,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
+import com.fiveamsolutions.nci.commons.util.io.DelimitedFileReader;
+import com.fiveamsolutions.nci.commons.util.io.DelimitedFileReaderFactoryImpl;
 
 /**
  * Parses tab-delimited Agilent raw text format.
@@ -107,13 +107,13 @@ class AgilentTextParser {
 
     /**
      * @param reader the input to parse
-     * @throws  
+     * @throws
      */
     AgilentTextParser(final File file) {
         try {
-            this.reader = new DelimitedFileReaderFactoryImpl().createTabDelimitedReader(
-                    new EndOfLineCorrectingReader(file));
-        } catch (IOException e) {
+            this.reader =
+                    new DelimitedFileReaderFactoryImpl().createTabDelimitedReader(new EndOfLineCorrectingReader(file));
+        } catch (final IOException e) {
             throw new ParseException("Could not open tab delimited reader", e);
         }
     }
@@ -122,7 +122,7 @@ class AgilentTextParser {
      * @return
      */
     boolean hasNext() {
-        return reader.hasNextLine();
+        return this.reader.hasNextLine();
     }
 
     /**
@@ -130,22 +130,22 @@ class AgilentTextParser {
      */
     void next() {
         readLine();
-        
-        if ("TYPE".equalsIgnoreCase(fields.get(0))) {            
+
+        if ("TYPE".equalsIgnoreCase(this.fields.get(0))) {
             readLine();
-            
+
             this.sectionName = this.fields.get(0);
-            
+
             this.columnIndexMap = new HashMap<String, Integer>();
-            int numberOfFields = this.fields.size();
+            final int numberOfFields = this.fields.size();
             for (int i = 1; i < numberOfFields; i++) {
-                columnIndexMap.put(fields.get(i).toLowerCase(), i);   
+                this.columnIndexMap.put(this.fields.get(i).toLowerCase(), i);
             }
-            
+
             readLine();
         }
-        
-        if (!"DATA".equalsIgnoreCase(fields.get(0))) {
+
+        if (!"DATA".equalsIgnoreCase(this.fields.get(0))) {
             throw new ParseException("Could not parse file (expected \"DATA\" line.");
         }
     }
@@ -155,18 +155,19 @@ class AgilentTextParser {
      * @return
      */
     String getStringValue(String columnName) {
-        Integer columnIndex = this.columnIndexMap.get(columnName.toLowerCase(Locale.ENGLISH));
+        final Integer columnIndex = this.columnIndexMap.get(columnName.toLowerCase(Locale.ENGLISH));
         if (columnIndex == null) {
             return null;
         }
-        return fields.get(columnIndex.intValue());
+        return this.fields.get(columnIndex.intValue());
     }
+
     /**
      * @param string
      * @return
      */
     int getIntValue(String columnName) {
-        String v = getStringValue(columnName);
+        final String v = getStringValue(columnName);
         if (v == null) {
             return 0;
         }
@@ -179,7 +180,7 @@ class AgilentTextParser {
      * @return
      */
     float getFloatValue(String columnName) {
-        String v = getStringValue(columnName);
+        final String v = getStringValue(columnName);
         if (v == null) {
             return 0.0F;
         }
@@ -198,7 +199,7 @@ class AgilentTextParser {
      * @return
      */
     String getSectionName() {
-         return this.sectionName;
+        return this.sectionName;
     }
 
     /**
@@ -212,46 +213,53 @@ class AgilentTextParser {
      * @return current line number.
      */
     int getCurrentLineNumber() {
-        return reader.getCurrentLineNumber();
+        return this.reader.getCurrentLineNumber();
     }
 
     /**
      * @return index of named column, or -1 is not found.
      */
     int getColumnIndex(String columnName) {
-        Integer columnIndex = this.columnIndexMap.get(columnName.toLowerCase(Locale.ENGLISH));
+        final Integer columnIndex = this.columnIndexMap.get(columnName.toLowerCase(Locale.ENGLISH));
         return columnIndex == null ? -1 : columnIndex.intValue();
     }
-    
+
     private void readLine() {
         try {
             List<String> newFields;
             do {
-                newFields = reader.nextLine();
-            } while (reader.hasNextLine() && newFields.get(0).charAt(0) == ('*'));
+                newFields = this.reader.nextLine();
+            } while (this.reader.hasNextLine() && newFields.get(0).charAt(0) == ('*'));
 
             this.fields = newFields;
 
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new ParseException("Could not read line.", e);
         }
     }
-   
-   /**
-    * Indicates an exception occurred during parsing or the file is malformed.
-    * 
-    * @author jscott
-    *
-    */
-   class ParseException extends RuntimeException {
-       private static final long serialVersionUID = 1L;
 
-       ParseException(String reason) {
-           super(reason);
-       }
-       
-       ParseException(String reason, Throwable cause) {
-           super(reason, cause);
-       }
-   }
+    /**
+     * Closes the file.
+     */
+    public void close() {
+        this.reader.close();
+    }
+
+    /**
+     * Indicates an exception occurred during parsing or the file is malformed.
+     * 
+     * @author jscott
+     * 
+     */
+    class ParseException extends RuntimeException {
+        private static final long serialVersionUID = 1L;
+
+        ParseException(String reason) {
+            super(reason);
+        }
+
+        ParseException(String reason, Throwable cause) {
+            super(reason, cause);
+        }
+    }
 }

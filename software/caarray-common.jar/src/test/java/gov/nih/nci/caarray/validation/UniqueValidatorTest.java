@@ -42,9 +42,9 @@ import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.dao.DAOException;
 import gov.nih.nci.caarray.dao.VocabularyDao;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
-import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
 
 import org.hibernate.Transaction;
+import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -52,44 +52,48 @@ import org.junit.Test;
  */
 @SuppressWarnings("PMD")
 public class UniqueValidatorTest extends AbstractDaoTest {
-    private static final VocabularyDao DAO_OBJECT = CaArrayDaoFactory.INSTANCE.getVocabularyDao();
+    private VocabularyDao DAO_OBJECT;
+
+    @Before
+    public void setUp() {
+        this.DAO_OBJECT = CaArrayDaoFactory.INSTANCE.getVocabularyDao();
+    }
 
     @Test
     public void testUniqueValidator() {
-        TermSource t1 = new TermSource();
+        final TermSource t1 = new TermSource();
         t1.setName("name1");
         t1.setUrl("url1");
         t1.setVersion("version1");
 
-        TermSource t2 = new TermSource();
+        final TermSource t2 = new TermSource();
         t2.setName("name1");
         t2.setUrl("url2");
 
-        TermSource t3 = new TermSource();
+        final TermSource t3 = new TermSource();
         t3.setName("name2");
         t3.setVersion("version1");
 
-        TermSource t4 = new TermSource();
+        final TermSource t4 = new TermSource();
         t4.setName("name1");
         t4.setUrl("foobar");
         t4.setVersion("version1");
 
-        TermSource t5 = new TermSource();
+        final TermSource t5 = new TermSource();
         t5.setName("name1");
 
-        TermSource t6= new TermSource();
+        final TermSource t6 = new TermSource();
         t6.setName("name3");
         t6.setUrl("url2");
         t6.setVersion("version3");
 
-
-        UniqueConstraintsValidator ucv = new UniqueConstraintsValidator();
+        final UniqueConstraintsValidator ucv = new UniqueConstraintsValidator();
         ucv.initialize(t1.getClass().getAnnotation(UniqueConstraints.class));
 
         Transaction tx = null;
         try {
-            tx = hibernateHelper.beginTransaction();
-            DAO_OBJECT.save(t1);
+            tx = this.hibernateHelper.beginTransaction();
+            this.DAO_OBJECT.save(t1);
 
             assertTrue(ucv.isValid(t1));
             assertTrue(ucv.isValid(t2));
@@ -98,8 +102,8 @@ public class UniqueValidatorTest extends AbstractDaoTest {
             assertTrue(ucv.isValid(t5));
             assertTrue(ucv.isValid(t6));
 
-            DAO_OBJECT.save(t2);
-            DAO_OBJECT.save(t3);
+            this.DAO_OBJECT.save(t2);
+            this.DAO_OBJECT.save(t3);
 
             assertTrue(ucv.isValid(t1));
             assertTrue(ucv.isValid(t2));
@@ -109,10 +113,9 @@ public class UniqueValidatorTest extends AbstractDaoTest {
             assertTrue(ucv.isValid(t6));
 
             tx.commit();
-        } catch (DAOException e) {
-            hibernateHelper.rollbackTransaction(tx);
+        } catch (final DAOException e) {
+            this.hibernateHelper.rollbackTransaction(tx);
             fail("DAO exception during save and retrieve of protocol: " + e.getMessage());
         }
     }
 }
-

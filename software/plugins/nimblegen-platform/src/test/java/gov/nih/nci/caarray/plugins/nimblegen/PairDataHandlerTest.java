@@ -127,11 +127,12 @@ public class PairDataHandlerTest extends AbstractHandlerTest {
     }
 
     private void testNimblegenDataFull() throws InvalidDataFileException {
-        final CaArrayFile nimblegenFile = getNimblegenCaArrayFile(NimblegenArrayDataFiles.HUMAN_EXPRESSION,
-                this.NIMBLEGEN_2006_08_03_HG18_60mer_expr_LSID_OBJECT_ID);
+        final CaArrayFile nimblegenFile =
+                getNimblegenCaArrayFile(NimblegenArrayDataFiles.HUMAN_EXPRESSION,
+                        this.NIMBLEGEN_2006_08_03_HG18_60mer_expr_LSID_OBJECT_ID);
         this.arrayDataService.importData(nimblegenFile, true, DEFAULT_IMPORT_OPTIONS);
-        final RawArrayData nimblegenData = (RawArrayData) this.daoFactoryStub.getArrayDao().getArrayData(
-                nimblegenFile.getId());
+        final RawArrayData nimblegenData =
+                (RawArrayData) this.daoFactoryStub.getArrayDao().getArrayData(nimblegenFile.getId());
         assertEquals(1, nimblegenData.getHybridizations().size());
         final DataSet dataSet = nimblegenData.getDataSet();
         assertNotNull(dataSet.getDesignElementList());

@@ -138,7 +138,7 @@ public final class GalDesignHandler extends AbstractDesignFileHandler {
     private static final String COLUMN_HEADER = "Column";
     private static final String ROW_HEADER = "Row";
     private static final String ID_HEADER = "ID";
-    private static final List<String> REQUIRED_DATA_COLUMN_HEADERS = Arrays.asList(new String[] { BLOCK_HEADER,
+    private static final List<String> REQUIRED_DATA_COLUMN_HEADERS = Arrays.asList(new String[] {BLOCK_HEADER,
             COLUMN_HEADER, ROW_HEADER, ID_HEADER });
     private static final String BLOCK_INDICATOR = "Block";
 
@@ -259,7 +259,7 @@ public final class GalDesignHandler extends AbstractDesignFileHandler {
     private void setBlockInfoFromHeaderData() {
         short blockRow = 0;
         short blockColumn = 0;
-        int currentYOrigin = -1;
+        double currentYOrigin = -1;
         for (final BlockInfo blockInfo : this.blockInfos) {
             if (blockInfo.getYOrigin() > currentYOrigin) {
                 blockColumn = 0;
@@ -294,8 +294,8 @@ public final class GalDesignHandler extends AbstractDesignFileHandler {
     private void handleBlockInformation(String name, String value) {
         final String[] parts = value.split(",");
         final short blockNumber = Short.parseShort(name.substring(BLOCK_INDICATOR.length()));
-        final int xOrigin = Integer.parseInt(parts[0].trim());
-        final int yOrigin = Integer.parseInt(parts[1].trim());
+        final double xOrigin = Double.parseDouble(parts[0].trim());
+        final double yOrigin = Double.parseDouble(parts[1].trim());
         final BlockInfo blockInfo = new BlockInfo(blockNumber, xOrigin, yOrigin);
         this.blockInfos.add(blockInfo);
         this.numberToBlockMap.put(blockInfo.getBlockNumber(), blockInfo);
@@ -426,8 +426,9 @@ public final class GalDesignHandler extends AbstractDesignFileHandler {
         while (this.reader.hasNextLine()) {
             final List<String> values = this.reader.nextLine();
             if (values.size() != numberOfDataColumns) {
-                final ValidationMessage message = result.addMessage(Type.ERROR,
-                        "Line " + this.reader.getCurrentLineNumber() + " has an incorrect number of columns");
+                final ValidationMessage message =
+                        result.addMessage(Type.ERROR, "Line " + this.reader.getCurrentLineNumber()
+                                + " has an incorrect number of columns");
                 message.setLine(this.reader.getCurrentLineNumber());
             } else {
                 validateDataValues(values, result, this.reader.getCurrentLineNumber());
@@ -449,8 +450,9 @@ public final class GalDesignHandler extends AbstractDesignFileHandler {
     private void validateShortField(List<String> values, String header, FileValidationResult result, int line) {
         final int column = this.headerToPositionMap.get(header);
         if (!Utils.isShort(values.get(column))) {
-            final ValidationMessage message = result.addMessage(Type.ERROR, "Illegal (non-numeric) value for field "
-                    + header + " on line " + line);
+            final ValidationMessage message =
+                    result.addMessage(Type.ERROR, "Illegal (non-numeric) value for field " + header + " on line "
+                            + line);
             message.setLine(line);
             message.setColumn(column);
         }
@@ -467,8 +469,8 @@ public final class GalDesignHandler extends AbstractDesignFileHandler {
     private void validateId(List<String> values, FileValidationResult result, int line) {
         final int column = this.headerToPositionMap.get(ID_HEADER);
         if (StringUtils.isBlank(values.get(column))) {
-            final ValidationMessage message = result.addMessage(Type.ERROR, "Missing value for ID field on line "
-                    + line);
+            final ValidationMessage message =
+                    result.addMessage(Type.ERROR, "Missing value for ID field on line " + line);
             message.setLine(line);
             message.setColumn(column);
         }
@@ -532,8 +534,9 @@ public final class GalDesignHandler extends AbstractDesignFileHandler {
                 return;
             }
             if (!values.get(0).contains("=")) {
-                final ValidationMessage message = result.addMessage(Type.ERROR,
-                        "Illegal header line; headers must be of the format <name>=<value>");
+                final ValidationMessage message =
+                        result.addMessage(Type.ERROR,
+                                "Illegal header line; headers must be of the format <name>=<value>");
                 message.setLine(this.reader.getCurrentLineNumber());
             }
         }
@@ -565,12 +568,24 @@ public final class GalDesignHandler extends AbstractDesignFileHandler {
     }
 
     private void validateBlockInformationFields(String[] values, int line, FileValidationResult result) {
-        if (values.length != NUMBER_OF_BLOCK_INFORMATION_FIELDS || !Utils.isInteger(values[0].trim())
-                || !Utils.isInteger(values[1].trim())) {
-            final ValidationMessage message = result.addMessage(Type.ERROR,
-                    "Block information must consist of exactly 7 comma-separated numeric values");
+        if (values.length != NUMBER_OF_BLOCK_INFORMATION_FIELDS) {
+            final ValidationMessage message =
+                    result.addMessage(Type.ERROR,
+                            "Block information must consist of exactly 7 comma-separated numeric values");
             message.setLine(line);
             message.setColumn(1);
+        }
+        if (!Utils.isDouble(values[0].trim())) {
+            final ValidationMessage message =
+                    result.addMessage(Type.ERROR, "Block information must contain a valid xOrigin value");
+            message.setLine(line);
+            message.setColumn(1);
+        }
+        if (!Utils.isDouble(values[1].trim())) {
+            final ValidationMessage message =
+                    result.addMessage(Type.ERROR, "Block information must contain a valid yOrigin value");
+            message.setLine(line);
+            message.setColumn(2);
         }
     }
 
@@ -585,10 +600,10 @@ public final class GalDesignHandler extends AbstractDesignFileHandler {
         private final short blockNumber;
         private short blockColumn;
         private short blockRow;
-        private final int xOrigin;
-        private final int yOrigin;
+        private final double xOrigin;
+        private final double yOrigin;
 
-        private BlockInfo(short blockNumber, int xOrigin, int yOrigin) {
+        private BlockInfo(short blockNumber, double xOrigin, double yOrigin) {
             this.blockNumber = blockNumber;
             this.xOrigin = xOrigin;
             this.yOrigin = yOrigin;
@@ -607,11 +622,11 @@ public final class GalDesignHandler extends AbstractDesignFileHandler {
         }
 
         @SuppressWarnings("unused")
-        private int getXOrigin() {
+        private double getXOrigin() {
             return this.xOrigin;
         }
 
-        private int getYOrigin() {
+        private double getYOrigin() {
             return this.yOrigin;
         }
 

@@ -134,6 +134,9 @@ public class URIUserType implements UserType {
     @Override
     public Object nullSafeGet(ResultSet inResultSet, String[] names, Object o) throws SQLException {
         final String val = (String) Hibernate.STRING.nullSafeGet(inResultSet, names[0]);
+        if (val == null) {
+            return null;
+        }
 
         URI uri = null;
         try {
@@ -151,7 +154,10 @@ public class URIUserType implements UserType {
     @Override
     public void nullSafeSet(PreparedStatement inPreparedStatement, Object o, int i) throws SQLException {
         final URI val = (URI) o;
-        final String uri = StringUtils.defaultString(val.toString());
+        String uri = null;
+        if (val != null) {
+            uri = StringUtils.defaultString(val.toString());
+        }
         inPreparedStatement.setString(i, uri);
     }
 

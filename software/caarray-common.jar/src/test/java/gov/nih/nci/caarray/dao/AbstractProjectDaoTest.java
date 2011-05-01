@@ -88,10 +88,10 @@ public class AbstractProjectDaoTest extends AbstractDaoTest {
     protected static RawArrayData DUMMY_RAW_ARRAY_DATA;
     protected static CaArrayFile DUMMY_DATA_FILE;
 
-    protected static final ProjectDao DAO_OBJECT = CaArrayDaoFactory.INSTANCE.getProjectDao();
-    protected static final VocabularyDao VOCABULARY_DAO = CaArrayDaoFactory.INSTANCE.getVocabularyDao();
-    protected static final SearchDao SEARCH_DAO = CaArrayDaoFactory.INSTANCE.getSearchDao();
-    protected static final CollaboratorGroupDao COLLAB_DAO = CaArrayDaoFactory.INSTANCE.getCollaboratorGroupDao();
+    protected ProjectDao daoObject;
+    protected VocabularyDao vocabularyDao;
+    protected SearchDao searchDao;
+    protected CollaboratorGroupDao collabDao;
 
     protected static final PageSortParams<Project> ALL_BY_ID = new PageSortParams<Project>(10000, 0,
             ProjectSortCriterion.TITLE, false);
@@ -101,6 +101,11 @@ public class AbstractProjectDaoTest extends AbstractDaoTest {
      */
     @Before
     public void setup() {
+        this.daoObject = new ProjectDaoImpl(this.hibernateHelper, this.typeRegistry);
+        this.vocabularyDao = new VocabularyDaoImpl(this.hibernateHelper);
+        this.searchDao = new SearchDaoImpl(this.hibernateHelper);
+        this.collabDao = new CollaboratorGroupDaoImpl(this.hibernateHelper);
+
         // Experiment
         DUMMY_ORGANISM = new Organism();
         DUMMY_PROVIDER = new Organization();
@@ -322,7 +327,7 @@ public class AbstractProjectDaoTest extends AbstractDaoTest {
         DUMMY_EXPERIMENT_1.getPublications().add(DUMMY_PUBLICATION_2);
     }
 
-    protected static void saveSupportingObjects() {
+    protected void saveSupportingObjects() {
         DUMMY_REPLICATE_TYPE.setValue("Dummy Replicate Type");
         DUMMY_REPLICATE_TYPE.setSource(DUMMY_TERM_SOURCE);
         DUMMY_REPLICATE_TYPE.setCategory(DUMMY_CATEGORY);
@@ -338,13 +343,13 @@ public class AbstractProjectDaoTest extends AbstractDaoTest {
         DUMMY_FACTOR_TYPE_2.setCategory(DUMMY_CATEGORY);
         DUMMY_FACTOR_TYPE_2.setSource(DUMMY_TERM_SOURCE);
         DUMMY_FACTOR_TYPE_2.setValue("Dummy Factor Type 2");
-        VOCABULARY_DAO.save(DUMMY_REPLICATE_TYPE);
-        VOCABULARY_DAO.save(DUMMY_QUALITY_CTRL_TYPE);
-        VOCABULARY_DAO.save(DUMMY_NORMALIZATION_TYPE);
-        VOCABULARY_DAO.save(DUMMY_FACTOR_TYPE_1);
-        VOCABULARY_DAO.save(DUMMY_FACTOR_TYPE_2);
-        DAO_OBJECT.save(DUMMY_ASSAYTYPE_1);
-        DAO_OBJECT.save(DUMMY_ASSAYTYPE_2);
+        this.vocabularyDao.save(DUMMY_REPLICATE_TYPE);
+        this.vocabularyDao.save(DUMMY_QUALITY_CTRL_TYPE);
+        this.vocabularyDao.save(DUMMY_NORMALIZATION_TYPE);
+        this.vocabularyDao.save(DUMMY_FACTOR_TYPE_1);
+        this.vocabularyDao.save(DUMMY_FACTOR_TYPE_2);
+        this.daoObject.save(DUMMY_ASSAYTYPE_1);
+        this.daoObject.save(DUMMY_ASSAYTYPE_2);
     }
 
 }

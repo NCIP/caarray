@@ -121,8 +121,7 @@ final class ArrayDataImporterImpl implements ArrayDataImporter {
     private final SearchDao searchDao;
 
     @Inject
-    ArrayDataImporterImpl(ArrayDataService arrayDataService, FileDao fileDao, ProjectDao projectDao,
-            SearchDao searchDao) {
+    ArrayDataImporterImpl(ArrayDataService arrayDataService, FileDao fileDao, ProjectDao projectDao, SearchDao searchDao) {
         super();
         this.arrayDataService = arrayDataService;
         this.fileDao = fileDao;
@@ -130,13 +129,14 @@ final class ArrayDataImporterImpl implements ArrayDataImporter {
         this.searchDao = searchDao;
     }
 
+    @Override
     public void importFiles(CaArrayFileSet fileSet, DataImportOptions dataImportOptions) {
-        Set<CaArrayFile> dataFiles = fileSet.getArrayDataFiles();
+        final Set<CaArrayFile> dataFiles = fileSet.getArrayDataFiles();
         fileSet.getFiles().clear();
         int fileCount = 0;
-        int totalNumberOfFiles = dataFiles.size();
-        for (Iterator<CaArrayFile> fileIt = dataFiles.iterator(); fileIt.hasNext();) {
-            CaArrayFile file = fileIt.next();
+        final int totalNumberOfFiles = dataFiles.size();
+        for (final Iterator<CaArrayFile> fileIt = dataFiles.iterator(); fileIt.hasNext();) {
+            final CaArrayFile file = fileIt.next();
             LOG.info("Importing data file [" + ++fileCount + "/" + totalNumberOfFiles + "]: " + file.getName());
             importFile(file, dataImportOptions);
             fileIt.remove();
@@ -144,24 +144,27 @@ final class ArrayDataImporterImpl implements ArrayDataImporter {
     }
 
     private void importFile(CaArrayFile file, DataImportOptions dataImportOptions) {
+        System.out.println("Importing file " + file.getName());
         try {
-            searchDao.refresh(file);
+            this.searchDao.refresh(file);
             this.arrayDataService.importData(file, true, dataImportOptions);
-        } catch (InvalidDataFileException e) {
+        } catch (final InvalidDataFileException e) {
             file.setFileStatus(FileStatus.VALIDATION_ERRORS);
             file.setValidationResult(e.getFileValidationResult());
         }
-        projectDao.save(file);
-        projectDao.flushSession();
-        projectDao.clearSession();
+        this.projectDao.save(file);
+        this.projectDao.flushSession();
+        this.projectDao.clearSession();
+        System.out.println("Done importing file " + file.getName());
     }
 
+    @Override
     public void validateFiles(CaArrayFileSet fileSet, MageTabDocumentSet mTabSet, boolean reimport) {
-        Set<CaArrayFile> dataFiles = fileSet.getArrayDataFiles();
-        Set<CaArrayFile> sdrfFiles = fileSet.getFilesByType(FileTypeRegistry.MAGE_TAB_SDRF);
+        final Set<CaArrayFile> dataFiles = fileSet.getArrayDataFiles();
+        final Set<CaArrayFile> sdrfFiles = fileSet.getFilesByType(FileTypeRegistry.MAGE_TAB_SDRF);
         int fileCount = 0;
-        int totalNumberOfFiles = dataFiles.size();
-        for (CaArrayFile file : dataFiles) {
+        final int totalNumberOfFiles = dataFiles.size();
+        for (final CaArrayFile file : dataFiles) {
             if (file.getFileStatus() != FileStatus.VALIDATION_ERRORS) {
                 LOG.info("Validating data file [" + ++fileCount + "/" + totalNumberOfFiles + "]: " + file.getName());
                 validateFile(file, mTabSet, reimport);
@@ -174,37 +177,34 @@ final class ArrayDataImporterImpl implements ArrayDataImporter {
         this.arrayDataService.validate(file, mTabSet, reimport);
     }
 
-    private void checkSdrfHybNames(Set<CaArrayFile> dataFiles, MageTabDocumentSet mTabSet,
-            Set<CaArrayFile> sdrfFiles) {
+    private void checkSdrfHybNames(Set<CaArrayFile> dataFiles, MageTabDocumentSet mTabSet, Set<CaArrayFile> sdrfFiles) {
         if (mTabSet != null) {
-        checkSdrfDataRelationshipNodeNames(dataFiles, mTabSet.getSdrfHybridizations(),
-                sdrfFiles, FileValidationResult.HYB_NAME);
+            checkSdrfDataRelationshipNodeNames(dataFiles, mTabSet.getSdrfHybridizations(), sdrfFiles,
+                    FileValidationResult.HYB_NAME);
         }
     }
 
-    private <T extends AbstractSampleDataRelationshipNode> List<String> getNodeValueNames(
-            String key, Map<String, List<T>> values) {
-        List<String> names = new ArrayList<String>();
-        List<T> mageTabNodeList = values.get(key);
-        for (T node : mageTabNodeList) {
+    private <T extends AbstractSampleDataRelationshipNode> List<String> getNodeValueNames(String key,
+            Map<String, List<T>> values) {
+        final List<String> names = new ArrayList<String>();
+        final List<T> mageTabNodeList = values.get(key);
+        for (final T node : mageTabNodeList) {
             names.add(node.getName());
         }
 
         return names;
     }
 
-    private <T extends AbstractSampleDataRelationshipNode>
-        Map<String, List<T>>
-        pruneOutDataFileNodeNames(Map<String, List<T>> sdrfNodeNames,
-        List<String> dataFileNodeNames) {
+    private <T extends AbstractSampleDataRelationshipNode> Map<String, List<T>> pruneOutDataFileNodeNames(
+            Map<String, List<T>> sdrfNodeNames, List<String> dataFileNodeNames) {
 
-        Map<String, List<T>> updatedMap = new HashMap<String, List<T>>();
+        final Map<String, List<T>> updatedMap = new HashMap<String, List<T>>();
 
-        for (String key : sdrfNodeNames.keySet()) {
-            List<T> updatedList = new ArrayList<T>();
-            List<T> mageTabNodeList = sdrfNodeNames.get(key);
+        for (final String key : sdrfNodeNames.keySet()) {
+            final List<T> updatedList = new ArrayList<T>();
+            final List<T> mageTabNodeList = sdrfNodeNames.get(key);
 
-            for (T sdrfNodeName : mageTabNodeList) {
+            for (final T sdrfNodeName : mageTabNodeList) {
                 if (!dataFileNodeNames.contains(sdrfNodeName.getName())) {
                     updatedList.add(sdrfNodeName);
                 }
@@ -216,28 +216,24 @@ final class ArrayDataImporterImpl implements ArrayDataImporter {
         return updatedMap;
     }
 
-    private <T extends AbstractSampleDataRelationshipNode>
-    void checkSdrfDataRelationshipNodeNames(Set<CaArrayFile> dataFiles,
-            Map<String, List<T>> values, Set<CaArrayFile> sdrfFiles, String keyName) {
+    private <T extends AbstractSampleDataRelationshipNode> void checkSdrfDataRelationshipNodeNames(
+            Set<CaArrayFile> dataFiles, Map<String, List<T>> values, Set<CaArrayFile> sdrfFiles, String keyName) {
         // generate list of node names from data files and compare
         // to list of node names from the sdrf
 
-        List<String> dataFileNodeNames =
-            collectDataRelationshipNodeNames(dataFiles, keyName);
+        final List<String> dataFileNodeNames = collectDataRelationshipNodeNames(dataFiles, keyName);
 
         if (!dataFileNodeNames.isEmpty() && !values.isEmpty() && !values.values().isEmpty()) {
 
-            doAddSdrfErrors(pruneOutDataFileNodeNames(values, dataFileNodeNames),
-                    keyName, sdrfFiles);
+            doAddSdrfErrors(pruneOutDataFileNodeNames(values, dataFileNodeNames), keyName, sdrfFiles);
         }
     }
 
     private List<String> collectDataRelationshipNodeNames(Set<CaArrayFile> dataFiles, String keyName) {
-        List<String> dataFileRelationshipNodeNames = new ArrayList<String>();
-        for (CaArrayFile caf : dataFiles) {
+        final List<String> dataFileRelationshipNodeNames = new ArrayList<String>();
+        for (final CaArrayFile caf : dataFiles) {
             if (caf.getValidationResult() != null) {
-                dataFileRelationshipNodeNames
-                    .addAll(getRelationshipNodeName(caf.getValidationResult(), keyName));
+                dataFileRelationshipNodeNames.addAll(getRelationshipNodeName(caf.getValidationResult(), keyName));
             }
         }
 
@@ -246,41 +242,39 @@ final class ArrayDataImporterImpl implements ArrayDataImporter {
 
     @SuppressWarnings("unchecked")
     private List<String> getRelationshipNodeName(FileValidationResult result, String keyName) {
-        List<String> names = new ArrayList<String>();
+        final List<String> names = new ArrayList<String>();
         if (result != null && result.getValidationProperties(keyName) != null) {
             names.addAll((List<String>) result.getValidationProperties(keyName));
         }
         return names;
     }
 
-    private <T extends AbstractSampleDataRelationshipNode> void doAddSdrfErrors(
-            Map<String, List<T>> values, String materialName, Set<CaArrayFile> sdrfFiles) {
+    private <T extends AbstractSampleDataRelationshipNode> void doAddSdrfErrors(Map<String, List<T>> values,
+            String materialName, Set<CaArrayFile> sdrfFiles) {
 
         if (!values.isEmpty() && !values.values().isEmpty()) {
             // add error to matching SDRF
-            for (String mtSdrfName : values.keySet()) {
+            for (final String mtSdrfName : values.keySet()) {
                 doAddSdrfError(mtSdrfName, values, materialName, sdrfFiles);
             }
         }
     }
 
-    private <T extends AbstractSampleDataRelationshipNode> void doAddSdrfError(
-            String mtSdrfName, Map<String, List<T>> values, String materialName, Set<CaArrayFile> sdrfFiles) {
-        for (CaArrayFile sdrf : sdrfFiles) {
-            List<String> mtSdrfNodeNameValues = getNodeValueNames(mtSdrfName, values);
-            if (mtSdrfName.equals(sdrf.getName())
-                    && !mtSdrfNodeNameValues.isEmpty()) {
+    private <T extends AbstractSampleDataRelationshipNode> void doAddSdrfError(String mtSdrfName,
+            Map<String, List<T>> values, String materialName, Set<CaArrayFile> sdrfFiles) {
+        for (final CaArrayFile sdrf : sdrfFiles) {
+            final List<String> mtSdrfNodeNameValues = getNodeValueNames(mtSdrfName, values);
+            if (mtSdrfName.equals(sdrf.getName()) && !mtSdrfNodeNameValues.isEmpty()) {
                 sdrf.setFileStatus(FileStatus.VALIDATION_ERRORS);
-                StringBuilder errorMessage = new StringBuilder(materialName);
+                final StringBuilder errorMessage = new StringBuilder(materialName);
                 errorMessage.append(" ");
                 errorMessage.append(mtSdrfNodeNameValues.toString());
                 errorMessage.append(" were not found in data files provided.");
                 if (sdrf.getValidationResult() == null) {
                     sdrf.setValidationResult(new FileValidationResult());
                 }
-                sdrf.getValidationResult()
-                    .addMessage(Type.ERROR, errorMessage.toString());
-                fileDao.save(sdrf);
+                sdrf.getValidationResult().addMessage(Type.ERROR, errorMessage.toString());
+                this.fileDao.save(sdrf);
             }
         }
     }

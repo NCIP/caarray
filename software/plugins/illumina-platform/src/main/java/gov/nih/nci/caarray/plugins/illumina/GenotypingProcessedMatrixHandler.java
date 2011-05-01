@@ -185,8 +185,9 @@ public final class GenotypingProcessedMatrixHandler extends AbstractDataFileHand
     @Override
     public void validate(MageTabDocumentSet mTabSet, final FileValidationResult result, ArrayDesign design) {
         final ValidatingHeaderParser headerProc = new ValidatingHeaderParser(result, mTabSet);
-        final HybDataValidator<IlluminaGenotypingProcessedMatrixQuantitationType> proc = new HybDataValidator<IlluminaGenotypingProcessedMatrixQuantitationType>(
-                headerProc, result, design, this.arrayDao);
+        final HybDataValidator<IlluminaGenotypingProcessedMatrixQuantitationType> proc =
+                new HybDataValidator<IlluminaGenotypingProcessedMatrixQuantitationType>(headerProc, result, design,
+                        this.arrayDao);
         processFile(headerProc, proc, getFile());
         proc.finish();
     }
@@ -206,16 +207,16 @@ public final class GenotypingProcessedMatrixHandler extends AbstractDataFileHand
     public void loadData(DataSet dataSet, List<QuantitationType> types, ArrayDesign design) {
         // pass 1: load design element and count row.
         DefaultHeaderProcessor header = new DefaultHeaderProcessor();
-        final DesignElementBuilder designElementProc = new DesignElementBuilder(header, dataSet, design, this.arrayDao,
-                this.searchDao);
+        final DesignElementBuilderParser designElementProc =
+                new DesignElementBuilderParser(header, dataSet, design, this.arrayDao, this.searchDao);
         processFile(header, designElementProc, getFile());
         designElementProc.finish();
         dataSet.prepareColumns(types, designElementProc.getElementCount());
         LOG.info("Pass 1/2 loaded " + designElementProc.getElementCount() + " design elements.");
         // pass 2: fill columns.
         header = new DefaultHeaderProcessor();
-        final HybDataBuilder<IlluminaGenotypingProcessedMatrixQuantitationType> loader = new HybDataBuilder<IlluminaGenotypingProcessedMatrixQuantitationType>(
-                dataSet, header, this.valueParser);
+        final HybDataBuilder<IlluminaGenotypingProcessedMatrixQuantitationType> loader =
+                new HybDataBuilder<IlluminaGenotypingProcessedMatrixQuantitationType>(dataSet, header, this.valueParser);
         processFile(header, loader, getFile());
         LOG.info("Pass 2/2 loaded data.");
     }
@@ -344,8 +345,8 @@ public final class GenotypingProcessedMatrixHandler extends AbstractDataFileHand
         private void buildHybBlock(int blockStart, List<String> row, int lineNum, int block) {
             int col = blockStart;
 
-            final AbstractHeaderParser<IlluminaGenotypingProcessedMatrixQuantitationType>.ValueLoader loader = addValueLoader(row
-                    .get(blockStart));
+            final AbstractHeaderParser<IlluminaGenotypingProcessedMatrixQuantitationType>.ValueLoader loader =
+                    addValueLoader(row.get(blockStart));
             for (int c = 0; c < this.period; c++, col++) {
                 String localName = row.get(col);
                 if (c != 0 && this.compositColNames) {

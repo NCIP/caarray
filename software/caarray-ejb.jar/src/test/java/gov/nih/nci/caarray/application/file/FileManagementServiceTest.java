@@ -167,7 +167,8 @@ public class FileManagementServiceTest extends AbstractServiceTest {
                     }
                 } else if (job instanceof ArrayDesignFileImportJob) {
                     final ArrayDesignFileImportJob arrayDesignJob = (ArrayDesignFileImportJob) job;
-                    getDaoFactory().getArrayDao().getArrayDesign(arrayDesignJob.getArrayDesignId()).getDesignFileSet()
+                    FileManagementServiceTest.this.daoFactoryStub.getArrayDao()
+                            .getArrayDesign(arrayDesignJob.getArrayDesignId()).getDesignFileSet()
                             .updateStatus(FileStatus.IMPORT_FAILED);
                 }
             }
@@ -181,7 +182,6 @@ public class FileManagementServiceTest extends AbstractServiceTest {
             }
         };
 
-        fileManagementMDB.setDaoFactory(this.daoFactoryStub);
         fileManagementMDB.setTransaction(new UserTransactionStub());
         final JobQueueDao jobDao = new JobDaoSingleJobStub();
         final DirectJobSubmitter submitter = new DirectJobSubmitter(fileManagementMDB, jobDao);

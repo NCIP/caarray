@@ -79,7 +79,8 @@
  * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */package gov.nih.nci.caarray.platforms.unparsed;
+ */
+package gov.nih.nci.caarray.platforms.unparsed;
 
 import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
 import gov.nih.nci.caarray.platforms.spi.DataFileHandler;
@@ -106,13 +107,13 @@ public class UnparsedModule extends AbstractModule {
         bind(FallbackUnparsedDataHandler.class);
 
         // design files
-        final Multibinder<DesignFileHandler> designFileBinder = Multibinder.newSetBinder(binder(),
-                DesignFileHandler.class);
+        final Multibinder<DesignFileHandler> designFileBinder =
+                Multibinder.newSetBinder(binder(), DesignFileHandler.class);
         designFileBinder.addBinding().to(UnparsedArrayDesignFileHandler.class);
 
         // array data descriptors
-        final Multibinder<ArrayDataTypeDescriptor> arrayDataDescriptorBinder = Multibinder.newSetBinder(binder(),
-                ArrayDataTypeDescriptor.class);
+        final Multibinder<ArrayDataTypeDescriptor> arrayDataDescriptorBinder =
+                Multibinder.newSetBinder(binder(), ArrayDataTypeDescriptor.class);
         arrayDataDescriptorBinder.addBinding().toInstance(UnsupportedDataFormatDescriptor.INSTANCE);
     }
 }

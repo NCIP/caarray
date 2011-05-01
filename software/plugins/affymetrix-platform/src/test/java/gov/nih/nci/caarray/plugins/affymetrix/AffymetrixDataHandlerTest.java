@@ -187,8 +187,8 @@ public class AffymetrixDataHandlerTest extends AbstractHandlerTest {
 
     @Test
     public void testExpressionChpData() throws InvalidDataFileException {
-        final DerivedArrayData chpData = getChpData(AffymetrixArrayDesignFiles.TEST3_CDF,
-                AffymetrixArrayDataFiles.TEST3_CHP);
+        final DerivedArrayData chpData =
+                getChpData(AffymetrixArrayDesignFiles.TEST3_CDF, AffymetrixArrayDataFiles.TEST3_CHP);
         this.arrayDataService.importData(chpData.getDataFile(), false, DEFAULT_IMPORT_OPTIONS);
         final DataSet dataSet = chpData.getDataSet();
         assertNotNull(dataSet.getDesignElementList());
@@ -199,11 +199,11 @@ public class AffymetrixDataHandlerTest extends AbstractHandlerTest {
         assertNotNull(dataSet.getHybridizationDataList());
         assertEquals(1, dataSet.getHybridizationDataList().size());
         final HybridizationData hybridizationData = dataSet.getHybridizationDataList().get(0);
-        final FusionCHPLegacyData chpData = FusionCHPLegacyData.fromBase(FusionCHPDataReg.read(chpFile
-                .getAbsolutePath()));
+        final FusionCHPLegacyData chpData =
+                FusionCHPLegacyData.fromBase(FusionCHPDataReg.read(chpFile.getAbsolutePath()));
         final FusionExpressionProbeSetResults results = new FusionExpressionProbeSetResults();
-        final FloatColumn signalColumn = (FloatColumn) hybridizationData
-                .getColumn(AffymetrixExpressionChpQuantitationType.CHP_SIGNAL);
+        final FloatColumn signalColumn =
+                (FloatColumn) hybridizationData.getColumn(AffymetrixExpressionChpQuantitationType.CHP_SIGNAL);
         for (int i = 0; i < chpData.getHeader().getNumProbeSets(); i++) {
             try {
                 chpData.getExpressionResults(i, results);
@@ -219,8 +219,8 @@ public class AffymetrixDataHandlerTest extends AbstractHandlerTest {
 
     @Test
     public void testSnpChpData() throws InvalidDataFileException {
-        final DerivedArrayData chpData = getChpData(AffymetrixArrayDesignFiles.TEN_K_CDF,
-                AffymetrixArrayDataFiles.TEN_K_1_CHP);
+        final DerivedArrayData chpData =
+                getChpData(AffymetrixArrayDesignFiles.TEN_K_CDF, AffymetrixArrayDataFiles.TEN_K_1_CHP);
         this.arrayDataService.importData(chpData.getDataFile(), false, DEFAULT_IMPORT_OPTIONS);
         final DataSet dataSet = chpData.getDataSet();
         assertNotNull(dataSet.getDesignElementList());
@@ -231,11 +231,11 @@ public class AffymetrixDataHandlerTest extends AbstractHandlerTest {
         assertNotNull(dataSet.getHybridizationDataList());
         assertEquals(1, dataSet.getHybridizationDataList().size());
         final HybridizationData hybridizationData = dataSet.getHybridizationDataList().get(0);
-        final FusionCHPLegacyData chpData = FusionCHPLegacyData.fromBase(FusionCHPDataReg.read(chpFile
-                .getAbsolutePath()));
+        final FusionCHPLegacyData chpData =
+                FusionCHPLegacyData.fromBase(FusionCHPDataReg.read(chpFile.getAbsolutePath()));
         final FusionGenotypeProbeSetResults results = new FusionGenotypeProbeSetResults();
-        final StringColumn alleleColumn = (StringColumn) hybridizationData
-                .getColumn(AffymetrixSnpChpQuantitationType.CHP_ALLELE);
+        final StringColumn alleleColumn =
+                (StringColumn) hybridizationData.getColumn(AffymetrixSnpChpQuantitationType.CHP_ALLELE);
         for (int i = 0; i < chpData.getHeader().getNumProbeSets(); i++) {
             try {
                 chpData.getGenotypingResults(i, results);
@@ -251,8 +251,8 @@ public class AffymetrixDataHandlerTest extends AbstractHandlerTest {
 
     @Test
     public void testCelData() throws InvalidDataFileException {
-        final RawArrayData celData = getCelData(AffymetrixArrayDesignFiles.TEST3_CDF,
-                AffymetrixArrayDataFiles.TEST3_CEL);
+        final RawArrayData celData =
+                getCelData(AffymetrixArrayDesignFiles.TEST3_CDF, AffymetrixArrayDataFiles.TEST3_CEL);
         this.arrayDataService.importData(celData.getDataFile(), false, DEFAULT_IMPORT_OPTIONS);
         final DataSet dataSet = celData.getDataSet();
         assertNotNull(dataSet.getDesignElementList());
@@ -387,8 +387,8 @@ public class AffymetrixDataHandlerTest extends AbstractHandlerTest {
 
     @Test
     public void testImportCN4Chp() throws InvalidDataFileException {
-        final DerivedArrayData chpData = getChpData(AffymetrixArrayDesignFiles.TEST3_CDF,
-                AffymetrixArrayDataFiles.COPY_NUMBER_4_CHP);
+        final DerivedArrayData chpData =
+                getChpData(AffymetrixArrayDesignFiles.TEST3_CDF, AffymetrixArrayDataFiles.COPY_NUMBER_4_CHP);
         assertEquals(FileStatus.UPLOADED, chpData.getDataFile().getFileStatus());
         assertNull(chpData.getDataSet());
         this.arrayDataService.importData(chpData.getDataFile(), false, DEFAULT_IMPORT_OPTIONS);
@@ -399,8 +399,8 @@ public class AffymetrixDataHandlerTest extends AbstractHandlerTest {
         assertEquals(1, dataSet.getHybridizationDataList().size());
         final HybridizationData hybridizationData = dataSet.getHybridizationDataList().get(0);
         assertEquals(chpData.getHybridizations().iterator().next(), hybridizationData.getHybridization());
-        final Set<CopyNumberQuantitationType> expected = new HashSet<CopyNumberQuantitationType>(
-                CnchpData.CN4_TYPE_MAP.values());
+        final Set<CopyNumberQuantitationType> expected =
+                new HashSet<CopyNumberQuantitationType>(CnchpData.CN4_TYPE_MAP.values());
         assertEquals(expected.size(), hybridizationData.getColumns().size());
         assertEquals(expected.size(), dataSet.getQuantitationTypes().size());
         for (final AbstractDesignElement element : dataSet.getDesignElementList().getDesignElements()) {
@@ -436,8 +436,8 @@ public class AffymetrixDataHandlerTest extends AbstractHandlerTest {
 
     @Test
     public void testImportCel() throws InvalidDataFileException {
-        final RawArrayData celData = getCelData(AffymetrixArrayDesignFiles.TEST3_CDF,
-                AffymetrixArrayDataFiles.TEST3_CEL);
+        final RawArrayData celData =
+                getCelData(AffymetrixArrayDesignFiles.TEST3_CDF, AffymetrixArrayDataFiles.TEST3_CEL);
         assertEquals(FileStatus.UPLOADED, celData.getDataFile().getFileStatus());
         assertNull(celData.getDataSet());
         this.arrayDataService.importData(celData.getDataFile(), false, DEFAULT_IMPORT_OPTIONS);
@@ -491,15 +491,15 @@ public class AffymetrixDataHandlerTest extends AbstractHandlerTest {
         fileList.add(AffymetrixArrayDesignFiles.TEST3_CDF);
 
         testValidFile(getChpCaArrayFile(AffymetrixArrayDataFiles.TEST3_CALVIN_CHP, AFFY_TEST3_LSID_OBJECT_ID),
-                genMageTabDocSet(fileList));
+                genMageTabDocSet(fileList), false);
         testValidFile(getChpCaArrayFile(AffymetrixArrayDataFiles.HG_FOCUS_CALVIN_CHP, HG_FOCUS_LSID_OBJECT_ID),
-                genMageTabDocSet(fileList));
+                genMageTabDocSet(fileList), false);
         testValidFile(getChpCaArrayFile(AffymetrixArrayDataFiles.HG_FOCUS_CHP, HG_FOCUS_LSID_OBJECT_ID),
-                genMageTabDocSet(fileList));
+                genMageTabDocSet(fileList), false);
         testValidFile(getChpCaArrayFile(AffymetrixArrayDataFiles.TEST3_CHP, AFFY_TEST3_LSID_OBJECT_ID),
-                genMageTabDocSet(fileList));
+                genMageTabDocSet(fileList), false);
         testInvalidFile(getChpCaArrayFile(AffymetrixArrayDesignFiles.TEST3_CDF, AFFY_TEST3_LSID_OBJECT_ID),
-                genMageTabDocSet(fileList));
+                genMageTabDocSet(fileList), new String[] {});
     }
 
     @Test
@@ -511,14 +511,14 @@ public class AffymetrixDataHandlerTest extends AbstractHandlerTest {
         fileList.add(AffymetrixArrayDataFiles.TEST3_INVALID_HEADER_CEL);
 
         testValidFile(getCelCaArrayFile(AffymetrixArrayDataFiles.TEST3_CEL, AFFY_TEST3_LSID_OBJECT_ID),
-                genMageTabDocSet(fileList));
+                genMageTabDocSet(fileList), true);
         testInvalidFile(getCelCaArrayFile(AffymetrixArrayDesignFiles.TEST3_CDF, AFFY_TEST3_LSID_OBJECT_ID),
-                genMageTabDocSet(fileList));
+                genMageTabDocSet(fileList), new String[] {PROBE_WAS_NOT_FOUND_IN_ARRAY_DESIGN_FRAGMENT });
         testInvalidFile(getCelCaArrayFile(AffymetrixArrayDataFiles.TEST3_INVALID_DATA_CEL, AFFY_TEST3_LSID_OBJECT_ID),
-                genMageTabDocSet(fileList));
+                genMageTabDocSet(fileList), new String[] {PROBE_WAS_NOT_FOUND_IN_ARRAY_DESIGN_FRAGMENT });
         testInvalidFile(
                 getCelCaArrayFile(AffymetrixArrayDataFiles.TEST3_INVALID_HEADER_CEL, AFFY_TEST3_LSID_OBJECT_ID),
-                genMageTabDocSet(fileList));
+                genMageTabDocSet(fileList), new String[] {PROBE_WAS_NOT_FOUND_IN_ARRAY_DESIGN_FRAGMENT });
     }
 
     @Test

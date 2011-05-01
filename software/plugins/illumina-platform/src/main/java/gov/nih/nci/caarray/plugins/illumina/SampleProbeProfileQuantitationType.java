@@ -88,6 +88,7 @@ import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
 
 /**
  * Quatitation types that will be read from a SampleProbeProfile file.
+ * 
  * @author gax
  * @since 2.4.0
  */
@@ -107,7 +108,7 @@ public enum SampleProbeProfileQuantitationType implements QuantitationTypeDescri
     /**
      * NARRAYS.
      */
-    NARRAYS("NARRAYS", DataType.FLOAT),
+    NARRAYS("NARRAYS", DataType.INTEGER),
     /**
      * ARRAY_STDEV.
      */
@@ -119,12 +120,12 @@ public enum SampleProbeProfileQuantitationType implements QuantitationTypeDescri
     /**
      * Avg_NBEADS.
      */
-    AVG_NBEADS("Avg_NBEADS", DataType.FLOAT),
+    AVG_NBEADS("Avg_NBEADS", DataType.INTEGER),
     /**
      * Detection, aka Detection Pval or DetectionPval.
      */
     DETECTION("Detection", DataType.FLOAT);
-  
+
     private final String name;
     private final DataType type;
 
@@ -136,14 +137,16 @@ public enum SampleProbeProfileQuantitationType implements QuantitationTypeDescri
     /**
      * {@inheritDoc}
      */
+    @Override
     public String getName() {
-        return name;
+        return this.name;
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public DataType getDataType() {
-        return type;
+        return this.type;
     }
 }

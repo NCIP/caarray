@@ -121,6 +121,7 @@ import com.google.inject.Inject;
 public class AgilentXmlDesignFileHandler extends AbstractDesignFileHandler {
     static final String LSID_AUTHORITY = "Agilent.com";
     static final String LSID_NAMESPACE = "PhysicalArrayDesign";
+    private static final int BATCH_SIZE = 1000;
 
     public static final FileType XML_FILE_TYPE = new FileType("AGILENT_XML", FileCategory.ARRAY_DESIGN, true);
     static final Set<FileType> SUPPORTED_TYPES = Sets.newHashSet(XML_FILE_TYPE);
@@ -227,16 +228,18 @@ public class AgilentXmlDesignFileHandler extends AbstractDesignFileHandler {
     @Override
     public void createDesignDetails(ArrayDesign arrayDesign) throws PlatformFileReadException {
         parseArrayDesign(arrayDesign);
-
         try {
             arrayDesign.setNumberOfFeatures(this.features.size());
             arrayDesign.setDesignDetails(this.arrayDesignDetails);
             getArrayDao().save(arrayDesign);
             getSessionTransactionManager().flushSession();
-
-            saveEntities(this.probeGroups);
-            saveEntities(this.features);
-            saveEntities(this.probes);
+            saveEntities(true, this.features);
+            this.features = null;
+            saveEntities(true, this.probeGroups);
+            this.probeGroups = null;
+            saveEntities(false, this.probes);
+            flushAndClearSession();
+            this.probes = null;
         } catch (final Exception e) {
             throw new PlatformFileReadException(this.fileOnDisk, "Unexpected error while validating "
                     + this.designFile.getName(), e);
@@ -265,9 +268,14 @@ public class AgilentXmlDesignFileHandler extends AbstractDesignFileHandler {
         }
     }
 
-    private void saveEntities(final Collection<? extends PersistentObject> persistentObjects) {
+    private void saveEntities(final boolean shouldBatchFlushAndClear,
+            final Collection<? extends PersistentObject> persistentObjects) {
+        int count = 0;
         for (final PersistentObject persistentObject : persistentObjects) {
             getArrayDao().save(persistentObject);
+            if (shouldBatchFlushAndClear && ++count % BATCH_SIZE == 0) {
+                flushAndClearSession();
+            }
         }
     }
 

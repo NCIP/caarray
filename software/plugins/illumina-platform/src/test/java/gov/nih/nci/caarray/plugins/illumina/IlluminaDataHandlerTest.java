@@ -129,23 +129,23 @@ public class IlluminaDataHandlerTest extends AbstractHandlerTest {
         final List<File> fileList = new ArrayList<File>();
         fileList.add(IlluminaArrayDataFiles.HUMAN_WG6);
         testValidFile(getIlluminaCaArrayFile(IlluminaArrayDataFiles.HUMAN_WG6, ILLUMINA_HUMAN_WG_6_LSID_OBJECT_ID),
-                genMageTabDocSet(fileList));
+                genMageTabDocSet(fileList), true);
     }
 
     @Test
     public void testIlluminaDataSmall() throws InvalidDataFileException {
-        final CaArrayFile illuminaFile = getIlluminaCaArrayFile(IlluminaArrayDataFiles.HUMAN_WG6_SMALL,
-                ILLUMINA_HUMAN_WG_6_LSID_OBJECT_ID);
+        final CaArrayFile illuminaFile =
+                getIlluminaCaArrayFile(IlluminaArrayDataFiles.HUMAN_WG6_SMALL, ILLUMINA_HUMAN_WG_6_LSID_OBJECT_ID);
         this.arrayDataService.importData(illuminaFile, true, DEFAULT_IMPORT_OPTIONS);
-        final DerivedArrayData illuminaData = (DerivedArrayData) this.daoFactoryStub.getArrayDao().getArrayData(
-                illuminaFile.getId());
+        final DerivedArrayData illuminaData =
+                (DerivedArrayData) this.daoFactoryStub.getArrayDao().getArrayData(illuminaFile.getId());
         final DataSet dataSet = illuminaData.getDataSet();
         assertNotNull(dataSet.getDesignElementList());
         assertEquals(19, dataSet.getHybridizationDataList().size());
         final HybridizationData hybridizationData = dataSet.getHybridizationDataList().get(0);
         assertEquals(4, hybridizationData.getColumns().size());
-        final FloatColumn signalColumn = (FloatColumn) hybridizationData
-                .getColumn(IlluminaExpressionQuantitationType.AVG_SIGNAL);
+        final FloatColumn signalColumn =
+                (FloatColumn) hybridizationData.getColumn(IlluminaExpressionQuantitationType.AVG_SIGNAL);
         assertNotNull(signalColumn);
         assertEquals(10, signalColumn.getValues().length);
         assertEquals(5.8, signalColumn.getValues()[0], 0.00001);
@@ -156,11 +156,11 @@ public class IlluminaDataHandlerTest extends AbstractHandlerTest {
 
     @Test
     public void testIlluminaDataFull() throws InvalidDataFileException {
-        final CaArrayFile illuminaFile = getIlluminaCaArrayFile(IlluminaArrayDataFiles.HUMAN_WG6,
-                ILLUMINA_HUMAN_WG_6_LSID_OBJECT_ID);
+        final CaArrayFile illuminaFile =
+                getIlluminaCaArrayFile(IlluminaArrayDataFiles.HUMAN_WG6, ILLUMINA_HUMAN_WG_6_LSID_OBJECT_ID);
         this.arrayDataService.importData(illuminaFile, true, DEFAULT_IMPORT_OPTIONS);
-        final DerivedArrayData illuminaData = (DerivedArrayData) this.daoFactoryStub.getArrayDao().getArrayData(
-                illuminaFile.getId());
+        final DerivedArrayData illuminaData =
+                (DerivedArrayData) this.daoFactoryStub.getArrayDao().getArrayData(illuminaFile.getId());
         assertEquals(19, illuminaData.getHybridizations().size());
         final DataSet dataSet = illuminaData.getDataSet();
         assertNotNull(dataSet.getDesignElementList());
@@ -180,8 +180,8 @@ public class IlluminaDataHandlerTest extends AbstractHandlerTest {
 
     @Test
     public void testCreateAnnotationIllumina() throws InvalidDataFileException {
-        final CaArrayFile illuminaFile = getIlluminaCaArrayFile(IlluminaArrayDataFiles.HUMAN_WG6,
-                ILLUMINA_HUMAN_WG_6_LSID_OBJECT_ID);
+        final CaArrayFile illuminaFile =
+                getIlluminaCaArrayFile(IlluminaArrayDataFiles.HUMAN_WG6, ILLUMINA_HUMAN_WG_6_LSID_OBJECT_ID);
         this.arrayDataService.importData(illuminaFile, true, DEFAULT_IMPORT_OPTIONS);
         checkAnnotation(illuminaFile, 19);
     }

@@ -106,7 +106,6 @@ import org.hibernate.annotations.IndexColumn;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 import org.hibernate.annotations.TypeDefs;
-import org.hibernate.validator.NotNull;
 
 /**
  * Subclasses of <code>AbstractDataColumn</code> contain the actual array data corresponding to a single
@@ -129,9 +128,7 @@ public abstract class AbstractDataColumn extends AbstractCaArrayObject {
     private URI dataHandle;
 
     @SuppressWarnings("PMD.CyclomaticComplexity")
-    // switch-like statement
-            static
-            AbstractDataColumn create(QuantitationType type) {
+    static AbstractDataColumn create(QuantitationType type) {
         AbstractDataColumn column = null;
         if (type.getTypeClass().equals(Boolean.class)) {
             column = new BooleanColumn();
@@ -202,7 +199,6 @@ public abstract class AbstractDataColumn extends AbstractCaArrayObject {
      * @return the dataHandle
      */
     @Column(length = DEFAULT_STRING_COLUMN_SIZE)
-    @NotNull
     @Index(name = "idx_handle")
     @Type(type = "uri")
     public URI getDataHandle() {

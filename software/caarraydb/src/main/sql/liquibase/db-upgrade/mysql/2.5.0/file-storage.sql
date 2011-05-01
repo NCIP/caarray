@@ -14,7 +14,6 @@ alter table datacolumn add column data_handle varchar(255);
 create index idx_handle on datacolumn (data_handle);
 insert into multipart_blob(uncompressed_size, compressed_size, creation_timestamp, source) select 0, 0, now(), id from datacolumn; 
 update datacolumn,multipart_blob set data_handle = concat('db-multipart:', multipart_blob.id) where datacolumn.id = multipart_blob.source; 
-alter table datacolumn modify data_handle varchar(255) not null;
 insert into multipart_blob_blob_parts(multipart_blob, blob_parts, contents_index) 
   select mpb.id, dcbp.blob_parts, dcbp.contents_index 
     from multipart_blob mpb join datacolumn_blob_parts dcbp on mpb.source = dcbp.datacolumn;  

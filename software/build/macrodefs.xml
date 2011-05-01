@@ -8,14 +8,15 @@
         <attribute name="classpathref.id" default="no.dependencies.path" />
         <attribute name="source.include" default="${test.source.include}" />
 		<attribute name="source.exclude" default="${test.source.exclude}" />
+		<attribute name="forkmode" default="once" />    	
         <element name="extentions" optional="yes"/>
 
         <sequential>
             <mkdir dir="@{xml.output.dir}" />
-            <property name="jdwp.port" value="8000"/>
+            <property name="jdwp.port" value="8686"/>
             <property name="should.suspend.vm.for.debugging" value="n"/>
             <property name="test.browser" value="*firefox"/>
-            <junit printsummary="on" failureproperty="junit.failure" fork="true" forkmode="once" maxmemory="1024m">
+            <junit printsummary="on" failureproperty="junit.failure" fork="true" forkmode="@{forkmode}" maxmemory="1024m">
                 <jvmarg value="-Xdebug"/>
                 <jvmarg value="-Xrunjdwp:transport=dt_socket,address=${jdwp.port},server=y,suspend=${should.suspend.vm.for.debugging}"/>
                 <sysproperty key="net.sourceforge.cobertura.datafile" file="${cobertura.file}" />

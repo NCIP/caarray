@@ -182,7 +182,8 @@ public final class SampleProbeProfileHandler extends AbstractDataFileHandler {
         }
         final List<LSID> lsids = new ArrayList<LSID>();
         while (!StringUtils.isEmpty(FilenameUtils.getExtension(fileName))) {
-            lsids.add(new LSID(IlluminaCsvDesignHandler.LSID_AUTHORITY, IlluminaCsvDesignHandler.LSID_NAMESPACE, fileName));
+            lsids.add(new LSID(IlluminaCsvDesignHandler.LSID_AUTHORITY, IlluminaCsvDesignHandler.LSID_NAMESPACE,
+                    fileName));
             fileName = FilenameUtils.getBaseName(fileName);
         }
         lsids.add(new LSID(IlluminaCsvDesignHandler.LSID_AUTHORITY, IlluminaCsvDesignHandler.LSID_NAMESPACE, fileName));
@@ -195,15 +196,15 @@ public final class SampleProbeProfileHandler extends AbstractDataFileHandler {
     @Override
     public void loadData(DataSet dataSet, List<QuantitationType> types, ArrayDesign design) {
         DataHeaderParser header = new DataHeaderParser(design.getFirstDesignFile().getFileType());
-        final DesignElementBuilder designElementBuilder = new DesignElementBuilder(header, dataSet, design,
-                this.arrayDao, this.searchDao);
+        final DesignElementBuilderParser designElementBuilder =
+                new DesignElementBuilderParser(header, dataSet, design, this.arrayDao, this.searchDao);
         processFile(getFile(), null, header, designElementBuilder);
         designElementBuilder.finish();
         dataSet.prepareColumns(types, designElementBuilder.getElementCount());
         LOG.info("Pass 1/2 loaded " + designElementBuilder.getElementCount() + " design elements.");
         header = new DataHeaderParser(design.getFirstDesignFile().getFileType());
-        final HybDataBuilder<SampleProbeProfileQuantitationType> loader = new HybDataBuilder<SampleProbeProfileQuantitationType>(
-                dataSet, header, this.valueParser);
+        final HybDataBuilder<SampleProbeProfileQuantitationType> loader =
+                new HybDataBuilder<SampleProbeProfileQuantitationType>(dataSet, header, this.valueParser);
         processFile(getFile(), null, header, loader);
         LOG.info("Pass 2/2 loaded data.");
     }
@@ -225,10 +226,10 @@ public final class SampleProbeProfileHandler extends AbstractDataFileHandler {
             return;
         }
 
-        final ValidatingHeaderParser headerValidator = new ValidatingHeaderParser(design.getFirstDesignFile()
-                .getFileType(), result, mTabSet);
-        final HybDataValidator<SampleProbeProfileQuantitationType> dataValidator = new HybDataValidator<SampleProbeProfileQuantitationType>(
-                headerValidator, result, design, this.arrayDao);
+        final ValidatingHeaderParser headerValidator =
+                new ValidatingHeaderParser(design.getFirstDesignFile().getFileType(), result, mTabSet);
+        final HybDataValidator<SampleProbeProfileQuantitationType> dataValidator =
+                new HybDataValidator<SampleProbeProfileQuantitationType>(headerValidator, result, design, this.arrayDao);
         processFile(getFile(), null, headerValidator, dataValidator);
         dataValidator.finish();
     }
@@ -431,12 +432,13 @@ public final class SampleProbeProfileHandler extends AbstractDataFileHandler {
          * @param unusedCols used/processed columns should be removed from this list.
          */
         void loadQTypeMap(ValueLoader hyb, List<String> line, int lineNum, List<String> unusedCols) {
-            final EnumSet<SampleProbeProfileQuantitationType> mandatory = EnumSet.of(
-                    SampleProbeProfileQuantitationType.DETECTION, SampleProbeProfileQuantitationType.AVG_SIGNAL); // always
-                                                                                                                  // present,
-                                                                                                                  // but
-                                                                                                                  // ckeck
-                                                                                                                  // anyway.
+            final EnumSet<SampleProbeProfileQuantitationType> mandatory =
+                    EnumSet.of(SampleProbeProfileQuantitationType.DETECTION,
+                            SampleProbeProfileQuantitationType.AVG_SIGNAL); // always
+                                                                            // present,
+                                                                            // but
+                                                                            // ckeck
+                                                                            // anyway.
             for (int i = 0; i < line.size(); i++) {
                 final String compositeName = line.get(i);
                 String localName = this.format.getLocalColName(compositeName, hyb.getHybName());
