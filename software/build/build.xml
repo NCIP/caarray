@@ -2599,9 +2599,6 @@
         <mkdir dir="${caarray-ejb.test.classes.dir}" />
         <javac srcdir="${caarray-ejb.test.src.dir}" destdir="${caarray-ejb.test.classes.dir}" debug="true">
         	<include name="**/*"/>
-        	<exclude name="**/AbstractFileManagementServiceIntegrationTest2*"/>
-        	<exclude name="**/FileImportIntegrationTest*"/>
-        	<exclude name="**/FileValidationIntegrationTest*"/>
             <classpath>
                 <pathelement location="${caarray-ejb.classes.dir}" />
                 <pathelement location="${caarray-client.classes.dir}" />
