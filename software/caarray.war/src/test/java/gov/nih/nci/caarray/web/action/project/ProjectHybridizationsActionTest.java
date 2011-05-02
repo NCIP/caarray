@@ -90,9 +90,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import gov.nih.nci.caarray.application.GenericDataService;
 import gov.nih.nci.caarray.application.GenericDataServiceStub;
-import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
-import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
-import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheStubFactory;
 import gov.nih.nci.caarray.application.project.ProjectManagementService;
 import gov.nih.nci.caarray.application.project.ProjectManagementServiceStub;
 import gov.nih.nci.caarray.application.vocabulary.VocabularyService;
@@ -124,11 +121,10 @@ import org.junit.Test;
 
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 import com.fiveamsolutions.nci.commons.web.struts2.action.ActionHelper;
-import gov.nih.nci.caarray.dao.FileDaoTest;
 
 /**
  * @author Winston Cheng
- *
+ * 
  */
 public class ProjectHybridizationsActionTest extends AbstractDownloadTest {
     private final ProjectHybridizationsAction action = new ProjectHybridizationsAction();
@@ -139,7 +135,7 @@ public class ProjectHybridizationsActionTest extends AbstractDownloadTest {
     @SuppressWarnings("deprecation")
     @Before
     public void setUp() throws Exception {
-        ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
+        final ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
         locatorStub.addLookup(GenericDataService.JNDI_NAME, new LocalGenericDataService());
         locatorStub.addLookup(ProjectManagementService.JNDI_NAME, new ProjectManagementServiceStub());
         locatorStub.addLookup(VocabularyService.JNDI_NAME, new VocabularyServiceStub());
@@ -150,54 +146,47 @@ public class ProjectHybridizationsActionTest extends AbstractDownloadTest {
     @Test
     public void testPrepare() throws Exception {
         // no current hybridization id
-        action.prepare();
-        assertNull(action.getCurrentHybridization().getId());
+        this.action.prepare();
+        assertNull(this.action.getCurrentHybridization().getId());
 
         // valid current hybridization id
         Hybridization hybridization = new Hybridization();
         hybridization.setId(1L);
-        action.setCurrentHybridization(hybridization);
-        action.prepare();
-        assertEquals(DUMMY_HYBRIDIZATION, action.getCurrentHybridization());
+        this.action.setCurrentHybridization(hybridization);
+        this.action.prepare();
+        assertEquals(DUMMY_HYBRIDIZATION, this.action.getCurrentHybridization());
 
         // invalid current hybridization id
         hybridization = new Hybridization();
         hybridization.setId(2L);
-        action.setCurrentHybridization(hybridization);
+        this.action.setCurrentHybridization(hybridization);
         try {
-            action.prepare();
+            this.action.prepare();
             fail("Expected PermissionDeniedException");
-        } catch (PermissionDeniedException pde) {}
+        } catch (final PermissionDeniedException pde) {
+        }
     }
 
     @Test
     public void testDownload() throws Exception {
-        assertEquals("noHybData", action.download());
+        assertEquals("noHybData", this.action.download());
 
-        FileAccessServiceStub fas = new FileAccessServiceStub();
-        TemporaryFileCacheLocator.setTemporaryFileCacheFactory(new TemporaryFileCacheStubFactory(fas));
-        fas.add(MageTabDataFiles.MISSING_TERMSOURCE_IDF);
-        fas.add(MageTabDataFiles.MISSING_TERMSOURCE_SDRF);
+        final CaArrayFile rawFile = this.fasStub.add(MageTabDataFiles.MISSING_TERMSOURCE_IDF);
+        final CaArrayFile derivedFile = this.fasStub.add(MageTabDataFiles.MISSING_TERMSOURCE_SDRF);
 
-        Project p = new Project();
+        final Project p = new Project();
         p.getExperiment().setPublicIdentifier("test");
-        Hybridization h1 = new Hybridization();
-        Hybridization h2 = new Hybridization();
-        RawArrayData raw = new RawArrayData();
+        final Hybridization h1 = new Hybridization();
+        final Hybridization h2 = new Hybridization();
+        final RawArrayData raw = new RawArrayData();
         h1.addArrayData(raw);
-        DerivedArrayData derived = new DerivedArrayData();
+        final DerivedArrayData derived = new DerivedArrayData();
         h2.getDerivedDataCollection().add(derived);
-        CaArrayFile rawFile = new CaArrayFile();
-        FileDaoTest.writeContents(rawFile, "");
-        rawFile.setName("missing_term_source.idf");
         raw.setDataFile(rawFile);
-        CaArrayFile derivedFile = new CaArrayFile();
-        FileDaoTest.writeContents(derivedFile, "");
-        derivedFile.setName("missing_term_source.sdrf");
         derived.setDataFile(derivedFile);
 
-        action.setCurrentHybridization(h1);
-        action.setProject(p);
+        this.action.setCurrentHybridization(h1);
+        this.action.setProject(p);
         List<CaArrayFile> files = new ArrayList<CaArrayFile>(h1.getAllDataFiles());
         Collections.sort(files, DownloadHelper.CAARRAYFILE_NAME_COMPARATOR_INSTANCE);
         assertEquals(1, files.size());
@@ -207,11 +196,12 @@ public class ProjectHybridizationsActionTest extends AbstractDownloadTest {
         assertEquals(1, files.size());
         assertEquals("missing_term_source.sdrf", files.get(0).getName());
 
-        assertEquals(null, action.download());
-        assertEquals("application/zip", mockResponse.getContentType());
-        assertEquals("filename=\"caArray_test_files.zip\"", mockResponse.getHeader("Content-disposition"));
+        assertEquals(null, this.action.download());
+        assertEquals("application/zip", this.mockResponse.getContentType());
+        assertEquals("filename=\"caArray_test_files.zip\"", this.mockResponse.getHeader("Content-disposition"));
 
-        ZipInputStream zis = new ZipInputStream(new ByteArrayInputStream(mockResponse.getContentAsByteArray()));
+        final ZipInputStream zis = new ZipInputStream(new ByteArrayInputStream(
+                this.mockResponse.getContentAsByteArray()));
         ZipEntry ze = zis.getNextEntry();
         assertNotNull(ze);
         assertEquals("missing_term_source.idf", ze.getName());
@@ -222,46 +212,46 @@ public class ProjectHybridizationsActionTest extends AbstractDownloadTest {
 
     @Test
     public void testCopy() {
-        assertEquals("notYetImplemented", action.copy());
+        assertEquals("notYetImplemented", this.action.copy());
     }
 
     @Test
     public void testDelete() {
         DUMMY_LABELED_EXTRACT.getHybridizations().add(DUMMY_HYBRIDIZATION);
         DUMMY_HYBRIDIZATION.getLabeledExtracts().add(DUMMY_LABELED_EXTRACT);
-        action.setCurrentHybridization(DUMMY_HYBRIDIZATION);
-        assertEquals("list", action.delete());
+        this.action.setCurrentHybridization(DUMMY_HYBRIDIZATION);
+        assertEquals("list", this.action.delete());
         assertFalse(DUMMY_LABELED_EXTRACT.getHybridizations().contains(DUMMY_HYBRIDIZATION));
     }
 
     @SuppressWarnings("deprecation")
     @Test
     public void testSave() {
-        LabeledExtract toAdd = new LabeledExtract();
-        List<LabeledExtract> addList = new ArrayList<LabeledExtract>();
+        final LabeledExtract toAdd = new LabeledExtract();
+        final List<LabeledExtract> addList = new ArrayList<LabeledExtract>();
         addList.add(toAdd);
-        action.setItemsToAssociate(addList);
+        this.action.setItemsToAssociate(addList);
 
-        LabeledExtract toRemove = new LabeledExtract();
+        final LabeledExtract toRemove = new LabeledExtract();
         toRemove.getHybridizations().add(DUMMY_HYBRIDIZATION);
-        List<LabeledExtract> removeList = new ArrayList<LabeledExtract>();
+        final List<LabeledExtract> removeList = new ArrayList<LabeledExtract>();
         removeList.add(toRemove);
-        action.setItemsToRemove(removeList);
+        this.action.setItemsToRemove(removeList);
 
-        ProtocolApplication pa = new ProtocolApplication();
-        Protocol p = new Protocol();
+        final ProtocolApplication pa = new ProtocolApplication();
+        final Protocol p = new Protocol();
         p.setName("protocol1");
         pa.setProtocol(p);
         DUMMY_HYBRIDIZATION.addProtocolApplication(pa);
 
-        Protocol p2 = new Protocol();
+        final Protocol p2 = new Protocol();
         p2.setName("protocol2");
-        List<Protocol> protocols = new ArrayList<Protocol>();
+        final List<Protocol> protocols = new ArrayList<Protocol>();
         protocols.add(p2);
-        action.setSelectedProtocols(protocols);
+        this.action.setSelectedProtocols(protocols);
 
-        action.setCurrentHybridization(DUMMY_HYBRIDIZATION);
-        assertEquals(ProjectTabAction.RELOAD_PROJECT_RESULT, action.save());
+        this.action.setCurrentHybridization(DUMMY_HYBRIDIZATION);
+        assertEquals(ProjectTabAction.RELOAD_PROJECT_RESULT, this.action.save());
         assertTrue(ActionHelper.getMessages().contains("experiment.items.updated"));
         assertTrue(toAdd.getHybridizations().contains(DUMMY_HYBRIDIZATION));
         assertFalse(toRemove.getHybridizations().contains(DUMMY_HYBRIDIZATION));
@@ -272,7 +262,7 @@ public class ProjectHybridizationsActionTest extends AbstractDownloadTest {
         @Override
         public <T extends PersistentObject> T getPersistentObject(Class<T> entityClass, Long entityId) {
             if (entityClass.equals(Hybridization.class) && entityId.equals(1L)) {
-                return (T)DUMMY_HYBRIDIZATION;
+                return (T) DUMMY_HYBRIDIZATION;
             }
             return null;
         }

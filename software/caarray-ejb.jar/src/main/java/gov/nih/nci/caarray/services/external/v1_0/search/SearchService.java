@@ -278,7 +278,6 @@ public interface SearchService {
     SearchResult<Hybridization> searchForHybridizations(HybridizationSearchCriteria criteria, LimitOffset limitOffset)
             throws InvalidReferenceException;
 
-
     /**
      * Search for files satisfying the given search criteria. Note that the File instances returned by this search only
      * contain file metadata; to retrieve the actual file contents, use the file retrieval methods in DataService.
@@ -296,7 +295,6 @@ public interface SearchService {
      */
     SearchResult<File> searchForFiles(FileSearchCriteria criteria, LimitOffset limitOffset)
             throws InvalidReferenceException;
-    
 
     /**
      * Returns a list of quantitation types satisfying the given search criteria.
@@ -309,27 +307,27 @@ public interface SearchService {
      */
     List<QuantitationType> searchForQuantitationTypes(QuantitationTypeSearchCriteria criteria)
             throws InvalidReferenceException, InvalidInputException;
-    
+
     /**
-     * Search for entities based on a specified example. Searches by example use the root example entities,
-     * as well as its directly associated entities, to construct the query. Entities with association chains of
-     * more than 1 link to the root example entities are ignored. The ExampleSearchCriteria class also allows
-     * the caller to specify how to treat empty and zero-valued properties, and how string comparisons should be done.
+     * Search for entities based on a specified example. Searches by example use the root example entities, as well as
+     * its directly associated entities, to construct the query. Entities with association chains of more than 1 link to
+     * the root example entities are ignored. The ExampleSearchCriteria class also allows the caller to specify how to
+     * treat empty and zero-valued properties, and how string comparisons should be done.
      * 
      * @param <T> type of the example entity
      * @param criteria the criteria specifying the example entity, as well as rules defining how candidate entities are
-     * matched against the example
+     *            matched against the example
      * @param limitOffset an optional parameter specifying the number of results to return, and the offset of the first
      *            result to return within the overall result set. May be left null to indicate the entire result set is
      *            requested.
      * @return a SearchResult with the matching entities and metadata on the subset of matching results actually
      *         returned. This may be smaller than the requested number of results - see the class level Javadoc for
-     *         details. 
+     *         details.
      * @throws InvalidInputException if a null example is given
      */
     <T extends AbstractCaArrayEntity> SearchResult<T> searchByExample(ExampleSearchCriteria<T> criteria,
             LimitOffset limitOffset) throws InvalidInputException;
-    
+
     /**
      * Returns an annotation set matching the given request. This annotation set consists of the values of
      * Characteristics with categories specified in the request across the experiment nodes (biomaterials and/or

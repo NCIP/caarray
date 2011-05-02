@@ -92,8 +92,10 @@ import gov.nih.nci.caarray.domain.data.HybridizationData;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
+import gov.nih.nci.caarray.injection.InjectionInterceptor;
 import gov.nih.nci.caarray.services.AuthorizationInterceptor;
 import gov.nih.nci.caarray.services.HibernateSessionInterceptor;
+import gov.nih.nci.caarray.services.StorageInterceptor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -107,7 +109,7 @@ import javax.interceptor.Interceptors;
 
 import org.apache.commons.collections.ListUtils;
 import org.apache.log4j.Logger;
-import org.jboss.annotation.ejb.TransactionTimeout;
+import org.jboss.ejb3.annotation.TransactionTimeout;
 
 import com.google.inject.Inject;
 
@@ -122,47 +124,48 @@ import com.google.inject.Inject;
  */
 @TransactionAttribute(TransactionAttributeType.REQUIRED)
 @TransactionTimeout(DataRetrievalServiceBean.TIMEOUT_SECONDS)
-@Interceptors({ AuthorizationInterceptor.class, HibernateSessionInterceptor.class,
-    DataSetConfiguringInterceptor.class })
+@Interceptors({AuthorizationInterceptor.class, HibernateSessionInterceptor.class, DataSetConfiguringInterceptor.class,
+        InjectionInterceptor.class, StorageInterceptor.class })
 public class DataRetrievalServiceBean implements DataRetrievalService {
     private static final Logger LOG = Logger.getLogger(DataRetrievalServiceBean.class);
 
     static final int TIMEOUT_SECONDS = 1800;
-    private final SearchDao searchDao;
-    
+    private SearchDao searchDao;
+
     /**
      * 
      * @param searchDao the SearchDao dependency
      */
     @Inject
-    public DataRetrievalServiceBean(SearchDao searchDao) {
+    public void setSearchDao(SearchDao searchDao) {
         this.searchDao = searchDao;
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public DataSet getDataSet(DataRetrievalRequest request) {
         LOG.info("Received data retrieval request");
         checkRequest(request);
-        List<DataSet> dataSets = getDataSets(request);
-        DataSet mergedDataSet = createMergedDataSet(dataSets, request);
+        final List<DataSet> dataSets = getDataSets(request);
+        final DataSet mergedDataSet = createMergedDataSet(dataSets, request);
         LOG.info("Retrieved " + mergedDataSet.getHybridizationDataList().size() + " hybridization data elements, "
                 + mergedDataSet.getQuantitationTypes().size() + " quant types");
         return mergedDataSet;
     }
 
     private List<DataSet> getDataSets(DataRetrievalRequest request) {
-        List<AbstractArrayData> arrayDatas = getArrayDatas(request);
-        List<DataSet> dataSets = new ArrayList<DataSet>(arrayDatas.size());
-        for (AbstractArrayData data : arrayDatas) {
+        final List<AbstractArrayData> arrayDatas = getArrayDatas(request);
+        final List<DataSet> dataSets = new ArrayList<DataSet>(arrayDatas.size());
+        for (final AbstractArrayData data : arrayDatas) {
             dataSets.add(data.getDataSet());
         }
         return dataSets;
     }
 
     private DataSet createMergedDataSet(List<DataSet> dataSets, DataRetrievalRequest request) {
-        DataSet dataSet = new DataSet();
+        final DataSet dataSet = new DataSet();
         dataSet.getQuantitationTypes().addAll(request.getQuantitationTypes());
         addDesignElementList(dataSet, dataSets);
         addHybridizationDatas(dataSet, dataSets, request);
@@ -179,11 +182,10 @@ public class DataRetrievalServiceBean implements DataRetrievalService {
         }
     }
 
-
     private boolean allDesignElementListsAreConsistent(List<DataSet> dataSets) {
-        DesignElementList firstList = dataSets.get(0).getDesignElementList();
+        final DesignElementList firstList = dataSets.get(0).getDesignElementList();
         for (int i = 1; i < dataSets.size(); i++) {
-            DesignElementList nextList = dataSets.get(i).getDesignElementList();
+            final DesignElementList nextList = dataSets.get(i).getDesignElementList();
             if (!ListUtils.isEqualList(firstList.getDesignElements(), nextList.getDesignElements())) {
                 return false;
             }
@@ -192,8 +194,8 @@ public class DataRetrievalServiceBean implements DataRetrievalService {
     }
 
     private void addHybridizationDatas(DataSet dataSet, List<DataSet> dataSets, DataRetrievalRequest request) {
-        for (DataSet nextDataSet : dataSets) {
-            for (HybridizationData nextHybridizationData : nextDataSet.getHybridizationDataList()) {
+        for (final DataSet nextDataSet : dataSets) {
+            for (final HybridizationData nextHybridizationData : nextDataSet.getHybridizationDataList()) {
                 addHybridizationData(dataSet, nextHybridizationData, request);
             }
         }
@@ -201,7 +203,7 @@ public class DataRetrievalServiceBean implements DataRetrievalService {
 
     private void addHybridizationData(DataSet dataSet, HybridizationData copyFromHybridizationData,
             DataRetrievalRequest request) {
-        HybridizationData hybridizationData = new HybridizationData();
+        final HybridizationData hybridizationData = new HybridizationData();
         hybridizationData.setHybridization(copyFromHybridizationData.getHybridization());
         hybridizationData.setId(copyFromHybridizationData.getId());
         dataSet.getHybridizationDataList().add(hybridizationData);
@@ -211,7 +213,7 @@ public class DataRetrievalServiceBean implements DataRetrievalService {
 
     private void copyColumns(HybridizationData hybridizationData, HybridizationData copyFromHybridizationData,
             List<QuantitationType> quantitationTypes) {
-        for (QuantitationType type : quantitationTypes) {
+        for (final QuantitationType type : quantitationTypes) {
             hybridizationData.getColumns().add(copyFromHybridizationData.getColumn(type));
         }
     }
@@ -231,14 +233,14 @@ public class DataRetrievalServiceBean implements DataRetrievalService {
     }
 
     private List<AbstractArrayData> getArrayDatas(DataRetrievalRequest request) {
-        List<Hybridization> hybridizations = getHybridizations(request);
+        final List<Hybridization> hybridizations = getHybridizations(request);
         return getArrayDatas(hybridizations, request.getQuantitationTypes());
     }
 
     private List<AbstractArrayData> getArrayDatas(List<Hybridization> hybridizations,
             List<QuantitationType> quantitationTypes) {
-        List<AbstractArrayData> arrayDatas = new ArrayList<AbstractArrayData>(hybridizations.size());
-        for (Hybridization hybridization : hybridizations) {
+        final List<AbstractArrayData> arrayDatas = new ArrayList<AbstractArrayData>(hybridizations.size());
+        for (final Hybridization hybridization : hybridizations) {
             addArrayDatas(arrayDatas, hybridization, quantitationTypes);
         }
         return arrayDatas;
@@ -246,12 +248,12 @@ public class DataRetrievalServiceBean implements DataRetrievalService {
 
     private void addArrayDatas(List<AbstractArrayData> arrayDatas, Hybridization hybridization,
             List<QuantitationType> quantitationTypes) {
-        for (RawArrayData rawArrayData : hybridization.getRawDataCollection()) {
+        for (final RawArrayData rawArrayData : hybridization.getRawDataCollection()) {
             if (shouldAddData(arrayDatas, rawArrayData, quantitationTypes)) {
                 arrayDatas.add(rawArrayData);
             }
         }
-        for (DerivedArrayData derivedArrayData : hybridization.getDerivedDataCollection()) {
+        for (final DerivedArrayData derivedArrayData : hybridization.getDerivedDataCollection()) {
             if (shouldAddData(arrayDatas, derivedArrayData, quantitationTypes)) {
                 arrayDatas.add(derivedArrayData);
             }
@@ -260,20 +262,18 @@ public class DataRetrievalServiceBean implements DataRetrievalService {
 
     private boolean shouldAddData(List<AbstractArrayData> arrayDatas, AbstractArrayData arrayData,
             List<QuantitationType> quantitationTypes) {
-        return arrayData != null
-                && !arrayDatas.contains(arrayData)
-                && containsAllTypes(arrayData, quantitationTypes);
+        return arrayData != null && !arrayDatas.contains(arrayData) && containsAllTypes(arrayData, quantitationTypes);
     }
 
     private boolean containsAllTypes(AbstractArrayData arrayData, List<QuantitationType> quantitationTypes) {
         return arrayData.getDataSet() != null
-            && arrayData.getDataSet().getQuantitationTypes().containsAll(quantitationTypes);
+                && arrayData.getDataSet().getQuantitationTypes().containsAll(quantitationTypes);
     }
 
     private List<Hybridization> getHybridizations(DataRetrievalRequest request) {
-        List<Hybridization> hybridizations = new ArrayList<Hybridization>(request.getHybridizations().size());
-        for (Hybridization hybridization : request.getHybridizations()) {
-            hybridizations.add(searchDao.retrieve(Hybridization.class, hybridization.getId()));
+        final List<Hybridization> hybridizations = new ArrayList<Hybridization>(request.getHybridizations().size());
+        for (final Hybridization hybridization : request.getHybridizations()) {
+            hybridizations.add(this.searchDao.retrieve(Hybridization.class, hybridization.getId()));
         }
         return hybridizations;
     }

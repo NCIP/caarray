@@ -82,7 +82,6 @@
  */
 package gov.nih.nci.caarray.services;
 
-import gov.nih.nci.caarray.util.EntityPruner;
 import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
 
 import java.util.ArrayList;

@@ -1,19 +1,15 @@
-
 package gov.nih.nci.caarray.application.fileaccess;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import gov.nih.nci.caarray.application.AbstractServiceIntegrationTest;
-import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
-import gov.nih.nci.caarray.domain.file.CaArrayFile;
-import gov.nih.nci.caarray.domain.file.FileStatus;
-import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
+
 import java.io.File;
-import java.io.InputStream;
-import org.hibernate.Transaction;
+
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
- *
+ * 
  * @author gax
  */
 public class TemporaryFileCacheImplTest extends AbstractServiceIntegrationTest {
@@ -22,21 +18,11 @@ public class TemporaryFileCacheImplTest extends AbstractServiceIntegrationTest {
      */
     @Test
     public void testCloseFiles() throws Exception {
-        CaArrayFile caArrayFile = new CaArrayFile();
-        caArrayFile.setName("foo");
-        caArrayFile.setFileStatus(FileStatus.UPLOADED);
-        InputStream in = TemporaryFileCacheImplTest.class.getProtectionDomain().getCodeSource().getLocation().openStream();
-        CaArrayDaoFactory.INSTANCE.getFileDao().writeContents(caArrayFile, in);
-        Transaction tx = hibernateHelper.beginTransaction();
-        hibernateHelper.getCurrentSession().save(caArrayFile);
-        tx.commit();
-        tx = hibernateHelper.beginTransaction();
-        TemporaryFileCacheImpl instance = new TemporaryFileCacheImpl();
-        File result = instance.getFile(caArrayFile);
-
-        instance.closeFiles();
+        final TemporaryFileCacheImpl instance = new TemporaryFileCacheImpl();
+        final File result = instance.createFile("foo");
+        assertTrue(result.exists());
+        instance.delete("foo");
         assertFalse(result.exists());
-        tx.commit();
     }
-    
+
 }

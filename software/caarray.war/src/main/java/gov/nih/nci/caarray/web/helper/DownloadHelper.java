@@ -20,20 +20,25 @@ import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
 
+import com.google.inject.Inject;
+
 /**
  * Helper for actions that implement download of files.
  * 
  * @author mshestopalov
- *
+ * 
  */
 public final class DownloadHelper {
     private static final String DOWNLOAD_CONTENT_TYPE = "application/zip";
     private static final Logger LOG = Logger.getLogger(DownloadHelper.class);
+    @Inject
+    private static FileAccessUtils fileAccessUtils;
 
     /**
      * an instance of a Comparator that compares CaArrayFile instances by name.
      */
     public static final Comparator<CaArrayFile> CAARRAYFILE_NAME_COMPARATOR_INSTANCE = new CaArrayFileNameComparator();
+
     private DownloadHelper() {
         // nothing here.
     }
@@ -42,6 +47,7 @@ public final class DownloadHelper {
      * Comparator class that compares CaArrayFile instances by name, alphabetically.
      */
     private static class CaArrayFileNameComparator implements Comparator<CaArrayFile> {
+        @Override
         public int compare(CaArrayFile f1, CaArrayFile f2) {
             return new CompareToBuilder().append(f1.getName(), f2.getName()).toComparison();
         }
@@ -50,61 +56,59 @@ public final class DownloadHelper {
     /**
      * Zips the selected files and writes the result to the servlet output stream. Also sets content type and
      * disposition appropriately.
-     *
+     * 
      * @param files the files to zip and send
      * @param baseFilename the filename w/o the suffix to use for the archive file. This filename will be set as the
-     * Content-disposition header
+     *            Content-disposition header
      * @throws IOException if there is an error writing to the stream
      */
-    public static void downloadFiles(Collection<CaArrayFile> files, String baseFilename)
-            throws IOException {
-        HttpServletResponse response = ServletActionContext.getResponse();
+    public static void downloadFiles(Collection<CaArrayFile> files, String baseFilename) throws IOException {
+        final HttpServletResponse response = ServletActionContext.getResponse();
+
         try {
-            PackagingInfo info = getPreferedPackageInfo(files, baseFilename);
+            final PackagingInfo info = getPreferedPackageInfo(files, baseFilename);
             response.setContentType(info.getMethod().getMimeType());
             response.addHeader("Content-disposition", "filename=\"" + info.getName() + "\"");
 
-            List<CaArrayFile> sortedFiles = new ArrayList<CaArrayFile>(files);
+            final List<CaArrayFile> sortedFiles = new ArrayList<CaArrayFile>(files);
             Collections.sort(sortedFiles, CAARRAYFILE_NAME_COMPARATOR_INSTANCE);
-            OutputStream sos = response.getOutputStream();
-            OutputStream closeShield = new CloseShieldOutputStream(sos);
-            ArchiveOutputStream arOut = info.getMethod().createArchiveOutputStream(closeShield);
+            final OutputStream sos = response.getOutputStream();
+            final OutputStream closeShield = new CloseShieldOutputStream(sos);
+            final ArchiveOutputStream arOut = info.getMethod().createArchiveOutputStream(closeShield);
             try {
-                for (CaArrayFile f : sortedFiles) {
-                    FileAccessUtils.addFileToArchive(f, arOut);
+                for (final CaArrayFile f : sortedFiles) {
+                    fileAccessUtils.addFileToArchive(f, arOut);
                 }
             } finally {
                 // note that the caller's stream is shielded from the close(),
                 // but this is the only way to finish and flush the (gzip) stream.
                 try {
                     arOut.close();
-                } catch (Exception e) {
+                } catch (final Exception e) {
                     LOG.error(e);
                 }
             }
-        } catch (Exception e) {
-            LOG.error("Error streaming download", e);
+        } catch (final Exception e) {
+            LOG.error("Error streaming download of files " + files, e);
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
         }
     }
 
     private static long getEstimatedPackageSize(Collection<CaArrayFile> files) {
         long size = 0L;
-        for (CaArrayFile f : files) {
+        for (final CaArrayFile f : files) {
             size += f.getCompressedSize();
         }
         return size;
     }
 
     private static PackagingInfo getPreferedPackageInfo(Collection<CaArrayFile> files, String baseFilename) {
-        long size = getEstimatedPackageSize(files);
+        final long size = getEstimatedPackageSize(files);
         if (size > PackagingInfo.MAX_ZIP_SIZE) {
-            return new PackagingInfo(
-                    baseFilename + PackagingInfo.PackagingMethod.TGZ.getExtension(),
+            return new PackagingInfo(baseFilename + PackagingInfo.PackagingMethod.TGZ.getExtension(),
                     PackagingInfo.PackagingMethod.TGZ);
         } else {
-            return new PackagingInfo(
-                    baseFilename + PackagingInfo.PackagingMethod.ZIP.getExtension(),
+            return new PackagingInfo(baseFilename + PackagingInfo.PackagingMethod.ZIP.getExtension(),
                     PackagingInfo.PackagingMethod.ZIP);
         }
     }

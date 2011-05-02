@@ -103,14 +103,16 @@ public class CollaboratorGroupDaoStub extends AbstractDaoStub implements Collabo
      * {@inheritDoc}
      */
     @Override
-    public void save(PersistentObject caArrayEntity) {
-        super.save(caArrayEntity);
+    public Long save(PersistentObject caArrayEntity) {
+        final Long id = super.save(caArrayEntity);
         CollaboratorGroupDaoStub.savedObject = caArrayEntity;
+        return id;
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public List<CollaboratorGroup> getAll() {
         ++numGetAllCalls;
         return Collections.emptyList();
@@ -123,6 +125,7 @@ public class CollaboratorGroupDaoStub extends AbstractDaoStub implements Collabo
     /**
      * {@inheritDoc}
      */
+    @Override
     public List<CollaboratorGroup> getAllForCurrentUser() {
         ++numGetAllForUserCalls;
         return Collections.emptyList();
@@ -142,6 +145,7 @@ public class CollaboratorGroupDaoStub extends AbstractDaoStub implements Collabo
     /**
      * {@inheritDoc}
      */
+    @Override
     public List<CollaboratorGroup> getAllForUser(long userId) {
         return Collections.emptyList();
     }

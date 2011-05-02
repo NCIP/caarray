@@ -85,13 +85,13 @@ package gov.nih.nci.caarray.services;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import gov.nih.nci.caarray.AbstractCaarrayTest;
+import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
+import gov.nih.nci.caarray.dataStorage.DataStorageFacade;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.security.AttributePolicy;
 import gov.nih.nci.caarray.security.SecurityPolicy;
 import gov.nih.nci.caarray.security.SecurityPolicyMode;
-import gov.nih.nci.caarray.staticinjection.CaArrayEjbStaticInjectionModule;
 import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
-import gov.nih.nci.caarray.util.CaArrayHibernateHelperFactory;
 import gov.nih.nci.caarray.util.CaArrayHibernateHelperModule;
 import gov.nih.nci.security.authorization.domainobjects.User;
 
@@ -103,54 +103,64 @@ import java.util.Set;
 
 import javax.interceptor.InvocationContext;
 
+import org.junit.Before;
 import org.junit.Test;
-import org.junit.BeforeClass;
-
-import com.google.inject.Guice;
-import com.google.inject.Injector;
 
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
+import com.google.inject.AbstractModule;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 
 /**
  *
  */
 public class EntityConfiguringInterceptorTest extends AbstractCaarrayTest {
-    private static Injector injector;
-    private static CaArrayHibernateHelper hibernateHelper; 
-    
+    private Injector injector;
+    private CaArrayHibernateHelper hibernateHelper;
+    private FileAccessServiceStub fasStub;
+
     /**
-     * post-construct lifecycle method; intializes the Guice injector that will provide dependencies. 
+     * post-construct lifecycle method; intializes the Guice injector that will provide dependencies.
      */
-    @BeforeClass
-    public static void init() {
-        injector = createInjector();
-        hibernateHelper = injector.getInstance(CaArrayHibernateHelper.class);
+    @Before
+    public void init() {
+        this.fasStub = new FileAccessServiceStub();
+        this.injector = createInjector();
+        this.hibernateHelper = this.injector.getInstance(CaArrayHibernateHelper.class);
     }
-    
+
     /**
      * @return a Guice injector from which this will obtain dependencies.
      */
-    protected static Injector createInjector() {
-        return Guice.createInjector(new CaArrayEjbStaticInjectionModule(), new CaArrayHibernateHelperModule());
+    protected Injector createInjector() {
+        return Guice.createInjector(new CaArrayHibernateHelperModule(), new AbstractModule() {
+            @Override
+            protected void configure() {
+                bind(DataStorageFacade.class).toInstance(
+                        EntityConfiguringInterceptorTest.this.fasStub.createStorageFacade());
+                requestStaticInjection(gov.nih.nci.caarray.services.EntityPruner.class);
+                requestStaticInjection(gov.nih.nci.caarray.services.EntityConfiguringInterceptor.class);
+            }
+        });
     }
-    
+
     @Test
     public void testPrepareReturnValue() throws Exception {
-        hibernateHelper.beginTransaction();
+        this.hibernateHelper.beginTransaction();
 
-        EntityConfiguringInterceptor interceptor = new EntityConfiguringInterceptor();
-        TestInvocationContext testContext = new TestInvocationContext();
-        TestEntity entity = new TestEntity();
+        final EntityConfiguringInterceptor interceptor = new EntityConfiguringInterceptor();
+        final TestInvocationContext testContext = new TestInvocationContext();
+        final TestEntity entity = new TestEntity();
         assertNotNull(entity.a.getFoo());
         testContext.returnValue = entity;
         interceptor.prepareReturnValue(testContext);
         checkEntity(entity);
-        Set<TestEntity> entitySet = new HashSet<TestEntity>();
+        final Set<TestEntity> entitySet = new HashSet<TestEntity>();
         entitySet.add(new TestEntity());
         entitySet.add(new TestEntity());
         testContext.returnValue = entitySet;
         interceptor.prepareReturnValue(testContext);
-        for (TestEntity nextEntity : entitySet) {
+        for (final TestEntity nextEntity : entitySet) {
             checkEntity(nextEntity);
         }
     }
@@ -165,26 +175,32 @@ public class EntityConfiguringInterceptorTest extends AbstractCaarrayTest {
 
         private Object returnValue;
 
+        @Override
         public Map<String, Object> getContextData() {
             return null;
         }
 
+        @Override
         public Method getMethod() {
             return null;
         }
 
+        @Override
         public Object[] getParameters() {
-            return new Object[]{};
+            return new Object[] {};
         }
 
+        @Override
         public Object getTarget() {
             return null;
         }
 
+        @Override
         public Object proceed() {
             return this.returnValue;
         }
 
+        @Override
         public void setParameters(Object[] arg0) {
             // empty on purpose
         }
@@ -196,7 +212,7 @@ public class EntityConfiguringInterceptorTest extends AbstractCaarrayTest {
         A a = new A();
 
         public A getA() {
-            return a;
+            return this.a;
         }
 
         public void setA(A a) {
@@ -212,9 +228,9 @@ public class EntityConfiguringInterceptorTest extends AbstractCaarrayTest {
         private Long id = 1L;
         private String foo = "Harrumph";
 
-
+        @Override
         public Long getId() {
-            return id;
+            return this.id;
         }
 
         /**
@@ -222,7 +238,7 @@ public class EntityConfiguringInterceptorTest extends AbstractCaarrayTest {
          */
         @AttributePolicy(deny = "TestPolicy")
         public String getFoo() {
-            return foo;
+            return this.foo;
         }
 
         /**
@@ -232,12 +248,13 @@ public class EntityConfiguringInterceptorTest extends AbstractCaarrayTest {
             this.foo = foo;
         }
 
+        @Override
         public void setId(Long id) {
             this.id = id;
         }
 
         public B getB() {
-            return b;
+            return this.b;
         }
 
         public void setB(B b) {
@@ -254,6 +271,7 @@ public class EntityConfiguringInterceptorTest extends AbstractCaarrayTest {
 
         private static final long serialVersionUID = 1L;
 
+        @Override
         public Long getId() {
             return null;
         }

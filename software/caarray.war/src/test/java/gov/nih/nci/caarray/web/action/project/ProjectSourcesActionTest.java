@@ -89,14 +89,10 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import gov.nih.nci.caarray.application.GenericDataService;
 import gov.nih.nci.caarray.application.GenericDataServiceStub;
-import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
-import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
-import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheStubFactory;
 import gov.nih.nci.caarray.application.project.ProjectManagementService;
 import gov.nih.nci.caarray.application.project.ProjectManagementServiceStub;
 import gov.nih.nci.caarray.application.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.application.vocabulary.VocabularyServiceStub;
-import gov.nih.nci.caarray.dao.FileDaoTest;
 import gov.nih.nci.caarray.domain.data.DerivedArrayData;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
@@ -140,7 +136,7 @@ public class ProjectSourcesActionTest extends AbstractDownloadTest {
     @Before
     @SuppressWarnings("deprecation")
     public void setUp() throws Exception {
-        ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
+        final ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
         locatorStub.addLookup(GenericDataService.JNDI_NAME, new LocalGenericDataService());
         locatorStub.addLookup(ProjectManagementService.JNDI_NAME, new ProjectManagementServiceStub());
         locatorStub.addLookup(VocabularyService.JNDI_NAME, new VocabularyServiceStub());
@@ -152,90 +148,84 @@ public class ProjectSourcesActionTest extends AbstractDownloadTest {
     @SuppressWarnings("deprecation")
     public void testPrepare() throws Exception {
         // no current source id
-        action.prepare();
-        assertNull(action.getCurrentSource().getId());
+        this.action.prepare();
+        assertNull(this.action.getCurrentSource().getId());
 
         // valid current source id
         Source source = new Source();
         source.setId(1L);
-        action.setCurrentSource(source);
-        action.prepare();
-        assertEquals(DUMMY_SOURCE, action.getCurrentSource());
+        this.action.setCurrentSource(source);
+        this.action.prepare();
+        assertEquals(DUMMY_SOURCE, this.action.getCurrentSource());
 
         // invalid current source id
         source = new Source();
         source.setId(2L);
-        action.setCurrentSource(source);
+        this.action.setCurrentSource(source);
         try {
-            action.prepare();
+            this.action.prepare();
             fail("Expected PermissionDeniedException");
-        } catch (PermissionDeniedException pde) {}
+        } catch (final PermissionDeniedException pde) {
+        }
     }
 
     @Test
     public void testCopy() {
-        action.setCurrentSource(DUMMY_SOURCE);
-        assertEquals("list", action.copy());
+        this.action.setCurrentSource(DUMMY_SOURCE);
+        assertEquals("list", this.action.copy());
     }
 
     @Test
     public void testDelete() {
-        assertEquals("list", action.delete());
+        assertEquals("list", this.action.delete());
         DUMMY_SOURCE.getSamples().add(new Sample());
-        action.setCurrentSource(DUMMY_SOURCE);
-        assertEquals("list", action.delete());
+        this.action.setCurrentSource(DUMMY_SOURCE);
+        assertEquals("list", this.action.delete());
         assertTrue(ActionHelper.getMessages().contains("experiment.annotations.cantdelete"));
     }
 
     @Test
     public void testDownload() throws Exception {
-        assertEquals("noSourceData", action.download());
+        assertEquals("noSourceData", this.action.download());
 
-        FileAccessServiceStub fas = new FileAccessServiceStub();
-        TemporaryFileCacheLocator.setTemporaryFileCacheFactory(new TemporaryFileCacheStubFactory(fas));
-        fas.add(MageTabDataFiles.MISSING_TERMSOURCE_IDF);
-        fas.add(MageTabDataFiles.MISSING_TERMSOURCE_SDRF);
+        final CaArrayFile rawFile = this.fasStub.add(MageTabDataFiles.MISSING_TERMSOURCE_IDF);
+        final CaArrayFile derivedFile = this.fasStub.add(MageTabDataFiles.MISSING_TERMSOURCE_SDRF);
 
-        Project p = new Project();
+        final Project p = new Project();
         p.getExperiment().setPublicIdentifier("test");
-        Source so = new Source();
-        Sample s1 = new Sample();
+        final Source so = new Source();
+        final Sample s1 = new Sample();
         so.getSamples().add(s1);
-        Sample s2 = new Sample();
+        final Sample s2 = new Sample();
         so.getSamples().add(s2);
-        Extract e = new Extract();
+        final Extract e = new Extract();
         s1.getExtracts().add(e);
         s2.getExtracts().add(e);
-        LabeledExtract le = new LabeledExtract();
+        final LabeledExtract le = new LabeledExtract();
         e.getLabeledExtracts().add(le);
-        Hybridization h = new Hybridization();
+        final Hybridization h = new Hybridization();
         le.getHybridizations().add(h);
-        RawArrayData raw = new RawArrayData();
+        final RawArrayData raw = new RawArrayData();
         h.addArrayData(raw);
-        DerivedArrayData derived = new DerivedArrayData();
+        final DerivedArrayData derived = new DerivedArrayData();
         h.getDerivedDataCollection().add(derived);
-        CaArrayFile rawFile = new CaArrayFile();
-        rawFile.setName("missing_term_source.idf");
-        FileDaoTest.writeContents(rawFile, "");
         raw.setDataFile(rawFile);
-        CaArrayFile derivedFile = new CaArrayFile();
-        derivedFile.setName("missing_term_source.sdrf");
-        FileDaoTest.writeContents(derivedFile, "");
         derived.setDataFile(derivedFile);
 
-        action.setCurrentSource(so);
-        action.setProject(p);
-        List<CaArrayFile> files = new ArrayList<CaArrayFile>(so.getAllDataFiles());
+        this.action.setCurrentSource(so);
+        this.action.setProject(p);
+        final List<CaArrayFile> files = new ArrayList<CaArrayFile>(so.getAllDataFiles());
         Collections.sort(files, DownloadHelper.CAARRAYFILE_NAME_COMPARATOR_INSTANCE);
         assertEquals(2, files.size());
         assertEquals("missing_term_source.idf", files.get(0).getName());
         assertEquals("missing_term_source.sdrf", files.get(1).getName());
 
-        action.download();
-        assertEquals("application/zip", mockResponse.getContentType());
-        assertEquals("filename=\"caArray_test_files.zip\"", mockResponse.getHeader("Content-disposition"));
+        this.action.download();
+        assertEquals("application/zip", this.mockResponse.getContentType());
+        assertEquals("filename=\"caArray_test_files.zip\"", this.mockResponse.getHeader("Content-disposition"));
 
-        ZipInputStream zis = new ZipInputStream(new ByteArrayInputStream(mockResponse.getContentAsByteArray()));
+        final ZipInputStream zis = new ZipInputStream(new ByteArrayInputStream(
+                this.mockResponse.getContentAsByteArray()));
         ZipEntry ze = zis.getNextEntry();
         assertNotNull(ze);
         assertEquals("missing_term_source.idf", ze.getName());
@@ -248,15 +238,15 @@ public class ProjectSourcesActionTest extends AbstractDownloadTest {
 
     @Test
     public void testLoad() {
-        Project p = new Project();
-        Experiment e = new Experiment();
+        final Project p = new Project();
+        final Experiment e = new Experiment();
         p.setExperiment(e);
-        for (int i=0; i<NUM_SOURCES; i++) {
+        for (int i = 0; i < NUM_SOURCES; i++) {
             e.getSources().add(new Source());
         }
-        action.setProject(p);
-        assertEquals("list", action.load());
-        assertEquals(NUM_SOURCES, action.getPagedItems().getFullListSize());
+        this.action.setProject(p);
+        assertEquals("list", this.action.load());
+        assertEquals(NUM_SOURCES, this.action.getPagedItems().getFullListSize());
     }
 
     private static class LocalGenericDataService extends GenericDataServiceStub {
@@ -264,10 +254,11 @@ public class ProjectSourcesActionTest extends AbstractDownloadTest {
         @Override
         public <T extends PersistentObject> T getPersistentObject(Class<T> entityClass, Long entityId) {
             if (entityClass.equals(Source.class) && entityId.equals(1L)) {
-                return (T)DUMMY_SOURCE;
+                return (T) DUMMY_SOURCE;
             }
             return null;
         }
+
         @Override
         public int collectionSize(Collection<? extends PersistentObject> collection) {
             return collection.size();

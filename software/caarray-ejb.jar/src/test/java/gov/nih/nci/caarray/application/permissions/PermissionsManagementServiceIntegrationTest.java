@@ -89,7 +89,6 @@ import gov.nih.nci.caarray.application.GenericDataServiceStub;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
 import gov.nih.nci.caarray.security.SecurityUtils;
-import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
 import gov.nih.nci.caarray.util.CaArrayUsernameHolder;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import gov.nih.nci.security.authorization.domainobjects.User;
@@ -116,15 +115,18 @@ public class PermissionsManagementServiceIntegrationTest extends AbstractService
     public void setup() {
         this.permissionsManagementService = createPermissionsManagementService(this.genericDataServiceStub);
     }
-    
+
     private PermissionsManagementService createPermissionsManagementService(GenericDataService genericDataServiceStub) {
-        CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
-        PermissionsManagementServiceBean bean = new PermissionsManagementServiceBean(hibernateHelper,
-                daoFactory.getCollaboratorGroupDao(), daoFactory.getSearchDao());
-        ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
+        final CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
+        final PermissionsManagementServiceBean bean = new PermissionsManagementServiceBean();
+        bean.setHibernateHelper(this.hibernateHelper);
+        bean.setCollaboratorGroupDao(daoFactory.getCollaboratorGroupDao());
+        bean.setSearchDao(daoFactory.getSearchDao());
+
+        final ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
         locatorStub.addLookup(GenericDataService.JNDI_NAME, genericDataServiceStub);
-        MysqlDataSource ds = new MysqlDataSource();
-        Configuration config = hibernateHelper.getConfiguration();
+        final MysqlDataSource ds = new MysqlDataSource();
+        final Configuration config = this.hibernateHelper.getConfiguration();
         ds.setUrl(config.getProperty("hibernate.connection.url"));
         ds.setUser(config.getProperty("hibernate.connection.username"));
         ds.setPassword(config.getProperty("hibernate.connection.password"));
@@ -137,24 +139,24 @@ public class PermissionsManagementServiceIntegrationTest extends AbstractService
     @Test
     public void testChangeOwner() throws Exception {
         CaArrayUsernameHolder.setUser(STANDARD_USER);
-        Transaction tx = hibernateHelper.beginTransaction();
-        CollaboratorGroup created = this.permissionsManagementService.create(TEST);
+        Transaction tx = this.hibernateHelper.beginTransaction();
+        final CollaboratorGroup created = this.permissionsManagementService.create(TEST);
         tx.commit();
         assertEquals(STANDARD_USER, created.getOwner().getLoginName());
-        tx = hibernateHelper.beginTransaction();
-        List<CollaboratorGroup> groups = this.permissionsManagementService.getCollaboratorGroupsForOwner(created
-                .getOwner().getUserId());
+        tx = this.hibernateHelper.beginTransaction();
+        List<CollaboratorGroup> groups =
+                this.permissionsManagementService.getCollaboratorGroupsForOwner(created.getOwner().getUserId());
         tx.commit();
         assertEquals(1, groups.size());
 
         CaArrayUsernameHolder.setUser("systemadministrator");
-        User caarrayuser = SecurityUtils.getAuthorizationManager().getUser("caarrayuser");
-        tx = hibernateHelper.beginTransaction();
+        final User caarrayuser = SecurityUtils.getAuthorizationManager().getUser("caarrayuser");
+        tx = this.hibernateHelper.beginTransaction();
         groups = this.permissionsManagementService.getCollaboratorGroupsForOwner(caarrayuser.getUserId());
         assertEquals(0, groups.size());
         this.permissionsManagementService.changeOwner(created.getId(), "caarrayuser");
         tx.commit();
-        tx = hibernateHelper.beginTransaction();
+        tx = this.hibernateHelper.beginTransaction();
         groups = this.permissionsManagementService.getCollaboratorGroupsForOwner(caarrayuser.getUserId());
         tx.commit();
         assertEquals(1, groups.size());

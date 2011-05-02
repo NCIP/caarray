@@ -50,7 +50,6 @@
                 <ajax:displayTag id="datatable" ajaxFlag="true" tableClass="searchresults" preFunction="TabUtils.showLoadingTextKeepMainContent" postFunction="TabUtils.hideLoadingText">
                     <display:table class="searchresults" cellspacing="0" defaultsort="1" list="${arrayDesigns}"
                                    requestURI="${sortUrl}" sort="list" id="row" pagesize="20">
-                        <caarray:displayTagProperties/>
                         <display:column property="name" titleKey="arrayDesign.name" sortable="true" url="/protected/arrayDesign/view.action" paramId="arrayDesign.id" paramProperty="id" maxLength="30"/>
                         <display:column property="provider.name" titleKey="arrayDesign.provider" sortable="true"/>
                         <display:column titleKey="arrayDesign.assayTypes" >

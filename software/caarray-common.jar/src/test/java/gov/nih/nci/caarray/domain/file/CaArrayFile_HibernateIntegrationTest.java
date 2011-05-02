@@ -85,56 +85,48 @@ package gov.nih.nci.caarray.domain.file;
 import static org.junit.Assert.assertEquals;
 import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity_HibernateIntegrationTest;
-import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.project.AssayType;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
+import gov.nih.nci.caarray.util.CaArrayUtils;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 
-import java.io.File;
+import java.net.URI;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.junit.Test;
-
-public class CaArrayFile_HibernateIntegrationTest extends AbstractCaArrayEntity_HibernateIntegrationTest {
-
-    @Test
-    @Override
-    @SuppressWarnings("PMD")
-    public void testSave() {
-        super.testSave();
-    }
+public class CaArrayFile_HibernateIntegrationTest extends AbstractCaArrayEntity_HibernateIntegrationTest<CaArrayFile> {
+    private static final URI DUMMY_HANDLE = CaArrayUtils.makeUriQuietly("foo:baz");
 
     @Override
-    protected void compareValues(AbstractCaArrayObject caArrayObject, AbstractCaArrayObject retrievedCaArrayObject) {
-        CaArrayFile original = (CaArrayFile) caArrayObject;
-        CaArrayFile retrieved = (CaArrayFile) retrievedCaArrayObject;
+    protected void compareValues(CaArrayFile original, CaArrayFile retrieved) {
+        super.compareValues(original, retrieved);
         assertEquals(original.getFileStatus(), retrieved.getFileStatus());
         assertEquals(original.getName(), retrieved.getName());
         assertEquals(original.getProject(), retrieved.getProject());
         assertEquals(original.getStatus(), retrieved.getStatus());
         assertEquals(original.getFileType(), retrieved.getFileType());
         assertEquals(original.getValidationResult(), retrieved.getValidationResult());
+        assertEquals(original.getDataHandle(), retrieved.getDataHandle());
     }
 
     @Override
-    protected void setValues(AbstractCaArrayObject caArrayObject) {
-        CaArrayFile caArrayFile = (CaArrayFile) caArrayObject;
+    protected void setValues(CaArrayFile caArrayFile) {
+        super.setValues(caArrayFile);
         caArrayFile.setStatus(getNextValue(FileStatus.values(), caArrayFile.getFileStatus()).name());
         caArrayFile.setName(getUniqueStringValue());
         if (caArrayFile.getProject() == null) {
-            TermSource ts = new TermSource();
+            final TermSource ts = new TermSource();
             ts.setName("Dummy TS");
             ts.setVersion("1.0");
-            Organism org = new Organism();
+            final Organism org = new Organism();
             org.setScientificName("Foo");
             org.setTermSource(ts);
             caArrayFile.setProject(new Project());
             caArrayFile.getProject().getExperiment().setTitle("TestFileExperiment1");
-            SortedSet <AssayType>assayTypes = new TreeSet<AssayType>();
-            AssayType assayType = new AssayType("aCGH");
+            final SortedSet<AssayType> assayTypes = new TreeSet<AssayType>();
+            final AssayType assayType = new AssayType("aCGH");
             assayTypes.add(assayType);
             save(assayType);
             caArrayFile.getProject().getExperiment().setAssayTypes(assayTypes);
@@ -142,19 +134,19 @@ public class CaArrayFile_HibernateIntegrationTest extends AbstractCaArrayEntity_
             caArrayFile.getProject().getExperiment().setManufacturer(new Organization());
             save(caArrayFile.getProject());
         }
-        caArrayFile.setFileType(FileType.AFFYMETRIX_CDF);
-        caArrayFile.setValidationResult(new FileValidationResult(new File(caArrayFile.getName())));
+        caArrayFile.setFileType(FileTypeRegistry.MAGE_TAB_IDF);
+        caArrayFile.setDataHandle(DUMMY_HANDLE);
+        caArrayFile.setValidationResult(new FileValidationResult());
     }
 
     @Override
-    protected void setNullableValuesToNull(AbstractCaArrayObject caArrayObject) {
-        CaArrayFile caArrayFile = (CaArrayFile) caArrayObject;
+    protected void setNullableValuesToNull(CaArrayFile caArrayFile) {
         caArrayFile.setFileType(null);
         caArrayFile.setValidationResult(null);
     }
 
     @Override
-    protected AbstractCaArrayObject createTestObject() {
+    protected CaArrayFile createTestObject() {
         return new CaArrayFile();
     }
 

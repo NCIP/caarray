@@ -87,7 +87,6 @@ import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.project.ExecutableJob;
 import gov.nih.nci.caarray.domain.project.JobStatus;
 import gov.nih.nci.caarray.domain.project.JobType;
-import gov.nih.nci.caarray.util.UsernameHolder;
 
 import java.io.Serializable;
 import java.sql.Connection;
@@ -116,7 +115,7 @@ public abstract class AbstractFileManagementJob implements Serializable, Executa
     private JobStatus jobStatus;
 
     @Inject
-    AbstractFileManagementJob(String username, UsernameHolder usernameHolder) {
+    AbstractFileManagementJob(String username) {
         this.ownerName = username;
         this.timeRequested = new Date();
     }

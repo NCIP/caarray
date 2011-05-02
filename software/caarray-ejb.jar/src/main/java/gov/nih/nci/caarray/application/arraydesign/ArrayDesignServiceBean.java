@@ -92,11 +92,12 @@ import gov.nih.nci.caarray.domain.data.DesignElementList;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.project.AssayType;
+import gov.nih.nci.caarray.injection.InjectionInterceptor;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.InvalidDataFileException;
-import gov.nih.nci.caarray.validation.ValidationResult;
 import gov.nih.nci.caarray.validation.ValidationMessage.Type;
+import gov.nih.nci.caarray.validation.ValidationResult;
 
 import java.util.HashSet;
 import java.util.List;
@@ -108,13 +109,13 @@ import javax.ejb.Local;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import javax.interceptor.Interceptors;
 
 import org.apache.log4j.Logger;
 import org.hibernate.criterion.Order;
-import org.jboss.annotation.ejb.TransactionTimeout;
+import org.jboss.ejb3.annotation.TransactionTimeout;
 
 import com.google.inject.Inject;
-
 
 /**
  * Implementation entry point for the ArrayDesign subsystem.
@@ -124,39 +125,25 @@ import com.google.inject.Inject;
 @TransactionAttribute(TransactionAttributeType.SUPPORTS)
 @TransactionTimeout(ArrayDesignServiceBean.TIMEOUT_SECONDS)
 @SuppressWarnings({"PMD.CyclomaticComplexity", "PMD.TooManyMethods" })
+@Interceptors(InjectionInterceptor.class)
 public class ArrayDesignServiceBean implements ArrayDesignService {
     private static final Logger LOG = Logger.getLogger(ArrayDesignServiceBean.class);
     static final int TIMEOUT_SECONDS = 1800;
     static final int DELETE_ARRAY_DELETE_TIMEOUT_SECONDS = 7200;
 
-    private final ArrayDao arrayDao;
-    private final SearchDao searchDao;
-    private final ContactDao contactDao;
-    private final ArrayDesignPlatformFacade arrayDesignPlatformFacade;
-    
-    /**
-     * 
-     * @param arrayDao the ArrayDao dependency
-     * @param searchDao the SearchDao dependency 
-     * @param contactDao the ContactDao dependency
-     * @param arrayDesignPlatformFacade the ArrayDesignPlatformFacade dependency
-     */
-    @Inject
-    public ArrayDesignServiceBean(ArrayDao arrayDao, SearchDao searchDao, ContactDao contactDao,
-            ArrayDesignPlatformFacade arrayDesignPlatformFacade) {
-        this.arrayDao = arrayDao;
-        this.searchDao = searchDao;
-        this.contactDao = contactDao;
-        this.arrayDesignPlatformFacade = arrayDesignPlatformFacade;
-    }
-    
+    private ArrayDao arrayDao;
+    private SearchDao searchDao;
+    private ContactDao contactDao;
+    private ArrayDesignPlatformFacade arrayDesignPlatformFacade;
+
     /**
      * {@inheritDoc}
      */
+    @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public ValidationResult validateDesign(Set<CaArrayFile> designFiles) {
         LogUtil.logSubsystemEntry(LOG, designFiles);
-        ValidationResult result = arrayDesignPlatformFacade.validateDesignFiles(designFiles);
+        final ValidationResult result = this.arrayDesignPlatformFacade.validateDesignFiles(designFiles);
         LogUtil.logSubsystemExit(LOG);
         return result;
     }
@@ -164,30 +151,30 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
     /**
      * {@inheritDoc}
      */
+    @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public ValidationResult validateDesign(ArrayDesign design) {
         LogUtil.logSubsystemEntry(LOG, design);
-        ValidationResult result = arrayDesignPlatformFacade.validateDesignFiles(design.getDesignFiles());
-        FileValidationResult duplicateResult = validateDuplicate(design);
-        result.addFile(duplicateResult.getFile(), duplicateResult);
+        final ValidationResult result = this.arrayDesignPlatformFacade.validateDesignFiles(design.getDesignFiles());
+        final FileValidationResult duplicateResult = validateDuplicate(design);
+        result.addFile(design.getFirstDesignFile().getName(), duplicateResult);
         LogUtil.logSubsystemExit(LOG);
         return result;
     }
 
-
     private FileValidationResult validateDuplicate(ArrayDesign arrayDesign) {
-        CaArrayFile designFile = arrayDesign.getDesignFiles().iterator().next();
+        final CaArrayFile designFile = arrayDesign.getFirstDesignFile();
         FileValidationResult result = designFile.getValidationResult();
         if (result == null) {
-            result = new FileValidationResult(null);
+            result = new FileValidationResult();
         }
-        if (isDuplicate(arrayDesign))   {
+        if (isDuplicate(arrayDesign)) {
             result.addMessage(Type.ERROR, "An array design already exists with the name " + arrayDesign.getName()
                     + " and provider " + arrayDesign.getProvider().getName());
             designFile.setFileStatus(FileStatus.VALIDATION_ERRORS);
             designFile.setValidationResult(result);
-            arrayDao.save(designFile);
-            arrayDao.flushSession();
+            this.arrayDao.save(designFile);
+            this.arrayDao.flushSession();
         }
         return result;
     }
@@ -195,12 +182,11 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean isDuplicate(ArrayDesign arrayDesign) {
-        List<ArrayDesign> providerDesigns =
-            arrayDao.getArrayDesigns(arrayDesign.getProvider(), null, false);
-        for (ArrayDesign providerDesign : providerDesigns) {
-            if (!arrayDesign.equals(providerDesign)
-                    && arrayDesign.getName().equalsIgnoreCase(providerDesign.getName())) {
+        final List<ArrayDesign> providerDesigns = this.arrayDao.getArrayDesigns(arrayDesign.getProvider(), null, false);
+        for (final ArrayDesign provDesign : providerDesigns) {
+            if (!arrayDesign.equals(provDesign) && arrayDesign.getName().equalsIgnoreCase(provDesign.getName())) {
                 return true;
             }
         }
@@ -210,6 +196,7 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
     /**
      * {@inheritDoc}
      */
+    @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public void importDesign(ArrayDesign arrayDesign) {
         LogUtil.logSubsystemEntry(LOG, arrayDesign);
@@ -218,28 +205,29 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
             return;
         }
         // Temporarily change the LSID so that file validation does not find this array design as a duplicate.
-        String lsid = arrayDesign.getLsid();
-        String tmpLsid = lsid + "tmp";
+        final String lsid = arrayDesign.getLsid();
+        final String tmpLsid = lsid + "tmp";
         arrayDesign.setLsidForEntity(tmpLsid);
-        arrayDao.save(arrayDesign);
-        arrayDao.flushSession();
-        ArrayDesignPlatformFacade facade = arrayDesignPlatformFacade;
+        this.arrayDao.save(arrayDesign);
+        this.arrayDao.flushSession();
+        final ArrayDesignPlatformFacade facade = this.arrayDesignPlatformFacade;
         if (facade.validateDesignFiles(arrayDesign.getDesignFiles()).isValid()) {
             facade.importDesign(arrayDesign);
             if (validateDuplicate(arrayDesign).isValid()) {
-                arrayDao.save(arrayDesign);
+                this.arrayDao.save(arrayDesign);
             }
         }
         if (tmpLsid.equals(arrayDesign.getLsid())) {
             arrayDesign.setLsidForEntity(lsid);
-            arrayDao.save(arrayDesign);
+            this.arrayDao.save(arrayDesign);
         }
         LogUtil.logSubsystemExit(LOG);
     }
-    
+
     /**
      * {@inheritDoc}
      */
+    @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public void importDesignDetails(ArrayDesign arrayDesign) {
         LogUtil.logSubsystemEntry(LOG, arrayDesign);
@@ -247,28 +235,29 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
             LOG.warn("importDesignDetails called, but no design file(s) provided. No updates made.");
             return;
         }
-        for (CaArrayFile designFile : arrayDesign.getDesignFiles()) {
+        for (final CaArrayFile designFile : arrayDesign.getDesignFiles()) {
             if (!designFile.getValidationResult().isValid()) {
                 throw new IllegalArgumentException("The array design provided for import is not valid");
             }
         }
 
-        ArrayDesignDetails designDetails = arrayDesign.getDesignDetails();
+        final ArrayDesignDetails designDetails = arrayDesign.getDesignDetails();
         if (designDetails != null) {
-            arrayDao.deleteArrayDesignDetails(arrayDesign);
-            arrayDao.flushSession();
+            this.arrayDao.deleteArrayDesignDetails(arrayDesign);
+            this.arrayDao.flushSession();
         }
 
-        arrayDesignPlatformFacade.importDesignDetails(arrayDesign);
+        this.arrayDesignPlatformFacade.importDesignDetails(arrayDesign);
         LogUtil.logSubsystemExit(LOG);
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public List<Organization> getAllProviders() {
         LogUtil.logSubsystemEntry(LOG);
-        List<Organization> orgs = contactDao.getAllProviders();
+        final List<Organization> orgs = this.contactDao.getAllProviders();
         LogUtil.logSubsystemExit(LOG);
         return orgs;
     }
@@ -276,9 +265,10 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
     /**
      * {@inheritDoc}
      */
+    @Override
     public List<ArrayDesign> getImportedArrayDesigns(Organization provider, Set<AssayType> assayTypes) {
         LogUtil.logSubsystemEntry(LOG);
-        List<ArrayDesign> designs = arrayDao.getArrayDesigns(provider, assayTypes, true);
+        final List<ArrayDesign> designs = this.arrayDao.getArrayDesigns(provider, assayTypes, true);
         LogUtil.logSubsystemExit(LOG);
         return designs;
     }
@@ -286,23 +276,26 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
     /**
      * {@inheritDoc}
      */
+    @Override
     public ArrayDesign getArrayDesign(Long id) {
-        return arrayDao.getArrayDesign(id);
+        return this.arrayDao.getArrayDesign(id);
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public ArrayDesign getArrayDesign(String lsidAuthority, String lsidNamespace, String lsidObjectId) {
-        return arrayDao.getArrayDesign(lsidAuthority, lsidNamespace, lsidObjectId);
+        return this.arrayDao.getArrayDesign(lsidAuthority, lsidNamespace, lsidObjectId);
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public List<ArrayDesign> getArrayDesigns() {
         LogUtil.logSubsystemEntry(LOG);
-        List<ArrayDesign> designs = searchDao.retrieveAll(ArrayDesign.class, Order.asc("name"));
+        final List<ArrayDesign> designs = this.searchDao.retrieveAll(ArrayDesign.class, Order.asc("name"));
         LogUtil.logSubsystemExit(LOG);
         return designs;
     }
@@ -310,18 +303,20 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean isArrayDesignLocked(Long id) {
-        return arrayDao.isArrayDesignLocked(id);
+        return this.arrayDao.isArrayDesignLocked(id);
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public ArrayDesign saveArrayDesign(ArrayDesign arrayDesign) throws IllegalAccessException, 
-        InvalidDataFileException {
+    public ArrayDesign saveArrayDesign(ArrayDesign arrayDesign) 
+    throws IllegalAccessException, InvalidDataFileException {
         LogUtil.logSubsystemEntry(LOG, arrayDesign);
-        FileStatus fileSetStatus = arrayDesign.getDesignFileSet().getStatus();
+        final FileStatus fileSetStatus = arrayDesign.getDesignFileSet().getStatus();
         if (fileSetStatus == FileStatus.IMPORTING || fileSetStatus == FileStatus.IMPORTED) {
             throw new IllegalAccessException("Cannot modify an array design while the design file is being imported"
                     + " or after it has been imported");
@@ -329,64 +324,66 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
         if (!validateDuplicate(arrayDesign).isValid()) {
             throw new InvalidDataFileException(arrayDesign.getDesignFiles().iterator().next().getValidationResult());
         }
-        Long id = arrayDesign.getId();
+        final Long id = arrayDesign.getId();
         if (id != null && isArrayDesignLocked(id)) {
             if (!validateLockedDesign(arrayDesign)) {
                 throw new IllegalAccessException("Cannot modify locked fields on an array design");
             }
             LogUtil.logSubsystemExit(LOG);
-            return (ArrayDesign) arrayDao.mergeObject(arrayDesign);
+            return (ArrayDesign) this.arrayDao.mergeObject(arrayDesign);
         } else {
-            arrayDao.save(arrayDesign);
+            this.arrayDao.save(arrayDesign);
             LogUtil.logSubsystemExit(LOG);
             return arrayDesign;
         }
     }
 
     /**
-     * Validated that the given array design (which is considered "locked") has not had its provider,
-     * assay types, or design files properties modified.
+     * Validated that the given array design (which is considered "locked") has not had its provider, assay types, or
+     * design files properties modified.
+     * 
      * @param arrayDesign the design to check
      * @return true if the design has not had the key properties above modified, false if it has.
      */
     private boolean validateLockedDesign(ArrayDesign arrayDesign) {
-        Organization provider = arrayDesign.getProvider();
-        SortedSet<AssayType> assayTypes = new TreeSet<AssayType>(arrayDesign.getAssayTypes());
-        Set<CaArrayFile> designFiles = new HashSet<CaArrayFile>(arrayDesign.getDesignFiles());
-        arrayDao.evictObject(arrayDesign);
-        ArrayDesign loadedArrayDesign = getArrayDesign(arrayDesign.getId());
+        final Organization provider = arrayDesign.getProvider();
+        final SortedSet<AssayType> assayTypes = new TreeSet<AssayType>(arrayDesign.getAssayTypes());
+        final Set<CaArrayFile> designFiles = new HashSet<CaArrayFile>(arrayDesign.getDesignFiles());
+        this.arrayDao.evictObject(arrayDesign);
+        final ArrayDesign loadedArrayDesign = getArrayDesign(arrayDesign.getId());
         if (!loadedArrayDesign.getProvider().equals(provider) || !loadedArrayDesign.getAssayTypes().equals(assayTypes)
                 || !loadedArrayDesign.getDesignFiles().equals(designFiles)) {
             return false;
         }
-        arrayDao.evictObject(loadedArrayDesign);
+        this.arrayDao.evictObject(loadedArrayDesign);
         return true;
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public DesignElementList getDesignElementList(String lsidAuthority, String lsidNamespace, String lsidObjectId) {
-        return arrayDao.getDesignElementList(lsidAuthority, lsidNamespace, lsidObjectId);
+        return this.arrayDao.getDesignElementList(lsidAuthority, lsidNamespace, lsidObjectId);
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     @TransactionTimeout(DELETE_ARRAY_DELETE_TIMEOUT_SECONDS)
     public void deleteArrayDesign(ArrayDesign arrayDesign) throws ArrayDesignDeleteException {
         LOG.info("Deleting array design " + arrayDesign.getName());
-        Long id = arrayDesign.getId();
-        boolean designLocked = (id != null && isArrayDesignLocked(id));
+        final Long id = arrayDesign.getId();
+        final boolean designLocked = (id != null && isArrayDesignLocked(id));
         if (arrayDesign.getDesignFileSet().getStatus() == FileStatus.IMPORTING || designLocked) {
             LOG.info("Array design " + arrayDesign.getName() + " is in a state that does not allow it to be deleted");
-            throw new ArrayDesignDeleteException(
-                    "You cannot delete an array design that is currently being "
+            throw new ArrayDesignDeleteException("You cannot delete an array design that is currently being "
                     + "imported or that is associated with one or more experiments.");
         }
 
-        if (arrayDao.getArrayDesigns(arrayDesign.getDesignDetails()).size() > 1) {
+        if (this.arrayDao.getArrayDesigns(arrayDesign.getDesignDetails()).size() > 1) {
             // if there's more than one array design for the design details, we don't want to delete the details
             // or the files, just the array design itself, because other array designs share the files and details.
             LOG.debug("Deleting just the array design object");
@@ -394,16 +391,48 @@ public class ArrayDesignServiceBean implements ArrayDesignService {
             arrayDesign.setDesignDetails(null);
         } else {
             LOG.debug("Deleting the array design and the array design details");
-            arrayDao.deleteArrayDesignDetails(arrayDesign);
+            this.arrayDao.deleteArrayDesignDetails(arrayDesign);
         }
-        arrayDao.remove(arrayDesign);
+        this.arrayDao.remove(arrayDesign);
     }
-
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public List<ArrayDesign> getArrayDesignsWithReImportableFiles() {
-        return arrayDao.getArrayDesignsWithReImportable();
+        return this.arrayDao.getArrayDesignsWithReImportable();
+    }
+
+    /**
+     * @param arrayDao the arrayDao to set
+     */
+    @Inject
+    public void setArrayDao(ArrayDao arrayDao) {
+        this.arrayDao = arrayDao;
+    }
+
+    /**
+     * @param searchDao the searchDao to set
+     */
+    @Inject
+    public void setSearchDao(SearchDao searchDao) {
+        this.searchDao = searchDao;
+    }
+
+    /**
+     * @param contactDao the contactDao to set
+     */
+    @Inject
+    public void setContactDao(ContactDao contactDao) {
+        this.contactDao = contactDao;
+    }
+
+    /**
+     * @param arrayDesignPlatformFacade the arrayDesignPlatformFacade to set
+     */
+    @Inject
+    public void setArrayDesignPlatformFacade(ArrayDesignPlatformFacade arrayDesignPlatformFacade) {
+        this.arrayDesignPlatformFacade = arrayDesignPlatformFacade;
     }
 }

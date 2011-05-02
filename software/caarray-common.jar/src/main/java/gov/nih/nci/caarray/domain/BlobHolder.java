@@ -90,13 +90,14 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
+
 /**
  * @author Scott Miller
- *
+ * 
  */
 @Entity
-public class BlobHolder {
-
+public class BlobHolder implements PersistentObject {
     private static final long serialVersionUID = 1L;
 
     private Long id;
@@ -104,18 +105,19 @@ public class BlobHolder {
 
     /**
      * Returns the id.
-     *
+     * 
      * @return the id
      */
+    @Override
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     public Long getId() {
-        return id;
+        return this.id;
     }
 
     /**
      * Sets the id.
-     *
+     * 
      * @param id the id to set
      * @deprecated should only be used by castor and hibernate
      */

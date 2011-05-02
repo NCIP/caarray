@@ -11,8 +11,8 @@ import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.search.SearchSampleCategory;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.security.SecurityUtils;
+import gov.nih.nci.caarray.util.LabelValue;
 import gov.nih.nci.caarray.util.CaArrayUsernameHolder;
-import gov.nih.nci.caarray.web.util.LabelValue;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;

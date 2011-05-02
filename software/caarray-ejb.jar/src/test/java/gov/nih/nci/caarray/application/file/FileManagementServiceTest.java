@@ -55,7 +55,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import gov.nih.nci.caarray.application.AbstractServiceTest;
+import gov.nih.nci.caarray.application.ServiceLocatorFactory;
 import gov.nih.nci.caarray.application.UserTransactionStub;
 import gov.nih.nci.caarray.application.arraydata.ArrayDataService;
 import gov.nih.nci.caarray.application.arraydata.ArrayDataServiceStub;
@@ -64,8 +66,6 @@ import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignServiceStub;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
-import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
-import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheStubFactory;
 import gov.nih.nci.caarray.application.translation.magetab.MageTabTranslator;
 import gov.nih.nci.caarray.application.translation.magetab.MageTabTranslatorStub;
 import gov.nih.nci.caarray.dao.ArrayDao;
@@ -76,17 +76,33 @@ import gov.nih.nci.caarray.dao.stub.ArrayDaoStub;
 import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
 import gov.nih.nci.caarray.dao.stub.JobDaoSingleJobStub;
 import gov.nih.nci.caarray.dao.stub.SearchDaoStub;
+import gov.nih.nci.caarray.dataStorage.DataStorageFacade;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
+import gov.nih.nci.caarray.domain.LSID;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
+import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
+import gov.nih.nci.caarray.domain.data.DataSet;
+import gov.nih.nci.caarray.domain.data.QuantitationType;
+import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
+import gov.nih.nci.caarray.domain.file.FileCategory;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
-import gov.nih.nci.caarray.domain.project.Experiment;
+import gov.nih.nci.caarray.domain.file.FileTypeRegistry;
+import gov.nih.nci.caarray.domain.file.FileTypeRegistryImpl;
 import gov.nih.nci.caarray.domain.project.ExecutableJob;
+import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
+import gov.nih.nci.caarray.magetab.MageTabFileSet;
 import gov.nih.nci.caarray.magetab.TestMageTabSets;
+import gov.nih.nci.caarray.magetab.io.FileRef;
+import gov.nih.nci.caarray.platforms.AbstractDataFileHandler;
+import gov.nih.nci.caarray.platforms.spi.DataFileHandler;
+import gov.nih.nci.caarray.platforms.spi.DesignFileHandler;
+import gov.nih.nci.caarray.platforms.spi.PlatformFileReadException;
+import gov.nih.nci.caarray.platforms.unparsed.UnparsedModule;
 import gov.nih.nci.caarray.test.data.arraydata.AffymetrixArrayDataFiles;
 import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
 import gov.nih.nci.caarray.test.data.arraydesign.GenepixArrayDesignFiles;
@@ -113,11 +129,22 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+import com.google.inject.AbstractModule;
+import com.google.inject.Guice;
+import com.google.inject.Inject;
+import com.google.inject.Injector;
 import com.google.inject.Provider;
+import com.google.inject.multibindings.Multibinder;
 import com.google.inject.util.Providers;
 
 @SuppressWarnings("PMD")
 public class FileManagementServiceTest extends AbstractServiceTest {
+    protected static FileType AFFYMETRIX_CDF = new FileType("AFFYMETRIX_CDF", FileCategory.ARRAY_DESIGN, true, "CDF");
+    protected static FileType AFFYMETRIX_CHP = new FileType("AFFYMETRIX_CHP", FileCategory.DERIVED_DATA, true, "CHP");
+    protected static FileType AFFYMETRIX_DAT = new FileType("AFFYMETRIX_DAT", FileCategory.RAW_DATA, false, "DAT");
+    protected static FileType AFFYMETRIX_CEL = new FileType("AFFYMETRIX_CEL", FileCategory.RAW_DATA, true, "CEL");
 
     private FileManagementService fileManagementService;
     private final LocalFileAccessServiceStub fileAccessServiceStub = new LocalFileAccessServiceStub();
@@ -126,12 +153,7 @@ public class FileManagementServiceTest extends AbstractServiceTest {
 
     @Before
     public void setUp() {
-        CaArrayHibernateHelper hibernateHelper = mock(CaArrayHibernateHelper.class);
-        JobQueueDao jobDao = new JobDaoSingleJobStub();
-        Provider<UsernameHolder> usernameHolderProvider =
-            Providers.of(mock(UsernameHolder.class));
-
-        FileManagementMDB fileManagementMDB = new FileManagementMDB(hibernateHelper, jobDao, usernameHolderProvider) {
+        final FileManagementMDB fileManagementMDB = new FileManagementMDB() {
 
             /**
              * {@inheritDoc}
@@ -139,14 +161,15 @@ public class FileManagementServiceTest extends AbstractServiceTest {
             @Override
             public void handleUnexpectedError(ExecutableJob job) {
                 if (job instanceof AbstractProjectFilesJob) {
-                    AbstractProjectFilesJob projectFilesJob = (AbstractProjectFilesJob) job;
-                    for (CaArrayFile file : projectFilesJob.getFileSet().getFiles()) {
+                    final AbstractProjectFilesJob projectFilesJob = (AbstractProjectFilesJob) job;
+                    for (final CaArrayFile file : projectFilesJob.getFileSet().getFiles()) {
                         file.setFileStatus(FileStatus.IMPORT_FAILED);
                     }
                 } else if (job instanceof ArrayDesignFileImportJob) {
-                    ArrayDesignFileImportJob arrayDesignJob = (ArrayDesignFileImportJob) job;
-                    getDaoFactory().getArrayDao().getArrayDesign(
-                            arrayDesignJob.getArrayDesignId()).getDesignFileSet().updateStatus(FileStatus.IMPORT_FAILED);
+                    final ArrayDesignFileImportJob arrayDesignJob = (ArrayDesignFileImportJob) job;
+                    FileManagementServiceTest.this.daoFactoryStub.getArrayDao()
+                            .getArrayDesign(arrayDesignJob.getArrayDesignId()).getDesignFileSet()
+                            .updateStatus(FileStatus.IMPORT_FAILED);
                 }
             }
 
@@ -158,87 +181,140 @@ public class FileManagementServiceTest extends AbstractServiceTest {
                 return 3600;
             }
         };
-        fileManagementMDB.setDaoFactory(this.daoFactoryStub);
+
         fileManagementMDB.setTransaction(new UserTransactionStub());
-        DirectJobSubmitter submitter = new DirectJobSubmitter(fileManagementMDB, jobDao);
-        
-        ArrayDataService arrayDataService = new LocalArrayDataServiceStub();
-        MageTabTranslator mageTabTranslator = new MageTabTranslatorStub();
-        
-        ArrayDataImporter arrayDataImporter = new ArrayDataImporterImpl(arrayDataService, daoFactoryStub.getFileDao(),
-                daoFactoryStub.getProjectDao(), daoFactoryStub.getSearchDao());
-        MageTabImporter mageTabImporter = new MageTabImporterImpl(mageTabTranslator,
-                daoFactoryStub.getProjectDao(), daoFactoryStub.getSearchDao());
-        
-        Provider<ArrayDao> arrayDaoProvider = Providers.of(daoFactoryStub.getArrayDao());
-        Provider<ArrayDataImporter> arrayDataImporterProvider = Providers.of(arrayDataImporter);
-        Provider<MageTabImporter> mageTabeImporterProvider = Providers.of(mageTabImporter);
-        Provider<ProjectDao> projectDaoProvider = Providers.of(daoFactoryStub.getProjectDao());
-        Provider<SearchDao> searchDaoProvider = Providers.of(daoFactoryStub.getSearchDao());
-        
-        JobFactory jobFactory = new JobFactoryImpl(usernameHolderProvider, arrayDaoProvider, arrayDataImporterProvider,
-                mageTabeImporterProvider, projectDaoProvider, searchDaoProvider);
-        
-        
-        FileManagementServiceBean fileManagementServiceBean =
-            new FileManagementServiceBean(daoFactoryStub.getProjectDao(), daoFactoryStub.getArrayDao(),
-                    daoFactoryStub.getFileDao(), mageTabImporter, daoFactoryStub.getSearchDao(), submitter,
-                    jobFactory);
-        ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
+        final JobQueueDao jobDao = new JobDaoSingleJobStub();
+        final DirectJobSubmitter submitter = new DirectJobSubmitter(fileManagementMDB, jobDao);
+        final DataStorageFacade dataStorageFacade = this.fileAccessServiceStub.createStorageFacade();
+
+        final FileManagementServiceBean fileManagementServiceBean = new FileManagementServiceBean();
+        final Provider<MageTabImporter> mageTabImporterProvider = new Provider<MageTabImporter>() {
+            @Override
+            public MageTabImporter get() {
+                return new MageTabImporterImpl(ServiceLocatorFactory.getMageTabTranslator(),
+                        FileManagementServiceTest.this.daoFactoryStub.getSearchDao(),
+                        FileManagementServiceTest.this.daoFactoryStub.getProjectDao(), dataStorageFacade);
+            }
+        };
+
+        final MageTabTranslator mageTabTranslator = new MageTabTranslatorStub();
+        final MageTabImporter mageTabImporter =
+                new MageTabImporterImpl(mageTabTranslator, this.daoFactoryStub.getSearchDao(),
+                        this.daoFactoryStub.getProjectDao(), dataStorageFacade);
+
+        final ArrayDataService arrayDataService = new LocalArrayDataServiceStub();
+        final ArrayDataImporter arrayDataImporter =
+                new ArrayDataImporterImpl(arrayDataService, this.daoFactoryStub.getFileDao(),
+                        this.daoFactoryStub.getProjectDao(), this.daoFactoryStub.getSearchDao());
+
+        final Provider<ArrayDao> arrayDaoProvider = Providers.of(this.daoFactoryStub.getArrayDao());
+        final Provider<ArrayDataImporter> arrayDataImporterProvider = Providers.of(arrayDataImporter);
+        final Provider<MageTabImporter> mageTabeImporterProvider = Providers.of(mageTabImporter);
+        final Provider<ProjectDao> projectDaoProvider = Providers.of(this.daoFactoryStub.getProjectDao());
+        final Provider<SearchDao> searchDaoProvider = Providers.of(this.daoFactoryStub.getSearchDao());
+        final Provider<UsernameHolder> usernameHolderProvider = Providers.of(mock(UsernameHolder.class));
+
+        final JobFactory jobFactory =
+                new JobFactoryImpl(usernameHolderProvider, arrayDaoProvider, arrayDataImporterProvider,
+                        mageTabeImporterProvider, projectDaoProvider, searchDaoProvider);
+
+        fileManagementServiceBean.setArrayDao(this.daoFactoryStub.getArrayDao());
+        fileManagementServiceBean.setFileDao(this.daoFactoryStub.getFileDao());
+        fileManagementServiceBean.setProjectDao(this.daoFactoryStub.getProjectDao());
+        fileManagementServiceBean.setSearchDao(this.daoFactoryStub.getSearchDao());
+        fileManagementServiceBean.setJobFactory(jobFactory);
+        fileManagementServiceBean.setJobSubmitter(submitter);
+        fileManagementServiceBean.setMageTabImporterProvider(mageTabImporterProvider);
+
+        final ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
         locatorStub.addLookup(FileAccessService.JNDI_NAME, this.fileAccessServiceStub);
-        locatorStub.addLookup(ArrayDataService.JNDI_NAME, arrayDataService);
+        locatorStub.addLookup(ArrayDataService.JNDI_NAME, new LocalArrayDataServiceStub());
         locatorStub.addLookup(ArrayDesignService.JNDI_NAME, this.arrayDesignServiceStub);
-        locatorStub.addLookup(MageTabTranslator.JNDI_NAME, mageTabTranslator);
+        locatorStub.addLookup(MageTabTranslator.JNDI_NAME, new MageTabTranslatorStub());
+
+        final DesignFileHandler affyDesignHandler = mock(DesignFileHandler.class);
+        when(affyDesignHandler.getSupportedTypes()).thenReturn(Sets.newHashSet(AFFYMETRIX_CDF));
+
+        final Injector injector = Guice.createInjector(new AbstractModule() {
+            @Override
+            protected void configure() {
+                // data files
+                final Multibinder<DataFileHandler> dataFileBinder =
+                        Multibinder.newSetBinder(binder(), DataFileHandler.class);
+                dataFileBinder.addBinding().to(TestDataHandler.class);
+
+                // design files
+                final Multibinder<DesignFileHandler> designFileBinder =
+                        Multibinder.newSetBinder(binder(), DesignFileHandler.class);
+                designFileBinder.addBinding().toInstance(affyDesignHandler);
+
+                bind(FileTypeRegistry.class).to(FileTypeRegistryImpl.class);
+                bind(DataStorageFacade.class).toInstance(dataStorageFacade);
+
+                bind(MageTabImporter.class).toProvider(mageTabImporterProvider);
+                requestStaticInjection(CaArrayFile.class);
+                requestStaticInjection(TestMageTabSets.class);
+
+                bind(JobQueueDao.class).toInstance(jobDao);
+                bind(CaArrayHibernateHelper.class).toInstance(mock(CaArrayHibernateHelper.class));
+                bind(UsernameHolder.class).toProvider(usernameHolderProvider);
+            }
+        }, new UnparsedModule());
+        this.fileAccessServiceStub.setTypeRegistry(injector.getInstance(FileTypeRegistry.class));
+        injector.injectMembers(fileManagementMDB);
         this.fileManagementService = fileManagementServiceBean;
-        TemporaryFileCacheLocator.setTemporaryFileCacheFactory(new TemporaryFileCacheStubFactory(
-                this.fileAccessServiceStub));
-        TemporaryFileCacheLocator.resetTemporaryFileCache();
+
     }
 
     @Test
     public void testValidateFiles() {
-        Project project = getTgaBroadTestProject();
+        final Project project = getTgaBroadTestProject();
         this.fileManagementService.validateFiles(project, project.getFileSet());
-        for (CaArrayFile file : project.getFiles()) {
-            assertEquals(FileStatus.VALIDATED, file.getFileStatus());
+        for (final CaArrayFile file : project.getFiles()) {
+            assertEquals("Wrong status for file " + file.getName(),
+                    file.getFileType().isDataMatrix() ? FileStatus.VALIDATED_NOT_PARSED : FileStatus.VALIDATED,
+                    file.getFileStatus());
         }
     }
 
     @Test
     public void testImportFiles() {
-        Project project = getTgaBroadTestProject();
-        this.fileManagementService.importFiles(project, project.getFileSet(), DataImportOptions
-                .getAutoCreatePerFileOptions());
-        for (CaArrayFile file : project.getFiles()) {
-            assertEquals(FileStatus.IMPORTED, file.getFileStatus());
+        final Project project = getTgaBroadTestProject();
+        this.fileManagementService.importFiles(project, project.getFileSet(),
+                DataImportOptions.getAutoCreatePerFileOptions());
+        for (final CaArrayFile file : project.getFiles()) {
+            assertEquals("Wrong status for file " + file.getName(),
+                    file.getFileType().isDataMatrix() ? FileStatus.IMPORTED_NOT_PARSED : FileStatus.IMPORTED,
+                    file.getFileStatus());
         }
     }
 
     @Test
     public void testImportMageTabFiles() throws Exception {
-        Project project = getMageTabSpecProject();
+        final Project project = getMageTabSpecProject();
         this.fileManagementService.importFiles(project, project.getFileSet(), null);
-        for (CaArrayFile file : project.getFiles()) {
-            assertEquals(FileStatus.IMPORTED, file.getFileStatus());
+        for (final CaArrayFile file : project.getFiles()) {
+            assertEquals("Wrong status for file " + file.getName(),
+                    file.getFileType().isDataMatrix() ? FileStatus.IMPORTED_NOT_PARSED : FileStatus.IMPORTED,
+                    file.getFileStatus());
         }
     }
 
     @Test
     public void testFindRefFiles() throws Exception {
-        Project project = getMageTabSpecProject();
+        final Project project = getMageTabSpecProject();
 
         // add some random file to project
-        CaArrayFile nonRelatedFile = new CaArrayFile();
+        final CaArrayFile nonRelatedFile = new CaArrayFile();
         nonRelatedFile.setName("NonRelatedFile.CEL");
-        nonRelatedFile.setFileType(FileType.AFFYMETRIX_CEL);
         nonRelatedFile.setFileStatus(FileStatus.UPLOADED);
         nonRelatedFile.setProject(project);
         project.getFiles().add(nonRelatedFile);
 
         // find a non idf file
         CaArrayFile nonIdfFile = null;
-        for (CaArrayFile caf : project.getFileSet().getFiles()) {
-            if (!FileType.MAGE_TAB_IDF.equals(caf.getFileType())) {
+        for (final CaArrayFile caf : project.getFileSet().getFiles()) {
+            if (!FileTypeRegistry.MAGE_TAB_IDF.equals(caf.getFileType())) {
                 nonIdfFile = caf;
                 break;
             }
@@ -246,67 +322,62 @@ public class FileManagementServiceTest extends AbstractServiceTest {
 
         // nothing should be selected
         try {
-            this.fileManagementService
-                .findIdfRefFileNames(nonIdfFile, project);
+            this.fileManagementService.findIdfRefFileNames(nonIdfFile, project);
             fail("non IDF file selected but did not give error.");
-        } catch (IllegalArgumentException iae) {
+        } catch (final IllegalArgumentException iae) {
             // do nothing
         }
 
-
         // find the idf
         CaArrayFile idfFile = null;
-        for (CaArrayFile caf : project.getFileSet().getFiles()) {
-            if (FileType.MAGE_TAB_IDF.equals(caf.getFileType())) {
+        for (final CaArrayFile caf : project.getFileSet().getFiles()) {
+            if (FileTypeRegistry.MAGE_TAB_IDF.equals(caf.getFileType())) {
                 idfFile = caf;
                 break;
             }
         }
 
-        List<String> filenames =
-            this.fileManagementService.findIdfRefFileNames(idfFile, project);
+        final List<String> filenames = this.fileManagementService.findIdfRefFileNames(idfFile, project);
         // 15 in all minus original idf = 14
         assertEquals(14, filenames.size());
         assertTrue(!filenames.contains("NonRelatedFile.CEL"));
     }
 
-
     @Test
     public void testMultidfRefFiles() throws Exception {
-        Project project = new Project();
+        final Project project = new Project();
         // combine two sets of idf and ref files
-        addFiles(project, TestMageTabSets.getFileSet(TestMageTabSets.MAGE_TAB_SPECIFICATION_INPUT_SET).getFiles());
-        addFiles(project, TestMageTabSets.getFileSet(TestMageTabSets.TCGA_BROAD_INPUT_SET).getFiles());
+        addFiles(project, getFileSet(TestMageTabSets.MAGE_TAB_SPECIFICATION_INPUT_SET, this.fileAccessServiceStub)
+                .getFiles());
+        addFiles(project, getFileSet(TestMageTabSets.TCGA_BROAD_INPUT_SET, this.fileAccessServiceStub).getFiles());
 
         // find the idf related to the spec file set
         CaArrayFile idfFile = null;
-        for (CaArrayFile caf : project.getFileSet().getFiles()) {
-            if (FileType.MAGE_TAB_IDF.equals(caf.getFileType())
-                    && MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF.getName()
-                    .equals(caf.getName())) {
+        for (final CaArrayFile caf : project.getFileSet().getFiles()) {
+            if (FileTypeRegistry.MAGE_TAB_IDF.equals(caf.getFileType())
+                    && MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF.getName().equals(caf.getName())) {
                 idfFile = caf;
                 break;
             }
         }
         assertNotNull(idfFile);
-        List<String> filenames =
-            this.fileManagementService.findIdfRefFileNames(idfFile, project);
+        final List<String> filenames = this.fileManagementService.findIdfRefFileNames(idfFile, project);
         // 15 in all minus original idf = 14
         assertEquals(14, filenames.size());
         // only the sdrf associated with the idf submitted should be present.
         assertTrue(!filenames.contains(MageTabDataFiles.TCGA_BROAD_SDRF.getName()));
     }
 
-
-
     @Test
     public void testUpdateAnnotationsFromMageTabFiles() throws Exception {
-        Project project = getMageTabSpecProject();
-        CaArrayFileSet newFiles = TestMageTabSets.getFileSet(TestMageTabSets.MAGE_TAB_SPECIFICATION_UPDATE_ANNOTATIONS_INPUT_SET);
+        final Project project = getMageTabSpecProject();
+        final CaArrayFileSet newFiles =
+                getFileSet(TestMageTabSets.MAGE_TAB_SPECIFICATION_UPDATE_ANNOTATIONS_INPUT_SET,
+                        this.fileAccessServiceStub);
         addFiles(project, newFiles.getFiles());
         this.fileManagementService.importFiles(project, newFiles, null);
         // import should fail on update_annotations sdrf, but all original spec files should still be uploaded
-        for (CaArrayFile file : project.getFiles()) {
+        for (final CaArrayFile file : project.getFiles()) {
             if (file.getName().equals(MageTabDataFiles.SPECIFICATION_UPDATE_ANNOTATIONS_SDRF.getName())) {
                 assertEquals(FileStatus.VALIDATION_ERRORS, file.getFileStatus());
             } else if (file.getName().equals(MageTabDataFiles.SPECIFICATION_UPDATE_ANNOTATIONS_IDF.getName())) {
@@ -319,60 +390,62 @@ public class FileManagementServiceTest extends AbstractServiceTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testImportIllegalState() {
-        Project project = getTgaBroadTestProject();
+        final Project project = getTgaBroadTestProject();
         project.getFiles().iterator().next().setFileStatus(FileStatus.VALIDATING);
-        this.fileManagementService.importFiles(project, project.getFileSet(), DataImportOptions
-                .getAutoCreatePerFileOptions());
+        this.fileManagementService.importFiles(project, project.getFileSet(),
+                DataImportOptions.getAutoCreatePerFileOptions());
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testValidateIllegalState() {
-        Project project = getTgaBroadTestProject();
+        final Project project = getTgaBroadTestProject();
         project.getFiles().iterator().next().setFileStatus(FileStatus.IMPORTED);
         this.fileManagementService.validateFiles(project, project.getFileSet());
     }
 
     @Test
     public void testImportDoesntOverwriteExistingExperiment() {
-        Project project = getTgaBroadTestProject();
-        Experiment experiment = new Experiment();
-        String title = "title" + System.currentTimeMillis();
+        final Project project = getTgaBroadTestProject();
+        final Experiment experiment = new Experiment();
+        final String title = "title" + System.currentTimeMillis();
         experiment.setTitle(title);
         project.setExperiment(experiment);
-        this.fileManagementService.importFiles(project, project.getFileSet(), DataImportOptions
-                .getAutoCreatePerFileOptions());
+        this.fileManagementService.importFiles(project, project.getFileSet(),
+                DataImportOptions.getAutoCreatePerFileOptions());
         assertEquals(title, project.getExperiment().getTitle());
     }
 
     private Project getTgaBroadTestProject() {
-        Project project = new Project();
+        final Project project = new Project();
         this.daoFactoryStub.searchDaoStub.save(project);
-        addFiles(project, TestMageTabSets.getFileSet(TestMageTabSets.TCGA_BROAD_INPUT_SET).getFiles());
+        addFiles(project, getFileSet(TestMageTabSets.TCGA_BROAD_INPUT_SET, this.fileAccessServiceStub).getFiles());
         saveFiles(project.getFiles());
         assertEquals(29, project.getFiles().size());
         return project;
     }
 
     private Project getMageTabSpecProject() throws Exception {
-        ArrayDesign design = importArrayDesign("design name", AffymetrixArrayDesignFiles.TEST3_CDF, FileType.AFFYMETRIX_CDF);
+        final ArrayDesign design =
+                importArrayDesign("design name", AffymetrixArrayDesignFiles.TEST3_CDF, AFFYMETRIX_CDF);
 
-        Project project = new Project();
+        final Project project = new Project();
         project.getExperiment().getArrayDesigns().add(design);
         this.daoFactoryStub.searchDaoStub.save(project);
-        addFiles(project, TestMageTabSets.getFileSet(TestMageTabSets.MAGE_TAB_SPECIFICATION_INPUT_SET).getFiles());
+        addFiles(project, getFileSet(TestMageTabSets.MAGE_TAB_SPECIFICATION_INPUT_SET, this.fileAccessServiceStub)
+                .getFiles());
         assertEquals(15, project.getFiles().size());
         return project;
     }
 
     private ArrayDesign importArrayDesign(String designName, File designFile, FileType designFileType)
             throws InvalidDataFileException, IllegalAccessException {
-        ArrayDesign design = new ArrayDesign();
+        final ArrayDesign design = new ArrayDesign();
         design.setName(designName);
         this.daoFactoryStub.searchDaoStub.save(design);
-        CaArrayFile caArrayFile = this.fileAccessServiceStub.add(designFile);
+        final CaArrayFile caArrayFile = this.fileAccessServiceStub.add(designFile);
         caArrayFile.setFileType(designFileType);
         design.addDesignFile(caArrayFile);
-        CaArrayFileSet fileSet = new CaArrayFileSet();
+        final CaArrayFileSet fileSet = new CaArrayFileSet();
         fileSet.add(caArrayFile);
         this.fileManagementService.saveArrayDesign(design, fileSet);
         this.fileManagementService.importArrayDesignDetails(design);
@@ -380,39 +453,40 @@ public class FileManagementServiceTest extends AbstractServiceTest {
     }
 
     private void addFiles(Project project, Set<CaArrayFile> files) {
-        for (CaArrayFile file : files) {
+        for (final CaArrayFile file : files) {
             addFile(project, file);
         }
     }
 
     private void addFile(Project project, CaArrayFile file) {
+        assertNotNull("no type for file " + file.getName(), file.getFileType());
         project.getFiles().add(file);
         file.setProject(project);
         this.daoFactoryStub.searchDaoStub.save(file);
     }
 
     private void saveFiles(SortedSet<CaArrayFile> files) {
-        for (CaArrayFile file : files) {
+        for (final CaArrayFile file : files) {
             this.daoFactoryStub.searchDaoStub.save(file);
         }
     }
 
     @Test
     public void testAddSupplementalFiles() {
-        Project project = getTgaBroadTestProject();
+        final Project project = getTgaBroadTestProject();
         this.fileManagementService.addSupplementalFiles(project, project.getFileSet());
-        for (CaArrayFile file : project.getFiles()) {
+        for (final CaArrayFile file : project.getFiles()) {
             assertEquals(FileStatus.SUPPLEMENTAL, file.getFileStatus());
         }
     }
 
     @Test
     public void testImportArrayDesignFile() throws InvalidDataFileException, IllegalAccessException {
-        ArrayDesign design = new ArrayDesign();
+        final ArrayDesign design = new ArrayDesign();
         design.setName("design name");
         this.daoFactoryStub.searchDaoStub.save(design);
         CaArrayFile caArrayFile = this.fileAccessServiceStub.add(AffymetrixArrayDesignFiles.TEST3_CDF);
-        caArrayFile.setFileType(FileType.AFFYMETRIX_CDF);
+        caArrayFile.setFileType(AFFYMETRIX_CDF);
         design.addDesignFile(caArrayFile);
         CaArrayFileSet fileSet = new CaArrayFileSet();
         fileSet.add(caArrayFile);
@@ -421,7 +495,7 @@ public class FileManagementServiceTest extends AbstractServiceTest {
         assertTrue(this.arrayDesignServiceStub.importCalled);
 
         caArrayFile = this.fileAccessServiceStub.add(GenepixArrayDesignFiles.DEMO_GAL);
-        caArrayFile.setFileType(FileType.GENEPIX_GAL);
+        caArrayFile.setFileType(AFFYMETRIX_CDF);
         design.getDesignFiles().clear();
         design.addDesignFile(caArrayFile);
         fileSet = new CaArrayFileSet();
@@ -430,23 +504,23 @@ public class FileManagementServiceTest extends AbstractServiceTest {
         this.fileManagementService.importArrayDesignDetails(design);
         assertTrue(this.arrayDesignServiceStub.importCalled);
     }
-    
+
     @Test
     public void testErrorHandling() throws InvalidDataFileException, IllegalAccessException {
-        ArrayDesign design = new ArrayDesign();
+        final ArrayDesign design = new ArrayDesign();
         design.setName("throw exception");
         this.daoFactoryStub.searchDaoStub.save(design);
-        CaArrayFile caArrayFile = this.fileAccessServiceStub.add(AffymetrixArrayDesignFiles.TEST3_CDF);
-        caArrayFile.setFileType(FileType.AFFYMETRIX_CDF);
+        final CaArrayFile caArrayFile = this.fileAccessServiceStub.add(AffymetrixArrayDesignFiles.TEST3_CDF);
+        caArrayFile.setFileType(AFFYMETRIX_CDF);
         design.addDesignFile(caArrayFile);
-        CaArrayFileSet fileSet = new CaArrayFileSet();
+        final CaArrayFileSet fileSet = new CaArrayFileSet();
         fileSet.add(caArrayFile);
         this.fileManagementService.saveArrayDesign(design, fileSet);
         assertEquals(FileStatus.VALIDATED, caArrayFile.getFileStatus());
         try {
             this.fileManagementService.importArrayDesignDetails(design);
             fail("Expected exception");
-        } catch (IllegalArgumentException e) {
+        } catch (final IllegalArgumentException e) {
             // expected
         }
         assertEquals(FileStatus.IMPORT_FAILED, caArrayFile.getFileStatus());
@@ -454,31 +528,43 @@ public class FileManagementServiceTest extends AbstractServiceTest {
 
     @Test(expected = InvalidDataFileException.class)
     public void testImportArrayDesignFileInvalid() throws InvalidDataFileException, IllegalAccessException {
-        ArrayDesign design = new ArrayDesign();
+        final ArrayDesign design = new ArrayDesign();
         design.setName("design name");
         this.daoFactoryStub.searchDaoStub.save(design);
-        CaArrayFile caArrayFile = this.fileAccessServiceStub.add(AffymetrixArrayDataFiles.TEST3_CHP);
-        caArrayFile.setFileType(FileType.AFFYMETRIX_CHP);
+        final CaArrayFile caArrayFile = this.fileAccessServiceStub.add(AffymetrixArrayDataFiles.TEST3_CHP);
+        caArrayFile.setFileType(AFFYMETRIX_CHP);
         design.addDesignFile(caArrayFile);
-        CaArrayFileSet fileSet = new CaArrayFileSet();
+        final CaArrayFileSet fileSet = new CaArrayFileSet();
         fileSet.add(caArrayFile);
         this.fileManagementService.saveArrayDesign(design, fileSet);
     }
 
     @Test
     public void testValidateMageTabAndUnparsedDataFile() {
-        Project project = getTgaBroadTestProject();
-        CaArrayFile expFile = this.fileAccessServiceStub.add(MageTabDataFiles.UNSUPPORTED_DATA_EXAMPLE_EXP);
-        expFile.setFileType(FileType.AFFYMETRIX_EXP);
+        final Project project = getTgaBroadTestProject();
+        final CaArrayFile expFile = this.fileAccessServiceStub.add(MageTabDataFiles.UNSUPPORTED_DATA_EXAMPLE_EXP);
+        expFile.setFileType(AFFYMETRIX_DAT);
         addFile(project, expFile);
         this.fileManagementService.validateFiles(project, project.getFileSet());
-        for (CaArrayFile file : project.getFiles()) {
-            if (expFile.equals(file)) {
+        for (final CaArrayFile file : project.getFiles()) {
+            if (expFile.equals(file) || file.getFileType().isDataMatrix()) {
                 assertEquals(FileStatus.VALIDATED_NOT_PARSED, file.getFileStatus());
             } else {
                 assertEquals(FileStatus.VALIDATED, file.getFileStatus());
             }
         }
+    }
+
+    public static CaArrayFileSet getFileSet(MageTabFileSet inputSet, FileAccessServiceStub fasStub) {
+        final CaArrayFileSet fileSet = new CaArrayFileSet();
+        for (final FileRef file : inputSet.getAllFiles()) {
+            // exclude ADF files
+            if (!file.getName().toUpperCase().endsWith("ADF")) {
+                final CaArrayFile caArrayFile = fasStub.add(file.getAsFile());
+                fileSet.add(caArrayFile);
+            }
+        }
+        return fileSet;
     }
 
     private static class LocalArrayDataServiceStub extends ArrayDataServiceStub {
@@ -489,7 +575,7 @@ public class FileManagementServiceTest extends AbstractServiceTest {
             } else {
                 arrayDataFile.setFileStatus(FileStatus.VALIDATED_NOT_PARSED);
             }
-            return new FileValidationResult(new File(arrayDataFile.getName()));
+            return new FileValidationResult();
         }
 
         @Override
@@ -514,13 +600,12 @@ public class FileManagementServiceTest extends AbstractServiceTest {
 
         @Override
         public ValidationResult validateDesign(Set<CaArrayFile> designFiles) {
-            CaArrayFile designFile = designFiles.iterator().next();
-            File file = new File(designFile.getName());
-            ValidationResult result = new ValidationResult();
+            final CaArrayFile designFile = designFiles.iterator().next();
+            final ValidationResult result = new ValidationResult();
             if (!designFile.getFileType().isArrayDesign()) {
-                result.addMessage(file, Type.ERROR, "Invalid design");
+                result.addMessage(designFile.getName(), Type.ERROR, "Invalid design");
                 designFile.setFileStatus(FileStatus.VALIDATION_ERRORS);
-                designFile.setValidationResult(result.getFileValidationResult(file));
+                designFile.setValidationResult(result.getFileValidationResult(designFile.getName()));
             } else {
                 designFile.setFileStatus(FileStatus.VALIDATED);
             }
@@ -592,10 +677,11 @@ public class FileManagementServiceTest extends AbstractServiceTest {
         }
 
         @Override
-        public <T extends PersistentObject> List<T> retrieveByIds(Class<T> entityClass, List<? extends Serializable> ids) {
-            List<T> list = new ArrayList<T>();
-            for (Serializable id : ids) {
-                T t = this.retrieve(entityClass, (Long) id);
+        public <T extends PersistentObject> List<T>
+                retrieveByIds(Class<T> entityClass, List<? extends Serializable> ids) {
+            final List<T> list = new ArrayList<T>();
+            for (final Serializable id : ids) {
+                final T t = this.retrieve(entityClass, (Long) id);
                 list.add(t);
             }
             return list;
@@ -610,7 +696,6 @@ public class FileManagementServiceTest extends AbstractServiceTest {
     }
 
     private static class LocalFileAccessServiceStub extends FileAccessServiceStub {
-        @Override
         public File getFile(CaArrayFile caArrayFile) {
             if (new File(MageTabDataFiles.TCGA_BROAD_DATA_DIRECTORY, caArrayFile.getName()).exists()) {
                 return new File(MageTabDataFiles.TCGA_BROAD_DATA_DIRECTORY, caArrayFile.getName());
@@ -620,7 +705,8 @@ public class FileManagementServiceTest extends AbstractServiceTest {
                 return new File(AffymetrixArrayDesignFiles.TEST3_CDF.getParentFile(), caArrayFile.getName());
             } else if (new File(MageTabDataFiles.SPECIFICATION_EXAMPLE_DIRECTORY, caArrayFile.getName()).exists()) {
                 return new File(MageTabDataFiles.SPECIFICATION_EXAMPLE_DIRECTORY, caArrayFile.getName());
-            } else if (new File(MageTabDataFiles.SPECIFICATION_UPDATE_ANNOTATIONS_DIRECTORY, caArrayFile.getName()).exists()) {
+            } else if (new File(MageTabDataFiles.SPECIFICATION_UPDATE_ANNOTATIONS_DIRECTORY, caArrayFile.getName())
+                    .exists()) {
                 return new File(MageTabDataFiles.SPECIFICATION_UPDATE_ANNOTATIONS_DIRECTORY, caArrayFile.getName());
             } else {
                 throw new IllegalArgumentException("Don't know location of " + caArrayFile.getName());
@@ -628,4 +714,48 @@ public class FileManagementServiceTest extends AbstractServiceTest {
         }
     }
 
+    private static class TestDataHandler extends AbstractDataFileHandler {
+        @Inject
+        public TestDataHandler(DataStorageFacade dataStorageFacade) {
+            super(dataStorageFacade);
+        }
+
+        @Override
+        public ArrayDataTypeDescriptor getArrayDataTypeDescriptor() {
+            return null;
+        }
+
+        @Override
+        public QuantitationTypeDescriptor[] getQuantitationTypeDescriptors() {
+            return new QuantitationTypeDescriptor[] {};
+        }
+
+        @Override
+        public List<LSID> getReferencedArrayDesignCandidateIds() throws PlatformFileReadException {
+            return Lists.newArrayList();
+        }
+
+        @Override
+        public Set<FileType> getSupportedTypes() {
+            return Sets.newHashSet(AFFYMETRIX_CEL, AFFYMETRIX_CHP);
+        }
+
+        @Override
+        public void loadData(DataSet dataSet, List<QuantitationType> types, ArrayDesign design)
+                throws PlatformFileReadException {
+            // do nothing
+        }
+
+        @Override
+        public boolean requiresMageTab() throws PlatformFileReadException {
+            return false;
+        }
+
+        @Override
+        public void validate(MageTabDocumentSet mTabSet, FileValidationResult result, ArrayDesign design)
+                throws PlatformFileReadException {
+            // do nothing
+        }
+
+    }
 }

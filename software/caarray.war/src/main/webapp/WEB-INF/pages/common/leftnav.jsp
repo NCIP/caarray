@@ -29,6 +29,12 @@
                     <li><a href="<c:url value="/protected/admin/import/reimport.action" />"
                            title="Re-import files to take advantage of new features">Re-Process</a></li>
                 </c:if>
+                <c:if test="${!empty menuItemContents}">
+                	<li class="liheader">Plugin Added</li>
+                	<c:forEach items="${menuItemContents}" var="menuItemContent">
+		                <li><a href="${menuItemContent.value}">${menuItemContent.label}</a></li>                	
+                	</c:forEach>
+                </c:if>
             </ul>
 
          </c:when>
@@ -40,6 +46,11 @@
                     <li><a href="<c:url value="/protected/project/workspace.action" />">Login</a></li>
                     <li><a href="<c:url value="/registration/input.action"/>">Register</a></li>
                 </c:if>
+                	<li class="liheader">Plugin Added</li>
+                	<c:forEach items="${menuItemContents}" var="menuItemContent">
+		                <li><a href="${menuItemContent.value}">${menuItemContent.label}</a></li>                	
+                	</c:forEach>
+                	<li class="liheader">Plugin OVER</li>
             </ul>
         </c:otherwise>
     </c:choose>

@@ -101,7 +101,6 @@ import gov.nih.nci.caarray.domain.search.SearchSampleCategory;
 import gov.nih.nci.caarray.domain.search.SearchSourceCategory;
 import gov.nih.nci.caarray.domain.search.SourceJoinableSortCriterion;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
-import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -110,24 +109,31 @@ import java.util.List;
 import java.util.Set;
 
 import org.hibernate.Transaction;
+import org.junit.Before;
 import org.junit.Test;
 
 import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
 
 /**
  * Unit tests for the Sample DAO.
- *
+ * 
  * @author Rashmi Srinivasa
  */
 @SuppressWarnings("PMD")
-public class SampleDaoTest  extends AbstractProjectDaoTest {
+public class SampleDaoTest extends AbstractProjectDaoTest {
     private static TermBasedCharacteristic DUMMY_CHARACTERISTIC = new TermBasedCharacteristic();
 
-    private static final SampleDao DAO_SAMPLE_OBJECT = CaArrayDaoFactory.INSTANCE.getSampleDao();
-    private static final PageSortParams<Sample> ALL_BY_NAME =
-        new PageSortParams<Sample>(10000, 0, SampleJoinableSortCriterion.NAME, false);
-    private static final PageSortParams<Source> ALL_SOURCE_BY_NAME =
-        new PageSortParams<Source>(10000, 0, SourceJoinableSortCriterion.NAME, false);
+    private static final PageSortParams<Sample> ALL_BY_NAME = new PageSortParams<Sample>(10000, 0,
+            SampleJoinableSortCriterion.NAME, false);
+    private static final PageSortParams<Source> ALL_SOURCE_BY_NAME = new PageSortParams<Source>(10000, 0,
+            SourceJoinableSortCriterion.NAME, false);
+
+    private SampleDao daoObject;
+
+    @Before
+    public void setUp() {
+        this.daoObject = new SampleDaoImpl(this.hibernateHelper);
+    }
 
     /**
      * Tests retrieving the <code>Sample</code> with the given id. Test encompasses save and delete of a
@@ -138,8 +144,7 @@ public class SampleDaoTest  extends AbstractProjectDaoTest {
         Transaction tx = null;
 
         try {
-            tx = hibernateHelper.beginTransaction();
-
+            tx = this.hibernateHelper.beginTransaction();
 
             DUMMY_CHARACTERISTIC = new TermBasedCharacteristic();
             DUMMY_CHARACTERISTIC.setCategory(DUMMY_CATEGORY);
@@ -150,19 +155,18 @@ public class SampleDaoTest  extends AbstractProjectDaoTest {
 
             saveSupportingObjects();
 
-            DAO_OBJECT.save(DUMMY_PROJECT_1);
+            this.daoObject.save(DUMMY_PROJECT_1);
             tx.commit();
 
-            tx = hibernateHelper.beginTransaction();
-            Sample retrievedSample = SEARCH_DAO.retrieve(Sample.class, DUMMY_SAMPLE.getId());
+            tx = this.hibernateHelper.beginTransaction();
+            final Sample retrievedSample = this.searchDao.retrieve(Sample.class, DUMMY_SAMPLE.getId());
 
-            if (!DUMMY_SAMPLE.equals(retrievedSample)
-                    || !compareSamples(retrievedSample, DUMMY_SAMPLE)) {
+            if (!DUMMY_SAMPLE.equals(retrievedSample) || !compareSamples(retrievedSample, DUMMY_SAMPLE)) {
                 fail("Retrieved sample is different from saved sample.");
             }
             tx.commit();
-        } catch (DAOException e) {
-            hibernateHelper.rollbackTransaction(tx);
+        } catch (final DAOException e) {
+            this.hibernateHelper.rollbackTransaction(tx);
             fail("DAO exception during save and retrieve of sample: " + e.getMessage());
         }
     }
@@ -176,36 +180,34 @@ public class SampleDaoTest  extends AbstractProjectDaoTest {
         Transaction tx = null;
 
         try {
-            tx = hibernateHelper.beginTransaction();
+            tx = this.hibernateHelper.beginTransaction();
             saveSupportingObjects();
-            DAO_OBJECT.save(DUMMY_PROJECT_1);
+            this.daoObject.save(DUMMY_PROJECT_1);
             tx.commit();
 
-            tx = hibernateHelper.beginTransaction();
+            tx = this.hibernateHelper.beginTransaction();
 
-            SearchSampleCategory[] categories = {SearchSampleCategory.SAMPLE_NAME};
+            final SearchSampleCategory[] categories = {SearchSampleCategory.SAMPLE_NAME };
 
-            int sampleCount = DAO_SAMPLE_OBJECT.searchCount(DUMMY_SAMPLE.getName(), Sample.class, categories);
+            final int sampleCount = this.daoObject.searchCount(DUMMY_SAMPLE.getName(), Sample.class, categories);
 
-            List<Sample> retrievedSamples = DAO_SAMPLE_OBJECT.searchByCategory
-                (ALL_BY_NAME, DUMMY_SAMPLE.getName(), Sample.class, categories);
+            final List<Sample> retrievedSamples =
+                    this.daoObject.searchByCategory(ALL_BY_NAME, DUMMY_SAMPLE.getName(), Sample.class, categories);
 
             tx.commit();
 
-            assertEquals(sampleCount , retrievedSamples.size());
+            assertEquals(sampleCount, retrievedSamples.size());
             assertEquals(1, sampleCount);
-            assertEquals(DUMMY_SAMPLE , retrievedSamples.get(0));
+            assertEquals(DUMMY_SAMPLE, retrievedSamples.get(0));
 
-        } catch (DAOException e) {
-            hibernateHelper.rollbackTransaction(tx);
+        } catch (final DAOException e) {
+            this.hibernateHelper.rollbackTransaction(tx);
             throw e;
         }
     }
 
-
     /**
-     * Tests retrieving the <code>Source</code> with the given category.
-     * Test encompasses save and delete
+     * Tests retrieving the <code>Source</code> with the given category. Test encompasses save and delete
      * <code>Source</code>.
      */
     @Test
@@ -213,32 +215,31 @@ public class SampleDaoTest  extends AbstractProjectDaoTest {
         Transaction tx = null;
 
         try {
-            tx = hibernateHelper.beginTransaction();
+            tx = this.hibernateHelper.beginTransaction();
             saveSupportingObjects();
-            DAO_OBJECT.save(DUMMY_PROJECT_1);
+            this.daoObject.save(DUMMY_PROJECT_1);
             tx.commit();
 
-            tx = hibernateHelper.beginTransaction();
-            SearchSourceCategory[] categories = SearchSourceCategory.values();
-            int sourceCount = DAO_SAMPLE_OBJECT.searchCount("", Source.class, categories);
+            tx = this.hibernateHelper.beginTransaction();
+            final SearchSourceCategory[] categories = SearchSourceCategory.values();
+            final int sourceCount = this.daoObject.searchCount("", Source.class, categories);
 
-            List<Source> retrievedSources = DAO_SAMPLE_OBJECT.searchByCategory
-                (ALL_SOURCE_BY_NAME, "", Source.class, categories);
+            final List<Source> retrievedSources =
+                    this.daoObject.searchByCategory(ALL_SOURCE_BY_NAME, "", Source.class, categories);
 
             tx.commit();
 
-            assertEquals(sourceCount , retrievedSources.size());
-            assertEquals(1 , sourceCount);
+            assertEquals(sourceCount, retrievedSources.size());
+            assertEquals(1, sourceCount);
 
-        } catch (DAOException e) {
-            hibernateHelper.rollbackTransaction(tx);
+        } catch (final DAOException e) {
+            this.hibernateHelper.rollbackTransaction(tx);
             throw e;
         }
     }
 
     /**
-     * Tests retrieving the <code>Sample</code> with the given category.
-     * Test encompasses save and delete.
+     * Tests retrieving the <code>Sample</code> with the given category. Test encompasses save and delete.
      * <code>Source</code>.
      */
     @Test
@@ -246,32 +247,31 @@ public class SampleDaoTest  extends AbstractProjectDaoTest {
         Transaction tx = null;
 
         try {
-            tx = hibernateHelper.beginTransaction();
+            tx = this.hibernateHelper.beginTransaction();
             saveSupportingObjects();
-            DAO_OBJECT.save(DUMMY_PROJECT_1);
+            this.daoObject.save(DUMMY_PROJECT_1);
             tx.commit();
 
-            tx = hibernateHelper.beginTransaction();
-            SearchSampleCategory[] categories = SearchSampleCategory.values();
-            int sampleCount = DAO_SAMPLE_OBJECT.searchCount("", Sample.class, categories);
+            tx = this.hibernateHelper.beginTransaction();
+            final SearchSampleCategory[] categories = SearchSampleCategory.values();
+            final int sampleCount = this.daoObject.searchCount("", Sample.class, categories);
 
-            List<Sample> retrievedSamples = DAO_SAMPLE_OBJECT.searchByCategory
-                (ALL_BY_NAME, "", Sample.class, categories);
+            final List<Sample> retrievedSamples =
+                    this.daoObject.searchByCategory(ALL_BY_NAME, "", Sample.class, categories);
 
             tx.commit();
 
-            assertEquals(sampleCount , retrievedSamples.size());
-            assertEquals(1 , sampleCount);
+            assertEquals(sampleCount, retrievedSamples.size());
+            assertEquals(1, sampleCount);
 
-        } catch (DAOException e) {
-            hibernateHelper.rollbackTransaction(tx);
+        } catch (final DAOException e) {
+            this.hibernateHelper.rollbackTransaction(tx);
             throw e;
         }
     }
 
     /**
-     * Tests retrieving the <code>Sample</code> with the given category.
-     * Test encompasses save and delete.
+     * Tests retrieving the <code>Sample</code> with the given category. Test encompasses save and delete.
      * <code>Source</code>.
      */
     @Test
@@ -279,54 +279,54 @@ public class SampleDaoTest  extends AbstractProjectDaoTest {
         Transaction tx = null;
 
         try {
-            tx = hibernateHelper.beginTransaction();
+            tx = this.hibernateHelper.beginTransaction();
             saveSupportingObjects();
-            DAO_OBJECT.save(DUMMY_PROJECT_1);
+            this.daoObject.save(DUMMY_PROJECT_1);
             tx.commit();
 
-            tx = hibernateHelper.beginTransaction();
-            SearchSampleCategory[] categories = SearchSampleCategory.values();
-            int sampleCount = DAO_SAMPLE_OBJECT.searchCount("", Sample.class, categories);
+            tx = this.hibernateHelper.beginTransaction();
+            final SearchSampleCategory[] categories = SearchSampleCategory.values();
+            final int sampleCount = this.daoObject.searchCount("", Sample.class, categories);
 
-            List<Sample> retrievedSamples = DAO_SAMPLE_OBJECT.searchByCategory
-                (ALL_BY_NAME, DUMMY_SAMPLE.getName(), Sample.class, categories);
+            final List<Sample> retrievedSamples =
+                    this.daoObject.searchByCategory(ALL_BY_NAME, DUMMY_SAMPLE.getName(), Sample.class, categories);
 
             tx.commit();
 
-            assertEquals(sampleCount , retrievedSamples.size());
-            assertEquals(1 , sampleCount);
+            assertEquals(sampleCount, retrievedSamples.size());
+            assertEquals(1, sampleCount);
 
-        } catch (DAOException e) {
-            hibernateHelper.rollbackTransaction(tx);
+        } catch (final DAOException e) {
+            this.hibernateHelper.rollbackTransaction(tx);
             throw e;
         }
     }
 
     /**
-     * Tests retrieving multiple biomaterials by keyword.
-     * Test encompasses save and delete.
-     * <code>Source</code>.
+     * Tests retrieving multiple biomaterials by keyword. Test encompasses save and delete. <code>Source</code>.
      */
     @Test
     public void testGetBiomaterialsByCategory() {
         Transaction tx = null;
 
         try {
-            tx = hibernateHelper.beginTransaction();
+            tx = this.hibernateHelper.beginTransaction();
             saveSupportingObjects();
-            DAO_OBJECT.save(DUMMY_PROJECT_1);
+            this.daoObject.save(DUMMY_PROJECT_1);
             tx.commit();
 
-            tx = hibernateHelper.beginTransaction();
+            tx = this.hibernateHelper.beginTransaction();
 
-            Set<Class<? extends AbstractBioMaterial>> classes = new HashSet<Class<? extends AbstractBioMaterial>>();
+            final Set<Class<? extends AbstractBioMaterial>> classes =
+                    new HashSet<Class<? extends AbstractBioMaterial>>();
             classes.add(Source.class);
             classes.add(Sample.class);
             classes.add(Extract.class);
-            
-            List<AbstractBioMaterial> retrievedBms = DAO_SAMPLE_OBJECT.searchByCategory(
-                    new PageSortParams<AbstractBioMaterial>(10000, 0, new AdHocSortCriterion<AbstractBioMaterial>(
-                            "name"), false), "Dummy", classes, ExternalBiomaterialSearchCategory.NAME);
+
+            final List<AbstractBioMaterial> retrievedBms =
+                    this.daoObject.searchByCategory(new PageSortParams<AbstractBioMaterial>(10000, 0,
+                            new AdHocSortCriterion<AbstractBioMaterial>("name"), false), "Dummy", classes,
+                            ExternalBiomaterialSearchCategory.NAME);
 
             tx.commit();
 
@@ -338,19 +338,18 @@ public class SampleDaoTest  extends AbstractProjectDaoTest {
             assertEquals(Source.class, retrievedBms.get(2).getClass());
             assertEquals(DUMMY_SOURCE.getName(), retrievedBms.get(2).getName());
 
-        } catch (DAOException e) {
-            hibernateHelper.rollbackTransaction(tx);
+        } catch (final DAOException e) {
+            this.hibernateHelper.rollbackTransaction(tx);
             throw e;
         }
     }
-
 
     @Test
     public void testGetSourceByCharacteristicCategory() {
         Transaction tx = null;
 
         try {
-            tx = hibernateHelper.beginTransaction();
+            tx = this.hibernateHelper.beginTransaction();
             DUMMY_CHARACTERISTIC = new TermBasedCharacteristic();
             DUMMY_CHARACTERISTIC.setCategory(DUMMY_CATEGORY);
             DUMMY_CHARACTERISTIC.setTerm(DUMMY_REPLICATE_TYPE);
@@ -359,31 +358,32 @@ public class SampleDaoTest  extends AbstractProjectDaoTest {
             DUMMY_SOURCE.getCharacteristics().add(DUMMY_CHARACTERISTIC);
 
             saveSupportingObjects();
-            DAO_OBJECT.save(DUMMY_PROJECT_1);
+            this.daoObject.save(DUMMY_PROJECT_1);
             tx.commit();
 
-            tx = hibernateHelper.beginTransaction();
+            tx = this.hibernateHelper.beginTransaction();
 
-            List<Category> all_chars = VOCABULARY_DAO.searchForCharacteristicCategory(null,
-                    TermBasedCharacteristic.class, DUMMY_CATEGORY.getName());
-            int sourceCount = DAO_SAMPLE_OBJECT
-                .countSourcesByCharacteristicCategory(all_chars.get(0), DUMMY_REPLICATE_TYPE.getValue());
-            PageSortParams<Source> sortByOrganism =
-                new PageSortParams<Source>(10000, 0, SourceJoinableSortCriterion.NAME, false);
+            final List<Category> all_chars =
+                    this.vocabularyDao.searchForCharacteristicCategory(null, TermBasedCharacteristic.class,
+                            DUMMY_CATEGORY.getName());
+            final int sourceCount =
+                    this.daoObject.countSourcesByCharacteristicCategory(all_chars.get(0),
+                            DUMMY_REPLICATE_TYPE.getValue());
+            final PageSortParams<Source> sortByOrganism =
+                    new PageSortParams<Source>(10000, 0, SourceJoinableSortCriterion.NAME, false);
             sortByOrganism.setSortCriterion(SourceJoinableSortCriterion.ORGANISM);
-            List<Source> retrievedSamples = DAO_SAMPLE_OBJECT
-                .searchSourcesByCharacteristicCategory(sortByOrganism,
-                        DUMMY_CATEGORY, DUMMY_REPLICATE_TYPE.getValue());
+            final List<Source> retrievedSamples =
+                    this.daoObject.searchSourcesByCharacteristicCategory(sortByOrganism, DUMMY_CATEGORY,
+                            DUMMY_REPLICATE_TYPE.getValue());
 
-            assertEquals(sourceCount , retrievedSamples.size());
+            assertEquals(sourceCount, retrievedSamples.size());
 
             tx.commit();
 
-            assertEquals(DUMMY_SOURCE , retrievedSamples.get(0));
+            assertEquals(DUMMY_SOURCE, retrievedSamples.get(0));
 
-
-        } catch (DAOException e) {
-            hibernateHelper.rollbackTransaction(tx);
+        } catch (final DAOException e) {
+            this.hibernateHelper.rollbackTransaction(tx);
             throw e;
         }
     }
@@ -393,7 +393,7 @@ public class SampleDaoTest  extends AbstractProjectDaoTest {
         Transaction tx = null;
 
         try {
-            tx = hibernateHelper.beginTransaction();
+            tx = this.hibernateHelper.beginTransaction();
             DUMMY_CHARACTERISTIC = new TermBasedCharacteristic();
             DUMMY_CHARACTERISTIC.setCategory(DUMMY_CATEGORY);
             DUMMY_CHARACTERISTIC.setTerm(DUMMY_REPLICATE_TYPE);
@@ -402,41 +402,38 @@ public class SampleDaoTest  extends AbstractProjectDaoTest {
             DUMMY_SOURCE.getCharacteristics().add(DUMMY_CHARACTERISTIC);
 
             saveSupportingObjects();
-            DAO_OBJECT.save(DUMMY_PROJECT_1);
+            this.daoObject.save(DUMMY_PROJECT_1);
             tx.commit();
 
-            tx = hibernateHelper.beginTransaction();
+            tx = this.hibernateHelper.beginTransaction();
 
-            List<Category> all_chars = VOCABULARY_DAO.searchForCharacteristicCategory(null,
-                    TermBasedCharacteristic.class, DUMMY_CATEGORY.getName());
-            int sourceCount = DAO_SAMPLE_OBJECT
-                .countSourcesByCharacteristicCategory(all_chars.get(0), DUMMY_REPLICATE_TYPE.getValue());
-            PageSortParams<Source> sortByOrganism =
-                new PageSortParams<Source>(10000, 0, SourceJoinableSortCriterion.NAME, false);
+            final List<Category> all_chars =
+                    this.vocabularyDao.searchForCharacteristicCategory(null, TermBasedCharacteristic.class,
+                            DUMMY_CATEGORY.getName());
+            final int sourceCount =
+                    this.daoObject.countSourcesByCharacteristicCategory(all_chars.get(0),
+                            DUMMY_REPLICATE_TYPE.getValue());
+            final PageSortParams<Source> sortByOrganism =
+                    new PageSortParams<Source>(10000, 0, SourceJoinableSortCriterion.NAME, false);
             sortByOrganism.setSortCriterion(SourceJoinableSortCriterion.ORGANISM);
-            List<Source> retrievedSamples = DAO_SAMPLE_OBJECT
-                .searchSourcesByCharacteristicCategory(sortByOrganism,
-                        DUMMY_CATEGORY, "");
+            final List<Source> retrievedSamples =
+                    this.daoObject.searchSourcesByCharacteristicCategory(sortByOrganism, DUMMY_CATEGORY, "");
 
-            assertEquals(sourceCount , retrievedSamples.size());
+            assertEquals(sourceCount, retrievedSamples.size());
 
             tx.commit();
 
-            assertEquals(DUMMY_SOURCE , retrievedSamples.get(0));
+            assertEquals(DUMMY_SOURCE, retrievedSamples.get(0));
 
-
-        } catch (DAOException e) {
-            hibernateHelper.rollbackTransaction(tx);
+        } catch (final DAOException e) {
+            this.hibernateHelper.rollbackTransaction(tx);
             throw e;
         }
     }
 
-
-
     /**
-     * Tests retrieving the <code>Sample</code> with the given char category and no keyword.
-     * Test encompasses save and delete of a
-     * <code>Sample</code>.
+     * Tests retrieving the <code>Sample</code> with the given char category and no keyword. Test encompasses save and
+     * delete of a <code>Sample</code>.
      */
     @Test
     public void testGetSampleByCharacteristicCategoryAll() {
@@ -444,7 +441,7 @@ public class SampleDaoTest  extends AbstractProjectDaoTest {
 
         try {
 
-            tx = hibernateHelper.beginTransaction();
+            tx = this.hibernateHelper.beginTransaction();
             DUMMY_CHARACTERISTIC = new TermBasedCharacteristic();
             DUMMY_CHARACTERISTIC.setCategory(DUMMY_CATEGORY);
             DUMMY_CHARACTERISTIC.setTerm(DUMMY_REPLICATE_TYPE);
@@ -453,41 +450,40 @@ public class SampleDaoTest  extends AbstractProjectDaoTest {
             DUMMY_SAMPLE.getCharacteristics().add(DUMMY_CHARACTERISTIC);
 
             saveSupportingObjects();
-            DAO_OBJECT.save(DUMMY_PROJECT_1);
+            this.daoObject.save(DUMMY_PROJECT_1);
             tx.commit();
 
-            tx = hibernateHelper.beginTransaction();
+            tx = this.hibernateHelper.beginTransaction();
 
-            List<Category> all_chars = VOCABULARY_DAO.searchForCharacteristicCategory(null,
-                    TermBasedCharacteristic.class, DUMMY_CATEGORY.getName());
-            int sampleCount = DAO_SAMPLE_OBJECT.countSamplesByCharacteristicCategory(all_chars.get(0), "");
-            List<Sample> retrievedSamples = DAO_SAMPLE_OBJECT
-                .searchSamplesByCharacteristicCategory(ALL_BY_NAME, DUMMY_CATEGORY, "");
+            final List<Category> all_chars =
+                    this.vocabularyDao.searchForCharacteristicCategory(null, TermBasedCharacteristic.class,
+                            DUMMY_CATEGORY.getName());
+            final int sampleCount = this.daoObject.countSamplesByCharacteristicCategory(all_chars.get(0), "");
+            final List<Sample> retrievedSamples =
+                    this.daoObject.searchSamplesByCharacteristicCategory(ALL_BY_NAME, DUMMY_CATEGORY, "");
 
-            assertEquals(sampleCount , retrievedSamples.size());
+            assertEquals(sampleCount, retrievedSamples.size());
 
             tx.commit();
 
-            assertEquals(DUMMY_SAMPLE , retrievedSamples.get(0));
+            assertEquals(DUMMY_SAMPLE, retrievedSamples.get(0));
 
-
-        } catch (DAOException e) {
-            hibernateHelper.rollbackTransaction(tx);
+        } catch (final DAOException e) {
+            this.hibernateHelper.rollbackTransaction(tx);
             throw e;
         }
     }
 
     /**
-     * Tests retrieving the <code>Sample</code> with the given char category and keyword.
-     * Test encompasses save and delete of a
-     * <code>Sample</code>.
+     * Tests retrieving the <code>Sample</code> with the given char category and keyword. Test encompasses save and
+     * delete of a <code>Sample</code>.
      */
     @Test
     public void testGetSampleByCharacteristicCategory() {
         Transaction tx = null;
 
         try {
-            tx = hibernateHelper.beginTransaction();
+            tx = this.hibernateHelper.beginTransaction();
             DUMMY_CHARACTERISTIC = new TermBasedCharacteristic();
             DUMMY_CHARACTERISTIC.setCategory(DUMMY_CATEGORY);
             DUMMY_CHARACTERISTIC.setTerm(DUMMY_REPLICATE_TYPE);
@@ -496,37 +492,39 @@ public class SampleDaoTest  extends AbstractProjectDaoTest {
             DUMMY_SAMPLE.getCharacteristics().add(DUMMY_CHARACTERISTIC);
 
             saveSupportingObjects();
-            DAO_OBJECT.save(DUMMY_PROJECT_1);
+            this.daoObject.save(DUMMY_PROJECT_1);
             tx.commit();
 
-            tx = hibernateHelper.beginTransaction();
+            tx = this.hibernateHelper.beginTransaction();
 
-            List<Category> all_chars = VOCABULARY_DAO.searchForCharacteristicCategory(null,
-                    TermBasedCharacteristic.class, DUMMY_CATEGORY.getName());
-            int sampleCount = DAO_SAMPLE_OBJECT
-                .countSamplesByCharacteristicCategory(all_chars.get(0), DUMMY_REPLICATE_TYPE.getValue());
-            List<Sample> retrievedSamples = DAO_SAMPLE_OBJECT
-                .searchSamplesByCharacteristicCategory(ALL_BY_NAME, DUMMY_CATEGORY, DUMMY_REPLICATE_TYPE.getValue());
+            final List<Category> all_chars =
+                    this.vocabularyDao.searchForCharacteristicCategory(null, TermBasedCharacteristic.class,
+                            DUMMY_CATEGORY.getName());
+            final int sampleCount =
+                    this.daoObject.countSamplesByCharacteristicCategory(all_chars.get(0),
+                            DUMMY_REPLICATE_TYPE.getValue());
+            final List<Sample> retrievedSamples =
+                    this.daoObject.searchSamplesByCharacteristicCategory(ALL_BY_NAME, DUMMY_CATEGORY,
+                            DUMMY_REPLICATE_TYPE.getValue());
 
-            assertEquals(sampleCount , retrievedSamples.size());
+            assertEquals(sampleCount, retrievedSamples.size());
 
             tx.commit();
 
-            assertEquals(DUMMY_SAMPLE , retrievedSamples.get(0));
+            assertEquals(DUMMY_SAMPLE, retrievedSamples.get(0));
 
-
-        } catch (DAOException e) {
-            hibernateHelper.rollbackTransaction(tx);
+        } catch (final DAOException e) {
+            this.hibernateHelper.rollbackTransaction(tx);
             throw e;
         }
     }
-    
+
     @Test
-    public void testSearchByCriteria() {        
+    public void testSearchByCriteria() {
         Transaction tx = null;
 
         try {
-            tx = hibernateHelper.beginTransaction();
+            tx = this.hibernateHelper.beginTransaction();
             DUMMY_CHARACTERISTIC = new TermBasedCharacteristic();
             DUMMY_CHARACTERISTIC.setCategory(DUMMY_CATEGORY);
             DUMMY_CHARACTERISTIC.setTerm(DUMMY_REPLICATE_TYPE);
@@ -536,90 +534,89 @@ public class SampleDaoTest  extends AbstractProjectDaoTest {
             DUMMY_SAMPLE.setExternalId("123");
             DUMMY_SAMPLE.setDiseaseState(DUMMY_NORMALIZATION_TYPE);
             DUMMY_SAMPLE.setCellType(DUMMY_FACTOR_TYPE_1);
-            
+
             saveSupportingObjects();
-            DAO_OBJECT.save(DUMMY_PROJECT_1);
-            DAO_OBJECT.save(DUMMY_PROJECT_2);
-            DAO_OBJECT.save(DUMMY_PROJECT_3);
+            this.daoObject.save(DUMMY_PROJECT_1);
+            this.daoObject.save(DUMMY_PROJECT_2);
+            this.daoObject.save(DUMMY_PROJECT_3);
             tx.commit();
 
-            tx = hibernateHelper.beginTransaction();
+            tx = this.hibernateHelper.beginTransaction();
 
-            PageSortParams<Source> sourceParams = new PageSortParams<Source>(20, 0, new AdHocSortCriterion<Source>(
-                    "name"), false);
-            PageSortParams<Sample> sampleParams = new PageSortParams<Sample>(20, 0, new AdHocSortCriterion<Sample>(
-                    "name"), false);
-            PageSortParams<Extract> extractParams = new PageSortParams<Extract>(20, 0, new AdHocSortCriterion<Extract>(
-                    "name"), false);
+            final PageSortParams<Source> sourceParams =
+                    new PageSortParams<Source>(20, 0, new AdHocSortCriterion<Source>("name"), false);
+            final PageSortParams<Sample> sampleParams =
+                    new PageSortParams<Sample>(20, 0, new AdHocSortCriterion<Sample>("name"), false);
+            final PageSortParams<Extract> extractParams =
+                    new PageSortParams<Extract>(20, 0, new AdHocSortCriterion<Extract>("name"), false);
 
             BiomaterialSearchCriteria bsc = new BiomaterialSearchCriteria();
             bsc.setExperiment(DUMMY_EXPERIMENT_1);
             bsc.getBiomaterialClasses().add(Source.class);
-            List<Source> srcResults = DAO_SAMPLE_OBJECT.searchByCriteria(sourceParams, bsc);
+            final List<Source> srcResults = this.daoObject.searchByCriteria(sourceParams, bsc);
             assertEquals(1, srcResults.size());
             assertEquals(DUMMY_SOURCE.getName(), srcResults.get(0).getName());
-            
+
             bsc.setExperiment(null);
             bsc.getNames().add(DUMMY_EXTRACT.getName());
             bsc.getBiomaterialClasses().clear();
             bsc.getBiomaterialClasses().add(Extract.class);
-            List<Extract> extResults = DAO_SAMPLE_OBJECT.searchByCriteria(extractParams, bsc);
+            List<Extract> extResults = this.daoObject.searchByCriteria(extractParams, bsc);
             assertEquals(1, extResults.size());
             assertEquals(DUMMY_EXTRACT.getName(), extResults.get(0).getName());
 
             bsc.getExternalIds().add("123");
-            extResults = DAO_SAMPLE_OBJECT.searchByCriteria(extractParams, bsc);
+            extResults = this.daoObject.searchByCriteria(extractParams, bsc);
             assertEquals(0, extResults.size());
 
             bsc.getNames().clear();
             bsc.getExternalIds().add(DUMMY_SAMPLE.getExternalId());
             bsc.getBiomaterialClasses().clear();
             bsc.getBiomaterialClasses().add(Sample.class);
-            List<Sample> results = DAO_SAMPLE_OBJECT.searchByCriteria(sampleParams, bsc);
+            List<Sample> results = this.daoObject.searchByCriteria(sampleParams, bsc);
             assertEquals(1, results.size());
             assertTrue(compareSamples(results.get(0), DUMMY_SAMPLE));
-            
+
             bsc.setExperiment(DUMMY_EXPERIMENT_2);
-            results = DAO_SAMPLE_OBJECT.searchByCriteria(sampleParams, bsc);
+            results = this.daoObject.searchByCriteria(sampleParams, bsc);
             assertEquals(0, results.size());
-            
+
             bsc = new BiomaterialSearchCriteria();
-            Category ds = new Category();
+            final Category ds = new Category();
             ds.setName(ExperimentOntologyCategory.DISEASE_STATE.getCategoryName());
             bsc.getAnnotationCriterions().add(new AnnotationCriterion(ds, DUMMY_NORMALIZATION_TYPE.getValue()));
             bsc.getBiomaterialClasses().add(Sample.class);
-            results = DAO_SAMPLE_OBJECT.searchByCriteria(sampleParams, bsc);
+            results = this.daoObject.searchByCriteria(sampleParams, bsc);
             assertEquals(1, results.size());
-            assertTrue(compareSamples(results.get(0), DUMMY_SAMPLE));            
+            assertTrue(compareSamples(results.get(0), DUMMY_SAMPLE));
 
             bsc.getAnnotationCriterions().add(new AnnotationCriterion(ds, DUMMY_FACTOR_TYPE_2.getValue()));
-            results = DAO_SAMPLE_OBJECT.searchByCriteria(sampleParams, bsc);
+            results = this.daoObject.searchByCriteria(sampleParams, bsc);
             assertEquals(1, results.size());
-            assertTrue(compareSamples(results.get(0), DUMMY_SAMPLE));            
+            assertTrue(compareSamples(results.get(0), DUMMY_SAMPLE));
 
-            
-            Category ct = new Category();
+            final Category ct = new Category();
             ct.setName(ExperimentOntologyCategory.CELL_TYPE.getCategoryName());
-            AnnotationCriterion ac2 = new AnnotationCriterion(ct, DUMMY_FACTOR_TYPE_1.getValue());
+            final AnnotationCriterion ac2 = new AnnotationCriterion(ct, DUMMY_FACTOR_TYPE_1.getValue());
             bsc.getAnnotationCriterions().add(ac2);
-            results = DAO_SAMPLE_OBJECT.searchByCriteria(sampleParams, bsc);
+            results = this.daoObject.searchByCriteria(sampleParams, bsc);
             assertEquals(1, results.size());
-            assertTrue(compareSamples(results.get(0), DUMMY_SAMPLE));            
+            assertTrue(compareSamples(results.get(0), DUMMY_SAMPLE));
 
             ac2.setValue("Fdsfdsfds");
-            results = DAO_SAMPLE_OBJECT.searchByCriteria(sampleParams, bsc);
+            results = this.daoObject.searchByCriteria(sampleParams, bsc);
             assertEquals(0, results.size());
 
             tx.commit();
-        } catch (DAOException e) {
-            hibernateHelper.rollbackTransaction(tx);
+        } catch (final DAOException e) {
+            this.hibernateHelper.rollbackTransaction(tx);
             throw e;
         }
     }
 
     /**
      * Compare 2 samples to check if they are the same.
-     *
+     * 
      * @return true if the 2 samples are the same and false otherwise.
      */
     private boolean compareSamples(Sample retrievedSample, Sample dummySample) {
@@ -627,13 +624,13 @@ public class SampleDaoTest  extends AbstractProjectDaoTest {
             return false;
         }
 
-        Collection<AbstractCharacteristic> characteristics = retrievedSample.getCharacteristics();
+        final Collection<AbstractCharacteristic> characteristics = retrievedSample.getCharacteristics();
         if (characteristics.isEmpty() || characteristics.size() != 1) {
             return false;
         }
 
-        Iterator<AbstractCharacteristic> i = characteristics.iterator();
-        TermBasedCharacteristic retrievedCharacteristic = (TermBasedCharacteristic) i.next();
+        final Iterator<AbstractCharacteristic> i = characteristics.iterator();
+        final TermBasedCharacteristic retrievedCharacteristic = (TermBasedCharacteristic) i.next();
         if (!DUMMY_CHARACTERISTIC.getTerm().equals(retrievedCharacteristic.getTerm())) {
             return false;
         }

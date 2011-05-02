@@ -22,9 +22,9 @@
     jobSize = 0;
     jobNumFiles = 0;
     MAX_JOB_SIZE = <s:property value="@gov.nih.nci.caarray.web.action.project.ProjectFilesAction@MAX_IMPORT_TOTAL_SIZE"/>;
-    SDRF_FILE_TYPE = '<s:property value="@gov.nih.nci.caarray.domain.file.FileType@MAGE_TAB_SDRF"/>';
-    IDF_FILE_TYPE = '<s:property value="@gov.nih.nci.caarray.domain.file.FileType@MAGE_TAB_IDF"/>';
-    GPR_FILE_TYPE = '<s:property value="@gov.nih.nci.caarray.domain.file.FileType@GENEPIX_GPR"/>';
+    SDRF_FILE_TYPE = '<s:property value="@gov.nih.nci.caarray.domain.file.FileTypeRegistry@MAGE_TAB_SDRF"/>';
+    IDF_FILE_TYPE = '<s:property value="@gov.nih.nci.caarray.domain.file.FileTypeRegistry@MAGE_TAB_IDF"/>';
+    GPR_FILE_TYPE = '<s:property value="@gov.nih.nci.caarray.plugins.genepix.GprHandler@GPR_FILE_TYPE"/>';
     <c:forEach items="${files}" var="file">
     fileTypeLookup['${file.id}'] = '${file.fileType}';
     fileNameLookup['${file.id}'] = '${caarrayfn:escapeJavaScript(file.name)}';

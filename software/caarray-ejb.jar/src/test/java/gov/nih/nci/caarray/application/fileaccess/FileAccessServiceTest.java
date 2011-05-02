@@ -84,306 +84,205 @@ package gov.nih.nci.caarray.application.fileaccess;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import edu.georgetown.pir.Organism;
-import gov.nih.nci.caarray.AbstractHibernateTest;
-import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
-import gov.nih.nci.caarray.domain.MultiPartBlob;
-import gov.nih.nci.caarray.domain.data.DerivedArrayData;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyBoolean;
+import static org.mockito.Matchers.anyLong;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import gov.nih.nci.caarray.application.AbstractServiceTest;
+import gov.nih.nci.caarray.dao.ArrayDao;
+import gov.nih.nci.caarray.dao.FileDao;
+import gov.nih.nci.caarray.dataStorage.DataStorageFacade;
+import gov.nih.nci.caarray.dataStorage.StorageMetadata;
+import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileStatus;
-import gov.nih.nci.caarray.domain.file.FileType;
+import gov.nih.nci.caarray.domain.file.FileTypeRegistry;
+import gov.nih.nci.caarray.domain.file.FileTypeRegistryImpl;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Project;
-import gov.nih.nci.caarray.domain.sample.Extract;
-import gov.nih.nci.caarray.domain.sample.LabeledExtract;
-import gov.nih.nci.caarray.domain.sample.Sample;
-import gov.nih.nci.caarray.domain.vocabulary.TermSource;
-import gov.nih.nci.caarray.staticinjection.CaArrayEjbStaticInjectionModule;
-import gov.nih.nci.caarray.test.data.arraydata.GenepixArrayDataFiles;
-import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
-import gov.nih.nci.caarray.util.CaArrayHibernateHelperModule;
+import gov.nih.nci.caarray.platforms.spi.DataFileHandler;
+import gov.nih.nci.caarray.platforms.spi.DesignFileHandler;
+import gov.nih.nci.caarray.util.CaArrayUtils;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.sql.SQLException;
-import java.util.ArrayList;
+import java.net.URI;
+import java.util.Collections;
+import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
-import org.apache.commons.io.IOUtils;
-import org.hibernate.Transaction;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
-import com.google.inject.Guice;
-import com.google.inject.Injector;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 /**
  *
  */
 @SuppressWarnings("PMD.AvoidDuplicateLiterals")
-public class FileAccessServiceTest extends AbstractHibernateTest {
+public class FileAccessServiceTest extends AbstractServiceTest {
+    private static final StorageMetadata TEST_METADATA = new StorageMetadata(10, 100,
+            CaArrayUtils.makeUriQuietly("test:1"), new Date());
+
+    @Mock
+    private FileDao fileDao;
+    @Mock
+    private ArrayDao arrayDao;
+    @Mock
+    private DataStorageFacade dataStorageFacade;
+
     private FileAccessServiceBean fileAccessService;
 
-    public FileAccessServiceTest() {
-        super(true);        
-    }
-    
-    /**
-     * @return a Guice injector from which this will obtain dependencies.
-     */
-    @Override
-    protected Injector createInjector() {
-        return Guice.createInjector(new CaArrayEjbStaticInjectionModule(), new CaArrayHibernateHelperModule());
-    }
-    
     @Before
     public void setUp() {
-        CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
-        this.fileAccessService = new FileAccessServiceBean(daoFactory.getFileDao(), daoFactory.getArrayDao());
-        hibernateHelper.unbindAndCleanupSession();
-        hibernateHelper.openAndBindSession();
-        
-        TemporaryFileCacheLocator.resetTemporaryFileCache();
-        TemporaryFileCacheLocator.setTemporaryFileCacheFactory(TemporaryFileCacheLocator.DEFAULT);
-    }
+        MockitoAnnotations.initMocks(this);
+        when(this.dataStorageFacade.addFile(any(InputStream.class), anyBoolean())).thenReturn(TEST_METADATA);
 
-    @After
-    public void tearDown() {
-        TemporaryFileCacheLocator.getTemporaryFileCache().closeFiles();
+        this.fileAccessService = new FileAccessServiceBean();
+        final FileTypeRegistry typeRegistry =
+                new FileTypeRegistryImpl(Collections.<DataFileHandler> emptySet(),
+                        Collections.<DesignFileHandler> emptySet());
+        this.fileAccessService.setFileDao(this.fileDao);
+        this.fileAccessService.setArrayDao(this.arrayDao);
+        this.fileAccessService.setDataStorageFacade(this.dataStorageFacade);
+        this.fileAccessService.setTypeRegistry(typeRegistry);
     }
 
     @Test
-    public void testAdd() throws IOException, FileAccessException {
-        Transaction tx = hibernateHelper.beginTransaction();
-        File file = File.createTempFile("pre", ".ext");
+    public void testAddUnknownType() throws IOException, FileAccessException {
+        final File file = File.createTempFile("pre", ".ext");
         file.deleteOnExit();
-        CaArrayFile caArrayFile = this.fileAccessService.add(file);
+        final CaArrayFile caArrayFile = this.fileAccessService.add(file);
         assertEquals(file.getName(), caArrayFile.getName());
+        assertEquals(FileStatus.UPLOADED, caArrayFile.getFileStatus());
         assertNull(caArrayFile.getFileType());
+        assertEquals(TEST_METADATA.getUncompressedSize(), caArrayFile.getUncompressedSize());
+        assertEquals(TEST_METADATA.getCompressedSize(), caArrayFile.getCompressedSize());
+        assertEquals(TEST_METADATA.getHandle(), caArrayFile.getDataHandle());
+    }
 
-        file = File.createTempFile("pre", ".cdf");
+    @Test
+    public void testAddKnownType() throws IOException, FileAccessException {
+        final File file = File.createTempFile("pre", ".idf");
         file.deleteOnExit();
-        caArrayFile = this.fileAccessService.add(file);
-        assertEquals(FileType.AFFYMETRIX_CDF, caArrayFile.getFileType());
-
-        caArrayFile = this.fileAccessService.add(GenepixArrayDataFiles.GPR_3_0_6);
-        assertEquals(FileType.GENEPIX_GPR, caArrayFile.getFileType());
-        tx.commit();
+        final CaArrayFile caArrayFile = this.fileAccessService.add(file);
+        assertEquals(file.getName(), caArrayFile.getName());
+        assertEquals(FileStatus.UPLOADED, caArrayFile.getFileStatus());
+        assertEquals(FileTypeRegistry.MAGE_TAB_IDF, caArrayFile.getFileType());
+        assertEquals(TEST_METADATA.getUncompressedSize(), caArrayFile.getUncompressedSize());
+        assertEquals(TEST_METADATA.getCompressedSize(), caArrayFile.getCompressedSize());
+        assertEquals(TEST_METADATA.getHandle(), caArrayFile.getDataHandle());
     }
 
-    /**
-     * Test method for {@link gov.nih.nci.caarray.application.fileaccess.FileAccessService#getFile(gov.nih.nci.caarray.domain.file.CaArrayFile)}.
-     * @throws FileAccessException
-     */
     @Test
-    public void testGetFile() throws Exception {
-        Transaction tx = hibernateHelper.beginTransaction();        
-        MultiPartBlob.setBlobSize(100);
-        File file = MageTabDataFiles.SPECIFICATION_EXAMPLE_SDRF;
-        CaArrayFile caArrayFile = this.fileAccessService.add(file);
-        hibernateHelper.getCurrentSession().save(caArrayFile);
-        hibernateHelper.getCurrentSession().flush();
-        File retrievedFile = TemporaryFileCacheLocator.getTemporaryFileCache().getFile(caArrayFile);
-        assertEquals(file.getName(), retrievedFile.getName());
-        assertEquals(file.length(), retrievedFile.length());
-        assertTrue(file.exists());
-        assertTrue(retrievedFile.exists());
-
-        InputStream originalIs = new FileInputStream(file);
-        byte[] originalBytes = IOUtils.toByteArray(originalIs);
-        IOUtils.closeQuietly(originalIs);
-
-        InputStream retrievedIs = new FileInputStream(retrievedFile);
-        byte[] retrievedBytes = IOUtils.toByteArray(retrievedIs);
-        IOUtils.closeQuietly(retrievedIs);
-        assertEquals(originalBytes.length, retrievedBytes.length);
-        for (int i = 0; i < originalBytes.length; i++) {
-            assertEquals(new Byte(originalBytes[i]), new Byte(retrievedBytes[i])); // NOPMD
-        }
-
-        TemporaryFileCacheLocator.getTemporaryFileCache().closeFile(caArrayFile);
-        assertFalse(retrievedFile.exists());
-        tx.commit();
+    public void testAddKnownTypeWithName() throws IOException, FileAccessException {
+        final File file = File.createTempFile("pre", "ext");
+        file.deleteOnExit();
+        final CaArrayFile caArrayFile = this.fileAccessService.add(file, "testfile1.idf");
+        assertEquals("testfile1.idf", caArrayFile.getName());
+        assertEquals(FileStatus.UPLOADED, caArrayFile.getFileStatus());
+        assertEquals(FileTypeRegistry.MAGE_TAB_IDF, caArrayFile.getFileType());
+        assertEquals(TEST_METADATA.getUncompressedSize(), caArrayFile.getUncompressedSize());
+        assertEquals(TEST_METADATA.getCompressedSize(), caArrayFile.getCompressedSize());
+        assertEquals(TEST_METADATA.getHandle(), caArrayFile.getDataHandle());
     }
 
-    /**
-     * Test method for {@link gov.nih.nci.caarray.application.fileaccess.FileAccessService#unzipFiles(java.util.List, java.util.List)}.
-     * @throws FileAccessException
-     */
     @Test
-    public void testUnzipFilesSingle() throws FileAccessException {
-        File file1 = MageTabDataFiles.SPECIFICATION_ZIP;
-
-        List<File> uploadFiles = new ArrayList<File>();
-        uploadFiles.add(file1);
-
-        List<String> uploadFileNames = new ArrayList<String>();
-        uploadFileNames.add(MageTabDataFiles.SPECIFICATION_ZIP.getName());
-
-        assertEquals(1, uploadFiles.size());
-        this.fileAccessService.unzipFiles(uploadFiles, uploadFileNames);
-        assertEquals(16, uploadFiles.size());
+    public void testAddKnownTypeWithInputStream() throws IOException, FileAccessException {
+        final String contents = "test";
+        final CaArrayFile caArrayFile =
+                this.fileAccessService.add(new ByteArrayInputStream(contents.getBytes()), "testfile1.idf");
+        assertEquals("testfile1.idf", caArrayFile.getName());
+        assertEquals(FileStatus.UPLOADED, caArrayFile.getFileStatus());
+        assertEquals(FileTypeRegistry.MAGE_TAB_IDF, caArrayFile.getFileType());
+        assertEquals(TEST_METADATA.getUncompressedSize(), caArrayFile.getUncompressedSize());
+        assertEquals(TEST_METADATA.getCompressedSize(), caArrayFile.getCompressedSize());
+        assertEquals(TEST_METADATA.getHandle(), caArrayFile.getDataHandle());
     }
 
-    /**
-     * Test method for {@link gov.nih.nci.caarray.application.fileaccess.FileAccessService#unzipFiles(java.util.List, java.util.List)}.
-     */
     @Test
-    public void testUnzipFilesMultiple() {
-        File file1 = MageTabDataFiles.SPECIFICATION_ZIP;
-        File file2 = MageTabDataFiles.EBI_TEMPLATE_IDF;
+    public void testSynchronizeWithStorage() {
+        final List<URI> fileRefs = Lists.newArrayList(CaArrayUtils.makeUriQuietly("foo:bar"));
+        final List<URI> parsedRefs = Lists.newArrayList(CaArrayUtils.makeUriQuietly("bar:foo"));
 
-        List<File> uploadFiles = new ArrayList<File>();
-        uploadFiles.add(file1);
-        uploadFiles.add(file2);
+        final Set<URI> allRefs = Sets.newHashSet(fileRefs);
+        allRefs.addAll(parsedRefs);
 
-        List<String> uploadFileNames = new ArrayList<String>();
-        uploadFileNames.add(MageTabDataFiles.SPECIFICATION_ZIP.getName());
+        when(this.fileDao.getAllFileHandles()).thenReturn(fileRefs);
+        when(this.arrayDao.getAllParsedDataHandles()).thenReturn(parsedRefs);
 
-        assertEquals(2, uploadFiles.size());
-        this.fileAccessService.unzipFiles(uploadFiles, uploadFileNames);
-        assertEquals(17, uploadFiles.size());
+        this.fileAccessService.synchronizeDataStorage();
+
+        verify(this.dataStorageFacade).removeUnreferencedData(allRefs,
+                FileAccessServiceBean.MIN_UNREFERENCABLE_DATA_AGE);
     }
 
-    @Test(expected = org.hibernate.ObjectNotFoundException.class)
-    public void testRemove() {
-        Transaction tx = hibernateHelper.beginTransaction();
-        MultiPartBlob.setBlobSize(100);
-        File file = MageTabDataFiles.SPECIFICATION_EXAMPLE_SDRF;
-        CaArrayFile caArrayFile = this.fileAccessService.add(file);
-        caArrayFile.setFileStatus(FileStatus.IMPORTED_NOT_PARSED);
+    @Test
+    public void testRemoveNotDeletable() {
+        final CaArrayFile f = new CaArrayFile();
+        f.setId(1L);
+        final Project p = new Project();
+        p.setId(1L);
+        p.getFiles().add(f);
+        f.setProject(p);
 
-        Project p = new Project();
-        p.getExperiment().setTitle("Foo");
-        Organism o = new Organism();
-        o.setScientificName("baz");
-        p.getExperiment().setOrganism(o);
-        TermSource ts = new TermSource();
-        ts.setName("TS");
-        ts.setUrl("http://ts");
-        o.setTermSource(ts);
-        p.getFiles().add(caArrayFile);
-        caArrayFile.setProject(p);
-        hibernateHelper.getCurrentSession().save(p);
-        hibernateHelper.getCurrentSession().save(caArrayFile);
-        tx.commit();
-        
-        tx = hibernateHelper.beginTransaction();
-        caArrayFile = (CaArrayFile) hibernateHelper.getCurrentSession().load(CaArrayFile.class, caArrayFile.getId());
-        boolean removed = this.fileAccessService.remove(caArrayFile);
+        when(this.fileDao.getDeletableFiles(1L)).thenReturn(Lists.<CaArrayFile> newArrayList());
+
+        final boolean removed = this.fileAccessService.remove(f);
+        assertFalse(removed);
+    }
+
+    @Test
+    public void testRemoveNoArrayData() {
+        final CaArrayFile f = new CaArrayFile();
+        f.setId(1L);
+        final Project p = new Project();
+        p.setId(1L);
+        p.getFiles().add(f);
+        f.setProject(p);
+
+        when(this.fileDao.getDeletableFiles(1L)).thenReturn(Lists.newArrayList(f));
+        when(this.arrayDao.getArrayData(anyLong())).thenReturn(null);
+
+        final boolean removed = this.fileAccessService.remove(f);
         assertTrue(removed);
-        tx.commit();
-
-        tx = hibernateHelper.beginTransaction();
-        caArrayFile = (CaArrayFile) hibernateHelper.getCurrentSession().load(CaArrayFile.class, caArrayFile.getId());
-        caArrayFile.toString();
-        tx.commit();
+        assertTrue(p.getFiles().isEmpty());
+        verify(this.fileDao).remove(f);
     }
 
     @Test
-    public void testRemoveWithArrayData() throws SQLException {
-        Transaction tx = hibernateHelper.beginTransaction();
-        MultiPartBlob.setBlobSize(100);
-        // SDRF
-        File file = MageTabDataFiles.SPECIFICATION_EXAMPLE_SDRF;
-        CaArrayFile caArrayFile = this.fileAccessService.add(file);
-        caArrayFile.setFileStatus(FileStatus.IMPORTED_NOT_PARSED);
-        // derived data file
-        File file2 = MageTabDataFiles.SPECIFICATION_DERIVED_DATA_EXAMPLE_DATA_FILE;
-        CaArrayFile caArrayFile2 = this.fileAccessService.add(file2);
-        caArrayFile2.setFileStatus(FileStatus.IMPORTED_NOT_PARSED);
-        DerivedArrayData der = new DerivedArrayData();
-        der.setDataFile(caArrayFile2);
-        Hybridization hyb = new Hybridization();
-        hyb.setName("foo");
-        hyb.getDerivedDataCollection().add(der);
-        der.getHybridizations().add(hyb);
-        Sample sample = new Sample();
-        sample.setName("sample");
-        Extract extract = new Extract();
-        extract.setName("extract");
-        sample.getExtracts().add(extract);
-        LabeledExtract le = new LabeledExtract();
-        le.setName("label");
-        extract.getLabeledExtracts().add(le);
-        le.getHybridizations().add(hyb);
-        hyb.getLabeledExtracts().add(le);
-        le.getExtracts().add(extract);
-        extract.getSamples().add(sample);
-        
-        Project p = new Project();
-        p.getExperiment().setTitle("Foo");
-        Organism o = new Organism();
-        o.setScientificName("baz");
-        p.getExperiment().setOrganism(o);
-        TermSource ts = new TermSource();
-        ts.setName("TS");
-        ts.setUrl("http://ts");
-        o.setTermSource(ts);
-        p.getFiles().add(caArrayFile);
-        p.getFiles().add(caArrayFile2);
-        caArrayFile.setProject(p);
-        caArrayFile2.setProject(p);
-        
-        hibernateHelper.getCurrentSession().save(p);
-        
-        hibernateHelper.getCurrentSession().save(sample);
-        hibernateHelper.getCurrentSession().saveOrUpdate(extract);
-        hibernateHelper.getCurrentSession().saveOrUpdate(le);
-        hibernateHelper.getCurrentSession().saveOrUpdate(sample);
-        hibernateHelper.getCurrentSession().saveOrUpdate(hyb);
-        hibernateHelper.getCurrentSession().saveOrUpdate(der);
+    public void testRemoveWithArrayData() {
+        final CaArrayFile f = new CaArrayFile();
+        f.setId(1L);
+        final Project p = new Project();
+        p.setId(1L);
+        p.getFiles().add(f);
+        f.setProject(p);
 
-        hibernateHelper.getCurrentSession().save(caArrayFile);
-        hibernateHelper.getCurrentSession().save(caArrayFile2);
-        hibernateHelper.getCurrentSession().flush();
-        tx.commit();
-        
-        tx = hibernateHelper.beginTransaction();
-        caArrayFile = (CaArrayFile) hibernateHelper.getCurrentSession().load(CaArrayFile.class, caArrayFile.getId());
-        caArrayFile2 = (CaArrayFile) hibernateHelper.getCurrentSession().load(CaArrayFile.class, caArrayFile2.getId());
-        der = (DerivedArrayData) hibernateHelper.getCurrentSession().load(DerivedArrayData.class, der.getId());
-        assertEquals(der.getDataFile(), caArrayFile2);
-        assertNotNull(caArrayFile.getProject());
-        assertNotNull(caArrayFile2.getProject());
-        tx.commit();
-        
-        tx = hibernateHelper.beginTransaction();
-        caArrayFile = (CaArrayFile) hibernateHelper.getCurrentSession().load(CaArrayFile.class, caArrayFile.getId());
-        boolean removed = this.fileAccessService.remove(caArrayFile);
+        final RawArrayData ad = new RawArrayData();
+        ad.setId(1L);
+        final Hybridization h = new Hybridization();
+        h.setId(1L);
+        ad.addHybridization(h);
+        h.getRawDataCollection().add(ad);
+
+        when(this.fileDao.getDeletableFiles(1L)).thenReturn(Lists.newArrayList(f));
+        when(this.arrayDao.getArrayData(1L)).thenReturn(ad);
+
+        final boolean removed = this.fileAccessService.remove(f);
         assertTrue(removed);
-        caArrayFile2 = (CaArrayFile) hibernateHelper.getCurrentSession().load(CaArrayFile.class, caArrayFile2.getId());
-        removed = this.fileAccessService.remove(caArrayFile2);
-        assertTrue(removed);        
-
-        tx.commit();
-        tx = hibernateHelper.beginTransaction();
-
-        try {
-            caArrayFile = (CaArrayFile) hibernateHelper.getCurrentSession().load(CaArrayFile.class, caArrayFile.getId());
-            fail("file " + caArrayFile + " not deleted");
-        } catch (org.hibernate.ObjectNotFoundException e) {
-        }
-
-        try {
-            caArrayFile2 = (CaArrayFile) hibernateHelper.getCurrentSession().load(CaArrayFile.class, caArrayFile2.getId());
-            fail("file " + caArrayFile2 + " not deleted");
-        } catch (org.hibernate.ObjectNotFoundException e) {
-        }
-        try {
-            der = (DerivedArrayData) hibernateHelper.getCurrentSession().load(DerivedArrayData.class, der.getId());
-            fail("raw array data not deleted " + der);
-        } catch (org.hibernate.ObjectNotFoundException e) {
-        }
-        hyb = (Hybridization) hibernateHelper.getCurrentSession().load(Hybridization.class, hyb.getId());
-        assertTrue(hyb.getDerivedDataCollection().isEmpty());
-        tx.commit();
+        assertTrue(p.getFiles().isEmpty());
+        assertTrue(h.getRawDataCollection().isEmpty());
+        verify(this.fileDao).remove(f);
+        verify(this.arrayDao).remove(ad);
     }
 }

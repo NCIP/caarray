@@ -143,7 +143,7 @@ public class JobFactoryImpl implements JobFactory {
      */
     public ProjectFilesImportJob createProjectFilesImportJob(String user, Project project, CaArrayFileSet fileSet,
             DataImportOptions dataImportOptions) {
-        return new ProjectFilesImportJob(user, usernameHolderProvider.get(), project, fileSet, dataImportOptions,
+        return new ProjectFilesImportJob(user, project, fileSet, dataImportOptions,
                 arrayDataImporterProvider.get(), mageTabImporterProvider.get(), projectDaoProvider.get(),
                 searchDaoProvider.get());
     }
@@ -153,7 +153,7 @@ public class JobFactoryImpl implements JobFactory {
      */
     public ProjectFilesValidationJob createProjectFilesValidationJob(String user, Project project,
             CaArrayFileSet fileSet) {
-        return new ProjectFilesValidationJob(user, usernameHolderProvider.get(), project, fileSet,
+        return new ProjectFilesValidationJob(user, project, fileSet,
                 arrayDataImporterProvider.get(), mageTabImporterProvider.get(), projectDaoProvider.get(),
                 searchDaoProvider.get());
     }

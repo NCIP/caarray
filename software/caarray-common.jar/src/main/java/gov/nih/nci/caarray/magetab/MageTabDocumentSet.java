@@ -126,16 +126,13 @@ public final class MageTabDocumentSet implements Serializable {
     private final Map<String, ArrayDesign> arrayDesignCache = new HashMap<String, ArrayDesign>();
     private final Map<String, Protocol> protocolCache = new HashMap<String, Protocol>();
     private final ValidationResult validationResult = new ValidationResult();
-    private final Map<String, List<Hybridization>> hybridizations
-        = new HashMap<String, List<Hybridization>>();
-    private final Map<String, List<Sample>> samples
-        = new HashMap<String, List<Sample>>();
+    private final Map<String, List<Hybridization>> hybridizations = new HashMap<String, List<Hybridization>>();
+    private final Map<String, List<Sample>> samples = new HashMap<String, List<Sample>>();
     private final ValidatorSet validatorSet;
 
     /**
-     * Create a new MAGE-TAB document set based on the given set of input files, using
-     * no validations.
-     *
+     * Create a new MAGE-TAB document set based on the given set of input files, using no validations.
+     * 
      * @param inputFileSet the set of files to hold the exported contents of the documents.
      */
     public MageTabDocumentSet(MageTabFileSet inputFileSet) {
@@ -143,9 +140,8 @@ public final class MageTabDocumentSet implements Serializable {
     }
 
     /**
-     * Create a new MAGE-TAB document set based on the given set of input files, using
-     * the given set of validations.
-     *
+     * Create a new MAGE-TAB document set based on the given set of input files, using the given set of validations.
+     * 
      * @param inputFileSet the set of files to hold the exported contents of the documents.
      * @param validatorSet the ValidatorSet to use to validate the input files.
      */
@@ -154,83 +150,82 @@ public final class MageTabDocumentSet implements Serializable {
         this.validatorSet = validatorSet;
     }
 
-    
     /**
      * @return the validatorSet
      */
     public ValidatorSet getValidatorSet() {
-        return validatorSet;
+        return this.validatorSet;
     }
 
     /**
      * @return the idfDocuments
      */
     public Set<IdfDocument> getIdfDocuments() {
-        return idfDocuments;
+        return this.idfDocuments;
     }
 
     /**
      * @return the sdrfDocuments
      */
     public Set<SdrfDocument> getSdrfDocuments() {
-        return sdrfDocuments;
+        return this.sdrfDocuments;
     }
 
     /**
      * @return the adfDocuments
      */
     public Set<AdfDocument> getAdfDocuments() {
-        return adfDocuments;
+        return this.adfDocuments;
     }
 
     /**
      * @return the dataMatrixes
      */
     public Set<DataMatrix> getDataMatrixes() {
-        return dataMatrixes;
+        return this.dataMatrixes;
     }
 
     /**
      * @return the nativeDataFiles
      */
     public Set<NativeDataFile> getNativeDataFiles() {
-        return nativeDataFiles;
+        return this.nativeDataFiles;
     }
 
     /**
      * Returns all <code>TermSources</code> used in the document set.
-     *
+     * 
      * @return the <code>TermSources</code>.
      */
     public Collection<TermSource> getTermSources() {
-        return termSourceCache.values();
+        return this.termSourceCache.values();
     }
 
     /**
      * Returns all <code>TermSources</code> used in the document set mapped to their names.
-     *
+     * 
      * @return the <code>TermSources</code> map.
      */
     public Map<String, TermSource> getTermSourceMap() {
-        return termSourceCache;
+        return this.termSourceCache;
     }
 
     /**
      * Returns all <code>Protocols</code> defined in the document set.
-     *
+     * 
      * @return the <code>Protocols</code>.
      */
     public Collection<Protocol> getProtocols() {
-        return protocolCache.values();
+        return this.protocolCache.values();
     }
 
     /**
      * Returns all <code>OntologyTerms</code> used in the document set.
-     *
+     * 
      * @return the <code>OntologyTerms</code>.
      */
     public Collection<OntologyTerm> getTerms() {
-        return termCache;
+        return this.termCache;
     }
 
     private void initializeFromFileSet(MageTabFileSet inputFileSet) {
@@ -242,33 +237,33 @@ public final class MageTabDocumentSet implements Serializable {
     }
 
     private void initializeIdfs(MageTabFileSet inputFileSet) {
-        for (FileRef file : inputFileSet.getIdfFiles()) {
-            idfDocuments.add(new IdfDocument(this, file));
+        for (final FileRef file : inputFileSet.getIdfFiles()) {
+            this.idfDocuments.add(new IdfDocument(this, file));
         }
     }
 
     private void initializeAdfs(MageTabFileSet inputFileSet) {
-        for (FileRef file : inputFileSet.getAdfFiles()) {
+        for (final FileRef file : inputFileSet.getAdfFiles()) {
             // TODO Implement initializeAdfs and remove placeholder line below
             FileUtility.checkFileExists(file);
         }
     }
 
     private void initializeSdrfs(MageTabFileSet inputFileSet) {
-        for (FileRef file : inputFileSet.getSdrfFiles()) {
-            sdrfDocuments.add(new SdrfDocument(this, file));
+        for (final FileRef file : inputFileSet.getSdrfFiles()) {
+            this.sdrfDocuments.add(new SdrfDocument(this, file));
         }
     }
 
     private void initializeDataMatrixes(MageTabFileSet inputFileSet) {
-        for (FileRef file : inputFileSet.getDataMatrixFiles()) {
-            dataMatrixes.add(new DataMatrix(this, file));
+        for (final FileRef file : inputFileSet.getDataMatrixFiles()) {
+            this.dataMatrixes.add(new DataMatrix(this, file));
         }
     }
 
     private void initializeNativeDataFiles(MageTabFileSet inputFileSet) {
-        for (FileRef file : inputFileSet.getNativeDataFiles()) {
-            nativeDataFiles.add(new NativeDataFile(this, file));
+        for (final FileRef file : inputFileSet.getNativeDataFiles()) {
+            this.nativeDataFiles.add(new NativeDataFile(this, file));
         }
     }
 
@@ -276,94 +271,90 @@ public final class MageTabDocumentSet implements Serializable {
         // DEVELOPER NOTE: currently multiple IDFs are not supported, so flag this as validation
         // error and do not attempt further processing. in the future, there is intention
         // to support this, so the object model will continue to support it
-        if (idfDocuments.size() > 1) {
-            for (IdfDocument idfDocument : idfDocuments) {
-                getValidationResult().addMessage(idfDocument.getFile().getAsFile(), ValidationMessage.Type.ERROR,
-                        "At most one IDF document can be present in an import");
+        if (this.idfDocuments.size() > 1) {
+            for (final IdfDocument idfDocument : this.idfDocuments) {
+                getValidationResult().addMessage(idfDocument.getFile().getName(),
+                        ValidationMessage.Type.ERROR, "At most one IDF document can be present in an import");
             }
             return;
         }
-        parse(idfDocuments);
-        parse(sdrfDocuments);
+        parse(this.idfDocuments);
+        parse(this.sdrfDocuments);
 
         // map sdrfs to the samples and hybridizations they contain
         generateSdrfRefHybs();
         generateSdrfRefSamples();
     }
-    
+
     /**
-     * Special parse method that skips adding validation results to files and does not generate
-     * hybs or samples. If More than 1 idf doc is encountered a runtime exception is thrown.
+     * Special parse method that skips adding validation results to files and does not generate hybs or samples. If More
+     * than 1 idf doc is encountered a runtime exception is thrown.
      * 
      * @throws MageTabParsingException
      */
     void parseNoValidation() throws MageTabParsingException {
-        if (idfDocuments.size() > 1) {
+        if (this.idfDocuments.size() > 1) {
             throw new IllegalArgumentException("Only one IDF document can be present when parsing for data files.");
         }
 
-        AbstractMageTabDocument idfDoc = idfDocuments.iterator().next();
+        final AbstractMageTabDocument idfDoc = this.idfDocuments.iterator().next();
         idfDoc.parse();
-        IdfDocument idf = (IdfDocument) idfDoc;
-        for (SdrfDocument document : idf.getSdrfDocuments()) {
-                document.parseNoIdfCheck();
+        final IdfDocument idf = (IdfDocument) idfDoc;
+        for (final SdrfDocument document : idf.getSdrfDocuments()) {
+            document.parseNoIdfCheck();
         }
 
     }
 
     private void parse(Set<? extends AbstractMageTabDocument> documents) throws MageTabParsingException {
-        for (AbstractMageTabDocument document : documents) {
+        for (final AbstractMageTabDocument document : documents) {
             document.parse();
         }
     }
 
     /**
-     * @return the list of names of all raw data files referenced by any
-     * SDRF in this document set.
+     * @return the list of names of all raw data files referenced by any SDRF in this document set.
      */
     public List<String> getSdrfReferencedRawFileNames() {
-        List<String> fileNames = new ArrayList<String>();
-        for (SdrfDocument sdrf : sdrfDocuments) {
+        final List<String> fileNames = new ArrayList<String>();
+        for (final SdrfDocument sdrf : this.sdrfDocuments) {
             fileNames.addAll(sdrf.getReferencedRawFileNames());
         }
         return fileNames;
     }
 
     /**
-     * @return the list of names of all derived data files referenced by any
-     * SDRF in this document set.
+     * @return the list of names of all derived data files referenced by any SDRF in this document set.
      */
     public List<String> getSdrfReferencedDerivedFileNames() {
-        List<String> fileNames = new ArrayList<String>();
-        for (SdrfDocument sdrf : sdrfDocuments) {
+        final List<String> fileNames = new ArrayList<String>();
+        for (final SdrfDocument sdrf : this.sdrfDocuments) {
             fileNames.addAll(sdrf.getReferencedDerivedFileNames());
         }
         return fileNames;
     }
 
     /**
-     * @return the list of names of all data matrix files referenced by any
-     * SDRF in this document set.
+     * @return the list of names of all data matrix files referenced by any SDRF in this document set.
      */
     public List<String> getSdrfReferencedDataMatrixFileNames() {
-        List<String> fileNames = new ArrayList<String>();
-        for (SdrfDocument sdrf : sdrfDocuments) {
+        final List<String> fileNames = new ArrayList<String>();
+        for (final SdrfDocument sdrf : this.sdrfDocuments) {
             fileNames.addAll(sdrf.getReferencedDataMatrixFileNames());
         }
         return fileNames;
     }
 
-
     /**
      * Returns an <code>OntologyTerm</code> matching the category and name given. Reuses an existing matching
      * <code>OntologyTerm</code> in the document set if one exists, otherwise creates one.
-     *
+     * 
      * @param category category of the term
      * @param value value of the term
      * @return the new or matching term.
      */
     OntologyTerm addOntologyTerm(String category, String value) {
-        OntologyTerm term = new OntologyTerm();
+        final OntologyTerm term = new OntologyTerm();
         term.setCategory(category);
         term.setValue(value);
         if (MageTabOntologyCategory.PROTOCOL_TYPE.getCategoryName().equals(category)
@@ -372,7 +363,7 @@ public final class MageTabDocumentSet implements Serializable {
         } else if (ExperimentOntologyCategory.ORGANISM.getCategoryName().equals(category)) {
             term.setTermSource(getOrCreateTermSource(ExperimentOntology.NCBI.getOntologyName()));
         }
-        termCache.add(term);
+        this.termCache.add(term);
         return term;
     }
 
@@ -380,89 +371,90 @@ public final class MageTabDocumentSet implements Serializable {
         TermSource termSource = getTermSource(name);
         if (termSource == null) {
             termSource = new TermSource(name);
-            termSourceCache.put(name, termSource);
+            this.termSourceCache.put(name, termSource);
         }
         return termSource;
     }
 
     TermSource getTermSource(String name) {
-        return termSourceCache.get(name);
+        return this.termSourceCache.get(name);
     }
 
     ArrayDesign getArrayDesign(String name) {
-        ArrayDesign arrayDesign = arrayDesignCache.get(name);
+        ArrayDesign arrayDesign = this.arrayDesignCache.get(name);
         if (arrayDesign == null) {
             arrayDesign = new ArrayDesign();
             arrayDesign.setValue(name);
-            arrayDesignCache.put(name, arrayDesign);
+            this.arrayDesignCache.put(name, arrayDesign);
         }
         return arrayDesign;
     }
 
     /**
      * Adds a new Protocol to the document set.
-     *
+     * 
      * @param protocol the new protocol.
      */
     void addProtocol(Protocol protocol) {
         if (protocol.getName() == null) {
             throw new IllegalArgumentException("Protocol name was null");
         }
-        protocolCache.put(protocol.getName(), protocol);
+        this.protocolCache.put(protocol.getName(), protocol);
     }
 
     /**
      * Returns the protocol with the id (name) provided.
-     *
+     * 
      * @param protocolId find protocol with this name.
      * @return the matching protocol or null if none exists for name.
      */
     Protocol getProtocol(String protocolId) {
-        return protocolCache.get(protocolId);
+        return this.protocolCache.get(protocolId);
     }
 
     /**
      * Returns the <code>IdfDocument</code> that matches the filename provided, or null if none match.
-     *
+     * 
      * @param filename locate <code>IdfDocument</code> with this filename
      * @return the <code>IdfDocument</code>.
      */
     public IdfDocument getIdfDocument(String filename) {
-        return (IdfDocument) getDocument(idfDocuments, filename);
+        return (IdfDocument) getDocument(this.idfDocuments, filename);
     }
 
     /**
      * Returns the <code>SdrfDocument</code> that matches the filename provided, or null if none match.
-     *
+     * 
      * @param filename locate <code>SdrfDocument</code> with this filename
      * @return the <code>SdrfDocument</code>.
      */
     public SdrfDocument getSdrfDocument(String filename) {
-        return (SdrfDocument) getDocument(sdrfDocuments, filename);
+        return (SdrfDocument) getDocument(this.sdrfDocuments, filename);
     }
 
     /**
      * Returns the <code>AdfDocument</code> that matches the filename provided, or null if none match.
-     *
+     * 
      * @param filename locate <code>AdfDocument</code> with this filename
      * @return the <code>AdfDocument</code>.
      */
     public AdfDocument getAdfDocument(String filename) {
-        return (AdfDocument) getDocument(adfDocuments, filename);
+        return (AdfDocument) getDocument(this.adfDocuments, filename);
     }
 
     /**
      * Returns the <code>DataMatrix</code> that matches the filename provided, or null if none match.
-     *
+     * 
      * @param filename locate <code>DataMatrix</code> with this filename
      * @return the <code>DataMatrix</code>.
      */
     public DataMatrix getArrayDataMatrix(String filename) {
-        return (DataMatrix) getDocument(dataMatrixes, filename);
+        return (DataMatrix) getDocument(this.dataMatrixes, filename);
     }
 
     /**
      * Return a set of the hybridizations referenced by the sdrf files.
+     * 
      * @return set of Hybridization
      */
     public Map<String, List<Hybridization>> getSdrfHybridizations() {
@@ -471,6 +463,7 @@ public final class MageTabDocumentSet implements Serializable {
 
     /**
      * Return a set of the sample ref'd by the sdrf files.
+     * 
      * @return set of Samples
      */
     public Map<String, List<Sample>> getSdrfSamples() {
@@ -479,16 +472,16 @@ public final class MageTabDocumentSet implements Serializable {
 
     /**
      * Returns the <code>NativeDataFile</code> that matches the filename provided, or null if none match.
-     *
+     * 
      * @param filename locate <code>NativeDataFile</code> with this filename
      * @return the <code>NativeDataFile</code>.
      */
     public NativeDataFile getNativeDataFile(String filename) {
-        return (NativeDataFile) getDocument(nativeDataFiles, filename);
+        return (NativeDataFile) getDocument(this.nativeDataFiles, filename);
     }
 
     private AbstractMageTabDocument getDocument(Set<? extends AbstractMageTabDocument> documents, String filename) {
-        for (AbstractMageTabDocument document : documents) {
+        for (final AbstractMageTabDocument document : documents) {
             if (document.getFile().getName().equals(filename)) {
                 return document;
             }
@@ -500,22 +493,22 @@ public final class MageTabDocumentSet implements Serializable {
      * @return the validationResult
      */
     public ValidationResult getValidationResult() {
-        return validationResult;
+        return this.validationResult;
     }
 
     ValidationMessage createValidationMessage(FileRef file, ValidationMessage.Type type, String message) {
-        return getValidationResult().addMessage(file.getAsFile(), type, message);
+        return getValidationResult().addMessage(file.getName(), type, message);
     }
 
     private void generateSdrfRefHybs() {
-        for (SdrfDocument sdrf : sdrfDocuments) {
-            hybridizations.put(sdrf.getFile().getName(), sdrf.getAllHybridizations());
+        for (final SdrfDocument sdrf : this.sdrfDocuments) {
+            this.hybridizations.put(sdrf.getFile().getName(), sdrf.getAllHybridizations());
         }
     }
 
     private void generateSdrfRefSamples() {
-        for (SdrfDocument sdrf : sdrfDocuments) {
-            samples.put(sdrf.getFile().getName(), sdrf.getAllSamples());
+        for (final SdrfDocument sdrf : this.sdrfDocuments) {
+            this.samples.put(sdrf.getFile().getName(), sdrf.getAllSamples());
         }
     }
 
@@ -523,12 +516,12 @@ public final class MageTabDocumentSet implements Serializable {
      * Exports the contents of the MAGE-TAB documents into files.
      */
     public void export() {
-        export(idfDocuments);
-        export(sdrfDocuments);
+        export(this.idfDocuments);
+        export(this.sdrfDocuments);
     }
 
     private void export(Set<? extends AbstractMageTabDocument> documents) {
-        for (AbstractMageTabDocument document : documents) {
+        for (final AbstractMageTabDocument document : documents) {
             document.export();
         }
     }

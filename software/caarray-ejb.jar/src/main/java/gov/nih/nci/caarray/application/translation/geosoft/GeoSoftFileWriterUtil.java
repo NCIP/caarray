@@ -82,10 +82,6 @@
  */
 package gov.nih.nci.caarray.application.translation.geosoft;
 
-import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
-import com.google.common.base.Predicate;
-import com.google.common.base.Predicates;
-import com.google.common.collect.Iterables;
 import edu.georgetown.pir.Organism;
 import gov.nih.nci.caarray.domain.contact.AbstractContact;
 import gov.nih.nci.caarray.domain.contact.Organization;
@@ -93,7 +89,6 @@ import gov.nih.nci.caarray.domain.contact.Person;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.data.DerivedArrayData;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
-import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.AbstractFactorValue;
 import gov.nih.nci.caarray.domain.project.Experiment;
@@ -109,6 +104,7 @@ import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
+
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -120,11 +116,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+
 import org.apache.commons.lang.StringUtils;
 
+import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
+import com.google.common.base.Predicate;
+import com.google.common.base.Predicates;
+import com.google.common.collect.Iterables;
+
 /**
- * Helper class to compose the GEO file.
- * Note: this class is intended to reduce the complexity of GeoSoftExporterBean.
+ * Helper class to compose the GEO file. Note: this class is intended to reduce the complexity of GeoSoftExporterBean.
+ * 
  * @see GeoSoftExporterBean
  * @author gax
  * @since 2.3.1
@@ -132,7 +134,7 @@ import org.apache.commons.lang.StringUtils;
 final class GeoSoftFileWriterUtil {
     private static final Map<String, String> MATERIAL_TYPE_MAP;
     static {
-        Map<String, String> map = new HashMap<String, String>();
+        final Map<String, String> map = new HashMap<String, String>();
         map.put("cytoplasmic_RNA".toLowerCase(), "cytoplasmic RNA");
         map.put("DNA".toLowerCase(), "genomic DNA");
         map.put("genomic_DNA".toLowerCase(), "genomic DNA");
@@ -147,20 +149,19 @@ final class GeoSoftFileWriterUtil {
 
     private static final Predicate<ProtocolApplication> PREDICATE_TREATMENT = new ProtocolPredicate("treatment");
     private static final Predicate<ProtocolApplication> PREDICATE_GROWTH = new ProtocolPredicate("growth");
-    private static final Predicate<ProtocolApplication> PREDICATE_EXTRACT =
-            new ProtocolPredicate("nucleic_acid_extraction");
+    private static final Predicate<ProtocolApplication> PREDICATE_EXTRACT = new ProtocolPredicate(
+            "nucleic_acid_extraction");
     private static final Predicate<ProtocolApplication> PREDICATE_LABELING = new ProtocolPredicate("labeling");
-    private static final Predicate<ProtocolApplication> PREDICATE_SCAN = Predicates.or(
-            new ProtocolPredicate("scan"),
+    private static final Predicate<ProtocolApplication> PREDICATE_SCAN = Predicates.or(new ProtocolPredicate("scan"),
             new ProtocolPredicate("image_acquisition"));
     private static final Predicate<ProtocolApplication> PREDICATE_HYB = new ProtocolPredicate("hybridization");
 
     /**
      * needed to make the output predicable.
      */
-    private static final Comparator<PersistentObject> ENTITY_COMPARATOR =
-            new Comparator<PersistentObject>() {
+    private static final Comparator<PersistentObject> ENTITY_COMPARATOR = new Comparator<PersistentObject>() {
 
+        @Override
         public int compare(PersistentObject o1, PersistentObject o2) {
             return o1.getId().compareTo(o2.getId());
         }
@@ -172,6 +173,7 @@ final class GeoSoftFileWriterUtil {
 
     /**
      * Write the GEO SOFT file for an valid experiment.
+     * 
      * @param
      */
     static void writeSoftFile(Experiment experiment, String permaLinkUrl, PrintWriter out) {
@@ -185,37 +187,38 @@ final class GeoSoftFileWriterUtil {
         out.print("!Series_title=");
         out.println(experiment.getTitle());
         out.print("!Series_summary=");
-        String desc = StringUtils.isNotBlank(experiment.getDescription())
-                ?   experiment.getDescription() : experiment.getTitle();
+        final String desc =
+                StringUtils.isNotBlank(experiment.getDescription()) ? experiment.getDescription() : experiment
+                        .getTitle();
         out.println(desc);
         writeExperimentDesignTypes(experiment, desc, out);
-        for (Publication pub : experiment.getPublications()) {
+        for (final Publication pub : experiment.getPublications()) {
             out.print("!Series_pubmed_id=");
             out.println(pub.getPubMedId());
         }
-        for (ExperimentContact c : experiment.getExperimentContacts()) {
+        for (final ExperimentContact c : experiment.getExperimentContacts()) {
             writeExperimentContact(c, out);
         }
         out.print("!Series_web_link=");
         out.println(permaLinkUrl);
-        for (Hybridization h : experiment.getHybridizations()) {
+        for (final Hybridization h : experiment.getHybridizations()) {
             out.print("!Series_sample_id=");
             out.println(h.getName());
         }
     }
 
     private static void writeSampleSections(Experiment experiment, PrintWriter out) {
-        for (Hybridization h : experiment.getHybridizations()) {
+        for (final Hybridization h : experiment.getHybridizations()) {
             writeSampleSection(h, out);
         }
     }
 
     @SuppressWarnings("PMD.ExcessiveMethodLength")
     private static void writeSampleSection(Hybridization h, PrintWriter out) {
-        Set<Source> sources = new TreeSet<Source>(ENTITY_COMPARATOR);
-        Set<Sample> samples = new TreeSet<Sample>(ENTITY_COMPARATOR);
-        Set<Extract> extracts = new TreeSet<Extract>(ENTITY_COMPARATOR);
-        Set<LabeledExtract> labeledExtracts = new TreeSet<LabeledExtract>(ENTITY_COMPARATOR);
+        final Set<Source> sources = new TreeSet<Source>(ENTITY_COMPARATOR);
+        final Set<Sample> samples = new TreeSet<Sample>(ENTITY_COMPARATOR);
+        final Set<Extract> extracts = new TreeSet<Extract>(ENTITY_COMPARATOR);
+        final Set<LabeledExtract> labeledExtracts = new TreeSet<LabeledExtract>(ENTITY_COMPARATOR);
         GeoSoftFileWriterUtil.collectBioMaterials(h, sources, samples, extracts, labeledExtracts);
 
         out.print("^SAMPLE=");
@@ -226,7 +229,7 @@ final class GeoSoftFileWriterUtil {
         writeData(h, out);
         writeSources(out, sources);
         writeOrganism(sources, samples, h.getExperiment(), out);
-        Set<ProtocolApplication> pas = new TreeSet<ProtocolApplication>(ENTITY_COMPARATOR);
+        final Set<ProtocolApplication> pas = new TreeSet<ProtocolApplication>(ENTITY_COMPARATOR);
         pas.addAll(h.getProtocolApplications());
         collectAllProtocols(labeledExtracts, pas);
         collectAllProtocols(extracts, pas);
@@ -241,7 +244,7 @@ final class GeoSoftFileWriterUtil {
         writeProtocol(h.getProtocolApplications(), "Sample_scan_protocol", PREDICATE_SCAN, out);
         writeProtocolsForData(h.getRawDataCollection(), "Sample_data_processing", out);
 
-        for (LabeledExtract labeledExtract : labeledExtracts) {
+        for (final LabeledExtract labeledExtract : labeledExtracts) {
             out.print("!Sample_label=");
             out.println(labeledExtract.getLabel().getValue());
         }
@@ -250,8 +253,8 @@ final class GeoSoftFileWriterUtil {
         out.print("!Sample_platform_id=");
         out.println(h.getArray().getDesign().getGeoAccession());
 
-        Set<String> uniqueEntries = new HashSet<String>();
-        for (AbstractFactorValue fv : h.getFactorValues()) {
+        final Set<String> uniqueEntries = new HashSet<String>();
+        for (final AbstractFactorValue fv : h.getFactorValues()) {
             writeCharacteristics(fv.getFactor().getName(), fv.getDisplayValue(), out, uniqueEntries);
         }
         writeCharacteristics(labeledExtracts, out, uniqueEntries);
@@ -264,12 +267,12 @@ final class GeoSoftFileWriterUtil {
 
     private static void writeDescription(PrintWriter out, Hybridization h, Set<Sample> samples) {
         out.print("!Sample_description=");
-        String desc = h.getDescription();
+        final String desc = h.getDescription();
         if (StringUtils.isNotBlank(desc)) {
             out.println(desc);
         } else {
             String comma = "";
-            for (Sample s : samples) {
+            for (final Sample s : samples) {
                 out.print(comma);
                 out.print(s.getName());
                 comma = ", ";
@@ -282,7 +285,7 @@ final class GeoSoftFileWriterUtil {
         out.print("!Sample_source_name=");
         String del = "";
 
-        for (Source source : sources) {
+        for (final Source source : sources) {
             out.print(del);
             out.print(source.getName());
             del = "; ";
@@ -290,15 +293,15 @@ final class GeoSoftFileWriterUtil {
         out.println();
     }
 
-    static void collectBioMaterials(Hybridization hyb,  Set<Source> sources, Set<Sample> samples,
-            Set<Extract> extracts, Set<LabeledExtract> labeledExtracts) {
-        for (LabeledExtract le : hyb.getLabeledExtracts()) {
+    static void collectBioMaterials(Hybridization hyb, Set<Source> sources, Set<Sample> samples, Set<Extract> extracts,
+            Set<LabeledExtract> labeledExtracts) {
+        for (final LabeledExtract le : hyb.getLabeledExtracts()) {
             labeledExtracts.add(le);
-            for (Extract ex : le.getExtracts()) {
+            for (final Extract ex : le.getExtracts()) {
                 extracts.add(ex);
-                for (Sample sa : ex.getSamples()) {
+                for (final Sample sa : ex.getSamples()) {
                     samples.add(sa);
-                    for (Source src : sa.getSources()) {
+                    for (final Source src : sa.getSources()) {
                         sources.add(src);
                     }
                 }
@@ -308,49 +311,49 @@ final class GeoSoftFileWriterUtil {
 
     private static void collectAllProtocols(Set<? extends ProtocolApplicable> nodes,
             Collection<ProtocolApplication> dest) {
-        for (ProtocolApplicable pa : nodes) {
+        for (final ProtocolApplicable pa : nodes) {
             dest.addAll(pa.getProtocolApplications());
         }
     }
 
     private static Iterable<ProtocolApplication> getAllProtocols(Set<? extends ProtocolApplicable> nodes) {
-        List<ProtocolApplication> l = new ArrayList<ProtocolApplication>();
+        final List<ProtocolApplication> l = new ArrayList<ProtocolApplication>();
         collectAllProtocols(nodes, l);
         return l;
     }
 
     private static void writeProviders(Set<Source> sources, PrintWriter out) {
-        Set<AbstractContact> all = new HashSet<AbstractContact>();
-        for (Source source : sources) {
+        final Set<AbstractContact> all = new HashSet<AbstractContact>();
+        for (final Source source : sources) {
             all.addAll(source.getProviders());
         }
-        for (AbstractContact c : all) {
+        for (final AbstractContact c : all) {
             out.print("!Sample_biomaterial_provider=");
             out.println(((Organization) c).getName());
         }
     }
 
     private static void writeMaterialTypes(Set<Extract> extracts, Set<LabeledExtract> les, PrintWriter out) {
-        Set<Term> all = new TreeSet<Term>(ENTITY_COMPARATOR);
-        for (Extract e : extracts) {
+        final Set<Term> all = new TreeSet<Term>(ENTITY_COMPARATOR);
+        for (final Extract e : extracts) {
             addIgnoreNull(all, e.getMaterialType());
         }
         if (all.isEmpty()) {
-            for (LabeledExtract e : les) {
+            for (final LabeledExtract e : les) {
                 addIgnoreNull(all, e.getMaterialType());
             }
         }
-        for (Term mt : all) {
+        for (final Term mt : all) {
             out.print("!Sample_molecule=");
-            String m = translateMaterial(mt);
+            final String m = translateMaterial(mt);
             out.println(m);
         }
     }
 
-    private static void writeProtocolsForData(Iterable<? extends AbstractArrayData> data, String label,
-            PrintWriter out) {
-        List<ProtocolApplication> l = new ArrayList<ProtocolApplication>();
-        for (AbstractArrayData d : data) {
+    private static void
+            writeProtocolsForData(Iterable<? extends AbstractArrayData> data, String label, PrintWriter out) {
+        final List<ProtocolApplication> l = new ArrayList<ProtocolApplication>();
+        for (final AbstractArrayData d : data) {
             l.addAll(d.getProtocolApplications());
         }
         writeProtocol(l, label, null, out);
@@ -368,15 +371,15 @@ final class GeoSoftFileWriterUtil {
             out.print(label);
             out.print("=");
             String semi = "\"";
-            Set<String> uniqueEntries = new HashSet<String>();
-            StringBuilder sb = new StringBuilder();
-            for (ProtocolApplication pa : selected) {
+            final Set<String> uniqueEntries = new HashSet<String>();
+            final StringBuilder sb = new StringBuilder();
+            for (final ProtocolApplication pa : selected) {
                 sb.setLength(0);
                 sb.append(pa.getProtocol().getName());
                 if (StringUtils.isNotBlank(pa.getProtocol().getDescription())) {
                     sb.append(':').append(pa.getProtocol().getDescription());
                 }
-                String entry = sb.toString();
+                final String entry = sb.toString();
                 if (uniqueEntries.add(entry)) {
                     out.print(semi);
                     out.print(entry);
@@ -397,8 +400,8 @@ final class GeoSoftFileWriterUtil {
 
     private static void writeCharacteristics(Set<? extends AbstractBioMaterial> bios, PrintWriter out,
             Set<String> alreadyWritten) {
-        for (AbstractBioMaterial bio : bios) {
-            for (AbstractCharacteristic c : bio.getCharacteristics()) {
+        for (final AbstractBioMaterial bio : bios) {
+            for (final AbstractCharacteristic c : bio.getCharacteristics()) {
                 writeCharacteristics(c.getCategory().getName(), c.getDisplayValue(), out, alreadyWritten);
             }
             writeExtraCharacteristics(ExperimentOntologyCategory.ORGANISM_PART, bio.getTissueSite(), out,
@@ -419,10 +422,10 @@ final class GeoSoftFileWriterUtil {
             Set<String> alreadyWritten) {
         writeCharacteristics(key.getCategoryName(), value, out, alreadyWritten);
     }
-    
+
     private static void writeCharacteristics(String key, String value, PrintWriter out, Set<String> alreadyWritten) {
         if (StringUtils.isNotBlank(value)) {
-            String entry = "!Sample_characteristics=" + key + ':' + value;
+            final String entry = "!Sample_characteristics=" + key + ':' + value;
             if (alreadyWritten.add(entry)) {
                 out.println(entry);
             }
@@ -430,29 +433,29 @@ final class GeoSoftFileWriterUtil {
     }
 
     private static void writeOrganism(Set<Source> sources, Set<Sample> samples, Experiment exp, PrintWriter out) {
-        Set<Organism> all = new TreeSet<Organism>(ENTITY_COMPARATOR);
-        for (Source source : sources) {
+        final Set<Organism> all = new TreeSet<Organism>(ENTITY_COMPARATOR);
+        for (final Source source : sources) {
             addIgnoreNull(all, source.getOrganism());
         }
-        for (Sample sample : samples) {
+        for (final Sample sample : samples) {
             addIgnoreNull(all, sample.getOrganism());
         }
         if (all.isEmpty()) {
             all.add(exp.getOrganism());
         }
-        for (Organism o : all) {
+        for (final Organism o : all) {
             out.print("!Sample_organism=");
             out.println(o.getScientificName());
         }
     }
 
     private static void writeData(Hybridization h, PrintWriter out) {
-        for (RawArrayData rad : h.getRawDataCollection()) {
+        for (final RawArrayData rad : h.getRawDataCollection()) {
             out.print("!Sample_supplementary_file=");
             out.println(rad.getDataFile().getName());
         }
-        for (DerivedArrayData dad : h.getDerivedDataCollection()) {
-            if (dad.getDataFile().getFileType() == FileType.AFFYMETRIX_CHP) {
+        for (final DerivedArrayData dad : h.getDerivedDataCollection()) {
+            if (GeoSoftExporterBean.AFFYMETRIX_CHP_TYPE_NAME.equals(dad.getDataFile().getFileType().getName())) {
                 out.print("!Sample_table=");
                 out.println(dad.getDataFile().getName());
             } else {
@@ -463,7 +466,7 @@ final class GeoSoftFileWriterUtil {
     }
 
     private static void writeExperimentContact(ExperimentContact c, PrintWriter out) {
-        Person p = c.getPerson();
+        final Person p = c.getPerson();
         out.print("!Series_contributor=");
         out.print(p.getFirstName());
         out.print(',');
@@ -480,7 +483,7 @@ final class GeoSoftFileWriterUtil {
             out.println(desc);
         } else {
             String semi = "\"";
-            for (Term edt : experiment.getExperimentDesignTypes()) {
+            for (final Term edt : experiment.getExperimentDesignTypes()) {
                 out.print(semi);
                 semi = "\"; \"";
                 out.print(edt.getValue());
@@ -496,9 +499,9 @@ final class GeoSoftFileWriterUtil {
      * From Apache commons-collection.
      * 
      * Adds an element to the collection unless the element is null.
-     *
-     * @param collection  the collection to add to, must not be null
-     * @param object  the object to add, if null it will not be added
+     * 
+     * @param collection the collection to add to, must not be null
+     * @param object the object to add, if null it will not be added
      * @return true if the collection changed
      * @throws NullPointerException if the collection is null
      * @since Commons Collections 3.2
@@ -521,8 +524,9 @@ final class GeoSoftFileWriterUtil {
             this.value = value;
         }
 
+        @Override
         public boolean apply(ProtocolApplication pa) {
-            return value.equals(pa.getProtocol().getType().getValue());
+            return this.value.equals(pa.getProtocol().getType().getValue());
         }
     }
 

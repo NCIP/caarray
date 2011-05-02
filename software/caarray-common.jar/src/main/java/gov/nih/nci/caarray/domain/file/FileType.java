@@ -83,304 +83,176 @@
 
 package gov.nih.nci.caarray.domain.file;
 
-import java.util.EnumSet;
+import java.util.Arrays;
 import java.util.Set;
 
+import org.apache.commons.lang.builder.CompareToBuilder;
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang.builder.ToStringBuilder;
+
+import com.google.inject.internal.Sets;
+
 /**
- *
+ * Describes a type of file that can be uploaded to caArray. This is not a persistent bean - instances of this class are
+ * registered with FileTypeRegistry by platform plugins which know how to parse particular file types.
  */
-public enum FileType implements Comparable<FileType> {
+public class FileType implements Comparable<FileType> {
+    private String name;
+    private Set<String> extensions = Sets.newHashSet();
+    private FileCategory category;
+    private boolean parsed;
+    private boolean dataMatrix;
 
     /**
-     * Affymetrix native array design file.
+     * create an uninitialized file type. mostly for dozer and other tooling frameworks, should avoid using in client
+     * code.
      */
-    AFFYMETRIX_CDF,
+    public FileType() {
+        // no-op
+    }
 
     /**
-     * Affymetrix native CEL data format.
+     * Constructs a file type with given properties.
+     * 
+     * @param name type name. Names should be unique across all types registered in the type registry
+     * @param extensions the extensions associated with this type. files whose names end in these extensions should be
+     *            considered to have this type.
+     * @param category the category to which files of this type belong.
+     * @param parsed whether this type can be parsed
      */
-    AFFYMETRIX_CEL,
+    public FileType(String name, FileCategory category, boolean parsed, String... extensions) {
+        this.name = name;
+        this.category = category;
+        this.parsed = parsed;
+        this.extensions.addAll(Arrays.asList(extensions));
+    }
 
     /**
-     * Affymetrix native CHP data format.
+     * Constructs a file type with given properties.
+     * 
+     * @param name type name. Names should be unique across all types registered in the type registry
+     * @param extensions the extensions associated with this type. files whose names end in these extensions should be
+     *            considered to have this type.
+     * @param category the category to which files of this type belong.
+     * @param parsed whether this type can be parsed
+     * @param dataMatrix whether files of this type are data matrices
      */
-    AFFYMETRIX_CHP,
+    public FileType(String name, FileCategory category, boolean parsed, boolean dataMatrix, String... extensions) {
+        this(name, category, parsed, extensions);
+        this.dataMatrix = dataMatrix;
+    }
 
     /**
-     * Affymetrix native CLF array design format (paired with an {@link #AFFYMETRIX_PGF} file).
+     * @return whether this is a data matrix type
      */
-    AFFYMETRIX_CLF,
+    public boolean isDataMatrix() {
+        return this.dataMatrix;
+    }
 
     /**
-     * Affymetrix native DAT image format.
+     * @param dataMatrix the dataMatrix to set
      */
-    AFFYMETRIX_DAT,
+    public void setDataMatrix(boolean dataMatrix) {
+        this.dataMatrix = dataMatrix;
+    }
 
     /**
-     * Affymetrix EXP format.
+     * @return the extensions associated with this type
      */
-    AFFYMETRIX_EXP,
+    public Set<String> getExtensions() {
+        return this.extensions;
+    }
 
     /**
-     * Affymetrix native PGF array design format (paired with an {@link #AFFYMETRIX_CLF} file).
+     * @param extensions the extensions to set
      */
-    AFFYMETRIX_PGF,
+    public void setExtensions(Set<String> extensions) {
+        this.extensions = extensions;
+    }
 
     /**
-     * Affymetrix TXT format.
+     * @return the category to which files of this type belong
      */
-    AFFYMETRIX_RPT,
+    public FileCategory getCategory() {
+        return this.category;
+    }
 
     /**
-     * Affymetrix TXT format.
+     * @param category the category to set
      */
-    AFFYMETRIX_TXT,
+    public void setCategory(FileCategory category) {
+        this.category = category;
+    }
 
     /**
-     * Agilent CSV format.
+     * @return the name of the type
      */
-    AGILENT_CSV,
+    public String getName() {
+        return this.name;
+    }
 
     /**
-     * Agilent TSV format.
+     * @param name the name to set
      */
-    AGILENT_TSV,
+    public void setName(String name) {
+        this.name = name;
+    }
 
     /**
-     * Agilent raw TXT format.
+     * @return whether files of this type can be parsed
      */
-    AGILENT_RAW_TXT,
+    public boolean isParsed() {
+        return this.parsed;
+    }
 
     /**
-     * Agilent derived TXT format.
+     * @param parsed the parsed to set
      */
-    AGILENT_DERIVED_TXT,
-
-    /**
-     * Agilent XML format.
-     */
-    AGILENT_XML,
-
-    /**
-     * Genepix array design GAL file.
-     */
-    GENEPIX_GAL,
-
-    /**
-     * Genepix array data GPR file.
-     */
-    GENEPIX_GPR,
-
-    /**
-     * Illumina raw array data file.
-     */
-    ILLUMINA_IDAT,
-
-    /**
-     * Illumina array data CSV file.
-     */
-    ILLUMINA_DATA_CSV,
-
-    /**
-     * Illumina array design CSV file.
-     */
-    ILLUMINA_DESIGN_CSV,
-
-    /**
-     * Illumina array design BGX (gziped TSV) file.
-     */
-    ILLUMINA_DESIGN_BGX,
-
-    /**
-     * Illumina raw array data TXT file.
-     */
-    ILLUMINA_RAW_TXT,
-
-    /**
-     * Illumina derived array data TXT file.
-     */
-    ILLUMINA_DERIVED_TXT,
-
-    /**
-     * Illumina Genotyping Processed Matrix TXT file.
-     */
-    ILLUMINA_GENOTYPING_PROCESSED_MATRIX_TXT,
-
-    /**
-     * Illumina Sample Probe Profile TXT.
-     */
-    ILLUMINA_SAMPLE_PROBE_PROFILE_TXT,
-
-    /**
-     * Imagene TXT format.
-     */
-    IMAGENE_TXT,
-
-    /**
-     * Imagene TIF format.
-     */
-    IMAGENE_TIF,
-
-    /**
-     * Imagene TPL array design format.
-     */
-    IMAGENE_TPL,
-
-    /**
-     * Nimblegen GFF format.
-     */
-    NIMBLEGEN_GFF,
-
-    /**
-     * Nimblegen NDF format.
-     */
-    NIMBLEGEN_NDF,
-
-    /**
-     * Nimblegen raw Pair format.
-     */
-    NIMBLEGEN_RAW_PAIR,
-
-    /**
-     * Nimblegen raw txt.
-     */
-    NIMBLEGEN_RAW_TXT,
-
-    /**
-     * Nimblegen normalized Pair format.
-     */
-    NIMBLEGEN_NORMALIZED_PAIR,
-
-    /**
-     * Nimblegen derived txt.
-     */
-    NIMBLEGEN_DERIVED_TXT,
-
-    /**
-     * The MAGE_TAB Array Design Format file type.
-     */
-    MAGE_TAB_ADF,
-
-    /**
-     * The MAGE_TAB data file type.
-     */
-    MAGE_TAB_DATA_MATRIX,
-
-    /**
-     * The MAGE_TAB copy number data file type.
-     */
-    MAGE_TAB_DATA_MATRIX_COPY_NUMBER,
-
-    /**
-     * The MAGE_TAB Investigation Description Format file type.
-     */
-    MAGE_TAB_IDF,
-
-    /**
-     * The MAGE_TAB Sample and Data Relationship Format file type.
-     */
-    MAGE_TAB_SDRF,
-
-    /**
-     * The UCSF Spot SPT array design file type.
-     */
-    UCSF_SPOT_SPT,
-
-    /**
-     * Gene Expression Omnibus (GEO) SOFT format data type.
-     */
-    GEO_SOFT,
-
-    /**
-     * Gene Expression Omnibus (GEO) GSM format data type.
-     */
-    GEO_GSM,
-
-    /**
-     * Gene Expression Omnibus (GEO) GPL format array design.
-     */
-    GEO_GPL,
-
-    /**
-     * ScanArray CSV format data type.
-     */
-    SCANARRAY_CSV;
-    
-    /**
-     * The set of array design file types that the caArray can parse.
-     */    
-    public static final Set<FileType> PARSEABLE_ARRAY_DESIGN_FILE_TYPES = EnumSet.of(AFFYMETRIX_CDF, AFFYMETRIX_CLF,
-            AFFYMETRIX_PGF, ILLUMINA_DESIGN_CSV, ILLUMINA_DESIGN_BGX, GENEPIX_GAL, NIMBLEGEN_NDF, AGILENT_XML);
-
-    /**
-     * The set of array design file types.
-     */
-    public static final Set<FileType> ARRAY_DESIGN_FILE_TYPES = EnumSet.of(AFFYMETRIX_CDF, AFFYMETRIX_CLF,
-            AFFYMETRIX_PGF, ILLUMINA_DESIGN_CSV, ILLUMINA_DESIGN_BGX, GENEPIX_GAL, AGILENT_CSV,
-            AGILENT_XML, IMAGENE_TPL, NIMBLEGEN_NDF, UCSF_SPOT_SPT, MAGE_TAB_ADF, GEO_GPL);
-    
-    /**
-     * The set of raw array data file types.
-     */
-    public static final Set<FileType> RAW_ARRAY_DATA_FILE_TYPES = EnumSet.of(ILLUMINA_IDAT, AFFYMETRIX_CEL,
-            AGILENT_RAW_TXT, AFFYMETRIX_DAT, AGILENT_TSV, IMAGENE_TIF, GEO_SOFT, GEO_GSM, SCANARRAY_CSV,
-            ILLUMINA_RAW_TXT, NIMBLEGEN_RAW_PAIR, NIMBLEGEN_RAW_TXT);
-
-    /**
-     * The set of derived array data file types.
-     */
-    public static final Set<FileType> DERIVED_ARRAY_DATA_FILE_TYPES = EnumSet.of(AFFYMETRIX_CHP, AFFYMETRIX_EXP,
-            AFFYMETRIX_TXT, AFFYMETRIX_RPT, ILLUMINA_DATA_CSV, ILLUMINA_GENOTYPING_PROCESSED_MATRIX_TXT,
-            ILLUMINA_SAMPLE_PROBE_PROFILE_TXT, ILLUMINA_DERIVED_TXT, GENEPIX_GPR, IMAGENE_TXT, AGILENT_DERIVED_TXT,
-            NIMBLEGEN_GFF, NIMBLEGEN_NORMALIZED_PAIR, NIMBLEGEN_DERIVED_TXT, MAGE_TAB_DATA_MATRIX_COPY_NUMBER);
-
-    /**
-     * The set of mage tab file types.
-     */
-    public static final Set<FileType> MAGE_TAB_FILE_TYPES = EnumSet.of(MAGE_TAB_ADF, MAGE_TAB_DATA_MATRIX,
-            MAGE_TAB_IDF, MAGE_TAB_SDRF);
-
-    /**
-     * The set of array data file types that caArray can parse.
-     */
-    public static final Set<FileType> PARSEABLE_ARRAY_DATA_FILE_TYPES = EnumSet.of(AFFYMETRIX_CEL, AFFYMETRIX_CHP,
-            ILLUMINA_DATA_CSV, ILLUMINA_GENOTYPING_PROCESSED_MATRIX_TXT, ILLUMINA_SAMPLE_PROBE_PROFILE_TXT,
-            GENEPIX_GPR, NIMBLEGEN_NORMALIZED_PAIR, NIMBLEGEN_RAW_PAIR, AGILENT_RAW_TXT,
-            MAGE_TAB_DATA_MATRIX_COPY_NUMBER);
+    public void setParsed(boolean parsed) {
+        this.parsed = parsed;
+    }
 
     /**
      * @return true if this file type is an array design.
      */
     public boolean isArrayDesign() {
-        return ARRAY_DESIGN_FILE_TYPES.contains(this);
+        return this.category == FileCategory.ARRAY_DESIGN;
     }
 
     /**
      * @return true if the system supports parsing this array design format.
      */
     public boolean isParseableArrayDesign() {
-        return PARSEABLE_ARRAY_DESIGN_FILE_TYPES.contains(this);
+        return isArrayDesign() && isParsed();
     }
 
     /**
      * @return true if the system supports parsing this data format.
      */
     public boolean isParseableData() {
-        return PARSEABLE_ARRAY_DATA_FILE_TYPES.contains(this);
+        return isArrayData() && isParsed();
     }
 
     /**
      * @return true if the file type is used for derived array data.
      */
     public boolean isDerivedArrayData() {
-        return DERIVED_ARRAY_DATA_FILE_TYPES.contains(this);
+        return this.category == FileCategory.DERIVED_DATA;
     }
 
     /**
      * @return true if the file type is used for derived array data.
      */
     public boolean isRawArrayData() {
-        return RAW_ARRAY_DATA_FILE_TYPES.contains(this);
+        return this.category == FileCategory.RAW_DATA;
+    }
+
+    /**
+     * @return true if the file type is used for mage tab annotations.
+     */
+    public boolean isMageTab() {
+        return this.category == FileCategory.MAGE_TAB;
     }
 
     /**
@@ -391,9 +263,38 @@ public enum FileType implements Comparable<FileType> {
     }
 
     /**
-     * @return the enum name -- necessary for bean property access.
+     * {@inheritDoc}
      */
-    public String getName() {
-        return name();
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof FileType)) {
+            return false;
+        }
+        final FileType other = (FileType) obj;
+        return new EqualsBuilder().append(this.name, other.name).isEquals();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder().append(this.name).toHashCode();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int compareTo(FileType ft) {
+        return new CompareToBuilder().append(this.name, ft.name).toComparison();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
     }
 }

@@ -97,25 +97,28 @@ import org.junit.Test;
 public class ArrayDesignDetailsServiceBeanTest extends AbstractServiceTest {
 
     private ArrayDesignDetailsService arrayDesignDetailsService;
-    private LocalDaoFactoryStub daoFactoryStub = new LocalDaoFactoryStub();
+    private final LocalDaoFactoryStub daoFactoryStub = new LocalDaoFactoryStub();
 
     @Before
     public void setUp() {
-        ArrayDao arrayDao = daoFactoryStub.getArrayDao();
-        arrayDesignDetailsService = new ArrayDesignDetailsServiceBean(arrayDao);
+        final ArrayDao arrayDao = this.daoFactoryStub.getArrayDao();
+
+        final ArrayDesignDetailsServiceBean arrayDesignDetailsServiceBean = new ArrayDesignDetailsServiceBean();
+        arrayDesignDetailsServiceBean.setArrayDao(arrayDao);
+        this.arrayDesignDetailsService = arrayDesignDetailsServiceBean;
     }
 
     @Test
     @SuppressWarnings("deprecation")
     public void testGetDesignDetails() {
-        ArrayDesign design = new ArrayDesign();
+        final ArrayDesign design = new ArrayDesign();
         design.setId(1L);
-        ArrayDesignDetails designDetails = new ArrayDesignDetails();
+        final ArrayDesignDetails designDetails = new ArrayDesignDetails();
         design.setDesignDetails(designDetails);
-        daoFactoryStub.setDesignForRetrieval(design);
-        assertEquals(designDetails, arrayDesignDetailsService.getDesignDetails(design));
-        daoFactoryStub.setDesignForRetrieval(null);
-        assertEquals(null, arrayDesignDetailsService.getDesignDetails(design));
+        this.daoFactoryStub.setDesignForRetrieval(design);
+        assertEquals(designDetails, this.arrayDesignDetailsService.getDesignDetails(design));
+        this.daoFactoryStub.setDesignForRetrieval(null);
+        assertEquals(null, this.arrayDesignDetailsService.getDesignDetails(design));
     }
 
     static class LocalDaoFactoryStub extends DaoFactoryStub {
@@ -123,12 +126,12 @@ public class ArrayDesignDetailsServiceBeanTest extends AbstractServiceTest {
         LocalArrayDao arrayDao = new LocalArrayDao();
 
         void setDesignForRetrieval(ArrayDesign design) {
-            arrayDao.design = design;
+            this.arrayDao.design = design;
         }
 
         @Override
         public ArrayDao getArrayDao() {
-            return arrayDao;
+            return this.arrayDao;
         }
 
     }
@@ -139,7 +142,7 @@ public class ArrayDesignDetailsServiceBeanTest extends AbstractServiceTest {
 
         @Override
         public ArrayDesign getArrayDesign(long id) {
-            return design;
+            return this.design;
         }
 
     }

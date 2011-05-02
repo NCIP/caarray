@@ -6,8 +6,10 @@ import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.contact.Person;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.file.FileCategory;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
+import gov.nih.nci.caarray.domain.file.FileTypeRegistry;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.AssayType;
 import gov.nih.nci.caarray.domain.project.Experiment;
@@ -25,7 +27,9 @@ import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
+import gov.nih.nci.caarray.util.CaArrayUtils;
 
+import java.net.URI;
 import java.util.Date;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -35,7 +39,8 @@ import org.junit.Before;
 import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
 
 public class AbstractProjectDaoTest extends AbstractDaoTest {
-    
+    protected static final URI DUMMY_HANDLE = CaArrayUtils.makeUriQuietly("foo:baz");
+
     protected static AssayType DUMMY_ASSAYTYPE_1;
     protected static AssayType DUMMY_ASSAYTYPE_2;
 
@@ -83,19 +88,24 @@ public class AbstractProjectDaoTest extends AbstractDaoTest {
     protected static RawArrayData DUMMY_RAW_ARRAY_DATA;
     protected static CaArrayFile DUMMY_DATA_FILE;
 
-    protected static final ProjectDao DAO_OBJECT = CaArrayDaoFactory.INSTANCE.getProjectDao();
-    protected static final VocabularyDao VOCABULARY_DAO = CaArrayDaoFactory.INSTANCE.getVocabularyDao();
-    protected static final SearchDao SEARCH_DAO = CaArrayDaoFactory.INSTANCE.getSearchDao();
-    protected static final CollaboratorGroupDao COLLAB_DAO = CaArrayDaoFactory.INSTANCE.getCollaboratorGroupDao();
+    protected ProjectDao daoObject;
+    protected VocabularyDao vocabularyDao;
+    protected SearchDao searchDao;
+    protected CollaboratorGroupDao collabDao;
 
-    protected static final PageSortParams<Project> ALL_BY_ID =
-            new PageSortParams<Project>(10000, 0, ProjectSortCriterion.TITLE, false);
+    protected static final PageSortParams<Project> ALL_BY_ID = new PageSortParams<Project>(10000, 0,
+            ProjectSortCriterion.TITLE, false);
 
     /**
      * Define the dummy objects that will be used by the tests.
      */
     @Before
     public void setup() {
+        this.daoObject = new ProjectDaoImpl(this.hibernateHelper, this.typeRegistry);
+        this.vocabularyDao = new VocabularyDaoImpl(this.hibernateHelper);
+        this.searchDao = new SearchDaoImpl(this.hibernateHelper);
+        this.collabDao = new CollaboratorGroupDaoImpl(this.hibernateHelper);
+
         // Experiment
         DUMMY_ORGANISM = new Organism();
         DUMMY_PROVIDER = new Organization();
@@ -214,10 +224,10 @@ public class AbstractProjectDaoTest extends AbstractDaoTest {
     protected static void setExperimentSummary() {
         DUMMY_EXPERIMENT_1.setTitle("DummyExperiment1");
         DUMMY_EXPERIMENT_1.setDescription("DummyExperiment1Desc");
-        Date currDate = new Date();
+        final Date currDate = new Date();
         DUMMY_EXPERIMENT_1.setDate(currDate);
         DUMMY_EXPERIMENT_1.setPublicReleaseDate(currDate);
-        SortedSet <AssayType>assayTypes = new TreeSet<AssayType>();
+        SortedSet<AssayType> assayTypes = new TreeSet<AssayType>();
         assayTypes.add(DUMMY_ASSAYTYPE_1);
         DUMMY_EXPERIMENT_1.setAssayTypes(assayTypes);
         DUMMY_EXPERIMENT_1.setDesignDescription("Working on it");
@@ -278,20 +288,23 @@ public class AbstractProjectDaoTest extends AbstractDaoTest {
 
     protected static void setFiles() {
         DUMMY_FILE_1.setName(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF.getName());
-        DUMMY_FILE_1.setFileType(FileType.MAGE_TAB_IDF);
+        DUMMY_FILE_1.setFileType(FileTypeRegistry.MAGE_TAB_IDF);
         DUMMY_FILE_1.setFileStatus(FileStatus.UPLOADED);
         DUMMY_PROJECT_1.getFiles().add(DUMMY_FILE_1);
         DUMMY_FILE_1.setProject(DUMMY_PROJECT_1);
+        DUMMY_FILE_1.setDataHandle(DUMMY_HANDLE);
 
         DUMMY_FILE_2.setName(MageTabDataFiles.SPECIFICATION_EXAMPLE_SDRF.getName());
-        DUMMY_FILE_2.setFileType(FileType.MAGE_TAB_SDRF);
+        DUMMY_FILE_2.setFileType(FileTypeRegistry.MAGE_TAB_SDRF);
         DUMMY_FILE_2.setFileStatus(FileStatus.SUPPLEMENTAL);
         DUMMY_PROJECT_1.getFiles().add(DUMMY_FILE_2);
         DUMMY_FILE_2.setProject(DUMMY_PROJECT_1);
-        
+        DUMMY_FILE_2.setDataHandle(DUMMY_HANDLE);
+
         DUMMY_DATA_FILE.setName("dummy.cel");
         DUMMY_DATA_FILE.setFileStatus(FileStatus.UPLOADED);
-        DUMMY_DATA_FILE.setFileType(FileType.AFFYMETRIX_CEL);
+        DUMMY_DATA_FILE.setFileType(new FileType("AFFYMETRIX_CEL", FileCategory.RAW_DATA, true));
+        DUMMY_DATA_FILE.setDataHandle(DUMMY_HANDLE);
     }
 
     protected static void setPublications() {
@@ -314,7 +327,7 @@ public class AbstractProjectDaoTest extends AbstractDaoTest {
         DUMMY_EXPERIMENT_1.getPublications().add(DUMMY_PUBLICATION_2);
     }
 
-    protected static void saveSupportingObjects() {
+    protected void saveSupportingObjects() {
         DUMMY_REPLICATE_TYPE.setValue("Dummy Replicate Type");
         DUMMY_REPLICATE_TYPE.setSource(DUMMY_TERM_SOURCE);
         DUMMY_REPLICATE_TYPE.setCategory(DUMMY_CATEGORY);
@@ -330,13 +343,13 @@ public class AbstractProjectDaoTest extends AbstractDaoTest {
         DUMMY_FACTOR_TYPE_2.setCategory(DUMMY_CATEGORY);
         DUMMY_FACTOR_TYPE_2.setSource(DUMMY_TERM_SOURCE);
         DUMMY_FACTOR_TYPE_2.setValue("Dummy Factor Type 2");
-        VOCABULARY_DAO.save(DUMMY_REPLICATE_TYPE);
-        VOCABULARY_DAO.save(DUMMY_QUALITY_CTRL_TYPE);
-        VOCABULARY_DAO.save(DUMMY_NORMALIZATION_TYPE);
-        VOCABULARY_DAO.save(DUMMY_FACTOR_TYPE_1);
-        VOCABULARY_DAO.save(DUMMY_FACTOR_TYPE_2);
-        DAO_OBJECT.save(DUMMY_ASSAYTYPE_1);
-        DAO_OBJECT.save(DUMMY_ASSAYTYPE_2);
+        this.vocabularyDao.save(DUMMY_REPLICATE_TYPE);
+        this.vocabularyDao.save(DUMMY_QUALITY_CTRL_TYPE);
+        this.vocabularyDao.save(DUMMY_NORMALIZATION_TYPE);
+        this.vocabularyDao.save(DUMMY_FACTOR_TYPE_1);
+        this.vocabularyDao.save(DUMMY_FACTOR_TYPE_2);
+        this.daoObject.save(DUMMY_ASSAYTYPE_1);
+        this.daoObject.save(DUMMY_ASSAYTYPE_2);
     }
 
 }

@@ -83,31 +83,38 @@
 
 package gov.nih.nci.caarray.platforms.unparsed;
 
+import gov.nih.nci.caarray.dataStorage.DataStorageFacade;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
-import gov.nih.nci.caarray.domain.file.FileType;
+import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.ValidationMessage.Type;
 
+import com.google.inject.Inject;
+
 /**
- * A non parsing Data handler that can process any file type.
+ * A non parsing Data handler that can process any file type; used as fallback for a normally parsable array file when
+ * the corresponding array design is missing or not parsable.
+ * 
  * @author gax
  */
 public class FallbackUnparsedDataHandler extends UnparsedDataHandler {
 
     /**
      * default ctor.
+     * 
+     * @param dataStorageFacade data storage facade for retrieving data
      */
-    public FallbackUnparsedDataHandler() {
-        super();
+    @Inject
+    public FallbackUnparsedDataHandler(DataStorageFacade dataStorageFacade) {
+        super(dataStorageFacade);
     }
 
     /**
-     * @param type any type.
-     * @return always true.
+     * {@inheritDoc}
      */
     @Override
-    protected boolean acceptFileType(FileType type) {
+    protected boolean isFileSupported(CaArrayFile dataFile) {
         return true;
     }
 
@@ -122,6 +129,5 @@ public class FallbackUnparsedDataHandler extends UnparsedDataHandler {
             result.addMessage(Type.INFO, "Not parsed because array design " + design.getName() + " is not parsed");
         }
     }
-
 
 }

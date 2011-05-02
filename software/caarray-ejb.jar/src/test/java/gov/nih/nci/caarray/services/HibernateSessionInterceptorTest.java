@@ -84,7 +84,6 @@ package gov.nih.nci.caarray.services;
 
 import static org.junit.Assert.assertTrue;
 import gov.nih.nci.caarray.AbstractCaarrayTest;
-import gov.nih.nci.caarray.staticinjection.CaArrayEjbStaticInjectionModule;
 import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
 import gov.nih.nci.caarray.util.CaArrayHibernateHelperModule;
 
@@ -99,29 +98,35 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 
 public class HibernateSessionInterceptorTest extends AbstractCaarrayTest {
     private static Injector injector;
-    private static CaArrayHibernateHelper hibernateHelper; 
-    
+    private static CaArrayHibernateHelper hibernateHelper;
+
     /**
-     * post-construct lifecycle method; intializes the Guice injector that will provide dependencies. 
+     * post-construct lifecycle method; intializes the Guice injector that will provide dependencies.
      */
     @BeforeClass
     public static void init() {
         injector = createInjector();
         hibernateHelper = injector.getInstance(CaArrayHibernateHelper.class);
     }
-    
+
     /**
      * @return a Guice injector from which this will obtain dependencies.
      */
     protected static Injector createInjector() {
-        return Guice.createInjector(new CaArrayEjbStaticInjectionModule(), new CaArrayHibernateHelperModule());
+        return Guice.createInjector(new CaArrayHibernateHelperModule(), new AbstractModule() {
+            @Override
+            protected void configure() {
+                requestStaticInjection(gov.nih.nci.caarray.services.HibernateSessionInterceptor.class);
+            }
+        });
     }
-    
+
     @Before
     public void setUp() {
         hibernateHelper.setFiltersEnabled(false);
@@ -129,9 +134,9 @@ public class HibernateSessionInterceptorTest extends AbstractCaarrayTest {
 
     @Test
     public void testManageHibernateSession() throws Exception {
-        TestInvocationContext testContext = new TestInvocationContext();
-        HibernateSessionInterceptor interceptor = new HibernateSessionInterceptor();
-        Transaction tx = hibernateHelper.getCurrentSession().beginTransaction();
+        final TestInvocationContext testContext = new TestInvocationContext();
+        final HibernateSessionInterceptor interceptor = new HibernateSessionInterceptor();
+        final Transaction tx = hibernateHelper.getCurrentSession().beginTransaction();
         interceptor.manageHibernateSession(testContext);
         tx.commit();
         assertTrue(testContext.getHibernateSession() != null);
@@ -143,27 +148,33 @@ public class HibernateSessionInterceptorTest extends AbstractCaarrayTest {
         Session hibernateSession;
         boolean hibernateSessionOpenInCall;
 
+        @Override
         public Map<String, Object> getContextData() {
             return null;
         }
 
+        @Override
         public Method getMethod() {
             return null;
         }
 
+        @Override
         public Object[] getParameters() {
-            return new Object[]{};
+            return new Object[] {};
         }
 
+        @Override
         public Object getTarget() {
             return null;
         }
 
+        @Override
         public Object proceed() {
             setHibernateSession();
             return null;
         }
 
+        @Override
         public void setParameters(Object[] arg0) {
             // empty on purpose
         }

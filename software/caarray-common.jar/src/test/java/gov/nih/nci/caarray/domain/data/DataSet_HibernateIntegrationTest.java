@@ -82,57 +82,50 @@
  */
 package gov.nih.nci.caarray.domain.data;
 
-import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
-import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject_HibernateIntegrationTest;
 import gov.nih.nci.caarray.domain.array.Feature;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.sample.Extract;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 import gov.nih.nci.caarray.domain.sample.Sample;
-import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
+import gov.nih.nci.caarray.util.CaArrayUtils;
+
+import java.net.URI;
 
 import org.hibernate.Transaction;
 import org.junit.Before;
-import org.junit.Test;
 
-public class DataSet_HibernateIntegrationTest extends AbstractCaArrayObject_HibernateIntegrationTest {
+public class DataSet_HibernateIntegrationTest extends AbstractCaArrayObject_HibernateIntegrationTest<DataSet> {
+    private static final URI DUMMY_HANDLE = CaArrayUtils.makeUriQuietly("foo:baz");
     private static final int NUMBER_OF_DATA_ROWS = 100;
     private QuantitationType stringType;
     private QuantitationType floatType;
 
     @Before
-    @Override
-    public void setUp() {
-        super.setUp();
-        stringType = new QuantitationType();
-        stringType.setName("string");
-        stringType.setTypeClass(String.class);
-        floatType = new QuantitationType();
-        floatType.setName("float");
-        floatType.setTypeClass(Float.class);
-    }
-
-    @Test
-    @Override
-    @SuppressWarnings("PMD")
-    public void testSave() {
-        super.testSave();
+    public void setUpQuantitationTypes() {
+        this.stringType = new QuantitationType();
+        this.stringType.setName("string");
+        this.stringType.setTypeClass(String.class);
+        this.floatType = new QuantitationType();
+        this.floatType.setName("float");
+        this.floatType.setTypeClass(Float.class);
     }
 
     @SuppressWarnings("deprecation")
     @Override
-    protected void setValues(AbstractCaArrayObject caArrayObject) {
-        DataSet dataSet = (DataSet) caArrayObject;
-        StringColumn stringColumn = (StringColumn) dataSet.getHybridizationDataList().get(0).getColumns().get(0);
-        stringColumn.initializeArray(NUMBER_OF_DATA_ROWS);
-        setValues(stringColumn.getValues());
-        FloatColumn floatColumn = (FloatColumn) dataSet.getHybridizationDataList().get(0).getColumns().get(1);
-        floatColumn.initializeArray(NUMBER_OF_DATA_ROWS);
-        setValues(floatColumn.getValues());
+    protected void setValues(DataSet dataSet) {
+        super.setValues(dataSet);
+        final StringColumn stringColumn = (StringColumn) dataSet.getHybridizationDataList().get(0).getColumns().get(0);
+        // stringColumn.initializeArray(NUMBER_OF_DATA_ROWS);
+        // setValues(stringColumn.getValues());
+        stringColumn.setDataHandle(DUMMY_HANDLE);
+        final FloatColumn floatColumn = (FloatColumn) dataSet.getHybridizationDataList().get(0).getColumns().get(1);
+        // floatColumn.initializeArray(NUMBER_OF_DATA_ROWS);
+        // setValues(floatColumn.getValues());
+        floatColumn.setDataHandle(DUMMY_HANDLE);
 
-        DesignElementList del = new DesignElementList();
+        final DesignElementList del = new DesignElementList();
         del.setDesignElementTypeEnum(getNextValue(DesignElementType.values(), del.getDesignElementTypeEnum()));
         del.getDesignElements().add(new Feature());
         dataSet.setDesignElementList(del);
@@ -151,17 +144,24 @@ public class DataSet_HibernateIntegrationTest extends AbstractCaArrayObject_Hibe
     }
 
     @Override
-    protected void compareValues(AbstractCaArrayObject caArrayObject, AbstractCaArrayObject retrievedCaArrayObject) {
-        DataSet original = (DataSet) caArrayObject;
-        DataSet retrieved = (DataSet) retrievedCaArrayObject;
-        assertEquals(original.getQuantitationTypes().get(0).getName(), retrieved.getQuantitationTypes().get(0).getName());
-        StringColumn originalColumn1 = (StringColumn) original.getHybridizationDataList().get(0).getColumns().get(0);
-        StringColumn retrievedColumn1 = (StringColumn) retrieved.getHybridizationDataList().get(0).getColumns().get(0);
-        assertArrayEquals(originalColumn1.getValues(), retrievedColumn1.getValues());
-        assertEquals(original.getQuantitationTypes().get(1).getName(), retrieved.getQuantitationTypes().get(1).getName());
-        FloatColumn originalColumn2 = (FloatColumn) original.getHybridizationDataList().get(0).getColumns().get(1);
-        FloatColumn retrievedColumn2 = (FloatColumn) retrieved.getHybridizationDataList().get(0).getColumns().get(1);
-        assertFloatArrayEquals(originalColumn2.getValues(), retrievedColumn2.getValues());
+    protected void compareValues(DataSet original, DataSet retrieved) {
+        super.compareValues(original, retrieved);
+        assertEquals(original.getQuantitationTypes().get(0).getName(), retrieved.getQuantitationTypes().get(0)
+                .getName());
+        final StringColumn originalColumn1 = (StringColumn) original.getHybridizationDataList().get(0).getColumns()
+                .get(0);
+        final StringColumn retrievedColumn1 = (StringColumn) retrieved.getHybridizationDataList().get(0).getColumns()
+                .get(0);
+        // assertArrayEquals(originalColumn1.getValues(), retrievedColumn1.getValues());
+        assertEquals(original.getQuantitationTypes().get(1).getName(), retrieved.getQuantitationTypes().get(1)
+                .getName());
+        assertEquals(originalColumn1.getDataHandle(), retrievedColumn1.getDataHandle());
+        final FloatColumn originalColumn2 = (FloatColumn) original.getHybridizationDataList().get(0).getColumns()
+                .get(1);
+        final FloatColumn retrievedColumn2 = (FloatColumn) retrieved.getHybridizationDataList().get(0).getColumns()
+                .get(1);
+        // assertFloatArrayEquals(originalColumn2.getValues(), retrievedColumn2.getValues());
+        assertEquals(originalColumn2.getDataHandle(), retrievedColumn2.getDataHandle());
     }
 
     private void assertFloatArrayEquals(float[] expected, float[] actual) {
@@ -175,39 +175,38 @@ public class DataSet_HibernateIntegrationTest extends AbstractCaArrayObject_Hibe
     }
 
     @Override
-    protected AbstractCaArrayObject createTestObject() {
-        Sample sample = new Sample();
+    protected DataSet createTestObject() {
+        final Sample sample = new Sample();
         sample.setName("Foo");
-        Extract extract = new Extract();
+        final Extract extract = new Extract();
         extract.setName("Foobar");
         sample.getExtracts().add(extract);
         extract.getSamples().add(sample);
-        LabeledExtract le = new LabeledExtract();
+        final LabeledExtract le = new LabeledExtract();
         le.setName("Foofoo");
         extract.getLabeledExtracts().add(le);
         le.getExtracts().add(extract);
-        Hybridization hybridization = new Hybridization();
+        final Hybridization hybridization = new Hybridization();
         hybridization.setName("Test Hyb");
         le.getHybridizations().add(hybridization);
         hybridization.getLabeledExtracts().add(le);
-        Transaction tx = hibernateHelper.beginTransaction();
-        hibernateHelper.getCurrentSession().saveOrUpdate(sample);
+        final Transaction tx = this.hibernateHelper.beginTransaction();
+        this.hibernateHelper.getCurrentSession().saveOrUpdate(sample);
         tx.commit();
-        DataSet dataSet = new DataSet();
+        final DataSet dataSet = new DataSet();
         dataSet.addHybridizationData(hybridization);
-        dataSet.addQuantitationType(stringType);
-        dataSet.addQuantitationType(floatType);
-        DesignElementList del = new DesignElementList();
+        dataSet.addQuantitationType(this.stringType);
+        dataSet.addQuantitationType(this.floatType);
+        final DesignElementList del = new DesignElementList();
         del.setDesignElementTypeEnum(null);
         dataSet.setDesignElementList(del);
         return dataSet;
     }
 
     @Override
-    protected void setNullableValuesToNull(AbstractCaArrayObject caArrayObject) {
-        DataSet dataSet = (DataSet) caArrayObject;
-        StringColumn stringColumn = (StringColumn) dataSet.getHybridizationDataList().get(0).getColumns().get(0);
-        FloatColumn floatColumn = (FloatColumn) dataSet.getHybridizationDataList().get(0).getColumns().get(1);
+    protected void setNullableValuesToNull(DataSet dataSet) {
+        final StringColumn stringColumn = (StringColumn) dataSet.getHybridizationDataList().get(0).getColumns().get(0);
+        final FloatColumn floatColumn = (FloatColumn) dataSet.getHybridizationDataList().get(0).getColumns().get(1);
         stringColumn.setValues(null);
         floatColumn.setValues(null);
         dataSet.setDesignElementList(null);

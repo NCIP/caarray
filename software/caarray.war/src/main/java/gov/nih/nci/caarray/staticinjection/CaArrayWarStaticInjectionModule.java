@@ -82,19 +82,24 @@
  */
 package gov.nih.nci.caarray.staticinjection;
 
+import gov.nih.nci.caarray.web.action.project.ProjectFilesAction;
+import gov.nih.nci.caarray.web.filter.OpenSessionInViewFilter;
+import gov.nih.nci.caarray.web.helper.DownloadHelper;
+
+import com.google.inject.AbstractModule;
+
 /**
  * @author jscott
- *
+ * 
  */
-public class CaArrayWarStaticInjectionModule extends CaArrayEjbStaticInjectionModule {
+public class CaArrayWarStaticInjectionModule extends AbstractModule {
     /**
      * {@inheritDoc}
      */
     @Override
     protected void configure() {
-        super.configure();
-        requestStaticInjection(gov.nih.nci.caarray.web.action.project.ProjectFilesAction.class);
-        requestStaticInjection(gov.nih.nci.caarray.web.filter.OpenSessionInViewFilter.class);
-        requestStaticInjection(gov.nih.nci.caarray.web.listener.StartupListener.class);
+        requestStaticInjection(OpenSessionInViewFilter.class);
+        requestStaticInjection(DownloadHelper.class);
+        requestStaticInjection(ProjectFilesAction.class);
     }
 }

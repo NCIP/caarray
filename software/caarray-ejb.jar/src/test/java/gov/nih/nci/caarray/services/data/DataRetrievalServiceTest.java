@@ -127,74 +127,79 @@ public class DataRetrievalServiceTest extends AbstractServiceTest {
 
     @SuppressWarnings("deprecation")
     private void setUpData() {
-        quantitationType1.setId(1L);
-        quantitationType1.setName("qt1");
-        quantitationType1.setTypeClass(Float.class);
-        quantitationType2.setId(2L);
-        quantitationType2.setName("qt2");
-        quantitationType2.setTypeClass(Integer.class);
-        quantitationType3.setId(3L);
-        quantitationType3.setName("qt3");
-        quantitationType3.setTypeClass(String.class);
-        hybridization1.setId(1L);
-        setUpHybridization(hybridization1);
-        hybridization2.setId(2L);
-        setUpHybridization(hybridization2);
+        this.quantitationType1.setId(1L);
+        this.quantitationType1.setName("qt1");
+        this.quantitationType1.setTypeClass(Float.class);
+        this.quantitationType2.setId(2L);
+        this.quantitationType2.setName("qt2");
+        this.quantitationType2.setTypeClass(Integer.class);
+        this.quantitationType3.setId(3L);
+        this.quantitationType3.setName("qt3");
+        this.quantitationType3.setTypeClass(String.class);
+        this.hybridization1.setId(1L);
+        setUpHybridization(this.hybridization1);
+        this.hybridization2.setId(2L);
+        setUpHybridization(this.hybridization2);
     }
 
     private void setUpHybridization(Hybridization hybridization) {
-        RawArrayData arrayData = new RawArrayData();
-        DataSet dataSet = new DataSet();
+        final RawArrayData arrayData = new RawArrayData();
+        final DataSet dataSet = new DataSet();
         dataSet.addHybridizationData(hybridization);
-        dataSet.addQuantitationType(quantitationType1);
-        dataSet.addQuantitationType(quantitationType2);
-        dataSet.addQuantitationType(quantitationType3);
+        dataSet.addQuantitationType(this.quantitationType1);
+        dataSet.addQuantitationType(this.quantitationType2);
+        dataSet.addQuantitationType(this.quantitationType3);
         dataSet.setDesignElementList(new DesignElementList());
-        dataSet.getDesignElementList().getDesignElements().add(probe1);
-        dataSet.getDesignElementList().getDesignElements().add(probe2);
+        dataSet.getDesignElementList().getDesignElements().add(this.probe1);
+        dataSet.getDesignElementList().getDesignElements().add(this.probe2);
         arrayData.setDataSet(dataSet);
         hybridization.addArrayData(arrayData);
     }
 
     private void setUpService() {
-        DataRetrievalServiceBean serviceBean = new DataRetrievalServiceBean(daoFactory.getSearchDao());
-        ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
-        locatorStub.addLookup(ArrayDataService.JNDI_NAME, arrayDataService);
-        service = serviceBean;
+        final DataRetrievalServiceBean serviceBean = new DataRetrievalServiceBean();
+        serviceBean.setSearchDao(this.daoFactory.getSearchDao());
+
+        final ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
+        locatorStub.addLookup(ArrayDataService.JNDI_NAME, this.arrayDataService);
+        this.service = serviceBean;
     }
 
     @Test
     @SuppressWarnings("PMD")
     public void testGetDataSet() {
-        DataRetrievalRequest request = new DataRetrievalRequest();
+        final DataRetrievalRequest request = new DataRetrievalRequest();
         try {
-            service.getDataSet(request);
+            this.service.getDataSet(request);
             fail("Expected IllegalArgumentException");
-        } catch (IllegalArgumentException e) {
+        } catch (final IllegalArgumentException e) {
             // expected
         }
 
         // Retrieve out of natural order to ensure elements are where requested by client
-        request.addQuantitationType(quantitationType2);
-        request.addQuantitationType(quantitationType1);
-        request.addHybridization(hybridization2);
-        request.addHybridization(hybridization1);
-        DataSet dataSet = service.getDataSet(request);
+        request.addQuantitationType(this.quantitationType2);
+        request.addQuantitationType(this.quantitationType1);
+        request.addHybridization(this.hybridization2);
+        request.addHybridization(this.hybridization1);
+        final DataSet dataSet = this.service.getDataSet(request);
         assertEquals(2, dataSet.getQuantitationTypes().size());
-        assertEquals(quantitationType2, dataSet.getQuantitationTypes().get(0));
-        assertEquals(quantitationType1, dataSet.getQuantitationTypes().get(1));
-        assertEquals(hybridization2, dataSet.getHybridizationDataList().get(0).getHybridization());
+        assertEquals(this.quantitationType2, dataSet.getQuantitationTypes().get(0));
+        assertEquals(this.quantitationType1, dataSet.getQuantitationTypes().get(1));
+        assertEquals(this.hybridization2, dataSet.getHybridizationDataList().get(0).getHybridization());
         assertEquals(2, dataSet.getHybridizationDataList().get(0).getColumns().size());
-        assertEquals(quantitationType2, dataSet.getHybridizationDataList().get(0).getColumns().get(0).getQuantitationType());
-        assertEquals(quantitationType1, dataSet.getHybridizationDataList().get(0).getColumns().get(1).getQuantitationType());
-        assertEquals(hybridization1, dataSet.getHybridizationDataList().get(1).getHybridization());
+        assertEquals(this.quantitationType2, dataSet.getHybridizationDataList().get(0).getColumns().get(0)
+                .getQuantitationType());
+        assertEquals(this.quantitationType1, dataSet.getHybridizationDataList().get(0).getColumns().get(1)
+                .getQuantitationType());
+        assertEquals(this.hybridization1, dataSet.getHybridizationDataList().get(1).getHybridization());
         assertEquals(2, dataSet.getHybridizationDataList().get(1).getColumns().size());
-        assertEquals(quantitationType2, dataSet.getHybridizationDataList().get(1).getColumns().get(0).getQuantitationType());
-        assertEquals(quantitationType1, dataSet.getHybridizationDataList().get(1).getColumns().get(1).getQuantitationType());
+        assertEquals(this.quantitationType2, dataSet.getHybridizationDataList().get(1).getColumns().get(0)
+                .getQuantitationType());
+        assertEquals(this.quantitationType1, dataSet.getHybridizationDataList().get(1).getColumns().get(1)
+                .getQuantitationType());
         assertNotNull(dataSet.getDesignElementList());
         assertEquals(2, dataSet.getDesignElementList().getDesignElements().size());
     }
-
 
     private class LocalDataFactoryStub extends DaoFactoryStub {
         @Override
@@ -204,11 +209,11 @@ public class DataRetrievalServiceTest extends AbstractServiceTest {
                 public <T extends PersistentObject> T retrieve(Class<T> entityClass, Long entityId) {
                     if (Hybridization.class.equals(entityClass)) {
                         if (entityId == 1L) {
-                            return (T) hybridization1;
+                            return (T) DataRetrievalServiceTest.this.hybridization1;
                         } else if (entityId == 2L) {
-                            return (T) hybridization2;
+                            return (T) DataRetrievalServiceTest.this.hybridization2;
                         }
-                    } 
+                    }
                     return super.retrieve(entityClass, entityId);
                 }
             };

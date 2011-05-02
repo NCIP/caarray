@@ -90,18 +90,14 @@ import gov.nih.nci.caarray.application.GenericDataService;
 import gov.nih.nci.caarray.application.GenericDataServiceStub;
 import gov.nih.nci.caarray.application.file.FileManagementService;
 import gov.nih.nci.caarray.application.file.FileManagementServiceStub;
-import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
-import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
-import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheStubFactory;
 import gov.nih.nci.caarray.application.project.ProjectManagementService;
 import gov.nih.nci.caarray.application.project.ProjectManagementServiceStub;
-import gov.nih.nci.caarray.dao.FileDaoTest;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileStatus;
-import gov.nih.nci.caarray.domain.file.FileType;
+import gov.nih.nci.caarray.domain.file.FileTypeRegistry;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.sample.Sample;
@@ -138,18 +134,18 @@ import net.sf.json.JSONObject;
 import org.apache.commons.io.IOUtils;
 import org.apache.struts2.ServletActionContext;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 import com.fiveamsolutions.nci.commons.web.struts2.action.ActionHelper;
+import com.google.common.base.Predicates;
+import com.google.common.collect.Iterables;
 import com.opensymphony.xwork2.Action;
-
 
 /**
  * @author Scott Miller
- *
+ * 
  */
 @SuppressWarnings("PMD")
 public class ProjectFilesActionTest extends AbstractDownloadTest {
@@ -161,28 +157,23 @@ public class ProjectFilesActionTest extends AbstractDownloadTest {
 
     private static final String LIST_SUPPLEMENTAL = "listSupplemental";
     private static final String UPLOAD = "upload";
-    private static final ProjectManagementServiceStub projectManagementServiceStub = new ProjectManagementServiceStub();
-    private static final LocalFileManagementServiceStub fileManagementServiceStub = new LocalFileManagementServiceStub();
-    private static final FileAccessServiceStub fileAccessServiceStub = new FileAccessServiceStub();
-    private static final GenericDataServiceStub dataServiceStub = new LocalGenericDataServiceStub();
-    ProjectFilesAction action = new ProjectFilesAction();
 
-    @BeforeClass
-    public static void beforeClass() {
-        ServiceLocatorStub stub = ServiceLocatorStub.registerEmptyLocator();
-        stub.addLookup(ProjectManagementService.JNDI_NAME, projectManagementServiceStub);
-        stub.addLookup(FileManagementService.JNDI_NAME, fileManagementServiceStub);
-        stub.addLookup(FileAccessService.JNDI_NAME, fileAccessServiceStub);
-        stub.addLookup(GenericDataService.JNDI_NAME, dataServiceStub);
-    }
+    private final ProjectManagementServiceStub projectManagementServiceStub = new ProjectManagementServiceStub();
+    private final LocalFileManagementServiceStub fileManagementServiceStub = new LocalFileManagementServiceStub();
+    private final LocalGenericDataServiceStub dataServiceStub = new LocalGenericDataServiceStub();
+    ProjectFilesAction action = new ProjectFilesAction();
 
     @Before
     public void before() {
-        projectManagementServiceStub.reset();
-        fileManagementServiceStub.reset();
-        fileAccessServiceStub.reset();
-        fileManagementServiceStub.reimportCount = 0;
+        final ServiceLocatorStub stub = ServiceLocatorStub.registerEmptyLocator();
+        stub.addLookup(ProjectManagementService.JNDI_NAME, this.projectManagementServiceStub);
+        stub.addLookup(FileManagementService.JNDI_NAME, this.fileManagementServiceStub);
+        stub.addLookup(GenericDataService.JNDI_NAME, this.dataServiceStub);
+        stub.addLookup(FileAccessServiceStub.JNDI_NAME, this.fasStub);
 
+        this.projectManagementServiceStub.reset();
+        this.fileManagementServiceStub.reset();
+        this.fileManagementServiceStub.reimportCount = 0;
 
         this.action = new ProjectFilesAction() {
             private static final long serialVersionUID = 1L;
@@ -195,9 +186,9 @@ public class ProjectFilesActionTest extends AbstractDownloadTest {
                 // empty on purpose
             }
         };
-        Project project = new Project();
+        final Project project = new Project();
         project.getExperiment().setPublicIdentifier("publicId");
-        CaArrayFile file = new CaArrayFile();
+        final CaArrayFile file = new CaArrayFile();
         file.setFileStatus(FileStatus.UPLOADED);
         file.setName("testfile1.cel");
         file.setProject(project);
@@ -211,38 +202,38 @@ public class ProjectFilesActionTest extends AbstractDownloadTest {
         assertEquals(UPLOAD, this.action.upload());
         assertTrue(ActionHelper.getMessages().get(0).contains("fileRequired"));
 
-        File file = File.createTempFile("tmp", ".zip");
+        final File file = File.createTempFile("tmp", ".zip");
 
-        List<File> files = new ArrayList<File>();
-        List<String> fileNames = new ArrayList<String>();
-        List<String> contentTypes = new ArrayList<String>();
+        final List<File> files = new ArrayList<File>();
+        final List<String> fileNames = new ArrayList<String>();
+        final List<String> contentTypes = new ArrayList<String>();
         files.add(file);
         fileNames.add(file.getName());
         contentTypes.add("test");
         this.action.setUpload(files);
         this.action.setUploadFileName(fileNames);
         assertEquals(UPLOAD, this.action.upload());
-        assertEquals(1, projectManagementServiceStub.getFilesAddedCount());
+        assertEquals(1, this.projectManagementServiceStub.getFilesAddedCount());
     }
 
     @Test
     public void testZipUploadAndUnpack() throws Exception {
         assertEquals(LIST_UNIMPORTED, this.action.unpackFiles());
         assertTrue(ActionHelper.getMessages().get(0).contains("0 file(s) unpacked"));
-        List<CaArrayFile> selectedFiles = new ArrayList<CaArrayFile>();
-        CaArrayFile file = new CaArrayFile();
+        final List<CaArrayFile> selectedFiles = new ArrayList<CaArrayFile>();
+        final CaArrayFile file = new CaArrayFile();
         file.setProject(this.action.getProject());
         file.setFileStatus(FileStatus.UPLOADED);
     }
 
     @Test
     public void testValidateSelectedImportFiles() {
-        List<CaArrayFile> selectedFiles = new ArrayList<CaArrayFile>();
+        final List<CaArrayFile> selectedFiles = new ArrayList<CaArrayFile>();
         this.action.setSelectedFiles(selectedFiles);
         CaArrayFile file = new CaArrayFile();
         file.setProject(this.action.getProject());
         file.setFileStatus(FileStatus.UPLOADED);
-        file.setFileType(FileType.AFFYMETRIX_CHP);
+        file.setFileType(AFFYMETRIX_CHP);
         selectedFiles.add(file);
 
         LocalHttpServletResponse response = new LocalHttpServletResponse();
@@ -260,13 +251,13 @@ public class ProjectFilesActionTest extends AbstractDownloadTest {
         file = new CaArrayFile();
         file.setProject(this.action.getProject());
         file.setFileStatus(FileStatus.UPLOADED);
-        file.setFileType(FileType.AFFYMETRIX_CDF);
+        file.setFileType(AFFYMETRIX_CDF);
         selectedFiles.add(file);
         // invalid status
         file = new CaArrayFile();
         file.setProject(this.action.getProject());
         file.setFileStatus(FileStatus.VALIDATING);
-        file.setFileType(FileType.AFFYMETRIX_CHP);
+        file.setFileType(AFFYMETRIX_CHP);
         selectedFiles.add(file);
 
         response = new LocalHttpServletResponse();
@@ -278,46 +269,46 @@ public class ProjectFilesActionTest extends AbstractDownloadTest {
 
     @Test
     public void testValidate() throws Exception {
-        List<CaArrayFile> selectedFiles = new ArrayList<CaArrayFile>();
+        final List<CaArrayFile> selectedFiles = new ArrayList<CaArrayFile>();
         this.action.setSelectedFiles(selectedFiles);
         assertEquals(LIST_UNIMPORTED, this.action.validateFiles());
         assertEquals(LIST_UNIMPORTED, this.action.getListAction());
-        assertEquals(0, fileManagementServiceStub.getValidatedFileCount());
+        assertEquals(0, this.fileManagementServiceStub.getValidatedFileCount());
 
         CaArrayFile file = new CaArrayFile();
         file.setProject(this.action.getProject());
         file.setFileStatus(FileStatus.VALIDATING);
-        file.setFileType(FileType.AFFYMETRIX_CHP);
+        file.setFileType(AFFYMETRIX_CHP);
         selectedFiles.add(file);
         file = new CaArrayFile();
         file.setProject(this.action.getProject());
         file.setFileStatus(FileStatus.VALIDATED);
-        file.setFileType(FileType.AFFYMETRIX_CHP);
+        file.setFileType(AFFYMETRIX_CHP);
         selectedFiles.add(file);
         file = new CaArrayFile();
         file.setProject(this.action.getProject());
         file.setFileStatus(FileStatus.VALIDATED);
-        file.setFileType(FileType.AFFYMETRIX_CDF);
+        file.setFileType(AFFYMETRIX_CDF);
         selectedFiles.add(file);
         file = new CaArrayFile();
         file.setProject(this.action.getProject());
         file.setFileStatus(FileStatus.IMPORTING);
-        file.setFileType(FileType.AFFYMETRIX_CHP);
+        file.setFileType(AFFYMETRIX_CHP);
         selectedFiles.add(file);
         file = new CaArrayFile();
         file.setProject(this.action.getProject());
         file.setFileStatus(FileStatus.IMPORTED);
-        file.setFileType(FileType.AFFYMETRIX_CHP);
+        file.setFileType(AFFYMETRIX_CHP);
         selectedFiles.add(file);
         file = new CaArrayFile();
         file.setProject(this.action.getProject());
         file.setFileStatus(FileStatus.UPLOADED);
-        file.setFileType(FileType.AFFYMETRIX_CHP);
+        file.setFileType(AFFYMETRIX_CHP);
         selectedFiles.add(file);
         file = new CaArrayFile();
         file.setProject(this.action.getProject());
         file.setFileStatus(FileStatus.VALIDATION_ERRORS);
-        file.setFileType(FileType.AFFYMETRIX_CHP);
+        file.setFileType(AFFYMETRIX_CHP);
         selectedFiles.add(file);
         file = new CaArrayFile();
         file.setProject(this.action.getProject());
@@ -325,14 +316,14 @@ public class ProjectFilesActionTest extends AbstractDownloadTest {
         selectedFiles.add(file);
         assertEquals(LIST_UNIMPORTED, this.action.validateFiles());
         assertEquals(LIST_UNIMPORTED, this.action.getListAction());
-        assertEquals(3, fileManagementServiceStub.getValidatedFileCount());
+        assertEquals(3, this.fileManagementServiceStub.getValidatedFileCount());
     }
 
     @Test
     public void testSelectRefFiles() throws Exception {
-        List<CaArrayFile> projectFiles = new ArrayList<CaArrayFile>();
-        List<CaArrayFile> selectedFiles = new ArrayList<CaArrayFile>();
-        List<CaArrayFile> wrongFiles = new ArrayList<CaArrayFile>();
+        final List<CaArrayFile> projectFiles = new ArrayList<CaArrayFile>();
+        final List<CaArrayFile> selectedFiles = new ArrayList<CaArrayFile>();
+        final List<CaArrayFile> wrongFiles = new ArrayList<CaArrayFile>();
 
         // load up the project
 
@@ -340,28 +331,28 @@ public class ProjectFilesActionTest extends AbstractDownloadTest {
         file.setName("DummyFile1.CEL");
         file.setProject(this.action.getProject());
         file.setFileStatus(FileStatus.UPLOADED);
-        file.setFileType(FileType.AFFYMETRIX_CEL);
+        file.setFileType(AFFYMETRIX_CEL);
         projectFiles.add(file);
 
         file = new CaArrayFile();
         file.setName("DummyFile2.CEL");
         file.setProject(this.action.getProject());
         file.setFileStatus(FileStatus.UPLOADED);
-        file.setFileType(FileType.AFFYMETRIX_CEL);
+        file.setFileType(AFFYMETRIX_CEL);
         projectFiles.add(file);
 
         file = new CaArrayFile();
         file.setName("DummyFile3.CEL");
         file.setProject(this.action.getProject());
         file.setFileStatus(FileStatus.UPLOADED);
-        file.setFileType(FileType.AFFYMETRIX_CEL);
+        file.setFileType(AFFYMETRIX_CEL);
         projectFiles.add(file);
 
         file = new CaArrayFile();
         file.setName("DummyFile.sdrf");
         file.setProject(this.action.getProject());
         file.setFileStatus(FileStatus.UPLOADED);
-        file.setFileType(FileType.MAGE_TAB_SDRF);
+        file.setFileType(FileTypeRegistry.MAGE_TAB_SDRF);
         projectFiles.add(file);
         wrongFiles.add(file);
 
@@ -369,7 +360,7 @@ public class ProjectFilesActionTest extends AbstractDownloadTest {
         file.setName("DummyFile.idf");
         file.setProject(this.action.getProject());
         file.setFileStatus(FileStatus.UPLOADED);
-        file.setFileType(FileType.MAGE_TAB_IDF);
+        file.setFileType(FileTypeRegistry.MAGE_TAB_IDF);
         projectFiles.add(file);
         selectedFiles.add(file);
 
@@ -391,98 +382,98 @@ public class ProjectFilesActionTest extends AbstractDownloadTest {
 
     private void setCompressedSize(CaArrayFile f, int size) {
         try {
-            Method m = CaArrayFile.class.getDeclaredMethod("setCompressedSize", Integer.TYPE);
+            final Method m = CaArrayFile.class.getDeclaredMethod("setCompressedSize", Integer.TYPE);
             m.setAccessible(true);
             m.invoke(f, size);
-        } catch (NoSuchMethodException e) {
+        } catch (final NoSuchMethodException e) {
             throw new IllegalArgumentException(e);
-        } catch (IllegalAccessException e) {
+        } catch (final IllegalAccessException e) {
             throw new IllegalArgumentException(e);
-        } catch (InvocationTargetException e) {
+        } catch (final InvocationTargetException e) {
             throw new IllegalArgumentException(e);
         }
     }
 
     private void setId(CaArrayFile f, Long id) {
         try {
-            Method m = CaArrayFile.class.getSuperclass().getSuperclass().getDeclaredMethod("setId", Long.class);
+            final Method m = CaArrayFile.class.getSuperclass().getSuperclass().getDeclaredMethod("setId", Long.class);
             m.setAccessible(true);
             m.invoke(f, id);
-        } catch (NoSuchMethodException e) {
+        } catch (final NoSuchMethodException e) {
             throw new IllegalArgumentException(e);
-        } catch (IllegalAccessException e) {
+        } catch (final IllegalAccessException e) {
             throw new IllegalArgumentException(e);
-        } catch (InvocationTargetException e) {
+        } catch (final InvocationTargetException e) {
             throw new IllegalArgumentException(e);
         }
     }
 
     @Test
     public void testValidateUnparsedDataFiles() throws Exception {
-        List<CaArrayFile> selectedFiles = new ArrayList<CaArrayFile>();
+        final List<CaArrayFile> selectedFiles = new ArrayList<CaArrayFile>();
         this.action.setSelectedFiles(selectedFiles);
 
         CaArrayFile file = new CaArrayFile();
         file.setProject(this.action.getProject());
         file.setFileStatus(FileStatus.UPLOADED);
-        file.setFileType(FileType.AFFYMETRIX_RPT);
+        file.setFileType(AFFYMETRIX_EXP);
         selectedFiles.add(file);
 
         assertEquals(LIST_UNIMPORTED, this.action.validateFiles());
-        assertEquals(1, fileManagementServiceStub.getValidatedFileCount());
+        assertEquals(1, this.fileManagementServiceStub.getValidatedFileCount());
 
         file = new CaArrayFile();
         file.setProject(this.action.getProject());
         file.setFileStatus(FileStatus.UPLOADED);
-        file.setFileType(FileType.MAGE_TAB_SDRF);
+        file.setFileType(FileTypeRegistry.MAGE_TAB_SDRF);
         selectedFiles.add(file);
 
         assertEquals(LIST_UNIMPORTED, this.action.validateFiles());
-        assertEquals(3, fileManagementServiceStub.getValidatedFileCount());
+        assertEquals(3, this.fileManagementServiceStub.getValidatedFileCount());
     }
 
     @Test
     public void testImport() throws Exception {
-        List<CaArrayFile> selectedFiles = new ArrayList<CaArrayFile>();
+        final List<CaArrayFile> selectedFiles = new ArrayList<CaArrayFile>();
         this.action.setSelectedFiles(selectedFiles);
         assertEquals(LIST_UNIMPORTED, this.action.importFiles());
         assertEquals(LIST_UNIMPORTED, this.action.getListAction());
-        assertEquals(0, fileManagementServiceStub.getValidatedFileCount());
+        assertEquals(0, this.fileManagementServiceStub.getValidatedFileCount());
 
         CaArrayFile file = new CaArrayFile();
         file.setProject(this.action.getProject());
         file.setFileStatus(FileStatus.VALIDATING);
-        file.setFileType(FileType.AFFYMETRIX_CHP);
+        file.setFileType(AFFYMETRIX_CHP);
         selectedFiles.add(file);
         file = new CaArrayFile();
         file.setProject(this.action.getProject());
         file.setFileStatus(FileStatus.VALIDATED);
-        file.setFileType(FileType.AFFYMETRIX_CHP);
+        file.setFileType(AFFYMETRIX_CHP);
         selectedFiles.add(file);
         file = new CaArrayFile();
         file.setProject(this.action.getProject());
         file.setFileStatus(FileStatus.VALIDATED);
-        file.setFileType(FileType.AFFYMETRIX_CDF);
+        file.setFileType(AFFYMETRIX_CDF);
         selectedFiles.add(file);
         file = new CaArrayFile();
         file.setProject(this.action.getProject());
         file.setFileStatus(FileStatus.IMPORTING);
-        file.setFileType(FileType.AFFYMETRIX_CHP);
+        file.setFileType(AFFYMETRIX_CHP);
         selectedFiles.add(file);
         file = new CaArrayFile();
         file.setProject(this.action.getProject());
         file.setFileStatus(FileStatus.IMPORTED);
-        file.setFileType(FileType.AFFYMETRIX_CHP);
+        file.setFileType(AFFYMETRIX_CHP);
         selectedFiles.add(file);
         file = new CaArrayFile();
         file.setProject(this.action.getProject());
         file.setFileStatus(FileStatus.UPLOADED);
-        file.setFileType(FileType.AFFYMETRIX_CHP);
+        file.setFileType(AFFYMETRIX_CHP);
         selectedFiles.add(file);
         file = new CaArrayFile();
         file.setProject(this.action.getProject());
         file.setFileStatus(FileStatus.VALIDATION_ERRORS);
-        file.setFileType(FileType.AFFYMETRIX_CHP);
+        file.setFileType(AFFYMETRIX_CHP);
         selectedFiles.add(file);
         file = new CaArrayFile();
         file.setProject(this.action.getProject());
@@ -490,12 +481,12 @@ public class ProjectFilesActionTest extends AbstractDownloadTest {
         selectedFiles.add(file);
         assertEquals(LIST_UNIMPORTED, this.action.importFiles());
         assertEquals(LIST_UNIMPORTED, this.action.getListAction());
-        assertEquals(3, fileManagementServiceStub.getImportedFilecCount());
+        assertEquals(3, this.fileManagementServiceStub.getImportedFilecCount());
     }
 
     @Test
     public void testAddSupplemental() {
-        List<CaArrayFile> selectedFiles = new ArrayList<CaArrayFile>();
+        final List<CaArrayFile> selectedFiles = new ArrayList<CaArrayFile>();
         this.action.setSelectedFiles(selectedFiles);
 
         CaArrayFile file = new CaArrayFile();
@@ -508,26 +499,26 @@ public class ProjectFilesActionTest extends AbstractDownloadTest {
         selectedFiles.add(file);
 
         assertEquals(LIST_UNIMPORTED, this.action.addSupplementalFiles());
-        assertEquals(2, fileManagementServiceStub.getSupplementalFileCount());
+        assertEquals(2, this.fileManagementServiceStub.getSupplementalFileCount());
     }
 
     @Test
     public void testDeleteImported() throws Exception {
-        List<CaArrayFile> selectedFiles = new ArrayList<CaArrayFile>();
+        final List<CaArrayFile> selectedFiles = new ArrayList<CaArrayFile>();
         this.action.setSelectedFiles(selectedFiles);
         assertEquals(LIST_IMPORTED, this.action.deleteImportedFiles());
-        assertEquals(0, fileManagementServiceStub.getValidatedFileCount());
+        assertEquals(0, this.fileManagementServiceStub.getValidatedFileCount());
 
         // make this file associated with a hyb
-        CaArrayFile celFile = fileAccessServiceStub.add(AffymetrixArrayDataFiles.TEST3_CEL);
-        fileAccessServiceStub.setDeletableStatus(celFile, false);
+        final CaArrayFile celFile = this.fasStub.add(AffymetrixArrayDataFiles.TEST3_CEL);
+        this.fasStub.setDeletableStatus(celFile, false);
         assertEquals(LIST_IMPORTED, this.action.deleteImportedFiles());
-        assertEquals(0, fileAccessServiceStub.getRemovedFileCount());
+        assertEquals(0, this.fasStub.getRemovedFileCount());
     }
 
     @Test
     public void testDeleteSupplemental() throws Exception {
-        List<CaArrayFile> selectedFiles = new ArrayList<CaArrayFile>();
+        final List<CaArrayFile> selectedFiles = new ArrayList<CaArrayFile>();
         this.action.setSelectedFiles(selectedFiles);
         assertEquals(LIST_SUPPLEMENTAL, this.action.deleteSupplementalFiles());
         assertEquals(LIST_SUPPLEMENTAL, this.action.getListAction());
@@ -536,72 +527,78 @@ public class ProjectFilesActionTest extends AbstractDownloadTest {
         file.setProject(this.action.getProject());
         file.setFileStatus(FileStatus.SUPPLEMENTAL);
         selectedFiles.add(file);
-        fileAccessServiceStub.setDeletableStatus(file, true);
+        this.fasStub.setDeletableStatus(file, true);
         file = new CaArrayFile();
         file.setProject(this.action.getProject());
         file.setFileStatus(FileStatus.SUPPLEMENTAL);
         selectedFiles.add(file);
-        fileAccessServiceStub.setDeletableStatus(file, true);
-        
-        
+        this.fasStub.setDeletableStatus(file, true);
+
         assertEquals(LIST_SUPPLEMENTAL, this.action.deleteSupplementalFiles());
         assertEquals(LIST_SUPPLEMENTAL, this.action.getListAction());
-        assertEquals(2, fileAccessServiceStub.getRemovedFileCount());
+        assertEquals(2, this.fasStub.getRemovedFileCount());
     }
 
     @Test
     public void testSave() throws Exception {
-        List<CaArrayFile> selectedFiles = new ArrayList<CaArrayFile>();
+        final List<CaArrayFile> selectedFiles = new ArrayList<CaArrayFile>();
         this.action.setSelectedFiles(selectedFiles);
         assertEquals(LIST_UNIMPORTED, this.action.saveFiles());
         assertEquals(LIST_UNIMPORTED, this.action.getListAction());
-        assertEquals(0, fileManagementServiceStub.getValidatedFileCount());
+        assertEquals(0, this.fileManagementServiceStub.getValidatedFileCount());
 
         CaArrayFile file = new CaArrayFile();
-        file.setValidationResult(new FileValidationResult(new File("test")));
+        file.setId(1L);
+        file.setValidationResult(new FileValidationResult());
         file.getValidationResult().addMessage(Type.ERROR, "foo");
         file.setProject(this.action.getProject());
         file.setFileStatus(FileStatus.VALIDATING);
         selectedFiles.add(file);
         file = new CaArrayFile();
+        file.setId(2L);
         file.setProject(this.action.getProject());
         file.setFileStatus(FileStatus.VALIDATED);
         selectedFiles.add(file);
         file = new CaArrayFile();
+        file.setId(3L);
         file.setProject(this.action.getProject());
         file.setFileStatus(FileStatus.IMPORTING);
         selectedFiles.add(file);
         file = new CaArrayFile();
+        file.setId(4L);
         file.setProject(this.action.getProject());
         file.setFileStatus(FileStatus.IMPORTED);
         selectedFiles.add(file);
         file = new CaArrayFile();
+        file.setId(5L);
         file.setProject(this.action.getProject());
         file.setFileStatus(FileStatus.UPLOADED);
         selectedFiles.add(file);
         file = new CaArrayFile();
+        file.setId(6L);
         file.setProject(this.action.getProject());
         file.setFileStatus(FileStatus.VALIDATION_ERRORS);
         selectedFiles.add(file);
         assertEquals(LIST_UNIMPORTED, this.action.saveFiles());
         assertEquals(LIST_UNIMPORTED, this.action.getListAction());
-        assertEquals(6, fileAccessServiceStub.getSavedFileCount());
+        assertEquals(6, this.dataServiceStub.getSavedCount(CaArrayFile.class));
         assertEquals(FileStatus.UPLOADED, selectedFiles.get(0).getFileStatus());
         assertEquals(0, selectedFiles.get(0).getValidationResult().getMessages().size());
     }
 
     @Test
     public void testChangeFileTypes() throws Exception {
-        List<CaArrayFile> selectedFiles = new ArrayList<CaArrayFile>();
+        final List<CaArrayFile> selectedFiles = new ArrayList<CaArrayFile>();
         this.action.setSelectedFiles(selectedFiles);
         assertEquals(LIST_UNIMPORTED, this.action.saveFiles());
         assertEquals(LIST_UNIMPORTED, this.action.getListAction());
-        assertEquals(0, fileManagementServiceStub.getValidatedFileCount());
+        assertEquals(0, this.fileManagementServiceStub.getValidatedFileCount());
 
         CaArrayFile file = new CaArrayFile();
 
-        for (int i=0; i < 3; i++) {
+        for (int i = 0; i < 3; i++) {
             file = new CaArrayFile();
+            file.setId((long) i);
             file.setProject(this.action.getProject());
             file.setFileStatus(FileStatus.UPLOADED);
             file.setFileType(null);
@@ -611,12 +608,12 @@ public class ProjectFilesActionTest extends AbstractDownloadTest {
         this.action.setChangeToFileType("AFFYMETRIX_CDF");
         assertEquals(LIST_UNIMPORTED, this.action.changeFileType());
         assertEquals(LIST_UNIMPORTED, this.action.getListAction());
-        assertEquals(3, fileAccessServiceStub.getSavedFileCount());
+        assertEquals(3, this.dataServiceStub.getSavedCount(CaArrayFile.class));
 
         assertEquals(FileStatus.UPLOADED, selectedFiles.get(0).getFileStatus());
         this.action.prepare();
-        for (CaArrayFile caf: this.action.getProject().getFiles()) {
-            assertEquals(FileType.AFFYMETRIX_CDF,caf.getFileType());
+        for (final CaArrayFile caf : this.action.getProject().getFiles()) {
+            assertEquals(AFFYMETRIX_CDF, caf.getFileType());
         }
     }
 
@@ -627,46 +624,37 @@ public class ProjectFilesActionTest extends AbstractDownloadTest {
 
     @Test
     public void testDownload() throws Exception {
-        FileAccessServiceStub fas = new FileAccessServiceStub();
-        TemporaryFileCacheLocator.setTemporaryFileCacheFactory(new TemporaryFileCacheStubFactory(fas));
-        fas.add(MageTabDataFiles.MISSING_TERMSOURCE_IDF);
-        fas.add(MageTabDataFiles.MISSING_TERMSOURCE_SDRF);
-        fas.add(MageTabDataFiles.CAARRAY1X_IDF);
+        final CaArrayFile f1 = this.fasStub.add(MageTabDataFiles.MISSING_TERMSOURCE_IDF);
+        final CaArrayFile f2 = this.fasStub.add(MageTabDataFiles.MISSING_TERMSOURCE_SDRF);
 
-
-        Project p = new Project();
+        final Project p = new Project();
         p.getExperiment().setPublicIdentifier("test");
-        CaArrayFile f1 = new CaArrayFile();
-        FileDaoTest.writeContents(f1, "");
-        setId(f1, 1L);
-        setCompressedSize(f1, 1024 * 1024 * 1024);
-        f1.setName("missing_term_source.idf");
-        CaArrayFile f2 = new CaArrayFile();
-        FileDaoTest.writeContents(f2, "");
-        setId(f2, 2L);
-        setCompressedSize(f2, 1024 * 1024 * 384);
-        f2.setName("missing_term_source.sdrf");
+        f1.setId(1L);
+        f1.setCompressedSize(1024 * 1024 * 1024);
+        f2.setId(2L);
+        f2.setCompressedSize(1024 * 1024 * 384);
 
-        Set<Long> l = new HashSet<Long>();
+        final Set<Long> l = new HashSet<Long>();
         l.add(1L);
         l.add(2L);
         // need to catch exception as these are test files and will not be retrieved
         try {
-            action.setSelectedFileIds(l);
-        } catch(Exception e) {
-            //NOOP
+            this.action.setSelectedFileIds(l);
+        } catch (final Exception e) {
+            // NOOP
         }
 
-        action.setSelectedFiles(Arrays.asList(f1, f2));
-        action.setProject(p);
+        this.action.setSelectedFiles(Arrays.asList(f1, f2));
+        this.action.setProject(p);
 
-        String result = action.download();
+        final String result = this.action.download();
         assertNull(result);
 
-        assertEquals("application/zip", mockResponse.getContentType());
-        assertEquals("filename=\"caArray_test_files.zip\"", mockResponse.getHeader("Content-disposition"));
+        assertEquals("application/zip", this.mockResponse.getContentType());
+        assertEquals("filename=\"caArray_test_files.zip\"", this.mockResponse.getHeader("Content-disposition"));
 
-        ZipInputStream zis = new ZipInputStream(new ByteArrayInputStream(mockResponse.getContentAsByteArray()));
+        final ZipInputStream zis = new ZipInputStream(new ByteArrayInputStream(
+                this.mockResponse.getContentAsByteArray()));
         ZipEntry ze = zis.getNextEntry();
         assertNotNull(ze);
         assertEquals("missing_term_source.idf", ze.getName());
@@ -679,39 +667,30 @@ public class ProjectFilesActionTest extends AbstractDownloadTest {
 
     @Test
     public void testSessionTimeoutDuringDownload() throws Exception {
-        FileAccessServiceStub fas = new FileAccessServiceStub();
-        TemporaryFileCacheLocator.setTemporaryFileCacheFactory(new TemporaryFileCacheStubFactory(fas));
-        fas.add(MageTabDataFiles.MISSING_TERMSOURCE_IDF);
-        fas.add(MageTabDataFiles.MISSING_TERMSOURCE_SDRF);
-        fas.add(MageTabDataFiles.CAARRAY1X_IDF);
+        final FileAccessServiceStub fas = new FileAccessServiceStub();
+        final CaArrayFile f1 = fas.add(MageTabDataFiles.MISSING_TERMSOURCE_IDF);
+        final CaArrayFile f2 = fas.add(MageTabDataFiles.MISSING_TERMSOURCE_SDRF);
 
-
-        Project p = new Project();
+        final Project p = new Project();
         p.getExperiment().setPublicIdentifier("test");
-        CaArrayFile f1 = new CaArrayFile();
-        FileDaoTest.writeContents(f1, "");
-        setId(f1, 1L);
-        setCompressedSize(f1, 1024 * 1024 * 1024);
-        f1.setName("missing_term_source.idf");
-        CaArrayFile f2 = new CaArrayFile();
-        FileDaoTest.writeContents(f2, "");
-        setId(f2, 2L);
-        setCompressedSize(f2, 1024 * 1024 * 384);
-        f2.setName("missing_term_source.sdrf");
-        Set<Long> l = new HashSet<Long>();
+        f1.setId(1L);
+        f1.setCompressedSize(1024 * 1024 * 1024);
+        f2.setId(2L);
+        f2.setCompressedSize(1024 * 1024 * 1024);
+        final Set<Long> l = new HashSet<Long>();
         l.add(1L);
         l.add(2L);
         l.add(3L);
         // need to catch exception as these are test files and will not be retrieved
         try {
-            action.setSelectedFileIds(l);
-        } catch(Exception e) {
-            //NOOP
+            this.action.setSelectedFileIds(l);
+        } catch (final Exception e) {
+            // NOOP
         }
-        action.setSelectedFiles(Arrays.asList(f1, f2));
-        action.setProject(p);
-        String result = action.download();
-        assertEquals("denied",result);
+        this.action.setSelectedFiles(Arrays.asList(f1, f2));
+        this.action.setProject(p);
+        final String result = this.action.download();
+        assertEquals("denied", result);
     }
 
     @Test
@@ -724,72 +703,72 @@ public class ProjectFilesActionTest extends AbstractDownloadTest {
         assertEquals(Action.SUCCESS, this.action.downloadFiles());
         final SortedSet<CaArrayFile> fileSet = getDownloadedFileSet();
 
-        TestProject project = new TestProject();
-        action.setProject(project);
+        final TestProject project = new TestProject();
+        this.action.setProject(project);
         project.setFiles(fileSet);
 
-        assertEquals(Action.SUCCESS,action.downloadFiles());
-        assertEquals(4,action.getFiles().size());
+        assertEquals(Action.SUCCESS, this.action.downloadFiles());
+        assertEquals(4, this.action.getFiles().size());
 
-        action.setFileType(FileType.AGILENT_CSV.name());
-        action.setFileStatus(FileStatus.IMPORTED.name());
-        assertEquals(Action.SUCCESS,action.downloadFiles());
-        assertEquals(1,action.getFiles().size());
+        this.action.setFileType(AGILENT_CSV.getName());
+        this.action.setFileStatus(FileStatus.IMPORTED.name());
+        assertEquals(Action.SUCCESS, this.action.downloadFiles());
+        assertEquals(1, this.action.getFiles().size());
 
-        action.setFileType(FileType.GENEPIX_GAL.name());
-        action.setFileStatus(FileStatus.VALIDATED_NOT_PARSED.name());
-        assertEquals(Action.SUCCESS,action.downloadFiles());
-        assertEquals(1,action.getFiles().size());
+        this.action.setFileType(GENEPIX_GAL.getName());
+        this.action.setFileStatus(FileStatus.VALIDATED_NOT_PARSED.name());
+        assertEquals(Action.SUCCESS, this.action.downloadFiles());
+        assertEquals(1, this.action.getFiles().size());
 
-        action.setFileStatus(null);
-        action.setFileType(FileType.AFFYMETRIX_EXP.name());
-        assertEquals(Action.SUCCESS,action.downloadFiles());
-        assertEquals(0,action.getFiles().size());
+        this.action.setFileStatus(null);
+        this.action.setFileType(AFFYMETRIX_EXP.getName());
+        assertEquals(Action.SUCCESS, this.action.downloadFiles());
+        assertEquals(0, this.action.getFiles().size());
 
-        action.setFileType(null);
-        assertEquals(Action.SUCCESS,action.downloadFiles());
-        assertEquals(4,action.getFiles().size());
+        this.action.setFileType(null);
+        assertEquals(Action.SUCCESS, this.action.downloadFiles());
+        assertEquals(4, this.action.getFiles().size());
 
-        action.setFileType(UNKNOWN_FILE_TYPE);
-        assertEquals(Action.SUCCESS,action.downloadFiles());
-        assertEquals(1,action.getFiles().size());
+        this.action.setFileType(UNKNOWN_FILE_TYPE);
+        assertEquals(Action.SUCCESS, this.action.downloadFiles());
+        assertEquals(1, this.action.getFiles().size());
 
-        action.setFileType(KNOWN_FILE_TYPE);
-        assertEquals(Action.SUCCESS,action.downloadFiles());
-        assertEquals(3,action.getFiles().size());
+        this.action.setFileType(KNOWN_FILE_TYPE);
+        assertEquals(Action.SUCCESS, this.action.downloadFiles());
+        assertEquals(3, this.action.getFiles().size());
     }
 
     @Test
     public void validateListImportedForm() throws IOException {
         final SortedSet<CaArrayFile> fileSet = getImportedFileSet();
 
-        TestProject project = new TestProject();
-        assertEquals(0,action.getFiles().size());
+        final TestProject project = new TestProject();
+        assertEquals(0, this.action.getFiles().size());
         project.setImportedFiles(fileSet);
-        action.setProject(project);
+        this.action.setProject(project);
 
-        assertEquals(LIST_IMPORTED_FORM,action.listImportedForm());
-        assertEquals(3,action.getFiles().size());
+        assertEquals(LIST_IMPORTED_FORM, this.action.listImportedForm());
+        assertEquals(3, this.action.getFiles().size());
 
-        action.setFileType(FileType.AGILENT_CSV.name());
-        assertEquals(LIST_IMPORTED_FORM,action.listImportedForm());
-        assertEquals(1,action.getFiles().size());
+        this.action.setFileType(AGILENT_CSV.getName());
+        assertEquals(LIST_IMPORTED_FORM, this.action.listImportedForm());
+        assertEquals(1, this.action.getFiles().size());
 
-        action.setFileType(FileType.AFFYMETRIX_EXP.name());
-        assertEquals(LIST_IMPORTED_FORM,action.listImportedForm());
-        assertEquals(0,action.getFiles().size());
+        this.action.setFileType(AFFYMETRIX_EXP.getName());
+        assertEquals(LIST_IMPORTED_FORM, this.action.listImportedForm());
+        assertEquals(0, this.action.getFiles().size());
 
-        action.setFileType(null);
-        assertEquals(LIST_IMPORTED_FORM,action.listImportedForm());
-        assertEquals(3,action.getFiles().size());
+        this.action.setFileType(null);
+        assertEquals(LIST_IMPORTED_FORM, this.action.listImportedForm());
+        assertEquals(3, this.action.getFiles().size());
 
-        action.setFileType(UNKNOWN_FILE_TYPE);
-        assertEquals(LIST_IMPORTED_FORM,action.listImportedForm());
-        assertEquals(1,action.getFiles().size());
+        this.action.setFileType(UNKNOWN_FILE_TYPE);
+        assertEquals(LIST_IMPORTED_FORM, this.action.listImportedForm());
+        assertEquals(1, this.action.getFiles().size());
 
-        action.setFileType(KNOWN_FILE_TYPE);
-        assertEquals(LIST_IMPORTED_FORM,action.listImportedForm());
-        assertEquals(2,action.getFiles().size());
+        this.action.setFileType(KNOWN_FILE_TYPE);
+        assertEquals(LIST_IMPORTED_FORM, this.action.listImportedForm());
+        assertEquals(2, this.action.getFiles().size());
     }
 
     @Test
@@ -814,195 +793,155 @@ public class ProjectFilesActionTest extends AbstractDownloadTest {
         assertEquals(LIST_SUPPLEMENTAL, this.action.getListAction());
     }
 
-    @Test
-    public void testFilterActions() {
-        assertEquals(Action.SUCCESS, action.downloadFilesList());
-        assertEquals(Action.SUCCESS, action.downloadFilesListTable());
-        assertTrue(action.getUploadFileName().isEmpty());
-        action.getUploadFileName().add("Test");
-        assertTrue(!action.getUploadFileName().isEmpty());
-        action.setUploadFileName(new ArrayList<String>());
-        assertTrue(action.getUploadFileName().isEmpty());
-
-        assertNull(action.getFileType());
-        action.setFileType(FileType.AFFYMETRIX_CDF.toString());
-        assertEquals(FileType.AFFYMETRIX_CDF.toString(), action.getFileType());
-    }
-
     @SuppressWarnings("deprecation")
     @Test
     public void testExperimentTreeJson() throws Exception {
-        Experiment exp = this.action.getProject().getExperiment();
+        final Experiment exp = this.action.getProject().getExperiment();
 
-        Source src1 = new Source();
+        final Source src1 = new Source();
         src1.setName("Src1");
         src1.setId(252L);
         src1.setExperiment(exp);
-        dataServiceStub.save(src1);
+        this.dataServiceStub.save(src1);
         exp.getSources().add(src1);
 
-        Sample smp1  = new Sample();
+        final Sample smp1 = new Sample();
         smp1.setName("Smp1");
         smp1.setId(781L);
         exp.getSamples().add(smp1);
         src1.getSamples().add(smp1);
         src1.setExperiment(exp);
         smp1.setExperiment(exp);
-        dataServiceStub.save(smp1);
+        this.dataServiceStub.save(smp1);
 
         this.action.setNodeType(ExperimentDesignTreeNodeType.ROOT);
         this.action.importTreeNodesJson();
-        String expected = "[{\"id\":\"Sources\",\"text\":\"Sources\",\"sort\":\"1\",\"nodeType\":\"EXPERIMENT_SOURCES\",\"leaf\":false}," +
-            "{\"id\":\"Samples\",\"text\":\"Samples\",\"sort\":\"2\",\"nodeType\":\"EXPERIMENT_SAMPLES\",\"leaf\":false}," +
-            "{\"id\":\"Extracts\",\"text\":\"Extracts\",\"sort\":\"3\",\"nodeType\":\"EXPERIMENT_EXTRACTS\",\"leaf\":true}," +
-            "{\"id\":\"LabeledExtracts\",\"text\":\"Labeled Extracts\",\"sort\":\"4\",\"nodeType\":\"EXPERIMENT_LABELED_EXTRACTS\",\"leaf\":true}," +
-            "{\"id\":\"Hybridizations\",\"text\":\"Hybridizations\",\"sort\":\"5\",\"nodeType\":\"EXPERIMENT_HYBRIDIZATIONS\",\"leaf\":true}]";
-        assertEquals(expected, mockResponse.getContentAsString());
+        String expected = "[{\"id\":\"Sources\",\"text\":\"Sources\",\"sort\":\"1\",\"nodeType\":\"EXPERIMENT_SOURCES\",\"leaf\":false},"
+                + "{\"id\":\"Samples\",\"text\":\"Samples\",\"sort\":\"2\",\"nodeType\":\"EXPERIMENT_SAMPLES\",\"leaf\":false},"
+                + "{\"id\":\"Extracts\",\"text\":\"Extracts\",\"sort\":\"3\",\"nodeType\":\"EXPERIMENT_EXTRACTS\",\"leaf\":true},"
+                + "{\"id\":\"LabeledExtracts\",\"text\":\"Labeled Extracts\",\"sort\":\"4\",\"nodeType\":\"EXPERIMENT_LABELED_EXTRACTS\",\"leaf\":true},"
+                + "{\"id\":\"Hybridizations\",\"text\":\"Hybridizations\",\"sort\":\"5\",\"nodeType\":\"EXPERIMENT_HYBRIDIZATIONS\",\"leaf\":true}]";
+        assertEquals(expected, this.mockResponse.getContentAsString());
 
-        mockResponse = new MockHttpServletResponse();
-        ServletActionContext.setResponse(mockResponse);
+        this.mockResponse = new MockHttpServletResponse();
+        ServletActionContext.setResponse(this.mockResponse);
         this.action.setNodeType(ExperimentDesignTreeNodeType.EXPERIMENT_SOURCES);
         this.action.setNode("ROOT_Sources");
         this.action.importTreeNodesJson();
         expected = "[{\"id\":\"ROOT_Sources_252\",\"entityId\":252,\"text\":\"Src1\",\"sort\":\"Src1\",\"nodeType\":\"SOURCE\",\"iconCls\":\"source_node\",\"checked\":false,\"children\":[{\"id\":\"ROOT_Sources_252_Samples\",\"text\":\"Associated Samples\",\"sort\":\"2\",\"nodeType\":\"BIOMATERIAL_SAMPLES\",\"leaf\":false},{\"id\":\"ROOT_Sources_252_Extracts\",\"text\":\"Associated Extracts\",\"sort\":\"3\",\"nodeType\":\"BIOMATERIAL_EXTRACTS\",\"leaf\":true},{\"id\":\"ROOT_Sources_252_LabeledExtracts\",\"text\":\"Associated Labeled Extracts\",\"sort\":\"4\",\"nodeType\":\"BIOMATERIAL_LABELED_EXTRACTS\",\"leaf\":true},{\"id\":\"ROOT_Sources_252_Hybridizations\",\"text\":\"Associated Hybridizations\",\"sort\":\"5\",\"nodeType\":\"BIOMATERIAL_HYBRIDIZATIONS\",\"leaf\":true}]}]";
-        assertEquals(expected, mockResponse.getContentAsString());
+        assertEquals(expected, this.mockResponse.getContentAsString());
 
-        mockResponse = new MockHttpServletResponse();
-        ServletActionContext.setResponse(mockResponse);
+        this.mockResponse = new MockHttpServletResponse();
+        ServletActionContext.setResponse(this.mockResponse);
         this.action.setNodeType(ExperimentDesignTreeNodeType.EXPERIMENT_SAMPLES);
         this.action.setNode("ROOT_Samples");
         this.action.importTreeNodesJson();
         expected = "[{\"id\":\"ROOT_Samples_781\",\"entityId\":781,\"text\":\"Smp1\",\"sort\":\"Smp1\",\"nodeType\":\"SAMPLE\",\"iconCls\":\"sample_node\",\"checked\":false,\"children\":[{\"id\":\"ROOT_Samples_781_Extracts\",\"text\":\"Associated Extracts\",\"sort\":\"3\",\"nodeType\":\"BIOMATERIAL_EXTRACTS\",\"leaf\":true},{\"id\":\"ROOT_Samples_781_LabeledExtracts\",\"text\":\"Associated Labeled Extracts\",\"sort\":\"4\",\"nodeType\":\"BIOMATERIAL_LABELED_EXTRACTS\",\"leaf\":true},{\"id\":\"ROOT_Samples_781_Hybridizations\",\"text\":\"Associated Hybridizations\",\"sort\":\"5\",\"nodeType\":\"BIOMATERIAL_HYBRIDIZATIONS\",\"leaf\":true}]}]";
-        assertEquals(expected, mockResponse.getContentAsString());
+        assertEquals(expected, this.mockResponse.getContentAsString());
 
-        mockResponse = new MockHttpServletResponse();
-        ServletActionContext.setResponse(mockResponse);
+        this.mockResponse = new MockHttpServletResponse();
+        ServletActionContext.setResponse(this.mockResponse);
         this.action.setNodeType(ExperimentDesignTreeNodeType.EXPERIMENT_EXTRACTS);
         this.action.setNode("ROOT_Extracts");
         this.action.importTreeNodesJson();
-        assertEquals("[]", mockResponse.getContentAsString());
+        assertEquals("[]", this.mockResponse.getContentAsString());
 
-        mockResponse = new MockHttpServletResponse();
-        ServletActionContext.setResponse(mockResponse);
+        this.mockResponse = new MockHttpServletResponse();
+        ServletActionContext.setResponse(this.mockResponse);
         this.action.setNodeType(ExperimentDesignTreeNodeType.BIOMATERIAL_SAMPLES);
         this.action.setNode("ROOT_Sources_252_Samples");
         this.action.importTreeNodesJson();
         expected = "[{\"id\":\"ROOT_Sources_252_Samples_781\",\"entityId\":781,\"text\":\"Smp1\",\"sort\":\"Smp1\",\"nodeType\":\"SAMPLE\",\"iconCls\":\"sample_node\",\"checked\":false,\"children\":[{\"id\":\"ROOT_Sources_252_Samples_781_Extracts\",\"text\":\"Associated Extracts\",\"sort\":\"3\",\"nodeType\":\"BIOMATERIAL_EXTRACTS\",\"leaf\":true},{\"id\":\"ROOT_Sources_252_Samples_781_LabeledExtracts\",\"text\":\"Associated Labeled Extracts\",\"sort\":\"4\",\"nodeType\":\"BIOMATERIAL_LABELED_EXTRACTS\",\"leaf\":true},{\"id\":\"ROOT_Sources_252_Samples_781_Hybridizations\",\"text\":\"Associated Hybridizations\",\"sort\":\"5\",\"nodeType\":\"BIOMATERIAL_HYBRIDIZATIONS\",\"leaf\":true}]}]";
-        assertEquals(expected, mockResponse.getContentAsString());
+        assertEquals(expected, this.mockResponse.getContentAsString());
 
-        mockResponse = new MockHttpServletResponse();
+        this.mockResponse = new MockHttpServletResponse();
         this.action.setNodeType(ExperimentDesignTreeNodeType.BIOMATERIAL_EXTRACTS);
-        ServletActionContext.setResponse(mockResponse);
+        ServletActionContext.setResponse(this.mockResponse);
         this.action.setNode("ROOT_Sources_252_Samples_781_Extracts");
         this.action.importTreeNodesJson();
-        assertEquals("[]", mockResponse.getContentAsString());
+        assertEquals("[]", this.mockResponse.getContentAsString());
     }
 
     private static final String UNKNOWN_FILE_TYPE = "(Unknown File Types)";
     private static final String KNOWN_FILE_TYPE = "(Supported File Types)";
 
     @Test
-    public void testListUnimported() throws IOException{
+    public void testListUnimported() throws IOException {
 
-        assertEquals(0,action.getFiles().size());
+        assertEquals(0, this.action.getFiles().size());
         final SortedSet<CaArrayFile> fileSet = getUnimportedFileSet();
 
-        TestProject project = new TestProject();
+        final TestProject project = new TestProject();
         project.setUnimportedFiles(fileSet);
-        action.setProject(project);
+        this.action.setProject(project);
 
-        assertEquals(LIST_UNIMPORTED,action.listUnimported());
-        assertEquals(6,action.getFiles().size());
-        assertEquals(3,action.getFileStatusCountMap().get(FileStatus.UPLOADED).intValue());
-        assertEquals(3,action.getFileStatusCountMap().get(FileStatus.IMPORT_FAILED).intValue());
+        assertEquals(LIST_UNIMPORTED, this.action.listUnimported());
+        assertEquals(6, this.action.getFiles().size());
+        assertEquals(3, this.action.getFileStatusCountMap().get(FileStatus.UPLOADED).intValue());
+        assertEquals(3, this.action.getFileStatusCountMap().get(FileStatus.IMPORT_FAILED).intValue());
 
-        action.setFileType(FileType.AGILENT_CSV.name());
-        assertEquals(LIST_UNIMPORTED,action.listUnimported());
-        assertEquals(2,action.getFiles().size());
+        this.action.setFileType(AGILENT_CSV.getName());
+        assertEquals(LIST_UNIMPORTED, this.action.listUnimported());
+        assertEquals(2, this.action.getFiles().size());
 
-        action.setFileType(null);
-        action.setFileStatus(FileStatus.UPLOADED.name());
-        assertEquals(FileStatus.UPLOADED.name(), action.getFileStatus());
-        assertEquals(LIST_UNIMPORTED,action.listUnimported());
-        assertEquals(3,action.getFiles().size());
+        this.action.setFileType(null);
+        this.action.setFileStatus(FileStatus.UPLOADED.name());
+        assertEquals(FileStatus.UPLOADED.name(), this.action.getFileStatus());
+        assertEquals(LIST_UNIMPORTED, this.action.listUnimported());
+        assertEquals(3, this.action.getFiles().size());
 
-        action.setFileType(FileType.AGILENT_CSV.name());
-        assertEquals(FileType.AGILENT_CSV.name(), action.getFileType());
-        action.setFileStatus(FileStatus.UPLOADED.name());
-        assertEquals(LIST_UNIMPORTED,action.listUnimported());
-        assertEquals(1,action.getFiles().size());
+        this.action.setFileType(AGILENT_CSV.getName());
+        assertEquals(AGILENT_CSV.getName(), this.action.getFileType());
+        this.action.setFileStatus(FileStatus.UPLOADED.name());
+        assertEquals(LIST_UNIMPORTED, this.action.listUnimported());
+        assertEquals(1, this.action.getFiles().size());
 
-        action.setFileType(UNKNOWN_FILE_TYPE);
-        action.setFileStatus(FileStatus.UPLOADED.name());
-        assertEquals(LIST_UNIMPORTED,action.listUnimported());
-        assertEquals(1,action.getFiles().size());
+        this.action.setFileType(UNKNOWN_FILE_TYPE);
+        this.action.setFileStatus(FileStatus.UPLOADED.name());
+        assertEquals(LIST_UNIMPORTED, this.action.listUnimported());
+        assertEquals(1, this.action.getFiles().size());
 
-        action.setFileStatus(FileStatus.IN_QUEUE.name());
-        assertEquals(LIST_UNIMPORTED,action.listUnimported());
-        assertEquals(0,action.getFiles().size());
+        this.action.setFileStatus(FileStatus.IN_QUEUE.name());
+        assertEquals(LIST_UNIMPORTED, this.action.listUnimported());
+        assertEquals(0, this.action.getFiles().size());
 
-        action.setFileType(KNOWN_FILE_TYPE);
-        action.setFileStatus(null);
-        assertEquals(LIST_UNIMPORTED,action.listUnimported());
-        assertEquals(5,action.getFiles().size());
+        this.action.setFileType(KNOWN_FILE_TYPE);
+        this.action.setFileStatus(null);
+        assertEquals(LIST_UNIMPORTED, this.action.listUnimported());
+        assertEquals(5, this.action.getFiles().size());
 
-        action.setFileType(KNOWN_FILE_TYPE);
-        action.setFileStatus(FileStatus.UPLOADED.name());
-        assertEquals(LIST_UNIMPORTED,action.listUnimported());
-        assertEquals(2,action.getFiles().size());
-        assertEquals(2,action.getFileStatusCountMap().get(FileStatus.UPLOADED).intValue());
+        this.action.setFileType(KNOWN_FILE_TYPE);
+        this.action.setFileStatus(FileStatus.UPLOADED.name());
+        assertEquals(LIST_UNIMPORTED, this.action.listUnimported());
+        assertEquals(2, this.action.getFiles().size());
+        assertEquals(2, this.action.getFileStatusCountMap().get(FileStatus.UPLOADED).intValue());
     }
-    
+
     @Test
     public void testReparseFilesNoDesign() {
-        TestProject project = new TestProject();
+        final TestProject project = new TestProject();
         project.setImportedFiles(new TreeSet<CaArrayFile>());
-        ArrayDesign design = new ArrayDesign() {
+        final ArrayDesign design = new ArrayDesign() {
             @Override
             public boolean isImportedAndParsed() {
                 return false;
             }
         };
         project.getExperiment().getArrayDesigns().add(design);
-        action.setProject(project);
-        
-        String result = action.reparseFiles();
+        this.action.setProject(project);
+
+        final String result = this.action.reparseFiles();
         assertEquals(LIST_IMPORTED, result);
         assertEquals(1, ActionHelper.getMessages().size());
-        assertEquals("project.fileReparse.error.noParsedDesigns", ActionHelper.getMessages().get(0));        
+        assertEquals("project.fileReparse.error.noParsedDesigns", ActionHelper.getMessages().get(0));
     }
 
     @Test
     public void testReparseFilesIneligible() {
-        TestProject project = new TestProject();
+        final TestProject project = new TestProject();
         project.setUnimportedFiles(new TreeSet<CaArrayFile>());
-        action.setProject(project);
-        ArrayDesign design = new ArrayDesign() {
-            @Override
-            public boolean isImportedAndParsed() {
-                return true;
-            }
-        };
-        project.getExperiment().getArrayDesigns().add(design);        
-
-        CaArrayFile file1 = new CaArrayFile();
-        file1.setName("file1");
-        file1.setFileType(FileType.AFFYMETRIX_CEL);
-        file1.setFileStatus(FileStatus.UPLOADED);
-        action.getSelectedFiles().add(file1);
-        
-        String result = action.reparseFiles();
-        assertEquals(LIST_UNIMPORTED, result);
-        assertEquals(2, ActionHelper.getMessages().size());
-        assertEquals("project.fileReparse.error.notEligible", ActionHelper.getMessages().get(0));        
-    }
-
-    @Test
-    public void testReparseFilesOk() {
-        TestProject project = new TestProject();
-        project.setUnimportedFiles(new TreeSet<CaArrayFile>());
-        action.setProject(project);
-        ArrayDesign design = new ArrayDesign() {
+        this.action.setProject(project);
+        final ArrayDesign design = new ArrayDesign() {
             @Override
             public boolean isImportedAndParsed() {
                 return true;
@@ -1010,59 +949,78 @@ public class ProjectFilesActionTest extends AbstractDownloadTest {
         };
         project.getExperiment().getArrayDesigns().add(design);
 
-        CaArrayFile file1 = new CaArrayFile();
+        final CaArrayFile file1 = new CaArrayFile();
         file1.setName("file1");
-        file1.setFileType(FileType.AGILENT_RAW_TXT);
+        file1.setFileType(AFFYMETRIX_CEL);
+        file1.setFileStatus(FileStatus.UPLOADED);
+        this.action.getSelectedFiles().add(file1);
+
+        final String result = this.action.reparseFiles();
+        assertEquals(LIST_UNIMPORTED, result);
+        assertEquals(2, ActionHelper.getMessages().size());
+        assertEquals("project.fileReparse.error.notEligible", ActionHelper.getMessages().get(0));
+    }
+
+    @Test
+    public void testReparseFilesOk() {
+        final TestProject project = new TestProject();
+        project.setUnimportedFiles(new TreeSet<CaArrayFile>());
+        this.action.setProject(project);
+        final ArrayDesign design = new ArrayDesign() {
+            @Override
+            public boolean isImportedAndParsed() {
+                return true;
+            }
+        };
+        project.getExperiment().getArrayDesigns().add(design);
+
+        final CaArrayFile file1 = new CaArrayFile();
+        file1.setName("file1");
+        file1.setFileType(AFFYMETRIX_CHP);
         file1.setFileStatus(FileStatus.IMPORTED_NOT_PARSED);
-        action.getSelectedFiles().add(file1);
-        
-        String result = action.reparseFiles();
+        this.action.getSelectedFiles().add(file1);
+
+        final String result = this.action.reparseFiles();
         assertEquals(LIST_UNIMPORTED, result);
         assertEquals(1, ActionHelper.getMessages().size());
         assertEquals("project.fileImport.success", ActionHelper.getMessages().get(0));
-        assertEquals(1, fileManagementServiceStub.reimportCount);
+        assertEquals(1, this.fileManagementServiceStub.reimportCount);
     }
 
     private SortedSet<CaArrayFile> getUnimportedFileSet() throws IOException {
-        SortedSet<CaArrayFile> fileSet = new TreeSet<CaArrayFile>();
+        final SortedSet<CaArrayFile> fileSet = new TreeSet<CaArrayFile>();
 
-        CaArrayFile file1 = new CaArrayFile();
-        FileDaoTest.writeContents(file1, "");
+        final CaArrayFile file1 = new CaArrayFile();
         file1.setName("file1");
-        file1.setType(FileType.AFFYMETRIX_CDF.name());
+        file1.setType(AFFYMETRIX_CDF.getName());
         file1.setFileStatus(FileStatus.IMPORT_FAILED);
         fileSet.add(file1);
 
-        CaArrayFile file2 = new CaArrayFile();
-        FileDaoTest.writeContents(file2, "");
+        final CaArrayFile file2 = new CaArrayFile();
         file2.setName("file2");
-        file2.setType(FileType.AFFYMETRIX_CDF.name());
+        file2.setType(AFFYMETRIX_CDF.getName());
         file2.setFileStatus(FileStatus.IMPORT_FAILED);
         fileSet.add(file2);
 
-        CaArrayFile file3 = new CaArrayFile();
-        FileDaoTest.writeContents(file3, "");
+        final CaArrayFile file3 = new CaArrayFile();
         file3.setName("file3");
-        file3.setType(FileType.AGILENT_CSV.name());
+        file3.setType(AGILENT_CSV.getName());
         file3.setFileStatus(FileStatus.IMPORT_FAILED);
         fileSet.add(file3);
 
-        CaArrayFile file4 = new CaArrayFile();
-        FileDaoTest.writeContents(file4, "");
+        final CaArrayFile file4 = new CaArrayFile();
         file4.setName("file4");
-        file4.setType(FileType.AGILENT_CSV.name());
+        file4.setType(AGILENT_CSV.getName());
         file4.setFileStatus(FileStatus.UPLOADED);
         fileSet.add(file4);
 
-        CaArrayFile file5 = new CaArrayFile();
-        FileDaoTest.writeContents(file5, "");
+        final CaArrayFile file5 = new CaArrayFile();
         file5.setName("file5");
-        file5.setFileType(FileType.MAGE_TAB_ADF);
+        file5.setFileType(GENEPIX_GAL);
         file5.setFileStatus(FileStatus.UPLOADED);
         fileSet.add(file5);
 
-        CaArrayFile file6 = new CaArrayFile();
-        FileDaoTest.writeContents(file6, "");
+        final CaArrayFile file6 = new CaArrayFile();
         file6.setName("file6");
         file6.setFileType(null);
         file6.setFileStatus(FileStatus.UPLOADED);
@@ -1071,24 +1029,21 @@ public class ProjectFilesActionTest extends AbstractDownloadTest {
     }
 
     private SortedSet<CaArrayFile> getImportedFileSet() throws IOException {
-        SortedSet<CaArrayFile> fileSet = new TreeSet<CaArrayFile>();
+        final SortedSet<CaArrayFile> fileSet = new TreeSet<CaArrayFile>();
 
-        CaArrayFile file1 = new CaArrayFile();
-        FileDaoTest.writeContents(file1, "");
+        final CaArrayFile file1 = new CaArrayFile();
         file1.setName("file1");
-        file1.setType(FileType.AFFYMETRIX_CDF.name());
+        file1.setType(AFFYMETRIX_CDF.getName());
         file1.setFileStatus(FileStatus.IMPORTED);
         fileSet.add(file1);
 
-        CaArrayFile file2 = new CaArrayFile();
-        FileDaoTest.writeContents(file2, "");
+        final CaArrayFile file2 = new CaArrayFile();
         file2.setName("file2");
-        file2.setType(FileType.AGILENT_CSV.name());
+        file2.setType(AGILENT_CSV.getName());
         file2.setFileStatus(FileStatus.VALIDATED);
         fileSet.add(file2);
 
-        CaArrayFile file3 = new CaArrayFile();
-        FileDaoTest.writeContents(file3, "");
+        final CaArrayFile file3 = new CaArrayFile();
         file3.setName("file3");
         file3.setType(null);
         file3.setFileStatus(FileStatus.VALIDATED);
@@ -1097,109 +1052,103 @@ public class ProjectFilesActionTest extends AbstractDownloadTest {
     }
 
     private SortedSet<CaArrayFile> getDownloadedFileSet() throws IOException {
-        SortedSet<CaArrayFile> fileSet = new TreeSet<CaArrayFile>();
+        final SortedSet<CaArrayFile> fileSet = new TreeSet<CaArrayFile>();
 
-        CaArrayFile file1 = new CaArrayFile();
-        FileDaoTest.writeContents(file1, "");
+        final CaArrayFile file1 = new CaArrayFile();
         file1.setName("file1");
-        file1.setType(FileType.AFFYMETRIX_CDF.name());
+        file1.setType(AFFYMETRIX_CDF.getName());
         file1.setFileStatus(FileStatus.IMPORTED_NOT_PARSED);
         fileSet.add(file1);
 
-        CaArrayFile file2 = new CaArrayFile();
-        FileDaoTest.writeContents(file2, "");
+        final CaArrayFile file2 = new CaArrayFile();
         file2.setName("file2");
-        file2.setType(FileType.AGILENT_CSV.name());
+        file2.setType(AGILENT_CSV.getName());
         file2.setFileStatus(FileStatus.IMPORTED);
         fileSet.add(file2);
 
-        CaArrayFile file3 = new CaArrayFile();
-        FileDaoTest.writeContents(file3, "");
+        final CaArrayFile file3 = new CaArrayFile();
         file3.setName("file3");
         file3.setType(null);
         file3.setFileStatus(FileStatus.VALIDATED);
         fileSet.add(file3);
 
-        CaArrayFile file4 = new CaArrayFile();
-        FileDaoTest.writeContents(file4, "");
+        final CaArrayFile file4 = new CaArrayFile();
         file4.setName("file4");
-        file4.setType(FileType.GENEPIX_GAL.name());
+        file4.setType(GENEPIX_GAL.getName());
         file4.setFileStatus(FileStatus.VALIDATED_NOT_PARSED);
         fileSet.add(file4);
         return fileSet;
     }
 
-
     @Test
     public void testDownloadOptions() throws IOException {
         CaArrayFile file = new CaArrayFile();
-        FileDaoTest.writeContents(file, "");
         file.setProject(this.action.getProject());
         file.setFileStatus(FileStatus.IMPORTED);
-        file.setFileType(FileType.GEO_GPL);
+        file.setFileType(GENEPIX_GAL);
         this.action.getProject().getFiles().add(file);
 
         file = new CaArrayFile();
-        FileDaoTest.writeContents(file, "");
         file.setProject(this.action.getProject());
         file.setFileStatus(FileStatus.IMPORTED);
-        file.setFileType(FileType.AFFYMETRIX_CEL);
+        file.setFileType(AFFYMETRIX_CEL);
         this.action.getProject().getFiles().add(file);
 
         file = new CaArrayFile();
-        FileDaoTest.writeContents(file, "");
         file.setProject(this.action.getProject());
         file.setFileStatus(FileStatus.IMPORTED);
-        file.setFileType(FileType.AFFYMETRIX_CHP);
+        file.setFileType(AFFYMETRIX_CHP);
         this.action.getProject().getFiles().add(file);
 
         file = new CaArrayFile();
-        FileDaoTest.writeContents(file, "");
         file.setProject(this.action.getProject());
         file.setFileStatus(FileStatus.IMPORTED);
-        file.setFileType(FileType.MAGE_TAB_IDF);
+        file.setFileType(FileTypeRegistry.MAGE_TAB_IDF);
         this.action.getProject().getFiles().add(file);
 
-        String result = this.action.downloadOptions();
+        final String result = this.action.downloadOptions();
         assertEquals("success", result);
 
         assertEquals(2, this.action.getFileTypes().size());
-        assertTrue(this.action.getFileTypes().contains(FileType.AFFYMETRIX_CEL.name()));
-        assertTrue(this.action.getFileTypes().contains(FileType.AFFYMETRIX_CHP.name()));
+        assertTrue(this.action.getFileTypes().contains(AFFYMETRIX_CEL.getName()));
+        assertTrue(this.action.getFileTypes().contains(AFFYMETRIX_CHP.getName()));
     }
 
-
     private class LocalHttpServletResponse extends MockHttpServletResponse {
-        private StringWriter out = new StringWriter();
+        private final StringWriter out = new StringWriter();
 
         @Override
         public PrintWriter getWriter() {
-            return new PrintWriter(out);
+            return new PrintWriter(this.out);
         }
 
         public String getResponseText() {
-            return out.toString();
+            return this.out.toString();
         }
     }
 
     private static class LocalGenericDataServiceStub extends GenericDataServiceStub {
-        private Map<Long, PersistentObject> objMap = new HashMap<Long, PersistentObject>();
+        private final Map<Long, PersistentObject> objMap = new HashMap<Long, PersistentObject>();
 
         @Override
         public void save(PersistentObject object) {
             super.save(object);
-            objMap.put(object.getId(), object);
+            this.objMap.put(object.getId(), object);
         }
 
         @SuppressWarnings("unchecked")
         @Override
         public <T extends PersistentObject> T getPersistentObject(Class<T> entityClass, Long entityId) {
-            Object candidate = objMap.get(entityId);
+            final Object candidate = this.objMap.get(entityId);
             if (candidate == null) {
                 return null;
             } else {
                 return (T) (entityClass.isInstance(candidate) ? candidate : null);
             }
+        }
+
+        public int getSavedCount(final Class<?> ofType) {
+            return Iterables.size(Iterables.filter(this.objMap.values(), Predicates.instanceOf(ofType)));
         }
     }
 
@@ -1210,24 +1159,27 @@ public class ProjectFilesActionTest extends AbstractDownloadTest {
         SortedSet<CaArrayFile> importedFiles;
         SortedSet<CaArrayFile> files;
 
+        @Override
         public SortedSet<CaArrayFile> getUnImportedFiles() {
-            return unimportedFiles;
+            return this.unimportedFiles;
         }
 
         public void setUnimportedFiles(SortedSet<CaArrayFile> unimportedFiles) {
             this.unimportedFiles = unimportedFiles;
         }
 
+        @Override
         public SortedSet<CaArrayFile> getImportedFiles() {
-            return importedFiles;
+            return this.importedFiles;
         }
 
         public void setImportedFiles(SortedSet<CaArrayFile> importedFiles) {
             this.importedFiles = importedFiles;
         }
 
+        @Override
         public SortedSet<CaArrayFile> getFiles() {
-            return files;
+            return this.files;
         }
 
         public void setFiles(SortedSet<CaArrayFile> files) {
@@ -1235,13 +1187,26 @@ public class ProjectFilesActionTest extends AbstractDownloadTest {
         }
 
     }
-    
+
     private static class LocalFileManagementServiceStub extends FileManagementServiceStub {
         private int reimportCount = 0;
-        
+
         @Override
         public void reimportAndParseProjectFiles(Project targetProject, CaArrayFileSet fileSet) {
-            reimportCount++;
-        }        
+            this.reimportCount++;
+        }
+
+        @Override
+        public List<String> findIdfRefFileNames(CaArrayFile idfFile, Project project) {
+            final List<String> filenames = new ArrayList<String>();
+            for (final CaArrayFile caf : project.getFileSet().getFiles()) {
+                if (FileTypeRegistry.MAGE_TAB_SDRF.equals(caf.getFileType())
+                        || AFFYMETRIX_CEL.equals(caf.getFileType())) {
+                    filenames.add(caf.getName());
+                }
+            }
+
+            return filenames;
+        }
     }
 }

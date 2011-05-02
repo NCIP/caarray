@@ -88,26 +88,27 @@ import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.InvalidDataFileException;
 
-import java.io.File;
-
 /**
  * Simple stub for array data service.
  */
 public class ArrayDataServiceStub implements ArrayDataService {
+    @Override
     public void importData(CaArrayFile caArrayFile, boolean createAnnotation, DataImportOptions importOptions)
             throws InvalidDataFileException {
         // no-op
     }
-    
+
     public ArrayDesign getArrayDesign(CaArrayFile file) {
         return null;
     }
 
+    @Override
     public void initialize() {
         // no-op
     }
 
+    @Override
     public FileValidationResult validate(CaArrayFile arrayDataFile, MageTabDocumentSet mTabSet, boolean reimport) {
-        return new FileValidationResult(new File(arrayDataFile.getName()));
+        return new FileValidationResult();
     }
 }

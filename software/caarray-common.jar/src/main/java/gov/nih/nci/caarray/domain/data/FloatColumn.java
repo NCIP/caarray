@@ -85,9 +85,13 @@ package gov.nih.nci.caarray.domain.data;
 
 import gov.nih.nci.caarray.util.CaArrayUtils;
 
+import java.io.Serializable;
+
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
+
+import com.google.common.base.Preconditions;
 
 /**
  * Contains a column of <code>float</code> values.
@@ -97,37 +101,60 @@ import javax.persistence.Transient;
 public class FloatColumn extends AbstractDataColumn {
     private static final long serialVersionUID = 1L;
 
+    private float[] values;
+
     /**
      * @return the values
      */
     @Transient
     public float[] getValues() {
-        return (float[]) getValuesAsSerializable();
+        return this.values;
     }
 
     /**
      * @param values the values to set
      */
     public void setValues(float[] values) {
-        setSerializableValues(values);
+        this.values = values;
     }
 
     /**
-     * @return the values of this column, in a space-separated representation, where each value is 
-     * encoded using the literal representation of the xs:float type defined in the XML Schema standard.
+     * @return the values of this column, in a space-separated representation, where each value is encoded using the
+     *         literal representation of the xs:float type defined in the XML Schema standard.
      */
+    @Override
     @Transient
     public String getValuesAsString() {
         return CaArrayUtils.join(getValues(), SEPARATOR);
     }
-    
+
     /**
-     * Set values from a String representation. The string should contain a list of space-separated
-     * values, with each value encoded using the literal representation of the xs:double type defined in XML Schema.
+     * Set values from a String representation. The string should contain a list of space-separated values, with each
+     * value encoded using the literal representation of the xs:double type defined in XML Schema.
+     * 
      * @param s the string containing the space-separated values
      */
+    @Override
     public void setValuesAsString(String s) {
         setValues(CaArrayUtils.splitIntoFloats(s, SEPARATOR));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setValuesFromArray(Serializable array) {
+        Preconditions.checkArgument(array instanceof float[], "Invalid array value passed");
+        this.values = (float[]) array;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transient
+    public Serializable getValuesAsArray() {
+        return this.values;
     }
 
     /**
@@ -137,5 +164,4 @@ public class FloatColumn extends AbstractDataColumn {
     public void initializeArray(int numberOfValues) {
         setValues(new float[numberOfValues]);
     }
-
 }

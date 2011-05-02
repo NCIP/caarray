@@ -89,7 +89,6 @@ import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
-import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.security.authorization.domainobjects.User;
 
 import java.sql.Connection;
@@ -111,9 +110,8 @@ abstract class AbstractProjectFilesJob extends AbstractFileManagementJob {
 
     private final long projectId;
     private final Set<Long> fileIds = new HashSet<Long>();
-
     private final ArrayDataImporter arrayDataImporter;
-    private final MageTabImporter mageTabImporter;
+    private MageTabImporter mageTabImporter;
     private final ProjectDao projectDao;
     private final SearchDao searchDao;
     private final String experimentName;
@@ -121,18 +119,18 @@ abstract class AbstractProjectFilesJob extends AbstractFileManagementJob {
     @SuppressWarnings("PMD.ExcessiveParameterList")
     @Inject
     // CHECKSTYLE:OFF more than 7 parameters are okay for injected constructor
-    AbstractProjectFilesJob(String username, UsernameHolder usernameHolder, Project targetProject,
+    AbstractProjectFilesJob(String username, Project targetProject,
             CaArrayFileSet fileSet, ArrayDataImporter arrayDataImporter, MageTabImporter mageTabImporter,
             ProjectDao projectDao, SearchDao searchDao) {
     // CHECKSTYLE:ON
-        super(username, usernameHolder);
+        super(username);
         this.projectId = targetProject.getId();
         this.experimentName = targetProject.getExperiment().getTitle();
         this.arrayDataImporter = arrayDataImporter;
         this.mageTabImporter = mageTabImporter;
         this.projectDao = projectDao;
         this.searchDao = searchDao;
-        for (CaArrayFile file : fileSet.getFiles()) {
+        for (final CaArrayFile file : fileSet.getFiles()) {
             this.fileIds.add(file.getId());
         }
     }
@@ -143,7 +141,7 @@ abstract class AbstractProjectFilesJob extends AbstractFileManagementJob {
     public String getJobEntityName() {
         return experimentName;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -165,7 +163,7 @@ abstract class AbstractProjectFilesJob extends AbstractFileManagementJob {
     }
 
     void doValidate(CaArrayFileSet fileSet) {
-        MageTabDocumentSet mTabSet = validateAnnotation(fileSet);
+        final MageTabDocumentSet mTabSet = validateAnnotation(fileSet);
         validateArrayData(fileSet, mTabSet);
     }
 
@@ -177,14 +175,22 @@ abstract class AbstractProjectFilesJob extends AbstractFileManagementJob {
         getArrayDataImporter().validateFiles(fileSet, mTabSet, false);
     }
 
+    MageTabImporter getMageTabImporter() {
+        return this.mageTabImporter;
+    }
+
+    /**
+     * @param mageTabImporter the mageTabImporter to set
+     */
+    @Inject
+    public void setMageTabImporter(MageTabImporter mageTabImporter) {
+        this.mageTabImporter = mageTabImporter;
+    }
+
     protected ArrayDataImporter getArrayDataImporter() {
         return arrayDataImporter;
     }
 
-    protected MageTabImporter getMageTabImporter() {
-        return mageTabImporter;
-    }
-    
     protected ProjectDao getProjectDao() {
         return projectDao;
     }
@@ -217,10 +223,10 @@ abstract class AbstractProjectFilesJob extends AbstractFileManagementJob {
      */
     @Override
     public PreparedStatement getUnexpectedErrorPreparedStatement(Connection con) throws SQLException {
-        PreparedStatement s = con.prepareStatement(
-                "update caarrayfile set status = ? where project = ? and status = ?");
+        final PreparedStatement s = con
+                .prepareStatement("update caarrayfile set status = ? where project = ? and status = ?");
         FileStatus newStatus;
-        switch(getInProgressStatus()) {
+        switch (getInProgressStatus()) {
         case IMPORTING:
             newStatus = FileStatus.IMPORT_FAILED;
             break;

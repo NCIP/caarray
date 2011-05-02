@@ -83,15 +83,6 @@
 package gov.nih.nci.caarray.dao;
 
 import static org.junit.Assert.assertEquals;
-import edu.georgetown.pir.Organism;
-import gov.nih.nci.caarray.domain.contact.Organization;
-import gov.nih.nci.caarray.domain.project.AssayType;
-import gov.nih.nci.caarray.domain.project.Experiment;
-import gov.nih.nci.caarray.domain.project.Project;
-import gov.nih.nci.caarray.domain.search.BrowseCategory;
-import gov.nih.nci.caarray.domain.search.ProjectSortCriterion;
-import gov.nih.nci.caarray.domain.vocabulary.TermSource;
-import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
 
 import java.util.List;
 import java.util.SortedSet;
@@ -104,9 +95,18 @@ import org.junit.Test;
 
 import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
 
+import edu.georgetown.pir.Organism;
+import gov.nih.nci.caarray.domain.contact.Organization;
+import gov.nih.nci.caarray.domain.project.AssayType;
+import gov.nih.nci.caarray.domain.project.Experiment;
+import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.domain.search.BrowseCategory;
+import gov.nih.nci.caarray.domain.search.ProjectSortCriterion;
+import gov.nih.nci.caarray.domain.vocabulary.TermSource;
+
 /**
  * @author Winston Cheng
- *
+ * 
  */
 @SuppressWarnings("PMD")
 public class BrowseDaoTest extends AbstractDaoTest {
@@ -128,13 +128,15 @@ public class BrowseDaoTest extends AbstractDaoTest {
     private static AssayType DUMMY_ASSAYTYPE_1;
     private static AssayType DUMMY_ASSAYTYPE_2;
 
-    private static final BrowseDao DAO_OBJECT = CaArrayDaoFactory.INSTANCE.getBrowseDao();
+    private BrowseDao daoObject;
 
     /**
      * Define the dummy objects that will be used by the tests.
      */
     @Before
     public void setup() {
+        final SearchDao searchDao = new SearchDaoImpl(this.hibernateHelper);
+        this.daoObject = new BrowseDaoImpl(searchDao, this.hibernateHelper);
         DUMMY_ORGANISM_1 = new Organism();
         DUMMY_ORGANISM_2 = new Organism();
         DUMMY_ORGANISM_3 = new Organism();
@@ -174,7 +176,7 @@ public class BrowseDaoTest extends AbstractDaoTest {
 
         DUMMY_PROJECT_1.setExperiment(DUMMY_EXPERIMENT_1);
         DUMMY_EXPERIMENT_1.setTitle("DummyExperiment1");
-        SortedSet <AssayType>assayTypes = new TreeSet<AssayType>();
+        SortedSet<AssayType> assayTypes = new TreeSet<AssayType>();
         assayTypes.add(DUMMY_ASSAYTYPE_1);
         DUMMY_EXPERIMENT_1.setAssayTypes(assayTypes);
         DUMMY_EXPERIMENT_1.setOrganism(DUMMY_ORGANISM_1);
@@ -202,33 +204,33 @@ public class BrowseDaoTest extends AbstractDaoTest {
     @Test
     public void testCountByBrowseCategory() {
         saveProjects();
-        Transaction tx = hibernateHelper.beginTransaction();
-        assertEquals(2, DAO_OBJECT.countByBrowseCategory(BrowseCategory.ORGANISMS));
+        final Transaction tx = this.hibernateHelper.beginTransaction();
+        assertEquals(2, this.daoObject.countByBrowseCategory(BrowseCategory.ORGANISMS));
         tx.commit();
     }
 
     @Test
     public void testHybridizationCount() {
-        Transaction tx = hibernateHelper.beginTransaction();
-        DAO_OBJECT.hybridizationCount();
+        final Transaction tx = this.hibernateHelper.beginTransaction();
+        this.daoObject.hybridizationCount();
         tx.commit();
     }
 
     @Test
     public void testUserCount() {
-        Transaction tx = hibernateHelper.beginTransaction();
-        DAO_OBJECT.userCount();
+        final Transaction tx = this.hibernateHelper.beginTransaction();
+        this.daoObject.userCount();
         tx.commit();
     }
 
     @Test
     public void testTabList() {
         saveProjects();
-        Transaction tx = hibernateHelper.beginTransaction();
-        List<Object[]> tabs = DAO_OBJECT.tabList(BrowseCategory.ORGANISMS);
+        final Transaction tx = this.hibernateHelper.beginTransaction();
+        final List<Object[]> tabs = this.daoObject.tabList(BrowseCategory.ORGANISMS);
         assertEquals(2, tabs.size());
-        Object[] tab1 = tabs.get(0);
-        Object[] tab2 = tabs.get(1);
+        final Object[] tab1 = tabs.get(0);
+        final Object[] tab2 = tabs.get(1);
         assertEquals("organism1", tab1[0]);
         assertEquals(2L, tab1[2]);
         assertEquals("organism2", tab2[0]);
@@ -239,17 +241,17 @@ public class BrowseDaoTest extends AbstractDaoTest {
     @Test
     public void testBrowseList() {
         saveProjects();
-        Transaction tx = hibernateHelper.beginTransaction();
-        Long id = DUMMY_ORGANISM_1.getId();
-        PageSortParams<Project> psp = new PageSortParams<Project>(20,0,ProjectSortCriterion.TITLE,false);
-        assertEquals(2, DAO_OBJECT.browseCount(BrowseCategory.ORGANISMS, id));
-        assertEquals(2, DAO_OBJECT.browseList(psp, BrowseCategory.ORGANISMS, id).size());
+        final Transaction tx = this.hibernateHelper.beginTransaction();
+        final Long id = DUMMY_ORGANISM_1.getId();
+        final PageSortParams<Project> psp = new PageSortParams<Project>(20, 0, ProjectSortCriterion.TITLE, false);
+        assertEquals(2, this.daoObject.browseCount(BrowseCategory.ORGANISMS, id));
+        assertEquals(2, this.daoObject.browseList(psp, BrowseCategory.ORGANISMS, id).size());
         tx.commit();
     }
 
     private void saveProjects() {
-        Transaction tx = hibernateHelper.beginTransaction();
-        Session session = hibernateHelper.getCurrentSession();
+        final Transaction tx = this.hibernateHelper.beginTransaction();
+        final Session session = this.hibernateHelper.getCurrentSession();
         session.save(DUMMY_ASSAYTYPE_1);
         session.save(DUMMY_ASSAYTYPE_2);
         session.save(DUMMY_ORGANISM_1);

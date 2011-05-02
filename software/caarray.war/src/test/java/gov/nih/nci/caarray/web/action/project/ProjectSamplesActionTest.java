@@ -90,14 +90,10 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import gov.nih.nci.caarray.application.GenericDataService;
 import gov.nih.nci.caarray.application.GenericDataServiceStub;
-import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
-import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
-import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheStubFactory;
 import gov.nih.nci.caarray.application.project.ProjectManagementService;
 import gov.nih.nci.caarray.application.project.ProjectManagementServiceStub;
 import gov.nih.nci.caarray.application.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.application.vocabulary.VocabularyServiceStub;
-import gov.nih.nci.caarray.dao.FileDaoTest;
 import gov.nih.nci.caarray.domain.data.DerivedArrayData;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
@@ -138,7 +134,7 @@ import com.opensymphony.xwork2.Action;
 
 /**
  * @author Winston Cheng
- *
+ * 
  */
 public class ProjectSamplesActionTest extends AbstractDownloadTest {
     private final ProjectSamplesAction action = new ProjectSamplesAction();
@@ -149,7 +145,7 @@ public class ProjectSamplesActionTest extends AbstractDownloadTest {
     @Before
     @SuppressWarnings("deprecation")
     public void setUp() throws Exception {
-        ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
+        final ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
         locatorStub.addLookup(GenericDataService.JNDI_NAME, new LocalGenericDataService());
         locatorStub.addLookup(ProjectManagementService.JNDI_NAME, new LocalProjectManagementService());
         locatorStub.addLookup(VocabularyService.JNDI_NAME, new VocabularyServiceStub());
@@ -164,34 +160,34 @@ public class ProjectSamplesActionTest extends AbstractDownloadTest {
     @SuppressWarnings("deprecation")
     public void testPrepare() throws Exception {
         // no current sample id
-        action.prepare();
-        assertNull(action.getCurrentSample().getId());
+        this.action.prepare();
+        assertNull(this.action.getCurrentSample().getId());
 
         // valid current sample id
         Sample sample = new Sample();
         sample.setId(1L);
         sample.setName("sample1");
-        action.setCurrentSample(sample);
-        action.prepare();
-        assertEquals(DUMMY_SAMPLE, action.getCurrentSample());
+        this.action.setCurrentSample(sample);
+        this.action.prepare();
+        assertEquals(DUMMY_SAMPLE, this.action.getCurrentSample());
 
-        //valid sample external id
+        // valid sample external id
         sample = new Sample();
         sample.setName("sample2");
         sample.setExternalId("abc");
-        action.setCurrentSample(sample);
-        action.prepare();
-        assertEquals("abc", action.getCurrentSample().getExternalId());
+        this.action.setCurrentSample(sample);
+        this.action.prepare();
+        assertEquals("abc", this.action.getCurrentSample().getExternalId());
 
         // invalid current sample id
         sample = new Sample();
         sample.setId(2L);
         sample.setName("sample3");
-        action.setCurrentSample(sample);
+        this.action.setCurrentSample(sample);
         try {
-            action.prepare();
+            this.action.prepare();
             fail("Expected PermissionDeniedException");
-        } catch (PermissionDeniedException pde) {
+        } catch (final PermissionDeniedException pde) {
             assertTrue(pde.getMessage().endsWith("id 2"));
         }
     }
@@ -199,74 +195,67 @@ public class ProjectSamplesActionTest extends AbstractDownloadTest {
     @Test
     public void testPrepareUsingExternalSampleId() throws Exception {
         // no current sample id
-        action.prepare();
-        assertNull(action.getCurrentSample().getId());
+        this.action.prepare();
+        assertNull(this.action.getCurrentSample().getId());
 
-        //valid sample external id
+        // valid sample external id
         Sample sample = new Sample();
         sample.setName("sample4");
         sample.setExternalId("abc");
-        action.setCurrentSample(sample);
-        action.prepare();
-        assertEquals("abc", action.getCurrentSample().getExternalId());
+        this.action.setCurrentSample(sample);
+        this.action.prepare();
+        assertEquals("abc", this.action.getCurrentSample().getExternalId());
 
         // invalid current sample id
         sample = new Sample();
         sample.setName("sample5");
         sample.setExternalId("def");
-        action.setCurrentSample(sample);
+        this.action.setCurrentSample(sample);
         try {
-            action.prepare();
+            this.action.prepare();
             fail("Expected PermissionDeniedException");
-        } catch (PermissionDeniedException pde) {
+        } catch (final PermissionDeniedException pde) {
             assertTrue(pde.getMessage().endsWith("external id def"));
         }
     }
 
     @Test
     public void testDownload() throws Exception {
-        assertEquals("noSampleData", action.download());
+        assertEquals("noSampleData", this.action.download());
 
-        FileAccessServiceStub fas = new FileAccessServiceStub();
-        TemporaryFileCacheLocator.setTemporaryFileCacheFactory(new TemporaryFileCacheStubFactory(fas));
-        fas.add(MageTabDataFiles.MISSING_TERMSOURCE_IDF);
-        fas.add(MageTabDataFiles.MISSING_TERMSOURCE_SDRF);
+        final CaArrayFile rawFile = this.fasStub.add(MageTabDataFiles.MISSING_TERMSOURCE_IDF);
+        final CaArrayFile derivedFile = this.fasStub.add(MageTabDataFiles.MISSING_TERMSOURCE_SDRF);
 
-        Project p = new Project();
+        final Project p = new Project();
         p.getExperiment().setPublicIdentifier("test");
-        Sample s = new Sample();
-        Extract e = new Extract();
+        final Sample s = new Sample();
+        final Extract e = new Extract();
         s.getExtracts().add(e);
-        LabeledExtract le = new LabeledExtract();
+        final LabeledExtract le = new LabeledExtract();
         e.getLabeledExtracts().add(le);
-        Hybridization h = new Hybridization();
+        final Hybridization h = new Hybridization();
         le.getHybridizations().add(h);
-        RawArrayData raw = new RawArrayData();
+        final RawArrayData raw = new RawArrayData();
         h.addArrayData(raw);
-        DerivedArrayData derived = new DerivedArrayData();
+        final DerivedArrayData derived = new DerivedArrayData();
         h.getDerivedDataCollection().add(derived);
-        CaArrayFile rawFile = new CaArrayFile();
-        FileDaoTest.writeContents(rawFile, "");
-        rawFile.setName("missing_term_source.idf");
         raw.setDataFile(rawFile);
-        CaArrayFile derivedFile = new CaArrayFile();
-        FileDaoTest.writeContents(derivedFile, "");
-        derivedFile.setName("missing_term_source.sdrf");
         derived.setDataFile(derivedFile);
 
-        action.setCurrentSample(s);
-        action.setProject(p);
-        List<CaArrayFile> files = new ArrayList<CaArrayFile>(s.getAllDataFiles());
+        this.action.setCurrentSample(s);
+        this.action.setProject(p);
+        final List<CaArrayFile> files = new ArrayList<CaArrayFile>(s.getAllDataFiles());
         Collections.sort(files, DownloadHelper.CAARRAYFILE_NAME_COMPARATOR_INSTANCE);
         assertEquals(2, files.size());
         assertEquals("missing_term_source.idf", files.get(0).getName());
         assertEquals("missing_term_source.sdrf", files.get(1).getName());
 
-        action.download();
-        assertEquals("application/zip", mockResponse.getContentType());
-        assertEquals("filename=\"caArray_test_files.zip\"", mockResponse.getHeader("Content-disposition"));
+        this.action.download();
+        assertEquals("application/zip", this.mockResponse.getContentType());
+        assertEquals("filename=\"caArray_test_files.zip\"", this.mockResponse.getHeader("Content-disposition"));
 
-        ZipInputStream zis = new ZipInputStream(new ByteArrayInputStream(mockResponse.getContentAsByteArray()));
+        final ZipInputStream zis = new ZipInputStream(new ByteArrayInputStream(
+                this.mockResponse.getContentAsByteArray()));
         ZipEntry ze = zis.getNextEntry();
         assertNotNull(ze);
         assertEquals("missing_term_source.idf", ze.getName());
@@ -279,64 +268,64 @@ public class ProjectSamplesActionTest extends AbstractDownloadTest {
 
     @Test
     public void testCopy() {
-        action.setCurrentSample(DUMMY_SAMPLE);
-        assertEquals("list", action.copy());
+        this.action.setCurrentSample(DUMMY_SAMPLE);
+        assertEquals("list", this.action.copy());
     }
 
     @Test
     public void testSearchForAssociationValues() {
-        assertEquals("associationValues", action.searchForAssociationValues());
+        assertEquals("associationValues", this.action.searchForAssociationValues());
     }
 
     @Test
     @SuppressWarnings("deprecation")
     public void testSave() {
         // save new
-        assertEquals(ProjectTabAction.RELOAD_PROJECT_RESULT, action.save());
+        assertEquals(ProjectTabAction.RELOAD_PROJECT_RESULT, this.action.save());
         assertTrue(ActionHelper.getMessages().contains("experiment.items.created"));
 
         // update associations
-        Source toAdd = new Source();
+        final Source toAdd = new Source();
         toAdd.setName("source1_to_add");
-        List<Source> addList = new ArrayList<Source>();
+        final List<Source> addList = new ArrayList<Source>();
         addList.add(toAdd);
-        action.setItemsToAssociate(addList);
-        Source toRemove = new Source();
+        this.action.setItemsToAssociate(addList);
+        final Source toRemove = new Source();
         toRemove.setName("source_to_remove");
         toRemove.getSamples().add(DUMMY_SAMPLE);
-        List<Source> removeList = new ArrayList<Source>();
+        final List<Source> removeList = new ArrayList<Source>();
         removeList.add(toRemove);
-        action.setItemsToRemove(removeList);
+        this.action.setItemsToRemove(removeList);
 
         // protocols
-        ProtocolApplication pa = new ProtocolApplication();
-        Protocol p = new Protocol();
+        final ProtocolApplication pa = new ProtocolApplication();
+        final Protocol p = new Protocol();
         p.setId(1L);
         p.setName("protocol1");
         pa.setProtocol(p);
         DUMMY_SAMPLE.addProtocolApplication(pa);
 
-        Protocol p2 = new Protocol();
+        final Protocol p2 = new Protocol();
         p2.setId(2L);
         p2.setName("protocol2");
-        List<Protocol> protocols = new ArrayList<Protocol>();
+        final List<Protocol> protocols = new ArrayList<Protocol>();
         protocols.add(p2);
-        action.setSelectedProtocols(protocols);
+        this.action.setSelectedProtocols(protocols);
 
         // update existing sample
-        action.setCurrentSample(DUMMY_SAMPLE);
-        assertEquals(ProjectTabAction.RELOAD_PROJECT_RESULT, action.save());
+        this.action.setCurrentSample(DUMMY_SAMPLE);
+        assertEquals(ProjectTabAction.RELOAD_PROJECT_RESULT, this.action.save());
         assertTrue(ActionHelper.getMessages().contains("experiment.items.updated"));
         assertTrue(toAdd.getSamples().contains(DUMMY_SAMPLE));
         assertFalse(toRemove.getSamples().contains(DUMMY_SAMPLE));
         assertEquals(p2, DUMMY_SAMPLE.getProtocolApplications().get(0).getProtocol());
 
         // add another protocol application
-        Protocol p3 = new Protocol();
+        final Protocol p3 = new Protocol();
         p3.setId(3L);
         p3.setName("protocol3");
-        action.getSelectedProtocols().add(p3);
-        assertEquals(ProjectTabAction.RELOAD_PROJECT_RESULT, action.save());
+        this.action.getSelectedProtocols().add(p3);
+        assertEquals(ProjectTabAction.RELOAD_PROJECT_RESULT, this.action.save());
         assertTrue(ActionHelper.getMessages().contains("experiment.items.updated"));
         assertEquals(2, DUMMY_SAMPLE.getProtocolApplications().size());
         assertTrue(DUMMY_SAMPLE.getProtocolApplications().get(0).getProtocol().equals(p2)
@@ -345,8 +334,8 @@ public class ProjectSamplesActionTest extends AbstractDownloadTest {
                 || DUMMY_SAMPLE.getProtocolApplications().get(1).getProtocol().equals(p3));
 
         // take away a PA
-        action.getSelectedProtocols().remove(p2);
-        assertEquals(ProjectTabAction.RELOAD_PROJECT_RESULT, action.save());
+        this.action.getSelectedProtocols().remove(p2);
+        assertEquals(ProjectTabAction.RELOAD_PROJECT_RESULT, this.action.save());
         assertTrue(ActionHelper.getMessages().contains("experiment.items.updated"));
         assertEquals(1, DUMMY_SAMPLE.getProtocolApplications().size());
         assertEquals(p3, DUMMY_SAMPLE.getProtocolApplications().get(0).getProtocol());
@@ -356,94 +345,93 @@ public class ProjectSamplesActionTest extends AbstractDownloadTest {
     @Test
     public void testSaveDuplicate() {
 
-        action.getProject().getExperiment().getSamples().add(DUMMY_SAMPLE);
+        this.action.getProject().getExperiment().getSamples().add(DUMMY_SAMPLE);
 
         // add a sample, with duplicate name
-        Sample sam = new Sample();
+        final Sample sam = new Sample();
         sam.setName(DUMMY_SAMPLE.getName());
         sam.getSources().add(DUMMY_SOURCE);
 
         // try to save dup.
-        action.setCurrentSample(sam);
-        assertEquals(Action.INPUT, action.save());
-        assertEquals(1, action.getFieldErrors().size());
+        this.action.setCurrentSample(sam);
+        assertEquals(Action.INPUT, this.action.save());
+        assertEquals(1, this.action.getFieldErrors().size());
     }
 
     @Test
     @SuppressWarnings("deprecation")
     public void testEditSampleRenameAsDuplicate() {
 
-        action.getProject().getExperiment().getSamples().add(DUMMY_SAMPLE);
+        this.action.getProject().getExperiment().getSamples().add(DUMMY_SAMPLE);
 
         // add another sample, with valid name
-        Sample sam = new Sample();
+        final Sample sam = new Sample();
         sam.setId(2L);
         sam.setName("test_name");
         sam.getSources().add(DUMMY_SOURCE);
 
-        action.getProject().getExperiment().getSamples().add(sam);
-
+        this.action.getProject().getExperiment().getSamples().add(sam);
 
         // try to edit sam w/ valid name.
         sam.setName("name_is_valid");
-        action.setCurrentSample(sam);
-        assertEquals(ProjectTabAction.RELOAD_PROJECT_RESULT, action.save());
+        this.action.setCurrentSample(sam);
+        assertEquals(ProjectTabAction.RELOAD_PROJECT_RESULT, this.action.save());
         assertTrue(ActionHelper.getMessages().contains("experiment.items.updated"));
 
         // try to edit sam with invalid name
         sam.setName(DUMMY_SAMPLE.getName());
-        action.setCurrentSample(sam);
-        assertEquals(Action.INPUT, action.save());
-        assertEquals(1, action.getFieldErrors().size());
+        this.action.setCurrentSample(sam);
+        assertEquals(Action.INPUT, this.action.save());
+        assertEquals(1, this.action.getFieldErrors().size());
     }
 
     @Test
     @SuppressWarnings("deprecation")
     public void testEdit() {
-        ProtocolApplication pa = new ProtocolApplication();
-        Protocol p = new Protocol();
+        final ProtocolApplication pa = new ProtocolApplication();
+        final Protocol p = new Protocol();
         p.setName("protocol1");
         pa.setProtocol(p);
         DUMMY_SAMPLE.getProtocolApplications().clear();
         DUMMY_SAMPLE.getProtocolApplications().add(pa);
-        action.setCurrentSample(DUMMY_SAMPLE);
-        assertEquals(Action.INPUT, action.edit());
-        assertEquals(1, action.getSelectedProtocols().size());
-        assertEquals(p, action.getSelectedProtocols().get(0));
+        this.action.setCurrentSample(DUMMY_SAMPLE);
+        assertEquals(Action.INPUT, this.action.edit());
+        assertEquals(1, this.action.getSelectedProtocols().size());
+        assertEquals(p, this.action.getSelectedProtocols().get(0));
 
-        ProtocolApplication pa2 = new ProtocolApplication();
-        Protocol p2 = new Protocol();
+        final ProtocolApplication pa2 = new ProtocolApplication();
+        final Protocol p2 = new Protocol();
         p2.setName("protocol2");
         pa2.setProtocol(p2);
         DUMMY_SAMPLE.getProtocolApplications().add(pa2);
-        action.setCurrentSample(DUMMY_SAMPLE);
-        assertEquals(Action.INPUT, action.edit());
-        assertEquals(2, action.getSelectedProtocols().size());
-        assertEquals(p2, action.getSelectedProtocols().get(1));
+        this.action.setCurrentSample(DUMMY_SAMPLE);
+        assertEquals(Action.INPUT, this.action.edit());
+        assertEquals(2, this.action.getSelectedProtocols().size());
+        assertEquals(p2, this.action.getSelectedProtocols().get(1));
     }
 
     public void testDelete() throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
         DUMMY_SOURCE.getSamples().add(DUMMY_SAMPLE);
         DUMMY_SAMPLE.getSources().add(DUMMY_SOURCE);
-        Project p = new Project();
+        final Project p = new Project();
         setProjectForExperiment(p.getExperiment(), p);
         p.getPublicProfile().setSecurityLevel(SecurityLevel.READ_SELECTIVE);
         p.getPublicProfile().getSampleSecurityLevels().put(DUMMY_SAMPLE, SampleSecurityLevel.READ);
         DUMMY_SAMPLE.setExperiment(p.getExperiment());
-        action.setCurrentSample(DUMMY_SAMPLE);
-        assertEquals("list", action.delete());
+        this.action.setCurrentSample(DUMMY_SAMPLE);
+        assertEquals("list", this.action.delete());
         assertFalse(DUMMY_SOURCE.getSamples().contains(DUMMY_SAMPLE));
         assertTrue(p.getPublicProfile().getSampleSecurityLevels().isEmpty());
 
         DUMMY_SAMPLE.getExtracts().add(new Extract());
-        action.setCurrentSample(DUMMY_SAMPLE);
-        assertEquals("list", action.delete());
+        this.action.setCurrentSample(DUMMY_SAMPLE);
+        assertEquals("list", this.action.delete());
         assertTrue(ActionHelper.getMessages().contains("experiment.annotations.cantdelete"));
     }
 
     private void setProjectForExperiment(Experiment e, Project p) throws SecurityException, NoSuchMethodException,
             IllegalArgumentException, IllegalAccessException, InvocationTargetException {
-        Method m = e.getClass().getDeclaredMethod("setProject", Project.class);
+        final Method m = e.getClass().getDeclaredMethod("setProject", Project.class);
         m.setAccessible(true);
         m.invoke(e, p);
     }
@@ -453,7 +441,7 @@ public class ProjectSamplesActionTest extends AbstractDownloadTest {
         @Override
         public <T extends PersistentObject> T getPersistentObject(Class<T> entityClass, Long entityId) {
             if (entityClass.equals(Sample.class) && entityId.equals(1L)) {
-                return (T)DUMMY_SAMPLE;
+                return (T) DUMMY_SAMPLE;
             }
             return null;
         }
@@ -463,7 +451,7 @@ public class ProjectSamplesActionTest extends AbstractDownloadTest {
         @Override
         public <T extends AbstractBioMaterial> T getBiomaterialByExternalId(Project project, String externalId,
                 Class<T> biomaterialClass) {
-            T bmByExternalId = super.getBiomaterialByExternalId(project, externalId, biomaterialClass);
+            final T bmByExternalId = super.getBiomaterialByExternalId(project, externalId, biomaterialClass);
             if ("abc".equals(externalId)) {
                 return bmByExternalId;
             }

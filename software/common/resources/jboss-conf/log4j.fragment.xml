@@ -51,4 +51,9 @@
     <category name="freemarker">
         <priority value="ERROR"/>
     </category>
+    
+    <category name="com.atlassian.plugin" >
+	    <level value="WARN"/>
+	</category>
+    
     <!-- end caarray custom configuration -->

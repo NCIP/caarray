@@ -82,111 +82,61 @@
  */
 package gov.nih.nci.caarray.services.file;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import gov.nih.nci.caarray.application.AbstractServiceTest;
-import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
-import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
-import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheStubFactory;
 import gov.nih.nci.caarray.dao.SearchDao;
-import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
-import gov.nih.nci.caarray.dao.stub.SearchDaoStub;
-import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
+import gov.nih.nci.caarray.dataStorage.DataStorageFacade;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
-import gov.nih.nci.caarray.staticinjection.CaArrayEjbStaticInjectionModule;
-import gov.nih.nci.caarray.test.data.arraydesign.AffymetrixArrayDesignFiles;
-import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
-import gov.nih.nci.caarray.util.CaArrayHibernateHelperFactory;
-import gov.nih.nci.caarray.util.CaArrayHibernateHelperModule;
-import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
+import gov.nih.nci.caarray.domain.file.FileTypeRegistry;
+import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.IOException;
+import java.util.Arrays;
 
-import org.hibernate.cfg.Configuration;
-import org.junit.Before;
+import org.apache.commons.io.FileUtils;
 import org.junit.Test;
-import org.junit.BeforeClass;
 
+import com.google.common.collect.Lists;
+import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
-import com.google.inject.Injector;
-
-import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
 
 /**
  * Tests the FileRetrievalServiceBean
  */
 public class FileRetrievalServiceBeanTest extends AbstractServiceTest {
-    private static Injector injector;
-    private static CaArrayHibernateHelper hibernateHelper; 
-    private final LocalDaoFactoryStub daoFactoryStub = new LocalDaoFactoryStub();
-    private final FileRetrievalServiceBean bean = new FileRetrievalServiceBean(daoFactoryStub.getSearchDao());
-    private final LocalFileAccessServiceStub fileAccessServiceStub = new LocalFileAccessServiceStub();
-    
     /**
-     * post-construct lifecycle method; intializes the Guice injector that will provide dependencies. 
-     */
-    @BeforeClass
-    public static void init() {
-        injector = createInjector();
-        hibernateHelper = injector.getInstance(CaArrayHibernateHelper.class);
-    }
-    
-    /**
-     * @return a Guice injector from which this will obtain dependencies.
-     */
-    protected static Injector createInjector() {
-        return Guice.createInjector(new CaArrayEjbStaticInjectionModule(), new CaArrayHibernateHelperModule());
-    }
-    
-    @Before
-    public void setUp() throws Exception {
-        ServiceLocatorStub serviceLocatorStub = ServiceLocatorStub.registerEmptyLocator();
-        serviceLocatorStub.addLookup(FileAccessService.JNDI_NAME, this.fileAccessServiceStub);
-        MysqlDataSource ds = new MysqlDataSource();
-        Configuration config = hibernateHelper.getConfiguration();
-        ds.setUrl(config.getProperty("hibernate.connection.url"));
-        ds.setUser(config.getProperty("hibernate.connection.username"));
-        ds.setPassword(config.getProperty("hibernate.connection.password"));
-        serviceLocatorStub.addLookup("java:jdbc/CaArrayDataSource", ds);
-        TemporaryFileCacheLocator.setTemporaryFileCacheFactory(new TemporaryFileCacheStubFactory(this.fileAccessServiceStub));
-        TemporaryFileCacheLocator.resetTemporaryFileCache();
-    }
-
-    /**
-     * Test method for {@link gov.nih.nci.caarray.services.file.FileRetrievalServiceBean#readFile(gov.nih.nci.caarray.domain.file.CaArrayFile)}.
+     * Test method for
+     * {@link gov.nih.nci.caarray.services.file.FileRetrievalServiceBean#readFile(gov.nih.nci.caarray.domain.file.CaArrayFile)}
+     * .
      */
     @Test
-    public void testReadFile() {
-        CaArrayFile caArrayFile = new CaArrayFile();
-        byte[] bytes = this.bean.readFile(caArrayFile);
-        assertEquals(AffymetrixArrayDesignFiles.TEST3_CDF.length(), (long) bytes.length);
-    }
+    public void testReadFile() throws IOException {
+        final FileAccessServiceStub fasStub = new FileAccessServiceStub();
+        Guice.createInjector(new AbstractModule() {
+            @Override
+            protected void configure() {
+                bind(FileTypeRegistry.class).toInstance(fasStub.getTypeRegistry());
+                requestStaticInjection(CaArrayFile.class);
+            }
+        });
 
-    private static class LocalFileAccessServiceStub extends FileAccessServiceStub {
+        final CaArrayFile file = fasStub.add(MageTabDataFiles.GEDP_IDF);
 
-        @Override
-        public File getFile(CaArrayFile caArrayFile) {
-            return AffymetrixArrayDesignFiles.TEST3_CDF;
-        }
+        final SearchDao searchDao = mock(SearchDao.class);
+        when(searchDao.query(any(CaArrayFile.class))).thenReturn(Lists.newArrayList(file));
 
-    }
+        final FileRetrievalServiceBean bean = new FileRetrievalServiceBean();
+        final DataStorageFacade dataStorageFacade = fasStub.createStorageFacade();
+        bean.setSearchDao(searchDao);
+        bean.setDataStorageFacade(dataStorageFacade);
 
-    private static class LocalDaoFactoryStub extends DaoFactoryStub {
-
-        @Override
-        public SearchDao getSearchDao() {
-            return new SearchDaoStub () {
-
-                @Override
-                public List<AbstractCaArrayObject> query(final AbstractCaArrayObject entityToMatch) {
-                    List<AbstractCaArrayObject> list = new ArrayList<AbstractCaArrayObject>();
-                    list.add(entityToMatch);
-                    return list;
-                };
-
-            };
-        }
+        final CaArrayFile caArrayFile = new CaArrayFile();
+        final byte[] bytes = bean.readFile(caArrayFile);
+        final byte[] expectedBytes = FileUtils.readFileToByteArray(MageTabDataFiles.GEDP_IDF);
+        assertTrue("retrieved file contents didn't match", Arrays.equals(expectedBytes, bytes));
     }
 }

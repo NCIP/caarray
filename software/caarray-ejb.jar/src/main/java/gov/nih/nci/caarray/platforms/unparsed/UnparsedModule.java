@@ -79,7 +79,8 @@
  * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */package gov.nih.nci.caarray.platforms.unparsed;
+ */
+package gov.nih.nci.caarray.platforms.unparsed;
 
 import gov.nih.nci.caarray.domain.data.ArrayDataTypeDescriptor;
 import gov.nih.nci.caarray.platforms.spi.DataFileHandler;
@@ -96,20 +97,23 @@ public class UnparsedModule extends AbstractModule {
      * {@inheritDoc}
      */
     @Override
-    protected void configure() {        
+    protected void configure() {
         // data files
-        Multibinder<DataFileHandler> dataFileBinder = Multibinder.newSetBinder(binder(),
-                DataFileHandler.class);
+        final Multibinder<DataFileHandler> dataFileBinder = Multibinder.newSetBinder(binder(), DataFileHandler.class);
         dataFileBinder.addBinding().to(UnparsedDataHandler.class);
-        
+
+        // special fallback handler used to handle normally parsable files that can't temporarily be parsed due to
+        // missing or faulty designs. we bind it separately.
+        bind(FallbackUnparsedDataHandler.class);
+
         // design files
-        Multibinder<DesignFileHandler> designFileBinder = Multibinder.newSetBinder(binder(),
-                DesignFileHandler.class);
+        final Multibinder<DesignFileHandler> designFileBinder =
+                Multibinder.newSetBinder(binder(), DesignFileHandler.class);
         designFileBinder.addBinding().to(UnparsedArrayDesignFileHandler.class);
-        
-        //array data descriptors
-        Multibinder<ArrayDataTypeDescriptor> arrayDataDescriptorBinder = Multibinder.newSetBinder(binder(),
-                ArrayDataTypeDescriptor.class);       
+
+        // array data descriptors
+        final Multibinder<ArrayDataTypeDescriptor> arrayDataDescriptorBinder =
+                Multibinder.newSetBinder(binder(), ArrayDataTypeDescriptor.class);
         arrayDataDescriptorBinder.addBinding().toInstance(UnsupportedDataFormatDescriptor.INSTANCE);
     }
 }

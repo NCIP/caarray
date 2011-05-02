@@ -105,6 +105,7 @@ import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.platforms.spi.DataFileHandler;
 import gov.nih.nci.caarray.platforms.spi.PlatformFileReadException;
+import gov.nih.nci.caarray.platforms.unparsed.FallbackUnparsedDataHandler;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -114,11 +115,11 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 
 import com.google.inject.Inject;
-
+import com.google.inject.Provider;
 
 /**
- * Helper class for creating and initializing ArrayDatas associated with a data file, and potentially
- * auto-generating related annotations. 
+ * Helper class for creating and initializing ArrayDatas associated with a data file, and potentially auto-generating
+ * related annotations.
  * 
  * This does not actually load the AbstractDataColumns with array data values; this is done by the DataSetLoader
  * 
@@ -129,19 +130,20 @@ class DataSetImporter extends AbstractArrayDataUtility {
     private final SearchDao searchDao;
 
     @Inject
-    DataSetImporter(ArrayDao arrayDao, SearchDao searchDao, Set<DataFileHandler> handlers) {
-        super(arrayDao, handlers);
+    DataSetImporter(ArrayDao arrayDao, SearchDao searchDao, Set<DataFileHandler> handlers,
+            Provider<FallbackUnparsedDataHandler> fallbackHandlerProvider) {
+        super(arrayDao, handlers, fallbackHandlerProvider);
         this.searchDao = searchDao;
     }
-    
-    AbstractArrayData importData(CaArrayFile caArrayFile, DataImportOptions dataImportOptions, 
-            boolean createAnnnotation) {
+
+    AbstractArrayData
+            importData(CaArrayFile caArrayFile, DataImportOptions dataImportOptions, boolean createAnnnotation) {
         DataFileHandler handler = null;
         try {
             handler = getHandler(caArrayFile);
-            Helper helper = new Helper(caArrayFile, dataImportOptions, handler);
+            final Helper helper = new Helper(caArrayFile, dataImportOptions, handler);
             return helper.importData(createAnnnotation);
-        } catch (PlatformFileReadException e) {
+        } catch (final PlatformFileReadException e) {
             throw new IllegalArgumentException("Error obtaining a handler for file " + caArrayFile.getName(), e);
         } finally {
             if (handler != null) {
@@ -149,9 +151,9 @@ class DataSetImporter extends AbstractArrayDataUtility {
             }
         }
     }
-    
+
     /**
-     * Helper class for the import, just so that the various parameters can be held as instance variables. 
+     * Helper class for the import, just so that the various parameters can be held as instance variables.
      * 
      * @author dkokotov
      */
@@ -167,7 +169,7 @@ class DataSetImporter extends AbstractArrayDataUtility {
             }
             if (!caArrayFile.getFileType().isRawArrayData() && !caArrayFile.getFileType().isDerivedArrayData()) {
                 throw new IllegalArgumentException("The file " + caArrayFile.getName()
-                        + " does not contain array data. The file type is " + caArrayFile.getFileType().name());
+                        + " does not contain array data. The file type is " + caArrayFile.getType());
             }
             this.dataImportOptions = dataImportOptions;
             this.caArrayFile = caArrayFile;
@@ -176,50 +178,51 @@ class DataSetImporter extends AbstractArrayDataUtility {
 
         AbstractArrayData importData(boolean createAnnnotation) throws PlatformFileReadException {
             lookupOrCreateArrayData(createAnnnotation);
-            if (StringUtils.isBlank(arrayData.getName())) {
-                arrayData.setName(caArrayFile.getName());
+            if (StringUtils.isBlank(this.arrayData.getName())) {
+                this.arrayData.setName(this.caArrayFile.getName());
             }
-            
+
             setArrayDataType();
-            arrayData.setDataSet(new DataSet());
+            this.arrayData.setDataSet(new DataSet());
             addHybridizationDatas();
             addColumns();
 
-            arrayData.getDataFile().setFileStatus(
-                    handler.parsesData() ? FileStatus.IMPORTED : FileStatus.IMPORTED_NOT_PARSED);
-            
-            return arrayData;
+            this.arrayData.getDataFile().setFileStatus(
+                    this.arrayData.getDataFile().getFileType().isParsed() ? FileStatus.IMPORTED
+                            : FileStatus.IMPORTED_NOT_PARSED);
+
+            return this.arrayData;
         }
-        
+
         private void setArrayDataType() {
-            arrayData.setType(getArrayDao().getArrayDataType(handler.getArrayDataTypeDescriptor()));
-            getArrayDao().save(arrayData);
+            this.arrayData.setType(getArrayDao().getArrayDataType(this.handler.getArrayDataTypeDescriptor()));
+            getArrayDao().save(this.arrayData);
         }
 
         private void lookupOrCreateArrayData(boolean createAnnnotation) throws PlatformFileReadException {
-            arrayData = getArrayDao().getArrayData(this.caArrayFile.getId());
-            if (arrayData == null) {
+            this.arrayData = getArrayDao().getArrayData(this.caArrayFile.getId());
+            if (this.arrayData == null) {
                 createArrayData(createAnnnotation);
             } else {
-                if (arrayData.getDataSet() != null) {
-                    getArrayDao().remove(arrayData.getDataSet());
-                    arrayData.setDataSet(null);
-                    getArrayDao().save(arrayData);
+                if (this.arrayData.getDataSet() != null) {
+                    getArrayDao().remove(this.arrayData.getDataSet());
+                    this.arrayData.setDataSet(null);
+                    getArrayDao().save(this.arrayData);
                 }
-                for (Hybridization h : arrayData.getHybridizations()) {
+                for (final Hybridization h : this.arrayData.getHybridizations()) {
                     ensureArrayDesignSetForHyb(h);
                 }
             }
         }
 
-        private void ensureArrayDesignSetForHyb(Hybridization h) throws PlatformFileReadException  {
+        private void ensureArrayDesignSetForHyb(Hybridization h) throws PlatformFileReadException {
             // if array was not set for a hybridization via mage-tab, try to look it up
             // from data file or experiment
             if (h.getArray() == null) {
                 h.setArray(new Array());
             }
             if (h.getArray().getDesign() == null) {
-                ArrayDesign ad = getArrayDesign(caArrayFile, handler);
+                final ArrayDesign ad = getArrayDesign(this.caArrayFile, this.handler);
                 if (ad != null) {
                     h.getArray().setDesign(ad);
                 }
@@ -228,79 +231,83 @@ class DataSetImporter extends AbstractArrayDataUtility {
 
         @SuppressWarnings("PMD.CyclomaticComplexity")
         private void createArrayData(boolean createAnnnotation) throws PlatformFileReadException {
-            arrayData = caArrayFile.getFileType().isRawArrayData() ? new RawArrayData() : new DerivedArrayData();
-            arrayData.setDataFile(caArrayFile);
+            this.arrayData =
+                    this.caArrayFile.getFileType().isRawArrayData() ? new RawArrayData() : new DerivedArrayData();
+            this.arrayData.setDataFile(this.caArrayFile);
 
             List<Hybridization> hybs = null;
             switch (this.dataImportOptions.getTargetAnnotationOption()) {
             case ASSOCIATE_TO_NODES:
                 if (this.dataImportOptions.getTargetNodeType() == ExperimentDesignNodeType.HYBRIDIZATION) {
-                    hybs = searchDao.retrieveByIds(Hybridization.class, this.dataImportOptions.getTargetNodeIds());
+                    hybs =
+                            DataSetImporter.this.searchDao.retrieveByIds(Hybridization.class,
+                                    this.dataImportOptions.getTargetNodeIds());
                     break;
                 }
                 // intentional fallthrough - for target nodes other than hybs
             case AUTOCREATE_PER_FILE:
-                hybs = lookupOrCreateHybridizations(handler.getHybridizationNames(), createAnnnotation);
+                hybs = lookupOrCreateHybridizations(this.handler.getHybridizationNames(), createAnnnotation);
                 break;
             case AUTOCREATE_SINGLE:
-                hybs = Collections.singletonList(lookupOrCreateHybridization(
-                        this.dataImportOptions.getNewAnnotationName(), createAnnnotation));
+                hybs =
+                        Collections.singletonList(lookupOrCreateHybridization(
+                                this.dataImportOptions.getNewAnnotationName(), createAnnnotation));
                 break;
             default:
                 throw new IllegalStateException("Unsupported annotation option: "
                         + this.dataImportOptions.getTargetAnnotationOption());
             }
 
-            for (Hybridization hybridization : hybs) {
+            for (final Hybridization hybridization : hybs) {
                 associateToHybridization(hybridization);
             }
-            
-            getArrayDao().save(arrayData);
+
+            getArrayDao().save(this.arrayData);
         }
 
         private void associateToHybridization(Hybridization hyb) {
-            arrayData.addHybridization(hyb);
-            hyb.addArrayData(arrayData);        
+            this.arrayData.addHybridization(hyb);
+            hyb.addArrayData(this.arrayData);
         }
 
         private void addHybridizationDatas() {
-            for (Hybridization hybridization : arrayData.getHybridizations()) {
-                arrayData.getDataSet().addHybridizationData(hybridization);
+            for (final Hybridization hybridization : this.arrayData.getHybridizations()) {
+                this.arrayData.getDataSet().addHybridizationData(hybridization);
             }
         }
 
         private void addColumns() {
-            List<QuantitationType> quantitationTypes = getQuantitationTypes();
-            for (QuantitationType type : quantitationTypes) {
-                arrayData.getDataSet().addQuantitationType(type);
+            final List<QuantitationType> quantitationTypes = getQuantitationTypes();
+            for (final QuantitationType type : quantitationTypes) {
+                this.arrayData.getDataSet().addQuantitationType(type);
             }
         }
 
         private List<QuantitationType> getQuantitationTypes() {
-            List<QuantitationType> quantitationTypes = new ArrayList<QuantitationType>();
-            for (QuantitationTypeDescriptor descriptor : handler.getQuantitationTypeDescriptors()) {
-                QuantitationType quantitationType = getArrayDao().getQuantitationType(descriptor);
+            final List<QuantitationType> quantitationTypes = new ArrayList<QuantitationType>();
+            for (final QuantitationTypeDescriptor descriptor : this.handler.getQuantitationTypeDescriptors()) {
+                final QuantitationType quantitationType = getArrayDao().getQuantitationType(descriptor);
                 quantitationTypes.add(quantitationType);
             }
             return quantitationTypes;
         }
 
         private Hybridization lookupHybridization(String hybridizationName) {
-            Experiment experiment = caArrayFile.getProject().getExperiment();
+            final Experiment experiment = this.caArrayFile.getProject().getExperiment();
             return experiment.getHybridizationByName(hybridizationName);
         }
 
         private Hybridization createHybridization(String hybridizationName) throws PlatformFileReadException {
-            Hybridization hybridization = new Hybridization();
+            final Hybridization hybridization = new Hybridization();
             hybridization.setName(hybridizationName);
-            ArrayDesign ad = getArrayDesign(caArrayFile, handler);
+            final ArrayDesign ad = getArrayDesign(this.caArrayFile, this.handler);
             if (ad != null) {
-                Array array = new Array();
+                final Array array = new Array();
                 array.setDesign(ad);
                 hybridization.setArray(array);
-            } 
-            caArrayFile.getProject().getExperiment().getHybridizations().add(hybridization);
-            hybridization.setExperiment(caArrayFile.getProject().getExperiment());
+            }
+            this.caArrayFile.getProject().getExperiment().getHybridizations().add(hybridization);
+            hybridization.setExperiment(this.caArrayFile.getProject().getExperiment());
             return hybridization;
         }
 
@@ -316,10 +323,10 @@ class DataSetImporter extends AbstractArrayDataUtility {
             return hybridization;
         }
 
-        private List<Hybridization> lookupOrCreateHybridizations(List<String> hybridizationNames, 
+        private List<Hybridization> lookupOrCreateHybridizations(List<String> hybridizationNames,
                 boolean createAnnotation) throws PlatformFileReadException {
-            List<Hybridization> hybs = new ArrayList<Hybridization>();
-            for (String hybName : hybridizationNames) {
+            final List<Hybridization> hybs = new ArrayList<Hybridization>();
+            for (final String hybName : hybridizationNames) {
                 hybs.add(lookupOrCreateHybridization(hybName, createAnnotation));
             }
             return hybs;
@@ -330,19 +337,21 @@ class DataSetImporter extends AbstractArrayDataUtility {
             case ASSOCIATE_TO_NODES:
                 AbstractExperimentDesignNode newChainStart = hybridization;
                 if (this.dataImportOptions.getTargetNodeType() != ExperimentDesignNodeType.LABELED_EXTRACT) {
-                    newChainStart = createAnnotationChain(hybridization, this.dataImportOptions.getTargetNodeType()
-                            .getSuccessorType(), hybridization.getName());
+                    newChainStart =
+                            createAnnotationChain(hybridization, this.dataImportOptions.getTargetNodeType()
+                                    .getSuccessorType(), hybridization.getName());
                 }
-                for (Long targetId : this.dataImportOptions.getTargetNodeIds()) {
-                    AbstractBioMaterial target = searchDao.retrieve(AbstractBioMaterial.class, targetId);
+                for (final Long targetId : this.dataImportOptions.getTargetNodeIds()) {
+                    final AbstractBioMaterial target =
+                            DataSetImporter.this.searchDao.retrieve(AbstractBioMaterial.class, targetId);
                     target.addDirectSuccessor(newChainStart);
                 }
                 break;
             case AUTOCREATE_PER_FILE:
                 // intentional fallthrough
             case AUTOCREATE_SINGLE:
-                List<String> sampleNames = handler.getSampleNames(hybridization.getName());
-                for (String sampleName : sampleNames) {
+                final List<String> sampleNames = this.handler.getSampleNames(hybridization.getName());
+                for (final String sampleName : sampleNames) {
                     createAnnotationChain(hybridization, ExperimentDesignNodeType.SOURCE, sampleName);
                 }
                 break;
@@ -363,7 +372,7 @@ class DataSetImporter extends AbstractArrayDataUtility {
          */
         private AbstractBioMaterial createAnnotationChain(Hybridization hybridization,
                 ExperimentDesignNodeType chainStartNodeType, String newAnnotationName) {
-            Experiment experiment = caArrayFile.getProject().getExperiment();
+            final Experiment experiment = this.caArrayFile.getProject().getExperiment();
 
             switch (chainStartNodeType) {
             case SOURCE:
@@ -422,13 +431,14 @@ class DataSetImporter extends AbstractArrayDataUtility {
          */
         private void fillInAnnotationChain(Hybridization hybridization, AbstractBioMaterial target,
                 String newAnnotationName) {
-            ExperimentDesignNodeType nextNodeType = target.getNodeType().getSuccessorType();
+            final ExperimentDesignNodeType nextNodeType = target.getNodeType().getSuccessorType();
             if (nextNodeType == ExperimentDesignNodeType.HYBRIDIZATION) {
                 target.addDirectSuccessor(hybridization);
             } else {
-                AbstractBioMaterial nextNode = createAnnotationChain(hybridization, nextNodeType, newAnnotationName);
+                final AbstractBioMaterial nextNode =
+                        createAnnotationChain(hybridization, nextNodeType, newAnnotationName);
                 target.addDirectSuccessor(nextNode);
             }
-        }           
+        }
     }
 }

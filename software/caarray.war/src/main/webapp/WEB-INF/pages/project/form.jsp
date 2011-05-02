@@ -92,10 +92,6 @@
         <c:param name="project.id" value="${project.id}" />
         <c:param name="editMode" value="${editMode}" />
     </c:url>
-    <c:url value="/ajax/notYetImplemented.jsp" var="supplementalUrl">
-        <c:param name="project.id" value="${project.id}" />
-        <c:param name="editMode" value="${editMode}" />
-    </c:url>
     <c:url value="/ajax/project/listTab/Publications/load.action" var="publicationsUrl">
         <c:param name="project.id" value="${project.id}" />
         <c:param name="editMode" value="${editMode}" />
@@ -134,6 +130,13 @@
                 <caarray:tab caption="${annotationsTitle}" baseUrl="${annotationsUrl}" defaultTab="${param.initialTab == 'annotations'}" />
                 <caarray:tab caption="${dataTitle}" baseUrl="${dataUrl}" defaultTab="${param.initialTab == 'data'}" />
                 <caarray:tab caption="${publicationsTitle}" baseUrl="${publicationsUrl}" defaultTab="${param.initialTab == 'publications'}" />
+                <c:forEach items="${projectTabs}" var="projectTab">
+    				<c:url value="${projectTab.url}" var="tabUrl">
+        				<c:param name="project.id" value="${project.id}" />
+        				<c:param name="editMode" value="${editMode}" />
+    				</c:url>                
+                	<caarray:tab caption="${projectTab.label}" baseUrl="${tabUrl}" defaultTab="${param.initialTab == projectTab.key}" />
+    			</c:forEach>
             </c:if>
         </ajax:tabPanel>
     </div>

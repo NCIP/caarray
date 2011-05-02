@@ -82,7 +82,6 @@
  */
 package gov.nih.nci.caarray.application.file;
 
-import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
 import gov.nih.nci.caarray.dao.ProjectDao;
 import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
@@ -99,12 +98,12 @@ import org.apache.log4j.Logger;
 import com.google.inject.Inject;
 
 /**
- * Encapsulates the functionality necessary for re-parsing a set of files that
- * were previously imported-not-parsed but now have an available parser.
+ * Encapsulates the functionality necessary for re-parsing a set of files that were previously imported-not-parsed but
+ * now have an available parser.
  * 
- * This is very similar to ProjectFilesImportJob except the annotation validation
- * and importing component is skipped.
- * @author dkokotov 
+ * This is very similar to ProjectFilesImportJob except the annotation validation and importing component is skipped.
+ * 
+ * @author dkokotov
  */
 final class ProjectFilesReparseJob extends AbstractProjectFilesJob {
     private static final long serialVersionUID = 1L;
@@ -117,7 +116,7 @@ final class ProjectFilesReparseJob extends AbstractProjectFilesJob {
             CaArrayFileSet fileSet, ArrayDataImporter arrayDataImporter, MageTabImporter mageTabImporter,
             ProjectDao projectDao, SearchDao searchDao) {
     // CHECKSTYLE:ON
-        super(username, usernameHolder, targetProject, fileSet,
+        super(username, targetProject, fileSet,
                 arrayDataImporter, mageTabImporter, projectDao, searchDao);
     }
 
@@ -131,22 +130,18 @@ final class ProjectFilesReparseJob extends AbstractProjectFilesJob {
     @Override
     protected void doExecute() {
         CaArrayFileSet fileSet = getFileSet();
-        try {
-            getArrayDataImporter().validateFiles(fileSet,
-                    new MageTabDocumentSet(new MageTabFileSet(), new ValidatorSet()), true);
-            final FileStatus status = getFileSet().getStatus();
-            if (status.equals(FileStatus.VALIDATED) || status.equals(FileStatus.VALIDATED_NOT_PARSED)) {
-                getProjectDao().flushSession();
-                getProjectDao().clearSession();
-                importArrayData(fileSet);
-            }
-        } finally {
-            TemporaryFileCacheLocator.getTemporaryFileCache().closeFiles();
-        }
+        getArrayDataImporter().validateFiles(fileSet,
+        new MageTabDocumentSet(new MageTabFileSet(), new ValidatorSet()), true);
+        final FileStatus status = getFileSet().getStatus();
+        if (status.equals(FileStatus.VALIDATED) || status.equals(FileStatus.VALIDATED_NOT_PARSED)) {
+            getProjectDao().flushSession();
+            getProjectDao().clearSession();
+            importArrayData(fileSet);
+         }
     }
-    
+
     private void importArrayData(CaArrayFileSet fileSet) {
-        ArrayDataImporter arrayDataImporter = getArrayDataImporter();
+        final ArrayDataImporter arrayDataImporter = getArrayDataImporter();
         arrayDataImporter.importFiles(fileSet, null); // don't need to specify import options since ArrayData exists
     }
 

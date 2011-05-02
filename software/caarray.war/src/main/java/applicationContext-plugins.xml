@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:plugin="http://atlassian.com/schema/spring/plugin" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="
+           http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
+           http://atlassian.com/schema/spring/plugin http://atlassian.com/schema/spring/plugin.xsd">
+           
+    <context:property-placeholder location="classpath:caarray-plugins.properties"/>       
+
+	<!-- atlassian plugins configuration -->
+	<bean name="hostComponentProvider"
+		class="com.atlassian.plugin.spring.SpringHostComponentProviderFactoryBean">
+		<property name="beanNames">
+			<list />
+		</property>
+		<property name="beanInterfaces">
+			<map />
+		</property>
+		<property name="beanContextClassLoaderStrategies">
+			<map />
+		</property>
+	</bean>
+
+	<bean name="springHostContainer"
+		class="com.atlassian.plugin.osgi.bridge.external.SpringHostContainer"/>
+
+	<bean id="pluginEventManager"
+		class="com.atlassian.plugin.event.impl.DefaultPluginEventManager"
+		plugin:available="true" />
+
+	<bean id="pluginManager" class="com.atlassian.plugin.manager.DefaultPluginManager"
+		plugin:available="true">
+		<plugin:interface>com.atlassian.plugin.PluginAccessor</plugin:interface>
+		<constructor-arg index="0" ref="pluginStateStore" />
+		<constructor-arg index="1">
+			<list>
+				<ref bean="classpathPluginLoader" />
+				<ref bean="bundledPluginLoader" />  
+				<ref bean="directoryPluginLoader" />
+			</list>
+		</constructor-arg>
+		<constructor-arg index="2" ref="moduleDescriptorFactory" />
+		<constructor-arg index="3" ref="pluginEventManager" />
+	</bean>
+
+	<bean id="pluginStateStore"
+		class="com.atlassian.plugin.manager.store.MemoryPluginPersistentStateStore" />
+
+	<bean id="servletModuleManager" class="com.atlassian.plugin.spring.SpringServletModuleManager"
+		plugin:available="true">
+		<constructor-arg index="0" ref="pluginEventManager" />
+	</bean>
+
+	<bean id="moduleDescriptorFactory" class="com.atlassian.plugin.DefaultModuleDescriptorFactory"
+		plugin:available="true">
+		<constructor-arg index="0" ref="springHostContainer" />
+		<property name="moduleDescriptors">
+			<map>
+				<entry key="servlet"
+					value="com.atlassian.plugin.servlet.descriptors.ServletModuleDescriptor" />
+				<entry key="servlet-context-param"
+					value="com.atlassian.plugin.servlet.descriptors.ServletContextParamModuleDescriptor" />
+				<entry key="servlet-filter"
+					value="com.atlassian.plugin.servlet.descriptors.ServletFilterModuleDescriptor" />
+				<entry key="servlet-context-listener"
+					value="com.atlassian.plugin.servlet.descriptors.ServletContextListenerModuleDescriptor" />
+				<entry key="web-panel"
+					value="com.atlassian.plugin.web.descriptors.DefaultWebPanelModuleDescriptor" />
+				<entry key="web-section"
+					value="com.atlassian.plugin.web.descriptors.DefaultWebSectionModuleDescriptor" />
+				<entry key="web-item"
+					value="com.atlassian.plugin.web.descriptors.DefaultWebItemModuleDescriptor" />
+				<entry key="web-resource"
+					value="com.atlassian.plugin.webresource.WebResourceModuleDescriptor" />
+				<entry key="web-resource-transformer"
+					value="com.atlassian.plugin.webresource.transformer.WebResourceTransformerModuleDescriptor" />
+				<entry key="project-tab"
+					value="gov.nih.nci.caarray.web.plugins.ProjectTabModuleDescriptor" />
+				<entry key="platform"
+					value="gov.nih.nci.caarray.web.plugins.ArrayPlatformModuleDescriptor" />
+				<entry key="struts2"
+					value="gov.nih.nci.caarray.web.plugins.Struts2ConfigModuleDescriptor" />
+			</map>
+		</property>
+	</bean>
+
+	<bean id="classpathPluginLoader" class="com.atlassian.plugin.loaders.ClassPathPluginLoader" />
+
+	<bean id='osgiPluginFactory' class="com.atlassian.plugin.osgi.factory.OsgiPluginFactory">
+		<constructor-arg index="0" value="atlassian-plugin.xml" />
+		<constructor-arg index="1" value="caarray" />
+		<constructor-arg index="2" ref="osgiPersistentCache" />
+		<constructor-arg index="3" ref="osgiContainerManager" />
+		<constructor-arg index="4" ref="pluginEventManager" />
+	</bean>
+
+	<bean id="osgiBundleFactory" class="com.atlassian.plugin.osgi.factory.OsgiBundleFactory">
+		<constructor-arg index="0" ref="osgiContainerManager" />
+		<constructor-arg index="1" ref="pluginEventManager" />
+	</bean>
+
+	<bean id="osgiPersistentCache"
+		class="com.atlassian.plugin.osgi.container.impl.DefaultOsgiPersistentCache">
+		<constructor-arg value="${plugins.cache.dir}" />
+	</bean>
+
+	<bean id="xmlDynamicPluginFactory" class="com.atlassian.plugin.factories.XmlDynamicPluginFactory" />
+
+	<bean id="directoryPluginLoader" class="com.atlassian.plugin.loaders.DirectoryPluginLoader">
+		<constructor-arg index="0"
+			value="${plugins.deploy.dir}" />
+		<constructor-arg index="1">
+			<list>
+				<ref bean="osgiPluginFactory" />
+				<ref bean="osgiBundleFactory" />
+				<ref bean="xmlDynamicPluginFactory" />
+			</list>
+		</constructor-arg>
+		<constructor-arg index="2" ref="pluginEventManager" />
+	</bean>
+
+	<bean id="bundledPluginLoader" class="com.atlassian.plugin.loaders.BundledPluginLoader">
+		<constructor-arg index="0"
+			value="file:${plugins.bundle.zip}" />
+		<constructor-arg index="1"
+			value="${plugins.bundleCache.dir}" />
+		<constructor-arg index="2">
+			<list>
+				<ref bean="osgiPluginFactory" />
+				<ref bean="osgiBundleFactory" />
+				<ref bean="xmlDynamicPluginFactory" />
+			</list>
+		</constructor-arg>
+		<constructor-arg index="3" ref="pluginEventManager" />
+	</bean>
+
+	<bean id="osgiContainerManager"
+		class="com.atlassian.plugin.osgi.container.felix.FelixOsgiContainerManager">
+		<constructor-arg ref="osgiPersistentCache" />
+		<constructor-arg ref="packageScannerConfiguration" />
+		<constructor-arg ref="hostComponentProvider" />
+		<constructor-arg ref="pluginEventManager" />
+	</bean>
+
+	<bean id="packageScannerConfiguration"
+		class="gov.nih.nci.caarray.web.plugins.CaArrayPackageScannerConfiguration" />
+
+	<bean id="hotDeployer" class="com.atlassian.plugin.main.HotDeployer">
+		<constructor-arg index="0" ref="pluginManager" />
+		<constructor-arg index="1" value="2000" />
+	</bean>
+
+	<bean id="pluginInstaller" class="com.atlassian.plugin.repositories.FilePluginInstaller">
+		<constructor-arg index="0"
+			value="${plugins.deploy.dir}" />
+	</bean>
+
+	<bean id="pluginsFacade" class="gov.nih.nci.caarray.plugins.CaArrayPluginsFacade">
+		<constructor-arg index="0" ref="osgiContainerManager" />
+		<constructor-arg index="1" ref="pluginManager" />
+		<constructor-arg index="2" ref="pluginEventManager" />
+		<constructor-arg index="3" ref="hotDeployer" />
+		<constructor-arg index="4" ref="pluginInstaller" />
+		<constructor-arg index="5" ref="webInterfaceManager" />
+	</bean>
+
+	<bean id="prefixModuleFactory"
+		class="com.atlassian.plugin.module.PrefixDelegatingModuleFactory"
+		plugin:available="true">
+		<constructor-arg index="0">
+			<set>
+				<bean class="com.atlassian.plugin.module.ClassPrefixModuleFactory">
+					<constructor-arg index="0" ref="springHostContainer" />
+				</bean>
+				<bean class="com.atlassian.plugin.osgi.module.BeanPrefixModuleFactory" />
+			</set>
+		</constructor-arg>
+	</bean>
+
+	<bean id="webFragmentHelper"
+		class="gov.nih.nci.caarray.web.plugins.CaArrayWebFragmentHelper" plugin:available="true">
+		<constructor-arg index="0" ref="velocityManager" />
+	</bean>
+
+	<bean id="webInterfaceManager" class="com.atlassian.plugin.web.DefaultWebInterfaceManager"
+		plugin:available="true">
+		<constructor-arg index="0" ref="pluginManager" />
+		<constructor-arg index="1" ref="webFragmentHelper" />
+	</bean>
+
+	<bean id="velocityManager"
+		class="com.atlassian.velocity.DefaultVelocityManager" />
+
+	<bean id="webResourceIntegration"
+		class="gov.nih.nci.caarray.web.plugins.CaArrayWebResourceIntegration">
+		<constructor-arg index="0" ref="pluginManager" />
+	</bean>
+
+	<bean id="pluginResourceLocator"
+		class="com.atlassian.plugin.webresource.PluginResourceLocatorImpl">
+		<constructor-arg index="0" ref="webResourceIntegration" />
+		<constructor-arg index="1" ref="webResourceIntegration" />
+	</bean>
+		
+	<bean id="webResourceManager"
+		class="com.atlassian.plugin.webresource.WebResourceManagerImpl" plugin:available="true">
+		<constructor-arg index="0" ref="pluginResourceLocator"/>
+		<constructor-arg index="1" ref="webResourceIntegration"/>
+		<constructor-arg index="2">
+			<bean class="com.atlassian.plugin.webresource.DefaultResourceBatchingConfiguration"/>
+		</constructor-arg>
+	</bean>
+</beans>

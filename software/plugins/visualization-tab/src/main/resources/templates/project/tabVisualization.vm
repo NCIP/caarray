@@ -1,0 +1,204 @@
+<style type="text/css">
+  div.slider { width:500px; margin:10px 0; background-color:#ccc; height:10px; position: relative; }
+  div.slider div.handle { width:3px; height:15px; background-color:#f00; cursor:move; position: absolute; }
+</style>
+
+#surl("value=/heatmap/ajax/project/tab/Visualization/data.action" "var=probeDataUrl" "dataset=heatmap")
+#set($probeDataUrl="$probeDataUrl&project.id=${project.id}")
+
+#surl("value=/heatmap/ajax/project/tab/Visualization/data.action" "var=charsDataUrl" "dataset=characteristics")
+#set($charsDataUrl="$charsDataUrl&project.id=${project.id}")
+
+#surl("value=/heatmap/ajax/project/tab/Visualization/openInIgv.action" "var=igvUrl" "dataset=characteristics")
+#set($igvUrl="$igvUrl&project.id=${project.id}")
+
+#surl("value=/heatmap/ajax/project/tab/Visualization/gct.action" "var=gctUrl" "dataset=characteristics")
+#set($gctDataUrl="$gctDataUrl&project.id=${project.id}")
+
+<div id="loadingText" class="loadingText" style="display: none;">
+    <div><img alt="Indicator" align="absmiddle" src="/caarray/images/indicator.gif" /> Loading.. </div>
+</div>
+
+<div id="tabHeader">
+  <h3>Heatmap Visualization</h3>
+</div>
+<div id="submittingText" style="display: none;">
+    <div><img alt="Indicator" align="absmiddle" src="/caarray/images/indicator.gif"/> <span id="submittingTextSpan">Submitting...</span></div>
+</div>
+<div id="theForm">
+
+    <div class="boxpad">
+
+		<div id="controls" style="margin: 20px auto">
+			<div style="margin: 5px auto; text-align: center">
+			<form id="viz-controls" name="viz-controls" >				
+					#foreach($hyb in ${project.experiment.hybridizations})					
+						<input type="checkbox" name="hybridizations.id" value="${hyb.id}" checked onchange="updateAllHeatmaps()"> <span>${hyb.name}</span><br>
+					#end
+			</form>
+			</div>
+			<div id="square_slider" class="slider" style="margin: 0 auto">
+			  <div id="square_slider_handle_min" class="handle left"></div>
+  			  <div id="square_slider_handle_max" class="handle right"></div>
+  		  	  <div id="square_slider_span" class="span"></div>
+			</div>
+			<a href="#" onclick="openInIgv(); return false;">Open in IGV</a>
+		</div>  
+		
+		  
+		<div id="heatmaps" style="width: 800px; margin: 0 auto; overflow: auto">
+			<div id="charsContainerWrapper" style="float: left; width: 200px; text-align: center">
+				<div id="charsTitle">Characteristics</div>
+				<div id="charsContainer"></div>
+			</div>
+			<div id="probesContainerWrapper" style="float: right; width: 500px; text-align: center">
+				<div id="probesTitle">Probes</div>
+				<div id="probesContainer" style="overflow: auto"></div>
+			</div>
+		</div>
+		
+		<div id="gctDump"></div>
+		    	
+        <script type="text/javascript"><!--
+    	console.log("Executing JS");
+		var HeatmapViz = Class.create({
+    			initialize: function(url, elt, heatmapOpts) {
+					this._url = url;
+					this._element = $(elt);
+    				this._heatmap = new org.systemsbiology.visualization.BioHeatMap(this._element);
+					this._heatmapOpts = {
+						startColor: { r: 0, g: 0, b: 255, a: 1}, 
+						endColor: {r:255, g:0, b:0, a:1 }, 
+						emptyDataColor: {r: 255, g: 255, b: 255, a:1}, 
+						numberOfColors: 256,
+						passThroughBlack: true, 
+						mapHeight: 600, 
+						verticalPadding: 0,
+						drawBorder: false
+					};
+					this._selectionTooltip = new Overlay();
+				    Object.extend(this._heatmapOpts, heatmapOpts || { });
+    			},
+    			
+    			sendDataRequest: function(extraParams) {
+    	        	console.log("sending data request");
+    	        	  var query = new google.visualization.Query(this._url + "&" + extraParams);
+    	        	  query.setQuery('select *');
+    	        	  query.send(this.handleQueryResponse.bind(this));
+    			},
+    			
+    	        handleQueryResponse: function(response) {
+    	        	  if (response.isError()) {
+    	        	    alert('Error in query: ' + response.getMessage() + ' ' + response.getDetailedMessage());
+    	        	    return;
+    	        	  }
+
+    	        	  this._data = response.getDataTable();
+    	        	  this.drawHeatMap();
+    	        },
+    	        
+    	        drawHeatMap: function() {
+    	        	console.log("Drawing heatmap");
+
+    				this._heatmap.draw(this._data, this._heatmapOpts);
+    				this._heatmap.setSelection([ { row:1, column:1}]);
+    	            
+    			  	// Add our selection handler.
+    	  			google.visualization.events.addListener(this._heatmap, 'select', this.selectHandler.bind(this));
+    	  			google.visualization.events.addListener(this._heatmap, 'hover', this.selectHandler.bind(this));
+    	  			google.visualization.events.addListener(this._heatmap, 'mouseout', function() { this._selectionTooltip.hide(); this._selectionTooltip.holder.hide(); });
+    			},
+    			
+    		    selectHandler: function(eventProps) {
+    		    	console.log('selection handler called for url ' + this._url);
+    	      		var newSelection = this._heatmap.getSelection();
+    	      		if (this._selection == newSelection) {
+    	      			return;
+    	      		}
+    	      		this._selection = newSelection;
+    	      		var message = '';
+    	      		console.log('Constructing selection message');
+    	      		for (var i = 0; i < newSelection.length; i++) {
+    	        		var item = newSelection[i];
+    	        		if (item.row != null && item.column != null) {
+    	          			message = this._data.getFormattedValue(item.row, item.column) || this._data.getValue(item.row, item.column);
+    	        		} else if (item.column != null) {
+    	        			message = this._data.getColumnProperty(item.column, "description") || this._data.getColumnLabel(item.column);
+    	        		}
+    	      		}
+    	      		console.log('You selected ' + message);
+    	      		if (message == '') {
+    	      			console.log('Hiding popup');
+    	      			this._selectionTooltip.hide();
+    	      			this._selectionTooltip.holder.hide();
+    	      		} else {
+    	      			console.log('Opening popup');
+						this._selectionTooltip.show(message, { position : 'center',
+							cls : 'simple_window',
+                            animate : false,
+                            auto_hide: true, 
+                            duration: 1000,
+                            opacity : 1.0
+                             });
+    	      		}
+    	    	},
+    	    	
+    	    	redraw: function(range) {
+    	    		if (range) {
+    	    			this._range = range;
+    	    		}
+    				var extraParams = $('viz-controls').serialize({hash:true});
+    				if (this._range) {
+        				extraParams['startProbeIndex'] = this._range[0];
+        				extraParams['endProbeIndex'] = this._range[1];    					
+    				}
+    				var extraParamsStr = Object.toQueryString(extraParams);
+    				console.log("redrawing with " + extraParamsStr);
+    				this.sendDataRequest(extraParamsStr);					    	    	    		
+    	    	}    	        
+    	});
+
+    	var probesHeatmap = new HeatmapViz('${probeDataUrl}', 'probesContainer', {useRowLabels: false});
+    	var charsHeatmap = new HeatmapViz('${charsDataUrl}', 'charsContainer', {startColor: { r: 0, g: 255, b: 255, a: 1}, passThrooughBlack: false});
+
+		probesHeatmap.sendDataRequest("startProbeIndex=0&endProbeIndex=500&hybridizations.id=1&hybridizations.id=2");        
+		charsHeatmap.sendDataRequest("hybridizations.id=1&hybridizations.id=2");
+		
+		updateAllHeatmaps = function() {
+			probesHeatmap.redraw();					    	
+			charsHeatmap.redraw();					    	
+		}
+		
+		var handles = ['square_slider_handle_min', 'square_slider_handle_max'];
+		var square_slider = new Control.Slider(handles, 'square_slider', {
+		    range: $R(0, 500),
+		    values: $R(0, 500),
+		    sliderValue: [0, 500],
+		    restricted: true,
+		    onSlide: function(values) {
+		    	console.log("slider now at " + values.join(","));
+		    }, 
+		    onChange: function(values) {
+		    	probesHeatmap.redraw(values);
+		    }
+		    
+		});
+
+		openInIgv = function() {
+			var extraParams = $('viz-controls').serialize();		    
+			new Ajax.Request('${igvUrl}&' + extraParams, {onComplete: function(response) { alert(response.responseText)}});
+		}
+
+		loadGct = function() {
+			var extraParams = $('viz-controls').serialize();		    
+			new Ajax.Updater('gctDump', '${gctUrl}&' + extraParams);
+		}
+
+        --></script>
+    </div>
+    
+    </div>
+<script type="text/javascript">
+TabUtils.updateSavedFormData();
+</script>
+    

@@ -95,7 +95,9 @@ import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
+import gov.nih.nci.caarray.domain.file.FileTypeRegistry;
 import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.injection.InjectionInterceptor;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.magetab.sdrf.SdrfDocument;
 import gov.nih.nci.caarray.util.CaArrayUsernameHolder;
@@ -113,57 +115,34 @@ import javax.interceptor.Interceptors;
 
 import org.apache.commons.lang.UnhandledException;
 import org.apache.log4j.Logger;
-import org.jboss.annotation.ejb.TransactionTimeout;
+import org.jboss.ejb3.annotation.TransactionTimeout;
 
 import com.google.inject.Inject;
+import com.google.inject.Provider;
 
 /**
- * EJB implementation of the entry point to the FileManagement subsystem. Delegates functionality
- * to other components in the subsystem.
+ * EJB implementation of the entry point to the FileManagement subsystem. Delegates functionality to other components in
+ * the subsystem.
  */
 @Local(FileManagementService.class)
 @Stateless
-@Interceptors(ExceptionLoggingInterceptor.class)
+@Interceptors({ExceptionLoggingInterceptor.class, InjectionInterceptor.class })
 @SuppressWarnings("PMD.TooManyMethods")
 public class FileManagementServiceBean implements FileManagementService {
 
     private static final Logger LOG = Logger.getLogger(FileManagementServiceBean.class);
     private static final int SAVE_ARRAY_DESIGN_TIMEOUT = 1800;
 
-    private final FileManagementJobSubmitter jobSubmitter;
-    private final ProjectDao projectDao;
-    private final ArrayDao arrayDao;
-    private final FileDao fileDao;
-    private final MageTabImporter mageTabImporter;
-    private final SearchDao searchDao;
-    private final JobFactory jobFactory;
-    
-    /**
-     * 
-     * @param projectDao the ProjectDao dependency
-     * @param arrayDao the ArrayDao dependency
-     * @param fileDao the FileDao dependency
-     * @param mageTabImporter the MageTabImporter dependency
-     * @param searchDao the SearchDao dependency
-     * @param jobSubmitter the JobSubmitter dependency
-     * @param jobFactory the JobFactory dependency
-     */
-    @SuppressWarnings("PMD.ExcessiveParameterList")
-    @Inject
-    public FileManagementServiceBean(ProjectDao projectDao, ArrayDao arrayDao, FileDao fileDao,
-            MageTabImporter mageTabImporter, SearchDao searchDao, FileManagementJobSubmitter jobSubmitter,
-            JobFactory jobFactory) {
-        this.projectDao = projectDao;
-        this.arrayDao = arrayDao;
-        this.fileDao = fileDao;
-        this.mageTabImporter = mageTabImporter;
-        this.searchDao = searchDao;
-        this.jobSubmitter = jobSubmitter;
-        this.jobFactory = jobFactory;
-    }
+    private FileManagementJobSubmitter jobSubmitter;
+    private ProjectDao projectDao;
+    private ArrayDao arrayDao;
+    private FileDao fileDao;
+    private SearchDao searchDao;
+    private JobFactory jobFactory;
+    private Provider<MageTabImporter> mageTabImporterProvider;
 
     private void checkForReparse(CaArrayFileSet fileSet) {
-        for (CaArrayFile caArrayFile : fileSet.getFiles()) {
+        for (final CaArrayFile caArrayFile : fileSet.getFiles()) {
             if (!caArrayFile.isUnparsedAndReimportable()) {
                 throw new IllegalArgumentException("Illegal attempt to reparse file " + caArrayFile.getName());
             }
@@ -171,33 +150,33 @@ public class FileManagementServiceBean implements FileManagementService {
     }
 
     private void checkForImport(CaArrayFileSet fileSet) {
-        for (CaArrayFile caArrayFile : fileSet.getFiles()) {
+        for (final CaArrayFile caArrayFile : fileSet.getFiles()) {
             if (!caArrayFile.getFileStatus().isImportable()) {
-                throw new IllegalArgumentException("Illegal attempt to import file "
-                        + caArrayFile.getName() + " with status " + caArrayFile.getFileStatus());
+                throw new IllegalArgumentException("Illegal attempt to import file " + caArrayFile.getName()
+                        + " with status " + caArrayFile.getFileStatus());
             }
         }
     }
 
     private void checkForValidation(CaArrayFileSet fileSet) {
-        for (CaArrayFile caArrayFile : fileSet.getFiles()) {
+        for (final CaArrayFile caArrayFile : fileSet.getFiles()) {
             if (!caArrayFile.getFileStatus().isValidatable()) {
-                throw new IllegalArgumentException("Illegal attempt to validate file "
-                        + caArrayFile.getName() + " with status " + caArrayFile.getFileStatus());
+                throw new IllegalArgumentException("Illegal attempt to validate file " + caArrayFile.getName()
+                        + " with status " + caArrayFile.getFileStatus());
             }
         }
     }
 
     private void checkForFileType(CaArrayFile caArrayFile, FileType ft) {
         if (!ft.equals(caArrayFile.getFileType())) {
-            throw new IllegalArgumentException("File "
-                    + caArrayFile.getName() + " must be an " + ft.getName() + " file type.");
+            throw new IllegalArgumentException("File " + caArrayFile.getName() + " must be an " + ft.getName()
+                    + " file type.");
         }
 
     }
 
     private void addFilesToInputSet(CaArrayFileSet addTo, CaArrayFileSet addFrom, FileType ft) {
-        for (CaArrayFile caArrayFile : addFrom.getFiles()) {
+        for (final CaArrayFile caArrayFile : addFrom.getFiles()) {
             if (ft.equals(caArrayFile.getFileType())) {
                 addTo.add(caArrayFile);
             }
@@ -207,6 +186,7 @@ public class FileManagementServiceBean implements FileManagementService {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void importFiles(Project targetProject, CaArrayFileSet fileSet, DataImportOptions dataImportOptions) {
         LogUtil.logSubsystemEntry(LOG, fileSet);
         checkForImport(fileSet);
@@ -216,22 +196,24 @@ public class FileManagementServiceBean implements FileManagementService {
     }
 
     private void clearValidationMessages(CaArrayFileSet fileSet) {
-        for (CaArrayFile caArrayFile : fileSet.getFiles()) {
+        for (final CaArrayFile caArrayFile : fileSet.getFiles()) {
             caArrayFile.setValidationResult(null);
-            projectDao.save(caArrayFile);
+            this.projectDao.save(caArrayFile);
         }
     }
 
-    private void sendImportJobMessage(Project targetProject, CaArrayFileSet fileSet,
-            DataImportOptions dataImportOptions) {
-        ProjectFilesImportJob job = jobFactory.createProjectFilesImportJob(CaArrayUsernameHolder.getUser(),
-                targetProject, fileSet, dataImportOptions);
-        jobSubmitter.submitJob(job);
+    private void
+            sendImportJobMessage(Project targetProject, CaArrayFileSet fileSet, DataImportOptions dataImportOptions) {
+        final ProjectFilesImportJob job =
+                this.jobFactory.createProjectFilesImportJob(CaArrayUsernameHolder.getUser(), targetProject, fileSet,
+                        dataImportOptions);
+        this.jobSubmitter.submitJob(job);
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public void validateFiles(Project project, CaArrayFileSet fileSet) {
         checkForValidation(fileSet);
         clearValidationMessages(fileSet);
@@ -239,46 +221,46 @@ public class FileManagementServiceBean implements FileManagementService {
     }
 
     private void sendValidationJobMessage(Project project, CaArrayFileSet fileSet) {
-        ProjectFilesValidationJob job = jobFactory.createProjectFilesValidationJob(CaArrayUsernameHolder.getUser(),
-                project, fileSet);
-        jobSubmitter.submitJob(job);
+        final ProjectFilesValidationJob job =
+                this.jobFactory.createProjectFilesValidationJob(CaArrayUsernameHolder.getUser(), project, fileSet);
+        this.jobSubmitter.submitJob(job);
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     @TransactionTimeout(SAVE_ARRAY_DESIGN_TIMEOUT)
-    public void saveArrayDesign(ArrayDesign arrayDesign, CaArrayFileSet designFiles)
-            throws InvalidDataFileException, IllegalAccessException {
-        boolean newArrayDesign = arrayDesign.getId() == null;
-        CaArrayFileSet oldFiles = arrayDesign.getDesignFileSet();
+    public void saveArrayDesign(ArrayDesign arrayDesign, CaArrayFileSet designFiles) throws InvalidDataFileException,
+            IllegalAccessException {
+        final boolean newArrayDesign = arrayDesign.getId() == null;
+        final CaArrayFileSet oldFiles = arrayDesign.getDesignFileSet();
         designFiles.updateStatus(FileStatus.VALIDATING);
 
-        ArrayDesignService ads = ServiceLocatorFactory.getArrayDesignService();
+        final ArrayDesignService ads = ServiceLocatorFactory.getArrayDesignService();
         arrayDesign.setDesignFileSet(designFiles);
         arrayDesign = ads.saveArrayDesign(arrayDesign);
-            ads.importDesign(arrayDesign);
+        ads.importDesign(arrayDesign);
 
         if (FileStatus.VALIDATION_ERRORS.equals(designFiles.getStatus())) {
             if (newArrayDesign) {
-                arrayDao.remove(arrayDesign);
+                this.arrayDao.remove(arrayDesign);
                 arrayDesign.getDesignFiles().clear();
             } else {
                 arrayDesign.setDesignFileSet(oldFiles);
-                arrayDao.save(arrayDesign);
+                this.arrayDao.save(arrayDesign);
             }
             checkDesignFiles(designFiles);
         } else if (oldFiles.getFiles().size() > 0) {
-            for (CaArrayFile file : oldFiles.getFiles()) {
-                arrayDao.remove(file);
+            for (final CaArrayFile file : oldFiles.getFiles()) {
+                this.arrayDao.remove(file);
             }
         }
     }
 
     private void checkDesignFiles(CaArrayFileSet designFiles) throws InvalidDataFileException {
-        for (CaArrayFile designFile : designFiles.getFiles()) {
-            if (designFile.getValidationResult() != null
-                    && !designFile.getValidationResult().getMessages().isEmpty()) {
+        for (final CaArrayFile designFile : designFiles.getFiles()) {
+            if (designFile.getValidationResult() != null && !designFile.getValidationResult().getMessages().isEmpty()) {
                 throw new InvalidDataFileException(designFile.getValidationResult());
             }
         }
@@ -287,88 +269,96 @@ public class FileManagementServiceBean implements FileManagementService {
     /**
      * {@inheritDoc}
      */
+    @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public void importArrayDesignDetails(ArrayDesign arrayDesign) {
-         projectDao.save(arrayDesign.getDesignFiles());
-        AbstractFileManagementJob job =
-            jobFactory.createArrayDesignFileImportJob(CaArrayUsernameHolder.getUser(), arrayDesign);
-        jobSubmitter.submitJob(job);
+        arrayDesign.getDesignFileSet().updateStatus(FileStatus.IN_QUEUE);
+        this.projectDao.save(arrayDesign.getDesignFiles());
+        final AbstractFileManagementJob job =
+                this.jobFactory.createArrayDesignFileImportJob(CaArrayUsernameHolder.getUser(), arrayDesign);
+        this.jobSubmitter.submitJob(job);
     }
-    
+
     /**
      * {@inheritDoc}
      */
+    @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public void reimportAndParseArrayDesign(Long arrayDesignId) throws InvalidDataFileException, 
-        IllegalAccessException {
-        ArrayDesign arrayDesign = searchDao.retrieve(ArrayDesign.class, arrayDesignId);        
+    public void reimportAndParseArrayDesign(Long arrayDesignId) 
+    throws InvalidDataFileException, IllegalAccessException {
+        ArrayDesign arrayDesign = this.searchDao.retrieve(ArrayDesign.class, arrayDesignId);
         if (!arrayDesign.isUnparsedAndReimportable()) {
             throw new IllegalAccessException("This array design is not eligible for reimport");
         }
-        
-        ArrayDesignService ads = ServiceLocatorFactory.getArrayDesignService();
+
+        final ArrayDesignService ads = ServiceLocatorFactory.getArrayDesignService();
         arrayDesign.getDesignFileSet().updateStatus(FileStatus.VALIDATING);
         try {
             arrayDesign = ads.saveArrayDesign(arrayDesign);
             ads.importDesign(arrayDesign);
             checkDesignFiles(arrayDesign.getDesignFileSet());
-        } catch (InvalidDataFileException e) {
+        } catch (final InvalidDataFileException e) {
             arrayDesign.getDesignFileSet().updateStatus(FileStatus.IMPORT_FAILED);
             throw e;
-        } catch (IllegalAccessException e) {
+        } catch (final IllegalAccessException e) {
             arrayDesign.getDesignFileSet().updateStatus(FileStatus.IMPORT_FAILED);
             throw e;
-        } catch (Exception e) {
+        } catch (final Exception e) {
             arrayDesign.getDesignFileSet().updateStatus(FileStatus.IMPORT_FAILED);
             throw new UnhandledException(e);
         }
-        
+
         importArrayDesignDetails(arrayDesign);
     }
-    
+
     /**
      * {@inheritDoc}
      */
+    @Override
     public void reimportAndParseProjectFiles(Project targetProject, CaArrayFileSet fileSet) {
         LogUtil.logSubsystemEntry(LOG, fileSet);
         checkForReparse(fileSet);
         clearValidationMessages(fileSet);
-        
-        ProjectFilesReparseJob job = jobFactory.createProjectFilesReparseJob(CaArrayUsernameHolder.getUser(),
-                targetProject, fileSet);
-        jobSubmitter.submitJob(job);
+        fileSet.updateStatus(FileStatus.IN_QUEUE);
 
-        LogUtil.logSubsystemExit(LOG);       
+        final ProjectFilesReparseJob job =
+                this.jobFactory.createProjectFilesReparseJob(CaArrayUsernameHolder.getUser(), targetProject, fileSet);
+        this.jobSubmitter.submitJob(job);
+
+        LogUtil.logSubsystemExit(LOG);
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public void addSupplementalFiles(Project targetProject, CaArrayFileSet fileSet) {
         if (targetProject == null) {
             throw new IllegalArgumentException("targetProject was null");
         }
-        for (CaArrayFile caArrayFile : fileSet.getFiles()) {
+        for (final CaArrayFile caArrayFile : fileSet.getFiles()) {
             caArrayFile.setFileStatus(FileStatus.SUPPLEMENTAL);
             caArrayFile.setProject(targetProject);
-            fileDao.save(caArrayFile);
+            this.fileDao.save(caArrayFile);
             targetProject.getFiles().add(caArrayFile);
         }
-        projectDao.save(targetProject);
+        this.projectDao.save(targetProject);
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public List<String> findIdfRefFileNames(CaArrayFile idfFile, Project project) {
-        List<String> filenames = new ArrayList<String>();
-        checkForFileType(idfFile, FileType.MAGE_TAB_IDF);
-        CaArrayFileSet inputFiles = new CaArrayFileSet(project);
+        final List<String> filenames = new ArrayList<String>();
+        checkForFileType(idfFile, FileTypeRegistry.MAGE_TAB_IDF);
+        final CaArrayFileSet inputFiles = new CaArrayFileSet(project);
         inputFiles.add(idfFile);
-        addFilesToInputSet(inputFiles, project.getFileSet(), FileType.MAGE_TAB_SDRF);
-        MageTabDocumentSet mTabSet = mageTabImporter.selectRefFiles(project, inputFiles);
+        addFilesToInputSet(inputFiles, project.getFileSet(), FileTypeRegistry.MAGE_TAB_SDRF);
+        final MageTabImporter mti = this.mageTabImporterProvider.get();
+        final MageTabDocumentSet mTabSet = mti.selectRefFiles(project, inputFiles);
         // we only care about the sdrf docs connected to the idf
-        for (SdrfDocument sdrfDoc : mTabSet.getIdfDocuments().iterator().next().getSdrfDocuments()) {
+        for (final SdrfDocument sdrfDoc : mTabSet.getIdfDocuments().iterator().next().getSdrfDocuments()) {
             filenames.addAll(getRefFileNames(sdrfDoc));
         }
 
@@ -376,7 +366,7 @@ public class FileManagementServiceBean implements FileManagementService {
     }
 
     private List<String> getRefFileNames(SdrfDocument sdrfDoc) {
-        List<String> filenames = new ArrayList<String>();
+        final List<String> filenames = new ArrayList<String>();
         filenames.add(sdrfDoc.getFile().getName());
         filenames.addAll(sdrfDoc.getReferencedDataMatrixFileNames());
         filenames.addAll(sdrfDoc.getReferencedDerivedFileNames());
@@ -384,4 +374,60 @@ public class FileManagementServiceBean implements FileManagementService {
 
         return filenames;
     }
- }
+
+    /**
+     * @param jobSubmitter the jobSubmitter to set
+     */
+    @Inject
+    public void setJobSubmitter(FileManagementJobSubmitter jobSubmitter) {
+        this.jobSubmitter = jobSubmitter;
+    }
+
+    /**
+     * @param projectDao the projectDao to set
+     */
+    @Inject
+    public void setProjectDao(ProjectDao projectDao) {
+        this.projectDao = projectDao;
+    }
+
+    /**
+     * @param arrayDao the arrayDao to set
+     */
+    @Inject
+    public void setArrayDao(ArrayDao arrayDao) {
+        this.arrayDao = arrayDao;
+    }
+
+    /**
+     * @param fileDao the fileDao to set
+     */
+    @Inject
+    public void setFileDao(FileDao fileDao) {
+        this.fileDao = fileDao;
+    }
+
+    /**
+     * @param searchDao the searchDao to set
+     */
+    @Inject
+    public void setSearchDao(SearchDao searchDao) {
+        this.searchDao = searchDao;
+    }
+
+    /**
+     * @param jobFactory the jobFactory to set
+     */
+    @Inject
+    public void setJobFactory(JobFactory jobFactory) {
+        this.jobFactory = jobFactory;
+    }
+
+    /**
+     * @param mageTabImporterProvider the mageTabImporterProvider to set
+     */
+    @Inject
+    public void setMageTabImporterProvider(Provider<MageTabImporter> mageTabImporterProvider) {
+        this.mageTabImporterProvider = mageTabImporterProvider;
+    }
+}

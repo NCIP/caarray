@@ -96,7 +96,7 @@ import gov.nih.nci.caarray.domain.search.SearchSourceCategory;
 import gov.nih.nci.caarray.domain.search.SearchTypeSelection;
 import gov.nih.nci.caarray.domain.search.SourceJoinableSortCriterion;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
-import gov.nih.nci.caarray.web.util.LabelValue;
+import gov.nih.nci.caarray.util.LabelValue;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;

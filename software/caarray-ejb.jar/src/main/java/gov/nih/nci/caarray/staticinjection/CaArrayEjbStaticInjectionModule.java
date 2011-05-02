@@ -84,7 +84,7 @@ package gov.nih.nci.caarray.staticinjection;
 
 /**
  * @author jscott
- *
+ * 
  */
 public class CaArrayEjbStaticInjectionModule extends CaArrayCommonStaticInjectionModule {
     /**
@@ -93,6 +93,7 @@ public class CaArrayEjbStaticInjectionModule extends CaArrayCommonStaticInjectio
     @Override
     protected void configure() {
         super.configure();
+        requestStaticInjection(gov.nih.nci.caarray.services.EntityPruner.class);
         requestStaticInjection(gov.nih.nci.caarray.application.ConfigurationHelper.class);
         requestStaticInjection(gov.nih.nci.caarray.services.data.DataSetConfiguringInterceptor.class);
         requestStaticInjection(gov.nih.nci.caarray.services.EntityConfiguringInterceptor.class);

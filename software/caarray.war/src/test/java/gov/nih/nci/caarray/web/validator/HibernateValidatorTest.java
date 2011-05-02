@@ -87,7 +87,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import gov.nih.nci.caarray.AbstractCaarrayTest;
 import gov.nih.nci.caarray.domain.sample.Source;
-import gov.nih.nci.caarray.staticinjection.CaArrayWarStaticInjectionModule;
 import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
 import gov.nih.nci.caarray.util.CaArrayHibernateHelperModule;
 import gov.nih.nci.caarray.util.CaArrayUsernameHolder;
@@ -112,8 +111,9 @@ import com.opensymphony.xwork2.validator.DelegatingValidatorContext;
 import com.opensymphony.xwork2.validator.ValidatorContext;
 
 /**
- * Note: the actual HibernateValidator class has been moved to nci-commons, but the test remains here because
- * hibernate, etc isn't available there for testing.
+ * Note: the actual HibernateValidator class has been moved to nci-commons, but the test remains here because hibernate,
+ * etc isn't available there for testing.
+ * 
  * 
  * @author Scott Miller
  */
@@ -141,7 +141,7 @@ public class HibernateValidatorTest extends AbstractBaseStrutsTest {
      * @return a Guice injector from which this will obtain dependencies.
      */
     protected static Injector createInjector() {
-        return Guice.createInjector(new CaArrayWarStaticInjectionModule(), new CaArrayHibernateHelperModule());
+        return Guice.createInjector(new CaArrayHibernateHelperModule());
     }
 
     @Before
@@ -162,13 +162,13 @@ public class HibernateValidatorTest extends AbstractBaseStrutsTest {
 
     @Test
     public void testHibernateValidatorWithNullObject() throws Exception {
-        ValueStack valueStack = ActionContext.getContext().getValueStack();
+        final ValueStack valueStack = ActionContext.getContext().getValueStack();
         valueStack.set("source", null);
-        validator.setValueStack(valueStack);
-        validator.setFieldName("source");
-        validator.validate(null);
-        assertFalse(validatorContext.hasActionErrors());
-        assertFalse(validatorContext.hasFieldErrors());
+        this.validator.setValueStack(valueStack);
+        this.validator.setFieldName("source");
+        this.validator.validate(null);
+        assertFalse(this.validatorContext.hasActionErrors());
+        assertFalse(this.validatorContext.hasFieldErrors());
     }
 
     @Test
@@ -177,13 +177,14 @@ public class HibernateValidatorTest extends AbstractBaseStrutsTest {
 
         ValueStack valueStack = ActionContext.getContext().getValueStack();
         valueStack.set("source", source);
-        validator.setValueStack(valueStack);
-        validator.setFieldName("source");
-        validator.validate(null);
-        assertFalse(validatorContext.hasActionErrors());
-        assertTrue(validatorContext.hasFieldErrors());
-        assertEquals(1, validatorContext.getFieldErrors().size());
-        Map.Entry<String, List<String>> error = validatorContext.getFieldErrors().entrySet().iterator().next();
+        this.validator.setValueStack(valueStack);
+        this.validator.setFieldName("source");
+        this.validator.validate(null);
+        assertFalse(this.validatorContext.hasActionErrors());
+        assertTrue(this.validatorContext.hasFieldErrors());
+        assertEquals(1, this.validatorContext.getFieldErrors().size());
+        final Map.Entry<String, List<String>> error = this.validatorContext.getFieldErrors().entrySet().iterator()
+                .next();
         assertEquals("source.name", error.getKey());
         assertEquals(1, error.getValue().size());
         assertEquals("name must be set", error.getValue().get(0));
@@ -191,20 +192,20 @@ public class HibernateValidatorTest extends AbstractBaseStrutsTest {
 
     @Test
     public void testHibernateValidatorWithValidObject() throws Exception {
-        Source source = new Source();
+        final Source source = new Source();
         source.setName("test name 1");
 
         ValueStack valueStack = ActionContext.getContext().getValueStack();
         valueStack.set("source", source);
-        validator.setValueStack(valueStack);
-        validator.setFieldName("source");
-        validator.validate(null);
-        assertFalse(validatorContext.hasActionErrors());
+        this.validator.setValueStack(valueStack);
+        this.validator.setFieldName("source");
+        this.validator.validate(null);
+        assertFalse(this.validatorContext.hasActionErrors());
     }
 
     @Test
     public void testHibernateValidatorListProcessing() throws Exception {
-        List<Source> sources = new ArrayList<Source>();
+        final List<Source> sources = new ArrayList<Source>();
         Source s = new Source();
         s.setName("test name 3");
         sources.add(s);
@@ -218,16 +219,17 @@ public class HibernateValidatorTest extends AbstractBaseStrutsTest {
         s.setName("test name 4");
         sources.add(s);
 
-        ValueStack valueStack = ActionContext.getContext().getValueStack();
+        final ValueStack valueStack = ActionContext.getContext().getValueStack();
         valueStack.set("sourceList", sources);
-        validator.setValueStack(valueStack);
-        validator.setFieldName("sourceList");
-        validator.validate(null);
+        this.validator.setValueStack(valueStack);
+        this.validator.setFieldName("sourceList");
+        this.validator.validate(null);
 
-        assertFalse(validatorContext.hasActionErrors());
-        assertTrue(validatorContext.hasFieldErrors());
-        assertEquals(1, validatorContext.getFieldErrors().size());
-        Map.Entry<String, List<String>> error = validatorContext.getFieldErrors().entrySet().iterator().next();
+        assertFalse(this.validatorContext.hasActionErrors());
+        assertTrue(this.validatorContext.hasFieldErrors());
+        assertEquals(1, this.validatorContext.getFieldErrors().size());
+        final Map.Entry<String, List<String>> error = this.validatorContext.getFieldErrors().entrySet().iterator()
+                .next();
         assertEquals("sourceList[1].name", error.getKey());
         assertEquals(1, error.getValue().size());
         assertEquals("name must be set", error.getValue().get(0));
@@ -235,22 +237,23 @@ public class HibernateValidatorTest extends AbstractBaseStrutsTest {
 
     @Test
     public void testHibernateValidatorArrayProcessing() throws Exception {
-        Source s1 = new Source();
+        final Source s1 = new Source();
         s1.setName("test name 3");
-        Source s2 = new Source();
+        final Source s2 = new Source();
         s2.setName("test name 4");
-        Source[] sources = { s1, new Source(), null, s2 };
+        final Source[] sources = { s1, new Source(), null, s2 };
 
-        ValueStack valueStack = ActionContext.getContext().getValueStack();
+        final ValueStack valueStack = ActionContext.getContext().getValueStack();
         valueStack.set("sourceList", sources);
-        validator.setValueStack(valueStack);
-        validator.setFieldName("sourceList");
-        validator.validate(null);
+        this.validator.setValueStack(valueStack);
+        this.validator.setFieldName("sourceList");
+        this.validator.validate(null);
 
-        assertFalse(validatorContext.hasActionErrors());
-        assertTrue(validatorContext.hasFieldErrors());
-        assertEquals(1, validatorContext.getFieldErrors().size());
-        Map.Entry<String, List<String>> error = validatorContext.getFieldErrors().entrySet().iterator().next();
+        assertFalse(this.validatorContext.hasActionErrors());
+        assertTrue(this.validatorContext.hasFieldErrors());
+        assertEquals(1, this.validatorContext.getFieldErrors().size());
+        final Map.Entry<String, List<String>> error = this.validatorContext.getFieldErrors().entrySet().iterator()
+                .next();
         assertEquals("sourceList[1].name", error.getKey());
         assertEquals(1, error.getValue().size());
         assertEquals("name must be set", error.getValue().get(0));

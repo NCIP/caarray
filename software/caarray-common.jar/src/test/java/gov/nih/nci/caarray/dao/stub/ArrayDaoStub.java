@@ -97,7 +97,9 @@ import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
 import gov.nih.nci.caarray.domain.project.AssayType;
 import gov.nih.nci.caarray.domain.search.QuantitationTypeSearchCriteria;
 
+import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -111,6 +113,7 @@ public class ArrayDaoStub extends AbstractDaoStub implements ArrayDao {
     /**
      * {@inheritDoc}
      */
+    @Override
     public ArrayDesign getArrayDesign(long id) {
         return null;
     }
@@ -118,6 +121,7 @@ public class ArrayDaoStub extends AbstractDaoStub implements ArrayDao {
     /**
      * {@inheritDoc}
      */
+    @Override
     public List<ArrayDesign> getArrayDesigns(Organization provider, Set<AssayType> assayTypes, boolean importedOnly) {
         return new ArrayList<ArrayDesign>();
     }
@@ -125,13 +129,15 @@ public class ArrayDaoStub extends AbstractDaoStub implements ArrayDao {
     /**
      * {@inheritDoc}
      */
+    @Override
     public ArrayDataType getArrayDataType(ArrayDataTypeDescriptor descriptor) {
         return null;
     }
-    
+
     /**
      * {@inheritDoc}
      */
+    @Override
     public AbstractArrayData getArrayData(Long fileId) {
         return null;
     }
@@ -139,18 +145,22 @@ public class ArrayDaoStub extends AbstractDaoStub implements ArrayDao {
     /**
      * {@inheritDoc}
      */
+    @Override
     public QuantitationType getQuantitationType(QuantitationTypeDescriptor descriptor) {
         return null;
     }
 
+    @Override
     public ArrayDesign getArrayDesign(String lsidAuthority, String lsidNamespace, String lsidObjectId) {
         return null;
     }
 
+    @Override
     public boolean isArrayDesignLocked(Long id) {
         return false;
     }
 
+    @Override
     public DesignElementList getDesignElementList(String lsidAuthority, String lsidNamespace, String lsidObjectId) {
         return null;
     }
@@ -163,52 +173,66 @@ public class ArrayDaoStub extends AbstractDaoStub implements ArrayDao {
         return null;
     }
 
+    @Override
     public void createDesignElementListEntries(DesignElementList designElementList, int startIndex,
             List<Long> logicalProbeIds) {
         // empty method
     }
 
+    @Override
     public Map<String, Long> getLogicalProbeNamesToIds(ArrayDesign design, List<String> names) {
         return null;
     }
 
+    @Override
     public void deleteArrayDesignDetails(ArrayDesign design) {
         // empty method
     }
 
+    @Override
     public List<Long> getLogicalProbeIds(ArrayDesign design, PageSortParams<LogicalProbe> params) {
         return null;
     }
 
+    @Override
     public void createFeatures(int rows, int cols, ArrayDesignDetails designDetails) {
         // empty method
     }
 
+    @Override
     public Long getFirstFeatureId(ArrayDesignDetails designDetails) {
         return NumberUtils.LONG_ONE;
     }
 
+    @Override
     public List<ArrayDesign> getArrayDesigns(ArrayDesignDetails arrayDesignDetails) {
         return new ArrayList<ArrayDesign>();
     }
 
+    @Override
     public List<QuantitationType> searchForQuantitationTypes(PageSortParams<QuantitationType> params,
             QuantitationTypeSearchCriteria criteria) {
         return new ArrayList<QuantitationType>();
     }
 
+    @Override
     public List<PhysicalProbe> getPhysicalProbeByNames(ArrayDesign design, List<String> names) {
-        List<PhysicalProbe> l = new ArrayList<PhysicalProbe>(names.size());
-        for (PhysicalProbe pp : design.getDesignDetails().getProbes()) {
+        final List<PhysicalProbe> l = new ArrayList<PhysicalProbe>(names.size());
+        for (final PhysicalProbe pp : design.getDesignDetails().getProbes()) {
             if (names.contains(pp.getName())) {
                 l.add(pp);
             }
-        }        
+        }
         return l;
     }
 
+    @Override
     public List<ArrayDesign> getArrayDesignsWithReImportable() {
         return new ArrayList<ArrayDesign>();
     }
 
+    @Override
+    public List<URI> getAllParsedDataHandles() {
+        return Collections.emptyList();
+    }
 }

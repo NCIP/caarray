@@ -82,8 +82,8 @@
  */
 package gov.nih.nci.caarray.domain.file;
 
-import static org.junit.Assert.*;
-import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import org.junit.Test;
 
@@ -92,7 +92,7 @@ public class CaArrayFileTest {
 
     @Test
     public void testSetFileStatus() {
-        CaArrayFile file = new CaArrayFile();
+        final CaArrayFile file = new CaArrayFile();
         file.setFileStatus(FileStatus.IMPORTED);
         assertEquals(FileStatus.IMPORTED, file.getFileStatus());
         assertEquals("IMPORTED", file.getStatus());
@@ -115,7 +115,7 @@ public class CaArrayFileTest {
 
     @Test
     public void testSetStatus() {
-        CaArrayFile file = new CaArrayFile();
+        final CaArrayFile file = new CaArrayFile();
         file.setStatus("IMPORTED");
         assertEquals(FileStatus.IMPORTED, file.getFileStatus());
         assertEquals("IMPORTED", file.getStatus());
@@ -125,17 +125,8 @@ public class CaArrayFileTest {
         try {
             file.setStatus("ILLEGAL STATUS");
             fail("Shouldn't be able to set status not in FileStatus");
-        } catch (IllegalArgumentException e) {
+        } catch (final IllegalArgumentException e) {
             // expected
         }
     }
-
-    @Test
-    public void testIsMatch() {
-        CaArrayFile caArrayFile = new CaArrayFile();
-        caArrayFile.setName(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF.getName());
-        assertTrue(caArrayFile.isMatch(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF));
-        assertFalse(caArrayFile.isMatch(MageTabDataFiles.SPECIFICATION_ERROR_EXAMPLE_IDF));
-    }
-
 }

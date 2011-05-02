@@ -79,7 +79,8 @@
  * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */package gov.nih.nci.caarray.services.external.v1_0.search;
+ */
+package gov.nih.nci.caarray.services.external.v1_0.search;
 
 import static org.junit.Assert.assertEquals;
 import gov.nih.nci.caarray.application.AbstractServiceTest;
@@ -125,13 +126,15 @@ public class SearchServiceTest extends AbstractServiceTest {
 
     private static Person PI1;
     private static Person PI2;
-    
+
     @Before
     public void setUpService() {
         CaArrayUsernameHolder.setUser(STANDARD_USER);
-        SearchServiceBean searchServiceBean = new SearchServiceBean(null);
+
+        final SearchServiceBean searchServiceBean = new SearchServiceBean();
         searchServiceBean.setDaoFactory(this.daoFactoryStub);
-        ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
+
+        final ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
         this.searchService = searchServiceBean;
         locatorStub.addLookup(SearchService.JNDI_NAME, this.searchService);
     }
@@ -143,7 +146,7 @@ public class SearchServiceTest extends AbstractServiceTest {
         PI1.setLastName("Doe");
         PI1.setEmail("john@baz.com");
         PI1.setMiddleInitials("J");
-        
+
         PI2 = new Person();
         PI2.setFirstName("Jane");
         PI2.setLastName("Doe");
@@ -152,18 +155,18 @@ public class SearchServiceTest extends AbstractServiceTest {
     @After
     public void tearDown() {
     }
-    
+
     @Test
     public void testGetAllPrincipalInvestigators() {
-        List<gov.nih.nci.caarray.external.v1_0.experiment.Person> pis = this.searchService
-                .getAllPrincipalInvestigators();
+        final List<gov.nih.nci.caarray.external.v1_0.experiment.Person> pis =
+                this.searchService.getAllPrincipalInvestigators();
         assertEquals(2, pis.size());
         assertEquivalent(PI1, pis.get(0));
         assertEquivalent(PI2, pis.get(1));
     }
-    
+
     private void assertEquivalent(Person intPerson, gov.nih.nci.caarray.external.v1_0.experiment.Person extPerson) {
-        assertEquals(intPerson.getFirstName(), extPerson.getFirstName());        
+        assertEquals(intPerson.getFirstName(), extPerson.getFirstName());
         assertEquals(intPerson.getLastName(), extPerson.getLastName());
         assertEquals(intPerson.getEmail(), extPerson.getEmailAddress());
         assertEquals(intPerson.getMiddleInitials(), extPerson.getMiddleInitials());
@@ -185,13 +188,13 @@ public class SearchServiceTest extends AbstractServiceTest {
         public SearchDao getSearchDao() {
             return new LocalSearchDaoStub(this.projectDao);
         }
-        
+
         @Override
         public ContactDao getContactDao() {
             return new LocalContactDaoStub();
         }
     }
-    
+
     private static class LocalProjectDaoStub extends ProjectDaoStub {
 
         final HashMap<Long, PersistentObject> savedObjects = new HashMap<Long, PersistentObject>();
@@ -199,9 +202,10 @@ public class SearchServiceTest extends AbstractServiceTest {
         PersistentObject lastDeleted;
 
         @Override
-        public void save(PersistentObject caArrayObject) {
+        public Long save(PersistentObject caArrayObject) {
             this.lastSaved = caArrayObject;
             this.savedObjects.put(caArrayObject.getId(), caArrayObject);
+            return caArrayObject.getId();
         }
 
         /**
@@ -223,7 +227,7 @@ public class SearchServiceTest extends AbstractServiceTest {
         }
 
     }
-    
+
     private static class LocalContactDaoStub extends ContactDaoStub {
         @Override
         public List<Person> getAllPrincipalInvestigators() {
@@ -247,23 +251,21 @@ public class SearchServiceTest extends AbstractServiceTest {
         @SuppressWarnings("unchecked")
         @Override
         public <T extends PersistentObject> T retrieve(Class<T> entityClass, Long entityId) {
-            PersistentObject po = this.projectDao.savedObjects.get(entityId);
+            final PersistentObject po = this.projectDao.savedObjects.get(entityId);
             if (po != null) {
                 return (T) po;
             }
             if (Sample.class.equals(entityClass)) {
-                Sample s = getSample(entityId);
+                final Sample s = getSample(entityId);
                 return (T) s;
-            }
-            else if (Source.class.equals(entityClass)) {
-                Source s = getSource(entityId);
+            } else if (Source.class.equals(entityClass)) {
+                final Source s = getSource(entityId);
                 return (T) s;
-            }
-            else if (Factor.class.equals(entityClass)) {
-                Factor f = getFactor(entityId);
+            } else if (Factor.class.equals(entityClass)) {
+                final Factor f = getFactor(entityId);
                 return (T) f;
             } else if (Extract.class.equals(entityClass)) {
-                Extract e = getExtract(entityId);
+                final Extract e = getExtract(entityId);
                 return (T) e;
             } else if (Project.class.equals(entityClass)) {
                 return (T) getProject(entityId);
@@ -279,39 +281,39 @@ public class SearchServiceTest extends AbstractServiceTest {
             if (this.projectDao.savedObjects.containsKey(id)) {
                 return (Project) this.projectDao.savedObjects.get(id);
             }
-            Project project = new Project();
+            final Project project = new Project();
             project.setId(id);
             this.projectDao.save(project);
             return project;
         }
 
         private Extract getExtract(Long entityId) {
-            Extract e = new Extract();
+            final Extract e = new Extract();
             setABM(e, entityId);
-            Sample s = getSample(entityId++);
+            final Sample s = getSample(entityId++);
             e.getSamples().add(s);
             s.getExtracts().add(e);
             return e;
         }
 
         private Sample getSample(Long entityId) {
-            Sample s = new Sample();
+            final Sample s = new Sample();
             setABM(s, entityId);
-            Source source = getSource(entityId++);
+            final Source source = getSource(entityId++);
             s.getSources().add(source);
             source.getSamples().add(s);
             return s;
         }
 
         private Source getSource(Long entityId) {
-            Source s = new Source();
+            final Source s = new Source();
             setABM(s, entityId);
             return s;
         }
 
         @SuppressWarnings("deprecation")
         private Factor getFactor(Long entityId) {
-            Factor f = new Factor();
+            final Factor f = new Factor();
             f.setName("Test");
             f.setId(entityId);
             return f;
@@ -327,13 +329,13 @@ public class SearchServiceTest extends AbstractServiceTest {
         @Override
         @SuppressWarnings("unchecked")
         public <T extends gov.nih.nci.caarray.domain.AbstractCaArrayObject> java.util.List<T> query(T entityToMatch) {
-            List<T> results = new ArrayList<T>();
+            final List<T> results = new ArrayList<T>();
             if (entityToMatch instanceof Sample) {
-                Sample sampleToMatch = (Sample) entityToMatch;
-                for (PersistentObject po : this.projectDao.savedObjects.values()) {
-                    Project p = (Project) po;
+                final Sample sampleToMatch = (Sample) entityToMatch;
+                for (final PersistentObject po : this.projectDao.savedObjects.values()) {
+                    final Project p = (Project) po;
                     if (sampleToMatch.getExperiment().getProject().getId().equals(p.getId())) {
-                        for (Sample s : p.getExperiment().getSamples()) {
+                        for (final Sample s : p.getExperiment().getSamples()) {
                             if (sampleToMatch.getExternalId().equals(s.getExternalId())) {
                                 results.add((T) s);
                             }

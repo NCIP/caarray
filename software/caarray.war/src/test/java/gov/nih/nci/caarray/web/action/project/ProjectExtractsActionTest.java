@@ -90,9 +90,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import gov.nih.nci.caarray.application.GenericDataService;
 import gov.nih.nci.caarray.application.GenericDataServiceStub;
-import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
-import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
-import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheStubFactory;
 import gov.nih.nci.caarray.application.project.ProjectManagementService;
 import gov.nih.nci.caarray.application.project.ProjectManagementServiceStub;
 import gov.nih.nci.caarray.application.vocabulary.VocabularyService;
@@ -124,7 +121,6 @@ import org.junit.Test;
 
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 import com.fiveamsolutions.nci.commons.web.struts2.action.ActionHelper;
-import gov.nih.nci.caarray.dao.FileDaoTest;
 
 /**
  * @author Winston Cheng
@@ -138,7 +134,7 @@ public class ProjectExtractsActionTest extends AbstractDownloadTest {
     @SuppressWarnings("deprecation")
     @Before
     public void setUp() throws Exception {
-        ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
+        final ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
         locatorStub.addLookup(GenericDataService.JNDI_NAME, new LocalGenericDataService());
         locatorStub.addLookup(ProjectManagementService.JNDI_NAME, new ProjectManagementServiceStub());
         locatorStub.addLookup(VocabularyService.JNDI_NAME, new VocabularyServiceStub());
@@ -149,93 +145,86 @@ public class ProjectExtractsActionTest extends AbstractDownloadTest {
     @Test
     public void testPrepare() throws Exception {
         // no current extract id
-        action.prepare();
-        assertNull(action.getCurrentExtract().getId());
+        this.action.prepare();
+        assertNull(this.action.getCurrentExtract().getId());
 
         // valid current extract id
         Extract extract = new Extract();
         extract.setId(1L);
-        action.setCurrentExtract(extract);
-        action.prepare();
-        assertEquals(DUMMY_EXTRACT, action.getCurrentExtract());
+        this.action.setCurrentExtract(extract);
+        this.action.prepare();
+        assertEquals(DUMMY_EXTRACT, this.action.getCurrentExtract());
 
         // invalid current extract id
         extract = new Extract();
         extract.setId(2L);
-        action.setCurrentExtract(extract);
+        this.action.setCurrentExtract(extract);
         try {
-            action.prepare();
+            this.action.prepare();
             fail("Expected PermissionDeniedException");
-        } catch (PermissionDeniedException pde) {}
+        } catch (final PermissionDeniedException pde) {
+        }
     }
 
     @Test
     public void testCopy() {
-        action.setCurrentExtract(DUMMY_EXTRACT);
-        assertEquals("list", action.copy());
+        this.action.setCurrentExtract(DUMMY_EXTRACT);
+        assertEquals("list", this.action.copy());
     }
 
     @Test
     public void testDelete() {
         DUMMY_SAMPLE.getExtracts().add(DUMMY_EXTRACT);
         DUMMY_EXTRACT.getSamples().add(DUMMY_SAMPLE);
-        action.setCurrentExtract(DUMMY_EXTRACT);
-        assertEquals("list", action.delete());
+        this.action.setCurrentExtract(DUMMY_EXTRACT);
+        assertEquals("list", this.action.delete());
         assertFalse(DUMMY_SAMPLE.getExtracts().contains(DUMMY_EXTRACT));
 
         DUMMY_EXTRACT.getLabeledExtracts().add(new LabeledExtract());
-        action.setCurrentExtract(DUMMY_EXTRACT);
-        assertEquals("list", action.delete());
+        this.action.setCurrentExtract(DUMMY_EXTRACT);
+        assertEquals("list", this.action.delete());
         assertTrue(ActionHelper.getMessages().contains("experiment.annotations.cantdelete"));
     }
 
     @Test
     public void testDownload() throws Exception {
+        final CaArrayFile rawFile = this.fasStub.add(MageTabDataFiles.MISSING_TERMSOURCE_IDF);
+        final CaArrayFile derivedFile = this.fasStub.add(MageTabDataFiles.MISSING_TERMSOURCE_SDRF);
 
-        FileAccessServiceStub fas = new FileAccessServiceStub();
-        TemporaryFileCacheLocator.setTemporaryFileCacheFactory(new TemporaryFileCacheStubFactory(fas));
-        fas.add(MageTabDataFiles.MISSING_TERMSOURCE_IDF);
-        fas.add(MageTabDataFiles.MISSING_TERMSOURCE_SDRF);
-
-        Project p = new Project();
+        final Project p = new Project();
         p.getExperiment().setPublicIdentifier("test");
-        Extract e1 = new Extract();
-        Extract e2 = new Extract();
-        LabeledExtract le1 = new LabeledExtract();
+        final Extract e1 = new Extract();
+        final Extract e2 = new Extract();
+        final LabeledExtract le1 = new LabeledExtract();
         e1.getLabeledExtracts().add(le1);
-        LabeledExtract le2 = new LabeledExtract();
+        final LabeledExtract le2 = new LabeledExtract();
         e2.getLabeledExtracts().add(le2);
-        Hybridization h = new Hybridization();
+        final Hybridization h = new Hybridization();
         le2.getHybridizations().add(h);
-        RawArrayData raw = new RawArrayData();
+        final RawArrayData raw = new RawArrayData();
         h.addArrayData(raw);
-        DerivedArrayData derived = new DerivedArrayData();
+        final DerivedArrayData derived = new DerivedArrayData();
         h.getDerivedDataCollection().add(derived);
-        CaArrayFile rawFile = new CaArrayFile();
-        FileDaoTest.writeContents(rawFile, "");
-        rawFile.setName("missing_term_source.idf");
         raw.setDataFile(rawFile);
-        CaArrayFile derivedFile = new CaArrayFile();
-        FileDaoTest.writeContents(derivedFile, "");
-        derivedFile.setName("missing_term_source.sdrf");
         derived.setDataFile(derivedFile);
 
-        action.setCurrentExtract(e1);
-        action.setProject(p);
-        assertEquals("noExtractData", action.download());
-        action.setCurrentExtract(e2);
+        this.action.setCurrentExtract(e1);
+        this.action.setProject(p);
+        assertEquals("noExtractData", this.action.download());
+        this.action.setCurrentExtract(e2);
 
-        List<CaArrayFile> files = new ArrayList<CaArrayFile>(e2.getAllDataFiles());
+        final List<CaArrayFile> files = new ArrayList<CaArrayFile>(e2.getAllDataFiles());
         Collections.sort(files, DownloadHelper.CAARRAYFILE_NAME_COMPARATOR_INSTANCE);
         assertEquals(2, files.size());
         assertEquals("missing_term_source.idf", files.get(0).getName());
         assertEquals("missing_term_source.sdrf", files.get(1).getName());
 
-        action.download();
-        assertEquals("application/zip", mockResponse.getContentType());
-        assertEquals("filename=\"caArray_test_files.zip\"", mockResponse.getHeader("Content-disposition"));
+        this.action.download();
+        assertEquals("application/zip", this.mockResponse.getContentType());
+        assertEquals("filename=\"caArray_test_files.zip\"", this.mockResponse.getHeader("Content-disposition"));
 
-        ZipInputStream zis = new ZipInputStream(new ByteArrayInputStream(mockResponse.getContentAsByteArray()));
+        final ZipInputStream zis = new ZipInputStream(new ByteArrayInputStream(
+                this.mockResponse.getContentAsByteArray()));
         ZipEntry ze = zis.getNextEntry();
         assertNotNull(ze);
         assertEquals("missing_term_source.idf", ze.getName());
@@ -246,22 +235,21 @@ public class ProjectExtractsActionTest extends AbstractDownloadTest {
         IOUtils.closeQuietly(zis);
     }
 
-
     @Test
     public void testSave() {
-        Sample toAdd = new Sample();
-        List<Sample> addList = new ArrayList<Sample>();
+        final Sample toAdd = new Sample();
+        final List<Sample> addList = new ArrayList<Sample>();
         addList.add(toAdd);
-        action.setItemsToAssociate(addList);
+        this.action.setItemsToAssociate(addList);
 
-        Sample toRemove = new Sample();
+        final Sample toRemove = new Sample();
         toRemove.getExtracts().add(DUMMY_EXTRACT);
-        List<Sample> removeList = new ArrayList<Sample>();
+        final List<Sample> removeList = new ArrayList<Sample>();
         removeList.add(toRemove);
-        action.setItemsToRemove(removeList);
+        this.action.setItemsToRemove(removeList);
 
-        action.setCurrentExtract(DUMMY_EXTRACT);
-        assertEquals(ProjectTabAction.RELOAD_PROJECT_RESULT, action.save());
+        this.action.setCurrentExtract(DUMMY_EXTRACT);
+        assertEquals(ProjectTabAction.RELOAD_PROJECT_RESULT, this.action.save());
         assertTrue(ActionHelper.getMessages().contains("experiment.items.updated"));
         assertTrue(toAdd.getExtracts().contains(DUMMY_EXTRACT));
         assertFalse(toRemove.getExtracts().contains(DUMMY_EXTRACT));
@@ -272,7 +260,7 @@ public class ProjectExtractsActionTest extends AbstractDownloadTest {
         @Override
         public <T extends PersistentObject> T getPersistentObject(Class<T> entityClass, Long entityId) {
             if (entityClass.equals(Extract.class) && entityId.equals(1L)) {
-                return (T)DUMMY_EXTRACT;
+                return (T) DUMMY_EXTRACT;
             }
             return null;
         }

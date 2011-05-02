@@ -111,8 +111,10 @@ import gov.nih.nci.security.provisioning.AuthorizationManagerImpl;
 import gov.nih.nci.security.system.ApplicationSessionFactory;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.math.BigInteger;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -122,6 +124,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 import org.apache.commons.lang.ArrayUtils;
@@ -133,9 +136,6 @@ import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
-import org.springframework.core.io.support.ResourcePatternResolver;
 
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 import com.fiveamsolutions.nci.commons.util.HibernateHelper;
@@ -148,7 +148,8 @@ import com.google.inject.Inject;
 @SuppressWarnings({"PMD.CyclomaticComplexity", "PMD.ExcessiveClassLength", "PMD.AvoidDuplicateLiterals",
         "PMD.TooManyMethods" })
 public final class SecurityUtils {
-    @Inject private static CaArrayHibernateHelper hibernateHelper; 
+    @Inject
+    private static CaArrayHibernateHelper hibernateHelper;
     private static final Logger LOG = Logger.getLogger(SecurityUtils.class);
     private static final long serialVersionUID = -2071964672876972370L;
 
@@ -189,7 +190,7 @@ public final class SecurityUtils {
     private static User anonymousUser;
     private static InstanceLevelMappingElement projectMapping;
     private static InstanceLevelMappingElement sampleMapping;
-    
+
     private static final ThreadLocal<Boolean> PRIVILEGED_MODE = new ThreadLocal<Boolean>() {
         @Override
         protected Boolean initialValue() {
@@ -203,22 +204,35 @@ public final class SecurityUtils {
 
     static {
         try {
-            Resource csmHibernateConfig = getCsmHibernateConfig();
-            caarrayAppName = StringUtils.substringBefore(csmHibernateConfig.getFilename(), Constants.FILE_NAME_SUFFIX);
-            authMgr = new AuthorizationManagerImpl(caarrayAppName, csmHibernateConfig.getURL());
-        } catch (IOException e) {
+            final URL appConfigUrl = SecurityUtils.class.getClassLoader().getResource("app-config.properties");
+            if (appConfigUrl == null) {
+                throw new IllegalStateException("resource app-config.properties not found in classpath");
+            }
+            final InputStream in = appConfigUrl.openStream();
+            final Properties appConfig = new Properties();
+            appConfig.load(in);
+            in.close();
+            caarrayAppName = appConfig.getProperty("csm.application.name");
+            final String csmConfigName = "csm/" + caarrayAppName + Constants.FILE_NAME_SUFFIX;
+            final URL csmConfigUrl = SecurityUtils.class.getClassLoader().getResource(csmConfigName);
+            if (csmConfigUrl == null) {
+                throw new IllegalStateException("resource " + csmConfigName + " not found in classpath");
+            }
+            authMgr = new AuthorizationManagerImpl(caarrayAppName, csmConfigUrl);
+        } catch (final IOException e) {
             throw new IllegalStateException("Could not initialize CSM: " + e.getMessage(), e);
-        } catch (CSConfigurationException e) {
+        } catch (final CSConfigurationException e) {
             LOG.error("Unable to initialize CSM: " + e.getMessage(), e);
         }
-        OWNER_ROLES = new String[] {getRoleByName(BROWSE_ROLE).getId().toString(),
-                getRoleByName(READ_ROLE).getId().toString(), getRoleByName(WRITE_ROLE).getId().toString(),
-                getRoleByName(PERMISSIONS_ROLE).getId().toString() };
+        OWNER_ROLES =
+                new String[] {getRoleByName(BROWSE_ROLE).getId().toString(),
+                        getRoleByName(READ_ROLE).getId().toString(), getRoleByName(WRITE_ROLE).getId().toString(),
+                        getRoleByName(PERMISSIONS_ROLE).getId().toString() };
     }
 
     /**
-     * Method that must be called prior to usage of SecurityUtils, initializing some cached values.
-     * Intended to be called at system startup, such as from a web application startup listener
+     * Method that must be called prior to usage of SecurityUtils, initializing some cached values. Intended to be
+     * called at system startup, such as from a web application startup listener
      */
     public static void init() {
         try {
@@ -226,20 +240,20 @@ public final class SecurityUtils {
             anonymousUser = authMgr.getUser(ANONYMOUS_USERNAME);
             projectMapping = authMgr.getInstanceLevelMappingElementById("1");
             sampleMapping = authMgr.getInstanceLevelMappingElementById("2");
-        } catch (CSObjectNotFoundException e) {
+        } catch (final CSObjectNotFoundException e) {
             throw new IllegalStateException("Could not retrieve caarray application or anonymous user", e);
         }
     }
 
-    private static Resource getCsmHibernateConfig() throws IOException {
-        ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
-        Resource[] resources = resolver.getResources(ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX
-                + CSM_HIBERNATE_CONFIG_PREFIX + Constants.FILE_NAME_SUFFIX);
-        if (resources.length == 0) {
-            throw new IllegalStateException("Could not locate a CSM hibernate configuration");
-        }
-        return resources[0];
-    }
+    // private static Resource getCsmHibernateConfig() throws IOException {
+    // ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
+    // Resource[] resources = resolver.getResources(ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX
+    // + CSM_HIBERNATE_CONFIG_PREFIX + Constants.FILE_NAME_SUFFIX);
+    // if (resources.length == 0) {
+    // throw new IllegalStateException("Could not locate a CSM hibernate configuration");
+    // }
+    // return resources[0];
+    // }
 
     /**
      * @return the CSM AuthorizationManager
@@ -261,12 +275,12 @@ public final class SecurityUtils {
     public static User getAnonymousUser() {
         return anonymousUser;
     }
-    
-    static InstanceLevelMappingElement findMappingElement(String className, String attributeName) {        
-        String packageName = StringUtils.substringBeforeLast(className, ".");
-        String objectName = StringUtils.substringAfterLast(className, ".");
-        
-        for (InstanceLevelMappingElement elt : Arrays.asList(projectMapping, sampleMapping)) {
+
+    static InstanceLevelMappingElement findMappingElement(String className, String attributeName) {
+        final String packageName = StringUtils.substringBeforeLast(className, ".");
+        final String objectName = StringUtils.substringAfterLast(className, ".");
+
+        for (final InstanceLevelMappingElement elt : Arrays.asList(projectMapping, sampleMapping)) {
             if (packageName.equals(elt.getObjectPackageName()) && objectName.equals(elt.getObjectName())
                     && attributeName.equals(elt.getAttributeName())) {
                 return elt;
@@ -281,33 +295,33 @@ public final class SecurityUtils {
         }
 
         try {
-            for (Project p : projects) {
+            for (final Project p : projects) {
                 LOG.debug("Modifying biomaterial collections for project: " + p.getId());
-                for (Sample s : p.getExperiment().getSamples()) {
+                for (final Sample s : p.getExperiment().getSamples()) {
                     if (protectables != null && protectables.contains(s)) {
                         handleNewSample(s, p);
                     }
                 }
             }
-        } catch (CSTransactionException e) {
+        } catch (final CSTransactionException e) {
             LOG.warn("Unable to update biomaterial collections: " + e.getMessage(), e);
-        } catch (CSObjectNotFoundException e) {
+        } catch (final CSObjectNotFoundException e) {
             LOG.warn("Unable to update biomaterial collections: " + e.getMessage(), e);
-        }        
+        }
     }
 
-    @SuppressWarnings({ "PMD.ExcessiveMethodLength", "unchecked" })
+    @SuppressWarnings({"PMD.ExcessiveMethodLength", "unchecked" })
     static void handleDeleted(Collection<Protectable> deletedInstances) {
         if (deletedInstances == null) {
             return;
         }
 
         try {
-            for (Protectable p : deletedInstances) {
+            for (final Protectable p : deletedInstances) {
                 LOG.debug("Deleting records for obj of type: " + p.getClass().getName() + " for user "
                         + CaArrayUsernameHolder.getUser());
-                List<UserGroupRoleProtectionGroup> l = getUserGroupRoleProtectionGroups(p);
-                for (UserGroupRoleProtectionGroup ugrpg : l) {
+                final List<UserGroupRoleProtectionGroup> l = getUserGroupRoleProtectionGroups(p);
+                for (final UserGroupRoleProtectionGroup ugrpg : l) {
                     if (ugrpg.getGroup() != null) {
                         authMgr.removeGroupRoleFromProtectionGroup(ugrpg.getProtectionGroup().getProtectionGroupId()
                                 .toString(), ugrpg.getGroup().getGroupId().toString(), new String[] {ugrpg.getRole()
@@ -318,14 +332,14 @@ public final class SecurityUtils {
                                 .getId().toString() });
                     }
                 }
-                ProtectionGroup pg = getProtectionGroup(p);
+                final ProtectionGroup pg = getProtectionGroup(p);
                 LOG.debug("HAndling delete for protection group " + pg.getProtectionGroupName());
-                Set<ProtectionElement> protElements = pg.getProtectionElements();
-                ProtectionElement pe = protElements.iterator().next();
+                final Set<ProtectionElement> protElements = pg.getProtectionElements();
+                final ProtectionElement pe = protElements.iterator().next();
                 authMgr.removeProtectionGroup(pg.getProtectionGroupId().toString());
                 authMgr.removeProtectionElement(pe.getProtectionElementId().toString());
             }
-        } catch (CSTransactionException e) {
+        } catch (final CSTransactionException e) {
             LOG.warn("Unable to remove CSM elements from deleted object: " + e.getMessage(), e);
         }
     }
@@ -339,22 +353,21 @@ public final class SecurityUtils {
             return;
         }
 
-        User csmUser = CaArrayUsernameHolder.getCsmUser();
-
+        final User csmUser = CaArrayUsernameHolder.getCsmUser();
 
         try {
-            for (Protectable p : protectables) {
+            for (final Protectable p : protectables) {
                 LOG.debug("Creating access record for obj of type: " + p.getClass().getName() + " for user "
                         + csmUser.getLoginName());
-                ProtectionGroup pg = createProtectionGroup(p, csmUser);
+                final ProtectionGroup pg = createProtectionGroup(p, csmUser);
 
                 if (p instanceof Project) {
                     handleNewProject((Project) p, pg);
                 }
             }
-        } catch (CSObjectNotFoundException e) {
+        } catch (final CSObjectNotFoundException e) {
             LOG.warn("Could not find the " + caarrayAppName + " application: " + e.getMessage(), e);
-        } catch (CSTransactionException e) {
+        } catch (final CSTransactionException e) {
             LOG.warn("Could not save new protection element: " + e.getMessage(), e);
         }
     }
@@ -367,53 +380,53 @@ public final class SecurityUtils {
             return;
         }
 
-        for (AccessProfile ap : profiles) {
+        for (final AccessProfile ap : profiles) {
             handleAccessProfile(ap);
-        }        
+        }
     }
 
     @SuppressWarnings("PMD.ExcessiveMethodLength")
     private static void handleAccessProfile(AccessProfile ap) {
         LOG.debug("Handling access profile");
-        
+
         try {
             // to populate inverse properties
-            Group targetGroup = getTargetGroup(ap);
+            final Group targetGroup = getTargetGroup(ap);
             if (targetGroup == null) {
                 return;
             }
 
             handleProjectSecurity(targetGroup, ap.getProject(), ap.getSecurityLevel());
 
-            Map<Long, ProtectionGroup> samplesToProjectionGroups = new HashMap<Long, ProtectionGroup>();
+            final Map<Long, ProtectionGroup> samplesToProjectionGroups = new HashMap<Long, ProtectionGroup>();
 
-            for (Sample sample : ap.getProject().getExperiment().getSamples()) {
-                ProtectionGroup sampleProtectionGroup = getProtectionGroup(sample);
+            for (final Sample sample : ap.getProject().getExperiment().getSamples()) {
+                final ProtectionGroup sampleProtectionGroup = getProtectionGroup(sample);
                 samplesToProjectionGroups.put(sample.getId(), sampleProtectionGroup);
             }
 
             if (!samplesToProjectionGroups.isEmpty()) {
                 LOG.debug("clearing existing sample-level security");
-                AuthorizationManagerExtensions.clearProtectionGroupRoles(targetGroup, samplesToProjectionGroups
-                        .values(), getApplication());
+                AuthorizationManagerExtensions.clearProtectionGroupRoles(targetGroup,
+                        samplesToProjectionGroups.values(), getApplication());
                 LOG.debug("done clearing existing sample-level security");
             }
 
             LOG.debug("setting new sample-level security");
-            Role readRole = getRoleByName(READ_ROLE);
-            Role writeRole = getRoleByName(WRITE_ROLE);
-            for (Sample sample : ap.getProject().getExperiment().getSamples()) {
-                SampleSecurityLevel sampleSecLevel = getSampleSecurityLevel(ap, sample);
+            final Role readRole = getRoleByName(READ_ROLE);
+            final Role writeRole = getRoleByName(WRITE_ROLE);
+            for (final Sample sample : ap.getProject().getExperiment().getSamples()) {
+                final SampleSecurityLevel sampleSecLevel = getSampleSecurityLevel(ap, sample);
 
                 if (sampleSecLevel.isAllowsRead() || sampleSecLevel.isAllowsWrite()) {
-                    ProtectionGroup pg = samplesToProjectionGroups.get(sample.getId());
+                    final ProtectionGroup pg = samplesToProjectionGroups.get(sample.getId());
                     handleSampleSecurity(targetGroup, pg, sampleSecLevel, readRole, writeRole);
                 }
             }
-        } catch (CSException e) {
+        } catch (final CSException e) {
             LOG.error("Could not update permissions for profile " + e.getMessage(), e);
         }
-        
+
         LOG.debug("Done handling access profile");
     }
 
@@ -447,16 +460,15 @@ public final class SecurityUtils {
                 sampleSecLevel = SampleSecurityLevel.NONE;
                 break;
             default:
-                throw new IllegalStateException("Encountered unknown project security level: "
-                        + ap.getSecurityLevel());
+                throw new IllegalStateException("Encountered unknown project security level: " + ap.getSecurityLevel());
             }
         }
         return sampleSecLevel;
     }
 
     private static void handleProjectSecurity(Group targetGroup, Project project, SecurityLevel securityLevel) {
-        ProtectionGroup pg = getProtectionGroup(project);
-        List<String> roleIds = new ArrayList<String>();
+        final ProtectionGroup pg = getProtectionGroup(project);
+        final List<String> roleIds = new ArrayList<String>();
         if (securityLevel != SecurityLevel.NONE && securityLevel != SecurityLevel.NO_VISIBILITY) {
             roleIds.add(getRoleByName(BROWSE_ROLE).getId().toString());
         }
@@ -470,14 +482,14 @@ public final class SecurityUtils {
         try {
             authMgr.assignGroupRoleToProtectionGroup(pg.getProtectionGroupId().toString(), targetGroup.getGroupId()
                     .toString(), roleIds.toArray(ArrayUtils.EMPTY_STRING_ARRAY));
-        } catch (CSTransactionException e) {
+        } catch (final CSTransactionException e) {
             LOG.warn("Could not assign project group roles corresponding to profile " + e.getMessage(), e);
         }
     }
 
     private static void handleSampleSecurity(Group targetGroup, ProtectionGroup samplePg,
             SampleSecurityLevel securityLevel, Role readRole, Role writeRole) {
-        List<Role> roles = new ArrayList<Role>();
+        final List<Role> roles = new ArrayList<Role>();
         if (securityLevel.isAllowsRead()) {
             roles.add(readRole);
         }
@@ -487,17 +499,17 @@ public final class SecurityUtils {
         try {
             AuthorizationManagerExtensions.assignGroupRoleToProtectionGroup(samplePg, targetGroup, roles,
                     getApplication());
-        } catch (CSTransactionException e) {
+        } catch (final CSTransactionException e) {
             LOG.warn("Could not assign sample group roles corresponding to profile " + e.getMessage(), e);
         }
     }
 
     @SuppressWarnings("PMD.ExcessiveMethodLength")
-    private static ProtectionGroup createProtectionGroup(Protectable p, User csmUser)
-            throws CSObjectNotFoundException, CSTransactionException {
+    private static ProtectionGroup createProtectionGroup(Protectable p, User csmUser) throws CSObjectNotFoundException,
+            CSTransactionException {
 
-        ProtectionElement pe = new ProtectionElement();
-        Application application = getApplication();
+        final ProtectionElement pe = new ProtectionElement();
+        final Application application = getApplication();
         pe.setApplication(application);
         pe.setObjectId(p.getClass().getName());
         pe.setAttribute("id");
@@ -505,7 +517,7 @@ public final class SecurityUtils {
         pe.setUpdateDate(new Date());
         authMgr.createProtectionElement(pe);
 
-        ProtectionGroup pg = new ProtectionGroup();
+        final ProtectionGroup pg = new ProtectionGroup();
         pg.setApplication(application);
         pg.setProtectionElements(Collections.singleton(pe));
         pg.setProtectionGroupName("PE(" + pe.getProtectionElementId() + ") group");
@@ -519,7 +531,7 @@ public final class SecurityUtils {
 
     private static void addOwner(ProtectionGroup pg, User user) throws CSObjectNotFoundException,
             CSTransactionException {
-        ProtectionElement pe = (ProtectionElement) pg.getProtectionElements().iterator().next();
+        final ProtectionElement pe = (ProtectionElement) pg.getProtectionElements().iterator().next();
         AuthorizationManagerExtensions.addOwner(pe.getProtectionElementId(), user, caarrayAppName);
 
         // This shouldn't be necessary, because the filter should take into account
@@ -527,23 +539,24 @@ public final class SecurityUtils {
         // mechanism and this runs into a hibernate bug:
         // http://opensource.atlassian.com/projects/hibernate/browse/HHH-2593
         // Thus, we do an extra association here. Yuck!
-        Group g = getSingletonGroup(user);
+        final Group g = getSingletonGroup(user);
         authMgr.assignGroupRoleToProtectionGroup(pg.getProtectionGroupId().toString(), g.getGroupId().toString(),
                 OWNER_ROLES);
     }
 
     /**
      * Get or create the singleton group for the given user.
+     * 
      * @param user user to get the singleton group for
      * @return the group
      * @throws CSTransactionException on CSM error
      */
     @SuppressWarnings("unchecked")
     private static Group getSingletonGroup(User user) throws CSTransactionException {
-        Group g = new Group();
+        final Group g = new Group();
         g.setGroupName(SELF_GROUP_PREFIX + user.getLoginName() + " (" + user.getUserId() + ")");
-        GroupSearchCriteria gsc = new GroupSearchCriteria(g);
-        List<Group> groupList = authMgr.getObjects(gsc);
+        final GroupSearchCriteria gsc = new GroupSearchCriteria(g);
+        final List<Group> groupList = authMgr.getObjects(gsc);
         if (groupList == null || groupList.isEmpty()) {
             g.setApplication(getApplication());
             g.setGroupDesc("Singleton group for CSM filter performance.  Do not edit.");
@@ -555,34 +568,36 @@ public final class SecurityUtils {
     }
 
     /**
-     * Change the owner of a Protectable.  If there is more than one owner, only the first owner will be changed to
+     * Change the owner of a Protectable. If there is more than one owner, only the first owner will be changed to
      * <code>newOwner</code>, and the others will be left untouched.
+     * 
      * @param p the Protectable to change the owner of
      * @param newOwner the new owner of the Protectable
      * @throws CSException on a CSM error
      */
     public static void changeOwner(Protectable p, User newOwner) throws CSException {
-        User oldOwner = getOwner(p);
+        final User oldOwner = getOwner(p);
 
-        List<Protectable> protectables = new ArrayList<Protectable>();
+        final List<Protectable> protectables = new ArrayList<Protectable>();
         protectables.add(p);
         changeOwner(protectables, oldOwner, newOwner);
-        
+
         AuthorizationManagerExtensions.refreshInstanceTables(SecurityUtils.getApplication());
     }
 
     /**
-     * Change the owner of a Project and replaces the old project owner with the new owner in the set of owners for
-     * each sample (other sample owners are unaffected).
+     * Change the owner of a Project and replaces the old project owner with the new owner in the set of owners for each
+     * sample (other sample owners are unaffected).
+     * 
      * @param p the Project to change the owner of
      * @param newOwner the new owner of the Project
      * @throws CSException on a CSM error
      */
     public static void changeOwner(Project p, User newOwner) throws CSException {
-        User oldOwner = getOwner(p);
-        List<Protectable> project = new ArrayList<Protectable>();
+        final User oldOwner = getOwner(p);
+        final List<Protectable> project = new ArrayList<Protectable>();
         project.add(p);
-        List<Protectable> samples = new ArrayList<Protectable>(p.getExperiment().getSamples());
+        final List<Protectable> samples = new ArrayList<Protectable>(p.getExperiment().getSamples());
 
         changeOwner(project, oldOwner, newOwner);
         changeOwner(samples, oldOwner, newOwner);
@@ -593,17 +608,17 @@ public final class SecurityUtils {
     private static void changeOwner(List<? extends Protectable> protectables, User oldOwner, User newOwner)
             throws CSTransactionException {
         if (!protectables.isEmpty()) {
-            List<String> protectableIds = new ArrayList<String>();
-            for (Protectable p : protectables) {
+            final List<String> protectableIds = new ArrayList<String>();
+            for (final Protectable p : protectables) {
                 protectableIds.add(p.getId().toString());
             }
 
-            String protectableClassName = getNonGLIBClass(protectables.get(0)).getName();
+            final String protectableClassName = getUnderlyingEntityClass(protectables.get(0)).getName();
 
-            List<Long> protectionElementIds = getProtectionElementIds(protectableIds, protectableClassName);
-            List<Long> protectionGroupIds = getProtectionGroupIds(protectableIds, protectableClassName);
-            Group newOwnerGroup = getSingletonGroup(newOwner);
-            Group oldOwnerGroup = getSingletonGroup(oldOwner);
+            final List<Long> protectionElementIds = getProtectionElementIds(protectableIds, protectableClassName);
+            final List<Long> protectionGroupIds = getProtectionGroupIds(protectableIds, protectableClassName);
+            final Group newOwnerGroup = getSingletonGroup(newOwner);
+            final Group oldOwnerGroup = getSingletonGroup(oldOwner);
             AuthorizationManagerExtensions.updateGroupForRoleProtectionGroup(protectionGroupIds, oldOwnerGroup,
                     newOwnerGroup, caarrayAppName);
             AuthorizationManagerExtensions.replaceOwner(protectionElementIds, oldOwner, newOwner, caarrayAppName);
@@ -617,47 +632,47 @@ public final class SecurityUtils {
     }
 
     private static void handleNewSample(Sample s, Project p) throws CSTransactionException, CSObjectNotFoundException {
-        ProtectionGroup pg = getProtectionGroup(s);
-        User csmUser = CaArrayUsernameHolder.getCsmUser();
+        final ProtectionGroup pg = getProtectionGroup(s);
+        final User csmUser = CaArrayUsernameHolder.getCsmUser();
 
-        for (User u : p.getOwners()) {
+        for (final User u : p.getOwners()) {
             if (!u.equals(csmUser)) {
                 addOwner(pg, u);
             }
         }
 
-        Role readRole = getRoleByName(READ_ROLE);
-        Role writeRole = getRoleByName(WRITE_ROLE);
-        for (AccessProfile ap : p.getAllAccessProfiles()) {
-            Group targetGroup = getTargetGroup(ap);
+        final Role readRole = getRoleByName(READ_ROLE);
+        final Role writeRole = getRoleByName(WRITE_ROLE);
+        for (final AccessProfile ap : p.getAllAccessProfiles()) {
+            final Group targetGroup = getTargetGroup(ap);
             if (targetGroup == null) {
                 continue;
             }
-            SampleSecurityLevel sampleSecLevel = getSampleSecurityLevel(ap, s);
+            final SampleSecurityLevel sampleSecLevel = getSampleSecurityLevel(ap, s);
             handleSampleSecurity(targetGroup, pg, sampleSecLevel, readRole, writeRole);
         }
     }
 
     private static void assignAnonymousAccess(ProtectionGroup pg) throws CSTransactionException {
         // We could cache the ids for the group and role
-        Group group = findGroupByName(ANONYMOUS_GROUP);
-        authMgr.assignGroupRoleToProtectionGroup(pg.getProtectionGroupId().toString(),
-                group.getGroupId().toString(), new String[]{getRoleByName(BROWSE_ROLE).getId().toString() });
+        final Group group = findGroupByName(ANONYMOUS_GROUP);
+        authMgr.assignGroupRoleToProtectionGroup(pg.getProtectionGroupId().toString(), group.getGroupId().toString(),
+                new String[] {getRoleByName(BROWSE_ROLE).getId().toString() });
     }
 
     private static void assignSystemAdministratorAccess(ProtectionGroup pg) throws CSTransactionException {
         // We could cache the ids for the group and role
-        Group group = findGroupByName(SYSTEM_ADMINISTRATOR_GROUP);
-        authMgr.assignGroupRoleToProtectionGroup(pg.getProtectionGroupId().toString(),
-                group.getGroupId().toString(), OWNER_ROLES);
+        final Group group = findGroupByName(SYSTEM_ADMINISTRATOR_GROUP);
+        authMgr.assignGroupRoleToProtectionGroup(pg.getProtectionGroupId().toString(), group.getGroupId().toString(),
+                OWNER_ROLES);
     }
 
     @SuppressWarnings("unchecked")
     private static Role getRoleByName(String roleName) {
         Role role = new Role();
         role.setName(roleName);
-        RoleSearchCriteria rsc = new RoleSearchCriteria(role);
-        List<Role> roleList = authMgr.getObjects(rsc);
+        final RoleSearchCriteria rsc = new RoleSearchCriteria(role);
+        final List<Role> roleList = authMgr.getObjects(rsc);
         role = roleList.get(0);
         return role;
     }
@@ -672,39 +687,41 @@ public final class SecurityUtils {
         // Unfortunately, CSM doesn't provide a way to find out if the UserGroupRoleProtectionGroup
         // has been created (down to attribute level). So we need to query for it,
         // using the known values for various ids from the csm script
-        String queryString =
+        final String queryString =
                 "SELECT ugrpg FROM " + UserGroupRoleProtectionGroup.class.getName() + " ugrpg, "
                         + ProtectionElement.class.getName() + " pe "
                         + "WHERE pe in elements(ugrpg.protectionGroup.protectionElements) "
                         + "  AND size(ugrpg.protectionGroup.protectionElements) = 1" + "  AND pe.attribute = 'id' "
                         + "  AND pe.objectId = :objectId " + "  AND pe.value = :value "
                         + "  AND ugrpg.role.name in (:roleNames)";
-        Query q = hibernateHelper.getCurrentSession().createQuery(queryString);
-        q.setParameterList("roleNames", new String[]{BROWSE_ROLE, READ_ROLE, WRITE_ROLE, PERMISSIONS_ROLE });
-        q.setString("objectId", getNonGLIBClass(p).getName());
+        final Query q = hibernateHelper.getCurrentSession().createQuery(queryString);
+        q.setParameterList("roleNames", new String[] {BROWSE_ROLE, READ_ROLE, WRITE_ROLE, PERMISSIONS_ROLE });
+        q.setString("objectId", getUnderlyingEntityClass(p).getName());
         q.setString("value", p.getId().toString());
         return q.list();
     }
 
     private static ProtectionGroup getProtectionGroup(Protectable p) {
-        String queryString = "SELECT pg FROM " + ProtectionGroup.class.getName() 
-                + " pg join pg.protectionElements pe inner join fetch pg.protectionElements pe2"
-                + " left join fetch pe2.owners "
-                + " WHERE pg.protectionGroupName LIKE 'PE(%) group' AND pe.objectId = :objectId "
-                + "  AND pe.attribute = 'id' AND pe.value = :value";
+        final String queryString =
+                "SELECT pg FROM " + ProtectionGroup.class.getName()
+                        + " pg join pg.protectionElements pe inner join fetch pg.protectionElements pe2"
+                        + " left join fetch pe2.owners "
+                        + " WHERE pg.protectionGroupName LIKE 'PE(%) group' AND pe.objectId = :objectId "
+                        + "  AND pe.attribute = 'id' AND pe.value = :value";
         Session s = null;
         try {
-            s = HibernateSessionFactoryHelper.getAuditSession(ApplicationSessionFactory
-                    .getSessionFactory(caarrayAppName));
-            Query q = s.createQuery(queryString);
-            q.setString("objectId", getNonGLIBClass(p).getName());
+            s =
+                    HibernateSessionFactoryHelper.getAuditSession(ApplicationSessionFactory
+                            .getSessionFactory(caarrayAppName));
+            final Query q = s.createQuery(queryString);
+            q.setString("objectId", getUnderlyingEntityClass(p).getName());
             q.setString("value", p.getId().toString());
             return (ProtectionGroup) q.uniqueResult();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new IllegalStateException("couldn't execute hibernate query: " + e);
         } finally {
             if (s != null) {
-                s.close();                
+                s.close();
             }
         }
     }
@@ -717,48 +734,49 @@ public final class SecurityUtils {
     }
 
     private static List<Long> getProtectionElementIds(List<String> protectableIds, String objectClassName) {
-        return getCsmObjectIds(protectableIds, objectClassName, "SELECT pe.id FROM "
-                + ProtectionElement.class.getName() + " pe"
-                + " WHERE pe.objectId = :objectId AND pe.attribute = 'id' AND ");
+        return getCsmObjectIds(protectableIds, objectClassName,
+                "SELECT pe.id FROM " + ProtectionElement.class.getName() + " pe"
+                        + " WHERE pe.objectId = :objectId AND pe.attribute = 'id' AND ");
     }
 
     @SuppressWarnings("unchecked")
     private static List<Long> getCsmObjectIds(List<String> protectableIds, String objectClassName, String queryBase) {
-        Map<String, List<? extends Serializable>> idBlocks = new HashMap<String, List<? extends Serializable>>();
-        String queryString = queryBase + "(" + HibernateHelper.buildInClause(protectableIds, "pe.value", idBlocks)
-                + ")";
+        final Map<String, List<? extends Serializable>> idBlocks = new HashMap<String, List<? extends Serializable>>();
+        final String queryString =
+                queryBase + "(" + HibernateHelper.buildInClause(protectableIds, "pe.value", idBlocks) + ")";
         Session s = null;
         try {
-            s = HibernateSessionFactoryHelper.getAuditSession(ApplicationSessionFactory
-                    .getSessionFactory(caarrayAppName));
-            Query q = s.createQuery(queryString);
+            s =
+                    HibernateSessionFactoryHelper.getAuditSession(ApplicationSessionFactory
+                            .getSessionFactory(caarrayAppName));
+            final Query q = s.createQuery(queryString);
             q.setString("objectId", objectClassName);
             HibernateHelper.bindInClauseParameters(q, idBlocks);
             return q.list();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new IllegalStateException("couldn't execute hibernate query: " + e);
         } finally {
             if (s != null) {
-                s.close();                
+                s.close();
             }
         }
     }
 
     /**
      * Returns the owner for the given protectable.
-     *
+     * 
      * @param p the protectable to get the owner for
      * @return the User who owns the given Protectable instance
      */
     @SuppressWarnings("unchecked")
     public static Set<User> getOwners(Protectable p) {
-        ProtectionGroup pg = getProtectionGroup(p);
-        ProtectionElement pe = (ProtectionElement) pg.getProtectionElements().iterator().next();
+        final ProtectionGroup pg = getProtectionGroup(p);
+        final ProtectionElement pe = (ProtectionElement) pg.getProtectionElements().iterator().next();
         return new HashSet<User>(pe.getOwners());
     }
 
     private static User getOwner(Protectable p) {
-        Set<User> owners = getOwners(p);
+        final Set<User> owners = getOwners(p);
         if (owners.isEmpty()) {
             return null;
         }
@@ -767,7 +785,7 @@ public final class SecurityUtils {
 
     /**
      * Checks whether a given user is an owner of the given protectable.
-     *
+     * 
      * @param p protectable to check
      * @param user user to check
      * @return whether the given user is an owner of the protectable
@@ -778,7 +796,7 @@ public final class SecurityUtils {
 
     /**
      * Returns whether the given user has READ privilege for the given Protectable.
-     *
+     * 
      * @param p the protectable to check
      * @param user the user to check
      * @return whether the given user has READ privilege for the given Protectable
@@ -788,11 +806,11 @@ public final class SecurityUtils {
     }
 
     /**
-     * Returns whether the given user has WRITE privilege for a given entity. this is determined
-     * by either checking whether the user has the privilege for that entity directly (if it's a
-     * Protectable) or by checking whether the user has the privilege for any of the related
-     * Protectables (if it's a ProtectableDescendent). If it is neither of those, then return true.
-     *
+     * Returns whether the given user has WRITE privilege for a given entity. this is determined by either checking
+     * whether the user has the privilege for that entity directly (if it's a Protectable) or by checking whether the
+     * user has the privilege for any of the related Protectables (if it's a ProtectableDescendent). If it is neither of
+     * those, then return true.
+     * 
      * @param o the entity to check
      * @param user the user to check
      * @return whether the given user has WRITE privilege for the given entity
@@ -802,11 +820,11 @@ public final class SecurityUtils {
             return hasPrivilege((Protectable) o, user, WRITE_PRIVILEGE);
         }
         if (o instanceof ProtectableDescendent) {
-            Collection<? extends Protectable> protectables = ((ProtectableDescendent) o).relatedProtectables();
-          if (protectables == null) {
+            final Collection<? extends Protectable> protectables = ((ProtectableDescendent) o).relatedProtectables();
+            if (protectables == null) {
                 return true;
             }
-            for (Protectable p : protectables) {
+            for (final Protectable p : protectables) {
                 if (hasPrivilege(p, user, WRITE_PRIVILEGE)) {
                     return true;
                 }
@@ -818,7 +836,7 @@ public final class SecurityUtils {
 
     /**
      * Returns whether the given user has PERMISSIONS privilege for the given Protectable.
-     *
+     * 
      * @param p the protectable to check
      * @param user the user to check
      * @return whether the given user has PERMISSIONS privilege for the given Protectable
@@ -834,17 +852,17 @@ public final class SecurityUtils {
             return CaArrayUsernameHolder.getCsmUser().equals(user);
         }
         try {
-            Application app = getApplication();
-            return AuthorizationManagerExtensions.checkPermission(user.getLoginName(), getNonGLIBClass(p).getName(),
-                    "id", p.getId().toString(), privilege, app);
-        } catch (CSException e) {
+            final Application app = getApplication();
+            return AuthorizationManagerExtensions.checkPermission(user.getLoginName(), getUnderlyingEntityClass(p)
+                    .getName(), "id", p.getId().toString(), privilege, app);
+        } catch (final CSException e) {
             LOG.warn(String.format(
-                    "Could not check if User %s had privilege %s for protectable of class %s with id %s", user
-                            .getLoginName(), privilege, p.getClass().getName(), p.getId()));
+                    "Could not check if User %s had privilege %s for protectable of class %s with id %s",
+                    user.getLoginName(), privilege, p.getClass().getName(), p.getId()));
             return false;
         }
     }
-    
+
     /**
      * The method returns a mapping of Privileges for the given Protectables for the given user.
      * 
@@ -858,15 +876,15 @@ public final class SecurityUtils {
         if (protectables.isEmpty()) {
             return Collections.emptyMap();
         }
-                
-        Application app = getApplication();
-        Collection<Long> ids = new ArrayList<Long>();
-        for (Protectable p : protectables) {
+
+        final Application app = getApplication();
+        final Collection<Long> ids = new ArrayList<Long>();
+        for (final Protectable p : protectables) {
             ids.add(p.getId());
         }
-        String className = getNonGLIBClass(protectables.iterator().next()).getName();
+        final String className = getUnderlyingEntityClass(protectables.iterator().next()).getName();
 
-        InstanceLevelMappingElement mappingElt = findMappingElement(className, "id");
+        final InstanceLevelMappingElement mappingElt = findMappingElement(className, "id");
 
         if (mappingElt != null) {
             return getPermissionsWithMappingTable(mappingElt.getTableNameForGroup(), user.getLoginName(), ids);
@@ -877,36 +895,39 @@ public final class SecurityUtils {
 
     private static Map<Long, Privileges> getPermissionsWithMappingTable(String groupTableName, String userName,
             Collection<Long> protectableIds) {
-        String sql = " select distinct pe.attribute_value, p.privilege_name from " + groupTableName + " pe "
-                + "inner join csm_user_group ug on pe.group_id = ug.group_id "
-                + "inner join csm_privilege p on pe.privilege_id = p.privilege_id "
-                + "inner join csm_user u on ug.user_id = u.user_id "
-                + "where pe.attribute_value in (:attr_values) and u.login_name = :login_name "
-                + "order by pe.attribute_value, p.privilege_name"; 
-        SQLQuery query = hibernateHelper.getCurrentSession().createSQLQuery(sql);
+        final String sql =
+                " select distinct pe.attribute_value, p.privilege_name from " + groupTableName + " pe "
+                        + "inner join csm_user_group ug on pe.group_id = ug.group_id "
+                        + "inner join csm_privilege p on pe.privilege_id = p.privilege_id "
+                        + "inner join csm_user u on ug.user_id = u.user_id "
+                        + "where pe.attribute_value in (:attr_values) and u.login_name = :login_name "
+                        + "order by pe.attribute_value, p.privilege_name";
+        final SQLQuery query = hibernateHelper.getCurrentSession().createSQLQuery(sql);
         query.setParameterList("attr_values", protectableIds);
         query.setString("login_name", userName);
 
         @SuppressWarnings("unchecked")
-        List<Object[]> results = query.list(); 
+        final List<Object[]> results = query.list();
         return createPrivilegesMapFromResults(results);
     }
 
     private static Map<Long, Privileges> getPermissionsWithCanonicalTable(String userName, String className,
             String attributeName, Collection<Long> protectableIds, Application application) {
-        String sql = " select distinct cast(pe.attribute_value as unsigned), "
-            + "p.privilege_name from csm_protection_element pe "
-            + "inner join csm_pg_pe pgpe on pe.protection_element_id = pgpe.protection_element_id "
-            + "inner join csm_user_group_role_pg ugrpg on pgpe.protection_group_id = ugrpg.protection_group_id "
-            + "inner join csm_role r on ugrpg.role_id = r.role_id "
-            + "inner join csm_user_group ug on ugrpg.group_id = ug.group_id "
-            + "inner join csm_role_privilege rp on r.role_id = rp.role_id "
-            + "inner join csm_privilege p on rp.privilege_id = p.privilege_id "
-            + "inner join csm_user u on ug.user_id = u.user_id "
-            + "where pe.object_id = :class_name and pe.attribute = :attr_name "
-            + "and pe.attribute_value in (:attr_values) and u.login_name = :login_name "
-            + "and pe.application_id = :app_id order by pe.attribute_value, p.privilege_name";
-        SQLQuery query = hibernateHelper.getCurrentSession().createSQLQuery(sql);
+        final String sql =
+                " select distinct cast(pe.attribute_value as unsigned), "
+                        + "p.privilege_name from csm_protection_element pe "
+                        + "inner join csm_pg_pe pgpe on pe.protection_element_id = pgpe.protection_element_id "
+                        + "inner join csm_user_group_role_pg ugrpg "
+                        + "on pgpe.protection_group_id = ugrpg.protection_group_id "
+                        + "inner join csm_role r on ugrpg.role_id = r.role_id "
+                        + "inner join csm_user_group ug on ugrpg.group_id = ug.group_id "
+                        + "inner join csm_role_privilege rp on r.role_id = rp.role_id "
+                        + "inner join csm_privilege p on rp.privilege_id = p.privilege_id "
+                        + "inner join csm_user u on ug.user_id = u.user_id "
+                        + "where pe.object_id = :class_name and pe.attribute = :attr_name "
+                        + "and pe.attribute_value in (:attr_values) and u.login_name = :login_name "
+                        + "and pe.application_id = :app_id order by pe.attribute_value, p.privilege_name";
+        final SQLQuery query = hibernateHelper.getCurrentSession().createSQLQuery(sql);
         query.setParameterList("attr_values", protectableIds);
         query.setString("login_name", userName);
         query.setString("class_name", className);
@@ -914,17 +935,17 @@ public final class SecurityUtils {
         query.setLong("app_id", application.getApplicationId());
 
         @SuppressWarnings("unchecked")
-        List<Object[]> results = query.list(); 
+        final List<Object[]> results = query.list();
         return createPrivilegesMapFromResults(results);
     }
-    
+
     private static Map<Long, Privileges> createPrivilegesMapFromResults(List<Object[]> results) {
-        Map<Long, Privileges> permissionsMap = new HashMap<Long, Privileges>();
+        final Map<Long, Privileges> permissionsMap = new HashMap<Long, Privileges>();
         BigInteger currId = null;
         Privileges perm = null;
-        for (Object[] result : results) {
-            BigInteger id = (BigInteger) result[0];
-            String privilegeName = (String) result[1];
+        for (final Object[] result : results) {
+            final BigInteger id = (BigInteger) result[0];
+            final String privilegeName = (String) result[1];
             if (!id.equals(currId)) {
                 currId = id;
                 perm = new Privileges();
@@ -932,16 +953,12 @@ public final class SecurityUtils {
             }
             perm.getPrivilegeNames().add(privilegeName);
         }
-        
-        return permissionsMap;       
+
+        return permissionsMap;
     }
-    
-    private static Class<?> getNonGLIBClass(Object o) {
-        Class<?> result = o.getClass();
-        if (result.getName().contains("$$EnhancerByCGLIB$$")) {
-            result = result.getSuperclass();
-        }
-        return result;
+
+    private static Class<?> getUnderlyingEntityClass(Object o) {
+        return hibernateHelper.unwrapProxy(o).getClass();
     }
 
     /**
@@ -959,13 +976,11 @@ public final class SecurityUtils {
     }
 
     /**
-     * create a group.
-     * This method is a partial replacement for
-     * {@link AuthorizationManager#createGroup(gov.nih.nci.security.authorization.domainobjects.Group)}
-     * to ensure that groups are loaded using the caArray (audited) Hibernate session.
-     * It does not perform some of the validations that caArray already does.
-     * Does not demarcate transactions; should be called from a service layer.
-     *
+     * create a group. This method is a partial replacement for
+     * {@link AuthorizationManager#createGroup(gov.nih.nci.security.authorization.domainobjects.Group)} to ensure that
+     * groups are loaded using the caArray (audited) Hibernate session. It does not perform some of the validations that
+     * caArray already does. Does not demarcate transactions; should be called from a service layer.
+     * 
      * @param group the CSM group to creat.
      * @throws CSTransactionException if a hibernate exception occures.
      */
@@ -973,118 +988,112 @@ public final class SecurityUtils {
         try {
             group.setUpdateDate(new Date());
             group.setApplication(getApplication());
-            Session s = hibernateHelper.getCurrentSession();
+            final Session s = hibernateHelper.getCurrentSession();
             s.save(group);
-        } catch (HibernateException e) {
+        } catch (final HibernateException e) {
             throw new CSTransactionException(e);
         }
     }
 
     /**
-     * add a multiple users from a group.
-     * This method is a partial replacement for
-     * {@link AuthorizationManager#assignUsersToGroup(java.lang.String, java.lang.String[])}
-     * to ensure that groups are loaded using the caArray (audited) Hibernate session.
-     * Does not demarcate transactions; should be called from a service layer.
-     *
-     * @param groupId  the CSM group Id to add the users to.
+     * add a multiple users from a group. This method is a partial replacement for
+     * {@link AuthorizationManager#assignUsersToGroup(java.lang.String, java.lang.String[])} to ensure that groups are
+     * loaded using the caArray (audited) Hibernate session. Does not demarcate transactions; should be called from a
+     * service layer.
+     * 
+     * @param groupId the CSM group Id to add the users to.
      * @param userIds the CSM user Ids to add to the group.
      * @throws CSTransactionException if a hibernate exception occures.
      */
     @SuppressWarnings("unchecked")
     public static void assignUsersToGroup(Long groupId, Set<Long> userIds) throws CSTransactionException {
         try {
-            Session s = hibernateHelper.getCurrentSession();
-            Group group = (Group) s.load(Group.class, groupId);
+            final Session s = hibernateHelper.getCurrentSession();
+            final Group group = (Group) s.load(Group.class, groupId);
             if (group.getUsers() == null) {
                 group.setUsers(new HashSet<User>(userIds.size()));
             }
-            for (Long uId : userIds) {
-                User u = (User) s.load(User.class, uId);
+            for (final Long uId : userIds) {
+                final User u = (User) s.load(User.class, uId);
                 group.getUsers().add(u);
             }
             s.update(group);
-        } catch (HibernateException e) {
+        } catch (final HibernateException e) {
             throw new CSTransactionException(e);
         }
     }
 
     /**
-     * remove a user from a group.
-     * This method is a partial replacement for
-     * {@link AuthorizationManager#removeUserFromGroup(java.lang.String, java.lang.String)}
-     * to ensure that groups are loaded using the caArray (audited) Hibernate session.
-     * Does not demarcate transactions; should be called from a service layer.
-     *
-     * @param groupId  the CSM group Id to add the users to.
+     * remove a user from a group. This method is a partial replacement for
+     * {@link AuthorizationManager#removeUserFromGroup(java.lang.String, java.lang.String)} to ensure that groups are
+     * loaded using the caArray (audited) Hibernate session. Does not demarcate transactions; should be called from a
+     * service layer.
+     * 
+     * @param groupId the CSM group Id to add the users to.
      * @param userId Id of the CSM user to remove to the group.
      * @throws CSTransactionException if a hibernate exception occures.
      */
     public static void removeUserFromGroup(Long groupId, Long userId) throws CSTransactionException {
         try {
-            Session s = hibernateHelper.getCurrentSession();
-            Group group = (Group) s.load(Group.class, groupId);
-            User user = (User) s.load(User.class, userId);
+            final Session s = hibernateHelper.getCurrentSession();
+            final Group group = (Group) s.load(Group.class, groupId);
+            final User user = (User) s.load(User.class, userId);
             user.getGroups().remove(group);
             group.getUsers().remove(user);
             s.update(user);
             s.update(group);
-        } catch (HibernateException e) {
+        } catch (final HibernateException e) {
             throw new CSTransactionException(e);
         }
     }
 
     /**
-     * delete the group identified by it's Id.
-     * This method is a partial replacement for
-     * {@link AuthorizationManager#removeGroup(java.lang.String)}
-     * to ensure that groups are loaded using the caArray (audited) Hibernate session.
-     *
+     * delete the group identified by it's Id. This method is a partial replacement for
+     * {@link AuthorizationManager#removeGroup(java.lang.String)} to ensure that groups are loaded using the caArray
+     * (audited) Hibernate session.
+     * 
      * @param groupId the CSM group Id to delete.
      * @throws CSTransactionException if a hibernate exception occures.
      */
     public static void removeGroup(Long groupId) throws CSTransactionException {
         try {
-            Session s = hibernateHelper.getCurrentSession();
-            Group group = (Group) s.load(Group.class, groupId);
+            final Session s = hibernateHelper.getCurrentSession();
+            final Group group = (Group) s.load(Group.class, groupId);
             s.delete(group);
-        } catch (HibernateException e) {
+        } catch (final HibernateException e) {
             throw new CSTransactionException(e);
         }
     }
 
     /**
-     * get all users belonging in the group identified by it's Id.
-     * This method is a partial replacement for
-     * {@link AuthorizationManager#getUsers(java.lang.String)}
-     * to ensure that groups are loaded using the caArray (audited) Hibernate session.
-     * Does not demarcate transactions; should be called from a service layer.
-     *
+     * get all users belonging in the group identified by it's Id. This method is a partial replacement for
+     * {@link AuthorizationManager#getUsers(java.lang.String)} to ensure that groups are loaded using the caArray
+     * (audited) Hibernate session. Does not demarcate transactions; should be called from a service layer.
+     * 
      * @param groupId CSM group id.
      * @return list of members.
      * @throws CSTransactionException if a hibernate exception occures.
      */
     public static Set<User> getUsers(Long groupId) throws CSTransactionException {
         try {
-            Session s = hibernateHelper.getCurrentSession();
-            Group group = (Group) s.load(Group.class, groupId);
+            final Session s = hibernateHelper.getCurrentSession();
+            final Group group = (Group) s.load(Group.class, groupId);
             @SuppressWarnings("unchecked")
             Set<User> us = group.getUsers();
             if (us == null) {
                 us = Collections.emptySet();
             }
             return us;
-        } catch (HibernateException e) {
+        } catch (final HibernateException e) {
             throw new CSTransactionException(e);
         }
     }
 
     /**
-     * find a group my it's name in this the caArray application context.
-     * This method is a partial replacement for
-     * {@link AuthorizationManager#getObjects(gov.nih.nci.security.dao.SearchCriteria)}
-     * to ensure that groups are loaded using the caArray (audited) Hibernate session.
-     * Does not demarcate transactions; should be called from a service layer.
+     * find a group my it's name in this the caArray application context. This method is a partial replacement for
+     * {@link AuthorizationManager#getObjects(gov.nih.nci.security.dao.SearchCriteria)} to ensure that groups are loaded
+     * using the caArray (audited) Hibernate session. Does not demarcate transactions; should be called from a service
+     * layer.
      * 
      * @param g group name
      * @return a group in this app that has the given name.
@@ -1092,12 +1101,12 @@ public final class SecurityUtils {
      */
     public static Group findGroupByName(String g) throws CSTransactionException {
         try {
-            Session s = hibernateHelper.getCurrentSession();
-            Criteria c = s.createCriteria(Group.class);
+            final Session s = hibernateHelper.getCurrentSession();
+            final Criteria c = s.createCriteria(Group.class);
             c.add(Restrictions.eq("groupName", g));
             c.add(Restrictions.eq("application", getApplication()));
             return (Group) c.uniqueResult();
-        } catch (HibernateException e) {
+        } catch (final HibernateException e) {
             throw new CSTransactionException(e);
         }
     }

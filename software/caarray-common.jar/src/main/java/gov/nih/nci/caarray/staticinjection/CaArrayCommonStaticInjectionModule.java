@@ -86,7 +86,7 @@ import com.google.inject.AbstractModule;
 
 /**
  * @author jscott
- *
+ * 
  */
 public class CaArrayCommonStaticInjectionModule extends AbstractModule {
     /**
@@ -95,10 +95,10 @@ public class CaArrayCommonStaticInjectionModule extends AbstractModule {
     @Override
     protected void configure() {
         requestStaticInjection(gov.nih.nci.caarray.dao.CaArrayDaoFactoryImpl.class);
+        requestStaticInjection(gov.nih.nci.caarray.domain.file.CaArrayFile.class);
         requestStaticInjection(gov.nih.nci.caarray.domain.permissions.CollaboratorGroup.class);
         requestStaticInjection(gov.nih.nci.caarray.security.AuthorizationManagerExtensions.class);
         requestStaticInjection(gov.nih.nci.caarray.security.SecurityUtils.class);
-        requestStaticInjection(gov.nih.nci.caarray.util.EntityPruner.class);
         requestStaticInjection(gov.nih.nci.caarray.validation.UniqueConstraintValidator.class);
     }
 }

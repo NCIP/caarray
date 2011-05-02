@@ -84,27 +84,26 @@ package gov.nih.nci.caarray.domain;
 
 import static org.junit.Assert.assertEquals;
 
-public abstract class AbstractCaArrayEntity_HibernateIntegrationTest extends AbstractCaArrayObject_HibernateIntegrationTest {
-
+public abstract class AbstractCaArrayEntity_HibernateIntegrationTest<T extends AbstractCaArrayEntity> extends
+        AbstractCaArrayObject_HibernateIntegrationTest<T> {
     @Override
-    final void setCaArrayObjectValues(AbstractCaArrayObject caArrayObject) {
-        AbstractCaArrayEntity caArrayEntity = (AbstractCaArrayEntity) caArrayObject;
+    protected void setValues(T caArrayObject) {
+        super.setValues(caArrayObject);
+        final AbstractCaArrayEntity caArrayEntity = caArrayObject;
         caArrayEntity.setLsidForEntity(generateUniqueLsid());
-        super.setCaArrayObjectValues(caArrayObject);
     }
 
     private String generateUniqueLsid() {
-        return  getUniqueStringValue() + ":" + getUniqueStringValue() + ":" + getUniqueStringValue();
+        return getUniqueStringValue() + ":" + getUniqueStringValue() + ":" + getUniqueStringValue();
     }
 
     @Override
-    final void compareCaArrayObjectValues(AbstractCaArrayObject caArrayObject,
-            AbstractCaArrayObject retrievedCaArrayObject) {
-        AbstractCaArrayEntity caArrayEntity = (AbstractCaArrayEntity) caArrayObject;
-        AbstractCaArrayEntity retrievedCaArrayEntity = (AbstractCaArrayEntity) retrievedCaArrayObject;
+    protected void compareValues(T caArrayObject, T retrievedCaArrayObject) {
+        super.compareValues(caArrayObject, retrievedCaArrayObject);
+        final AbstractCaArrayEntity caArrayEntity = caArrayObject;
+        final AbstractCaArrayEntity retrievedCaArrayEntity = retrievedCaArrayObject;
         assertEquals(caArrayEntity.getLsidAuthority(), retrievedCaArrayEntity.getLsidAuthority());
         assertEquals(caArrayEntity.getLsidNamespace(), retrievedCaArrayEntity.getLsidNamespace());
         assertEquals(caArrayEntity.getLsidObjectId(), retrievedCaArrayEntity.getLsidObjectId());
-        super.compareCaArrayObjectValues(caArrayObject, retrievedCaArrayObject);
     }
 }

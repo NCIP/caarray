@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.application.arraydata;
 
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.injection.InjectionInterceptor;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
 import gov.nih.nci.caarray.validation.FileValidationResult;
@@ -93,11 +94,11 @@ import javax.ejb.Local;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import javax.interceptor.Interceptors;
 
 import org.apache.log4j.Logger;
 
 import com.google.inject.Inject;
-
 
 /**
  * Entry point to the ArrayDataService subsystem.
@@ -107,58 +108,79 @@ import com.google.inject.Inject;
 @Local(ArrayDataService.class)
 @Stateless
 @TransactionAttribute(TransactionAttributeType.SUPPORTS)
+@Interceptors(InjectionInterceptor.class)
 public class ArrayDataServiceBean implements ArrayDataService {
     private static final Logger LOG = Logger.getLogger(ArrayDataServiceBean.class);
-    
-    private final TypeRegistrationManager tm;
-    private final DataSetImporter dataSetImporter;
-    private final DataSetLoader loader;
-    private final DataFileValidator dataFileValidator;
-   
-    /**
-     * 
-     * @param tm the TypeRegistrationManager dependency
-     * @param dataSetImporter the DataSetImporter dependency
-     * @param loader the DataSetLoader dependency
-     * @param dataFileValidator the DataFileValidator dependency
-     */
-    @Inject
-    public ArrayDataServiceBean(TypeRegistrationManager tm, DataSetImporter dataSetImporter, DataSetLoader loader,
-            DataFileValidator dataFileValidator) {
-        this.tm = tm;
-        this.dataSetImporter = dataSetImporter;
-        this.loader = loader;
-        this.dataFileValidator = dataFileValidator;
-    }
+
+    private TypeRegistrationManager typeRegistrationManager;
+    private DataSetImporter dataSetImporter;
+    private DataSetLoader loader;
+    private DataFileValidator dataFileValidator;
 
     /**
      * {@inheritDoc}
      */
+    @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public void initialize() {
         LogUtil.logSubsystemEntry(LOG);
-        tm.registerNewTypes();
+        this.typeRegistrationManager.registerNewTypes();
         LogUtil.logSubsystemExit(LOG);
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public void importData(CaArrayFile caArrayFile, boolean createAnnnotation, DataImportOptions dataImportOptions)
             throws InvalidDataFileException {
         LogUtil.logSubsystemEntry(LOG, caArrayFile);
-        AbstractArrayData arrayData = dataSetImporter.importData(caArrayFile, dataImportOptions, createAnnnotation);
-        loader.load(arrayData);
+        final AbstractArrayData arrayData =
+                this.dataSetImporter.importData(caArrayFile, dataImportOptions, createAnnnotation);
+        this.loader.load(arrayData);
         LogUtil.logSubsystemExit(LOG);
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public FileValidationResult validate(CaArrayFile arrayDataFile, MageTabDocumentSet mTabSet, boolean reimport) {
-        dataFileValidator.validate(arrayDataFile, mTabSet, reimport);
+        this.dataFileValidator.validate(arrayDataFile, mTabSet, reimport);
         return arrayDataFile.getValidationResult();
+    }
+
+    /**
+     * @param dataSetImporter the dataSetImporter to set
+     */
+    @Inject
+    public void setDataSetImporter(DataSetImporter dataSetImporter) {
+        this.dataSetImporter = dataSetImporter;
+    }
+
+    /**
+     * @param loader the loader to set
+     */
+    @Inject
+    public void setLoader(DataSetLoader loader) {
+        this.loader = loader;
+    }
+
+    /**
+     * @param dataFileValidator the dataFileValidator to set
+     */
+    @Inject
+    public void setDataFileValidator(DataFileValidator dataFileValidator) {
+        this.dataFileValidator = dataFileValidator;
+    }
+
+    /**
+     * @param typeRegistrationManager the typeRegistrationManager to set
+     */
+    @Inject
+    public void setTypeRegistrationManager(TypeRegistrationManager typeRegistrationManager) {
+        this.typeRegistrationManager = typeRegistrationManager;
     }
 }

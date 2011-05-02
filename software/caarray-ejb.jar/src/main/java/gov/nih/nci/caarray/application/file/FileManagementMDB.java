@@ -84,11 +84,12 @@ package gov.nih.nci.caarray.application.file;
 
 import gov.nih.nci.caarray.application.ConfigurationHelper;
 import gov.nih.nci.caarray.application.ExceptionLoggingInterceptor;
-import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
 import gov.nih.nci.caarray.dao.JobQueueDao;
 import gov.nih.nci.caarray.domain.ConfigParamEnum;
 import gov.nih.nci.caarray.domain.project.ExecutableJob;
+import gov.nih.nci.caarray.injection.InjectionInterceptor;
 import gov.nih.nci.caarray.services.HibernateSessionInterceptor;
+import gov.nih.nci.caarray.services.StorageInterceptor;
 import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
 import gov.nih.nci.caarray.util.UsernameHolder;
 
@@ -124,11 +125,12 @@ import com.google.inject.Provider;
  * Singleton MDB that handles file import jobs.
  */
 @MessageDriven(activationConfig = {
-    @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Topic"),
-    @ActivationConfigProperty(propertyName = "destination", propertyValue = FileManagementMDB.QUEUE_JNDI_NAME),
-    @ActivationConfigProperty(propertyName = "maxSession", propertyValue = "1")
-    }, messageListenerInterface = MessageListener.class)
-@Interceptors({ HibernateSessionInterceptor.class, ExceptionLoggingInterceptor.class })
+        @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Topic"),
+        @ActivationConfigProperty(propertyName = "destination", propertyValue = FileManagementMDB.QUEUE_JNDI_NAME),
+        @ActivationConfigProperty(propertyName = "maxSession", propertyValue = "1") },
+    messageListenerInterface = MessageListener.class)
+@Interceptors({HibernateSessionInterceptor.class, ExceptionLoggingInterceptor.class, InjectionInterceptor.class,
+        StorageInterceptor.class })
 @TransactionManagement(TransactionManagementType.BEAN)
 public class FileManagementMDB implements MessageListener {
 
@@ -141,71 +143,58 @@ public class FileManagementMDB implements MessageListener {
     static final String QUEUE_JNDI_NAME = "topic/caArray/FileManagement";
     private static ThreadLocal<FileManagementMDB> currentMDB = new ThreadLocal<FileManagementMDB>();
 
-    private CaArrayDaoFactory daoFactory = CaArrayDaoFactory.INSTANCE;
-    @Resource private UserTransaction transaction;
-    private final CaArrayHibernateHelper hibernateHelper;
-    private final JobQueueDao jobDao;
-    private final Provider<UsernameHolder> userHolderProvider;
-    
-    /**
-     * @param hibernateHelper the CaArrayHibernateHelper dependency
-     * @param jobDao the JobDao dependency
-     * @param userHolderProvider provides userHolder objects. Using a provider here to enable a possible
-     *        future enhancement where thread specific userHolders can be provided.
-     */
-    @Inject
-    public FileManagementMDB(CaArrayHibernateHelper hibernateHelper, JobQueueDao jobDao,
-            Provider<UsernameHolder> userHolderProvider) {
-        this.hibernateHelper = hibernateHelper;
-        this.jobDao = jobDao;
-        this.userHolderProvider = userHolderProvider;
-    }
+    @Resource
+    private UserTransaction transaction;
+    private CaArrayHibernateHelper hibernateHelper;
+    private JobQueueDao jobDao;
+    private Provider<UsernameHolder> userHolderProvider;
 
     /**
      * Handles file management job message.
-     *
+     * 
      * @param message the JMS message to handle.
      */
+    @Override
     public void onMessage(Message message) {
         if (!(message instanceof TextMessage)) {
             LOG.error("Invalid message type delivered: " + message.getClass().getName());
             return;
         }
         try {
-            currentMDB.set(this);            
-            String messageText = ((TextMessage) message).getText();
+            currentMDB.set(this);
+            final String messageText = ((TextMessage) message).getText();
             if ("enqueue".equals(messageText)) {
-                UsernameHolder usernameHolder = userHolderProvider.get();
-                ExecutableJob job = jobDao.peekAtJobQueue();
+                final UsernameHolder usernameHolder = this.userHolderProvider.get();
+                final ExecutableJob job = this.jobDao.peekAtJobQueue();
                 if (null != job) {
-                    String previousUser = usernameHolder.getUser();
+                    final String previousUser = usernameHolder.getUser();
                     usernameHolder.setUser(job.getOwnerName());
                     try {
                         setJobInProgress(job);
                         performJob(job);
                         LOG.info("Successfully completed job");
                     } finally {
-                        // remove the job from the queue if there is an exception or successfully completed. 
-                        jobDao.dequeue();
+                        // remove the job from the queue if there is an exception or successfully completed.
+                        this.jobDao.dequeue();
                         usernameHolder.setUser(previousUser);
                     }
                 }
             } else {
                 LOG.error("Invalid message text: \"" + messageText + "\"");
             }
-        } catch (JMSException e) {
+        } catch (final JMSException e) {
             LOG.error("Error handling message", e);
         } finally {
             currentMDB.remove();
         }
     }
-    
+
     private void setJobInProgress(ExecutableJob job) {
         beginTransaction();
         job.markAsInProgress();
         commitTransaction();
     }
-    
+
     /**
      * Begin the transaction used by the job.
      */
@@ -213,10 +202,10 @@ public class FileManagementMDB implements MessageListener {
         try {
             this.transaction.setTransactionTimeout(getBackgroundThreadTransactionTimeout());
             this.transaction.begin();
-        } catch (NotSupportedException e) {
+        } catch (final NotSupportedException e) {
             LOG.error("Unexpected throwable -- transaction is supported", e);
             throw new IllegalStateException(e);
-        } catch (SystemException e) {
+        } catch (final SystemException e) {
             LOG.error("Couldn't start transaction", e);
             throw new EJBException(e);
         }
@@ -224,12 +213,13 @@ public class FileManagementMDB implements MessageListener {
 
     /**
      * Get the background thread timeout.
+     * 
      * @return the timeout val
      */
     protected int getBackgroundThreadTransactionTimeout() {
-        String backgroundThreadTransactionTimeout =
-            ConfigurationHelper.getConfiguration().getString(
-                    ConfigParamEnum.BACKGROUND_THREAD_TRANSACTION_TIMEOUT.name());
+        final String backgroundThreadTransactionTimeout =
+                ConfigurationHelper.getConfiguration().getString(
+                        ConfigParamEnum.BACKGROUND_THREAD_TRANSACTION_TIMEOUT.name());
         int timeout = DEFAULT_TIMEOUT_SECONDS;
         if (StringUtils.isNumeric(backgroundThreadTransactionTimeout)) {
             timeout = Integer.parseInt(backgroundThreadTransactionTimeout);
@@ -241,20 +231,20 @@ public class FileManagementMDB implements MessageListener {
     /**
      * Commit the transaction used by the job.
      */
-    public void commitTransaction()  {
+    public void commitTransaction() {
         try {
             this.transaction.commit();
-        } catch (SecurityException e) {
+        } catch (final SecurityException e) {
             LOG.error("Unexpected throwable -- transaction is supported", e);
             throw new IllegalStateException(e);
-        } catch (RollbackException e) {
+        } catch (final RollbackException e) {
             LOG.error("Received rollback condition", e);
             rollbackTransaction();
-        } catch (HeuristicMixedException e) {
+        } catch (final HeuristicMixedException e) {
             rollbackTransaction();
-        } catch (HeuristicRollbackException e) {
+        } catch (final HeuristicRollbackException e) {
             rollbackTransaction();
-        } catch (SystemException e) {
+        } catch (final SystemException e) {
             LOG.error("Couldn't commit transaction", e);
             throw new EJBException(e);
         }
@@ -266,10 +256,10 @@ public class FileManagementMDB implements MessageListener {
     public void rollbackTransaction() {
         try {
             this.transaction.rollback();
-        } catch (SecurityException e) {
+        } catch (final SecurityException e) {
             LOG.error("Unexpected throwable -- transaction is supported", e);
             throw new IllegalStateException(e);
-        } catch (SystemException e) {
+        } catch (final SystemException e) {
             LOG.error("Error rolling back transaction", e);
             throw new EJBException(e);
         }
@@ -280,7 +270,7 @@ public class FileManagementMDB implements MessageListener {
         LOG.info("Starting job of type: " + job.getClass().getSimpleName());
         try {
             job.execute();
-        } catch (RuntimeException e) {
+        } catch (final RuntimeException e) {
             rollbackTransaction();
             handleUnexpectedError(job);
             throw e;
@@ -290,18 +280,19 @@ public class FileManagementMDB implements MessageListener {
 
     /**
      * Handles unexpected errors.
+     * 
      * @param job the job.
      */
     protected void handleUnexpectedError(ExecutableJob job) {
         Connection con = null;
         PreparedStatement ps = null;
         try {
-            con = hibernateHelper.getNewConnection();
+            con = this.hibernateHelper.getNewConnection();
             con.setAutoCommit(false);
             ps = job.getUnexpectedErrorPreparedStatement(con);
             ps.executeUpdate();
             con.commit();
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             LOG.error("Error while attempting to handle an unexpected error.", e);
         } finally {
             try {
@@ -311,18 +302,10 @@ public class FileManagementMDB implements MessageListener {
                 if (con != null) {
                     con.close();
                 }
-            } catch (SQLException e) {
+            } catch (final SQLException e) {
                 LOG.error("Error while attempting close the connection after handling an unexpected error.", e);
             }
         }
-    }
-
-    CaArrayDaoFactory getDaoFactory() {
-        return this.daoFactory;
-    }
-
-    void setDaoFactory(CaArrayDaoFactory daoFactory) {
-        this.daoFactory = daoFactory;
     }
 
     /**
@@ -341,10 +324,35 @@ public class FileManagementMDB implements MessageListener {
 
     /**
      * Get the instance of FileManagementMDB that is processing the current message.
+     * 
      * @return the current instance
      */
     public static FileManagementMDB getCurrentMDB() {
         return currentMDB.get();
+    }
+
+    /**
+     * @param hibernateHelper the hibernateHelper to set
+     */
+    @Inject
+    public void setHibernateHelper(CaArrayHibernateHelper hibernateHelper) {
+        this.hibernateHelper = hibernateHelper;
+    }
+
+    /**
+     * @param jobDao the jobDao to set
+     */
+    @Inject
+    public void setJobDao(JobQueueDao jobDao) {
+        this.jobDao = jobDao;
+    }
+
+    /**
+     * @param userHolderProvider the userHolderProvider to set
+     */
+    @Inject
+    public void setUserHolderProvider(Provider<UsernameHolder> userHolderProvider) {
+        this.userHolderProvider = userHolderProvider;
     }
 
 }

@@ -113,17 +113,17 @@ import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
 
 /**
- * Base DAO implementation for all caArray domain DAOs.
- * It provides methods to save, update, remove and query entities by example.
- *
+ * Base DAO implementation for all caArray domain DAOs. It provides methods to save, update, remove and query entities
+ * by example.
+ * 
  * @author Rashmi Srinivasa
  */
-@SuppressWarnings({"PMD.CyclomaticComplexity", "PMD.TooManyMethods" })
+@SuppressWarnings({ "PMD.CyclomaticComplexity", "PMD.TooManyMethods" })
 public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
     private static final Logger LOG = Logger.getLogger(AbstractCaArrayDaoImpl.class);
-    
+
     private final CaArrayHibernateHelper hibernateHelper;
-    
+
     /**
      * 
      * @param hibernateHelper the CaArrayHibernateHelper dependency
@@ -133,15 +133,15 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
     }
 
     /**
-      * @return the hibernate helper
+     * @return the hibernate helper
      */
     protected CaArrayHibernateHelper getHibernateHelper() {
-        return hibernateHelper;
+        return this.hibernateHelper;
     }
 
     /**
      * Returns the current Hibernate Session.
-     *
+     * 
      * @return the current Hibernate Session.
      */
     protected Session getCurrentSession() {
@@ -151,10 +151,12 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
     /**
      * {@inheritDoc}
      */
-    public void save(PersistentObject persistentObject) {
+    @Override
+    public Long save(PersistentObject persistentObject) {
         try {
             getCurrentSession().saveOrUpdate(persistentObject);
-        } catch (HibernateException e) {
+            return persistentObject.getId();
+        } catch (final HibernateException e) {
             LOG.error("Unable to save entity", e);
             throw new DAOException("Unable to save entity", e);
         }
@@ -163,14 +165,15 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void save(Collection<? extends PersistentObject> persistentObjects) {
         try {
-            Iterator<? extends PersistentObject> iterator = persistentObjects.iterator();
+            final Iterator<? extends PersistentObject> iterator = persistentObjects.iterator();
             while (iterator.hasNext()) {
-                PersistentObject entity = iterator.next();
+                final PersistentObject entity = iterator.next();
                 getCurrentSession().saveOrUpdate(entity);
             }
-        } catch (HibernateException he) {
+        } catch (final HibernateException he) {
             LOG.error("Unable to save entity collection", he);
             throw new DAOException("Unable to save entity collection", he);
         }
@@ -179,10 +182,11 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void remove(PersistentObject persistentObject) {
         try {
             getCurrentSession().delete(persistentObject);
-        } catch (HibernateException he) {
+        } catch (final HibernateException he) {
             LOG.error("Unable to remove entity", he);
             throw new DAOException("Unable to remove entity", he);
         }
@@ -191,6 +195,7 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
     /**
      * {@inheritDoc}
      */
+    @Override
     public <T extends PersistentObject> List<T> queryEntityByExample(T entityToMatch, Order... order) {
         return queryEntityByExample(new ExampleSearchCriteria<T>(entityToMatch), order);
     }
@@ -198,14 +203,16 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
     /**
      * {@inheritDoc}
      */
-    public <T extends PersistentObject> List<T> queryEntityByExample(ExampleSearchCriteria<T> criteria, 
-            Order... orders) {
+    @Override
+    public <T extends PersistentObject> List<T>
+            queryEntityByExample(ExampleSearchCriteria<T> criteria, Order... orders) {
         return queryEntityByExample(criteria, 0, 0, orders);
     }
-    
+
     /**
      * {@inheritDoc}
      */
+    @Override
     @SuppressWarnings("unchecked")
     public <T extends PersistentObject> List<T> queryEntityByExample(ExampleSearchCriteria<T> criteria, int maxResults,
             int firstResult, Order... orders) {
@@ -213,36 +220,36 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
             return Collections.emptyList();
         }
 
-        Criteria c = getCriteriaForExampleQuery(criteria);
-        for (Order order : orders) {
+        final Criteria c = getCriteriaForExampleQuery(criteria);
+        for (final Order order : orders) {
             c.addOrder(order);
         }
         if (maxResults > 0) {
             c.setMaxResults(maxResults);
         }
-        c.setFirstResult(firstResult);            
-        
+        c.setFirstResult(firstResult);
+
         return c.list();
     }
-    
+
     private <T extends PersistentObject> Criteria getCriteriaForExampleQuery(ExampleSearchCriteria<T> criteria) {
-        T entityToMatch = criteria.getExample();
+        final T entityToMatch = criteria.getExample();
         CaArrayUtils.blankStringPropsToNull(entityToMatch);
-        
-        Criteria c = getCurrentSession()
-                .createCriteria(getPersistentClass(entityToMatch.getClass()))
-                .setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
-        c.add(createExample(entityToMatch, criteria.getMatchMode(), criteria.isExcludeNulls(), criteria
-                .isExcludeZeroes(), criteria.getExcludeProperties()));
-        new SearchCriteriaHelper<T>(this, c, criteria).addCriteriaForAssociations();            
+
+        final Criteria c =
+                getCurrentSession().createCriteria(getPersistentClass(entityToMatch.getClass())).setResultTransformer(
+                        CriteriaSpecification.DISTINCT_ROOT_ENTITY);
+        c.add(createExample(entityToMatch, criteria.getMatchMode(), criteria.isExcludeNulls(),
+                criteria.isExcludeZeroes(), criteria.getExcludeProperties()));
+        new SearchCriteriaHelper<T>(this, c, criteria).addCriteriaForAssociations();
 
         return c;
     }
 
-
     /**
      * {@inheritDoc}
      */
+    @Override
     public void flushSession() {
         getCurrentSession().flush();
     }
@@ -250,6 +257,7 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void clearSession() {
         getCurrentSession().clear();
     }
@@ -257,6 +265,7 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
     /**
      * {@inheritDoc}
      */
+    @Override
     public Object mergeObject(Object object) {
         return getCurrentSession().merge(object);
     }
@@ -264,22 +273,23 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void evictObject(Object object) {
         getCurrentSession().evict(object);
     }
-    
+
     @SuppressWarnings("deprecation")
     static Order toOrder(PageSortParams<?> params) {
-        String orderField = params.getSortCriterion().getOrderField();
+        final String orderField = params.getSortCriterion().getOrderField();
         return params.isDesc() ? Order.desc(orderField) : Order.asc(orderField);
     }
-    
+
     @SuppressWarnings("deprecation")
     static String toHqlOrder(PageSortParams<?> params) {
-        return new StringBuilder("ORDER BY ").append(params.getSortCriterion().getOrderField()).append(
-                params.isDesc() ? " desc" : " asc").toString();
+        return new StringBuilder("ORDER BY ").append(params.getSortCriterion().getOrderField())
+                .append(params.isDesc() ? " desc" : " asc").toString();
     }
-    
+
     @SuppressWarnings("deprecation")
     static Order toOrder(PageSortParams<?> params, String alias) {
         String orderField = params.getSortCriterion().getOrderField();
@@ -288,27 +298,27 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
         }
         return params.isDesc() ? Order.desc(orderField) : Order.asc(orderField);
     }
-    
-    Criterion createExample(Object entity, MatchMode matchMode, boolean excludeNulls,
-            boolean excludeZeroes, Collection<String> excludeProperties) {
-        Example example = Example.create(entity).enableLike(matchMode).ignoreCase();
+
+    Criterion createExample(Object entity, MatchMode matchMode, boolean excludeNulls, boolean excludeZeroes,
+            Collection<String> excludeProperties) {
+        final Example example = Example.create(entity).enableLike(matchMode).ignoreCase();
         if (excludeZeroes) {
             example.excludeZeroes();
         } else if (!excludeNulls) {
             example.excludeNone();
         }
-        for (String property : excludeProperties) {
+        for (final String property : excludeProperties) {
             example.excludeProperty(property);
         }
-        
+
         // ID property is not handled by Example, so we have to special case it
-        PersistentClass pclass = getClassMapping(entity.getClass());
+        final PersistentClass pclass = getClassMapping(entity.getClass());
         Object idVal = null;
         if (pclass != null && pclass.hasIdentifierProperty()) {
             try {
                 idVal = PropertyUtils.getProperty(entity, pclass.getIdentifierProperty().getName());
-            } catch (Exception e) {
-                LOG.warn("Could not retrieve identifier value in a by example query, ignoring it", e); 
+            } catch (final Exception e) {
+                LOG.warn("Could not retrieve identifier value in a by example query, ignoring it", e);
             }
         }
         if (idVal == null) {
@@ -319,22 +329,21 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
     }
 
     private PersistentClass getClassMapping(Class<?> exampleClass) {
-        Class<?> persistentClass = getPersistentClass(exampleClass);
+        final Class<?> persistentClass = getPersistentClass(exampleClass);
         return persistentClass == null ? null : getHibernateHelper().getConfiguration().getClassMapping(
                 persistentClass.getName());
     }
 
     private Class<?> getPersistentClass(Class<?> exampleClass) {
-        Configuration hcfg = getHibernateHelper().getConfiguration();
-        for (Class<?> klass = exampleClass; !Object.class.equals(klass); klass = klass
-                .getSuperclass()) {
+        final Configuration hcfg = getHibernateHelper().getConfiguration();
+        for (Class<?> klass = exampleClass; !Object.class.equals(klass); klass = klass.getSuperclass()) {
             if (hcfg.getClassMapping(klass.getName()) != null) {
                 return klass;
             }
         }
         return null;
     }
-    
+
     /**
      * Provides helper methods for search DAOs.
      * 
@@ -348,7 +357,7 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
         private final AbstractCaArrayDaoImpl dao;
 
         /**
-         * @param abstractCaArrayDaoImpl 
+         * @param abstractCaArrayDaoImpl
          * @param criteria
          * @param excludeNulls
          * @param matchMode
@@ -369,65 +378,66 @@ public abstract class AbstractCaArrayDaoImpl implements CaArrayDao {
         @SuppressWarnings("unchecked")
         public void addCriteriaForAssociations() {
             try {
-                PersistentClass pclass = getClassMapping(exampleCriteria.getExample().getClass());
+                final PersistentClass pclass = getClassMapping(this.exampleCriteria.getExample().getClass());
                 if (pclass == null) {
                     throw new DAOException("Could not find hibernate class mapping in hierarchy of class "
-                            + exampleCriteria.getExample().getClass().getName());
+                            + this.exampleCriteria.getExample().getClass().getName());
                 }
-                Iterator<Property> properties = pclass.getPropertyClosureIterator();
+                final Iterator<Property> properties = pclass.getPropertyClosureIterator();
                 while (properties.hasNext()) {
-                    Property prop = properties.next();
+                    final Property prop = properties.next();
                     if (prop.getType().isAssociationType()) {
                         addCriterionForAssociation(prop);
                     }
                 }
-            } catch (IllegalAccessException iae) {
+            } catch (final IllegalAccessException iae) {
                 LOG.error(UNABLE_TO_GET_ASSOCIATION_VAL, iae);
                 throw new DAOException(UNABLE_TO_GET_ASSOCIATION_VAL, iae);
-            } catch (InvocationTargetException ite) {
+            } catch (final InvocationTargetException ite) {
                 LOG.error(UNABLE_TO_GET_ASSOCIATION_VAL, ite);
                 throw new DAOException(UNABLE_TO_GET_ASSOCIATION_VAL, ite);
             }
         }
-        
+
         /**
          * Add one search criterion based on the association to be matched.
          * 
          * @param entityToMatch the root entity being searched on.
          * @param hibCriteria the root Criteria to add to.
-         * @param prop the association to be matched.
+         * @param property the association to be matched.
          */
-        private void addCriterionForAssociation(Property prop) throws IllegalAccessException, 
-            InvocationTargetException {
+        private void addCriterionForAssociation(Property property) throws IllegalAccessException,
+                InvocationTargetException {
             Object valueOfAssociation = null;
 
             try {
-                valueOfAssociation = PropertyUtils.getProperty(exampleCriteria.getExample(), prop.getName());
-            } catch (NoSuchMethodException e) {
-                LOG.error("No getter method for property " + prop.getName(), e);
+                valueOfAssociation = PropertyUtils.getProperty(this.exampleCriteria.getExample(), property.getName());
+            } catch (final NoSuchMethodException e) {
+                LOG.error("No getter method for property " + property.getName(), e);
             }
-            
+
             if (valueOfAssociation == null) {
                 return;
             }
             if (valueOfAssociation instanceof Collection<?>) {
-                Collection<?> collValue = (Collection<?>) valueOfAssociation;
+                final Collection<?> collValue = (Collection<?>) valueOfAssociation;
                 if (!collValue.isEmpty()) {
-                    Disjunction or = Restrictions.disjunction();
-                    for (Object value : collValue) {
+                    final Disjunction or = Restrictions.disjunction();
+                    for (final Object value : collValue) {
                         or.add(createExample(value));
                     }
-                    hibCriteria.createCriteria(prop.getName()).add(or);
+                    this.hibCriteria.createCriteria(property.getName()).add(or);
                 }
             } else {
-                hibCriteria.createCriteria(prop.getName()).add(createExample(valueOfAssociation));
-            }                
+                this.hibCriteria.createCriteria(property.getName()).add(createExample(valueOfAssociation));
+            }
 
         }
 
         private Criterion createExample(Object value) {
-            return dao.createExample(value, exampleCriteria.getMatchMode(), exampleCriteria
-                    .isExcludeNulls(), exampleCriteria.isExcludeZeroes(), exampleCriteria.getExcludeProperties());
+            return this.dao.createExample(value, this.exampleCriteria.getMatchMode(),
+                    this.exampleCriteria.isExcludeNulls(), this.exampleCriteria.isExcludeZeroes(),
+                    this.exampleCriteria.getExcludeProperties());
         }
     }
 }

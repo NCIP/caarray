@@ -83,9 +83,10 @@
 package gov.nih.nci.caarray.upgrade;
 
 import gov.nih.nci.caarray.application.ApplicationModule;
-import gov.nih.nci.caarray.application.arraydata.ArrayDataModule;
+import gov.nih.nci.caarray.application.JtaSessionTransactionManager;
 import gov.nih.nci.caarray.application.file.FileModule;
 import gov.nih.nci.caarray.dao.ArrayDao;
+import gov.nih.nci.caarray.dao.DaoModule;
 import gov.nih.nci.caarray.dao.FileDao;
 import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.dao.SearchDaoUnsupportedOperationImpl;
@@ -93,13 +94,10 @@ import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.array.PhysicalProbe;
 import gov.nih.nci.caarray.domain.contact.Organization;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
-import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.project.AssayType;
-import gov.nih.nci.caarray.platforms.FileDaoFileManager;
-import gov.nih.nci.caarray.platforms.FileManager;
+import gov.nih.nci.caarray.platforms.PlatformModule;
 import gov.nih.nci.caarray.platforms.SessionTransactionManager;
 import gov.nih.nci.caarray.platforms.SessionTransactionManagerNoOpImpl;
-import gov.nih.nci.caarray.platforms.illumina.IlluminaModule;
 import gov.nih.nci.caarray.platforms.spi.DesignFileHandler;
 import gov.nih.nci.caarray.platforms.spi.PlatformFileReadException;
 import gov.nih.nci.caarray.services.ServicesModule;
@@ -135,6 +133,7 @@ import com.google.inject.util.Types;
  *
  */
 public class FixIlluminaGenotypingCsvDesignProbeNamesMigrator extends AbstractCustomChange {
+    private static final String ILLUMINA_DESIGN_CSV_TYPE_NAME = "ILLUMINA_DESIGN_CSV";
     
     /**
      * {@inheritDoc}
@@ -152,24 +151,24 @@ public class FixIlluminaGenotypingCsvDesignProbeNamesMigrator extends AbstractCu
      * @param connection the JDBC connection to use
      */
     public void execute(Connection connection) {
-        Injector injector = createInjector();
-        
-        SingleConnectionHibernateHelper hibernateHelper = createHibernateHelper(connection, injector);
-        
-        FileDao fileDao = injector.getInstance(FileDao.class);
-        Set<DesignFileHandler> handlers = getAllDesignHandlers(fileDao);
-        
-        Transaction transaction = hibernateHelper.beginTransaction();              
+        final Injector injector = createInjector();
+
+        final SingleConnectionHibernateHelper hibernateHelper = createHibernateHelper(connection, injector);
+
+        final FileDao fileDao = injector.getInstance(FileDao.class);
+        final Set<DesignFileHandler> handlers = getAllDesignHandlers(fileDao);
+
+        final Transaction transaction = hibernateHelper.beginTransaction();
         try {
-            ArrayDao arrayDao = injector.getInstance(ArrayDao.class);
-                        
-            List<Long> arrayDesignIds = getArrayDesignIds(hibernateHelper, arrayDao);
+            final ArrayDao arrayDao = injector.getInstance(ArrayDao.class);
+
+            final List<Long> arrayDesignIds = getArrayDesignIds(hibernateHelper, arrayDao);
             hibernateHelper.getCurrentSession().clear();
-           
+
             fixArrayDesigns(handlers, arrayDao, arrayDesignIds);
-            
-            transaction.commit();           
-        } catch (Exception e) {
+
+            transaction.commit();
+        } catch (final Exception e) {
             transaction.rollback();
             throw new UnhandledException(e);
         }
@@ -177,48 +176,49 @@ public class FixIlluminaGenotypingCsvDesignProbeNamesMigrator extends AbstractCu
 
     private void fixArrayDesigns(Set<DesignFileHandler> handlers, ArrayDao arrayDao, List<Long> arrayDesignIds)
             throws PlatformFileReadException {
-        
-        for (long arrayDesignId : arrayDesignIds) {
-            ArrayDesign originalArrayDesign = arrayDao.getArrayDesign(arrayDesignId);
-           
-            CaArrayFile arrayDesignFile = originalArrayDesign.getFirstDesignFile();
-            ArrayDesign reparsedArrayDesign = getNewArrayDesign(handlers, arrayDesignFile);
-            
+
+        for (final long arrayDesignId : arrayDesignIds) {
+            final ArrayDesign originalArrayDesign = arrayDao.getArrayDesign(arrayDesignId);
+
+            final CaArrayFile arrayDesignFile = originalArrayDesign.getFirstDesignFile();
+            final ArrayDesign reparsedArrayDesign = getNewArrayDesign(handlers, arrayDesignFile);
+
             renameProbesUsingReparsedProbeNames(originalArrayDesign, reparsedArrayDesign);
               
             arrayDao.save(originalArrayDesign);
             arrayDao.flushSession();
             
             // Detach the array design
-            arrayDao.clearSession();           
+            arrayDao.clearSession();
         }
     }
 
     private void renameProbesUsingReparsedProbeNames(ArrayDesign originalArrayDesign, ArrayDesign reparsedArrayDesign) {
-        SortedSet<PhysicalProbe> originalProbes = getSortedProbeList(originalArrayDesign);                
-        SortedSet<PhysicalProbe> reparsedProbes = getSortedProbeList(reparsedArrayDesign);
-        
+        final SortedSet<PhysicalProbe> originalProbes = getSortedProbeList(originalArrayDesign);
+        final SortedSet<PhysicalProbe> reparsedProbes = getSortedProbeList(reparsedArrayDesign);
+
         if (originalProbes.size() != reparsedProbes.size()) {
             throw new IllegalStateException("probe set sizes differ");
         }
-        
-        Iterator<PhysicalProbe> reparsedProbeIterator = reparsedProbes.iterator();
-        for (PhysicalProbe originalProbe : originalProbes) {
-            String reparsedName = reparsedProbeIterator.next().getName();
+
+        final Iterator<PhysicalProbe> reparsedProbeIterator = reparsedProbes.iterator();
+        for (final PhysicalProbe originalProbe : originalProbes) {
+            final String reparsedName = reparsedProbeIterator.next().getName();
             originalProbe.setName(reparsedName);
         }
     }
 
     private SortedSet<PhysicalProbe> getSortedProbeList(ArrayDesign orrayDesign) {
-        Comparator<PhysicalProbe> comparator = getPhysicalProbeIdComparator();
-            
-        SortedSet<PhysicalProbe> probes = new TreeSet<PhysicalProbe>(comparator);
+        final Comparator<PhysicalProbe> comparator = getPhysicalProbeIdComparator();
+
+        final SortedSet<PhysicalProbe> probes = new TreeSet<PhysicalProbe>(comparator);
         probes.addAll(orrayDesign.getDesignDetails().getProbes());
         return probes;
     }
 
     private Comparator<PhysicalProbe> getPhysicalProbeIdComparator() {
-        Comparator<PhysicalProbe> comparator = new Comparator<PhysicalProbe>() {
+        final Comparator<PhysicalProbe> comparator = new Comparator<PhysicalProbe>() {
+            @Override
             public int compare(PhysicalProbe o1, PhysicalProbe o2) {
                 if (o1.getId() < o2.getId()) {
                     return -1;
@@ -233,7 +233,7 @@ public class FixIlluminaGenotypingCsvDesignProbeNamesMigrator extends AbstractCu
     }
 
     private SingleConnectionHibernateHelper createHibernateHelper(Connection connection, Injector injector) {
-        SingleConnectionHibernateHelper hibernateHelper = (SingleConnectionHibernateHelper) injector
+        final SingleConnectionHibernateHelper hibernateHelper = (SingleConnectionHibernateHelper) injector
                 .getInstance(CaArrayHibernateHelper.class);
         
         hibernateHelper.initialize(connection);
@@ -242,21 +242,23 @@ public class FixIlluminaGenotypingCsvDesignProbeNamesMigrator extends AbstractCu
     }
 
     private Injector createInjector() {
-        Module localModule = new AbstractModule() {
+        final Module localModule = new AbstractModule() {
             @Override
             protected void configure() {
-                bind(CaArrayHibernateHelper.class).toInstance(new SingleConnectionHibernateHelper());             
-            }   
+                bind(CaArrayHibernateHelper.class).toInstance(new SingleConnectionHibernateHelper());
+                bind(SessionTransactionManager.class).to(JtaSessionTransactionManager.class);
+            }
         };
         
         final Module[] modules = new Module[] {
-                new ArrayDataModule(), // identical to ArrayDataModule, includes DaoModule
+                new DaoModule(), 
                 new ServicesModule(),
                 new FileModule(),
+                new PlatformModule(), 
                 new ApplicationModule(),
                 localModule,
             };
-       
+
         return Guice.createInjector(modules);
     }
 
@@ -268,10 +270,10 @@ public class FixIlluminaGenotypingCsvDesignProbeNamesMigrator extends AbstractCu
      */
     private ArrayDesign getNewArrayDesign(Set<DesignFileHandler> handlers, CaArrayFile arrayDesignFile)
             throws PlatformFileReadException {
-        Set<CaArrayFile> arrayDesignFileSet = Collections.<CaArrayFile>singleton(arrayDesignFile);
-        ArrayDesign arrayDesign = new ArrayDesign();
-        
-        for (DesignFileHandler handler : handlers) {
+        final Set<CaArrayFile> arrayDesignFileSet = Collections.<CaArrayFile> singleton(arrayDesignFile);
+        final ArrayDesign arrayDesign = new ArrayDesign();
+
+        for (final DesignFileHandler handler : handlers) {
             if (handler.openFiles(arrayDesignFileSet)) {
                 try {
                     handler.load(arrayDesign);
@@ -307,44 +309,44 @@ public class FixIlluminaGenotypingCsvDesignProbeNamesMigrator extends AbstractCu
 
     @SuppressWarnings("unchecked")
     private Set<DesignFileHandler> getAllDesignHandlers(final FileDao fileDao) {
-        Module module = new AbstractModule() {
+        final Module module = new AbstractModule() {
             @Override
             protected void configure() {
-                bind(FileManager.class).toInstance(new FileDaoFileManager(fileDao));
-                
+                // TODO: need something for file storage to replace this: bind(FileManager.class).toInstance(new FileDaoFileManager(fileDao));
                 bind(SessionTransactionManager.class).to(SessionTransactionManagerNoOpImpl.class).asEagerSingleton();
-                
+
                 bind(ArrayDao.class).to(ShellArrayDao.class).asEagerSingleton();
-                
+
                 bind(SearchDao.class).to(SearchDaoUnsupportedOperationImpl.class).asEagerSingleton();
             }
-         };
-        Injector injector = Guice.createInjector(module, new IlluminaModule());
+        };
+        // TODO: need to figure out how to make this work with OSGi plugins
+        final Injector injector = Guice.createInjector(module /** , new IlluminaModule() */
+        );
         final Key<?> key = Key.get(TypeLiteral.get(Types.setOf(DesignFileHandler.class)));
-        Set<DesignFileHandler> handlers = (Set<DesignFileHandler>) injector.getInstance(key);
-        
+        final Set<DesignFileHandler> handlers = (Set<DesignFileHandler>) injector.getInstance(key);
+
         return handlers;
     }
 
     private List<Long> getArrayDesignIds(SingleConnectionHibernateHelper hibernateHelper, ArrayDao arrayDao) {
-        List<Long> arrayDesignIds = new ArrayList<Long>();
-        
-        Organization provider = (Organization) hibernateHelper.getCurrentSession()
-            .createQuery("FROM " + Organization.class.getName() + " where provider = true and name = 'Illumina'")
-            .uniqueResult();
-        
-        AssayType assayType = (AssayType) hibernateHelper.getCurrentSession()
-            .createQuery("FROM " + AssayType.class.getName() + " where name = 'SNP'")
-            .uniqueResult();
-         
-        Set<AssayType> assayTypes = new HashSet<AssayType>();
+        final List<Long> arrayDesignIds = new ArrayList<Long>();
+
+        final Organization provider = (Organization) hibernateHelper.getCurrentSession()
+                .createQuery("FROM " + Organization.class.getName() + " where provider = true and name = 'Illumina'")
+                .uniqueResult();
+
+        final AssayType assayType = (AssayType) hibernateHelper.getCurrentSession()
+                .createQuery("FROM " + AssayType.class.getName() + " where name = 'SNP'").uniqueResult();
+
+        final Set<AssayType> assayTypes = new HashSet<AssayType>();
         assayTypes.add(assayType);
-        
-        List<ArrayDesign> candidateArrayDesigns = arrayDao.getArrayDesigns(provider, assayTypes , true);
-        for (ArrayDesign candidate : candidateArrayDesigns) {
-             if (candidate.getFirstDesignFile().getFileType() == FileType.ILLUMINA_DESIGN_CSV) {
-                 arrayDesignIds.add(candidate.getId());
-             }
+
+        final List<ArrayDesign> candidateArrayDesigns = arrayDao.getArrayDesigns(provider, assayTypes, true);
+        for (final ArrayDesign candidate : candidateArrayDesigns) {
+            if (candidate.getFirstDesignFile().getFileType().getName().equals(ILLUMINA_DESIGN_CSV_TYPE_NAME)) {
+                arrayDesignIds.add(candidate.getId());
+            }
         }
         
         return arrayDesignIds;

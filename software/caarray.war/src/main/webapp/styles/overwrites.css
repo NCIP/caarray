@@ -219,3 +219,14 @@ A.btn:active SPAN.btn_img
 .create_choice_indented_item {
   padding-left: 15px !important;
 }
+
+
+.simple_window {  
+    border:1px solid #000;  
+    background-color:#abc;  
+    padding:10px;  
+    text-align:left;  
+    font-family:"Lucida Grande",Verdana;  
+    font-size:12px;  
+    color:#333;  
+} 

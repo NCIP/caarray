@@ -81,6 +81,7 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package gov.nih.nci.caarray.application.browse;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import gov.nih.nci.caarray.application.AbstractServiceTest;
@@ -108,36 +109,39 @@ public class BrowseServiceTest extends AbstractServiceTest {
 
     @Before
     public void setUpService() {
-        BrowseServiceBean browseServiceBean = new BrowseServiceBean(this.daoFactoryStub.getBrowseDao());
-        browseService = browseServiceBean;
+        final BrowseServiceBean browseServiceBean = new BrowseServiceBean();
+        browseServiceBean.setBrowseDao(this.daoFactoryStub.getBrowseDao());
+        this.browseService = browseServiceBean;
     }
 
     @Test
     public void testBrowseCount() {
-        assertEquals(1, browseService.browseCount(null, null));
+        assertEquals(1, this.browseService.browseCount(null, null));
     }
+
     @Test
     public void testBrowseList() {
-        assertNotNull(browseService.browseList(null, null, null));
+        assertNotNull(this.browseService.browseList(null, null, null));
     }
+
     @Test
     public void testTabList() {
-        assertNotNull(browseService.tabList(null));
+        assertNotNull(this.browseService.tabList(null));
     }
 
     @Test
     public void testCountByBrowseCategory() {
-        assertEquals(NUM_PROJECTS, browseService.countByBrowseCategory(null));
+        assertEquals(NUM_PROJECTS, this.browseService.countByBrowseCategory(null));
     }
 
     @Test
     public void testHybridizationCount() {
-        assertEquals(1, browseService.hybridizationCount());
+        assertEquals(1, this.browseService.hybridizationCount());
     }
 
     @Test
     public void testUserCount() {
-        assertEquals(3, browseService.userCount());
+        assertEquals(3, this.browseService.userCount());
     }
 
     private static class LocalDaoFactoryStub extends DaoFactoryStub {
@@ -151,6 +155,7 @@ public class BrowseServiceTest extends AbstractServiceTest {
             return this.browseDao;
         }
     }
+
     private static class LocalBrowseDaoStub extends BrowseDaoStub {
         @Override
         public int browseCount(BrowseCategory cat, Number fieldId) {

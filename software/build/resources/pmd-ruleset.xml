@@ -3,12 +3,12 @@
 
     <description>5AM PMD Rules</description>
 
-    <rule ref="rulesets/basic.xml" />
     <rule ref="rulesets/basic.xml/EmptyCatchBlock">
         <properties>
             <property name="allowCommentedBlocks" value="true" />
         </properties>
     </rule>
+    <rule ref="rulesets/basic.xml" />
 
     <rule ref="rulesets/braces.xml" />
 
@@ -72,6 +72,7 @@
     <rule ref="rulesets/naming.xml">
         <exclude name="LongVariable" />
         <exclude name="ShortVariable" />
+        <exclude name="PackageCase" />
         <exclude name="AvoidFieldNameMatchingMethodName" />
     </rule>
 

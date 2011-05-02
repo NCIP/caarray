@@ -84,7 +84,7 @@ package gov.nih.nci.caarray.web;
 
 import static org.junit.Assert.assertNotNull;
 import gov.nih.nci.caarray.AbstractCaarrayTest;
-import gov.nih.nci.caarray.web.util.LabelValue;
+import gov.nih.nci.caarray.util.LabelValue;
 
 import org.junit.Test;
 

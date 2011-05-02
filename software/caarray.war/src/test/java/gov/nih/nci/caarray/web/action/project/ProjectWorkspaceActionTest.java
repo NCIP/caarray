@@ -92,7 +92,6 @@ import gov.nih.nci.caarray.application.project.ProjectManagementService;
 import gov.nih.nci.caarray.application.project.ProjectManagementServiceStub;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileStatus;
-import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import gov.nih.nci.caarray.web.AbstractBaseStrutsTest;
@@ -108,7 +107,7 @@ import com.opensymphony.xwork2.Action;
 
 /**
  * @author Winston Cheng
- *
+ * 
  */
 public class ProjectWorkspaceActionTest extends AbstractBaseStrutsTest {
     private final ProjectWorkspaceAction action = new ProjectWorkspaceAction();
@@ -117,40 +116,37 @@ public class ProjectWorkspaceActionTest extends AbstractBaseStrutsTest {
 
     @Before
     public void setUp() throws Exception {
-        ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
+        final ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
         locatorStub.addLookup(ProjectManagementService.JNDI_NAME, new LocalProjectManagementService());
         locatorStub.addLookup(FileManagementService.JNDI_NAME, new FileManagementServiceStub());
         locatorStub.addLookup(GenericDataService.JNDI_NAME, new LocalGenericDataServiceStub());
-   }
+    }
 
     @Test
     public void testWorkspace() {
-        assertEquals(Action.SUCCESS, action.workspace());
-        assertEquals(WORK_QUEUE_COUNT, action.getProjects().getFullListSize());
+        assertEquals(Action.SUCCESS, this.action.workspace());
+        assertEquals(WORK_QUEUE_COUNT, this.action.getProjects().getFullListSize());
     }
-    
+
     @Before
     public void before() {
-        loadTestProject();        
+        loadTestProject();
     }
 
     private void loadTestProject() {
         final ArrayList<Project> projects = new ArrayList<Project>();
         final Project project = new Project();
-        CaArrayFile file1 = new CaArrayFile();
+        final CaArrayFile file1 = new CaArrayFile();
         file1.setProject(project);
         file1.setFileStatus(FileStatus.UPLOADED);
         file1.setName("file1.ext");
-        file1.setFileType(FileType.AFFYMETRIX_CEL);
-        CaArrayFile file2 = new CaArrayFile();
+        final CaArrayFile file2 = new CaArrayFile();
         file2.setFileStatus(FileStatus.UPLOADED);
         file2.setName("file2.ext");
-        file2.setFileType(FileType.AFFYMETRIX_CEL);
         file2.setProject(project);
-        CaArrayFile file3 = new CaArrayFile();
+        final CaArrayFile file3 = new CaArrayFile();
         file3.setFileStatus(FileStatus.UPLOADED);
         file3.setName("file3.ext");
-        file3.setFileType(FileType.AFFYMETRIX_CEL);
         file3.setProject(project);
         project.getFiles().add(file1);
         project.getFiles().add(file2);
@@ -164,7 +160,7 @@ public class ProjectWorkspaceActionTest extends AbstractBaseStrutsTest {
     public void testList() throws Exception {
         ServletActionContext.getRequest().getSession().setAttribute("messages", null);
         assertNotNull(this.action.getProjects());
-        String result = this.action.workspace();
+        final String result = this.action.workspace();
         assertEquals(Action.SUCCESS, result);
     }
 
@@ -174,12 +170,12 @@ public class ProjectWorkspaceActionTest extends AbstractBaseStrutsTest {
             return WORK_QUEUE_COUNT;
         }
     }
-    
+
     private static class LocalGenericDataServiceStub extends GenericDataServiceStub {
         @Override
         public <T extends PersistentObject> T getPersistentObject(Class<T> entityClass, Long entityId) {
             if (Project.class.equals(entityClass)) {
-                Project project = new Project();
+                final Project project = new Project();
                 project.setId(entityId);
                 return (T) project;
             } else {

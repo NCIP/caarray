@@ -87,12 +87,10 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import gov.nih.nci.caarray.application.AbstractServiceTest;
-import gov.nih.nci.caarray.application.arraydesign.ArrayDesignServiceTest;
-import gov.nih.nci.caarray.application.file.AbstractFileManagementServiceIntegrationTest;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
-import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
-import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheStubFactory;
 import gov.nih.nci.caarray.application.translation.CaArrayTranslationResult;
 import gov.nih.nci.caarray.application.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.application.vocabulary.VocabularyServiceStub;
@@ -106,11 +104,13 @@ import gov.nih.nci.caarray.domain.data.DerivedArrayData;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
+import gov.nih.nci.caarray.domain.file.FileCategory;
 import gov.nih.nci.caarray.domain.file.FileType;
+import gov.nih.nci.caarray.domain.file.FileTypeRegistry;
+import gov.nih.nci.caarray.domain.file.FileTypeRegistryImpl;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.ExperimentContact;
-import gov.nih.nci.caarray.domain.project.ExperimentOntology;
 import gov.nih.nci.caarray.domain.project.MeasurementFactorValue;
 import gov.nih.nci.caarray.domain.project.TermBasedFactorValue;
 import gov.nih.nci.caarray.domain.project.UserDefinedFactorValue;
@@ -140,8 +140,9 @@ import gov.nih.nci.caarray.magetab.io.FileRef;
 import gov.nih.nci.caarray.magetab.io.JavaIOFileRef;
 import gov.nih.nci.caarray.magetab.sdrf.AbstractBioMaterial;
 import gov.nih.nci.caarray.magetab.sdrf.SdrfDocument;
+import gov.nih.nci.caarray.platforms.spi.DataFileHandler;
+import gov.nih.nci.caarray.platforms.spi.DesignFileHandler;
 import gov.nih.nci.caarray.test.data.arraydata.GenepixArrayDataFiles;
-import gov.nih.nci.caarray.test.data.arraydesign.AgilentArrayDesignFiles;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import gov.nih.nci.caarray.validation.FileValidationResult;
@@ -151,6 +152,7 @@ import gov.nih.nci.caarray.validation.ValidationResult;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -161,163 +163,197 @@ import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.criterion.Order;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
+import com.google.common.collect.Sets;
+import com.google.inject.AbstractModule;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 
 /**
  * Test for MAGE tab translator
  */
 @SuppressWarnings("PMD")
 public class MageTabTranslatorTest extends AbstractServiceTest {
+    protected static FileType AFFYMETRIX_CHP = new FileType("AFFYMETRIX_CHP", FileCategory.DERIVED_DATA, true, "CHP");
+    protected static FileType AFFYMETRIX_CEL = new FileType("AFFYMETRIX_CEL", FileCategory.RAW_DATA, true, "CEL");
+    protected static FileType GENEPIX_GPR = new FileType("GENEPIX_GPR", FileCategory.DERIVED_DATA, true, "GPR");
 
     MageTabTranslator translator;
     private final LocalDaoFactoryStub daoFactoryStub = new LocalDaoFactoryStub();
     private final VocabularyServiceStub vocabularyServiceStub = new VocabularyServiceStub();
     private FileAccessServiceStub fileAccessServiceStub;
 
+    protected FileTypeRegistry typeRegistry;
+    protected Injector injector;
+
+    /**
+     * Subclasses can override this to configure a custom injector, e.g. by overriding some modules with stubbed out
+     * functionality.
+     * 
+     * @return a Guice injector from which this will obtain dependencies.
+     */
+    protected Injector createInjector() {
+        System.out.println("Creating injector");
+
+        return Guice.createInjector(new AbstractModule() {
+            @Override
+            protected void configure() {
+                bind(FileTypeRegistry.class).toInstance(MageTabTranslatorTest.this.typeRegistry);
+                requestStaticInjection(CaArrayFile.class);
+                requestStaticInjection(TestMageTabSets.class);
+            }
+        });
+    }
+
     /**
      * Prepares the translator implementation, stubbing out dependencies.
      */
     @Before
     public void setupTranslator() {
-        MageTabTranslatorBean mageTabTranslatorBean = new MageTabTranslatorBean();
+        final DataFileHandler dataHandler = mock(DataFileHandler.class);
+        when(dataHandler.getSupportedTypes()).thenReturn(Sets.newHashSet(AFFYMETRIX_CHP, AFFYMETRIX_CEL, GENEPIX_GPR));
+
+        this.typeRegistry = new FileTypeRegistryImpl(Sets.<DataFileHandler> newHashSet(dataHandler),
+                Collections.<DesignFileHandler> emptySet());
+
+        this.injector = createInjector();
+
+        final MageTabTranslatorBean mageTabTranslatorBean = new MageTabTranslatorBean();
         mageTabTranslatorBean.setDaoFactory(this.daoFactoryStub);
-        ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
-        fileAccessServiceStub = new FileAccessServiceStub();
-        TemporaryFileCacheLocator
-                .setTemporaryFileCacheFactory(new TemporaryFileCacheStubFactory(fileAccessServiceStub));
+        final ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
+        this.fileAccessServiceStub = new FileAccessServiceStub();
         locatorStub.addLookup(VocabularyService.JNDI_NAME, this.vocabularyServiceStub);
         this.translator = mageTabTranslatorBean;
     }
-    
+
     @Test
     public void testDefect27959() throws InvalidDataException, MageTabParsingException {
-        MageTabFileSet mageTabSet = TestMageTabSets.DEFECT_27959;
-        for (FileRef f : mageTabSet.getAllFiles()) {
-            fileAccessServiceStub.add(f.getAsFile());
+        final MageTabFileSet mageTabSet = TestMageTabSets.DEFECT_27959;
+        for (final FileRef f : mageTabSet.getAllFiles()) {
+            this.fileAccessServiceStub.add(f.getAsFile());
         }
-        MageTabDocumentSet docSet = MageTabParser.INSTANCE.parse(mageTabSet);
+        final MageTabDocumentSet docSet = MageTabParser.INSTANCE.parse(mageTabSet);
         assertTrue(docSet.getValidationResult().isValid());
-        CaArrayFileSet fileSet = TestMageTabSets.getFileSet(mageTabSet);
-        CaArrayFile dataFile = fileSet.getFile(MageTabDataFiles.DEFECT_27959_DERIVED_DATA_FILE);
-        dataFile.setType(FileType.ILLUMINA_DERIVED_TXT.getName());
-        ValidationResult result = this.translator.validate(docSet, fileSet);
+        final CaArrayFileSet fileSet = TestMageTabSets.getFileSet(mageTabSet);
+        final CaArrayFile dataFile = fileSet.getFile(MageTabDataFiles.DEFECT_27959_DERIVED_DATA_FILE);
+        dataFile.setFileType(GENEPIX_GPR);
+        final ValidationResult result = this.translator.validate(docSet, fileSet);
         assertFalse(result.isValid());
-        FileValidationResult fileResult = result.getFileValidationResult(
-                MageTabDataFiles.DEFECT_27959_DERIVED_DATA_FILE);
+        final FileValidationResult fileResult = result
+        .getFileValidationResult(MageTabDataFiles.DEFECT_27959_DERIVED_DATA_FILE.getName());
         assertNotNull(fileResult);
         assertFalse(result.isValid());
         assertEquals(1, fileResult.getMessages().size());
         assertTrue(fileResult.getMessages().get(0).getMessage().startsWith("This file is not correctly referenced"));
     }
-    
+
     @Test
     public void testDefect13164_positive() throws InvalidDataException, MageTabParsingException {
-        MageTabFileSet mageTabSet = TestMageTabSets.DEFECT_13164_GOOD;
-        for (FileRef f : mageTabSet.getAllFiles()) {
-            fileAccessServiceStub.add(f.getAsFile());
+        final MageTabFileSet mageTabSet = TestMageTabSets.DEFECT_13164_GOOD;
+        for (final FileRef f : mageTabSet.getAllFiles()) {
+            this.fileAccessServiceStub.add(f.getAsFile());
         }
-        MageTabDocumentSet docSet = MageTabParser.INSTANCE.parse(mageTabSet);
+        final MageTabDocumentSet docSet = MageTabParser.INSTANCE.parse(mageTabSet);
         assertTrue(docSet.getValidationResult().isValid());
-        CaArrayFileSet fileSet = TestMageTabSets.getFileSet(mageTabSet);
-        ValidationResult result = this.translator.validate(docSet, fileSet);
+        final CaArrayFileSet fileSet = TestMageTabSets.getFileSet(mageTabSet);
+        final ValidationResult result = this.translator.validate(docSet, fileSet);
         assertTrue(result.isValid());
     }
-    
+
     @Test
     public void testDefect13164_negative() throws InvalidDataException, MageTabParsingException {
-        MageTabFileSet mageTabSet = TestMageTabSets.DEFECT_13164_BAD;
-        for (FileRef f : mageTabSet.getAllFiles()) {
-            fileAccessServiceStub.add(f.getAsFile());
+        final MageTabFileSet mageTabSet = TestMageTabSets.DEFECT_13164_BAD;
+        for (final FileRef f : mageTabSet.getAllFiles()) {
+            this.fileAccessServiceStub.add(f.getAsFile());
         }
-        MageTabDocumentSet docSet = MageTabParser.INSTANCE.parse(mageTabSet);
+        final MageTabDocumentSet docSet = MageTabParser.INSTANCE.parse(mageTabSet);
         assertTrue(docSet.getValidationResult().isValid());
-        CaArrayFileSet fileSet = TestMageTabSets.getFileSet(mageTabSet);
-        ValidationResult result = this.translator.validate(docSet, fileSet);
+        final CaArrayFileSet fileSet = TestMageTabSets.getFileSet(mageTabSet);
+        final ValidationResult result = this.translator.validate(docSet, fileSet);
         assertFalse(result.isValid());
-        FileValidationResult fileResult = result.getFileValidationResult(
-                MageTabDataFiles.DEFECT_13164_SDRF);
+        final FileValidationResult fileResult = result.getFileValidationResult(
+                MageTabDataFiles.DEFECT_13164_SDRF.getName());
         assertNotNull(fileResult);
         assertFalse(result.isValid());
         assertEquals(1, fileResult.getMessages().size());
         assertTrue(fileResult.getMessages().get(0).getMessage().indexOf("or the Term Source should be omitted") >= 0);
     }
-    
+
     @Test
     public void testVocabularyTermSources() throws InvalidDataException, MageTabParsingException {
         // negative testing
-        MageTabFileSet badMageTabFileSet = TestMageTabSets.BAD_VOCABULARY_TERM_SOURCES_FILE_SET;
-        for (FileRef f : badMageTabFileSet.getAllFiles()) {
-            fileAccessServiceStub.add(f.getAsFile());
-        }
-        MageTabDocumentSet badMageTabDocumentSet = MageTabParser.INSTANCE.parse(badMageTabFileSet);
-        assertTrue(badMageTabDocumentSet.getValidationResult().isValid());
-        CaArrayFileSet badCaarrayFileSet = TestMageTabSets.getFileSet(badMageTabFileSet);
-        ValidationResult badValidationResult = this.translator.validate(badMageTabDocumentSet, badCaarrayFileSet);
-        FileValidationResult badSdrfFileValidationResult = badValidationResult.getFileValidationResult(
-                MageTabDataFiles.BAD_VOCABULARY_TERM_SOURCES_SDRF);
-        assertNotNull(badSdrfFileValidationResult);
-        assertFalse(badValidationResult.isValid());
-        assertEquals(2, badSdrfFileValidationResult.getMessages().size());
-        assertTrue(badSdrfFileValidationResult.getMessages().get(0).getMessage().indexOf("all Material Types must come from the") >= 0);
-        assertTrue(badSdrfFileValidationResult.getMessages().get(1).getMessage().indexOf("or the Term Source should be omitted") >= 0);
-        FileValidationResult badIdfFileValidationResult = badValidationResult.getFileValidationResult(MageTabDataFiles.BAD_VOCABULARY_TERM_SOURCES_IDF);
-        assertNotNull(badIdfFileValidationResult);
-        assertEquals(1, badIdfFileValidationResult.getMessages().size());
-        assertTrue(badIdfFileValidationResult.getMessages().get(0).getMessage().indexOf("All Protocol Types must come from the") >= 0);
+        final MageTabFileSet badMageTabFileSet = TestMageTabSets.BAD_VOCABULARY_TERM_SOURCES_FILE_SET;
+        for (final FileRef f : badMageTabFileSet.getAllFiles()) {
+            this.fileAccessServiceStub.add(f.getAsFile());
+            final MageTabDocumentSet badMageTabDocumentSet = MageTabParser.INSTANCE.parse(badMageTabFileSet);
+            assertTrue(badMageTabDocumentSet.getValidationResult().isValid());
+            final CaArrayFileSet badCaarrayFileSet = TestMageTabSets.getFileSet(badMageTabFileSet);
+            final ValidationResult badValidationResult = this.translator.validate(badMageTabDocumentSet, badCaarrayFileSet);
+            final FileValidationResult badSdrfFileValidationResult = badValidationResult.getFileValidationResult(
+                    MageTabDataFiles.BAD_VOCABULARY_TERM_SOURCES_SDRF.getName());
+            assertNotNull(badSdrfFileValidationResult);
+            assertFalse(badValidationResult.isValid());
+            assertEquals(2, badSdrfFileValidationResult.getMessages().size());
+            assertTrue(badSdrfFileValidationResult.getMessages().get(0).getMessage().indexOf("all Material Types must come from the") >= 0);
+            assertTrue(badSdrfFileValidationResult.getMessages().get(1).getMessage().indexOf("or the Term Source should be omitted") >= 0);
+            final FileValidationResult badIdfFileValidationResult = badValidationResult.getFileValidationResult(MageTabDataFiles.BAD_VOCABULARY_TERM_SOURCES_IDF.getName());
+            assertNotNull(badIdfFileValidationResult);
+            assertEquals(1, badIdfFileValidationResult.getMessages().size());
+            assertTrue(badIdfFileValidationResult.getMessages().get(0).getMessage().indexOf("All Protocol Types must come from the") >= 0);
 
-        // positive testing
-        MageTabFileSet goodMageTabFileSet = TestMageTabSets.GOOD_VOCABULARY_TERM_SOURCES_FILE_SET;
-        for (FileRef f : goodMageTabFileSet.getAllFiles()) {
-            fileAccessServiceStub.add(f.getAsFile());
+            // positive testing
+            final MageTabFileSet goodMageTabFileSet = TestMageTabSets.GOOD_VOCABULARY_TERM_SOURCES_FILE_SET;
+            for (final FileRef fref : goodMageTabFileSet.getAllFiles()) {
+                this.fileAccessServiceStub.add(fref.getAsFile());
+            }
+            final MageTabDocumentSet goodMageTabDocumentSet = MageTabParser.INSTANCE.parse(goodMageTabFileSet);
+            assertTrue(goodMageTabDocumentSet.getValidationResult().isValid());
+            final CaArrayFileSet goodCaarrayFileSet = TestMageTabSets.getFileSet(goodMageTabFileSet);
+            final ValidationResult goodValidationResult = this.translator.validate(goodMageTabDocumentSet, goodCaarrayFileSet);
+            final FileValidationResult goodSdrfFileValidationResult = goodValidationResult.getFileValidationResult(
+                    MageTabDataFiles.GOOD_VOCABULARY_TERM_SOURCES_SDRF.getName());
+            assertNull(goodSdrfFileValidationResult);
+
+            final CaArrayTranslationResult goodCaArrayTranslationResult = this.translator.translate(goodMageTabDocumentSet, goodCaarrayFileSet);
+            final Collection<Experiment> investigationsCollection = goodCaArrayTranslationResult.getInvestigations();
+            assertTrue("There should only be one experiment.", investigationsCollection.size() == 1);
+            final Experiment experiment = investigationsCollection.iterator().next();
+            final Investigation investigation = goodMageTabDocumentSet.getIdfDocument(MageTabDataFiles.GOOD_VOCABULARY_TERM_SOURCES_IDF.getName()).getInvestigation();
+            final List<Protocol> protocols = investigation.getProtocols();
+            final Protocol protocol = protocols.get(0);
+            final String protocolTypeTermSourceUrl = protocol.getType().getTermSource().getFile();
+            assertEquals("The protocol term source is incorrect.", "http://mged.sourceforge.net/ontologies/MGEDOntology1.1.8.daml", protocolTypeTermSourceUrl);
+            final Set<Sample> samplesSet = experiment.getSamples();
+            assertTrue("There should only be one sample.", samplesSet.size() == 1);
+            final Set<Source> sourcesSet = experiment.getSources();
+            assertTrue("There should only be one source.", sourcesSet.size() == 1);
+            final Sample sample = samplesSet.iterator().next();
+            final Source source = sourcesSet.iterator().next();
+            assertEquals("The sample organism is incorrect.", "Homo sapiens", sample.getOrganism().getScientificName());
+            assertEquals("The sample organism term source is incorrect.", "http://ncicb.nci.nih.gov/", sample.getOrganism().getTermSource().getUrl());
+            assertEquals("The source material type term source is incorrect.", "http://mged.sourceforge.net/ontologies/MGEDOntology1.1.8.daml", source.getMaterialType().getSource().getUrl());
         }
-        MageTabDocumentSet goodMageTabDocumentSet = MageTabParser.INSTANCE.parse(goodMageTabFileSet);
-        assertTrue(goodMageTabDocumentSet.getValidationResult().isValid());
-        CaArrayFileSet goodCaarrayFileSet = TestMageTabSets.getFileSet(goodMageTabFileSet);
-        ValidationResult goodValidationResult = this.translator.validate(goodMageTabDocumentSet, goodCaarrayFileSet);
-        FileValidationResult goodSdrfFileValidationResult = goodValidationResult.getFileValidationResult(
-                MageTabDataFiles.GOOD_VOCABULARY_TERM_SOURCES_SDRF);
-        assertNull(goodSdrfFileValidationResult);
-        
-        CaArrayTranslationResult goodCaArrayTranslationResult = this.translator.translate(goodMageTabDocumentSet, goodCaarrayFileSet);
-        Collection<Experiment> investigationsCollection = goodCaArrayTranslationResult.getInvestigations();
-        assertTrue("There should only be one experiment.", investigationsCollection.size() == 1);
-        Experiment experiment = investigationsCollection.iterator().next();
-        Investigation investigation = goodMageTabDocumentSet.getIdfDocument(MageTabDataFiles.GOOD_VOCABULARY_TERM_SOURCES_IDF.getName()).getInvestigation();
-        List<Protocol> protocols = investigation.getProtocols();
-        Protocol protocol = protocols.get(0);
-        String protocolTypeTermSourceUrl = protocol.getType().getTermSource().getFile();
-        assertEquals("The protocol term source is incorrect.", "http://mged.sourceforge.net/ontologies/MGEDOntology1.1.8.daml", protocolTypeTermSourceUrl);
-        Set<Sample> samplesSet = experiment.getSamples();
-        assertTrue("There should only be one sample.", samplesSet.size() == 1);
-        Set<Source> sourcesSet = experiment.getSources();
-        assertTrue("There should only be one source.", sourcesSet.size() == 1);
-        Sample sample = samplesSet.iterator().next();
-        Source source = sourcesSet.iterator().next();
-        assertEquals("The sample organism is incorrect.", "Homo sapiens", sample.getOrganism().getScientificName());
-        assertEquals("The sample organism term source is incorrect.", "http://ncicb.nci.nih.gov/", sample.getOrganism().getTermSource().getUrl());
-        assertEquals("The source material type term source is incorrect.", "http://mged.sourceforge.net/ontologies/MGEDOntology1.1.8.daml", source.getMaterialType().getSource().getUrl());
     }
 
     @Test
     public void testDefect17200() throws InvalidDataException, MageTabParsingException {
         MageTabFileSet mageTabSet = TestMageTabSets.DEFECT_17200;
-        for (FileRef f : mageTabSet.getAllFiles()) {
-            fileAccessServiceStub.add(f.getAsFile());
+        for (final FileRef f : mageTabSet.getAllFiles()) {
+            this.fileAccessServiceStub.add(f.getAsFile());
         }
         MageTabDocumentSet docSet = MageTabParser.INSTANCE.parse(mageTabSet);
         assertTrue(docSet.getValidationResult().isValid());
         CaArrayFileSet fileSet = TestMageTabSets.getFileSet(TestMageTabSets.DEFECT_17200);
         ValidationResult result = this.translator.validate(docSet, fileSet);
         assertFalse(result.isValid());
-        FileValidationResult fileResult = result.getFileValidationResult(MageTabDataFiles.DEFECT_17200_GPR);
+        FileValidationResult fileResult = result.getFileValidationResult(MageTabDataFiles.DEFECT_17200_GPR.getName());
         assertNotNull(fileResult);
         assertFalse(result.isValid());
         assertEquals(1, fileResult.getMessages().size());
         assertTrue(fileResult.getMessages().get(0).getMessage().startsWith("This file is not correctly referenced"));
-        fileResult = result.getFileValidationResult(GenepixArrayDataFiles.GPR_3_0_6);
+        fileResult = result.getFileValidationResult(GenepixArrayDataFiles.GPR_3_0_6.getName());
         assertNotNull(fileResult);
         assertFalse(result.isValid());
         assertEquals(1, fileResult.getMessages().size());
@@ -326,7 +362,7 @@ public class MageTabTranslatorTest extends AbstractServiceTest {
         mageTabSet = new MageTabFileSet();
         mageTabSet.addNativeData(new JavaIOFileRef(MageTabDataFiles.DEFECT_17200_GPR));
         fileSet = new CaArrayFileSet();
-        fileSet.add(fileAccessServiceStub.add(MageTabDataFiles.DEFECT_17200_GPR));
+        fileSet.add(this.fileAccessServiceStub.add(MageTabDataFiles.DEFECT_17200_GPR));
         docSet = MageTabParser.INSTANCE.parse(mageTabSet);
         assertTrue(docSet.getValidationResult().isValid());
         result = this.translator.validate(docSet, fileSet);
@@ -334,39 +370,42 @@ public class MageTabTranslatorTest extends AbstractServiceTest {
     }
 
     /**
-     * See @see <a href="https://gforge.nci.nih.gov/tracker/?func=detail&aid=27306&group_id=305&atid=1344">Defect 27306</a>
+     * See @see <a href="https://gforge.nci.nih.gov/tracker/?func=detail&aid=27306&group_id=305&atid=1344">Defect
+     * 27306</a>
+     * 
      * @throws InvalidDataException
      * @throws MageTabParsingException
      */
     @Test
-    public void testThatSecondDerivedFileGetsLinkedToFirstDerivedFile() throws InvalidDataException, MageTabParsingException {
+    public void testThatSecondDerivedFileGetsLinkedToFirstDerivedFile() throws InvalidDataException,
+    MageTabParsingException {
         // Prepare the input data
 
-        ((MageTabTranslatorBean) translator).setDaoFactory(new LocalDaoFactoryStub2());
+        ((MageTabTranslatorBean) this.translator).setDaoFactory(new LocalDaoFactoryStub2());
 
-        MageTabFileSet mageTabSet = TestMageTabSets.DEFECT_27306_INPUT_SET;
-        for (FileRef f : mageTabSet.getAllFiles()) {
-            fileAccessServiceStub.add(f.getAsFile());
+        final MageTabFileSet mageTabSet = TestMageTabSets.DEFECT_27306_INPUT_SET;
+        for (final FileRef f : mageTabSet.getAllFiles()) {
+            this.fileAccessServiceStub.add(f.getAsFile());
         }
 
-        MageTabDocumentSet docSet = MageTabParser.INSTANCE.parse(mageTabSet);
-        CaArrayFileSet caArrayFileSet = TestMageTabSets.getFileSet(mageTabSet);
+        final MageTabDocumentSet docSet = MageTabParser.INSTANCE.parse(mageTabSet);
+        final CaArrayFileSet caArrayFileSet = TestMageTabSets.getFileSet(mageTabSet);
 
         // Call the method under test
 
-        CaArrayTranslationResult translationResult = this.translator.translate(docSet, caArrayFileSet);
+        final CaArrayTranslationResult translationResult = this.translator.translate(docSet, caArrayFileSet);
 
         // Check the results
 
-        Experiment experiment = translationResult.getInvestigations().iterator().next();
-        Hybridization hybridization = experiment.getHybridizations().iterator().next();
+        final Experiment experiment = translationResult.getInvestigations().iterator().next();
+        final Hybridization hybridization = experiment.getHybridizations().iterator().next();
 
-        RawArrayData rawData = hybridization.getRawDataCollection().iterator().next();
+        final RawArrayData rawData = hybridization.getRawDataCollection().iterator().next();
 
         DerivedArrayData level2Data = null;
         DerivedArrayData level3Data = null;
-        for (DerivedArrayData derivedData : hybridization.getDerivedDataCollection()) {
-            String name = derivedData.getName();
+        for (final DerivedArrayData derivedData : hybridization.getDerivedDataCollection()) {
+            final String name = derivedData.getName();
             if (name.contains("level2")) {
                 level2Data = derivedData;
             } else if (name.contains("level3")) {
@@ -374,19 +413,20 @@ public class MageTabTranslatorTest extends AbstractServiceTest {
             }
         }
 
-        AbstractArrayData level2Parent = level2Data.getDerivedFromArrayDataCollection().iterator().next();
+        final AbstractArrayData level2Parent = level2Data.getDerivedFromArrayDataCollection().iterator().next();
         assertEquals(rawData, level2Parent);
 
-        AbstractArrayData level3Parent = level3Data.getDerivedFromArrayDataCollection().iterator().next();
+        final AbstractArrayData level3Parent = level3Data.getDerivedFromArrayDataCollection().iterator().next();
         assertEquals(level2Data, level3Parent);
     }
 
     @Test
     public void testSpecificationDocuments() throws Exception {
-        CaArrayFileSet fileSet = TestMageTabSets.getFileSet(TestMageTabSets.MAGE_TAB_SPECIFICATION_INPUT_SET);
-        MageTabDocumentSet docSet = MageTabParser.INSTANCE.parse(TestMageTabSets.MAGE_TAB_SPECIFICATION_INPUT_SET);
-        CaArrayTranslationResult result = this.translator.translate(docSet, fileSet);
-        Experiment experiment = result.getInvestigations().iterator().next();
+        final CaArrayFileSet fileSet = TestMageTabSets.getFileSet(TestMageTabSets.MAGE_TAB_SPECIFICATION_INPUT_SET);
+        final MageTabDocumentSet docSet = MageTabParser.INSTANCE
+        .parse(TestMageTabSets.MAGE_TAB_SPECIFICATION_INPUT_SET);
+        final CaArrayTranslationResult result = this.translator.translate(docSet, fileSet);
+        final Experiment experiment = result.getInvestigations().iterator().next();
         assertNotNull(experiment.getDescription());
         assertTrue(experiment.getDescription().startsWith("&lt;&gt;Gene expression of TK6"));
         assertEquals(8, experiment.getExperimentContacts().size());
@@ -397,7 +437,7 @@ public class MageTabTranslatorTest extends AbstractServiceTest {
         assertEquals(6, experiment.getExtracts().size());
         assertEquals(6, experiment.getLabeledExtracts().size());
         assertEquals(6, experiment.getHybridizations().size());
-        for (Hybridization hyb : experiment.getHybridizations()) {
+        for (final Hybridization hyb : experiment.getHybridizations()) {
             assertNotNull(hyb.getArray().getDesign());
             assertEquals(6, hyb.getDerivedDataCollection().iterator().next().getDerivedFromArrayDataCollection().size());
         }
@@ -405,34 +445,35 @@ public class MageTabTranslatorTest extends AbstractServiceTest {
 
     @Test
     public void testSpecificationTermCaseSensitivityDocuments() throws Exception {
-        CaArrayFileSet fileSet = TestMageTabSets
-                .getFileSet(TestMageTabSets.MAGE_TAB_SPECIFICATION_CASE_SENSITIVITY_INPUT_SET);
-        MageTabDocumentSet docSet = MageTabParser.INSTANCE
-                .parse(TestMageTabSets.MAGE_TAB_SPECIFICATION_CASE_SENSITIVITY_INPUT_SET);
-        CaArrayTranslationResult result = this.translator.translate(docSet, fileSet);
-        Collection<Term> terms = result.getTerms();
+        final CaArrayFileSet fileSet = TestMageTabSets
+        .getFileSet(TestMageTabSets.MAGE_TAB_SPECIFICATION_CASE_SENSITIVITY_INPUT_SET);
+        final MageTabDocumentSet docSet = MageTabParser.INSTANCE
+        .parse(TestMageTabSets.MAGE_TAB_SPECIFICATION_CASE_SENSITIVITY_INPUT_SET);
+        final CaArrayTranslationResult result = this.translator.translate(docSet, fileSet);
+        final Collection<Term> terms = result.getTerms();
         @SuppressWarnings("unchecked")
-        Collection<Term> matchingTerms = CollectionUtils.select(terms, new Predicate() {
+        final Collection<Term> matchingTerms = CollectionUtils.select(terms, new Predicate() {
+            @Override
             public boolean evaluate(Object o) {
-                Term t = (Term) o;
+                final Term t = (Term) o;
                 return t.getValue().equalsIgnoreCase("fresh_sample");
             }
         });
         assertTrue(matchingTerms.size() >= 1);
-        Term oneMatch = matchingTerms.iterator().next();
-        for (Term eachMatch : matchingTerms) {
+        final Term oneMatch = matchingTerms.iterator().next();
+        for (final Term eachMatch : matchingTerms) {
             assertTrue(oneMatch == eachMatch);
         }
     }
 
     @Test
     public void testSpecificationDocumentsNoExpDesc() throws Exception {
-        CaArrayFileSet fileSet = TestMageTabSets
-                .getFileSet(TestMageTabSets.MAGE_TAB_SPECIFICATION_NO_EXP_DESC_INPUT_SET);
-        MageTabDocumentSet docSet = MageTabParser.INSTANCE
-                .parse(TestMageTabSets.MAGE_TAB_SPECIFICATION_NO_EXP_DESC_INPUT_SET);
-        CaArrayTranslationResult result = this.translator.translate(docSet, fileSet);
-        Experiment experiment = result.getInvestigations().iterator().next();
+        final CaArrayFileSet fileSet = TestMageTabSets
+        .getFileSet(TestMageTabSets.MAGE_TAB_SPECIFICATION_NO_EXP_DESC_INPUT_SET);
+        final MageTabDocumentSet docSet = MageTabParser.INSTANCE
+        .parse(TestMageTabSets.MAGE_TAB_SPECIFICATION_NO_EXP_DESC_INPUT_SET);
+        final CaArrayTranslationResult result = this.translator.translate(docSet, fileSet);
+        final Experiment experiment = result.getInvestigations().iterator().next();
         assertNull(experiment.getDescription());
         assertEquals(8, experiment.getExperimentContacts().size());
         assertEquals(1, experiment.getExperimentDesignTypes().size());
@@ -442,19 +483,19 @@ public class MageTabTranslatorTest extends AbstractServiceTest {
         assertEquals(6, experiment.getExtracts().size());
         assertEquals(6, experiment.getLabeledExtracts().size());
         assertEquals(6, experiment.getHybridizations().size());
-        for (Hybridization hyb : experiment.getHybridizations()) {
+        for (final Hybridization hyb : experiment.getHybridizations()) {
             assertNotNull(hyb.getArray().getDesign());
         }
     }
 
     @Test
     public void testSpecificationDocumentsNoArrayDesignRef() throws Exception {
-        CaArrayFileSet fileSet = TestMageTabSets
-                .getFileSet(TestMageTabSets.MAGE_TAB_SPECIFICATION_NO_ARRAY_DESIGN_INPUT_SET);
-        MageTabDocumentSet docSet = MageTabParser.INSTANCE
-                .parse(TestMageTabSets.MAGE_TAB_SPECIFICATION_NO_ARRAY_DESIGN_INPUT_SET);
-        CaArrayTranslationResult result = this.translator.translate(docSet, fileSet);
-        Experiment experiment = result.getInvestigations().iterator().next();
+        final CaArrayFileSet fileSet = TestMageTabSets
+        .getFileSet(TestMageTabSets.MAGE_TAB_SPECIFICATION_NO_ARRAY_DESIGN_INPUT_SET);
+        final MageTabDocumentSet docSet = MageTabParser.INSTANCE
+        .parse(TestMageTabSets.MAGE_TAB_SPECIFICATION_NO_ARRAY_DESIGN_INPUT_SET);
+        final CaArrayTranslationResult result = this.translator.translate(docSet, fileSet);
+        final Experiment experiment = result.getInvestigations().iterator().next();
         assertNotNull(experiment.getDescription());
         assertTrue(experiment.getDescription().startsWith("&lt;&gt;Gene expression of TK6"));
         assertFalse(experiment.getDescription().contains("<"));
@@ -466,17 +507,17 @@ public class MageTabTranslatorTest extends AbstractServiceTest {
         assertEquals(6, experiment.getExtracts().size());
         assertEquals(6, experiment.getLabeledExtracts().size());
         assertEquals(6, experiment.getHybridizations().size());
-        for (Hybridization hyb : experiment.getHybridizations()) {
+        for (final Hybridization hyb : experiment.getHybridizations()) {
             assertNull(hyb.getArray().getDesign().getName());
         }
     }
 
     @Test
     public void testSpecificationDocumentsWithDerivedData() throws Exception {
-        CaArrayFileSet fileSet = TestMageTabSets.getFileSet(TestMageTabSets.DERIVED_DATA_INPUT_SET);
-        MageTabDocumentSet docSet = MageTabParser.INSTANCE.parse(TestMageTabSets.DERIVED_DATA_INPUT_SET);
-        CaArrayTranslationResult result = this.translator.translate(docSet, fileSet);
-        Experiment experiment = result.getInvestigations().iterator().next();
+        final CaArrayFileSet fileSet = TestMageTabSets.getFileSet(TestMageTabSets.DERIVED_DATA_INPUT_SET);
+        final MageTabDocumentSet docSet = MageTabParser.INSTANCE.parse(TestMageTabSets.DERIVED_DATA_INPUT_SET);
+        final CaArrayTranslationResult result = this.translator.translate(docSet, fileSet);
+        final Experiment experiment = result.getInvestigations().iterator().next();
         assertNotNull(experiment.getDescription());
         assertTrue(experiment.getDescription().startsWith("Gene expression of TK6"));
         assertEquals(8, experiment.getExperimentContacts().size());
@@ -487,16 +528,16 @@ public class MageTabTranslatorTest extends AbstractServiceTest {
         assertEquals(1, experiment.getExtracts().size());
         assertEquals(1, experiment.getLabeledExtracts().size());
         assertEquals(1, experiment.getHybridizations().size());
-        Hybridization hyb = experiment.getHybridizations().iterator().next();
+        final Hybridization hyb = experiment.getHybridizations().iterator().next();
         assertNotNull(hyb.getArray().getDesign());
         assertEquals(2, hyb.getDerivedDataCollection().size());
-        Iterator<DerivedArrayData> derivedArrayDataIterator = hyb.getDerivedDataCollection().iterator();
-        DerivedArrayData derivedData = derivedArrayDataIterator.next();
-        DerivedArrayData derivedData2 = derivedArrayDataIterator.next();
+        final Iterator<DerivedArrayData> derivedArrayDataIterator = hyb.getDerivedDataCollection().iterator();
+        final DerivedArrayData derivedData = derivedArrayDataIterator.next();
+        final DerivedArrayData derivedData2 = derivedArrayDataIterator.next();
         assertEquals(1, derivedData.getDerivedFromArrayDataCollection().size());
         assertEquals(1, derivedData2.getDerivedFromArrayDataCollection().size());
-        AbstractArrayData derivedFrom = derivedData.getDerivedFromArrayDataCollection().iterator().next();
-        AbstractArrayData derivedFrom2 = derivedData2.getDerivedFromArrayDataCollection().iterator().next();
+        final AbstractArrayData derivedFrom = derivedData.getDerivedFromArrayDataCollection().iterator().next();
+        final AbstractArrayData derivedFrom2 = derivedData2.getDerivedFromArrayDataCollection().iterator().next();
 
         // not sure which order the derived from objects are returned - one derived data is derived from
         // raw data and the other is derived from the other derived data, but we don't know which derived data
@@ -513,17 +554,17 @@ public class MageTabTranslatorTest extends AbstractServiceTest {
 
     @Test
     public void testTcgaBroadDocuments() throws Exception {
-        CaArrayFileSet fileSet = TestMageTabSets.getFileSet(TestMageTabSets.TCGA_BROAD_INPUT_SET);
-        MageTabDocumentSet docSet = MageTabParser.INSTANCE.parse(TestMageTabSets.TCGA_BROAD_INPUT_SET);
-        CaArrayTranslationResult result = this.translator.translate(docSet, fileSet);
+        final CaArrayFileSet fileSet = TestMageTabSets.getFileSet(TestMageTabSets.TCGA_BROAD_INPUT_SET);
+        final MageTabDocumentSet docSet = MageTabParser.INSTANCE.parse(TestMageTabSets.TCGA_BROAD_INPUT_SET);
+        final CaArrayTranslationResult result = this.translator.translate(docSet, fileSet);
 
-        Set<Term> terms = new HashSet<Term>();
+        final Set<Term> terms = new HashSet<Term>();
         terms.addAll(result.getTerms());
         assertEquals(10, terms.size());
 
         assertEquals(1, result.getInvestigations().size());
-        Experiment investigation = result.getInvestigations().iterator().next();
-        IdfDocument idf = docSet.getIdfDocuments().iterator().next();
+        final Experiment investigation = result.getInvestigations().iterator().next();
+        final IdfDocument idf = docSet.getIdfDocuments().iterator().next();
         assertEquals(idf.getInvestigation().getTitle(), investigation.getTitle());
 
         checkTcgaBroadBioMaterials(investigation);
@@ -532,14 +573,14 @@ public class MageTabTranslatorTest extends AbstractServiceTest {
 
     private void checkTcgaBroadHybridizations(Experiment investigation) {
         assertEquals(1, investigation.getArrayDesigns().size());
-        ArrayDesign arrayDesign = investigation.getArrayDesigns().iterator().next();
-        for (LabeledExtract labeledExtract : investigation.getLabeledExtracts()) {
-            Hybridization hybridization = labeledExtract.getHybridizations().iterator().next();
+        final ArrayDesign arrayDesign = investigation.getArrayDesigns().iterator().next();
+        for (final LabeledExtract labeledExtract : investigation.getLabeledExtracts()) {
+            final Hybridization hybridization = labeledExtract.getHybridizations().iterator().next();
             assertEquals(arrayDesign, hybridization.getArray().getDesign());
-            RawArrayData celData = hybridization.getRawDataCollection().iterator().next();
+            final RawArrayData celData = hybridization.getRawDataCollection().iterator().next();
             assertEquals(celData.getDataFile().getName(), celData.getName());
         }
-        Set<Hybridization> hybridizations = investigation.getHybridizations();
+        final Set<Hybridization> hybridizations = investigation.getHybridizations();
         assertEquals(26, hybridizations.size());
         checkHybridizationsHaveRawDataAndFiles(hybridizations);
     }
@@ -553,10 +594,10 @@ public class MageTabTranslatorTest extends AbstractServiceTest {
 
     @Test
     public void testGskTestDocuments() throws Exception {
-        CaArrayFileSet fileSet = TestMageTabSets.getFileSet(TestMageTabSets.GSK_TEST_INPUT_SET);
-        MageTabDocumentSet docSet = MageTabParser.INSTANCE.parse(TestMageTabSets.GSK_TEST_INPUT_SET);
-        CaArrayTranslationResult result = this.translator.translate(docSet, fileSet);
-        Experiment experiment = result.getInvestigations().iterator().next();
+        final CaArrayFileSet fileSet = TestMageTabSets.getFileSet(TestMageTabSets.GSK_TEST_INPUT_SET);
+        final MageTabDocumentSet docSet = MageTabParser.INSTANCE.parse(TestMageTabSets.GSK_TEST_INPUT_SET);
+        final CaArrayTranslationResult result = this.translator.translate(docSet, fileSet);
+        final Experiment experiment = result.getInvestigations().iterator().next();
         assertEquals(6, experiment.getSources().size());
         assertEquals(6, experiment.getSamples().size());
         assertEquals(6, experiment.getExtracts().size());
@@ -566,25 +607,25 @@ public class MageTabTranslatorTest extends AbstractServiceTest {
 
     @Test
     public void testTranslateRawArrayDataWithoutDerivedData() throws Exception {
-        CaArrayFileSet fileSet = TestMageTabSets.getFileSet(TestMageTabSets.PERFORMANCE_TEST_10_INPUT_SET);
-        MageTabDocumentSet docSet = MageTabParser.INSTANCE.parse(TestMageTabSets.PERFORMANCE_TEST_10_INPUT_SET);
-        CaArrayTranslationResult result = this.translator.translate(docSet, fileSet);
+        final CaArrayFileSet fileSet = TestMageTabSets.getFileSet(TestMageTabSets.PERFORMANCE_TEST_10_INPUT_SET);
+        final MageTabDocumentSet docSet = MageTabParser.INSTANCE.parse(TestMageTabSets.PERFORMANCE_TEST_10_INPUT_SET);
+        final CaArrayTranslationResult result = this.translator.translate(docSet, fileSet);
         assertEquals(1, result.getInvestigations().size());
-        Experiment investigation = result.getInvestigations().iterator().next();
+        final Experiment investigation = result.getInvestigations().iterator().next();
         assertEquals(10, investigation.getHybridizations().size());
         checkHybridizationsHaveRawDataAndFiles(investigation.getHybridizations());
     }
 
     @Test
     public void testTranslateDataMatrixCopyNumberData() throws Exception {
-        CaArrayFileSet fileSet = TestMageTabSets.getFileSet(TestMageTabSets.GOOD_DATA_MATRIX_COPY_NUMBER_INPUT_SET);
-        MageTabDocumentSet docSet = MageTabParser.INSTANCE.parse(TestMageTabSets.GOOD_DATA_MATRIX_COPY_NUMBER_INPUT_SET);
-        CaArrayTranslationResult result = this.translator.translate(docSet, fileSet);
+        final CaArrayFileSet fileSet = TestMageTabSets.getFileSet(TestMageTabSets.GOOD_DATA_MATRIX_COPY_NUMBER_INPUT_SET);
+        final MageTabDocumentSet docSet = MageTabParser.INSTANCE.parse(TestMageTabSets.GOOD_DATA_MATRIX_COPY_NUMBER_INPUT_SET);
+        final CaArrayTranslationResult result = this.translator.translate(docSet, fileSet);
         assertEquals(1, result.getInvestigations().size());
-        Experiment investigation = result.getInvestigations().iterator().next();
-        Set<Hybridization> hybridizations = investigation.getHybridizations();
+        final Experiment investigation = result.getInvestigations().iterator().next();
+        final Set<Hybridization> hybridizations = investigation.getHybridizations();
         assertEquals(3, hybridizations.size());
-        for (Hybridization hybridization : hybridizations) {
+        for (final Hybridization hybridization : hybridizations) {
             assertTrue(hybridization.getRawDataCollection().isEmpty());
             assertFalse(hybridization.getDerivedDataCollection().isEmpty());
             assertNotNull(hybridization.getDerivedDataCollection().iterator().next().getDataFile());
@@ -593,14 +634,15 @@ public class MageTabTranslatorTest extends AbstractServiceTest {
 
     @Test
     public void testTranslatePersonsWithNullAffiliation() throws Exception {
-        CaArrayFileSet fileSet = TestMageTabSets.getFileSet(TestMageTabSets.MAGE_TAB_SPECIFICATION_INPUT_SET);
-        MageTabDocumentSet docSet = MageTabParser.INSTANCE.parse(TestMageTabSets.MAGE_TAB_SPECIFICATION_INPUT_SET);
-        docSet.getIdfDocuments().iterator().next().getInvestigation().getPersons().iterator().next().setAffiliation(
-                null);
-        CaArrayTranslationResult result = this.translator.translate(docSet, fileSet);
-        Experiment experiment = result.getInvestigations().iterator().next();
-        for (ExperimentContact contact : experiment.getExperimentContacts()) {
-            for (Organization organization : contact.getContact().getAffiliations()) {
+        final CaArrayFileSet fileSet = TestMageTabSets.getFileSet(TestMageTabSets.MAGE_TAB_SPECIFICATION_INPUT_SET);
+        final MageTabDocumentSet docSet = MageTabParser.INSTANCE
+        .parse(TestMageTabSets.MAGE_TAB_SPECIFICATION_INPUT_SET);
+        docSet.getIdfDocuments().iterator().next().getInvestigation().getPersons().iterator().next()
+        .setAffiliation(null);
+        final CaArrayTranslationResult result = this.translator.translate(docSet, fileSet);
+        final Experiment experiment = result.getInvestigations().iterator().next();
+        for (final ExperimentContact contact : experiment.getExperimentContacts()) {
+            for (final Organization organization : contact.getContact().getAffiliations()) {
                 assertNotNull(organization);
             }
         }
@@ -608,12 +650,13 @@ public class MageTabTranslatorTest extends AbstractServiceTest {
 
     @Test
     public void testTranslateBioMaterialSourceDescriptions() throws Exception {
-        CaArrayFileSet fileSet = TestMageTabSets.getFileSet(TestMageTabSets.MAGE_TAB_SPECIFICATION_INPUT_SET);
-        MageTabDocumentSet docSet = MageTabParser.INSTANCE.parse(TestMageTabSets.MAGE_TAB_SPECIFICATION_INPUT_SET);
-        SdrfDocument sdrfDocument = docSet.getSdrfDocuments().iterator().next();
+        final CaArrayFileSet fileSet = TestMageTabSets.getFileSet(TestMageTabSets.MAGE_TAB_SPECIFICATION_INPUT_SET);
+        final MageTabDocumentSet docSet = MageTabParser.INSTANCE
+        .parse(TestMageTabSets.MAGE_TAB_SPECIFICATION_INPUT_SET);
+        final SdrfDocument sdrfDocument = docSet.getSdrfDocuments().iterator().next();
         addDescriptionToBioMaterials(sdrfDocument);
-        CaArrayTranslationResult result = this.translator.translate(docSet, fileSet);
-        Experiment experiment = result.getInvestigations().iterator().next();
+        final CaArrayTranslationResult result = this.translator.translate(docSet, fileSet);
+        final Experiment experiment = result.getInvestigations().iterator().next();
         checkDescription(experiment.getSources(), "Source description");
         checkDescription(experiment.getSamples(), "Sample description");
         checkDescription(experiment.getExtracts(), "Extract description");
@@ -622,7 +665,7 @@ public class MageTabTranslatorTest extends AbstractServiceTest {
 
     private void checkDescription(Set<? extends gov.nih.nci.caarray.domain.sample.AbstractBioMaterial> materials,
             String description) {
-        for (gov.nih.nci.caarray.domain.sample.AbstractBioMaterial material : materials) {
+        for (final gov.nih.nci.caarray.domain.sample.AbstractBioMaterial material : materials) {
             assertEquals(description, material.getDescription());
         }
     }
@@ -635,13 +678,13 @@ public class MageTabTranslatorTest extends AbstractServiceTest {
     }
 
     private void addDescriptionToBioMaterials(List<? extends AbstractBioMaterial> materials, String description) {
-        for (AbstractBioMaterial material : materials) {
+        for (final AbstractBioMaterial material : materials) {
             material.setDescription(description);
         }
     }
 
     private void checkHybridizationsHaveRawDataAndFiles(Set<Hybridization> hybridizations) {
-        for (Hybridization hybridization : hybridizations) {
+        for (final Hybridization hybridization : hybridizations) {
             assertFalse(hybridization.getRawDataCollection().isEmpty());
             assertNotNull(hybridization.getRawDataCollection().iterator().next().getDataFile());
         }
@@ -649,98 +692,111 @@ public class MageTabTranslatorTest extends AbstractServiceTest {
 
     @Test
     public void testTranslateValid_Feature13141() throws Exception {
-        CaArrayFileSet fileSet = TestMageTabSets.getFileSet(TestMageTabSets.VALID_FEATURE_13141_INPUT_SET);
-        MageTabDocumentSet docSet = MageTabParser.INSTANCE.parse(TestMageTabSets.VALID_FEATURE_13141_INPUT_SET);
-        ValidationResult vResult = this.translator.validate(docSet, fileSet);
+        final CaArrayFileSet fileSet = TestMageTabSets.getFileSet(TestMageTabSets.VALID_FEATURE_13141_INPUT_SET);
+        final MageTabDocumentSet docSet = MageTabParser.INSTANCE.parse(TestMageTabSets.VALID_FEATURE_13141_INPUT_SET);
+        final ValidationResult vResult = this.translator.validate(docSet, fileSet);
         assertTrue(vResult.getMessages().isEmpty());
-        CaArrayTranslationResult tResult = this.translator.translate(docSet, fileSet);
-        assertEquals(1,tResult.getInvestigations().size());
-        Experiment e = tResult.getInvestigations().iterator().next();
+        final CaArrayTranslationResult tResult = this.translator.translate(docSet, fileSet);
+        assertEquals(1, tResult.getInvestigations().size());
+        final Experiment e = tResult.getInvestigations().iterator().next();
         assertEquals(6, e.getSamples().size());
-        for (Sample s : e.getSamples()) {
+        for (final Sample s : e.getSamples()) {
             assertNotNull(s.getExternalId());
         }
         boolean wasFound = false;
-        for (Source source : e.getSources()) {
+        for (final Source source : e.getSources()) {
             if (!(StringUtils.isEmpty(source.getDescription()))) {
                 assertEquals(2000, source.getDescription().length());
                 wasFound = true;
             }
         }
         assertTrue("the 2000 char source description was not found.", wasFound);
-        Set<Publication> publicationsSet = e.getPublications();
+        final Set<Publication> publicationsSet = e.getPublications();
         assertEquals(1, publicationsSet.size());
-        Publication publication = publicationsSet.iterator().next();
+        final Publication publication = publicationsSet.iterator().next();
         assertEquals(2000, publication.getAuthors().length());
     }
 
     @Test
     public void testTranslateInvalid_Feature13141() throws Exception {
-        CaArrayFileSet fileSet = TestMageTabSets.getFileSet(TestMageTabSets.INVALID_FEATURE_13141_INPUT_SET);
-        MageTabDocumentSet docSet = MageTabParser.INSTANCE.parse(TestMageTabSets.INVALID_FEATURE_13141_INPUT_SET);
-        ValidationResult vResult = this.translator.validate(docSet, fileSet);
+        final CaArrayFileSet fileSet = TestMageTabSets.getFileSet(TestMageTabSets.INVALID_FEATURE_13141_INPUT_SET);
+        final MageTabDocumentSet docSet = MageTabParser.INSTANCE.parse(TestMageTabSets.INVALID_FEATURE_13141_INPUT_SET);
+        final ValidationResult vResult = this.translator.validate(docSet, fileSet);
         assertFalse(vResult.getMessages().isEmpty());
         assertEquals(3, vResult.getMessages(ValidationMessage.Type.ERROR).size());
-        String string = "[ExternalSampleId] value '%s"
-                                            + "' is referenced multiple times (ExternalSampleId must be unique). "
-                                            + "Please correct and try again.";
-        assertEquals(String.format(string, "345"), vResult.getMessages(ValidationMessage.Type.ERROR).get(0).getMessage());
-        assertEquals(String.format(string, "234"), vResult.getMessages(ValidationMessage.Type.ERROR).get(1).getMessage());
-        assertEquals(String.format(string, "123"), vResult.getMessages(ValidationMessage.Type.ERROR).get(2).getMessage());
-        CaArrayTranslationResult result = this.translator.translate(docSet, fileSet);
+        final String string = "[ExternalSampleId] value '%s"
+            + "' is referenced multiple times (ExternalSampleId must be unique). "
+            + "Please correct and try again.";
+        assertEquals(String.format(string, "345"), vResult.getMessages(ValidationMessage.Type.ERROR).get(0)
+                .getMessage());
+        assertEquals(String.format(string, "234"), vResult.getMessages(ValidationMessage.Type.ERROR).get(1)
+                .getMessage());
+        assertEquals(String.format(string, "123"), vResult.getMessages(ValidationMessage.Type.ERROR).get(2)
+                .getMessage());
+        final CaArrayTranslationResult result = this.translator.translate(docSet, fileSet);
 
-        assertEquals(1,result.getInvestigations().size());
-        Experiment e = result.getInvestigations().iterator().next();
+        assertEquals(1, result.getInvestigations().size());
+        final Experiment e = result.getInvestigations().iterator().next();
         assertEquals(6, e.getSamples().size());
-        for (Sample s : e.getSamples()) {
+        for (final Sample s : e.getSamples()) {
             assertNotNull(s.getExternalId());
         }
     }
 
     @Test
     public void testValidateInvalidDuplicateTermSources() throws Exception {
-        CaArrayFileSet fileSet = TestMageTabSets.getFileSet(TestMageTabSets.INVALID_DUPLICATE_TERM_SOURCES_INPUT_SET);
-        MageTabDocumentSet docSet = MageTabParser.INSTANCE
-                .parse(TestMageTabSets.INVALID_DUPLICATE_TERM_SOURCES_INPUT_SET);
-        ValidationResult validationResult = this.translator.validate(docSet, fileSet);
+        final CaArrayFileSet fileSet = TestMageTabSets
+        .getFileSet(TestMageTabSets.INVALID_DUPLICATE_TERM_SOURCES_INPUT_SET);
+        final MageTabDocumentSet docSet = MageTabParser.INSTANCE
+        .parse(TestMageTabSets.INVALID_DUPLICATE_TERM_SOURCES_INPUT_SET);
+        final ValidationResult validationResult = this.translator.validate(docSet, fileSet);
         assertFalse(validationResult.getMessages().isEmpty());
         assertEquals(7, validationResult.getMessages(ValidationMessage.Type.ERROR).size());
-        String prototypeString =
-            "Redundant term source named '%s'. Term sources cannot have "
-            + "the same URL unless they have different versions, even if "
-            + "their names are different.";
-        assertEquals(String.format(prototypeString, "LM_3"), validationResult.getMessages(ValidationMessage.Type.ERROR).get(0).getMessage());
-        assertEquals(String.format(prototypeString, "LM_2"), validationResult.getMessages(ValidationMessage.Type.ERROR).get(1).getMessage());
-        assertEquals(String.format(prototypeString, "LM_1"), validationResult.getMessages(ValidationMessage.Type.ERROR).get(2).getMessage());
-        assertEquals(String.format(prototypeString, "LM"), validationResult.getMessages(ValidationMessage.Type.ERROR).get(3).getMessage());
-        assertEquals(String.format(prototypeString, "FOO2"), validationResult.getMessages(ValidationMessage.Type.ERROR).get(4).getMessage());
-        assertEquals(String.format(prototypeString, "FOO"), validationResult.getMessages(ValidationMessage.Type.ERROR).get(5).getMessage());
-        assertEquals("Duplicate term source name 'FOO'.", validationResult.getMessages(ValidationMessage.Type.ERROR).get(6).getMessage());
+        final String prototypeString = "Redundant term source named '%s'. Term sources cannot have "
+            + "the same URL unless they have different versions, even if " + "their names are different.";
+        assertEquals(String.format(prototypeString, "LM_3"), validationResult.getMessages(ValidationMessage.Type.ERROR)
+                .get(0).getMessage());
+        assertEquals(String.format(prototypeString, "LM_2"), validationResult.getMessages(ValidationMessage.Type.ERROR)
+                .get(1).getMessage());
+        assertEquals(String.format(prototypeString, "LM_1"), validationResult.getMessages(ValidationMessage.Type.ERROR)
+                .get(2).getMessage());
+        assertEquals(String.format(prototypeString, "LM"), validationResult.getMessages(ValidationMessage.Type.ERROR)
+                .get(3).getMessage());
+        assertEquals(String.format(prototypeString, "FOO2"), validationResult.getMessages(ValidationMessage.Type.ERROR)
+                .get(4).getMessage());
+        assertEquals(String.format(prototypeString, "FOO"), validationResult.getMessages(ValidationMessage.Type.ERROR)
+                .get(5).getMessage());
+        assertEquals("Duplicate term source name 'FOO'.", validationResult.getMessages(ValidationMessage.Type.ERROR)
+                .get(6).getMessage());
     }
 
     @Test
     public void testValidateExperimentDescriptionLength() throws Exception {
-        MageTabFileSet validMageTabFileSet = new MageTabFileSet();
+        final MageTabFileSet validMageTabFileSet = new MageTabFileSet();
         validMageTabFileSet.addIdf(new JavaIOFileRef(MageTabDataFiles.VALID_DESCRIPTION_LENGTH_IDF));
-        MageTabDocumentSet validDocSet = MageTabParser.INSTANCE.parse(validMageTabFileSet);
-        ValidationResult goodValidationResult = this.translator.validate(validDocSet, TestMageTabSets.getFileSet(validMageTabFileSet));
+        final MageTabDocumentSet validDocSet = MageTabParser.INSTANCE.parse(validMageTabFileSet);
+        final ValidationResult goodValidationResult = this.translator.validate(validDocSet,
+                TestMageTabSets.getFileSet(validMageTabFileSet));
         assertTrue(goodValidationResult.getMessages().isEmpty());
-        
-        MageTabFileSet invalidMageTabFileSet = new MageTabFileSet();
+
+        final MageTabFileSet invalidMageTabFileSet = new MageTabFileSet();
         invalidMageTabFileSet.addIdf(new JavaIOFileRef(MageTabDataFiles.INVALID_DESCRIPTION_LENGTH_IDF));
-        MageTabDocumentSet invalidDocSet = MageTabParser.INSTANCE.parse(invalidMageTabFileSet);
-        ValidationResult badValidationResult = this.translator.validate(invalidDocSet, TestMageTabSets.getFileSet(invalidMageTabFileSet));
+        final MageTabDocumentSet invalidDocSet = MageTabParser.INSTANCE.parse(invalidMageTabFileSet);
+        final ValidationResult badValidationResult = this.translator.validate(invalidDocSet,
+                TestMageTabSets.getFileSet(invalidMageTabFileSet));
         assertFalse(badValidationResult.getMessages().isEmpty());
         assertEquals(1, badValidationResult.getMessages(ValidationMessage.Type.ERROR).size());
-        assertEquals("The experiment description length of 2001 is greater than the allowed length of 2000.", badValidationResult.getMessages(ValidationMessage.Type.ERROR).get(0).getMessage());
+        assertEquals("The experiment description length of 2001 is greater than the allowed length of 2000.",
+                badValidationResult.getMessages(ValidationMessage.Type.ERROR).get(0).getMessage());
     }
-    
+
     @Test
     public void testExtendedFactorValues() throws Exception {
-        CaArrayFileSet fileSet = TestMageTabSets.getFileSet(TestMageTabSets.EXTENDED_FACTOR_VALUES_INPUT_SET);
-        MageTabDocumentSet docSet = MageTabParser.INSTANCE.parse(TestMageTabSets.EXTENDED_FACTOR_VALUES_INPUT_SET);
-        CaArrayTranslationResult result = this.translator.translate(docSet, fileSet);
-        Experiment experiment = result.getInvestigations().iterator().next();
+        final CaArrayFileSet fileSet = TestMageTabSets.getFileSet(TestMageTabSets.EXTENDED_FACTOR_VALUES_INPUT_SET);
+        final MageTabDocumentSet docSet = MageTabParser.INSTANCE
+        .parse(TestMageTabSets.EXTENDED_FACTOR_VALUES_INPUT_SET);
+        final CaArrayTranslationResult result = this.translator.translate(docSet, fileSet);
+        final Experiment experiment = result.getInvestigations().iterator().next();
         assertEquals(3, experiment.getFactors().size());
         assertEquals(3, experiment.getSamples().size());
         assertEquals(3, experiment.getHybridizations().size());
@@ -757,21 +813,21 @@ public class MageTabTranslatorTest extends AbstractServiceTest {
         verifyExtendedFactorValuesSampleParams(experiment.getSampleByName("Sample C"), "foo", null, "less", "mg",
                 "nothing", null);
         verifyExtendedFactorValuesHyb(experiment.getHybridizationByName("Hyb A"), "123", 5f, null, "years", "tissue",
-                "Name for: http://mged.sourceforge.net/ontologies/MGEDontology.php");
+        "Name for: http://mged.sourceforge.net/ontologies/MGEDontology.php");
         verifyExtendedFactorValuesHyb(experiment.getHybridizationByName("Hyb B"), "234", null, "a lot", "months",
                 "tissue", "Name for: http://mged.sourceforge.net/ontologies/MGEDontology.php");
         verifyExtendedFactorValuesHyb(experiment.getHybridizationByName("Hyb C"), "345", null, "2.2", null, "unknown",
                 null);
     }
-    
+
     @Test
     public void testRenamingTermSources() throws Exception {
-        CaArrayFileSet fileSet = TestMageTabSets.getFileSet(TestMageTabSets.RENAMING_TERM_SOURCES_INPUT_SET);
-        MageTabDocumentSet docSet = MageTabParser.INSTANCE.parse(TestMageTabSets.RENAMING_TERM_SOURCES_INPUT_SET);
-        CaArrayTranslationResult result = this.translator.translate(docSet, fileSet);
+        final CaArrayFileSet fileSet = TestMageTabSets.getFileSet(TestMageTabSets.RENAMING_TERM_SOURCES_INPUT_SET);
+        final MageTabDocumentSet docSet = MageTabParser.INSTANCE.parse(TestMageTabSets.RENAMING_TERM_SOURCES_INPUT_SET);
+        final CaArrayTranslationResult result = this.translator.translate(docSet, fileSet);
         boolean mgedAliasTermSourceWasFound = false;
-        for (Term term : result.getTerms()) {
-            TermSource termSource = term.getSource();
+        for (final Term term : result.getTerms()) {
+            final TermSource termSource = term.getSource();
             System.out.println("termSource.getName() =" + termSource.getName() + "=");
             if (termSource.getName().equals("Name for: http://mged.sourceforge.net/ontologies/MGEDontology.php")) {
                 mgedAliasTermSourceWasFound = true;
@@ -780,94 +836,104 @@ public class MageTabTranslatorTest extends AbstractServiceTest {
         assertTrue("The MGED alias TermSource name was not found.", mgedAliasTermSourceWasFound);
     }
 
-    private void verifyExtendedFactorValuesHyb(Hybridization hyb, String fv1Value, Float fv2Num,
-            String fv2String, String fv2Unit, String fv3Value, String fv3ts) {
+    private void verifyExtendedFactorValuesHyb(Hybridization hyb, String fv1Value, Float fv2Num, String fv2String,
+            String fv2Unit, String fv3Value, String fv3ts) {
         assertEquals(3, hyb.getFactorValues().size());
-        UserDefinedFactorValue fv1 = (UserDefinedFactorValue) hyb.getFactorValue("ExternalSampleId");
+        final UserDefinedFactorValue fv1 = (UserDefinedFactorValue) hyb.getFactorValue("ExternalSampleId");
         assertEquals(fv1Value, fv1.getValue());
         assertNull(fv1.getUnit());
         if (fv2Num != null) {
-            MeasurementFactorValue fv2 = (MeasurementFactorValue) hyb.getFactorValue("Age");            
+            final MeasurementFactorValue fv2 = (MeasurementFactorValue) hyb.getFactorValue("Age");
             assertEquals(fv2Num, fv2.getValue());
             assertEquals(fv2Unit, fv2Unit == null ? fv2.getUnit() : fv2.getUnit().getValue());
-            if (fv2Unit != null)
-                assertEquals("Name for: http://mged.sourceforge.net/ontologies/MGEDontology.php", fv2.getUnit().getSource().getName());
+            if (fv2Unit != null) {
+                assertEquals("Name for: http://mged.sourceforge.net/ontologies/MGEDontology.php", fv2.getUnit()
+                        .getSource().getName());
+            }
         } else {
-            UserDefinedFactorValue fv2 = (UserDefinedFactorValue) hyb.getFactorValue("Age");
+            final UserDefinedFactorValue fv2 = (UserDefinedFactorValue) hyb.getFactorValue("Age");
             assertEquals(fv2String, fv2.getValue());
             assertEquals(fv2Unit, fv2Unit == null ? fv2.getUnit() : fv2.getUnit().getValue());
-            if (fv2Unit != null)
-                assertEquals("Name for: http://mged.sourceforge.net/ontologies/MGEDontology.php", fv2.getUnit().getSource().getName());
+            if (fv2Unit != null) {
+                assertEquals("Name for: http://mged.sourceforge.net/ontologies/MGEDontology.php", fv2.getUnit()
+                        .getSource().getName());
+            }
         }
         if (fv3ts != null) {
-            TermBasedFactorValue fv3 = (TermBasedFactorValue) hyb.getFactorValue("MaterialType");
+            final TermBasedFactorValue fv3 = (TermBasedFactorValue) hyb.getFactorValue("MaterialType");
             assertEquals(fv3Value, fv3.getTerm().getValue());
             assertEquals(fv3ts, fv3.getTerm().getSource().getName());
             assertNull(fv3.getUnit());
         } else {
-            UserDefinedFactorValue fv3 = (UserDefinedFactorValue) hyb.getFactorValue("MaterialType");
+            final UserDefinedFactorValue fv3 = (UserDefinedFactorValue) hyb.getFactorValue("MaterialType");
             assertEquals(fv3Value, fv3.getValue());
             assertNull(fv3.getUnit());
         }
     }
 
-    private void verifyExtendedFactorValuesSampleChars(Sample s, String c1Value, Float c2Num,
-            String c2String, String c2Unit, String c3Value, String c3ts) {
+    private void verifyExtendedFactorValuesSampleChars(Sample s, String c1Value, Float c2Num, String c2String,
+            String c2Unit, String c3Value, String c3ts) {
         assertEquals(2, s.getCharacteristics().size());
         assertEquals(c1Value, s.getExternalId());
         if (c2Num != null) {
-            MeasurementCharacteristic c2 = (MeasurementCharacteristic) s.getCharacteristic("Age");            
+            final MeasurementCharacteristic c2 = (MeasurementCharacteristic) s.getCharacteristic("Age");
             assertEquals(c2Num, c2.getValue());
             assertEquals(c2Unit, c2.getUnit().getValue());
-            assertEquals("Name for: http://mged.sourceforge.net/ontologies/MGEDontology.php", c2.getUnit().getSource().getName());
+            assertEquals("Name for: http://mged.sourceforge.net/ontologies/MGEDontology.php", c2.getUnit().getSource()
+                    .getName());
         } else {
-            UserDefinedCharacteristic c2 = (UserDefinedCharacteristic) s.getCharacteristic("Age");
+            final UserDefinedCharacteristic c2 = (UserDefinedCharacteristic) s.getCharacteristic("Age");
             assertEquals(c2String, c2.getValue());
             assertEquals(c2Unit, c2.getUnit().getValue());
-            assertEquals("Name for: http://mged.sourceforge.net/ontologies/MGEDontology.php", c2.getUnit().getSource().getName());
+            assertEquals("Name for: http://mged.sourceforge.net/ontologies/MGEDontology.php", c2.getUnit().getSource()
+                    .getName());
         }
-        if (c3ts != null) {            
-            TermBasedCharacteristic c3 = (TermBasedCharacteristic) s.getCharacteristic("MaterialType");
+        if (c3ts != null) {
+            final TermBasedCharacteristic c3 = (TermBasedCharacteristic) s.getCharacteristic("MaterialType");
             assertEquals(c3Value, c3.getTerm().getValue());
             assertEquals(c3ts, c3.getTerm().getSource().getName());
             assertNull(c3.getUnit());
         } else {
-            UserDefinedCharacteristic c3 = (UserDefinedCharacteristic) s.getCharacteristic("MaterialType");
+            final UserDefinedCharacteristic c3 = (UserDefinedCharacteristic) s.getCharacteristic("MaterialType");
             assertEquals(c3Value, c3.getValue());
             assertNull(c3.getUnit());
         }
     }
 
-    private void verifyExtendedFactorValuesSampleParams(Sample s, String pv1Value, Float pv2Num,
-            String pv2String, String pv2Unit, String pv3Value, String pv3ts) {        
+    private void verifyExtendedFactorValuesSampleParams(Sample s, String pv1Value, Float pv2Num, String pv2String,
+            String pv2Unit, String pv3Value, String pv3ts) {
         assertEquals(1, s.getProtocolApplications().size());
-        ProtocolApplication pa = s.getProtocolApplications().get(0);
+        final ProtocolApplication pa = s.getProtocolApplications().get(0);
         assertEquals("Dan1", pa.getProtocol().getName());
         assertEquals(3, pa.getValues().size());
-        UserDefinedParameterValue pv1 = (UserDefinedParameterValue) pa.getValue("p1");
+        final UserDefinedParameterValue pv1 = (UserDefinedParameterValue) pa.getValue("p1");
         assertNotNull(pv1);
         assertEquals(pv1Value, pv1.getValue());
         assertNull(pv1.getUnit());
         if (pv2Num != null) {
-            MeasurementParameterValue pv2 = (MeasurementParameterValue) pa.getValue("p3");            
+            final MeasurementParameterValue pv2 = (MeasurementParameterValue) pa.getValue("p3");
             assertEquals(pv2Num, pv2.getValue());
             assertEquals(pv2Unit, pv2Unit == null ? pv2.getUnit() : pv2.getUnit().getValue());
-            if (pv2Unit != null)
-                assertEquals("Name for: http://mged.sourceforge.net/ontologies/MGEDontology.php", pv2.getUnit().getSource().getName());
+            if (pv2Unit != null) {
+                assertEquals("Name for: http://mged.sourceforge.net/ontologies/MGEDontology.php", pv2.getUnit()
+                        .getSource().getName());
+            }
         } else {
-            UserDefinedParameterValue pv2 = (UserDefinedParameterValue) pa.getValue("p3");
+            final UserDefinedParameterValue pv2 = (UserDefinedParameterValue) pa.getValue("p3");
             assertEquals(pv2String, pv2.getValue());
             assertEquals(pv2Unit, pv2Unit == null ? pv2.getUnit() : pv2.getUnit().getValue());
-            if (pv2Unit != null)
-                assertEquals("Name for: http://mged.sourceforge.net/ontologies/MGEDontology.php", pv2.getUnit().getSource().getName());
+            if (pv2Unit != null) {
+                assertEquals("Name for: http://mged.sourceforge.net/ontologies/MGEDontology.php", pv2.getUnit()
+                        .getSource().getName());
+            }
         }
-        if (pv3ts != null) {            
-            TermBasedParameterValue pv3 = (TermBasedParameterValue) pa.getValue("p2");
+        if (pv3ts != null) {
+            final TermBasedParameterValue pv3 = (TermBasedParameterValue) pa.getValue("p2");
             assertEquals(pv3Value, pv3.getTerm().getValue());
             assertEquals(pv3ts, pv3.getTerm().getSource().getName());
             assertNull(pv3.getUnit());
         } else {
-            UserDefinedParameterValue pv3 = (UserDefinedParameterValue) pa.getValue("p2");
+            final UserDefinedParameterValue pv3 = (UserDefinedParameterValue) pa.getValue("p2");
             assertEquals(pv3Value, pv3.getValue());
             assertNull(pv3.getUnit());
         }
@@ -900,11 +966,11 @@ public class MageTabTranslatorTest extends AbstractServiceTest {
         @Override
         public <T extends PersistentObject> List<T> queryEntityByExample(ExampleSearchCriteria<T> criteria,
                 Order... orders) {
-            T entityToMatch = criteria.getExample();
+            final T entityToMatch = criteria.getExample();
             if (entityToMatch instanceof ArrayDesign) {
-                ArrayDesign arrayDesign = (ArrayDesign) entityToMatch;
+                final ArrayDesign arrayDesign = (ArrayDesign) entityToMatch;
                 if ("URN:LSID:Affymetrix.com:PhysicalArrayDesign:Test3".equals(arrayDesign.getLsid())) {
-                    ArrayList list = new ArrayList();
+                    final ArrayList list = new ArrayList();
                     list.add(arrayDesign);
                     return list;
                 }
@@ -918,11 +984,11 @@ public class MageTabTranslatorTest extends AbstractServiceTest {
         @Override
         public <T extends PersistentObject> List<T> queryEntityByExample(ExampleSearchCriteria<T> criteria,
                 Order... orders) {
-            T entityToMatch = criteria.getExample();
+            final T entityToMatch = criteria.getExample();
             if (entityToMatch instanceof ArrayDesign) {
-                ArrayDesign arrayDesign = (ArrayDesign) entityToMatch;
+                final ArrayDesign arrayDesign = (ArrayDesign) entityToMatch;
                 if ("URN:LSID:Affymetrix.com:PhysicalArrayDesign:HT_HG-U133A".equals(arrayDesign.getLsid())) {
-                    ArrayList list = new ArrayList();
+                    final ArrayList list = new ArrayList();
                     list.add(arrayDesign);
                     return list;
                 }

@@ -82,53 +82,21 @@
  */
 package gov.nih.nci.caarray.dao.stub;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import gov.nih.nci.caarray.dao.FileDao;
+import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.search.FileSearchCriteria;
+
+import java.net.URI;
 import java.util.Collections;
 import java.util.List;
 
 import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
 
-import gov.nih.nci.caarray.dao.FileDao;
-import gov.nih.nci.caarray.domain.file.CaArrayFile;
-import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
-import gov.nih.nci.caarray.domain.file.FileStatus;
-import gov.nih.nci.caarray.domain.search.FileSearchCriteria;
-import java.util.HashMap;
-import java.util.Map;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-
-
 /**
  *
  */
 public class FileDaoStub extends AbstractDaoStub implements FileDao {
-
-    Map<CaArrayFile, InputStream> store = new HashMap<CaArrayFile, InputStream>();
-    /**
-     * {@inheritDoc}
-     */
-    public void updateFileStatus(CaArrayFileSet fileSet, FileStatus status) {
-        for (CaArrayFile file : fileSet.getFiles()) {
-            file.setFileStatus(status);
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void deleteSqlBlobsByProjectId(Long projectId) {
-        //NOOP
-    }
-
-    public void deleteHqlBlobsByProjectId(Long projectId) {
-        // NOOP
-
-    }
-
+    @Override
     public List<CaArrayFile> searchFiles(PageSortParams<CaArrayFile> params, FileSearchCriteria criteria) {
         return Collections.emptyList();
     }
@@ -136,29 +104,13 @@ public class FileDaoStub extends AbstractDaoStub implements FileDao {
     /**
      * {@inheritDoc}
      */
+    @Override
     public List<CaArrayFile> getDeletableFiles(Long projectId) {
         return Collections.emptyList();
     }
 
-    public void writeContents(CaArrayFile file, InputStream data) throws IOException {
-        store.put(file, data);
-    }
-
-    public void writeContents(CaArrayFile file, File data) throws IOException {
-        writeContents(file, FileUtils.openInputStream(data));
-    }
-
-    public void copyContentsToStream(CaArrayFile ref, OutputStream dest) throws IOException {
-        copyContentsToStream(ref, true, dest);
-    }
-
-    public void copyContentsToStream(CaArrayFile ref, boolean inflate, OutputStream dest) throws IOException {
-        if (inflate) {
-            IOUtils.copy(store.get(ref), dest);
-        }
-    }
-
-    public void saveAndEvict(CaArrayFile file) {
-        
+    @Override
+    public List<URI> getAllFileHandles() {
+        return Collections.emptyList();
     }
 }

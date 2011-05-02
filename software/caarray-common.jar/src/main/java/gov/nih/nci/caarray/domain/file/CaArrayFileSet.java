@@ -93,10 +93,13 @@ import java.util.Set;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
+import com.google.common.base.Preconditions;
+
 /**
  * Provides functionality to handle multiple <code>CaArrayFiles</code> as a single set.
  */
-@SuppressWarnings("PMD.CyclomaticComplexity") // Complex rules for checking aggregate file status
+@SuppressWarnings("PMD.CyclomaticComplexity")
+// Complex rules for checking aggregate file status
 public class CaArrayFileSet implements Serializable {
 
     private static final long serialVersionUID = -831461553674445009L;
@@ -110,63 +113,66 @@ public class CaArrayFileSet implements Serializable {
         if (p == null) {
             throw new IllegalArgumentException("Project must be non-null");
         }
-        projectId = p.getId();
+        this.projectId = p.getId();
     }
 
     /**
      * Construct a new file set, with the same files and associated project.
+     * 
      * @param baseFileSet file set on which to base the new file set
      */
     public CaArrayFileSet(CaArrayFileSet baseFileSet) {
-        projectId = baseFileSet.projectId;
-        files.addAll(baseFileSet.getFiles());
+        this.projectId = baseFileSet.projectId;
+        this.files.addAll(baseFileSet.getFiles());
     }
 
     /**
      * @return related project system identifier
      */
     public Long getProjectId() {
-        return projectId;
+        return this.projectId;
     }
 
     /**
-     * File set.  Only files <em>not</em> associated with a project can be added.
+     * File set. Only files <em>not</em> associated with a project can be added.
      */
     public CaArrayFileSet() {
-        projectId = null;
+        this.projectId = null;
     }
 
     /**
      * Adds a file to the set.
-     *
+     * 
      * @param file the file to add
      */
     public void add(CaArrayFile file) {
-        Long fileProjectId = file.getProject() == null ? null : file.getProject().getId();
-        if (!ObjectUtils.equals(fileProjectId, projectId)) {
+        final Long fileProjectId = file.getProject() == null ? null : file.getProject().getId();
+        if (!ObjectUtils.equals(fileProjectId, this.projectId)) {
             throw new IllegalArgumentException("file's project and fileset project not the same");
         }
-        files.add(file);
+        this.files.add(file);
     }
 
     /**
      * Returns the contained files.
-     *
+     * 
      * @return the files.
      */
     public Set<CaArrayFile> getFiles() {
-        return files;
+        return this.files;
     }
 
     /**
      * Get a subset of CaArrayFile objects with file type specified.
-     * @param ft File type
+     * 
+     * @param ft File type must not be null
      * @return set of CaArrayFile objects
      */
     public Set<CaArrayFile> getFilesByType(FileType ft) {
-        Set<CaArrayFile> sdrfFiles = new HashSet<CaArrayFile>();
-        for (CaArrayFile fileIt : files) {
-            if (fileIt.getFileType() == ft) {
+        Preconditions.checkNotNull(ft);        
+        final Set<CaArrayFile> sdrfFiles = new HashSet<CaArrayFile>();
+        for (final CaArrayFile fileIt : this.files) {
+            if (ft.equals(fileIt.getFileType())) {
                 sdrfFiles.add(fileIt);
             }
         }
@@ -175,11 +181,12 @@ public class CaArrayFileSet implements Serializable {
 
     /**
      * Get a subset of CaArrayFile objects that are array data file types.
+     * 
      * @return set of CaArrayFile objects
      */
     public Set<CaArrayFile> getArrayDataFiles() {
-        Set<CaArrayFile> dataFiles = new HashSet<CaArrayFile>();
-        for (CaArrayFile fileIt : files) {
+        final Set<CaArrayFile> dataFiles = new HashSet<CaArrayFile>();
+        for (final CaArrayFile fileIt : this.files) {
             if (fileIt.getFileType().isArrayData()) {
                 dataFiles.add(fileIt);
             }
@@ -189,12 +196,12 @@ public class CaArrayFileSet implements Serializable {
 
     /**
      * Returns the aggregate status of the file set.
-     *
+     * 
      * @return status of the set.
      */
     public FileStatus getStatus() {
-        if (!files.isEmpty() && allStatusesEqual(files.iterator().next().getFileStatus())) {
-            return files.iterator().next().getFileStatus();
+        if (!this.files.isEmpty() && allStatusesEqual(this.files.iterator().next().getFileStatus())) {
+            return this.files.iterator().next().getFileStatus();
         } else if (allStatusesEqual(FileStatus.IMPORTED, FileStatus.IMPORTED_NOT_PARSED)) {
             return FileStatus.IMPORTED;
         } else if (allStatusesEqual(FileStatus.VALIDATED, FileStatus.VALIDATED_NOT_PARSED)) {
@@ -217,11 +224,11 @@ public class CaArrayFileSet implements Serializable {
      */
     @SuppressWarnings("PMD.UnusedPrivateMethod")
     private boolean allStatusesEqual(FileStatus... statuses) {
-        Set<FileStatus> fileSetStatuses = new HashSet<FileStatus>();
-        for (CaArrayFile file : files) {
+        final Set<FileStatus> fileSetStatuses = new HashSet<FileStatus>();
+        for (final CaArrayFile file : this.files) {
             fileSetStatuses.add(file.getFileStatus());
         }
-        for (FileStatus status : statuses) {
+        for (final FileStatus status : statuses) {
             fileSetStatuses.remove(status);
         }
         return fileSetStatuses.isEmpty();
@@ -229,11 +236,12 @@ public class CaArrayFileSet implements Serializable {
 
     /**
      * tells if the status is in the set.
+     * 
      * @param status the status.
      * @return true if it is in the set.
      */
     private boolean statusesContains(FileStatus status) {
-        for (CaArrayFile file : files) {
+        for (final CaArrayFile file : this.files) {
             if (status.equals(file.getFileStatus())) {
                 return true;
             }
@@ -243,21 +251,22 @@ public class CaArrayFileSet implements Serializable {
 
     /**
      * Adds a collection of files to this set.
-     *
+     * 
      * @param fileCollection files to add.
      */
     public void addAll(Collection<CaArrayFile> fileCollection) {
-        for (CaArrayFile file : fileCollection) {
-            files.add(file);
+        for (final CaArrayFile file : fileCollection) {
+            this.files.add(file);
         }
     }
 
     /**
      * Update the status of each file in this file set to the given status.
+     * 
      * @param status the new status which each file in this set should have.
      */
     public void updateStatus(FileStatus status) {
-        for (CaArrayFile file : files) {
+        for (final CaArrayFile file : this.files) {
             file.setFileStatus(status);
         }
     }
@@ -271,29 +280,38 @@ public class CaArrayFileSet implements Serializable {
     }
 
     /**
-     * Returns the <code>CaArrayFile</code> in the set corresponding to the
-     * given file object or null if no match.
-     *
+     * Returns the <code>CaArrayFile</code> in the set corresponding to the given file object or null if no match.
+     * 
      * @param file get <code>CaArrayFile</code> for this file.
      * @return the matching <code>CaArrayFile</code>.
      */
     public CaArrayFile getFile(File file) {
-        for (CaArrayFile caArrayFile : files) {
-            if (caArrayFile.isMatch(file)) {
+        for (final CaArrayFile caArrayFile : this.files) {
+            if (isWrapperFor(caArrayFile, file)) {
                 return caArrayFile;
             }
         }
         return null;
     }
-    
+
+    /**
+     * Returns true if this <code>CaArrayFile</code> wraps access to the given physical file.
+     * 
+     * @param file check if this is the wrapped file
+     * @return true if this is the wrapped file.
+     */
+    boolean isWrapperFor(CaArrayFile caArrayFile, File file) {
+        return file != null && caArrayFile.getName() != null && caArrayFile.getName().equals(file.getName());
+    }
+
     /**
      * Returns the <code>CaArrayFile</code> in the set with the given name or null if no match.
-     *
+     * 
      * @param name the name of the file to find
      * @return the <code>CaArrayFile</code> with given name, or null if no such file exists in this set.
      */
     public CaArrayFile getFile(String name) {
-        for (CaArrayFile caArrayFile : getFiles()) {
+        for (final CaArrayFile caArrayFile : getFiles()) {
             if (name.equals(caArrayFile.getName())) {
                 return caArrayFile;
             }
@@ -306,7 +324,7 @@ public class CaArrayFileSet implements Serializable {
      */
     public long getTotalCompressedSize() {
         long size = 0;
-        for (CaArrayFile file : files) {
+        for (final CaArrayFile file : this.files) {
             size += file.getCompressedSize();
         }
         return size;
@@ -317,7 +335,7 @@ public class CaArrayFileSet implements Serializable {
      */
     public long getTotalUncompressedSize() {
         long size = 0;
-        for (CaArrayFile file : files) {
+        for (final CaArrayFile file : this.files) {
             size += file.getUncompressedSize();
         }
         return size;

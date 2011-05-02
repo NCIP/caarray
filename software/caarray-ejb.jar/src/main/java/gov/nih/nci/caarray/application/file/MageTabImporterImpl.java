@@ -82,15 +82,17 @@
  */
 package gov.nih.nci.caarray.application.file;
 
-import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
 import gov.nih.nci.caarray.application.translation.CaArrayTranslationResult;
 import gov.nih.nci.caarray.application.translation.magetab.MageTabTranslator;
 import gov.nih.nci.caarray.dao.ProjectDao;
 import gov.nih.nci.caarray.dao.SearchDao;
+import gov.nih.nci.caarray.dataStorage.DataStorageFacade;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
+import gov.nih.nci.caarray.domain.file.FileCategory;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
+import gov.nih.nci.caarray.domain.file.FileTypeRegistry;
 import gov.nih.nci.caarray.domain.project.AbstractFactorValue;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.ExperimentContact;
@@ -105,13 +107,13 @@ import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.magetab.MageTabFileSet;
 import gov.nih.nci.caarray.magetab.MageTabParser;
 import gov.nih.nci.caarray.magetab.MageTabParsingException;
+import gov.nih.nci.caarray.magetab.io.FileRef;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.InvalidDataException;
 import gov.nih.nci.caarray.validation.ValidationMessage;
 import gov.nih.nci.caarray.validation.ValidationMessage.Type;
 import gov.nih.nci.caarray.validation.ValidationResult;
 
-import java.io.File;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -128,47 +130,50 @@ import com.google.inject.Inject;
 @SuppressWarnings("PMD.TooManyMethods")
 class MageTabImporterImpl implements MageTabImporter {
 
-    private static final Logger LOG = Logger.getLogger(MageTabImporterImpl.class);
+    private static final Logger LOG = Logger.getLogger(MageTabImporter.class);
 
     private final MageTabTranslator translator;
-    private final ProjectDao projectDao;
     private final SearchDao searchDao;
+    private final ProjectDao projectDao;
+    private final DataStorageFacade dataStorageFacade;
 
     @Inject
-    MageTabImporterImpl(MageTabTranslator translator, ProjectDao projectDao, SearchDao searchDao) {
+    MageTabImporterImpl(MageTabTranslator translator, SearchDao searchDao, ProjectDao projectDao,
+            DataStorageFacade dataStorageFacade) {
         this.translator = translator;
         this.searchDao = searchDao;
         this.projectDao = projectDao;
+        this.dataStorageFacade = dataStorageFacade;
     }
 
     public MageTabDocumentSet validateFiles(Project targetProject, CaArrayFileSet fileSet) {
         LOG.info("Validating MAGE-TAB document set");
         updateFileStatus(fileSet, FileStatus.VALIDATING);
         MageTabDocumentSet documentSet = null;
-        MageTabFileSet inputSet = getInputFileSet(targetProject, fileSet);
+        final MageTabFileSet inputSet = getInputFileSet(targetProject, fileSet);
         try {
             updateFileStatus(fileSet, FileStatus.VALIDATED);
             documentSet = MageTabParser.INSTANCE.parse(inputSet);
-            handleResult(fileSet, translator.validate(documentSet, fileSet));
-        } catch (MageTabParsingException e) {
+            handleResult(fileSet, this.translator.validate(documentSet, fileSet));
+        } catch (final MageTabParsingException e) {
             updateFileStatus(fileSet, FileStatus.VALIDATION_ERRORS);
-        } catch (InvalidDataException e) {
+        } catch (final InvalidDataException e) {
             handleResult(fileSet, e.getValidationResult());
         }
-        searchDao.save(fileSet.getFiles());
+        this.searchDao.save(fileSet.getFiles());
         return documentSet;
     }
 
     public MageTabDocumentSet selectRefFiles(Project project, CaArrayFileSet idfFileSet) {
         MageTabDocumentSet documentSet = null;
-        MageTabFileSet inputSet = getInputFileSet(project, idfFileSet);
+        final MageTabFileSet inputSet = getInputFileSet(project, idfFileSet);
         try {
 
             documentSet = MageTabParser.INSTANCE.parseDataFileNames(inputSet);
-            handleSelectRefFilesResult(idfFileSet, translator.validate(documentSet, idfFileSet));
-        } catch (MageTabParsingException e) {
+            handleSelectRefFilesResult(idfFileSet, this.translator.validate(documentSet, idfFileSet));
+        } catch (final MageTabParsingException e) {
             updateFileStatus(idfFileSet, FileStatus.VALIDATION_ERRORS);
-        } catch (InvalidDataException e) {
+        } catch (final InvalidDataException e) {
             handleResult(idfFileSet, e.getValidationResult());
         }
 
@@ -176,21 +181,19 @@ class MageTabImporterImpl implements MageTabImporter {
     }
 
     private void handleSelectRefFilesResult(CaArrayFileSet fileSet, ValidationResult result) {
-
-        for (FileValidationResult fileValidationResult : result.getFileValidationResults()) {
-            CaArrayFile caArrayFile = fileSet.getFile(fileValidationResult.getFile());
-            if (!result.isValid()) {
+        for (final String fileName : result.getFileNames()) {
+            final CaArrayFile caArrayFile = fileSet.getFile(fileName);
+            final FileValidationResult fileResult = result.getFileValidationResult(fileName);
+            if (!fileResult.isValid()) {
                 // check whether any of the validation errors are other than data file checks
-                saveErrorMessages(fileValidationResult, caArrayFile);
+                saveErrorMessages(fileResult, caArrayFile);
             }
         }
     }
 
-    private void saveErrorMessages(FileValidationResult fileValidationResult,
-            CaArrayFile caArrayFile) {
-        FileValidationResult newResult =
-            new FileValidationResult(getFile(caArrayFile));
-        for (ValidationMessage vm : fileValidationResult.getMessages()) {
+    private void saveErrorMessages(FileValidationResult fileValidationResult, CaArrayFile caArrayFile) {
+        final FileValidationResult newResult = new FileValidationResult();
+        for (final ValidationMessage vm : fileValidationResult.getMessages()) {
             if (vm.getType().equals(Type.ERROR)
                     && !Pattern.matches(".*Array Data.*not found in the document set.*", vm.getMessage())) {
                 newResult.addMessage(Type.ERROR, vm.getMessage());
@@ -200,43 +203,43 @@ class MageTabImporterImpl implements MageTabImporter {
         if (newResult.getMessages().size() > 0) {
             caArrayFile.setFileStatus(FileStatus.VALIDATION_ERRORS);
             caArrayFile.setValidationResult(newResult);
-            projectDao.save(caArrayFile);
+            this.projectDao.save(caArrayFile);
         }
     }
 
     private void handleResult(CaArrayFileSet fileSet, ValidationResult result) {
-        for (FileValidationResult fileValidationResult : result.getFileValidationResults()) {
-            CaArrayFile caArrayFile = fileSet.getFile(fileValidationResult.getFile());
-            if (!result.isValid()) {
+        for (final String fileName : result.getFileNames()) {
+            final CaArrayFile caArrayFile = fileSet.getFile(fileName);
+            final FileValidationResult fileResult = result.getFileValidationResult(fileName);
+            if (!fileResult.isValid()) {
                 caArrayFile.setFileStatus(FileStatus.VALIDATION_ERRORS);
             } else {
                 caArrayFile.setFileStatus(FileStatus.VALIDATED);
             }
-            caArrayFile.setValidationResult(fileValidationResult);
-            projectDao.save(caArrayFile);
+            caArrayFile.setValidationResult(fileResult);
+            this.projectDao.save(caArrayFile);
         }
     }
 
-    public void importFiles(Project targetProject, CaArrayFileSet fileSet)
-            throws MageTabParsingException {
+    public void importFiles(Project targetProject, CaArrayFileSet fileSet) throws MageTabParsingException {
         LOG.info("Importing MAGE-TAB document set");
         updateFileStatus(fileSet, FileStatus.IMPORTING);
-        MageTabFileSet inputSet = getInputFileSet(targetProject, fileSet);
+        final MageTabFileSet inputSet = getInputFileSet(targetProject, fileSet);
         MageTabDocumentSet documentSet;
         try {
             documentSet = MageTabParser.INSTANCE.parse(inputSet);
-            CaArrayTranslationResult translationResult = translator.translate(documentSet, fileSet);
+            final CaArrayTranslationResult translationResult = this.translator.translate(documentSet, fileSet);
             save(targetProject, translationResult);
             updateFileStatus(fileSet, FileStatus.IMPORTED);
-        } catch (InvalidDataException e) {
+        } catch (final InvalidDataException e) {
             handleResult(fileSet, e.getValidationResult());
         }
-        searchDao.save(fileSet.getFiles());
+        this.searchDao.save(fileSet.getFiles());
     }
 
     private void updateFileStatus(CaArrayFileSet fileSet, FileStatus status) {
-        CaArrayFileSet mageTabFileSet = new CaArrayFileSet(fileSet);
-        for (CaArrayFile file : fileSet.getFiles()) {
+        final CaArrayFileSet mageTabFileSet = new CaArrayFileSet(fileSet);
+        for (final CaArrayFile file : fileSet.getFiles()) {
             if (!isMageTabFile(file)) {
                 mageTabFileSet.getFiles().remove(file);
             }
@@ -245,46 +248,38 @@ class MageTabImporterImpl implements MageTabImporter {
     }
 
     private boolean isMageTabFile(CaArrayFile file) {
-        return FileType.MAGE_TAB_ADF.equals(file.getFileType())
-        || FileType.MAGE_TAB_DATA_MATRIX.equals(file.getFileType())
-        || FileType.MAGE_TAB_IDF.equals(file.getFileType())
-        || FileType.MAGE_TAB_SDRF.equals(file.getFileType());
+        return FileCategory.MAGE_TAB == file.getFileType().getCategory();
     }
 
     private MageTabFileSet getInputFileSet(Project project, CaArrayFileSet fileSet) {
-        CaArrayFileSet fullSet = new CaArrayFileSet(fileSet);
+        final CaArrayFileSet fullSet = new CaArrayFileSet(fileSet);
         fullSet.addAll(Collections2.filter(project.getImportedFiles(), new Predicate<CaArrayFile>() {
+            @Override
             public boolean apply(CaArrayFile f) {
-                return f.getFileType().isArrayData() || FileType.MAGE_TAB_DATA_MATRIX.equals(f.getFileType());
+                return f.getFileType().isArrayData();
             }
         }));
 
-        MageTabFileSet inputFileSet = new MageTabFileSet();
-        for (CaArrayFile caArrayFile : fullSet.getFiles()) {
+        final MageTabFileSet inputFileSet = new MageTabFileSet();
+        for (final CaArrayFile caArrayFile : fullSet.getFiles()) {
             addInputFile(inputFileSet, caArrayFile);
         }
-        
+
         return inputFileSet;
     }
 
     private void addInputFile(MageTabFileSet inputFileSet, CaArrayFile caArrayFile) {
-        FileType type = caArrayFile.getFileType();
-        if (FileType.MAGE_TAB_IDF.equals(type)) {
-            inputFileSet.addIdf(new CaArrayFileRef(caArrayFile));
-        } else if (FileType.MAGE_TAB_SDRF.equals(type)) {
-            inputFileSet.addSdrf(new CaArrayFileRef(caArrayFile));
-        } else if (FileType.MAGE_TAB_ADF.equals(type)) {
-            inputFileSet.addAdf(new CaArrayFileRef(caArrayFile));
-        } else if (FileType.MAGE_TAB_DATA_MATRIX.equals(type)
-                || FileType.MAGE_TAB_DATA_MATRIX_COPY_NUMBER.equals(type)) {
-            inputFileSet.addDataMatrix(new CaArrayFileRef(caArrayFile));
+        final FileType type = caArrayFile.getFileType();
+        final FileRef fileRef = new CaArrayFileRef(caArrayFile, this.dataStorageFacade);
+        if (FileTypeRegistry.MAGE_TAB_IDF.equals(type)) {
+            inputFileSet.addIdf(fileRef);
+        } else if (FileTypeRegistry.MAGE_TAB_SDRF.equals(type)) {
+            inputFileSet.addSdrf(fileRef);
+        } else if (type.isDataMatrix()) {
+            inputFileSet.addDataMatrix(fileRef);
         } else {
-            inputFileSet.addNativeData(new CaArrayFileRef(caArrayFile));
+            inputFileSet.addNativeData(fileRef);
         }
-    }
-
-    private File getFile(CaArrayFile caArrayFile) {
-        return TemporaryFileCacheLocator.getTemporaryFileCache().getFile(caArrayFile);
     }
 
     private void save(Project targetProject, CaArrayTranslationResult translationResult) {
@@ -294,13 +289,13 @@ class MageTabImporterImpl implements MageTabImporter {
     }
 
     private void saveTerms(CaArrayTranslationResult translationResult) {
-        for (Term term : translationResult.getTerms()) {
-            projectDao.save(term);
+        for (final Term term : translationResult.getTerms()) {
+            this.projectDao.save(term);
         }
     }
 
     private void saveArrayDesigns(CaArrayTranslationResult translationResult) {
-        projectDao.save(translationResult.getArrayDesigns());
+        this.projectDao.save(translationResult.getArrayDesigns());
     }
 
     private void saveInvestigations(Project targetProject, CaArrayTranslationResult translationResult) {
@@ -326,36 +321,36 @@ class MageTabImporterImpl implements MageTabImporter {
         mergeExperimentContacts(originalExperiment, translatedExperiment);
 
         originalExperiment.getHybridizations().addAll(translatedExperiment.getHybridizations());
-        projectDao.save(originalExperiment.getHybridizations());
-        
-        for (LabeledExtract le : translatedExperiment.getLabeledExtracts()) {
+        this.projectDao.save(originalExperiment.getHybridizations());
+
+        for (final LabeledExtract le : translatedExperiment.getLabeledExtracts()) {
             le.setExperiment(originalExperiment);
             originalExperiment.getLabeledExtracts().add(le);
         }
-        projectDao.save(originalExperiment.getLabeledExtracts());
-        for (Extract e : translatedExperiment.getExtracts()) {
+        this.projectDao.save(originalExperiment.getLabeledExtracts());
+        for (final Extract e : translatedExperiment.getExtracts()) {
             e.setExperiment(originalExperiment);
             originalExperiment.getExtracts().add(e);
         }
-        projectDao.save(originalExperiment.getExtracts());
-        for (Sample s : translatedExperiment.getSamples()) {
+        this.projectDao.save(originalExperiment.getExtracts());
+        for (final Sample s : translatedExperiment.getSamples()) {
             s.setExperiment(originalExperiment);
             originalExperiment.getSamples().add(s);
         }
-        projectDao.save(originalExperiment.getSamples());
-        for (Source s : translatedExperiment.getSources()) {
+        this.projectDao.save(originalExperiment.getSamples());
+        for (final Source s : translatedExperiment.getSources()) {
             s.setExperiment(originalExperiment);
             originalExperiment.getSources().add(s);
         }
-        projectDao.save(originalExperiment.getSources());
+        this.projectDao.save(originalExperiment.getSources());
 
     }
 
     private void mergeExperimentContacts(Experiment originalExperiment, Experiment translatedExperiment) {
-        for (ExperimentContact translatedEc : translatedExperiment.getExperimentContacts()) {
-            List<ExperimentContact> originalExperimentContacts = originalExperiment.getExperimentContacts();
+        for (final ExperimentContact translatedEc : translatedExperiment.getExperimentContacts()) {
+            final List<ExperimentContact> originalExperimentContacts = originalExperiment.getExperimentContacts();
             boolean isNewEc = true;
-            for (ExperimentContact originalEc : originalExperimentContacts) {
+            for (final ExperimentContact originalEc : originalExperimentContacts) {
                 if (originalEc.equalsBaseContact(translatedEc)) {
                     isNewEc = false;
                     break;
@@ -369,13 +364,13 @@ class MageTabImporterImpl implements MageTabImporter {
     }
 
     private void mergeFactors(Experiment originalExperiment, Experiment translatedExperiment) {
-        for (Factor translatedFactor : translatedExperiment.getFactors()) {
+        for (final Factor translatedFactor : translatedExperiment.getFactors()) {
             boolean isNewFactor = true;
-            Set<Factor> originalFactors = originalExperiment.getFactors();
-            for (Factor originalFactor : originalFactors) {
+            final Set<Factor> originalFactors = originalExperiment.getFactors();
+            for (final Factor originalFactor : originalFactors) {
                 if (originalFactor.getName().equals(translatedFactor.getName())) {
                     isNewFactor = false;
-                    for (AbstractFactorValue newValue : translatedFactor.getFactorValues()) {
+                    for (final AbstractFactorValue newValue : translatedFactor.getFactorValues()) {
                         newValue.setFactor(originalFactor);
                     }
                     break;
@@ -386,5 +381,4 @@ class MageTabImporterImpl implements MageTabImporter {
             }
         }
     }
-
 }

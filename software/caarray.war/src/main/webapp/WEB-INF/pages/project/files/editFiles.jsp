@@ -11,7 +11,7 @@
         <s:form action="ajax/project/files/changeFileType" cssClass="form" id="projectForm" onsubmit="TabUtils.submitTabForm('projectForm', 'tabbox1wrapper'); return false;">
 
                             <s:select required="true" name="changeToFileType" label="Select New File Type" 
-                              list="@gov.nih.nci.caarray.domain.file.FileType@values()" listValue="%{getText('experiment.files.filetype.' + name)}"
+                              list="%{availableFileTypes}" listValue="%{getText('experiment.files.filetype.' + name)}"
                               listKey="name" value="fileType.name"/>
 
                 <display:table class="searchresults" cellspacing="0" defaultsort="1" list="${selectedFiles}" pagesize="${pageSize}"

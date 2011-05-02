@@ -25,6 +25,7 @@
         <mapping class="edu.georgetown.pir.AdditionalOrganismName" />
         <mapping class="edu.georgetown.pir.Organism" />
         <mapping class="gov.nih.nci.caarray.domain.BlobHolder" />
+        <mapping class="gov.nih.nci.caarray.domain.MultiPartBlob" />
         <mapping class="gov.nih.nci.caarray.domain.array.AbstractDesignElement"/>
         <mapping class="gov.nih.nci.caarray.domain.array.AbstractProbe"/>
         <mapping class="gov.nih.nci.caarray.domain.array.Array"/>

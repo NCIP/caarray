@@ -1,0 +1,8 @@
+<atlassian-plugin key="illumina-platform" name="Illumina Array Platform" plugins-version="2">
+	<plugin-info>
+		<version>1.0.0</version>
+	</plugin-info>
+	<platform key="illumina-platform">
+		<platform-module class="gov.nih.nci.caarray.plugins.illumina.IlluminaModule"/>
+	</platform>
+</atlassian-plugin>

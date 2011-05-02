@@ -82,14 +82,12 @@
  */
 package gov.nih.nci.caarray.application.file;
 
-import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
 import gov.nih.nci.caarray.dao.ProjectDao;
 import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.project.JobType;
 import gov.nih.nci.caarray.domain.project.Project;
-import gov.nih.nci.caarray.util.UsernameHolder;
 
 import com.google.inject.Inject;
 
@@ -103,11 +101,11 @@ final class ProjectFilesValidationJob extends AbstractProjectFilesJob {
     @SuppressWarnings("PMD.ExcessiveParameterList")
     @Inject
     // CHECKSTYLE:OFF more than 7 parameters are okay for injected constructor
-    ProjectFilesValidationJob(String username, UsernameHolder usernameHolder, Project project,
+    ProjectFilesValidationJob(String username, Project project,
             CaArrayFileSet fileSet, ArrayDataImporter arrayDataImporter, MageTabImporter mageTabImporter,
             ProjectDao projectDao, SearchDao searchDao) {
     // CHECKSTYLE:ON
-        super(username, usernameHolder, project, fileSet, arrayDataImporter, mageTabImporter,
+        super(username, project, fileSet, arrayDataImporter, mageTabImporter,
                 projectDao, searchDao);
     }
 
@@ -120,13 +118,8 @@ final class ProjectFilesValidationJob extends AbstractProjectFilesJob {
 
     @Override
     protected void doExecute() {
-        try {            
-            doValidate(getFileSet());
-        } finally {
-            TemporaryFileCacheLocator.getTemporaryFileCache().closeFiles();            
-        }
+        doValidate(getFileSet());
     }
-
 
     @Override
     protected FileStatus getInProgressStatus() {

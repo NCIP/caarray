@@ -86,7 +86,6 @@ import gov.nih.nci.caarray.domain.file.CaArrayFile;
 
 import java.io.File;
 import java.io.InputStream;
-import java.util.List;
 
 /**
  * Provides file storage and retrieval services to the system.
@@ -100,7 +99,7 @@ public interface FileAccessService {
 
     /**
      * Adds a new file to caArray file storage.
-     *
+     * 
      * @param file the file to store
      * @return the caArray file object.
      */
@@ -108,7 +107,7 @@ public interface FileAccessService {
 
     /**
      * Adds a new file to caArray file storage.
-     *
+     * 
      * @param file the file to store
      * @param filename the filename for the new CaArrayFile -- may be different from file.getName()
      * @return the caArray file object.
@@ -117,7 +116,7 @@ public interface FileAccessService {
 
     /**
      * Adds a new file to caArray file storage.
-     *
+     * 
      * @param stream the file to store
      * @param filename the filename for the new CaArrayFile -- may be different from file.getName()
      * @return the caArray file object.
@@ -125,27 +124,19 @@ public interface FileAccessService {
     CaArrayFile add(InputStream stream, String filename);
 
     /**
-     * Removes a file from caArray file storage if it is legal for it to be removed. Returns true
-     * if the file was actually removed.
-     *
+     * Removes a file from caArray file storage if it is legal for it to be removed. Returns true if the file was
+     * actually removed.
+     * 
      * @param caArrayFile the caArrayFile to remove
-     * @return true if the file was removed, false if the file could not be removed. 
+     * @return true if the file was removed, false if the file could not be removed.
      */
     boolean remove(CaArrayFile caArrayFile);
 
     /**
-     * Saves a file to the caArray file storage.
-     *
-     * @param caArrayFile the caArrayFile to store
+     * Syncrhonize the state of data storage engines with the caArray database, ensuring that any data items that are no
+     * longer referenced from caArray are removed from storage engines.
+     * 
+     * This method should be called on a regular scheduled basis, eg by a timer task
      */
-    void save(CaArrayFile caArrayFile);
-
-    /**
-     * Unzips a .zip file, removes it from <code>files</code> and adds the extracted files to <code>files</code>.
-     *
-     * @param files the list of files to unzip and the files extracted from the zips
-     * @param fileNames the list of filenames to go along with the list of files
-     */
-    void unzipFiles(List<File> files, List<String> fileNames);
-
+    void synchronizeDataStorage();
 }

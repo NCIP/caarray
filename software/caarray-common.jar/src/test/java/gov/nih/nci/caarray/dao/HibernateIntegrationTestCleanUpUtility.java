@@ -88,8 +88,13 @@ import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
 import gov.nih.nci.caarray.util.CaArrayHibernateHelperFactory;
+import gov.nih.nci.security.authorization.domainobjects.Application;
+import gov.nih.nci.security.authorization.domainobjects.FilterClause;
 import gov.nih.nci.security.authorization.domainobjects.Group;
+import gov.nih.nci.security.authorization.domainobjects.InstanceLevelMappingElement;
+import gov.nih.nci.security.authorization.domainobjects.Privilege;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionElement;
+import gov.nih.nci.security.authorization.domainobjects.Role;
 import gov.nih.nci.security.authorization.domainobjects.User;
 
 import java.util.HashMap;
@@ -118,6 +123,11 @@ public final class HibernateIntegrationTestCleanUpUtility {
     private static List<Class<?>> classesToRemove;
     private static List<Class<?>> collsToRemove;
     private static final String SELF_GROUP_PATTERN = "'" + SecurityUtils.SELF_GROUP_PREFIX + "%'";
+    
+    // this sets up constraints that prevent some instances from being removed. these would be configuration
+    // data that are expected to always be populated and are needed for proper operation of caArray
+    // if a persistence class is found in this map, its instances will only be deleted if they match the 
+    // constraint in the map
     private static final Map<Class<?>, String> CLASS_DELETE_CONSTRAINTS = new HashMap<Class<?>, String>();
     static {
         CLASS_DELETE_CONSTRAINTS.put(TermSource.class, "id > 0");
@@ -126,18 +136,20 @@ public final class HibernateIntegrationTestCleanUpUtility {
         CLASS_DELETE_CONSTRAINTS.put(User.class, "id > 9");
         CLASS_DELETE_CONSTRAINTS.put(Group.class, "id > 8 and not (groupName like " + SELF_GROUP_PATTERN + ")");
         CLASS_DELETE_CONSTRAINTS.put(ProtectionElement.class, "id > 2");
+        CLASS_DELETE_CONSTRAINTS.put(Application.class, "0 = 1");
+        CLASS_DELETE_CONSTRAINTS.put(Privilege.class, "0 = 1");
+        CLASS_DELETE_CONSTRAINTS.put(Role.class, "0 = 1");
+        CLASS_DELETE_CONSTRAINTS.put(FilterClause.class, "0 = 1");
+        CLASS_DELETE_CONSTRAINTS.put(InstanceLevelMappingElement.class, "0 = 1");
     }
-
-    private static final Class<?>[] CSM_CLASSES_NOT_TO_REMOVE = {
-            gov.nih.nci.security.authorization.domainobjects.Application.class,
-            gov.nih.nci.security.authorization.domainobjects.Privilege.class,
-            gov.nih.nci.security.authorization.domainobjects.Role.class,
-            gov.nih.nci.security.authorization.domainobjects.FilterClause.class };
 
     private HibernateIntegrationTestCleanUpUtility() {
         super();
     }
 
+    /**
+     * Delete all instances of CSM and caArray classes from the databases, except for a few 
+     */
     @SuppressWarnings("PMD")
     public static void cleanUp() {
         boolean cleanupComplete = doCleanUp();
@@ -205,10 +217,7 @@ public final class HibernateIntegrationTestCleanUpUtility {
 
         classesToRemove = new LinkedList<Class<?>>();
         for (ClassMetadata classMetadata : classMetadataMap.values()) {
-            Class<?> persistentClass = classMetadata.getMappedClass(EntityMode.POJO);
-            if (!ArrayUtils.contains(CSM_CLASSES_NOT_TO_REMOVE, persistentClass)) {
-                classesToRemove.add(persistentClass);
-            }
+            classesToRemove.add(classMetadata.getMappedClass(EntityMode.POJO));
         }        
     }
 

@@ -83,7 +83,6 @@
 package gov.nih.nci.caarray.application.file;
 
 import gov.nih.nci.caarray.application.ServiceLocatorFactory;
-import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
 import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
@@ -113,7 +112,7 @@ final class ArrayDesignFileImportJob extends AbstractFileManagementJob {
     @SuppressWarnings("PMD.ExcessiveParameterList")
     ArrayDesignFileImportJob(String username, UsernameHolder usernameHolder,
             ArrayDesign arrayDesign, ArrayDao arrayDao) {
-        super(username, usernameHolder);
+        super(username);
         this.arrayDesignId = arrayDesign.getId();
         this.arrayDesignName = arrayDesign.getName();
         this.arrayDao = arrayDao;
@@ -154,14 +153,10 @@ final class ArrayDesignFileImportJob extends AbstractFileManagementJob {
     @Override
     protected void doExecute() {
         ArrayDesign arrayDesign = getArrayDesign();
-        try {
-            ArrayDesignImporter importer = new ArrayDesignImporter(ServiceLocatorFactory.getArrayDesignService());
-            importer.importArrayDesign(arrayDesign);
-        } finally {
-            TemporaryFileCacheLocator.getTemporaryFileCache().closeFiles();
-        }
+        ArrayDesignImporter importer = new ArrayDesignImporter(ServiceLocatorFactory.getArrayDesignService());
+        importer.importArrayDesign(arrayDesign);
     }
-    
+
     private ArrayDesign getArrayDesign() {
         return arrayDao.getArrayDesign(getArrayDesignId());
     }
@@ -181,7 +176,7 @@ final class ArrayDesignFileImportJob extends AbstractFileManagementJob {
      */
     @Override
     public PreparedStatement getUnexpectedErrorPreparedStatement(Connection con) throws SQLException {
-        PreparedStatement s = con.prepareStatement("update caarrayfile set status = ? where id in "
+        final PreparedStatement s = con.prepareStatement("update caarrayfile set status = ? where id in "
                 + "(select design_file from array_design_design_file where array_design = ?)");
         s.setString(1, FileStatus.IMPORT_FAILED.toString());
         s.setLong(2, getArrayDesignId());

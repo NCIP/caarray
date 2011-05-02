@@ -109,6 +109,30 @@
     <property name="caarray-grid-svc.common.test.classes.dir" value="${caarray-grid-svc.common.target.dir}/test-classes" />
     <property name="caarray-grid-svc.common.jar" value="${caarray-grid-svc.common.target.dir}/caarray-grid-common.jar" />
 
+    <property name="caarray-plugins.dir" value="${basedir}/plugins" />
+    <property name="caarray-plugins.pluginList" value="nimblegen-platform,genepix-platform,illumina-platform,affymetrix-platform,agilent-platform,copynumber-platform" />
+    <property name="caarray-plugins.src.subdir" value="src/main/java" />
+    <property name="caarray-plugins.resources.subdir" value="src/main/resources" />
+    <property name="caarray-plugins.test.src.subdir" value="src/test/java" />
+    <property name="caarray-plugins.test.resources.subdir" value="src/test/resources" />
+    <property name="caarray-plugins.target.subdir" value="target" />
+    <property name="caarray-plugins.classes.subdir" value="${caarray-plugins.target.subdir}/classes" />
+    <property name="caarray-plugins.instrumented.classes.subdir" value="${caarray-plugins.target.subdir}/instrumented-classes" />
+    <property name="caarray-plugins.test.classes.subdir" value="${caarray-plugins.target.subdir}/test-classes" />
+    <property name="caarray-plugins.deploy.dir" value="${plugins.deploy.baseDir}/plugins" />
+    <property name="caarray-plugins.deploy.cache.dir" value="${plugins.deploy.baseDir}/cache" />
+    <property name="caarray-plugins.deploy.bundleCache.dir" value="${plugins.deploy.baseDir}/bundle-cache" />
+    <property name="caarray-plugins.bundledPlugins.zip" value="${plugins.deploy.baseDir}/caarray-bundled-plugins.zip" />
+    <property name="caarray-plugins.properties.file" value="${caarray-war.classes.dir}/caarray-plugins.properties" />
+	
+	<!-- plugin dependencies on each other go here -->    	
+	<property name="caarray-plugins.copynumber-platform.requires" value="agilent-platform" />
+	<property name="caarray-plugins.agilent-platform.requires" value="" />
+	<property name="caarray-plugins.affymetrix-platform.requires" value="" />
+	<property name="caarray-plugins.illumina-platform.requires" value="" />
+	<property name="caarray-plugins.genepix-platform.requires" value="" />
+	<property name="caarray-plugins.nimblegen-platform.requires" value="" />
+
     <!-- ******************************************************************* -->
     <!-- ** 3RD PARTY DEPENDENCY MANAGMENT                                ** -->
     <!-- ******************************************************************* -->
@@ -189,15 +213,21 @@
     </fileset>
 
     <target name="init:third-party-paths">
-        <ant antfile="caarray-ivy-build.xml" dir="${basedir}/master_build" inheritAll="true" inheritRefs="true" target="retrieve-app-dependencies">
-            <property name="no.ivy" value="${no.ivy}"/>
-            <property name="psuedo_override.clean.bootstrap.libs.and.ivy.cache" value="false"/>
-            <property name="local.repo.dir" value="${local.repo.dir}"/>
-            <property name="ivy.cache.dir" value="${ivy.cache.dir}"/>
-            <property name="lib.dir" location="${lib.dir}" />
-            <property name="bda-utils.dir" value="${bda-utils.dir}"/>
-            <property name="bda.utils.build.file" value="${bda.utils.build.file}"/>
-        </ant>
+        <if>
+			<not><equals arg1="${no.ivy}" arg2="true" /></not>
+            <then>
+                <ant antfile="caarray-ivy-build.xml" dir="${basedir}/master_build" inheritAll="true" inheritRefs="true" target="retrieve-app-dependencies">
+                    <property name="no.ivy" value="${no.ivy}"/>
+                    <property name="psuedo_override.clean.bootstrap.libs.and.ivy.cache" value="false"/>
+                    <property name="local.repo.dir" value="${local.repo.dir}"/>
+                    <property name="ivy.cache.dir" value="${ivy.cache.dir}"/>
+                    <property name="lib.dir" location="${lib.dir}" />
+                    <property name="bda-utils.dir" value="${bda-utils.dir}"/>
+                    <property name="bda.utils.build.file" value="${bda.utils.build.file}"/>
+                </ant>
+            </then>
+        </if>
+
 		<mkdir dir="${download.dir}"/> <!-- working around BDA bug -->
         <validate-pre-build application.base.path="${basedir}/tools" wscore.relative.dir="ws-core-4.0.3"/>
 
@@ -539,10 +569,7 @@
 
         <path id="hibernate.jar.path">
             <fileset dir="${project.lib}" id="hibernate.jar.fileset">
-                <include name="hibernate-*.jar"/>
-                <exclude name="hibernate-annotations-*.jar"/>
-                <exclude name="hibernate-client-*.jar"/>
-                <exclude name="hibernate-tools-*.jar"/>
+                <include name="hibernate-core-*.jar"/>
             </fileset>
         </path>
         <property name="hibernate.jar" refid="hibernate.jar.fileset" />
@@ -574,6 +601,41 @@
             </fileset>
         </path>
         <property name="hibernate-annotations.jar" refid="hibernate-annotations.jar.fileset" />
+
+        <path id="hibernate-commons-annotations.jar.path">
+            <fileset dir="${project.lib}" id="hibernate-commons-annotations.jar.fileset">
+                <include name="hibernate-commons-annotations-*.jar"/>
+            </fileset>
+        </path>
+        <property name="hibernate-commons-annotations.jar" refid="hibernate-commons-annotations.jar.fileset" />
+
+        <path id="hibernate-validator.jar.path">
+            <fileset dir="${project.lib}" id="hibernate-validator.jar.fileset">
+                <include name="hibernate-validator-*.jar"/>
+            </fileset>
+        </path>
+        <property name="hibernate-validator.jar" refid="hibernate-validator.jar.fileset" />
+
+        <path id="hibernate-c3p0.jar.path">
+            <fileset dir="${project.lib}" id="hibernate-c3p0.jar.fileset">
+                <include name="hibernate-c3p0-*.jar"/>
+            </fileset>
+        </path>
+        <property name="hibernate-c3p0.jar" refid="hibernate-c3p0.jar.fileset" />
+
+        <path id="hibernate-jbosscache.jar.path">
+            <fileset dir="${project.lib}" id="hibernate-jbosscache.jar.fileset">
+                <include name="hibernate-jbosscache-*.jar"/>
+            </fileset>
+        </path>
+        <property name="hibernate-jbosscache.jar" refid="hibernate-jbosscache.jar.fileset" />
+
+        <path id="slf4j-api.jar.path">
+            <fileset dir="${project.lib}" id="slf4j-api.jar.fileset">
+                <include name="slf4j-*.jar"/>
+            </fileset>
+        </path>
+        <property name="slf4j-api.jar" refid="slf4j-api.jar.fileset" />
 
         <path id="jakarta-oro.jar.path">
             <fileset dir="${project.lib}" id="jakarta-oro.jar.fileset">
@@ -631,12 +693,12 @@
         </path>
         <property name="jboss-ejb3-client.jar" refid="jboss-ejb3-client.jar.fileset" />
 
-        <path id="jboss-ejb3x.jar.path">
-            <fileset dir="${project.lib}" id="jboss-ejb3x.jar.fileset">
-                <include name="jboss-ejb3x-*.jar"/>
+        <path id="jboss-ejb3-ext-api.jar.path">
+            <fileset dir="${project.lib}" id="jboss-ejb3-ext-api.jar.fileset">
+                <include name="jboss-ejb3-ext-api-*.jar"/>
             </fileset>
         </path>
-        <property name="jboss-ejb3x.jar" refid="jboss-ejb3x.jar.fileset" />
+        <property name="jboss-ejb3-ext-api.jar" refid="jboss-ejb3-ext-api.jar.fileset" />
 
         <path id="jboss-annotations-ejb3.jar.path">
             <fileset dir="${project.lib}" id="jboss-annotations-ejb3.jar.fileset">
@@ -661,12 +723,55 @@
 
         <path id="jboss-ejb3.jar.path">
             <fileset dir="${project.lib}" id="jboss-ejb3.jar.fileset">
-                <include name="jboss-ejb3*.jar"/>
+                <include name="jboss-ejb3-ext-api-*.jar"/>
                 <exclude name="jboss-ejb3-client-*.jar"/>
                 <exclude name="jboss-ejb3x*.jar"/>
             </fileset>
         </path>
         <property name="jboss-ejb3.jar" refid="jboss-ejb3.jar.fileset" />
+
+        <path id="jboss-system-jmx-client.jar.path">
+            <fileset dir="${project.lib}" id="jboss-system-jmx-client.jar.fileset">
+                <include name="jboss-system-jmx-client-*.jar"/>
+            </fileset>
+        </path>
+        <property name="jboss-system-jmx-client.jar" refid="jboss-system-jmx-client.jar.fileset" />
+
+        <path id="jboss-system-jmx.jar.path">
+            <fileset dir="${project.lib}" id="jboss-system-jmx.jar.fileset">
+                <include name="jboss-system-jmx-*.jar"/>
+                <exclude name="jboss-system-jmx-client-*.jar"/>
+            </fileset>
+        </path>
+        <property name="jboss-system-jmx.jar" refid="jboss-system-jmx.jar.fileset" />
+
+        <path id="jboss-system-client.jar.path">
+            <fileset dir="${project.lib}" id="jboss-system-client.jar.fileset">
+                <include name="jboss-system-client-*.jar"/>
+            </fileset>
+        </path>
+        <property name="jboss-system-client.jar" refid="jboss-system-client.jar.fileset" />
+
+        <path id="jboss-kernel.jar.path">
+            <fileset dir="${project.lib}" id="jboss-kernel.jar.fileset">
+                <include name="jboss-kernel-*.jar"/>
+            </fileset>
+        </path>
+        <property name="jboss-kernel.jar" refid="jboss-kernel.jar.fileset" />
+
+        <path id="jboss-j2se.jar.path">
+            <fileset dir="${project.lib}" id="jboss-j2se.jar.fileset">
+                <include name="jboss-j2se-*.jar"/>
+            </fileset>
+        </path>
+        <property name="jboss-j2se.jar" refid="jboss-j2se.jar.fileset" />
+
+        <path id="jboss-logging-spi.jar.path">
+            <fileset dir="${project.lib}" id="jboss-logging-spi.jar.fileset">
+                <include name="jboss-logging-spi-*.jar"/>
+            </fileset>
+        </path>
+        <property name="jboss-logging-spi.jar" refid="jboss-logging-spi.jar.fileset" />
 
         <path id="jta.jar.path">
             <fileset dir="${project.lib}" id="jta.jar.fileset">
@@ -763,6 +868,7 @@
                 <include name="spring-*.jar"/>
                 <exclude name="spring-mock-*.jar"/>
                 <exclude name="spring-richclient-full-*.jar"/>
+                <exclude name="spring-osgi-*.jar"/>
             </fileset>
         </path>
         <property name="spring.jar" refid="spring.jar.fileset" />
@@ -893,12 +999,12 @@
         </path>
         <property name="jboss-cache.jar" refid="jboss-cache.jar.fileset" />
 
-        <path id="jboss-common.jar.path">
-            <fileset dir="${project.lib}" id="jboss-common.jar.fileset">
-                <include name="jboss-common-*.jar"/>
+        <path id="jboss-common-core.jar.path">
+            <fileset dir="${project.lib}" id="jboss-common-core.jar.fileset">
+                <include name="jboss-common-core-*.jar"/>
             </fileset>
         </path>
-        <property name="jboss-common.jar" refid="jboss-common.jar.fileset" />
+        <property name="jboss-common-core.jar" refid="jboss-common-core.jar.fileset" />
 
         <path id="jboss-system.jar.path">
             <fileset dir="${project.lib}" id="jboss-system.jar.fileset">
@@ -1006,12 +1112,12 @@
         </path>
         <property name="wsdl4j.jar" refid="wsdl4j.jar.fileset" />
 
-        <path id="google-collections.jar.path">
-            <fileset dir="${project.lib}" id="google-collections.jar.fileset">
-                <include name="google-collections-*.jar"/>
+        <path id="guava.jar.path">
+            <fileset dir="${project.lib}" id="guava.jar.fileset">
+                <include name="guava-*.jar"/>
             </fileset>
         </path>
-        <property name="google-collections.jar" refid="google-collections.jar.fileset" />
+        <property name="guava.jar" refid="guava.jar.fileset" />
 
         <path id="liquibase.jar.path">
             <fileset dir="${project.lib}" id="liquibase.jar.fileset">
@@ -1076,20 +1182,44 @@
         </path>
         <property name="gnu-regexp.jar" refid="gnu-regexp.jar.fileset" />
         
+        <path id="atlassian-all.jar.path">
+            <fileset dir="${project.lib}" id="atlassian-all.jar.fileset">
+                <include name="atlassian-*.jar"/>
+            </fileset>
+        </path>
+        <property name="atlassian.jar" refid="atlassian-all.jar.fileset" />
+    	
+        <path id="joda-time.jar.path">
+            <fileset dir="${project.lib}" id="joda-time.jar.fileset">
+                <include name="joda-time*.jar"/>
+            </fileset>
+        </path>
+        <property name="joda-time.jar" refid="joda-time.jar.fileset" />
+
+
         <path id="jboss.dependencies.path">
             <fileset id="jboss.dependencies.fileset" dir="${project.lib}">
                 <include name="${jboss-annotations-ejb3.jar}"/>
                 <include name="${jbossall-client.jar}"/>
-                <include name="${jboss-common.jar}"/>
+                <include name="${jboss-common-core.jar}"/>
                 <include name="${jboss-cache.jar}"/>
                 <include name="${jboss-jmx.jar}"/>
                 <include name="${jboss-system.jar}"/>
+                <include name="${jboss-kernel.jar}"/>
+                <include name="${jboss-j2se.jar}"/>
+                <include name="${jboss-logging-spi.jar}"/>
+                <include name="${jboss-system-jmx-client.jar}"/>
+                <include name="${jboss-system-jmx.jar}"/>
+                <include name="${jboss-system-client.jar}"/>
                 <include name="${jboss-aop-client.jar}"/>
                 <include name="${jboss-aspect-client.jar}"/>
                 <include name="${jboss-ejb3-client.jar}"/>
                 <include name="${jboss-dependency.jar}"/>
                 <include name="${jboss-aop-jdk50.jar}"/>
                 <include name="${jboss-ejb3.jar}"/>
+                <include name="${javassist.jar}"/>
+                <include name="${hibernate-jbosscache.jar}"/>
+                <include name="${jgroups.jar}"/>
             </fileset>
         </path>
         
@@ -1127,6 +1257,7 @@
             <fileset refid="guice-assistedinject.jar.fileset"/>
             <fileset refid="woodstox.jar.fileset"/>
             <fileset refid="stax2-api.jar.fileset"/>
+            <fileset refid="slf4j-api.jar.fileset"/>
             <fileset id="common.grid.dependencies.fileset" dir="${project.lib}">
                 <include name="${axis.jar}"/>
                 <include name="${caGrid-core.jar}"/>
@@ -1137,26 +1268,45 @@
                 <include name="${ejb3-persistence.jar}"/>
                 <include name="${hibernate.jar}"/>
                 <include name="${hibernate-annotations.jar}"/>
+                <include name="${hibernate-validator.jar}"/>
+                <include name="${hibernate-commons-annotations.jar}"/>
                 <include name="${nci-commons-core.jar}"/>
             </fileset>
             <fileset id="common.compile.partial.dependencies.fileset" dir="${project.lib}">
                 <include name="${commons-beanutils.jar}"/>
                 <include name="${commons-collections.jar}"/>
-                <include name="${google-collections.jar}"/>
-                <include name="${commons-logging.jar}"/>
+                <include name="${guava.jar}"/>
+                <include name="slf4j*.jar"/>
                 <include name="${commons-io.jar}"/>
                 <include name="${log4j.jar}"/>
                 <include name="${spring.jar}"/>
                 <include name="${castor.jar}"/>
                 <include name="${csmapi.jar}"/>
             </fileset>
+        	<fileset dir="${project.lib}">
+            <include name="atlassian-core*.jar"/>
+                <include name="atlassian-util*.jar"/>
+                <include name="atlassian-event*.jar"/>
+                <include name="atlassian-velocity*.jar"/>
+                <include name="atlassian-trusted*.jar"/>
+                <include name="atlassian-plugins*.jar"/>
+                <include name="atlassian-template*.jar"/>
+            <include name="sal-*.jar"/>
+            <include name="package-scanner-*.jar"/>
+            <include name="org.apache.felix*.jar"/>
+            <include name="bndlib*.jar"/>
+            <include name="spring-osgi-*.jar"/>
+            <include name="velocity-*.jar"/>
+			<include name="peaberry-*.jar"/>
+            <include name="${xwork.jar}"/>
+			</fileset>
         </path>
         <pathtofileset name="common.compile.dependencies.fileset" pathrefid="common.compile.dependencies.path" dir="${project.lib}"/>
 
         <path id="external.api.dependencies.path">
             <fileset refid="dozer.jar.fileset"/>
             <fileset refid="rmiio.jar.fileset"/>
-            <fileset refid="google-collections.jar.fileset"/>
+            <fileset refid="guava.jar.fileset"/>
         </path>
         <pathtofileset name="external.api.dependencies.fileset" pathrefid="external.api.dependencies.path" dir="${project.lib}"/>
 
@@ -1168,7 +1318,7 @@
             <fileset refid="javassist.jar.fileset"/>
             <fileset refid="commons-compress.jar.fileset"/>
             <fileset refid="gnu-regexp.jar.fileset"/>
-        	<fileset refid="liquibase.jar.fileset"/>
+            <fileset refid="liquibase.jar.fileset"/>
         </path>
 
         <path id="grid.compile.dependencies.path">
@@ -1193,6 +1343,12 @@
         <path id="war.compile.ear-provided.depenendencies.path">
             <fileset id="war.compile.ear-provided.depenendencies.fileset" dir="${project.lib}">
                 <include name="${commons-compress.jar}"/>
+                <include name="visualization*.jar"/>
+                <include name="icu*.jar"/>
+                <include name="${commons-fileupload.jar}"/>
+                <include name="${json-lib.jar}"/>
+                <include name="${jericho-html.jar}"/>
+                <include name="${ezmorph.jar}"/>
             </fileset>
             <fileset refid="common.compile.dependencies.fileset"/>
             <path refid="ejb.compile.dependencies.path"/>
@@ -1209,23 +1365,19 @@
         <path id="war.compile.dependencies.path">
             <!-- all jars that should go in caarray.war!/WEB-INF/lib/ -->
             <fileset id="war.compile.war-provided.depenendencies.fileset" dir="${project.lib}">
-                <include name="${displaytag.jar}"/>
-                <include name="${freemarker.jar}"/>
-                <include name="${commons-fileupload.jar}"/>
-                <include name="${oscache.jar}"/>
-                <include name="${sitemesh.jar}"/>
-                <include name="${urlrewrite.jar}"/>
-                <include name="${xwork.jar}"/>
-                <include name="${ognl.jar}"/>
-                <include name="${ajaxtags.jar}"/>
-                <include name="${jericho-html.jar}"/>
-                <include name="${json-lib.jar}"/>
-                <include name="${ezmorph.jar}"/>
-                <include name="${nci-commons-struts2.jar}"/>
-                <include name="${struts2-core.jar}"/>
                 <include name="${jstl.jar}"/>
                 <include name="${standard.jar}"/>
+                <include name="${oscache.jar}"/>
+                <include name="${ajaxtags.jar}"/>
                 <include name="${liquibase.jar}"/>
+                <include name="${sitemesh.jar}"/>
+                <include name="${displaytag.jar}"/>
+                <include name="${struts2-core.jar}"/>
+                <include name="${xwork.jar}"/>
+                <include name="${freemarker.jar}"/>
+                <include name="${nci-commons-struts2.jar}"/>
+                <include name="${ognl.jar}"/>
+                <include name="${urlrewrite.jar}"/>
             </fileset>
 
             <!-- all jars that should go in the caarray.ear!/lib/ -->
@@ -1263,11 +1415,15 @@
                 <include name="${antlr.jar}"/>
                 <include name="${asm.jar}"/>
                 <include name="${c3p0.jar}"/>
+                <include name="${hibernate-c3p0.jar}"/>
+                <include name="${hibernate-jbosscache.jar}"/>
+                <include name="${commons-logging.jar}" />
                 <include name="${concurrent.jar}"/>
                 <include name="${jgroups.jar}"/>
                 <include name="${junit.jar}"/>
                 <include name="${ledatastream.jar}"/>
                 <include name="${mockito.jar}"/>
+            	<include name="hamcrest-*.jar"/>
             </fileset>
         </path>
 
@@ -1314,6 +1470,21 @@
                 <include name="${spring-mock.jar}"/>
             </fileset>
         </path>
+    	
+        <path id="grid.dependencies.lib.path">
+            <fileset dir="${project.lib}" id="grid.dependencies.lib.fileset">
+                <include name="${addressing.jar}" />
+                <include name="${cog-axis.jar}" />
+                <include name="${cog-jglobus.jar}" />
+                <include name="${commons-discovery.jar}" />
+                <include name="${jce.jar}" />
+                <include name="${wsrf_core_enum.jar}"/>
+                <include name="${wsrf_core_stubs_enum.jar}"/>
+                <include name="${wss4j.jar}" />
+                <include name="${xercesImpl.jar}" />
+                <include name="${castor.jar}" />
+            </fileset>
+        </path>
         
         <path id="test.grid.dependencies.path">
             <fileset refid="grid.compile.dependencies.fileset"/>
@@ -1341,7 +1512,7 @@
             <fileset refid="caarray-client.common.dependencies.fileset"/>
             <fileset refid="jboss.dependencies.fileset"/>
             <fileset dir="${project.lib}">
-                <include name="${jboss-ejb3x.jar}" />
+                <include name="${jboss-ejb3-ext-api.jar}" />
             	<include name="${jboss-remoting.jar}" />
             </fileset>
         </path>
@@ -1355,7 +1526,7 @@
                 <include name="${axis.jar}" />
                 <include name="${javaee.jar}"/>
                 <include name="${wsdl4j.jar}"/>
-                <include name="${google-collections.jar}"/>
+                <include name="${guava.jar}"/>
                 <include name="${nci-commons-core.jar}"/>
                 <include name="${caGrid-cql.jar}"/>
             </fileset>
@@ -1370,6 +1541,7 @@
                 <include name="${ejb3-persistence.jar}" />
                 <include name="${hibernate.jar}" />
                 <include name="${hibernate-annotations.jar}" />
+                <include name="${hibernate-validator.jar}"/>
                 <include name="${javassist.jar}" />
                 <include name="${nci-commons-core.jar}" />
             </fileset>
@@ -1400,22 +1572,7 @@
             <fileset refid="caarray-client.common.grid.dependencies.fileset"/>
         </path>
         <pathtofileset name="caarray-client.external.v1_0.grid.dependencies.fileset" pathrefid="caarray-client.external.v1_0.grid.dependencies.path" dir="${project.lib}"/>
-
-        <path id="grid.dependencies.lib.path">
-            <fileset dir="${project.lib}" id="grid.dependencies.lib.fileset">
-                <include name="${addressing.jar}" />
-                <include name="${cog-axis.jar}" />
-                <include name="${cog-jglobus.jar}" />
-                <include name="${commons-discovery.jar}" />
-                <include name="${jce.jar}" />
-                <include name="${wsrf_core_enum.jar}"/>
-                <include name="${wsrf_core_stubs_enum.jar}"/>
-                <include name="${wss4j.jar}" />
-                <include name="${xercesImpl.jar}" />
-                <include name="${castor.jar}" />
-            </fileset>
-        </path>
-
+    	
         <taskdef resource="checkstyletask.properties">
             <classpath refid="checkstyle.jar.path"/>
             <classpath refid="commons-beanutils.jar.path"/>
@@ -1454,7 +1611,6 @@
     <!-- File References -->
     <property name="mysql.datasource.file" value="caarray-mysql-ds.xml" />
     <property name="jboss-mail-service.file" value="mail-service.xml" />
-    <property name="jboss-aop.file" value="ejb3-interceptors-aop.xml" />
     <property name="jboss-globus-serverinstance-config.zip" location="${resource.dir}/deploy/jboss-globus-serverinstance-config.zip" />
 
     <filterset id="caarray.filterset" onmissingfiltersfile="warn">
@@ -1488,6 +1644,7 @@
         clean:target.dir,
         clean:caarray-grid-common,
         clean:caarray-grid-svc,
+    	clean:caarray-plugins,
         clean:caarraydb,
     	clean-cn2magetab" description="Deletes all of the target directories" />
 
@@ -1545,6 +1702,14 @@
                 <ant dir="${caarray-grid-svc.base.dir}/@{version}" target="clean" inheritall="false">
                 	<property name="caarray-grid-svc.common.target.dir" value="${caarray-grid-svc.common.target.dir}"/>
                 </ant>
+            </sequential>
+        </for>
+    </target>
+
+    <target name="clean:caarray-plugins">
+        <for param="plugin" list="${caarray-plugins.pluginList}">
+            <sequential>
+                <delete dir="${caarray-plugins.dir}/@{plugin}/target" />
             </sequential>
         </for>
     </target>
@@ -1635,7 +1800,8 @@
       compile:caarray-common.jar,
         compile:caarray-ejb.jar,
         compile:caarray.war,
-        compile:caarray-grid-svc" />
+        compile:caarray-grid-svc,
+    	compile:caarray-plugins" />
     
     <target name="compile:cn2magetab" depends="init:third-party-paths">
         <mkdir dir="${cn2magetab.classes.dir}" />
@@ -1665,6 +1831,10 @@
             </classpath>
             <classpath refid="common.compile.dependencies.path" />
         </javac>
+        <copy todir="${caarray-common.classes.dir}" overwrite="true" file="${caarray-common.resources.dir}/app-config.properties"/>
+        <replace file="${caarray-common.classes.dir}/app-config.properties">
+            <replacefilter token="@csm.application.name@" value="${csm.application.name}" />
+        </replace>
     </target>
 
     <target name="compile:caarray-ejb.jar" depends="init:third-party-paths,compile:caarray-common.jar">
@@ -1678,6 +1848,7 @@
     </target>
 
     <target name="compile:caarray.war" depends="init:third-party-paths,compile:caarray-common.jar,compile:caarray-ejb.jar">
+    	<echo message="${atlassian.jar}"/>
         <mkdir dir="${caarray-war.classes.dir}" />
         <javac srcdir="${caarray-war.src.dir}" destdir="${caarray-war.classes.dir}" debug="true">
             <classpath>
@@ -1713,6 +1884,23 @@
             </sequential>
         </for>
     </target>
+	
+    <target name="compile:caarray-plugins" depends="init:third-party-paths, compile:caarray.war">
+        <for param="plugin" list="${caarray-plugins.pluginList}">
+            <sequential>
+		        <mkdir dir="${caarray-plugins.dir}/@{plugin}/${caarray-plugins.classes.subdir}" />
+                <javac srcdir="${caarray-plugins.dir}/@{plugin}/${caarray-plugins.src.subdir}" destdir="${caarray-plugins.dir}/@{plugin}/${caarray-plugins.classes.subdir}" debug="true">
+                    <classpath>
+                        <pathelement location="${caarray-common.classes.dir}" />
+                        <pathelement location="${caarray-ejb.classes.dir}" />
+                        <pathelement location="${caarray-war.classes.dir}" />
+                        <pathelement location="${caarray-plugins.dir}/@{plugin}/${caarray-plugins.resources.subdir}" />
+                    </classpath>
+                    <classpath refid="war.compile.dependencies.path" />
+                </javac>
+            </sequential>
+        </for>
+    </target>
 
     <!-- ******************************************************************* -->
     <!-- ** SVN TARGETS                                                 ** -->
@@ -1743,6 +1931,7 @@
         build:caarray.war,
         build:caarray.ear,
         build:caarray-grid-svc,
+    	build:caarray-plugins,
     	build:cn2magetab"/>
 
     <target name="build-functional" depends="init:third-party-paths,
@@ -1926,6 +2115,33 @@
         </jar>
     </target>
 
+    <target name="build:caarray-plugins" depends="init:third-party-paths,compile:caarray-plugins,svn:getinfo">
+        <for param="plugin" list="${caarray-plugins.pluginList}">
+            <sequential>
+		        <mkdir dir="${caarray-plugins.dir}/@{plugin}/${caarray-plugins.target.subdir}" />
+                <pathconvert pathsep=" " property="flattened.common.dependencies" refid="common.compile.dependencies.path">
+                    <flattenmapper />
+                </pathconvert>
+                <copy todir="${caarray-plugins.dir}/@{plugin}/${caarray-plugins.classes.subdir}" overwrite="true">
+                    <fileset dir="${caarray-plugins.dir}/@{plugin}/${caarray-plugins.resources.subdir}" includes="**/*" />
+                </copy>
+                <jar destfile="${caarray-plugins.dir}/@{plugin}/${caarray-plugins.target.subdir}/@{plugin}-plugin.jar">
+                    <manifest>
+                        <section name="gov/nih/nci/caarray/@{plugin}">
+                            <attribute name="Specification-Title" value="caArray" />
+                            <attribute name="Specification-Version" value="${svn.url} ${svn.revision}" />
+                            <attribute name="Specification-Vendor" value="5AM Solutions" />
+                            <attribute name="Implementation-Title" value="caArray" />
+                            <attribute name="Implementation-Version" value="${svn.url} ${svn.revision}" />
+                            <attribute name="Implementation-Vendor" value="5AM Solutions" />
+                        </section>
+                    </manifest>
+                    <fileset dir="${caarray-plugins.dir}/@{plugin}/${caarray-plugins.classes.subdir}" />
+                </jar>
+            </sequential>
+        </for>
+    </target>
+
     <target name="build:functional:caarray-common.jar" depends="build:caarray-common.jar, test:instrument-functional:caarray-common.jar" />
 
     <target name="build:caarray-ejb.jar" depends="init:third-party-paths,compile:caarray-ejb.jar,svn:getinfo">
@@ -1939,6 +2155,11 @@
         <copy todir="${caarray-ejb.classes.dir}" overwrite="true">
             <fileset dir="${caarray-ejb.resources.dir}" includes="**/*" />
         </copy>
+    	<propertyfile file="${caarray-ejb.classes.dir}/dataStorage.properties">
+    		<entry key="dataStorage.fileSystem.baseDir" value="${dataStorage.fileSystem.baseDir}"/>
+        	<entry key="dataStorage.fileDataEngine" value="${dataStorage.fileDataEngine}"/>
+        	<entry key="dataStorage.parsedDataEngine" value="${dataStorage.parsedDataEngine}"/>
+    	</propertyfile>
         <jar destfile="${caarray-ejb.jar}">
             <manifest>
                 <attribute name="Class-Path" value="${processed.ejb.dependencies.ready.for.manifest.classpath}" />
@@ -2019,6 +2240,12 @@
         <copy todir="${caarray-war.classes.dir}">
             <fileset dir="${caarray-war.src.dir}" includes="*.xml,*.properties, template/**/*" />
         </copy>
+    	<propertyfile file="${caarray-plugins.properties.file}">
+    		<entry key="plugins.deploy.dir" value="${caarray-plugins.deploy.dir}"/>
+        	<entry key="plugins.bundle.zip" value="${caarray-plugins.bundledPlugins.zip}"/>
+    		<entry key="plugins.cache.dir" value="${caarray-plugins.deploy.cache.dir}"/>
+        	<entry key="plugins.bundleCache.dir" value="${caarray-plugins.deploy.bundleCache.dir}"/>
+    	</propertyfile>
         <war destfile="${caarray.war}" webxml="${caarray-war.target.dir}/xml/web.xml">
             <fileset dir="${caarray-war.target.webapp.dir}">
                 <exclude name="WEB-INF/**" />
@@ -2098,7 +2325,7 @@
             <for param="file" list="${flattened.ear.lib.dependencies}" delimiter="|">
                 <sequential>
                     <echo append="true" file="${application.xml.fragment.file}"><![CDATA[
-    <module xmlns="http://java.sun.com/xml/ns/j2ee">
+    <module xmlns="http://java.sun.com/xml/ns/javaee">
         <java>lib/@{file}</java>
     </module>]]></echo>
                 </sequential>
@@ -2226,6 +2453,7 @@
       test:junit-caarray-common.jar,
       test:junit-caarray-ejb.jar,
       test:junit-caarray.war,
+      test:junit-caarray-plugins,
       test:junit-cn2magetab,
       test:junit-report,
       test:cobertura-report,
@@ -2336,7 +2564,7 @@
     </target>
 
     <target name="test:junit-caarray-common.jar" unless="notest" depends="init:third-party-paths,test:compile:caarray-common.test.classes,test:instrument:caarray-common.jar,configure-datasource-for-test,test:copy-files-to-target-dir-and-unpack-test-data">
-        <caarray-run-junit-tests test.src.dir="${caarray-common.test.src.dir}" xml.output.dir="${caarray-common.target.dir}/junit" instrumented.classes="${caarray-common.instrumented.classes.dir}" classpath="${caarray-common.test.classes.dir};${test.data.target.dir};${test.data.classes.dir};${caarray-common.test.files.dir};${caarray-common.classes.dir};" classpathref.id="common.test.dependencies.path" />
+        <caarray-run-junit-tests test.src.dir="${caarray-common.test.src.dir}" xml.output.dir="${caarray-common.target.dir}/junit" instrumented.classes="${caarray-common.instrumented.classes.dir}" classpath="${caarray-common.test.classes.dir};${test.data.target.dir};${test.data.classes.dir};${caarray-common.classes.dir};${caarray-common.test.files.dir};" classpathref.id="common.test.dependencies.path" />
     </target>
 
 	<!-- caarray-ejb.jar -->
@@ -2359,20 +2587,103 @@
     <target name="test:compile:caarray-ejb.test.classes" unless="notest" depends="init:third-party-paths,compile:caarray-ejb.jar,compile:caarray-client.jar,compile:caarray-common.jar,test:compile:caarray-common.test.classes,test:compile:test-data-classes">
         <mkdir dir="${caarray-ejb.test.classes.dir}" />
         <javac srcdir="${caarray-ejb.test.src.dir}" destdir="${caarray-ejb.test.classes.dir}" debug="true">
+        	<include name="**/*"/>
             <classpath>
                 <pathelement location="${caarray-ejb.classes.dir}" />
                 <pathelement location="${caarray-client.classes.dir}" />
                 <pathelement location="${caarray-common.classes.dir}" />
                 <pathelement location="${caarray-common.test.classes.dir}" />
-                <pathelement location="${test.data.classes.dir}" />
+                <pathelement location="${test.data.classes.dir}" />            	
             </classpath>
             <classpath refid="ejb.test.dependencies.path" />
             <classpath refid="mysql-connector-java.jar.path" />
         </javac>
     </target>
 
-    <target name="test:junit-caarray-ejb.jar" unless="notest" depends="init:third-party-paths,test:compile:caarray-ejb.test.classes,test:instrument:caarray-ejb.jar,compile:caarray-client.jar,compile:caarray-common.jar,test:functional:compile-tests,test:copy-files-to-target-dir-and-unpack-test-data">
-        <caarray-run-junit-tests test.src.dir="${caarray-ejb.test.src.dir}" xml.output.dir="${caarray-ejb.target.dir}/junit" instrumented.classes="${caarray-ejb.instrumented.classes.dir};${caarray-common.instrumented.classes.dir}" classpath="${caarray-ejb.test.classes.dir};${caarray-common.test.classes.dir};${test.data.target.dir};${test.data.classes.dir};${caarray-ejb.test.resources.dir};${caarray-ejb.resources.dir};${caarray-common.test.files.dir};${caarray-ejb.classes.dir};${caarray-client.classes.dir};${caarray-common.classes.dir};" classpathref.id="ejb.test.dependencies.path"/>
+    <target name="test:junit-caarray-ejb.jar" unless="notest" depends="init:third-party-paths,test:compile:caarray-ejb.test.classes,test:instrument:caarray-ejb.jar,compile:caarray-client.jar,compile:caarray-common.jar,test:copy-files-to-target-dir-and-unpack-test-data">
+    	<propertyfile file="${caarray-ejb.test.classes.dir}/dataStorage.properties">
+    		<entry key="dataStorage.fileSystem.baseDir" value="${dataStorage.fileSystem.testBaseDir}"/>
+    	    <entry key="dataStorage.fileDataEngine" value="${dataStorage.fileDataEngine}"/>
+    	    <entry key="dataStorage.parsedDataEngine" value="${dataStorage.parsedDataEngine}"/>
+	    </propertyfile>
+    	<caarray-run-junit-tests test.src.dir="${caarray-ejb.test.src.dir}" xml.output.dir="${caarray-ejb.target.dir}/junit" instrumented.classes="${caarray-ejb.instrumented.classes.dir};${caarray-common.instrumented.classes.dir}" classpath="${caarray-ejb.test.classes.dir};${caarray-common.test.classes.dir};${test.data.target.dir};${test.data.classes.dir};${caarray-ejb.test.resources.dir};${caarray-ejb.resources.dir};${caarray-common.test.files.dir};${caarray-ejb.classes.dir};${caarray-client.classes.dir};${caarray-common.classes.dir};" classpathref.id="ejb.test.dependencies.path"/>
+    </target>
+
+	<!-- caarray-plugins -->
+
+    <target name="test:instrument:caarray-plugins" unless="nocobertura" depends="init:cobertura-runcheck,init:third-party-paths,compile:caarray-plugins">
+        <for param="plugin" list="${caarray-plugins.pluginList}">
+            <sequential>
+                <cobertura-instrument todir="${caarray-plugins.dir}/@{plugin}/${caarray-plugins.instrumented.classes.subdir}" datafile="${cobertura.file}">
+                    <fileset dir="${caarray-plugins.dir}/@{plugin}/${caarray-plugins.classes.subdir}">
+                        <include name="**/*.class" />
+                    </fileset>
+                </cobertura-instrument>
+            </sequential>
+        </for>
+    </target>
+
+    <target name="test:instrument-functional:caarray-plugins" unless="nocobertura" depends="init:cobertura-runcheck,init:third-party-paths,build:caarray-plugins">
+        <for param="plugin" list="${caarray-plugins.pluginList}">
+            <sequential>
+                <cobertura-instrument todir="${caarray-plugins.dir}/@{plugin}/${caarray-plugins.instrumented.classes.subdir}" datafile="${cobertura-functional.file}">
+                    <fileset dir="${caarray-plugins.dir}/@{plugin}/${caarray-plugins.classes.subdir}">
+                        <include name="**/*.class" />
+                    </fileset>
+                </cobertura-instrument>
+            </sequential>
+        </for>
+    </target>
+
+    <target name="test:compile:caarray-plugins.test.classes" unless="notest" depends="init:third-party-paths,compile:caarray-plugins,test:compile:caarray-ejb.test.classes">
+        <for param="plugin" list="${caarray-plugins.pluginList}">
+            <sequential>
+                <mkdir dir="${caarray-plugins.dir}/@{plugin}/${caarray-plugins.test.classes.subdir}" />
+	            <propertycopy property="requiredPlugins" override="true" from="caarray-plugins.@{plugin}.requires"/>
+                <var name="plugin.classpath" value="${caarray-plugins.dir}/@{plugin}/${caarray-plugins.classes.subdir};" />
+            	<echo message="required plugins: ${requiredPlugins}"/>
+                <for param="requiredPlugin" list="${requiredPlugins}">
+    				<sequential>            		
+    		    		<var name="plugin.classpath" value="${plugin.classpath}${caarray-plugins.dir}/@{requiredPlugin}/${caarray-plugins.classes.subdir};"/>
+                	</sequential>
+                </for>
+				<echo message="plugin cp: ${plugin.classpath}"/>
+            	
+                <javac srcdir="${caarray-plugins.dir}/@{plugin}/${caarray-plugins.test.src.subdir}" destdir="${caarray-plugins.dir}/@{plugin}/${caarray-plugins.test.classes.subdir}" debug="true">
+                    <classpath>
+                        <pathelement path="${plugin.classpath}" />
+                        <pathelement location="${caarray-ejb.classes.dir}" />
+                        <pathelement location="${caarray-client.classes.dir}" />
+                        <pathelement location="${caarray-common.classes.dir}" />
+                        <pathelement location="${caarray-common.test.classes.dir}" />
+                        <pathelement location="${caarray-ejb.test.classes.dir}" />
+                        <pathelement location="${test.data.classes.dir}" />
+                    </classpath>
+                    <classpath refid="ejb.test.dependencies.path" />
+                    <classpath refid="mysql-connector-java.jar.path" />
+                </javac>
+            </sequential>
+        </for>
+    </target>
+
+    <target name="test:junit-caarray-plugins" unless="notest" depends="init:third-party-paths,test:compile:caarray-plugins.test.classes,test:instrument:caarray-plugins,test:copy-files-to-target-dir-and-unpack-test-data">
+        <for param="plugin" list="${caarray-plugins.pluginList}">
+            <sequential>
+            	<var name="plugin.test.classpath" value="${caarray-plugins.dir}/@{plugin}/${caarray-plugins.test.classes.subdir};${caarray-ejb.test.classes.dir};${caarray-common.test.classes.dir};${test.data.target.dir};${test.data.classes.dir};${caarray-plugins.dir}/@{plugin}/${caarray-plugins.test.resources.subdir};${caarray-plugins.dir}/@{plugin}/${caarray-plugins.resources.subdir};${caarray-ejb.test.resources.dir};${caarray-ejb.resources.dir};${caarray-common.test.files.dir};${caarray-plugins.dir}/@{plugin}/${caarray-plugins.classes.subdir};${caarray-ejb.classes.dir};${caarray-client.classes.dir};${caarray-common.classes.dir};"/>
+            	<propertycopy property="requiredPlugins" override="true" from="caarray-plugins.@{plugin}.requires"/>
+            	<echo message="required plugins: ${requiredPlugins}"/>
+            	<for param="requiredPlugin" list="${requiredPlugins}">
+					<sequential>            		
+		            	<var name="plugin.test.classpath" value="${plugin.test.classpath}${caarray-plugins.dir}/@{requiredPlugin}/${caarray-plugins.classes.subdir};"/>
+            		</sequential>
+            	</for>
+                <caarray-run-junit-tests test.src.dir="${caarray-plugins.dir}/@{plugin}/${caarray-plugins.test.src.subdir}" 
+                	xml.output.dir="${caarray-plugins.dir}/@{plugin}/${caarray-plugins.target.subdir}/junit" 
+                	instrumented.classes="${caarray-plugins.dir}/@{plugin}/${caarray-plugins.instrumented.classes.subdir};${caarray-ejb.instrumented.classes.dir};${caarray-common.instrumented.classes.dir}" 
+                	classpath="${plugin.test.classpath}" classpathref.id="ejb.test.dependencies.path"
+                	forkmode="perTest"/>
+            </sequential>
+        </for>
     </target>
 
     <!-- caarray.war -->
@@ -2396,6 +2707,7 @@
     <target name="test:compile:caarray-war.test.classes" unless="notest" depends="init:third-party-paths,compile:caarray.war,compile:caarray-common.jar,compile:caarray-ejb.jar,test:compile:caarray-ejb.test.classes,test:compile:caarray-common.test.classes,test:compile:test-data-classes">
         <mkdir dir="${caarray-war.test.classes.dir}" />
         <javac srcdir="${caarray-war.test.src.dir}" destdir="${caarray-war.test.classes.dir}" debug="true">
+        	<include name="**/*"/>
             <classpath>
                 <pathelement location="${test.data.classes.dir}" />
                 <pathelement location="${caarray-war.classes.dir}" />
@@ -2435,6 +2747,9 @@
             <fileset dir="${cn2magetab.target.dir}/junit">
                 <include name="TEST-*.xml" />
             </fileset>
+            <fileset dir="${caarray-plugins.dir}">
+                <include name="**/target/junit/TEST-*.xml" />
+            </fileset>
             <report format="frames" todir="${site.dir}/junit/unit" />
         </junitreport>
     </target>
@@ -2445,6 +2760,7 @@
             <fileset dir="${caarray-client.src.dir}" />
             <fileset dir="${caarray-common.src.dir}" />
             <fileset dir="${caarray-ejb.src.dir}" />
+            <fileset dir="${caarray-plugins.dir}" includes="**/src/main/java/**/*.java" />
             <fileset dir="${caarray-war.src.dir}" />
             <fileset dir="${cn2magetab.src.dir}" />
         </cobertura-report>
@@ -2681,7 +2997,7 @@
             instrumented.classes="${caarray-common.instrumented.classes.dir}"
             classpath="${test.classes.dir};${caarray-client.classes.dir};${caarray-client.resources.dir};${caarray-ejb.classes.dir};${caarray-common.classes.dir}"
             classpathref.id="client.test.dependencies.path"
-            source.include="**/api/**/java/**/*ServiceTest.java" source.exclude="**/Abstract*.java" />
+            source.include="**/api/**/java/**/SearchServiceTest.java" source.exclude="**/Abstract*.java" />
     </target>
     
     <target name="test:wait-for-jboss-servers">
@@ -2736,7 +3052,7 @@
         <caarray-run-junit-tests test.src.dir="${test.src.dir}" xml.output.dir="${test.target.dir}/junit/api/grid"
             classpath="${test.classes.dir};${caarray-common.classes.dir};${caarray-ejb.classes.dir};${caarray-grid-svc.common.jar};${caarray-client.resources.dir};"
             classpathref.id="test.grid.dependencies.path"
-            source.include="**/api/**/grid/**/*ApiTest.java" source.exclude="**/Abstract*.java" >
+            source.include="**/api/**/grid/**/ModelApiTest.java" source.exclude="**/Abstract*.java" >
                 <extentions>
                     <sysproperty key="globoss.server.http.port" value="${grid.server.port}" /><!-- same server, same port -->
                 </extentions>
@@ -2754,8 +3070,9 @@
 
     <target name="check:checkstyle" depends="init:third-party-paths,build:caarray-common.jar,build:caarray-ejb.jar,compile:caarray.war,compile:cn2magetab">
         <mkdir dir="${site.dir}/checkstyle" />
-                <!-- Checkstyle chokes on @throws CustomChangeException in gov.nih.nci.caarray.upgrade.AbstractCustomChange.java -->
-        <property name="checkstyle-caarray-ejb-excludes" value="**/AbstractCustomChange.java" />
+        <!-- Checkstyle chokes on @throws CustomChangeException in gov.nih.nci.caarray.upgrade.AbstractCustomChange.java -->
+        <!-- exclude the Fix* migrations pending resolution of how to treat them (ARRAY-1942) -->
+        <property name="checkstyle-caarray-ejb-excludes" value="**/AbstractCustomChange.java, **/upgrade/Fix*.java" />
 
         <checkstyle config="${checkstyle.config}" failureProperty="checkstyle.failure" failOnViolation="false" maxerrors="0" maxwarnings="0">
             <classpath>
@@ -2770,6 +3087,10 @@
             <fileset dir="${caarray-ejb.src.dir}" includes="**/*.java" excludes="${checkstyle-caarray-ejb-excludes}" />
             <fileset dir="${caarray-war.src.dir}" includes="**/*.java" />
         	<fileset dir="${cn2magetab.src.dir}" includes="**/*.java" />
+            <fileset dir="${caarray-plugins.dir}">
+                <include name="*/${caarray-plugins.src.subdir}/**/*.java" />
+                <exclude name="visualization-tab/**/*.java" />
+            </fileset>
         </checkstyle>
         <xslt in="${site.dir}/checkstyle/checkstyle.xml" out="${site.dir}/checkstyle/checkstyle.html" style="${resource.dir}/checkstyle-frames-errors.xsl">
             <param name="output.dir" expression="${site.dir}/checkstyle" />
@@ -2793,6 +3114,9 @@
             </fileset>
             <fileset dir="${caarray-ejb.src.dir}">
                 <include name="**/*.java" />
+            </fileset>
+            <fileset dir="${caarray-plugins.dir}">
+                <include name="*/${caarray-plugins.src.subdir}/**/*.java" />
             </fileset>
             <fileset dir="${cn2magetab.src.dir}">
                 <include name="**/*.java" />
@@ -2908,12 +3232,16 @@
             <fileset refid="guice-multibindings.jar.fileset"/>
             <fileset refid="aopalliance.jar.fileset"/>
             <fileset refid="hibernate.jar.fileset"/>
+            <fileset refid="hibernate-commons-annotations.jar.fileset"/>
+            <fileset refid="slf4j-api.jar.fileset"/>
+            <fileset refid="javassist.jar.fileset"/>
             <fileset refid="csmapi.jar.fileset"/>
             <fileset refid="common.compile.dependencies.fileset"/>
             <fileset refid="dozer.jar.fileset"/>
             <fileset refid="jaxen.jar.fileset"/>
             <fileset refid="asm.jar.fileset"/>
             <fileset refid="antlr.jar.fileset"/>
+            <fileset refid="jboss-aop-client.jar.fileset"/>
             <pathelement path="${caarraydb.sql.src.dir}/liquibase" />
         </path>
 		
@@ -2948,13 +3276,11 @@
     <!-- ** LOCAL DEPLOY TARGETS                                                ** -->
     <!-- ******************************************************************* -->
 
+    <target name="deploy:no-upgrade" depends="init:third-party-paths,deploy:caarray.ear,deploy:caarray-grid-svc" description="Deploy the application and grid services" />
     <target name="deploy" depends="init:third-party-paths,deploy:caarray.ear,deploy:caarray-grid-svc,database:update" description="Deploy the application and grid services" />
 
     <target name="deploy:caarray.ear-dependencies" depends="init:third-party-paths,prepare:create-local.properties">
         <copy file="${common.resources.jboss.conf.dir}/${mysql.datasource.file}" todir="${jboss.deploy.dir}" overwrite="true">
-            <filterset refid="caarray.filterset" />
-        </copy>
-        <copy file="${common.resources.jboss.conf.dir}/${jboss-aop.file}" todir="${jboss.deploy.dir}" overwrite="true">
             <filterset refid="caarray.filterset" />
         </copy>
         <copy todir="${jboss.lib.dir}" overwrite="true" flatten="true">
@@ -2966,9 +3292,27 @@
         </copy>
         <delete dir="${jboss.deploy.dir}/jbossweb-tomcat55.sar/jsf-libs" includes="commons-lang*.jar" quiet="true"/>
     </target>
+	
+	<target name="deploy:caarray-plugins-prepare" depends="init:third-party-paths" description="Prepare the directories for plugin deployment">
+		<mkdir dir="${caarray-plugins.deploy.dir}"/>		
+		<mkdir dir="${caarray-plugins.deploy.cache.dir}"/>		
+		<mkdir dir="${caarray-plugins.deploy.bundleCache.dir}"/>		
+		
+		<zip destfile="${caarray-plugins.bundledPlugins.zip}">
+			<fileset refid="joda-time.jar.fileset"/>
+		</zip>
+	</target>
 
-    <target name="deploy:caarray.ear" depends="init:third-party-paths,build:caarray.ear,deploy:caarray.ear-dependencies">
+    <target name="deploy:caarray.ear" depends="init:third-party-paths,build:caarray.ear,deploy:caarray.ear-dependencies,deploy:caarray-plugins-prepare">
         <copy file="${caarray.ear}" todir="${jboss.deploy.dir}" />
+    </target>
+
+    <target name="deploy:caarray-plugins" depends="init:third-party-paths,build:caarray-plugins,deploy:caarray-plugins-prepare">
+        <for param="plugin" list="${caarray-plugins.pluginList}">
+            <sequential>
+                <copy file="${caarray-plugins.dir}/@{plugin}/${caarray-plugins.target.subdir}/@{plugin}-plugin.jar" todir="${caarray-plugins.deploy.dir}" />
+            </sequential>
+        </for>
     </target>
 
     <target name="deploy:functional:caarray.ear" depends="init:third-party-paths,build:functional:caarray.ear,deploy:caarray.ear-dependencies">
@@ -3028,13 +3372,26 @@
         </for>
     </target>
 
-    <target name="undeploy" description="Undeploys the application from JBoss and Globoss" depends="init:third-party-paths,undeploy:caarray.ear, undeploy:caarray-grid-svc" />
+    <target name="undeploy" description="Undeploys the application from JBoss and Globoss" depends="init:third-party-paths,undeploy:caarray.ear,undeploy:caarray-plugins,undeploy:caarray-grid-svc" />
 
     <target name="undeploy:caarray.ear" description="Undeploys the application from JBoss" depends="init:third-party-paths">
         <delete file="${jboss.deploy.dir}/${mysql.datasource.file}" />
         <delete file="${jboss.deploy.dir}/caarray.ear" />
         <delete file="${jboss.deploy.dir}/mail-service.xml" />
     </target>
+	
+	<target name="undeploy:caarray-plugins" description="Undeploys plugins and cleans out the cache" depends="init:third-party-paths">
+		<delete>
+			<fileset dir="${caarray-plugins.deploy.dir}" includes="**/*"/> 
+		</delete>
+		<delete>
+			<fileset dir="${caarray-plugins.deploy.cache.dir}" includes="**/*"/> 
+		</delete>
+		<delete>
+			<fileset dir="${caarray-plugins.deploy.bundleCache.dir}" includes="**/*"/> 
+		</delete>
+		<delete file="${caarray-plugins.bundledPlugins.zip}"/>							
+	</target>
 
     <target name="undeploy:caarray-grid-svc" depends="init:third-party-paths,undeploy:caarray-grid-svc-globus, undeploy:caarray-grid-svc-jboss"/>
 
@@ -3105,7 +3462,7 @@
     <target name="deploy:copy-jsp" description="Copies the jsp's over to the unpacked war directory in jboss" depends="init:third-party-paths">
         <for param="toDir">
             <path>
-                <dirset dir="${jboss.deploy.dir}/../tmp/deploy" includes="tmp*caarray.ear-contents/caarray-exp.war" />
+                <dirset dir="${jboss.deploy.dir}/../tmp" includes="*/caarray.war" />
             </path>
             <sequential>
                 <copy todir="@{toDir}">
@@ -3281,4 +3638,5 @@
     </target>
 
     <target name="javadoc:caarray-client" depends="javadoc:caarray-client-legacy, javadoc:caarray-client-external"/>
+	
 </project>

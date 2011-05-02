@@ -82,24 +82,29 @@
  */
 package gov.nih.nci.caarray.domain;
 
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.SequenceInputStream;
-import java.io.Serializable;
 import java.sql.Blob;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Vector;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
-import javax.persistence.Embeddable;
+import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
@@ -107,48 +112,61 @@ import org.hibernate.Hibernate;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.IndexColumn;
+import org.hibernate.validator.NotNull;
+
+import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 
 /**
- * This class is used to get around a mysql issue where the mysql server uses memory extremely
- * poorly on a connection where a blob is being used.  In order to get around this memory issue we
- * are breaking a single blob up in to many smaller blobs.
+ * This class is used to get around a mysql issue where the mysql server uses memory extremely poorly on a connection
+ * where a blob is being used. In order to get around this memory issue we are breaking a single blob up in to many
+ * smaller blobs.
+ * 
  * @author Scott Miller
  */
-@Embeddable
-public class MultiPartBlob implements Serializable {
+@Entity
+@Table(name = "multipart_blob")
+public class MultiPartBlob implements PersistentObject {
     private static final long serialVersionUID = -2527332971292994350L;
 
-    private static final int DEFAULT_BLOB_SIZE = 50 * 1024 * 1024;
+    private Long id;
+    private Date creationTimestamp;
+    private long uncompressedSize;
+    private long compressedSize;
 
     /**
-     * Constant holding the default blob size.  By default it will be 50 MB.
+     * Returns the id.
+     * 
+     * @return the id
      */
-    private static int blobSize = DEFAULT_BLOB_SIZE;
-
-    /**
-     * Set the max size of a stored blob.
-     * @param size the size in bytes
-     */
-    public static final void setBlobSize(int size) {
-        blobSize = size;
+    @Override
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    public Long getId() {
+        return this.id;
     }
+
     /**
-     * @return blob size
+     * Sets the id.
+     * 
+     * @param id the id to set
+     * @deprecated should only be used by castor and hibernate
      */
-    public static final int getBlobSize() {
-        return blobSize;
+    @Deprecated
+    public void setId(Long id) {
+        this.id = id;
     }
 
     private List<BlobHolder> blobParts = new ArrayList<BlobHolder>();
 
     /**
      * The blobParts as stored by hibernate.
+     * 
      * @return the blobParts the blobParts.
      */
     @OneToMany(fetch = FetchType.LAZY)
     @IndexColumn(name = "contents_index")
     @Cascade(value = CascadeType.ALL)
-    private List<BlobHolder> getBlobParts() {
+    public List<BlobHolder> getBlobParts() {
         return this.blobParts;
     }
 
@@ -160,47 +178,20 @@ public class MultiPartBlob implements Serializable {
         this.blobParts = contents;
     }
 
-
     /**
-     * Method that takes an input stream and breaks it up in to multiple blobs.
-     * Note that this method loads each chunk in to a byte[], while this is not
-     * ideal, this will be done by the mysql driver anyway, so we are not adding
-     * a new inefficiency.  The data will be compressed.
-     * @param data the input stream to store.
-     * @return metadata about the written data (sizes, etc)
-     * @throws IOException on error reading from the stream.
-     */
-    public MetaData writeDataCompressed(InputStream data) throws IOException {
-        return writeData(data, true);
-    }
-
-    /**
-     * Method that takes an input stream and breaks it up in to multiple blobs.
-     * Note that this method loads each chunk in to a byte[], while this is not
-     * ideal, this will be done by the mysql driver anyway, so we are not adding
-     * a new inefficiency.  The data will <em>not</em> be compressed.
-     * @param data the input stream to store.
-     * @return metadata about the written data (sizes, etc)
-     * @throws IOException on error reading from the stream.
-     */
-    public MetaData writeDataUncompressed(InputStream data) throws IOException {
-        return writeData(data, false);
-    }
-
-    /**
-     * Method that takes an input stream and breaks it up in to multiple blobs.
-     * Note that this method loads each chunk in to a byte[], while this is not
-     * ideal, this will be done by the mysql driver anyway, so we are not adding
-     * a new inefficiency.
+     * Method that takes an input stream and breaks it up in to multiple blobs. Note that this method loads each chunk
+     * in to a byte[], while this is not ideal, this will be done by the mysql driver anyway, so we are not adding a new
+     * inefficiency.
+     * 
      * @param data the input stream to store.
      * @param compress true to compress the data, false to leave it uncompressed
-     * @return metadata about the written data (sizes, etc)
+     * @param blobPartSize the maximum size of a single blob
      * @throws IOException on error reading from the stream.
      */
-    private MetaData writeData(InputStream data, boolean compress) throws IOException {
-        int uncompressedBytes = 0;
-        int compressedBytes = 0;
-        ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+    public void writeData(InputStream data, boolean compress, int blobPartSize) throws IOException {
+        long uncompressedBytes = 0;
+        long compressedBytes = 0;
+        final ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
         OutputStream writeStream;
         if (compress) {
             writeStream = new GZIPOutputStream(byteStream);
@@ -208,41 +199,43 @@ public class MultiPartBlob implements Serializable {
             writeStream = byteStream;
         }
         byte[] unwritten = new byte[0];
-        byte[] uncompressed = new byte[MultiPartBlob.getBlobSize()];
+        final byte[] uncompressed = new byte[blobPartSize];
         int len = 0;
         while ((len = data.read(uncompressed)) > 0) {
             uncompressedBytes += len;
             writeStream.write(uncompressed, 0, len);
-            if (byteStream.size() + unwritten.length >= MultiPartBlob.getBlobSize()) {
+            if (byteStream.size() + unwritten.length >= blobPartSize) {
                 compressedBytes += byteStream.size();
-                unwritten = writeData(ArrayUtils.addAll(unwritten, byteStream.toByteArray()), false);
+                unwritten = writeData(ArrayUtils.addAll(unwritten, byteStream.toByteArray()), blobPartSize, false);
                 byteStream.reset();
             }
         }
         IOUtils.closeQuietly(writeStream);
         compressedBytes += byteStream.size();
-        writeData(ArrayUtils.addAll(unwritten, byteStream.toByteArray()), true);
-        return new MetaData(uncompressedBytes, compressedBytes);
+        writeData(ArrayUtils.addAll(unwritten, byteStream.toByteArray()), blobPartSize, true);
+        this.compressedSize = compressedBytes;
+        this.uncompressedSize = uncompressedBytes;
     }
 
     /**
      * Writes data to the blob. If writeAll is false, this method only writes out data that fills the max blob size. Any
      * remaining unwritten data is returned.
-     *
+     * 
      * @param data the data to write the blob
      * @param writeAll whether to write out all the data
+     * @param blobPartSize the maximum size of a single blob
      * @return array of any unwritten data
      */
-    private byte[] writeData(byte[] data, boolean writeAll) {
+    private byte[] writeData(byte[] data, int blobPartSize, boolean writeAll) {
         if (data == null) {
             return new byte[0];
         }
         int index = 0;
-        while (data.length - index >= blobSize) {
-            addBlob(ArrayUtils.subarray(data, index, index + blobSize));
-            index += blobSize;
+        while (data.length - index >= blobPartSize) {
+            addBlob(ArrayUtils.subarray(data, index, index + blobPartSize));
+            index += blobPartSize;
         }
-        byte[] unwritten = ArrayUtils.subarray(data, index, data.length);
+        final byte[] unwritten = ArrayUtils.subarray(data, index, data.length);
         if (writeAll && !ArrayUtils.isEmpty(unwritten)) {
             addBlob(unwritten);
             return new byte[0];
@@ -253,28 +246,30 @@ public class MultiPartBlob implements Serializable {
 
     /**
      * Add a blob part.
+     * 
      * @param buffer blob data
      */
     private void addBlob(byte[] buffer) {
-        BlobHolder bh = new BlobHolder();
+        final BlobHolder bh = new BlobHolder();
         bh.setContents(Hibernate.createBlob(buffer));
         getBlobParts().add(bh);
     }
 
     /**
      * Add a blob part.
+     * 
      * @param blob blob data
      */
     public void addBlob(Blob blob) {
-        BlobHolder bh = new BlobHolder();
+        final BlobHolder bh = new BlobHolder();
         bh.setContents(blob);
         getBlobParts().add(bh);
     }
 
     /**
-     * Returns an input stream to access the contents of this MultiPartBlob.  The contents will <em>not</em> be
+     * Returns an input stream to access the contents of this MultiPartBlob. The contents will <em>not</em> be
      * uncompressed when read.
-     *
+     * 
      * @return the raw (gzip) input stream to read.
      * @throws IOException if the contents couldn't be accessed.
      */
@@ -283,9 +278,9 @@ public class MultiPartBlob implements Serializable {
     }
 
     /**
-     * Returns an input stream to access the contents of this MultiPartBlob.  The contents will be uncompressed when
+     * Returns an input stream to access the contents of this MultiPartBlob. The contents will be uncompressed when
      * read.
-     *
+     * 
      * @return the inflated input stream to read.
      * @throws IOException if the contents couldn't be accessed.
      */
@@ -295,71 +290,75 @@ public class MultiPartBlob implements Serializable {
 
     /**
      * Returns an input stream to access the contents of this MultiPartBlob.
-     *
+     * 
      * @param uncompress true if the data should be uncompressed when read, false otherwise
      * @return the input stream to read.
      * @throws IOException if the contents couldn't be accessed.
      */
     private InputStream readContents(boolean uncompress) throws IOException {
         try {
-            Vector<InputStream> isVector = new Vector<InputStream>(); // NOPMD
-            for (BlobHolder currentBlobHolder : getBlobParts()) {
+            final Vector<InputStream> isVector = new Vector<InputStream>(); // NOPMD
+            for (final BlobHolder currentBlobHolder : getBlobParts()) {
                 isVector.add(currentBlobHolder.getContents().getBinaryStream());
             }
-            SequenceInputStream sequenceInputStream = new SequenceInputStream(isVector.elements());
+            final SequenceInputStream sequenceInputStream = new SequenceInputStream(isVector.elements());
             if (uncompress) {
                 return new GZIPInputStream(sequenceInputStream);
             } else {
                 return sequenceInputStream;
             }
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             throw new IllegalStateException("Couldn't access file contents", e);
         }
     }
 
     /**
-     * This class stores metadata about a MultiPartBlob.
-     * @author Steve Lustbader
+     * @return the timestamp
      */
-    public class MetaData {
-        private int uncompressedBytes = 0;
-        private int compressedBytes = 0;
+    @Temporal(TemporalType.TIMESTAMP)
+    @NotNull
+    public Date getCreationTimestamp() {
+        return this.creationTimestamp;
+    }
 
-        /**
-         * @param uncompressedBytes uncompressed size of the MultiPartBlob, in bytes
-         * @param compressedBytes compressed size of the MultiPartBlob, in bytes
-         */
-        public MetaData(int uncompressedBytes, int compressedBytes) {
-            this.uncompressedBytes = uncompressedBytes;
-            this.compressedBytes = compressedBytes;
-        }
+    /**
+     * @param timestamp the timestamp to set
+     */
+    public void setCreationTimestamp(Date timestamp) {
+        this.creationTimestamp = timestamp;
+    }
 
-        /**
-         * @return the uncompressedBytes
-         */
-        public int getUncompressedBytes() {
-            return uncompressedBytes;
-        }
+    /**
+     * @return the uncompressed size, in bytes
+     */
+    public long getUncompressedSize() {
+        return this.uncompressedSize;
+    }
 
-        /**
-         * @param uncompressedBytes the uncompressedBytes to set
-         */
-        public void setUncompressedBytes(int uncompressedBytes) {
-            this.uncompressedBytes = uncompressedBytes;
-        }
+    /**
+     * This method should generally not be called directly, as file size is calculated when data is written to the file.
+     * It is left public to support use in query by example and tooling relying on JavaBean property conventions
+     * 
+     * @param uncompressedSize the uncompressed size of the file, in bytes
+     */
+    public void setUncompressedSize(long uncompressedSize) {
+        this.uncompressedSize = uncompressedSize;
+    }
 
-        /**
-         * @return the compressedBytes
-         */
-        public int getCompressedBytes() {
-            return compressedBytes;
-        }
+    /**
+     * @return the compressed size, in bytes
+     */
+    public long getCompressedSize() {
+        return this.compressedSize;
+    }
 
-        /**
-         * @param compressedBytes the compressedBytes to set
-         */
-        public void setCompressedBytes(int compressedBytes) {
-            this.compressedBytes = compressedBytes;
-        }
+    /**
+     * This method should generally not be called directly, as file size is calculated when data is written to the file.
+     * It is left public to support use in query by example and tooling relying on JavaBean property conventions
+     * 
+     * @param compressedSize the compressed size of the file, in bytes
+     */
+    public void setCompressedSize(long compressedSize) {
+        this.compressedSize = compressedSize;
     }
 }

@@ -14,4 +14,9 @@
        <comment>GF-29399 - Write an upgrade script that will clean up organisms in the database to limit them to the NCBI taxonomy term source.</comment>
        <customChange class="gov.nih.nci.caarray.upgrade.FixOrganismsMigrator"/>
     </changeSet>
+    <!-- 2.4.0 changes -->    
+    <changeSet id="file-storage" author="dkokotov">
+       <comment>GF ?? - file storage</comment>
+       <sqlFile path="db-upgrade/mysql/2.5.0/file-storage.sql"/>
+    </changeSet>   
 </databaseChangeLog>

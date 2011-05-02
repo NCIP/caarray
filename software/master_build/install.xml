@@ -1217,7 +1217,7 @@ depends="upgrade:jboss:init,common:init,upgrade-ncm:jboss,-install:jboss:configu
         <unzip dest="${grid.home}/server/${grid.server.name}" src="${basedir}/grid/jboss-globus-serverinstance-config.zip" />
     </target>
 
-	<target name="-install:jboss:configure:ejb3-interceptors-aop">
+    <target name="-install:jboss:configure:ejb3-interceptors-aop">
         <copy todir="${jboss.home}/server/${jboss.server.name}/deploy" overwrite="true">
             <fileset dir="${jboss-conf.dist.relative.dir}">
                 <include name="ejb3-interceptors-aop.xml"/>

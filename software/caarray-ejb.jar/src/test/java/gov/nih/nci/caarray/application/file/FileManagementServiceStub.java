@@ -86,7 +86,7 @@ import gov.nih.nci.caarray.application.arraydata.DataImportOptions;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
-import gov.nih.nci.caarray.domain.file.FileType;
+import gov.nih.nci.caarray.domain.file.FileTypeRegistry;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.validation.InvalidDataFileException;
 
@@ -102,10 +102,12 @@ public class FileManagementServiceStub implements FileManagementService {
     int importedFilecCount = 0;
     int supplementalFileCount = 0;
 
+    @Override
     public void importFiles(Project targetProject, CaArrayFileSet fileSet, DataImportOptions options) {
         this.importedFilecCount += fileSet.getFiles().size();
     }
 
+    @Override
     public void validateFiles(Project project, CaArrayFileSet fileSet) {
         this.validatedFileCount += fileSet.getFiles().size();
     }
@@ -137,6 +139,7 @@ public class FileManagementServiceStub implements FileManagementService {
         this.supplementalFileCount = 0;
     }
 
+    @Override
     public void addSupplementalFiles(Project targetProject, CaArrayFileSet fileSet) {
         this.supplementalFileCount += fileSet.getFiles().size();
     }
@@ -145,31 +148,34 @@ public class FileManagementServiceStub implements FileManagementService {
         arrayDesign.setAnnotationFile(annotationFile);
     }
 
+    @Override
     public void saveArrayDesign(ArrayDesign arrayDesign, CaArrayFileSet designFiles) throws InvalidDataFileException {
         arrayDesign.setDesignFileSet(designFiles);
     }
 
+    @Override
     public void importArrayDesignDetails(ArrayDesign arrayDesign) {
         // no-op
     }
 
-    public List<String> findIdfRefFileNames(CaArrayFile idfFile,
-            Project project) {
-        List<String> filenames = new ArrayList<String>();
-        for (CaArrayFile caf : project.getFileSet().getFiles()) {
-            if (FileType.AFFYMETRIX_CEL.equals(caf.getFileType()) ||
-                    FileType.MAGE_TAB_SDRF.equals(caf.getFileType())) {
+    @Override
+    public List<String> findIdfRefFileNames(CaArrayFile idfFile, Project project) {
+        final List<String> filenames = new ArrayList<String>();
+        for (final CaArrayFile caf : project.getFileSet().getFiles()) {
+            if (FileTypeRegistry.MAGE_TAB_SDRF.equals(caf.getFileType())) {
                 filenames.add(caf.getName());
             }
         }
 
         return filenames;
     }
-    
+
+    @Override
     public void reimportAndParseArrayDesign(Long arrayDesignId) throws InvalidDataFileException, IllegalAccessException {
         // no-op
     }
-    
+
+    @Override
     public void reimportAndParseProjectFiles(Project targetProject, CaArrayFileSet fileSet) {
         // no-op
     }
