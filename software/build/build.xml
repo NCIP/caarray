@@ -3089,7 +3089,6 @@
         	<fileset dir="${cn2magetab.src.dir}" includes="**/*.java" />
             <fileset dir="${caarray-plugins.dir}">
                 <include name="*/${caarray-plugins.src.subdir}/**/*.java" />
-                <exclude name="visualization-tab/**/*.java" />
             </fileset>
         </checkstyle>
         <xslt in="${site.dir}/checkstyle/checkstyle.xml" out="${site.dir}/checkstyle/checkstyle.html" style="${resource.dir}/checkstyle-frames-errors.xsl">
