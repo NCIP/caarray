@@ -107,7 +107,7 @@ import com.google.inject.Singleton;
  * @author jscott
  */
 @Singleton
-class JobQueueDaoImpl implements JobQueueDao {
+public class JobQueueDaoImpl implements JobQueueDao {
     private final Queue<ExecutableJob> queue = new LinkedList<ExecutableJob>();
     private final JobMessageSender messageSender;
     private final Lock jobQueueLock = new ReentrantLock();
@@ -115,6 +115,7 @@ class JobQueueDaoImpl implements JobQueueDao {
 
     /**
      * @param messageSender the MessageSender dependency
+     * @param fileDao the file dao.
      */
     @Inject
     public JobQueueDaoImpl(JobMessageSender messageSender, FileDao fileDao) {
@@ -122,6 +123,9 @@ class JobQueueDaoImpl implements JobQueueDao {
         this.fileDao = fileDao;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void enqueue(ExecutableJob job) {
         job.setJobId(UUID.randomUUID());
         job.markAsInQueue();

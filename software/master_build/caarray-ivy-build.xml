@@ -89,8 +89,8 @@
         <property name="ivy.cache.dir" value="${ivy.cache.dir}"/>
         <property name="ivy.resolver.default.check.modified" value="true"/>
         <ivy:settings file="${caarray.ivy.settings.file}" />
-        <ivy:resolve file="${caarray.dependencies.file}" refresh="true" conf="asm_2.2.1, asm_3.0, project" />
-        <ivy:retrieve pattern="${lib.dir}/caarray-[conf]/[artifact]-[revision].[ext]" conf="asm_2.2.1, asm_3.0, project" />
+        <ivy:resolve file="${caarray.dependencies.file}" refresh="true" conf="asm_3.0, project" />
+        <ivy:retrieve pattern="${lib.dir}/caarray-[conf]/[artifact]-[revision].[ext]" conf="asm_3.0, project" />
     </target>
 
 </project>

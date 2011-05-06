@@ -6,7 +6,6 @@
   <info module="caArray-project" organisation="ncicb"/>
 
     <configurations defaultconfmapping="*->*">
-        <conf name="asm_2.2.1"/>
         <conf name="asm_3.0"/>
         <conf name="project"/>
         <conf name="bda-utils"/>
@@ -42,15 +41,11 @@
 
         <dependency conf="project" name="ncicb-ant" org="ncicb" rev="1.0"/>
 
-        <dependency conf="asm_2.2.1" name="asm" org="objectweb" rev="2.2.1"/>
-
         <dependency conf="project" name="asm" org="objectweb" rev="1.5.3" force="true"/>
 
         <dependency conf="asm_3.0" name="asm" org="objectweb" rev="3.0"/>
 
         <dependency conf="project" name="asm-attrs" org="objectweb" rev="1.5.3"/>
-
-        <dependency conf="project" name="asm-tree" org="objectweb" rev="2.2.1"/>
 
         <dependency conf="project" name="backport-util-concurrent" org="edu.emory" rev="1.0"/>
 
