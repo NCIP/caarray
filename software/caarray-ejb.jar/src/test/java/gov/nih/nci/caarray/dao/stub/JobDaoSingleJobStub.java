@@ -82,16 +82,16 @@
  */
 package gov.nih.nci.caarray.dao.stub;
 
-import gov.nih.nci.caarray.dao.JobQueueDao;
 import gov.nih.nci.caarray.domain.project.ExecutableJob;
 import gov.nih.nci.caarray.domain.project.Job;
 import gov.nih.nci.caarray.domain.project.JobSnapshot;
+import gov.nih.nci.caarray.jobqueue.JobQueue;
 import gov.nih.nci.security.authorization.domainobjects.User;
 
 import java.util.Collections;
 import java.util.List;
 
-public class JobDaoSingleJobStub implements JobQueueDao {
+public class JobDaoSingleJobStub implements JobQueue {
     private ExecutableJob job;
     
     public void enqueue(ExecutableJob job) {
@@ -140,7 +140,7 @@ public class JobDaoSingleJobStub implements JobQueueDao {
         }
     }
 
-    public boolean cancelJob(String jobId) {
+    public boolean cancelJob(String jobId, User user) {
         return true;
     }
 }

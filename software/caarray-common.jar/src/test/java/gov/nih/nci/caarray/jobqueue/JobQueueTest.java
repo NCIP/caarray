@@ -79,7 +79,8 @@
  * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */package gov.nih.nci.caarray.dao;
+ */
+package gov.nih.nci.caarray.jobqueue;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -91,6 +92,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import gov.nih.nci.caarray.dao.FileDao;
 import gov.nih.nci.caarray.dao.stub.ExecutableJobStub;
 import gov.nih.nci.caarray.domain.project.ExecutableJob;
 import gov.nih.nci.caarray.domain.project.Job;
@@ -106,10 +108,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 
-public class JobDaoTest {
+public class JobQueueTest {
     private static final int NUMBER_OF_MOCK_JOBS = 3;
     
-    private JobQueueDaoImpl systemUnderTest;
+    private JobQueueImpl systemUnderTest;
     private List<ExecutableJob> mockJobs;
     private int jobIndex;
     private JobMessageSender jobMessageSender;
@@ -118,7 +120,7 @@ public class JobDaoTest {
     public void setUp() {
         jobMessageSender = mock(JobMessageSender.class);
         FileDao fileDao = mock(FileDao.class);
-        systemUnderTest = new JobQueueDaoImpl(jobMessageSender, fileDao);        
+        systemUnderTest = new JobQueueImpl(jobMessageSender, fileDao);        
         mockJobs = createMockJobsList(NUMBER_OF_MOCK_JOBS);
         jobIndex = 0;
     }
@@ -303,9 +305,15 @@ public class JobDaoTest {
         List<Job> snapshotList = systemUnderTest.getJobsForUser(mock(User.class));
         assertEquals(5, snapshotList.size());
         
-        // Get the UUID of a job to cancel. 
-        UUID jobIdToCancel = snapshotList.get(2).getJobId();
-        systemUnderTest.cancelJob(jobIdToCancel.toString());
+        // Get the UUID and owner of a job to cancel. 
+        Job originalJob = snapshotList.get(2);
+        assertFalse(originalJob.getJobStatus().equals(JobStatus.RUNNING));
+        
+        UUID jobIdToCancel = originalJob.getJobId();
+        String jobOwner = originalJob.getOwnerName();
+        User user = mock(User.class);
+        when(user.getLoginName()).thenReturn(jobOwner);
+        systemUnderTest.cancelJob(jobIdToCancel.toString(), user);
         
         // Assert that the count of queued jobs is now one less than before.
         snapshotList = systemUnderTest.getJobsForUser(mock(User.class));
@@ -317,6 +325,57 @@ public class JobDaoTest {
         for (Job job : snapshotList) {
             assertFalse(jobIdToCancel.equals(job.getJobId()));
         }
+    }
+    
+    @Test
+    public void testCancelJobForInProgressJob() {
+        // setup data for system under test. 
+        setupDataForSystemUnderTest();
+        
+        // Assert that the number of jobs in the snapshot list equals number of queued jobs.
+        List<Job> snapshotList = systemUnderTest.getJobsForUser(mock(User.class));
+        assertEquals(5, snapshotList.size());
+        
+        // Get the UUID and owner of a job to cancel. 
+        Job originalJob = snapshotList.get(0);
+        assertTrue(originalJob.getJobStatus().equals(JobStatus.RUNNING));
+        
+        UUID jobIdToCancel = originalJob.getJobId();
+        String jobOwner = originalJob.getOwnerName();
+        User user = mock(User.class);
+        when(user.getLoginName()).thenReturn(jobOwner);
+        systemUnderTest.cancelJob(jobIdToCancel.toString(), user);
+        
+        // Assert that the count of queued jobs is same as before.
+        snapshotList = systemUnderTest.getJobsForUser(mock(User.class));
+        assertEquals(5, snapshotList.size());
+        assertEquals(snapshotList.size(), systemUnderTest.getLength());
+        assertEquals(snapshotList.size(), systemUnderTest.getJobList().size());
+    }
+    
+    @Test
+    public void testCancelJobForWithDifferentOwner() {
+        // setup data for system under test. 
+        setupDataForSystemUnderTest();
+        
+        // Assert that the number of jobs in the snapshot list equals number of queued jobs.
+        List<Job> snapshotList = systemUnderTest.getJobsForUser(mock(User.class));
+        assertEquals(5, snapshotList.size());
+        
+        // Get the UUID and owner of a job to cancel. 
+        Job originalJob = snapshotList.get(2);
+        assertFalse(originalJob.getJobStatus().equals(JobStatus.RUNNING));
+        
+        UUID jobIdToCancel = originalJob.getJobId();
+        User user = mock(User.class);
+        when(user.getLoginName()).thenReturn("username");
+        systemUnderTest.cancelJob(jobIdToCancel.toString(), user);
+        
+        // Assert that the count of queued jobs is same as before.
+        snapshotList = systemUnderTest.getJobsForUser(mock(User.class));
+        assertEquals(5, snapshotList.size());
+        assertEquals(snapshotList.size(), systemUnderTest.getLength());
+        assertEquals(snapshotList.size(), systemUnderTest.getJobList().size());
     }
     
     private void setupDataForSystemUnderTest() {

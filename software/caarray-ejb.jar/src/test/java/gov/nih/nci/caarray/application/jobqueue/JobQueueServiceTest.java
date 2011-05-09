@@ -54,12 +54,12 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import gov.nih.nci.caarray.dao.JobQueueDao;
 import gov.nih.nci.caarray.dao.stub.ExecutableJobStub;
 import gov.nih.nci.caarray.domain.project.ExecutableJob;
 import gov.nih.nci.caarray.domain.project.Job;
 import gov.nih.nci.caarray.domain.project.JobSnapshot;
 import gov.nih.nci.caarray.domain.project.JobStatus;
+import gov.nih.nci.caarray.jobqueue.JobQueue;
 import gov.nih.nci.security.authorization.domainobjects.User;
 
 import java.util.ArrayList;
@@ -77,20 +77,20 @@ import com.google.inject.Module;
 @SuppressWarnings("PMD")
 public class JobQueueServiceTest {
     private JobQueueService bean;
-    private JobQueueDao jobQueue;
+    private JobQueue jobQueue;
     private List<Job> jobs;
     private User user;
     
     @Before
     public void setUp() {
-        jobQueue = mock(JobQueueDao.class);
+        jobQueue = mock(JobQueue.class);
         user = mock(User.class);
-        bean = new JobQueueServiceBean();
+        bean = new JobQueueServiceBean(jobQueue);
         
         final Module testModule = new AbstractModule() {
             @Override
             protected void configure() {
-                bind(JobQueueDao.class).toInstance(jobQueue);
+                bind(JobQueue.class).toInstance(jobQueue);
                 bind(JobQueueService.class).toInstance(bean);
             }
         };
@@ -116,8 +116,8 @@ public class JobQueueServiceTest {
     @Test
     public void testCancelJob() {
         when(jobQueue.getJobsForUser(user)).thenReturn(jobs);
-        when(jobQueue.cancelJob(any(String.class))).thenReturn(true);
-        assertEquals(true, bean.cancelJob(any(String.class)));
+        when(jobQueue.cancelJob(any(String.class), any(User.class))).thenReturn(true);
+        assertEquals(true, bean.cancelJob(any(String.class), any(User.class)));
     }
     
     private List<Job> getJobs() {

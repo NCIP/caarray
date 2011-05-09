@@ -69,7 +69,6 @@ import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
 import gov.nih.nci.caarray.application.translation.magetab.MageTabTranslator;
 import gov.nih.nci.caarray.application.translation.magetab.MageTabTranslatorStub;
 import gov.nih.nci.caarray.dao.ArrayDao;
-import gov.nih.nci.caarray.dao.JobQueueDao;
 import gov.nih.nci.caarray.dao.ProjectDao;
 import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.dao.stub.ArrayDaoStub;
@@ -94,6 +93,7 @@ import gov.nih.nci.caarray.domain.file.FileTypeRegistryImpl;
 import gov.nih.nci.caarray.domain.project.ExecutableJob;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.jobqueue.JobQueue;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.magetab.MageTabFileSet;
 import gov.nih.nci.caarray.magetab.TestMageTabSets;
@@ -153,7 +153,10 @@ public class FileManagementServiceTest extends AbstractServiceTest {
 
     @Before
     public void setUp() {
-        final FileManagementMDB fileManagementMDB = new FileManagementMDB() {
+        CaArrayHibernateHelper hibernateHelper = mock(CaArrayHibernateHelper.class);
+        JobQueue jobQueue = new JobDaoSingleJobStub();
+        final Provider<UsernameHolder> usernameHolderProvider = Providers.of(mock(UsernameHolder.class));
+        FileManagementMDB fileManagementMDB = new FileManagementMDB(hibernateHelper, jobQueue, usernameHolderProvider) {
 
             /**
              * {@inheritDoc}
@@ -183,8 +186,8 @@ public class FileManagementServiceTest extends AbstractServiceTest {
         };
 
         fileManagementMDB.setTransaction(new UserTransactionStub());
-        final JobQueueDao jobDao = new JobDaoSingleJobStub();
-        final DirectJobSubmitter submitter = new DirectJobSubmitter(fileManagementMDB, jobDao);
+        final JobQueue jobDao = new JobDaoSingleJobStub();
+        final DirectJobSubmitter submitter = new DirectJobSubmitter(fileManagementMDB, jobQueue);
         final DataStorageFacade dataStorageFacade = this.fileAccessServiceStub.createStorageFacade();
 
         final FileManagementServiceBean fileManagementServiceBean = new FileManagementServiceBean();
@@ -212,7 +215,6 @@ public class FileManagementServiceTest extends AbstractServiceTest {
         final Provider<MageTabImporter> mageTabeImporterProvider = Providers.of(mageTabImporter);
         final Provider<ProjectDao> projectDaoProvider = Providers.of(this.daoFactoryStub.getProjectDao());
         final Provider<SearchDao> searchDaoProvider = Providers.of(this.daoFactoryStub.getSearchDao());
-        final Provider<UsernameHolder> usernameHolderProvider = Providers.of(mock(UsernameHolder.class));
 
         final JobFactory jobFactory =
                 new JobFactoryImpl(usernameHolderProvider, arrayDaoProvider, arrayDataImporterProvider,
@@ -255,7 +257,7 @@ public class FileManagementServiceTest extends AbstractServiceTest {
                 requestStaticInjection(CaArrayFile.class);
                 requestStaticInjection(TestMageTabSets.class);
 
-                bind(JobQueueDao.class).toInstance(jobDao);
+                bind(JobQueue.class).toInstance(jobDao);
                 bind(CaArrayHibernateHelper.class).toInstance(mock(CaArrayHibernateHelper.class));
                 bind(UsernameHolder.class).toProvider(usernameHolderProvider);
             }

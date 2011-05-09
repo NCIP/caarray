@@ -134,7 +134,7 @@ public class ProjectJobQueueActionTest extends AbstractBaseStrutsTest {
         jobIdToCancel = jobList.get(1).getJobId();
         action.setJobId(jobIdToCancel.toString());
         
-        when(jqService.cancelJob(jobIdToCancel.toString())).thenReturn(true);
+        when(jqService.cancelJob(jobIdToCancel.toString(), user)).thenReturn(true);
    }
     
     @Test
@@ -152,7 +152,7 @@ public class ProjectJobQueueActionTest extends AbstractBaseStrutsTest {
     public void testCancelJob() {
         action.setJobId(jobIdToCancel.toString());
         assertEquals("success", action.cancelJob());
-        verify(jqService).cancelJob(anyString());
+        verify(jqService).cancelJob(anyString(), (User) anyObject());
     }
     
     private void initJobList() {

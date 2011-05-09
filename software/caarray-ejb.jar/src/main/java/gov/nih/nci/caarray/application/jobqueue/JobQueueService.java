@@ -126,8 +126,9 @@ public interface JobQueueService {
      * Cancels the given job.
      * 
      * @param jobId string representation of the job id to cancel.
+     * @param user the logged in user.
      * @return a boolean value that indicates if the job was canceled or not. true implies that the job was
      * canceled successfully, whereas a false value indicates that the job could not be canceled. 
      */
-    boolean cancelJob(String jobId);
+    boolean cancelJob(String jobId, User user);
 }

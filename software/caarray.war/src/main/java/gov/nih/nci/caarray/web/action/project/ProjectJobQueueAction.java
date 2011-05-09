@@ -133,7 +133,7 @@ public class ProjectJobQueueAction extends ActionSupport {
      * @return a boolean value that indicates if the job was cancelled or not.
      */
     public String cancelJob() {
-        if (!ServiceLocatorFactory.getJobQueueService().cancelJob(jobId)) {
+        if (!ServiceLocatorFactory.getJobQueueService().cancelJob(jobId, CaArrayUsernameHolder.getCsmUser())) {
             ActionHelper.saveMessage(getText("jobQueue.cancel.unableToCancel"));
         }
         return Action.SUCCESS;

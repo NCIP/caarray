@@ -80,157 +80,62 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.dao;
+
+package gov.nih.nci.caarray.jobqueue;
 
 
-import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.project.ExecutableJob;
 import gov.nih.nci.caarray.domain.project.Job;
-import gov.nih.nci.caarray.domain.project.JobMessageSender;
-import gov.nih.nci.caarray.domain.project.JobSnapshot;
 import gov.nih.nci.security.authorization.domainobjects.User;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
-import java.util.UUID;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
 
 /**
  * Manages a queue of jobs.
- * 
  * @author jscott
+ *
  */
-@Singleton
-public class JobQueueDaoImpl implements JobQueueDao {
-    private final Queue<ExecutableJob> queue = new LinkedList<ExecutableJob>();
-    private final JobMessageSender messageSender;
-    private final Lock jobQueueLock = new ReentrantLock();
-    private final FileDao fileDao;
+public interface JobQueue {
 
     /**
-     * @param messageSender the MessageSender dependency
-     * @param fileDao the file dao.
+     * Adds a job to the end of the queue.
+     * @param job the job to add
      */
-    @Inject
-    public JobQueueDaoImpl(JobMessageSender messageSender, FileDao fileDao) {
-        this.messageSender = messageSender;
-        this.fileDao = fileDao;
-    }
+    void enqueue(ExecutableJob job);
 
     /**
-     * {@inheritDoc}
+     * Peek and return the job at the head of the queue, but do not remove it from the queue. 
+     * @return the job at the head of the queue or null if the queue is empty.
      */
-    public void enqueue(ExecutableJob job) {
-        job.setJobId(UUID.randomUUID());
-        job.markAsInQueue();
-        jobQueueLock.lock();
-        try {
-            queue.add(job);
-        } finally {
-            jobQueueLock.unlock();
-        }
-        messageSender.sendEnqueueMessage();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public int getLength() {
-        jobQueueLock.lock();
-        try {
-            return queue.size();
-        } finally {
-            jobQueueLock.unlock();
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public ExecutableJob dequeue() {
-        ExecutableJob job = null;
-        jobQueueLock.lock();
-        try {
-            if (queue.size() == 0) {
-                throw new IllegalStateException("the JobQueue is empty");
-            }
-
-            job = queue.remove();
-        } finally {
-            jobQueueLock.unlock();
-        }
-        return job;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public ExecutableJob peekAtJobQueue() {
-        return queue.peek();
-    }
+    ExecutableJob peekAtJobQueue();
     
     /**
-     * {@inheritDoc}
+     * @return the number of jobs in the queue.
      */
-    public List<Job> getJobsForUser(User user) {
-        List<Job> snapshotList = new ArrayList<Job>();
-        jobQueueLock.lock();
-        try {
-            int position = 1;
-            for (ExecutableJob originalJob : getJobList()) {
-                snapshotList.add(new JobSnapshot(user, originalJob, position++));
-            }
-        } finally {
-            jobQueueLock.unlock();
-        }
+    int getLength();
 
-        return snapshotList;
-    }
+    /**
+     * Remove the job at the head of the queue and return it. 
+     * Throws an exception if either the job queue is empty, or if the job is in progress. 
+     * @return the job at the head of the queue.
+     */
+    ExecutableJob dequeue();
     
     /**
-     * Get all the jobs on the queue as a list.
-     * @return the list of jobs
+     * Gets all jobs on the queue as a list. The reqd and write access properties are set
+     * according to the privileges of the user with the given user name.
+     * @param user the username of the owner
+     * @return all jobs accessible to the user with the given user name
      */
-    protected List<ExecutableJob> getJobList() {
-        jobQueueLock.lock();
-        try {
-            return new ArrayList<ExecutableJob>(queue);
-        } finally {
-            jobQueueLock.unlock();
-        }
-    }
+    List<Job> getJobsForUser(User user);
 
     /**
-     * {@inheritDoc}
+     * Cancels the given job.
+     * 
+     * @param jobId string representation of the job id to cancel.
+     * @param user the logged in user.
+     * @return a boolean value that indicates if the job was canceled or not. true implies that the job was
+     * canceled successfully, whereas a false value indicates that the job could not be canceled. 
      */
-    public boolean cancelJob(String jobId) {
-        for (ExecutableJob originalJob : getJobList()) {
-            jobQueueLock.lock();
-            try {
-                if (originalJob.getJobId().equals(UUID.fromString(jobId))) {
-                    if (originalJob.isInProgress()) {
-                        return false;
-                    }
-                    
-                    if (queue.remove(originalJob)) {
-                        originalJob.markAsCancelled();
-                        for (CaArrayFile file : originalJob.getFileSet().getFiles()) {
-                            fileDao.save(file);
-                            fileDao.evictObject(file);
-                        }
-                        return true;
-                    }
-                }
-            } finally {
-                jobQueueLock.unlock();
-            }
-        }
-        return false;
-    }
+    boolean cancelJob(String jobId, User user);
 }

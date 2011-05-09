@@ -84,7 +84,7 @@ package gov.nih.nci.caarray.application.file;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import gov.nih.nci.caarray.dao.JobQueueDao;
+import gov.nih.nci.caarray.jobqueue.JobQueue;
 
 import javax.jms.JMSException;
 import javax.jms.TextMessage;
@@ -97,15 +97,15 @@ import org.apache.commons.lang.UnhandledException;
 class DirectJobSubmitter implements FileManagementJobSubmitter {
 
     private final FileManagementMDB fileManagementMDB;
-    private final JobQueueDao jobDao;
+    private final JobQueue jobQueue;
 
-    DirectJobSubmitter(FileManagementMDB fileManagementMDB, JobQueueDao jobDao) {
-        this.jobDao = jobDao;
+    DirectJobSubmitter(FileManagementMDB fileManagementMDB, JobQueue jobQueue) {
+        this.jobQueue = jobQueue;
         this.fileManagementMDB = fileManagementMDB;
     }
 
     public void submitJob(AbstractFileManagementJob job) {
-        jobDao.enqueue(job);
+        jobQueue.enqueue(job);
         TextMessage message = getMessageStub("enqueue");
         fileManagementMDB.onMessage(message);
     }

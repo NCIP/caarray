@@ -84,7 +84,8 @@ package gov.nih.nci.caarray.dao;
 
 import gov.nih.nci.caarray.domain.project.DefaultJobMessageSenderImpl;
 import gov.nih.nci.caarray.domain.project.JobMessageSender;
-
+import gov.nih.nci.caarray.jobqueue.JobQueue;
+import gov.nih.nci.caarray.jobqueue.JobQueueImpl;
 import com.google.inject.AbstractModule;
 
 /**
@@ -110,7 +111,7 @@ public class DaoModule extends AbstractModule {
         bind(SampleDao.class).to(SampleDaoImpl.class);
         bind(VocabularyDao.class).to(VocabularyDaoImpl.class);
         bind(JobMessageSender.class).to(DefaultJobMessageSenderImpl.class);
-        bind(JobQueueDao.class).to(JobQueueDaoImpl.class);
+        bind(JobQueue.class).to(JobQueueImpl.class);
         bind(MultipartBlobDao.class).to(MultipartBlobDaoImpl.class);
     }
 }

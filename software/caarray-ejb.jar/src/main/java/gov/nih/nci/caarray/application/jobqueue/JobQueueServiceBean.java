@@ -83,9 +83,8 @@
 package gov.nih.nci.caarray.application.jobqueue;
 
 import gov.nih.nci.caarray.application.ExceptionLoggingInterceptor;
-import gov.nih.nci.caarray.dao.JobQueueDao;
 import gov.nih.nci.caarray.domain.project.Job;
-import gov.nih.nci.caarray.injection.InjectionInterceptor;
+import gov.nih.nci.caarray.jobqueue.JobQueue;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
 import gov.nih.nci.security.authorization.domainobjects.User;
 
@@ -106,20 +105,20 @@ import com.google.inject.Inject;
  */
 @Local(JobQueueService.class)
 @Stateless
-@Interceptors({ExceptionLoggingInterceptor.class, InjectionInterceptor.class })
+@Interceptors(ExceptionLoggingInterceptor.class)
 @TransactionAttribute(TransactionAttributeType.SUPPORTS)
 public class JobQueueServiceBean implements JobQueueService {
     private static final Logger LOG = Logger.getLogger(JobQueueServiceBean.class);
-    private JobQueueDao jobQueueDao;
+    private final JobQueue jobQueue;
 
     /**
      * Set the job queue DAO to use.
      * 
-     * @param jobQueueDao the JobQueueDao dependency
+     * @param jobQueue the jobQueue dependency
      */
     @Inject
-    public void setJobQueueDao(JobQueueDao jobQueueDao) {
-        this.jobQueueDao = jobQueueDao;
+    public JobQueueServiceBean(JobQueue jobQueue) {
+        this.jobQueue = jobQueue;
     }
 
     /**
@@ -128,7 +127,7 @@ public class JobQueueServiceBean implements JobQueueService {
     @Override
     public List<Job> getJobsForUser(User user) {
         LogUtil.logSubsystemEntry(LOG);
-        final List<Job> result = this.jobQueueDao.getJobsForUser(user);
+        final List<Job> result = this.jobQueue.getJobsForUser(user);
         LogUtil.logSubsystemExit(LOG);
         return result;
     }
@@ -138,15 +137,15 @@ public class JobQueueServiceBean implements JobQueueService {
      */
     @Override
     public int getJobCount(User user) {
-        return this.jobQueueDao.getJobsForUser(user).size();
+        return this.jobQueue.getJobsForUser(user).size();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public boolean cancelJob(String jobId) {
-        return this.jobQueueDao.cancelJob(jobId);
+    public boolean cancelJob(String jobId, User user) {
+        return this.jobQueue.cancelJob(jobId, user);
     }
 
 }

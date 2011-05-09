@@ -99,7 +99,6 @@ import gov.nih.nci.caarray.application.translation.magetab.MageTabTranslatorBean
 import gov.nih.nci.caarray.application.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.application.vocabulary.VocabularyServiceBean;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
-import gov.nih.nci.caarray.dao.JobQueueDao;
 import gov.nih.nci.caarray.dao.VocabularyDao;
 import gov.nih.nci.caarray.dao.stub.JobDaoSingleJobStub;
 import gov.nih.nci.caarray.dataStorage.spi.DataStorage;
@@ -118,6 +117,7 @@ import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.injection.InjectorFactory;
+import gov.nih.nci.caarray.jobqueue.JobQueue;
 import gov.nih.nci.caarray.magetab.MageTabFileSet;
 import gov.nih.nci.caarray.magetab.TestMageTabSets;
 import gov.nih.nci.caarray.magetab.io.FileRef;
@@ -535,15 +535,12 @@ public abstract class AbstractFileManagementServiceIntegrationTest extends Abstr
             }
 
             private DirectJobSubmitter createJobSubmitter() {
-                final JobQueueDao jobDao = new JobDaoSingleJobStub();
-                final Provider<UsernameHolder> usernameHolderProvider = Providers.of(mock(UsernameHolder.class));
-                final FileManagementMDB mdb = new FileManagementMDB();
-                final UserTransaction ut = mock(UserTransaction.class);
+                JobQueue jobQueue = new JobDaoSingleJobStub();
+                Provider<UsernameHolder> usernameHolderProvider = Providers.of(mock(UsernameHolder.class));
+                final FileManagementMDB mdb = new FileManagementMDB(hibernateHelper, jobQueue, usernameHolderProvider );
+                UserTransaction ut = mock(UserTransaction.class);
                 mdb.setTransaction(ut);
-                mdb.setUserHolderProvider(usernameHolderProvider);
-                mdb.setJobDao(jobDao);
-                mdb.setHibernateHelper(AbstractFileManagementServiceIntegrationTest.this.hibernateHelper);
-                final DirectJobSubmitter submitter = new DirectJobSubmitter(mdb, jobDao);
+                DirectJobSubmitter submitter = new DirectJobSubmitter(mdb, jobQueue);
                 return submitter;
             }
         });

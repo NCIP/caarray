@@ -107,6 +107,7 @@ public class JobSnapshot implements Job {
     private final boolean doesUserHaveReadAccess;
     private final boolean doesUserHaveWriteAccess;
     private final boolean doesUserHaveOwnership;
+    private final boolean canUserCancelJob;
     private final boolean inProgress;
     private final int position;
 
@@ -131,6 +132,8 @@ public class JobSnapshot implements Job {
         doesUserHaveWriteAccess = originalJob.userHasWriteAccess(user);
         inProgress = originalJob.isInProgress();
         doesUserHaveOwnership = originalJob.getOwnerName().equalsIgnoreCase(user.getLoginName());
+        // Currently, only job owners can cancel a job. Refer to ARRAY-1953 for more information. 
+        canUserCancelJob = doesUserHaveOwnership && !inProgress; 
     }
 
     /**
@@ -208,6 +211,13 @@ public class JobSnapshot implements Job {
      */
     public boolean getUserHasOwnership() {
         return doesUserHaveOwnership;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public boolean getUserCanCancelJob() {
+        return canUserCancelJob;
     }
 
     /**

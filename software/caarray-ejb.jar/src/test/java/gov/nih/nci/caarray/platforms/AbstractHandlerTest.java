@@ -96,7 +96,6 @@ import gov.nih.nci.caarray.application.vocabulary.VocabularyService;
 import gov.nih.nci.caarray.application.vocabulary.VocabularyServiceStub;
 import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.dao.ContactDao;
-import gov.nih.nci.caarray.dao.JobQueueDao;
 import gov.nih.nci.caarray.dao.MultipartBlobDao;
 import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.dao.stub.ArrayDaoStub;
@@ -124,6 +123,7 @@ import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.jobqueue.JobQueue;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.magetab.MageTabFileSet;
 import gov.nih.nci.caarray.magetab.MageTabParserImplementation;
@@ -173,7 +173,7 @@ public abstract class AbstractHandlerTest extends AbstractCaarrayTest {
             @Override
             protected void configure() {
                 bind(UsernameHolder.class).toInstance(mock(UsernameHolder.class));
-                bind(JobQueueDao.class).toInstance(mock(JobQueueDao.class));
+                bind(JobQueue.class).toInstance(mock(JobQueue.class));
                 bind(ContactDao.class).toInstance(new ContactDaoStub());
                 bind(SearchDao.class).toInstance(AbstractHandlerTest.this.daoFactoryStub.getSearchDao());
                 bind(ArrayDao.class).toInstance(AbstractHandlerTest.this.daoFactoryStub.getArrayDao());
