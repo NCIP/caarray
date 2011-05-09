@@ -223,7 +223,8 @@ public class JobQueueImpl implements JobQueue {
                     if (queue.remove(originalJob)) {
                         originalJob.markAsCancelled();
                         for (CaArrayFile file : originalJob.getFileSet().getFiles()) {
-                            fileDao.saveAndEvict(file);
+                            fileDao.save(file);
+                            fileDao.evictObject(file);
                         }
                         return true;
                     }
