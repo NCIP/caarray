@@ -603,7 +603,6 @@ jboss.server.binding.template.location="${jboss.server.binding.template.location
 jboss.server-xml.file="${jboss.home}/server/${jboss.server.name}/deploy/jbossweb.sar/server.xml"
 proxy.update.connector.port.ssl="${jboss.ssl.port}"
 					/>
-			<jboss51-encrypt-messaging-passwd />
 			</then>
 		</if>
     </target>
