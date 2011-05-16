@@ -3,8 +3,6 @@
 	<classpathentry kind="src" path="software/grid/legacy/build/stubs-CaArraySvc/src"/>
 	<classpathentry kind="src" path="software/plugins/copynumber-platform/src/test/java"/>
 	<classpathentry kind="src" path="software/plugins/copynumber-platform/src/main/java"/>
-	<classpathentry kind="src" path="software/plugins/visualization-tab/src/test/java"/>
-	<classpathentry kind="src" path="software/plugins/visualization-tab/src/main/java"/>
 	<classpathentry kind="src" path="software/plugins/genepix-platform/src/main/java"/>
 	<classpathentry kind="src" path="software/plugins/nimblegen-platform/src/test/java"/>
 	<classpathentry kind="src" path="software/plugins/illumina-platform/src/main/java"/>
