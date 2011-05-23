@@ -84,6 +84,8 @@ package gov.nih.nci.caarray.platforms.agilent;
 
 import gov.nih.nci.caarray.platforms.agilent.AgilentGELMToken.Token;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -97,13 +99,14 @@ import java.util.regex.Pattern;
  * 
  */
 @SuppressWarnings("PMD.ExcessiveClassLength")
-class AgilentGELMParser {
+class AgilentGELMParser implements FeatureCountPublisher {
     private static final String NEGATIVE_CONTROLS_CONTROL_GROUP_NAME = "negative controls";
     private static final String POSITIVE_CONTROLS_CONTROL_GROUP_NAME = "positive controls";
     private static final String IGNORE_CONTROL_GROUP_NAME = "ignore";
 
     private final XMLTokenizer<Token> tokenizer;
     private final Pattern chromosomePattern = Pattern.compile("chr(.+):(\\d+)-(\\d+)(?:\\|.+){0,1}");
+    private final List<FeatureCountListener> featureCountListeners;
     private int featureCount;
     private int geneCount;
     private int positionCount;
@@ -114,6 +117,7 @@ class AgilentGELMParser {
      */
     AgilentGELMParser(XMLTokenizer<Token> tokenizer) {
         this.tokenizer = tokenizer;
+        this.featureCountListeners = new ArrayList<FeatureCountListener>();
     }
 
     /**
@@ -136,6 +140,7 @@ class AgilentGELMParser {
         try {
             parseDocument(arrayDesignBuilder);
             expect(Token.EOF);
+            arrayDesignBuilder.processChunk(true);
         } catch (ParseException e) {
             return false;
         }
@@ -374,6 +379,8 @@ class AgilentGELMParser {
         parseReporterContents(physicalProbeBuilder);
 
         expect(Token.END);
+        
+        arrayDesignBuilder.processChunk(false);
 
         if (featureCount == 0) {
             throw new ParseException("Expected at least one \"feature\" element.");
@@ -381,6 +388,12 @@ class AgilentGELMParser {
 
         if (geneCount > 1) {
             throw new ParseException("Expected no more than one \"gene\" element.");
+        }
+    }
+    
+    private void notifyListeners() {
+        for (FeatureCountListener featureCountListener : featureCountListeners) {
+            featureCountListener.incrementFeatureCount();
         }
     }
 
@@ -478,6 +491,8 @@ class AgilentGELMParser {
         parseFeatureContents(featureBuilder);
 
         expect(Token.END);
+        
+        notifyListeners();
 
         if (positionCount != 1) {
             throw new ParseException("Expected no more than one \"position\" element.");
@@ -810,5 +825,12 @@ class AgilentGELMParser {
         public ParseException(String message) {
             super(message);
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void addFeatureCountListener(FeatureCountListener featureCountListener) {
+        featureCountListeners.add(featureCountListener);
     }
 }

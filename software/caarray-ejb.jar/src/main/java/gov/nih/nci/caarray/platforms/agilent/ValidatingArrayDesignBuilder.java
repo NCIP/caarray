@@ -217,5 +217,12 @@ FeatureBuilder, GeneBuilder, AccessionBuilder, BiosequenceBuilder {
         // Do nothing
         return this;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void processChunk(boolean forceFlush) {
+        // Do nothing
+    }
 }
 

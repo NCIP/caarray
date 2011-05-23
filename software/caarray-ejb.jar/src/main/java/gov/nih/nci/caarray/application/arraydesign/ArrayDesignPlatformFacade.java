@@ -82,6 +82,7 @@
  */package gov.nih.nci.caarray.application.arraydesign;
 
 import gov.nih.nci.caarray.dao.ArrayDao;
+import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileStatus;
@@ -108,14 +109,16 @@ import com.google.inject.Inject;
 final class ArrayDesignPlatformFacade {
     private final Set<DesignFileHandler> handlers;
     private final ArrayDao arrayDao;
+    private final SearchDao searchDao;
     
     /**
      * @param handlers
      */
     @Inject
-    ArrayDesignPlatformFacade(ArrayDao arrayDao, Set<DesignFileHandler> handlers) {
+    ArrayDesignPlatformFacade(ArrayDao arrayDao, SearchDao searchDao, Set<DesignFileHandler> handlers) {
         this.handlers = new HashSet<DesignFileHandler>(handlers);
         this.arrayDao = arrayDao;
+        this.searchDao = searchDao;
     }
     
     private DesignFileHandler getHandler(Set<CaArrayFile> designFiles) throws PlatformFileReadException {
@@ -200,10 +203,7 @@ final class ArrayDesignPlatformFacade {
             }
         }
         
-        // the handler cleared the session, so we need to merge before we update the status
-        // See hibernate bug http://opensource.atlassian.com/projects/hibernate/browse/HHH-511
-        // When we upgrade to hibernate 3.2.4+, we can remove the call to merge.
-        arrayDesign = (ArrayDesign) arrayDao.mergeObject(arrayDesign);
+        arrayDesign = searchDao.retrieve(ArrayDesign.class, arrayDesign.getId());
         arrayDesign.getDesignFileSet().updateStatus(
                 handler.parsesData() ? FileStatus.IMPORTED : FileStatus.IMPORTED_NOT_PARSED);
         arrayDao.save(arrayDesign);        

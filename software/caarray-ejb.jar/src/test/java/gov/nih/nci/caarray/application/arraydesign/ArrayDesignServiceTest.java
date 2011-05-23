@@ -161,6 +161,7 @@ import org.hibernate.Transaction;
 import org.hibernate.criterion.Order;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
@@ -925,7 +926,7 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
 
     public static class LocalDaoFactoryStub extends DaoFactoryStub {
         private final Map<String, AbstractCaArrayEntity> lsidEntityMap = new HashMap<String, AbstractCaArrayEntity>();
-        private final Map<Long, PersistentObject> objectMap = new HashMap<Long, PersistentObject>();
+        private final Map<Class, Map<Long, PersistentObject>> classKeyedOfPersistentObjectsMap = new HashMap<Class, Map<Long, PersistentObject>>();
         private static long nextId = 1;
         private static long nextFeatureId = 1;
 
@@ -946,8 +947,9 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
                 @Override
                 public List<ArrayDesign> getArrayDesigns(final Organization provider, final Set<AssayType> assayTypes, final boolean importedOnly) {
                     final List<ArrayDesign> designs = new ArrayList<ArrayDesign>();
-                    for (final PersistentObject entity : objectMap.values()) {
-                        if (entity instanceof ArrayDesign) {
+                    Map<Long, PersistentObject> persistentObjectsMap = classKeyedOfPersistentObjectsMap.get(ArrayDesign.class);
+                    if (null != persistentObjectsMap) {
+                        for (final PersistentObject entity : persistentObjectsMap.values()) {
                             final ArrayDesign design = (ArrayDesign) entity;
                             if (ObjectUtils.equals(provider, design.getProvider())
                                     && (!importedOnly
@@ -963,8 +965,9 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
                 @Override
                 public List<Long> getLogicalProbeIds(final ArrayDesign design, final PageSortParams<LogicalProbe> params) {
                     final List<Long> ids = new ArrayList<Long>();
-                    for (final Entry<Long, PersistentObject> entry : objectMap.entrySet()) {
-                        if (entry.getValue() instanceof LogicalProbe) {
+                    Map<Long, PersistentObject> persistentObjectsMap = classKeyedOfPersistentObjectsMap.get(LogicalProbe.class);
+                    if (null != persistentObjectsMap) {
+                        for (final Entry<Long, PersistentObject> entry : persistentObjectsMap.entrySet()) {
                             ids.add(entry.getKey());
                         }
                     }
@@ -986,13 +989,17 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
                             caArrayObject.setId(nextId++);
                         } else if (caArrayObject.getId() == null && caArrayObject instanceof Feature) {
                             caArrayObject.setId(nextFeatureId++);
-                            nextId = nextFeatureId;
                         }
                         if (caArrayObject instanceof AbstractCaArrayEntity) {
                             final AbstractCaArrayEntity caArrayEntity = (AbstractCaArrayEntity) object;
                             lsidEntityMap.put(caArrayEntity.getLsid(), caArrayEntity);
                         }
-                        objectMap.put(caArrayObject.getId(), caArrayObject);
+                        Map<Long, PersistentObject> persistentObjectsMap = classKeyedOfPersistentObjectsMap.get(caArrayObject.getClass());
+                        if (null == persistentObjectsMap) {
+                            persistentObjectsMap = new HashMap<Long, PersistentObject>();
+                            classKeyedOfPersistentObjectsMap.put(caArrayObject.getClass(), persistentObjectsMap);
+                        }
+                        persistentObjectsMap.put(caArrayObject.getId(), caArrayObject);
                     }
                     // manually create reverse association automatically created by database fk relationship
                     if (object instanceof LogicalProbe) {
@@ -1028,7 +1035,12 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
 
                 @Override
                 public ArrayDesign getArrayDesign(final long id) {
-                    return (ArrayDesign) objectMap.get(id);
+                    Map<Long, PersistentObject> persistentObjectsMap = classKeyedOfPersistentObjectsMap.get(ArrayDesign.class);
+                    ArrayDesign arrayDesign = null;
+                    if (null != persistentObjectsMap) {
+                        arrayDesign = (ArrayDesign) persistentObjectsMap.get(id);
+                    }
+                    return arrayDesign;
                 }
 
                 @Override
@@ -1065,7 +1077,7 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
 
         public void clear() {
             lsidEntityMap.clear();
-            objectMap.clear();
+            classKeyedOfPersistentObjectsMap.clear();
             nextId = 0;
             nextFeatureId = 1;
         }
@@ -1079,18 +1091,33 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
                 @Override
                 @SuppressWarnings("unchecked")
                 public <T extends PersistentObject> T retrieve(final Class<T> entityClass, final Long entityId) {
-                    return (T) objectMap.get(entityId);
+                    Map<Long, PersistentObject> persistentObjectsMap = classKeyedOfPersistentObjectsMap.get(entityClass);
+                    PersistentObject persistentObject = null;
+                    if (null != persistentObjectsMap) {
+                        persistentObject = persistentObjectsMap.get(entityId);
+                    }
+                    return (T) persistentObject;
                 }
 
                 @Override
                 @SuppressWarnings("unchecked")
                 public <T extends PersistentObject> T retrieveUnsecured(final Class<T> entityClass, final Long entityId) {
-                    return (T) objectMap.get(entityId);
+                    Map<Long, PersistentObject> persistentObjectsMap = classKeyedOfPersistentObjectsMap.get(entityClass);
+                    PersistentObject persistentObject = null;
+                    if (null != persistentObjectsMap) {
+                        persistentObject = persistentObjectsMap.get(entityId);
+                    }
+                    return (T) persistentObject;
                 }
 
                 @Override
                 public void save(final PersistentObject object) {
-                    objectMap.put(object.getId(), object);
+                    Map<Long, PersistentObject> persistentObjectsMap = classKeyedOfPersistentObjectsMap.get(object.getClass());
+                    if (null == persistentObjectsMap) {
+                        persistentObjectsMap = new HashMap<Long, PersistentObject>();
+                        classKeyedOfPersistentObjectsMap.put(object.getClass(), persistentObjectsMap);
+                    }
+                    persistentObjectsMap.put(object.getId(), object);
                 }
             };
         }
@@ -1106,8 +1133,11 @@ public class ArrayDesignServiceTest extends AbstractServiceTest {
                  */
                 @Override
                 public List<Organization> getAllProviders() {
+                    Map<Long, PersistentObject> persistentObjectsMap = classKeyedOfPersistentObjectsMap.get(Organization.class);                 
                     final List<Organization> orgs = new ArrayList<Organization>();
-                    CollectionUtils.select(objectMap.values(), PredicateUtils.instanceofPredicate(Organization.class), orgs);
+                    if (null != persistentObjectsMap) {
+                        CollectionUtils.addAll(orgs, persistentObjectsMap.values().iterator());
+                    }
                     return orgs;
                 }
             };

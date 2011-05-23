@@ -6,7 +6,7 @@ package gov.nih.nci.caarray.platforms.agilent;
  * 
  * @author jscott
  */
-interface ArrayDesignBuilder {
+interface ArrayDesignBuilder extends PersistenceChunkProcessor {
     /**
      * Gets a builder for a probe to be associated with the array design.  If the probe named
      * does not exist, it is created.  Otherwise, the previously created probe is looked
