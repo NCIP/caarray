@@ -177,8 +177,8 @@ FeatureBuilder, GeneBuilder, AccessionBuilder {
      * {@inheritDoc}
      */
     public PhysicalProbeBuilder findOrCreatePhysicalProbeBuilder(String name) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("1 findOrCreatePhysicalProbeBuilder(String) called: name=" + name + "=");
+        if (LOG.isTraceEnabled()) {
+            LOG.trace("1 findOrCreatePhysicalProbeBuilder(String) called: name=" + name + "=");
         }
         Long existingPhysicalProbeId = createdPhysicalProbeIds.get(name);
         PhysicalProbe probe = null;
@@ -198,8 +198,8 @@ FeatureBuilder, GeneBuilder, AccessionBuilder {
      * {@inheritDoc}
      */
     public FeatureBuilder createFeatureBuilder(int featureNumber) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("2 createFeatureBuilder(int) called: featureNumber=" + featureNumber + "=");
+        if (LOG.isTraceEnabled()) {
+            LOG.trace("2 createFeatureBuilder(int) called: featureNumber=" + featureNumber + "=");
         }
         Feature feature = new Feature(arrayDesignDetails);
         feature.setFeatureNumber(featureNumber);
@@ -213,8 +213,8 @@ FeatureBuilder, GeneBuilder, AccessionBuilder {
      * {@inheritDoc}
      */
     public FeatureBuilder setCoordinates(double x, double y, String units) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("3 setCoordinates(double, double, String) called: x=" + x + "=, y =" + y + "=, units =" + units
+        if (LOG.isTraceEnabled()) {
+            LOG.trace("3 setCoordinates(double, double, String) called: x=" + x + "=, y =" + y + "=, units =" + units
                     + "=");
         }
         currentFeature.setX_Coordinate(x);
@@ -231,8 +231,8 @@ FeatureBuilder, GeneBuilder, AccessionBuilder {
      * {@inheritDoc}
      */
     public PhysicalProbeBuilder addToProbeGroup(String probeGroupName) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("4 addToProbeGroup(String) called: probeGroupName=" + probeGroupName + "=");
+        if (LOG.isTraceEnabled()) {
+            LOG.trace("4 addToProbeGroup(String) called: probeGroupName=" + probeGroupName + "=");
         }
         ProbeGroup ignoreProbeGroup = getOrCreateProbeGroup(probeGroupName);
         addCurrentPhysicalProbeToProbeGroup(ignoreProbeGroup);
@@ -240,8 +240,8 @@ FeatureBuilder, GeneBuilder, AccessionBuilder {
     }
 
     private ProbeGroup getOrCreateProbeGroup(String probeGroupName) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("5 getOrCreateProbeGroup(String) called: probeGroupName=" + probeGroupName + "=");
+        if (LOG.isTraceEnabled()) {
+            LOG.trace("5 getOrCreateProbeGroup(String) called: probeGroupName=" + probeGroupName + "=");
         }
         Long probeGroupId = createdProbeGroupIds.get(probeGroupName);
         ProbeGroup probeGroup = null;
@@ -254,8 +254,8 @@ FeatureBuilder, GeneBuilder, AccessionBuilder {
     }
 
     private ProbeGroup createProbeGroup(String name) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("6 createProbeGroup(String) called: name=" + name + "=");
+        if (LOG.isTraceEnabled()) {
+            LOG.trace("6 createProbeGroup(String) called: name=" + name + "=");
         }
         ProbeGroup probeGroup = new ProbeGroup(arrayDesignDetails);
         probeGroup.setName(name);
@@ -265,8 +265,8 @@ FeatureBuilder, GeneBuilder, AccessionBuilder {
     }
 
     private void addCurrentPhysicalProbeToProbeGroup(final ProbeGroup probeGroup) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("7 addCurrentPhysicalProbeToProbeGroup(ProbeGroup) called: probeGroup=" + probeGroup + "=");
+        if (LOG.isTraceEnabled()) {
+            LOG.trace("7 addCurrentPhysicalProbeToProbeGroup(ProbeGroup) called: probeGroup=" + probeGroup + "=");
         }
         currentPhysicalProbe.setProbeGroup(probeGroup);
     }
@@ -275,8 +275,8 @@ FeatureBuilder, GeneBuilder, AccessionBuilder {
      * {@inheritDoc}
      */
     public PhysicalProbeBuilder setBiosequenceRef(String database, String species, String identifier) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("8 setBiosequenceRef(String, String, String) called: database=" + database + "=, species ="
+        if (LOG.isTraceEnabled()) {
+            LOG.trace("8 setBiosequenceRef(String, String, String) called: database=" + database + "=, species ="
                     + species + "=, identifier =" + identifier + "=");
         }
         String key = buildBiosequenceKey(species, identifier);
@@ -285,8 +285,8 @@ FeatureBuilder, GeneBuilder, AccessionBuilder {
     }
 
     private String buildBiosequenceKey(String species, String identifier) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("9 buildBiosequenceKey(String, String) called: species=" + species + "=, identifier ="
+        if (LOG.isTraceEnabled()) {
+            LOG.trace("9 buildBiosequenceKey(String, String) called: species=" + species + "=, identifier ="
                     + identifier + "=");
         }
         return String.format("`%s`%s`", species, identifier);
@@ -296,16 +296,16 @@ FeatureBuilder, GeneBuilder, AccessionBuilder {
      * {@inheritDoc}
      */
     public GeneBuilder createGeneBuilder(String geneName) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("10 createGeneBuilder(String) called: geneName=" + geneName + "=");
+        if (LOG.isTraceEnabled()) {
+            LOG.trace("10 createGeneBuilder(String) called: geneName=" + geneName + "=");
         }
         createExpressionProbeAnnotation(currentPhysicalProbe, geneName);
         return this;
     }
 
     private ExpressionProbeAnnotation createExpressionProbeAnnotation(PhysicalProbe physicalProbe, String geneName) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("11 createExpressionProbeAnnotation(PhysicalProbe, String) called: physicalProbe ="
+        if (LOG.isTraceEnabled()) {
+            LOG.trace("11 createExpressionProbeAnnotation(PhysicalProbe, String) called: physicalProbe ="
                     + physicalProbe + ", geneName=" + geneName + "=");
         }
         Gene gene = new Gene();
@@ -320,8 +320,8 @@ FeatureBuilder, GeneBuilder, AccessionBuilder {
     }
 
     private ExpressionProbeAnnotation createExpressionProbeAnnotation(PhysicalProbe physicalProbe) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("12 createExpressionProbeAnnotation(PhysicalProbe) called: physicalProbe=" + physicalProbe + "=");
+        if (LOG.isTraceEnabled()) {
+            LOG.trace("12 createExpressionProbeAnnotation(PhysicalProbe) called: physicalProbe=" + physicalProbe + "=");
         }
         String geneName = null;
         return createExpressionProbeAnnotation(physicalProbe, geneName);
@@ -332,8 +332,8 @@ FeatureBuilder, GeneBuilder, AccessionBuilder {
      */
     public GeneBuilder setChromosomeLocation(String chromosomeName,
             long startPosition, long endPosition) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("13 setChromosomeLocation(String, long, long) called: chromosomeName=" + chromosomeName
+        if (LOG.isTraceEnabled()) {
+            LOG.trace("13 setChromosomeLocation(String, long, long) called: chromosomeName=" + chromosomeName
                     + "=, startPosition =" + startPosition + "=, endPosition =" + endPosition + "=");
         }
         ExpressionProbeAnnotation annotation = (ExpressionProbeAnnotation) currentPhysicalProbe.getAnnotation();
@@ -345,8 +345,8 @@ FeatureBuilder, GeneBuilder, AccessionBuilder {
      * {@inheritDoc}
      */
     public AccessionBuilder createNewGBAccession(String accessionNumber) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("14 createNewGBAccession(String) called: accessionNumber=" + accessionNumber + "=");
+        if (LOG.isTraceEnabled()) {
+            LOG.trace("14 createNewGBAccession(String) called: accessionNumber=" + accessionNumber + "=");
         }
         ExpressionProbeAnnotation annotation = (ExpressionProbeAnnotation) currentPhysicalProbe.getAnnotation();
         Gene gene = annotation.getGene();
@@ -358,8 +358,8 @@ FeatureBuilder, GeneBuilder, AccessionBuilder {
      * {@inheritDoc}
      */
     public AccessionBuilder createNewEnsemblAccession(String accessionNumber) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("15 createNewEnsemblAccession(String) called: accessionNumber=" + accessionNumber + "=");
+        if (LOG.isTraceEnabled()) {
+            LOG.trace("15 createNewEnsemblAccession(String) called: accessionNumber=" + accessionNumber + "=");
         }
         ExpressionProbeAnnotation annotation = (ExpressionProbeAnnotation) currentPhysicalProbe.getAnnotation();
         Gene gene = annotation.getGene();
@@ -371,8 +371,8 @@ FeatureBuilder, GeneBuilder, AccessionBuilder {
      * {@inheritDoc}
      */
     public AccessionBuilder createNewRefSeqAccession(String accessionNumber) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("16 createNewRefSeqAccession(String) called: accessionNumber=" + accessionNumber + "=");
+        if (LOG.isTraceEnabled()) {
+            LOG.trace("16 createNewRefSeqAccession(String) called: accessionNumber=" + accessionNumber + "=");
         }
         ExpressionProbeAnnotation annotation = (ExpressionProbeAnnotation) currentPhysicalProbe.getAnnotation();
         Gene gene = annotation.getGene();
@@ -384,8 +384,8 @@ FeatureBuilder, GeneBuilder, AccessionBuilder {
      * {@inheritDoc}
      */
     public AccessionBuilder createNewTHCAccession(String accessionNumber) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("17 createNewTHCAccession(String) called: accessionNumber=" + accessionNumber + "=");
+        if (LOG.isTraceEnabled()) {
+            LOG.trace("17 createNewTHCAccession(String) called: accessionNumber=" + accessionNumber + "=");
         }
         ExpressionProbeAnnotation annotation = (ExpressionProbeAnnotation) currentPhysicalProbe.getAnnotation();
         Gene gene = annotation.getGene();
@@ -411,8 +411,8 @@ FeatureBuilder, GeneBuilder, AccessionBuilder {
      * {@inheritDoc}
      */
     public BiosequenceBuilder createBiosequenceBuilder(String controlType, String species) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("18 createBiosequenceBuilder(String, String) called: controlType=" + controlType + "=, species ="
+        if (LOG.isTraceEnabled()) {
+            LOG.trace("18 createBiosequenceBuilder(String, String) called: controlType=" + controlType + "=, species ="
                     + species + "=");
         }
         if (POSITIVE_CONTROL_LABEL.equalsIgnoreCase(controlType)
@@ -449,8 +449,8 @@ FeatureBuilder, GeneBuilder, AccessionBuilder {
         private boolean isMiRNA;
 
         BiosequenceBuilderImpl(ArrayDesignBuilderImpl parentBuilder, String species) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("19 BiosequenceBuilderImpl(ArrayDesignBuilderImpl, String) called: parentBuilder="
+            if (LOG.isTraceEnabled()) {
+                LOG.trace("19 BiosequenceBuilderImpl(ArrayDesignBuilderImpl, String) called: parentBuilder="
                         + parentBuilder + "=, species =" + species + "=");
             }
             this.parentBuilder = parentBuilder;
@@ -461,8 +461,8 @@ FeatureBuilder, GeneBuilder, AccessionBuilder {
          * {@inheritDoc}
          */
         public BiosequenceBuilder agpAccession(String accessionNumber) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("20 agpAccession(String) called: accessionNumber=" + accessionNumber + "=");
+            if (LOG.isTraceEnabled()) {
+                LOG.trace("20 agpAccession(String) called: accessionNumber=" + accessionNumber + "=");
             }
             key = parentBuilder.buildBiosequenceKey(species, accessionNumber);
             return this;
@@ -472,8 +472,8 @@ FeatureBuilder, GeneBuilder, AccessionBuilder {
          * {@inheritDoc}
          */
         public BiosequenceBuilder createNewEnsemblAccession(String accessionNumber) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("21 createNewEnsemblAccession(String) called: accessionNumber=" + accessionNumber + "=");
+            if (LOG.isTraceEnabled()) {
+                LOG.trace("21 createNewEnsemblAccession(String) called: accessionNumber=" + accessionNumber + "=");
             }
             addAccession(Gene.ENSEMBLE, accessionNumber);           
             return this;
@@ -483,8 +483,8 @@ FeatureBuilder, GeneBuilder, AccessionBuilder {
          * {@inheritDoc}
          */
         public BiosequenceBuilder createNewGBAccession(String accessionNumber) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("22 createNewGBAccession(String) called: accessionNumber=" + accessionNumber + "=");
+            if (LOG.isTraceEnabled()) {
+                LOG.trace("22 createNewGBAccession(String) called: accessionNumber=" + accessionNumber + "=");
             }
             addAccession(Gene.GENBANK, accessionNumber);           
             return this;
@@ -494,8 +494,8 @@ FeatureBuilder, GeneBuilder, AccessionBuilder {
          * {@inheritDoc}
          */
         public BiosequenceBuilder createNewMirAccession(String accessionNumber) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("23 createNewMirAccession(String) called: accessionNumber=" + accessionNumber + "=");
+            if (LOG.isTraceEnabled()) {
+                LOG.trace("23 createNewMirAccession(String) called: accessionNumber=" + accessionNumber + "=");
             }
             isMiRNA = true;
             addAccession(MiRNAProbeAnnotation.MIR, accessionNumber);           
@@ -506,8 +506,8 @@ FeatureBuilder, GeneBuilder, AccessionBuilder {
          * {@inheritDoc}
          */
         public BiosequenceBuilder createNewRefSeqAccession(String accessionNumber) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("24 createNewRefSeqAccession(String) called: accessionNumber=" + accessionNumber + "=");
+            if (LOG.isTraceEnabled()) {
+                LOG.trace("24 createNewRefSeqAccession(String) called: accessionNumber=" + accessionNumber + "=");
             }
             addAccession(Gene.REF_SEQ, accessionNumber);           
             return this;
@@ -517,8 +517,8 @@ FeatureBuilder, GeneBuilder, AccessionBuilder {
          * {@inheritDoc}
          */
         public BiosequenceBuilder createNewTHCAccession(String accessionNumber) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("25 createNewTHCAccession(String) called: accessionNumber=" + accessionNumber + "=");
+            if (LOG.isTraceEnabled()) {
+                LOG.trace("25 createNewTHCAccession(String) called: accessionNumber=" + accessionNumber + "=");
             }
             addAccession(Gene.THC, accessionNumber);           
             return this;
@@ -528,8 +528,8 @@ FeatureBuilder, GeneBuilder, AccessionBuilder {
          * {@inheritDoc}
          */
         public BiosequenceBuilder finish() {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("26 finish() called");
+            if (LOG.isTraceEnabled()) {
+                LOG.trace("26 finish() called");
             }
             Long physicalProbeId = parentBuilder.getBiosequenceReIdsfMap().get(key);
             PhysicalProbe physicalProbe = null;
@@ -541,8 +541,8 @@ FeatureBuilder, GeneBuilder, AccessionBuilder {
         }
 
         private void createAnnotationWithAccessions(PhysicalProbe physicalProbe) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("27 createAnnotationWithAccessions(PhysicalProbe) called: physicalProbe=" + physicalProbe
+            if (LOG.isTraceEnabled()) {
+                LOG.trace("27 createAnnotationWithAccessions(PhysicalProbe) called: physicalProbe=" + physicalProbe
                         + "=");
             }
             if (isMiRNA) {
@@ -553,8 +553,8 @@ FeatureBuilder, GeneBuilder, AccessionBuilder {
         }
 
         private void createExpressionAnnotationWithAccessions(PhysicalProbe physicalProbe) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("28 createExpressionAnnotationWithAccessions(PhysicalProbe) called: physicalProbe="
+            if (LOG.isTraceEnabled()) {
+                LOG.trace("28 createExpressionAnnotationWithAccessions(PhysicalProbe) called: physicalProbe="
                         + physicalProbe + "=");
             }
             ExpressionProbeAnnotation annotation = createExpressionProbeAnnotation(physicalProbe);             
@@ -566,8 +566,8 @@ FeatureBuilder, GeneBuilder, AccessionBuilder {
         }
 
         private void createMiRNAAnnotationWithAccessions(PhysicalProbe physicalProbe) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("29 createMiRNAAnnotationWithAccessions(PhysicalProbe) called: physicalProbe="
+            if (LOG.isTraceEnabled()) {
+                LOG.trace("29 createMiRNAAnnotationWithAccessions(PhysicalProbe) called: physicalProbe="
                         + physicalProbe + "=");
             }
             MiRNAProbeAnnotation annotation = new MiRNAProbeAnnotation();
@@ -579,8 +579,8 @@ FeatureBuilder, GeneBuilder, AccessionBuilder {
         }
 
         private void addAccession(String database, String accessionNumber) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("30 addAccession(String, String) called: database=" + database + "=, accessionNumber ="
+            if (LOG.isTraceEnabled()) {
+                LOG.trace("30 addAccession(String, String) called: database=" + database + "=, accessionNumber ="
                         + accessionNumber + "=");
             }
             this.accessionNumbers.add(new AccessionNumber(database, accessionNumber));          
@@ -676,8 +676,8 @@ FeatureBuilder, GeneBuilder, AccessionBuilder {
      * {@inheritDoc}
      */
     public void processChunk(boolean forceFlush) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("31 processChunk() called");
+        if (LOG.isTraceEnabled()) {
+            LOG.trace("31 processChunk() called");
         }
         arrayDao.save(currentFeature);
         arrayDao.save(currentPhysicalProbe);
