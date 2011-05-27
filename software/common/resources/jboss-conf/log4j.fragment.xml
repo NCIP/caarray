@@ -31,6 +31,10 @@
     <category name="gov.nih.nci.caarray">
       <priority value="DEBUG"/>
     </category>
+
+    <category name="gov.nih.nci.caarray.platforms.agilent.ArrayDesignBuilderImpl">
+      <priority value="WARN"/>
+    </category>
     
     <category name="net.sf.dozer">
         <priority value="ERROR"/>
