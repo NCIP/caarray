@@ -95,7 +95,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
     <property name="jboss-conf.target.dir" value="${caarray.dist.dir}/${jboss-conf.dist.relative.dir}" />
     
     <property name="cagrid-console.dest.file" value="${download.dir}/${cagrid-console.binaries.file}" />
-	<property name="cagrid.target.co.dir" location="${target.dir}/cagrid-target"/>
+    <property name="cagrid.target.co.dir" location="${target.dir}/cagrid-target"/>
 
     <!-- Used by dist:*:prep to determin list of files to use for incremental build process.
         Directory and files must be in svn to work.
@@ -108,6 +108,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
             Use project.propertie relative dir names becasue they are used by install also-->
     <property name="dist.exploded.dir" value="${dist.dir}/exploded" />
     <property name="caarray.ear.target.dir" value="${dist.exploded.dir}/ear" />
+    <property name="caarray-bundled-plugins.dir" value="${dist.exploded.dir}/plugins" />
     <property name="caarray.grid.dir" value="${dist.exploded.dir}/grid" />    
     <property name="tools.dist.dir" value="${dist.exploded.dir}/${tools.dist.relative.dir}" />
     <property name="common.dist.dir" value="${dist.exploded.dir}/${common.dist.relative.dir}" />
@@ -124,29 +125,29 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
     <property name="caarray.dist.dir" value="${dist.exploded.dir}" />
     <property name="db.dir" value="${caarray.dist.dir}/db" />
     <property name="config.dir" value="${caarray.dist.dir}/config" />
+    
+    <!-- retrive ivy.jar.files then retrieve bda files and librarires -->
+    <condition property="commonlibrary.dir" value="">
+        <or>
+        <os family="unix" />
+            <os family="mac" />
+        </or>
+    </condition>
 
-	<!-- retrive ivy.jar.files then retrieve bda files and librarires -->
-	<condition property="commonlibrary.dir" value="">
-		<or>
-		<os family="unix" />
-			<os family="mac" />
-		</or>
-	</condition>
+    <condition property="commonlibrary.dir" value="c:/">
+        <os family="windows" />
+    </condition>
 
-	<condition property="commonlibrary.dir" value="c:/">
-		<os family="windows" />
-	</condition>
+        <condition property="local.cbiit-ivy-repo.dir" value="">
+        <or>
+        <os family="unix" />
+            <os family="mac" />
+    </or>
+    </condition>
 
-		<condition property="local.cbiit-ivy-repo.dir" value="">
-		<or>
-		<os family="unix" />
-			<os family="mac" />
-	</or>
-	</condition>
-
-	<condition property="local.cbiit-ivy-repo.dir" value="c:/">
-		<os family="windows" />
-	</condition>
+    <condition property="local.cbiit-ivy-repo.dir" value="c:/">
+        <os family="windows" />
+    </condition>
 
     <!-- this needs to be reviewed later -->
     <!-- retrive ivy files then retrieve bda files and librarires -->
@@ -161,12 +162,12 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
         <property name="lib.dir" location="${lib.dir}" />
         <property name="software.dir" location="${software.dir}" />
         <property name="commonlibrary.dir" location="${commonlibrary.dir}" />
-	<!-- Use below for old ivy repo -->
-	<!--<property name="ivy.settings.file" value="ivy-bda-settings.xml"/>-->
-	<!-- Use below for new ivy repo -->
-	<property name="ivy.settings.file" value="cbiit-ivy-bda-settings.xml"/>
-	<property name="target.dir" location="${target.dir}"/>
-	<property name="local.cbiit-ivy-repo.dir" value="${local.cbiit-ivy-repo.dir}"/>
+    <!-- Use below for old ivy repo -->
+    <!--<property name="ivy.settings.file" value="ivy-bda-settings.xml"/>-->
+    <!-- Use below for new ivy repo -->
+    <property name="ivy.settings.file" value="cbiit-ivy-bda-settings.xml"/>
+    <property name="target.dir" location="${target.dir}"/>
+    <property name="local.cbiit-ivy-repo.dir" value="${local.cbiit-ivy-repo.dir}"/>
     </ant>
 
     <!-- Paths -->
@@ -184,6 +185,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
 
     <!-- Includes- include BDA macros -->
     <import file="${bda-utils.dir}/bda-build-utils-${bda.version}.xml" />
+    <import file="${software.dir}/build/macrodefs.xml" />
 
     <!-- delegate retrieval of third-party dependencies -->
     <if>
@@ -234,55 +236,55 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
         <available file="${cagrid-libs.dest.file}" property="cagrid-libs.tools.exists" />
         <available file="${cagrid-base-war.dest.file}" property="cagrid-base-war.tools.exists" />
         <available file="${cagrid-console.dest.file}" property="cagrid-console.tools.exists" />
-	<!-- If jboss is required to build, then check for jboss in jboss.home, then check for in jboss in working directory, if not found then download it into this that directory.  If found at any point set local.jboss.home to where it is found.  This can be passed to sub-projects so then can compile code against distribution.  This is especially important on AntHillPro server which will not have jboss present, thus will have to use a copy in the working area.  This also makes it easier to start the project, if the developer does not yet have jboss installed, build will download it and install it so build can proceed. -->
-	<if>
-		<equals arg1="${require.jboss}" arg2="true" />
-		<then>
-			<available file="${jboss.home}/lib/commons-httpclient.jar" property="rt.jboss.exists" />
-			<if>
-				<isset property="rt.jboss.exists" />
-				<then>
-					<property name="local.jboss.home" location="${jboss.home}" />
-					<echo message="JBOSS_HOME exists ${jboss.home}" />
-				</then>
-				<else>
-					<property name="local.jboss.home" location="${pt.dir}/${jboss.binaries.relative.dir}" />
-					<available file="${local.jboss.home}/lib/commons-httpclient.jar" property="local.jboss.exists" />
-					<echo message="JBOSS_HOME does not exist checking for LOCAL_JBOSS_HOME ${local.jboss.home}" />
-					<if>
-						<not>
-							<isset property="local.jboss.exists" />
-						</not>
-						<then>
-							<echo message="LOCAL_JBOSS_HOME not found downloading." />
-							<antcall target="dist:tools:retrieve:jboss" />
-							<java jar="${tools.dir}/${jboss.binaries.file}" fork="true">
-								<arg line="-installGroup ejb3 installpath=${local.jboss.home}" />
-							</java>
-						</then>
-						<else>
-							<echo message="LOCAL_JBOSS_HOME found ${local.jboss.home}" />
-						</else>
-					</if>
-				</else>
-			</if>
+    <!-- If jboss is required to build, then check for jboss in jboss.home, then check for in jboss in working directory, if not found then download it into this that directory.  If found at any point set local.jboss.home to where it is found.  This can be passed to sub-projects so then can compile code against distribution.  This is especially important on AntHillPro server which will not have jboss present, thus will have to use a copy in the working area.  This also makes it easier to start the project, if the developer does not yet have jboss installed, build will download it and install it so build can proceed. -->
+    <if>
+        <equals arg1="${require.jboss}" arg2="true" />
+        <then>
+            <available file="${jboss.home}/lib/commons-httpclient.jar" property="rt.jboss.exists" />
+            <if>
+                <isset property="rt.jboss.exists" />
+                <then>
+                    <property name="local.jboss.home" location="${jboss.home}" />
+                    <echo message="JBOSS_HOME exists ${jboss.home}" />
+                </then>
+                <else>
+                    <property name="local.jboss.home" location="${pt.dir}/${jboss.binaries.relative.dir}" />
+                    <available file="${local.jboss.home}/lib/commons-httpclient.jar" property="local.jboss.exists" />
+                    <echo message="JBOSS_HOME does not exist checking for LOCAL_JBOSS_HOME ${local.jboss.home}" />
+                    <if>
+                        <not>
+                            <isset property="local.jboss.exists" />
+                        </not>
+                        <then>
+                            <echo message="LOCAL_JBOSS_HOME not found downloading." />
+                            <antcall target="dist:tools:retrieve:jboss" />
+                            <java jar="${tools.dir}/${jboss.binaries.file}" fork="true">
+                                <arg line="-installGroup ejb3 installpath=${local.jboss.home}" />
+                            </java>
+                        </then>
+                        <else>
+                            <echo message="LOCAL_JBOSS_HOME found ${local.jboss.home}" />
+                        </else>
+                    </if>
+                </else>
+            </if>
 
-		</then>
-	</if>        
+        </then>
+    </if>        
     </target>
     
-	<target name="ivy:clean" description="Cleans up the ivy cache of this project and all sub-projects">
-		<ivy:settings file="${ivy.settings.dir}/${ivy.settings.file}" />
-		<ivy:cleancache />
-		<ant inheritAll="false" inheritRefs="false" antfile="bda-ivy-2.0.0-build.xml" target="ivy-cleancache" dir="${bda-download.dir}">
-			<property name="bda-utils.dir" value="${bda-utils.dir}" />
-			<property name="lib.dir" value="${lib.dir}" />
-			<property name="software.dir" value="${software.dir}" />
-		</ant>
-		<!--
-		<ant inheritAll="false" inheritRefs="false" antfile="${bda-blueprints-webapp.build.file}" target="ivy-clean" dir="${bda-blueprints-webapp.base.dir}" />
-		-->
-	</target>    
+    <target name="ivy:clean" description="Cleans up the ivy cache of this project and all sub-projects">
+        <ivy:settings file="${ivy.settings.dir}/${ivy.settings.file}" />
+        <ivy:cleancache />
+        <ant inheritAll="false" inheritRefs="false" antfile="bda-ivy-2.0.0-build.xml" target="ivy-cleancache" dir="${bda-download.dir}">
+            <property name="bda-utils.dir" value="${bda-utils.dir}" />
+            <property name="lib.dir" value="${lib.dir}" />
+            <property name="software.dir" value="${software.dir}" />
+        </ant>
+        <!--
+        <ant inheritAll="false" inheritRefs="false" antfile="${bda-blueprints-webapp.build.file}" target="ivy-clean" dir="${bda-blueprints-webapp.base.dir}" />
+        -->
+    </target>    
     
     <target name="validate:pre:build">
         <mkdir dir="${download.dir}"/>
@@ -311,54 +313,52 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
             dist:caarray-client.zip,
             dist:gui-installer,
             dist:example-api-zips,
-    	   dist:cn2magetab
+           dist:cn2magetab
         "/>
-
 
     <!-- Creates the installer distribution used by automated or manual remote installations -->
     <target name="dist:installer" depends="dist:installer:prep">
         <delete file="${dist.dir}/${caarray.install.zip.file}" />
-		<!-- Set environment name to external -->
-		<delete file="${dist.exploded.dir}/upgrade.properties"/>
-		<replaceregexp file="${dist.exploded.dir}/install.properties" byline="true" match="^(env.name)=.*" replace="\1=external" />
-		<obfuscate-properties-file
-			properties.file="${dist.exploded.dir}/install.properties"
-			uncomment.property.list="application.base.path"
-			required.property.list="application.base.path,database.server,database.port,database.name,database.user,database.password,grid.server.hostname,grid.web.password,jboss.server.hostname,jboss.web.password,grid.poc.tech.researchCenter.displayname,grid.poc.tech.researchCenter.shortname,grid.poc.tech.addr.country,grid.poc.tech.addr.locality,grid.poc.tech.addr.postalCode,grid.poc.tech.addr.stateProvince,grid.poc.tech.addr.street1,grid.poc.tech.addr.street2,grid.poc.tech.affiliation,grid.poc.tech.name.last,grid.poc.tech.name.first,grid.poc.tech.phone,grid.poc.tech.email,grid.poc.tech.role,user.admin.email.address.from,user.admin.email.address.to,mail.smtp.host,mail.smtp.port,mail.smtp.auth,mail.smtp.starttls.enable,mail.user,mail.password"
-			optional.property.list="ldap.url,ldap.searchbase,ldap.searchprefix,upt.url"
-			delete.property.list="exclude.jboss.backup,application.base.path.linux,application.base.path.windows,database.system.user,database.system.password"
-			/>
+        <!-- Set environment name to external -->
+        <delete file="${dist.exploded.dir}/upgrade.properties"/>
+        <replaceregexp file="${dist.exploded.dir}/install.properties" byline="true" match="^(env.name)=.*" replace="\1=external" />
+        <obfuscate-properties-file
+            properties.file="${dist.exploded.dir}/install.properties"
+            uncomment.property.list="application.base.path"
+            required.property.list="application.base.path,database.server,database.port,database.name,database.user,database.password,grid.server.hostname,grid.web.password,jboss.server.hostname,jboss.web.password,grid.poc.tech.researchCenter.displayname,grid.poc.tech.researchCenter.shortname,grid.poc.tech.addr.country,grid.poc.tech.addr.locality,grid.poc.tech.addr.postalCode,grid.poc.tech.addr.stateProvince,grid.poc.tech.addr.street1,grid.poc.tech.addr.street2,grid.poc.tech.affiliation,grid.poc.tech.name.last,grid.poc.tech.name.first,grid.poc.tech.phone,grid.poc.tech.email,grid.poc.tech.role,user.admin.email.address.from,user.admin.email.address.to,mail.smtp.host,mail.smtp.port,mail.smtp.auth,mail.smtp.starttls.enable,mail.user,mail.password"
+            optional.property.list="ldap.url,ldap.searchbase,ldap.searchprefix,upt.url"
+            delete.property.list="exclude.jboss.backup,application.base.path.linux,application.base.path.windows,database.system.user,database.system.password"
+            />
         <zip destfile="${dist.dir}/${caarray.install.zip.file}" >
-        	<zipfileset dir="${caarray.dist.dir}" prefix="${caarray.install.name}_${caarray.version}" excludes="tools/cagrid-wscore-4.0.3*, tools/ws-core-enum*"/>
+            <zipfileset dir="${caarray.dist.dir}" prefix="${caarray.install.name}_${caarray.version}" excludes="tools/cagrid-wscore-4.0.3*, tools/ws-core-enum*"/>
         </zip>
     </target>
-
 
     <!-- Creates upgrader distribution -->
     <target name="dist:upgrader" depends="dist:upgrader:prep">
         <delete file="${dist.dir}/${caarray.upgrade.zip.file}" />
         
-		<!-- Set environment name to external -->
-		<copy todir="${dist.exploded.dir}" overwrite="true">
-			<fileset dir="${build.dir}">
-				<include name="upgrade.properties" />
-			</fileset>              
-		</copy>         
-		<delete file="${dist.exploded.dir}/install.properties"/>
-		<replaceregexp file="${dist.exploded.dir}/upgrade.properties" byline="true" match="^(env.name)=.*" replace="\1=external" />
+        <!-- Set environment name to external -->
+        <copy todir="${dist.exploded.dir}" overwrite="true">
+            <fileset dir="${build.dir}">
+                <include name="upgrade.properties" />
+            </fileset>              
+        </copy>         
+        <delete file="${dist.exploded.dir}/install.properties"/>
+        <replaceregexp file="${dist.exploded.dir}/upgrade.properties" byline="true" match="^(env.name)=.*" replace="\1=external" />
 
-		<obfuscate-properties-file
-			properties.file="${dist.exploded.dir}/upgrade.properties"
-			comment.property.list=""
-			uncomment.property.list=""
-			required.property.list="application.base.path,jboss.server.hostname,jboss.web.password,grid.server.hostname,grid.web.password"
-			optional.property.list="upt.url,ldap.url,ldap.searchbase,ldap.searchprefix,"
-			delete.property.list="application.base.path.windows,application.base.path.linux"
-			/>
+        <obfuscate-properties-file
+            properties.file="${dist.exploded.dir}/upgrade.properties"
+            comment.property.list=""
+            uncomment.property.list=""
+            required.property.list="application.base.path,jboss.server.hostname,jboss.web.password,grid.server.hostname,grid.web.password"
+            optional.property.list="upt.url,ldap.url,ldap.searchbase,ldap.searchprefix,"
+            delete.property.list="application.base.path.windows,application.base.path.linux"
+            />
         
         <replaceregexp file="${dist.exploded.dir}/build.xml" byline="true" match="(&lt;property name=&quot;properties.file&quot;\s+value=&quot;).*(&quot;\s*\/&gt;)" replace="\1upgrade.properties\2" />
         <zip destfile="${dist.dir}/${caarray.upgrade.zip.file}">
-        	<zipfileset dir="${caarray.dist.dir}" prefix="${caarray.upgrade.name}_${caarray.version}" excludes="tools/**/*"
+            <zipfileset dir="${caarray.dist.dir}" prefix="${caarray.upgrade.name}_${caarray.version}" excludes="tools/**/*"
 />
         </zip>
     </target>
@@ -384,11 +384,11 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
             <zipfileset dir="${software.dir}/../api_client_examples/legacy_api_client_examples" excludes="dist/**, tools/**, bda-utils/**, local-ivy-repo/**, target/**, load-test/**, **/eclipse-out/**, **/.svn/**" prefix="legacy_api_client_examples"/>
         </zip>
     </target>
-	
-	<target name="dist:cn2magetab">
+    
+    <target name="dist:cn2magetab">
         <delete file="${dist.dir}/cn2magetab.jar" />
         <copy file="${software.dir}/copy-number-converter/target/cn2magetab.jar" tofile="${dist.dir}/cn2magetab.jar"/>
-	</target>
+    </target>
 
     <target name="dist:javadoc">
         <delete file="${dist.dir}/${caarray.javadoc.zip.file}" />
@@ -632,7 +632,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
     </target>
 
     <target name="dist:tools:retrieve" depends="retrieve:jboss,retrieve:jboss405,dist:tools:retrieve:cagrid,dist:tools:retrieve:cagrid-console"/>
-	
+    
     <target name="dist:tools:retrieve:jboss-bindings"  description="Downloads JBOSS bindings filefrom binary repository and verifies checksum">
         <get src="${jboss4-bindings.src.url}" dest="${dist.exploded.dir}/${jboss4-bindings.file}" />
         <get src="${jboss5-bindings.src.url}" dest="${dist.exploded.dir}/${jboss5-bindings.file}" />
@@ -651,87 +651,87 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
     </target>
     
     <target name="dist:tools:retrieve:sync-gts"  description="Downloads synch-gts from binary repository" depends="dist:tools:retrieve:cagrid-target">
-		<if>
-			<not>
-				<available file="${download.dir}/${sync-gts.binaries.file}"/>
-			</not>
-			<then>
-				<get src="${sync-gts.src.url}" dest="${download.dir}/${sync-gts.binaries.file}" />
-			</then>
-		</if>
-		<property name="sync-gts.dist.dir" location="${dist.exploded.dir}/${sync-gts.dist.relative.dir}"/>
-		<unzip src="${download.dir}/${sync-gts.binaries.file}" dest="${sync-gts.dist.dir}"/>
-	</target>
-	
-	<target name="dist:tools:retrieve:cagrid-target">
-		<mkdir dir="${cagrid.target.co.dir}"/>
-		<if>
-			<not>
-				<available file="${cagrid-target.src.url}"/>
-			</not>
-			<then>
-				<mkdir dir="${cagrid.target.co.dir}"/>
-				<svn-co
-					svn.checkout.url="${cagrid-target.src.url}"
-					svn.checkout.dir="${cagrid.target.co.dir}"
-					delete="false"
-					/>
-			</then>
-		</if>
-		<copy todir="${dist.exploded.dir}/cagrid-target">
-			<fileset dir="${cagrid.target.co.dir}"/>
-		</copy>
-	</target>
-	
-	<target name="dist:tools:retrieve:cgmm" if="jboss.cgmm.enable">
-		<ivy-retrieve-cgmm ivy.dir="${bda-utils.dir}/resource/ivy"
-			/>
-		<copy todir="${dist.exploded.dir}/cgmm-libs">
-			<fileset dir="${lib.dir}">
-				<include name="cgmm/*"/>
-				<include name="jboss-default-lib/*"/>
-				<include name="jbossweb-tomcat55-sar-jars/*"/>
-			</fileset>
-		</copy>
-	</target>
-	
-	<target name="deploy:remote:upgrade:ahp" description="Installs and configures the application and required binaries and re-creates the datbase  on a remote machine. Used for NCI tiers (dev, qa, stg, prod)" >
-		<!--
-		  * Will use the target from install.xml specified in ${upgrade.target} (defaults to upgrade unless passed in on command line).
-		  * Requires specifying -Dproperties.file=@file@ on the command line to point installer to correct enviornment to install into.
-		  * Calls ant from exec task to ensure properties are do not carry over from current ant runtime and also to emulate a manual install, if you want properties to be used at install time they must be included in a proeprties file.
-		-->
-		<!-- Call macro to deploy files on desired server -->
-		<echoproperties  prefix="ssh"> <propertyset negate="yes" > <propertyref regex="passw" /> </propertyset> </echoproperties>
-		<deploy-files dist.file="${bda-blueprints-webapp.upgrade.zip.file}" />
-		<override-properties-prep
-			override.properties="@{override.properties}"
-			override.properties.string.property.name="override.properties.string"
-			/>
-		<!-- SSH to machine ant run ant command line to install application -->
-		<remote-ssh remotesshcommand=". .bash_profile;cd ${ssh.dir.temp}; ant -Dproperties.file=${properties.file.name} -Dforce.reinstall=true ${override.properties.string} ${upgrade.target}" />
-	</target>
+        <if>
+            <not>
+                <available file="${download.dir}/${sync-gts.binaries.file}"/>
+            </not>
+            <then>
+                <get src="${sync-gts.src.url}" dest="${download.dir}/${sync-gts.binaries.file}" />
+            </then>
+        </if>
+        <property name="sync-gts.dist.dir" location="${dist.exploded.dir}/${sync-gts.dist.relative.dir}"/>
+        <unzip src="${download.dir}/${sync-gts.binaries.file}" dest="${sync-gts.dist.dir}"/>
+    </target>
+    
+    <target name="dist:tools:retrieve:cagrid-target">
+        <mkdir dir="${cagrid.target.co.dir}"/>
+        <if>
+            <not>
+                <available file="${cagrid-target.src.url}"/>
+            </not>
+            <then>
+                <mkdir dir="${cagrid.target.co.dir}"/>
+                <svn-co
+                    svn.checkout.url="${cagrid-target.src.url}"
+                    svn.checkout.dir="${cagrid.target.co.dir}"
+                    delete="false"
+                    />
+            </then>
+        </if>
+        <copy todir="${dist.exploded.dir}/cagrid-target">
+            <fileset dir="${cagrid.target.co.dir}"/>
+        </copy>
+    </target>
+    
+    <target name="dist:tools:retrieve:cgmm" if="jboss.cgmm.enable">
+        <ivy-retrieve-cgmm ivy.dir="${bda-utils.dir}/resource/ivy"
+            />
+        <copy todir="${dist.exploded.dir}/cgmm-libs">
+            <fileset dir="${lib.dir}">
+                <include name="cgmm/*"/>
+                <include name="jboss-default-lib/*"/>
+                <include name="jbossweb-tomcat55-sar-jars/*"/>
+            </fileset>
+        </copy>
+    </target>
+    
+    <target name="deploy:remote:upgrade:ahp" description="Installs and configures the application and required binaries and re-creates the datbase  on a remote machine. Used for NCI tiers (dev, qa, stg, prod)" >
+        <!--
+          * Will use the target from install.xml specified in ${upgrade.target} (defaults to upgrade unless passed in on command line).
+          * Requires specifying -Dproperties.file=@file@ on the command line to point installer to correct enviornment to install into.
+          * Calls ant from exec task to ensure properties are do not carry over from current ant runtime and also to emulate a manual install, if you want properties to be used at install time they must be included in a proeprties file.
+        -->
+        <!-- Call macro to deploy files on desired server -->
+        <echoproperties  prefix="ssh"> <propertyset negate="yes" > <propertyref regex="passw" /> </propertyset> </echoproperties>
+        <deploy-files dist.file="${bda-blueprints-webapp.upgrade.zip.file}" />
+        <override-properties-prep
+            override.properties="@{override.properties}"
+            override.properties.string.property.name="override.properties.string"
+            />
+        <!-- SSH to machine ant run ant command line to install application -->
+        <remote-ssh remotesshcommand=". .bash_profile;cd ${ssh.dir.temp}; ant -Dproperties.file=${properties.file.name} -Dforce.reinstall=true ${override.properties.string} ${upgrade.target}" />
+    </target>
     
     <target name="dist:tools:retrieve:cagrid-console" description="Downloads grid console from binary repository">
-		<if>
-			<not>
-				<available file="${cagrid-console.dest.file}"/>
-			</not>
-			<then>
-				<get src="${cagrid-console.src.url}" dest="${cagrid-console.dest.file}" />
-			</then>
-		</if>
-		<property name="cagrid-console.dist.dir" location="${dist.exploded.dir}/${cagrid-console.dist.relative.dir}"/>
-		<unzip src="${cagrid-console.dest.file}" dest="${dist.exploded.dir}"/>
-		<replaceregexp file="${cagrid-console.dist.dir}/ivy-build.xml" byline="true"
-			match="override=.true."
-			replace=""
-			/>
-		<replaceregexp file="${cagrid-console.dist.dir}/ivy-build.xml" byline="true"
-			match="id=.ivy.instance."
-			replace=""
-			/>
-	</target>
+        <if>
+            <not>
+                <available file="${cagrid-console.dest.file}"/>
+            </not>
+            <then>
+                <get src="${cagrid-console.src.url}" dest="${cagrid-console.dest.file}" />
+            </then>
+        </if>
+        <property name="cagrid-console.dist.dir" location="${dist.exploded.dir}/${cagrid-console.dist.relative.dir}"/>
+        <unzip src="${cagrid-console.dest.file}" dest="${dist.exploded.dir}"/>
+        <replaceregexp file="${cagrid-console.dist.dir}/ivy-build.xml" byline="true"
+            match="override=.true."
+            replace=""
+            />
+        <replaceregexp file="${cagrid-console.dist.dir}/ivy-build.xml" byline="true"
+            match="id=.ivy.instance."
+            replace=""
+            />
+    </target>
 
     <target name="copy-caarray2-grid-service" depends="run-caarray2-build">
         <copy todir="${caarray.grid.dir}" overwrite="true" flatten="true">
@@ -742,7 +742,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
         <copy todir="${caarray.grid.dir}" file="${caarray.src.dir}/build/resources/deploy/jboss-globus-serverinstance-config.zip" />
     </target>
 
-    <target name="dist:installer:prep" depends="build:all,dist:tools:retrieve,dist:tools:retrieve:jboss-bindings">
+    <target name="dist:installer:prep" depends="build:all,dist:tools:retrieve,dist:tools:retrieve:jboss-bindings,dist:plugins:prepare">
         <copy todir="${caarray.dist.dir}/${db.dist.relative.dir}" overwrite="true">
             <fileset dir="${caarray.sql.src.dir}/liquibase" includes="**/*.sql, **/*.xml" />
         </copy>
@@ -754,9 +754,6 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
         <copy todir="${caarray.dist.dir}/master_build" file="${caarray.src.dir}/master_build/ivy-caarray.xml" overwrite="true"/>
         <copy todir="${caarray.dist.dir}/master_build" file="${caarray.src.dir}/master_build/ivy-caarray-settings.xml" overwrite="true"/>
         <copy todir="${caarray.dist.dir}/master_build" file="${caarray.src.dir}/master_build/caarray-ivy-build.xml" overwrite="true"/>
-
-        <copy todir="${caarray.dist.dir}" file="${caarray.src.dir}/build/macrodefs.xml" overwrite="true" />
-
 
         <copy todir="${caarray.dist.dir}/lib" overwrite="true">
             <fileset dir="${caarray.src.dir}/lib">
@@ -776,6 +773,12 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
         <copy tofile="${caarray.dist.dir}/${properties.file.name}" file="${properties.file}" overwrite="true"/>
     </target>
 
+    <target name="dist:plugins:prepare" description="Copies the macrodefs.xml and plugin jars to the dist/exploded folder">
+        <copy todir="${caarray.dist.dir}" file="${caarray.src.dir}/build/macrodefs.xml" overwrite="true" />
+        <mkdir dir="${caarray-bundled-plugins.dir}" />
+        <copy file="${software.dir}/plugins/target/${caarray-plugins.bundledPlugins.zip.name}" todir="${caarray-bundled-plugins.dir}" />
+    </target>
+    
     <target name="install:set-default-target">
         <copy todir="${caarray.dist.dir}" overwrite="true" file="install.properties" />
 
@@ -790,7 +793,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
     </target>
 
     <!-- For non DAC upgrades -->
-    <target name="dist:upgrader:prep" depends="build:all,dist:tools:retrieve:jboss-bindings,dist:tools:retrieve:cagrid-console" description="Copies artifacts not generated by sub-project builds into the install distribution area">
+    <target name="dist:upgrader:prep" depends="build:all,dist:tools:retrieve:jboss-bindings,dist:tools:retrieve:cagrid-console,dist:plugins:prepare" description="Copies artifacts not generated by sub-project builds into the install distribution area">
     <!-- for DAC Upgrades
     <target name="dist:upgrader:prep" depends="build:all,dist:tools:retrieve" description="Copies artifacts not generated by sub-project builds into the install distribution area">
     -->
@@ -804,7 +807,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
                 <include name="**/*.jar" />
             </fileset>
         </copy>
-    	
+        
         <dist-prep
             copy.tools.flag="N"
             default.target="upgrade"
@@ -1090,9 +1093,9 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
             />                      
     </target>
 
-	<target name="keygen">
-		<generate-jar-signing-keystore
-			/>
-	</target>    
+    <target name="keygen">
+        <generate-jar-signing-keystore
+            />
+    </target>    
     
 </project>

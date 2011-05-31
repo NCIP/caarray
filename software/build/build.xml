@@ -73,6 +73,7 @@
     <property name="caarray-ejb.test.classes.dir" value="${caarray-ejb.target.dir}/test-classes" />
     <property name="caarray-ejb.test.resources.dir" value="${caarray-ejb.dir}/src/test/resources" />
     <property name="caarray-ejb.jar" value="${caarray-ejb.target.dir}/caarray-ejb.jar" />
+    <property name="dataStorage.fileSystem.testBaseDir" value="${caarray-ejb.target.dir}/file-storage-test" />
 
     <property name="caarray-war.dir" value="${basedir}/caarray.war" />
     <property name="caarray-war.src.dir" value="${caarray-war.dir}/src/main/java" />
@@ -109,6 +110,7 @@
     <property name="caarray-grid-svc.common.test.classes.dir" value="${caarray-grid-svc.common.target.dir}/test-classes" />
     <property name="caarray-grid-svc.common.jar" value="${caarray-grid-svc.common.target.dir}/caarray-grid-common.jar" />
 
+    <property name="caarray.resources.baseDir" value="${jboss.home}/server/${jboss.server.name}/caarray" />
     <property name="caarray-plugins.dir" value="${basedir}/plugins" />
     <property name="caarray-plugins.pluginList" value="nimblegen-platform,genepix-platform,illumina-platform,affymetrix-platform,agilent-platform,copynumber-platform" />
     <property name="caarray-plugins.src.subdir" value="src/main/java" />
@@ -119,10 +121,8 @@
     <property name="caarray-plugins.classes.subdir" value="${caarray-plugins.target.subdir}/classes" />
     <property name="caarray-plugins.instrumented.classes.subdir" value="${caarray-plugins.target.subdir}/instrumented-classes" />
     <property name="caarray-plugins.test.classes.subdir" value="${caarray-plugins.target.subdir}/test-classes" />
-    <property name="caarray-plugins.deploy.dir" value="${plugins.deploy.baseDir}/plugins" />
-    <property name="caarray-plugins.deploy.cache.dir" value="${plugins.deploy.baseDir}/cache" />
-    <property name="caarray-plugins.deploy.bundleCache.dir" value="${plugins.deploy.baseDir}/bundle-cache" />
-    <property name="caarray-plugins.bundledPlugins.zip" value="${plugins.deploy.baseDir}/caarray-bundled-plugins.zip" />
+    <property name="caarray-bundled-plugins.dir" value="${caarray-plugins.dir}/target" />
+    
     <property name="caarray-plugins.properties.file" value="${caarray-war.classes.dir}/caarray-plugins.properties" />
     
     <!-- plugin dependencies on each other go here -->    	
@@ -132,7 +132,7 @@
     <property name="caarray-plugins.illumina-platform.requires" value="" />
     <property name="caarray-plugins.genepix-platform.requires" value="" />
     <property name="caarray-plugins.nimblegen-platform.requires" value="" />
-
+    
     <!-- ******************************************************************* -->
     <!-- ** 3RD PARTY DEPENDENCY MANAGMENT                                ** -->
     <!-- ******************************************************************* -->
@@ -1702,6 +1702,7 @@
                 <delete dir="${caarray-plugins.dir}/@{plugin}/target" />
             </sequential>
         </for>
+        <delete dir="${caarray-bundled-plugins.dir}"/>
     </target>
 
     <target name="clean:caarraydb">
@@ -2106,6 +2107,7 @@
     </target>
 
     <target name="build:caarray-plugins" depends="init:third-party-paths,compile:caarray-plugins,svn:getinfo">
+        <mkdir dir="${caarray-bundled-plugins.dir}" />
         <for param="plugin" list="${caarray-plugins.pluginList}">
             <sequential>
                 <mkdir dir="${caarray-plugins.dir}/@{plugin}/${caarray-plugins.target.subdir}" />
@@ -2128,8 +2130,12 @@
                     </manifest>
                     <fileset dir="${caarray-plugins.dir}/@{plugin}/${caarray-plugins.classes.subdir}" />
                 </jar>
+                <!-- Copy the jars to the "caarray-bundled-plugins.dir" directory -->
+                <copy file="${caarray-plugins.dir}/@{plugin}/${caarray-plugins.target.subdir}/@{plugin}-plugin.jar" todir="${caarray-bundled-plugins.dir}" />
             </sequential>
         </for>
+        <!-- Zip the plugin jars and joda runtime jar dependency -->
+        <create-plugin-bundle pluginJarsDir="${caarray-bundled-plugins.dir}" projectLibDir="${project.lib}" />
     </target>
 
     <target name="build:functional:caarray-common.jar" depends="build:caarray-common.jar, test:instrument-functional:caarray-common.jar" />
@@ -2590,7 +2596,7 @@
         </javac>
     </target>
 
-    <target name="test:junit-caarray-ejb.jar" unless="notest" depends="init:third-party-paths,test:compile:caarray-ejb.test.classes,test:instrument:caarray-ejb.jar,compile:caarray-client.jar,compile:caarray-common.jar,test:copy-files-to-target-dir-and-unpack-test-data">
+    <target name="test:junit-caarray-ejb.jar" unless="notest" depends="init:third-party-paths,test:compile:caarray-ejb.test.classes,test:instrument:caarray-ejb.jar,compile:caarray-client.jar,compile:caarray-common.jar,test:copy-files-to-target-dir-and-unpack-test-data, test:caarray-fileStorage-prepare">
         <propertyfile file="${caarray-ejb.test.classes.dir}/dataStorage.properties">
             <entry key="dataStorage.fileSystem.baseDir" value="${dataStorage.fileSystem.testBaseDir}"/>
             <entry key="dataStorage.fileDataEngine" value="${dataStorage.fileDataEngine}"/>
@@ -2599,6 +2605,11 @@
         <caarray-run-junit-tests test.src.dir="${caarray-ejb.test.src.dir}" xml.output.dir="${caarray-ejb.target.dir}/junit" instrumented.classes="${caarray-ejb.instrumented.classes.dir};${caarray-common.instrumented.classes.dir}" classpath="${caarray-ejb.test.classes.dir};${caarray-common.test.classes.dir};${test.data.target.dir};${test.data.classes.dir};${caarray-ejb.test.resources.dir};${caarray-ejb.resources.dir};${caarray-common.test.files.dir};${caarray-ejb.classes.dir};${caarray-client.classes.dir};${caarray-common.classes.dir};" classpathref.id="ejb.test.dependencies.path"/>
     </target>
 
+    <target name="test:caarray-fileStorage-prepare" description="Prepare file storage test base directory.">
+        <check-required-property name="dataStorage.fileSystem.testBaseDir" />
+        <mkdir dir="${dataStorage.fileSystem.testBaseDir}" />
+    </target>
+    
     <!-- caarray-plugins -->
 
     <target name="test:instrument:caarray-plugins" unless="nocobertura" depends="init:cobertura-runcheck,init:third-party-paths,compile:caarray-plugins">
@@ -3281,29 +3292,19 @@
         </copy>
         <delete dir="${jboss.deploy.dir}/jbossweb-tomcat55.sar/jsf-libs" includes="commons-lang*.jar" quiet="true"/>
     </target>
-    
-    <target name="deploy:caarray-plugins-prepare" depends="init:third-party-paths" description="Prepare the directories for plugin deployment">
-        <mkdir dir="${caarray-plugins.deploy.dir}"/>		
-        <mkdir dir="${caarray-plugins.deploy.cache.dir}"/>		
-        <mkdir dir="${caarray-plugins.deploy.bundleCache.dir}"/>		
-        
-        <zip destfile="${caarray-plugins.bundledPlugins.zip}">
-            <fileset refid="joda-time.jar.fileset"/>
-        </zip>
-    </target>
-
-    <target name="deploy:caarray.ear" depends="init:third-party-paths,build:caarray.ear,deploy:caarray.ear-dependencies,deploy:caarray-plugins-prepare">
+     
+    <target name="deploy:caarray.ear" depends="init:third-party-paths,build:caarray.ear,deploy:caarray.ear-dependencies, deploy:caarray-plugins, deploy:caarray-fileStorage">
         <copy file="${caarray.ear}" todir="${jboss.deploy.dir}" />
     </target>
 
-    <target name="deploy:caarray-plugins" depends="init:third-party-paths,build:caarray-plugins,deploy:caarray-plugins-prepare">
-        <for param="plugin" list="${caarray-plugins.pluginList}">
-            <sequential>
-                <copy file="${caarray-plugins.dir}/@{plugin}/${caarray-plugins.target.subdir}/@{plugin}-plugin.jar" todir="${caarray-plugins.deploy.dir}" />
-            </sequential>
-        </for>
+    <target name="deploy:caarray-plugins" depends="init:third-party-paths,build:caarray-plugins">
+           <process-plugins pluginJarsRootDir="${caarray-bundled-plugins.dir}" />
     </target>
-
+    
+    <target name="deploy:caarray-fileStorage" depends="init:third-party-paths">
+        <process-filestorage />
+    </target>
+    
     <target name="deploy:functional:caarray.ear" depends="init:third-party-paths,build:functional:caarray.ear,deploy:caarray.ear-dependencies">
         <copy file="${caarray.ear}" todir="${jboss.deploy.dir}" />
     </target>
@@ -3628,4 +3629,19 @@
 
     <target name="javadoc:caarray-client" depends="javadoc:caarray-client-legacy, javadoc:caarray-client-external"/>
     
+    <macrodef name="create-plugin-bundle" description="Creates the plugin bundle zip file from the individual plugin jars and the joda time dependency jar">
+        <attribute name="pluginJarsDir" />
+        <attribute name="projectLibDir" />
+        <sequential>
+            <!-- Zip the plugin jars and joda runtime jar dependency -->
+            <zip destfile="@{pluginJarsDir}/${caarray-plugins.bundledPlugins.zip.name}" filesonly="true">
+                <fileset dir="@{projectLibDir}" includes="joda-time*.jar" />
+                <fileset dir="@{pluginJarsDir}"  includes="*.jar" />
+            </zip>
+            <!-- Delete the individual plugin jar files -->
+            <delete>
+                <fileset dir="@{pluginJarsDir}" includes="*.jar"/>
+            </delete>
+        </sequential>
+    </macrodef>
 </project>

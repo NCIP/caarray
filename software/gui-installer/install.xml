@@ -175,7 +175,18 @@
                         <condition type="ref" refid="custom.installation"/>
                         <condition type="ref" refid="upgrade" />
                     </condition>
-
+                    <condition type="variable" id="fileDataEngine.file-system">
+                        <name>dataStorage.fileDataEngine</name>
+                        <value>file-system</value>
+                    </condition>
+                    <condition type="variable" id="parsedDataEngine.file-system">
+                        <name>dataStorage.parsedDataEngine</name>
+                        <value>file-system</value>
+                    </condition>
+                    <condition type="or" id="dataEngine.file-system">
+                        <condition type="ref" refid="fileDataEngine.file-system"/>
+                        <condition type="ref" refid="parsedDataEngine.file-system" />
+                    </condition>
                 </conditions>
 
                 <!--
@@ -208,26 +219,28 @@
                     <panel classname="UserInputPanel"  id="UserInputPanel.1" />
                     <panel classname="UserPathPanel" id="UserPathPanelInstallation" condition="install"/>
                     <panel classname="UserInputPanel"  id="UserInputPanel.2" condition="install"/>
-                    <panel classname="UserInputPanel"  id="UserInputPanel.3" condition="custom.installation"/>
-                    <panel classname="UserInputPanel"  id="UserInputPanel.4" condition="typical.installation"/>
+                    <panel classname="UserInputPanel"  id="UserInputPanel.3" />
+                    <panel classname="UserInputPanel"  id="UserInputPanel.4" condition="dataEngine.file-system" />
                     <panel classname="UserInputPanel"  id="UserInputPanel.5" condition="custom.installation"/>
-                    <panel classname="UserInputPanel"  id="UserInputPanel.6" condition="custom.installation"/>
+                    <panel classname="UserInputPanel"  id="UserInputPanel.6" condition="typical.installation"/>
                     <panel classname="UserInputPanel"  id="UserInputPanel.7" condition="custom.installation"/>
-                    <panel classname="UserInputPanel"  id="UserInputPanel.8" condition="upgrade"/>
-                    <panel classname="UserInputPanel"  id="UserInputPanel.9" condition="upgrade"/>
+                    <panel classname="UserInputPanel"  id="UserInputPanel.8" condition="custom.installation"/>
+                    <panel classname="UserInputPanel"  id="UserInputPanel.9" condition="custom.installation"/>
+                    <panel classname="UserInputPanel"  id="UserInputPanel.10" condition="upgrade"/>
+                    <panel classname="UserInputPanel"  id="UserInputPanel.11" condition="upgrade"/>
                     <panel classname="MySQLDatabaseInfoExtractionPanel"  id="MySQLDatabaseInfoExtractionPanel.1" condition="upgrade"/>
-                    <panel classname="UserInputPanel"  id="UserInputPanel.10" condition="install"/>
-                    <panel classname="UserInputPanel"  id="UserInputPanel.11" condition="install"/>
+                    <panel classname="UserInputPanel"  id="UserInputPanel.12" condition="install"/>
+                    <panel classname="UserInputPanel"  id="UserInputPanel.13" condition="install"/>
                     <panel classname="MySQLColumnValueAnalyzerPanel"  id="MySQLColumnValueAnalyzerPanel.1" condition="upgrade"/>
-                    <panel classname="UserInputPanel"  id="UserInputPanel.12" condition="should.show.duplicate.hybridization.details.panel.condition"/>
-                    <panel classname="UserInputPanel"  id="UserInputPanel.13" condition="custom.installation|upgrade"/>
-                    <panel classname="UserInputPanel"  id="UserInputPanel.14" condition="ldap.setup"/>
-                    <panel classname="UserInputPanel"  id="UserInputPanel.15" condition="install"/>
-                    <panel classname="UserInputPanel"  id="UserInputPanel.16" condition="custom.installation"/>
+                    <panel classname="UserInputPanel"  id="UserInputPanel.14" condition="should.show.duplicate.hybridization.details.panel.condition"/>
+                    <panel classname="UserInputPanel"  id="UserInputPanel.15" condition="custom.installation|upgrade"/>
+                    <panel classname="UserInputPanel"  id="UserInputPanel.16" condition="ldap.setup"/>
                     <panel classname="UserInputPanel"  id="UserInputPanel.17" condition="install"/>
-                    <panel classname="UserInputPanel"  id="UserInputPanel.18"/>
+                    <panel classname="UserInputPanel"  id="UserInputPanel.18" condition="custom.installation"/>
                     <panel classname="UserInputPanel"  id="UserInputPanel.19" condition="install"/>
-                    <panel classname="UserInputPanel"  id="UserInputPanel.20" condition="upgrade"/>
+                    <panel classname="UserInputPanel"  id="UserInputPanel.20"/>
+                    <panel classname="UserInputPanel"  id="UserInputPanel.21" condition="install"/>
+                    <panel classname="UserInputPanel"  id="UserInputPanel.22" condition="upgrade"/>
                     <panel classname="InstallationGroupPanel"/>
                     <panel classname="ExtendedInstallPanel"/>
                     <panel classname="SimpleFinishPanel"/>

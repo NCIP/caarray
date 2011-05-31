@@ -26,7 +26,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
     <property name="log.dir" location="${basedir}/logs" />
     <property name="working.dir" value="${basedir}/working" />
     <property name="temp.dir" location="${working.dir}/temp" />
-
+    
     <!-- Install Time properties -->
     <!-- Source and target directories -->
     <property name="bda-utils.dir" location="${basedir}/bda-utils" />
@@ -52,14 +52,28 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
 
     <property name="temp.dir" value="${basedir}/temp" />
     <property name="this.dir" value="${basedir}" />
+    
+    <!-- Set application.base.path based on platform -->
+    <condition property="application.base.path" value="${application.base.path.linux}">
+        <or>
+            <os family="unix" />
+            <os family="mac" />
+        </or>
+    </condition>
+
+    <condition property="application.base.path" value="${application.base.path.windows}">
+        <os family="windows" />
+    </condition>
+    <echo message="application.base.path=${application.base.path}"/>
+    <property name="caarray.resources.baseDir" value="${application.base.path}/${jboss.relative.path}/server/${jboss.server.name}/caarray" />
 
     <!-- grid service-related properties -->
     <property name="caarray-grid-svc.versions" value="legacy,v1_0" />
 
     <!-- CGMM-related properties -->
-	<property name="cagrid-target.dir" location="${basedir}/cagrid-target"/>
+    <property name="cagrid-target.dir" location="${basedir}/cagrid-target"/>
 
-	<!-- Paths -->
+    <!-- Paths -->
     <path id="bda-utils.classpath">
         <fileset dir="${bda-utils.dir}">
             <include name="**/*.jar" />
@@ -75,6 +89,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
 
     <!-- Includes-->
     <import file="${bda-utils.dir}/bda-build-utils-${bda.version}.xml" />
+    <import file="${basedir}/macrodefs.xml" /> 
 
     <!-- Start logging moved out of target so all targets are logged -->
     <!--<property name="install-logs.dir" location="${application.base.path}/change-logs"/> -->
@@ -90,219 +105,219 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
     <record loglevel="info" name="${log.dir}/install-${install.time}.info.log" action="start"/>
 
     <!-- Installer section -->
-	<target name="common:init:pre">
-		<!-- Set application.base.path based on platform -->
-		<condition property="application.base.path" value="${application.base.path.linux}">
-			<or>
-				<os family="unix" />
-				<os family="mac" />
-			</or>
-		</condition>
+    <target name="common:init:pre">
+        <!-- Set application.base.path based on platform -->
+        <condition property="application.base.path" value="${application.base.path.linux}">
+            <or>
+                <os family="unix" />
+                <os family="mac" />
+            </or>
+        </condition>
 
-		<condition property="application.base.path" value="${application.base.path.windows}">
-			<os family="windows" />
-		</condition>
-		<echo message="application.base.path=${application.base.path}"/>
-		<property name="jboss.home" value="${application.base.path}/${jboss.relative.path}"/>
-		<property name="grid.home" value="${application.base.path}/${grid.relative.path}"/>
-		<jboss-version />
-		<if>
-			<not>
-				<isset property="skip.clean"/>
-			</not>
-			<then>
-				<!-- clean/make working dir -->
-    			<delete dir="${working.dir}"/>
-    			<mkdir dir="${working.dir}" />
+        <condition property="application.base.path" value="${application.base.path.windows}">
+            <os family="windows" />
+        </condition>
+        <echo message="application.base.path=${application.base.path}"/>
+        <property name="jboss.home" value="${application.base.path}/${jboss.relative.path}"/>
+        <property name="grid.home" value="${application.base.path}/${grid.relative.path}"/>
+        <jboss-version />
+        <if>
+            <not>
+                <isset property="skip.clean"/>
+            </not>
+            <then>
+                <!-- clean/make working dir -->
+                <delete dir="${working.dir}"/>
+                <mkdir dir="${working.dir}" />
 
-    			<!-- clean temp dir -->
-        		<delete dir="${temp.dir}" />
-			</then>
-		</if>
-	<if>
-			<or>
-				<equals arg1="${exclude.tomcat}" arg2="true" />
-				<equals arg1="${tomcat.major.version}" arg2="6" />
-			</or>
-			<then>
-				<property name="exclude.tomcat.grid" value="true" />
-			</then>
-		</if>
-		<mkdir dir="${download.dir}"/> <!-- working around BDA bug -->
-		<validate-pre-build application.base.path="${tools.dir}" wscore.relative.dir="ws-core-4.0.3"/>
-	</target>
-	<!-- Targets begin -->
-	<target name="install:jboss:init" depends="common:init:pre" unless="exclude.jboss">
-		<!-- determine if port configurations or port lists are being called -->
-		<if>
-			<isset property="jboss.ncicb-standard.port-config"/>
-			<then>
-				<!-- Read some port properties from standard bindings file -->
-				<echo message="Using JBoss NCICB Standard port configurations"/>
-				<if>
-					<equals arg1="${jboss.major.version}" arg2="4" />
-					<then>
-						<property name="jboss.server.binding.template.location" value="${basedir}/${jboss4-bindings.file}"/>
-						<jboss-read-ports
-							jboss.server.bindingfile.location="${jboss.server.binding.template.location}" />
-						<jboss-bindings-validate jboss.server.bindingfile.location="${jboss.server.binding.template.location}"
-					/>
-					</then>
-					<elseif>
-						<equals arg1="${jboss.major.version}" arg2="5" />
-						<then>
-							<property name="jboss.server.bindingfile.location" value="${basedir}/${jboss-bindings.file}" />
-							<property name="jboss.server.binding.template.location" value="${basedir}/${jboss5-bindings.file}"/>
-							<property name="temp.ejb.file" value="${temp.dir}/ejb3-connectors-jboss-beans.xml" />
-							<copy tofile="${temp.ejb.file}" file="${bda-utils.dir}/resource/jboss-5.1.0.GA/ejb3-connectors-jboss-beans.xml" />
-							<jboss51-bindings-nci jboss.server.bindingfile.location="${jboss.server.binding.template.location}" />
-							<jboss51-read-ports-nci jboss.server.bindingfile.location="${jboss.server.binding.template.location}" jboss.server.ejbfile.location="${temp.ejb.file}" />
-						</then>
-					</elseif>
-				</if>
-				<echo message="http -${jboss.server.port} "/>
-				<echo message="http -${jboss.server.jndi.port} "/>
-			</then>
-			<else>
-				<echo message="Using custom JBoss port configurations"/>
-				<if>
-					<equals arg1="${jboss.major.version}" arg2="4" />
-					<then>
-						<property name="jboss.server.binding.template.location" value="${bda-utils.dir}/resource/${jboss.binaries.relative.dir}/bindings.xml" 					/>
-					</then>
-					<else>
-						<property name="jboss.server.binding.template.location" value="${bda-utils.dir}/resource/${jboss.binaries.relative.dir}/bindings-jboss-beans.xml" 					/>
+                <!-- clean temp dir -->
+                <delete dir="${temp.dir}" />
+            </then>
+        </if>
+    <if>
+            <or>
+                <equals arg1="${exclude.tomcat}" arg2="true" />
+                <equals arg1="${tomcat.major.version}" arg2="6" />
+            </or>
+            <then>
+                <property name="exclude.tomcat.grid" value="true" />
+            </then>
+        </if>
+        <mkdir dir="${download.dir}"/> <!-- working around BDA bug -->
+        <validate-pre-build application.base.path="${tools.dir}" wscore.relative.dir="ws-core-4.0.3"/>
+    </target>
+    <!-- Targets begin -->
+    <target name="install:jboss:init" depends="common:init:pre" unless="exclude.jboss">
+        <!-- determine if port configurations or port lists are being called -->
+        <if>
+            <isset property="jboss.ncicb-standard.port-config"/>
+            <then>
+                <!-- Read some port properties from standard bindings file -->
+                <echo message="Using JBoss NCICB Standard port configurations"/>
+                <if>
+                    <equals arg1="${jboss.major.version}" arg2="4" />
+                    <then>
+                        <property name="jboss.server.binding.template.location" value="${basedir}/${jboss4-bindings.file}"/>
+                        <jboss-read-ports
+                            jboss.server.bindingfile.location="${jboss.server.binding.template.location}" />
+                        <jboss-bindings-validate jboss.server.bindingfile.location="${jboss.server.binding.template.location}"
+                    />
+                    </then>
+                    <elseif>
+                        <equals arg1="${jboss.major.version}" arg2="5" />
+                        <then>
+                            <property name="jboss.server.bindingfile.location" value="${basedir}/${jboss-bindings.file}" />
+                            <property name="jboss.server.binding.template.location" value="${basedir}/${jboss5-bindings.file}"/>
+                            <property name="temp.ejb.file" value="${temp.dir}/ejb3-connectors-jboss-beans.xml" />
+                            <copy tofile="${temp.ejb.file}" file="${bda-utils.dir}/resource/jboss-5.1.0.GA/ejb3-connectors-jboss-beans.xml" />
+                            <jboss51-bindings-nci jboss.server.bindingfile.location="${jboss.server.binding.template.location}" />
+                            <jboss51-read-ports-nci jboss.server.bindingfile.location="${jboss.server.binding.template.location}" jboss.server.ejbfile.location="${temp.ejb.file}" />
+                        </then>
+                    </elseif>
+                </if>
+                <echo message="http -${jboss.server.port} "/>
+                <echo message="http -${jboss.server.jndi.port} "/>
+            </then>
+            <else>
+                <echo message="Using custom JBoss port configurations"/>
+                <if>
+                    <equals arg1="${jboss.major.version}" arg2="4" />
+                    <then>
+                        <property name="jboss.server.binding.template.location" value="${bda-utils.dir}/resource/${jboss.binaries.relative.dir}/bindings.xml" 					/>
+                    </then>
+                    <else>
+                        <property name="jboss.server.binding.template.location" value="${bda-utils.dir}/resource/${jboss.binaries.relative.dir}/bindings-jboss-beans.xml" 					/>
 
-					</else>
-				</if>
-				<properties-exist properties.list="jboss.server.jndi.port,jboss.server.port,jboss.server.ports.name" />
-				<!-- else ensure that all ports are set, since these will be removed from install-properties.template we will verify here.  They have to be removed so the validator works with or without the properties or we have to change the format of the file. -->
-				<properties-exist
+                    </else>
+                </if>
+                <properties-exist properties.list="jboss.server.jndi.port,jboss.server.port,jboss.server.ports.name" />
+                <!-- else ensure that all ports are set, since these will be removed from install-properties.template we will verify here.  They have to be removed so the validator works with or without the properties or we have to change the format of the file. -->
+                <properties-exist
 properties.list="jboss.server.jndi.port,jboss.server.port,jboss.cobraorb.port,jboss.hajndi.port,jboss.hajrmi.port,jboss.jmx-rmi.port,jboss.messaging.port,jboss.pooledha.port,jboss.server.bind.port,jboss.server.rmi.port,jboss.service.rmiobject.port,jboss.snmp.port,jboss.snmp-trapd.port,jboss.web.service.port,jboss.unifiedinvoker.port,jboss.hajndi.auto.port,jboss.ssl.port,jboss.jms2.netty.port,jboss.jms2.netty-ssl.port,jboss.transaction.recovery.port,jboss.transaction.status.port,jboss.transaction.processid.port"/>
-			</else>
-		</if>
-		<jboss-version />
-		<if>
-			<equals arg1="${jboss.http-connector.remove}" arg2="true"/>
-			<then>
-				<property name="jboss.application.url" value="https://${jboss.server.hostname}:${jboss.grid.secure.port}/${caarray-webapp.name}"/>
-			</then>
-			<else>
-				<property name="jboss.application.url" value="http://${jboss.server.hostname}:${jboss.server.port}/${caarray-webapp.name}"/>
-			</else>
-		</if>
-	</target>
-	<target name="common:jboss:init" depends="common:init:pre,common:jboss:grid:init" unless="exclude.jboss">
-		<!--<math result="jboss.ssl.port" operand1="${jboss.server.port}" operation="+" operand2="363" datatype="int"/>-->
-	        <!-- Default to false, properties can override -->
-	        <property name="grid.secure.enable" value="false"/>
-		<property name="jboss.ssl.enable" value="false"/>
-		<property name="jboss.home" value="${application.base.path}/${jboss.relative.path}"/>
-		<available file="${jboss.home}/server/${jboss.server.name}/conf/jboss-service.xml" property="jboss.exists"/>
-		<basename file="${jboss.ssl.keystore.location}" property="jboss.ssl.keystore.file"/>
-		<dirname file="${jboss.ssl.keystore.location}" property="jboss.ssl.keystore.dir"/>
-		<basename file="${jboss.grid.secure.cert.location}" property="jboss.grid.secure.cert.file"/>
-		<dirname file="${jboss.grid.secure.cert.location}" property="jboss.grid.secure.dir"/>
-		<basename file="${jboss.grid.secure.key.location}" property="jboss.grid.secure.key.file"/>
-		<property name="jboss.socket.ports" value="${jboss.server.port},${jboss.server.rmi.port},${jboss.server.jndi.port},${jboss.service.rmiobject.port},${jboss.jms.port},${jboss.web.service.port}"/>
-	</target>
+            </else>
+        </if>
+        <jboss-version />
+        <if>
+            <equals arg1="${jboss.http-connector.remove}" arg2="true"/>
+            <then>
+                <property name="jboss.application.url" value="https://${jboss.server.hostname}:${jboss.grid.secure.port}/${caarray-webapp.name}"/>
+            </then>
+            <else>
+                <property name="jboss.application.url" value="http://${jboss.server.hostname}:${jboss.server.port}/${caarray-webapp.name}"/>
+            </else>
+        </if>
+    </target>
+    <target name="common:jboss:init" depends="common:init:pre,common:jboss:grid:init" unless="exclude.jboss">
+        <!--<math result="jboss.ssl.port" operand1="${jboss.server.port}" operation="+" operand2="363" datatype="int"/>-->
+            <!-- Default to false, properties can override -->
+            <property name="grid.secure.enable" value="false"/>
+        <property name="jboss.ssl.enable" value="false"/>
+        <property name="jboss.home" value="${application.base.path}/${jboss.relative.path}"/>
+        <available file="${jboss.home}/server/${jboss.server.name}/conf/jboss-service.xml" property="jboss.exists"/>
+        <basename file="${jboss.ssl.keystore.location}" property="jboss.ssl.keystore.file"/>
+        <dirname file="${jboss.ssl.keystore.location}" property="jboss.ssl.keystore.dir"/>
+        <basename file="${jboss.grid.secure.cert.location}" property="jboss.grid.secure.cert.file"/>
+        <dirname file="${jboss.grid.secure.cert.location}" property="jboss.grid.secure.dir"/>
+        <basename file="${jboss.grid.secure.key.location}" property="jboss.grid.secure.key.file"/>
+        <property name="jboss.socket.ports" value="${jboss.server.port},${jboss.server.rmi.port},${jboss.server.jndi.port},${jboss.service.rmiobject.port},${jboss.jms.port},${jboss.web.service.port}"/>
+    </target>
 
-	<target name="common:init" depends="common:init:pre">
-		<!-- bda-blueprints-webapp can use either Oracle or MySQL or PostgreSQL as its database platform, this is controled by the database.type property.  Based on the value of this property sent several variables for use during install -->
-		<echoproperties prefix="database">
-			<propertyset negate="yes" >
-				<propertyref regex="passw" />
-		</propertyset>
-		</echoproperties>
-		<switch value="${database.type}">
-			<case value="oracle">
-				<property name="database.dialect" value="org.hibernate.dialect.OracleDialect"/>
-				<property name="database.driver.file" value="${bda-utils.dir}/ojdbc14-10.2.0.3.0.jar"/>
-				<property name="database.driver" value="oracle.jdbc.driver.OracleDriver"/>
-				<property name="database.schema" value="${database.name}"/>
-			</case>
-			<case value="mysql">
-				<property name="database.dialect" value="org.hibernate.dialect.MySQLDialect"/>
-				<property name="database.driver.file" value="${bda-utils.dir}/mysql-connector-java-5.1.13.jar"/>
-				<property name="database.driver" value="com.mysql.jdbc.Driver"/>
-				<property name="database.schema" value="${database.name}"/>
-			</case>
-			<case value="postgresql">
-				<property name="database.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
-				<property name="database.driver.file" value="${bda-utils.dir}/postgresql-8.4-701.jdbc3.jar"/>
-				<property name="database.driver" value="org.postgresql.Driver"/>
-				<property name="database.schema" value="public"/>
-			</case>
-			<default>
-				<fail message="Invalid database type ${database.type}"/>
-			</default>
-		</switch>
+    <target name="common:init" depends="common:init:pre">
+        <!-- bda-blueprints-webapp can use either Oracle or MySQL or PostgreSQL as its database platform, this is controled by the database.type property.  Based on the value of this property sent several variables for use during install -->
+        <echoproperties prefix="database">
+            <propertyset negate="yes" >
+                <propertyref regex="passw" />
+        </propertyset>
+        </echoproperties>
+        <switch value="${database.type}">
+            <case value="oracle">
+                <property name="database.dialect" value="org.hibernate.dialect.OracleDialect"/>
+                <property name="database.driver.file" value="${bda-utils.dir}/ojdbc14-10.2.0.3.0.jar"/>
+                <property name="database.driver" value="oracle.jdbc.driver.OracleDriver"/>
+                <property name="database.schema" value="${database.name}"/>
+            </case>
+            <case value="mysql">
+                <property name="database.dialect" value="org.hibernate.dialect.MySQLDialect"/>
+                <property name="database.driver.file" value="${bda-utils.dir}/mysql-connector-java-5.1.13.jar"/>
+                <property name="database.driver" value="com.mysql.jdbc.Driver"/>
+                <property name="database.schema" value="${database.name}"/>
+            </case>
+            <case value="postgresql">
+                <property name="database.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
+                <property name="database.driver.file" value="${bda-utils.dir}/postgresql-8.4-701.jdbc3.jar"/>
+                <property name="database.driver" value="org.postgresql.Driver"/>
+                <property name="database.schema" value="public"/>
+            </case>
+            <default>
+                <fail message="Invalid database type ${database.type}"/>
+            </default>
+        </switch>
 
-		<path id="jdbc.driver.classpath">
-			<pathelement location="${database.driver.file}"/>
-		</path>
+        <path id="jdbc.driver.classpath">
+            <pathelement location="${database.driver.file}"/>
+        </path>
 
-		<property name="properties.template.file" value="${basedir}/properties.template" />
-		   <property file="${basedir}/cagrid-target/${grid.target}/service_urls.properties" />
-		<property name="grid.index.url" value="${cagrid.master.index.service.url}" />
-		<filterset id="embedded.filterset">
-			<filter token="application.base.path" value="${application.base.path}"/>
-			<filter token="application.url" value="${application.url}"/>
-			<filter token="database.url" value="${database.url}"/>
-			<filter token="database.user" value="${database.user}"/>
-			<filter token="database.password" value="${database.password}"/>
-			<filter token="database.system.url" value="${database.system.url}"/>
-			<!-- added internal properties that may be used in a filtered copy -->
-			<filter token="database.driver" value="${database.driver}"/>
-			<!-- added for liquibase -->
-			<filter token="db-upgrade.run.dir" value="${db-upgrade.dir.dest}/${database.type}"/>
-			<filter token="jboss.home" value="${jboss.home}"/>
-			<filter token="tomcat.home" value="${tomcat.home}" />
-			<filter token="database.dialect" value="${database.dialect}"/>
-			<filter token="hibernate.cfg.file.path" value="${hibernate.cfg.file.path}"/>
-			<filter token="env.LOGNAME" value="${env.LOGNAME}"/>
-			<filter token="env.JAVA_HOME" value="${env.JAVA_HOME}"/>
-			<filter token="project.name" value="${project.name}" />
-			<filter token="grid.dorian.name" value="${grid.target}-Dorian" />
-			<filter token="grid.dorian.url" value="${cagrid.master.dorian.service.url}" />
-			<filter token="grid.auth.service.url" value="${grid.auth.service.url}" />
-			<filter token="grid.auth.service.name" value="${grid.auth.service.name}" />
-			<filter token="" value=""/>
-		    </filterset>
+        <property name="properties.template.file" value="${basedir}/properties.template" />
+           <property file="${basedir}/cagrid-target/${grid.target}/service_urls.properties" />
+        <property name="grid.index.url" value="${cagrid.master.index.service.url}" />
+        <filterset id="embedded.filterset">
+            <filter token="application.base.path" value="${application.base.path}"/>
+            <filter token="application.url" value="${application.url}"/>
+            <filter token="database.url" value="${database.url}"/>
+            <filter token="database.user" value="${database.user}"/>
+            <filter token="database.password" value="${database.password}"/>
+            <filter token="database.system.url" value="${database.system.url}"/>
+            <!-- added internal properties that may be used in a filtered copy -->
+            <filter token="database.driver" value="${database.driver}"/>
+            <!-- added for liquibase -->
+            <filter token="db-upgrade.run.dir" value="${db-upgrade.dir.dest}/${database.type}"/>
+            <filter token="jboss.home" value="${jboss.home}"/>
+            <filter token="tomcat.home" value="${tomcat.home}" />
+            <filter token="database.dialect" value="${database.dialect}"/>
+            <filter token="hibernate.cfg.file.path" value="${hibernate.cfg.file.path}"/>
+            <filter token="env.LOGNAME" value="${env.LOGNAME}"/>
+            <filter token="env.JAVA_HOME" value="${env.JAVA_HOME}"/>
+            <filter token="project.name" value="${project.name}" />
+            <filter token="grid.dorian.name" value="${grid.target}-Dorian" />
+            <filter token="grid.dorian.url" value="${cagrid.master.dorian.service.url}" />
+            <filter token="grid.auth.service.url" value="${grid.auth.service.url}" />
+            <filter token="grid.auth.service.name" value="${grid.auth.service.name}" />
+            <filter token="" value=""/>
+            </filterset>
 
-		<!--OS Temp dir -->
-		<condition property="os.temp.dir" value="/tmp/${project.name}">
-			<or>
-				<os family="unix" />
-				<os family="mac" />
-			</or>
-		</condition>
+        <!--OS Temp dir -->
+        <condition property="os.temp.dir" value="/tmp/${project.name}">
+            <or>
+                <os family="unix" />
+                <os family="mac" />
+            </or>
+        </condition>
 
-		<condition property="os.temp.dir" value="c:/temp/${project.name}">
-			<os family="windows" />
-		</condition>
-		<echo message="os.temp.dir - ${os.temp.dir}"/>
-		<!-- Copy files to ensure values containing variables are expanded, such properties are stored in embedded.filterset and then copy with filter files -->
-		<copy todir="${common.dir.dest}" filtering="true">
-			<fileset dir="${common.dir.src}">
-				<include name="**/*"/>
-			</fileset>
-			<filterset refid="embedded.filterset"/>
-			<filterset>
-				<filtersfile file="${properties.file}"/>
-				<filtersfile file="project.properties"/>
-			</filterset>
-		</copy>
+        <condition property="os.temp.dir" value="c:/temp/${project.name}">
+            <os family="windows" />
+        </condition>
+        <echo message="os.temp.dir - ${os.temp.dir}"/>
+        <!-- Copy files to ensure values containing variables are expanded, such properties are stored in embedded.filterset and then copy with filter files -->
+        <copy todir="${common.dir.dest}" filtering="true">
+            <fileset dir="${common.dir.src}">
+                <include name="**/*"/>
+            </fileset>
+            <filterset refid="embedded.filterset"/>
+            <filterset>
+                <filtersfile file="${properties.file}"/>
+                <filtersfile file="project.properties"/>
+            </filterset>
+        </copy>
         <available file="${jboss.home}" property="jboss.exists"/>
         <available file="${grid.home}" property="grid.exists"/>
-	</target>
+    </target>
 
     <target name="diag">
         <echoproperties>
-			<propertyset negate="yes" >
-				<propertyref regex="passw" />
-			</propertyset>
-		</echoproperties>
+            <propertyset negate="yes" >
+                <propertyref regex="passw" />
+            </propertyset>
+        </echoproperties>
     </target>
 
     <!-- Clean up destination directory -->
@@ -338,8 +353,8 @@ properties.list="jboss.server.jndi.port,jboss.server.port,jboss.cobraorb.port,jb
 
     <target name="install:database" description="Re-creates database and users from baseline and applys incremental database changes." unless="exclude.database"
         depends="
-		common:init,
-		install:database:validation:pre-install
+        common:init,
+        install:database:validation:pre-install
         ">
 
         <mkdir dir="${temp.dir}/caarray.ear" />
@@ -350,31 +365,31 @@ properties.list="jboss.server.jndi.port,jboss.server.port,jboss.cobraorb.port,jb
         <path id="liquibase.dependencies.path">
             <fileset dir="${lib.dir}/caarray-project" includes="*.jar"/>
             <fileset dir="${temp.dir}/caarray.ear" includes="caarray-*.jar"/>
-			<pathelement path="${db.dir.src}" />
-		</path>
+            <pathelement path="${db.dir.src}" />
+        </path>
 
-		<taskdef resource="liquibasetasks.properties">
-		    <classpath refid="liquibase.dependencies.path"/>
-		</taskdef>
+        <taskdef resource="liquibasetasks.properties">
+            <classpath refid="liquibase.dependencies.path"/>
+        </taskdef>
 
-		<updateDatabase
-			driver="${database.driver}"
-			url="${database.url}"
-			username="${database.user}"
-			password="${database.password}"
-			classpathref="liquibase.dependencies.path"
-			changeLogFile="db-upgrade.xml">
-			<changeLogProperty name="csm.application.name" value="${csm.application.name}"/>
-			<changeLogProperty name="environment" value="${environment}"/>
-    	</updateDatabase>
+        <updateDatabase
+            driver="${database.driver}"
+            url="${database.url}"
+            username="${database.user}"
+            password="${database.password}"
+            classpathref="liquibase.dependencies.path"
+            changeLogFile="db-upgrade.xml">
+            <changeLogProperty name="csm.application.name" value="${csm.application.name}"/>
+            <changeLogProperty name="environment" value="${environment}"/>
+        </updateDatabase>
     </target>
 
     <target name="upgrade:database:remove-offending-liquibase-changesets">
-    	<!-- since this is an update, the db-env-specific changeset needs to be removed-->
-    	<xmltask source="${db.dir.src}/db-env-specific.xml" dest="${db.dir.src}/db-env-specific.xml">
-			<xmlcatalog refid="bda.xml.catalog"/>
-			<remove path="//*[local-name()='changeSet']"/>
-		</xmltask>
+        <!-- since this is an update, the db-env-specific changeset needs to be removed-->
+        <xmltask source="${db.dir.src}/db-env-specific.xml" dest="${db.dir.src}/db-env-specific.xml">
+            <xmlcatalog refid="bda.xml.catalog"/>
+            <remove path="//*[local-name()='changeSet']"/>
+        </xmltask>
     </target>
 
     <target name="install:jboss:binaries" description="Unzip JBoss binary" unless="exclude.jboss" depends="common:jboss:init, common:init">
@@ -383,7 +398,7 @@ properties.list="jboss.server.jndi.port,jboss.server.port,jboss.cobraorb.port,jb
     </target>
 
     <target name="install:jboss:grid-binaries" description="Unzip JBoss binary for grid services" unless="exclude.jboss.grid" depends="common:jboss:init, common:init">
-	    <jboss-install-binaries jboss.binaries.file="${tools.dir}/${jboss.grid-binaries.file}" jboss.server.name="${grid.server.name}" jboss.home="${grid.home}"/>
+        <jboss-install-binaries jboss.binaries.file="${tools.dir}/${jboss.grid-binaries.file}" jboss.server.name="${grid.server.name}" jboss.home="${grid.home}"/>
     </target>
 
     <target name="install:jboss:caarray" description="Deploy caarray caarray.ear" unless="exclude.jboss" depends="common:jboss:init, common:init">
@@ -394,14 +409,31 @@ properties.list="jboss.server.jndi.port,jboss.server.port,jboss.cobraorb.port,jb
         <copy file="${temp.dir}/caarray.ear.to_deploy/${caarray.ear.file}" todir="${jboss.home}/server/${jboss.server.name}/deploy" overwrite="true" />
         <copy file="${database.driver.file}" todir="${jboss.home}/server/${jboss.server.name}/lib" overwrite="true" />
     </target>
+    
+    <target name="common:jboss:caarray:configure-plugins">
+        <process-plugins pluginJarsRootDir="${basedir}/plugins" />
+    </target>
+    
+    <target name="common:jboss:caarray:configure-filestorage">
+        <process-filestorage />
+    </target>
 
-    <target name="install:jboss:caarray:re-configure" description="Update xml files in meta-inf directory of ear that have deployment attributes" depends="common:jboss:init, common:init">
+    <target name="install:jboss:caarray:re-configure" description="Update xml files in meta-inf directory of ear that have deployment attributes" depends="common:jboss:init, common:init, common:jboss:caarray:configure-plugins, common:jboss:caarray:configure-filestorage">
         <mkdir dir="${temp.dir}/caarray.ear.to_deploy" />
         <mkdir dir="${temp.dir}/caarray.ear" />
         <mkdir dir="${temp.dir}/caarray-common.jar" />
         <unzip src="${caarray.dir.dist}/${caarray.ear.file}" dest="${temp.dir}/caarray.ear/" />
         <unjar src="${temp.dir}/caarray.ear/caarray-common.jar" dest="${temp.dir}/caarray-common.jar"/>
         <unjar src="${temp.dir}/caarray.ear/caarray.war" dest="${temp.dir}/caarray.war"/>
+        <unjar src="${temp.dir}/caarray.ear/caarray-ejb.jar" dest="${temp.dir}/caarray-ejb.jar"/>
+        
+        <!-- update the filestorage property values in ejb jar's dataStorage.properties file -->
+        <replaceregexp file="${temp.dir}/caarray-ejb.jar/dataStorage.properties" match="dataStorage.fileSystem.baseDir=(.*)" replace="dataStorage.fileSystem.baseDir=${dataStorage.fileSystem.baseDir}" byline="true"/>
+        <replaceregexp file="${temp.dir}/caarray-ejb.jar/dataStorage.properties" match="dataStorage.fileDataEngine=(.*)" replace="dataStorage.fileDataEngine=${dataStorage.fileDataEngine}" byline="true"/>
+        <replaceregexp file="${temp.dir}/caarray-ejb.jar/dataStorage.properties" match="dataStorage.parsedDataEngine=(.*)" replace="dataStorage.parsedDataEngine=${dataStorage.parsedDataEngine}" byline="true"/>
+        
+        <jar destfile="${temp.dir}/caarray.ear/caarray-ejb.jar" basedir="${temp.dir}/caarray-ejb.jar" update="false" manifest="${temp.dir}/caarray-ejb.jar/META-INF/MANIFEST.MF"/>
+        
         <move todir="${temp.dir}/caarray-common.jar/csm">
             <fileset dir="${temp.dir}/caarray-common.jar/csm">
                 <include name="*.csm.new.hibernate.cfg.xml" />
@@ -409,18 +441,18 @@ properties.list="jboss.server.jndi.port,jboss.server.port,jboss.cobraorb.port,jb
             <mapper type="regexp" from="^.*.csm.new.hibernate.cfg.xml" to="${csm.application.name}.csm.new.hibernate.cfg.xml" />
         </move>
         <apply-filters-to-dir filters.target.dir="${temp.dir}/caarray-common.jar"/>
-    	<jar destfile="${temp.dir}/caarray.ear/caarray-common.jar" basedir="${temp.dir}/caarray-common.jar" update="false" manifest="${temp.dir}/caarray-common.jar/META-INF/MANIFEST.MF"/>
+        <jar destfile="${temp.dir}/caarray.ear/caarray-common.jar" basedir="${temp.dir}/caarray-common.jar" update="false" manifest="${temp.dir}/caarray-common.jar/META-INF/MANIFEST.MF"/>
 
         <propertyregex property="corrected.database.url" input="${read.database.url}" regexp="(.*)\?" select="\1" defaultValue="${database.url}"/>
-		<copy file="${jboss-conf.dist.relative.dir}/security-config.xml" tofile="${temp.dir}/caarray.ear/META-INF/security-config.xml"/>
-		<replaceregexp file="${temp.dir}/caarray.ear/META-INF/security-config.xml" match="&amp;" replace="&amp;amp;" byline="false"/>
-		<xmltask source="${temp.dir}/caarray.ear/META-INF/security-config.xml" dest="${temp.dir}/caarray.ear/META-INF/security-config.xml">
-			<xmlcatalog refid="bda.xml.catalog"/>
-			<replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule']/module-option[@name='url']/text()" withText="${corrected.database.url}"/>
-			<replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule']/module-option[@name='user']/text()" withText="${database.user}"/>
-			<replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule']/module-option[@name='passwd']/text()" withText="${database.password}"/>
-			<replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule']/module-option[@name='driver']/text()" withText="${database.driver}"/>
-		</xmltask>
+        <copy file="${jboss-conf.dist.relative.dir}/security-config.xml" tofile="${temp.dir}/caarray.ear/META-INF/security-config.xml"/>
+        <replaceregexp file="${temp.dir}/caarray.ear/META-INF/security-config.xml" match="&amp;" replace="&amp;amp;" byline="false"/>
+        <xmltask source="${temp.dir}/caarray.ear/META-INF/security-config.xml" dest="${temp.dir}/caarray.ear/META-INF/security-config.xml">
+            <xmlcatalog refid="bda.xml.catalog"/>
+            <replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule']/module-option[@name='url']/text()" withText="${corrected.database.url}"/>
+            <replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule']/module-option[@name='user']/text()" withText="${database.user}"/>
+            <replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule']/module-option[@name='passwd']/text()" withText="${database.password}"/>
+            <replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule']/module-option[@name='driver']/text()" withText="${database.driver}"/>
+        </xmltask>
         <if>
             <equals arg1="${ldap.authentication.enabled}" arg2="true" />
             <then>
@@ -453,7 +485,13 @@ properties.list="jboss.server.jndi.port,jboss.server.port,jboss.cobraorb.port,jb
             <replace path="//*[local-name()='param-name'][text()='ldapSearchableBase']/following-sibling::*/text()" withText="${ldap.searchbase}"/>
             <replace path="//*[local-name()='param-name'][text()='ldapUserIdLabel']/following-sibling::*/text()" withText="${ldap.searchprefix}"/>
         </xmltask>
-
+        
+        <!-- replace the plugin property values -->
+        <replaceregexp file="${temp.dir}/caarray.war/WEB-INF/classes/caarray-plugins.properties" match="plugins.deploy.dir=(.*)" replace="plugins.deploy.dir=${caarray-plugins.deploy.dir}" byline="true"/>
+        <replaceregexp file="${temp.dir}/caarray.war/WEB-INF/classes/caarray-plugins.properties" match="plugins.cache.dir=(.*)" replace="plugins.cache.dir=${caarray-plugins.deploy.cache.dir}" byline="true"/>
+        <replaceregexp file="${temp.dir}/caarray.war/WEB-INF/classes/caarray-plugins.properties" match="plugins.bundle.zip=(.*)" replace="plugins.bundle.zip=${caarray-plugins.bundledPlugins.zip}" byline="true"/>
+        <replaceregexp file="${temp.dir}/caarray.war/WEB-INF/classes/caarray-plugins.properties" match="plugins.bundleCache.dir=(.*)" replace="plugins.bundleCache.dir=${caarray-plugins.deploy.bundleCache.dir}" byline="true"/>
+        
         <apply-filters-to-dir filters.target.dir="${temp.dir}/caarray.war"/>
         <war destfile="${temp.dir}/caarray.ear/caarray.war">
             <fileset dir="${temp.dir}/caarray.war"/>
@@ -539,72 +577,72 @@ properties.list="jboss.server.jndi.port,jboss.server.port,jboss.cobraorb.port,jb
     </target>
 
     <target name="common:jboss:grid:init" depends="common:init:pre" unless="exclude.jboss">
-		<if>
-			<isset property="exclude.jboss.grid" />
-			<then>
-				<property name="jboss.grid.enable" value="false" />
-			</then>
-			<else>
-				<property name="jboss.grid.enable" value="true" />
-			</else>
-		</if>
-	</target>
-	<target name="common:tomcat:grid:init" depends="common:init:pre" unless="exclude.tomcat">
-		<if>
-			<isset property="exclude.tomcat.grid" />
-			<then>
-				<property name="tomcat.grid.enable" value="false" />
-			</then>
-			<else>
-				<property name="tomcat.grid.enable" value="true" />
-			</else>
-		</if>
-	</target>
+        <if>
+            <isset property="exclude.jboss.grid" />
+            <then>
+                <property name="jboss.grid.enable" value="false" />
+            </then>
+            <else>
+                <property name="jboss.grid.enable" value="true" />
+            </else>
+        </if>
+    </target>
+    <target name="common:tomcat:grid:init" depends="common:init:pre" unless="exclude.tomcat">
+        <if>
+            <isset property="exclude.tomcat.grid" />
+            <then>
+                <property name="tomcat.grid.enable" value="false" />
+            </then>
+            <else>
+                <property name="tomcat.grid.enable" value="true" />
+            </else>
+        </if>
+    </target>
 
-	<target name="install:jboss:configure" description="Configure JBoss (bindings, login-config.xml, ect)" unless="exclude.jboss"
+    <target name="install:jboss:configure" description="Configure JBoss (bindings, login-config.xml, ect)" unless="exclude.jboss"
 depends="
-		common:jboss:init,
-		common:init,
+        common:jboss:init,
+        common:init,
         -install:jboss:configure:log4j,
         -install:jboss:configure:disable-credential-caching,
         -install:jboss:configure:java_opts,
         -install:jboss:configure:web-container,
         -install:jboss:configure:update-runscripts
             ">
-		<!-- Calls the following macros
-		    jboss-bindings - configures ports for jboss
-		    jboss-login-config - sets up authentication
-		    secure-jboss-console - adds password to jboss console apps
-		    jboss-update-shutdown - updates shutdown.jar with correct jndi port so no args need to used 4 shutdown
-		    appserver-ssl-configure -  enables ssl
-		    appserver-configure-external-hostname - configures jboss for use through a reverse proxy
-		    grid-secure-configure-connector - configures secure grid
-		-->
-		<!-- Use below if you are defining all the ports in your install.xml not the NCICB port configuraitons-->
-		<if>
-			<equals arg1="${jboss.major.version}" arg2="4"/>
-			<then>
-				<jboss-configure jboss.grid.configure="true" />
-				<if>
-					<equals arg1="${jboss.cgmm.enable}" arg2="true" />
-					<then>
-						<jboss-configure-cgmm />
-					</then>
-				</if>
-			</then>
-		</if>
-		<if>
-			<equals arg1="${jboss.major.version}" arg2="5"/>
-			<then>
-				<jboss-configure
-jboss.grid.configure="true"
-jboss.server.bindingfile.location="${jboss.home}/server/${jboss.server.name}/conf/bindingservice.beans/META-INF/bindings-jboss-beans.xml"
-jboss.server.binding.template.location="${jboss.server.binding.template.location}"
-jboss.server-xml.file="${jboss.home}/server/${jboss.server.name}/deploy/jbossweb.sar/server.xml"
-proxy.update.connector.port.ssl="${jboss.ssl.port}"
-					/>
-			</then>
-		</if>
+        <!-- Calls the following macros
+            jboss-bindings - configures ports for jboss
+            jboss-login-config - sets up authentication
+            secure-jboss-console - adds password to jboss console apps
+            jboss-update-shutdown - updates shutdown.jar with correct jndi port so no args need to used 4 shutdown
+            appserver-ssl-configure -  enables ssl
+            appserver-configure-external-hostname - configures jboss for use through a reverse proxy
+            grid-secure-configure-connector - configures secure grid
+        -->
+        <!-- Use below if you are defining all the ports in your install.xml not the NCICB port configuraitons-->
+        <if>
+            <equals arg1="${jboss.major.version}" arg2="4"/>
+            <then>
+                <jboss-configure jboss.grid.configure="true" />
+                <if>
+                    <equals arg1="${jboss.cgmm.enable}" arg2="true" />
+                    <then>
+                        <jboss-configure-cgmm />
+                    </then>
+                </if>
+            </then>
+        </if>
+        <if>
+            <equals arg1="${jboss.major.version}" arg2="5"/>
+            <then>
+                <jboss-configure
+                    jboss.grid.configure="true"
+                    jboss.server.bindingfile.location="${jboss.home}/server/${jboss.server.name}/conf/bindingservice.beans/META-INF/bindings-jboss-beans.xml"
+                    jboss.server.binding.template.location="${jboss.server.binding.template.location}"
+                    jboss.server-xml.file="${jboss.home}/server/${jboss.server.name}/deploy/jbossweb.sar/server.xml"
+                    proxy.update.connector.port.ssl="${jboss.ssl.port}"
+                />
+            </then>
+        </if>
     </target>
 
     <target name="-install:jboss:configure:web-container" description="Configure web container for caArray JBoss installation.">
@@ -645,7 +683,7 @@ proxy.update.connector.port.ssl="${jboss.ssl.port}"
 
     <target name="-install:jboss:start-with-config" description="Starts jboss" unless="exclude.jboss" depends="common:jboss:init,common:init,-install:jboss:configure:web-container ">
         <antcall target="install:jboss:start" inheritAll="false">
-        	<param name="skip.clean" value="true"/>
+            <param name="skip.clean" value="true"/>
         </antcall>
     </target>
 
@@ -661,68 +699,68 @@ proxy.update.connector.port.ssl="${jboss.ssl.port}"
         </if>
     </target>
 
-    	<target name="install:common:validation:pre-install" description="Runs pre-install validation checks bda-utils" depends="common:init">
-    		<validate-pre-install-common
-    			ant.check.version="${ant.minimum.version}"
-    			java.check.version.major="${java.major.version}"
-    			java.check.version.minor="${java.minor.version}"
-    			/>
-    	</target>
-    	<target name="install:jboss:validation:pre-install" description="Runs pre-install validation checks bda-utils"
-    		depends="
-    		common:jboss:init,common:init,
-    		install:common:validation:pre-install
-    		">
-    		<validate-pre-install-jboss
-    			/>
-    	</target>
+        <target name="install:common:validation:pre-install" description="Runs pre-install validation checks bda-utils" depends="common:init">
+            <validate-pre-install-common
+                ant.check.version="${ant.minimum.version}"
+                java.check.version.major="${java.major.version}"
+                java.check.version.minor="${java.minor.version}"
+                />
+        </target>
+        <target name="install:jboss:validation:pre-install" description="Runs pre-install validation checks bda-utils"
+            depends="
+            common:jboss:init,common:init,
+            install:common:validation:pre-install
+            ">
+            <validate-pre-install-jboss
+                />
+        </target>
 
-    	<target name="install:database:validation:pre-install" description="Runs pre-install validation checks bda-utils"
-    		depends="
-    		common:init,
-    		install:common:validation:pre-install
-    		">
-    		<validate-pre-install-database
-    			database.version="${mysql.minimum.version}"
-    			/>
-    	</target>
+        <target name="install:database:validation:pre-install" description="Runs pre-install validation checks bda-utils"
+            depends="
+            common:init,
+            install:common:validation:pre-install
+            ">
+            <validate-pre-install-database
+                database.version="${mysql.minimum.version}"
+                />
+        </target>
 
 
-    	<target name="install:jboss:validation:pre-install:ports" description="Checks to see if configured ports are listenting and fails buld, meant to be run after jboss:stop"
-    		depends="
-    		common:init,
-    		install:jboss:stop
-    		">
-    		<validate-pre-jboss-ports
-    			/>
-    	</target>
+        <target name="install:jboss:validation:pre-install:ports" description="Checks to see if configured ports are listenting and fails buld, meant to be run after jboss:stop"
+            depends="
+            common:init,
+            install:jboss:stop
+            ">
+            <validate-pre-jboss-ports
+                />
+        </target>
 
-    	<target name="install:common:validation:post-install" description="Run post-install checks from bda-utils"
-    		depends="
-    		common:init
-    		">
-    		<validate-post-common />
-    	</target>
-    	<target name="install:jboss:validation:post-install" description="Run post-install checks from bda-utils"
-    		depends="
-    		common:jboss:init,
-    		common:init
-    		">
-    		<if>
-    			<not>
-    				<isset property="exclude.start.servers"/>
-    			</not>
-    			<then>
-    				<validate-post-jboss />
-    			</then>
-    		</if>
-	</target>
+        <target name="install:common:validation:post-install" description="Run post-install checks from bda-utils"
+            depends="
+            common:init
+            ">
+            <validate-post-common />
+        </target>
+        <target name="install:jboss:validation:post-install" description="Run post-install checks from bda-utils"
+            depends="
+            common:jboss:init,
+            common:init
+            ">
+            <if>
+                <not>
+                    <isset property="exclude.start.servers"/>
+                </not>
+                <then>
+                    <validate-post-jboss />
+                </then>
+            </if>
+    </target>
 
 
     <!-- Calls to bda macros for basic functionality -->
     <target name="install:grid:stop" description="Stops grid jboss" unless="exclude.jboss" depends="common:jboss:init,common:init">
         <if>
-			<isset property="grid.exists"/>
+            <isset property="grid.exists"/>
             <then>
                 <jboss-stop-jboss jboss.home="${grid.home}" jboss.server.hostname="${grid.server.hostname}" jboss.server.jndi.port="${grid.server.jndi.port}" jboss.server.name="${grid.server.name}" jboss.web.user="${grid.web.user}" jboss.web.password="${grid.web.password}"/>
             </then>
@@ -750,7 +788,7 @@ proxy.update.connector.port.ssl="${jboss.ssl.port}"
 jboss.bin.dir="${jboss.home}/bin" 
 host.flag.value="${jboss.server.hostname}"
             />
-		<chmod dir="${jboss.home}/bin" perm="ugo+rx" includes="**/*" osfamily="unix"/>
+        <chmod dir="${jboss.home}/bin" perm="ugo+rx" includes="**/*" osfamily="unix"/>
     </target>
 
     <target name="-set:target:port:configuration:file">
@@ -790,15 +828,15 @@ host.flag.value="${jboss.server.hostname}"
     <!-- Wrapper target to deploy JBOSS container -->
     <target name="install:jboss" unless="exclude.jboss"
         depends="
-		common:jboss:init,
-		common:init,
-		install:jboss:init,
-		install:jboss:validation:pre-install,
-		install:common:validation:pre-install,
-		install:jboss:stop,
-		install:jboss:validation:pre-install:ports,
-		install:jboss:clean,
-		install:jboss:binaries,
+        common:jboss:init,
+        common:init,
+        install:jboss:init,
+        install:jboss:validation:pre-install,
+        install:common:validation:pre-install,
+        install:jboss:stop,
+        install:jboss:validation:pre-install:ports,
+        install:jboss:clean,
+        install:jboss:binaries,
         install:jboss:caarray:re-configure,
         install:jboss:caarray,
         install:jboss:caarray:configure,
@@ -808,14 +846,14 @@ host.flag.value="${jboss.server.hostname}"
     <!-- Wrapper target to deploy all containers to one server -->
     <target name="install" description="Installs and configures JBOSS, creates database, and deploys application"
         depends="
-		common:jboss:init,
-		common:init,
-		install:jboss:init,
-		install:jboss:validation:pre-install,
-		install:common:validation:pre-install,
-		install:jboss:stop,
-		install:jboss:validation:pre-install:ports,
-		install:jboss:clean,
+        common:jboss:init,
+        common:init,
+        install:jboss:init,
+        install:jboss:validation:pre-install,
+        install:common:validation:pre-install,
+        install:jboss:stop,
+        install:jboss:validation:pre-install:ports,
+        install:jboss:clean,
         install:database,
         install:jboss,
         install:carray-grid">
@@ -853,38 +891,38 @@ depends="upgrade:jboss:init,common:init,upgrade-ncm:jboss,-install:jboss:configu
 
     <target name="upgrade:tier:caarray" description="Upgrades caArray installation on NCICB tier."
         depends="
-		upgrade:jboss:init,
-		common:init,
-		common:jboss:init,
-		install:jboss:validation:pre-install,
-		install:common:validation:pre-install,
-		install:jboss:stop,
-		install:jboss:validation:pre-install:ports,
-		install:jboss:caarray:re-configure,
-		-install:jboss:configure:web-container,
-		install:jboss:caarray,
-		-install:jboss:configure:log4j,
-		-install:jboss:configure:disable-credential-caching,
-		upgrade:database">
-		<antcall target="-install:jboss:start-with-config">
+        upgrade:jboss:init,
+        common:init,
+        common:jboss:init,
+        install:jboss:validation:pre-install,
+        install:common:validation:pre-install,
+        install:jboss:stop,
+        install:jboss:validation:pre-install:ports,
+        install:jboss:caarray:re-configure,
+        -install:jboss:configure:web-container,
+        install:jboss:caarray,
+        -install:jboss:configure:log4j,
+        -install:jboss:configure:disable-credential-caching,
+        upgrade:database">
+        <antcall target="-install:jboss:start-with-config">
             <param name="skip.clean" value="true"/>
         </antcall>
-		<antcall target="install:post:jboss">
+        <antcall target="install:post:jboss">
             <param name="skip.clean" value="true"/>
         </antcall>
     </target>
-		
+        
     <target name="upgrade:tier:grid" description="Upgrades caArray installation on NCICB tier."
-    	depends="
-    	upgrade:jboss:init,
-		common:init,
-		common:jboss:init,
-		install:grid:stop,
-		upgrade:carray-grid">
-		<antcall target="install:grid:start">
+        depends="
+        upgrade:jboss:init,
+        common:init,
+        common:jboss:init,
+        install:grid:stop,
+        upgrade:carray-grid">
+        <antcall target="install:grid:start">
             <param name="skip.clean" value="true"/>
         </antcall>
-		<antcall target="install:jboss:validation:post-install">
+        <antcall target="install:jboss:validation:post-install">
             <param name="skip.clean" value="true"/>
         </antcall>
     </target>
@@ -910,14 +948,14 @@ depends="upgrade:jboss:init,common:init,upgrade-ncm:jboss,-install:jboss:configu
     <!-- Upgrade with Disposable Application Conttainer (DAC) -->
     <target name="upgrade-dac:jboss" description="Wrapper target to call all targets required to upgrade jboss container." unless="exclude.jboss"
         depends="
-		upgrade:jboss:init,
-		common:init,
-		common:jboss:init,
-		install:jboss:validation:pre-install,
-		install:common:validation:pre-install,
-		install:jboss:stop,
-		install:jboss:validation:pre-install:ports,
-		install:jboss:clean,
+        upgrade:jboss:init,
+        common:init,
+        common:jboss:init,
+        install:jboss:validation:pre-install,
+        install:common:validation:pre-install,
+        install:jboss:stop,
+        install:jboss:validation:pre-install:ports,
+        install:jboss:clean,
         install:jboss:binaries,
         install:jboss:configure,
         install:jboss:caarray:re-configure,
@@ -925,20 +963,20 @@ depends="upgrade:jboss:init,common:init,upgrade-ncm:jboss,-install:jboss:configu
         install:jboss:caarray:configure,
         -install:jboss:configure:update-runscripts,
         upgrade:post:jboss">
-	</target>
+    </target>
 
     <target name="upgrade-dac" description="Upgrades JBoss and Database"
         depends="
-		upgrade:common:init,
-		common:init,
-		common:jboss:init,
-		install:common:validation:pre-install,
-		install:jboss:validation:pre-install,
-		install:database:validation:pre-install,
+        upgrade:common:init,
+        common:init,
+        common:jboss:init,
+        install:common:validation:pre-install,
+        install:jboss:validation:pre-install,
+        install:database:validation:pre-install,
         install:jboss:stop,
         upgrade:database,
         upgrade:jboss,
-		install:common:validation:post-install
+        install:common:validation:post-install
         ">
     </target>
 
@@ -946,45 +984,45 @@ depends="upgrade:jboss:init,common:init,upgrade-ncm:jboss,-install:jboss:configu
 
     <target name="upgrade-dac:with-dbinstall" description="Upgrades JBoss and Database"
         depends="
-		upgrade:common:init,
-		common:init,
-		common:jboss:init,
-		install:common:validation:pre-install,
-		install:jboss:validation:pre-install,
-		install:database:validation:pre-install,
-		install:jboss:stop,
+        upgrade:common:init,
+        common:init,
+        common:jboss:init,
+        install:common:validation:pre-install,
+        install:jboss:validation:pre-install,
+        install:database:validation:pre-install,
+        install:jboss:stop,
         install:database,
         upgrade:jboss,
-	    install:common:validation:post-install
+        install:common:validation:post-install
         ">
     </target>
     <!-- Upgrade with Container Modification (CM) -->
     <target name="upgrade-cm:jboss" description="Wrapper target to call all targets required to upgrade jboss container." unless="exclude.jboss"
         depends="
-		upgrade:jboss:init,
-		common:init,
-		common:jboss:init,
-		install:jboss:validation:pre-install,
-		install:common:validation:pre-install,
-		install:jboss:stop,
-		install:jboss:validation:pre-install:ports,
-		install:jboss:configure,
+        upgrade:jboss:init,
+        common:init,
+        common:jboss:init,
+        install:jboss:validation:pre-install,
+        install:common:validation:pre-install,
+        install:jboss:stop,
+        install:jboss:validation:pre-install:ports,
+        install:jboss:configure,
         install:jboss:caarray:re-configure,
         install:jboss:caarray,
         install:jboss:caarray:configure,
         -install:jboss:configure:update-runscripts,
         upgrade:post:jboss">
-	</target>
+    </target>
 
     <target name="upgrade-cm" description="Upgrades JBoss and Database"
         depends="
-		upgrade:common:init,
-		common:init,
-		common:jboss:init,
-		install:common:validation:pre-install,
-		install:jboss:validation:pre-install,
-		install:database:validation:pre-install,
-		install:jboss:stop,
+        upgrade:common:init,
+        common:init,
+        common:jboss:init,
+        install:common:validation:pre-install,
+        install:jboss:validation:pre-install,
+        install:database:validation:pre-install,
+        install:jboss:stop,
         upgrade:database,
         upgrade:jboss,
         install:common:validation:post-install
@@ -993,29 +1031,29 @@ depends="upgrade:jboss:init,common:init,upgrade-ncm:jboss,-install:jboss:configu
 
     <target name="upgrade-cm:with-dbinstall" description="Upgrades JBoss and Database"
         depends="
-		upgrade:common:init,
-		common:init,
-		common:jboss:init,
-		install:common:validation:pre-install,
-		install:jboss:validation:pre-install,
-		install:database:validation:pre-install,
-		install:jboss:stop,
+        upgrade:common:init,
+        common:init,
+        common:jboss:init,
+        install:common:validation:pre-install,
+        install:jboss:validation:pre-install,
+        install:database:validation:pre-install,
+        install:jboss:stop,
         install:database,
         upgrade:jboss,
-	    install:common:validation:post-install
+        install:common:validation:post-install
         ">
     </target>
     
     <!-- Upgrade with No Container Modification (NCM) -->
     <target name="upgrade-ncm:jboss" description="Wrapper target to call all targets required to upgrade jboss container." unless="exclude.jboss"
         depends="
-		upgrade:jboss:init,
-		common:init,
-		common:jboss:init,
-		install:jboss:validation:pre-install,
-		install:common:validation:pre-install,
-		install:jboss:stop,
-		install:jboss:validation:pre-install:ports,
+        upgrade:jboss:init,
+        common:init,
+        common:jboss:init,
+        install:jboss:validation:pre-install,
+        install:common:validation:pre-install,
+        install:jboss:stop,
+        install:jboss:validation:pre-install:ports,
         install:jboss:caarray:re-configure,
         install:jboss:caarray">
     </target>
@@ -1036,13 +1074,13 @@ depends="upgrade:jboss:init,common:init,upgrade-ncm:jboss,-install:jboss:configu
 
     <target name="upgrade-ncm:with-dbinstall" description="Upgrades JBoss and Database"
         depends="
-		upgrade:common:init,
-		common:init,
-		common:jboss:init,
-		install:common:validation:pre-install,
-		install:jboss:validation:pre-install,
-		install:database:validation:pre-install,
-		install:jboss:stop,
+        upgrade:common:init,
+        common:init,
+        common:jboss:init,
+        install:common:validation:pre-install,
+        install:jboss:validation:pre-install,
+        install:database:validation:pre-install,
+        install:jboss:stop,
         install:database,
         upgrade:jboss,
         install:common:validation:post-install
@@ -1050,41 +1088,41 @@ depends="upgrade:jboss:init,common:init,upgrade-ncm:jboss,-install:jboss:configu
     </target>
 
     <target name="install:carray-grid" description="Grouping of caArray Grid application targets" depends="install:jboss:grid-binaries,install:grid:deploy">
-		<jboss-configure
-			jboss.server.bindingfile.location="${grid.home}/bindings/bindings.xml"
-			jboss.server.binding.template.location="${bda-utils.dir}/resource/jboss-4.0.4.GA/bindings.xml"
-			jboss.grid.configure="true"
-			jboss.home="${grid.home}"
-			jboss.server.name="${grid.server.name}"
-			jboss.server.ports.name="${grid.server.ports.name}"
+        <jboss-configure
+            jboss.server.bindingfile.location="${grid.home}/bindings/bindings.xml"
+            jboss.server.binding.template.location="${bda-utils.dir}/resource/jboss-4.0.4.GA/bindings.xml"
+            jboss.grid.configure="true"
+            jboss.home="${grid.home}"
+            jboss.server.name="${grid.server.name}"
+            jboss.server.ports.name="${grid.server.ports.name}"
             jboss.server-xml.file="${grid.home}/server/${grid.server.name}/deploy/jbossweb-tomcat55.sar/server.xml"
-			jboss.web.user="${grid.web.user}"
-			jboss.web.password="${grid.web.password}"
-			jboss.server.jndi.port="${grid.server.jndi.port}"
-			jboss.server.port="${grid.server.port}"
-			jboss.cobraorb.port="${grid.cobraorb.port}"
-			jboss.ejbinvoker.port="${grid.ejbinvoker.port}"
-			jboss.hajndi.port="${grid.hajndi.port}"
-			jboss.hajrmi.port="${grid.hajrmi.port}"
-			jboss.jms.port="${grid.jms.port}"
-			jboss.jmx-rmi.port="${grid.jmx-rmi.port}"
-			jboss.messaging.port="${grid.messaging.port}"
-			jboss.pooledha.port="${grid.pooledha.port}"
-			jboss.remoting.port="${grid.remoting.port}"
-			jboss.server.bind.port="${grid.server.bind.port}"
-			jboss.server.rmi.port="${grid.server.rmi.port}"
-			jboss.service.rmiobject.port="${grid.service.rmiobject.port}"
-			jboss.snmp.port="${grid.snmp.port}"
-			jboss.snmp-trapd.port="${grid.snmp-trapd.port}"
-			jboss.web.service.port="${grid.web.service.port}"
-			jboss.ssl.enable="${grid.ssl.enable}"
-			jboss.ssl.keystore.pass="${grid.ssl.keystore.pass}"
-			jboss.ssl.keystore.alias="${grid.ssl.keystore.alias}"
-			jboss.ssl.fullyqualified.hostname="${grid.ssl.fullyqualified.hostname}"
-			jboss.external.http.host="${grid.static.hostname}"
-			jboss.external.http.port="${grid.static.port}"
-			jboss.grid.secure.enable="${grid.secure.enable}"
-		/>
+            jboss.web.user="${grid.web.user}"
+            jboss.web.password="${grid.web.password}"
+            jboss.server.jndi.port="${grid.server.jndi.port}"
+            jboss.server.port="${grid.server.port}"
+            jboss.cobraorb.port="${grid.cobraorb.port}"
+            jboss.ejbinvoker.port="${grid.ejbinvoker.port}"
+            jboss.hajndi.port="${grid.hajndi.port}"
+            jboss.hajrmi.port="${grid.hajrmi.port}"
+            jboss.jms.port="${grid.jms.port}"
+            jboss.jmx-rmi.port="${grid.jmx-rmi.port}"
+            jboss.messaging.port="${grid.messaging.port}"
+            jboss.pooledha.port="${grid.pooledha.port}"
+            jboss.remoting.port="${grid.remoting.port}"
+            jboss.server.bind.port="${grid.server.bind.port}"
+            jboss.server.rmi.port="${grid.server.rmi.port}"
+            jboss.service.rmiobject.port="${grid.service.rmiobject.port}"
+            jboss.snmp.port="${grid.snmp.port}"
+            jboss.snmp-trapd.port="${grid.snmp-trapd.port}"
+            jboss.web.service.port="${grid.web.service.port}"
+            jboss.ssl.enable="${grid.ssl.enable}"
+            jboss.ssl.keystore.pass="${grid.ssl.keystore.pass}"
+            jboss.ssl.keystore.alias="${grid.ssl.keystore.alias}"
+            jboss.ssl.fullyqualified.hostname="${grid.ssl.fullyqualified.hostname}"
+            jboss.external.http.host="${grid.static.hostname}"
+            jboss.external.http.port="${grid.static.port}"
+            jboss.grid.secure.enable="${grid.secure.enable}"
+        />
         <for param="version" list="${caarray-grid-svc.versions}">
             <sequential>
                 <if>
@@ -1097,8 +1135,8 @@ depends="upgrade:jboss:init,common:init,upgrade-ncm:jboss,-install:jboss:configu
                     </else>
                 </if>
                 <jboss-configure-grid
-                	jboss.home="${grid.home}"
-                	jboss.server.name="${grid.server.name}"
+                    jboss.home="${grid.home}"
+                    jboss.server.name="${grid.server.name}"
                     jboss.conf.dir="${grid.home}/server/${grid.server.name}/conf"
                     jboss.webapp.dir="${grid.home}/server/${grid.server.name}/deploy"
                     jboss.server-xml.file="${grid.home}/server/${grid.server.name}/deploy/jbossweb-tomcat55.sar/server.xml"
@@ -1225,32 +1263,32 @@ depends="upgrade:jboss:init,common:init,upgrade-ncm:jboss,-install:jboss:configu
     </target>
 
     <target name="-install:jboss:configure:disable-credential-caching" unless="exclude.jboss" description="Cnonfigures the jboss-service.xml file to turn off JAAS credential caching.">
-    	<xmltask source="${jboss.home}/server/${jboss.server.name}/conf/jboss-service.xml" dest="${jboss.home}/server/${jboss.server.name}/conf/jboss-service.xml">
-			<xmlcatalog refid="bda.xml.catalog"/>
-			<replace path="/server/mbean[@name='jboss.security:service=JaasSecurityManager']/attribute[@name='DefaultCacheTimeout']/text()" withText="0"/>
-		</xmltask>
+        <xmltask source="${jboss.home}/server/${jboss.server.name}/conf/jboss-service.xml" dest="${jboss.home}/server/${jboss.server.name}/conf/jboss-service.xml">
+            <xmlcatalog refid="bda.xml.catalog"/>
+            <replace path="/server/mbean[@name='jboss.security:service=JaasSecurityManager']/attribute[@name='DefaultCacheTimeout']/text()" withText="0"/>
+        </xmltask>
     </target>
 
     <target name="-install:jboss:configure:log4j" unless="exclude.jboss" description="Configures jboss-log4j for caArray JBoss server.">
-		<echo message="Configuring ${jboss.home}/server/${jboss.server.name}/conf/jboss-log4j.xml."/>
+        <echo message="Configuring ${jboss.home}/server/${jboss.server.name}/conf/jboss-log4j.xml."/>
         <copy file="${jboss.home}/server/${jboss.server.name}/conf/jboss-log4j.xml" tofile="${jboss.home}/server/${jboss.server.name}/conf/jboss-log4j.xml.original"/>
-		<loadfile property="log4j.fragment" srcFile="common/resources/jboss-conf/log4j.fragment.xml"/>
-		<loadfile property="existing.log4j.contents" srcFile="${jboss.home}/server/${jboss.server.name}/conf/jboss-log4j.xml"/>
-		<propertyregex property="caarray.custom.cfg.target.text"
-			input="${existing.log4j.contents}"
-			regexp="&lt;!-- start caarray custom configuration[\d\D]*end caarray custom configuration --&gt;"
-			select="\0"
-			global="true"
-			/>
-		<if>
-			<isset property="caarray.custom.cfg.target.text" />
-			<then>
-			    <replace file="${jboss.home}/server/${jboss.server.name}/conf/jboss-log4j.xml" token="${caarray.custom.cfg.target.text}" value="${log4j.fragment}"/>
-			</then>
-			<else>
-				<replace file="${jboss.home}/server/${jboss.server.name}/conf/jboss-log4j.xml" token="&lt;/log4j:configuration&gt;" value="${log4j.fragment}${line.separator}&lt;/log4j:configuration&gt;"/>
-			</else>
-		</if>
+        <loadfile property="log4j.fragment" srcFile="common/resources/jboss-conf/log4j.fragment.xml"/>
+        <loadfile property="existing.log4j.contents" srcFile="${jboss.home}/server/${jboss.server.name}/conf/jboss-log4j.xml"/>
+        <propertyregex property="caarray.custom.cfg.target.text"
+            input="${existing.log4j.contents}"
+            regexp="&lt;!-- start caarray custom configuration[\d\D]*end caarray custom configuration --&gt;"
+            select="\0"
+            global="true"
+            />
+        <if>
+            <isset property="caarray.custom.cfg.target.text" />
+            <then>
+                <replace file="${jboss.home}/server/${jboss.server.name}/conf/jboss-log4j.xml" token="${caarray.custom.cfg.target.text}" value="${log4j.fragment}"/>
+            </then>
+            <else>
+                <replace file="${jboss.home}/server/${jboss.server.name}/conf/jboss-log4j.xml" token="&lt;/log4j:configuration&gt;" value="${log4j.fragment}${line.separator}&lt;/log4j:configuration&gt;"/>
+            </else>
+        </if>
     </target>
 
     <target name="-install:grid:configure:ports" description="Configure grid service based on properties">
@@ -1411,39 +1449,39 @@ depends="upgrade:jboss:init,common:init,upgrade-ncm:jboss,-install:jboss:configu
         upgrade:jboss:readers:bda,
         upgrade:jboss:readers:custom
         ">
-	<properties-print
-		properties.list="${read.properties.list}"
-		/>
-	<properties-exist
-		properties.list="${read.properties.list}"
-		/>
-	<properties-write
-		properties.list="${read.properties.list}"
-		/>
+    <properties-print
+        properties.list="${read.properties.list}"
+        />
+    <properties-exist
+        properties.list="${read.properties.list}"
+        />
+    <properties-write
+        properties.list="${read.properties.list}"
+        />
 
     </target>
 
 
-	<target name="upgrade:database:init"
-		depends="
-		upgrade:jboss:init:prep,
-		upgrade:database:readers:bda,
-		upgrade:database:readers:custom
-		">
-		<!-- You need to either depend on jboss or tomcat so that you can read the db properties from it's configs.  BDA only has macros to read database properties from jboss. -->
-	</target>
+    <target name="upgrade:database:init"
+        depends="
+        upgrade:jboss:init:prep,
+        upgrade:database:readers:bda,
+        upgrade:database:readers:custom
+        ">
+        <!-- You need to either depend on jboss or tomcat so that you can read the db properties from it's configs.  BDA only has macros to read database properties from jboss. -->
+    </target>
 
     <target name="upgrade:jboss:init:prep" depends="upgrade:common:init:prep">
-		<property name="jboss.home" value="${application.base.path}/${jboss.relative.path}"/>
-		<if>
-			<not>
-				<available file="${jboss.home}" />
-			</not>
-			<then>
-				<fail message="${jboss.home} must exist during upgrades" />
-			</then>
-		</if>
-		<property name="application.url" value="http://${jboss.server.hostname}:${jboss.server.port}/caarray"/>
+        <property name="jboss.home" value="${application.base.path}/${jboss.relative.path}"/>
+        <if>
+            <not>
+                <available file="${jboss.home}" />
+            </not>
+            <then>
+                <fail message="${jboss.home} must exist during upgrades" />
+            </then>
+        </if>
+        <property name="application.url" value="http://${jboss.server.hostname}:${jboss.server.port}/caarray"/>
         <properties-print
             properties.list="application.base.path,jboss.home,jboss.server.name"
             />
@@ -1568,61 +1606,61 @@ depends="upgrade:jboss:init,common:init,upgrade-ncm:jboss,-install:jboss:configu
 
     </target>
 
-   	<target name="upgrade:database:readers:custom">
-   		<!-- call your custom readers here, two properties included in these scripts that don't have readers are "fs-data.base.dir, mail.smtp.server" -->
-	</target>
+       <target name="upgrade:database:readers:custom">
+           <!-- call your custom readers here, two properties included in these scripts that don't have readers are "fs-data.base.dir, mail.smtp.server" -->
+    </target>
 
-   	<target name="upgrade:database:readers:bda" depends="upgrade:jboss:init:prep,common:init" if="jboss.exists">
+       <target name="upgrade:database:readers:bda" depends="upgrade:jboss:init:prep,common:init" if="jboss.exists">
 
-   		<!-- Make sure the ${properties.file} has at least the following props -->
-   		<properties-exist
-   			properties.list="application.base.path,jboss.home,jboss.server.name"
-   			/>
-   		<jboss-read-dbconfig
-   			jboss.home="${read.jboss.home}"
-   			jboss.ds-xml.file="caarray-ds.xml"
-   			/>
-	</target>
+           <!-- Make sure the ${properties.file} has at least the following props -->
+           <properties-exist
+               properties.list="application.base.path,jboss.home,jboss.server.name"
+               />
+           <jboss-read-dbconfig
+               jboss.home="${read.jboss.home}"
+               jboss.ds-xml.file="caarray-ds.xml"
+               />
+    </target>
 
-	<target name="upgrade:common:init:prep">
-		<if>
-			<not>
-				<isset property="application.base.path"/>
-			</not>
-			<then>
-				<!-- Set application.base.path based on platform -->
-				<condition property="application.base.path" value="${application.base.path.linux}">
-					<or>
-						<os family="unix" />
-						<os family="mac" />
-					</or>
-				</condition>
+    <target name="upgrade:common:init:prep">
+        <if>
+            <not>
+                <isset property="application.base.path"/>
+            </not>
+            <then>
+                <!-- Set application.base.path based on platform -->
+                <condition property="application.base.path" value="${application.base.path.linux}">
+                    <or>
+                        <os family="unix" />
+                        <os family="mac" />
+                    </or>
+                </condition>
 
-				<condition property="application.base.path" value="${application.base.path.windows}">
-					<os family="windows" />
-				</condition>
-				<echo message="application.base.path=${application.base.path}"/>
-			</then>
-		</if>
-		<properties-print
-			properties.list="application.base.path,jboss.home,tomcat.home,jboss.server.name"
-			/>
-		<var name="read.properties.list" value=""/>
-	</target>
+                <condition property="application.base.path" value="${application.base.path.windows}">
+                    <os family="windows" />
+                </condition>
+                <echo message="application.base.path=${application.base.path}"/>
+            </then>
+        </if>
+        <properties-print
+            properties.list="application.base.path,jboss.home,tomcat.home,jboss.server.name"
+            />
+        <var name="read.properties.list" value=""/>
+    </target>
 
     <target name="upgrade:post:jboss">
-		<if>
-			<equals arg1="${jboss.major.version}" arg2="4"/>
-			<then>
-				<copy file="${copied.jboss.log4j.dir}/log4j.xml" todir="${jboss.home}/server/${jboss.server.name}/conf"/>
-			</then>
-		</if>
-		<if>
-			<equals arg1="${jboss.major.version}" arg2="5"/>
-			<then>
-				<copy file="${copied.jboss.log4j.dir}/jboss-log4j.xml" todir="${jboss.home}/server/${jboss.server.name}/conf"/>
-			</then>
-		</if>
+        <if>
+            <equals arg1="${jboss.major.version}" arg2="4"/>
+            <then>
+                <copy file="${copied.jboss.log4j.dir}/log4j.xml" todir="${jboss.home}/server/${jboss.server.name}/conf"/>
+            </then>
+        </if>
+        <if>
+            <equals arg1="${jboss.major.version}" arg2="5"/>
+            <then>
+                <copy file="${copied.jboss.log4j.dir}/jboss-log4j.xml" todir="${jboss.home}/server/${jboss.server.name}/conf"/>
+            </then>
+        </if>
     </target>
 
     <macrodef name="set-host-flag-in-start-jboss-scripts">

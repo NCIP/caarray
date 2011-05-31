@@ -1,4 +1,11 @@
 <project name="macrodefs">
+    <!-- Common properties being re-used in /software/build/build.xml and /master_build/install.xml-->
+    <property name="plugins.deploy.baseDir" value="${caarray.resources.baseDir}/osgi" />
+    <property name="caarray-plugins.deploy.dir" value="${plugins.deploy.baseDir}/plugins" />
+    <property name="caarray-plugins.deploy.cache.dir" value="${plugins.deploy.baseDir}/cache" />
+    <property name="caarray-plugins.deploy.bundleCache.dir" value="${plugins.deploy.baseDir}/bundle-cache" />
+    <property name="caarray-plugins.bundledPlugins.zip.name" value="caarray-bundled-plugins.zip" />
+    <property name="caarray-plugins.bundledPlugins.zip" value="${plugins.deploy.baseDir}/${caarray-plugins.bundledPlugins.zip.name}" />
 
     <macrodef name="caarray-run-junit-tests">
         <attribute name="test.src.dir" />
@@ -7,10 +14,9 @@
         <attribute name="instrumented.classes" default="" />
         <attribute name="classpathref.id" default="no.dependencies.path" />
         <attribute name="source.include" default="${test.source.include}" />
-		<attribute name="source.exclude" default="${test.source.exclude}" />
-		<attribute name="forkmode" default="once" />    	
+        <attribute name="source.exclude" default="${test.source.exclude}" />
+        <attribute name="forkmode" default="once" />    	
         <element name="extentions" optional="yes"/>
-
         <sequential>
             <mkdir dir="@{xml.output.dir}" />
             <property name="jdwp.port" value="8686"/>
@@ -58,4 +64,48 @@
         </sequential>
     </macrodef>
 
+    <macrodef name="process-plugins" description="Prepare directories for plugin deployment">
+        <attribute name="pluginJarsRootDir" />
+        <sequential>
+            <echo message="caarray.resources.baseDir=${caarray.resources.baseDir}" />
+            <check-required-property name="plugins.deploy.baseDir" />
+            <mkdir dir="${plugins.deploy.baseDir}" />
+            <mkdir dir="${caarray-plugins.deploy.dir}" />
+            <mkdir dir="${caarray-plugins.deploy.cache.dir}" />
+            <mkdir dir="${caarray-plugins.deploy.bundleCache.dir}" />
+            <!-- Copy the bundled plugin zip file over  -->
+            <copy file="@{pluginJarsRootDir}/${caarray-plugins.bundledPlugins.zip.name}" todir="${plugins.deploy.baseDir}" />
+        </sequential>
+    </macrodef>
+    
+    <macrodef name="process-filestorage" description="Prepare directory for file storage">
+        <sequential>
+            <property name="dataStorageFileSystemLiteral" value="file-system" />
+            <if>
+                <or>
+                    <equals arg1="${dataStorage.fileDataEngine}" arg2="${dataStorageFileSystemLiteral}"/>
+                    <equals arg1="${dataStorage.parsedDataEngine}" arg2="${dataStorageFileSystemLiteral}"/>
+                </or>
+                <then>
+                    <check-required-property name="dataStorage.fileSystem.baseDir" />
+                    <mkdir dir="${dataStorage.fileSystem.baseDir}" />
+                </then>
+            </if>
+        </sequential>
+    </macrodef>
+    
+    <macrodef name="check-required-property" description="Check that the property is set and not blank">
+        <attribute name="name" />
+        <sequential> 
+            <property name="caarray.property.notDefined" value="must be defined." />
+            <fail message="The property '@{name}' ${caarray.property.notDefined}"> 
+                <condition>
+                    <or>
+                        <equals arg1="${@{name}}" arg2="" />
+                        <not><isset property="@{name}"/></not>
+                    </or>
+                </condition> 
+            </fail> 
+        </sequential>
+    </macrodef>
 </project>
