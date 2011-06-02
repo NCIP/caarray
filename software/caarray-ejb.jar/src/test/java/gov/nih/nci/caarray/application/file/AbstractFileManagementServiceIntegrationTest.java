@@ -535,12 +535,12 @@ public abstract class AbstractFileManagementServiceIntegrationTest extends Abstr
             }
 
             private DirectJobSubmitter createJobSubmitter() {
-                JobQueue jobQueue = new JobDaoSingleJobStub();
-                Provider<UsernameHolder> usernameHolderProvider = Providers.of(mock(UsernameHolder.class));
+                final JobQueue jobQueue = new JobDaoSingleJobStub();
+                final Provider<UsernameHolder> usernameHolderProvider = Providers.of(mock(UsernameHolder.class));
                 final FileManagementMDB mdb = new FileManagementMDB(hibernateHelper, jobQueue, usernameHolderProvider );
-                UserTransaction ut = mock(UserTransaction.class);
+                final UserTransaction ut = mock(UserTransaction.class);
                 mdb.setTransaction(ut);
-                DirectJobSubmitter submitter = new DirectJobSubmitter(mdb, jobQueue);
+                final DirectJobSubmitter submitter = new DirectJobSubmitter(mdb, jobQueue);
                 return submitter;
             }
         });
@@ -549,7 +549,7 @@ public abstract class AbstractFileManagementServiceIntegrationTest extends Abstr
     }
 
     @BeforeClass
-    public static void regiserFileAccessServiceStub() {
+    public static void registerFileAccessServiceStub() {
         final ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
         locatorStub.addLookup(FileAccessService.JNDI_NAME, new FileAccessServiceStub());
         InjectorFactory.addPlatform(new AbstractModule() {

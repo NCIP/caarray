@@ -153,10 +153,7 @@ public class FileManagementServiceTest extends AbstractServiceTest {
 
     @Before
     public void setUp() {
-        CaArrayHibernateHelper hibernateHelper = mock(CaArrayHibernateHelper.class);
-        JobQueue jobQueue = new JobDaoSingleJobStub();
-        final Provider<UsernameHolder> usernameHolderProvider = Providers.of(mock(UsernameHolder.class));
-        FileManagementMDB fileManagementMDB = new FileManagementMDB(hibernateHelper, jobQueue, usernameHolderProvider) {
+        FileManagementMDB fileManagementMDB = new FileManagementMDB() {
 
             /**
              * {@inheritDoc}
@@ -186,7 +183,7 @@ public class FileManagementServiceTest extends AbstractServiceTest {
         };
 
         fileManagementMDB.setTransaction(new UserTransactionStub());
-        final JobQueue jobDao = new JobDaoSingleJobStub();
+        final JobQueue jobQueue = new JobDaoSingleJobStub();
         final DirectJobSubmitter submitter = new DirectJobSubmitter(fileManagementMDB, jobQueue);
         final DataStorageFacade dataStorageFacade = this.fileAccessServiceStub.createStorageFacade();
 
@@ -215,6 +212,7 @@ public class FileManagementServiceTest extends AbstractServiceTest {
         final Provider<MageTabImporter> mageTabeImporterProvider = Providers.of(mageTabImporter);
         final Provider<ProjectDao> projectDaoProvider = Providers.of(this.daoFactoryStub.getProjectDao());
         final Provider<SearchDao> searchDaoProvider = Providers.of(this.daoFactoryStub.getSearchDao());
+        final Provider<UsernameHolder> usernameHolderProvider = Providers.of(mock(UsernameHolder.class));
 
         final JobFactory jobFactory =
                 new JobFactoryImpl(usernameHolderProvider, arrayDaoProvider, arrayDataImporterProvider,
@@ -257,7 +255,7 @@ public class FileManagementServiceTest extends AbstractServiceTest {
                 requestStaticInjection(CaArrayFile.class);
                 requestStaticInjection(TestMageTabSets.class);
 
-                bind(JobQueue.class).toInstance(jobDao);
+                bind(JobQueue.class).toInstance(jobQueue);
                 bind(CaArrayHibernateHelper.class).toInstance(mock(CaArrayHibernateHelper.class));
                 bind(UsernameHolder.class).toProvider(usernameHolderProvider);
             }

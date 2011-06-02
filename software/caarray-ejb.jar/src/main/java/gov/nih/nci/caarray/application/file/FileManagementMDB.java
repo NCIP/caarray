@@ -143,20 +143,29 @@ public class FileManagementMDB implements MessageListener {
     static final String QUEUE_JNDI_NAME = "topic/caArray/FileManagement";
     private static ThreadLocal<FileManagementMDB> currentMDB = new ThreadLocal<FileManagementMDB>();
 
-    @Resource
+    @Resource 
     private UserTransaction transaction;
-    private final CaArrayHibernateHelper hibernateHelper;
-    private final JobQueue jobQueue;
-    private final Provider<UsernameHolder> userHolderProvider;
+    
+    private CaArrayHibernateHelper hibernateHelper;
+    private JobQueue jobQueue;
+    private Provider<UsernameHolder> userHolderProvider;
 
     /**
+     * Default no-arg ctor is required by app container. 
+     */
+    public FileManagementMDB() {
+        //no-op default ctor. Dependencies should be added through the setters. 
+    }
+
+    /**
+     * STARTING WITH caArray 2.5.0 THIS VERSION OF THE CTOR IS A CONVENIENCE FOR TESTING USE ONLY. 
+     * 
      * @param hibernateHelper the CaArrayHibernateHelper dependency
      * @param jobQueue the JobQueue dependency
      * @param userHolderProvider provides userHolder objects. Using a provider here to enable a possible
      *        future enhancement where thread specific userHolders can be provided.
      */
-    @Inject
-    public FileManagementMDB(CaArrayHibernateHelper hibernateHelper, JobQueue jobQueue,
+     FileManagementMDB(CaArrayHibernateHelper hibernateHelper, JobQueue jobQueue,
             Provider<UsernameHolder> userHolderProvider) {
         this.hibernateHelper = hibernateHelper;
         this.jobQueue = jobQueue;
@@ -342,6 +351,30 @@ public class FileManagementMDB implements MessageListener {
      */
     public static FileManagementMDB getCurrentMDB() {
         return currentMDB.get();
+    }
+
+    /**
+     * @param hibernateHelper the hibernateHelper to set
+     */
+    @Inject
+    public void setHibernateHelper(CaArrayHibernateHelper hibernateHelper) {
+        this.hibernateHelper = hibernateHelper;
+    }
+
+    /**
+     * @param jobQueue the jobQueue to set
+     */
+    @Inject
+    public void setJobQueue(JobQueue jobQueue) {
+        this.jobQueue = jobQueue;
+    }
+
+    /**
+     * @param userHolderProvider the userHolderProvider to set
+     */
+    @Inject
+    public void setUserHolderProvider(Provider<UsernameHolder> userHolderProvider) {
+        this.userHolderProvider = userHolderProvider;
     }
 
 }
