@@ -43,9 +43,9 @@
         <display:setProperty name="pagination.sortdirection.param" value="jobs.sortDirection" />
         <display:setProperty name="pagination.pagenumber.param" value="jobs.pageNumber" />
         
-        <display:column sortProperty="POSITION" title="Position" sortable="true" >${row.position}</display:column>
-        <display:column sortProperty="USER" title="User" sortable="true" maxLength="30">${userColValue}</display:column>
-        <display:column sortProperty="EXPERIMENT" title="Experiment/Array Design" sortable="true" >
+        <display:column sortProperty="POSITION" title="Position" sortable="false" >${row.position}</display:column>
+        <display:column sortProperty="USER" title="User" sortable="false" maxLength="30">${userColValue}</display:column>
+        <display:column sortProperty="EXPERIMENT" title="Experiment/Array Design" sortable="false" >
             <c:choose>
                 <c:when test="${row.userHasReadAccess || row.userHasWriteAccess}">
                     <a href="${viewEditUrl}">${experimentColValue}</a>
@@ -53,14 +53,14 @@
                 <c:otherwise>${experimentColValue}</c:otherwise>
             </c:choose>
         </display:column>
-        <display:column sortProperty="JOB" title="Job" sortable="true" >${row.jobType.displayValue}</display:column>
-        <display:column sortProperty="TIME_REQUESTED" title="Time Requested" sortable="true">
+        <display:column sortProperty="JOB" title="Job" sortable="false" >${row.jobType.displayValue}</display:column>
+        <display:column sortProperty="TIME_REQUESTED" title="Time Requested" sortable="false">
           <fmt:formatDate value="${row.timeRequested}" pattern="${jobQueueDatePattern}"/>
         </display:column>
-        <display:column sortProperty="TIME_STARTED" title="Time Started" sortable="true" >
+        <display:column sortProperty="TIME_STARTED" title="Time Started" sortable="false" >
           <fmt:formatDate value="${row.timeStarted}" pattern="${jobQueueDatePattern}"/>
         </display:column>
-        <display:column sortProperty="STATUS" title="Status" sortable="true" >${row.jobStatus.displayValue}</display:column>
+        <display:column sortProperty="STATUS" title="Status" sortable="false" >${row.jobStatus.displayValue}</display:column>
         <c:url value="/protected/project/cancelJob.action" var="cancelJobUrl">
             <c:param name="jobId" value="${row.jobId}" />     
         </c:url>
