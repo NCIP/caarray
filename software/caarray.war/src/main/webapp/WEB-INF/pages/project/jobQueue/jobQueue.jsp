@@ -6,12 +6,11 @@
 <body>
     <h1>View Job Queue</h1>
     <caarray:helpPrint/>
-    <c:url value="/protected/ajax/project/jobQueue.action" var="jobQueueUrl" />
+    <c:url value="/protected/ajax/project/viewJobQueue.action" var="jobQueueUrl" />
 
     <fmt:message key="project.workspace.tabs.myProjects" var="myProjectsTitle" />
     <caarray:successMessages />
     <div class="padme">
-        <c:url value="/protected/ajax/project/jobQueue.action" var="sortUrl" />
         <%@ include file="/WEB-INF/pages/project/jobQueue/jobList.jsp" %>
     </div>
 </body>
