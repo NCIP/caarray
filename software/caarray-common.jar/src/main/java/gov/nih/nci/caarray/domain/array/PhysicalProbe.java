@@ -137,7 +137,7 @@ public class PhysicalProbe extends AbstractProbe {
      * @return the probeGroup
      */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(updatable = false)
+    @JoinColumn(name = "probe_group")
     @ForeignKey(name = "probe_group_fk")
     @Cascade({ org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.EVICT })
     public ProbeGroup getProbeGroup() {
