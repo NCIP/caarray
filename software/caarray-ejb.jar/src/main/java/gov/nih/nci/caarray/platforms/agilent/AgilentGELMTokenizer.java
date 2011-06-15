@@ -154,4 +154,12 @@ class AgilentGELMTokenizer extends AbstractXMLTokenizer<Token> {
     protected Token getEOFToken() {
         return Token.getEOFToken();
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected Token getEndAttributesToken() {
+        return Token.getEndAttributeEndToken();
+    }
 }

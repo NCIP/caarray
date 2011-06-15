@@ -98,11 +98,13 @@ import java.util.regex.Pattern;
  * @author jscott
  * 
  */
-@SuppressWarnings("PMD.ExcessiveClassLength")
+@SuppressWarnings({ "PMD.ExcessiveClassLength", "PMD.CyclomaticComplexity", "PMD.ExcessiveMethodLength",
+    "PMD.NPathComplexity" })
 class AgilentGELMParser implements FeatureCountPublisher {
     private static final String NEGATIVE_CONTROLS_CONTROL_GROUP_NAME = "negative controls";
     private static final String POSITIVE_CONTROLS_CONTROL_GROUP_NAME = "positive controls";
     private static final String IGNORE_CONTROL_GROUP_NAME = "ignore";
+    private static final String PROBE_MAPPINGS = "probe_mappings";
 
     private final XMLTokenizer<Token> tokenizer;
     private final Pattern chromosomePattern = Pattern.compile("chr(.+):(\\d+)-(\\d+)(?:\\|.+){0,1}");
@@ -156,15 +158,13 @@ class AgilentGELMParser implements FeatureCountPublisher {
 
     private void parseProject(ArrayDesignBuilder arrayDesignBuilder) {
         expect(Token.PROJECT_START);
+        
+        while (tokenizer.getCurrentToken() != Token.ATTRIBUTE_END) {
+            tokenizer.advance(); // none of these attributes are used
+        }
+        tokenizer.advance();
 
-        accept(Token.BY);
-        accept(Token.COMPANY);
-        accept(Token.DATE);
-        accept(Token.ID);
-        accept(Token.NAME);
-        accept(Token.ORGANIZATION);
-
-        while (Token.END != tokenizer.getCurrentToken()) {
+        while (Token.ELEMENT_END != tokenizer.getCurrentToken()) {
             switch (tokenizer.getCurrentToken()) {
 
             case BIOSEQUENCE_START:
@@ -188,26 +188,40 @@ class AgilentGELMParser implements FeatureCountPublisher {
             }
         }
 
-        expect(Token.END);
+        expect(Token.ELEMENT_END);
     }
 
     private void parseBiosequence(ArrayDesignBuilder arrayDesignBuilder) {
         expect(Token.BIOSEQUENCE_START);
 
-        accept(Token.ACCESS);
-        accept(Token.CHROMOSOME);
-        final String controlType = acceptTokenWithStringValue(Token.CONTROL_TYPE, null);
-        accept(Token.DESCRIPTION);
-        accept(Token.EC_NUMBER);
-        accept(Token.MAP_POSITION);
-        accept(Token.PRIMARY_NAME);
-        accept(Token.SEQUENCEDB);
-        final String species = expectTokenWithStringValue(Token.SPECIES);
-        accept(Token.TYPE);
+        String controlType = null;
+        String species = null;
+        int speciesCounter = 0;
+        while (tokenizer.getCurrentToken() != Token.ATTRIBUTE_END) {
+            switch (tokenizer.getCurrentToken()) {
+
+            case CONTROL_TYPE:
+                controlType = acceptTokenWithStringValue(Token.CONTROL_TYPE, null);
+                break;
+
+            case SPECIES:
+                species = expectTokenWithStringValue(Token.SPECIES);
+                speciesCounter++;
+                break;
+
+            default:
+                tokenizer.advance();
+            }
+        }
+        tokenizer.advance();
+        
+        if (1 != speciesCounter) {
+            throw new ParseException("Expected exactly one \"species\" attribute.");
+        }
         
         BiosequenceBuilder biosequenceBuilder = arrayDesignBuilder.createBiosequenceBuilder(controlType, species);
 
-        while (Token.END != tokenizer.getCurrentToken()) {
+        while (Token.ELEMENT_END != tokenizer.getCurrentToken()) {
             switch (tokenizer.getCurrentToken()) {
 
             case ACCESSION_START:
@@ -227,38 +241,64 @@ class AgilentGELMParser implements FeatureCountPublisher {
             }
         }
 
-        expect(Token.END);
+        expect(Token.ELEMENT_END);
         
         biosequenceBuilder.finish();
     }
 
     private void parseBiosequenceRef(PhysicalProbeBuilder physicalProbeBuilder) {
         expect(Token.BIOSEQUENCE_REF_START);
+        
 
-        final String database = acceptTokenWithStringValue(Token.DATABASE, "");
-        final String identifier = expectTokenWithStringValue(Token.IDENTIFIER);
-        final String species = expectTokenWithStringValue(Token.SPECIES);
+        String database = null;
+        String identifier = null;
+        int identifierCounter = 0;
+        String species = null;
+        int speciesCounter = 0;
+        
+        while (tokenizer.getCurrentToken() != Token.ATTRIBUTE_END) {
+            switch (tokenizer.getCurrentToken()) {
+
+            case DATABASE:
+                database = acceptTokenWithStringValue(Token.DATABASE, "");
+                break;
+
+            case IDENTIFIER:
+                identifier = expectTokenWithStringValue(Token.IDENTIFIER);
+                identifierCounter++;
+                break;
+
+            case SPECIES:
+                species = expectTokenWithStringValue(Token.SPECIES);
+                speciesCounter++;
+                break;
+
+            default:
+                tokenizer.advance();
+            }
+        }
+        tokenizer.advance();
+        
+        if (1 != identifierCounter || 1 != speciesCounter) {
+            throw new ParseException("Expected exactly one \"identifier\" and one \"species\" attribute.");
+        }
         
         physicalProbeBuilder.setBiosequenceRef(database, species, identifier);
 
-        expect(Token.END);
+        expect(Token.ELEMENT_END);
     }
 
     private void parsePrinting() {
         int chipCount = 0;
 
         expect(Token.PRINTING_START);
+        
+        while (tokenizer.getCurrentToken() != Token.ATTRIBUTE_END) {
+            tokenizer.advance(); // none of these attributes are used
+        }
+        tokenizer.advance();
 
-        accept(Token.DATE);
-        accept(Token.PATTERN_NAME);
-        accept(Token.PREPARED_AT_SITE);
-        accept(Token.PREPARED_BY);
-        accept(Token.PREPARED_BY_ORG);
-        accept(Token.PRINTER);
-        accept(Token.RUN_DESCRIPTION);
-        accept(Token.TYPE);
-
-        while (Token.END != tokenizer.getCurrentToken()) {
+        while (Token.ELEMENT_END != tokenizer.getCurrentToken()) {
             switch (tokenizer.getCurrentToken()) {
 
             case CHIP_START:
@@ -275,7 +315,7 @@ class AgilentGELMParser implements FeatureCountPublisher {
             }
         }
 
-        expect(Token.END);
+        expect(Token.ELEMENT_END);
 
         if (chipCount == 0) {
             throw new ParseException("Expected at least one \"chip\" element.");
@@ -284,12 +324,24 @@ class AgilentGELMParser implements FeatureCountPublisher {
 
     private void parseChip() {
         expect(Token.CHIP_START);
+        
+        int barcodeCount = 0;
+                
+        while (tokenizer.getCurrentToken() != Token.ATTRIBUTE_END) {
+            switch (tokenizer.getCurrentToken()) {
 
-        expect(Token.BARCODE);
-        accept(Token.PREPARED_FOR);
-        accept(Token.PREPARED_FOR_ORG);
+            case BARCODE:
+                barcodeCount++;
+                tokenizer.advance();
+                break;
 
-        while (Token.END != tokenizer.getCurrentToken()) {
+            default:
+                tokenizer.advance();
+            }
+        }
+        tokenizer.advance();
+
+        while (Token.ELEMENT_END != tokenizer.getCurrentToken()) {
             switch (tokenizer.getCurrentToken()) {
 
             case OTHER_START:
@@ -300,24 +352,25 @@ class AgilentGELMParser implements FeatureCountPublisher {
                 throwTokenError();
             }
         }
+        
+        if (barcodeCount != 1) {
+            throw new ParseException("There must be one \"barcode\" element.");
+        }
 
-        expect(Token.END);
+        expect(Token.ELEMENT_END);
     }
 
     private void parsePattern(ArrayDesignBuilder arrayDesignBuilder) {
         int reporterCount = 0;
 
         expect(Token.PATTERN_START);
+        
+        while (tokenizer.getCurrentToken() != Token.ATTRIBUTE_END) {
+            tokenizer.advance(); // none of these attributes are used
+        }
+        tokenizer.advance();
 
-        accept(Token.ACCESS);
-        accept(Token.DESCRIPTION);
-        accept(Token.NAME);
-        accept(Token.OWNER);
-        accept(Token.SPECIES_DATABASE);
-        accept(Token.TYPE);
-        accept(Token.TYPE_ID);
-
-        while (Token.END != tokenizer.getCurrentToken()) {
+        while (Token.ELEMENT_END != tokenizer.getCurrentToken()) {
             switch (tokenizer.getCurrentToken()) {
 
             case GRID_LAYOUT_START:
@@ -338,7 +391,7 @@ class AgilentGELMParser implements FeatureCountPublisher {
             }
         }
 
-        expect(Token.END);
+        expect(Token.ELEMENT_END);
 
         if (reporterCount == 0) {
             throw new ParseException("Expected at least one \"reporter\" element.");
@@ -350,13 +403,13 @@ class AgilentGELMParser implements FeatureCountPublisher {
      */
     private void parseGridLayout() {
         expect(Token.GRID_LAYOUT_START);
-
-        accept(Token.FEATURE_COUNT_X);
-        accept(Token.FEATURE_COUNT_Y);
-        accept(Token.FEATURE_SPACING_X);
-        accept(Token.FEATURE_SPACING_Y);
-
-        expect(Token.END);
+        
+        while (tokenizer.getCurrentToken() != Token.ATTRIBUTE_END) {
+            tokenizer.advance(); // none of these attributes are used
+        }
+        tokenizer.advance();
+        
+        expect(Token.ELEMENT_END);
     }
 
     private void parseReporter(ArrayDesignBuilder arrayDesignBuilder) {
@@ -364,12 +417,32 @@ class AgilentGELMParser implements FeatureCountPublisher {
         geneCount = 0;
 
         expect(Token.REPORTER_START);
+        
+        String controlTypeValue = null;
+        String name = null;
+        int nameCount = 0;
+        
+        while (tokenizer.getCurrentToken() != Token.ATTRIBUTE_END) {
+            switch (tokenizer.getCurrentToken()) {
 
-        parseReportAttributes1();
-        final String controlTypeValue = acceptTokenWithStringValue(Token.CONTROL_TYPE, null);
-        parseReporterAttributes2();
-        final String name = expectTokenWithStringValue(Token.NAME);
-        parseReporterAttributes3();
+            case CONTROL_TYPE:
+                controlTypeValue = acceptTokenWithStringValue(Token.CONTROL_TYPE, null);
+                break;
+
+            case NAME:
+                name = expectTokenWithStringValue(Token.NAME);
+                nameCount++;
+                break;
+
+            default:
+                tokenizer.advance();
+            }
+        }
+        tokenizer.advance();
+        
+        if ((null == name) || (nameCount != 1)) {
+            throw new ParseException("Expected exactly one \"name\" attribute.");
+        }
 
         final ControlType controlType = validateReporterControlType(controlTypeValue, name);
 
@@ -378,7 +451,7 @@ class AgilentGELMParser implements FeatureCountPublisher {
 
         parseReporterContents(physicalProbeBuilder);
 
-        expect(Token.END);
+        expect(Token.ELEMENT_END);
         
         arrayDesignBuilder.processChunk(false);
 
@@ -398,7 +471,7 @@ class AgilentGELMParser implements FeatureCountPublisher {
     }
 
     private void parseReporterContents(PhysicalProbeBuilder physicalProbeBuilder) {
-        while (Token.END != tokenizer.getCurrentToken()) {
+        while (Token.ELEMENT_END != tokenizer.getCurrentToken()) {
             switch (tokenizer.getCurrentToken()) {
 
             case BIOSEQUENCE_REF_START:
@@ -456,41 +529,32 @@ class AgilentGELMParser implements FeatureCountPublisher {
         return controlType;
     }
 
-    private void parseReportAttributes1() {
-        accept(Token.ACCESSION);
-        accept(Token.ACTIVE_SEQUENCE);
-    }
-
-    private void parseReporterAttributes2() {
-        accept(Token.DELETION);
-        accept(Token.DESCRIPTION);
-        accept(Token.FAIL_TYPE);
-        accept(Token.LINKER_SEQUENCE);
-        accept(Token.MISMATCH_COUNT);
-    }
-
-    private void parseReporterAttributes3() {
-        accept(Token.PRIMER1_SEQUENCE);
-        accept(Token.PRIMER2_SEQUENCE);
-        accept(Token.START_COORD);
-
-        accept(Token.SYSTEMATIC_NAME);
-    }
-
     private void parseFeature(PhysicalProbeBuilder physicalProbeBuilder) {
         positionCount = 0;
         penCount = 0;
 
         expect(Token.FEATURE_START);
+        
+        int featureNumber = Integer.MIN_VALUE;
+        
+        while (tokenizer.getCurrentToken() != Token.ATTRIBUTE_END) {
+            switch (tokenizer.getCurrentToken()) {
 
-        accept(Token.CTRL_FOR_FEAT_NUM);
-        int featureNumber = acceptTokenWithIntValue(Token.NUMBER, 0);
+            case NUMBER:
+                featureNumber = acceptTokenWithIntValue(Token.NUMBER, 0);
+                break;
+
+            default:
+                tokenizer.advance();
+            }
+        }
+        tokenizer.advance();
 
         FeatureBuilder featureBuilder = physicalProbeBuilder.createFeatureBuilder(featureNumber);
 
         parseFeatureContents(featureBuilder);
 
-        expect(Token.END);
+        expect(Token.ELEMENT_END);
         
         notifyListeners();
 
@@ -504,7 +568,7 @@ class AgilentGELMParser implements FeatureCountPublisher {
     }
 
     private void parseFeatureContents(FeatureBuilder featureBuilder) {
-        while (Token.END != tokenizer.getCurrentToken()) {
+        while (Token.ELEMENT_END != tokenizer.getCurrentToken()) {
             switch (tokenizer.getCurrentToken()) {
 
             case POSITION_START:
@@ -529,19 +593,31 @@ class AgilentGELMParser implements FeatureCountPublisher {
 
     private void parseGene(PhysicalProbeBuilder physicalProbeBuilder) {
         expect(Token.GENE_START);
+        
+        String name = null;
+        int primaryNameCounter = 0;
+        
+        while (tokenizer.getCurrentToken() != Token.ATTRIBUTE_END) {
+            switch (tokenizer.getCurrentToken()) {
 
-        accept(Token.CHROMOSOME);
-        accept(Token.DESCRIPTION);
-        accept(Token.MAP_POSITION);
+            case PRIMARY_NAME:
+                name = expectTokenWithStringValue(Token.PRIMARY_NAME);
+                primaryNameCounter++;
+                break;
 
-        String name = expectTokenWithStringValue(Token.PRIMARY_NAME);
-
-        accept(Token.SPECIES);
-        accept(Token.SYSTEMATIC_NAME);
+            default:
+                tokenizer.advance();
+            }
+        }
+        tokenizer.advance();
+        
+        if (1 != primaryNameCounter) {
+            throw new ParseException("Expected exactly one \"primary_name\" attribute.");
+        }
 
         GeneBuilder geneBuilder = physicalProbeBuilder.createGeneBuilder(name);
  
-        while (Token.END != tokenizer.getCurrentToken()) {
+        while (Token.ELEMENT_END != tokenizer.getCurrentToken()) {
             switch (tokenizer.getCurrentToken()) {
 
             case ACCESSION_START:
@@ -553,7 +629,7 @@ class AgilentGELMParser implements FeatureCountPublisher {
                 break;
 
             case OTHER_START:
-                parseProbeMappingsOrOther(geneBuilder);
+                parseOther(geneBuilder);
                 break;
 
             default:
@@ -561,17 +637,48 @@ class AgilentGELMParser implements FeatureCountPublisher {
             }
         }
 
-        expect(Token.END);
+        expect(Token.ELEMENT_END);
     }
 
     private void parsePosition(FeatureBuilder featureBuilder) {
         expect(Token.POSITION_START);
+        
+        String units = null;
+        int unitsCount = 0;
+        double x = Double.MIN_VALUE;
+        int xCount = 0;
+        double y = Double.MIN_VALUE;
+        int yCount = 0;
+        
+        while (tokenizer.getCurrentToken() != Token.ATTRIBUTE_END) {
+            switch (tokenizer.getCurrentToken()) {
 
-        String units = expectTokenWithStringValue(Token.UNITS);
-        double x = expectTokenWithDoubleValue(Token.X);
-        double y = expectTokenWithDoubleValue(Token.Y);
+            case UNITS:
+                units = expectTokenWithStringValue(Token.UNITS);
+                unitsCount++;
+                break;
 
-        while (Token.END != tokenizer.getCurrentToken()) {
+            case X:
+                x = expectTokenWithDoubleValue(Token.X);
+                xCount++;
+                break;
+
+            case Y:
+                y = expectTokenWithDoubleValue(Token.Y);
+                yCount++;
+                break;
+
+            default:
+                tokenizer.advance();
+            }
+        }
+        tokenizer.advance();
+        
+        if (1 != unitsCount || 1 != xCount || 1 != yCount) {
+            throw new ParseException("Expected exactly one \"units\", one \"x\" and one \"y\" attribute.");
+        }
+
+        while (Token.ELEMENT_END != tokenizer.getCurrentToken()) {
             switch (tokenizer.getCurrentToken()) {
 
             case OTHER_START:
@@ -585,16 +692,45 @@ class AgilentGELMParser implements FeatureCountPublisher {
 
         featureBuilder.setCoordinates(x, y, units);
 
-        expect(Token.END);
+        expect(Token.ELEMENT_END);
     }
 
     private void parsePen() {
         expect(Token.PEN_START);
-        expect(Token.UNITS);
-        expect(Token.X);
-        expect(Token.Y);
+        
+        int unitsCount = 0;
+        int xCount = 0;
+        int yCount = 0;
+        
+        while (tokenizer.getCurrentToken() != Token.ATTRIBUTE_END) {
+            switch (tokenizer.getCurrentToken()) {
 
-        while (Token.END != tokenizer.getCurrentToken()) {
+            case UNITS:
+                unitsCount++;
+                tokenizer.advance();
+                break;
+
+            case X:
+                xCount++;
+                tokenizer.advance();
+                break;
+
+            case Y:
+                yCount++;
+                tokenizer.advance();
+                break;
+
+            default:
+                tokenizer.advance();
+            }
+        }
+        tokenizer.advance();
+        
+        if ((1 != unitsCount) || (1 != xCount) || (1 != yCount)) {
+            throw new ParseException("Expected exactly one \"units\", one \"x\" and one \"y\" attribute.");
+        }
+
+        while (Token.ELEMENT_END != tokenizer.getCurrentToken()) {
             switch (tokenizer.getCurrentToken()) {
 
             case OTHER_START:
@@ -606,16 +742,42 @@ class AgilentGELMParser implements FeatureCountPublisher {
             }
         }
 
-        expect(Token.END);
+        expect(Token.ELEMENT_END);
     }
 
     private void parseAccession(AccessionBuilder accessionBuilder) {
         expect(Token.ACCESSION_START);
         
-        final String database = expectTokenWithStringValue(Token.DATABASE);       
-        final String id = parseAccessionName();
+        String database = null;    
+        final String defaultId = "default value 9238BE1D-CA35-40F7-631264F9DCFB7ABA";
+        String id = defaultId;
+        
+        while (tokenizer.getCurrentToken() != Token.ATTRIBUTE_END) {
+            switch (tokenizer.getCurrentToken()) {
 
-        while (Token.END != tokenizer.getCurrentToken()) {
+            case DATABASE:
+                database = expectTokenWithStringValue(Token.DATABASE);
+                break;
+
+            case ID:
+                id = acceptTokenWithStringValue(Token.ID, defaultId);
+                break;
+
+            case IDENTIFIER:
+                id = acceptTokenWithStringValue(Token.IDENTIFIER, defaultId);
+                break;
+
+            default:
+                tokenizer.advance();
+            }
+        }
+        tokenizer.advance();
+        
+        if (defaultId.equals(id)) {
+            throw new ParseException("Missing accession.");
+        }
+
+        while (Token.ELEMENT_END != tokenizer.getCurrentToken()) {
             switch (tokenizer.getCurrentToken()) {
 
             case OTHER_START:
@@ -641,29 +803,33 @@ class AgilentGELMParser implements FeatureCountPublisher {
             accessionBuilder.createNewMirAccession(id);
         }
 
-        expect(Token.END);
-    }
-
-    private String parseAccessionName() {      
-        final String defaultValue = "default value 9238BE1D-CA35-40F7-631264F9DCFB7ABA";
-        String id = acceptTokenWithStringValue(Token.ID, defaultValue);
-        
-        if (defaultValue.equals(id)) {
-            id = acceptTokenWithStringValue(Token.IDENTIFIER, defaultValue);
-        }
-        
-        if (defaultValue.equals(id)) {
-            throw new ParseException("Missing accession.");
-        }
-        
-        return id;
+        expect(Token.ELEMENT_END);
     }
 
     private void parseAlias() {
         expect(Token.ALIAS_START);
-        expect(Token.NAME);
+        
+        int nameCounter = 0;
+        
+        while (tokenizer.getCurrentToken() != Token.ATTRIBUTE_END) {
+            switch (tokenizer.getCurrentToken()) {
 
-        while (Token.END != tokenizer.getCurrentToken()) {
+            case NAME:
+                nameCounter++;
+                tokenizer.advance();
+                break;
+
+            default:
+                tokenizer.advance();
+            }
+        }
+        tokenizer.advance();
+        
+        if (1 != nameCounter) {
+            throw new ParseException("Expected exactly one \"name\" attribute.");
+        }
+
+        while (Token.ELEMENT_END != tokenizer.getCurrentToken()) {
             switch (tokenizer.getCurrentToken()) {
 
             case OTHER_START:
@@ -675,17 +841,43 @@ class AgilentGELMParser implements FeatureCountPublisher {
             }
         }
 
-        expect(Token.END);
+        expect(Token.ELEMENT_END);
+    }
+    
+    private void parseOther() {
+        parseOther(null);
     }
 
-    private void parseProbeMappingsOrOther(GeneBuilder geneBuilder) {
+    private void parseOther(GeneBuilder geneBuilder) {
         expect(Token.OTHER_START);
-        String name = expectTokenWithStringValue(Token.NAME);
+        String name = null;
+        int nameCounter = 0;
+        String value = null;
+        int valueCounter = 0;
+        while (tokenizer.getCurrentToken() != Token.ATTRIBUTE_END) {
+            switch (tokenizer.getCurrentToken()) {
 
-        if (!"probe_mappings".equalsIgnoreCase(name)) {
-            parseOtherContents();
-        } else {
-            String value = expectTokenWithStringValue(Token.VALUE);
+            case NAME:
+                name = expectTokenWithStringValue(Token.NAME);
+                nameCounter++;
+                break;
+
+            case VALUE:
+                value = expectTokenWithStringValue(Token.VALUE);
+                valueCounter++;
+                break;
+
+            default:
+                tokenizer.advance();
+            }
+        }
+        tokenizer.advance();
+        
+        if (1 != nameCounter || 1 != valueCounter) {
+            throw new ParseException("Expected exactly one \"name\" and one \"value\" attribute.");
+        }
+
+        if (PROBE_MAPPINGS.equalsIgnoreCase(name)) {
             Matcher m = chromosomePattern.matcher(value);
             if (!m.matches()) {
                 throw new ParseException(String.format("Unrecognized chromosome name \"%s\".", value));
@@ -696,32 +888,21 @@ class AgilentGELMParser implements FeatureCountPublisher {
             final long endPosition = Long.parseLong(m.group(3));
 
             geneBuilder.setChromosomeLocation(chromosome, startPosition, endPosition);
-            expect(Token.END);
         }
-    }
-
-    private void parseOther() {
-        expect(Token.OTHER_START);
-        expect(Token.NAME);
-        parseOtherContents();
-    }
-
-    private void parseOtherContents() {
-        expect(Token.VALUE);
-
-        while (Token.END != tokenizer.getCurrentToken()) {
+        
+        while (Token.ELEMENT_END != tokenizer.getCurrentToken()) {
             switch (tokenizer.getCurrentToken()) {
 
             case OTHER_START:
-                parseOther();
+                parseOther(geneBuilder);
                 break;
 
             default:
-                throwTokenError();
+                tokenizer.advance();
             }
         }
-
-        expect(Token.END);
+        
+        expect(Token.ELEMENT_END);
     }
 
     private void throwTokenError() {
