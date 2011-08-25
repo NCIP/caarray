@@ -123,6 +123,7 @@ final class DataSetLoader extends AbstractArrayDataUtility {
             LOG.debug("Parsing required for file " + arrayData.getDataFile().getName());
             try {
                 handler = findAndSetupHandler(arrayData.getDataFile(), mTabSet);
+                assert handler != null : "findAndSetupHandler must never return null";
                 ArrayDesign design = getArrayDesign(arrayData.getDataFile(), handler);
                 List<QuantitationType> types = getQuantitationTypes(handler);
                 handler.loadData(arrayData.getDataSet(), types, design);

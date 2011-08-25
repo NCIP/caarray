@@ -140,6 +140,7 @@ class DataSetImporter extends AbstractArrayDataUtility {
         DataFileHandler handler = null;
         try {
             handler = findAndSetupHandler(caArrayFile, mTabSet);
+            assert handler != null : "findAndSetupHandler must never return null";
             Helper helper = new Helper(caArrayFile, dataImportOptions, handler);
             return helper.importData(createAnnnotation);
         } catch (PlatformFileReadException e) {

@@ -125,6 +125,7 @@ final class DataFileValidator extends AbstractArrayDataUtility {
             
             try {
                 handler = findAndSetupHandler(caArrayFile, mTabSet);
+                assert handler != null : "findAndSetupHandler must never return null";
                 if (!reimport && handler.requiresMageTab()) {
                     validateMageTabPresent(mTabSet, result);
                 }
