@@ -212,11 +212,11 @@ abstract class AbstractArrayDataUtility {
             return null;
         }
         String dataFileName= arrayDataFile.getName();
-        LOG.info("findArrayDesignFromSdrf for arrayDataFile=" + dataFileName);
+        LOG.info("findArrayDesignFromSdrf for arrayDataFile=[" + dataFileName + "]. ");
         for(SdrfDocument sdrf : mTabSetArg.getSdrfDocuments()) {
             String adLsidName= sdrf.getArrayDesignNameForArrayDataFileName(dataFileName);
             LOG.info(String.format(
-                    "findArrayDesignFromSdrf for arrayDataFile=%s, found matching arrayDesign LSID=%s", 
+                    "findArrayDesignFromSdrf for arrayDataFile=[%s], found matching arrayDesign LSID=[%s]. ", 
                     dataFileName, adLsidName));
             if(adLsidName != null) {
                 LSID adLsid= new LSID(adLsidName);
@@ -226,13 +226,16 @@ abstract class AbstractArrayDataUtility {
                     return ad;
                 } else {
                     LOG.warn(String.format(
-                            "findArrayDesignFromSdrf for arrayDataFile=%s, found matching arrayDesign LSID=%s,"
-                            + " but arrayDesign object not found in persistent store.", 
+                            "findArrayDesignFromSdrf for arrayDataFile=[%s], found matching arrayDesign LSID=[%s],"
+                            + " but arrayDesign object not found in persistent store. ", 
                             dataFileName, adLsidName));
                 }
             }
         }
         
+        LOG.info(String.format(
+                "findArrayDesignFromSdrf for arrayDataFile=[%s], found no matching arrayDesign. ", 
+                dataFileName));
         return null; 
     }
     
