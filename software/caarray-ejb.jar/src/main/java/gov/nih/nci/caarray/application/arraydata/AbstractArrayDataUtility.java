@@ -96,6 +96,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
+
 import com.google.inject.Inject;
 
 /**
@@ -105,6 +107,8 @@ import com.google.inject.Inject;
  * @author dkokotov
  */
 abstract class AbstractArrayDataUtility {
+    private static final Logger LOG = Logger.getLogger(AbstractArrayDataUtility.class);
+
     private final ArrayDao arrayDao;
     private final Set<DataFileHandler> handlers;
 
@@ -208,14 +212,23 @@ abstract class AbstractArrayDataUtility {
             return null;
         }
         String dataFileName= arrayDataFile.getName();
+        LOG.info("findArrayDesignFromSdrf for arrayDataFile=" + dataFileName);
         for(SdrfDocument sdrf : mTabSetArg.getSdrfDocuments()) {
-            String adName= sdrf.getArrayDesignNameForArrayDataFileName(dataFileName);
-            if(adName != null) {
-                LSID adLsid= new LSID(adName);
+            String adLsidName= sdrf.getArrayDesignNameForArrayDataFileName(dataFileName);
+            LOG.info(String.format(
+                    "findArrayDesignFromSdrf for arrayDataFile=%s, found matching arrayDesign LSID=%s", 
+                    dataFileName, adLsidName));
+            if(adLsidName != null) {
+                LSID adLsid= new LSID(adLsidName);
                 ArrayDesign ad = arrayDao.getArrayDesign(adLsid.getAuthority(), adLsid.getNamespace(), adLsid
                         .getObjectId());
                 if (ad != null) {
                     return ad;
+                } else {
+                    LOG.warn(String.format(
+                            "findArrayDesignFromSdrf for arrayDataFile=%s, found matching arrayDesign LSID=%s,"
+                            + " but arrayDesign object not found in persistent store.", 
+                            dataFileName, adLsidName));
                 }
             }
         }
