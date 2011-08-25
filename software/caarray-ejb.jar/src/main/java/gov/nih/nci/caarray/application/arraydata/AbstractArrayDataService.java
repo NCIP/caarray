@@ -82,84 +82,23 @@
  */
 package gov.nih.nci.caarray.application.arraydata;
 
-import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
-import gov.nih.nci.caarray.util.io.logging.LogUtil;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.InvalidDataFileException;
 
-import javax.ejb.Local;
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-
-import org.apache.log4j.Logger;
-
-import com.google.inject.Inject;
-
 
 /**
- * Entry point to the ArrayDataService subsystem.
+ * Convenience abstract super class for ArrayDataService interface.
  * 
- * @author dkokotov
  */
-@Local(ArrayDataService.class)
-@Stateless
-@TransactionAttribute(TransactionAttributeType.SUPPORTS)
-public class ArrayDataServiceBean extends AbstractArrayDataService {
-    private static final Logger LOG = Logger.getLogger(ArrayDataServiceBean.class);
-    
-    private final TypeRegistrationManager tm;
-    private final DataSetImporter dataSetImporter;
-    private final DataSetLoader loader;
-    private final DataFileValidator dataFileValidator;
-   
+public abstract class AbstractArrayDataService implements ArrayDataService {
     /**
-     * 
-     * @param tm the TypeRegistrationManager dependency
-     * @param dataSetImporter the DataSetImporter dependency
-     * @param loader the DataSetLoader dependency
-     * @param dataFileValidator the DataFileValidator dependency
+     * delegates to {@link ArrayDataService#importData(CaArrayFile, boolean, DataImportOptions, MageTabDocumentSet)} 
+     * passing null for the MageTabDocumentSet param.
      */
-    @Inject
-    public ArrayDataServiceBean(TypeRegistrationManager tm, DataSetImporter dataSetImporter, DataSetLoader loader,
-            DataFileValidator dataFileValidator) {
-        this.tm = tm;
-        this.dataSetImporter = dataSetImporter;
-        this.loader = loader;
-        this.dataFileValidator = dataFileValidator;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public void initialize() {
-        LogUtil.logSubsystemEntry(LOG);
-        tm.registerNewTypes();
-        LogUtil.logSubsystemExit(LOG);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public void importData(CaArrayFile caArrayFile, boolean createAnnnotation, DataImportOptions dataImportOptions, 
-            MageTabDocumentSet mTabSet)
+    public void importData(CaArrayFile file, boolean createAnnotation, DataImportOptions dataImportOptions)
             throws InvalidDataFileException {
-        LogUtil.logSubsystemEntry(LOG, caArrayFile);
-        AbstractArrayData arrayData = dataSetImporter.importData(caArrayFile, dataImportOptions, createAnnnotation, mTabSet);
-        loader.load(arrayData, mTabSet);
-        LogUtil.logSubsystemExit(LOG);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public FileValidationResult validate(CaArrayFile arrayDataFile, MageTabDocumentSet mTabSet, boolean reimport) {
-        dataFileValidator.validate(arrayDataFile, mTabSet, reimport);
-        return arrayDataFile.getValidationResult();
+        importData(file, createAnnotation, dataImportOptions, null);
     }
 }

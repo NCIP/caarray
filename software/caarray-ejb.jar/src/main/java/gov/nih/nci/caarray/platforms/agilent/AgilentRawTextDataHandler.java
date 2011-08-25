@@ -505,20 +505,25 @@ class AgilentRawTextDataHandler extends AbstractDataFileHandler {
      * {@inheritDoc}
      */        
     public boolean requiresMageTab() throws PlatformFileReadException {
-        readHeader();
-        return isTwoColor();
+        //readHeader();
+        //return isTwoColor();
+        
+        //Replace the above with below. - Andrew Sy 2011-08-24
+        
+        //This handler always requires MAGE-TAB. 
+        //Otherwise there is now way to map array data file to its array design, 
+        //in case there are multiple array design files in the experiment. 
+        
+        return true;
+        
     }
     
     /**
      * {@inheritDoc}
      */
     public List<LSID> getReferencedArrayDesignCandidateIds() {
-        try {
-            readHeader();
-            return Collections.singletonList(this.arrayDesignId);
-        } catch (PlatformFileReadException e) {
-            return Collections.emptyList();
-        }
+        // should come externally from SDRF file, not from the array data file being parsed
+        return Collections.emptyList();
     }
     
     /**

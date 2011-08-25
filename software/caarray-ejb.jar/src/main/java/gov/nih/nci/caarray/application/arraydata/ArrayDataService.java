@@ -126,8 +126,21 @@ public interface ArrayDataService {
      * of annotation to <code>AbstractArrayData</code>. How the chain is created is controlled
      * by the dataImportOptions paramter.
      * @param dataImportOptions options that control creation of the annotion chain
+     * @param mTabSet parsed MageTabDocumentSet containing SDRF file(s). The SDRF file(s) specify 
+     * data file to array design mapping. This is required for certain types of data files such as 
+     * AgilentRawText. May be null if not applicable. 
      * @throws InvalidDataFileException if the file is not a valid data file.
+     */
+    void importData(CaArrayFile file, boolean createAnnotation, DataImportOptions dataImportOptions, 
+            MageTabDocumentSet mTabSet)
+            throws InvalidDataFileException;
+    
+    /**
+     * same functionality as {@link #importData(CaArrayFile, boolean, DataImportOptions, MageTabDocumentSet)} 
+     * except there is no MageTabDocumentSet param. Used in cases where the MageTabDocumentSet is 
+     * not applicable. 
      */
     void importData(CaArrayFile file, boolean createAnnotation, DataImportOptions dataImportOptions)
             throws InvalidDataFileException;
+    
 }

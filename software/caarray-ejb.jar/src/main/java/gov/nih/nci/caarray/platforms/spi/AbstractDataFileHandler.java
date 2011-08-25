@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.platforms.spi;
 
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileType;
+import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.platforms.FileManager;
 
 import java.io.File;
@@ -104,6 +105,8 @@ public abstract class AbstractDataFileHandler implements DataFileHandler {
     
     private CaArrayFile caArrayFile;
     private File file;
+
+    private MageTabDocumentSet mageTabDocumentSet;
     
     /**
      * @param fileManager the FileManager to use
@@ -180,6 +183,20 @@ public abstract class AbstractDataFileHandler implements DataFileHandler {
      */
     protected void setFile(File file) {
         this.file = file;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public MageTabDocumentSet getMageTabDocumentSet() {
+        return mageTabDocumentSet;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void setMageTabDocumentSet(MageTabDocumentSet mTabSet) {
+        this.mageTabDocumentSet = mTabSet;        
     }
 
 

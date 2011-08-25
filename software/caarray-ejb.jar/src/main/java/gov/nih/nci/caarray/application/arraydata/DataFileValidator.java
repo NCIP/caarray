@@ -122,8 +122,9 @@ final class DataFileValidator extends AbstractArrayDataUtility {
         try {
             File file = fileManager.openFile(caArrayFile);            
             FileValidationResult result = new FileValidationResult(file);
+            
             try {
-                handler = getHandler(caArrayFile);
+                handler = findAndSetupHandler(caArrayFile, mTabSet);
                 if (!reimport && handler.requiresMageTab()) {
                     validateMageTabPresent(mTabSet, result);
                 }

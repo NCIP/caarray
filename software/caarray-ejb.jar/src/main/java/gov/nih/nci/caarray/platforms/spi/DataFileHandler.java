@@ -119,4 +119,16 @@ public interface DataFileHandler {
      * @return true if this handler parses the files, false if it does not.
      */
     boolean parsesData();
+    
+    /**
+     * 
+     * @return MageTabDocumentSet associated with this instance. 
+     */
+    MageTabDocumentSet getMageTabDocumentSet();
+    
+    /**
+     * Stores reference to MageTabDocumentSet arg.
+     * @param mTabSet parsed MageTabDocumentSet with SDRF that specifies data file to array design mappings. 
+     */
+    void setMageTabDocumentSet(MageTabDocumentSet mTabSet);
 }

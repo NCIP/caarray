@@ -146,8 +146,12 @@ final class ProjectFilesReparseJob extends AbstractProjectFilesJob {
     }
     
     private void importArrayData(CaArrayFileSet fileSet) {
-        ArrayDataImporter arrayDataImporter = getArrayDataImporter();
-        arrayDataImporter.importFiles(fileSet, null); // don't need to specify import options since ArrayData exists
+        ArrayDataImporter arrayDataImporter = getArrayDataImporter();        
+        MageTabDocumentSet mTabSet = null; //TODO: isn't parsed MageTabDocumentSet required for certain platforms? 
+            //e.g. AgilentRawTextDataHandler needs SDRF that specifies data file to array design mapping,  
+            //in case there are more than one array design for a given experiment. 
+            // Andrew Sy 2011-08-24
+        arrayDataImporter.importFiles(fileSet, null, mTabSet);  // don't need to specify import options since ArrayData exists.
     }
 
     @Override

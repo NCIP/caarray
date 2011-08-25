@@ -162,6 +162,9 @@ public final class SdrfDocument extends AbstractMageTabDocument {
     private Commentable currentCommentable;
     private int currentLineNumber;
     private int currentColumnNumber;
+    private ArrayDesign currentArrayDesign;    
+    // native array data file, derived array data files, array data matrix files, derived array data matrix files on currentLine
+    private List<AbstractSampleDataRelationshipNode> currentArrayDataFiles= new ArrayList<AbstractSampleDataRelationshipNode>();
 
     private final List<Source> allSources = new ArrayList<Source>();
     private final List<FactorValue> allFactorValues = new ArrayList<FactorValue>();
@@ -192,6 +195,11 @@ public final class SdrfDocument extends AbstractMageTabDocument {
         new LinkedHashMap<String, SdrfCharacteristic>();
     private final Map<String, SdrfCharacteristic> allLabeledExtractCharacteristics = 
         new LinkedHashMap<String, SdrfCharacteristic>();
+    
+    // maps names of native array data files, derived array data files, 
+    // array data matrix files, derived array data matrix files to corresponding array design
+    private final Map<String, ArrayDesign> arrayDataFileToDesignFileMap = 
+        new LinkedHashMap<String, ArrayDesign>();
 
     /**
      * Creates a new SDRF from an existing file.
@@ -678,12 +686,15 @@ public final class SdrfDocument extends AbstractMageTabDocument {
                     addError(e.toString() + ": " + sw.toString());
                 }
             }
+            handleDataFileToDesignMap(currentArrayDataFiles, currentArrayDesign);
             currentNode = null;
             currentHybridization = null;
             currentScan = null;
             currentNormalization = null;
             currentFile = null;
             currentCommentable = null;
+            currentArrayDesign = null;
+            currentArrayDataFiles.clear();
             lineNodeCache.clear();
         }
     }
@@ -855,6 +866,7 @@ public final class SdrfDocument extends AbstractMageTabDocument {
         
         currentCommentable = arrayDesign;
         currentTermSourceable = arrayDesign;
+        currentArrayDesign= arrayDesign;
     }
 
     private void handleFactorValue(SdrfColumn column, String value, SdrfColumn nextColumn, SdrfColumn nextNextColumn) {
@@ -904,6 +916,7 @@ public final class SdrfDocument extends AbstractMageTabDocument {
             adf.link(currentFile);
         }
         currentFile = adf;
+        currentArrayDataFiles.add(adf);
     }
 
     private void handleArrayDataMatrixFile(SdrfColumn column, String value, boolean derived) {
@@ -918,6 +931,7 @@ public final class SdrfDocument extends AbstractMageTabDocument {
             admf.link(currentFile);
         }
         currentFile = admf;
+        currentArrayDataFiles.add(admf);
     }
 
     private void handleLabel(SdrfColumn column, String value) {
@@ -1046,6 +1060,15 @@ public final class SdrfDocument extends AbstractMageTabDocument {
         }
         
         currentCommentable = parameterValue;
+    }
+    
+    
+    protected void handleDataFileToDesignMap(List<AbstractSampleDataRelationshipNode> arrayDataFiles, ArrayDesign arrayDesignArg) {
+        for(AbstractSampleDataRelationshipNode adf : arrayDataFiles) {
+            String key = adf.getName();
+            //TODO: if key already exists in map, make sure its ArrayDesign is same as arrayDesignArg
+            arrayDataFileToDesignFileMap.put(key, arrayDesignArg);
+        }
     }
 
     private void handleNode(SdrfColumn column, String value, AbstractSampleDataRelationshipNode nodeToLinkTo) {
@@ -1344,6 +1367,29 @@ public final class SdrfDocument extends AbstractMageTabDocument {
         fileNames.addAll(getFileNames(this.getAllArrayDataMatrixFiles()));
         fileNames.addAll(getFileNames(this.getAllDerivedArrayDataMatrixFiles()));
         return fileNames;
+    }
+    
+    
+    /**
+     * Retrieve ArrayDesign corresponding to the arrayDataFileName
+     * @param arrayDataFileName
+     * @return ArrayDesign corresponding to the arrayDataFileName or null if no match found. 
+     */
+    public ArrayDesign getArrayDesignForArrayDataFileName(String arrayDataFileName) {
+        return arrayDataFileToDesignFileMap.get(arrayDataFileName);
+    }
+
+    /**
+     * Retrieve value (i.e name) of ArrayDesign corresponding to the arrayDataFileName
+     * @param arrayDataFileName
+     * @return ArrayDesign name corresponding to the arrayDataFileName or null if no match found. 
+     */
+    public String getArrayDesignNameForArrayDataFileName(String arrayDataFileName) {
+        ArrayDesign arrayDesign = getArrayDesignForArrayDataFileName(arrayDataFileName); 
+        if(arrayDesign != null) {
+            return arrayDesign.getValue();
+        } 
+        return null;
     }
 
     /**

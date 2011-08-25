@@ -103,6 +103,7 @@ import gov.nih.nci.caarray.domain.sample.Extract;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
+import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.platforms.spi.DataFileHandler;
 import gov.nih.nci.caarray.platforms.spi.PlatformFileReadException;
 
@@ -135,10 +136,10 @@ class DataSetImporter extends AbstractArrayDataUtility {
     }
     
     AbstractArrayData importData(CaArrayFile caArrayFile, DataImportOptions dataImportOptions, 
-            boolean createAnnnotation) {
+            boolean createAnnnotation, MageTabDocumentSet mTabSet) {
         DataFileHandler handler = null;
         try {
-            handler = getHandler(caArrayFile);
+            handler = findAndSetupHandler(caArrayFile, mTabSet);
             Helper helper = new Helper(caArrayFile, dataImportOptions, handler);
             return helper.importData(createAnnnotation);
         } catch (PlatformFileReadException e) {
