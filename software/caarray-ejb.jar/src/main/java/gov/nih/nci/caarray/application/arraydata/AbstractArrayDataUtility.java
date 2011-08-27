@@ -137,10 +137,10 @@ abstract class AbstractArrayDataUtility {
         if (handler == null) {
             throw new IllegalArgumentException("Unsupported type " + caArrayFile.getFileType());
         }
+        handler.setMageTabDocumentSet(mTabSet);
         if (!handler.parsesData()) {
             return handler;
         }
-        handler.setMageTabDocumentSet(mTabSet);
         ArrayDesign ad = getArrayDesign(caArrayFile, handler);
         if (ad == null || !ad.isImportedAndParsed()) {
             handler.closeFiles();

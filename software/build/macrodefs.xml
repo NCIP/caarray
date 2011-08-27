@@ -14,7 +14,7 @@
         <sequential>
             <mkdir dir="@{xml.output.dir}" />
             <property name="jdwp.port" value="8000"/>
-            <property name="should.suspend.vm.for.debugging" value="y"/>
+            <!-- property name="should.suspend.vm.for.debugging" value="n"/> -->
             <property name="test.browser" value="*firefox"/>
             <junit printsummary="on" failureproperty="junit.failure" fork="true" forkmode="once" maxmemory="1024m">
                 <jvmarg value="-Xdebug"/>
