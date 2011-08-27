@@ -6,14 +6,15 @@
         <attribute name="classpath" default="" />
         <attribute name="instrumented.classes" default="" />
         <attribute name="classpathref.id" default="no.dependencies.path" />
-        <attribute name="source.include" default="**/*Test.java" />
-        <attribute name="source.exclude" default="**/Abstract*Test.java" />
+        <attribute name="source.include" default="${test.source.include}" />
+        <attribute name="source.exclude" default="${test.source.exclude}" />
+
         <element name="extentions" optional="yes"/>
 
         <sequential>
             <mkdir dir="@{xml.output.dir}" />
             <property name="jdwp.port" value="8000"/>
-            <property name="should.suspend.vm.for.debugging" value="n"/>
+            <property name="should.suspend.vm.for.debugging" value="y"/>
             <property name="test.browser" value="*firefox"/>
             <junit printsummary="on" failureproperty="junit.failure" fork="true" forkmode="once" maxmemory="1024m">
                 <jvmarg value="-Xdebug"/>
@@ -35,10 +36,7 @@
                 <classpath refid="cobertura.dependencies.path" />
                 <formatter type="xml" />
                 <batchtest todir="@{xml.output.dir}">
-                    <fileset dir="@{test.src.dir}">
-                        <include name="@{source.include}" />
-                        <exclude name="@{source.exclude}" />
-                    </fileset>
+                    <fileset dir="@{test.src.dir}" includes="@{source.include}" excludes="@{source.exclude}" />
                 </batchtest>
 
                 <extentions/>

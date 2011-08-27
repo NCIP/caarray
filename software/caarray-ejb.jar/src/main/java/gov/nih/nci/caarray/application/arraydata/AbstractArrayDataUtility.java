@@ -144,7 +144,8 @@ abstract class AbstractArrayDataUtility {
         ArrayDesign ad = getArrayDesign(caArrayFile, handler);
         if (ad == null || !ad.isImportedAndParsed()) {
             handler.closeFiles();
-            return getUnparsedDataHandler(caArrayFile);
+            handler= getUnparsedDataHandler(caArrayFile);
+            handler.setMageTabDocumentSet(mTabSet);
         }
         return handler;        
     }
@@ -173,7 +174,7 @@ abstract class AbstractArrayDataUtility {
             ad = findArrayDesignFromExperiment(arrayDataFile.getProject().getExperiment());
         }
         if (ad == null) {
-            ad = findArrayDesignFromSdrf(arrayDataFile, handlerArg.getMageTabDocumentSet());
+            ad = findArrayDesignViaSdrf(arrayDataFile, handlerArg.getMageTabDocumentSet());
         }
         return ad;
     }
@@ -207,7 +208,7 @@ abstract class AbstractArrayDataUtility {
      * @return first array design found that corresponds to arrayDataFile. null if no match found 
      * or if mTabSetArg is null. 
      */
-    private ArrayDesign findArrayDesignFromSdrf(CaArrayFile arrayDataFile, MageTabDocumentSet mTabSetArg) {
+    private ArrayDesign findArrayDesignViaSdrf(CaArrayFile arrayDataFile, MageTabDocumentSet mTabSetArg) {
         if(mTabSetArg == null) {
             return null;
         }
