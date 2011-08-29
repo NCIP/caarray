@@ -151,6 +151,7 @@ public class AgilentRawTextDataHandlerTest extends AbstractHandlerTest {
         AgilentTextQuantitationType.G_IS_GENE_DETECTED
     };
     
+    @Test
     public void validIfMageTab() {
         setupArrayDesign(TINY_DESIGN);
         addProbeToDesign("Agilent_Tiny_1");
