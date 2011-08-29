@@ -84,8 +84,8 @@
 package gov.nih.nci.caarray.platforms.agilent;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import gov.nih.nci.caarray.application.arraydata.DataImportOptions;
 import gov.nih.nci.caarray.domain.LSID;
@@ -103,6 +103,7 @@ import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
+import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.platforms.AbstractHandlerTest;
 import gov.nih.nci.caarray.test.data.arraydata.AgilentArrayDataFiles;
 import gov.nih.nci.caarray.validation.FileValidationResult;
@@ -116,7 +117,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.beanutils.PropertyUtils;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -151,7 +151,6 @@ public class AgilentRawTextDataHandlerTest extends AbstractHandlerTest {
         AgilentTextQuantitationType.G_IS_GENE_DETECTED
     };
     
-    @Test
     public void validIfMageTab() {
         setupArrayDesign(TINY_DESIGN);
         addProbeToDesign("Agilent_Tiny_1");
@@ -451,7 +450,10 @@ public class AgilentRawTextDataHandlerTest extends AbstractHandlerTest {
         addProbeToDesign("A_54_P00004465");
 
         CaArrayFile caArrayFile = getCaArrayFile(AgilentArrayDataFiles.MIRNA_BLANKS, DESIGN_LSID.getObjectId());
-        FileValidationResult results = this.arrayDataService.validate(caArrayFile, null, false);
+        List<File> fileList = makeFileList(AgilentArrayDataFiles.MIRNA_BLANKS, AgilentArrayDataFiles.MIRNA_BLANKS_IDF, 
+                AgilentArrayDataFiles.MIRNA_BLANKS_SRDF); 
+        MageTabDocumentSet mTabSet= genMageTabDocSet(fileList); 
+        FileValidationResult results = this.arrayDataService.validate(caArrayFile, mTabSet, false);
         assertEquals(FileStatus.VALIDATION_ERRORS, caArrayFile.getFileStatus());
 
         int i = 0;
