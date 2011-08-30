@@ -97,7 +97,7 @@ public abstract class AbstractArrayDataService implements ArrayDataService {
      * delegates to {@link ArrayDataService#importData(CaArrayFile, boolean, DataImportOptions, MageTabDocumentSet)} 
      * passing null for the MageTabDocumentSet param.
      */
-    public void importData(CaArrayFile file, boolean createAnnotation, DataImportOptions dataImportOptions)
+    public final void importData(CaArrayFile file, boolean createAnnotation, DataImportOptions dataImportOptions)
             throws InvalidDataFileException {
         importData(file, createAnnotation, dataImportOptions, null);
     }

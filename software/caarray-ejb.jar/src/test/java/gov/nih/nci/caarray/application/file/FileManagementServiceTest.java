@@ -493,7 +493,7 @@ public class FileManagementServiceTest extends AbstractServiceTest {
         }
 
         @Override
-        public void importData(CaArrayFile caArrayFile, boolean createAnnotation, DataImportOptions importOptions)
+        public void importData(CaArrayFile caArrayFile, boolean createAnnotation, DataImportOptions importOptions, MageTabDocumentSet mTabSet)
                 throws InvalidDataFileException {
             if (caArrayFile.getFileType().isParseableData()) {
                 caArrayFile.setFileStatus(FileStatus.IMPORTED);
