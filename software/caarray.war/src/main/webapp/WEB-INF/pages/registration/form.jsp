@@ -11,7 +11,7 @@
     <caarray:successMessages />
     <s:actionerror/>
     <s:form action="save" method="post" id="regForm">
-        <table class="form">
+        <table class="form" summary="layout">
             <tr><th colspan="2">Security Information</th></tr>
             <c:if test="${ldapInstall == 'true'}">
                 <s:radio
