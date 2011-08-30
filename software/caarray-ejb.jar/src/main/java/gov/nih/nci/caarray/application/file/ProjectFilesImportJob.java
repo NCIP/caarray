@@ -134,7 +134,7 @@ final class ProjectFilesImportJob extends AbstractProjectFilesJob {
             doValidate(fileSet);
             final FileStatus status = getFileSet().getStatus();
             if (status.equals(FileStatus.VALIDATED) || status.equals(FileStatus.VALIDATED_NOT_PARSED)) {
-                MageTabDocumentSet mageTabDocSet= importAnnotation(fileSet);
+                MageTabDocumentSet mageTabDocSet = importAnnotation(fileSet);
                 importArrayData(fileSet, mageTabDocSet);
             }
         } finally {
@@ -145,7 +145,7 @@ final class ProjectFilesImportJob extends AbstractProjectFilesJob {
     private MageTabDocumentSet importAnnotation(CaArrayFileSet fileSet) {
         MageTabDocumentSet mageTabDocSet = null; 
         try {
-            mageTabDocSet= getMageTabImporter().importFiles(getProject(), fileSet);
+            mageTabDocSet = getMageTabImporter().importFiles(getProject(), fileSet);
         } catch (MageTabParsingException e) {
             LOG.error(e.getMessage(), e);
         }

@@ -83,8 +83,6 @@
 package gov.nih.nci.caarray.application.arraydata;
 
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
-import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
-import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.InvalidDataFileException;
 
 
@@ -94,8 +92,10 @@ import gov.nih.nci.caarray.validation.InvalidDataFileException;
  */
 public abstract class AbstractArrayDataService implements ArrayDataService {
     /**
-     * delegates to {@link ArrayDataService#importData(CaArrayFile, boolean, DataImportOptions, MageTabDocumentSet)} 
+     * Delegates to {@link ArrayDataService#importData(CaArrayFile, boolean, DataImportOptions, MageTabDocumentSet)} 
      * passing null for the MageTabDocumentSet param.
+     * {@inheritDoc}
+
      */
     public final void importData(CaArrayFile file, boolean createAnnotation, DataImportOptions dataImportOptions)
             throws InvalidDataFileException {

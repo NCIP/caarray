@@ -136,9 +136,15 @@ public interface ArrayDataService {
             throws InvalidDataFileException;
     
     /**
-     * same functionality as {@link #importData(CaArrayFile, boolean, DataImportOptions, MageTabDocumentSet)} 
+     * Same functionality as overloaded method 
+     * {@link #importData(CaArrayFile, boolean, DataImportOptions, MageTabDocumentSet)} 
      * except there is no MageTabDocumentSet param. Used in cases where the MageTabDocumentSet is 
      * not applicable. 
+     * 
+     * @param file see the overloaded method.
+     * @param createAnnotation see the overloaded method.
+     * @param dataImportOptions see the overloaded method.
+     * @throws InvalidDataFileException see the overloaded method.
      */
     void importData(CaArrayFile file, boolean createAnnotation, DataImportOptions dataImportOptions)
             throws InvalidDataFileException;

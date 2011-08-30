@@ -149,7 +149,8 @@ public class ArrayDataServiceBean extends AbstractArrayDataService {
             MageTabDocumentSet mTabSet)
             throws InvalidDataFileException {
         LogUtil.logSubsystemEntry(LOG, caArrayFile);
-        AbstractArrayData arrayData = dataSetImporter.importData(caArrayFile, dataImportOptions, createAnnnotation, mTabSet);
+        AbstractArrayData arrayData = dataSetImporter.importData(caArrayFile, dataImportOptions, 
+                createAnnnotation, mTabSet);
         loader.load(arrayData, mTabSet);
         LogUtil.logSubsystemExit(LOG);
     }

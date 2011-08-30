@@ -163,8 +163,8 @@ public final class SdrfDocument extends AbstractMageTabDocument {
     private int currentLineNumber;
     private int currentColumnNumber;
     private ArrayDesign currentArrayDesign;    
-    // native array data file, derived array data files, array data matrix files, derived array data matrix files on currentLine
-    private List<AbstractSampleDataRelationshipNode> currentArrayDataFiles= new ArrayList<AbstractSampleDataRelationshipNode>();
+    private final List<AbstractSampleDataRelationshipNode> currentArrayDataFiles = 
+        new ArrayList<AbstractSampleDataRelationshipNode>();
 
     private final List<Source> allSources = new ArrayList<Source>();
     private final List<FactorValue> allFactorValues = new ArrayList<FactorValue>();
@@ -866,7 +866,7 @@ public final class SdrfDocument extends AbstractMageTabDocument {
         
         currentCommentable = arrayDesign;
         currentTermSourceable = arrayDesign;
-        currentArrayDesign= arrayDesign;
+        currentArrayDesign = arrayDesign;
     }
 
     private void handleFactorValue(SdrfColumn column, String value, SdrfColumn nextColumn, SdrfColumn nextNextColumn) {
@@ -1062,11 +1062,17 @@ public final class SdrfDocument extends AbstractMageTabDocument {
         currentCommentable = parameterValue;
     }
     
-    
-    protected void handleDataFileToDesignMap(List<AbstractSampleDataRelationshipNode> arrayDataFiles, ArrayDesign arrayDesignArg) {
-        for(AbstractSampleDataRelationshipNode adf : arrayDataFiles) {
+    /**
+     * For each data file in arrayDataFiles, maps the name of the data file to arrayDesignArg
+     * and stores this information in this.arrayDataFileToDesignFileMap.
+     * @param arrayDataFiles contains data files to map.  
+     * @param arrayDesignArg ArrayDesign to map to. 
+     */
+    protected void handleDataFileToDesignMap(List<AbstractSampleDataRelationshipNode> arrayDataFiles, 
+            ArrayDesign arrayDesignArg) {
+        for (AbstractSampleDataRelationshipNode adf : arrayDataFiles) {
             String key = adf.getName();
-            //TODO: if key already exists in map, make sure its ArrayDesign is same as arrayDesignArg
+            // TODO if key already exists in map, make sure its ArrayDesign is same as arrayDesignArg
             arrayDataFileToDesignFileMap.put(key, arrayDesignArg);
         }
     }
@@ -1371,8 +1377,8 @@ public final class SdrfDocument extends AbstractMageTabDocument {
     
     
     /**
-     * Retrieve ArrayDesign corresponding to the arrayDataFileName
-     * @param arrayDataFileName
+     * Retrieve ArrayDesign corresponding to the arrayDataFileName.
+     * @param arrayDataFileName key to use for retrieval. 
      * @return ArrayDesign corresponding to the arrayDataFileName or null if no match found. 
      */
     public ArrayDesign getArrayDesignForArrayDataFileName(String arrayDataFileName) {
@@ -1380,13 +1386,13 @@ public final class SdrfDocument extends AbstractMageTabDocument {
     }
 
     /**
-     * Retrieve value (i.e name) of ArrayDesign corresponding to the arrayDataFileName
-     * @param arrayDataFileName
+     * Retrieve value (i.e name) of ArrayDesign corresponding to the arrayDataFileName.
+     * @param arrayDataFileName key to user for retrieval. 
      * @return ArrayDesign name corresponding to the arrayDataFileName or null if no match found. 
      */
     public String getArrayDesignNameForArrayDataFileName(String arrayDataFileName) {
         ArrayDesign arrayDesign = getArrayDesignForArrayDataFileName(arrayDataFileName); 
-        if(arrayDesign != null) {
+        if (arrayDesign != null) {
             return arrayDesign.getValue();
         } 
         return null;

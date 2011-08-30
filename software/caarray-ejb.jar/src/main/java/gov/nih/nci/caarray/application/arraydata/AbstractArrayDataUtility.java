@@ -132,7 +132,8 @@ abstract class AbstractArrayDataUtility {
      * @return the DataFileHandler instance capable of processing that file. That handler will
      * have been initialized with this file.
      */
-    protected DataFileHandler findAndSetupHandler(CaArrayFile caArrayFile, MageTabDocumentSet mTabSet) throws PlatformFileReadException {
+    protected DataFileHandler findAndSetupHandler(CaArrayFile caArrayFile, MageTabDocumentSet mTabSet) 
+            throws PlatformFileReadException {
         DataFileHandler handler = getOpeningHandler(caArrayFile);
         if (handler == null) {
             throw new IllegalArgumentException("Unsupported type " + caArrayFile.getFileType());
@@ -144,7 +145,7 @@ abstract class AbstractArrayDataUtility {
         ArrayDesign ad = getArrayDesign(caArrayFile, handler);
         if (ad == null || !ad.isImportedAndParsed()) {
             handler.closeFiles();
-            handler= getUnparsedDataHandler(caArrayFile);
+            handler = getUnparsedDataHandler(caArrayFile);
             handler.setMageTabDocumentSet(mTabSet);
         }
         return handler;        
@@ -209,18 +210,18 @@ abstract class AbstractArrayDataUtility {
      * or if mTabSetArg is null. 
      */
     private ArrayDesign findArrayDesignViaSdrf(CaArrayFile arrayDataFile, MageTabDocumentSet mTabSetArg) {
-        if(mTabSetArg == null) {
+        if (mTabSetArg == null) {
             return null;
         }
-        String dataFileName= arrayDataFile.getName();
+        String dataFileName = arrayDataFile.getName();
         LOG.info("findArrayDesignFromSdrf for arrayDataFile=[" + dataFileName + "]. ");
-        for(SdrfDocument sdrf : mTabSetArg.getSdrfDocuments()) {
-            String adLsidName= sdrf.getArrayDesignNameForArrayDataFileName(dataFileName);
+        for (SdrfDocument sdrf : mTabSetArg.getSdrfDocuments()) {
+            String adLsidName = sdrf.getArrayDesignNameForArrayDataFileName(dataFileName);
             LOG.info(String.format(
                     "findArrayDesignFromSdrf for arrayDataFile=[%s], found matching arrayDesign LSID=[%s]. ", 
                     dataFileName, adLsidName));
-            if(adLsidName != null) {
-                LSID adLsid= new LSID(adLsidName);
+            if (adLsidName != null) {
+                LSID adLsid = new LSID(adLsidName);
                 ArrayDesign ad = arrayDao.getArrayDesign(adLsid.getAuthority(), adLsid.getNamespace(), adLsid
                         .getObjectId());
                 if (ad != null) {
