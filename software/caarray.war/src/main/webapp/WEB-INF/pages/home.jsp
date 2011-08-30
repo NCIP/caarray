@@ -137,7 +137,7 @@
         <div id="browseboxhome" style="margin-bottom: 20px">
             <h2 class="tanbar">Browse caArray</h2>
             <div class="boxpad">
-                <table class="alttable" cellspacing="0">
+                <table class="alttable" summary="layout" cellspacing="0">
                     <tr>
                         <th colspan="2">
                     <label for="location"><fmt:message key="search.location"/></label>

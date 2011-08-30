@@ -237,6 +237,13 @@ var TabUtils = {
             tabLink = tabMenuItems[i].getElementsByTagName('a')[0];
             tabLink.blur();
         }
+        // Set summary=layout attribute for form tables for Section 508 compliance.
+        var tableArr = document.getElementsByTagName("table");
+        for (var i = 0; i < tableArr.length; i++) {
+	    if (tableArr[i].className == "form") {
+                tableArr[i].summary = "layout";
+	    }
+        }
     },
 
     setSelectedLevel2Tab : function() {
