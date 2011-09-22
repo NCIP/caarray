@@ -243,8 +243,6 @@ public class FileDaoTest extends AbstractDaoTest {
         DAO_OBJECT.save(DUMMY_PROJECT_1);
         assertTrue(hibernateHelper.getCurrentSession().contains(DUMMY_EXPERIMENT_1));
         DAO_OBJECT.flushSession();
-//        hibernateHelper.getCurrentSession().refresh(DUMMY_EXPERIMENT_1);
-//        assertNotNull(DUMMY_EXPERIMENT_1.getProject());
         
     }
 

@@ -136,24 +136,28 @@ import com.fiveamsolutions.nci.commons.util.HibernateHelper;
 public class SearchDaoTest extends AbstractDaoTest {
     private static final Logger LOG = Logger.getLogger(SearchDaoTest.class);
 
-    private static String FAIL_NO_MATCH = "Retrieved protocol is different from saved protocol.";
-    private static TermSource DUMMY_TERM_SOURCE = new TermSource();
-    private static Category DUMMY_CATEGORY = new Category();
-    private static Term DUMMY_TERM_1 = new Term();
-    private static Protocol DUMMY_PROTOCOL_1 = new Protocol("DummyTestProtocol1", DUMMY_TERM_1, DUMMY_TERM_SOURCE);
-    private static Parameter DUMMY_PARAMETER_1 = new Parameter("param 1", DUMMY_PROTOCOL_1);
-    private static Parameter DUMMY_PARAMETER_2 = new Parameter("param 2", DUMMY_PROTOCOL_1);
+    private final String FAIL_NO_MATCH = "Retrieved protocol is different from saved protocol.";
+    private TermSource DUMMY_TERM_SOURCE;
+    private Category DUMMY_CATEGORY;
+    private Term DUMMY_TERM_1;
+    private Protocol DUMMY_PROTOCOL_1; 
+    private Parameter DUMMY_PARAMETER_1;
+    private Parameter DUMMY_PARAMETER_2; 
 
-    private static final SearchDao SEARCH_DAO = CaArrayDaoFactory.INSTANCE.getSearchDao();
-    private static final ProtocolDao PROTOCOL_DAO = CaArrayDaoFactory.INSTANCE.getProtocolDao();
+    private SearchDao SEARCH_DAO; 
+    private ProtocolDao PROTOCOL_DAO; 
 
-    private static AssayType DUMMY_ASSAYTYPE_1 = new AssayType("aCGH");
+    //why is this not initialized in setup()? Intentional? 
+    private AssayType DUMMY_ASSAYTYPE_1 = new AssayType("aCGH");
 
     /**
      * Define the dummy objects that will be used by the tests.
      */
     @Before
     public void setUp() {
+
+        initializeDao(); 
+
         DUMMY_TERM_SOURCE = new TermSource();
         DUMMY_TERM_SOURCE.setName("Dummy MGED Ontology");
         DUMMY_TERM_SOURCE.setUrl("test url");
@@ -175,6 +179,16 @@ public class SearchDaoTest extends AbstractDaoTest {
         DUMMY_PARAMETER_2.setName("DummyTestParameter2");
     }
     
+    private void initializeDao() {
+        if (SEARCH_DAO == null) {
+            SEARCH_DAO = CaArrayDaoFactory.INSTANCE.getSearchDao();
+        }
+        
+        if (PROTOCOL_DAO == null) {
+            PROTOCOL_DAO = CaArrayDaoFactory.INSTANCE.getProtocolDao();
+        }
+    }
+
     private void saveSupportingObjects() {
         Transaction tx = hibernateHelper.beginTransaction();
         PROTOCOL_DAO.save(DUMMY_TERM_SOURCE);
