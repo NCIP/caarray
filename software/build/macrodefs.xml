@@ -13,12 +13,12 @@
 
         <sequential>
             <mkdir dir="@{xml.output.dir}" />
-            <property name="jdwp.port" value="8000"/>
+            <!-- property name="jdwp.port" value="8000"/ -->
             <!-- property name="should.suspend.vm.for.debugging" value="n"/> -->
             <property name="test.browser" value="*firefox"/>
-            <junit printsummary="on" failureproperty="junit.failure" fork="true" forkmode="once" maxmemory="1024m">
+            <junit printsummary="on" failureproperty="junit.failure" fork="true" forkmode="once" maxmemory="1024m" outputtoformatters="${junit.outputtoformatters}">
                 <jvmarg value="-Xdebug"/>
-                <jvmarg value="-Xrunjdwp:transport=dt_socket,address=${jdwp.port},server=y,suspend=${should.suspend.vm.for.debugging}"/>
+                <jvmarg value="-Xrunjdwp:transport=dt_socket,address=${junit.jdwp.port},server=y,suspend=${junit.should.suspend.vm.for.debugging}"/>
                 <sysproperty key="net.sourceforge.cobertura.datafile" file="${cobertura.file}" />
                 <sysproperty key="server.hostname" value="${jboss.server.hostname}" />
                 <sysproperty key="server.port" value="${jboss.server.port}" />
@@ -34,7 +34,7 @@
                 </classpath>
                 <classpath refid="@{classpathref.id}" />
                 <classpath refid="cobertura.dependencies.path" />
-                <formatter type="xml" />
+                <formatter type="${junit.formatter.type}" usefile="${junit.formatter.usefile}"/>
                 <batchtest todir="@{xml.output.dir}">
                     <fileset dir="@{test.src.dir}" includes="@{source.include}" excludes="@{source.exclude}" />
                 </batchtest>
