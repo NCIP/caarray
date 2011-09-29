@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.application.file;
 
 import gov.nih.nci.caarray.application.arraydata.DataImportOptions;
+import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
 import gov.nih.nci.caarray.dao.ProjectDao;
 import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
@@ -108,11 +109,11 @@ final class ProjectFilesImportJob extends AbstractProjectFilesJob {
     // CHECKSTYLE:OFF more than 7 parameters are okay for injected constructor
     @SuppressWarnings("PMD.ExcessiveParameterList")
     @Inject
-    ProjectFilesImportJob(String username, Project targetProject,
+    ProjectFilesImportJob(String username, UsernameHolder usernameHolder, Project targetProject,
             CaArrayFileSet fileSet, DataImportOptions dataImportOptions, ArrayDataImporter arrayDataImporter,
             MageTabImporter mageTabImporter, ProjectDao projectDao, SearchDao searchDao) {
     // CHECKSTYLE:ON
-        super(username, targetProject, fileSet, arrayDataImporter,
+        super(username, usernameHolder, targetProject, fileSet, arrayDataImporter,
                 mageTabImporter, projectDao, searchDao);
         this.dataImportOptions = dataImportOptions;
     }
@@ -127,11 +128,15 @@ final class ProjectFilesImportJob extends AbstractProjectFilesJob {
     @Override
     protected void doExecute() {
         CaArrayFileSet fileSet = getFileSet();
-        doValidate(fileSet);
-        FileStatus status = getFileSet().getStatus();
-        if (status.equals(FileStatus.VALIDATED) || status.equals(FileStatus.VALIDATED_NOT_PARSED)) {
-            importAnnotation(fileSet);
-            importArrayData(fileSet);
+        try {
+            doValidate(fileSet);
+            final FileStatus status = getFileSet().getStatus();
+            if (status.equals(FileStatus.VALIDATED) || status.equals(FileStatus.VALIDATED_NOT_PARSED)) {
+                importAnnotation(fileSet);
+                importArrayData(fileSet);
+            }
+        } finally {
+            TemporaryFileCacheLocator.getTemporaryFileCache().closeFiles();
         }
     }
 
