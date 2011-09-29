@@ -141,6 +141,14 @@ public abstract class AbstractHibernateTest extends AbstractCaarrayTest {
                     }
                 });
     }
+    
+    /**
+     * Called during test tear down. If necessary subclasses can override this to undo 
+     * the effects of createInjector() so it does not affect subsequent tests. 
+     */
+    protected void levelsetInjector() {
+        // NOP
+    }
 
     protected AbstractHibernateTest(boolean enableFilters) {
         this.enableFilters = enableFilters;
@@ -180,6 +188,7 @@ public abstract class AbstractHibernateTest extends AbstractCaarrayTest {
         }
         this.hibernateHelper.unbindAndCleanupSession();
         HibernateIntegrationTestCleanUpUtility.cleanUp();
+        levelsetInjector();
     }
 
 }
