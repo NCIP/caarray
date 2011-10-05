@@ -728,7 +728,6 @@ public final class TestMageTabSets {
 
     private static FilenameFilter createExtensionFilter(final String extension) {
         return new FilenameFilter() {
-            @Override
             public boolean accept(File dir, String name) {
                 return name.toLowerCase(Locale.getDefault()).endsWith("." + extension.toLowerCase(Locale.getDefault()));
             }

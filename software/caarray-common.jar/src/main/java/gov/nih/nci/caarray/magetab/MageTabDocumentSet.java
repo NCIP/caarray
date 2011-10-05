@@ -82,8 +82,6 @@
  */
 package gov.nih.nci.caarray.magetab;
 
-import gov.nih.nci.caarray.domain.project.ExperimentOntology;
-import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
 import gov.nih.nci.caarray.magetab.adf.AdfDocument;
 import gov.nih.nci.caarray.magetab.data.DataMatrix;
 import gov.nih.nci.caarray.magetab.data.NativeDataFile;
@@ -357,12 +355,6 @@ public final class MageTabDocumentSet implements Serializable {
         final OntologyTerm term = new OntologyTerm();
         term.setCategory(category);
         term.setValue(value);
-        if (MageTabOntologyCategory.PROTOCOL_TYPE.getCategoryName().equals(category)
-                || MageTabOntologyCategory.MATERIAL_TYPE.getCategoryName().equals(category)) {
-            term.setTermSource(getOrCreateTermSource(ExperimentOntology.MGED_ONTOLOGY.getOntologyName()));
-        } else if (ExperimentOntologyCategory.ORGANISM.getCategoryName().equals(category)) {
-            term.setTermSource(getOrCreateTermSource(ExperimentOntology.NCBI.getOntologyName()));
-        }
         this.termCache.add(term);
         return term;
     }

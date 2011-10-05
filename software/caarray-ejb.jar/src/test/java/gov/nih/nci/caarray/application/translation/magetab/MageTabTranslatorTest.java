@@ -453,7 +453,6 @@ public class MageTabTranslatorTest extends AbstractServiceTest {
         final Collection<Term> terms = result.getTerms();
         @SuppressWarnings("unchecked")
         final Collection<Term> matchingTerms = CollectionUtils.select(terms, new Predicate() {
-            @Override
             public boolean evaluate(Object o) {
                 final Term t = (Term) o;
                 return t.getValue().equalsIgnoreCase("fresh_sample");
