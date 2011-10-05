@@ -1636,7 +1636,8 @@
         clean:caarray-grid-svc,
         clean:caarray-plugins,
         clean:caarraydb,
-        clean-cn2magetab" description="Deletes all of the target directories" />
+        clean-cn2magetab,
+    	clean-bda-lite-cfg-staging" description="Deletes all of the target directories" />
 
     <target name="clean:lib">
         <delete dir="${lib.dir}"/>
@@ -1909,6 +1910,79 @@
     <!-- ******************************************************************* -->
     <!-- ** BUILD TARGETS                                                 ** -->
     <!-- ******************************************************************* -->
+	
+	<target name="clean-build-for-bda-lite" depends="clean-build-with-zips, -configure-for-bda-lite"/>
+	
+    <property name="bda.lite.ear.cfg.properties.file" value="${caarray-ear.target.dir}/bda_lite_cfg/temp/bda_lite_cfg.properties"/>
+    <property name="bda.lite.grid.cfg.properties.file" value="${caarray-grid-svc.base.dir}/target/bda_lite_cfg/bda_lite_cfg.properties"/>
+    
+    <target name="-configure-for-bda-lite" depends="
+    	clean-bda-lite-cfg-staging,
+    	-create-deployment-properties-files,
+    	-configure-ear-for-bda-lite,
+	    -configure-grid-services-for-bda-lite,
+    	-configure-globus-instance-for-bda-lite"/>
+	
+	<target name="clean-bda-lite-cfg-staging">
+		<delete dir="${caarray-ear.target.dir}/bda_lite_cfg"/>
+		<mkdir dir="${caarray-ear.target.dir}/bda_lite_cfg/temp"/>
+        <delete dir="${caarray-grid-svc.base.dir}/target"/>
+        <mkdir dir="${caarray-grid-svc.base.dir}/target/bda_lite_cfg/"/>
+	</target>
+	
+	<target name="-create-deployment-properties-files">
+		<echoproperties destfile="${bda.lite.ear.cfg.properties.file}"/>
+		<copy file="${bda.lite.ear.cfg.properties.file}" tofile="${bda.lite.grid.cfg.properties.file}"/>
+	</target>
+	
+	<target name="-configure-ear-for-bda-lite">
+        <configure-caarray-ear
+        	project.properties="${basedir}/master_build/project.properties"
+            temp.dir="${caarray-ear.target.dir}/bda_lite_cfg/temp"
+            template.ear.path="${caarray.ear}"
+            properties.file="${bda.lite.ear.cfg.properties.file}"/>
+		<move file="${caarray-ear.target.dir}/bda_lite_cfg/temp/caarray.ear.to_deploy/caarray.ear" todir="${caarray-ear.target.dir}/bda_lite_cfg/"/>
+        <delete dir="${caarray-ear.target.dir}/bda_lite_cfg/temp"/>
+	</target>
+    
+    <target name="-configure-grid-services-for-bda-lite">
+    	<copy todir="${caarray-grid-svc.base.dir}/target/bda_lite_cfg" flatten="true">
+            <fileset dir="${caarray-grid-svc.base.dir}">
+                <include name="**/cagrid_CaArraySvc*.zip"/>
+            </fileset>
+        </copy>
+        <configure-caarray-grid-services
+            project.properties="${basedir}/master_build/project.properties"
+            properties.file="${bda.lite.grid.cfg.properties.file}"
+            temp.dir="${caarray-grid-svc.base.dir}/target/bda_lite_cfg/temp"
+            grid.template.basedir="${caarray-grid-svc.base.dir}/target/bda_lite_cfg"
+            grid.target.basedir="${caarray-grid-svc.base.dir}/target/bda_lite_cfg"/>
+    	<delete dir="${caarray-grid-svc.base.dir}/target/bda_lite_cfg/temp"/>
+        <delete file="${bda.lite.grid.cfg.properties.file}"/>
+    </target>
+		
+	<target name="-configure-globus-instance-for-bda-lite">
+		<delete dir="${caarray-grid-svc.base.dir}/target/bda_lite_cfg/temp"/>
+        <mkdir dir="${caarray-grid-svc.base.dir}/target/bda_lite_cfg/temp"/>
+        <unzip src="${basedir}/build/resources/deploy/jboss-globus-serverinstance-config.zip" dest="${caarray-grid-svc.base.dir}/target/bda_lite_cfg/temp"/>
+		<replace dir="${caarray-grid-svc.base.dir}/target/bda_lite_cfg/temp" token="localhost:8080" value="${grid.static.hostname}:${grid.static.port}">
+		    <include name="**/*.wsdl"/>
+		</replace>
+        <replace dir="${caarray-grid-svc.base.dir}/target/bda_lite_cfg/temp" token="http://index.training.cagrid.org:8080/wsrf/services/DefaultIndexService" value="${grid.index.url}">
+            <include name="**/*.xml"/>
+        </replace>
+        <replace dir="${caarray-grid-svc.base.dir}/target/bda_lite_cfg/temp" token="@LOGICAL_HOST@" value="${grid.static.hostname}">
+            <include name="**/*.wsdd"/>
+        </replace>
+		<xmltask source="${caarray-grid-svc.base.dir}/target/bda_lite_cfg/temp/deploy/wsrf.war/WEB-INF/web.xml" dest="${caarray-grid-svc.base.dir}/target/bda_lite_cfg/temp/deploy/wsrf.war/WEB-INF/web.xml">
+            <xmlcatalog refid="bda.xml.catalog"/>
+            <replace path="//init-param/param-name[text()='defaultPort']/following-sibling::param-value[1]/text()" withText="${grid.static.port}"/>
+        </xmltask>
+		<zip destfile="${caarray-grid-svc.base.dir}/target/bda_lite_cfg/jboss-globus-serverinstance-config.zip">
+            <zipfileset dir="${caarray-grid-svc.base.dir}/target/bda_lite_cfg/temp" />
+        </zip>
+        <delete dir="${caarray-grid-svc.base.dir}/target/bda_lite_cfg/temp"/>
+	</target>
 
     <target name="clean-build-with-zips" depends="clean,
         build,

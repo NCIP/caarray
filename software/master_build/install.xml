@@ -260,30 +260,6 @@ properties.list="jboss.server.jndi.port,jboss.server.port,jboss.cobraorb.port,jb
         <property name="properties.template.file" value="${basedir}/properties.template" />
            <property file="${basedir}/cagrid-target/${grid.target}/service_urls.properties" />
         <property name="grid.index.url" value="${cagrid.master.index.service.url}" />
-        <filterset id="embedded.filterset">
-            <filter token="application.base.path" value="${application.base.path}"/>
-            <filter token="application.url" value="${application.url}"/>
-            <filter token="database.url" value="${database.url}"/>
-            <filter token="database.user" value="${database.user}"/>
-            <filter token="database.password" value="${database.password}"/>
-            <filter token="database.system.url" value="${database.system.url}"/>
-            <!-- added internal properties that may be used in a filtered copy -->
-            <filter token="database.driver" value="${database.driver}"/>
-            <!-- added for liquibase -->
-            <filter token="db-upgrade.run.dir" value="${db-upgrade.dir.dest}/${database.type}"/>
-            <filter token="jboss.home" value="${jboss.home}"/>
-            <filter token="tomcat.home" value="${tomcat.home}" />
-            <filter token="database.dialect" value="${database.dialect}"/>
-            <filter token="hibernate.cfg.file.path" value="${hibernate.cfg.file.path}"/>
-            <filter token="env.LOGNAME" value="${env.LOGNAME}"/>
-            <filter token="env.JAVA_HOME" value="${env.JAVA_HOME}"/>
-            <filter token="project.name" value="${project.name}" />
-            <filter token="grid.dorian.name" value="${grid.target}-Dorian" />
-            <filter token="grid.dorian.url" value="${cagrid.master.dorian.service.url}" />
-            <filter token="grid.auth.service.url" value="${grid.auth.service.url}" />
-            <filter token="grid.auth.service.name" value="${grid.auth.service.name}" />
-            <filter token="" value=""/>
-            </filterset>
 
         <!--OS Temp dir -->
         <condition property="os.temp.dir" value="/tmp/${project.name}">
@@ -360,7 +336,7 @@ properties.list="jboss.server.jndi.port,jboss.server.port,jboss.cobraorb.port,jb
         <mkdir dir="${temp.dir}/caarray.ear" />
         <unzip src="${caarray.dir.dist}/${caarray.ear.file}" dest="${temp.dir}/caarray.ear/" />
 
-        <apply-filters-to-dir filters.target.dir="${db.dir.src}"/>
+        <apply-filters-to-dir properties.file="${properties.file}" project.properties="${basedir}/project.properties" filters.target.dir="${db.dir.src}"/>
 
         <path id="liquibase.dependencies.path">
             <fileset dir="${lib.dir}/caarray-project" includes="*.jar"/>
@@ -419,91 +395,7 @@ properties.list="jboss.server.jndi.port,jboss.server.port,jboss.cobraorb.port,jb
     </target>
 
     <target name="install:jboss:caarray:re-configure" description="Update xml files in meta-inf directory of ear that have deployment attributes" depends="common:jboss:init, common:init, common:jboss:caarray:configure-plugins, common:jboss:caarray:configure-filestorage">
-        <mkdir dir="${temp.dir}/caarray.ear.to_deploy" />
-        <mkdir dir="${temp.dir}/caarray.ear" />
-        <mkdir dir="${temp.dir}/caarray-common.jar" />
-        <unzip src="${caarray.dir.dist}/${caarray.ear.file}" dest="${temp.dir}/caarray.ear/" />
-        <unjar src="${temp.dir}/caarray.ear/caarray-common.jar" dest="${temp.dir}/caarray-common.jar"/>
-        <unjar src="${temp.dir}/caarray.ear/caarray.war" dest="${temp.dir}/caarray.war"/>
-        <unjar src="${temp.dir}/caarray.ear/caarray-ejb.jar" dest="${temp.dir}/caarray-ejb.jar"/>
-        
-        <!-- update the filestorage property values in ejb jar's dataStorage.properties file -->
-        <replaceregexp file="${temp.dir}/caarray-ejb.jar/dataStorage.properties" match="dataStorage.fileSystem.baseDir=(.*)" replace="dataStorage.fileSystem.baseDir=${dataStorage.fileSystem.baseDir}" byline="true"/>
-        <replaceregexp file="${temp.dir}/caarray-ejb.jar/dataStorage.properties" match="dataStorage.fileDataEngine=(.*)" replace="dataStorage.fileDataEngine=${dataStorage.fileDataEngine}" byline="true"/>
-        <replaceregexp file="${temp.dir}/caarray-ejb.jar/dataStorage.properties" match="dataStorage.parsedDataEngine=(.*)" replace="dataStorage.parsedDataEngine=${dataStorage.parsedDataEngine}" byline="true"/>
-        
-        <jar destfile="${temp.dir}/caarray.ear/caarray-ejb.jar" basedir="${temp.dir}/caarray-ejb.jar" update="false" manifest="${temp.dir}/caarray-ejb.jar/META-INF/MANIFEST.MF"/>
-        
-        <move todir="${temp.dir}/caarray-common.jar/csm">
-            <fileset dir="${temp.dir}/caarray-common.jar/csm">
-                <include name="*.csm.new.hibernate.cfg.xml" />
-            </fileset>
-            <mapper type="regexp" from="^.*.csm.new.hibernate.cfg.xml" to="${csm.application.name}.csm.new.hibernate.cfg.xml" />
-        </move>
-        <apply-filters-to-dir filters.target.dir="${temp.dir}/caarray-common.jar"/>
-        <jar destfile="${temp.dir}/caarray.ear/caarray-common.jar" basedir="${temp.dir}/caarray-common.jar" update="false" manifest="${temp.dir}/caarray-common.jar/META-INF/MANIFEST.MF"/>
-
-        <propertyregex property="corrected.database.url" input="${read.database.url}" regexp="(.*)\?" select="\1" defaultValue="${database.url}"/>
-        <copy file="${jboss-conf.dist.relative.dir}/security-config.xml" tofile="${temp.dir}/caarray.ear/META-INF/security-config.xml"/>
-        <replaceregexp file="${temp.dir}/caarray.ear/META-INF/security-config.xml" match="&amp;" replace="&amp;amp;" byline="false"/>
-        <xmltask source="${temp.dir}/caarray.ear/META-INF/security-config.xml" dest="${temp.dir}/caarray.ear/META-INF/security-config.xml">
-            <xmlcatalog refid="bda.xml.catalog"/>
-            <replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule']/module-option[@name='url']/text()" withText="${corrected.database.url}"/>
-            <replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule']/module-option[@name='user']/text()" withText="${database.user}"/>
-            <replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule']/module-option[@name='passwd']/text()" withText="${database.password}"/>
-            <replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule']/module-option[@name='driver']/text()" withText="${database.driver}"/>
-        </xmltask>
-        <if>
-            <equals arg1="${ldap.authentication.enabled}" arg2="true" />
-            <then>
-                <xmltask source="${temp.dir}/caarray.ear/META-INF/security-config.xml" dest="${temp.dir}/caarray.ear/META-INF/security-config.xml">
-                    <xmlcatalog refid="bda.xml.catalog"/>
-                    <replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsLDAPLoginModule']/module-option[@name='ldapHost']/text()" withText="${ldap.url}"/>
-                    <replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsLDAPLoginModule']/module-option[@name='ldapSearchableBase']/text()" withText="${ldap.searchbase}"/>
-                    <replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsLDAPLoginModule']/module-option[@name='ldapUserIdLabel']/text()" withText="${ldap.searchprefix}"/>
-                </xmltask>
-            </then>
-            <else>
-                <xmltask source="${temp.dir}/caarray.ear/META-INF/security-config.xml" dest="${temp.dir}/caarray.ear/META-INF/security-config.xml">
-                    <xmlcatalog refid="bda.xml.catalog"/>
-                    <remove path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsLDAPLoginModule']"/>
-                    <replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule']/@flag" withText="required"/>
-                </xmltask>
-            </else>
-        </if>
-
-        <!-- set the UptUrl value -->
-        <replaceregexp file="${temp.dir}/caarray.war/WEB-INF/web.xml" match="uptUrl&lt;/param-name&gt;\s{0,}&lt;param-value&gt;(.*)&lt;/param-value&gt;" replace="uptUrl&lt;/param-name&gt;&lt;param-value&gt;${upt.url}&lt;/param-value&gt;" byline="false"/>
-
-        <!-- set the nodeName -->
-        <replaceregexp file="${temp.dir}/caarray.war/WEB-INF/web.xml" match="nodeName&lt;/param-name&gt;\s{0,}&lt;param-value&gt;(.*)&lt;/param-value&gt;" replace="nodeName&lt;/param-name&gt;&lt;param-value&gt;${grid.poc.tech.researchCenter.shortname}&lt;/param-value&gt;" byline="false"/>
-
-        <!-- set the ldap.url value -->
-        <xmltask source="${temp.dir}/caarray.war/WEB-INF/web.xml" dest="${temp.dir}/caarray.war/WEB-INF/web.xml">
-            <xmlcatalog refid="bda.xml.catalog"/>
-            <replace path="//*[local-name()='param-name'][text()='ldapHost']/following-sibling::*/text()" withText="${ldap.url}"/>
-            <replace path="//*[local-name()='param-name'][text()='ldapSearchableBase']/following-sibling::*/text()" withText="${ldap.searchbase}"/>
-            <replace path="//*[local-name()='param-name'][text()='ldapUserIdLabel']/following-sibling::*/text()" withText="${ldap.searchprefix}"/>
-        </xmltask>
-        
-        <!-- replace the plugin property values -->
-        <replaceregexp file="${temp.dir}/caarray.war/WEB-INF/classes/caarray-plugins.properties" match="plugins.deploy.dir=(.*)" replace="plugins.deploy.dir=${caarray-plugins.deploy.dir}" byline="true"/>
-        <replaceregexp file="${temp.dir}/caarray.war/WEB-INF/classes/caarray-plugins.properties" match="plugins.cache.dir=(.*)" replace="plugins.cache.dir=${caarray-plugins.deploy.cache.dir}" byline="true"/>
-        <replaceregexp file="${temp.dir}/caarray.war/WEB-INF/classes/caarray-plugins.properties" match="plugins.bundle.zip=(.*)" replace="plugins.bundle.zip=${caarray-plugins.bundledPlugins.zip}" byline="true"/>
-        <replaceregexp file="${temp.dir}/caarray.war/WEB-INF/classes/caarray-plugins.properties" match="plugins.bundleCache.dir=(.*)" replace="plugins.bundleCache.dir=${caarray-plugins.deploy.bundleCache.dir}" byline="true"/>
-        
-        <apply-filters-to-dir filters.target.dir="${temp.dir}/caarray.war"/>
-        <war destfile="${temp.dir}/caarray.ear/caarray.war">
-            <fileset dir="${temp.dir}/caarray.war"/>
-        </war>
-
-        <apply-filters-to-dir filters.target.dir="${temp.dir}/caarray.ear"/>
-        <ear destfile="${temp.dir}/caarray.ear.to_deploy/${caarray.ear.file}" appxml="${temp.dir}/caarray.ear/META-INF/application.xml" update="false" duplicate="preserve">
-            <metainf dir="${temp.dir}/caarray.ear/META-INF" includes="*.xml" excludes="jboss-service.xml" />
-            <fileset dir="${temp.dir}/caarray.ear">
-                <include name="**/*" />
-            </fileset>
-        </ear>
+    	<configure-caarray-ear temp.dir="${temp.dir}" template.ear.path="${caarray.dir.dist}/${caarray.ear.file}" project.properties="${basedir}/project.properties" properties.file="${properties.file}"/>
 
         <!-- punt old commons lang jar -->
         <delete dir="${jboss.home}/server/${jboss.server.name}/deploy/jbossweb-tomcat55.sar/jsf-libs" includes="commons-lang*.jar" quiet="true"/>
@@ -1211,6 +1103,7 @@ depends="upgrade:jboss:init,common:init,upgrade-ncm:jboss,-install:jboss:configu
         <delete>
             <fileset dir="${grid.home}/server/${grid.server.name}/lib" includes="cog-jglobus.jar cog-tomcat.jar cryptix32.jar cryptix.jar cryptix-asn1.jar jce-jdk13-125.jar log4j-1.2.8.jar puretls.jar"/>
         </delete>
+    	<configure-caarray-grid-services properties.file="${properties.file}" project.properties="${basedir}/project.properties" temp.dir="${temp.dir}" grid.template.basedir="${basedir}/grid" grid.target.basedir="${basedir}/grid"/>
         <for param="version" list="${caarray-grid-svc.versions}">
             <sequential>
                 <if>
@@ -1222,32 +1115,6 @@ depends="upgrade:jboss:init,common:init,upgrade-ncm:jboss,-install:jboss:configu
                         <var name="version.label" value="_@{version}"/>
                     </else>
                 </if>
-                <unzip dest="${temp.dir}/grid${version.label}" src="${basedir}/grid/cagrid_CaArraySvc${version.label}.zip"/>
-
-                <unzip src="${temp.dir}/grid${version.label}/WEB-INF/lib/CaArraySvc${version.label}-common.jar" dest="${temp.dir}/grid${version.label}/WEB-INF/lib/CaArraySvc${version.label}-common" />
-
-                <replaceregexp byline="true" match="^(java.naming.provider.url)=(.*)" replace="\1=jnp://${jboss.server.hostname}:${jboss.server.jndi.port}">
-                    <fileset dir="${temp.dir}/grid${version.label}/WEB-INF/lib/CaArraySvc${version.label}-common">
-                        <include name="**/jndi.properties"/>
-                    </fileset>
-                </replaceregexp>
-
-                <delete file="${temp.dir}/grid${version.label}/WEB-INF/lib/CaArraySvc${version.label}-common.jar" />
-
-                <apply-filters-to-dir filters.target.dir="${temp.dir}/grid${version.label}/WEB-INF/lib/CaArraySvc${version.label}-common"/>
-                <jar jarfile="${temp.dir}/grid${version.label}/WEB-INF/lib/CaArraySvc${version.label}-common.jar" compress="false" manifest="${temp.dir}/grid${version.label}/WEB-INF/lib/CaArraySvc${version.label}-common/META-INF/MANIFEST.MF">
-                    <fileset dir="${temp.dir}/grid${version.label}/WEB-INF/lib/CaArraySvc${version.label}-common">
-                        <include name="*/**" />
-                    </fileset>
-                </jar>
-
-                <delete dir="${temp.dir}/grid${version.label}/WEB-INF/lib/CaArraySvc${version.label}-common" />
-
-                <apply-filters-to-dir filters.target.dir="${temp.dir}/grid${version.label}"/>
-                <zip destfile="${basedir}/grid/cagrid_CaArraySvc${version.label}.zip">
-                    <zipfileset dir="${temp.dir}/grid${version.label}" />
-                </zip>
-
                 <unzip dest="${grid.home}/server/${grid.server.name}/deploy/${grid.dir.dest}" src="${basedir}/grid/cagrid_CaArraySvc${version.label}.zip" />
             </sequential>
         </for>
@@ -1673,30 +1540,6 @@ depends="upgrade:jboss:init,common:init,upgrade-ncm:jboss,-install:jboss:configu
                     <include name="run.sh"/>
                 </fileset>
             </replaceregexp>
-        </sequential>
-    </macrodef>
-
-    <macrodef name="apply-filters-to-dir">
-        <attribute name="filters.target.dir" />
-        <sequential>
-            <delete dir="@{filters.target.dir}.filters.temp"/>
-            <copy todir="@{filters.target.dir}.filters.temp" overwrite="true">
-                <fileset dir="@{filters.target.dir}">
-                    <include name="**/*.properties"/>
-                    <include name="**/*.sql"/>
-                    <include name="**/*.xml"/>
-                </fileset>
-                <filterset refid="embedded.filterset"/>
-                <filterset>
-                    <filtersfile file="${properties.file}"/>
-                    <filtersfile file="project.properties"/>
-                </filterset>
-            </copy>
-            <move todir="@{filters.target.dir}">
-                <fileset dir="@{filters.target.dir}.filters.temp">
-                   <different targetdir="@{filters.target.dir}" ignoreFileTimes="true"/>
-                </fileset>
-            </move>
         </sequential>
     </macrodef>
 
