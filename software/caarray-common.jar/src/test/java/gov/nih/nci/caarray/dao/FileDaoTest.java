@@ -106,7 +106,7 @@ import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileCategory;
 import gov.nih.nci.caarray.domain.file.FileStatus;
-import gov.nih.nci.caarray.domain.file.FileTypeRegistry;
+import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.Project;
@@ -129,20 +129,20 @@ import gov.nih.nci.caarray.util.CaArrayUtils;
  * 
  */
 public class FileDaoTest extends AbstractDaoTest {
-    private static FileDao DAO_OBJECT;
+    private FileDao DAO_OBJECT;
 
     // Experiment
-    private static Organism DUMMY_ORGANISM = new Organism();
-    private static Organization DUMMY_PROVIDER = new Organization();
-    private static Project DUMMY_PROJECT_1 = new Project();
-    private static Experiment DUMMY_EXPERIMENT_1 = new Experiment();
-    private static TermSource DUMMY_TERM_SOURCE = new TermSource();
-    private static Category DUMMY_CATEGORY = new Category();
+    private Organism DUMMY_ORGANISM;
+    private Organization DUMMY_PROVIDER;
+    private Project DUMMY_PROJECT_1;
+    private Experiment DUMMY_EXPERIMENT_1;
+    private TermSource DUMMY_TERM_SOURCE;
+    private Category DUMMY_CATEGORY;
 
     // Annotations
-    private static Term DUMMY_REPLICATE_TYPE = new Term();
-    private static Term DUMMY_NORMALIZATION_TYPE = new Term();
-    private static Term DUMMY_QUALITY_CTRL_TYPE = new Term();
+    private Term DUMMY_REPLICATE_TYPE;
+    private Term DUMMY_NORMALIZATION_TYPE;
+    private Term DUMMY_QUALITY_CTRL_TYPE;
 
     private static QuantitationType DUMMY_QUANT_TYPE = new QuantitationType();
 
@@ -154,9 +154,7 @@ public class FileDaoTest extends AbstractDaoTest {
      */
     @Before
     public void setup() {
-        DAO_OBJECT = new FileDaoImpl(this.hibernateHelper, this.typeRegistry);
-        VOCABULARY_DAO = new VocabularyDaoImpl(this.hibernateHelper);
-
+        initializeDao(); 
         // Experiment
         DUMMY_ORGANISM = new Organism();
         DUMMY_PROVIDER = new Organization();
@@ -172,16 +170,25 @@ public class FileDaoTest extends AbstractDaoTest {
 
         // Initialize all the dummy objects needed for the tests.
         initializeProjects();
-
-        DUMMY_QUANT_TYPE = new QuantitationType();
-        DUMMY_QUANT_TYPE.setDataType(DataType.BOOLEAN);
-        DUMMY_QUANT_TYPE.setName("dummy_quant");
+    }
+    
+    // Has dependency on AbstractHibernateTest.baseIntegrationSetUp() being called first !!!
+    // Otherwise CaArrayDaoFactoryImpl.CaArrayHibernateHelper will not have been initialized 
+    // via Guice injection, and the DAO created will not have a hibernateHelper
+    private void initializeDao() {
+        if (DAO_OBJECT == null) {
+            DAO_OBJECT = CaArrayDaoFactory.INSTANCE.getFileDao();
+        }
+        
+        if (VOCABULARY_DAO == null) {
+            VOCABULARY_DAO = CaArrayDaoFactory.INSTANCE.getVocabularyDao();
+        }
     }
 
     /**
      * Initialize the dummy <code>Project</code> objects.
      */
-    private static void initializeProjects() {
+    private void initializeProjects() {
         setExperimentSummary();
         DUMMY_TERM_SOURCE.setName("Dummy MGED Ontology");
         DUMMY_TERM_SOURCE.setUrl("test url");
@@ -191,11 +198,12 @@ public class FileDaoTest extends AbstractDaoTest {
         DUMMY_ORGANISM.setTermSource(DUMMY_TERM_SOURCE);
         setExperimentAnnotations();
         DUMMY_PROJECT_1.setExperiment(DUMMY_EXPERIMENT_1);
+        DUMMY_EXPERIMENT_1.setProject(DUMMY_PROJECT_1);
         DUMMY_EXPERIMENT_1.setOrganism(DUMMY_ORGANISM);
         DUMMY_EXPERIMENT_1.setManufacturer(DUMMY_PROVIDER);
     }
 
-    private static void setExperimentSummary() {
+    private void setExperimentSummary() {
         DUMMY_EXPERIMENT_1.setTitle("DummyExperiment1");
         DUMMY_EXPERIMENT_1.setDescription("DummyExperiment1Desc");
         final Date currDate = new Date();
@@ -204,7 +212,7 @@ public class FileDaoTest extends AbstractDaoTest {
         DUMMY_EXPERIMENT_1.setDesignDescription("Working on it");
     }
 
-    private static void setExperimentAnnotations() {
+    private void setExperimentAnnotations() {
         DUMMY_REPLICATE_TYPE.setValue("Dummy Replicate Type");
         DUMMY_REPLICATE_TYPE.setSource(DUMMY_TERM_SOURCE);
         DUMMY_REPLICATE_TYPE.setCategory(DUMMY_CATEGORY);
@@ -233,7 +241,7 @@ public class FileDaoTest extends AbstractDaoTest {
         VOCABULARY_DAO.save(DUMMY_QUALITY_CTRL_TYPE);
         VOCABULARY_DAO.save(DUMMY_NORMALIZATION_TYPE);
         DAO_OBJECT.save(DUMMY_PROJECT_1);
-        DAO_OBJECT.save(DUMMY_QUANT_TYPE);
+        assertTrue(hibernateHelper.getCurrentSession().contains(DUMMY_EXPERIMENT_1));
         DAO_OBJECT.flushSession();
         this.hibernateHelper.getCurrentSession().refresh(DUMMY_EXPERIMENT_1);
     }
@@ -245,104 +253,118 @@ public class FileDaoTest extends AbstractDaoTest {
         saveSupportingObjects();
         final CaArrayFile DUMMY_FILE_1 = new CaArrayFile();
         DUMMY_FILE_1.setName(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF.getName());
-        DUMMY_FILE_1.setFileType(FileTypeRegistry.MAGE_TAB_IDF);
+        DUMMY_FILE_1.setFileType(FileType.MAGE_TAB_IDF);
         DUMMY_FILE_1.setFileStatus(FileStatus.UPLOADED);
-        DUMMY_FILE_1.setDataHandle(DUMMY_DATA_HANDLE);
+        writeContents1(DUMMY_FILE_1, "test blob");
         DUMMY_FILE_1.setProject(DUMMY_PROJECT_1);
         DUMMY_PROJECT_1.getFiles().add(DUMMY_FILE_1);
         DAO_OBJECT.save(DUMMY_FILE_1);
         tx.commit();
 
-        tx = this.hibernateHelper.beginTransaction();
-        this.hibernateHelper.getCurrentSession().clear();
-        CaArrayFile retrieved =
-                (CaArrayFile) this.hibernateHelper.getCurrentSession().get(CaArrayFile.class, DUMMY_FILE_1.getId());
-        assertNotNull(retrieved);
-        assertEquals(DUMMY_DATA_HANDLE, retrieved.getDataHandle());
-        DAO_OBJECT.remove(retrieved);
+        tx = hibernateHelper.beginTransaction();
+        DAO_OBJECT.deleteHqlBlobsByProjectId(DUMMY_PROJECT_1.getId());
         tx.commit();
+    }
+    
+	private final void writeContents(CaArrayFile file, InputStream data) throws IOException {
+        this.DAO_OBJECT.writeContents(file, data);
+    }
 
-        tx = this.hibernateHelper.beginTransaction();
-        this.hibernateHelper.getCurrentSession().clear();
-        retrieved = (CaArrayFile) this.hibernateHelper.getCurrentSession().get(CaArrayFile.class, DUMMY_FILE_1.getId());
-        assertNull(retrieved);
+    // Quick hack to remedy the fact that writeContents(CaArrayFile, String) has been declared public static,
+    // which it probably should never have been. That has led to it being called outside of this class from 40+
+    // other places, where the callees really have no dependencies on this class other than this method. 
+    // In other words, the writeContents method should be moved to a utility class accessible to all external callees.
+    public void writeContents1(CaArrayFile file, String data) throws IOException {
+        writeContents(file, IOUtils.toInputStream(data));
+    }
+
+    public static void writeContents(CaArrayFile file, String data) throws IOException {
+        FileDaoTest fdt = new FileDaoTest(); 
+        fdt.initializeDao();
+        fdt.writeContents1(file, data);       
+    }
+
+    @Test
+    public void testUnknownProjectIds() {
+        Transaction tx = hibernateHelper.beginTransaction();
+        DAO_OBJECT.deleteHqlBlobsByProjectId(12345678L);
+        // we are simply testing that this does not cause an exception. the result is a no-op
         tx.commit();
-
     }
 
     @Test
     public void testSearchByCriteria() throws Exception {
-        Transaction tx = this.hibernateHelper.beginTransaction();
+        Transaction tx = hibernateHelper.beginTransaction();
 
-        saveSupportingObjects();
+        saveSupportingObjects();       
 
-        final CaArrayFile file1 = new CaArrayFile();
+        CaArrayFile file1 = new CaArrayFile();
         file1.setName("file1.idf");
-        file1.setFileType(FileTypeRegistry.MAGE_TAB_IDF);
+        file1.setFileType(FileType.MAGE_TAB_IDF);
         file1.setFileStatus(FileStatus.UPLOADED);
-        file1.setDataHandle(DUMMY_DATA_HANDLE);
+        writeContents1(file1, "test idf");
         file1.setProject(DUMMY_PROJECT_1);
         DUMMY_PROJECT_1.getFiles().add(file1);
         DAO_OBJECT.save(file1);
 
-        final Hybridization h1 = new Hybridization();
-        h1.setName("h1");
+        Hybridization h1 = new Hybridization();
+        h1.setName("h1");        
         DUMMY_EXPERIMENT_1.getHybridizations().add(h1);
         h1.setExperiment(DUMMY_EXPERIMENT_1);
-        final RawArrayData rawArrayData = new RawArrayData();
+        RawArrayData rawArrayData = new RawArrayData();
         h1.addArrayData(rawArrayData);
         rawArrayData.addHybridization(h1);
         rawArrayData.setName("h1");
-        final CaArrayFile file2 = new CaArrayFile();
+        CaArrayFile file2 = new CaArrayFile();
         file2.setName("file2.cel");
-        file2.setFileType(AFFYMETRIX_CEL);
+        file2.setFileType(FileType.AFFYMETRIX_CEL);
         file2.setFileStatus(FileStatus.UPLOADED);
-        file2.setDataHandle(DUMMY_DATA_HANDLE);
+        writeContents1(file2, "test cel");
         file2.setProject(DUMMY_PROJECT_1);
         rawArrayData.setDataFile(file2);
         DUMMY_PROJECT_1.getFiles().add(file2);
         DAO_OBJECT.save(file2);
-        DAO_OBJECT.save(rawArrayData);
-
-        final Hybridization h2 = new Hybridization();
-        h2.setName("h2");
+        DAO_OBJECT.save(rawArrayData);        
+        
+        Hybridization h2 = new Hybridization();
+        h2.setName("h2");        
         DUMMY_EXPERIMENT_1.getHybridizations().add(h2);
         h2.setExperiment(DUMMY_EXPERIMENT_1);
-        final DerivedArrayData derivedArrayData = new DerivedArrayData();
+        DerivedArrayData derivedArrayData = new DerivedArrayData();
         h2.getDerivedDataCollection().add(derivedArrayData);
-        derivedArrayData.addHybridization(h2);
-        final CaArrayFile file3 = new CaArrayFile();
+        derivedArrayData.addHybridization(h2);        
+        CaArrayFile file3 = new CaArrayFile();
         file3.setName("file3.chp");
-        file3.setFileType(AFFYMETRIX_CHP);
+        file3.setFileType(FileType.AFFYMETRIX_CHP);
         file3.setFileStatus(FileStatus.UPLOADED);
-        file3.setDataHandle(DUMMY_DATA_HANDLE);
+        writeContents1(file3, "test chp");
         file3.setProject(DUMMY_PROJECT_1);
         derivedArrayData.setDataFile(file3);
         DUMMY_PROJECT_1.getFiles().add(file3);
-        DAO_OBJECT.save(file3);
+        DAO_OBJECT.save(file3);        
         DAO_OBJECT.save(derivedArrayData);
 
-        final Source so1 = new Source();
+        Source so1 = new Source();
         so1.setName("source");
         DUMMY_EXPERIMENT_1.getSources().add(so1);
         so1.setExperiment(DUMMY_EXPERIMENT_1);
-        final Sample sa1 = new Sample();
+        Sample sa1 = new Sample();
         sa1.setName("sample");
         so1.getSamples().add(sa1);
         sa1.getSources().add(so1);
         DUMMY_EXPERIMENT_1.getSamples().add(sa1);
         sa1.setExperiment(DUMMY_EXPERIMENT_1);
-        final Extract ex1 = new Extract();
+        Extract ex1 = new Extract();
         ex1.setName("extract1");
         sa1.getExtracts().add(ex1);
         ex1.getSamples().add(sa1);
         DUMMY_EXPERIMENT_1.getExtracts().add(ex1);
         ex1.setExperiment(DUMMY_EXPERIMENT_1);
-        final Extract ex2 = new Extract();
+        Extract ex2 = new Extract();
         ex2.setName("extract2");
         DUMMY_EXPERIMENT_1.getExtracts().add(ex2);
         ex2.setExperiment(DUMMY_EXPERIMENT_1);
-        final LabeledExtract le1 = new LabeledExtract();
+        LabeledExtract le1 = new LabeledExtract();
         le1.setName("LE1");
         ex1.getLabeledExtracts().add(le1);
         le1.getExtracts().add(ex1);
@@ -352,16 +374,16 @@ public class FileDaoTest extends AbstractDaoTest {
         h1.getLabeledExtracts().add(le1);
         DUMMY_EXPERIMENT_1.getLabeledExtracts().add(le1);
         le1.setExperiment(DUMMY_EXPERIMENT_1);
-        final LabeledExtract le2 = new LabeledExtract();
-        le2.setName("LE2");
+        LabeledExtract le2 = new LabeledExtract();
+        le2.setName("LE2");        
         ex2.getLabeledExtracts().add(le2);
         le2.getExtracts().add(ex2);
         le2.getHybridizations().add(h2);
         h2.getLabeledExtracts().add(le2);
         DUMMY_EXPERIMENT_1.getLabeledExtracts().add(le2);
         le2.setExperiment(DUMMY_EXPERIMENT_1);
-        final LabeledExtract le3 = new LabeledExtract();
-        le3.setName("LE3");
+        LabeledExtract le3 = new LabeledExtract();
+        le3.setName("LE3");        
         le3.getHybridizations().add(h1);
         h1.getLabeledExtracts().add(le3);
         le3.getHybridizations().add(h2);
@@ -370,47 +392,46 @@ public class FileDaoTest extends AbstractDaoTest {
         le3.setExperiment(DUMMY_EXPERIMENT_1);
         DAO_OBJECT.save(DUMMY_EXPERIMENT_1);
 
-        final CaArrayFile file4 = new CaArrayFile();
+        CaArrayFile file4 = new CaArrayFile();
         file4.setName("file4.cdf");
-        file4.setFileType(AFFYMETRIX_CDF);
+        file4.setFileType(FileType.AFFYMETRIX_CDF);
         file4.setFileStatus(FileStatus.UPLOADED);
-        file4.setDataHandle(DUMMY_DATA_HANDLE);
+        writeContents1(file4, "test ad");
         DAO_OBJECT.save(file4);
 
-        final CaArrayFile file5 = new CaArrayFile();
+        CaArrayFile file5 = new CaArrayFile();
         file5.setName("file5.txt");
         file5.setFileStatus(FileStatus.SUPPLEMENTAL);
-        file5.setDataHandle(DUMMY_DATA_HANDLE);
+        writeContents1(file5, "blah blah");
         file5.setProject(DUMMY_PROJECT_1);
         DUMMY_PROJECT_1.getFiles().add(file5);
         DAO_OBJECT.save(file5);
 
-        final Hybridization h3 = new Hybridization();
-        h3.setName("h3");
+        Hybridization h3 = new Hybridization();
+        h3.setName("h3");        
         DUMMY_EXPERIMENT_1.getHybridizations().add(h3);
         h3.setExperiment(DUMMY_EXPERIMENT_1);
-        final LabeledExtract le4 = new LabeledExtract();
-        le4.setName("LE4");
+        LabeledExtract le4 = new LabeledExtract();
+        le4.setName("LE4");        
         le4.getHybridizations().add(h3);
         h3.getLabeledExtracts().add(le4);
         DUMMY_EXPERIMENT_1.getLabeledExtracts().add(le4);
-
-        final CaArrayFile file6 = new CaArrayFile();
+        
+        CaArrayFile file6 = new CaArrayFile();
         file6.setName("file6.chp");
-        file6.setFileType(AFFYMETRIX_CHP);
+        file6.setFileType(FileType.AFFYMETRIX_CHP);
         file6.setFileStatus(FileStatus.UPLOADED);
-        file6.setDataHandle(DUMMY_DATA_HANDLE);
-        DAO_OBJECT.save(file6);
+        writeContents1(file6, "test chp2");
+        DAO_OBJECT.save(file6);        
+
 
         tx.commit();
 
-        tx = this.hibernateHelper.beginTransaction();
-        final Experiment e =
-                CaArrayDaoFactory.INSTANCE.getSearchDao().retrieve(Experiment.class, DUMMY_EXPERIMENT_1.getId());
-
-        final PageSortParams<CaArrayFile> params =
-                new PageSortParams<CaArrayFile>(5, 0, new AdHocSortCriterion<CaArrayFile>("name"), false);
-        final FileSearchCriteria criteria = new FileSearchCriteria();
+        tx = hibernateHelper.beginTransaction();
+        Experiment e = CaArrayDaoFactory.INSTANCE.getSearchDao().retrieve(Experiment.class, DUMMY_EXPERIMENT_1.getId());
+        
+        PageSortParams<CaArrayFile> params = new PageSortParams<CaArrayFile>(5, 0, new AdHocSortCriterion<CaArrayFile>("name"), false);
+        FileSearchCriteria criteria = new FileSearchCriteria();
         criteria.getCategories().add(FileCategory.RAW_DATA);
         criteria.getCategories().add(FileCategory.DERIVED_DATA);
 
@@ -454,7 +475,7 @@ public class FileDaoTest extends AbstractDaoTest {
         criteria.getExperimentNodes().add(h2);
         files = DAO_OBJECT.searchFiles(params, criteria);
         assertEquals(1, files.size());
-        assertEquals(file3.getName(), files.get(0).getName());
+        assertEquals(file3.getName(), files.get(0).getName());        
 
         criteria.getCategories().add(FileCategory.RAW_DATA);
         files = DAO_OBJECT.searchFiles(params, criteria);
@@ -466,7 +487,7 @@ public class FileDaoTest extends AbstractDaoTest {
         criteria.getExperimentNodes().add(h1);
         files = DAO_OBJECT.searchFiles(params, criteria);
         assertEquals(1, files.size());
-        assertEquals(file2.getName(), files.get(0).getName());
+        assertEquals(file2.getName(), files.get(0).getName());                
 
         criteria.getExperimentNodes().clear();
         criteria.getExperimentNodes().add(h3);
@@ -477,23 +498,23 @@ public class FileDaoTest extends AbstractDaoTest {
         criteria.setExtension("CHP");
         files = DAO_OBJECT.searchFiles(params, criteria);
         assertEquals(1, files.size());
-        assertEquals(file3.getName(), files.get(0).getName());
+        assertEquals(file3.getName(), files.get(0).getName());                
         criteria.setExtension(".CHP");
         files = DAO_OBJECT.searchFiles(params, criteria);
         assertEquals(1, files.size());
-        assertEquals(file3.getName(), files.get(0).getName());
+        assertEquals(file3.getName(), files.get(0).getName());                
 
         criteria.setExtension(null);
-        criteria.getTypes().add(AFFYMETRIX_CEL);
+        criteria.getTypes().add(FileType.AFFYMETRIX_CEL);
         files = DAO_OBJECT.searchFiles(params, criteria);
         assertEquals(1, files.size());
-        assertEquals(file2.getName(), files.get(0).getName());
+        assertEquals(file2.getName(), files.get(0).getName());                
 
         criteria.getTypes().clear();
         criteria.getExperimentNodes().add(so1);
         files = DAO_OBJECT.searchFiles(params, criteria);
         assertEquals(1, files.size());
-        assertEquals(file2.getName(), files.get(0).getName());
+        assertEquals(file2.getName(), files.get(0).getName());                
 
         criteria.getExperimentNodes().add(sa1);
         files = DAO_OBJECT.searchFiles(params, criteria);
@@ -505,15 +526,15 @@ public class FileDaoTest extends AbstractDaoTest {
         criteria.getExperimentNodes().add(ex2);
         files = DAO_OBJECT.searchFiles(params, criteria);
         assertEquals(2, files.size());
-        assertEquals(file2.getName(), files.get(0).getName());
-        assertEquals(file3.getName(), files.get(1).getName());
+        assertEquals(file2.getName(), files.get(0).getName());                
+        assertEquals(file3.getName(), files.get(1).getName());                
 
         criteria.getExperimentNodes().clear();
         criteria.getExperimentNodes().add(le3);
         files = DAO_OBJECT.searchFiles(params, criteria);
         assertEquals(2, files.size());
-        assertEquals(file2.getName(), files.get(0).getName());
-        assertEquals(file3.getName(), files.get(1).getName());
+        assertEquals(file2.getName(), files.get(0).getName());                
+        assertEquals(file3.getName(), files.get(1).getName());                
 
         criteria.getExperimentNodes().clear();
         criteria.getExperimentNodes().add(le4);
@@ -525,12 +546,12 @@ public class FileDaoTest extends AbstractDaoTest {
         criteria.getExperimentNodes().add(h2);
         files = DAO_OBJECT.searchFiles(params, criteria);
         assertEquals(2, files.size());
-        assertEquals(file2.getName(), files.get(0).getName());
-        assertEquals(file3.getName(), files.get(1).getName());
+        assertEquals(file2.getName(), files.get(0).getName());                
+        assertEquals(file3.getName(), files.get(1).getName());                
 
         tx.commit();
     }
-
+    
     @Test
     public void testFilePermissions() throws Exception {
         CaArrayUsernameHolder.setUser(STANDARD_USER);
@@ -540,25 +561,26 @@ public class FileDaoTest extends AbstractDaoTest {
 
         final CaArrayFile file1 = new CaArrayFile();
         file1.setName("file1");
-        file1.setFileType(FileTypeRegistry.MAGE_TAB_IDF);
+        file1.setFileType(FileType.MAGE_TAB_IDF);
         file1.setFileStatus(FileStatus.UPLOADED);
-        file1.setDataHandle(DUMMY_DATA_HANDLE);
+        writeContents1(file1, "test idf");
         file1.setProject(DUMMY_PROJECT_1);
         DUMMY_PROJECT_1.getFiles().add(file1);
         DAO_OBJECT.save(file1);
 
         final CaArrayFile file2 = new CaArrayFile();
         file2.setName("file2");
-        file2.setFileType(AFFYMETRIX_CDF);
+        file2.setFileType(FileType.AFFYMETRIX_CDF);
         file2.setFileStatus(FileStatus.UPLOADED);
-        file2.setDataHandle(DUMMY_DATA_HANDLE);
+        writeContents1(file2, "test cdf");
         DAO_OBJECT.save(file2);
 
         final CaArrayFile file3 = new CaArrayFile();
         file3.setName("file3");
-        file3.setFileType(AFFYMETRIX_CDF);
+        file3.setFileType(FileType.AFFYMETRIX_CDF);
         file3.setFileStatus(FileStatus.IMPORTED);
         file3.setDataHandle(DUMMY_DATA_HANDLE);
+        writeContents1(file3, "test cdf");
         DAO_OBJECT.save(file3);
 
         tx.commit();
@@ -588,9 +610,8 @@ public class FileDaoTest extends AbstractDaoTest {
         saveSupportingObjects();
         final CaArrayFile f1 = new CaArrayFile();
         f1.setName("dummy1");
-        f1.setFileType(FileTypeRegistry.MAGE_TAB_IDF);
+        f1.setFileType(FileType.MAGE_TAB_IDF);
         f1.setFileStatus(FileStatus.UPLOADED);
-        f1.setDataHandle(DUMMY_DATA_HANDLE);
         f1.setProject(DUMMY_PROJECT_1);
         DUMMY_PROJECT_1.getFiles().add(f1);
         DAO_OBJECT.save(f1);
@@ -605,9 +626,8 @@ public class FileDaoTest extends AbstractDaoTest {
         arrayData.setName("h1");
         final CaArrayFile f2 = new CaArrayFile();
         f2.setName("dummy2");
-        f2.setFileType(AFFYMETRIX_DAT);
+        f2.setFileType(FileType.AFFYMETRIX_DAT);
         f2.setFileStatus(FileStatus.IMPORTED_NOT_PARSED);
-        f2.setDataHandle(DUMMY_DATA_HANDLE);
         f2.setProject(DUMMY_PROJECT_1);
         arrayData.setDataFile(f2);
         DUMMY_PROJECT_1.getFiles().add(f2);
@@ -616,53 +636,87 @@ public class FileDaoTest extends AbstractDaoTest {
 
         final CaArrayFile f3 = new CaArrayFile();
         f3.setName("dummy3");
-        f3.setFileType(FileTypeRegistry.MAGE_TAB_IDF);
+        f3.setFileType(FileType.MAGE_TAB_IDF);
         f3.setFileStatus(FileStatus.IMPORTED);
-        f3.setDataHandle(DUMMY_DATA_HANDLE);
         f3.setProject(DUMMY_PROJECT_1);
         DUMMY_PROJECT_1.getFiles().add(f3);
         DAO_OBJECT.save(f3);
 
         h1.setExperiment(DUMMY_EXPERIMENT_1);
-        final DerivedArrayData arrayData2 = new DerivedArrayData();
+        DerivedArrayData arrayData2 = new DerivedArrayData();
         h1.addArrayData(arrayData2);
         arrayData2.addHybridization(h1);
         arrayData.setName("h1");
-        final CaArrayFile f4 = new CaArrayFile();
+        CaArrayFile f4 = new CaArrayFile();
         f4.setName("dummy4");
-        f4.setFileType(AFFYMETRIX_CHP);
+        f4.setFileType(FileType.AFFYMETRIX_CHP);
         f4.setFileStatus(FileStatus.IMPORTED);
         f4.setProject(DUMMY_PROJECT_1);
-        f4.setDataHandle(DUMMY_DATA_HANDLE);
         arrayData2.setDataFile(f4);
         DUMMY_PROJECT_1.getFiles().add(f4);
         DAO_OBJECT.save(f4);
-        DAO_OBJECT.save(arrayData2);
+        DAO_OBJECT.save(arrayData2);        
 
-        final CaArrayFile f5 = new CaArrayFile();
+        CaArrayFile f5 = new CaArrayFile();
         f5.setName("dummy5");
         f5.setFileStatus(FileStatus.SUPPLEMENTAL);
-        f5.setDataHandle(DUMMY_DATA_HANDLE);
         f5.setProject(DUMMY_PROJECT_1);
         DUMMY_PROJECT_1.getFiles().add(f5);
         DAO_OBJECT.save(f5);
 
-        final CaArrayFile f6 = new CaArrayFile();
+        CaArrayFile f6 = new CaArrayFile();
         f6.setName("dummy6");
-        f6.setFileType(AFFYMETRIX_CDF);
+        f6.setFileType(FileType.AFFYMETRIX_CDF);
         f6.setFileStatus(FileStatus.IMPORTED);
-        f6.setDataHandle(DUMMY_DATA_HANDLE);
         DAO_OBJECT.save(f6);
 
         tx.commit();
 
-        tx = this.hibernateHelper.beginTransaction();
-        final List<CaArrayFile> files = DAO_OBJECT.getDeletableFiles(DUMMY_PROJECT_1.getId());
+        tx = hibernateHelper.beginTransaction();
+        List<CaArrayFile> files = DAO_OBJECT.getDeletableFiles(DUMMY_PROJECT_1.getId());
         assertEquals(4, files.size());
         assertEquals(f1, files.get(0));
         assertEquals(f2, files.get(1));
         assertEquals(f3, files.get(2));
         assertEquals(f5, files.get(3));
         tx.commit();
+    }
+    
+    @Test
+    public void testClearAndEvictionOnSave() throws IOException {
+        Transaction tx = hibernateHelper.beginTransaction();
+
+        CaArrayFile f1 = new CaArrayFile();
+        f1.setName("dummy1");
+        f1.setFileType(FileType.MAGE_TAB_IDF);
+        f1.setFileStatus(FileStatus.UPLOADED);
+
+        writeContents1(f1, "test cdf");
+
+        List<BlobHolder> blobs = getBlobs(f1);
+        for (BlobHolder bh : blobs) {
+            assertNotNull(bh.getContents());
+        }
+        DAO_OBJECT.saveAndEvict(f1);
+
+        boolean cleared = false;
+        for (BlobHolder bh : blobs) {
+            assertNull(bh.getContents());
+            cleared = true;
+        }
+        assertTrue(cleared);
+        tx.rollback();
+    }
+
+    private List<BlobHolder> getBlobs(CaArrayFile file) {
+        try {
+            Method getBlobParts = MultiPartBlob.class.getDeclaredMethod("getBlobParts");
+            getBlobParts.setAccessible(true);
+            Method getMultiPartBlob = CaArrayFile.class.getDeclaredMethod("getMultiPartBlob");
+            getMultiPartBlob.setAccessible(true);
+            return (List<BlobHolder>) getBlobParts.invoke(getMultiPartBlob.invoke(file));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

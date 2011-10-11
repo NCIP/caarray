@@ -93,7 +93,8 @@ import gov.nih.nci.caarray.validation.InvalidDataFileException;
  */
 public class ArrayDataServiceStub implements ArrayDataService {
     @Override
-    public void importData(CaArrayFile caArrayFile, boolean createAnnotation, DataImportOptions importOptions)
+    public void importData(CaArrayFile caArrayFile, boolean createAnnotation, DataImportOptions importOptions, 
+            MageTabDocumentSet mTabSet)
             throws InvalidDataFileException {
         // no-op
     }
@@ -109,6 +110,6 @@ public class ArrayDataServiceStub implements ArrayDataService {
 
     @Override
     public FileValidationResult validate(CaArrayFile arrayDataFile, MageTabDocumentSet mTabSet, boolean reimport) {
-        return new FileValidationResult();
+        return new FileValidationResult(new File(arrayDataFile.getName()));
     }
 }
