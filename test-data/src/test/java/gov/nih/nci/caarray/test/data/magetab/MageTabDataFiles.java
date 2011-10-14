@@ -388,6 +388,9 @@ public class MageTabDataFiles {
     public static final File GOOD_VOCABULARY_TERM_SOURCES_IDF = new File(MageTabDataFiles.class.getResource(
     "/magetab/test_term_sources/test.good.idf").getFile());
     
+    public static final File GOOD_VOCABULARY_TERM_SOURCES_SDRF = new File(MageTabDataFiles.class.getResource(
+    "/magetab/test_term_sources/test.good.sdrf").getFile());
+    
     public static final File DEFECT_13164_IDF = new File(MageTabDataFiles.class.getResource(
     "/magetab/test_organism_term_source/test.idf").getFile());
     
@@ -400,9 +403,12 @@ public class MageTabDataFiles {
     public static final File DEFECT_13164_GOOD_SDRF = new File(MageTabDataFiles.class.getResource(
     "/magetab/test_organism_term_source/test.good.sdrf").getFile());
     
-    public static final File GOOD_VOCABULARY_TERM_SOURCES_SDRF = new File(MageTabDataFiles.class.getResource(
-    "/magetab/test_term_sources/test.good.sdrf").getFile());
+    public static final File DEFECT_13164_CEL = new File(MageTabDataFiles.class.getResource(
+    "/magetab/test_organism_term_source/Test3.CEL").getFile());
     
+    public static final File DEFECT_13164_CHP = new File(MageTabDataFiles.class.getResource(
+    "/magetab/test_organism_term_source/Test3.CHP").getFile());
+
     public static final File TESTING_VOCABULARY_TERM_SOURCES_CEL = new File(MageTabDataFiles.class.getResource(
     "/magetab/test_term_sources/Test3.CEL").getFile());
     
