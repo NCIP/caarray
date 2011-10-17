@@ -369,4 +369,12 @@ public class PairDataHandler extends AbstractDataFileHandler {
         }
         return result;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean parsesData() {
+        return true;
+    }
 }

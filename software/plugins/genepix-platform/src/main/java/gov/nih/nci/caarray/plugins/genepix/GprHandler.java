@@ -653,4 +653,12 @@ public final class GprHandler extends AbstractDataFileHandler {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean parsesData() {
+        return true;
+    }
+
 }

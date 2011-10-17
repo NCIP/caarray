@@ -359,6 +359,11 @@ public class ArrayDesignServiceIntegrationTest extends AbstractServiceIntegratio
         }
 
         @Override
+        public boolean parsesData() {
+             return false;
+        }
+
+        @Override
         public void load(ArrayDesign arrayDesign) throws PlatformFileReadException {
             arrayDesign.setName(TEST_DESIGN_NAME);
             arrayDesign.setLsid(TEST_LSID);

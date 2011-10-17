@@ -80,82 +80,25 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.application.file;
+package gov.nih.nci.caarray.application.arraydata;
 
-import gov.nih.nci.caarray.application.arraydata.DataImportOptions;
-import gov.nih.nci.caarray.dao.ProjectDao;
-import gov.nih.nci.caarray.dao.SearchDao;
-import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
-import gov.nih.nci.caarray.domain.file.FileStatus;
-import gov.nih.nci.caarray.domain.project.JobType;
-import gov.nih.nci.caarray.domain.project.Project;
-import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
-import gov.nih.nci.caarray.magetab.MageTabParsingException;
+import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.validation.InvalidDataFileException;
 
-import org.apache.log4j.Logger;
-
-import com.google.inject.Inject;
 
 /**
- * Encapsulates the functionality necessary for importing a set of files into a project.
+ * Convenience abstract super class for ArrayDataService interface.
+ * 
  */
-final class ProjectFilesImportJob extends AbstractProjectFilesJob {
-
-    private static final long serialVersionUID = 1L;
-    private static final Logger LOG = Logger.getLogger(ProjectFilesImportJob.class);
-
-    private final DataImportOptions dataImportOptions;
-
-    // CHECKSTYLE:OFF more than 7 parameters are okay for injected constructor
-    @SuppressWarnings("PMD.ExcessiveParameterList")
-    @Inject
-    ProjectFilesImportJob(String username, Project targetProject,
-            CaArrayFileSet fileSet, DataImportOptions dataImportOptions, ArrayDataImporter arrayDataImporter,
-            MageTabImporter mageTabImporter, ProjectDao projectDao, SearchDao searchDao) {
-    // CHECKSTYLE:ON
-        super(username, targetProject, fileSet, arrayDataImporter,
-                mageTabImporter, projectDao, searchDao);
-        this.dataImportOptions = dataImportOptions;
-    }
-
+public abstract class AbstractArrayDataService implements ArrayDataService {
     /**
+     * Delegates to {@link ArrayDataService#importData(CaArrayFile, boolean, DataImportOptions, MageTabDocumentSet)} 
+     * passing null for the MageTabDocumentSet param.
      * {@inheritDoc}
+
      */
-    public JobType getJobType() {
-        return JobType.DATA_FILE_IMPORT;
+    public final void importData(CaArrayFile file, boolean createAnnotation, DataImportOptions dataImportOptions)
+            throws InvalidDataFileException {
+        importData(file, createAnnotation, dataImportOptions, null);
     }
-
-    @Override
-    protected void doExecute() {
-        CaArrayFileSet fileSet = getFileSet();
-        doValidate(fileSet);
-        final FileStatus status = getFileSet().getStatus();
-        if (status.equals(FileStatus.VALIDATED) || status.equals(FileStatus.VALIDATED_NOT_PARSED)) {
-            MageTabDocumentSet mageTabDocSet = importAnnotation(fileSet);
-            importArrayData(fileSet, mageTabDocSet);
-        }
-    }
-
-    private MageTabDocumentSet importAnnotation(CaArrayFileSet fileSet) {
-        MageTabDocumentSet mageTabDocSet = null; 
-        try {
-            mageTabDocSet = getMageTabImporter().importFiles(getProject(), fileSet);
-        } catch (final MageTabParsingException e) {
-            LOG.error(e.getMessage(), e);
-        }
-        getProjectDao().flushSession();
-        getProjectDao().clearSession();
-        return mageTabDocSet;
-    }
-
-    private void importArrayData(CaArrayFileSet fileSet, MageTabDocumentSet mTabSet) {
-        final ArrayDataImporter arrayDataImporter = getArrayDataImporter();
-        arrayDataImporter.importFiles(fileSet, this.dataImportOptions, mTabSet);
-    }
-
-    @Override
-    protected FileStatus getInProgressStatus() {
-        return FileStatus.IMPORTING;
-    }
-
 }

@@ -103,6 +103,7 @@ import gov.nih.nci.caarray.domain.sample.Extract;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
+import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.platforms.spi.DataFileHandler;
 import gov.nih.nci.caarray.platforms.spi.PlatformFileReadException;
 import gov.nih.nci.caarray.platforms.unparsed.FallbackUnparsedDataHandler;
@@ -136,11 +137,12 @@ class DataSetImporter extends AbstractArrayDataUtility {
         this.searchDao = searchDao;
     }
 
-    AbstractArrayData
-            importData(CaArrayFile caArrayFile, DataImportOptions dataImportOptions, boolean createAnnnotation) {
+    AbstractArrayData importData(CaArrayFile caArrayFile, DataImportOptions dataImportOptions, 
+            boolean createAnnnotation, MageTabDocumentSet mTabSet) {
         DataFileHandler handler = null;
         try {
-            handler = getHandler(caArrayFile);
+            handler = findAndSetupHandler(caArrayFile, mTabSet);
+            assert handler != null : "findAndSetupHandler must never return null";
             final Helper helper = new Helper(caArrayFile, dataImportOptions, handler);
             return helper.importData(createAnnnotation);
         } catch (final PlatformFileReadException e) {
@@ -188,9 +190,8 @@ class DataSetImporter extends AbstractArrayDataUtility {
             addColumns();
 
             this.arrayData.getDataFile().setFileStatus(
-                    this.arrayData.getDataFile().getFileType().isParsed() ? FileStatus.IMPORTED
-                            : FileStatus.IMPORTED_NOT_PARSED);
-
+                    this.handler.parsesData() ? FileStatus.IMPORTED : FileStatus.IMPORTED_NOT_PARSED);
+            
             return this.arrayData;
         }
 

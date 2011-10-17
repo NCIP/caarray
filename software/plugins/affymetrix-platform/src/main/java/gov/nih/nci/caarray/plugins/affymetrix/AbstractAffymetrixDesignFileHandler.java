@@ -139,6 +139,14 @@ abstract class AbstractAffymetrixDesignFileHandler extends AbstractDesignFileHan
      * {@inheritDoc}
      */
     @Override
+    public boolean parsesData() {
+        return true;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void load(ArrayDesign arrayDesign) {
         final String arrayDesignName = getArrayDesignName();
         arrayDesign.setName(arrayDesignName);

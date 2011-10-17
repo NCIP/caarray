@@ -508,8 +508,19 @@ class AgilentRawTextDataHandler extends AbstractDataFileHandler {
      */
     @Override
     public boolean requiresMageTab() throws PlatformFileReadException {
-        readHeader();
-        return isTwoColor();
+        //readHeader();
+        //return isTwoColor();
+        
+        //Replace the above with below. - Andrew Sy 2011-08-24
+        
+        //ARRAY-2059: 
+        //[Multiple associated array designs causes Agilent gene expression data to fail validation and import] 
+        //This handler always requires MAGE-TAB. 
+        //Otherwise there is now way to map array data file to its array design, 
+        //in case there are multiple array design files in the experiment. 
+        
+        return true;
+        
     }
 
     /**
@@ -517,12 +528,29 @@ class AgilentRawTextDataHandler extends AbstractDataFileHandler {
      */
     @Override
     public List<LSID> getReferencedArrayDesignCandidateIds() {
-        try {
-            readHeader();
-            return Collections.singletonList(this.arrayDesignId);
-        } catch (final PlatformFileReadException e) {
-            return Collections.emptyList();
-        }
+//        try {
+//            readHeader();
+//            return Collections.singletonList(this.arrayDesignId);
+//        } catch (final PlatformFileReadException e) {
+//            return Collections.emptyList();
+//        }
+
+        //Replace the above with below. - Andrew Sy 2011-08-24
+        
+        //ARRAY-2059: 
+        //[Multiple associated array designs causes Agilent gene expression data to fail validation and import] 
+        //Info about referenced array design(s) should come externally from SDRF file, 
+        //not from the array data file being parsed
+        return Collections.emptyList();
+    
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean parsesData() {
+        return true;
     }
 
     /**

@@ -215,7 +215,7 @@ public class FileManagementServiceTest extends AbstractServiceTest {
         final Provider<UsernameHolder> usernameHolderProvider = Providers.of(mock(UsernameHolder.class));
 
         final JobFactory jobFactory =
-                new JobFactoryImpl(usernameHolderProvider, arrayDaoProvider, arrayDataImporterProvider,
+                new JobFactoryImpl(arrayDaoProvider, arrayDataImporterProvider,
                         mageTabeImporterProvider, projectDaoProvider, searchDaoProvider);
 
         fileManagementServiceBean.setArrayDao(this.daoFactoryStub.getArrayDao());
@@ -579,7 +579,7 @@ public class FileManagementServiceTest extends AbstractServiceTest {
         }
 
         @Override
-        public void importData(CaArrayFile caArrayFile, boolean createAnnotation, DataImportOptions importOptions)
+        public void importData(CaArrayFile caArrayFile, boolean createAnnotation, DataImportOptions importOptions, MageTabDocumentSet mTabSet)
                 throws InvalidDataFileException {
             if (caArrayFile.getFileType().isParseableData()) {
                 caArrayFile.setFileStatus(FileStatus.IMPORTED);
@@ -755,6 +755,11 @@ public class FileManagementServiceTest extends AbstractServiceTest {
         public void validate(MageTabDocumentSet mTabSet, FileValidationResult result, ArrayDesign design)
                 throws PlatformFileReadException {
             // do nothing
+        }
+
+        @Override
+        public boolean parsesData() {
+            return true;
         }
 
     }

@@ -115,10 +115,10 @@ import com.google.inject.Injector;
  * @author Steve Lustbader
  */
 public abstract class AbstractHibernateTest extends AbstractCaarrayTest {
-    protected static FileType AFFYMETRIX_CEL = new FileType("AFFYMETRIX_CEL", FileCategory.RAW_DATA, true);
-    protected static FileType AFFYMETRIX_CHP = new FileType("AFFYMETRIX_CHP", FileCategory.DERIVED_DATA, true);
-    protected static FileType AFFYMETRIX_DAT = new FileType("AFFYMETRIX_DAT", FileCategory.RAW_DATA, false);
-    protected static FileType AFFYMETRIX_CDF = new FileType("AFFYMETRIX_CDF", FileCategory.ARRAY_DESIGN, true);
+    protected static final FileType AFFYMETRIX_CEL = new FileType("AFFYMETRIX_CEL", FileCategory.RAW_DATA, true);
+    protected static final FileType AFFYMETRIX_CHP = new FileType("AFFYMETRIX_CHP", FileCategory.DERIVED_DATA, true);
+    protected static final FileType AFFYMETRIX_DAT = new FileType("AFFYMETRIX_DAT", FileCategory.RAW_DATA, false);
+    protected static final FileType AFFYMETRIX_CDF = new FileType("AFFYMETRIX_CDF", FileCategory.ARRAY_DESIGN, true);
 
     protected FileTypeRegistry typeRegistry;
     protected Injector injector;
@@ -140,6 +140,14 @@ public abstract class AbstractHibernateTest extends AbstractCaarrayTest {
                         requestStaticInjection(CaArrayFile.class);
                     }
                 });
+    }
+
+    /**
+     * Called during test tear down. If necessary subclasses can override this to undo 
+     * the effects of createInjector() so it does not affect subsequent tests. 
+     */
+    protected void levelsetInjector() {
+        // NOP
     }
 
     protected AbstractHibernateTest(boolean enableFilters) {
@@ -180,6 +188,7 @@ public abstract class AbstractHibernateTest extends AbstractCaarrayTest {
         }
         this.hibernateHelper.unbindAndCleanupSession();
         HibernateIntegrationTestCleanUpUtility.cleanUp();
+        levelsetInjector();
     }
 
 }

@@ -131,7 +131,7 @@ final class ArrayDataImporterImpl implements ArrayDataImporter {
     }
 
     @Override
-    public void importFiles(CaArrayFileSet fileSet, DataImportOptions dataImportOptions) {
+    public void importFiles(CaArrayFileSet fileSet, DataImportOptions dataImportOptions, MageTabDocumentSet mTabSet) {
         final Set<CaArrayFile> dataFiles = fileSet.getArrayDataFiles();
         fileSet.getFiles().clear();
         int fileCount = 0;
@@ -139,15 +139,15 @@ final class ArrayDataImporterImpl implements ArrayDataImporter {
         for (final Iterator<CaArrayFile> fileIt = dataFiles.iterator(); fileIt.hasNext();) {
             final CaArrayFile file = fileIt.next();
             LOG.info("Importing data file [" + ++fileCount + "/" + totalNumberOfFiles + "]: " + file.getName());
-            importFile(file, dataImportOptions);
+            importFile(file, dataImportOptions, mTabSet);
             fileIt.remove();
         }
     }
 
-    private void importFile(CaArrayFile file, DataImportOptions dataImportOptions) {
+    private void importFile(CaArrayFile file, DataImportOptions dataImportOptions, MageTabDocumentSet mTabSet) {
         try {
             this.searchDao.refresh(file);
-            this.arrayDataService.importData(file, true, dataImportOptions);
+            this.arrayDataService.importData(file, true, dataImportOptions, mTabSet);
         } catch (final InvalidDataFileException e) {
             file.setFileStatus(FileStatus.VALIDATION_ERRORS);
             file.setValidationResult(e.getFileValidationResult());

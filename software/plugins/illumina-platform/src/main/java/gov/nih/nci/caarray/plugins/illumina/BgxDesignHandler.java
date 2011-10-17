@@ -175,6 +175,14 @@ public class BgxDesignHandler extends AbstractDesignFileHandler {
      * {@inheritDoc}
      */
     @Override
+    public boolean parsesData() {
+         return true;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void load(ArrayDesign arrayDesign) {
         arrayDesign.setName(FilenameUtils.getBaseName(this.designFile.getName()));
         arrayDesign.setLsidForEntity(IlluminaCsvDesignHandler.LSID_AUTHORITY + ":"

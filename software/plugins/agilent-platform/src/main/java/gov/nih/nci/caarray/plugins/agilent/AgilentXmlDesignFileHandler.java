@@ -138,6 +138,7 @@ public class AgilentXmlDesignFileHandler extends AbstractDesignFileHandler {
     private Collection<ProbeGroup> probeGroups;
     private Reader inputReader = null;
     private AgilentGELMTokenizer tokenizer = null;
+    private int featureCount = 0;
 
     /**
      * @param sessionTransactionManager the SessionTransactionManager to use
@@ -318,5 +319,17 @@ public class AgilentXmlDesignFileHandler extends AbstractDesignFileHandler {
             this.tokenizer.close();
             this.tokenizer = null;
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean parsesData() {
+         return true;
+    }
+
+    public void incrementFeatureCount() {
+        featureCount++;
     }
 }

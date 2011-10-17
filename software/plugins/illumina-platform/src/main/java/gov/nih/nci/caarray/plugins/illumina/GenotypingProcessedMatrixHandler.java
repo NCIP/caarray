@@ -474,4 +474,12 @@ public final class GenotypingProcessedMatrixHandler extends AbstractDataFileHand
             }
         }
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean parsesData() {
+        return true;
+    }
 }

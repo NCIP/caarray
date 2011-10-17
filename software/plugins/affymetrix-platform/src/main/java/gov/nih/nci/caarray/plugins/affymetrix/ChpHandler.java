@@ -291,4 +291,12 @@ public class ChpHandler extends AbstractDataFileHandler {
         final String lsidObjectId = getChpData(getFile()).getChipType();
         return Collections.singletonList(new LSID(LSID_AUTHORITY, LSID_NAMESPACE_DESIGN, lsidObjectId));
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean parsesData() {
+        return true;
+    }
 }

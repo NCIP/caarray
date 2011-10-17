@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.platforms;
 
 import gov.nih.nci.caarray.dataStorage.DataStorageFacade;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.platforms.spi.DataFileHandler;
 import gov.nih.nci.caarray.platforms.spi.PlatformFileReadException;
 
@@ -104,6 +105,8 @@ public abstract class AbstractDataFileHandler implements DataFileHandler {
 
     private CaArrayFile caArrayFile;
     private File file;
+
+    private MageTabDocumentSet mageTabDocumentSet;
 
     /**
      * @param dataStorageFacade data storage facade for retrieving file data
@@ -176,4 +179,19 @@ public abstract class AbstractDataFileHandler implements DataFileHandler {
     protected File getFile() {
         return this.file;
     }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public MageTabDocumentSet getMageTabDocumentSet() {
+        return mageTabDocumentSet;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void setMageTabDocumentSet(MageTabDocumentSet mTabSet) {
+        this.mageTabDocumentSet = mTabSet;        
+    }
+
 }

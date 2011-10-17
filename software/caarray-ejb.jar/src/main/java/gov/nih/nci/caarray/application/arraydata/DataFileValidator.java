@@ -119,8 +119,10 @@ final class DataFileValidator extends AbstractArrayDataUtility {
         DataFileHandler handler = null;
         try {
             final FileValidationResult result = new FileValidationResult();
+            
             try {
-                handler = getHandler(caArrayFile);
+                handler = findAndSetupHandler(caArrayFile, mTabSet);
+                assert handler != null : "findAndSetupHandler must never return null";
                 if (!reimport && handler.requiresMageTab()) {
                     validateMageTabPresent(mTabSet, result);
                 }
@@ -146,9 +148,7 @@ final class DataFileValidator extends AbstractArrayDataUtility {
             }
             caArrayFile.setValidationResult(result);
             if (result.isValid()) {
-                final boolean wasFileParsed = caArrayFile.getFileType().isParsed()
-                        && !(handler instanceof FallbackUnparsedDataHandler);
-                caArrayFile.setFileStatus(wasFileParsed ? FileStatus.VALIDATED : FileStatus.VALIDATED_NOT_PARSED);
+                caArrayFile.setFileStatus(handler.parsesData() ? FileStatus.VALIDATED : FileStatus.VALIDATED_NOT_PARSED);
             } else {
                 caArrayFile.setFileStatus(FileStatus.VALIDATION_ERRORS);
             }

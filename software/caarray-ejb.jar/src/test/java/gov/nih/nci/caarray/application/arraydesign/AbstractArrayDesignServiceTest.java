@@ -553,6 +553,11 @@ public class AbstractArrayDesignServiceTest extends AbstractServiceTest {
         }
 
         @Override
+        public boolean parsesData() {
+             return false;
+        }
+
+        @Override
         public void load(ArrayDesign arrayDesign) throws PlatformFileReadException {
             arrayDesign.setName(TEST_DESIGN_NAME);
             arrayDesign.setLsid(TEST_LSID);

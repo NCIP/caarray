@@ -13,8 +13,8 @@
  * the direction or management of such entity, whether by contract or otherwise,
  * or (ii) ownership of fifty percent (50%) or more of the outstanding shares,
  * or (iii) beneficial ownership of such entity.
- *
  * This License is granted provided that You agree to the conditions described
+ *
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up,
  * no-charge, irrevocable, transferable and royalty-free right and license in
  * its rights in the caArray Software to (i) use, install, access, operate,
@@ -82,7 +82,6 @@
  */
 package gov.nih.nci.caarray.application.file;
 
-import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCacheLocator;
 import gov.nih.nci.caarray.dao.ProjectDao;
 import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
@@ -113,11 +112,11 @@ final class ProjectFilesReparseJob extends AbstractProjectFilesJob {
     @SuppressWarnings("PMD.ExcessiveParameterList")
     @Inject
     // CHECKSTYLE:OFF more than 7 parameters are okay for injected constructor
-    ProjectFilesReparseJob(String username, UsernameHolder usernameHolder, Project targetProject,
+    ProjectFilesReparseJob(String username, Project targetProject,
             CaArrayFileSet fileSet, ArrayDataImporter arrayDataImporter, MageTabImporter mageTabImporter,
             ProjectDao projectDao, SearchDao searchDao) {
     // CHECKSTYLE:ON
-        super(username, usernameHolder, targetProject, fileSet,
+        super(username, targetProject, fileSet,
                 arrayDataImporter, mageTabImporter, projectDao, searchDao);
     }
 
@@ -131,23 +130,26 @@ final class ProjectFilesReparseJob extends AbstractProjectFilesJob {
     @Override
     protected void doExecute() {
         CaArrayFileSet fileSet = getFileSet();
-        try {
-            getArrayDataImporter().validateFiles(fileSet,
-                    new MageTabDocumentSet(new MageTabFileSet(), new ValidatorSet()), true);
-            final FileStatus status = getFileSet().getStatus();
-            if (status.equals(FileStatus.VALIDATED) || status.equals(FileStatus.VALIDATED_NOT_PARSED)) {
-                getProjectDao().flushSession();
-                getProjectDao().clearSession();
-                importArrayData(fileSet);
-            }
-        } finally {
-            TemporaryFileCacheLocator.getTemporaryFileCache().closeFiles();
+        getArrayDataImporter().validateFiles(fileSet,
+                new MageTabDocumentSet(new MageTabFileSet(), new ValidatorSet()), true);
+        final FileStatus status = getFileSet().getStatus();
+        if (status.equals(FileStatus.VALIDATED) || status.equals(FileStatus.VALIDATED_NOT_PARSED)) {
+            getProjectDao().flushSession();
+            getProjectDao().clearSession();
+            importArrayData(fileSet);
         }
     }
 
     private void importArrayData(CaArrayFileSet fileSet) {
         final ArrayDataImporter arrayDataImporter = getArrayDataImporter();
-        arrayDataImporter.importFiles(fileSet, null); // don't need to specify import options since ArrayData exists
+        final MageTabDocumentSet mTabSet = null; 
+            //TODO isn't parsed MageTabDocumentSet required for certain platforms? 
+            //e.g. AgilentRawTextDataHandler needs SDRF that specifies data file to array design mapping,  
+            //in case there are more than one array design for a given experiment. 
+            // Andrew Sy 2011-08-24
+        
+        arrayDataImporter.importFiles(fileSet, null, mTabSet);  
+            // don't need to specify import options since ArrayData exists.
     }
 
     @Override

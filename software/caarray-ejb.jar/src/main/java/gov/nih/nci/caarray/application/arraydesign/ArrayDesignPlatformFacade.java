@@ -153,6 +153,7 @@ final class ArrayDesignPlatformFacade {
 
         }
 
+        FileStatus validatedStatus = FileStatus.VALIDATED;
         if (result.isValid()) {
             DesignFileHandler handler = null;
             try {
@@ -177,7 +178,7 @@ final class ArrayDesignPlatformFacade {
             }
         }
 
-        final FileStatus status = result.isValid() ? getValidStatus(designFiles) : FileStatus.VALIDATION_ERRORS;
+        final FileStatus status = result.isValid() ? validatedStatus : FileStatus.VALIDATION_ERRORS;
         for (final CaArrayFile designFile : designFiles) {
             designFile.setFileStatus(status);
             this.arrayDao.save(designFile);
@@ -185,11 +186,6 @@ final class ArrayDesignPlatformFacade {
         this.arrayDao.flushSession();
 
         return result;
-    }
-
-    private static FileStatus getValidStatus(Set<CaArrayFile> designFiles) {
-        return designFiles.iterator().next().getFileType().isParsed() ? FileStatus.VALIDATED
-                : FileStatus.VALIDATED_NOT_PARSED;
     }
 
     @SuppressWarnings("PMD.AvoidReassigningParameters")

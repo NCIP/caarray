@@ -215,6 +215,14 @@ public final class GalDesignHandler extends AbstractDesignFileHandler {
      * {@inheritDoc}
      */
     @Override
+    public boolean parsesData() {
+         return true;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void createDesignDetails(ArrayDesign arrayDesign) throws PlatformFileReadException {
         final ArrayDesignDetails details = new ArrayDesignDetails();
         arrayDesign.setDesignDetails(details);

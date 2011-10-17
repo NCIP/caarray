@@ -156,6 +156,14 @@ public final class SampleProbeProfileHandler extends AbstractDataFileHandler {
      * {@inheritDoc}
      */
     @Override
+    public boolean parsesData() {
+        return true;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Set<FileType> getSupportedTypes() {
         return SUPPORTED_TYPES;
     }

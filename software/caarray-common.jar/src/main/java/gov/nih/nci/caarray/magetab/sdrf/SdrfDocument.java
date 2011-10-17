@@ -655,7 +655,7 @@ public final class SdrfDocument extends AbstractMageTabDocument {
         
         boolean hasError = false;
         for (ValidationMessage message : messages) {
-            getDocumentSet().getValidationResult().addMessage(getFile().getAsFile(), message);
+            getDocumentSet().getValidationResult().addMessage(getFile().getName(), message);
             hasError |= message.getType() == Type.ERROR;
         }
         

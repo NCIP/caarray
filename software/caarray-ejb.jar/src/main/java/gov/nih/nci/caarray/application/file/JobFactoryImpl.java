@@ -100,7 +100,6 @@ import com.google.inject.Provider;
  *
  */
 public class JobFactoryImpl implements JobFactory {
-    private final Provider<UsernameHolder> usernameHolderProvider;
     private final Provider<ArrayDao> arrayDaoProvider;
     private final Provider<ArrayDataImporter> arrayDataImporterProvider;
     private final Provider<MageTabImporter> mageTabImporterProvider;
@@ -109,7 +108,6 @@ public class JobFactoryImpl implements JobFactory {
 
     
     /**
-     * @param usernameHolderProvider the Provider&lt;UsernameHolderInterface&gt; dependency
      * @param arrayDaoProvider the Provider&lt;ArrayDao&gt; dependency
      * @param arrayDataImporterProvider the Provider&lt;ArrayDataImporter&gt; dependency
      * @param mageTabImporterProvider the Provider&lt;MageTabImporter&gt; dependency
@@ -119,11 +117,10 @@ public class JobFactoryImpl implements JobFactory {
     @Inject
     @SuppressWarnings("PMD.ExcessiveParameterList")
     // CHECKSTYLE:OFF more than 7 parameters are okay for injected constructor
-    public JobFactoryImpl(Provider<UsernameHolder> usernameHolderProvider, Provider<ArrayDao> arrayDaoProvider,
+    public JobFactoryImpl(Provider<ArrayDao> arrayDaoProvider,
             Provider<ArrayDataImporter> arrayDataImporterProvider, Provider<MageTabImporter> mageTabImporterProvider,
             Provider<ProjectDao> projectDaoProvider, Provider<SearchDao> searchDaoProvider) {
     // CHECKSTYLE:ON
-        this.usernameHolderProvider = usernameHolderProvider;
         this.arrayDaoProvider = arrayDaoProvider;
         this.arrayDataImporterProvider = arrayDataImporterProvider;
         this.mageTabImporterProvider = mageTabImporterProvider;
@@ -135,7 +132,7 @@ public class JobFactoryImpl implements JobFactory {
      * {@inheritDoc}
      */
     public AbstractFileManagementJob createArrayDesignFileImportJob(String user, ArrayDesign arrayDesign) {
-        return new ArrayDesignFileImportJob(user, usernameHolderProvider.get(), arrayDesign, arrayDaoProvider.get());
+        return new ArrayDesignFileImportJob(user, arrayDesign, arrayDaoProvider.get());
     }
     
     /**
@@ -163,7 +160,7 @@ public class JobFactoryImpl implements JobFactory {
      */
     public ProjectFilesReparseJob createProjectFilesReparseJob(String user, Project project,
             CaArrayFileSet fileSet) {
-        return new ProjectFilesReparseJob(user, usernameHolderProvider.get(), project, fileSet,
+        return new ProjectFilesReparseJob(user, project, fileSet,
                 arrayDataImporterProvider.get(), mageTabImporterProvider.get(), projectDaoProvider.get(),
                 searchDaoProvider.get());
     }
