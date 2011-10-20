@@ -129,31 +129,43 @@ abstract class AbstractArrayDataUtility {
     /**
      * Find the appropriate data handler for the given data file, and initialize it.
      * 
-     * @param caArrayFile the data file to be processed
+     * @param arrayDataFile the data file to be processed
      * @param mTabSet parsed MageTabDocumentSet containing SDRF specifying data file to array design mappings. 
      * May be null if not applicable.
-     * @return the DataFileHandler instance capable of processing that file. That handler will
-     * have been initialized with this file.
+     * @return the DataFileHandler instance capable of processing the arrayDataFile. The handler will
+     * have been initialized with arrayDataFile and mTabSet. 
      */
-    protected DataFileHandler findAndSetupHandler(CaArrayFile caArrayFile, MageTabDocumentSet mTabSet) 
+    protected DataFileHandler findAndSetupHandler(CaArrayFile arrayDataFile, MageTabDocumentSet mTabSet) 
             throws PlatformFileReadException {
-        DataFileHandler handler = getOpeningHandler(caArrayFile);
-        if (handler == null) {
-            throw new IllegalArgumentException("Unsupported type " + caArrayFile.getFileType());
-        }
+        DataFileHandler handler = findHandlerAndSetDataFile(arrayDataFile); 
         handler.setMageTabDocumentSet(mTabSet);
+        return handler;
+    }
+    
+    /**
+     * Find the appropriate data handler for the given data file.
+     * 
+     * @param arrayDataFile the data file to be processed
+     * @return the DataFileHandler instance capable of processing the arrayDataFile. The handler will
+     * have been initialized with arrayDataFile. 
+     */
+    protected DataFileHandler findHandlerAndSetDataFile(CaArrayFile arrayDataFile) 
+            throws PlatformFileReadException {
+        DataFileHandler handler = getOpeningHandler(arrayDataFile);
+        if (handler == null) {
+            throw new IllegalArgumentException("Unsupported type " + arrayDataFile.getFileType());
+        }
         if (!handler.parsesData()) {
             return handler;
         }
-        final ArrayDesign ad = getArrayDesign(caArrayFile, handler);
+        final ArrayDesign ad = getArrayDesign(arrayDataFile, handler);
         if (ad == null || !ad.isImportedAndParsed()) {
             handler.closeFiles();
-            handler = getUnparsedDataHandler(caArrayFile);
-            handler.setMageTabDocumentSet(mTabSet);
+            handler = getUnparsedDataHandler(arrayDataFile);
         }
         return handler;
     }
-
+    
     /**
      * Find the array design corresponding to the given data file. 
      * <ol>
@@ -164,7 +176,7 @@ abstract class AbstractArrayDataUtility {
      * The SDRF files, if available, are contained in the MageTabDocumentSet referenced by the handlerArg.</li> 
      * </ol>
      * 
-     * @param caArrayFile the data file
+     * @param arrayDataFile the data file
      * @param handler the handler for the data file
      * @return the array design corresponding to the file, or null if it is not found or could not be determined
      *         uniquely from the file or experiment.

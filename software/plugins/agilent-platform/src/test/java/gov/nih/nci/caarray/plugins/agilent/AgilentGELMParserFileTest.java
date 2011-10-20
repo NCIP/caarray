@@ -89,6 +89,8 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.refEq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import gov.nih.nci.caarray.dao.ArrayDao;
+import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.dao.VocabularyDao;
 import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
 import gov.nih.nci.caarray.domain.search.ExampleSearchCriteria;
@@ -198,6 +200,8 @@ public class AgilentGELMParserFileTest {
         final Term millimeterTerm = new Term();
         final TermSource termSource = new TermSource();
         List<TermSource> termSources = Collections.singletonList(termSource);
+        
+        ArrayDesignDetails arrayDesignDetailsMock = mock(ArrayDesignDetails.class);
 
         VocabularyDao vocabularyDaoMock = mock(VocabularyDao.class);
         
@@ -206,7 +210,11 @@ public class AgilentGELMParserFileTest {
         
         when(vocabularyDaoMock.getTerm(refEq(termSource), eq("mm"))).thenReturn(millimeterTerm);
 
-        arrayDesignBuilder = new ArrayDesignBuilderImpl(vocabularyDaoMock);
+        ArrayDao arrayDaoMock = mock(ArrayDao.class);
+        
+        SearchDao searchDaoMock = mock(SearchDao.class);
+        
+        arrayDesignBuilder = new ArrayDesignBuilderImpl(arrayDesignDetailsMock, vocabularyDaoMock, arrayDaoMock, searchDaoMock);
         arrayDesignDetails = arrayDesignBuilder.getArrayDesignDetails();
     }
 

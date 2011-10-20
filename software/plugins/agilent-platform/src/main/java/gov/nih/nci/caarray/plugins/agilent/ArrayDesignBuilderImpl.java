@@ -82,6 +82,8 @@
  */
 package gov.nih.nci.caarray.plugins.agilent;
 
+import gov.nih.nci.caarray.dao.ArrayDao;
+import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.dao.VocabularyDao;
 import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
 import gov.nih.nci.caarray.domain.array.ExpressionProbeAnnotation;
@@ -101,6 +103,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.hibernate.criterion.Order;
 
 /**
@@ -109,26 +112,43 @@ import org.hibernate.criterion.Order;
  * @author jscott
  * 
  */
-class ArrayDesignBuilderImpl implements ArrayDesignBuilder, PhysicalProbeBuilder, FeatureBuilder, GeneBuilder,
-        AccessionBuilder {
+@SuppressWarnings("PMD.ExcessiveClassLength")
+class ArrayDesignBuilderImpl implements ArrayDesignBuilder, PhysicalProbeBuilder,
+FeatureBuilder, GeneBuilder, AccessionBuilder {
+    
+    private static final Logger LOG = Logger.getLogger(ArrayDesignBuilderImpl.class);
 
     private final VocabularyDao vocabularyDao;
-    private final ArrayDesignDetails arrayDesignDetails = new ArrayDesignDetails();
-    private final Map<String, ProbeGroup> probeGroups = new HashMap<String, ProbeGroup>();;
-    private final Map<String, PhysicalProbe> physicalProbes = new HashMap<String, PhysicalProbe>();
-    private final List<Feature> features = new ArrayList<Feature>();
+    private final ArrayDao arrayDao;
+    private final SearchDao searchDao;
+    private final Map<String, Long> createdProbeGroupIds = new HashMap<String, Long>();
+    private final Map<String, Long> createdPhysicalProbeIds = new HashMap<String, Long>();
+    private final ArrayDesignDetails arrayDesignDetails;
     private PhysicalProbe currentPhysicalProbe;
     private Feature currentFeature;
     private Term millimeterTerm;
-    private final Map<String, PhysicalProbe> biosequenceRefMap = new HashMap<String, PhysicalProbe>();
+    private final Map<String, Long> biosequenceReIdsfMap = new HashMap<String, Long>();
+    private static final int BATCH_SIZE = 1000;
+    private static final String POSITIVE_CONTROL_LABEL = "pos";
+    private static final String NEGATIVE_CONTROL_LABEL = "neg";
+    private int batchCount = 0;
 
     /**
-     * @param vocabularyDao a vocabulary DAO
+     * 
+     * @param arrayDesignDetails
+     * @param vocabularyDao
+     * @param arrayDao
+     * @param searchDao
      */
-    ArrayDesignBuilderImpl(VocabularyDao vocabularyDao) {
+    ArrayDesignBuilderImpl(ArrayDesignDetails arrayDesignDetails, VocabularyDao vocabularyDao, ArrayDao arrayDao,
+            SearchDao searchDao) {
+        this.arrayDesignDetails = arrayDesignDetails;
         this.vocabularyDao = vocabularyDao;
+        this.arrayDao = arrayDao;
+        this.searchDao = searchDao;
         lookupMillimeterTerm();
     }
+
 
     private TermSource getMOSource() {
         final TermSource querySource = new TermSource();
@@ -154,45 +174,51 @@ class ArrayDesignBuilderImpl implements ArrayDesignBuilder, PhysicalProbeBuilder
     /**
      * {@inheritDoc}
      */
-    @Override
     public PhysicalProbeBuilder findOrCreatePhysicalProbeBuilder(String name) {
-        PhysicalProbe probe = getPhysicalProbes().get(name);
-
-        if (null == probe) {
-            probe = new PhysicalProbe(this.arrayDesignDetails, null);
-
-            probe.setName(name);
-            getPhysicalProbes().put(name, probe);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("1 findOrCreatePhysicalProbeBuilder(String) called: name=" + name + "=");
         }
-
-        this.currentPhysicalProbe = probe;
+        Long existingPhysicalProbeId = createdPhysicalProbeIds.get(name);
+        PhysicalProbe probe = null;
+        if (null != existingPhysicalProbeId) {
+            probe = searchDao.retrieve(PhysicalProbe.class, existingPhysicalProbeId);
+        } else {
+            probe = new PhysicalProbe(arrayDesignDetails, null);
+            probe.setName(name);
+            arrayDao.save(probe);
+            createdPhysicalProbeIds.put(name, probe.getId());
+        }
+        currentPhysicalProbe = probe;
         return this;
     }
 
     /**
      * {@inheritDoc}
      */
-    @Override
     public FeatureBuilder createFeatureBuilder(int featureNumber) {
-        final Feature feature = new Feature(this.arrayDesignDetails);
-        this.currentPhysicalProbe.addFeature(feature);
-
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("2 createFeatureBuilder(int) called: featureNumber=" + featureNumber + "=");
+        }
+        Feature feature = new Feature(arrayDesignDetails);
         feature.setFeatureNumber(featureNumber);
-
-        this.features.add(feature);
-        this.currentFeature = feature;
+        arrayDao.save(feature);
+        currentPhysicalProbe.addFeature(feature);
+        currentFeature = feature;
         return this;
     }
 
     /**
      * {@inheritDoc}
      */
-    @Override
     public FeatureBuilder setCoordinates(double x, double y, String units) {
-        this.currentFeature.setX_Coordinate(x);
-        this.currentFeature.setY_Coordinate(y);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("3 setCoordinates(double, double, String) called: x=" + x + "=, y =" + y + "=, units =" + units
+                    + "=");
+        }
+        currentFeature.setX_Coordinate(x);
+        currentFeature.setY_Coordinate(y);
         if ("mm".equalsIgnoreCase(units)) {
-            this.currentFeature.setCoordinateUnits(this.millimeterTerm);
+            currentFeature.setCoordinateUnits(millimeterTerm);
         } else {
             throw new AgilentParseException(String.format("Unexpected units \"%s\"", units));
         }
@@ -202,79 +228,113 @@ class ArrayDesignBuilderImpl implements ArrayDesignBuilder, PhysicalProbeBuilder
     /**
      * {@inheritDoc}
      */
-    @Override
     public PhysicalProbeBuilder addToProbeGroup(String probeGroupName) {
-        final ProbeGroup ignoreProbeGroup = getOrCreateProbeGroup(probeGroupName);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("4 addToProbeGroup(String) called: probeGroupName=" + probeGroupName + "=");
+        }
+        ProbeGroup ignoreProbeGroup = getOrCreateProbeGroup(probeGroupName);
         addCurrentPhysicalProbeToProbeGroup(ignoreProbeGroup);
         return this;
     }
 
     private ProbeGroup getOrCreateProbeGroup(String probeGroupName) {
-        ProbeGroup probeGroup = this.probeGroups.get(probeGroupName);
-        if (null == probeGroup) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("5 getOrCreateProbeGroup(String) called: probeGroupName=" + probeGroupName + "=");
+        }
+        Long probeGroupId = createdProbeGroupIds.get(probeGroupName);
+        ProbeGroup probeGroup = null;
+        if (null != probeGroupId) {
+            probeGroup = searchDao.retrieve(ProbeGroup.class, probeGroupId);
+        } else {
             probeGroup = createProbeGroup(probeGroupName);
         }
         return probeGroup;
     }
 
     private ProbeGroup createProbeGroup(String name) {
-        final ProbeGroup probeGroup = new ProbeGroup(this.arrayDesignDetails);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("6 createProbeGroup(String) called: name=" + name + "=");
+        }
+        ProbeGroup probeGroup = new ProbeGroup(arrayDesignDetails);
         probeGroup.setName(name);
-        this.probeGroups.put(name, probeGroup);
+        arrayDao.save(probeGroup);
+        createdProbeGroupIds.put(name, probeGroup.getId());
         return probeGroup;
     }
 
     private void addCurrentPhysicalProbeToProbeGroup(final ProbeGroup probeGroup) {
-        this.currentPhysicalProbe.setProbeGroup(probeGroup);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("7 addCurrentPhysicalProbeToProbeGroup(ProbeGroup) called: probeGroup=" + probeGroup + "=");
+        }
+        currentPhysicalProbe.setProbeGroup(probeGroup);
     }
 
     /**
      * {@inheritDoc}
      */
-    @Override
     public PhysicalProbeBuilder setBiosequenceRef(String database, String species, String identifier) {
-        final String key = buildBiosequenceKey(species, identifier);
-        getBiosequenceRefMap().put(key, this.currentPhysicalProbe);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("8 setBiosequenceRef(String, String, String) called: database=" + database + "=, species ="
+                    + species + "=, identifier =" + identifier + "=");
+        }
+        String key = buildBiosequenceKey(species, identifier);
+        getBiosequenceReIdsfMap().put(key, currentPhysicalProbe.getId());
         return this;
     }
 
     private String buildBiosequenceKey(String species, String identifier) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("9 buildBiosequenceKey(String, String) called: species=" + species + "=, identifier ="
+                    + identifier + "=");
+        }
         return String.format("`%s`%s`", species, identifier);
     }
 
     /**
      * {@inheritDoc}
      */
-    @Override
     public GeneBuilder createGeneBuilder(String geneName) {
-        createExpressionProbeAnnotation(this.currentPhysicalProbe, geneName);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("10 createGeneBuilder(String) called: geneName=" + geneName + "=");
+        }
+        createExpressionProbeAnnotation(currentPhysicalProbe, geneName);
         return this;
     }
 
     private ExpressionProbeAnnotation createExpressionProbeAnnotation(PhysicalProbe physicalProbe, String geneName) {
-        final Gene gene = new Gene();
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("11 createExpressionProbeAnnotation(PhysicalProbe, String) called: physicalProbe ="
+                    + physicalProbe + ", geneName=" + geneName + "=");
+        }
+        Gene gene = new Gene();
         gene.setFullName(geneName);
 
-        final ExpressionProbeAnnotation annotation = new ExpressionProbeAnnotation();
+        ExpressionProbeAnnotation annotation = new ExpressionProbeAnnotation();
         annotation.setGene(gene);
-
+        
         physicalProbe.setAnnotation(annotation);
 
         return annotation;
     }
 
     private ExpressionProbeAnnotation createExpressionProbeAnnotation(PhysicalProbe physicalProbe) {
-        final String geneName = null;
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("12 createExpressionProbeAnnotation(PhysicalProbe) called: physicalProbe=" + physicalProbe + "=");
+        }
+        String geneName = null;
         return createExpressionProbeAnnotation(physicalProbe, geneName);
     }
 
     /**
      * {@inheritDoc}
      */
-    @Override
-    public GeneBuilder setChromosomeLocation(String chromosomeName, long startPosition, long endPosition) {
-        final ExpressionProbeAnnotation annotation = (ExpressionProbeAnnotation) this.currentPhysicalProbe
-                .getAnnotation();
+    public GeneBuilder setChromosomeLocation(String chromosomeName,
+            long startPosition, long endPosition) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("13 setChromosomeLocation(String, long, long) called: chromosomeName=" + chromosomeName
+                    + "=, startPosition =" + startPosition + "=, endPosition =" + endPosition + "=");
+        }
+        ExpressionProbeAnnotation annotation = (ExpressionProbeAnnotation) currentPhysicalProbe.getAnnotation();
         annotation.setChromosome(chromosomeName, startPosition, endPosition);
         return this;
     }
@@ -282,11 +342,12 @@ class ArrayDesignBuilderImpl implements ArrayDesignBuilder, PhysicalProbeBuilder
     /**
      * {@inheritDoc}
      */
-    @Override
     public AccessionBuilder createNewGBAccession(String accessionNumber) {
-        final ExpressionProbeAnnotation annotation = (ExpressionProbeAnnotation) this.currentPhysicalProbe
-                .getAnnotation();
-        final Gene gene = annotation.getGene();
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("14 createNewGBAccession(String) called: accessionNumber=" + accessionNumber + "=");
+        }
+        ExpressionProbeAnnotation annotation = (ExpressionProbeAnnotation) currentPhysicalProbe.getAnnotation();
+        Gene gene = annotation.getGene();
         gene.addAccessionNumber(Gene.GENBANK, accessionNumber);
         return this;
     }
@@ -294,11 +355,12 @@ class ArrayDesignBuilderImpl implements ArrayDesignBuilder, PhysicalProbeBuilder
     /**
      * {@inheritDoc}
      */
-    @Override
     public AccessionBuilder createNewEnsemblAccession(String accessionNumber) {
-        final ExpressionProbeAnnotation annotation = (ExpressionProbeAnnotation) this.currentPhysicalProbe
-                .getAnnotation();
-        final Gene gene = annotation.getGene();
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("15 createNewEnsemblAccession(String) called: accessionNumber=" + accessionNumber + "=");
+        }
+        ExpressionProbeAnnotation annotation = (ExpressionProbeAnnotation) currentPhysicalProbe.getAnnotation();
+        Gene gene = annotation.getGene();
         gene.addAccessionNumber(Gene.ENSEMBLE, accessionNumber);
         return this;
     }
@@ -306,11 +368,12 @@ class ArrayDesignBuilderImpl implements ArrayDesignBuilder, PhysicalProbeBuilder
     /**
      * {@inheritDoc}
      */
-    @Override
     public AccessionBuilder createNewRefSeqAccession(String accessionNumber) {
-        final ExpressionProbeAnnotation annotation = (ExpressionProbeAnnotation) this.currentPhysicalProbe
-                .getAnnotation();
-        final Gene gene = annotation.getGene();
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("16 createNewRefSeqAccession(String) called: accessionNumber=" + accessionNumber + "=");
+        }
+        ExpressionProbeAnnotation annotation = (ExpressionProbeAnnotation) currentPhysicalProbe.getAnnotation();
+        Gene gene = annotation.getGene();
         gene.addAccessionNumber(Gene.REF_SEQ, accessionNumber);
         return this;
     }
@@ -318,11 +381,12 @@ class ArrayDesignBuilderImpl implements ArrayDesignBuilder, PhysicalProbeBuilder
     /**
      * {@inheritDoc}
      */
-    @Override
     public AccessionBuilder createNewTHCAccession(String accessionNumber) {
-        final ExpressionProbeAnnotation annotation = (ExpressionProbeAnnotation) this.currentPhysicalProbe
-                .getAnnotation();
-        final Gene gene = annotation.getGene();
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("17 createNewTHCAccession(String) called: accessionNumber=" + accessionNumber + "=");
+        }
+        ExpressionProbeAnnotation annotation = (ExpressionProbeAnnotation) currentPhysicalProbe.getAnnotation();
+        Gene gene = annotation.getGene();
         gene.addAccessionNumber(Gene.THC, accessionNumber);
         return this;
     }
@@ -330,7 +394,6 @@ class ArrayDesignBuilderImpl implements ArrayDesignBuilder, PhysicalProbeBuilder
     /**
      * {@inheritDoc}
      */
-    @Override
     public AccessionBuilder agpAccession(String probeId) {
         return this;
     }
@@ -338,7 +401,6 @@ class ArrayDesignBuilderImpl implements ArrayDesignBuilder, PhysicalProbeBuilder
     /**
      * {@inheritDoc}
      */
-    @Override
     public AccessionBuilder createNewMirAccession(String accessionNumber) {
         return this;
     }
@@ -346,12 +408,13 @@ class ArrayDesignBuilderImpl implements ArrayDesignBuilder, PhysicalProbeBuilder
     /**
      * {@inheritDoc}
      */
-    @Override
     public BiosequenceBuilder createBiosequenceBuilder(String controlType, String species) {
-        final String positiveControlLabel = "pos";
-
-        final String negativeControlLabel = "neg";
-        if (positiveControlLabel.equalsIgnoreCase(controlType) || negativeControlLabel.equalsIgnoreCase(controlType)) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("18 createBiosequenceBuilder(String, String) called: controlType=" + controlType + "=, species ="
+                    + species + "=");
+        }
+        if (POSITIVE_CONTROL_LABEL.equalsIgnoreCase(controlType)
+                || NEGATIVE_CONTROL_LABEL.equalsIgnoreCase(controlType)) {
             return new NullBiosequenceBuilder();
         } else {
             return new BiosequenceBuilderImpl(this, species);
@@ -362,32 +425,14 @@ class ArrayDesignBuilderImpl implements ArrayDesignBuilder, PhysicalProbeBuilder
      * @return the array design details object constructed by this class.
      */
     ArrayDesignDetails getArrayDesignDetails() {
-        return this.arrayDesignDetails;
+        return arrayDesignDetails;
     }
 
     /**
-     * @return the features
+     * @return biosequenceReIdsfMap
      */
-    List<Feature> getFeatures() {
-        return this.features;
-    }
-
-    /**
-     * @return the physicalProbes
-     */
-    Map<String, PhysicalProbe> getPhysicalProbes() {
-        return this.physicalProbes;
-    }
-
-    /**
-     * @return the probeGroups
-     */
-    Map<String, ProbeGroup> getProbeGroups() {
-        return this.probeGroups;
-    }
-
-    private Map<String, PhysicalProbe> getBiosequenceRefMap() {
-        return this.biosequenceRefMap;
+    Map<String, Long> getBiosequenceReIdsfMap() {
+        return biosequenceReIdsfMap;
     }
 
     /**
@@ -397,11 +442,15 @@ class ArrayDesignBuilderImpl implements ArrayDesignBuilder, PhysicalProbeBuilder
         private final ArrayDesignBuilderImpl parentBuilder;
         private final String species;
         private final List<AccessionNumber> accessionNumbers = new ArrayList<AccessionNumber>();
-
+        
         private String key;
         private boolean isMiRNA;
 
         BiosequenceBuilderImpl(ArrayDesignBuilderImpl parentBuilder, String species) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("19 BiosequenceBuilderImpl(ArrayDesignBuilderImpl, String) called: parentBuilder="
+                        + parentBuilder + "=, species =" + species + "=");
+            }
             this.parentBuilder = parentBuilder;
             this.species = species;
         }
@@ -409,74 +458,92 @@ class ArrayDesignBuilderImpl implements ArrayDesignBuilder, PhysicalProbeBuilder
         /**
          * {@inheritDoc}
          */
-        @Override
         public BiosequenceBuilder agpAccession(String accessionNumber) {
-            this.key = this.parentBuilder.buildBiosequenceKey(this.species, accessionNumber);
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("20 agpAccession(String) called: accessionNumber=" + accessionNumber + "=");
+            }
+            key = parentBuilder.buildBiosequenceKey(species, accessionNumber);
             return this;
         }
 
         /**
          * {@inheritDoc}
          */
-        @Override
         public BiosequenceBuilder createNewEnsemblAccession(String accessionNumber) {
-            addAccession(Gene.ENSEMBLE, accessionNumber);
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("21 createNewEnsemblAccession(String) called: accessionNumber=" + accessionNumber + "=");
+            }
+            addAccession(Gene.ENSEMBLE, accessionNumber);           
             return this;
         }
 
         /**
          * {@inheritDoc}
          */
-        @Override
         public BiosequenceBuilder createNewGBAccession(String accessionNumber) {
-            addAccession(Gene.GENBANK, accessionNumber);
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("22 createNewGBAccession(String) called: accessionNumber=" + accessionNumber + "=");
+            }
+            addAccession(Gene.GENBANK, accessionNumber);           
             return this;
         }
 
         /**
          * {@inheritDoc}
          */
-        @Override
         public BiosequenceBuilder createNewMirAccession(String accessionNumber) {
-            this.isMiRNA = true;
-            addAccession(MiRNAProbeAnnotation.MIR, accessionNumber);
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("23 createNewMirAccession(String) called: accessionNumber=" + accessionNumber + "=");
+            }
+            isMiRNA = true;
+            addAccession(MiRNAProbeAnnotation.MIR, accessionNumber);           
             return this;
         }
 
         /**
          * {@inheritDoc}
          */
-        @Override
         public BiosequenceBuilder createNewRefSeqAccession(String accessionNumber) {
-            addAccession(Gene.REF_SEQ, accessionNumber);
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("24 createNewRefSeqAccession(String) called: accessionNumber=" + accessionNumber + "=");
+            }
+            addAccession(Gene.REF_SEQ, accessionNumber);           
             return this;
         }
 
         /**
          * {@inheritDoc}
          */
-        @Override
         public BiosequenceBuilder createNewTHCAccession(String accessionNumber) {
-            addAccession(Gene.THC, accessionNumber);
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("25 createNewTHCAccession(String) called: accessionNumber=" + accessionNumber + "=");
+            }
+            addAccession(Gene.THC, accessionNumber);           
             return this;
         }
-
+        
         /**
          * {@inheritDoc}
          */
-        @Override
         public BiosequenceBuilder finish() {
-            final PhysicalProbe physicalProbe = this.parentBuilder.getBiosequenceRefMap().get(this.key);
-
-            if (null != physicalProbe) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("26 finish() called");
+            }
+            Long physicalProbeId = parentBuilder.getBiosequenceReIdsfMap().get(key);
+            PhysicalProbe physicalProbe = null;
+            if (null != physicalProbeId) {
+                physicalProbe = searchDao.retrieve(PhysicalProbe.class, physicalProbeId);
                 createAnnotationWithAccessions(physicalProbe);
             }
-
             return this;
         }
 
         private void createAnnotationWithAccessions(PhysicalProbe physicalProbe) {
-            if (this.isMiRNA) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("27 createAnnotationWithAccessions(PhysicalProbe) called: physicalProbe=" + physicalProbe
+                        + "=");
+            }
+            if (isMiRNA) {
                 createMiRNAAnnotationWithAccessions(physicalProbe);
             } else {
                 createExpressionAnnotationWithAccessions(physicalProbe);
@@ -484,54 +551,64 @@ class ArrayDesignBuilderImpl implements ArrayDesignBuilder, PhysicalProbeBuilder
         }
 
         private void createExpressionAnnotationWithAccessions(PhysicalProbe physicalProbe) {
-            final ExpressionProbeAnnotation annotation = createExpressionProbeAnnotation(physicalProbe);
-            final Gene gene = annotation.getGene();
-
-            for (final AccessionNumber accessionNumber : this.accessionNumbers) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("28 createExpressionAnnotationWithAccessions(PhysicalProbe) called: physicalProbe="
+                        + physicalProbe + "=");
+            }
+            ExpressionProbeAnnotation annotation = createExpressionProbeAnnotation(physicalProbe);             
+            Gene gene = annotation.getGene();
+   
+            for (AccessionNumber accessionNumber : accessionNumbers) {
                 gene.addAccessionNumber(accessionNumber.getDatabase(), accessionNumber.getAccession());
             }
         }
 
         private void createMiRNAAnnotationWithAccessions(PhysicalProbe physicalProbe) {
-            final MiRNAProbeAnnotation annotation = new MiRNAProbeAnnotation();
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("29 createMiRNAAnnotationWithAccessions(PhysicalProbe) called: physicalProbe="
+                        + physicalProbe + "=");
+            }
+            MiRNAProbeAnnotation annotation = new MiRNAProbeAnnotation();
             physicalProbe.setAnnotation(annotation);
-
-            for (final AccessionNumber accessionNumber : this.accessionNumbers) {
+            
+            for (AccessionNumber accessionNumber : accessionNumbers) {
                 annotation.addAccessionNumber(accessionNumber.getDatabase(), accessionNumber.getAccession());
             }
         }
 
         private void addAccession(String database, String accessionNumber) {
-            this.accessionNumbers.add(new AccessionNumber(database, accessionNumber));
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("30 addAccession(String, String) called: database=" + database + "=, accessionNumber ="
+                        + accessionNumber + "=");
+            }
+            this.accessionNumbers.add(new AccessionNumber(database, accessionNumber));          
         }
-
+        
         /**
          * Stores accession numbers for association with an annotation.
-         * 
          * @author jscott
          */
         private class AccessionNumber {
             private final String database;
-            private final String accession;
-
+            private final String accession; 
+            
             AccessionNumber(String database, String accessionNumber) {
                 this.database = database;
                 this.accession = accessionNumber;
             }
 
             public String getDatabase() {
-                return this.database;
+                return database;
             }
 
             public String getAccession() {
-                return this.accession;
+                return accession;
             }
         }
     }
-
+    
     /**
      * Used for controls, this biosequenceBuilder does nothing.
-     * 
      * @author jscott
      */
     private class NullBiosequenceBuilder implements BiosequenceBuilder {
@@ -539,7 +616,6 @@ class ArrayDesignBuilderImpl implements ArrayDesignBuilder, PhysicalProbeBuilder
         /**
          * {@inheritDoc}
          */
-        @Override
         public BiosequenceBuilder agpAccession(String accessionNumber) {
             // Do nothing
             return this;
@@ -548,7 +624,6 @@ class ArrayDesignBuilderImpl implements ArrayDesignBuilder, PhysicalProbeBuilder
         /**
          * {@inheritDoc}
          */
-        @Override
         public BiosequenceBuilder createNewEnsemblAccession(String accessionNumber) {
             // Do nothing
             return this;
@@ -557,7 +632,6 @@ class ArrayDesignBuilderImpl implements ArrayDesignBuilder, PhysicalProbeBuilder
         /**
          * {@inheritDoc}
          */
-        @Override
         public BiosequenceBuilder createNewGBAccession(String accessionNumber) {
             // Do nothing
             return this;
@@ -566,7 +640,6 @@ class ArrayDesignBuilderImpl implements ArrayDesignBuilder, PhysicalProbeBuilder
         /**
          * {@inheritDoc}
          */
-        @Override
         public BiosequenceBuilder createNewMirAccession(String accessionNumber) {
             // Do nothing
             return this;
@@ -575,7 +648,6 @@ class ArrayDesignBuilderImpl implements ArrayDesignBuilder, PhysicalProbeBuilder
         /**
          * {@inheritDoc}
          */
-        @Override
         public BiosequenceBuilder createNewRefSeqAccession(String accessionNumber) {
             // Do nothing
             return this;
@@ -584,19 +656,32 @@ class ArrayDesignBuilderImpl implements ArrayDesignBuilder, PhysicalProbeBuilder
         /**
          * {@inheritDoc}
          */
-        @Override
         public BiosequenceBuilder createNewTHCAccession(String accessionNumber) {
             // Do nothing
             return this;
         }
-
+              
         /**
          * {@inheritDoc}
          */
-        @Override
         public BiosequenceBuilder finish() {
             return this;
         }
 
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void processChunk(boolean forceFlush) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("31 processChunk() called");
+        }
+        arrayDao.save(currentFeature);
+        arrayDao.save(currentPhysicalProbe);
+        if (forceFlush || ++batchCount % BATCH_SIZE == 0) {
+            arrayDao.flushSession();
+            arrayDao.clearSession();
+        }
     }
 }

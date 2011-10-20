@@ -221,6 +221,10 @@ class MageTabImporterImpl implements MageTabImporter {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public MageTabDocumentSet importFiles(Project targetProject, CaArrayFileSet fileSet)
             throws MageTabParsingException {
         LOG.info("Importing MAGE-TAB document set");

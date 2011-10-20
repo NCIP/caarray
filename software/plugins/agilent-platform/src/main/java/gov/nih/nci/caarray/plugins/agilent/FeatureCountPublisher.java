@@ -80,7 +80,7 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.platforms.agilent;
+package gov.nih.nci.caarray.plugins.agilent;
 
 /**
  * Alerts clients to growing feature counts in array designs.

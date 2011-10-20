@@ -104,6 +104,7 @@ final class AgilentGELMToken {
     private static Token eofToken;
     private static Token endToken;
     private static Token errorToken;
+    private static Token attributeEndToken;
     
     // Utility class should not have a default constructor.
     private AgilentGELMToken() {       
@@ -138,7 +139,6 @@ final class AgilentGELMToken {
          * An error occurred during lexical analysis.
          */
         TOKENIZER_ERROR(TokenType.ERROR),
-
 
         /**
          * Start of an "accession" XML element.
@@ -214,13 +214,16 @@ final class AgilentGELMToken {
          * Start of a "reporter" XML element.
          */
         REPORTER_START("reporter", TokenType.START),
-
         
         /**
          * End of an XML element.
          */
-        END(TokenType.END),
-
+        ELEMENT_END(TokenType.ELEMENT_END),
+        
+        /**
+         * End of an XML element's attributes.
+         */
+        ATTRIBUTE_END(TokenType.ATTRIBUTE_END),
 
         /**
          * An "access" XML attribute.
@@ -483,8 +486,11 @@ final class AgilentGELMToken {
                 case EOF:
                     eofToken = this;
                     break;
-                case END:
+                case ELEMENT_END:
                     endToken = this;
+                    break;
+                case ATTRIBUTE_END:
+                    attributeEndToken = this;
                     break;
                 case ERROR:
                     errorToken = this;
@@ -520,6 +526,10 @@ final class AgilentGELMToken {
         static Token getEOFToken() {
             return eofToken;
         }
+        
+        static Token getEndAttributeEndToken() {
+            return attributeEndToken;
+        }
 
         static Token getEndToken() {
             return endToken;
@@ -543,7 +553,7 @@ final class AgilentGELMToken {
          * Categorizes the types of tokens in the grammar.
          */
         private enum TokenType {
-            DOCUMENT_START, DOCUMENT_END, START, END, ATTRIBUTE, EOF, ERROR
+            DOCUMENT_START, DOCUMENT_END, START, ELEMENT_END, ATTRIBUTE, ATTRIBUTE_END, EOF, ERROR
         }
     }
 }

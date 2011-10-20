@@ -88,9 +88,6 @@ import gov.nih.nci.caarray.dao.VocabularyDao;
 import gov.nih.nci.caarray.dataStorage.DataStorageFacade;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.array.ArrayDesignDetails;
-import gov.nih.nci.caarray.domain.array.Feature;
-import gov.nih.nci.caarray.domain.array.PhysicalProbe;
-import gov.nih.nci.caarray.domain.array.ProbeGroup;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileCategory;
 import gov.nih.nci.caarray.domain.file.FileType;
@@ -105,12 +102,10 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
-import java.util.Collection;
 import java.util.Set;
 
 import org.apache.commons.io.FilenameUtils;
 
-import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 
@@ -118,10 +113,9 @@ import com.google.inject.Inject;
  * @author jscott
  * 
  */
-public class AgilentXmlDesignFileHandler extends AbstractDesignFileHandler {
+public class AgilentXmlDesignFileHandler extends AbstractDesignFileHandler implements FeatureCountListener {
     static final String LSID_AUTHORITY = "Agilent.com";
     static final String LSID_NAMESPACE = "PhysicalArrayDesign";
-    private static final int BATCH_SIZE = 1000;
 
     /**
      * File Type for AGILENT_XML array design.
@@ -133,9 +127,6 @@ public class AgilentXmlDesignFileHandler extends AbstractDesignFileHandler {
     private CaArrayFile designFile;
     private File fileOnDisk;
     private ArrayDesignDetails arrayDesignDetails;
-    private Collection<Feature> features;
-    private Collection<PhysicalProbe> probes;
-    private Collection<ProbeGroup> probeGroups;
     private Reader inputReader = null;
     private AgilentGELMTokenizer tokenizer = null;
     private int featureCount = 0;
@@ -234,20 +225,18 @@ public class AgilentXmlDesignFileHandler extends AbstractDesignFileHandler {
     public void createDesignDetails(ArrayDesign arrayDesign) throws PlatformFileReadException {
         parseArrayDesign(arrayDesign);
         try {
-            arrayDesign.setNumberOfFeatures(this.features.size());
-            arrayDesign.setDesignDetails(this.arrayDesignDetails);
+            arrayDesignDetails = new ArrayDesignDetails();
+            getArrayDao().save(arrayDesignDetails);
+            arrayDesign.setDesignDetails(arrayDesignDetails);
             getArrayDao().save(arrayDesign);
-            getSessionTransactionManager().flushSession();
-            saveEntities(true, this.features);
-            this.features = null;
-            saveEntities(true, this.probeGroups);
-            this.probeGroups = null;
-            saveEntities(false, this.probes);
+            parseArrayDesign(arrayDesign);
+            arrayDesign = getSearchDao().retrieve(ArrayDesign.class, arrayDesign.getId());
+            arrayDesign.setNumberOfFeatures(Integer.valueOf(featureCount));
+            getArrayDao().save(arrayDesign);
             flushAndClearSession();
-            this.probes = null;
-        } catch (final Exception e) {
-            throw new PlatformFileReadException(this.fileOnDisk, "Unexpected error while validating "
-                    + this.designFile.getName(), e);
+        } catch (Exception e) {
+            throw new PlatformFileReadException(this.fileOnDisk, "Unexpected error while creating design details: "
+                    + designFile.getName() + ": " + e.getMessage(), e);
         }
     }
 
@@ -255,15 +244,13 @@ public class AgilentXmlDesignFileHandler extends AbstractDesignFileHandler {
         boolean parseResult;
 
         try {
-            final AgilentGELMParser parser = new AgilentGELMParser(this.tokenizer);
+            AgilentGELMParser parser = new AgilentGELMParser(tokenizer);
+            parser.addFeatureCountListener(this);
 
-            final ArrayDesignBuilderImpl builder = new ArrayDesignBuilderImpl(this.vocabularyDao);
+            ArrayDesignBuilderImpl builder = new ArrayDesignBuilderImpl(arrayDesignDetails, vocabularyDao,
+                    getArrayDao(), getSearchDao());
             parseResult = parser.parse(builder);
 
-            this.arrayDesignDetails = builder.getArrayDesignDetails();
-            this.features = builder.getFeatures();
-            this.probes = builder.getPhysicalProbes().values();
-            this.probeGroups = builder.getProbeGroups().values();
         } catch (final Exception e) {
             throw new PlatformFileReadException(this.fileOnDisk,
                     "Could not parse file " + this.designFile.getName(), e);
@@ -274,16 +261,6 @@ public class AgilentXmlDesignFileHandler extends AbstractDesignFileHandler {
         }
     }
 
-    private void saveEntities(final boolean shouldBatchFlushAndClear,
-            final Collection<? extends PersistentObject> persistentObjects) {
-        int count = 0;
-        for (final PersistentObject persistentObject : persistentObjects) {
-            getArrayDao().save(persistentObject);
-            if (shouldBatchFlushAndClear && ++count % BATCH_SIZE == 0) {
-                flushAndClearSession();
-            }
-        }
-    }
 
     /**
      * {@inheritDoc}
