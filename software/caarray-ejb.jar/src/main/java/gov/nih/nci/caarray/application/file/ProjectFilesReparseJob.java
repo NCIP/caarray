@@ -91,7 +91,6 @@ import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.magetab.MageTabFileSet;
 import gov.nih.nci.caarray.magetab.validator.ValidatorSet;
-import gov.nih.nci.caarray.util.UsernameHolder;
 
 import org.apache.log4j.Logger;
 

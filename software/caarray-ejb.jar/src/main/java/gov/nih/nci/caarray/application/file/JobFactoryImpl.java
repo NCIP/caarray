@@ -89,7 +89,6 @@ import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.project.Project;
-import gov.nih.nci.caarray.util.UsernameHolder;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;

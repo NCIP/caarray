@@ -148,7 +148,8 @@ final class DataFileValidator extends AbstractArrayDataUtility {
             }
             caArrayFile.setValidationResult(result);
             if (result.isValid()) {
-                caArrayFile.setFileStatus(handler.parsesData() ? FileStatus.VALIDATED : FileStatus.VALIDATED_NOT_PARSED);
+                caArrayFile.setFileStatus(
+                        handler.parsesData() ? FileStatus.VALIDATED : FileStatus.VALIDATED_NOT_PARSED);
             } else {
                 caArrayFile.setFileStatus(FileStatus.VALIDATION_ERRORS);
             }

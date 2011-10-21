@@ -211,7 +211,7 @@ final class ArrayDesignPlatformFacade {
         arrayDesign.getDesignFileSet().updateStatus(
                 arrayDesign.getDesignFiles().iterator().next().getFileType().isParsed() ? FileStatus.IMPORTED
                         : FileStatus.IMPORTED_NOT_PARSED);
-		*/
+         */
         arrayDesign = searchDao.retrieve(ArrayDesign.class, arrayDesign.getId());
         arrayDesign.getDesignFileSet().updateStatus(
                 handler.parsesData() ? FileStatus.IMPORTED : FileStatus.IMPORTED_NOT_PARSED);

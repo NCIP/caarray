@@ -306,6 +306,9 @@ public class AgilentXmlDesignFileHandler extends AbstractDesignFileHandler imple
          return true;
     }
 
+    /**
+     * Increment feature count. 
+     */
     public void incrementFeatureCount() {
         featureCount++;
     }
