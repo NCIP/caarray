@@ -7,7 +7,7 @@ This file is the is the settings file used by IVY.  It is a good starting point 
 
 
 <ivysettings>
-	<property name="ivy-bda.local.repo" value="${software.dir}/${caarray-bda.ivy-repo.relative.dir}"/>
+	<property name="ivy-bda.local.repo" value="${software.dir}/caarray-bda/ivy-repo"/>
 	<property name="tmp.local.repo" value="${software.dir}/tmp.local.ivy.repo"/>
     <settings defaultResolver="ncicb-chain"/>
     <caches defaultCacheDir="${ivy.settings.dir}/.ivy2-caarray-cache" useOrigin="false"/>
