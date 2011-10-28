@@ -27,7 +27,7 @@ This ant build file downloads the bda project from the official NCICB Ivy Reposi
 	<property name="ivy.settings.file" value="ivy-bda-settings.xml"/>
 	<property name="ivy.bda.file" value="ivy-bda-2.0.0.xml"/>
 
-	<property name="ivy.src.url" value="${ivy.src.url}/${ivy.jar.file}"/>
+	<property name="ivy.src.url" value="${ivy.src.url.base}/${ivy.jar.file}"/>
 	<property name="ivy-bda.src.url.base" value="file://${software.dir}/${caarray-bda.downloads.relative.dir}"/>
 
 	<property name="ivy.dest.file" value="${lib.dir}/${ivy.jar.file}"/>
