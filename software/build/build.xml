@@ -3628,7 +3628,7 @@
     <!-- ** DOCUMENTATION TARGETS                                         ** -->
     <!-- ******************************************************************* -->
 
-    <target name="javadoc" depends="init:third-party-paths,javadoc:all" description="Generates javadoc for all source code" />
+    <target name="javadoc" depends="javadoc:all" description="Generates javadoc for all source code" />
 
     <target name="init:javadoc-dependencies" depends="init:third-party-paths">
         <path id="javadoc.classpath">
@@ -3639,7 +3639,7 @@
         </path>
     </target>
 
-    <target name="javadoc:all" depends="init:third-party-paths,compile:caarray-client.jar,compile:caarray-common.jar,compile:caarray-ejb.jar,compile:caarray.war,build:caarray-grid-svc">
+    <target name="javadoc:all" depends="init:javadoc-dependencies,compile:caarray-client.jar,compile:caarray-common.jar,compile:caarray-ejb.jar,compile:caarray.war,build:caarray-grid-svc">
         <mkdir dir="${site.dir}/docs/api" />
         <javadoc destdir="${site.dir}/docs/api" classpathref="javadoc.classpath">
             <packageset dir="${caarray-client.src.dir}" />
@@ -3653,7 +3653,7 @@
         </javadoc>
     </target>
 
-    <target name="javadoc:caarray-client-legacy" depends="init:third-party-paths,compile:caarray-client.jar,compile:caarray-common.jar,compile:caarray-ejb.jar,build:caarray-grid-svc">
+    <target name="javadoc:caarray-client-legacy" depends="init:javadoc-dependencies,compile:caarray-client.jar,compile:caarray-common.jar,compile:caarray-ejb.jar,build:caarray-grid-svc">
         <mkdir dir="${caarray-client.target.dir}/docs/api/legacy" />
         <javadoc destdir="${caarray-client.target.dir}/docs/api/legacy" classpathref="javadoc.classpath">
             <packageset dir="${caarray-client.src.dir}" />
@@ -3693,7 +3693,7 @@
         </sequential>
     </macrodef>
 
-    <target name="javadoc:caarray-client-external" depends="init:third-party-paths,compile:caarray-client.jar,compile:caarray-common.jar,compile:caarray-ejb.jar,build:caarray-grid-svc">
+    <target name="javadoc:caarray-client-external" depends="init:javadoc-dependencies,compile:caarray-client.jar,compile:caarray-common.jar,compile:caarray-ejb.jar,build:caarray-grid-svc">
         <for param="version" list="${caarray-grid-svc.versions.external}">
             <sequential>
                 <javadoc-caarray-client-external version="@{version}"/>
