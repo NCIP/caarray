@@ -99,12 +99,19 @@ Getting Started
 - Copy the "$CAARRAY_HOME/software/master_build/install.properties" file, rename it to whatever you wish, and configure it with values appropriate for your desired local deployment.
 - Create and configure a "$CAARRAY_HOME/software/build/local.properties" file so that it contains properties and values for the following at least (values should be same as in install.properties
   copy above): database.system.user, database.system.password, database.server, database.port, database.name, database.user, database.password. Also, add the jboss.home property and
-  set its value to be what is set for application.base.path in the install.properties file copy above, with jboss-4.0.5.GA appended (e.g., application.base.path set to /usr/local/caarray,
-  so jboss.home is set to /usr/local/caarray/jboss-4.0.5.GA). The purpose of the $CAARRAY_HOME/software/build/local.properties file is to allow developers to override property values from
+  set its value to be what is set for application.base.path in the install.properties file copy above, with jboss-5.1.0.GA-nci appended (e.g., application.base.path set to /usr/local/caarray,
+  so jboss.home is set to /usr/local/caarray/jboss-5.1.0.GA-nci). The purpose of the $CAARRAY_HOME/software/build/local.properties file is to allow developers to override property values from
   $CAARRAY_HOME/software/build/default.properties file and thus prevent accidental check-in of $CAARRAY_HOME/software/build/default.properties, so localize your environment in
   $CAARRAY_HOME/software/build/local.properties rather than $CAARRAY_HOME/software/build/default.properties.
-- To create the caArray DB schema (prerequisite for installation) open a command prompt and from $CAARRAY_HOME/software/build, execute
-  ant database:recreate-database
+- To create the caArray DB schema (prerequisite for installation), 
+1.  create schema caarraydb;
+2.  create user 'caarrayop'
+3.  grant all on caarraydb.* to 'db-user'@'%' identified by 'db-password' with grant option;
+4.  grant all on caarraydb.* to 'db-user'@'localhost' identified by 'db-password' with grant option;
+5.  flush privileges;
+where db-user and db-password are the values you set in local.properties and your copy of install.properties. 
+Then open a command prompt and from $CAARRAY_HOME/software/build, execute
+  ant database:reinitialize
 - Then, to install caArray application, cd to $CAARRAY_HOME/software/master_build, execute (replace "<absolute path to install.properties file copy>" with actual path)
   ant -Dproperties.file=<absolute path to install.properties file copy> deploy:local:install
 - caArray will be installed locally and both caArray JBoss and grid service JBoss will be started automatically.
