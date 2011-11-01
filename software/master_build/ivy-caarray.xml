@@ -85,7 +85,9 @@
 		<dependency conf="project" org="org.apache.myfaces.core" name="myfaces-api" rev="1.1.5" transitive="false" />
 		<dependency conf="project" org="mysql" name="mysql-connector-java" rev="5.0.5" transitive="false" />
 		<dependency conf="project" org="pmd" name="pmd" rev="3.9nci" transitive="false" />
-		<dependency conf="project" org="org.seleniumhq.selenium.server" name="selenium-server" rev="1.0.3" transitive="false" />
+		<dependency conf="project" org="org.seleniumhq.selenium.server" name="selenium-server" rev="1.0.3" transitive="false">
+			<artifact name="selenium-server" type="jar" url="https://ncimvn.nci.nih.gov/nexus/content/repositories/public/org/seleniumhq/selenium/server/selenium-server/1.0.3/selenium-server-1.0.3-standalone.jar" />
+		</dependency>
 		<dependency conf="project" org="org.seleniumhq.selenium.client-drivers" name="selenium-java-client-driver" rev="1.0.2" transitive="false" >
 			<artifact name="selenium-java-client-driver" type="jar" url="https://ncimvn.nci.nih.gov/nexus/content/repositories/public/org/seleniumhq/selenium/client-drivers/selenium-java-client-driver/1.0.2/selenium-java-client-driver-1.0.2.jar" />
 			<artifact name="selenium-java-client-driver-tests" type="jar" url="https://ncimvn.nci.nih.gov/nexus/content/repositories/public/org/seleniumhq/selenium/client-drivers/selenium-java-client-driver/1.0.2/selenium-java-client-driver-1.0.2-tests.jar" />
@@ -95,7 +97,9 @@
 		<dependency conf="project" org="net.sourceforge.javacsv" name="javacsv" rev="2.0" transitive="false" />
 		<dependency conf="project" org="csmapi" name="csmapi" rev="4.2" transitive="false" />
 		<dependency conf="project" org="svntask" name="svntask" rev="1.0.7nci" transitive="false" />
-		<dependency conf="project" org="gov.nih.nci.security" name="clm" rev="4.2.beta_jboss51" transitive="false" />
+		<dependency conf="project" org="gov.nih.nci.security" name="clm" rev="4.2.beta_jboss51" transitive="false">
+			<artifact name="clm" type="jar" url="https://ncimvn.nci.nih.gov/nexus/content/repositories/public/gov/nih/nci/security/clm/4.2.beta_jboss51/clm-4.2.beta_jboss51-fix.jar" />
+		</dependency>
 		<dependency conf="project" org="opensymphony" name="oscache" rev="2.4.1nci" transitive="false" />
 		<dependency conf="project" org="opensymphony" name="sitemesh" rev="2.3" transitive="false" />
 		<dependency conf="project" org="com.opensymphony" name="xwork-core" rev="2.1.6" transitive="false" />
@@ -122,7 +126,9 @@
 		<dependency conf="project" org="com.fiveamsolutions" name="nci-commons-core" rev="1.2.17" transitive="false" />
 		<dependency conf="project" org="nci-commons-struts2" name="nci-commons-struts2" rev="1.2.17nci" transitive="false" />
 		<dependency conf="project" org="net.sf.ezmorph" name="ezmorph" rev="1.0.4" transitive="false" />
-		<dependency conf="project" org="net.sf.json-lib" name="json-lib" rev="2.2.2" transitive="false" />
+		<dependency conf="project" org="net.sf.json-lib" name="json-lib" rev="2.2.2" transitive="false">
+			<artifact name="json-lib" type="jar" url="https://ncimvn.nci.nih.gov/nexus/content/repositories/public/net/sf/json-lib/json-lib/2.2.2/json-lib-2.2.2-jdk15.jar" />
+		</dependency>
 		<dependency conf="project" org="xalan" name="xalan" rev="2.7.1" transitive="false" />
 		<dependency conf="project" org="xalan-serializer" name="serializer" rev="2.7.1" transitive="false" />
 		<dependency conf="project" org="org.codehaus.castor" name="castor" rev="1.0.4nci" transitive="false" />
@@ -173,7 +179,9 @@
 		<dependency conf="project" org="com.atlassian.plugins" name="atlassian-plugins-webresource" rev="2.6.0" transitive="false" />
 		<dependency conf="project" org="com.atlassian.sal" name="sal-api" rev="2.2.0" transitive="false" />
 		<dependency conf="project" org="org.slf4j" name="slf4j-api" rev="1.5.8" transitive="false" />
-		<dependency conf="project" org="org.twdata.pkgscanner" name="package-scanner" rev="0.9.6-SNAPSHOT" transitive="false" />
+		<dependency conf="project" org="org.twdata.pkgscanner" name="package-scanner" rev="0.9.6-SNAPSHOT" transitive="false">
+			<artifact name="package-scanner" type="jar" url="https://ncimvn.nci.nih.gov/nexus/content/repositories/public/org/twdata/pkgscanner/package-scanner/0.9.6-SNAPSHOT/package-scanner-0.9.6-20111012.141429-1.jar" />		
+		</dependency>
 		<dependency conf="project" org="joda-time" name="joda-time" rev="1.6" transitive="false" />
 		<dependency conf="project" org="org.apache.felix" name="org.apache.felix.framework" rev="3.0.2" transitive="false" />
 		<dependency conf="project" org="biz.aQute" name="bndlib" rev="0.0.255" transitive="false" />
