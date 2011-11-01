@@ -245,7 +245,7 @@
 
         <path id="affxfusion.jar.path">
             <fileset dir="${project.lib}" id="affxfusion.jar.fileset">
-                <include name="AffxFusion-*.jar"/>
+                <include name="fusion-*.jar"/>
             </fileset>
         </path>
         <property name="affxfusion.jar" refid="affxfusion.jar.fileset" />
@@ -341,35 +341,35 @@
 
         <path id="caGrid-core.jar.path">
             <fileset dir="${project.lib}" id="caGrid-core.jar.fileset">
-                <include name="caGrid-core-*.jar"/>
+                <include name="cagrid-core-*.jar"/>
             </fileset>
         </path>
         <property name="caGrid-core.jar" refid="caGrid-core.jar.fileset" />
 
         <path id="caGrid-data-stubs.jar.path">
             <fileset dir="${project.lib}" id="caGrid-data-stubs.jar.fileset">
-                <include name="caGrid-data-stubs-*.jar"/>
+                <include name="cagrid-data-stubs-*.jar"/>
             </fileset>
         </path>
         <property name="caGrid-data-stubs.jar" refid="caGrid-data-stubs.jar.fileset" />
 
         <path id="caGrid-data-common.jar.path">
             <fileset dir="${project.lib}" id="caGrid-data-common.jar.fileset">
-                <include name="caGrid-data-common-*.jar"/>
+                <include name="cagrid-data-common-*.jar"/>
             </fileset>
         </path>
         <property name="caGrid-data-common.jar" refid="caGrid-data-common.jar.fileset" />
 
         <path id="caGrid-sdkQuery32-core.jar.path">
             <fileset dir="${project.lib}" id="caGrid-sdkQuery32-core.jar.fileset">
-                <include name="caGrid-sdkQuery32-core-*.jar"/>
+                <include name="cagrid-sdkquery32-core-*.jar"/>
             </fileset>
         </path>
         <property name="caGrid-sdkQuery32-core.jar" refid="caGrid-sdkQuery32-core.jar.fileset" />
 
         <path id="caGrid-cql.jar.path">
             <fileset dir="${project.lib}" id="caGrid-cql.jar.fileset">
-                <include name="caGrid-CQL-cql.1.0-*.jar"/>
+                <include name="cagrid-cql*.jar"/>
             </fileset>
         </path>
         <property name="caGrid-cql.jar" refid="caGrid-cql.jar.fileset" />
@@ -545,7 +545,7 @@
 
         <path id="xerces-J.jar.path">
             <fileset dir="${project.lib}" id="xerces-J.jar.fileset">
-                <include name="xerces-J-*.jar"/>
+                <include name="xerces-1.4.0.jar"/>
             </fileset>
         </path>
         <property name="xerces-J.jar" refid="xerces-J.jar.fileset"/>
@@ -566,7 +566,7 @@
 
         <path id="hibernate-client.jar.path">
             <fileset dir="${project.lib}" id="hibernate-client.jar.fileset">
-                <include name="hibernate-client-*.jar"/>
+                <include name="hibernate-3.2nci.jar"/>
             </fileset>
         </path>
         <property name="hibernate-client.jar" refid="hibernate-client.jar.fileset" />
@@ -629,7 +629,7 @@
 
         <path id="jakarta-oro.jar.path">
             <fileset dir="${project.lib}" id="jakarta-oro.jar.fileset">
-                <include name="jakarta-oro-*.jar"/>
+                <include name="oro-*.jar"/>
             </fileset>
         </path>
         <property name="jakarta-oro.jar" refid="jakarta-oro.jar.fileset" />
@@ -921,7 +921,7 @@
 
         <path id="addressing.jar.path">
             <fileset dir="${project.lib}" id="addressing.jar.fileset">
-                <include name="addressing-*.jar"/>
+                <include name="ws-addressing-*.jar"/>
             </fileset>
         </path>
         <property name="addressing.jar" refid="addressing.jar.fileset" />
@@ -977,7 +977,7 @@
 
         <path id="axis.jar.path">
             <fileset dir="${project.lib}" id="axis.jar.fileset">
-                <include name="axis-*.jar"/>
+                <include name="axis-1.4.2_10nci*.jar"/>
             </fileset>
         </path>
         <property name="axis.jar" refid="axis.jar.fileset" />

@@ -86,9 +86,9 @@
 		<dependency conf="project" org="mysql" name="mysql-connector-java" rev="5.0.5" transitive="false" />
 		<dependency conf="project" org="pmd" name="pmd" rev="3.9nci" transitive="false" />
 		<dependency conf="project" org="org.seleniumhq.selenium.server" name="selenium-server" rev="1.0.3" transitive="false" />
-		<dependency conf="project" org="org.seleniumhq.selenium.client-drivers" name="selenium-java-client-driver" rev="1.0.2" transitive="false" />
-		<dependency conf="project" org="org.seleniumhq.selenium.client-drivers" name="selenium-java-client-driver" rev="1.0.2" transitive="false">
-			<artifact name="selenium-java-client-driver" type="jar" url="https://ncimvn.nci.nih.gov/nexus/content/repositories/public//org/seleniumhq/selenium/client-drivers/selenium-java-client-driver/1.0.2/selenium-java-client-driver-1.0.2-tests.jar" />
+		<dependency conf="project" org="org.seleniumhq.selenium.client-drivers" name="selenium-java-client-driver" rev="1.0.2" transitive="false" >
+			<artifact name="selenium-java-client-driver" type="jar" url="https://ncimvn.nci.nih.gov/nexus/content/repositories/public/org/seleniumhq/selenium/client-drivers/selenium-java-client-driver/1.0.2/selenium-java-client-driver-1.0.2.jar" />
+			<artifact name="selenium-java-client-driver-tests" type="jar" url="https://ncimvn.nci.nih.gov/nexus/content/repositories/public/org/seleniumhq/selenium/client-drivers/selenium-java-client-driver/1.0.2/selenium-java-client-driver-1.0.2-tests.jar" />
 		</dependency>
 		<dependency conf="project" org="org.springframework" name="spring" rev="2.5.6" transitive="false" />
 		<dependency conf="project" org="org.springframework" name="spring-mock" rev="2.0.3" transitive="false" />
