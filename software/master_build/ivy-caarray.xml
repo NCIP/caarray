@@ -13,11 +13,12 @@
 		<dependency conf="bda-utils" org="ncicb" name="bda-utils" rev="${bda.version}" force="true" />
 		<!-- CONF = BDA-UTILS END -->
 		<!--  CONF = ASM_3.0 START -->
-		<dependency conf="asm_3.0" org="objectweb" name="asm-tree" rev="3.0" transitive="false" />
+		<dependency conf="asm_3.0" org="objectweb" name="asm" rev="3.0" transitive="false" />
 		<!-- CONF = ASM_3.0 END -->
 		<!-- CONF = PROJECT START -->
+		<dependency conf="project" org="asm" name="asm" rev="1.5.3nci" transitive="false" />
+		<dependency conf="project" org="asm" name="asm-attrs" rev="1.5.3nci" transitive="false" />
 		<dependency conf="project" org="objectweb" name="asm-tree" rev="3.0" transitive="false" />
-		<dependency conf="project" org="objectweb" name='asm' rev="3.0" transitive="false"/>
 		<dependency conf="project" org="org.apache.jakarta" name="jmeter" rev="2.3nci" transitive="false" />
 		<dependency conf="project" org="ant-jmeter" name="ant-jmeter" rev="2.3nci" transitive="false" />
 		<dependency conf="project" org="apachejmeter" name="apachejmeter_java" rev="2.3nci" transitive="false" />
@@ -33,8 +34,6 @@
 		<dependency conf="project" org="javassist" name="javassist" rev="3.9.0.GAnci" transitive="false" />
 		<dependency conf="project" org="antlr" name="antlr" rev="2.7.6" transitive="false" />
 		<dependency conf="project" org="ncicb-ant" name="ncicb-ant" rev="1.0nci" transitive="false" />
-		<dependency conf="project" org="asm" name="asm" rev="1.5.3nci" transitive="false" />
-		<dependency conf="project" org="asm" name="asm-attrs" rev="1.5.3nci" transitive="false" />
 		<dependency conf="project" org="backport-util-concurrent" name="backport-util-concurrent" rev="3.0" transitive="false" />
 		<dependency conf="project" org="c3p0" name="c3p0" rev="0.9.0" transitive="false" />
 		<dependency conf="project" org="cagrid" name="cagrid-core" rev="1.2.0.1nci" transitive="false" />
