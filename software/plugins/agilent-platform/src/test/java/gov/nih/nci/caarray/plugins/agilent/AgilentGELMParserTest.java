@@ -86,6 +86,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import gov.nih.nci.caarray.plugins.agilent.AgilentGELMToken.Token;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class AgilentGELMParserTest {

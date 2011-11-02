@@ -122,7 +122,7 @@ public class AgilentGELMParserFileTest {
 
     @Test
     public void validatesTestAcghXmlFile() throws FileNotFoundException {
-        validatesFile(AgilentArrayDesignFiles.TEST_ACGH_XML);       
+        validatesFile(AgilentArrayDesignFiles.TEST_SHORT_ACGH_XML);       
     }
 
     @Test
@@ -159,7 +159,7 @@ public class AgilentGELMParserFileTest {
 
     @Test
     public void parsesTestAcghXmlFile() throws FileNotFoundException {
-        parsesFile(AgilentArrayDesignFiles.TEST_ACGH_XML);       
+        parsesFile(AgilentArrayDesignFiles.TEST_SHORT_ACGH_XML);       
     }
 
     @Test
