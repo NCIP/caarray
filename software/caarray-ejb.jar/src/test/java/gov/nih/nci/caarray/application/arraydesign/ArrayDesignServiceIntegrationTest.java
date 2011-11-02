@@ -360,7 +360,7 @@ public class ArrayDesignServiceIntegrationTest extends AbstractServiceIntegratio
 
         @Override
         public boolean parsesData() {
-             return false;
+             return true;
         }
 
         @Override
