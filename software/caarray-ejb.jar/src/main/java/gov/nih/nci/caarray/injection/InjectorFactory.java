@@ -124,18 +124,35 @@ public final class InjectorFactory {
         private InjectorSingletonHolder() {
         }
 
-        private static void createInjector() {
+        private static synchronized void createInjector() {
             injector = Guice.createInjector(getModule());
         }
+        
+        private static synchronized Injector getInjector() {
+            if (injector == null) {
+                injector = Guice.createInjector(getModule());
+            }
+            return injector;
+        }
+        
     }
 
     /**
      * @return the single InjectorSingleton instance.
      */
     public static Injector getInjector() {
-        return InjectorSingletonHolder.injector;
+        return InjectorSingletonHolder.getInjector();
     }
 
+    /**
+     * 
+     */
+    public static void resetInjector() {
+        InjectorSingletonHolder.injector = null;
+    }
+    
+    
+    
     /**
      * Intended for integration tests that need to override modules and create their own injectors.
      * 
