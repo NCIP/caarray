@@ -223,14 +223,12 @@ public class AgilentXmlDesignFileHandler extends AbstractDesignFileHandler imple
      */
     @Override
     public void createDesignDetails(ArrayDesign arrayDesign) throws PlatformFileReadException {
-        parseArrayDesign(arrayDesign);
         try {
             arrayDesignDetails = new ArrayDesignDetails();
             getArrayDao().save(arrayDesignDetails);
             arrayDesign.setDesignDetails(arrayDesignDetails);
             getArrayDao().save(arrayDesign);
             parseArrayDesign(arrayDesign);
-            arrayDesign = getSearchDao().retrieve(ArrayDesign.class, arrayDesign.getId());
             arrayDesign.setNumberOfFeatures(Integer.valueOf(featureCount));
             getArrayDao().save(arrayDesign);
             flushAndClearSession();
