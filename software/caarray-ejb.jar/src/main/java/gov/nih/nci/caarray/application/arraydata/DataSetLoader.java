@@ -91,6 +91,7 @@ import gov.nih.nci.caarray.domain.data.DataSet;
 import gov.nih.nci.caarray.domain.data.HybridizationData;
 import gov.nih.nci.caarray.domain.data.QuantitationType;
 import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
+import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.platforms.spi.DataFileHandler;
 import gov.nih.nci.caarray.platforms.spi.PlatformFileReadException;
 import gov.nih.nci.caarray.platforms.unparsed.FallbackUnparsedDataHandler;
@@ -125,12 +126,13 @@ final class DataSetLoader extends AbstractArrayDataUtility {
         this.parsedDataPersister = parsedDataPersister;
     }
 
-    void load(AbstractArrayData arrayData) throws InvalidDataFileException {
+    void load(AbstractArrayData arrayData, MageTabDocumentSet mTabSet) throws InvalidDataFileException {
         DataFileHandler handler = null;
         try {
             LOG.debug("Parsing required for file " + arrayData.getDataFile().getName());
             try {
-                handler = getHandler(arrayData.getDataFile());
+                handler = findAndSetupHandler(arrayData.getDataFile(), mTabSet);
+                assert handler != null : "findAndSetupHandler must never return null";
                 final ArrayDesign design = getArrayDesign(arrayData.getDataFile(), handler);
                 final List<QuantitationType> types = getQuantitationTypes(handler);
                 handler.loadData(arrayData.getDataSet(), types, design);

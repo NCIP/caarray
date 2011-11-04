@@ -112,6 +112,7 @@ import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.search.ExampleSearchCriteria;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
+import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.platforms.AbstractHandlerTest;
 import gov.nih.nci.caarray.platforms.PlatformModule;
 import gov.nih.nci.caarray.test.data.arraydata.AgilentArrayDataFiles;
@@ -478,7 +479,10 @@ public class AgilentRawTextDataHandlerTest extends AbstractHandlerTest {
         addProbeToDesign("A_54_P00004465");
 
         final CaArrayFile caArrayFile = getCaArrayFile(AgilentArrayDataFiles.MIRNA_BLANKS, DESIGN_LSID.getObjectId());
-        final FileValidationResult results = this.arrayDataService.validate(caArrayFile, null, false);
+        List<File> fileList = makeFileList(AgilentArrayDataFiles.MIRNA_BLANKS, AgilentArrayDataFiles.MIRNA_BLANKS_IDF, 
+                AgilentArrayDataFiles.MIRNA_BLANKS_SRDF); 
+        MageTabDocumentSet mTabSet= genMageTabDocSet(fileList); 
+        final FileValidationResult results = this.arrayDataService.validate(caArrayFile, mTabSet, false);
         assertEquals(FileStatus.VALIDATION_ERRORS, caArrayFile.getFileStatus());
 
         final int i = 0;

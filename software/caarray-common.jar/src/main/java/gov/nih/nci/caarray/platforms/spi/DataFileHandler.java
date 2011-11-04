@@ -116,7 +116,25 @@ public interface DataFileHandler {
     List<String> getSampleNames(String hybridizationName);
 
     /**
+     * @return true if this handler parses the files, false if it does not.
+     */
+    boolean parsesData();
+    
+    /**
      * @return a set of FileType instances describing the files that this DataFileHandler can handle.
      */
     Set<FileType> getSupportedTypes();
+
+    /**
+     * 
+     * @return MageTabDocumentSet associated with this instance. 
+     */
+    MageTabDocumentSet getMageTabDocumentSet();
+    
+    /**
+     * Stores reference to MageTabDocumentSet arg.
+     * @param mTabSet parsed MageTabDocumentSet with SDRF that specifies data file to array design mappings. 
+     */
+    void setMageTabDocumentSet(MageTabDocumentSet mTabSet);
+
 }

@@ -82,6 +82,7 @@
  */package gov.nih.nci.caarray.application.arraydesign;
 
 import gov.nih.nci.caarray.dao.ArrayDao;
+import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileStatus;
@@ -107,14 +108,16 @@ import com.google.inject.Inject;
 final class ArrayDesignPlatformFacade {
     private final Set<DesignFileHandler> handlers;
     private final ArrayDao arrayDao;
+    private final SearchDao searchDao;
 
     /**
      * @param handlers
      */
     @Inject
-    ArrayDesignPlatformFacade(ArrayDao arrayDao, Set<DesignFileHandler> handlers) {
+    ArrayDesignPlatformFacade(ArrayDao arrayDao, SearchDao searchDao, Set<DesignFileHandler> handlers) {
         this.handlers = new HashSet<DesignFileHandler>(handlers);
         this.arrayDao = arrayDao;
+        this.searchDao = searchDao;
     }
 
     private DesignFileHandler getHandler(Set<CaArrayFile> designFiles) throws PlatformFileReadException {
@@ -150,10 +153,14 @@ final class ArrayDesignPlatformFacade {
 
         }
 
+        FileStatus validatedStatus = FileStatus.VALIDATED;
         if (result.isValid()) {
             DesignFileHandler handler = null;
             try {
                 handler = getHandler(designFiles);
+                if (!handler.parsesData()) {
+                    validatedStatus = FileStatus.VALIDATED_NOT_PARSED;
+                }
                 handler.validate(result);
             } catch (final PlatformFileReadException e) {
                 final CaArrayFile firstDesignFile = designFiles.iterator().next();
@@ -171,7 +178,7 @@ final class ArrayDesignPlatformFacade {
             }
         }
 
-        final FileStatus status = result.isValid() ? getValidStatus(designFiles) : FileStatus.VALIDATION_ERRORS;
+        final FileStatus status = result.isValid() ? validatedStatus : FileStatus.VALIDATION_ERRORS;
         for (final CaArrayFile designFile : designFiles) {
             designFile.setFileStatus(status);
             this.arrayDao.save(designFile);
@@ -179,11 +186,6 @@ final class ArrayDesignPlatformFacade {
         this.arrayDao.flushSession();
 
         return result;
-    }
-
-    private static FileStatus getValidStatus(Set<CaArrayFile> designFiles) {
-        return designFiles.iterator().next().getFileType().isParsed() ? FileStatus.VALIDATED
-                : FileStatus.VALIDATED_NOT_PARSED;
     }
 
     @SuppressWarnings("PMD.AvoidReassigningParameters")
@@ -203,10 +205,16 @@ final class ArrayDesignPlatformFacade {
         // the handler cleared the session, so we need to merge before we update the status
         // See hibernate bug http://opensource.atlassian.com/projects/hibernate/browse/HHH-511
         // When we upgrade to hibernate 3.2.4+, we can remove the call to merge.
+        //commenting out as part of merging 2.4.1.x to trunk. Step 3.
+        /*
         arrayDesign = (ArrayDesign) this.arrayDao.mergeObject(arrayDesign);
         arrayDesign.getDesignFileSet().updateStatus(
                 arrayDesign.getDesignFiles().iterator().next().getFileType().isParsed() ? FileStatus.IMPORTED
                         : FileStatus.IMPORTED_NOT_PARSED);
+         */
+        arrayDesign = searchDao.retrieve(ArrayDesign.class, arrayDesign.getId());
+        arrayDesign.getDesignFileSet().updateStatus(
+                handler.parsesData() ? FileStatus.IMPORTED : FileStatus.IMPORTED_NOT_PARSED);
         this.arrayDao.save(arrayDesign);
     }
 

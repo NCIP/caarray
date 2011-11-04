@@ -282,62 +282,6 @@ public class MageTabTranslatorTest extends AbstractServiceTest {
     }
 
     @Test
-    public void testVocabularyTermSources() throws InvalidDataException, MageTabParsingException {
-        // negative testing
-        final MageTabFileSet badMageTabFileSet = TestMageTabSets.BAD_VOCABULARY_TERM_SOURCES_FILE_SET;
-        for (final FileRef f : badMageTabFileSet.getAllFiles()) {
-            this.fileAccessServiceStub.add(f.getAsFile());
-            final MageTabDocumentSet badMageTabDocumentSet = MageTabParser.INSTANCE.parse(badMageTabFileSet);
-            assertTrue(badMageTabDocumentSet.getValidationResult().isValid());
-            final CaArrayFileSet badCaarrayFileSet = TestMageTabSets.getFileSet(badMageTabFileSet);
-            final ValidationResult badValidationResult = this.translator.validate(badMageTabDocumentSet, badCaarrayFileSet);
-            final FileValidationResult badSdrfFileValidationResult = badValidationResult.getFileValidationResult(
-                    MageTabDataFiles.BAD_VOCABULARY_TERM_SOURCES_SDRF.getName());
-            assertNotNull(badSdrfFileValidationResult);
-            assertFalse(badValidationResult.isValid());
-            assertEquals(2, badSdrfFileValidationResult.getMessages().size());
-            assertTrue(badSdrfFileValidationResult.getMessages().get(0).getMessage().indexOf("all Material Types must come from the") >= 0);
-            assertTrue(badSdrfFileValidationResult.getMessages().get(1).getMessage().indexOf("or the Term Source should be omitted") >= 0);
-            final FileValidationResult badIdfFileValidationResult = badValidationResult.getFileValidationResult(MageTabDataFiles.BAD_VOCABULARY_TERM_SOURCES_IDF.getName());
-            assertNotNull(badIdfFileValidationResult);
-            assertEquals(1, badIdfFileValidationResult.getMessages().size());
-            assertTrue(badIdfFileValidationResult.getMessages().get(0).getMessage().indexOf("All Protocol Types must come from the") >= 0);
-
-            // positive testing
-            final MageTabFileSet goodMageTabFileSet = TestMageTabSets.GOOD_VOCABULARY_TERM_SOURCES_FILE_SET;
-            for (final FileRef fref : goodMageTabFileSet.getAllFiles()) {
-                this.fileAccessServiceStub.add(fref.getAsFile());
-            }
-            final MageTabDocumentSet goodMageTabDocumentSet = MageTabParser.INSTANCE.parse(goodMageTabFileSet);
-            assertTrue(goodMageTabDocumentSet.getValidationResult().isValid());
-            final CaArrayFileSet goodCaarrayFileSet = TestMageTabSets.getFileSet(goodMageTabFileSet);
-            final ValidationResult goodValidationResult = this.translator.validate(goodMageTabDocumentSet, goodCaarrayFileSet);
-            final FileValidationResult goodSdrfFileValidationResult = goodValidationResult.getFileValidationResult(
-                    MageTabDataFiles.GOOD_VOCABULARY_TERM_SOURCES_SDRF.getName());
-            assertNull(goodSdrfFileValidationResult);
-
-            final CaArrayTranslationResult goodCaArrayTranslationResult = this.translator.translate(goodMageTabDocumentSet, goodCaarrayFileSet);
-            final Collection<Experiment> investigationsCollection = goodCaArrayTranslationResult.getInvestigations();
-            assertTrue("There should only be one experiment.", investigationsCollection.size() == 1);
-            final Experiment experiment = investigationsCollection.iterator().next();
-            final Investigation investigation = goodMageTabDocumentSet.getIdfDocument(MageTabDataFiles.GOOD_VOCABULARY_TERM_SOURCES_IDF.getName()).getInvestigation();
-            final List<Protocol> protocols = investigation.getProtocols();
-            final Protocol protocol = protocols.get(0);
-            final String protocolTypeTermSourceUrl = protocol.getType().getTermSource().getFile();
-            assertEquals("The protocol term source is incorrect.", "http://mged.sourceforge.net/ontologies/MGEDOntology1.1.8.daml", protocolTypeTermSourceUrl);
-            final Set<Sample> samplesSet = experiment.getSamples();
-            assertTrue("There should only be one sample.", samplesSet.size() == 1);
-            final Set<Source> sourcesSet = experiment.getSources();
-            assertTrue("There should only be one source.", sourcesSet.size() == 1);
-            final Sample sample = samplesSet.iterator().next();
-            final Source source = sourcesSet.iterator().next();
-            assertEquals("The sample organism is incorrect.", "Homo sapiens", sample.getOrganism().getScientificName());
-            assertEquals("The sample organism term source is incorrect.", "http://ncicb.nci.nih.gov/", sample.getOrganism().getTermSource().getUrl());
-            assertEquals("The source material type term source is incorrect.", "http://mged.sourceforge.net/ontologies/MGEDOntology1.1.8.daml", source.getMaterialType().getSource().getUrl());
-        }
-    }
-
-    @Test
     public void testDefect17200() throws InvalidDataException, MageTabParsingException {
         MageTabFileSet mageTabSet = TestMageTabSets.DEFECT_17200;
         for (final FileRef f : mageTabSet.getAllFiles()) {
@@ -453,7 +397,6 @@ public class MageTabTranslatorTest extends AbstractServiceTest {
         final Collection<Term> terms = result.getTerms();
         @SuppressWarnings("unchecked")
         final Collection<Term> matchingTerms = CollectionUtils.select(terms, new Predicate() {
-            @Override
             public boolean evaluate(Object o) {
                 final Term t = (Term) o;
                 return t.getValue().equalsIgnoreCase("fresh_sample");

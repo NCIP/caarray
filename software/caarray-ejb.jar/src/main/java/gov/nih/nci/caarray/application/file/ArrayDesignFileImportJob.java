@@ -88,7 +88,6 @@ import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.project.JobType;
-import gov.nih.nci.caarray.util.UsernameHolder;
 import gov.nih.nci.security.authorization.domainobjects.User;
 
 import java.sql.Connection;
@@ -109,9 +108,7 @@ final class ArrayDesignFileImportJob extends AbstractFileManagementJob {
     private final String arrayDesignName;
 
     @Inject
-    @SuppressWarnings("PMD.ExcessiveParameterList")
-    ArrayDesignFileImportJob(String username, UsernameHolder usernameHolder,
-            ArrayDesign arrayDesign, ArrayDao arrayDao) {
+    ArrayDesignFileImportJob(String username, ArrayDesign arrayDesign, ArrayDao arrayDao) {
         super(username);
         this.arrayDesignId = arrayDesign.getId();
         this.arrayDesignName = arrayDesign.getName();

@@ -343,4 +343,13 @@ public final class CelHandler extends AbstractDataFileHandler {
     public List<LSID> getReferencedArrayDesignCandidateIds() {
         return Collections.singletonList(new LSID(LSID_AUTHORITY, LSID_NAMESPACE, this.celData.getChipType()));
     }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean parsesData() {
+        return true;
+    }
+    
 }

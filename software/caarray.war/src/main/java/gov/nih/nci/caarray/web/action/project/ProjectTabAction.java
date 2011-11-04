@@ -2,8 +2,8 @@ package gov.nih.nci.caarray.web.action.project;
 
 import gov.nih.nci.caarray.application.ServiceLocatorFactory;
 import gov.nih.nci.caarray.application.project.InconsistentProjectStateException;
-import gov.nih.nci.caarray.application.project.ProposalWorkflowException;
 import gov.nih.nci.caarray.application.project.InconsistentProjectStateException.Reason;
+import gov.nih.nci.caarray.application.project.ProposalWorkflowException;
 import gov.nih.nci.caarray.application.vocabulary.VocabularyUtils;
 import gov.nih.nci.caarray.domain.contact.Person;
 import gov.nih.nci.caarray.domain.project.ExperimentContact;
@@ -72,6 +72,9 @@ public class ProjectTabAction extends AbstractBaseProjectAction {
         } catch (InconsistentProjectStateException e) {
             handleInconsistentStateError(e);
             return INPUT;
+        } catch (Exception e) {
+            handleSaveError(e);
+            return "saveError";
         }
     }
 
@@ -101,6 +104,16 @@ public class ProjectTabAction extends AbstractBaseProjectAction {
      */
     protected void handleWorkflowError() {
         ActionHelper.saveMessage(getText("project.saveProblem", new String[] {StringUtils.abbreviate(getProject()
+                .getExperiment().getTitle(), TRUNCATED_TITLE_WIDTH) }));
+    }
+    
+    /**
+     * Helper method for creating and saving appropriate error message when experiment creation fails due to any reason 
+     * other than an InconsistentStateError and/or a WorkflowError.
+     * @param e the exception containing information about the error.
+     */
+    protected void handleSaveError(Exception e) {
+        ActionHelper.saveMessage(getText("project.saveError", new String[] {StringUtils.abbreviate(getProject()
                 .getExperiment().getTitle(), TRUNCATED_TITLE_WIDTH) }));
     }
 

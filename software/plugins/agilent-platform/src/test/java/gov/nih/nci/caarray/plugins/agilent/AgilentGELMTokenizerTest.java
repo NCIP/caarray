@@ -86,7 +86,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
-import gov.nih.nci.caarray.plugins.agilent.AgilentGELMTokenizer;
 import gov.nih.nci.caarray.plugins.agilent.AgilentGELMToken.Token;
 import gov.nih.nci.caarray.test.data.arraydesign.AgilentArrayDesignFiles;
 
@@ -96,7 +95,6 @@ import java.io.FileReader;
 import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -131,7 +129,10 @@ public class AgilentGELMTokenizerTest {
         assertEquals(Token.PATTERN_START, tokenizer.getCurrentToken());
         tokenizer.advance();
 
-        assertEquals(Token.END, tokenizer.getCurrentToken());
+        assertEquals(Token.ATTRIBUTE_END, tokenizer.getCurrentToken());
+        tokenizer.advance();
+
+        assertEquals(Token.ELEMENT_END, tokenizer.getCurrentToken());
         tokenizer.advance();
 
         assertEquals(Token.DOCUMENT_END, tokenizer.getCurrentToken());
@@ -154,7 +155,10 @@ public class AgilentGELMTokenizerTest {
         assertEquals(Token.TOKENIZER_ERROR, tokenizer.getCurrentToken());
         tokenizer.advance();
 
-        assertEquals(Token.END, tokenizer.getCurrentToken());
+        assertEquals(Token.ATTRIBUTE_END, tokenizer.getCurrentToken());
+        tokenizer.advance();
+
+        assertEquals(Token.ELEMENT_END, tokenizer.getCurrentToken());
         tokenizer.advance();
 
         assertEquals(Token.DOCUMENT_END, tokenizer.getCurrentToken());
@@ -180,7 +184,10 @@ public class AgilentGELMTokenizerTest {
         assertEquals(Token.TOKENIZER_ERROR, tokenizer.getCurrentToken());
         tokenizer.advance();
 
-        assertEquals(Token.END, tokenizer.getCurrentToken());
+        assertEquals(Token.ATTRIBUTE_END, tokenizer.getCurrentToken());
+        tokenizer.advance();
+
+        assertEquals(Token.ELEMENT_END, tokenizer.getCurrentToken());
         tokenizer.advance();
 
         assertEquals(Token.DOCUMENT_END, tokenizer.getCurrentToken());
@@ -191,82 +198,82 @@ public class AgilentGELMTokenizerTest {
 
     @Test
     public void recognizesAccessionElementWithAttributes() {
-        handlesElementAndAttributes("accession", Token.ACCESSION_START, Token.END, new String[]{"database", "id",}, new Token[]{Token.DATABASE, Token.ID,});
+        handlesElementAndAttributes("accession", Token.ACCESSION_START, Token.ELEMENT_END, Token.ATTRIBUTE_END, new String[]{"database", "id",}, new Token[]{Token.DATABASE, Token.ID,});
     }
 
     @Test
     public void recognizesAliasElementWithAttributes() {
-        handlesElementAndAttributes("alias", Token.ALIAS_START, Token.END, new String[]{"name",}, new Token[]{Token.NAME,});
+        handlesElementAndAttributes("alias", Token.ALIAS_START, Token.ELEMENT_END, Token.ATTRIBUTE_END, new String[]{"name",}, new Token[]{Token.NAME,});
     }
 
     @Test
     public void recognizesChipElementWithAttributes() {
-        handlesElementAndAttributes("chip", Token.CHIP_START, Token.END, new String[]{"barcode", "prepared_for", "prepared_for_org"}, new Token[]{Token.BARCODE, Token.PREPARED_FOR, Token.PREPARED_FOR_ORG,});
+        handlesElementAndAttributes("chip", Token.CHIP_START, Token.ELEMENT_END, Token.ATTRIBUTE_END, new String[]{"barcode", "prepared_for", "prepared_for_org"}, new Token[]{Token.BARCODE, Token.PREPARED_FOR, Token.PREPARED_FOR_ORG,});
     }
 
     @Test
     public void recognizesFeatureElementWithAttributes() {
-        handlesElementAndAttributes("feature", Token.FEATURE_START, Token.END, new String[]{"number", "ctrl_for_feat_num",}, new Token[]{Token.NUMBER, Token.CTRL_FOR_FEAT_NUM,});
+        handlesElementAndAttributes("feature", Token.FEATURE_START, Token.ELEMENT_END, Token.ATTRIBUTE_END, new String[]{"number", "ctrl_for_feat_num",}, new Token[]{Token.NUMBER, Token.CTRL_FOR_FEAT_NUM,});
     }
 
     @Test
     public void recognizesGeneElementWithAttributes() {
-        handlesElementAndAttributes("gene", Token.GENE_START, Token.END, new String[]{"primary_name", "systematic_name", "species", "chromosome", "map_position", "description",}, new Token[]{Token.PRIMARY_NAME, Token.SYSTEMATIC_NAME, Token.SPECIES, Token.CHROMOSOME, Token.MAP_POSITION, Token.DESCRIPTION,});
+        handlesElementAndAttributes("gene", Token.GENE_START, Token.ELEMENT_END, Token.ATTRIBUTE_END, new String[]{"primary_name", "systematic_name", "species", "chromosome", "map_position", "description",}, new Token[]{Token.PRIMARY_NAME, Token.SYSTEMATIC_NAME, Token.SPECIES, Token.CHROMOSOME, Token.MAP_POSITION, Token.DESCRIPTION,});
     }
 
     @Test
     public void recognizesOtherElementWithAttributes() {
-        handlesElementAndAttributes("other", Token.OTHER_START, Token.END, new String[]{"name", "value",}, new Token[]{Token.NAME, Token.VALUE,});
+        handlesElementAndAttributes("other", Token.OTHER_START, Token.ELEMENT_END, Token.ATTRIBUTE_END, new String[]{"name", "value",}, new Token[]{Token.NAME, Token.VALUE,});
     }
 
     @Test
     public void recognizesPatternElementWithAttributes() {
-        handlesElementAndAttributes("pattern", Token.PATTERN_START, Token.END, new String[]{"name", "type_id", "species_database", "description", "access", "owner",}, new Token[]{Token.NAME, Token.TYPE_ID, Token.SPECIES_DATABASE, Token.DESCRIPTION, Token.ACCESS, Token.OWNER,});
+        handlesElementAndAttributes("pattern", Token.PATTERN_START, Token.ELEMENT_END, Token.ATTRIBUTE_END, new String[]{"name", "type_id", "species_database", "description", "access", "owner",}, new Token[]{Token.NAME, Token.TYPE_ID, Token.SPECIES_DATABASE, Token.DESCRIPTION, Token.ACCESS, Token.OWNER,});
     }
 
     @Test
     public void recognizesPenElementWithAttributes() {
-        handlesElementAndAttributes("pen", Token.PEN_START, Token.END, new String[]{"x", "y", "units",}, new Token[]{Token.X, Token.Y, Token.UNITS,});
+        handlesElementAndAttributes("pen", Token.PEN_START, Token.ELEMENT_END, Token.ATTRIBUTE_END, new String[]{"x", "y", "units",}, new Token[]{Token.X, Token.Y, Token.UNITS,});
     }
 
     @Test
     public void recognizesPositionElementWithAttributes() {
-        handlesElementAndAttributes("position", Token.POSITION_START, Token.END, new String[]{"x", "y", "units",}, new Token[]{Token.X, Token.Y, Token.UNITS,});
+        handlesElementAndAttributes("position", Token.POSITION_START, Token.ELEMENT_END, Token.ATTRIBUTE_END, new String[]{"x", "y", "units",}, new Token[]{Token.X, Token.Y, Token.UNITS,});
     }
 
     @Test
     public void recognizesPrintingElementWithAttributes() {
-        handlesElementAndAttributes("printing", Token.PRINTING_START, Token.END, new String[]{"date", "printer", "type", "pattern_name", "run_description", "prepared_by", "prepared_at_site", "prepared_by_org",}, new Token[]{Token.DATE, Token.PRINTER, Token.TYPE, Token.PATTERN_NAME, Token.RUN_DESCRIPTION, Token.PREPARED_BY, Token.PREPARED_AT_SITE, Token.PREPARED_BY_ORG,});
+        handlesElementAndAttributes("printing", Token.PRINTING_START, Token.ELEMENT_END, Token.ATTRIBUTE_END, new String[]{"date", "printer", "type", "pattern_name", "run_description", "prepared_by", "prepared_at_site", "prepared_by_org",}, new Token[]{Token.DATE, Token.PRINTER, Token.TYPE, Token.PATTERN_NAME, Token.RUN_DESCRIPTION, Token.PREPARED_BY, Token.PREPARED_AT_SITE, Token.PREPARED_BY_ORG,});
     }
 
     @Test
     public void recognizesProjectElementWithGelmPatternDtdAttributes() {
-        handlesElementAndAttributes("project", Token.PROJECT_START, Token.END, new String[]{"name", "id", "date", "by", "company",}, new Token[]{Token.NAME, Token.ID, Token.DATE, Token.BY, Token.COMPANY,});
+        handlesElementAndAttributes("project", Token.PROJECT_START, Token.ELEMENT_END, Token.ATTRIBUTE_END, new String[]{"name", "id", "date", "by", "company",}, new Token[]{Token.NAME, Token.ID, Token.DATE, Token.BY, Token.COMPANY,});
     }
 
     @Test
     public void recognizesProjectElementWithGelmDtdAttributes() {
-        handlesElementAndAttributes("project", Token.PROJECT_START, Token.END, new String[]{"name", "id", "date", "by", "organization",}, new Token[]{Token.NAME, Token.ID, Token.DATE, Token.BY, Token.ORGANIZATION,});
+        handlesElementAndAttributes("project", Token.PROJECT_START, Token.ELEMENT_END, Token.ATTRIBUTE_END, new String[]{"name", "id", "date", "by", "organization",}, new Token[]{Token.NAME, Token.ID, Token.DATE, Token.BY, Token.ORGANIZATION,});
     }
 
     @Test
     public void recognizesReporterElementWithAttributes() {
-        handlesElementAndAttributes("reporter", Token.REPORTER_START, Token.END, new String[]{"name", "systematic_name", "accession", "deletion", "control_type", "fail_type", "active_sequence", "linker_sequence", "primer1_sequence", "primer2_sequence", "start_coord", "mismatch_count",}, new Token[]{Token.NAME, Token.SYSTEMATIC_NAME, Token.ACCESSION, Token.DELETION, Token.CONTROL_TYPE, Token.FAIL_TYPE, Token.ACTIVE_SEQUENCE, Token.LINKER_SEQUENCE, Token.PRIMER1_SEQUENCE, Token.PRIMER2_SEQUENCE, Token.START_COORD, Token.MISMATCH_COUNT,});
+        handlesElementAndAttributes("reporter", Token.REPORTER_START, Token.ELEMENT_END, Token.ATTRIBUTE_END, new String[]{"name", "systematic_name", "accession", "deletion", "control_type", "fail_type", "active_sequence", "linker_sequence", "primer1_sequence", "primer2_sequence", "start_coord", "mismatch_count",}, new Token[]{Token.NAME, Token.SYSTEMATIC_NAME, Token.ACCESSION, Token.DELETION, Token.CONTROL_TYPE, Token.FAIL_TYPE, Token.ACTIVE_SEQUENCE, Token.LINKER_SEQUENCE, Token.PRIMER1_SEQUENCE, Token.PRIMER2_SEQUENCE, Token.START_COORD, Token.MISMATCH_COUNT,});
     }
 
     @Test
     public void recognizesBiosequenceElementWithAttributes() {
-        handlesElementAndAttributes("biosequence", Token.BIOSEQUENCE_START, Token.END, new String[]{"access", "chromosome", "control_type", "description", "ec_number", "map_position", "primary_name", "sequenceDB", "species", "type",}, new Token[]{Token.ACCESS, Token.CHROMOSOME, Token.CONTROL_TYPE, Token.DESCRIPTION, Token.EC_NUMBER, Token.MAP_POSITION, Token.PRIMARY_NAME, Token.SEQUENCEDB, Token.SPECIES, Token.TYPE,});
+        handlesElementAndAttributes("biosequence", Token.BIOSEQUENCE_START, Token.ELEMENT_END, Token.ATTRIBUTE_END, new String[]{"access", "chromosome", "control_type", "description", "ec_number", "map_position", "primary_name", "sequenceDB", "species", "type",}, new Token[]{Token.ACCESS, Token.CHROMOSOME, Token.CONTROL_TYPE, Token.DESCRIPTION, Token.EC_NUMBER, Token.MAP_POSITION, Token.PRIMARY_NAME, Token.SEQUENCEDB, Token.SPECIES, Token.TYPE,});
     }
     
     @Test
     public void recognizesBiosequenceRefElementWithAttributes() {
-        handlesElementAndAttributes("biosequence_ref", Token.BIOSEQUENCE_REF_START, Token.END, new String[]{"database", "identifier", "species",}, new Token[]{Token.DATABASE, Token.IDENTIFIER, Token.SPECIES,});
+        handlesElementAndAttributes("biosequence_ref", Token.BIOSEQUENCE_REF_START, Token.ELEMENT_END, Token.ATTRIBUTE_END, new String[]{"database", "identifier", "species",}, new Token[]{Token.DATABASE, Token.IDENTIFIER, Token.SPECIES,});
     }
     
     @Test
     public void recognizesGridLayouElementWithAttributes() {
-        handlesElementAndAttributes("grid_layout", Token.GRID_LAYOUT_START, Token.END, new String[]{"feature_count_x", "feature_count_y", "feature_spacing_x  ","feature_spacing_y ",}, new Token[]{Token.FEATURE_COUNT_X, Token.FEATURE_COUNT_Y, Token.FEATURE_SPACING_X, Token.FEATURE_SPACING_Y,});
+        handlesElementAndAttributes("grid_layout", Token.GRID_LAYOUT_START, Token.ELEMENT_END, Token.ATTRIBUTE_END, new String[]{"feature_count_x", "feature_count_y", "feature_spacing_x  ","feature_spacing_y ",}, new Token[]{Token.FEATURE_COUNT_X, Token.FEATURE_COUNT_Y, Token.FEATURE_SPACING_X, Token.FEATURE_SPACING_Y,});
     }
     
     @Test
@@ -308,7 +315,7 @@ public class AgilentGELMTokenizerTest {
         }
     }
 
-    private void handlesElementAndAttributes(String elementName, Token elementStartToken, Token elementEndToken, String[] attributeNames, Token[] attributeTokens) {
+    private void handlesElementAndAttributes(String elementName, Token elementStartToken, Token elementEndToken, Token attributeEndToken, String[] attributeNames, Token[] attributeTokens) {
         String xmlSnippet = buildXmlSnippet(elementName, attributeNames);
         StringReader inputReader = new StringReader(xmlSnippet);
 
@@ -327,14 +334,16 @@ public class AgilentGELMTokenizerTest {
         for (int i = 0; i < attributeNames.length; i++) {
             attributeTokenMap.put(attributeNames[i], attributeTokens[i]);
         }
-        String[] sortedAttributeNames = attributeNames.clone();
-        Arrays.sort(sortedAttributeNames);
 
-        for (String attributeName : sortedAttributeNames) {
+        for (String attributeName : attributeNames) {
             Token expectedAttributeToken = attributeTokenMap.get(attributeName);
             assertEquals(expectedAttributeToken, tokenizer.getCurrentToken());
             tokenizer.advance();
         }
+
+        // Followed the attribute end token
+        assertEquals(attributeEndToken, tokenizer.getCurrentToken());
+        tokenizer.advance();
 
         // Followed the element end token
         assertEquals(elementEndToken, tokenizer.getCurrentToken());

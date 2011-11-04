@@ -608,4 +608,12 @@ public class CsvDataHandler extends AbstractDataFileHandler {
             reader.close();
         }
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean parsesData() {
+        return true;
+    }
 }

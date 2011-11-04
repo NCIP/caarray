@@ -98,7 +98,14 @@ interface MageTabImporter {
 
     MageTabDocumentSet selectRefFiles(Project project, CaArrayFileSet idfFileSet);
 
-    void importFiles(Project targetProject, CaArrayFileSet fileSet)
+    /**
+     * 
+     * @param targetProject
+     * @param fileSet
+     * @return MageTabDocumentSet if available, else null. 
+     * @throws MageTabParsingException
+     */
+    MageTabDocumentSet importFiles(Project targetProject, CaArrayFileSet fileSet)
             throws MageTabParsingException;
 
 }

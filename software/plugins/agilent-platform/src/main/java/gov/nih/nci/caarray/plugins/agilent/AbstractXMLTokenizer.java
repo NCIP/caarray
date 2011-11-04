@@ -83,9 +83,9 @@
 package gov.nih.nci.caarray.plugins.agilent;
 
 import java.io.Reader;
+import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.List;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.XMLEvent;
@@ -114,11 +114,17 @@ abstract class AbstractXMLTokenizer<TokenT extends Enum<TokenT>> implements XMLT
     }
 
     private TokenT currentToken;
+    private boolean attribtesArePresentForCurrentElement = false;
     private XMLStreamReader2 reader;
     private boolean currentTokenIsAttribute;
     private int currentAttributeIndex;
-    private final SortedMap<String, Integer> attributeIndexMap = new TreeMap<String, Integer>();   
-    private Iterator<Integer> attributeIndexIterator = attributeIndexMap.values().iterator();
+    private final List<AttributeNameAndIndexWrapper> attributesAndIndexesList =
+        new ArrayList<AttributeNameAndIndexWrapper>();   
+    private Iterator<AttributeNameAndIndexWrapper> attributeIterator = attributesAndIndexesList.iterator();
+    
+    private static final String END_OF_ATTRIBUTES_TOKEN_NAME = AbstractXMLTokenizer.class.getName()
+        + ".END_OF_ATTRIBUTES_TOKEN_NAME";
+    private static final int END_OF_ATTRIBUTES_INDEX_PLACEHOLDER = -1;
     
     /**
      * @param inputReader a reader on the XML source to tokenized
@@ -132,7 +138,7 @@ abstract class AbstractXMLTokenizer<TokenT extends Enum<TokenT>> implements XMLT
         try {
             reader = (XMLStreamReader2) inputFactory.createXMLStreamReader(inputReader);
         } catch (XMLStreamException e) {
-            throw new AgilentParseException("StAX library error", e);
+            throw new AgilentParseException("Cannot create StAX reader: " + e.getMessage(), e);
         }
 
         currentToken = getNextToken();
@@ -146,17 +152,21 @@ abstract class AbstractXMLTokenizer<TokenT extends Enum<TokenT>> implements XMLT
             try {
                 reader.close();
             } catch (XMLStreamException e) {
-                throw new AgilentParseException("StAX library error", e);
+                throw new AgilentParseException("Cannot close StAX reader: " + e.getMessage(), e);
             }
         }
     }
 
     private TokenT getNextToken() {
-        currentTokenIsAttribute = attributeIndexIterator.hasNext();
+        currentTokenIsAttribute = attributeIterator.hasNext();
         if (currentTokenIsAttribute) {
-            currentAttributeIndex = attributeIndexIterator.next();
-            String attributeName = reader.getAttributeLocalName(currentAttributeIndex);
-            return findAttributeToken(attributeName);
+            currentAttributeIndex = attributeIterator.next().getAttributeIndex();
+            if (END_OF_ATTRIBUTES_INDEX_PLACEHOLDER == currentAttributeIndex) {
+                return getEndAttributesToken();
+            } else {
+                String attributeName = reader.getAttributeLocalName(currentAttributeIndex);
+                return findAttributeToken(attributeName);
+            }
         }
         while (true) {
             TokenT token = getToken();
@@ -220,11 +230,18 @@ abstract class AbstractXMLTokenizer<TokenT extends Enum<TokenT>> implements XMLT
 
     private void setUpAttributes() {
         int numberOfAttributes = reader.getAttributeCount();
-        attributeIndexMap.clear();
-        for (int i = 0; i < numberOfAttributes; i++) {
-            attributeIndexMap.put(reader.getAttributeLocalName(i), i);
+        if (numberOfAttributes > 0) {
+            attribtesArePresentForCurrentElement = true;
+        } else {
+            attribtesArePresentForCurrentElement = false;
         }
-        attributeIndexIterator = attributeIndexMap.values().iterator();
+        attributesAndIndexesList.clear();
+        for (int i = 0; i < numberOfAttributes; i++) {
+            attributesAndIndexesList.add(new AttributeNameAndIndexWrapper(reader.getAttributeLocalName(i), i));
+        }
+        attributesAndIndexesList.add(
+                new AttributeNameAndIndexWrapper(END_OF_ATTRIBUTES_TOKEN_NAME, END_OF_ATTRIBUTES_INDEX_PLACEHOLDER));
+        attributeIterator = attributesAndIndexesList.iterator();
     }
 
     /**
@@ -269,6 +286,11 @@ abstract class AbstractXMLTokenizer<TokenT extends Enum<TokenT>> implements XMLT
     protected abstract TokenT getEOFToken();
 
     /**
+     * @return the token to return when there is are no more attributes for this element
+     */
+    protected abstract TokenT getEndAttributesToken();
+
+    /**
      * @return {@inheritDoc}
      */
     public TokenT getCurrentToken() {
@@ -279,7 +301,7 @@ abstract class AbstractXMLTokenizer<TokenT extends Enum<TokenT>> implements XMLT
      * {@inheritDoc}
      */
     public void advance() {
-        if (attributeIndexIterator.hasNext()) {
+        if (attributeIterator.hasNext()) {
             currentToken = getNextToken();
         } else {
             switch (tryToAdvance()) {
@@ -290,7 +312,8 @@ abstract class AbstractXMLTokenizer<TokenT extends Enum<TokenT>> implements XMLT
                 currentToken = getEOFToken();
                 break;
             default:
-                throw new AgilentParseException("Encountered an unexpected case in switch statement.");
+                throw new AgilentParseException(
+                        "Encountered an unexpected case in switch statement while advancing.");
             }
         }
     }
@@ -358,6 +381,30 @@ abstract class AbstractXMLTokenizer<TokenT extends Enum<TokenT>> implements XMLT
             return FileStatus.END_OF_FILE;
         } catch (XMLStreamException e) {
             throw new AgilentParseException("StAX library error", e);
+        }
+    }
+    
+    /**
+     * wraps the name and index of an xml attribute.
+     * @author dharley
+     *
+     */
+    private static class AttributeNameAndIndexWrapper {
+        
+        private final String attributeName;
+        private final int attributeIndex;
+        
+        AttributeNameAndIndexWrapper(String attributeName, int attributeIndex) {
+            this.attributeName = attributeName;
+            this.attributeIndex = attributeIndex;
+        }
+        
+        String getAttributeName() {
+            return attributeName;
+        }
+        
+        int getAttributeIndex() {
+            return attributeIndex;
         }
     }
 }

@@ -84,7 +84,6 @@ package gov.nih.nci.caarray.web.action.vocabulary;
 
 import gov.nih.nci.caarray.application.ServiceLocatorFactory;
 import gov.nih.nci.caarray.application.vocabulary.VocabularyUtils;
-import gov.nih.nci.caarray.domain.project.ExperimentOntology;
 import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
 import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
@@ -121,9 +120,8 @@ public class VocabularyAction extends ActionSupport implements Preparable {
     private static final long serialVersionUID = 1L;
     private Set<Term> terms = new HashSet<Term>();
     private Term currentTerm;
-    private ExperimentOntologyCategory category;
+    private ExperimentOntologyCategory category;;
     private List<TermSource> sources = new ArrayList<TermSource>();
-    private TermSource mgedTermSource;
     private Long returnProjectId;
     private boolean returnToProjectOnCompletion = false;
     private String returnInitialTab1 = "overview";
@@ -333,27 +331,6 @@ public class VocabularyAction extends ActionSupport implements Preparable {
      */
     public void setSources(List<TermSource> sources) {
         this.sources = sources;
-        setMgedSource(sources);
-    }
-    
-    private void setMgedSource(List<TermSource> termSources) {
-        if (null == termSources) {
-            mgedTermSource = null;
-        } else {
-            for (TermSource termSource : termSources) {
-                if (ExperimentOntology.MGED_ONTOLOGY.getOntologyName().equals(termSource.getName())) {
-                    mgedTermSource = termSource;
-                    break;
-                }
-            }
-        }
-    }
-
-    /**
-     * @return the source for MGED ontology
-     */
-    public TermSource getMgedTermSource() {
-        return this.mgedTermSource;
     }
 
     /**

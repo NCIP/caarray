@@ -85,6 +85,7 @@ package gov.nih.nci.caarray.dao;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.net.URI;
 import java.util.Date;
@@ -129,34 +130,33 @@ import gov.nih.nci.caarray.util.CaArrayUtils;
  * 
  */
 public class FileDaoTest extends AbstractDaoTest {
-    private static FileDao DAO_OBJECT;
+    private FileDao DAO_OBJECT;
 
     // Experiment
-    private static Organism DUMMY_ORGANISM = new Organism();
-    private static Organization DUMMY_PROVIDER = new Organization();
-    private static Project DUMMY_PROJECT_1 = new Project();
-    private static Experiment DUMMY_EXPERIMENT_1 = new Experiment();
-    private static TermSource DUMMY_TERM_SOURCE = new TermSource();
-    private static Category DUMMY_CATEGORY = new Category();
+    private Organism DUMMY_ORGANISM;
+    private Organization DUMMY_PROVIDER;
+    private Project DUMMY_PROJECT_1;
+    private Experiment DUMMY_EXPERIMENT_1;
+    private TermSource DUMMY_TERM_SOURCE;
+    private Category DUMMY_CATEGORY;
 
     // Annotations
-    private static Term DUMMY_REPLICATE_TYPE = new Term();
-    private static Term DUMMY_NORMALIZATION_TYPE = new Term();
-    private static Term DUMMY_QUALITY_CTRL_TYPE = new Term();
+    private Term DUMMY_REPLICATE_TYPE;
+    private Term DUMMY_NORMALIZATION_TYPE;
+    private Term DUMMY_QUALITY_CTRL_TYPE;
 
-    private static QuantitationType DUMMY_QUANT_TYPE = new QuantitationType();
+    private QuantitationType DUMMY_QUANT_TYPE;
 
-    private static final URI DUMMY_DATA_HANDLE = CaArrayUtils.makeUriQuietly("file-system:foo");
-    private static VocabularyDao VOCABULARY_DAO;
+    private URI DUMMY_DATA_HANDLE;
+
+    private VocabularyDao VOCABULARY_DAO;    
 
     /**
      * Define the dummy objects that will be used by the tests.
      */
     @Before
     public void setup() {
-        DAO_OBJECT = new FileDaoImpl(this.hibernateHelper, this.typeRegistry);
-        VOCABULARY_DAO = new VocabularyDaoImpl(this.hibernateHelper);
-
+        initializeDao(); 
         // Experiment
         DUMMY_ORGANISM = new Organism();
         DUMMY_PROVIDER = new Organization();
@@ -176,12 +176,28 @@ public class FileDaoTest extends AbstractDaoTest {
         DUMMY_QUANT_TYPE = new QuantitationType();
         DUMMY_QUANT_TYPE.setDataType(DataType.BOOLEAN);
         DUMMY_QUANT_TYPE.setName("dummy_quant");
+        
+        DUMMY_DATA_HANDLE = CaArrayUtils.makeUriQuietly("file-system:foo");
+        
+    }
+    
+    // Has dependency on AbstractHibernateTest.baseIntegrationSetUp() being called first !!!
+    // Otherwise CaArrayDaoFactoryImpl.CaArrayHibernateHelper will not have been initialized 
+    // via Guice injection, and the DAO created will not have a hibernateHelper
+    private void initializeDao() {
+        if (DAO_OBJECT == null) {
+            DAO_OBJECT = CaArrayDaoFactory.INSTANCE.getFileDao();
+        }
+        
+        if (VOCABULARY_DAO == null) {
+            VOCABULARY_DAO = CaArrayDaoFactory.INSTANCE.getVocabularyDao();
+        }
     }
 
     /**
      * Initialize the dummy <code>Project</code> objects.
      */
-    private static void initializeProjects() {
+    private void initializeProjects() {
         setExperimentSummary();
         DUMMY_TERM_SOURCE.setName("Dummy MGED Ontology");
         DUMMY_TERM_SOURCE.setUrl("test url");
@@ -191,11 +207,12 @@ public class FileDaoTest extends AbstractDaoTest {
         DUMMY_ORGANISM.setTermSource(DUMMY_TERM_SOURCE);
         setExperimentAnnotations();
         DUMMY_PROJECT_1.setExperiment(DUMMY_EXPERIMENT_1);
+        DUMMY_EXPERIMENT_1.setProject(DUMMY_PROJECT_1);
         DUMMY_EXPERIMENT_1.setOrganism(DUMMY_ORGANISM);
         DUMMY_EXPERIMENT_1.setManufacturer(DUMMY_PROVIDER);
     }
 
-    private static void setExperimentSummary() {
+    private void setExperimentSummary() {
         DUMMY_EXPERIMENT_1.setTitle("DummyExperiment1");
         DUMMY_EXPERIMENT_1.setDescription("DummyExperiment1Desc");
         final Date currDate = new Date();
@@ -204,7 +221,7 @@ public class FileDaoTest extends AbstractDaoTest {
         DUMMY_EXPERIMENT_1.setDesignDescription("Working on it");
     }
 
-    private static void setExperimentAnnotations() {
+    private void setExperimentAnnotations() {
         DUMMY_REPLICATE_TYPE.setValue("Dummy Replicate Type");
         DUMMY_REPLICATE_TYPE.setSource(DUMMY_TERM_SOURCE);
         DUMMY_REPLICATE_TYPE.setCategory(DUMMY_CATEGORY);
@@ -233,9 +250,9 @@ public class FileDaoTest extends AbstractDaoTest {
         VOCABULARY_DAO.save(DUMMY_QUALITY_CTRL_TYPE);
         VOCABULARY_DAO.save(DUMMY_NORMALIZATION_TYPE);
         DAO_OBJECT.save(DUMMY_PROJECT_1);
+        assertTrue(hibernateHelper.getCurrentSession().contains(DUMMY_EXPERIMENT_1));
         DAO_OBJECT.save(DUMMY_QUANT_TYPE);
         DAO_OBJECT.flushSession();
-        this.hibernateHelper.getCurrentSession().refresh(DUMMY_EXPERIMENT_1);
     }
 
     @Test

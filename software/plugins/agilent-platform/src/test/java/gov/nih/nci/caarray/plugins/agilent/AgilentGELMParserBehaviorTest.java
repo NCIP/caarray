@@ -91,21 +91,14 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import gov.nih.nci.caarray.plugins.agilent.AccessionBuilder;
-import gov.nih.nci.caarray.plugins.agilent.AgilentGELMParser;
-import gov.nih.nci.caarray.plugins.agilent.ArrayDesignBuilder;
-import gov.nih.nci.caarray.plugins.agilent.BiosequenceBuilder;
-import gov.nih.nci.caarray.plugins.agilent.FeatureBuilder;
-import gov.nih.nci.caarray.plugins.agilent.GeneBuilder;
-import gov.nih.nci.caarray.plugins.agilent.PhysicalProbeBuilder;
 import gov.nih.nci.caarray.plugins.agilent.AgilentGELMToken.Token;
 
 import org.junit.Test;
 
 public class AgilentGELMParserBehaviorTest {
-    private TokenizerStub tokenizer = new TokenizerStub();
-    private AgilentGELMParser parser = new AgilentGELMParser(tokenizer);
-    private AbstractBuilder builder = createMockBuilder();
+    final private TokenizerStub tokenizer = new TokenizerStub();
+    final private AgilentGELMParser parser = new AgilentGELMParser(tokenizer);
+    final private AbstractBuilder builder = createMockBuilder();
 
     @Test
     public void reporterCreatesPhysicalProbe() {
@@ -115,20 +108,26 @@ public class AgilentGELMParserBehaviorTest {
 
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.PATTERN_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.REPORTER_START);
         add(Token.NAME, reporterName);
         add(Token.SYSTEMATIC_NAME);
+        add(Token.ATTRIBUTE_END);
         add(Token.FEATURE_START);
         add(Token.NUMBER, featureNumber);
+        add(Token.ATTRIBUTE_END);
         add(Token.POSITION_START);
         add(Token.UNITS, "mm");
         add(Token.X, 0.00000000000000001);
         add(Token.Y, 0.00000000000000001);
-        repeat(2, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(2, Token.ELEMENT_END);
         add(Token.GENE_START);
         add(Token.PRIMARY_NAME, geneName);
-        repeat(4, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(4, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
         
@@ -150,22 +149,28 @@ public class AgilentGELMParserBehaviorTest {
 
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.PATTERN_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.REPORTER_START);
         add(Token.NAME, reporterName);
         add(Token.SYSTEMATIC_NAME);
+        add(Token.ATTRIBUTE_END);
         add(Token.FEATURE_START);
         add(Token.NUMBER, featureNumber);
+        add(Token.ATTRIBUTE_END);
         add(Token.POSITION_START);
         add(Token.UNITS, "mm");
         add(Token.X, 0.00000000000000001);
         add(Token.Y, 0.00000000000000001);
-        repeat(2, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(2, Token.ELEMENT_END);
         add(Token.BIOSEQUENCE_REF_START);
         add(Token.DATABASE, databaseName);
         add(Token.IDENTIFIER, identifier);
         add(Token.SPECIES, species);
-        repeat(4, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(4, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
         
@@ -185,28 +190,35 @@ public class AgilentGELMParserBehaviorTest {
         
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.BIOSEQUENCE_START);
         add(Token.SPECIES, species);
+        add(Token.ATTRIBUTE_END);
         add(Token.ACCESSION_START);
         add(Token.DATABASE, "agp");
         add(Token.ID, probeId);
-        add(Token.END);
+        add(Token.ATTRIBUTE_END);
+        add(Token.ELEMENT_END);
         add(Token.ACCESSION_START);
         add(Token.DATABASE, "gb");
         add(Token.ID, "genbank accession");
-        add(Token.END);
+        add(Token.ATTRIBUTE_END);
+        add(Token.ELEMENT_END);
         add(Token.ACCESSION_START);
         add(Token.DATABASE, "ens");
         add(Token.ID, "ensembl accession");
-        add(Token.END);
+        add(Token.ATTRIBUTE_END);
+        add(Token.ELEMENT_END);
         add(Token.ACCESSION_START);
         add(Token.DATABASE, "ref");
         add(Token.ID, "ref accession");
-        add(Token.END);
+        add(Token.ATTRIBUTE_END);
+        add(Token.ELEMENT_END);
         add(Token.ACCESSION_START);
         add(Token.DATABASE, "thc");
         add(Token.ID, "thc accession");
-        repeat(3, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(3, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -231,20 +243,25 @@ public class AgilentGELMParserBehaviorTest {
         
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.BIOSEQUENCE_START);
         add(Token.SPECIES, species);
+        add(Token.ATTRIBUTE_END);
         add(Token.ACCESSION_START);
         add(Token.DATABASE, "agp");
         add(Token.ID, probeId);
-        add(Token.END);
+        add(Token.ATTRIBUTE_END);
+        add(Token.ELEMENT_END);
         add(Token.ACCESSION_START);
         add(Token.DATABASE, "mir");
         add(Token.ID, mirAccession1);
-        add(Token.END);
+        add(Token.ATTRIBUTE_END);
+        add(Token.ELEMENT_END);
         add(Token.ACCESSION_START);
         add(Token.DATABASE, "mir");
         add(Token.ID, mirAccession2);
-        repeat(3, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(3, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -265,35 +282,45 @@ public class AgilentGELMParserBehaviorTest {
 
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.PATTERN_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.REPORTER_START);
         add(Token.NAME, reporterName);
         add(Token.SYSTEMATIC_NAME);
+        add(Token.ATTRIBUTE_END);
         add(Token.FEATURE_START);
         add(Token.NUMBER, featureNumber);
+        add(Token.ATTRIBUTE_END);
         add(Token.POSITION_START);
         add(Token.UNITS, "mm");
         add(Token.X, 0.00000000000000001);
         add(Token.Y, 0.00000000000000001);
-        repeat(2, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(2, Token.ELEMENT_END);
         add(Token.GENE_START);
         add(Token.PRIMARY_NAME, geneName);
+        add(Token.ATTRIBUTE_END);
         add(Token.ACCESSION_START);
         add(Token.DATABASE, "gb");
         add(Token.ID, "genbank accession");
-        add(Token.END);
+        add(Token.ATTRIBUTE_END);
+        add(Token.ELEMENT_END);
         add(Token.ACCESSION_START);
         add(Token.DATABASE, "ens");
         add(Token.ID, "ensembl accession");
-        add(Token.END);
+        add(Token.ATTRIBUTE_END);
+        add(Token.ELEMENT_END);
         add(Token.ACCESSION_START);
         add(Token.DATABASE, "ref");
         add(Token.ID, "ref accession");
-        add(Token.END);
+        add(Token.ATTRIBUTE_END);
+        add(Token.ELEMENT_END);
         add(Token.ACCESSION_START);
         add(Token.DATABASE, "thc");
         add(Token.ID, "thc accession");
-        repeat(5, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(5, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -318,27 +345,35 @@ public class AgilentGELMParserBehaviorTest {
 
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.PATTERN_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.REPORTER_START);
         add(Token.NAME, reporterName);
         add(Token.SYSTEMATIC_NAME);
+        add(Token.ATTRIBUTE_END);
         add(Token.FEATURE_START);
         add(Token.NUMBER, featureNumber);
+        add(Token.ATTRIBUTE_END);
         add(Token.POSITION_START);
         add(Token.UNITS, "mm");
         add(Token.X, 0.00000000000000001);
         add(Token.Y, 0.00000000000000001);
-        repeat(2, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(2, Token.ELEMENT_END);
         add(Token.GENE_START);
         add(Token.PRIMARY_NAME, geneName);
+        add(Token.ATTRIBUTE_END);
         add(Token.ACCESSION_START);
         add(Token.DATABASE, "gb");
         add(Token.ID, "genbank accession");
-        add(Token.END);
+        add(Token.ATTRIBUTE_END);
+        add(Token.ELEMENT_END);
         add(Token.OTHER_START);
         add(Token.NAME, "probe_mappings");
         add(Token.VALUE, "chr2:111111111-999999999");
-        repeat(5, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(5, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -359,17 +394,22 @@ public class AgilentGELMParserBehaviorTest {
 
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.PATTERN_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.REPORTER_START);
         add(Token.NAME, reporterName);
         add(Token.SYSTEMATIC_NAME);
+        add(Token.ATTRIBUTE_END);
         add(Token.FEATURE_START);
         add(Token.NUMBER, featureNumber);
+        add(Token.ATTRIBUTE_END);
         add(Token.POSITION_START);
         add(Token.UNITS);
         add(Token.X);
         add(Token.Y);
-        repeat(5, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(5, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -487,18 +527,23 @@ public class AgilentGELMParserBehaviorTest {
     private void setupTokenStream(String reporterName, String controlType, int featureNumber) {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.PATTERN_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.REPORTER_START);
         add(Token.CONTROL_TYPE, controlType);
         add(Token.NAME, reporterName);
         add(Token.SYSTEMATIC_NAME);
+        add(Token.ATTRIBUTE_END);
         add(Token.FEATURE_START);
         add(Token.NUMBER, featureNumber);
+        add(Token.ATTRIBUTE_END);
         add(Token.POSITION_START);
         add(Token.UNITS, "mm");
         add(Token.X, 0.00000000000000001);
         add(Token.Y, 0.00000000000000001);
-        repeat(5, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(5, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
     }

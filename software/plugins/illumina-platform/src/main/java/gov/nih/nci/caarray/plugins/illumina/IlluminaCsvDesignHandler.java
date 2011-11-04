@@ -192,6 +192,14 @@ public final class IlluminaCsvDesignHandler extends AbstractDesignFileHandler {
      * {@inheritDoc}
      */
     @Override
+    public boolean parsesData() {
+         return true;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void createDesignDetails(ArrayDesign arrayDesign) {
         try {
             positionAtAnnotation();

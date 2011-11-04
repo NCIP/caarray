@@ -109,7 +109,7 @@ import com.google.inject.Inject;
 @Stateless
 @TransactionAttribute(TransactionAttributeType.SUPPORTS)
 @Interceptors(InjectionInterceptor.class)
-public class ArrayDataServiceBean implements ArrayDataService {
+public class ArrayDataServiceBean extends AbstractArrayDataService {
     private static final Logger LOG = Logger.getLogger(ArrayDataServiceBean.class);
 
     private TypeRegistrationManager typeRegistrationManager;
@@ -133,12 +133,13 @@ public class ArrayDataServiceBean implements ArrayDataService {
      */
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public void importData(CaArrayFile caArrayFile, boolean createAnnnotation, DataImportOptions dataImportOptions)
+    public void importData(CaArrayFile caArrayFile, boolean createAnnnotation, DataImportOptions dataImportOptions, 
+            MageTabDocumentSet mTabSet)
             throws InvalidDataFileException {
         LogUtil.logSubsystemEntry(LOG, caArrayFile);
         final AbstractArrayData arrayData =
-                this.dataSetImporter.importData(caArrayFile, dataImportOptions, createAnnnotation);
-        this.loader.load(arrayData);
+                this.dataSetImporter.importData(caArrayFile, dataImportOptions, createAnnnotation, mTabSet);
+        this.loader.load(arrayData, mTabSet);
         LogUtil.logSubsystemExit(LOG);
     }
 

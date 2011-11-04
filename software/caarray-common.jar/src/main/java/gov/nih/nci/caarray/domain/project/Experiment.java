@@ -890,8 +890,7 @@ public class Experiment extends AbstractCaArrayEntity {
     /**
      * @param project the project to set
      */
-    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
-    private void setProject(Project project) {
+    public void setProject(Project project) {
         this.project = project;
     }
 

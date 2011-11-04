@@ -211,9 +211,6 @@ public class ArrayDesignServiceIntegrationTest extends AbstractServiceIntegratio
     protected void levelsetInjector() {
         InjectorFactory.resetInjector();
     }
-
-    
-
     private ArrayDesign setupAndSaveDesign(File... designFiles) throws IllegalAccessException, InvalidDataFileException {
         this.hibernateHelper.getCurrentSession().save(DUMMY_ORGANIZATION);
         this.hibernateHelper.getCurrentSession().save(DUMMY_ORGANISM);
@@ -367,6 +364,11 @@ public class ArrayDesignServiceIntegrationTest extends AbstractServiceIntegratio
         @Override
         public void closeFiles() {
             this.designFile = null;
+        }
+
+        @Override
+        public boolean parsesData() {
+             return true;
         }
 
         @Override

@@ -1,13 +1,9 @@
-                                                                     
-                                                                     
-                                                                     
-                                             
 Release Notes
 =============
  
   #Product:#	caArray
-  #Version:#	2.4.0
-  #Date:#	September 2010
+  #Version:#	2.4.1
+  #Date:#	September  2011
 
 Contents
 --------
@@ -38,11 +34,13 @@ library of assay management.
 
 Release History
 ------------------------
-
+    * caArray v2.4.1		-- September 2011 
+    * caArray v2.4.0.2		-- February  2011 
+    * caArray v2.4.0.1		-- January   2011 
     * caArray v2.4.0		-- September 2010 
     * caArray v2.3.1		-- February  2010 
-    * caArray v2.3.0		-- November  2009   
-    * caArray v2.2.1		-- May	     2009    
+    * caArray v2.3.0.1		-- November  2009   
+    * caArray v2.2.1		-- May       2009    
     * caArray v2.2.0		-- January   2009    
     * caArray v2.1.1		-- October   2008    
     * caArray v2.1.0		-- August    2008    
@@ -54,48 +52,35 @@ Release History
 Anticipated Releases
 ------------------------
  
-    * caArray v2.5.0	--   Q1 2011 (new features)
+    * caArray v2.5.0	--   Q1 2012 (new features)
 
 
 Features and Defects Addressed in this Release
 -----------------------------------------------
 
-This release represents a feature release of the caArray 2 software. 
-Highlights of caArray 2.4.0 are:
+This release represents a feature release of the caArray 2 software. Highlights of caArray 2.4.1 are:
 
-* Parsers for several new data types:
-  * Agilent raw TXT for aCGH, expression and miRNA assays.
-  * Agilent GEML/xml array designs
-  * Nimblegen pair Report TXT (raw and normalized)
-  * Nimblegen NDF array designs
-  * Illumina Sample Probe Profile TXT
-  * Illumina genotyping processed data matrix TXT
-  * Illumina BGX/TXT array designs
-  * Affymetrix CEL and CHP in AGCC/Calvin formats in addition to the old GCOS formats
-  * Affymetrix CNCHP copy number data (CN4 and CN5)
-  * Copy Number data in a prescribed MAGE-TAB Data Matrix format.
-For details about the parsing of these files, please refer to the chapter "Importing Data Files"
-in the caArray User's Guide.
+* Visibility into the queue of import and validation jobs, and where your job is in relation to other jobs in the system. Ability to cancel a queued job.
+  For details about this feature, please refer to the chapter "Submitting Data" in the caArray User's Guide.
 
-* If there are array design files or data files already in the system that are "imported not parsed", and
-  if there are new parsers available that allow those file types to now be parsed, the system provides the
-  ability to reimport these files.
+* Search for experiments by publication author or PubMed ID.
 
-* If you have copy number data that is not in the caArray-prescribed Copy Number MAGE-TAB Data Matrix format,
-  we provide a conversion utility. The conversion utility is found inside the cn2magetab.jar file, and is invoked
-  from the command line. Please see the README_copy_number_conversion.txt for more details on its operation.
+* Organisms are now restricted to terms from the NCBI Taxonomy.
 
-* For experiments created from 2.4.0 onwards, the experiment public identifier will be composed of the
-  string "EXP-" followed by a number. Already-existing experiment public identifiers will not be changed.
+* Bug fix to allow proper import of Agilent array design files where the chromosome name is not in a strictly numeric or X/Y format.
+
+* The installer no longer depends on an internet connection.
+
+* Fix to bug where experiments with multiple array designs may cause copy number data to get imported as "Imported (Not Parsed)".
 
 
 Known Issues/Defects
 ------------------------
  
-See the GForge tracker for existing open defects, community requests, resolutions and feature requests.
-The following issues are highlighted. 
+See the Jira tracker for existing open defects, community requests, resolutions and feature requests.
+https://tracker.nci.nih.gov/browse/ARRAY
 
-https://gforge.nci.nih.gov/tracker/?group_id=305
+The following issues are highlighted. 
 
 * The total import job size (defined as sum of uncompressed file sizes) must be less than 3GB.
 
@@ -114,6 +99,14 @@ https://gforge.nci.nih.gov/tracker/?group_id=305
 
 * Multiple MAGE-TAB imports can result in duplicate persons in the database.
 
+* Experiments with multiple array designs may cause copy number data to be Imported (not parsed).  For more
+  information, please go to https://tracker.nci.nih.gov/browse/ARRAY-1811.
+
+* Data import can fail if experiment is associated with multiple array designs (https://tracker.nci.nih.gov/browse/ARRAY-1837).
+
+* GUI installer suddenly quits when illegal characters present in password fields.
+
+* For Agilent GEML Array Design files for miRNA, accessions are not created. See https://tracker.nci.nih.gov/browse/ARRAY-2041
 
 Bug Reports, Feature Requests, And Support
 ------------------------------------------
@@ -123,20 +116,19 @@ please visit the Molecular Analysis Tools Knowledge Center resources at:
 
 https://cabig-kc.nci.nih.gov/Molecular/KC/index.php/Main_Page
 
-Existing requests and resolution may be viewed at the caArray GForge URL:
+Existing requests and resolution may be viewed at the caArray issue tracker URL:
 
-https://gforge.nci.nih.gov/tracker/?group_id=305
+https://tracker.nci.nih.gov/browse/ARRAY
 
 
 Documentation And Files
 -----------------------
-Please note: new wiki based technical guide and the installation guide can be 
-found at 
-following locations:
+Wiki-based guides are available at the following locations:
 
-   caArray 2.4.0 Installation Guide: https://wiki.nci.nih.gov/display/caArray2/caArray+2.4.0+Data+Portal+Local+Installation+Guide+Wiki+Main+Page
-   caArray 2.4.0 Technical Guide: https://wiki.nci.nih.gov/display/caArray2/caArray+2.4.0+Technical+Guide+Wiki+Main+Page
-   caArray 2.4.0 API Guide (unchanged for this release): https://wiki.nci.nih.gov/display/caArray2/caArray+2.4.0+API+Guide
+   caArray 2.4.0 User's Guide: https://wiki.nci.nih.gov/display/caArray2doc/caArray+2.4+User%27s+Guide
+   caArray 2.4.0 Installation Guide: https://wiki.nci.nih.gov/display/caArray2doc/caArray+2.4.0+Data+Portal+Local+Installation+Guide+Wiki+Main+Page
+   caArray 2.4.0 Technical Guide: https://wiki.nci.nih.gov/display/caArray2doc/caArray+2.4.0+Technical+Guide+Wiki+Main+Page
+   caArray 2.4.0 API Guide (unchanged for this release): https://wiki.nci.nih.gov/display/caArray2doc/caArray+2.4.0+API+Guide
 
 Links to all other documentation and files can be found at: 
 
@@ -165,7 +157,6 @@ in a future release.
 
 If, for some reason, you do not wish to use the new Service API yet, you can continue to use the legacy API,
 but you must upgrade to the latest version. To do this, please download the client libraries (caarray-client-legacy.zip).
-
 
 
 FEEDBACK

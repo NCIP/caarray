@@ -266,15 +266,6 @@ final class SdrfTranslator extends AbstractTranslator {
 
     private void validateSamples(SdrfDocument document, Set<String> externalIds) {
         for (final gov.nih.nci.caarray.magetab.sdrf.AbstractBioMaterial sdrfBm : document.getAllBiomaterials()) {
-            if (null != sdrfBm.getMaterialType()
-                    && null != sdrfBm.getMaterialType().getTermSource()
-                    && !ExperimentOntology.MGED_ONTOLOGY.getOntologyName().equals(
-                            sdrfBm.getMaterialType().getTermSource().getName())) {
-                document.addErrorMessage("The Material Type '" + sdrfBm.getMaterialType().getValue()
-                        + "' has an associated Term Source '" + sdrfBm.getMaterialType().getTermSource().getName()
-                        + "', which is invalid, as all Material " + "Types must come from the '"
-                        + ExperimentOntology.MGED_ONTOLOGY.getOntologyName() + "' Term Source.");
-            }
             for (final Characteristic sdrfCharacteristic : sdrfBm.getCharacteristics()) {
                 final String category = sdrfCharacteristic.getCategory();
                 final boolean isExternalId =
@@ -594,9 +585,8 @@ final class SdrfTranslator extends AbstractTranslator {
     }
 
     private Term getUnknownProtocolType() {
-        final TermSource source =
-                this.vocabularyService.getSource(ExperimentOntology.MGED_ONTOLOGY.getOntologyName(),
-                        ExperimentOntology.MGED_ONTOLOGY.getVersion());
+        TermSource source = this.vocabularyService.getSource(ExperimentOntology.MGED_ONTOLOGY.getOntologyName(),
+                ExperimentOntology.MGED_ONTOLOGY.getVersion());
         return this.vocabularyService.getTerm(source, VocabularyService.UNKNOWN_PROTOCOL_TYPE_NAME);
     }
 

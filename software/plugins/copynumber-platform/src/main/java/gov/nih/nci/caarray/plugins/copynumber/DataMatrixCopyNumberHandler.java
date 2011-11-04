@@ -473,4 +473,12 @@ public final class DataMatrixCopyNumberHandler extends AbstractDataFileHandler {
     public boolean requiresMageTab() {
         return true;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean parsesData() {
+        return true;
+    }
 }

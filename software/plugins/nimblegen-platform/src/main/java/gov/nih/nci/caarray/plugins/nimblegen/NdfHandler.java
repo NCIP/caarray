@@ -217,6 +217,14 @@ public class NdfHandler extends AbstractDesignFileHandler {
         this.designFile = null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean parsesData() {
+         return true;
+    }
+
     private ScrollableResults loadRows(File file) throws IOException {
         this.hibernateHelper.getCurrentSession().createSQLQuery(CREATE_TEMP_TABLE_STMT).executeUpdate();
         final String filePath = file.getAbsolutePath().replace('\\', '/');

@@ -91,9 +91,10 @@ import gov.nih.nci.caarray.validation.InvalidDataFileException;
 /**
  * Simple stub for array data service.
  */
-public class ArrayDataServiceStub implements ArrayDataService {
+public class ArrayDataServiceStub extends AbstractArrayDataService {
     @Override
-    public void importData(CaArrayFile caArrayFile, boolean createAnnotation, DataImportOptions importOptions)
+    public void importData(CaArrayFile caArrayFile, boolean createAnnotation, DataImportOptions importOptions, 
+            MageTabDocumentSet mTabSet)
             throws InvalidDataFileException {
         // no-op
     }

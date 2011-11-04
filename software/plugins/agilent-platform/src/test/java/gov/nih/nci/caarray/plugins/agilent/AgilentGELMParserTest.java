@@ -84,20 +84,21 @@ package gov.nih.nci.caarray.plugins.agilent;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import gov.nih.nci.caarray.plugins.agilent.AgilentGELMParser;
 import gov.nih.nci.caarray.plugins.agilent.AgilentGELMToken.Token;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class AgilentGELMParserTest {
-    private TokenizerStub tokenizer = new TokenizerStub();
-    private AgilentGELMParser parser = new AgilentGELMParser(tokenizer);
+    final private TokenizerStub tokenizer = new TokenizerStub();
+    final private AgilentGELMParser parser = new AgilentGELMParser(tokenizer);
 
     @Test
     public void acceptsDocumentWithProject() {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
-        add(Token.END);
+        add(Token.ATTRIBUTE_END);
+        add(Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -114,7 +115,8 @@ public class AgilentGELMParserTest {
         add(Token.ID);
         add(Token.NAME);
         add(Token.ORGANIZATION);
-        add(Token.END);
+        add(Token.ATTRIBUTE_END);
+        add(Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -125,10 +127,13 @@ public class AgilentGELMParserTest {
     public void acceptsProjectWithPrinting() {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.PRINTING_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.CHIP_START);
         add(Token.BARCODE);
-        repeat(3, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(3, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -140,14 +145,19 @@ public class AgilentGELMParserTest {
 
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.PRINTING_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.CHIP_START);
         add(Token.BARCODE);
-        repeat(2, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(2, Token.ELEMENT_END);
         add(Token.PRINTING_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.CHIP_START);
         add(Token.BARCODE);
-        repeat(3, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(3, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -158,16 +168,21 @@ public class AgilentGELMParserTest {
     public void acceptsProjectWithPattern() {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.PATTERN_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.REPORTER_START);
         add(Token.NAME, "reporter name");
         add(Token.SYSTEMATIC_NAME);
+        add(Token.ATTRIBUTE_END);
         add(Token.FEATURE_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.POSITION_START);
         add(Token.UNITS, "mm");
         add(Token.X, 1.1);
         add(Token.Y, 2.2);
-        repeat(5, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(5, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -178,26 +193,35 @@ public class AgilentGELMParserTest {
     public void acceptsProjectWith2Patterns() {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.PATTERN_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.REPORTER_START);
         add(Token.NAME, "reporter name");
         add(Token.SYSTEMATIC_NAME);
+        add(Token.ATTRIBUTE_END);
         add(Token.FEATURE_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.POSITION_START);
         add(Token.UNITS, "mm");
         add(Token.X, 1.1);
         add(Token.Y, 2.2);
-        repeat(4, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(4, Token.ELEMENT_END);
         add(Token.PATTERN_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.REPORTER_START);
         add(Token.NAME, "reporter name");
         add(Token.SYSTEMATIC_NAME);
+        add(Token.ATTRIBUTE_END);
         add(Token.FEATURE_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.POSITION_START);
         add(Token.UNITS, "mm");
         add(Token.X, 1.1);
         add(Token.Y, 2.2);
-        repeat(5, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(5, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -208,10 +232,12 @@ public class AgilentGELMParserTest {
     public void acceptsProjectWithOther() {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.OTHER_START);
         add(Token.NAME);
         add(Token.VALUE);
-        repeat(2, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(2, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -222,14 +248,17 @@ public class AgilentGELMParserTest {
     public void acceptsProjectWith2Others() {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.OTHER_START);
         add(Token.NAME);
         add(Token.VALUE);
-        add(Token.END);
+        add(Token.ATTRIBUTE_END);
+        add(Token.ELEMENT_END);
         add(Token.OTHER_START);
         add(Token.NAME);
         add(Token.VALUE);
-        repeat(2, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(2, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -240,8 +269,10 @@ public class AgilentGELMParserTest {
     public void rejectsPrintingWithNoChip() {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.PRINTING_START);
-        repeat(2, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(2, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -252,10 +283,13 @@ public class AgilentGELMParserTest {
     public void acceptsPrintingWithOneChip() {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.PRINTING_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.CHIP_START);
         add(Token.BARCODE);
-        repeat(3, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(3, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -266,13 +300,17 @@ public class AgilentGELMParserTest {
     public void acceptsPrintingWithTwoChips() {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.PRINTING_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.CHIP_START);
         add(Token.BARCODE);
-        add(Token.END);
+        add(Token.ATTRIBUTE_END);
+        add(Token.ELEMENT_END);
         add(Token.CHIP_START);
         add(Token.BARCODE);
-        repeat(3, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(3, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -283,6 +321,7 @@ public class AgilentGELMParserTest {
     public void acceptsPrintingWithOptionalAttributes() {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.PRINTING_START);        
         add(Token.DATE);
         add(Token.PATTERN_NAME);
@@ -292,9 +331,11 @@ public class AgilentGELMParserTest {
         add(Token.PRINTER);
         add(Token.RUN_DESCRIPTION);
         add(Token.TYPE);
+        add(Token.ATTRIBUTE_END);
         add(Token.CHIP_START);
         add(Token.BARCODE);
-        repeat(3, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(3, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -305,14 +346,18 @@ public class AgilentGELMParserTest {
     public void acceptsPrintingWithOneOther() {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.PRINTING_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.CHIP_START);
         add(Token.BARCODE);
-        add(Token.END);
+        add(Token.ATTRIBUTE_END);
+        add(Token.ELEMENT_END);
         add(Token.OTHER_START);
         add(Token.NAME);
         add(Token.VALUE);
-        repeat(3, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(3, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -323,18 +368,23 @@ public class AgilentGELMParserTest {
     public void acceptsPrintingWithTwoOthers() {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.PRINTING_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.CHIP_START);
         add(Token.BARCODE);
-        add(Token.END);
+        add(Token.ATTRIBUTE_END);
+        add(Token.ELEMENT_END);
         add(Token.OTHER_START);
         add(Token.NAME);
         add(Token.VALUE);
-        add(Token.END);
+        add(Token.ATTRIBUTE_END);
+        add(Token.ELEMENT_END);
         add(Token.OTHER_START);
         add(Token.NAME);
         add(Token.VALUE);
-        repeat(3, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(3, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -345,9 +395,12 @@ public class AgilentGELMParserTest {
     public void rejectsChipWithNoBarcode() {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.PRINTING_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.CHIP_START);
-        repeat(3, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(3, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -358,12 +411,15 @@ public class AgilentGELMParserTest {
     public void acceptsChipWithOptionalAttributes() {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.PRINTING_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.CHIP_START);
         add(Token.BARCODE);
         add(Token.PREPARED_FOR);
         add(Token.PREPARED_FOR_ORG);
-        repeat(3, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(3, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -374,13 +430,17 @@ public class AgilentGELMParserTest {
     public void acceptsChipWithOneOther() {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.PRINTING_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.CHIP_START);
         add(Token.BARCODE);
+        add(Token.ATTRIBUTE_END);
         add(Token.OTHER_START);
         add(Token.NAME);
         add(Token.VALUE);
-        repeat(4, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(4, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -391,17 +451,22 @@ public class AgilentGELMParserTest {
     public void acceptsChipWithTwoOthers() {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.PRINTING_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.CHIP_START);
         add(Token.BARCODE);
+        add(Token.ATTRIBUTE_END);
         add(Token.OTHER_START);
         add(Token.NAME);
         add(Token.VALUE);
-        add(Token.END);
+        add(Token.ATTRIBUTE_END);
+        add(Token.ELEMENT_END);
         add(Token.OTHER_START);
         add(Token.NAME);
         add(Token.VALUE);
-        repeat(4, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(4, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -412,16 +477,21 @@ public class AgilentGELMParserTest {
     public void acceptsPatternWithOneReporter() {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.PATTERN_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.REPORTER_START);
         add(Token.NAME, "reporter name");
         add(Token.SYSTEMATIC_NAME);
+        add(Token.ATTRIBUTE_END);
         add(Token.FEATURE_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.POSITION_START);
         add(Token.UNITS, "mm");
         add(Token.X, 1.1);
         add(Token.Y, 2.2);
-        repeat(5, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(5, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -432,25 +502,33 @@ public class AgilentGELMParserTest {
     public void acceptsPatternWithTwoReporters() {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.PATTERN_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.REPORTER_START);
         add(Token.NAME, "reporter name");
         add(Token.SYSTEMATIC_NAME);
+        add(Token.ATTRIBUTE_END);
         add(Token.FEATURE_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.POSITION_START);
         add(Token.UNITS, "mm");
         add(Token.X, 1.1);
         add(Token.Y, 2.2);
-        repeat(3, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(3, Token.ELEMENT_END);
         add(Token.REPORTER_START);
         add(Token.NAME, "reporter name");
         add(Token.SYSTEMATIC_NAME);
+        add(Token.ATTRIBUTE_END);
         add(Token.FEATURE_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.POSITION_START);
         add(Token.UNITS, "mm");
         add(Token.X, 1.1);
         add(Token.Y, 2.2);
-        repeat(5, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(5, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -461,8 +539,10 @@ public class AgilentGELMParserTest {
     public void rejectsPatternWithNoReporter() {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.PATTERN_START);
-        repeat(2, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(2, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -473,6 +553,7 @@ public class AgilentGELMParserTest {
     public void acceptsPatternWithOptionalAttributes() {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.PATTERN_START);
         add(Token.ACCESS);
         add(Token.DESCRIPTION);
@@ -481,15 +562,19 @@ public class AgilentGELMParserTest {
         add(Token.SPECIES_DATABASE);
         add(Token.TYPE);
         add(Token.TYPE_ID);
+        add(Token.ATTRIBUTE_END);
         add(Token.REPORTER_START);
         add(Token.NAME, "reporter name");
         add(Token.SYSTEMATIC_NAME);
+        add(Token.ATTRIBUTE_END);
         add(Token.FEATURE_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.POSITION_START);
         add(Token.UNITS, "mm");
         add(Token.X, 1.1);
         add(Token.Y, 2.2);
-        repeat(5, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(5, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -500,20 +585,26 @@ public class AgilentGELMParserTest {
     public void acceptsPatternWithOneOther() {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.PATTERN_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.REPORTER_START);
         add(Token.NAME, "reporter name");
         add(Token.SYSTEMATIC_NAME);
+        add(Token.ATTRIBUTE_END);
         add(Token.FEATURE_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.POSITION_START);
         add(Token.UNITS, "mm");
         add(Token.X, 1.1);
         add(Token.Y, 2.2);
-        repeat(3, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(3, Token.ELEMENT_END);
         add(Token.OTHER_START);
         add(Token.NAME);
         add(Token.VALUE);
-        repeat(3, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(3, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -524,24 +615,31 @@ public class AgilentGELMParserTest {
     public void acceptsPatternWithTwoOthers() {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.PATTERN_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.REPORTER_START);
         add(Token.NAME, "reporter name");
         add(Token.SYSTEMATIC_NAME);
+        add(Token.ATTRIBUTE_END);
         add(Token.FEATURE_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.POSITION_START);
         add(Token.UNITS, "mm");
         add(Token.X, 1.1);
         add(Token.Y, 2.2);
-        repeat(3, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(3, Token.ELEMENT_END);
         add(Token.OTHER_START);
         add(Token.NAME);
         add(Token.VALUE);
-        add(Token.END);
+        add(Token.ATTRIBUTE_END);
+        add(Token.ELEMENT_END);
         add(Token.OTHER_START);
         add(Token.NAME);
         add(Token.VALUE);
-        repeat(3, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(3, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -552,16 +650,21 @@ public class AgilentGELMParserTest {
     public void acceptsReporterWithOneFeature() {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.PATTERN_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.REPORTER_START);
         add(Token.NAME, "reporter name");
         add(Token.SYSTEMATIC_NAME);
+        add(Token.ATTRIBUTE_END);
         add(Token.FEATURE_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.POSITION_START);
         add(Token.UNITS, "mm");
         add(Token.X, 1.1);
         add(Token.Y, 2.2);
-        repeat(5, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(5, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -572,22 +675,29 @@ public class AgilentGELMParserTest {
     public void acceptsReporterWithTwoFeatures() {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.PATTERN_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.REPORTER_START);
         add(Token.NAME, "reporter name");
         add(Token.SYSTEMATIC_NAME);
+        add(Token.ATTRIBUTE_END);
         add(Token.FEATURE_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.POSITION_START);
         add(Token.UNITS, "mm");
         add(Token.X, 1.1);
         add(Token.Y, 2.2);
-        repeat(2, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(2, Token.ELEMENT_END);
         add(Token.FEATURE_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.POSITION_START);
         add(Token.UNITS, "mm");
         add(Token.X, 1.1);
         add(Token.Y, 2.2);
-        repeat(5, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(5, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -598,11 +708,14 @@ public class AgilentGELMParserTest {
     public void rejectsReporterWithNoFeature() {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.PATTERN_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.REPORTER_START);
         add(Token.NAME, "reporter name");
         add(Token.SYSTEMATIC_NAME);
-        repeat(3, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(3, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -613,14 +726,19 @@ public class AgilentGELMParserTest {
     public void rejectsReporterWithNoName() {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.PATTERN_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.REPORTER_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.FEATURE_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.POSITION_START);
         add(Token.UNITS, "mm");
         add(Token.X, 1.1);
         add(Token.Y, 2.2);
-        repeat(5, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(5, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -631,7 +749,9 @@ public class AgilentGELMParserTest {
     public void acceptsReporterWithOptionalAttributes() {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.PATTERN_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.REPORTER_START);
         add(Token.ACCESSION);
         add(Token.ACTIVE_SEQUENCE);
@@ -646,12 +766,15 @@ public class AgilentGELMParserTest {
         add(Token.PRIMER2_SEQUENCE);
         add(Token.START_COORD);
         add(Token.SYSTEMATIC_NAME);
+        add(Token.ATTRIBUTE_END);
         add(Token.FEATURE_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.POSITION_START);
         add(Token.UNITS, "mm");
         add(Token.X, 1.1);
         add(Token.Y, 2.2);
-        repeat(5, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(5, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -662,20 +785,26 @@ public class AgilentGELMParserTest {
     public void acceptsReporterWithOneOther() {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.PATTERN_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.REPORTER_START);
         add(Token.NAME, "reporter name");
         add(Token.SYSTEMATIC_NAME);
+        add(Token.ATTRIBUTE_END);
         add(Token.FEATURE_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.POSITION_START);
         add(Token.UNITS, "mm");
         add(Token.X, 1.1);
         add(Token.Y, 2.2);
-        repeat(2, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(2, Token.ELEMENT_END);
         add(Token.OTHER_START);
         add(Token.NAME);
         add(Token.VALUE);
-        repeat(4, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(4, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -686,24 +815,31 @@ public class AgilentGELMParserTest {
     public void acceptsReporterWithTwoOthers() {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.PATTERN_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.REPORTER_START);
         add(Token.NAME, "reporter name");
         add(Token.SYSTEMATIC_NAME);
+        add(Token.ATTRIBUTE_END);
         add(Token.FEATURE_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.POSITION_START);
         add(Token.UNITS, "mm");
         add(Token.X, 1.1);
         add(Token.Y, 2.2);
-        repeat(2, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(2, Token.ELEMENT_END);
         add(Token.OTHER_START);
         add(Token.NAME);
         add(Token.VALUE);
-        add(Token.END);
+        add(Token.ATTRIBUTE_END);
+        add(Token.ELEMENT_END);
         add(Token.OTHER_START);
         add(Token.NAME);
         add(Token.VALUE);
-        repeat(4, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(4, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -714,19 +850,25 @@ public class AgilentGELMParserTest {
     public void acceptsReporterWithOneGene() {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.PATTERN_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.REPORTER_START);
         add(Token.NAME, "reporter name");
         add(Token.SYSTEMATIC_NAME);
+        add(Token.ATTRIBUTE_END);
         add(Token.FEATURE_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.POSITION_START);
         add(Token.UNITS, "mm");
         add(Token.X, 1.1);
         add(Token.Y, 2.2);
-        repeat(2, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(2, Token.ELEMENT_END);
         add(Token.GENE_START);
         add(Token.PRIMARY_NAME);
-        repeat(4, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(4, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -737,18 +879,24 @@ public class AgilentGELMParserTest {
     public void rejectsReporterWithTwoGenes() {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.PATTERN_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.REPORTER_START);
         add(Token.NAME, "reporter name");
         add(Token.SYSTEMATIC_NAME);
+        add(Token.ATTRIBUTE_END);
         add(Token.FEATURE_START);
-        add(Token.END);
+        add(Token.ATTRIBUTE_END);
+        add(Token.ELEMENT_END);
         add(Token.GENE_START);
         add(Token.PRIMARY_NAME);
-        add(Token.END);
+        add(Token.ATTRIBUTE_END);
+        add(Token.ELEMENT_END);
         add(Token.GENE_START);
         add(Token.PRIMARY_NAME);
-        repeat(4, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(4, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -759,18 +907,23 @@ public class AgilentGELMParserTest {
     public void acceptsFeatureWithOptionalAttributes() {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.PATTERN_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.REPORTER_START);
         add(Token.NAME, "reporter name");
         add(Token.SYSTEMATIC_NAME);
+        add(Token.ATTRIBUTE_END);
         add(Token.FEATURE_START);
         add(Token.CTRL_FOR_FEAT_NUM);
         add(Token.NUMBER, 123456);
+        add(Token.ATTRIBUTE_END);
         add(Token.POSITION_START);
         add(Token.UNITS, "mm");
         add(Token.X, 1.1);
         add(Token.Y, 2.2);
-        repeat(5, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(5, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -781,20 +934,26 @@ public class AgilentGELMParserTest {
     public void acceptsFeatureWithOneOther() {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.PATTERN_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.REPORTER_START);
         add(Token.NAME, "reporter name");
         add(Token.SYSTEMATIC_NAME);
+        add(Token.ATTRIBUTE_END);
         add(Token.FEATURE_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.POSITION_START);
         add(Token.UNITS, "mm");
         add(Token.X, 1.1);
         add(Token.Y, 2.2);
-        add(Token.END);
+        add(Token.ATTRIBUTE_END);
+        add(Token.ELEMENT_END);
         add(Token.OTHER_START);
         add(Token.NAME);
         add(Token.VALUE);
-        repeat(5, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(5, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -805,24 +964,31 @@ public class AgilentGELMParserTest {
     public void acceptsFeatureWithTwoOthers() {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.PATTERN_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.REPORTER_START);
         add(Token.NAME, "reporter name");
         add(Token.SYSTEMATIC_NAME);
+        add(Token.ATTRIBUTE_END);
         add(Token.FEATURE_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.POSITION_START);
         add(Token.UNITS, "mm");
         add(Token.X, 1.1);
         add(Token.Y, 2.2);
-        add(Token.END);
+        add(Token.ATTRIBUTE_END);
+        add(Token.ELEMENT_END);
         add(Token.OTHER_START);
         add(Token.NAME);
         add(Token.VALUE);
-        add(Token.END);
+        add(Token.ATTRIBUTE_END);
+        add(Token.ELEMENT_END);
         add(Token.OTHER_START);
         add(Token.NAME);
         add(Token.VALUE);
-        repeat(5, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(5, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -833,21 +999,27 @@ public class AgilentGELMParserTest {
     public void acceptsFeatureWithOnePen() {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.PATTERN_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.REPORTER_START);
         add(Token.NAME, "reporter name");
         add(Token.SYSTEMATIC_NAME);
+        add(Token.ATTRIBUTE_END);
         add(Token.FEATURE_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.POSITION_START);
         add(Token.UNITS, "mm");
         add(Token.X, 1.1);
         add(Token.Y, 2.2);
-        add(Token.END);
+        add(Token.ATTRIBUTE_END);
+        add(Token.ELEMENT_END);
         add(Token.PEN_START);
         add(Token.UNITS, "mm");
         add(Token.X, 1.1);
         add(Token.Y, 2.2);
-        repeat(5, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(5, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -858,21 +1030,27 @@ public class AgilentGELMParserTest {
     public void rejectsFeatureWithTwoPens() {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.PATTERN_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.REPORTER_START);
         add(Token.NAME, "reporter name");
         add(Token.SYSTEMATIC_NAME);
+        add(Token.ATTRIBUTE_END);
         add(Token.FEATURE_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.PEN_START);
         add(Token.UNITS, "mm");
         add(Token.X, 1.1);
         add(Token.Y, 2.2);
-        add(Token.END);
+        add(Token.ATTRIBUTE_END);
+        add(Token.ELEMENT_END);
         add(Token.PEN_START);
         add(Token.UNITS, "mm");
         add(Token.X, 1.1);
         add(Token.Y, 2.2);
-        repeat(5, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(5, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -883,12 +1061,16 @@ public class AgilentGELMParserTest {
     public void rejectsFeatureWithNoPosition() {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.PATTERN_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.REPORTER_START);
         add(Token.NAME, "reporter name");
         add(Token.SYSTEMATIC_NAME);
+        add(Token.ATTRIBUTE_END);
         add(Token.FEATURE_START);
-        repeat(4, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(4, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -899,21 +1081,27 @@ public class AgilentGELMParserTest {
     public void rejectsFeatureWithTwoPositions() {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.PATTERN_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.REPORTER_START);
         add(Token.NAME, "reporter name");
         add(Token.SYSTEMATIC_NAME);
+        add(Token.ATTRIBUTE_END);
         add(Token.FEATURE_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.POSITION_START);
         add(Token.UNITS, "mm");
         add(Token.X, 1.1);
         add(Token.Y, 2.2);
-        add(Token.END);
+        add(Token.ATTRIBUTE_END);
+        add(Token.ELEMENT_END);
         add(Token.POSITION_START);
         add(Token.UNITS, "mm");
         add(Token.X, 1.1);
         add(Token.Y, 2.2);
-        repeat(5, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(5, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -924,20 +1112,26 @@ public class AgilentGELMParserTest {
     public void rejectsPenWithNoUnits() {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.PATTERN_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.REPORTER_START);
         add(Token.NAME, "reporter name");
         add(Token.SYSTEMATIC_NAME);
+        add(Token.ATTRIBUTE_END);
         add(Token.FEATURE_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.POSITION_START);
         add(Token.UNITS, "mm");
         add(Token.X, 1.1);
         add(Token.Y, 2.2);
-        add(Token.END);
+        add(Token.ATTRIBUTE_END);
+        add(Token.ELEMENT_END);
         add(Token.PEN_START);
         add(Token.X, 1.1);
         add(Token.Y, 2.2);
-        repeat(5, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(5, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -948,19 +1142,25 @@ public class AgilentGELMParserTest {
     public void rejectsPenWithNoX() {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.PATTERN_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.REPORTER_START);
         add(Token.NAME, "reporter name");
         add(Token.SYSTEMATIC_NAME);
+        add(Token.ATTRIBUTE_END);
         add(Token.FEATURE_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.POSITION_START);
         add(Token.UNITS, "mm");
         add(Token.X, 1.1);
         add(Token.Y, 2.2);
-        add(Token.END);
+        add(Token.ATTRIBUTE_END);
+        add(Token.ELEMENT_END);
         add(Token.PEN_START);
         add(Token.UNITS, "mm");
-        repeat(5, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(5, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -971,20 +1171,26 @@ public class AgilentGELMParserTest {
     public void rejectsPenWithNoY() {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.PATTERN_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.REPORTER_START);
         add(Token.NAME, "reporter name");
         add(Token.SYSTEMATIC_NAME);
+        add(Token.ATTRIBUTE_END);
         add(Token.FEATURE_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.POSITION_START);
         add(Token.UNITS, "mm");
         add(Token.X, 1.1);
         add(Token.Y, 2.2);
-        add(Token.END);
+        add(Token.ATTRIBUTE_END);
+        add(Token.ELEMENT_END);
         add(Token.PEN_START);
         add(Token.UNITS, "mm");
         add(Token.X, 1.1);
-        repeat(5, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(5, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -995,24 +1201,31 @@ public class AgilentGELMParserTest {
     public void acceptsPenWithOneOther() {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.PATTERN_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.REPORTER_START);
         add(Token.NAME, "reporter name");
         add(Token.SYSTEMATIC_NAME);
+        add(Token.ATTRIBUTE_END);
         add(Token.FEATURE_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.POSITION_START);
         add(Token.UNITS, "mm");
         add(Token.X, 1.1);
         add(Token.Y, 2.2);
-        add(Token.END);
+        add(Token.ATTRIBUTE_END);
+        add(Token.ELEMENT_END);
         add(Token.PEN_START);
         add(Token.UNITS, "mm");
         add(Token.X, 1.1);
         add(Token.Y, 2.2);
+        add(Token.ATTRIBUTE_END);
         add(Token.OTHER_START);
         add(Token.NAME);
         add(Token.VALUE);
-        repeat(6, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(6, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -1023,28 +1236,36 @@ public class AgilentGELMParserTest {
     public void acceptsPenWithTwoOthers() {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.PATTERN_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.REPORTER_START);
         add(Token.NAME, "reporter name");
         add(Token.SYSTEMATIC_NAME);
+        add(Token.ATTRIBUTE_END);
         add(Token.FEATURE_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.POSITION_START);
         add(Token.UNITS, "mm");
         add(Token.X, 1.1);
         add(Token.Y, 2.2);
-        add(Token.END);
+        add(Token.ATTRIBUTE_END);
+        add(Token.ELEMENT_END);
         add(Token.PEN_START);
         add(Token.UNITS, "mm");
         add(Token.X, 1.1);
         add(Token.Y, 2.2);
+        add(Token.ATTRIBUTE_END);
         add(Token.OTHER_START);
         add(Token.NAME);
         add(Token.VALUE);
-        add(Token.END);
+        add(Token.ATTRIBUTE_END);
+        add(Token.ELEMENT_END);
         add(Token.OTHER_START);
         add(Token.NAME);
         add(Token.VALUE);
-        repeat(6, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(6, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -1055,15 +1276,20 @@ public class AgilentGELMParserTest {
     public void rejectsPositionWithNoUnits() {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.PATTERN_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.REPORTER_START);
         add(Token.NAME, "reporter name");
         add(Token.SYSTEMATIC_NAME);
+        add(Token.ATTRIBUTE_END);
         add(Token.FEATURE_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.POSITION_START);
         add(Token.X, 1.1);
         add(Token.Y, 2.2);
-        repeat(5, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(5, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -1074,15 +1300,20 @@ public class AgilentGELMParserTest {
     public void rejectsPositionWithNoX() {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.PATTERN_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.REPORTER_START);
         add(Token.NAME, "reporter name");
         add(Token.SYSTEMATIC_NAME);
+        add(Token.ATTRIBUTE_END);
         add(Token.FEATURE_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.POSITION_START);
         add(Token.UNITS, "mm");
         add(Token.Y, 2.2);
-        repeat(5, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(5, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -1093,15 +1324,20 @@ public class AgilentGELMParserTest {
     public void rejectsPositionWithNoY() {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.PATTERN_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.REPORTER_START);
         add(Token.NAME, "reporter name");
         add(Token.SYSTEMATIC_NAME);
+        add(Token.ATTRIBUTE_END);
         add(Token.FEATURE_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.POSITION_START);
         add(Token.UNITS, "mm");
         add(Token.X, 1.1);
-        repeat(5, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(5, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -1112,24 +1348,31 @@ public class AgilentGELMParserTest {
     public void acceptsPositionWithOneOther() {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.PATTERN_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.REPORTER_START);
         add(Token.NAME, "reporter name");
         add(Token.SYSTEMATIC_NAME);
+        add(Token.ATTRIBUTE_END);
         add(Token.FEATURE_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.POSITION_START);
         add(Token.UNITS, "mm");
         add(Token.X, 1.1);
         add(Token.Y, 2.2);
+        add(Token.ATTRIBUTE_END);
         add(Token.OTHER_START);
         add(Token.NAME);
         add(Token.VALUE);
-        repeat(2, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(2, Token.ELEMENT_END);
         add(Token.PEN_START);
         add(Token.UNITS, "mm");
         add(Token.X, 1.1);
         add(Token.Y, 2.2);
-        repeat(5, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(5, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -1140,28 +1383,36 @@ public class AgilentGELMParserTest {
     public void acceptsPositionWithTwoOthers() {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.PATTERN_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.REPORTER_START);
         add(Token.NAME, "reporter name");
         add(Token.SYSTEMATIC_NAME);
+        add(Token.ATTRIBUTE_END);
         add(Token.FEATURE_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.POSITION_START);
         add(Token.UNITS, "mm");
         add(Token.X, 1.1);
         add(Token.Y, 2.2);
+        add(Token.ATTRIBUTE_END);
         add(Token.OTHER_START);
         add(Token.NAME);
         add(Token.VALUE);
-        add(Token.END);
+        add(Token.ATTRIBUTE_END);
+        add(Token.ELEMENT_END);
         add(Token.OTHER_START);
         add(Token.NAME);
         add(Token.VALUE);
-        repeat(2, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(2, Token.ELEMENT_END);
         add(Token.PEN_START);
         add(Token.UNITS, "mm");
         add(Token.X, 1.1);
         add(Token.Y, 2.2);
-        repeat(5, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(5, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -1172,22 +1423,29 @@ public class AgilentGELMParserTest {
     public void acceptsGeneWithOneAccession() {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.PATTERN_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.REPORTER_START);
         add(Token.NAME, "reporter name");
         add(Token.SYSTEMATIC_NAME);
+        add(Token.ATTRIBUTE_END);
         add(Token.FEATURE_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.POSITION_START);
         add(Token.UNITS, "mm");
         add(Token.X, 1.1);
         add(Token.Y, 2.2);
-        repeat(2, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(2, Token.ELEMENT_END);
         add(Token.GENE_START);
         add(Token.PRIMARY_NAME);
+        add(Token.ATTRIBUTE_END);
         add(Token.ACCESSION_START);
         add(Token.DATABASE);
         add(Token.ID);
-        repeat(5, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(5, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -1198,26 +1456,34 @@ public class AgilentGELMParserTest {
     public void acceptsGeneWithTwoAccessions() {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.PATTERN_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.REPORTER_START);
         add(Token.NAME, "reporter name");
         add(Token.SYSTEMATIC_NAME);
+        add(Token.ATTRIBUTE_END);
         add(Token.FEATURE_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.POSITION_START);
         add(Token.UNITS, "mm");
         add(Token.X, 1.1);
         add(Token.Y, 2.2);
-        repeat(2, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(2, Token.ELEMENT_END);
         add(Token.GENE_START);
         add(Token.PRIMARY_NAME);
+        add(Token.ATTRIBUTE_END);
         add(Token.ACCESSION_START);
         add(Token.DATABASE);
         add(Token.ID);
-        add(Token.END);
+        add(Token.ATTRIBUTE_END);
+        add(Token.ELEMENT_END);
         add(Token.ACCESSION_START);
         add(Token.DATABASE);
         add(Token.ID);
-        repeat(5, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(5, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -1228,21 +1494,28 @@ public class AgilentGELMParserTest {
     public void acceptsGeneWithOneAlias() {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.PATTERN_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.REPORTER_START);
         add(Token.NAME, "reporter name");
         add(Token.SYSTEMATIC_NAME);
+        add(Token.ATTRIBUTE_END);
         add(Token.FEATURE_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.POSITION_START);
         add(Token.UNITS, "mm");
         add(Token.X, 1.1);
         add(Token.Y, 2.2);
-        repeat(2, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(2, Token.ELEMENT_END);
         add(Token.GENE_START);
         add(Token.PRIMARY_NAME);
+        add(Token.ATTRIBUTE_END);
         add(Token.ALIAS_START);
         add(Token.NAME);
-        repeat(5, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(5, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -1253,24 +1526,32 @@ public class AgilentGELMParserTest {
     public void acceptsGeneWithTwoAliases() {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.PATTERN_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.REPORTER_START);
         add(Token.NAME, "reporter name");
         add(Token.SYSTEMATIC_NAME);
+        add(Token.ATTRIBUTE_END);
         add(Token.FEATURE_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.POSITION_START);
         add(Token.UNITS, "mm");
         add(Token.X, 1.1);
         add(Token.Y, 2.2);
-        repeat(2, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(2, Token.ELEMENT_END);
         add(Token.GENE_START);
         add(Token.PRIMARY_NAME);
+        add(Token.ATTRIBUTE_END);
         add(Token.ALIAS_START);
         add(Token.NAME);
-        add(Token.END);
+        add(Token.ATTRIBUTE_END);
+        add(Token.ELEMENT_END);
         add(Token.ALIAS_START);
         add(Token.NAME);
-        repeat(5, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(5, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -1281,18 +1562,24 @@ public class AgilentGELMParserTest {
     public void rejectsGeneWithNoPrimaryName() {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.PATTERN_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.REPORTER_START);
         add(Token.NAME, "reporter name");
         add(Token.SYSTEMATIC_NAME);
+        add(Token.ATTRIBUTE_END);
         add(Token.FEATURE_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.POSITION_START);
         add(Token.UNITS, "mm");
         add(Token.X, 1.1);
         add(Token.Y, 2.2);
-        repeat(2, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(2, Token.ELEMENT_END);
         add(Token.GENE_START);
-        repeat(4, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(4, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -1303,24 +1590,30 @@ public class AgilentGELMParserTest {
     public void acceptsGeneWithOptionalAttributes() {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.PATTERN_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.REPORTER_START);
         add(Token.NAME, "reporter name");
         add(Token.SYSTEMATIC_NAME);
+        add(Token.ATTRIBUTE_END);
         add(Token.FEATURE_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.POSITION_START);
         add(Token.UNITS, "mm");
         add(Token.X, 1.1);
         add(Token.Y, 2.2);
-        repeat(2, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(2, Token.ELEMENT_END);
         add(Token.GENE_START);
         add(Token.CHROMOSOME);
         add(Token.DESCRIPTION);
         add(Token.MAP_POSITION);
         add(Token.PRIMARY_NAME);
         add(Token.SPECIES);
-        add(Token.SYSTEMATIC_NAME);        
-        repeat(4, Token.END);
+        add(Token.SYSTEMATIC_NAME);
+        add(Token.ATTRIBUTE_END);
+        repeat(4, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -1331,22 +1624,29 @@ public class AgilentGELMParserTest {
     public void acceptsGeneWithOneOther() {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.PATTERN_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.REPORTER_START);
         add(Token.NAME, "reporter name");
         add(Token.SYSTEMATIC_NAME);
+        add(Token.ATTRIBUTE_END);
         add(Token.FEATURE_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.POSITION_START);
         add(Token.UNITS, "mm");
         add(Token.X, 1.1);
         add(Token.Y, 2.2);
-        repeat(2, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(2, Token.ELEMENT_END);
         add(Token.GENE_START);
         add(Token.PRIMARY_NAME);
+        add(Token.ATTRIBUTE_END);
         add(Token.OTHER_START);
         add(Token.NAME);
         add(Token.VALUE);
-        repeat(5, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(5, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -1357,26 +1657,34 @@ public class AgilentGELMParserTest {
     public void acceptsGeneWithTwoOthers() {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.PATTERN_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.REPORTER_START);
         add(Token.NAME, "reporter name");
         add(Token.SYSTEMATIC_NAME);
+        add(Token.ATTRIBUTE_END);
         add(Token.FEATURE_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.POSITION_START);
         add(Token.UNITS, "mm");
         add(Token.X, 1.1);
         add(Token.Y, 2.2);
-        repeat(2, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(2, Token.ELEMENT_END);
         add(Token.GENE_START);
         add(Token.PRIMARY_NAME);
+        add(Token.ATTRIBUTE_END);
         add(Token.OTHER_START);
         add(Token.NAME);
         add(Token.VALUE);
-        add(Token.END);
+        add(Token.ATTRIBUTE_END);
+        add(Token.ELEMENT_END);
         add(Token.OTHER_START);
         add(Token.NAME);
         add(Token.VALUE);
-        repeat(5, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(5, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -1387,21 +1695,27 @@ public class AgilentGELMParserTest {
     public void rejectsAccessionNoDatabase() {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.PATTERN_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.REPORTER_START);
         add(Token.NAME, "reporter name");
         add(Token.SYSTEMATIC_NAME);
+        add(Token.ATTRIBUTE_END);
         add(Token.FEATURE_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.POSITION_START);
         add(Token.UNITS, "mm");
         add(Token.X, 1.1);
         add(Token.Y, 2.2);
-        repeat(2, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(2, Token.ELEMENT_END);
         add(Token.GENE_START);
         add(Token.PRIMARY_NAME);
         add(Token.ACCESSION_START);
         add(Token.ID);
-        repeat(5, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(5, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -1412,21 +1726,27 @@ public class AgilentGELMParserTest {
     public void rejectsAccessionNoIdOrIdentifier() {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.PATTERN_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.REPORTER_START);
         add(Token.NAME, "reporter name");
         add(Token.SYSTEMATIC_NAME);
+        add(Token.ATTRIBUTE_END);
         add(Token.FEATURE_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.POSITION_START);
         add(Token.UNITS, "mm");
         add(Token.X, 1.1);
         add(Token.Y, 2.2);
-        repeat(2, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(2, Token.ELEMENT_END);
         add(Token.GENE_START);
         add(Token.PRIMARY_NAME);
         add(Token.ACCESSION_START);
         add(Token.DATABASE);
-        repeat(5, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(5, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -1437,22 +1757,29 @@ public class AgilentGELMParserTest {
     public void acceptsAccessionWithId() {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.PATTERN_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.REPORTER_START);
         add(Token.NAME, "reporter name");
         add(Token.SYSTEMATIC_NAME);
+        add(Token.ATTRIBUTE_END);
         add(Token.FEATURE_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.POSITION_START);
         add(Token.UNITS, "mm");
         add(Token.X, 1.1);
         add(Token.Y, 2.2);
-        repeat(2, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(2, Token.ELEMENT_END);
         add(Token.GENE_START);
         add(Token.PRIMARY_NAME);
+        add(Token.ATTRIBUTE_END);
         add(Token.ACCESSION_START);
         add(Token.DATABASE);
         add(Token.ID);
-        repeat(5, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(5, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -1463,22 +1790,29 @@ public class AgilentGELMParserTest {
     public void acceptsAccessionWithIdentifier() {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.PATTERN_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.REPORTER_START);
         add(Token.NAME, "reporter name");
         add(Token.SYSTEMATIC_NAME);
+        add(Token.ATTRIBUTE_END);
         add(Token.FEATURE_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.POSITION_START);
         add(Token.UNITS, "mm");
         add(Token.X, 1.1);
         add(Token.Y, 2.2);
-        repeat(2, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(2, Token.ELEMENT_END);
         add(Token.GENE_START);
         add(Token.PRIMARY_NAME);
+        add(Token.ATTRIBUTE_END);
         add(Token.ACCESSION_START);
         add(Token.DATABASE);
         add(Token.IDENTIFIER);
-        repeat(5, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(5, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -1489,25 +1823,33 @@ public class AgilentGELMParserTest {
     public void acceptsAccessionWithOneOther() {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.PATTERN_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.REPORTER_START);
         add(Token.NAME, "reporter name");
         add(Token.SYSTEMATIC_NAME);
+        add(Token.ATTRIBUTE_END);
         add(Token.FEATURE_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.POSITION_START);
         add(Token.UNITS, "mm");
         add(Token.X, 1.1);
         add(Token.Y, 2.2);
-        repeat(2, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(2, Token.ELEMENT_END);
         add(Token.GENE_START);
         add(Token.PRIMARY_NAME);
+        add(Token.ATTRIBUTE_END);
         add(Token.ACCESSION_START);
         add(Token.DATABASE);
         add(Token.ID);
+        add(Token.ATTRIBUTE_END);
         add(Token.OTHER_START);
         add(Token.NAME);
         add(Token.VALUE);
-        repeat(6, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(6, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -1518,29 +1860,38 @@ public class AgilentGELMParserTest {
     public void acceptsAccessionWithTwoOthers() {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.PATTERN_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.REPORTER_START);
         add(Token.NAME, "reporter name");
         add(Token.SYSTEMATIC_NAME);
+        add(Token.ATTRIBUTE_END);
         add(Token.FEATURE_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.POSITION_START);
         add(Token.UNITS, "mm");
         add(Token.X, 1.1);
         add(Token.Y, 2.2);
-        repeat(2, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(2, Token.ELEMENT_END);
         add(Token.GENE_START);
         add(Token.PRIMARY_NAME);
+        add(Token.ATTRIBUTE_END);
         add(Token.ACCESSION_START);
         add(Token.DATABASE);
         add(Token.ID);
+        add(Token.ATTRIBUTE_END);
         add(Token.OTHER_START);
         add(Token.NAME);
         add(Token.VALUE);
-        add(Token.END);
+        add(Token.ATTRIBUTE_END);
+        add(Token.ELEMENT_END);
         add(Token.OTHER_START);
         add(Token.NAME);
         add(Token.VALUE);
-        repeat(6, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(6, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -1551,20 +1902,27 @@ public class AgilentGELMParserTest {
     public void rejectsAliasWithNoName() {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.PATTERN_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.REPORTER_START);
         add(Token.NAME, "reporter name");
         add(Token.SYSTEMATIC_NAME);
+        add(Token.ATTRIBUTE_END);
         add(Token.FEATURE_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.POSITION_START);
         add(Token.UNITS, "mm");
         add(Token.X, 1.1);
         add(Token.Y, 2.2);
-        repeat(2, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(2, Token.ELEMENT_END);
         add(Token.GENE_START);
         add(Token.PRIMARY_NAME);
+        add(Token.ATTRIBUTE_END);
         add(Token.ALIAS_START);
-        repeat(5, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(5, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -1575,24 +1933,32 @@ public class AgilentGELMParserTest {
     public void acceptsAliasWithOneOther() {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.PATTERN_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.REPORTER_START);
         add(Token.NAME, "reporter name");
         add(Token.SYSTEMATIC_NAME);
+        add(Token.ATTRIBUTE_END);
         add(Token.FEATURE_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.POSITION_START);
         add(Token.UNITS, "mm");
         add(Token.X, 1.1);
         add(Token.Y, 2.2);
-        repeat(2, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(2, Token.ELEMENT_END);
         add(Token.GENE_START);
         add(Token.PRIMARY_NAME);
+        add(Token.ATTRIBUTE_END);
         add(Token.ALIAS_START);
         add(Token.NAME);
+        add(Token.ATTRIBUTE_END);
         add(Token.OTHER_START);
         add(Token.NAME);
         add(Token.VALUE);
-        repeat(6, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(6, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -1603,28 +1969,37 @@ public class AgilentGELMParserTest {
     public void acceptsAliasWithTwoOthers() {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.PATTERN_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.REPORTER_START);
         add(Token.NAME, "reporter name");
         add(Token.SYSTEMATIC_NAME);
+        add(Token.ATTRIBUTE_END);
         add(Token.FEATURE_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.POSITION_START);
         add(Token.UNITS, "mm");
         add(Token.X, 1.1);
         add(Token.Y, 2.2);
-        repeat(2, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(2, Token.ELEMENT_END);
         add(Token.GENE_START);
         add(Token.PRIMARY_NAME);
+        add(Token.ATTRIBUTE_END);
         add(Token.ALIAS_START);
         add(Token.NAME);
+        add(Token.ATTRIBUTE_END);
         add(Token.OTHER_START);
         add(Token.NAME);
         add(Token.VALUE);
-        add(Token.END);
+        add(Token.ATTRIBUTE_END);
+        add(Token.ELEMENT_END);
         add(Token.OTHER_START);
         add(Token.NAME);
         add(Token.VALUE);
-        repeat(6, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(6, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -1635,9 +2010,11 @@ public class AgilentGELMParserTest {
     public void rejectsOtherNoName() {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.OTHER_START);
         add(Token.VALUE);
-        repeat(2, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(2, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -1648,9 +2025,11 @@ public class AgilentGELMParserTest {
     public void rejectsOtherNoValue() {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.OTHER_START);
         add(Token.NAME);
-        repeat(2, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(2, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -1661,13 +2040,16 @@ public class AgilentGELMParserTest {
     public void acceptsOtherWithOneNestedOther() {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.OTHER_START);
         add(Token.NAME);
         add(Token.VALUE);
+        add(Token.ATTRIBUTE_END);
         add(Token.OTHER_START);
         add(Token.NAME);
         add(Token.VALUE);
-        repeat(3, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(3, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -1678,17 +2060,21 @@ public class AgilentGELMParserTest {
     public void acceptsOtherWithTwoNestedOthers() {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.OTHER_START);
         add(Token.NAME);
         add(Token.VALUE);
+        add(Token.ATTRIBUTE_END);
         add(Token.OTHER_START);
         add(Token.NAME);
         add(Token.VALUE);
-        add(Token.END);
+        add(Token.ATTRIBUTE_END);
+        add(Token.ELEMENT_END);
         add(Token.OTHER_START);
         add(Token.NAME);
         add(Token.VALUE);
-        repeat(3, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(3, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -1699,16 +2085,20 @@ public class AgilentGELMParserTest {
     public void acceptsOtherWithDoublyNestedOthers() {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.OTHER_START);
         add(Token.NAME);
         add(Token.VALUE);
+        add(Token.ATTRIBUTE_END);
         add(Token.OTHER_START);
         add(Token.NAME);
         add(Token.VALUE);
+        add(Token.ATTRIBUTE_END);
         add(Token.OTHER_START);
         add(Token.NAME);
         add(Token.VALUE);
-        repeat(4, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(4, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -1719,18 +2109,24 @@ public class AgilentGELMParserTest {
     public void acceptsGridLayout() {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.PATTERN_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.GRID_LAYOUT_START);
-        add(Token.END);
+        add(Token.ATTRIBUTE_END);
+        add(Token.ELEMENT_END);
         add(Token.REPORTER_START);
         add(Token.NAME, "reporter name");
         add(Token.SYSTEMATIC_NAME);
+        add(Token.ATTRIBUTE_END);
         add(Token.FEATURE_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.POSITION_START);
         add(Token.UNITS, "mm");
         add(Token.X, 1.1);
         add(Token.Y, 2.2);
-        repeat(5, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(5, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -1741,22 +2137,28 @@ public class AgilentGELMParserTest {
     public void acceptsGridLayoutWithOptionalAttributes() {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.PATTERN_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.GRID_LAYOUT_START);
         add(Token.FEATURE_COUNT_X);
         add(Token.FEATURE_COUNT_Y);
         add(Token.FEATURE_SPACING_X);
         add(Token.FEATURE_SPACING_Y);
-        add(Token.END);
+        add(Token.ATTRIBUTE_END);
+        add(Token.ELEMENT_END);
         add(Token.REPORTER_START);
         add(Token.NAME, "reporter name");
         add(Token.SYSTEMATIC_NAME);
+        add(Token.ATTRIBUTE_END);
         add(Token.FEATURE_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.POSITION_START);
         add(Token.UNITS, "mm");
         add(Token.X, 1.1);
         add(Token.Y, 2.2);
-        repeat(5, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(5, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -1767,20 +2169,26 @@ public class AgilentGELMParserTest {
     public void acceptsBiosequenceRef() {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.PATTERN_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.REPORTER_START);
         add(Token.NAME, "reporter name");
         add(Token.SYSTEMATIC_NAME);
+        add(Token.ATTRIBUTE_END);
         add(Token.FEATURE_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.POSITION_START);
         add(Token.UNITS, "mm");
         add(Token.X, 1.1);
         add(Token.Y, 2.2);
-        repeat(2, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(2, Token.ELEMENT_END);
         add(Token.BIOSEQUENCE_REF_START);
         add(Token.IDENTIFIER);
         add(Token.SPECIES);
-        repeat(4, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(4, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -1791,19 +2199,25 @@ public class AgilentGELMParserTest {
     public void rejectsBiosequenceRefWithNoIdentifier() {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.PATTERN_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.REPORTER_START);
         add(Token.NAME, "reporter name");
         add(Token.SYSTEMATIC_NAME);
+        add(Token.ATTRIBUTE_END);
         add(Token.FEATURE_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.POSITION_START);
         add(Token.UNITS, "mm");
         add(Token.X, 1.1);
         add(Token.Y, 2.2);
-        repeat(2, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(2, Token.ELEMENT_END);
         add(Token.BIOSEQUENCE_REF_START);
         add(Token.SPECIES);
-        repeat(4, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(4, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -1814,19 +2228,25 @@ public class AgilentGELMParserTest {
     public void rejectsBiosequenceRefWithNoSpecies() {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.PATTERN_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.REPORTER_START);
         add(Token.NAME, "reporter name");
         add(Token.SYSTEMATIC_NAME);
+        add(Token.ATTRIBUTE_END);
         add(Token.FEATURE_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.POSITION_START);
         add(Token.UNITS, "mm");
         add(Token.X, 1.1);
         add(Token.Y, 2.2);
-        repeat(2, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(2, Token.ELEMENT_END);
         add(Token.BIOSEQUENCE_REF_START);
         add(Token.IDENTIFIER);
-        repeat(4, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(4, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -1837,21 +2257,27 @@ public class AgilentGELMParserTest {
     public void acceptsBiosequenceRefWithOptionalAttributes() {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.PATTERN_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.REPORTER_START);
         add(Token.NAME, "reporter name");
         add(Token.SYSTEMATIC_NAME);
+        add(Token.ATTRIBUTE_END);
         add(Token.FEATURE_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.POSITION_START);
         add(Token.UNITS, "mm");
         add(Token.X, 1.1);
         add(Token.Y, 2.2);
-        repeat(2, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(2, Token.ELEMENT_END);
         add(Token.BIOSEQUENCE_REF_START);
         add(Token.DATABASE);
         add(Token.IDENTIFIER);
         add(Token.SPECIES);
-        repeat(4, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(4, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -1862,9 +2288,11 @@ public class AgilentGELMParserTest {
     public void acceptsBiosequence() {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.BIOSEQUENCE_START);
         add(Token.SPECIES);
-        repeat(2, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(2, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -1875,8 +2303,10 @@ public class AgilentGELMParserTest {
     public void rejectsBiosequenceWithOutSpecies() {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.BIOSEQUENCE_START);
-        repeat(2, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(2, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -1887,6 +2317,7 @@ public class AgilentGELMParserTest {
     public void acceptsBiosequenceWithOptionalAttributes() {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.BIOSEQUENCE_START);       
         add(Token.ACCESS);
         add(Token.CHROMOSOME);
@@ -1898,7 +2329,8 @@ public class AgilentGELMParserTest {
         add(Token.SEQUENCEDB);
         add(Token.SPECIES);
         add(Token.TYPE);
-        repeat(2, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(2, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -1909,12 +2341,15 @@ public class AgilentGELMParserTest {
     public void acceptsBiosequenceWithOneOther() {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.BIOSEQUENCE_START);
         add(Token.SPECIES);
+        add(Token.ATTRIBUTE_END);
         add(Token.OTHER_START);
         add(Token.NAME);
         add(Token.VALUE);
-        repeat(3, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(3, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -1925,16 +2360,20 @@ public class AgilentGELMParserTest {
     public void acceptsBiosequenceWithTwoOthers() {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.BIOSEQUENCE_START);
         add(Token.SPECIES);
+        add(Token.ATTRIBUTE_END);
         add(Token.OTHER_START);
         add(Token.NAME);
         add(Token.VALUE);
-        add(Token.END);
+        add(Token.ATTRIBUTE_END);
+        add(Token.ELEMENT_END);
         add(Token.OTHER_START);
         add(Token.NAME);
         add(Token.VALUE);
-        repeat(3, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(3, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -1945,12 +2384,15 @@ public class AgilentGELMParserTest {
     public void acceptsBiosequenceWithOneAccession() {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.BIOSEQUENCE_START);
         add(Token.SPECIES);
+        add(Token.ATTRIBUTE_END);
         add(Token.ACCESSION_START);
         add(Token.DATABASE);
         add(Token.ID);
-        repeat(3, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(3, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -1961,16 +2403,20 @@ public class AgilentGELMParserTest {
     public void acceptsBiosequenceWithTwoAccessions() {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.BIOSEQUENCE_START);
         add(Token.SPECIES);
+        add(Token.ATTRIBUTE_END);
         add(Token.ACCESSION_START);
         add(Token.DATABASE);
         add(Token.ID);
-        add(Token.END);
+        add(Token.ATTRIBUTE_END);
+        add(Token.ELEMENT_END);
         add(Token.ACCESSION_START);
         add(Token.DATABASE);
         add(Token.ID);
-        repeat(3, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(3, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -1981,11 +2427,14 @@ public class AgilentGELMParserTest {
     public void acceptsBiosequenceWithOneAlias() {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.BIOSEQUENCE_START);
         add(Token.SPECIES);
+        add(Token.ATTRIBUTE_END);
         add(Token.ALIAS_START);
         add(Token.NAME);
-        repeat(3, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(3, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 
@@ -1996,14 +2445,18 @@ public class AgilentGELMParserTest {
     public void acceptsBiosequenceWithTwoAliases() {
         add(Token.DOCUMENT_START);
         add(Token.PROJECT_START);
+        add(Token.ATTRIBUTE_END);
         add(Token.BIOSEQUENCE_START);
         add(Token.SPECIES);
+        add(Token.ATTRIBUTE_END);
         add(Token.ALIAS_START);
         add(Token.NAME);
-        add(Token.END);
+        add(Token.ATTRIBUTE_END);
+        add(Token.ELEMENT_END);
         add(Token.ALIAS_START);
         add(Token.NAME);
-        repeat(3, Token.END);
+        add(Token.ATTRIBUTE_END);
+        repeat(3, Token.ELEMENT_END);
         add(Token.DOCUMENT_END);
         add(Token.EOF);
 

@@ -184,6 +184,14 @@ public class UnparsedArrayDesignFileHandler implements DesignFileHandler {
      * {@inheritDoc}
      */
     @Override
+    public boolean parsesData() {
+         return false;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void createDesignDetails(ArrayDesign arrayDesign) {
         // no-op for unknown types
     }

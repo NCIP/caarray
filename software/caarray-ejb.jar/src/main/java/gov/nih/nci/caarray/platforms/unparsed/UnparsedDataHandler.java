@@ -264,4 +264,12 @@ public class UnparsedDataHandler extends AbstractDataFileHandler {
     public List<LSID> getReferencedArrayDesignCandidateIds() {
         return Collections.emptyList();
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean parsesData() {
+        return false;
+    }
 }

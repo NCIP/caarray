@@ -221,11 +221,16 @@ class MageTabImporterImpl implements MageTabImporter {
         }
     }
 
-    public void importFiles(Project targetProject, CaArrayFileSet fileSet) throws MageTabParsingException {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public MageTabDocumentSet importFiles(Project targetProject, CaArrayFileSet fileSet)
+            throws MageTabParsingException {
         LOG.info("Importing MAGE-TAB document set");
         updateFileStatus(fileSet, FileStatus.IMPORTING);
         final MageTabFileSet inputSet = getInputFileSet(targetProject, fileSet);
-        MageTabDocumentSet documentSet;
+        MageTabDocumentSet documentSet = null;
         try {
             documentSet = MageTabParser.INSTANCE.parse(inputSet);
             final CaArrayTranslationResult translationResult = this.translator.translate(documentSet, fileSet);
@@ -235,6 +240,7 @@ class MageTabImporterImpl implements MageTabImporter {
             handleResult(fileSet, e.getValidationResult());
         }
         this.searchDao.save(fileSet.getFiles());
+        return documentSet;
     }
 
     private void updateFileStatus(CaArrayFileSet fileSet, FileStatus status) {

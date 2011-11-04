@@ -13,7 +13,7 @@
  * the direction or management of such entity, whether by contract or otherwise,
  * or (ii) ownership of fifty percent (50%) or more of the outstanding shares,
  * or (iii) beneficial ownership of such entity.
- *
+ * 
  * This License is granted provided that You agree to the conditions described
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up,
  * no-charge, irrevocable, transferable and royalty-free right and license in
@@ -91,19 +91,18 @@ import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.magetab.MageTabFileSet;
 import gov.nih.nci.caarray.magetab.validator.ValidatorSet;
-import gov.nih.nci.caarray.util.UsernameHolder;
 
 import org.apache.log4j.Logger;
 
 import com.google.inject.Inject;
 
 /**
- * Encapsulates the functionality necessary for re-parsing a set of files that were previously imported-not-parsed but
- * now have an available parser.
+ * Encapsulates the functionality necessary for re-parsing a set of files that
+ * were previously imported-not-parsed but now have an available parser.
  * 
- * This is very similar to ProjectFilesImportJob except the annotation validation and importing component is skipped.
- * 
- * @author dkokotov
+ * This is very similar to ProjectFilesImportJob except the annotation validation
+ * and importing component is skipped.
+ * @author dkokotov 
  */
 final class ProjectFilesReparseJob extends AbstractProjectFilesJob {
     private static final long serialVersionUID = 1L;
@@ -112,7 +111,7 @@ final class ProjectFilesReparseJob extends AbstractProjectFilesJob {
     @SuppressWarnings("PMD.ExcessiveParameterList")
     @Inject
     // CHECKSTYLE:OFF more than 7 parameters are okay for injected constructor
-    ProjectFilesReparseJob(String username, UsernameHolder usernameHolder, Project targetProject,
+    ProjectFilesReparseJob(String username, Project targetProject,
             CaArrayFileSet fileSet, ArrayDataImporter arrayDataImporter, MageTabImporter mageTabImporter,
             ProjectDao projectDao, SearchDao searchDao) {
     // CHECKSTYLE:ON
@@ -131,18 +130,25 @@ final class ProjectFilesReparseJob extends AbstractProjectFilesJob {
     protected void doExecute() {
         CaArrayFileSet fileSet = getFileSet();
         getArrayDataImporter().validateFiles(fileSet,
-        new MageTabDocumentSet(new MageTabFileSet(), new ValidatorSet()), true);
+                new MageTabDocumentSet(new MageTabFileSet(), new ValidatorSet()), true);
         final FileStatus status = getFileSet().getStatus();
         if (status.equals(FileStatus.VALIDATED) || status.equals(FileStatus.VALIDATED_NOT_PARSED)) {
             getProjectDao().flushSession();
             getProjectDao().clearSession();
             importArrayData(fileSet);
-         }
+        }
     }
 
     private void importArrayData(CaArrayFileSet fileSet) {
         final ArrayDataImporter arrayDataImporter = getArrayDataImporter();
-        arrayDataImporter.importFiles(fileSet, null); // don't need to specify import options since ArrayData exists
+        final MageTabDocumentSet mTabSet = null; 
+            //TODO isn't parsed MageTabDocumentSet required for certain platforms? 
+            //e.g. AgilentRawTextDataHandler needs SDRF that specifies data file to array design mapping,  
+            //in case there are more than one array design for a given experiment. 
+            // Andrew Sy 2011-08-24
+        
+        arrayDataImporter.importFiles(fileSet, null, mTabSet);  
+            // don't need to specify import options since ArrayData exists.
     }
 
     @Override

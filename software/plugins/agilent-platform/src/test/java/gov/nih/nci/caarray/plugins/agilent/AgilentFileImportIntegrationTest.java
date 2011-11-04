@@ -165,7 +165,7 @@ public class AgilentFileImportIntegrationTest extends AbstractFileManagementServ
     @Test
     public void testReimport() throws Exception {
         ArrayDesign design =
-                importArrayDesign(AgilentArrayDesignFiles.TEST_GENE_EXPRESSION_1_XML,
+                importArrayDesign(AgilentArrayDesignFiles.TEST_GENE_EXPRESSION_1_REDUCED_XML,
                         UnparsedArrayDesignFileHandler.AGILENT_CSV);
         assertNull(design.getDesignDetails());
 
@@ -182,15 +182,15 @@ public class AgilentFileImportIntegrationTest extends AbstractFileManagementServ
         tx = this.hibernateHelper.beginTransaction();
         design = (ArrayDesign) this.hibernateHelper.getCurrentSession().load(ArrayDesign.class, design.getId());
         assertNotNull(design.getDesignDetails());
-        assertEquals(45220, design.getNumberOfFeatures().intValue());
-        assertEquals(45220, design.getDesignDetails().getFeatures().size());
+        assertEquals(5, design.getNumberOfFeatures().intValue());
+        assertEquals(5, design.getDesignDetails().getFeatures().size());
         tx.commit();
     }
 
     @Test
     public void testReimportWithReferencingExperiment() throws Exception {
         ArrayDesign design =
-                importArrayDesign(AgilentArrayDesignFiles.TEST_GENE_EXPRESSION_1_XML,
+                importArrayDesign(AgilentArrayDesignFiles.TEST_GENE_EXPRESSION_1_REDUCED_XML,
                         UnparsedArrayDesignFileHandler.AGILENT_CSV);
         assertNull(design.getDesignDetails());
         addDesignToExperiment(design);
@@ -208,8 +208,8 @@ public class AgilentFileImportIntegrationTest extends AbstractFileManagementServ
         tx = this.hibernateHelper.beginTransaction();
         design = (ArrayDesign) this.hibernateHelper.getCurrentSession().load(ArrayDesign.class, design.getId());
         assertNotNull(design.getDesignDetails());
-        assertEquals(45220, design.getNumberOfFeatures().intValue());
-        assertEquals(45220, design.getDesignDetails().getFeatures().size());
+        assertEquals(5, design.getNumberOfFeatures().intValue());
+        assertEquals(5, design.getDesignDetails().getFeatures().size());
         tx.commit();
     }
 }

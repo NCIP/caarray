@@ -68,4 +68,10 @@ public interface DesignFileHandler {
      * @return a set of FileType instances describing the files that this DesignFileHandler can handle.
      */
     Set<FileType> getSupportedTypes();
+    
+    /**
+     * @return true if this handler parses the files, false if it does not.
+     */
+    boolean parsesData();
+    
 }

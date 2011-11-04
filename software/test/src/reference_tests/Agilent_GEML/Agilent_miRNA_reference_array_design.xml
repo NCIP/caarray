@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE project SYSTEM "GEMLPattern.dtd"[]>
+<!--Copyright (c) 2008 Agilent Technologies-->
+<!--Layout notes:-->
+<!--1) Layout is double-density (interlaced rectilinear grids).-->
+<!--2) Feature numbers are LR-TB relative to Agilent scanned images-->
+<!--(DNA back, barcode left).-->
+<!--3) X and Y are relative to writer (DNA front, barcode top).-->
+<!--AgilentTagVersion=1-->
+<!--NumFeaturesRows=192, NumFeaturesColumns=164, AG_X_OFFSET_MICRONS=36.661742095, AG_Y_OFFSET_MICRONS=63.5-->
+<project by="Agilent Technologies" date="2008/02/14" name="Agilent-019118" company="Agilent Technologies">
+  <pattern name="Agilent-019118" owner="Agilent Technologies" description="Human miRNA Microarray 2.0" species_database="H. sapiens">
+    <reporter control_type="pos" name="miRNABrightCorner30" start_coord="0">
+      <biosequence_ref identifier="miRNABrightCorner30" species="M. musculus"></biosequence_ref>
+      <feature number="1">
+        <position x="0.0" y="0.0" units="mm"></position>
+      </feature>
+    </reporter>
+    <reporter control_type="pos" name="DarkCorner" start_coord="0">
+      <biosequence_ref identifier="DarkCorner" database="agc" species="M. musculus"></biosequence_ref>
+      <feature number="2">
+        <position x="0.127" y="0.0" units="mm"></position>
+      </feature>
+    </reporter>
+    <reporter control_type="ignore" name="NA00001" start_coord="0">
+      <biosequence_ref identifier="NA00001" species="M. musculus"></biosequence_ref>
+      <feature number="8">
+        <position x="0.889" y="0.0" units="mm"></position>
+      </feature>
+    </reporter>
+	<!--artificially created control_type="ignore" with no reporter name-->
+    <reporter control_type="ignore" name="" start_coord="0">
+      <biosequence_ref identifier="NA00001" species="M. musculus"></biosequence_ref>
+      <feature number="8">
+        <position x="0.889" y="0.0" units="mm"></position>
+      </feature>
+    </reporter>
+    <reporter control_type="neg" name="NegativeControl" start_coord="0">
+      <biosequence_ref identifier="NegativeControl" database="agc" species="M. musculus"></biosequence_ref>
+      <feature number="118">
+        <position x="4.5085" y="0.03666174209354125" units="mm"></position>
+      </feature>
+    </reporter>
+    <reporter name="A_54_P2696" active_sequence="ACATTGCCTAGGAATTGTT" start_coord="0">
+      <biosequence_ref identifier="A_54_P2696" database="agp" species="M. musculus"></biosequence_ref>
+      <feature number="3">
+        <position x="0.254" y="0.0" units="mm"></position>
+      </feature>
+    </reporter>
+    <reporter name="A_54_P2286" active_sequence="CGCATTATTACTCACGGTA" start_coord="0">
+      <biosequence_ref identifier="A_54_P2286" database="agp" species="M. musculus"></biosequence_ref>
+      <feature number="15654">
+        <position x="9.271" y="6.965730997772837" units="mm"></position>
+      </feature>
+    </reporter>
+    <reporter control_type="ignore" name="NA00001" start_coord="0">
+      <biosequence_ref identifier="NA00001" species="M. musculus"></biosequence_ref>
+      <feature number="15655">
+        <position x="9.398" y="6.965730997772837" units="mm"></position>
+      </feature>
+    </reporter>
+    <reporter name="A_25_P00010428" systematic_name="hsa-miR-519c-3p">
+      <feature number="13448">
+        <position x="5.975863961485" y="10.3505" units="mm" />
+      </feature>
+      <gene systematic_name="hsa-miR-519c-3p" primary_name="hsa-miR-519c-3p" description="NA">
+        <accession database="mir" id="hsa-miR-519c-3p" />
+        <accession database="mir" id="MIMAT0002832" />
+        <other name="accessions" value="mir|hsa-miR-519c-3p|mir|MIMAT0002832" />
+        <other name="chr_coord" value="chr19:058881609-058881590" />
+      </gene>
+    </reporter>
+    <reporter control_type="pos" name="hur_5_23" start_coord="0">
+      <biosequence_ref identifier="hur_5_23" species="H. sapiens"></biosequence_ref>
+      <feature number="9116">
+        <position x="1.7145000000000001" y="4.069453372383078" units="mm"></position>
+      </feature>
+    </reporter>
+    <other name="AG_TAG_VERSION" value="2" />
+    <other name="AG_ROW_SPACING_MICRONS" value="73.32348419" />
+    <other name="AG_COL_SPACING_MICRONS" value="127" />
+    <other name="AG_X_OFFSET_MICRONS" value="36.661742095" />
+    <other name="AG_Y_OFFSET_MICRONS" value="63.5" />
+    <other name="AG_ROW_SPOTSIZE_MICRONS" value="65" />
+    <other name="AG_COL_SPOTSIZE_MICRONS" value="65" />
+    <other name="NumArrays" value="8" />
+    <other name="NumArrayRows" value="2" />
+    <other name="NumArrayCols" value="4" />
+    <other name="ArraySpacingCol" value="15.875" />
+    <other name="ArraySpacingRow" value="12.3183453434299" />
+    <other name="ArrayPadding" value="2.0" />
+    <other name="Array1LocRow" value="2.9721" />
+    <other name="Array1LocCol" value="15.4517" />
+    <other name="Fiducial1LocRow" value="0" />
+    <other name="Fiducial1LocCol" value="0" />
+    <!--Total Number of Reporters: 15744-->
+    <other name="AMADID" value="019118" />
+    <other name="array_design_type" value="miRNA" />
+    <other name="genomic_build" value="hg18:NCBI36:May2004" />
+    <other name="control_grid_id" value="IS-15744-8-V1_8x15K_miRNA_Hs_V20070411" />
+  </pattern>
+  <biosequence species="M. musculus" description="NA" primary_name="mmu-miR-297a*">
+    <accession database="agp" identifier="A_54_P2696"></accession>
+    <accession database="mir" identifier="mmu-miR-297a*"></accession>
+    <accession database="mir" identifier="MIMAT0004864"></accession>
+    <accession database="mir" identifier="mmu-miR-297b-3p"></accession>
+    <accession database="mir" identifier="MIMAT0004827"></accession>
+    <accession database="mir" identifier="mmu-miR-297c*"></accession>
+    <accession database="mir" identifier="MIMAT0004866"></accession>
+  </biosequence>
+</project>
