@@ -136,8 +136,10 @@ import gov.nih.nci.caarray.validation.ValidationResult;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -311,10 +313,45 @@ public class AbstractArrayDesignServiceTest extends AbstractServiceTest {
         caArrayFile.setFileType(type);
         return caArrayFile;
     }
+        
+    static class LocalObjectCache {
+    	
+    	private final Map<Class<?>, Map<Long, PersistentObject>> map = 
+    			new HashMap<Class<?>, Map<Long, PersistentObject>>();
+    	
+    	private Map<Long, PersistentObject> mapByClass(Class<?> type) {
+    		Map<Long, PersistentObject> current = map.get(type);
+    		if (current == null) {
+    			current = new HashMap<Long, PersistentObject>();
+    			map.put(type, current);
+    		}
+    		return current;
+    	}
+    	
+    	public void add(PersistentObject entity) {
+    		Map<Long, PersistentObject> mapByType = mapByClass(entity.getClass());
+    		mapByType.put(entity.getId(), entity);
+    	}
+    	
+    	public <T extends PersistentObject> T get(Class<T> type, Long id) {
+    		Map<Long, PersistentObject> mapByType = mapByClass(type);
+    		return (T) mapByType.get(id);
+    		
+    	}
+    	public <T extends PersistentObject> Collection<T> getAll(Class<T> type) {
+    		Map<Long, PersistentObject> mapByType = mapByClass(type);
+    		return (Collection<T>) mapByType.values();
+    	}
+    	
+    	public <T extends PersistentObject> Set<Long> getIds(Class<T> type) {
+    		Map<Long, PersistentObject> mapByType = mapByClass(type);
+    		return mapByType.keySet();
+    	}
+    }
 
     public static class LocalDaoFactoryStub extends DaoFactoryStub {
         private final Map<String, AbstractCaArrayEntity> lsidEntityMap = new HashMap<String, AbstractCaArrayEntity>();
-        private final Map<Long, PersistentObject> objectMap = new HashMap<Long, PersistentObject>();
+        private LocalObjectCache cache = new LocalObjectCache();
         private static long nextId = 1;
         private static long nextFeatureId = 1;
 
@@ -336,14 +373,11 @@ public class AbstractArrayDesignServiceTest extends AbstractServiceTest {
                 public List<ArrayDesign> getArrayDesigns(final Organization provider, final Set<AssayType> assayTypes,
                         final boolean importedOnly) {
                     final List<ArrayDesign> designs = new ArrayList<ArrayDesign>();
-                    for (final PersistentObject entity : LocalDaoFactoryStub.this.objectMap.values()) {
-                        if (entity instanceof ArrayDesign) {
-                            final ArrayDesign design = (ArrayDesign) entity;
-                            if (ObjectUtils.equals(provider, design.getProvider())
-                                    && (!importedOnly || design.getDesignFileSet().getStatus() == FileStatus.IMPORTED || design
-                                            .getDesignFileSet().getStatus() == FileStatus.IMPORTED_NOT_PARSED)) {
-                                designs.add(design);
-                            }
+                    for (ArrayDesign design : cache.getAll(ArrayDesign.class)) {
+                        if (ObjectUtils.equals(provider, design.getProvider())
+                                && (!importedOnly || design.getDesignFileSet().getStatus() == FileStatus.IMPORTED || design
+                                        .getDesignFileSet().getStatus() == FileStatus.IMPORTED_NOT_PARSED)) {
+                            designs.add(design);
                         }
                     }
                     return designs;
@@ -353,11 +387,7 @@ public class AbstractArrayDesignServiceTest extends AbstractServiceTest {
                 public List<Long>
                         getLogicalProbeIds(final ArrayDesign design, final PageSortParams<LogicalProbe> params) {
                     final List<Long> ids = new ArrayList<Long>();
-                    for (final Entry<Long, PersistentObject> entry : LocalDaoFactoryStub.this.objectMap.entrySet()) {
-                        if (entry.getValue() instanceof LogicalProbe) {
-                            ids.add(entry.getKey());
-                        }
-                    }
+                    ids.addAll(cache.getIds(LogicalProbe.class));
                     Collections.sort(ids);
                     final int startIndex = params.getIndex();
                     final int toIndex = Math.min(ids.size(), startIndex + params.getPageSize());
@@ -382,7 +412,7 @@ public class AbstractArrayDesignServiceTest extends AbstractServiceTest {
                             final AbstractCaArrayEntity caArrayEntity = (AbstractCaArrayEntity) object;
                             LocalDaoFactoryStub.this.lsidEntityMap.put(caArrayEntity.getLsid(), caArrayEntity);
                         }
-                        LocalDaoFactoryStub.this.objectMap.put(caArrayObject.getId(), caArrayObject);
+                        cache.add(caArrayObject);
                     }
                     // manually create reverse association automatically created by database fk relationship
                     if (object instanceof LogicalProbe) {
@@ -421,7 +451,7 @@ public class AbstractArrayDesignServiceTest extends AbstractServiceTest {
 
                 @Override
                 public ArrayDesign getArrayDesign(final long id) {
-                    return (ArrayDesign) LocalDaoFactoryStub.this.objectMap.get(id);
+                	return cache.get(ArrayDesign.class, id);
                 }
 
                 @Override
@@ -459,7 +489,7 @@ public class AbstractArrayDesignServiceTest extends AbstractServiceTest {
 
         public void clear() {
             this.lsidEntityMap.clear();
-            this.objectMap.clear();
+            this.cache = new LocalObjectCache();
             nextId = 0;
             nextFeatureId = 1;
         }
@@ -473,19 +503,19 @@ public class AbstractArrayDesignServiceTest extends AbstractServiceTest {
                 @Override
                 @SuppressWarnings("unchecked")
                 public <T extends PersistentObject> T retrieve(final Class<T> entityClass, final Long entityId) {
-                    return (T) LocalDaoFactoryStub.this.objectMap.get(entityId);
+                	return cache.get(entityClass, entityId);
                 }
 
                 @Override
                 @SuppressWarnings("unchecked")
                 public <T extends PersistentObject> T
                         retrieveUnsecured(final Class<T> entityClass, final Long entityId) {
-                    return (T) LocalDaoFactoryStub.this.objectMap.get(entityId);
+                	return cache.get(entityClass, entityId);
                 }
 
                 @Override
                 public Long save(final PersistentObject object) {
-                    LocalDaoFactoryStub.this.objectMap.put(object.getId(), object);
+                	cache.add(object);
                     return object.getId();
                 }
             };
@@ -502,9 +532,8 @@ public class AbstractArrayDesignServiceTest extends AbstractServiceTest {
                  */
                 @Override
                 public List<Organization> getAllProviders() {
-                    final List<Organization> orgs = new ArrayList<Organization>();
-                    CollectionUtils.select(LocalDaoFactoryStub.this.objectMap.values(),
-                            PredicateUtils.instanceofPredicate(Organization.class), orgs);
+                	List<Organization> orgs = new ArrayList<Organization>();
+                	orgs.addAll(cache.getAll(Organization.class));
                     return orgs;
                 }
             };
