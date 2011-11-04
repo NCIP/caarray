@@ -585,9 +585,8 @@ final class SdrfTranslator extends AbstractTranslator {
     }
 
     private Term getUnknownProtocolType() {
-        final TermSource source =
-                this.vocabularyService.getSource(ExperimentOntology.CAARRAY.getOntologyName(),
-                        ExperimentOntology.CAARRAY.getVersion());
+        TermSource source = this.vocabularyService.getSource(ExperimentOntology.MGED_ONTOLOGY.getOntologyName(),
+                ExperimentOntology.MGED_ONTOLOGY.getVersion());
         return this.vocabularyService.getTerm(source, VocabularyService.UNKNOWN_PROTOCOL_TYPE_NAME);
     }
 
