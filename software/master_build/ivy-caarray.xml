@@ -13,7 +13,7 @@
 
     <dependencies>
 
-        <dependency conf="bda-utils" org="ncicb" name="bda-utils" rev="${bda.version}" force="true"/>
+        <dependency conf="bda-utils" org="ncicb" name="bda-utils" rev="1.7.5" force="true"/>
 
         <dependency conf="project" name="jmeter" org="apache" rev="2.3"/>
 

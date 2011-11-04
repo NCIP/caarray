@@ -353,6 +353,7 @@ public class AbstractArrayDesignServiceTest extends AbstractServiceTest {
         private final Map<String, AbstractCaArrayEntity> lsidEntityMap = new HashMap<String, AbstractCaArrayEntity>();
         private LocalObjectCache cache = new LocalObjectCache();
         private static long nextId = 1;
+        private static long nextFeatureId = 1;
 
         @Override
         public ArrayDao getArrayDao() {
@@ -401,8 +402,10 @@ public class AbstractArrayDesignServiceTest extends AbstractServiceTest {
                 public Long save(final PersistentObject object) {
                     if (object instanceof AbstractCaArrayObject) {
                         final AbstractCaArrayObject caArrayObject = (AbstractCaArrayObject) object;
-                        if (caArrayObject.getId() == null) {
+                        if (caArrayObject.getId() == null && !(caArrayObject instanceof Feature)) {
                             caArrayObject.setId(nextId++);
+                        } else if (caArrayObject.getId() == null && caArrayObject instanceof Feature) {
+                            caArrayObject.setId(nextFeatureId++);
                         }
                         if (caArrayObject instanceof AbstractCaArrayEntity) {
                             final AbstractCaArrayEntity caArrayEntity = (AbstractCaArrayEntity) object;
@@ -487,6 +490,7 @@ public class AbstractArrayDesignServiceTest extends AbstractServiceTest {
             this.lsidEntityMap.clear();
             this.cache = new LocalObjectCache();
             nextId = 0;
+            nextFeatureId = 1;
         }
 
         /**
