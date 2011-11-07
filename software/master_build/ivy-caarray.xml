@@ -9,167 +9,235 @@
         <conf name="bda-utils"/>
     </configurations>
     <dependencies>
-        <dependency conf="bda-utils" org="ncicb" name="bda-utils" rev="${bda.version}" force="true"/>
-        <dependency conf="project" name="jmeter" org="apache" rev="2.3"/>
-        <dependency conf="project" name="log4j" org="apache" rev="1.2.14"/>
-        <dependency conf="project" name="acegi-security" org="acegisecurity" rev="1.0.5"/>
-        <dependency conf="project" name="acegi-security-jboss" org="acegisecurity" rev="1.0.5"/>
-        <dependency conf="project" name="AffxFusion" org="affymetrix" rev="1.1"/>
-        <dependency conf="project" name="addressing" org="apache" rev="1.0"/>
-        <dependency conf="project" name="activation" org="javax.activation" rev="1.1"/>
-        <dependency conf="project" name="html" org="jericho" rev="2.4"/>
-        <dependency conf="project" name="ajaxtags" org="ajax" rev="1.3-beta-rc7"/>
-        <dependency conf="project" name="ant-contrib" org="apache" rev="1.0b3"/>
-        <dependency conf="project" name="javassist" org="javassist" rev="3.9.0.GA"/>
-        <dependency conf="project" name="antlr" org="org.antlr" rev="2.7.6"/>
-        <dependency conf="project" name="ncicb-ant" org="ncicb" rev="1.0"/>
-        <dependency conf="project" name="asm" org="objectweb" rev="1.5.3" force="true"/>
-        <dependency conf="asm_3.0" name="asm" org="objectweb" rev="3.0"/>
-        <dependency conf="project" name="asm-attrs" org="objectweb" rev="1.5.3"/>
-        <dependency conf="project" name="backport-util-concurrent" org="edu.emory" rev="1.0"/>
-        <dependency conf="project" name="c3p0" org="c3p0" rev="0.9.0"/>
-        <dependency conf="project" name="core" org="cagrid" rev="1.2.0.1"/>
-        <dependency conf="project" name="data" org="cagrid" rev="1.2.0.1"/>
-        <dependency conf="project" name="sdkQuery32" org="cagrid" rev="1.2.0.1"/>
-        <dependency conf="project" name="cql" org="cagrid" rev="1.2.0.1"/>
-        <dependency conf="project" name="cglib" org="cglib" rev="2.1_3"/>
-        <dependency conf="project" name="checkstyle" org="checkstyle" rev="4.3"/>
-        <dependency conf="project" name="cobertura" org="cobertura" rev="1.9.3"/>
-        <dependency conf="project" name="commons-beanutils" org="jakarta" rev="1.7.0"/>
-        <dependency conf="project" name="commons-httpclient" org="jakarta" rev="3.0.1"/>
-        <dependency conf="project" name="commons-el" org="jakarta" rev="1.0"/>
-        <dependency conf="project" name="commons-fileupload" org="jakarta" rev="1.2.1"/>
-        <dependency conf="project" name="commons-collections" org="jakarta" rev="3.2"/>
-        <dependency conf="project" name="commons-io" org="jakarta" rev="1.4"/>
-        <dependency conf="project" name="commons-lang" org="jakarta" rev="2.4"/>
-        <dependency conf="project" name="commons-cli" org="jakarta" rev="1.2"/>
-        <dependency conf="project" name="commons-configuration" org="jakarta" rev="1.5"/>
-        <dependency conf="project" name="commons-logging" org="jakarta" rev="1.1.1"/>
-        <dependency conf="project" name="commons-fileupload" org="jakarta" rev="1.2.1"/>
-        <dependency conf="project" name="commons-compress" org="apache" rev="1.0"/>
-        <dependency conf="project" name="javaee" org="javaee" rev="5.0"/>
-        <dependency conf="project" name="dom4j" org="dom4j" rev="1.6.1"/>
-        <dependency conf="project" name="hibernate-core" org="org.hibernate" rev="3.3.1.GA"/>
-        <dependency conf="project" name="hibernate-client" org="org.hibernate" rev="3.2"/>
-        <dependency conf="project" name="ejb3-persistence" org="org.hibernate" rev="1.0.1"/>
-        <dependency conf="project" name="hibernate-annotations" org="org.hibernate" rev="3.4.0.GA"/>
-        <dependency conf="project" name="hibernate-validator" org="org.hibernate" rev="3.1.0.GA"/>
-        <dependency conf="project" name="hibernate-tools" org="org.hibernate" rev="3.2.4.GA"/>
-        <dependency conf="project" name="hibernate-commons-annotations" org="org.hibernate" rev="3.3.0.GA"/>
-        <dependency conf="project" name="hibernate-c3p0" org="org.hibernate" rev="3.3.1.GA"/>
-        <dependency conf="project" name="hibernate-jbosscache" org="org.hibernate" rev="3.3.1.GA"/>
-        <dependency conf="project" name="slf4j-api" org="org.slf4j" rev="1.5.6"/>
-        <dependency conf="project" name="slf4j-log4j12" org="org.slf4j" rev="1.6.1"/>
-        <dependency conf="project" name="oro" org="jakarta" rev="2.0.8"/>
-        <dependency conf="project" name="jaxen" org="jaxen" rev="1.1.1"/>
-        <dependency conf="project" name="jboss-aop-client" org="jboss" rev="2.1.1.GA"/>
-        <dependency conf="project" name="jbossall-client" org="jboss" rev="5.1.0.GA"/>
-        <dependency conf="project" name="jboss-ejb3-ext-api" org="jboss" rev="1.0.0"/>
-        <!--dependency conf="project" name="jboss-annotations-ejb3" org="jboss" rev="1.0"/-->
-        <!--dependency conf="project" name="jboss-remoting" org="jboss" rev="1.4.6"/-->
-        <!--dependency conf="project" name="jta" org="javax.transaction" rev="1.0.1B"/-->
-        <dependency conf="project" name="junit" org="junit" rev="4.4"/>
-        <dependency conf="project" name="myfaces-api" org="javax.faces" rev="1.1.5"/>
-        <dependency conf="project" name="mysql-connector-java" org="mysql" rev="5.0.5"/>
-        <dependency conf="project" name="pmd" org="pmd" rev="3.9"/>
-        <dependency conf="project" name="selenium-server" org="openqa" rev="1.0.3"/>
-        <dependency conf="project" name="selenium-java-client-driver" org="openqa" rev="1.0.1"/>
-        <dependency conf="project" name="selenium-java-client-driver-tests" org="openqa" rev="1.0.1"/>
-        <dependency conf="project" name="spring" org="springsource" rev="2.5.6"/>
-        <dependency conf="project" name="spring-mock" org="springsource" rev="2.0.3"/>
-        <dependency conf="project" name="javacsv" org="javacsv" rev="1.0"/>
-        <dependency conf="project" name="csm" org="ncicb" rev="4.2"/>
-        <dependency conf="project" name="svntask" org="com.googlecode" rev="1.0.7"/>
-        <dependency conf="project" name="clm" org="ncicb" rev="4.2.beta_jboss51-fix" force="true"/>
-        <dependency conf="project" name="oscache" org="opensymphony" rev="2.4.1"/>
-        <dependency conf="project" name="sitemesh" org="opensymphony" rev="2.3"/>
-        <dependency conf="project" name="xwork" org="opensymphony" rev="2.1.6"/>
-        <dependency conf="project" name="freemarker" org="freemarker" rev="2.3.15"/>
-        <dependency conf="project" name="jstl" org="sun" rev="1.1.2"/>
-        <dependency conf="project" name="taglibs-standard" org="apache" rev="1.1.2"/>
-        <dependency conf="project" name="ognl" org="ognl" rev="2.7.3"/>
-        <dependency conf="project" name="displaytag" org="org.displaytag" rev="1.1.1"/>
-        <dependency conf="project" name="urlrewrite" org="org.tuckey" rev="2.6.0"/>
-        <dependency conf="project" name="axis" org="apache" rev="1.4.2_10"/>
-        <dependency conf="project" name="struts2-core" org="apache" rev="2.1.8"/>
-        <dependency conf="project" name="jboss-cache" org="jboss" rev="1.4.1.GA"/>
-        <dependency conf="project" name="jboss-system-jmx-client" org="jboss" rev="5.1.0.GA"/>
-        <dependency conf="project" name="jboss-system-client" org="jboss" rev="5.1.0.GA"/>
-        <dependency conf="project" name="jboss-system-jmx" org="jboss" rev="5.1.0.GA"/>
-        <dependency conf="project" name="jboss-kernel" org="jboss" rev="5.1.0.GA"/>
-        <dependency conf="project" name="jboss-j2se" org="jboss" rev="5.1.0.GA"/>
-        <dependency conf="project" name="jboss-common-core" org="jboss" rev="2.2.14.GA"/>
-        <dependency conf="project" name="jboss-logging-spi" org="jboss" rev="2.1.0.GA"/>
-        <dependency conf="project" name="jboss-dependency" org="jboss" rev="2.0.6.GA"/>
-        <dependency conf="project" name="jboss-ejb3" org="jboss" rev="4.0.5.GA"/>
-        <dependency conf="project" name="jgroups" org="jgroups" rev="2.6.10.GA"/>
-        <dependency conf="project" name="concurrent" org="edu.oswego" rev="1.3.4"/>
-        <dependency conf="project" name="nci-commons-core" org="ncicb" rev="1.2.17"/>
-        <dependency conf="project" name="nci-commons-struts2" org="ncicb" rev="1.2.17"/>
-        <dependency conf="project" name="ezmorph" org="ezmorph" rev="1.0.4"/>
-        <dependency conf="project" name="json-lib" org="json-lib" rev="2.2.2-jdk15"/>
-        <dependency conf="project" name="xalan" org="apache" rev="2.7.1"/>
-        <dependency conf="project" name="serializer" org="apache" rev="2.7.1"/>
-        <dependency conf="project" name="castor" org="org.codehaus.castor" rev="1.0.4"/>
-        <dependency conf="project" name="mail" org="javax.mail" rev="1.2"/>
-        <dependency conf="project" name="jcogfx" org="globus" rev="noversion"/>
-        <dependency conf="project" name="jcog" org="globus" rev="1.2"/>
-        <dependency conf="project" name="ws-enumeration" org="globus" rev="4.0.3"/>
-        <dependency conf="project" name="wss4j" org="globus" rev="noversion"/>
-        <dependency conf="project" name="commons-discovery" org="jakarta" rev="0.2"/>
-        <dependency conf="project" name="bouncycastle" org="bouncycastle" rev="jdk1.3_1.25"/>
-        <dependency conf="project" name="xerces" org="apache" rev="2.7.1"/>
-        <dependency conf="project" name="xerces-J" org="apache" rev="1.4.0"/>
-        <dependency conf="project" name="jaxrpc" org="jcp" rev="1.1"/>
-        <dependency conf="project" name="saaj" org="jcp" rev="1.2"/>
-        <dependency conf="project" name="jdbc-se" org="jdbc-se" rev="2.0"/>
-        <dependency conf="project" name="wsdl4j" org="ibm" rev="1.5.1"/>
-        <dependency conf="project" name="xml-apis" org="apache" rev="1.3"/>
-        <dependency conf="project" name="yuicompressor" org="com.yahoo" rev="2.3.5"/>
-        <dependency conf="project" name="dozer" org="dozer" rev="4.4.1"/>
-        <dependency conf="project" name="rmiio" org="com.healthmarketscience" rev="2.0.2"/>
-        <dependency conf="project->master" name="guava" org="com.google.guava" rev="r07"/>
-        <dependency conf="project" name="liquibase" org="liquibase" rev="1.9.3"/>
-        <dependency conf="project" name="ledatastream" org="mindprod" rev="1.8"/>
-        <dependency conf="project" name="guice" org="google" rev="2.0"/>
-        <dependency conf="project" name="guice-multibindings" org="google" rev="2.0"/>
-        <dependency conf="project" name="guice-assistedinject" org="google" rev="2.0"/>
-        <dependency conf="project" name="guice-servlet" org="google" rev="2.0"/>        
-        <dependency conf="project" name="aopalliance" org="aopalliance" rev="1.0"/>
-        <dependency conf="project" name="woodstox" org="codehaus" rev="4.0.7"/>
-        <dependency conf="project" name="mockito" org="mockito" rev="1.8.4"/>  
-        <dependency conf="project" name="hamcrest-library" org="hamcrest" rev="1.1"/>  
-        <dependency conf="project" name="gnu-regexp" org="gnu" rev="1.1.4"/> 
-        <dependency conf="project" name="atlassian-core" org="com.atlassian.core" rev="3.12"/>
-        <dependency conf="project" name="atlassian-util-concurrent" org="com.atlassian.util.concurrent" rev="0.0.12"/>
-        <dependency conf="project" name="atlassian-event" org="com.atlassian.event" rev="2.0.2"/>
-        <dependency conf="project" name="atlassian-velocity" org="com.atlassian.velocity" rev="0.8"/>
-        <dependency conf="project" name="atlassian-trusted-apps-core" org="com.atlassian.security.auth.trustedapps" rev="2.2"/>
-        <dependency conf="project" name="atlassian-plugins-core" org="com.atlassian.plugins" rev="2.6.0"/>
-        <dependency conf="project" name="atlassian-plugins-main" org="com.atlassian.plugins" rev="2.6.0"/>
-        <dependency conf="project" name="atlassian-plugins-osgi" org="com.atlassian.plugins" rev="2.6.0"/>
-        <dependency conf="project" name="atlassian-plugins-osgi-bridge" org="com.atlassian.plugins" rev="2.6.0"/>
-        <dependency conf="project" name="atlassian-plugins-osgi-events" org="com.atlassian.plugins" rev="2.6.0"/>
-        <dependency conf="project" name="atlassian-plugins-osgi-spring-extender" org="com.atlassian.plugins" rev="2.6.0"/>
-        <dependency conf="project" name="atlassian-plugins-servlet" org="com.atlassian.plugins" rev="2.6.0"/>
-        <dependency conf="project" name="atlassian-plugins-spring" org="com.atlassian.plugins" rev="2.6.0"/>
-        <dependency conf="project" name="atlassian-plugins-webfragment" org="com.atlassian.plugins" rev="2.6.0"/>
-        <dependency conf="project" name="atlassian-plugins-webresource" org="com.atlassian.plugins" rev="2.6.0"/>
-        <dependency conf="project" name="sal-api" org="com.atlassian.sal" rev="2.2.0"/>
-        <dependency conf="project" name="slf4j-api" org="org.slf4j" rev="1.5.8"/>        
-        <dependency conf="project" name="slf4j-log4j12" org="org.slf4j" rev="1.5.8"/>        
-        <dependency conf="project" name="package-scanner" org="org.twdata" rev="0.9.6-SNAPSHOT"/>        
-        <dependency conf="project" name="joda-time" org="joda-time" rev="1.6"/>        
-        <dependency conf="project" name="org.apache.felix.framework" org="org.apache.felix" rev="3.0.2"/>                
-        <dependency conf="project" name="bndlib" org="aQute" rev="0.0.255"/>                
-        <dependency conf="project" name="spring-osgi-core" org="springsource" rev="1.2.1"/>                        
-        <dependency conf="project" name="spring-osgi-web" org="springsource" rev="1.2.1"/>                        
-        <dependency conf="project" name="spring-osgi-extender" org="springsource" rev="1.2.1"/>                        
-        <dependency conf="project" name="spring-osgi-io" org="springsource" rev="1.2.1"/>                        
-        <dependency conf="project" name="velocity" org="org.apache.velocity" rev="1.4-atlassian-1"/>        
-        <dependency conf="project" name="velocity-tools" org="org.apache.velocity" rev="1.3"/>              
-        <dependency conf="project" name="icu4j" org="com.ibm.icu" rev="4.0.1"/>        
-        <dependency conf="project" name="visualization-datasource" org="com.google" rev="1.0.2"/>              
-        <exclude org="pull-parser" module="pull-parser"/>         
+        <!-- CONF = BDA-UTILS START -->
+		<dependency conf="bda-utils" org="ncicb" name="bda-utils" rev="${bda.version}" force="true" />
+		<!-- CONF = BDA-UTILS END -->
+		<!--  CONF = ASM_3.0 START -->
+		<dependency conf="asm_3.0" org="objectweb" name="asm" rev="3.0" transitive="false" />
+		<!-- CONF = ASM_3.0 END -->
+		<!-- CONF = PROJECT START -->
+		<dependency conf="project" org="asm" name="asm" rev="1.5.3nci" transitive="false" />
+		<dependency conf="project" org="asm" name="asm-attrs" rev="1.5.3nci" transitive="false" />
+		<dependency conf="project" org="objectweb" name="asm-tree" rev="3.0" transitive="false" />
+		<dependency conf="project" org="org.apache.jakarta" name="jmeter" rev="2.3nci" transitive="false" />
+		<dependency conf="project" org="ant-jmeter" name="ant-jmeter" rev="2.3nci" transitive="false" />
+		<dependency conf="project" org="apachejmeter" name="apachejmeter_java" rev="2.3nci" transitive="false" />
+		<dependency conf="project" org="log4j" name="log4j" rev="1.2.14nci" transitive="false" />
+		<dependency conf="project" org="org.acegisecurity" name="acegi-security" rev="1.0.5" transitive="false" />
+		<dependency conf="project" org="org.acegisecurity" name="acegi-security-jboss" rev="1.0.5" transitive="false" />
+		<dependency conf="project" org="com.affymetrix" name="fusion" rev="1.1nci" transitive="false" />
+		<dependency conf="project" org="globus" name="ws-addressing" rev="1.0" transitive="false" />
+		<dependency conf="project" org="activation" name="activation" rev="1.1nci" transitive="false" />
+		<dependency conf="project" org="net.htmlparser.jericho" name="jericho-html" rev="2.4" transitive="false" />
+		<dependency conf="project" org="org.ajaxtags" name="ajaxtags" rev="1.3-beta-rc7" transitive="false" />
+		<dependency conf="project" org="ant-contrib" name="ant-contrib" rev="1.0b3" transitive="false" />
+		<dependency conf="project" org="javassist" name="javassist" rev="3.9.0.GAnci" transitive="false" />
+		<dependency conf="project" org="antlr" name="antlr" rev="2.7.6" transitive="false" />
+		<dependency conf="project" org="ncicb-ant" name="ncicb-ant" rev="1.0nci" transitive="false" />
+		<dependency conf="project" org="backport-util-concurrent" name="backport-util-concurrent" rev="3.0" transitive="false" />
+		<dependency conf="project" org="c3p0" name="c3p0" rev="0.9.0" transitive="false" />
+		<dependency conf="project" org="cagrid" name="cagrid-core" rev="1.2.0.1nci" transitive="false" />
+		<dependency conf="project" org="cagrid" name="cagrid-data-cql" rev="1.2.0.1nci" transitive="false" />
+		<dependency conf="project" org="cagrid" name="cagrid-data-validation" rev="1.2.0.1nci" transitive="false" />
+		<dependency conf="project" org="cagrid" name="cagrid-data-stubs" rev="1.2.0.1nci" transitive="false" />
+		<dependency conf="project" org="cagrid" name="cagrid-data-utils" rev="1.2.0.1nci" transitive="false" />
+		<dependency conf="project" org="cagrid" name="cagrid-data-common" rev="1.2.0.1nci" transitive="false" />
+		<dependency conf="project" org="cagrid" name="cagrid-data-tools" rev="1.2.0.1nci" transitive="false" />
+		<dependency conf="project" org="cagrid" name="cagrid-data-service" rev="1.2.0.1nci" transitive="false" />
+		<dependency conf="project" org="cagrid" name="cagrid-sdkquery32-core" rev="1.2.0.1nci" transitive="false" />
+		<dependency conf="project" org="cagrid" name="cagrid-cql-cql" rev="1.0-1.2.0.1nci" transitive="false" />
+		<dependency conf="project" org="cglib" name="cglib" rev="2.1_3" transitive="false" />
+		<dependency conf="project" org="checkstyle" name="checkstyle-optional" rev="4.3" transitive="false" />
+		<dependency conf="project" org="checkstyle" name="checkstyle" rev="4.3" transitive="false" />
+		<dependency conf="project" org="cobertura" name="cobertura" rev="1.9.3" transitive="false" />
+		<dependency conf="project" org="commons-beanutils" name="commons-beanutils" rev="1.7.0" transitive="false" />
+		<dependency conf="project" org="commons-httpclient" name="commons-httpclient" rev="3.0.1" transitive="false" />
+		<dependency conf="project" org="commons-el" name="commons-el" rev="1.0" transitive="false" />
+		<dependency conf="project" org="commons-fileupload" name="commons-fileupload" rev="1.2.1nci" transitive="false" />
+		<dependency conf="project" org="commons-collections" name="commons-collections" rev="3.2" transitive="false" />
+		<dependency conf="project" org="commmons-io" name="commons-io" rev="1.4" transitive="false">
+			<artifact name="commons-io" type="jar" url="https://ncimvn.nci.nih.gov/nexus/content/repositories/public/commons-io/commons-io/1.4/commons-io-1.4.jar" />
+		</dependency>
+		<dependency conf="project" org="commons-lang" name="commons-lang" rev="2.4" transitive="false" />
+		<dependency conf="project" org="commons-cli" name="commons-cli" rev="1.2" transitive="false" />
+		<dependency conf="project" org="commons-configuration" name="commons-configuration" rev="1.5" transitive="false" />
+		<dependency conf="project" org="commons-logging" name="commons-logging" rev="1.1.1nci" transitive="false" />
+		<dependency conf="project" org="org.apache.commons" name="commons-compress" rev="1.0" transitive="false" />
+		<dependency conf="project" org="javax.javaee" name="javaee" rev="5.0nci" transitive="false" />
+		<dependency conf="project" org="dom4j" name="dom4j" rev="1.6.1" transitive="false" />
+		<dependency conf="project" org="org.hibernate" name="hibernate-core" rev="3.3.1.GAnci" transitive="false" />
+		<dependency conf="project" org="org.hibernate" name="hibernate" rev="3.2nci" transitive="false" />
+		<dependency conf="project" org="org.hibernate" name="ejb3-persistence" rev="1.0.1nci" transitive="false" />
+		<dependency conf="project" org="org.hibernate" name="hibernate-annotations" rev="3.4.0.GAnci" transitive="false" />
+		<dependency conf="project" org="org.hibernate" name="hibernate-validator" rev="3.1.0.GAnci" transitive="false" />
+		<dependency conf="project" org="org.hibernate" name="hibernate-tools" rev="3.2.4.GA" transitive="false" />
+		<dependency conf="project" org="org.hibernate" name="hibernate-commons-annotations" rev="3.3.0.ga" transitive="false" />
+		<dependency conf="project" org="org.hibernate" name="hibernate-c3p0" rev="3.3.1.GA" transitive="false" />
+		<dependency conf="project" org="org.hibernate" name="hibernate-jbosscache" rev="3.3.1.GA" transitive="false" />
+		<dependency conf="project" org="org.slf4j" name="slf4j-log4j12" rev="1.6.1" transitive="false" />
+		<dependency conf="project" org="oro" name="oro" rev="2.0.8" transitive="false" />
+		<dependency conf="project" org="jaxen" name="jaxen" rev="1.1.1" transitive="false" />
+		<dependency conf="project" org="org.jboss.aop" name="jboss-aop-client" rev="2.1.1.GAnci" transitive="false" />
+		<dependency conf="project" org="org.jboss.client" name="jbossall-client" rev="5.1.0.GAnci" transitive="false" />
+		<dependency conf="project" org="org.jboss.ejb3" name="jboss-ejb3-ext-api" rev="1.0.0nci" transitive="false" />
+		<dependency conf="project" org="junit" name="junit" rev="4.4" transitive="false" />
+		<dependency conf="project" org="org.apache.myfaces.core" name="myfaces-api" rev="1.1.5" transitive="false" />
+		<dependency conf="project" org="mysql" name="mysql-connector-java" rev="5.0.5" transitive="false" />
+		<dependency conf="project" org="pmd" name="pmd" rev="3.9nci" transitive="false" />
+		<dependency conf="project" org="org.seleniumhq.selenium.server" name="selenium-server" rev="1.0.3" transitive="false">
+			<artifact name="selenium-server" type="jar" url="https://ncimvn.nci.nih.gov/nexus/content/repositories/public/org/seleniumhq/selenium/server/selenium-server/1.0.3/selenium-server-1.0.3-standalone.jar" />
+		</dependency>
+		<dependency conf="project" org="org.seleniumhq.selenium.client-drivers" name="selenium-java-client-driver" rev="1.0.2" transitive="false" >
+			<artifact name="selenium-java-client-driver" type="jar" url="https://ncimvn.nci.nih.gov/nexus/content/repositories/public/org/seleniumhq/selenium/client-drivers/selenium-java-client-driver/1.0.2/selenium-java-client-driver-1.0.2.jar" />
+			<artifact name="selenium-java-client-driver-tests" type="jar" url="https://ncimvn.nci.nih.gov/nexus/content/repositories/public/org/seleniumhq/selenium/client-drivers/selenium-java-client-driver/1.0.2/selenium-java-client-driver-1.0.2-tests.jar" />
+		</dependency>
+		<dependency conf="project" org="org.springframework" name="spring" rev="2.5.6" transitive="false" />
+		<dependency conf="project" org="org.springframework" name="spring-mock" rev="2.0.3" transitive="false" />
+		<dependency conf="project" org="net.sourceforge.javacsv" name="javacsv" rev="2.0" transitive="false" />
+		<dependency conf="project" org="csmapi" name="csmapi" rev="4.2" transitive="false" />
+		<dependency conf="project" org="svntask" name="svntask" rev="1.0.7nci" transitive="false" />
+		<dependency conf="project" org="gov.nih.nci.security" name="clm" rev="4.2.beta_jboss51" transitive="false">
+			<artifact name="clm" type="jar" url="https://ncimvn.nci.nih.gov/nexus/content/repositories/public/gov/nih/nci/security/clm/4.2.beta_jboss51/clm-4.2.beta_jboss51-fix.jar" />
+		</dependency>
+		<dependency conf="project" org="opensymphony" name="oscache" rev="2.4.1nci" transitive="false" />
+		<dependency conf="project" org="opensymphony" name="sitemesh" rev="2.3" transitive="false" />
+		<dependency conf="project" org="com.opensymphony" name="xwork-core" rev="2.1.6" transitive="false" />
+		<dependency conf="project" org="org.freemarker" name="freemarker" rev="2.3.15" transitive="false" />
+		<dependency conf="project" org="javax.servlet" name="jstl" rev="1.1.2" transitive="false" />
+		<dependency conf="project" org="taglibs" name="standard" rev="1.1.2" transitive="false" />
+		<dependency conf="project" org="ognl" name="ognl" rev="2.7.3" transitive="false" />
+		<dependency conf="project" org="displaytag" name="displaytag" rev="1.1.1nci" transitive="false" />
+		<dependency conf="project" org="org.tuckey" name="urlrewrite" rev="2.6.0nci" transitive="false" />
+		<dependency conf="project" org="axis" name="axis" rev="1.4.2_10nci" transitive="false" />
+		<dependency conf="project" org="org.apache.struts" name="struts2-core" rev="2.1.8" transitive="false" />
+		<dependency conf="project" org="jboss" name="jboss-cache" rev="1.4.1.GA" transitive="false" />
+		<dependency conf="project" org="org.jboss" name="jboss-system-jmx-client" rev="5.1.0.GAnci" transitive="false" />
+		<dependency conf="project" org="jboss" name="jboss-system-client" rev="5.1.0.GAnci" transitive="false" />
+		<dependency conf="project" org="org.jboss" name="jboss-system-jmx" rev="5.1.0.GAnci" transitive="false" />
+		<dependency conf="project" org="org.jboss.kernel" name="jboss-kernel" rev="5.1.0.GAnci" transitive="false" />
+		<dependency conf="project" org="org.jboss.mx" name="jboss-j2se" rev="5.1.0.GAnci" transitive="false" />
+		<dependency conf="project" org="org.jboss" name="jboss-common-core" rev="2.2.14.GAnci" transitive="false" />
+		<dependency conf="project" org="org.jboss.logging" name="jboss-logging-spi" rev="2.1.0.GAnci" transitive="false" />
+		<dependency conf="project" org="org.jboss.microcontainer" name="jboss-dependency" rev="2.0.6.GAnci" transitive="false" />
+		<dependency conf="project" org="jboss" name="jboss-ejb3" rev="4.0.5.GAnci" transitive="false" />
+		<dependency conf="project" org="org.jgroups" name="jgroups" rev="2.6.10.GAnci" transitive="false" />
+		<dependency conf="project" org="oswego-concurrent" name="concurrent" rev="1.3.4" transitive="false" />
+		<dependency conf="project" org="com.fiveamsolutions" name="nci-commons-core" rev="1.2.17" transitive="false" />
+		<dependency conf="project" org="nci-commons-struts2" name="nci-commons-struts2" rev="1.2.17nci" transitive="false" />
+		<dependency conf="project" org="net.sf.ezmorph" name="ezmorph" rev="1.0.4" transitive="false" />
+		<dependency conf="project" org="net.sf.json-lib" name="json-lib" rev="2.2.2" transitive="false">
+			<artifact name="json-lib" type="jar" url="https://ncimvn.nci.nih.gov/nexus/content/repositories/public/net/sf/json-lib/json-lib/2.2.2/json-lib-2.2.2-jdk15.jar" />
+		</dependency>
+		<dependency conf="project" org="xalan" name="xalan" rev="2.7.1" transitive="false" />
+		<dependency conf="project" org="xalan-serializer" name="serializer" rev="2.7.1" transitive="false" />
+		<dependency conf="project" org="org.codehaus.castor" name="castor" rev="1.0.4nci" transitive="false" />
+		<dependency conf="project" org="mail" name="mail" rev="1.2nci" transitive="false" />
+		<dependency conf="project" org="org.globus" name="cog-axis" rev="1.0nci" transitive="false" />
+		<dependency conf="project" org="globus" name="jcog" rev="1.2" transitive="false" />
+		<dependency conf="project" org="globus" name="ws-core-client" rev="4.0.3" transitive="false" />
+		<dependency conf="project" org="globus" name="ws-enumeration" rev="4.0.3" transitive="false" />
+		<dependency conf="project" org="wss4j" name="wss4j" rev="1.0nci" transitive="false" />
+		<dependency conf="project" org="commons-discovery" name="commons-discovery" rev="0.2" transitive="false" />
+		<dependency conf="project" org="jce-jdk" name="jce-jdk" rev="1.3_1.25nci" transitive="false" />
+		<dependency conf="project" org="apache-xerces" name="xercesImpl" rev="2.7.1" transitive="false" />
+		<dependency conf="project" org="xerces" name="xerces" rev="1.4.0" transitive="false" />
+		<dependency conf="project" org="org.apache.axis" name="axis-jaxrpc" rev="1.4" transitive="false" />
+		<dependency conf="project" org="org.apache.axis" name="axis-saaj" rev="1.4" transitive="false" />
+		<dependency conf="project" org="jdbc-se" name="jdbc-se" rev="2.0nci" transitive="false" />
+		<dependency conf="project" org="axis" name="axis-wsdl4j" rev="1.5.1" transitive="false" />
+		<dependency conf="project" org="xml-apis" name="xml-apis" rev="1.3.02" transitive="false" />
+		<dependency conf="project" org="com.yahoo.platform.yui" name="yuicompressor" rev="2.3.5nci" transitive="false" />
+		<dependency conf="project" org="net.sf.dozer" name="dozer" rev="4.4.1nci" transitive="false" />
+		<dependency conf="project" org="com.healthmarketscience.rmiio" name="rmiio" rev="2.0.2" transitive="false" />
+		<dependency conf="project" org="com.google.guava" name="guava" rev="r07" transitive="false" />
+		<dependency conf="project" org="org.liquibase" name="liquibase-core" rev="1.9.3" transitive="false" />
+		<dependency conf="project" org="ledatastream" name="ledatastream" rev="1.8nci" transitive="false" />
+		<dependency conf="project" org="com.google.inject" name="guice" rev="2.0" transitive="false" />
+		<dependency conf="project" org="com.google.inject.extensions" name="guice-multibindings" rev="2.0" transitive="false" />
+		<dependency conf="project" org="com.google.inject.extensions" name="guice-assisted-inject" rev="2.0" transitive="false" />
+		<dependency conf="project" org="com.google.code.guice" name="guice-servlet" rev="2.0" transitive="false" />
+		<dependency conf="project" org="aopalliance" name="aopalliance" rev="1.0" transitive="false" />
+		<dependency conf="project" org="org.codehaus.woodstox" name="woodstox-core-asl" rev="4.0.7" transitive="false" />
+		<dependency conf="project" org="org.mockito" name="mockito-all" rev="1.8.4" transitive="false" />
+		<dependency conf="project" org="org.hamcrest" name="hamcrest-library" rev="1.1nci" transitive="false" />
+		<dependency conf="project" org="gnu-regexp" name="gnu-regexp" rev="1.1.4" transitive="false" />
+		<dependency conf="project" org="com.atlassian.core" name="atlassian-core" rev="3.12" transitive="false" />
+		<dependency conf="project" org="com.atlassian.util.concurrent" name="atlassian-util-concurrent" rev="0.0.12" transitive="false" />
+		<dependency conf="project" org="com.atlassian.event" name="atlassian-event" rev="2.0.2" transitive="false" />
+		<dependency conf="project" org="com.atlassian.velocity" name="atlassian-velocity" rev="0.8" transitive="false" />
+		<dependency conf="project" org="com.atlassian.security.auth.trustedapps" name="atlassian-trusted-apps-core" rev="2.2nci" transitive="false" />
+		<dependency conf="project" org="com.atlassian.plugins" name="atlassian-plugins-core" rev="2.6.0" transitive="false" />
+		<dependency conf="project" org="com.atlassian.plugins" name="atlassian-plugins-main" rev="2.6.0" transitive="false" />
+		<dependency conf="project" org="com.atlassian.plugins" name="atlassian-plugins-osgi" rev="2.6.0" transitive="false" />
+		<dependency conf="project" org="com.atlassian.plugins" name="atlassian-plugins-osgi-bridge" rev="2.6.0" transitive="false" />
+		<dependency conf="project" org="com.atlassian.plugins" name="atlassian-plugins-osgi-events" rev="2.6.0" transitive="false" />
+		<dependency conf="project" org="com.atlassian.plugins" name="atlassian-plugins-osgi-spring-extender" rev="2.6.0" transitive="false" />
+		<dependency conf="project" org="com.atlassian.plugins" name="atlassian-plugins-servlet" rev="2.6.0" transitive="false" />
+		<dependency conf="project" org="com.atlassian.plugins" name="atlassian-plugins-spring" rev="2.6.0" transitive="false" />
+		<dependency conf="project" org="com.atlassian.plugins" name="atlassian-plugins-webfragment" rev="2.6.0" transitive="false" />
+		<dependency conf="project" org="com.atlassian.plugins" name="atlassian-plugins-webresource" rev="2.6.0" transitive="false" />
+		<dependency conf="project" org="com.atlassian.sal" name="sal-api" rev="2.2.0" transitive="false" />
+		<dependency conf="project" org="org.slf4j" name="slf4j-api" rev="1.5.8" transitive="false" />
+		<dependency conf="project" org="org.twdata.pkgscanner" name="package-scanner" rev="0.9.6-SNAPSHOT" transitive="false">
+			<artifact name="package-scanner" type="jar" url="https://ncimvn.nci.nih.gov/nexus/content/repositories/public/org/twdata/pkgscanner/package-scanner/0.9.6-SNAPSHOT/package-scanner-0.9.6-20111012.141429-1.jar" />		
+		</dependency>
+		<dependency conf="project" org="joda-time" name="joda-time" rev="1.6" transitive="false" />
+		<dependency conf="project" org="org.apache.felix" name="org.apache.felix.framework" rev="3.0.2" transitive="false" />
+		<dependency conf="project" org="biz.aQute" name="bndlib" rev="0.0.255" transitive="false" />
+		<dependency conf="project" org="org.springframework.osgi" name="spring-osgi-core" rev="1.2.1" transitive="false" />
+		<dependency conf="project" org="org.springframework.osgi" name="spring-osgi-web" rev="1.2.1" transitive="false" />
+		<dependency conf="project" org="org.springframework.osgi" name="spring-osgi-extender" rev="1.2.1" transitive="false" />
+		<dependency conf="project" org="org.springframework.osgi" name="spring-osgi-io" rev="1.2.1" transitive="false" />
+		<dependency conf="project" org="velocity" name="velocity" rev="1.4-atlassian-1" transitive="false" />
+		<dependency conf="project" org="velocity-tools" name="velocity-tools" rev="1.3" transitive="false" />
+		<dependency conf="project" org="com.ibm.icu" name="icu4j" rev="4.0.1" transitive="false" />
+		<dependency conf="project" org="com.google.visualization" name="visualization-datasource" rev="1.0.2nci" transitive="false" />
+		<dependency conf="project" org="bcel" name="bcel" rev="5.1" transitive="false" />
+		<dependency conf="project" org="org.apache.ivy" name="ivy" rev="2.0.0-beta2" transitive="false" />
+		<dependency conf="project" org="commons-beanutils" name="commons-beanutils-core" rev="1.7.0" transitive="false" />
+		<dependency conf="project" org="jaxme" name="jaxme-api" rev="0.3" transitive="false" />
+		<dependency conf="project" org="msv" name="xsdlib" rev="20030807" transitive="false" />
+		<dependency conf="project" org="msv" name="relaxngDatatype" rev="20030225" transitive="false" />
+		<dependency conf="project" org="xpp3" name="xpp3" rev="1.1.3.3" transitive="false" />
+		<dependency conf="project" org="org.jdom" name="jdom" rev="0.9" transitive="false" />
+		<dependency conf="project" org="org.hibernate" name="hibernate" rev="3.2.0.ga" transitive="false" />
+		<dependency conf="project" org="org.apache.ant" name="ant-jai" rev="1.7.0" transitive="false" />
+		<dependency conf="project" org="org.apache.ant" name="ant-apache-log4j" rev="1.7.0" transitive="false" />
+		<dependency conf="project" org="org.apache.ant" name="ant-apache-oro" rev="1.7.0nci" transitive="false" />
+		<dependency conf="project" org="org.apache.ant" name="ant-jdepend" rev="1.7.0" transitive="false" />
+		<dependency conf="project" org="org.apache.ant" name="ant-apache-bsf" rev="1.7.0nci" transitive="false" />
+		<dependency conf="project" org="org.apache.ant" name="ant-swing" rev="1.7.0" transitive="false" />
+		<dependency conf="project" org="org.apache.ant" name="ant-weblogic" rev="1.7.0" transitive="false" />
+		<dependency conf="project" org="org.apache.ant" name="ant-netrexx" rev="1.7.0" transitive="false" />
+		<dependency conf="project" org="org.apache.ant" name="ant-javamail" rev="1.7.0" transitive="false" />
+		<dependency conf="project" org="org.apache.ant" name="ant-junit" rev="1.7.0" transitive="false" />
+		<dependency conf="project" org="org.apache.ant" name="ant-commons-logging" rev="1.7.0" transitive="false" />
+		<dependency conf="project" org="org.apache.ant" name="ant-commons-net" rev="1.7.0nci" transitive="false" />
+		<dependency conf="project" org="org.apache.ant" name="ant-antlr" rev="1.7.0" transitive="false" />
+		<dependency conf="project" org="org.apache.ant" name="ant-stylebook" rev="1.7.0" transitive="false" />
+		<dependency conf="project" org="org.apache.ant" name="ant-apache-regexp" rev="1.7.0nci" transitive="false" />
+		<dependency conf="project" org="org.apache.ant" name="ant-jsch" rev="1.7.0" transitive="false" />
+		<dependency conf="project" org="org.apache.ant" name="ant-trax" rev="1.7.0" transitive="false" />
+		<dependency conf="project" org="org.dspace.xmlui.xml" name="xml-apis" rev="1.3.03" transitive="false" />
+		<dependency conf="project" org="org.apache.ant" name="ant-nodeps" rev="1.7.0" transitive="false" />
+		<dependency conf="project" org="org.apache.ant" name="ant-testutil" rev="1.7.0" transitive="false" />
+		<dependency conf="project" org="xerces" name="xercesImpl" rev="2.8.1" transitive="false" />
+		<dependency conf="project" org="org.apache.ant" name="ant" rev="1.7.0" transitive="false" />
+		<dependency conf="project" org="org.apache.ant" name="ant-starteam" rev="1.7.0" transitive="false" />
+		<dependency conf="project" org="org.apache.ant" name="ant-launcher" rev="1.7.0" transitive="false" />
+		<dependency conf="project" org="org.apache.ant" name="ant-apache-bcel" rev="1.7.0nci" transitive="false" />
+		<dependency conf="project" org="org.apache.ant" name="ant-apache-resolver" rev="1.7.0" transitive="false" />
+		<dependency conf="project" org="org.apache.ant" name="ant-jmf" rev="1.7.0" transitive="false" />
+		<dependency conf="project" org="com.svnkit" name="svnkit" rev="1.3nci" transitive="false" />
+		<dependency conf="project" org="commons-dbcp" name="commons-dbcp" rev="1.2.1" transitive="false" />
+		<dependency conf="project" org="cryptix" name="cryptix" rev="1.2nci" transitive="false" />
+		<dependency conf="project" org="cryptix" name="cryptix" rev="3.2nci" transitive="false" />
+		<dependency conf="project" org="cryptix" name="cryptix-asn1" rev="0.1.11nci" transitive="false" />
+		<dependency conf="project" org="stax" name="stax-api" rev="1.0.1" transitive="false" />
+		<dependency conf="project" org="org.codehaus.woodstox" name="stax2-api" rev="3.0.1nci" transitive="false" />
+		<dependency conf="project" org="org.hamcrest" name="hamcrest-core" rev="1.1nci" transitive="false" />
+		<!-- CONF = PROJECT END -->
+		<exclude org="pull-parser" module="pull-parser"/>  
+		<conflict manager="all" />
     </dependencies>
 </ivy-module>
