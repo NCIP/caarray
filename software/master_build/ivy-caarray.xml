@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet type="text/xsl" href="http://gforge.nci.nih.gov/svnroot/commonlibrary/trunk/ivy-xsl/ivy.xsl"?>
 
-<ivy-module xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.0">
+<ivy-module xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.0" xsi:noNamespaceSchemaLocation="http://ant.apache.org/ivy/schemas/ivy.xsd">
   	<info module="caArray-project" organisation="ncicb"/>
     <configurations defaultconfmapping="*->*">
         <conf name="asm_3.0"/>
