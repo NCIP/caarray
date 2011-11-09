@@ -2,7 +2,7 @@
 
     <property name="ivy.jar.file" value="ivy-2.0.0.jar"/>
     <property name="ivy.src.url" value="https://ncimvn.nci.nih.gov/nexus/content/repositories/public/org/apache/ivy/ivy/2.0.0/${ivy.jar.file}"/>
-    <property name="ivy-bda.src.url.base" value="file://${software.dir}/caarray-bda/downloads"/>
+    <property name="ivy-bda.src.url.base" value="file:///${software.dir}/caarray-bda/downloads"/>
     <property name="ivy.dest.file" value="${bda-utils.dir}/${ivy.jar.file}"/>
     <property name="caarray.dependencies.file" value="ivy-caarray.xml"/>
     <property name="caarray.ivy.settings.file" value="ivy-caarray-settings.xml"/>
