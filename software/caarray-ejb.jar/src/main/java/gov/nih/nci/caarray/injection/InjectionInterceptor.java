@@ -102,7 +102,8 @@ public class InjectionInterceptor {
     @SuppressWarnings("PMD.SignatureDeclareThrowsException")
     public Object injectByGuice(InvocationContext ctx) throws Exception {
         final Injector injector = InjectorFactory.getInjector();
-        injector.injectMembers(ctx.getTarget());
+        Object target = ctx.getTarget();
+        injector.injectMembers(target);
         return ctx.proceed();
     }
 

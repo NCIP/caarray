@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.application.jobqueue;
 
 import gov.nih.nci.caarray.application.ExceptionLoggingInterceptor;
 import gov.nih.nci.caarray.domain.project.Job;
+import gov.nih.nci.caarray.injection.InjectionInterceptor;
 import gov.nih.nci.caarray.jobqueue.JobQueue;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
 import gov.nih.nci.security.authorization.domainobjects.User;
@@ -105,19 +106,36 @@ import com.google.inject.Inject;
  */
 @Local(JobQueueService.class)
 @Stateless
-@Interceptors(ExceptionLoggingInterceptor.class)
+@Interceptors({ExceptionLoggingInterceptor.class, InjectionInterceptor.class })
 @TransactionAttribute(TransactionAttributeType.SUPPORTS)
 public class JobQueueServiceBean implements JobQueueService {
     private static final Logger LOG = Logger.getLogger(JobQueueServiceBean.class);
-    private final JobQueue jobQueue;
+    private JobQueue jobQueue;
+    
+    /**
+     * No-arg ctor required for all EJB Beans. Dependencies should be added through the setters.
+     */
+    public JobQueueServiceBean() {
+        super();
+    }
 
     /**
-     * Set the job queue DAO to use.
+     * Set the JobQueue to use.
      * 
      * @param jobQueue the jobQueue dependency
      */
     @Inject
-    public JobQueueServiceBean(JobQueue jobQueue) {
+    public void setJobQueue(JobQueue jobQueue) {
+        this.jobQueue = jobQueue;
+    }
+    
+    /**
+     * STARTING WITH caArray 2.5.0 THIS VERSION OF THE CTOR IS A CONVENIENCE FOR TESTING USE ONLY.
+     * 
+     * @param jobQueue the jobQueue dependency
+     */
+    @Inject
+    JobQueueServiceBean(JobQueue jobQueue) {
         this.jobQueue = jobQueue;
     }
 

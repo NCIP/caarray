@@ -83,9 +83,13 @@
 package gov.nih.nci.caarray.web.action.project;
 
 import gov.nih.nci.caarray.application.ServiceLocatorFactory;
+import gov.nih.nci.caarray.application.jobqueue.JobQueueService;
 import gov.nih.nci.caarray.domain.project.Job;
 import gov.nih.nci.caarray.domain.search.JobSortCriterion;
 import gov.nih.nci.caarray.util.CaArrayUsernameHolder;
+import gov.nih.nci.security.authorization.domainobjects.User;
+
+import java.util.List;
 
 import org.apache.struts2.interceptor.validation.SkipValidation;
 
@@ -114,10 +118,11 @@ public class ProjectJobQueueAction extends ActionSupport {
      */
     @SkipValidation
     public String jobQueue() {
-        this.jobs.setList(ServiceLocatorFactory.getJobQueueService().getJobsForUser(
-                CaArrayUsernameHolder.getCsmUser()));
-        this.jobs.setFullListSize(ServiceLocatorFactory.getJobQueueService().
-                getJobCount(CaArrayUsernameHolder.getCsmUser()));
+        JobQueueService jobQueueService = ServiceLocatorFactory.getJobQueueService(); 
+        User user = CaArrayUsernameHolder.getCsmUser();
+        List<Job> jobsList = jobQueueService.getJobsForUser(user);
+        this.jobs.setList(jobsList);
+        this.jobs.setFullListSize(jobQueueService.getJobCount(user));
         return Action.SUCCESS;
     }
     
