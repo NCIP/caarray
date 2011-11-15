@@ -96,13 +96,25 @@ Getting Started
 - Make sure you have installed and configured all of the prerequisites as described above.
 - Check out caArray. Most likely, you will check out the trunk - see the Source Control section for URL locations.
   Below, we use $CAARRAY_HOME to refer to the location of the caArray checkout.
-- Copy the "$CAARRAY_HOME/software/master_build/install.properties" file, rename it to whatever you wish, and configure it with values appropriate for your desired local deployment.
-- Create and configure a "$CAARRAY_HOME/software/build/local.properties" file so that it contains properties and values for the following at least (values should be same as in install.properties
-  copy above): database.system.user, database.system.password, database.server, database.port, database.name, database.user, database.password. Also, add the jboss.home property and
-  set its value to be what is set for application.base.path in the install.properties file copy above, with jboss-5.1.0.GA-nci appended (e.g., application.base.path set to /usr/local/caarray,
-  so jboss.home is set to /usr/local/caarray/jboss-5.1.0.GA-nci). The purpose of the $CAARRAY_HOME/software/build/local.properties file is to allow developers to override property values from
-  $CAARRAY_HOME/software/build/default.properties file and thus prevent accidental check-in of $CAARRAY_HOME/software/build/default.properties, so localize your environment in
-  $CAARRAY_HOME/software/build/local.properties rather than $CAARRAY_HOME/software/build/default.properties.
+- Copy the "$CAARRAY_HOME/software/master_build/install.properties" file, rename it to whatever you wish, and configure it with values appropriate for your 
+  desired local deployment.
+- Create and configure a "$CAARRAY_HOME/software/build/local.properties" file.
+  - Database setup (values should be same as in install.properties copy above): 
+      database.system.user
+      database.system.password
+      database.server
+      database.port
+      database.name
+      database.user
+      database.password. 
+  - JBoss setup: 
+    - jboss.home set its value to be what is set for application.base.path in the install.properties file copy above, with jboss-5.1.0.GA-nci appended 
+      (e.g., application.base.path set to /usr/local/caarray, so jboss.home is set to /usr/local/caarray/jboss-5.1.0.GA-nci). 
+  - Ivy Resolution. This will speed up ivy resolution.  Unset if dependencies change (or clean out your cache):
+    - ivy.resolve.pessimistic=false  
+  The purpose of the $CAARRAY_HOME/software/build/local.properties file is to allow developers to override property values from
+  $CAARRAY_HOME/software/build/default.properties file and thus prevent accidental check-in of $CAARRAY_HOME/software/build/default.properties, so localize 
+  your environment in $CAARRAY_HOME/software/build/local.properties rather than $CAARRAY_HOME/software/build/default.properties.
 - To create the caArray DB schema (prerequisite for installation), 
 1.  create schema caarraydb;
 2.  create user 'caarrayop'
