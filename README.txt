@@ -112,6 +112,7 @@ Getting Started
       (e.g., application.base.path set to /usr/local/caarray, so jboss.home is set to /usr/local/caarray/jboss-5.1.0.GA-nci). 
   - Ivy Resolution. This will speed up ivy resolution.  Unset if dependencies change (or clean out your cache):
     - ivy.resolve.pessimistic=false  
+    - ivy.noclean=true
   The purpose of the $CAARRAY_HOME/software/build/local.properties file is to allow developers to override property values from
   $CAARRAY_HOME/software/build/default.properties file and thus prevent accidental check-in of $CAARRAY_HOME/software/build/default.properties, so localize 
   your environment in $CAARRAY_HOME/software/build/local.properties rather than $CAARRAY_HOME/software/build/default.properties.

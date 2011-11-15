@@ -1643,7 +1643,7 @@
         <delete dir="${lib.dir}"/>
     </target>
     
-    <target name="clean:ivy-cache">
+    <target name="clean:ivy-cache" unless="ivy.noclean">
         <delete dir="${basedir}/master_build/.ivy2-caarray-cache"/>
     </target>
 
