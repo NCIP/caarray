@@ -97,17 +97,10 @@ import gov.nih.nci.caarray.injection.InjectionInterceptor;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import java.util.Enumeration;
-import java.util.List;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 
 import javax.ejb.Local;
 import javax.ejb.Stateless;
@@ -232,50 +225,6 @@ public class FileAccessServiceBean implements FileAccessService {
         final Set<URI> references = Sets.newHashSet(this.fileDao.getAllFileHandles());
         references.addAll(this.arrayDao.getAllParsedDataHandles());
         return references;
-    }
-
-    /**
-     * Goes through given list of files, and for any file which is a zip file, removes it from the list, unzips it, and
-     * adds the files which were within the zip to the list.
-     * 
-     * @param files list of files to process
-     * @param fileNames the names of the files, matched by index to the file list
-     */
-    @SuppressWarnings("PMD.ExcessiveMethodLength")
-    public void unzipFiles(List<File> files, List<String> fileNames) {
-        try {
-            final Pattern p = Pattern.compile("\\.zip$");
-            int index = 0;
-            for (int i = 0; i < fileNames.size(); i++) {
-                final Matcher m = p.matcher(fileNames.get(i).toLowerCase());
-
-                if (m.find()) {
-                    final File file = files.get(i);
-                    final String fileName = file.getAbsolutePath();
-                    final String directoryPath = file.getParent();
-                    final ZipFile zipFile = new ZipFile(fileName);
-                    final Enumeration<? extends ZipEntry> entries = zipFile.entries();
-                    while (entries.hasMoreElements()) {
-                        final ZipEntry entry = entries.nextElement();
-                        final File entryFile = new File(directoryPath + "/" + entry.getName());
-
-                        final InputStream fileInputStream = zipFile.getInputStream(entry);
-                        final FileOutputStream fileOutputStream = new FileOutputStream(entryFile);
-                        IOUtils.copy(fileInputStream, fileOutputStream);
-                        IOUtils.closeQuietly(fileOutputStream);
-
-                        files.add(entryFile);
-                        fileNames.add(entry.getName());
-                    }
-                    zipFile.close();
-                    files.remove(index);
-                    fileNames.remove(index);
-                }
-                index++;
-            }
-        } catch (final IOException e) {
-            throw new FileAccessException("Couldn't unzip archive.", e);
-        }
     }
 
     /**

@@ -93,7 +93,6 @@ import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.file.FileTypeRegistry;
-import gov.nih.nci.caarray.domain.file.FileTypeRegistryImpl;
 import gov.nih.nci.caarray.domain.file.UnsupportedAffymetrixCdfFiles;
 import gov.nih.nci.caarray.domain.project.AssayType;
 import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
@@ -156,6 +155,24 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
     private boolean locked;
     private boolean createMode;
     private FileTypeRegistry fileTypeRegistry;
+    private FileAccessUtils fileAccessUtils;
+
+    /**
+     * Construts a new action.
+     */
+    public ArrayDesignAction() {
+        this(InjectorFactory.getInjector());
+    }
+    
+    /**
+     * Constructs a new action.
+     * 
+     * @param injector for injection
+     */
+    public ArrayDesignAction(Injector injector) {
+        this.fileTypeRegistry = injector.getInstance(FileTypeRegistry.class);
+        this.fileAccessUtils = injector.getInstance(FileAccessUtils.class);
+    }
 
     /**
      * @return the set of array design file types to display in UI.
@@ -334,9 +351,6 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
             }
             this.locked = ServiceLocatorFactory.getArrayDesignService().isArrayDesignLocked(this.arrayDesign.getId());
         }
-        // should convert to injected
-        final Injector injector = InjectorFactory.getInjector();
-        this.fileTypeRegistry = injector.getInstance(FileTypeRegistryImpl.class);
     }
 
     /**
@@ -483,7 +497,7 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
                 // Checks if any uploaded files are zip files. If they are, the files are unzipped,
                 // and the appropriate properties are updated so that the unzipped files are
                 // part of the uploads list.
-                FileAccessUtils.unzipFiles(this.uploads, this.uploadFileName);
+                fileAccessUtils.unzipFiles(this.uploads, this.uploadFileName);
                 this.arrayDesign.setName(FilenameUtils.getBaseName(this.uploadFileName.get(0)));
             }
 
@@ -536,9 +550,6 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
 
     @SuppressWarnings("PMD.ExcessiveMethodLength")
     private void saveImportFile() {
-        final Injector injector = InjectorFactory.getInjector();
-        final FileAccessUtils fileAccessUtils = injector.getInstance(FileAccessUtils.class);
-
         try {
             // figure out if we are editing or creating.
             if (this.arrayDesign.getId() != null && (this.uploadFileName == null || this.uploadFileName.isEmpty())) {

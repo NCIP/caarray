@@ -187,10 +187,6 @@ public class FileAccessServiceStub implements FileAccessService, DataStorage {
         }
     }
 
-    public void unzipFiles(List<File> uploads, List<String> uploadFileNames) {
-        // do nothing
-    }
-
     public void reset() {
         this.nameToFile.clear();
         this.deletables.clear();

@@ -209,7 +209,7 @@ public class FileAccessUtils {
      * @param fileNames the list of filenames to go along with the list of files
      */
     @SuppressWarnings("PMD.ExcessiveMethodLength")
-    public static void unzipFiles(List<File> files, List<String> fileNames) {
+    public void unzipFiles(List<File> files, List<String> fileNames) {
         try {
             final Pattern p = Pattern.compile("\\.zip$");
             int index = 0;
