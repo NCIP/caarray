@@ -124,7 +124,21 @@ class InternalScanner {
         while (urls.hasMoreElements()) {
             try {
                 final URL url = urls.nextElement();
+                String urlProtocol = url.getProtocol();
                 String urlPath = url.getPath();
+                
+                log.info("url = " + url.toString());
+                log.info("urlProtocol = " + urlProtocol);
+                log.info("Initial urlPath = " + urlPath);
+                
+                /*
+                 *  For any urls that match file:/path, replace file: with file://. Example below,
+                 *  url = jar:file:/C:/apps/local_install/jboss-5.1.0.GA-nci/lib/jboss-classloader.jar!/org
+                 *  urlProtocol = jar
+                 *  Initial urlPath = file:/C:/apps/local_install/jboss-5.1.0.GA-nci/lib/jboss-classloader.jar!/org
+                 */
+                urlPath = urlPath.replace("file:", "file://");
+                log.info("After replacing with file://,  urlPath = " + urlPath);
 
                 // special handling for jboss VFS - we cache the jar to a local copy, use it to do the scanning
                 // as usual then discard it.
@@ -132,43 +146,46 @@ class InternalScanner {
                 // assumptions that a JAR can be accessed as a file.
                 // should consider eventually rewriting this to use jboss-vfs API directly for jar inspection
                 // a possible starting point is http://community.jboss.org/message/8432
-                if (url.getProtocol().startsWith("vfs")) {
+                if (urlProtocol.startsWith("vfs") && urlPath.contains(".jar")) {
+                	// Example:  url = vfszip:/C:/apps/local_install/jboss-5.1.0.GA-nci/lib/jboss-deployers-spi.jar/org/
                     final String pathToJar = urlPath.substring(0, urlPath.lastIndexOf(".jar") + 4);
                     final String jarName = pathToJar.substring(pathToJar.lastIndexOf("/") + 1, pathToJar.length());
-
+                    log.info("pathToJar = " + pathToJar);
+                    log.info("jarName = " + jarName);
+                    
                     final File tmp = new File(tempDir, jarName);
                     tmp.deleteOnExit();
 
                     final URL jarUrl = new URL(url.getProtocol() + ":" + pathToJar);
                     FileUtils.copyURLToFile(jarUrl, tmp);
-                    urlPath = "file:" + tmp.getAbsolutePath();
+                    // append the file:// to the files absolute path, to make it a valid url.
+                    urlPath = "file://" + tmp.getAbsolutePath();
                 } else if (urlPath.lastIndexOf('!') > 0) {
                     // it's in a JAR, grab the path to the jar
                     urlPath = urlPath.substring(0, urlPath.lastIndexOf('!'));
                     if (urlPath.startsWith("/"))
                     {
-                        urlPath = "file:" + urlPath;
+                        urlPath = "file://" + urlPath;
                     }
                 } else if (!urlPath.startsWith("file:")) {
-                    urlPath = "file:"+urlPath;
+                    urlPath = "file://"+urlPath;
                 }
-
+                
                 this.log.debug("Scanning for packages in [" + urlPath + "].");
                 File file = null;
-                try
-                {
-                    final URL fileURL = new URL(urlPath);
-                    // only scan elements in the classpath that are local files
-                    if("file".equals(fileURL.getProtocol().toLowerCase())) {
-                        file = new File(fileURL.toURI());
-                    } else {
-                        this.log.info("Skipping non file classpath element [ "+urlPath+ " ]");
-                    }
-                }
-                catch (final URISyntaxException e)
-                {
-                    //Yugh, this is necessary as the URL might not be convertible to a URI, so resolve it by the file path
-                    file = new File(urlPath.substring("file:".length()));
+                final URL fileURL = new URL(urlPath);
+                // only scan elements in the classpath that are local files
+                if("file".equals(fileURL.getProtocol().toLowerCase())) {
+                    log.info("Protocol = file");
+                	String fileName = urlPath.substring("file://".length());
+                	// replace any %20 in the filename with spaces.
+                	fileName = fileName.replaceAll("%20", " ");
+                	log.info("fileName = " + fileName);
+                    file = new File(fileName);
+                    log.info("absolute file path = " + file.getAbsolutePath());
+                    
+                } else {
+                    this.log.info("Skipping non file classpath element [ "+urlPath+ " ]");
                 }
 
                 if (file!=null && file.isDirectory()) {
