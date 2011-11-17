@@ -10,7 +10,7 @@
     </configurations>
     <dependencies>
         <!-- CONF = BDA-UTILS START -->
-		<dependency conf="bda-utils" org="ncicb" name="bda-utils" rev="${bda.version}" force="true" />
+ 		<dependency conf="bda-utils" org="ncicb" name="bda-utils" rev="1.7.5.caarary" force="true" />
 		<!-- CONF = BDA-UTILS END -->
 		<!--  CONF = ASM_3.0 START -->
 		<dependency conf="asm_3.0" org="objectweb" name="asm" rev="3.0" transitive="false" />

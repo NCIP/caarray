@@ -132,7 +132,6 @@ public class DataMatrixCopyNumberFileImportIntegrationTest extends AbstractFileM
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
-    @Ignore("TODO: Please investigate why this test is being ignored.")
     public void testDataMatrixCopyNumberMageTabImportFailDueToBadSdrfHybCount() throws Exception {
         final ArrayDesign design =
                 importArrayDesign(AgilentArrayDesignFiles.TEST_SHORT_ACGH_XML,
