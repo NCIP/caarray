@@ -103,8 +103,7 @@
 		<dependency conf="project" org="opensymphony" name="sitemesh" rev="2.3" transitive="false" />
 		<dependency conf="project" org="com.opensymphony" name="xwork-core" rev="2.1.6" transitive="false" />
 		<dependency conf="project" org="org.freemarker" name="freemarker" rev="2.3.15" transitive="false" />
-		<dependency conf="project" org="javax.servlet" name="jstl" rev="1.1.2" transitive="false" />
-		<dependency conf="project" org="taglibs" name="standard" rev="1.1.2" transitive="false" />
+		
 		<dependency conf="project" org="ognl" name="ognl" rev="2.7.3" transitive="false" />
 		<dependency conf="project" org="displaytag" name="displaytag" rev="1.1.1nci" transitive="false" />
 		<dependency conf="project" org="org.tuckey" name="urlrewrite" rev="2.6.0nci" transitive="false" />
