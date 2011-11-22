@@ -107,21 +107,22 @@ public class AgilentFileValidationIntegrationTest extends AbstractFileValidation
         InjectorFactory.addPlatform(new AgilentModule());
     }
 
-    @Ignore
     @Test
     public void testInvalidProbeNamesForAgilentRawTextData() throws Exception {
-        // for some reason the IDF and SDRF are not being added for agilent raw text data, need to investigate further
         final FileFileTypeWrapper[] dataFiles = new FileFileTypeWrapper[3];
         dataFiles[0] =
-                new FileFileTypeWrapper(AgilentArrayDataFiles.TEST_ACGH_RAW_TEXT,
+                new FileFileTypeWrapper(AgilentArrayDataFiles.TINY_RAW_TEXT,
                         AgilentRawTextDataHandler.RAW_TXT_FILE_TYPE);
         dataFiles[1] = new FileFileTypeWrapper(AgilentArrayDataFiles.TINY_IDF, FileTypeRegistry.MAGE_TAB_IDF);
-        dataFiles[2] = new FileFileTypeWrapper(AgilentArrayDataFiles.TINY_IDF, FileTypeRegistry.MAGE_TAB_SDRF);
+        dataFiles[2] = new FileFileTypeWrapper(AgilentArrayDataFiles.TINY_SDRF, FileTypeRegistry.MAGE_TAB_SDRF);
         final FileFileTypeWrapper design =
-                new FileFileTypeWrapper(AgilentArrayDesignFiles.TEST_GENE_EXPRESSION_1_XML,
+                new FileFileTypeWrapper(AgilentArrayDesignFiles.TEST_ACGH_XML,
                         AgilentXmlDesignFileHandler.XML_FILE_TYPE);
         final List<String[]> expectedErrorsList = new ArrayList<String[]>();
-        final String[] expectedErrors = new String[] {"TBD" };
+        final String[] expectedErrors = new String[] {
+        		"Probe with aliases 'Agilent_Tiny_2','chr10:19811167-19811226' was not found in array design '022522_D_F_20090107' version '2.0'.",
+        		"Probe with aliases 'Agilent_Tiny_1','chr6:62964904-62964963' was not found in array design '022522_D_F_20090107' version '2.0'."
+        		};
         expectedErrorsList.add(expectedErrors);
         doValidation(dataFiles, design, new FileType[] {AgilentRawTextDataHandler.RAW_TXT_FILE_TYPE },
                 expectedErrorsList);
