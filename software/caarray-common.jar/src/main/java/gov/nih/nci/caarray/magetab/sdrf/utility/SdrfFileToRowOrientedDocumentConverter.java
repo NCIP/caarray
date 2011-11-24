@@ -80,28 +80,91 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.common;
+package gov.nih.nci.caarray.magetab.sdrf.utility;
 
-/**
- * Intended to be superclass of all application specific RuntimeExceptions. 
+import gov.nih.nci.caarray.common.CaArrayRutimeException;
+import gov.nih.nci.caarray.magetab.io.FileRef;
+import gov.nih.nci.caarray.magetab.sdrf.RowOrientedSdrfDocument;
+import gov.nih.nci.caarray.magetab.sdrf.SdrfHeaderNotFoundException;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.LineNumberReader;
+
+/** 
+ * Converts SDRF file to RowOrientedSdrfDocument. 
  * @author asy
  *
  */
-public class CaArrayRutimeException extends RuntimeException {
+final class SdrfFileToRowOrientedDocumentConverter {
 
-    /**
-     * @param message the msg
-     */
-    public CaArrayRutimeException(String message) {
-        super(message);
+    private SdrfFileToRowOrientedDocumentConverter() {
+        //This satisfies checkstyle rule: Utility classes should not have a public or default constructor.
     }
 
     /**
-     * @param message the msg
-     * @param cause the cause
+     * Converts SDRF file to RowOrientedSdrfDocument.
+     * @param sdrfFileRef reference to the SDRF file
+     * @return the converted file
      */
-    public CaArrayRutimeException(String message, Throwable cause) {
-        super(message, cause);
+    public static RowOrientedSdrfDocument convert(final FileRef sdrfFileRef) 
+    throws SdrfHeaderNotFoundException {
+        final String sdrfFileName = sdrfFileRef != null ? sdrfFileRef.getName() : null;
+        try {
+            final RowOrientedSdrfDocument rowOrientedDoc = new RowOrientedSdrfDocument();
+            final File ioFile = sdrfFileRef.getAsFile(); 
+            final LineNumberReader lnReader = new LineNumberReader(new FileReader(ioFile));
+
+            final String headerString = extractHeaderLine(lnReader, sdrfFileName);
+            rowOrientedDoc.setHeaderRow(headerString);
+
+            extractBodyRows(rowOrientedDoc, lnReader);
+
+            return rowOrientedDoc;
+
+        } catch (final FileNotFoundException e) {
+            throw new IllegalArgumentException(e.getMessage(), e);
+        } catch (final IOException e) {
+            throw new CaArrayRutimeException("IOException while reading SDRF file=[" +  sdrfFileName + "]", e);
+        }
     }
+
+
+    /**
+     * Reads from current line of lnReader until first non-ignoreable row is found. 
+     * This row is returned as the header row. 
+     * @param lnReader reader for the SDRF file
+     * @param sdrfFileName used to report the file name in case of error. 
+     * @return header row
+     * @throws IOException if error while reading lnReader
+     * @throws SdrfHeaderNotFoundException if header row not found
+     */
+    static String extractHeaderLine(final LineNumberReader lnReader, String sdrfFileName) 
+    throws IOException, SdrfHeaderNotFoundException {
+        String currentLine = null;
+        //first non-ignoreable line is the header
+        while ((currentLine = lnReader.readLine()) != null) {
+            if (!SdrfIgnoreableRowChecker.isIgnoreableRow(currentLine)) { break; }
+        }
+
+        if (currentLine == null) {
+            throw new SdrfHeaderNotFoundException("Header not found for SDRF file=[" + sdrfFileName + "]");
+        }
+        return currentLine;
+    }
+
+
+    static void extractBodyRows(final RowOrientedSdrfDocument rowOrientedDoc, 
+            final LineNumberReader lnReader) throws IOException {
+        String currentLine = null;
+        while ((currentLine = lnReader.readLine()) != null) {
+            if (!SdrfIgnoreableRowChecker.isIgnoreableRow(currentLine)) { 
+                rowOrientedDoc.addBodyRow(currentLine);
+            }
+        }
+    }
+
 
 }

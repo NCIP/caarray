@@ -80,84 +80,34 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.magetab.sdrf.utility;
+package gov.nih.nci.caarray.magetab.sdrf.testdata;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import gov.nih.nci.caarray.magetab.sdrf.RowOrientedSdrfDocument;
 
-import org.junit.Test;
+public class SdrfTestData {
 
+    private final String header; 
+    private final String[] bodyRows; 
 
-
-/**
- * Test of SdrfUtility class
- */
-public class SdrfUtilityTest {
-
-    @Test
-    public void testNoBlanksBeforeCommentMarkerAndBlanksAtEnd() {
-        String row = "#comment row "; 
-        assertTrue(SdrfUtility.isCommentRow(row));
+    public SdrfTestData(final String header, final String[] bodyRows) {
+        this.header = header; 
+        this.bodyRows = bodyRows; 
     }
 
-    @Test
-    public void testBlanksBeforeCommentMarkerAndNoBlanksAtEnd() {
-        String row = "\t  #";
-        assertTrue(SdrfUtility.isCommentRow(row));
+    public String getHeader() {
+        return header;
     }
 
-    @Test
-    public void testIsNotComment() {
-        String row = "not comment row";
-        assertFalse(SdrfUtility.isCommentRow(row));
+    public String[] getBodyRows() {
+        return bodyRows;
     }
 
-    @Test
-    public void testNullStringIsNotComment() {
-        String row = null;
-        assertFalse(SdrfUtility.isCommentRow(row));
+    public RowOrientedSdrfDocument createRowOrientedSdrfDocument() {
+        RowOrientedSdrfDocument rowOrientedDoc = new RowOrientedSdrfDocument();
+        rowOrientedDoc.setHeaderRow(header);
+        for (String bodyRow : bodyRows) {
+            rowOrientedDoc.addBodyRow(bodyRow);
+        }
+        return rowOrientedDoc;
     }
-
-    @Test
-    public void testNullStringIsEmptyRow() {
-        String testString = null;
-        assertTrue(SdrfUtility.isEmptyRow(testString));
-    }
-
-    @Test
-    public void testEmptyStringIsEmptyRow() {
-        String testString = "";
-        assertTrue(SdrfUtility.isEmptyRow(testString));
-    }
-
-    @Test
-    public void testBlankStringIsEmptyRow() {
-        String testString = " \t ";
-        assertTrue(SdrfUtility.isEmptyRow(testString));
-    }
-
-    @Test
-    public void testNonEmptyRow() {
-        String testString = "non empty";
-        assertFalse(SdrfUtility.isEmptyRow(testString));
-    }
-
-    @Test
-    public void testNonIgnoreableRow() {
-        String testString = "non empty";
-        assertFalse(SdrfUtility.isIgnoreableRow(testString));
-    }
-
-    @Test
-    public void testEmptyStringIsIgnoreableRow() {
-        String testString = "";
-        assertTrue(SdrfUtility.isIgnoreableRow(testString));        
-    }
-
-    @Test
-    public void testCommentStringIsIgnoreableRow() {
-        String testString = "#comment";
-        assertTrue(SdrfUtility.isIgnoreableRow(testString));        
-    }
-
 }

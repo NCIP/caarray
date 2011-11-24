@@ -80,51 +80,36 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.magetab.sdrf.utility;
+package gov.nih.nci.caarray.magetab.sdrf.testdata;
 
-import gov.nih.nci.caarray.magetab.sdrf.SdrfRow;
 
-/** 
- * Misc utilities for working with SDRF. 
- * @author asy
- *
- */
-public final class SdrfUtility {
+public class SdrfTestDataSets {
 
-    private SdrfUtility() {
-        //This satisfies checkstyle rule: Utility classes should not have a public or default constructor.
-    }
+    private static final String RAW_HEADER_1 = "Source Name\tSample Name\tExtract Name\tLabeled Extract Name"
+        + "\tLabel\tHybridization Name\tArray Data File\tDerived Array Data File";
+    private static final String[] RAW_BODY_ROWS_1 = {
+        "Source 1\tSample 1\tExtract 1\tLabeled Extract 1\tLabel 1\tHybridization 1\tArray Data File 1\tDerived Array Data File 1",
+    };
+    public static final SdrfTestData DATA_SET_1 = new SdrfTestData(RAW_HEADER_1, RAW_BODY_ROWS_1);
 
-    /**
-     * comment row starts with 0 or more space or tab, followed by '#', followed by 0 or more chars.
-     * e.g. "#this and the below are comments" 
-     * e.g. "  #"
-     * @param testString string to test
-     * @return whether or not testString is a comment
-     */
-    public static boolean isCommentRow(String testString) {
-        return testString != null && testString.matches("^[ \t]*" + SdrfRow.COMMENT_CHARACTER + ".*$"); 
-    }
 
-    /**
-     * Empty row is null or empty string or nothing but blank chars.
-     * @param testString string to test
-     * @return whether or not testString is empty
-     */
-    public static boolean isEmptyRow(String testString) {
-        return testString == null || testString.isEmpty() || testString.matches("^[ \t]+$");
+    private static final String RAW_HEADER_2 = "Source Name\tSample Name\tExtract Name\tLabeled Extract Name"
+        + "\tLabel\tHybridization Name\tArray Data File\tDerived Array Data File";
+    private static final String[] RAW_BODY_ROWS_2 = {
+        "Source 1\tSample 1\tExtract 1\tLabeled Extract 1\tLabel 1\tHybridization 1\tArray Data File 1\tDerived Array Data File 1",
+        "Source 2\tSample 2\tExtract 2\tLabeled Extract 2\tLabel 1\tHybridization 2\tArray Data File 2\tDerived Array Data File 2",
+    };
+    public static final SdrfTestData DATA_SET_2 = new SdrfTestData(RAW_HEADER_2, RAW_BODY_ROWS_2);
 
-    }
-
-    /**
-     * Row is ignorable if it isEmptyRow() || isCommentRow().
-     * @param testString string to test
-     * @return whether or not testString is ignoreable.
-     */
-    public static boolean isIgnoreableRow(String testString) {
-        return isEmptyRow(testString) || isCommentRow(testString);
-
-    }
-
+    private static final String RAW_HEADER_3 = "Source Name\tSample Name\tExtract Name\tLabeled Extract Name"
+        + "\tLabel\tHybridization Name\tArray Data File\tDerived Array Data File";
+    private static final String[] RAW_BODY_ROWS_3 = {
+        "Source 1\tSample 1\tExtract 1\tLabeled Extract 1\tLabel 1\tHybridization 1\tArray Data File 1\tDerived Array Data File 1",
+        "Source 2\tSample 2\tExtract 2\tLabeled Extract 2\tLabel 1\tHybridization 2\tArray Data File 2\tDerived Array Data File 2",
+        "Source 3\tSample 3\tExtract 3\tLabeled Extract 3\tLabel 1\tHybridization 3\tArray Data File 3\tDerived Array Data File 3", 
+        "Source 4\tSample 4\tExtract 4\tLabeled Extract 4\tLabel 1\tHybridization 4\tArray Data File 4\tDerived Array Data File 4", 
+        "Source 5\tSample 5\tExtract 5\tLabeled Extract 5\tLabel 1\tHybridization 5\tArray Data File 5\tDerived Array Data File 5", 
+    };
+    public static final SdrfTestData DATA_SET_3 = new SdrfTestData(RAW_HEADER_3, RAW_BODY_ROWS_3);
 
 }

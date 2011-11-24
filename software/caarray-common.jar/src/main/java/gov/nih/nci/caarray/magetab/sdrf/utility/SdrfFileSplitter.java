@@ -84,10 +84,11 @@ package gov.nih.nci.caarray.magetab.sdrf.utility;
 
 import gov.nih.nci.caarray.magetab.io.FileRef;
 import gov.nih.nci.caarray.magetab.sdrf.RowOrientedSdrfDocument;
+import gov.nih.nci.caarray.magetab.sdrf.SdrfHeaderNotFoundException;
+import gov.nih.nci.caarray.magetab.sdrf.SdrfInvalidSplitRowCountException;
 import gov.nih.nci.caarray.magetab.sdrf.SdrfRow;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -99,34 +100,57 @@ import java.util.List;
 public class SdrfFileSplitter {
 
     /**
-     * Splits src SDRF into smaller baby SDRFs, each containing at most bodyRowsCount number of body rows. 
-     * @param srcSdrfFileRef references to source SDRF file
+     * Splits original SDRF into smaller baby SDRFs, each containing at most maxRowsPerSplit number of body rows. 
+     * @param origSdrfFile original SDRF 
      * @param maxRowsPerSplit max number of body rows in each split SDRF baby 
      * @return list of split baby SDRFs
+     * @throws SdrfHeaderNotFoundException if header row not found in origSdrfFile
+     * @throws SdrfInvalidSplitRowCountException if maxRowsPerSplit > bodyRowsCount of original SDRF.
      */
-    public List<RowOrientedSdrfDocument> splitSdrfByLineCount(final FileRef srcSdrfFileRef, final int maxRowsPerSplit) {
-        if (maxRowsPerSplit <= 0) {
-            throw new IllegalArgumentException("Cannot split SDRF by bodyRowsCount=" + maxRowsPerSplit);
-        }
-        List<RowOrientedSdrfDocument> babySdrfs = new ArrayList<RowOrientedSdrfDocument>();
-        final RowOrientedSdrfDocument srcSdrf = new SdrfFileConverter().toRowOrientedSdrfDocument(srcSdrfFileRef);
+    public List<RowOrientedSdrfDocument> splitByRowCount(final FileRef origSdrfFile, final int maxRowsPerSplit) 
+    throws SdrfHeaderNotFoundException, SdrfInvalidSplitRowCountException {
+        final RowOrientedSdrfDocument origSdrf = SdrfFileToRowOrientedDocumentConverter.convert(origSdrfFile);
+        return splitByRowCount(origSdrf, maxRowsPerSplit);
+    }
 
-        final Iterator<SdrfRow> origBodyRows = srcSdrf.bodyRowsIterator();
-        final String strHeaderRow = srcSdrf.getHeaderRow().getRawString();
+
+    /**
+     * Splits original SDRF into smaller baby SDRFs, each containing at most maxRowsPerSplit number of body rows. 
+     * @param origSdrf original SDRF 
+     * @param maxRowsPerSplit max number of body rows in each split SDRF baby 
+     * @return list of split baby SDRFs
+     * @throws SdrfInvalidSplitRowCountException if maxRowsPerSplit > bodyRowsCount of original SDRF.
+     */
+    public List<RowOrientedSdrfDocument> splitByRowCount(final RowOrientedSdrfDocument origSdrf, 
+            final int maxRowsPerSplit) 
+            throws SdrfInvalidSplitRowCountException {
+
+        if (maxRowsPerSplit > origSdrf.bodyRowsCount()) {
+            throw new SdrfInvalidSplitRowCountException("Original SDRF has bodyRowsCount=" + origSdrf.bodyRowsCount()
+                    + "; cannot split SDRF by maxRowsPerSplit=" + maxRowsPerSplit + ". ");
+        }
+
+
+        if (maxRowsPerSplit <= 0) {
+            throw new IllegalArgumentException("Cannot split SDRF by maxRowsPerSplit=" + maxRowsPerSplit);
+        }
+
+        List<RowOrientedSdrfDocument> babySdrfs = new ArrayList<RowOrientedSdrfDocument>();
+
+        final List<SdrfRow> origBodyRows = origSdrf.getBodyRows();
+        final String strHeaderRow = origSdrf.getHeaderRow().getRawString();
         RowOrientedSdrfDocument babySdrf = null;
-        for (int i = 0; origBodyRows.hasNext(); i++) {
+        for (int i = 0; i < origBodyRows.size(); i++) {
             if (i % maxRowsPerSplit == 0) {
                 babySdrf = new RowOrientedSdrfDocument();
                 babySdrf.setHeaderRow(strHeaderRow);
                 babySdrfs.add(babySdrf);
             }
-            SdrfRow currentBodyRow = origBodyRows.next();
+            SdrfRow currentBodyRow = origBodyRows.get(i);
             babySdrf.addBodyRow(currentBodyRow.getRawString());
         }
 
         return babySdrfs;
     }
-
-
 
 }

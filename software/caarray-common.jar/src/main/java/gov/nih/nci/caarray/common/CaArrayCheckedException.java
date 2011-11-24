@@ -83,16 +83,16 @@
 package gov.nih.nci.caarray.common;
 
 /**
- * Intended to be superclass of all application specific RuntimeExceptions. 
+ * Intended to be superclass of all application specific checked Exceptions. 
  * @author asy
  *
  */
-public class CaArrayRutimeException extends RuntimeException {
+public class CaArrayCheckedException extends Exception {
 
     /**
      * @param message the msg
      */
-    public CaArrayRutimeException(String message) {
+    public CaArrayCheckedException(String message) {
         super(message);
     }
 
@@ -100,7 +100,7 @@ public class CaArrayRutimeException extends RuntimeException {
      * @param message the msg
      * @param cause the cause
      */
-    public CaArrayRutimeException(String message, Throwable cause) {
+    public CaArrayCheckedException(String message, Throwable cause) {
         super(message, cause);
     }
 

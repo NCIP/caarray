@@ -80,69 +80,61 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.magetab.sdrf.utility;
+package gov.nih.nci.caarray.magetab.sdrf;
 
-import gov.nih.nci.caarray.common.CaArrayRutimeException;
-import gov.nih.nci.caarray.magetab.io.FileRef;
-import gov.nih.nci.caarray.magetab.sdrf.RowOrientedSdrfDocument;
+import static org.junit.Assert.assertEquals;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.LineNumberReader;
+import gov.nih.nci.caarray.magetab.sdrf.testdata.SdrfTestDataSets;
 
-/** 
- * Converts SDRF file into different object representations. 
+import java.util.List;
+
+import org.junit.Before;
+import org.junit.Test;
+
+/**
+ * Test of RowOrientedSdrfDocument class.
+ * 
  * @author asy
- *
  */
-public class SdrfFileConverter {
+public class RowOrientedSdrfDocumentTest {
 
-    /**
-     * 
-     * @param sdrfFileRef reference to the SDRF file
-     * @return the converted file
-     */
-    public RowOrientedSdrfDocument toRowOrientedSdrfDocument(final FileRef sdrfFileRef) {
-        try {
-            final RowOrientedSdrfDocument rowOrientedDoc = new RowOrientedSdrfDocument();
-            final File ioFile = sdrfFileRef.getAsFile(); 
-            final LineNumberReader lnReader = new LineNumberReader(new FileReader(ioFile));
+    private RowOrientedSdrfDocument rowOrientedDoc;
 
-            final String headerString = extractHeaderLine(lnReader);
-            rowOrientedDoc.setHeaderRow(headerString);
+    @Before
+    public void setup() {
+        rowOrientedDoc = SdrfTestDataSets.DATA_SET_2.createRowOrientedSdrfDocument();
+    }
 
-            extractBodyRows(rowOrientedDoc, lnReader);
+    @Test
+    public void testHeader() {
+        String actualHeader = rowOrientedDoc.getHeaderRow().getRawString();
+        assertEquals(SdrfTestDataSets.DATA_SET_2.getHeader(), actualHeader);
+    }
 
-            return rowOrientedDoc;
+    @Test
+    public void testBodyRowsSize() {
+        int actualBodyRowsCount = this.rowOrientedDoc.bodyRowsCount();
+        assertEquals(SdrfTestDataSets.DATA_SET_2.getBodyRows().length, actualBodyRowsCount);
+    }
 
-        } catch (final FileNotFoundException e) {
-            throw new IllegalArgumentException(e.getMessage(), e);
-        } catch (final IOException e) {
-            final String sdrfFileName = sdrfFileRef != null ? sdrfFileRef.getName() : null;
-            throw new CaArrayRutimeException("IOException while reading SDRF file=[" +  sdrfFileName + "]", e);
+    @Test
+    public void testBodyRows() {
+        List<SdrfRow> actualBodyRows = rowOrientedDoc.getBodyRows();
+        for (int i = 0; i < SdrfTestDataSets.DATA_SET_2.getBodyRows().length; i++) {
+            String actualRow = actualBodyRows.get(i).getRawString();
+            String expectedRow = SdrfTestDataSets.DATA_SET_2.getBodyRows()[i];
+            assertEquals(expectedRow, actualRow);
         }
     }
 
-
-    String extractHeaderLine(final LineNumberReader lnReader) throws IOException {
-        String currentLine = null;
-        while ((currentLine = lnReader.readLine()) != null) {
-            if (!SdrfUtility.isIgnoreableRow(currentLine)) { break; }
+    @Test
+    public void testAsRawString() {
+        String actualRawString = rowOrientedDoc.asRawString();
+        String expectedRawString = SdrfTestDataSets.DATA_SET_2.getHeader() + "\n";
+        for (int i = 0; i < SdrfTestDataSets.DATA_SET_2.getBodyRows().length; i++) {
+            expectedRawString += SdrfTestDataSets.DATA_SET_2.getBodyRows()[i] + "\n";
         }
-        return currentLine;
+        assertEquals(expectedRawString, actualRawString);
     }
-
-
-    void extractBodyRows(final RowOrientedSdrfDocument rowOrientedDoc, 
-            final LineNumberReader lnReader) throws IOException {
-        String currentLine = null;
-        while ((currentLine = lnReader.readLine()) != null) {
-            if (SdrfUtility.isCommentRow(currentLine)) { continue; }
-            rowOrientedDoc.addBodyRow(currentLine);
-        }
-    }
-
 
 }

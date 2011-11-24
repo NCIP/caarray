@@ -80,28 +80,84 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.common;
+package gov.nih.nci.caarray.magetab.sdrf.utility;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import org.junit.Test;
+
+
 
 /**
- * Intended to be superclass of all application specific RuntimeExceptions. 
- * @author asy
- *
+ * Test of SdrfUtility class
  */
-public class CaArrayRutimeException extends RuntimeException {
+public class SdrfIgnoreableRowCheckerTest {
 
-    /**
-     * @param message the msg
-     */
-    public CaArrayRutimeException(String message) {
-        super(message);
+    @Test
+    public void testNoBlanksBeforeCommentMarkerAndBlanksAtEnd() {
+        String row = "#comment row "; 
+        assertTrue(SdrfIgnoreableRowChecker.isCommentRow(row));
     }
 
-    /**
-     * @param message the msg
-     * @param cause the cause
-     */
-    public CaArrayRutimeException(String message, Throwable cause) {
-        super(message, cause);
+    @Test
+    public void testBlanksBeforeCommentMarkerAndNoBlanksAtEnd() {
+        String row = "\t  #";
+        assertTrue(SdrfIgnoreableRowChecker.isCommentRow(row));
+    }
+
+    @Test
+    public void testIsNotComment() {
+        String row = "not comment row";
+        assertFalse(SdrfIgnoreableRowChecker.isCommentRow(row));
+    }
+
+    @Test
+    public void testNullStringIsNotComment() {
+        String row = null;
+        assertFalse(SdrfIgnoreableRowChecker.isCommentRow(row));
+    }
+
+    @Test
+    public void testNullStringIsEmptyRow() {
+        String testString = null;
+        assertTrue(SdrfIgnoreableRowChecker.isEmptyRow(testString));
+    }
+
+    @Test
+    public void testEmptyStringIsEmptyRow() {
+        String testString = "";
+        assertTrue(SdrfIgnoreableRowChecker.isEmptyRow(testString));
+    }
+
+    @Test
+    public void testBlankStringIsEmptyRow() {
+        String testString = " \t ";
+        assertTrue(SdrfIgnoreableRowChecker.isEmptyRow(testString));
+    }
+
+    @Test
+    public void testNonEmptyRow() {
+        String testString = "non empty";
+        assertFalse(SdrfIgnoreableRowChecker.isEmptyRow(testString));
+    }
+
+    @Test
+    public void testNonIgnoreableRow() {
+        String testString = "non empty";
+        assertFalse(SdrfIgnoreableRowChecker.isIgnoreableRow(testString));
+    }
+
+    @Test
+    public void testEmptyStringIsIgnoreableRow() {
+        String testString = "";
+        assertTrue(SdrfIgnoreableRowChecker.isIgnoreableRow(testString));        
+    }
+
+    @Test
+    public void testCommentStringIsIgnoreableRow() {
+        String testString = "#comment";
+        assertTrue(SdrfIgnoreableRowChecker.isIgnoreableRow(testString));        
     }
 
 }

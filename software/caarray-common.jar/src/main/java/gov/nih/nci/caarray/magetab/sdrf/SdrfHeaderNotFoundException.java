@@ -80,19 +80,21 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.common;
+package gov.nih.nci.caarray.magetab.sdrf;
+
+import gov.nih.nci.caarray.common.CaArrayCheckedException;
 
 /**
- * Intended to be superclass of all application specific RuntimeExceptions. 
+ * Thrown when header not found in SDRF file. 
  * @author asy
  *
  */
-public class CaArrayRutimeException extends RuntimeException {
+public class SdrfHeaderNotFoundException extends CaArrayCheckedException {
 
     /**
      * @param message the msg
      */
-    public CaArrayRutimeException(String message) {
+    public SdrfHeaderNotFoundException(String message) {
         super(message);
     }
 
@@ -100,7 +102,7 @@ public class CaArrayRutimeException extends RuntimeException {
      * @param message the msg
      * @param cause the cause
      */
-    public CaArrayRutimeException(String message, Throwable cause) {
+    public SdrfHeaderNotFoundException(String message, Throwable cause) {
         super(message, cause);
     }
 

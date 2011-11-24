@@ -80,28 +80,51 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.common;
+package gov.nih.nci.caarray.magetab.sdrf.utility;
 
-/**
- * Intended to be superclass of all application specific RuntimeExceptions. 
+import gov.nih.nci.caarray.magetab.sdrf.SdrfRow;
+
+/** 
+ * Misc utilities for working with SDRF. 
  * @author asy
  *
  */
-public class CaArrayRutimeException extends RuntimeException {
+public final class SdrfIgnoreableRowChecker {
 
-    /**
-     * @param message the msg
-     */
-    public CaArrayRutimeException(String message) {
-        super(message);
+    private SdrfIgnoreableRowChecker() {
+        //This satisfies checkstyle rule: Utility classes should not have a public or default constructor.
     }
 
     /**
-     * @param message the msg
-     * @param cause the cause
+     * comment row starts with 0 or more space or tab, followed by '#', followed by 0 or more chars.
+     * e.g. "#this and the below are comments" 
+     * e.g. "  #"
+     * @param testString string to test
+     * @return whether or not testString is a comment
      */
-    public CaArrayRutimeException(String message, Throwable cause) {
-        super(message, cause);
+    public static boolean isCommentRow(String testString) {
+        return testString != null && testString.matches("^[ \t]*" + SdrfRow.COMMENT_CHARACTER + ".*$"); 
     }
+
+    /**
+     * Empty row is null or empty string or nothing but blank chars.
+     * @param testString string to test
+     * @return whether or not testString is empty
+     */
+    public static boolean isEmptyRow(String testString) {
+        return testString == null || testString.isEmpty() || testString.matches("^[ \t]+$");
+
+    }
+
+    /**
+     * Row is ignorable if it isEmptyRow() || isCommentRow().
+     * @param testString string to test
+     * @return whether or not testString is ignoreable.
+     */
+    public static boolean isIgnoreableRow(String testString) {
+        return isEmptyRow(testString) || isCommentRow(testString);
+
+    }
+
 
 }

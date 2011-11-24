@@ -85,6 +85,9 @@ package gov.nih.nci.caarray.magetab.sdrf.utility;
 import static org.junit.Assert.assertEquals;
 import gov.nih.nci.caarray.magetab.io.JavaIOFileRef;
 import gov.nih.nci.caarray.magetab.sdrf.RowOrientedSdrfDocument;
+import gov.nih.nci.caarray.magetab.sdrf.SdrfHeaderNotFoundException;
+import gov.nih.nci.caarray.magetab.sdrf.SdrfInvalidSplitRowCountException;
+import gov.nih.nci.caarray.magetab.sdrf.testdata.SdrfTestDataSets;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 
 import java.io.File;
@@ -101,35 +104,114 @@ import org.junit.Test;
 public class SdrfFileSplitterTest {
 
     @Test
-    public void testCreateSdrfFileSplitter() {
-        File srcSdrfFile = MageTabDataFiles.GENEPIX_GENE_EXPRESSION_SDRF;
-        JavaIOFileRef srcSdrfFileRef = new JavaIOFileRef(srcSdrfFile);
+    public void testSplitByRowCountUsingFileRef() 
+    throws SdrfHeaderNotFoundException, SdrfInvalidSplitRowCountException {
+        final File origSdrfFile = MageTabDataFiles.GENEPIX_GENE_EXPRESSION_SDRF;
+        final JavaIOFileRef origSdrfFileRef = new JavaIOFileRef(origSdrfFile);
 
-        final int bodyRowsCountInSrcFile = 14; 
-        final int bodyRowsCountPerSplitFile = 3;
-        List<RowOrientedSdrfDocument> splitSdrfs = new SdrfFileSplitter().splitSdrfByLineCount(srcSdrfFileRef, bodyRowsCountPerSplitFile);
-        final int expectedNumberOfFiles = bodyRowsCountInSrcFile % bodyRowsCountPerSplitFile == 0 ? bodyRowsCountInSrcFile / bodyRowsCountPerSplitFile
-                : (bodyRowsCountInSrcFile / bodyRowsCountPerSplitFile) + 1;
+        final int bodyRowsCountInOrigSdrf = 14; 
+        final int bodyRowsCountPerSplitSdrf = 3;
+
+        List<RowOrientedSdrfDocument> splitSdrfs = new SdrfFileSplitter().splitByRowCount(origSdrfFileRef, 
+                bodyRowsCountPerSplitSdrf);
+
+        verifyNumberOfFilesProducedInSplit(bodyRowsCountInOrigSdrf, bodyRowsCountPerSplitSdrf, splitSdrfs);
+
+        final String expectedHeaderRow = "Source Name\tSample Name\tExtract Name\tLabeled Extract Name" 
+            + "\tHybridization Name\tArray Data File\tDerived Array Data File";
+        verifyHeadersProducedInSplit(expectedHeaderRow, splitSdrfs);
+
+        verifyBodyRowCountsProducedInSplit(bodyRowsCountInOrigSdrf, bodyRowsCountPerSplitSdrf, splitSdrfs);
+    }
+
+    @Test(expected = SdrfInvalidSplitRowCountException.class)
+    public void testSplitByRowCountGreaterThanSdrfBodyRowsCount() throws Exception {
+        final RowOrientedSdrfDocument origRowOrientedSdrf = SdrfTestDataSets.DATA_SET_2.createRowOrientedSdrfDocument();
+        final int bodyRowsCountPerSplitSdrf = origRowOrientedSdrf.bodyRowsCount() + 1;
+        executeSplitByRowCountUsingRowOrientedDoc(origRowOrientedSdrf, bodyRowsCountPerSplitSdrf);
+    }
+
+    @Test
+    public void testSplitSdrfWithBodyRowsCountOfOneByRowCountOfOne() 
+    throws SdrfHeaderNotFoundException, SdrfInvalidSplitRowCountException {
+        final RowOrientedSdrfDocument origRowOrientedSdrf = SdrfTestDataSets.DATA_SET_1.createRowOrientedSdrfDocument();
+        final int bodyRowsCountPerSplitSdrf = 1;
+        executeSplitByRowCountUsingRowOrientedDoc(origRowOrientedSdrf, bodyRowsCountPerSplitSdrf);
+    }
+
+    @Test
+    public void testSplitSdrfWithBodyRowsCountGreaterThanOneByRowCountOfOne() 
+    throws SdrfHeaderNotFoundException, SdrfInvalidSplitRowCountException {
+        final RowOrientedSdrfDocument origRowOrientedSdrf = SdrfTestDataSets.DATA_SET_2.createRowOrientedSdrfDocument();
+        final int bodyRowsCountPerSplitSdrf = 1;
+        executeSplitByRowCountUsingRowOrientedDoc(origRowOrientedSdrf, bodyRowsCountPerSplitSdrf);
+    }
+
+    @Test
+    public void testSplitByRowCountGreaterThanOriginalSdrfBodyRowsCount() 
+    throws SdrfHeaderNotFoundException, SdrfInvalidSplitRowCountException {
+        final RowOrientedSdrfDocument origRowOrientedSdrf = SdrfTestDataSets.DATA_SET_3.createRowOrientedSdrfDocument();
+        final int bodyRowsCountPerSplitSdrf = origRowOrientedSdrf.bodyRowsCount() - 1;
+        if (bodyRowsCountPerSplitSdrf <= 1) {
+            throw new IllegalStateException("Original SDRF has bodyRowsCount=" + origRowOrientedSdrf.bodyRowsCount()
+                    + ", bodyRowsCountPerSplitSdrf=" + bodyRowsCountPerSplitSdrf 
+                    + ". bodyRowsCount of Original SDRF needs to be >= 3" 
+                    + ", so that we could test the case where bodyRowsCountPerSplitSdrf > 1" 
+                    + ". The case where bodyRowsCountPerSplitSdrf == 1 is already covered by"
+                    + "  testSplitSdrfWithBodyRowsCountOfOneByRowCountOfOne()"
+                    + ", and by testSplitSdrfWithBodyRowsCountGreaterThanOneByRowCountOfOne()"
+            );
+        }
+        executeSplitByRowCountUsingRowOrientedDoc(origRowOrientedSdrf, bodyRowsCountPerSplitSdrf);
+    }
+
+    public void executeSplitByRowCountUsingRowOrientedDoc(final RowOrientedSdrfDocument origRowOrientedSdrf, 
+            final int bodyRowsCountPerSplitSdrf) 
+    throws SdrfHeaderNotFoundException, SdrfInvalidSplitRowCountException {
+        final int bodyRowsCountInOrigSdrf = origRowOrientedSdrf.bodyRowsCount(); 
+        List<RowOrientedSdrfDocument> splitSdrfs = new SdrfFileSplitter().splitByRowCount(origRowOrientedSdrf, 
+                bodyRowsCountPerSplitSdrf);
+
+        verifyNumberOfFilesProducedInSplit(bodyRowsCountInOrigSdrf, bodyRowsCountPerSplitSdrf, splitSdrfs);
+
+        final String expectedHeaderRow = SdrfTestDataSets.DATA_SET_2.getHeader();
+        verifyHeadersProducedInSplit(expectedHeaderRow, splitSdrfs);
+
+        verifyBodyRowCountsProducedInSplit(bodyRowsCountInOrigSdrf, bodyRowsCountPerSplitSdrf, splitSdrfs);
+    }
+
+    private void verifyNumberOfFilesProducedInSplit(final int bodyRowsCountInOrigFile, 
+            final int bodyRowsCountPerSplitFile, final List<RowOrientedSdrfDocument> splitSdrfs) {
+        final int expectedNumberOfFiles = bodyRowsCountInOrigFile % bodyRowsCountPerSplitFile == 0 ? 
+                bodyRowsCountInOrigFile / bodyRowsCountPerSplitFile
+                : (bodyRowsCountInOrigFile / bodyRowsCountPerSplitFile) + 1;
         assertEquals(expectedNumberOfFiles, splitSdrfs.size());
+    }
 
-        for (int i = 0; i < expectedNumberOfFiles; i++) {
-            RowOrientedSdrfDocument splitDoc = splitSdrfs.get(i);
-
-            //verify headerRow
-            String expectedHeaderRow = "Source Name\tSample Name\tExtract Name\tLabeled Extract Name" 
-                + "\tHybridization Name\tArray Data File\tDerived Array Data File";
-            String actualHeaderRow = splitDoc.getHeaderRow().getRawString();
+    private void verifyHeadersProducedInSplit(final String expectedHeaderRow, 
+            final List<RowOrientedSdrfDocument> splitSdrfs) {
+        for (RowOrientedSdrfDocument aSplitSdrf : splitSdrfs) {
+            final String actualHeaderRow = aSplitSdrf.getHeaderRow().getRawString();
             assertEquals(expectedHeaderRow, actualHeaderRow);
+        }
+    }
 
-            //verify bodyRowsCount
-            if (i < expectedNumberOfFiles - 1) {
-                assertEquals(bodyRowsCountPerSplitFile, splitDoc.bodyRowsCount());
+    private void verifyBodyRowCountsProducedInSplit(final int bodyRowsCountInOrigFile, 
+            final int bodyRowsCountPerSplitFile, 
+            final List<RowOrientedSdrfDocument> splitSdrfs) {
+        for (int i = 0; i < splitSdrfs.size(); i++) {
+            final RowOrientedSdrfDocument aSplitSdrf = splitSdrfs.get(i); 
+            if (i < splitSdrfs.size() - 1) {
+                //all files except last one 
+                assertEquals(bodyRowsCountPerSplitFile, aSplitSdrf.bodyRowsCount());
             } else { 
-                //final split file holds the left-over rows. 
-                assertEquals(bodyRowsCountInSrcFile % bodyRowsCountPerSplitFile, splitDoc.bodyRowsCount());
+                //final file holds the left-over rows. 
+                final int numberOfLeftOverRows = bodyRowsCountPerSplitFile == 1 ? 1 : 
+                    bodyRowsCountInOrigFile % bodyRowsCountPerSplitFile;
+                assertEquals(numberOfLeftOverRows, aSplitSdrf.bodyRowsCount());
             }
         }
-
     }
+
 
 }

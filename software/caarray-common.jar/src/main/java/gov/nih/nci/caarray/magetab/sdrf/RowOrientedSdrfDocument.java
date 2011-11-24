@@ -83,7 +83,7 @@
 package gov.nih.nci.caarray.magetab.sdrf;
 
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -122,10 +122,10 @@ public class RowOrientedSdrfDocument {
 
     /**
      * 
-     * @return Iterator to iterate over the bodyRows
+     * @return get bodyRows as unmodifiable List
      */
-    public Iterator<SdrfRow> bodyRowsIterator() {
-        return bodyRows.iterator();
+    public List<SdrfRow> getBodyRows() {
+        return Collections.unmodifiableList(bodyRows);
     }
 
     /**
@@ -139,7 +139,7 @@ public class RowOrientedSdrfDocument {
     /**
      * @return sdrf document as multi-line string.
      */
-    public String getRawString() {
+    public String asRawString() {
         final StringBuilder strBuilder = new StringBuilder(headerRow.getRawString() + "\n");
         for (SdrfRow bodyRow : bodyRows) {
             strBuilder.append(bodyRow.getRawString() + "\n");
@@ -152,7 +152,7 @@ public class RowOrientedSdrfDocument {
      */
     @Override
     public String toString() {
-        return getRawString();
+        return asRawString();
     }
 
 }
