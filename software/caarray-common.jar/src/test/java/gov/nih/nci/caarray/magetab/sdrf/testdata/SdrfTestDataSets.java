@@ -82,34 +82,76 @@
  */
 package gov.nih.nci.caarray.magetab.sdrf.testdata;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 
 public class SdrfTestDataSets {
 
-    private static final String RAW_HEADER_1 = "Source Name\tSample Name\tExtract Name\tLabeled Extract Name"
+    //DATA_SET_1
+    private static final String HEADER_1 = "Source Name\tSample Name\tExtract Name\tLabeled Extract Name"
         + "\tLabel\tHybridization Name\tArray Data File\tDerived Array Data File";
-    private static final String[] RAW_BODY_ROWS_1 = {
+    private static final String[] BODY_1 = {
         "Source 1\tSample 1\tExtract 1\tLabeled Extract 1\tLabel 1\tHybridization 1\tArray Data File 1\tDerived Array Data File 1",
     };
-    public static final SdrfTestData DATA_SET_1 = new SdrfTestData(RAW_HEADER_1, RAW_BODY_ROWS_1);
+    private static final List<String> BODY_LIST_1 = Collections.unmodifiableList(Arrays.asList(BODY_1));
+    public static final SdrfTestData DATA_SET_1 = new SdrfTestData(HEADER_1, BODY_LIST_1);
 
 
-    private static final String RAW_HEADER_2 = "Source Name\tSample Name\tExtract Name\tLabeled Extract Name"
+
+    //DATA_SET_2
+    private static final String HEADER_2 = "Source Name\tSample Name\tExtract Name\tLabeled Extract Name"
         + "\tLabel\tHybridization Name\tArray Data File\tDerived Array Data File";
-    private static final String[] RAW_BODY_ROWS_2 = {
+    private static final String[] BODY_2 = {
         "Source 1\tSample 1\tExtract 1\tLabeled Extract 1\tLabel 1\tHybridization 1\tArray Data File 1\tDerived Array Data File 1",
         "Source 2\tSample 2\tExtract 2\tLabeled Extract 2\tLabel 1\tHybridization 2\tArray Data File 2\tDerived Array Data File 2",
     };
-    public static final SdrfTestData DATA_SET_2 = new SdrfTestData(RAW_HEADER_2, RAW_BODY_ROWS_2);
+    private static final List<String> BODY_LIST_2 = Collections.unmodifiableList(Arrays.asList(BODY_2));
+    public static final SdrfTestData DATA_SET_2 = new SdrfTestData(HEADER_2, BODY_LIST_2);
 
-    private static final String RAW_HEADER_3 = "Source Name\tSample Name\tExtract Name\tLabeled Extract Name"
+
+    //DATA_SET_3
+    private static final String HEADER_3 = "Source Name\tSample Name\tExtract Name\tLabeled Extract Name"
         + "\tLabel\tHybridization Name\tArray Data File\tDerived Array Data File";
-    private static final String[] RAW_BODY_ROWS_3 = {
+    private static final String[] BODY_3 = {
         "Source 1\tSample 1\tExtract 1\tLabeled Extract 1\tLabel 1\tHybridization 1\tArray Data File 1\tDerived Array Data File 1",
         "Source 2\tSample 2\tExtract 2\tLabeled Extract 2\tLabel 1\tHybridization 2\tArray Data File 2\tDerived Array Data File 2",
         "Source 3\tSample 3\tExtract 3\tLabeled Extract 3\tLabel 1\tHybridization 3\tArray Data File 3\tDerived Array Data File 3", 
         "Source 4\tSample 4\tExtract 4\tLabeled Extract 4\tLabel 1\tHybridization 4\tArray Data File 4\tDerived Array Data File 4", 
         "Source 5\tSample 5\tExtract 5\tLabeled Extract 5\tLabel 1\tHybridization 5\tArray Data File 5\tDerived Array Data File 5", 
     };
-    public static final SdrfTestData DATA_SET_3 = new SdrfTestData(RAW_HEADER_3, RAW_BODY_ROWS_3);
+    private static final List<String> BODY_LIST_3 = Collections.unmodifiableList(Arrays.asList(BODY_3));
+    public static final SdrfTestData DATA_SET_3 = new SdrfTestData(HEADER_3, BODY_LIST_3);
+
+
+    //DATA_SET_4
+    private static final String HEADER_4 = "Source Name\tSample Name\tExtract Name\tLabeled Extract Name"
+        + "\tLabel\tHybridization Name\tArray Data File\tDerived Array Data File";
+    private static final String[] BODY_4 = {
+        "Source 1\tSample 1\tExtract 1\tLabeled Extract 1\tLabel 1\tHybridization 1\tArray Data File 1\tDerived Array Data File 1",
+    };
+    private static final List<String> BODY_LIST_4 = Collections.unmodifiableList(Arrays.asList(BODY_4));
+    private static final String[] PREHEADER_4 = {
+        "",
+        " ",
+        "#this is a comment line",
+    };
+    private static final List<String> PREHEADER_LIST_4 = Collections.unmodifiableList(Arrays.asList(PREHEADER_4));
+    public static final SdrfTestData DATA_SET_WITH_MULTIPLE_PREHEADER_LINES = new SdrfTestData(PREHEADER_LIST_4, HEADER_4, BODY_LIST_4);
+
+
+
+    //DATA_SET_5
+    private static final String HEADER_5 = "";
+    private static final String[] BODY_5 = new String[0];
+    private static final List<String> BODY_LIST_5 = Collections.unmodifiableList(Arrays.asList(BODY_5));
+    private static final String[] PREHEADER_5 = {
+        "",
+        " ",
+        "#this is a comment line",
+    };
+    private static final List<String> PREHEADER_LIST_5 = Collections.unmodifiableList(Arrays.asList(PREHEADER_5));
+    public static final SdrfTestData DATA_SET_WITH_NO_HEADER_OR_BODY = new SdrfTestData(PREHEADER_LIST_5, HEADER_5, BODY_LIST_5);
 
 }

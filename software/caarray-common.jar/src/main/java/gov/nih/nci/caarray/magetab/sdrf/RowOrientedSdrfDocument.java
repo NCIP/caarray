@@ -90,7 +90,7 @@ import java.util.List;
  * Represents the unparsed lines of the SDRF document. 
  */
 public class RowOrientedSdrfDocument {
-    private SdrfRow headerRow; 
+    private SdrfRow headerRow = new SdrfRow("");
 
     private final List<SdrfRow> bodyRows = new ArrayList<SdrfRow>();
 
@@ -107,6 +107,7 @@ public class RowOrientedSdrfDocument {
      * @param headerString the header row as a string 
      */
     public void setHeaderRow(String headerString) {
+        if (headerString == null) { headerString = ""; } 
         this.headerRow = new SdrfRow(headerString);
     }
 
@@ -116,6 +117,7 @@ public class RowOrientedSdrfDocument {
      * @return true if added successfully.
      */
     public boolean addBodyRow(String bodyString) {
+        if (bodyString == null) { bodyString = ""; } 
         final SdrfRow bodyRow = new SdrfRow(bodyString);
         return bodyRows.add(bodyRow);
     }

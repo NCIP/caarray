@@ -84,21 +84,37 @@ package gov.nih.nci.caarray.magetab.sdrf.testdata;
 
 import gov.nih.nci.caarray.magetab.sdrf.RowOrientedSdrfDocument;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 public class SdrfTestData {
+    @SuppressWarnings("unchecked")
+    private static final List<String> EMPTY_LIST_OF_STRING = Collections.unmodifiableList(new ArrayList<String>());
 
+    private final List<String> preHeaderLines; 
     private final String header; 
-    private final String[] bodyRows; 
+    private final List<String> bodyRows; 
 
-    public SdrfTestData(final String header, final String[] bodyRows) {
+    public SdrfTestData(final String header, final List<String> bodyRows) {
+        this(EMPTY_LIST_OF_STRING, header, bodyRows);
+    }
+
+    public SdrfTestData(final List<String> preHeaderLines, final String header, final List<String> bodyRows) {
+        this.preHeaderLines = preHeaderLines;
         this.header = header; 
         this.bodyRows = bodyRows; 
+    }
+
+    public List<String> getPreHeaderLines() {
+        return preHeaderLines;
     }
 
     public String getHeader() {
         return header;
     }
 
-    public String[] getBodyRows() {
+    public List<String> getBodyRows() {
         return bodyRows;
     }
 
@@ -110,4 +126,19 @@ public class SdrfTestData {
         }
         return rowOrientedDoc;
     }
+
+    public String asRawText() {
+        StringBuilder rawText = new StringBuilder("");
+        for (String preHeaderLines : getPreHeaderLines()) { rawText.append(preHeaderLines + "\n"); }
+        rawText.append(getHeader() + "\n");
+        for (String bodyRow : getBodyRows()) { rawText.append(bodyRow + "\n"); }
+        return rawText.toString();
+    }      
+
+    public String asRawTextStrippedOfIgnoreableLines() {
+        StringBuilder rawText = new StringBuilder("");
+        rawText.append(getHeader() + "\n");
+        for (String bodyRow : getBodyRows()) { rawText.append(bodyRow + "\n"); }
+        return rawText.toString();
+    }      
 }

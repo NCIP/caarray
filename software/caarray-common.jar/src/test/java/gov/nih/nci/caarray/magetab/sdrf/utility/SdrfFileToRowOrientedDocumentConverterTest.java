@@ -80,60 +80,85 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.magetab.sdrf;
+package gov.nih.nci.caarray.magetab.sdrf.utility;
 
 import static org.junit.Assert.assertEquals;
+import gov.nih.nci.caarray.magetab.io.JavaIOFileRef;
+import gov.nih.nci.caarray.magetab.sdrf.RowOrientedSdrfDocument;
+import gov.nih.nci.caarray.magetab.sdrf.SdrfHeaderNotFoundException;
 import gov.nih.nci.caarray.magetab.sdrf.testdata.SdrfTestData;
 import gov.nih.nci.caarray.magetab.sdrf.testdata.SdrfTestDataSets;
+import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 
-import java.util.List;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.LineNumberReader;
+import java.io.StringReader;
 
-import org.junit.Before;
 import org.junit.Test;
 
 /**
- * Test of RowOrientedSdrfDocument class.
+ * Test of SdrfFileToRowOrientedDocumentConverter class.
  * 
  * @author asy
  */
-public class RowOrientedSdrfDocumentTest {
+public class SdrfFileToRowOrientedDocumentConverterTest {
 
-    private RowOrientedSdrfDocument rowOrientedDoc;
-    private final SdrfTestData sdrfTestData = SdrfTestDataSets.DATA_SET_3;
+    @Test
+    public void testExtractHeaderLine() throws Exception  {
+        final SdrfTestData sdrfTestData = SdrfTestDataSets.DATA_SET_WITH_MULTIPLE_PREHEADER_LINES;
+        final LineNumberReader testDataReader = createLineNumberReader(sdrfTestData);
+        String actualHeader = SdrfFileToRowOrientedDocumentConverter.extractHeaderLine(testDataReader, "dummyFileName");
+        String expectedHeader = sdrfTestData.getHeader();
+        assertEquals(expectedHeader, actualHeader);
+    }
 
-    @Before
-    public void setup() {
-        rowOrientedDoc = sdrfTestData.createRowOrientedSdrfDocument();
+    @Test(expected = SdrfHeaderNotFoundException.class)
+    public void testHeaderNotFound() throws Exception {
+        final SdrfTestData sdrfTestData = SdrfTestDataSets.DATA_SET_WITH_NO_HEADER_OR_BODY;
+        final LineNumberReader testDataReader = createLineNumberReader(sdrfTestData);
+        String actualHeader = SdrfFileToRowOrientedDocumentConverter.extractHeaderLine(testDataReader, "dummyFileName");
+        String expectedHeader = sdrfTestData.getHeader();
+        assertEquals(expectedHeader, actualHeader);
     }
 
     @Test
-    public void testHeader() {
-        String actualHeader = rowOrientedDoc.getHeaderRow().getRawString();
-        assertEquals(sdrfTestData.getHeader(), actualHeader);
+    public void testConvert() throws Exception {
+        final File origSdrfFile = MageTabDataFiles.GENEPIX_GENE_EXPRESSION_SDRF;
+        final JavaIOFileRef origSdrfFileRef = new JavaIOFileRef(origSdrfFile);
+        final RowOrientedSdrfDocument rowOrientedDoc = SdrfFileToRowOrientedDocumentConverter.convert(origSdrfFileRef);
+
+        final String origSdrfRawText = readFileContents(origSdrfFile);
+        final String actualRawText = rowOrientedDoc.asRawString();
+        assertEquals(origSdrfRawText, actualRawText);
     }
 
-    @Test
-    public void testBodyRowsSize() {
-        int actualBodyRowsCount = this.rowOrientedDoc.bodyRowsCount();
-        assertEquals(sdrfTestData.getBodyRows().size(), actualBodyRowsCount);
+    private LineNumberReader createLineNumberReader(final SdrfTestData sdrfTestData) {
+        final String testDataAsRawText = sdrfTestData.asRawText();
+        return new LineNumberReader(new StringReader(testDataAsRawText));
     }
 
-    @Test
-    public void testBodyRows() {
-        List<String> expectedBodyRows = sdrfTestData.getBodyRows();
-        List<SdrfRow> actualBodyRows = rowOrientedDoc.getBodyRows();
-        for (int i = 0; i < expectedBodyRows.size(); i++) {
-            String actualRow = actualBodyRows.get(i).getRawString();
-            String expectedRow = expectedBodyRows.get(i);
-            assertEquals(expectedRow, actualRow);
-        }
+    private String readFileContents(File file) throws IOException {
+        FileReader fileReader = new FileReader(file);
+        int fileLength = (int) file.length();
+        char[] fileContents = new char[fileLength]; //assume only Latin-1 single byte chars
+        fileReader.read(fileContents);
+        String strFileContents = new String(fileContents);
+        return normalizeLineBreaks(strFileContents);
     }
 
-    @Test
-    public void testAsRawString() {
-        String actualRawString = rowOrientedDoc.asRawString();
-        String expectedRawString = sdrfTestData.asRawText();
-        assertEquals(expectedRawString, actualRawString);
+    /**
+     * Normalize target by converting line breaks to "\n", and appending "\n" if target does not end with line break.
+     * @param target string to normalize
+     * @return normalized string
+     */
+    private String normalizeLineBreaks(final String target) {
+        String retString = target.replaceAll("\r\n", "\n");
+        retString = retString.replaceAll("\r", "\n");
+        if (!retString.endsWith("\n")) { retString = retString.concat("\n"); }
+        return retString;
+
     }
 
 }

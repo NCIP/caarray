@@ -85,7 +85,6 @@ package gov.nih.nci.caarray.magetab.sdrf.utility;
 import static org.junit.Assert.assertEquals;
 import gov.nih.nci.caarray.magetab.io.JavaIOFileRef;
 import gov.nih.nci.caarray.magetab.sdrf.RowOrientedSdrfDocument;
-import gov.nih.nci.caarray.magetab.sdrf.SdrfHeaderNotFoundException;
 import gov.nih.nci.caarray.magetab.sdrf.SdrfInvalidSplitRowCountException;
 import gov.nih.nci.caarray.magetab.sdrf.testdata.SdrfTestDataSets;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
@@ -104,8 +103,7 @@ import org.junit.Test;
 public class SdrfFileSplitterTest {
 
     @Test
-    public void testSplitByRowCountUsingFileRef() 
-    throws SdrfHeaderNotFoundException, SdrfInvalidSplitRowCountException {
+    public void testSplitByRowCountUsingFileRef() throws Exception {
         final File origSdrfFile = MageTabDataFiles.GENEPIX_GENE_EXPRESSION_SDRF;
         final JavaIOFileRef origSdrfFileRef = new JavaIOFileRef(origSdrfFile);
 
@@ -132,24 +130,21 @@ public class SdrfFileSplitterTest {
     }
 
     @Test
-    public void testSplitSdrfWithBodyRowsCountOfOneByRowCountOfOne() 
-    throws SdrfHeaderNotFoundException, SdrfInvalidSplitRowCountException {
+    public void testSplitSdrfWithBodyRowsCountOfOneByRowCountOfOne() throws Exception {
         final RowOrientedSdrfDocument origRowOrientedSdrf = SdrfTestDataSets.DATA_SET_1.createRowOrientedSdrfDocument();
         final int bodyRowsCountPerSplitSdrf = 1;
         executeSplitByRowCountUsingRowOrientedDoc(origRowOrientedSdrf, bodyRowsCountPerSplitSdrf);
     }
 
     @Test
-    public void testSplitSdrfWithBodyRowsCountGreaterThanOneByRowCountOfOne() 
-    throws SdrfHeaderNotFoundException, SdrfInvalidSplitRowCountException {
+    public void testSplitSdrfWithBodyRowsCountGreaterThanOneByRowCountOfOne() throws Exception {
         final RowOrientedSdrfDocument origRowOrientedSdrf = SdrfTestDataSets.DATA_SET_2.createRowOrientedSdrfDocument();
         final int bodyRowsCountPerSplitSdrf = 1;
         executeSplitByRowCountUsingRowOrientedDoc(origRowOrientedSdrf, bodyRowsCountPerSplitSdrf);
     }
 
     @Test
-    public void testSplitByRowCountGreaterThanOriginalSdrfBodyRowsCount() 
-    throws SdrfHeaderNotFoundException, SdrfInvalidSplitRowCountException {
+    public void testSplitByRowCountGreaterThanOriginalSdrfBodyRowsCount() throws Exception {
         final RowOrientedSdrfDocument origRowOrientedSdrf = SdrfTestDataSets.DATA_SET_3.createRowOrientedSdrfDocument();
         final int bodyRowsCountPerSplitSdrf = origRowOrientedSdrf.bodyRowsCount() - 1;
         if (bodyRowsCountPerSplitSdrf <= 1) {
@@ -167,7 +162,7 @@ public class SdrfFileSplitterTest {
 
     public void executeSplitByRowCountUsingRowOrientedDoc(final RowOrientedSdrfDocument origRowOrientedSdrf, 
             final int bodyRowsCountPerSplitSdrf) 
-    throws SdrfHeaderNotFoundException, SdrfInvalidSplitRowCountException {
+    throws Exception {
         final int bodyRowsCountInOrigSdrf = origRowOrientedSdrf.bodyRowsCount(); 
         List<RowOrientedSdrfDocument> splitSdrfs = new SdrfFileSplitter().splitByRowCount(origRowOrientedSdrf, 
                 bodyRowsCountPerSplitSdrf);
