@@ -82,7 +82,7 @@
  */
 package gov.nih.nci.caarray.magetab.sdrf.utility;
 
-import gov.nih.nci.caarray.magetab.sdrf.SdrfRow;
+import gov.nih.nci.caarray.magetab.sdrf.roworiented.SdrfRow;
 
 /** 
  * Misc utilities for working with SDRF. 

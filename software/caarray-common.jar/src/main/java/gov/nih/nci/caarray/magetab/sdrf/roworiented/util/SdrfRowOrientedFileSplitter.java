@@ -80,91 +80,76 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.magetab.sdrf.utility;
+package gov.nih.nci.caarray.magetab.sdrf.roworiented.util;
 
-import gov.nih.nci.caarray.common.CaArrayRutimeException;
 import gov.nih.nci.caarray.magetab.io.FileRef;
-import gov.nih.nci.caarray.magetab.sdrf.RowOrientedSdrfDocument;
 import gov.nih.nci.caarray.magetab.sdrf.SdrfHeaderNotFoundException;
+import gov.nih.nci.caarray.magetab.sdrf.roworiented.SdrfRowOrientedDocument;
+import gov.nih.nci.caarray.magetab.sdrf.roworiented.SdrfRow;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.LineNumberReader;
+import java.util.ArrayList;
+import java.util.List;
 
-/** 
- * Converts SDRF file to RowOrientedSdrfDocument. 
+/**
+ * Utility class for splitting a SDRF file into smaller files.
+ * 
  * @author asy
  *
  */
-final class SdrfFileToRowOrientedDocumentConverter {
-
-    private SdrfFileToRowOrientedDocumentConverter() {
-        //This satisfies checkstyle rule: Utility classes should not have a public or default constructor.
-    }
+public class SdrfRowOrientedFileSplitter {
 
     /**
-     * Converts SDRF file to RowOrientedSdrfDocument.
-     * @param sdrfFileRef reference to the SDRF file
-     * @return the converted file
+     * Splits original SDRF into smaller baby SDRFs, each containing at most maxRowsPerSplit number of body rows. 
+     * @param origSdrfFile original SDRF 
+     * @param maxRowsPerSplit max number of body rows in each split SDRF baby 
+     * @return list of split baby SDRFs
+     * @throws SdrfHeaderNotFoundException if header row not found in origSdrfFile
+     * @throws SdrfInvalidSplitRowCountException if maxRowsPerSplit > bodyRowsCount of original SDRF.
      */
-    public static RowOrientedSdrfDocument convert(final FileRef sdrfFileRef) 
-    throws SdrfHeaderNotFoundException {
-        final String sdrfFileName = sdrfFileRef != null ? sdrfFileRef.getName() : null;
-        try {
-            final RowOrientedSdrfDocument rowOrientedDoc = new RowOrientedSdrfDocument();
-            final File ioFile = sdrfFileRef.getAsFile(); 
-            final LineNumberReader lnReader = new LineNumberReader(new FileReader(ioFile));
-
-            final String headerString = extractHeaderLine(lnReader, sdrfFileName);
-            rowOrientedDoc.setHeaderRow(headerString);
-
-            extractBodyRows(rowOrientedDoc, lnReader);
-
-            return rowOrientedDoc;
-
-        } catch (final FileNotFoundException e) {
-            throw new IllegalArgumentException(e.getMessage(), e);
-        } catch (final IOException e) {
-            throw new CaArrayRutimeException("IOException while reading SDRF file=[" +  sdrfFileName + "]", e);
-        }
+    public List<SdrfRowOrientedDocument> splitByRowCount(final FileRef origSdrfFile, final int maxRowsPerSplit) 
+    throws SdrfHeaderNotFoundException, SdrfInvalidSplitRowCountException {
+        final SdrfRowOrientedDocument origSdrf = SdrfFileToRowOrientedDocumentConverter.convert(origSdrfFile);
+        return splitByRowCount(origSdrf, maxRowsPerSplit);
     }
 
 
     /**
-     * Reads from current line of lnReader until first non-ignoreable row is found. 
-     * This row is returned as the header row. 
-     * @param lnReader reader for the SDRF file
-     * @param sdrfFileName used to report the file name in case of error. 
-     * @return header row
-     * @throws IOException if error while reading lnReader
-     * @throws SdrfHeaderNotFoundException if header row not found
+     * Splits original SDRF into smaller baby SDRFs, each containing at most maxRowsPerSplit number of body rows. 
+     * @param origSdrf original SDRF 
+     * @param maxRowsPerSplit max number of body rows in each split SDRF baby 
+     * @return list of split baby SDRFs
+     * @throws SdrfInvalidSplitRowCountException if maxRowsPerSplit > bodyRowsCount of original SDRF.
      */
-    static String extractHeaderLine(final LineNumberReader lnReader, String sdrfFileName) 
-    throws IOException, SdrfHeaderNotFoundException {
-        String currentLine = null;
-        //first non-ignoreable line is the header
-        while ((currentLine = lnReader.readLine()) != null) {
-            if (!SdrfIgnoreableRowChecker.isIgnoreableRow(currentLine)) { break; }
+    public List<SdrfRowOrientedDocument> splitByRowCount(final SdrfRowOrientedDocument origSdrf, 
+            final int maxRowsPerSplit) 
+            throws SdrfInvalidSplitRowCountException {
+
+        if (maxRowsPerSplit > origSdrf.bodyRowsCount()) {
+            throw new SdrfInvalidSplitRowCountException("Original SDRF has bodyRowsCount=" + origSdrf.bodyRowsCount()
+                    + "; cannot split SDRF by maxRowsPerSplit=" + maxRowsPerSplit + ". ");
         }
 
-        if (currentLine == null) {
-            throw new SdrfHeaderNotFoundException("Header not found for SDRF file=[" + sdrfFileName + "]");
+
+        if (maxRowsPerSplit <= 0) {
+            throw new IllegalArgumentException("Cannot split SDRF by maxRowsPerSplit=" + maxRowsPerSplit);
         }
-        return currentLine;
-    }
 
+        List<SdrfRowOrientedDocument> babySdrfs = new ArrayList<SdrfRowOrientedDocument>();
 
-    static void extractBodyRows(final RowOrientedSdrfDocument rowOrientedDoc, 
-            final LineNumberReader lnReader) throws IOException {
-        String currentLine = null;
-        while ((currentLine = lnReader.readLine()) != null) {
-            if (!SdrfIgnoreableRowChecker.isIgnoreableRow(currentLine)) { 
-                rowOrientedDoc.addBodyRow(currentLine);
+        final List<SdrfRow> origBodyRows = origSdrf.getBodyRows();
+        final String strHeaderRow = origSdrf.getHeaderRow().getRawString();
+        SdrfRowOrientedDocument babySdrf = null;
+        for (int i = 0; i < origBodyRows.size(); i++) {
+            if (i % maxRowsPerSplit == 0) {
+                babySdrf = new SdrfRowOrientedDocument();
+                babySdrf.setHeaderRow(strHeaderRow);
+                babySdrfs.add(babySdrf);
             }
+            SdrfRow currentBodyRow = origBodyRows.get(i);
+            babySdrf.addBodyRow(currentBodyRow.getRawString());
         }
-    }
 
+        return babySdrfs;
+    }
 
 }

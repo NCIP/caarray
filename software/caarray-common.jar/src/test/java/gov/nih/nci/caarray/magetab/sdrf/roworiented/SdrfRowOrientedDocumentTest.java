@@ -80,30 +80,62 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.magetab.sdrf;
+package gov.nih.nci.caarray.magetab.sdrf.roworiented;
 
-import gov.nih.nci.caarray.common.CaArrayCheckedException;
+import static org.junit.Assert.assertEquals;
+import gov.nih.nci.caarray.magetab.sdrf.roworiented.SdrfRowOrientedDocument;
+import gov.nih.nci.caarray.magetab.sdrf.roworiented.SdrfRow;
+import gov.nih.nci.caarray.magetab.sdrf.testdata.SdrfTestData;
+import gov.nih.nci.caarray.magetab.sdrf.testdata.SdrfTestDataSets;
+
+import java.util.List;
+
+import org.junit.Before;
+import org.junit.Test;
 
 /**
- * Thrown when header not found in SDRF file. 
+ * Test of SdrfRowOrientedDocument class.
+ * 
  * @author asy
- *
  */
-public class SdrfInvalidSplitRowCountException extends CaArrayCheckedException {
+public class SdrfRowOrientedDocumentTest {
 
-    /**
-     * @param message the msg
-     */
-    public SdrfInvalidSplitRowCountException(String message) {
-        super(message);
+    private SdrfRowOrientedDocument rowOrientedDoc;
+    private final SdrfTestData sdrfTestData = SdrfTestDataSets.DATA_SET_3;
+
+    @Before
+    public void setup() {
+        rowOrientedDoc = sdrfTestData.createRowOrientedSdrfDocument();
     }
 
-    /**
-     * @param message the msg
-     * @param cause the cause
-     */
-    public SdrfInvalidSplitRowCountException(String message, Throwable cause) {
-        super(message, cause);
+    @Test
+    public void testHeader() {
+        String actualHeader = rowOrientedDoc.getHeaderRow().getRawString();
+        assertEquals(sdrfTestData.getHeader(), actualHeader);
+    }
+
+    @Test
+    public void testBodyRowsSize() {
+        int actualBodyRowsCount = this.rowOrientedDoc.bodyRowsCount();
+        assertEquals(sdrfTestData.getBodyRows().size(), actualBodyRowsCount);
+    }
+
+    @Test
+    public void testBodyRows() {
+        List<String> expectedBodyRows = sdrfTestData.getBodyRows();
+        List<SdrfRow> actualBodyRows = rowOrientedDoc.getBodyRows();
+        for (int i = 0; i < expectedBodyRows.size(); i++) {
+            String actualRow = actualBodyRows.get(i).getRawString();
+            String expectedRow = expectedBodyRows.get(i);
+            assertEquals(expectedRow, actualRow);
+        }
+    }
+
+    @Test
+    public void testAsRawString() {
+        String actualRawString = rowOrientedDoc.asRawString();
+        String expectedRawString = sdrfTestData.asRawText();
+        assertEquals(expectedRawString, actualRawString);
     }
 
 }

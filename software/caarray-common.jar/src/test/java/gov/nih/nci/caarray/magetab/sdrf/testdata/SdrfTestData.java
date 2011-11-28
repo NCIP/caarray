@@ -82,7 +82,7 @@
  */
 package gov.nih.nci.caarray.magetab.sdrf.testdata;
 
-import gov.nih.nci.caarray.magetab.sdrf.RowOrientedSdrfDocument;
+import gov.nih.nci.caarray.magetab.sdrf.roworiented.SdrfRowOrientedDocument;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -118,8 +118,8 @@ public class SdrfTestData {
         return bodyRows;
     }
 
-    public RowOrientedSdrfDocument createRowOrientedSdrfDocument() {
-        RowOrientedSdrfDocument rowOrientedDoc = new RowOrientedSdrfDocument();
+    public SdrfRowOrientedDocument createRowOrientedSdrfDocument() {
+        SdrfRowOrientedDocument rowOrientedDoc = new SdrfRowOrientedDocument();
         rowOrientedDoc.setHeaderRow(header);
         for (String bodyRow : bodyRows) {
             rowOrientedDoc.addBodyRow(bodyRow);

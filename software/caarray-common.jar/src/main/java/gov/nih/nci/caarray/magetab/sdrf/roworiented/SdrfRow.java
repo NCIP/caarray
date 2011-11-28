@@ -80,81 +80,46 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.magetab.sdrf;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+package gov.nih.nci.caarray.magetab.sdrf.roworiented;
 
 /**
- * Represents the unparsed lines of the SDRF document. 
+ * Represents a row in an SDRF file.
  */
-public class RowOrientedSdrfDocument {
-    private SdrfRow headerRow = new SdrfRow("");
+public class SdrfRow {
+    private final String rawString; 
 
-    private final List<SdrfRow> bodyRows = new ArrayList<SdrfRow>();
+    /**
+     * Marks a comment line as per MAGE-TAB specs.
+     */
+    public static final String COMMENT_CHARACTER = "#";
+
+    /**
+     * Column delimiter as per MAGE-TAB specs.
+     */
+    public static final String COLUMN_DELIMITER = "\t";
 
     /**
      * 
-     * @return the header row
+     * @param rawString the row as a string.
      */
-    public SdrfRow getHeaderRow() {
-        return headerRow;
+    protected SdrfRow(String rawString) {
+        this.rawString = rawString; 
     }
 
     /**
-     * 
-     * @param headerString the header row as a string 
+     * @return row as string.
      */
-    public void setHeaderRow(String headerString) {
-        if (headerString == null) { headerString = ""; } 
-        this.headerRow = new SdrfRow(headerString);
+    public String getRawString() {
+        return rawString;
     }
 
-    /**
-     * 
-     * @param bodyString a body row as a string
-     * @return true if added successfully.
-     */
-    public boolean addBodyRow(String bodyString) {
-        if (bodyString == null) { bodyString = ""; } 
-        final SdrfRow bodyRow = new SdrfRow(bodyString);
-        return bodyRows.add(bodyRow);
-    }
 
     /**
-     * 
-     * @return get bodyRows as unmodifiable List
-     */
-    public List<SdrfRow> getBodyRows() {
-        return Collections.unmodifiableList(bodyRows);
-    }
-
-    /**
-     * 
-     * @return row count of bodyRows
-     */
-    public int bodyRowsCount() {
-        return bodyRows.size();
-    }
-
-    /**
-     * @return sdrf document as multi-line string.
-     */
-    public String asRawString() {
-        final StringBuilder strBuilder = new StringBuilder(headerRow.getRawString() + "\n");
-        for (SdrfRow bodyRow : bodyRows) {
-            strBuilder.append(bodyRow.getRawString() + "\n");
-        }
-        return strBuilder.toString();
-    }
-
-    /**
-     * @return sdrf document as multi-line string.
+     * @return row as string.
      */
     @Override
     public String toString() {
-        return asRawString();
+        return getRawString();
     }
 
 }

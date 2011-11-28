@@ -80,12 +80,13 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.magetab.sdrf.utility;
+package gov.nih.nci.caarray.magetab.sdrf.roworiented.util;
 
 import static org.junit.Assert.assertEquals;
 import gov.nih.nci.caarray.magetab.io.JavaIOFileRef;
-import gov.nih.nci.caarray.magetab.sdrf.RowOrientedSdrfDocument;
 import gov.nih.nci.caarray.magetab.sdrf.SdrfHeaderNotFoundException;
+import gov.nih.nci.caarray.magetab.sdrf.roworiented.SdrfRowOrientedDocument;
+import gov.nih.nci.caarray.magetab.sdrf.roworiented.util.SdrfFileToRowOrientedDocumentConverter;
 import gov.nih.nci.caarray.magetab.sdrf.testdata.SdrfTestData;
 import gov.nih.nci.caarray.magetab.sdrf.testdata.SdrfTestDataSets;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
@@ -127,7 +128,7 @@ public class SdrfFileToRowOrientedDocumentConverterTest {
     public void testConvert() throws Exception {
         final File origSdrfFile = MageTabDataFiles.GENEPIX_GENE_EXPRESSION_SDRF;
         final JavaIOFileRef origSdrfFileRef = new JavaIOFileRef(origSdrfFile);
-        final RowOrientedSdrfDocument rowOrientedDoc = SdrfFileToRowOrientedDocumentConverter.convert(origSdrfFileRef);
+        final SdrfRowOrientedDocument rowOrientedDoc = SdrfFileToRowOrientedDocumentConverter.convert(origSdrfFileRef);
 
         final String origSdrfRawText = readFileContents(origSdrfFile);
         final String actualRawText = rowOrientedDoc.asRawString();
