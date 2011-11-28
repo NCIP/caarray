@@ -86,8 +86,6 @@ package gov.nih.nci.caarray.magetab.sdrf.roworiented;
  * Represents a row in an SDRF file.
  */
 public class SdrfRow {
-    private final String rawString; 
-
     /**
      * Marks a comment line as per MAGE-TAB specs.
      */
@@ -97,6 +95,9 @@ public class SdrfRow {
      * Column delimiter as per MAGE-TAB specs.
      */
     public static final String COLUMN_DELIMITER = "\t";
+
+    private final String rawString;
+
 
     /**
      * 
