@@ -2,8 +2,11 @@ package gov.nih.nci.caarray.application.translation.magetab;
 
  import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import gov.nih.nci.caarray.application.AbstractServiceTest;
 import gov.nih.nci.caarray.domain.contact.Organization;
+import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.ExperimentOntology;
@@ -22,8 +25,6 @@ import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.magetab.MageTabOntologyCategory;
 import gov.nih.nci.caarray.magetab.idf.IdfRowType;
 import gov.nih.nci.caarray.magetab.sdrf.SdrfColumnType;
-import com.fiveamsolutions.nci.commons.util.io.DelimitedFileReader;
-import com.fiveamsolutions.nci.commons.util.io.DelimitedFileReaderFactoryImpl;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,6 +36,9 @@ import org.apache.commons.lang.StringUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import com.fiveamsolutions.nci.commons.util.io.DelimitedFileReader;
+import com.fiveamsolutions.nci.commons.util.io.DelimitedFileReaderFactoryImpl;
 
 /**
  * Tests the MAGE-TAB exporter by creating different experiment structures, exporting to MAGE-TAB and verifying
@@ -119,6 +123,34 @@ public class MageTabExporterTest extends AbstractServiceTest {
         // Delete temporary files.
         idfFile.delete();
         sdrfFile.delete();
+    }
+    
+    /**
+     * Tests MAGE-TAB export of an experiment to ensure that ARRAY-2166 is resolved.
+     *
+     * @throws IOException
+     */
+    @Test
+    public void testDefect_Array2166() throws IOException {
+    	/*
+    	 *  Mock the RawArrayData so that the getDataFile() always returns null.
+    	 *  This will ensure that the call 
+    	 *      final CaArrayFile file = ((RawArrayData) caarrayNode).getDataFile();
+    	 *   in file MageTabExporterBean.java, method createNode(AbstractArrayData ...) will return null.
+    	 */
+    	RawArrayData file = mock(RawArrayData.class);
+    	when(file.getDataFile()).thenReturn(null);
+    	
+        // Create experiment.
+        Experiment experiment = createExperimentWithOneToOneChains();
+
+        // Call the exporter to export the contents of the experiment to MAGE-TAB.
+        exporter.exportToMageTab(experiment, idfFile, sdrfFile);
+
+        // Verify that the exported MAGE-TAB is correct.
+        DelimitedFileReader reader = new DelimitedFileReaderFactoryImpl().createTabDelimitedFileReader(sdrfFile);
+        verifyRowsOneToOne(reader, 2);
+        reader.close();
     }
 
     /**
@@ -301,6 +333,11 @@ public class MageTabExporterTest extends AbstractServiceTest {
         Hybridization hybridization = new Hybridization();
         hybridization.setName(HYBRIDIZATION_BASENAME + suffix);
 
+        RawArrayData rad = new RawArrayData();
+        rad.setName("rowArrayDataName");
+        rad.addHybridization(hybridization);
+        hybridization.getRawDataCollection().add(rad);
+        
         hybridization.getLabeledExtracts().add(labeledExtract);
         labeledExtract.getHybridizations().add(hybridization);
         labeledExtract.getExtracts().add(extract);

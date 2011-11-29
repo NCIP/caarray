@@ -550,7 +550,7 @@ public class MageTabExporterBean implements MageTabExporter {
         AbstractSampleDataRelationshipNode node = null;
         if (caarrayNode.getClass() == RawArrayData.class) {
             final CaArrayFile file = ((RawArrayData) caarrayNode).getDataFile();
-            if (!file.getFileType().isDataMatrix()) {
+            if (file == null || !file.getFileType().isDataMatrix()) {
                 node = new gov.nih.nci.caarray.magetab.sdrf.ArrayDataFile();
                 this.allArrayDataFiles.add((gov.nih.nci.caarray.magetab.sdrf.ArrayDataFile) node);
             } else {
