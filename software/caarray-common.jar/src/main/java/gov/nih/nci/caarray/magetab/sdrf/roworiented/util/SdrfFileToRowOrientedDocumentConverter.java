@@ -84,7 +84,7 @@ package gov.nih.nci.caarray.magetab.sdrf.roworiented.util;
 
 import gov.nih.nci.caarray.common.CaArrayRutimeException;
 import gov.nih.nci.caarray.magetab.io.FileRef;
-import gov.nih.nci.caarray.magetab.sdrf.SdrfHeaderNotFoundException;
+import gov.nih.nci.caarray.magetab.sdrf.SdrfHeaderRowNotFoundException;
 import gov.nih.nci.caarray.magetab.sdrf.roworiented.SdrfRowOrientedDocument;
 import gov.nih.nci.caarray.magetab.sdrf.utility.SdrfIgnoreableRowChecker;
 
@@ -111,7 +111,7 @@ final class SdrfFileToRowOrientedDocumentConverter {
      * @return the converted file
      */
     public static SdrfRowOrientedDocument convert(final FileRef sdrfFileRef) 
-    throws SdrfHeaderNotFoundException {
+    throws SdrfHeaderRowNotFoundException {
         final String sdrfFileName = sdrfFileRef != null ? sdrfFileRef.getName() : null;
         try {
             final SdrfRowOrientedDocument rowOrientedDoc = new SdrfRowOrientedDocument();
@@ -140,10 +140,10 @@ final class SdrfFileToRowOrientedDocumentConverter {
      * @param sdrfFileName used to report the file name in case of error. 
      * @return header row
      * @throws IOException if error while reading lnReader
-     * @throws SdrfHeaderNotFoundException if header row not found
+     * @throws SdrfHeaderRowNotFoundException if header row not found
      */
     static String extractHeaderLine(final LineNumberReader lnReader, String sdrfFileName) 
-    throws IOException, SdrfHeaderNotFoundException {
+    throws IOException, SdrfHeaderRowNotFoundException {
         String currentLine = null;
         //first non-ignoreable line is the header
         while ((currentLine = lnReader.readLine()) != null) {
@@ -151,7 +151,7 @@ final class SdrfFileToRowOrientedDocumentConverter {
         }
 
         if (currentLine == null) {
-            throw new SdrfHeaderNotFoundException("Header not found for SDRF file=[" + sdrfFileName + "]");
+            throw new SdrfHeaderRowNotFoundException("Header not found for SDRF file=[" + sdrfFileName + "]");
         }
         return currentLine;
     }

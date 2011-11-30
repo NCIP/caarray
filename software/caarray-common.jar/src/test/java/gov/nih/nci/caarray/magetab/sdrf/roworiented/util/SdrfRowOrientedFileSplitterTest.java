@@ -85,8 +85,6 @@ package gov.nih.nci.caarray.magetab.sdrf.roworiented.util;
 import static org.junit.Assert.assertEquals;
 import gov.nih.nci.caarray.magetab.io.JavaIOFileRef;
 import gov.nih.nci.caarray.magetab.sdrf.roworiented.SdrfRowOrientedDocument;
-import gov.nih.nci.caarray.magetab.sdrf.roworiented.util.SdrfRowOrientedFileSplitter;
-import gov.nih.nci.caarray.magetab.sdrf.roworiented.util.SdrfInvalidSplitRowCountException;
 import gov.nih.nci.caarray.magetab.sdrf.testdata.SdrfTestDataSets;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 
@@ -107,11 +105,12 @@ public class SdrfRowOrientedFileSplitterTest {
     public void testSplitByRowCountUsingFileRef() throws Exception {
         final File origSdrfFile = MageTabDataFiles.GENEPIX_GENE_EXPRESSION_SDRF;
         final JavaIOFileRef origSdrfFileRef = new JavaIOFileRef(origSdrfFile);
+        final SdrfRowOrientedDocument origSdrf = SdrfFileToRowOrientedDocumentConverter.convert(origSdrfFileRef);
 
         final int bodyRowsCountInOrigSdrf = 14; 
         final int bodyRowsCountPerSplitSdrf = 3;
 
-        List<SdrfRowOrientedDocument> splitSdrfs = new SdrfRowOrientedFileSplitter().splitByRowCount(origSdrfFileRef, 
+        List<SdrfRowOrientedDocument> splitSdrfs = new SdrfRowOrientedFileSplitter().splitByRowCount(origSdrf, 
                 bodyRowsCountPerSplitSdrf);
 
         verifyNumberOfFilesProducedInSplit(bodyRowsCountInOrigSdrf, bodyRowsCountPerSplitSdrf, splitSdrfs);

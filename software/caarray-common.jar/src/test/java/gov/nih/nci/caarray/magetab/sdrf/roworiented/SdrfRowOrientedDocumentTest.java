@@ -83,8 +83,8 @@
 package gov.nih.nci.caarray.magetab.sdrf.roworiented;
 
 import static org.junit.Assert.assertEquals;
-import gov.nih.nci.caarray.magetab.sdrf.roworiented.SdrfRowOrientedDocument;
-import gov.nih.nci.caarray.magetab.sdrf.roworiented.SdrfRow;
+import static org.junit.Assert.fail;
+import gov.nih.nci.caarray.magetab.sdrf.SdrfInvalidColumnException;
 import gov.nih.nci.caarray.magetab.sdrf.testdata.SdrfTestData;
 import gov.nih.nci.caarray.magetab.sdrf.testdata.SdrfTestDataSets;
 
@@ -112,6 +112,39 @@ public class SdrfRowOrientedDocumentTest {
     public void testHeader() {
         String actualHeader = rowOrientedDoc.getHeaderRow().getRawString();
         assertEquals(sdrfTestData.getHeader(), actualHeader);
+
+        String[] expectedHeaderNames = sdrfTestData.getHeader().split("\t");
+        for (int expectedIndex = 0; expectedIndex < expectedHeaderNames.length; expectedIndex++) {
+            String expectedHeaderName = expectedHeaderNames[expectedIndex];
+            try {
+                int actualIndex = rowOrientedDoc.columnIndexForHeader(expectedHeaderName);
+                assertEquals(expectedIndex, actualIndex);
+            } catch (SdrfInvalidColumnException e) {
+                fail("Failed for header=" + expectedHeaderName + ". " + e.getMessage());
+            }
+        }
+
+    }
+
+    @Test
+    public void testGetColumnForHeader() {
+        final String headerName = "Array Data File";
+        try {
+            int expectedNumberOfRows = sdrfTestData.getBodyRowsCount();
+            List<String> column = rowOrientedDoc.getColumnForHeader(headerName);
+            assertEquals(expectedNumberOfRows, column.size());
+            for (int i = 0; i < expectedNumberOfRows; i++) {
+                String expectedCellValue = headerName + " " + (i+1);
+                assertEquals(expectedCellValue, column.get(i));
+            }
+        } catch (SdrfInvalidColumnException e) {
+            fail("Failed for header=" + headerName + ". " + e.getMessage());
+        }
+    }
+
+    @Test(expected = SdrfInvalidColumnException.class)
+    public void testNoColumnFoundForHeader() throws SdrfInvalidColumnException {
+        rowOrientedDoc.getColumnForHeader("some invalid header name");
     }
 
     @Test

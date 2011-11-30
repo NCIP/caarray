@@ -82,9 +82,13 @@
  */
 package gov.nih.nci.caarray.magetab.sdrf.roworiented;
 
+import gov.nih.nci.caarray.magetab.sdrf.SdrfInvalidColumnException;
+
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Represents the unparsed lines of the SDRF document. 
@@ -95,7 +99,11 @@ public class SdrfRowOrientedDocument {
     private final List<SdrfRow> bodyRows = new ArrayList<SdrfRow>();
 
     /**
-     * 
+     * Maps header names to corresponding column zero-based index. 
+     */
+    private final Map<String, Integer> headerNameToColumnIndexMap = new HashMap<String, Integer>();
+
+    /**
      * @return the header row
      */
     public SdrfRow getHeaderRow() {
@@ -103,21 +111,29 @@ public class SdrfRowOrientedDocument {
     }
 
     /**
-     * 
-     * @param headerString the header row as a string 
+     * @param headerRow the header row as a tab delimited string 
      */
-    public void setHeaderRow(String headerString) {
-        if (headerString == null) { headerString = ""; } 
-        this.headerRow = new SdrfRow(headerString);
+    public void setHeaderRow(String headerRow) {
+        this.headerRow = new SdrfRow(headerRow);
+        initializeHeaderNameToColumnIndexMap();
+
     }
+
+    private void initializeHeaderNameToColumnIndexMap() {
+        this.headerNameToColumnIndexMap.clear(); 
+        List<String> headerCells = this.headerRow.cellValues();
+        for (int i = 0; i < headerCells.size(); i++) {
+            headerNameToColumnIndexMap.put(headerCells.get(i), i);
+        }
+    }
+
 
     /**
      * 
-     * @param bodyString a body row as a string
+     * @param bodyString a body row as a tab delimited string
      * @return true if added successfully.
      */
     public boolean addBodyRow(String bodyString) {
-        if (bodyString == null) { bodyString = ""; } 
         final SdrfRow bodyRow = new SdrfRow(bodyString);
         return bodyRows.add(bodyRow);
     }
@@ -132,7 +148,7 @@ public class SdrfRowOrientedDocument {
 
     /**
      * 
-     * @return row count of bodyRows
+     * @return count of bodyRows
      */
     public int bodyRowsCount() {
         return bodyRows.size();
@@ -156,5 +172,38 @@ public class SdrfRowOrientedDocument {
     public String toString() {
         return asRawString();
     }
+
+
+    /**
+     * Given a column header name, retrieves the values of the cells that make up the column.
+     * The list that is returned is in the same order as the body rows of this SDRF document.  
+     * @param headerName name of header for which to retrieve the corresponding column values.
+     * @return column corresponding to specified header name. 
+     * @throws SdrfInvalidColumnException if column not found
+     */
+    public List<String> getColumnForHeader(String headerName) throws SdrfInvalidColumnException {
+        List<String> theColumn = new ArrayList<String>();
+        int columnIndex = columnIndexForHeader(headerName);
+        for (SdrfRow sdrfRow : getBodyRows()) {
+            String cellValue = sdrfRow.cellValue(columnIndex);
+            theColumn.add(cellValue);
+        }
+        return theColumn;
+    }
+
+    /**
+     * @param headerName name of header for which to retrieve the corresponding column index.
+     * @return zero-based index of the column corresponding to specified header name. 
+     * @throws SdrfInvalidColumnException if column not found
+     */
+    int columnIndexForHeader(String headerName) throws SdrfInvalidColumnException {
+
+        Integer columnIndex = headerNameToColumnIndexMap.get(headerName);
+        if (columnIndex == null) {
+            throw new SdrfInvalidColumnException("column not found for header name=" + headerName);
+        }
+        return columnIndex; 
+    }
+
 
 }

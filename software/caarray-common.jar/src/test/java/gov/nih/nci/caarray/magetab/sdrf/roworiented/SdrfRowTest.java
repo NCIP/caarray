@@ -80,30 +80,49 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.magetab.sdrf;
+package gov.nih.nci.caarray.magetab.sdrf.roworiented;
 
-import gov.nih.nci.caarray.common.CaArrayCheckedException;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+import gov.nih.nci.caarray.magetab.sdrf.SdrfInvalidColumnException;
+
+import java.util.List;
+
+import org.junit.Test;
 
 /**
- * Thrown when header not found in SDRF file. 
+ * Test of SdrfRow class.
+ * 
  * @author asy
- *
  */
-public class SdrfHeaderNotFoundException extends CaArrayCheckedException {
+public class SdrfRowTest {
 
-    /**
-     * @param message the msg
-     */
-    public SdrfHeaderNotFoundException(String message) {
-        super(message);
+    @Test
+    public void testCellValues() {
+        SdrfRow sdrfRow = new SdrfRow("hi\tho\tha\t");
+        List<String> cellValues = sdrfRow.cellValues();
+        assertEquals(3, cellValues.size());
+        assertEquals("hi", cellValues.get(0));
+        assertEquals("ho", cellValues.get(1));
+        assertEquals("ha", cellValues.get(2));
     }
 
-    /**
-     * @param message the msg
-     * @param cause the cause
-     */
-    public SdrfHeaderNotFoundException(String message, Throwable cause) {
-        super(message, cause);
+    @Test
+    public void testCellValue() {
+        try {
+            SdrfRow sdrfRow = new SdrfRow("hi\tho\tha");
+            assertEquals("hi", sdrfRow.cellValue(0));
+            assertEquals("ho", sdrfRow.cellValue(1));
+            assertEquals("ha", sdrfRow.cellValue(2));
+        } catch (SdrfInvalidColumnException e) {
+            fail("Test failed. " + e.getMessage());
+        }
+    }
+
+    @Test(expected = SdrfInvalidColumnException.class)
+    public void testCellValueWithInvalidIndex() throws SdrfInvalidColumnException {
+        SdrfRow sdrfRow = new SdrfRow("hi\tho\tha\t");
+        sdrfRow.cellValue(4);
     }
 
 }

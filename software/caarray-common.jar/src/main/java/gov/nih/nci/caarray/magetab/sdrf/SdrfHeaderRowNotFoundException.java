@@ -80,69 +80,30 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.magetab.sdrf.testdata;
+package gov.nih.nci.caarray.magetab.sdrf;
 
-import gov.nih.nci.caarray.magetab.sdrf.roworiented.SdrfRowOrientedDocument;
+import gov.nih.nci.caarray.common.CaArrayCheckedException;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+/**
+ * Thrown when no header row is found in the SDRF file. 
+ * @author asy
+ *
+ */
+public class SdrfHeaderRowNotFoundException extends CaArrayCheckedException {
 
-public class SdrfTestData {
-    @SuppressWarnings("unchecked")
-    private static final List<String> EMPTY_LIST_OF_STRING = Collections.unmodifiableList(new ArrayList<String>());
-
-    private final List<String> preHeaderLines; 
-    private final String header; 
-    private final List<String> bodyRows; 
-
-    public SdrfTestData(final String header, final List<String> bodyRows) {
-        this(EMPTY_LIST_OF_STRING, header, bodyRows);
+    /**
+     * @param message the msg
+     */
+    public SdrfHeaderRowNotFoundException(String message) {
+        super(message);
     }
 
-    public SdrfTestData(final List<String> preHeaderLines, final String header, final List<String> bodyRows) {
-        this.preHeaderLines = preHeaderLines;
-        this.header = header; 
-        this.bodyRows = bodyRows; 
+    /**
+     * @param message the msg
+     * @param cause the cause
+     */
+    public SdrfHeaderRowNotFoundException(String message, Throwable cause) {
+        super(message, cause);
     }
 
-    public List<String> getPreHeaderLines() {
-        return preHeaderLines;
-    }
-
-    public String getHeader() {
-        return header;
-    }
-
-    public List<String> getBodyRows() {
-        return bodyRows;
-    }
-
-    public int getBodyRowsCount() {
-        return bodyRows.size();
-    }
-
-    public SdrfRowOrientedDocument createRowOrientedSdrfDocument() {
-        SdrfRowOrientedDocument rowOrientedDoc = new SdrfRowOrientedDocument();
-        rowOrientedDoc.setHeaderRow(header);
-        for (String bodyRow : bodyRows) {
-            rowOrientedDoc.addBodyRow(bodyRow);
-        }
-        return rowOrientedDoc;
-    }
-
-    public String asRawText() {
-        StringBuilder rawText = new StringBuilder("");
-        for (String preHeaderLines : getPreHeaderLines()) { rawText.append(preHeaderLines + "\n"); }
-        rawText.append(getHeader() + "\n");
-        for (String bodyRow : getBodyRows()) { rawText.append(bodyRow + "\n"); }
-        return rawText.toString();
-    }      
-
-    public String asRawTextStrippedOfIgnoreableLines() {
-        StringBuilder rawText = new StringBuilder("");
-        rawText.append(getHeader() + "\n");
-        for (String bodyRow : getBodyRows()) { rawText.append(bodyRow + "\n"); }
-        return rawText.toString();
-    }      
 }

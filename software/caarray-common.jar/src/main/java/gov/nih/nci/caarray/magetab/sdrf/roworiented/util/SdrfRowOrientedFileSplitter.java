@@ -82,10 +82,8 @@
  */
 package gov.nih.nci.caarray.magetab.sdrf.roworiented.util;
 
-import gov.nih.nci.caarray.magetab.io.FileRef;
-import gov.nih.nci.caarray.magetab.sdrf.SdrfHeaderNotFoundException;
-import gov.nih.nci.caarray.magetab.sdrf.roworiented.SdrfRowOrientedDocument;
 import gov.nih.nci.caarray.magetab.sdrf.roworiented.SdrfRow;
+import gov.nih.nci.caarray.magetab.sdrf.roworiented.SdrfRowOrientedDocument;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -97,21 +95,6 @@ import java.util.List;
  *
  */
 public class SdrfRowOrientedFileSplitter {
-
-    /**
-     * Splits original SDRF into smaller baby SDRFs, each containing at most maxRowsPerSplit number of body rows. 
-     * @param origSdrfFile original SDRF 
-     * @param maxRowsPerSplit max number of body rows in each split SDRF baby 
-     * @return list of split baby SDRFs
-     * @throws SdrfHeaderNotFoundException if header row not found in origSdrfFile
-     * @throws SdrfInvalidSplitRowCountException if maxRowsPerSplit > bodyRowsCount of original SDRF.
-     */
-    public List<SdrfRowOrientedDocument> splitByRowCount(final FileRef origSdrfFile, final int maxRowsPerSplit) 
-    throws SdrfHeaderNotFoundException, SdrfInvalidSplitRowCountException {
-        final SdrfRowOrientedDocument origSdrf = SdrfFileToRowOrientedDocumentConverter.convert(origSdrfFile);
-        return splitByRowCount(origSdrf, maxRowsPerSplit);
-    }
-
 
     /**
      * Splits original SDRF into smaller baby SDRFs, each containing at most maxRowsPerSplit number of body rows. 

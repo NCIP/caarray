@@ -85,7 +85,7 @@ package gov.nih.nci.caarray.magetab.sdrf.roworiented.util;
 import gov.nih.nci.caarray.common.CaArrayCheckedException;
 
 /**
- * Thrown when header not found in SDRF file. 
+ * Thrown when SDRF cannot be split by the row count specified.  
  * @author asy
  *
  */

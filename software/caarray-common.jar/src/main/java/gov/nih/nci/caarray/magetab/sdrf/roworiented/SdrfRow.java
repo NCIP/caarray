@@ -82,6 +82,12 @@
  */
 package gov.nih.nci.caarray.magetab.sdrf.roworiented;
 
+import gov.nih.nci.caarray.magetab.sdrf.SdrfInvalidColumnException;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 /**
  * Represents a row in an SDRF file.
  */
@@ -96,19 +102,30 @@ public class SdrfRow {
      */
     public static final String COLUMN_DELIMITER = "\t";
 
-    private final String rawString;
+    private String rawString;
+    private List<String> cells;
 
-
-    /**
-     * 
-     * @param rawString the row as a string.
-     */
-    protected SdrfRow(String rawString) {
-        this.rawString = rawString; 
+    private SdrfRow() {
+        //make no-arg ctor private to prevent accidental creation of invalid instance. 
     }
 
     /**
-     * @return row as string.
+     * 
+     * @param rawString the row as a tab delimited string.
+     */
+    protected SdrfRow(String rawString) {
+        if (rawString == null) { throw new IllegalArgumentException("rawString may not be null"); }
+        this.rawString = rawString; 
+        tokenizeRawString();
+    }
+
+    private void tokenizeRawString() {
+        String[] tokensArray = rawString.split(COLUMN_DELIMITER);
+        cells = Arrays.asList(tokensArray);
+    }
+
+    /**
+     * @return row as tab delimited string.
      */
     public String getRawString() {
         return rawString;
@@ -116,11 +133,35 @@ public class SdrfRow {
 
 
     /**
-     * @return row as string.
+     * @return row as tab delimited string.
      */
     @Override
     public String toString() {
         return getRawString();
+    }
+
+
+    /**
+     * @param index zero-based index of the cell value to return, where cells are in same order as original 
+     * tab delimited raw string.
+     * @return value of specified cell as string 
+     * @throws SdrfInvalidColumnException if index is out of bounds.
+     */
+    String cellValue(int index) throws SdrfInvalidColumnException {
+        try {
+            return cells.get(index);
+        } catch (ArrayIndexOutOfBoundsException e) {
+            String errMsg = 
+                "Invalid column index=" + index + ". The SDRF row as a raw string is=[" + rawString + "]";
+            throw new SdrfInvalidColumnException(errMsg, e);
+        }
+    }
+
+    /**
+     * @return unmodifiable list of cell values as string, where cells are in same order as original raw string. 
+     */
+    List<String> cellValues() {
+        return Collections.unmodifiableList(cells);
     }
 
 }

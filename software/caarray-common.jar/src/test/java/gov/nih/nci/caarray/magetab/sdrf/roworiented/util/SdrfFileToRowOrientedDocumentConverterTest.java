@@ -84,7 +84,7 @@ package gov.nih.nci.caarray.magetab.sdrf.roworiented.util;
 
 import static org.junit.Assert.assertEquals;
 import gov.nih.nci.caarray.magetab.io.JavaIOFileRef;
-import gov.nih.nci.caarray.magetab.sdrf.SdrfHeaderNotFoundException;
+import gov.nih.nci.caarray.magetab.sdrf.SdrfHeaderRowNotFoundException;
 import gov.nih.nci.caarray.magetab.sdrf.roworiented.SdrfRowOrientedDocument;
 import gov.nih.nci.caarray.magetab.sdrf.roworiented.util.SdrfFileToRowOrientedDocumentConverter;
 import gov.nih.nci.caarray.magetab.sdrf.testdata.SdrfTestData;
@@ -115,7 +115,7 @@ public class SdrfFileToRowOrientedDocumentConverterTest {
         assertEquals(expectedHeader, actualHeader);
     }
 
-    @Test(expected = SdrfHeaderNotFoundException.class)
+    @Test(expected = SdrfHeaderRowNotFoundException.class)
     public void testHeaderNotFound() throws Exception {
         final SdrfTestData sdrfTestData = SdrfTestDataSets.DATA_SET_WITH_NO_HEADER_OR_BODY;
         final LineNumberReader testDataReader = createLineNumberReader(sdrfTestData);
