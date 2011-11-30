@@ -1,0 +1,6 @@
+Hybridization REF			my_hybridization_1	my_hybridization_2	ahybridization
+Reporter REF	Chromosome	Position	Log2Ratio	Log2Ratio	Log2Ratio
+HsCGHBrightCorner	6	62964904	-0.447480618	-0.457480618	-0.444480618
+DarkCorner2	10	19811167	-0.258419751	-0.268419751	-0.248419751
+A_16_P37904891	3	127363084	-0.303141107	-0.313141107	-0.3403141107
+A_16_P37638626	3	195691534	n/a	N/A	NA

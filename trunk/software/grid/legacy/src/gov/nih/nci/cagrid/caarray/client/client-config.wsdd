@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<deployment xmlns="http://xml.apache.org/axis/wsdd/" xmlns:java="http://xml.apache.org/axis/wsdd/providers/java">
+ <globalConfiguration>
+  <parameter name="adminPassword" value="admin"/>
+  <parameter name="disablePrettyXML" value="true"/>
+  <parameter name="attachments.implementation" value="org.apache.axis.attachments.AttachmentsImpl"/>
+  <parameter name="sendXsiTypes" value="true"/>
+  <parameter name="sendMultiRefs" value="true"/>
+  <parameter name="sendXMLDeclaration" value="true"/>
+  <parameter name="castorMapping" value="/gov/nih/nci/cagrid/caarray/xml-mapping.xml" />
+  <requestFlow>
+   <handler type="java:org.globus.wsrf.handlers.AddressingHandler"/>
+   <handler type="java:org.globus.wsrf.impl.security.authorization.ClientPropertiesHandler"/>
+   <handler type="java:org.globus.wsrf.impl.security.authentication.ClientPropertiesHandler"/>
+   <handler type="java:org.apache.axis.handlers.JAXRPCHandler">
+    <parameter name="className" value="org.globus.wsrf.impl.security.authentication.securemsg.X509EncryptHandler"/>
+   </handler>
+   <handler type="java:org.apache.axis.handlers.JAXRPCHandler">
+    <parameter name="className" value="org.globus.wsrf.impl.security.authentication.securemsg.X509SignHandler"/>
+   </handler>
+   <handler type="java:org.apache.axis.handlers.JAXRPCHandler">
+    <parameter name="className" value="org.globus.wsrf.impl.security.authentication.UsernameHandler"/>
+   </handler>
+   <handler type="java:org.apache.axis.handlers.JAXRPCHandler">
+    <parameter name="authService" value="auto"/>
+    <parameter name="className" value="org.globus.wsrf.impl.security.authentication.secureconv.SecContextHandler"/>
+   </handler>
+   <handler type="java:org.apache.axis.handlers.JAXRPCHandler">
+    <parameter name="className" value="org.globus.wsrf.impl.security.authentication.secureconv.GSSHandler"/>
+   </handler>
+   <handler type="java:org.apache.axis.handlers.JAXRPCHandler">
+    <parameter name="className" value="org.globus.wsrf.impl.security.authorization.TrustedTargetHandler"/>
+   </handler>
+   <handler type="java:org.globus.wsrf.handlers.MessageLoggingHandler"/>
+  </requestFlow>
+  <responseFlow>
+   <handler type="java:org.globus.wsrf.handlers.AddressingHandler"/>
+   <handler type="java:org.globus.wsrf.handlers.MessageLoggingHandler"/>
+   <handler type="java:org.apache.axis.handlers.JAXRPCHandler">
+    <parameter name="className" value="org.globus.wsrf.impl.security.authentication.wssec.WSSecurityClientHandler"/>
+   </handler>
+  </responseFlow>
+ </globalConfiguration>
+ <transport name="java" pivot="java:org.apache.axis.transport.java.JavaSender"/>
+ <transport name="https" pivot="java:org.globus.axis.transport.HTTPSSender">
+  <requestFlow>
+   <handler type="java:org.globus.axis.handlers.HTTP11Handler"/>
+  </requestFlow>
+ </transport>
+ <transport name="http" pivot="java:org.apache.axis.transport.http.HTTPSender">
+  <requestFlow>
+   <handler type="java:org.globus.axis.handlers.HTTP11Handler"/>
+  </requestFlow>
+ </transport>
+ <transport name="local" pivot="java:org.apache.axis.transport.local.LocalSender"/>
+ <typeMapping deserializer="org.apache.axis.encoding.ser.SimpleDeserializerFactory" encodingStyle="" qname="ns1:ServiceNameType" serializer="org.apache.axis.encoding.ser.SimpleSerializerFactory" type="java:org.apache.axis.message.addressing.ServiceNameType" xmlns:ns1="http://schemas.xmlsoap.org/ws/2004/03/addressing"/>
+ <typeMapping deserializer="org.apache.axis.encoding.ser.SimpleDeserializerFactory" encodingStyle="" qname="ns2:BinaryExchangeType" serializer="org.apache.axis.encoding.ser.SimpleSerializerFactory" type="java:org.globus.ws.trust.BinaryExchangeType" xmlns:ns2="http://schemas.xmlsoap.org/ws/2004/04/trust"/>
+ <typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns3:BaseFaultType" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:org.oasis.wsrf.faults.BaseFaultType" xmlns:ns3="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-BaseFaults-1.2-draft-01.xsd"/>
+ <typeMapping deserializer="org.apache.axis.encoding.ser.SimpleDeserializerFactory" encodingStyle="" qname="ns4:AttributedURI" serializer="org.apache.axis.encoding.ser.SimpleSerializerFactory" type="java:org.apache.axis.message.addressing.AttributedURI" xmlns:ns4="http://schemas.xmlsoap.org/ws/2004/03/addressing"/>
+ <typeMapping deserializer="org.globus.wsrf.encoding.TopicExpressionDeserializerFactory" encodingStyle="" qname="ns5:TopicExpressionType" serializer="org.globus.wsrf.encoding.TopicExpressionSerializerFactory" type="java:org.oasis.wsn.TopicExpressionType" xmlns:ns5="http://docs.oasis-open.org/wsn/2004/06/wsn-WS-BaseNotification-1.2-draft-01.xsd"/>
+ <typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns6:EndpointReferenceType" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:org.apache.axis.message.addressing.EndpointReferenceType" xmlns:ns6="http://schemas.xmlsoap.org/ws/2004/03/addressing"/>
+ <typeMapping deserializer="org.apache.axis.encoding.ser.SimpleDeserializerFactory" encodingStyle="" qname="ns7:AttributedQName" serializer="org.apache.axis.encoding.ser.SimpleSerializerFactory" type="java:org.apache.axis.message.addressing.AttributedQName" xmlns:ns7="http://schemas.xmlsoap.org/ws/2004/03/addressing"/>
+ <typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns8:SecurityContextTokenType" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:org.globus.ws.sc.SecurityContextTokenType" xmlns:ns8="http://schemas.xmlsoap.org/ws/2004/04/sc"/>
+ <typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns9:ReferencePropertiesType" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:org.apache.axis.message.addressing.ReferencePropertiesType" xmlns:ns9="http://schemas.xmlsoap.org/ws/2004/03/addressing"/>
+ <typeMapping deserializer="org.globus.wsrf.encoding.AnyListDeserializerFactory" encodingStyle="" qname="ns10:&gt;SetResourceProperties" serializer="org.globus.wsrf.encoding.AnyListSerializerFactory" type="java:org.oasis.wsrf.properties.SetResourceProperties_Element" xmlns:ns10="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-ResourceProperties-1.2-draft-01.xsd"/>
+ <typeMapping deserializer="org.apache.axis.encoding.ser.SimpleDeserializerFactory" encodingStyle="" qname="ns11:QueryExpressionDialect" serializer="org.apache.axis.encoding.ser.SimpleSerializerFactory" type="java:java.lang.String" xmlns:ns11="http://www.globus.org/foobar"/>
+ <typeMapping deserializer="org.globus.wsrf.encoding.QueryExpressionDeserializerFactory" encodingStyle="" qname="ns12:QueryExpressionType" serializer="org.globus.wsrf.encoding.QueryExpressionSerializerFactory" type="java:org.oasis.wsrf.properties.QueryExpressionType" xmlns:ns12="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-ResourceProperties-1.2-draft-01.xsd"/>
+<!-- START INTRODUCE TYPEMAPPINGS -->
+<ns3:typeMapping encodingStyle="" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" type="ns1:gov.nih.nci.caarray.domain.file.CaArrayFile" qname="ns2:CaArrayFile" xmlns:ns1="http://xml.apache.org/axis/wsdd/providers/java" xmlns:ns2="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.file" xmlns:ns3="http://xml.apache.org/axis/wsdd/"/>
+
+<ns3:typeMapping encodingStyle="" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" type="ns1:gov.nih.nci.caarray.domain.data.AbstractArrayData" qname="ns2:AbstractArrayData" xmlns:ns1="http://xml.apache.org/axis/wsdd/providers/java" xmlns:ns2="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.data" xmlns:ns3="http://xml.apache.org/axis/wsdd/"/>
+
+<ns3:typeMapping encodingStyle="" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" type="ns1:gov.nih.nci.caarray.domain.data.AbstractDataColumn" qname="ns2:AbstractDataColumn" xmlns:ns1="http://xml.apache.org/axis/wsdd/providers/java" xmlns:ns2="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.data" xmlns:ns3="http://xml.apache.org/axis/wsdd/"/>
+
+<ns3:typeMapping encodingStyle="" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" type="ns1:gov.nih.nci.caarray.domain.data.ArrayDataType" qname="ns2:ArrayDataType" xmlns:ns1="http://xml.apache.org/axis/wsdd/providers/java" xmlns:ns2="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.data" xmlns:ns3="http://xml.apache.org/axis/wsdd/"/>
+
+<ns3:typeMapping encodingStyle="" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" type="ns1:gov.nih.nci.caarray.domain.data.BooleanColumn" qname="ns2:BooleanColumn" xmlns:ns1="http://xml.apache.org/axis/wsdd/providers/java" xmlns:ns2="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.data" xmlns:ns3="http://xml.apache.org/axis/wsdd/"/>
+
+<ns3:typeMapping encodingStyle="" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" type="ns1:gov.nih.nci.caarray.domain.data.DataRetrievalRequest" qname="ns2:DataRetrievalRequest" xmlns:ns1="http://xml.apache.org/axis/wsdd/providers/java" xmlns:ns2="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.data" xmlns:ns3="http://xml.apache.org/axis/wsdd/"/>
+
+<ns3:typeMapping encodingStyle="" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" type="ns1:gov.nih.nci.caarray.domain.data.DataSet" qname="ns2:DataSet" xmlns:ns1="http://xml.apache.org/axis/wsdd/providers/java" xmlns:ns2="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.data" xmlns:ns3="http://xml.apache.org/axis/wsdd/"/>
+
+<ns3:typeMapping encodingStyle="" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" type="ns1:gov.nih.nci.caarray.domain.data.DerivedArrayData" qname="ns2:DerivedArrayData" xmlns:ns1="http://xml.apache.org/axis/wsdd/providers/java" xmlns:ns2="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.data" xmlns:ns3="http://xml.apache.org/axis/wsdd/"/>
+
+<ns3:typeMapping encodingStyle="" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" type="ns1:gov.nih.nci.caarray.domain.data.DesignElementList" qname="ns2:DesignElementList" xmlns:ns1="http://xml.apache.org/axis/wsdd/providers/java" xmlns:ns2="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.data" xmlns:ns3="http://xml.apache.org/axis/wsdd/"/>
+
+<ns3:typeMapping encodingStyle="" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" type="ns1:gov.nih.nci.caarray.domain.data.DoubleColumn" qname="ns2:DoubleColumn" xmlns:ns1="http://xml.apache.org/axis/wsdd/providers/java" xmlns:ns2="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.data" xmlns:ns3="http://xml.apache.org/axis/wsdd/"/>
+
+<ns3:typeMapping encodingStyle="" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" type="ns1:gov.nih.nci.caarray.domain.data.FloatColumn" qname="ns2:FloatColumn" xmlns:ns1="http://xml.apache.org/axis/wsdd/providers/java" xmlns:ns2="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.data" xmlns:ns3="http://xml.apache.org/axis/wsdd/"/>
+
+<ns3:typeMapping encodingStyle="" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" type="ns1:gov.nih.nci.caarray.domain.data.HybridizationData" qname="ns2:HybridizationData" xmlns:ns1="http://xml.apache.org/axis/wsdd/providers/java" xmlns:ns2="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.data" xmlns:ns3="http://xml.apache.org/axis/wsdd/"/>
+
+<ns3:typeMapping encodingStyle="" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" type="ns1:gov.nih.nci.caarray.domain.data.Image" qname="ns2:Image" xmlns:ns1="http://xml.apache.org/axis/wsdd/providers/java" xmlns:ns2="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.data" xmlns:ns3="http://xml.apache.org/axis/wsdd/"/>
+
+<ns3:typeMapping encodingStyle="" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" type="ns1:gov.nih.nci.caarray.domain.data.IntegerColumn" qname="ns2:IntegerColumn" xmlns:ns1="http://xml.apache.org/axis/wsdd/providers/java" xmlns:ns2="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.data" xmlns:ns3="http://xml.apache.org/axis/wsdd/"/>
+
+<ns3:typeMapping encodingStyle="" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" type="ns1:gov.nih.nci.caarray.domain.data.LongColumn" qname="ns2:LongColumn" xmlns:ns1="http://xml.apache.org/axis/wsdd/providers/java" xmlns:ns2="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.data" xmlns:ns3="http://xml.apache.org/axis/wsdd/"/>
+
+<ns3:typeMapping encodingStyle="" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" type="ns1:gov.nih.nci.caarray.domain.data.QuantitationType" qname="ns2:QuantitationType" xmlns:ns1="http://xml.apache.org/axis/wsdd/providers/java" xmlns:ns2="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.data" xmlns:ns3="http://xml.apache.org/axis/wsdd/"/>
+
+<ns3:typeMapping encodingStyle="" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" type="ns1:gov.nih.nci.caarray.domain.data.RawArrayData" qname="ns2:RawArrayData" xmlns:ns1="http://xml.apache.org/axis/wsdd/providers/java" xmlns:ns2="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.data" xmlns:ns3="http://xml.apache.org/axis/wsdd/"/>
+
+<ns3:typeMapping encodingStyle="" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" type="ns1:gov.nih.nci.caarray.domain.data.ShortColumn" qname="ns2:ShortColumn" xmlns:ns1="http://xml.apache.org/axis/wsdd/providers/java" xmlns:ns2="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.data" xmlns:ns3="http://xml.apache.org/axis/wsdd/"/>
+
+<ns3:typeMapping encodingStyle="" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" type="ns1:gov.nih.nci.caarray.domain.data.StringColumn" qname="ns2:StringColumn" xmlns:ns1="http://xml.apache.org/axis/wsdd/providers/java" xmlns:ns2="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.data" xmlns:ns3="http://xml.apache.org/axis/wsdd/"/>
+
+<ns3:typeMapping encodingStyle="" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" type="ns1:gov.nih.nci.caarray.domain.hybridization.Hybridization" qname="ns2:Hybridization" xmlns:ns1="http://xml.apache.org/axis/wsdd/providers/java" xmlns:ns2="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.hybridization" xmlns:ns3="http://xml.apache.org/axis/wsdd/"/>
+
+<ns3:typeMapping encodingStyle="" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" type="ns1:gov.nih.nci.caarray.domain.protocol.AbstractParameterValue" qname="ns2:AbstractParameterValue" xmlns:ns1="http://xml.apache.org/axis/wsdd/providers/java" xmlns:ns2="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.protocol" xmlns:ns3="http://xml.apache.org/axis/wsdd/"/>
+
+<ns3:typeMapping encodingStyle="" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" type="ns1:gov.nih.nci.caarray.domain.protocol.MeasurementParameterValue" qname="ns2:MeasurementParameterValue" xmlns:ns1="http://xml.apache.org/axis/wsdd/providers/java" xmlns:ns2="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.protocol" xmlns:ns3="http://xml.apache.org/axis/wsdd/"/>
+
+<ns3:typeMapping encodingStyle="" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" type="ns1:gov.nih.nci.caarray.domain.protocol.Parameter" qname="ns2:Parameter" xmlns:ns1="http://xml.apache.org/axis/wsdd/providers/java" xmlns:ns2="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.protocol" xmlns:ns3="http://xml.apache.org/axis/wsdd/"/>
+
+<ns3:typeMapping encodingStyle="" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" type="ns1:gov.nih.nci.caarray.domain.protocol.Protocol" qname="ns2:Protocol" xmlns:ns1="http://xml.apache.org/axis/wsdd/providers/java" xmlns:ns2="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.protocol" xmlns:ns3="http://xml.apache.org/axis/wsdd/"/>
+
+<ns3:typeMapping encodingStyle="" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" type="ns1:gov.nih.nci.caarray.domain.protocol.ProtocolApplication" qname="ns2:ProtocolApplication" xmlns:ns1="http://xml.apache.org/axis/wsdd/providers/java" xmlns:ns2="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.protocol" xmlns:ns3="http://xml.apache.org/axis/wsdd/"/>
+
+<ns3:typeMapping encodingStyle="" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" type="ns1:gov.nih.nci.caarray.domain.protocol.TermBasedParameterValue" qname="ns2:TermBasedParameterValue" xmlns:ns1="http://xml.apache.org/axis/wsdd/providers/java" xmlns:ns2="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.protocol" xmlns:ns3="http://xml.apache.org/axis/wsdd/"/>
+
+<ns3:typeMapping encodingStyle="" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" type="ns1:gov.nih.nci.caarray.domain.protocol.UserDefinedParameterValue" qname="ns2:UserDefinedParameterValue" xmlns:ns1="http://xml.apache.org/axis/wsdd/providers/java" xmlns:ns2="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.protocol" xmlns:ns3="http://xml.apache.org/axis/wsdd/"/>
+
+<ns3:typeMapping encodingStyle="" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" type="ns1:gov.nih.nci.cabio.domain.ArrayReporter" qname="ns2:ArrayReporter" xmlns:ns1="http://xml.apache.org/axis/wsdd/providers/java" xmlns:ns2="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.cabio.domain" xmlns:ns3="http://xml.apache.org/axis/wsdd/"/>
+
+<ns3:typeMapping encodingStyle="" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" type="ns1:gov.nih.nci.cabio.domain.ExonArrayReporter" qname="ns2:ExonArrayReporter" xmlns:ns1="http://xml.apache.org/axis/wsdd/providers/java" xmlns:ns2="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.cabio.domain" xmlns:ns3="http://xml.apache.org/axis/wsdd/"/>
+
+<ns3:typeMapping encodingStyle="" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" type="ns1:gov.nih.nci.cabio.domain.ExpressionArrayReporter" qname="ns2:ExpressionArrayReporter" xmlns:ns1="http://xml.apache.org/axis/wsdd/providers/java" xmlns:ns2="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.cabio.domain" xmlns:ns3="http://xml.apache.org/axis/wsdd/"/>
+
+<ns3:typeMapping encodingStyle="" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" type="ns1:gov.nih.nci.cabio.domain.SNPArrayReporter" qname="ns2:SNPArrayReporter" xmlns:ns1="http://xml.apache.org/axis/wsdd/providers/java" xmlns:ns2="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.cabio.domain" xmlns:ns3="http://xml.apache.org/axis/wsdd/"/>
+
+<ns3:typeMapping encodingStyle="" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" type="ns1:gov.nih.nci.cabio.domain.TranscriptArrayReporter" qname="ns2:TranscriptArrayReporter" xmlns:ns1="http://xml.apache.org/axis/wsdd/providers/java" xmlns:ns2="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.cabio.domain" xmlns:ns3="http://xml.apache.org/axis/wsdd/"/>
+
+<ns3:typeMapping encodingStyle="" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" type="ns1:gov.nih.nci.caarray.domain.array.AbstractDesignElement" qname="ns2:AbstractDesignElement" xmlns:ns1="http://xml.apache.org/axis/wsdd/providers/java" xmlns:ns2="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.array" xmlns:ns3="http://xml.apache.org/axis/wsdd/"/>
+
+<ns3:typeMapping encodingStyle="" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" type="ns1:gov.nih.nci.caarray.domain.array.AbstractProbe" qname="ns2:AbstractProbe" xmlns:ns1="http://xml.apache.org/axis/wsdd/providers/java" xmlns:ns2="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.array" xmlns:ns3="http://xml.apache.org/axis/wsdd/"/>
+
+<ns3:typeMapping encodingStyle="" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" type="ns1:gov.nih.nci.caarray.domain.array.AbstractProbeAnnotation" qname="ns2:AbstractProbeAnnotation" xmlns:ns1="http://xml.apache.org/axis/wsdd/providers/java" xmlns:ns2="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.array" xmlns:ns3="http://xml.apache.org/axis/wsdd/"/>
+
+<ns3:typeMapping encodingStyle="" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" type="ns1:gov.nih.nci.caarray.domain.array.Array" qname="ns2:Array" xmlns:ns1="http://xml.apache.org/axis/wsdd/providers/java" xmlns:ns2="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.array" xmlns:ns3="http://xml.apache.org/axis/wsdd/"/>
+
+<ns3:typeMapping encodingStyle="" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" type="ns1:gov.nih.nci.caarray.domain.array.ArrayDesign" qname="ns2:ArrayDesign" xmlns:ns1="http://xml.apache.org/axis/wsdd/providers/java" xmlns:ns2="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.array" xmlns:ns3="http://xml.apache.org/axis/wsdd/"/>
+
+<ns3:typeMapping encodingStyle="" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" type="ns1:gov.nih.nci.caarray.domain.array.ArrayDesignDetails" qname="ns2:ArrayDesignDetails" xmlns:ns1="http://xml.apache.org/axis/wsdd/providers/java" xmlns:ns2="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.array" xmlns:ns3="http://xml.apache.org/axis/wsdd/"/>
+
+<ns3:typeMapping encodingStyle="" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" type="ns1:gov.nih.nci.caarray.domain.array.ArrayGroup" qname="ns2:ArrayGroup" xmlns:ns1="http://xml.apache.org/axis/wsdd/providers/java" xmlns:ns2="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.array" xmlns:ns3="http://xml.apache.org/axis/wsdd/"/>
+
+<ns3:typeMapping encodingStyle="" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" type="ns1:gov.nih.nci.caarray.domain.array.ExonProbeAnnotation" qname="ns2:ExonProbeAnnotation" xmlns:ns1="http://xml.apache.org/axis/wsdd/providers/java" xmlns:ns2="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.array" xmlns:ns3="http://xml.apache.org/axis/wsdd/"/>
+
+<ns3:typeMapping encodingStyle="" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" type="ns1:gov.nih.nci.caarray.domain.array.ExpressionProbeAnnotation" qname="ns2:ExpressionProbeAnnotation" xmlns:ns1="http://xml.apache.org/axis/wsdd/providers/java" xmlns:ns2="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.array" xmlns:ns3="http://xml.apache.org/axis/wsdd/"/>
+
+<ns3:typeMapping encodingStyle="" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" type="ns1:gov.nih.nci.caarray.domain.array.Feature" qname="ns2:Feature" xmlns:ns1="http://xml.apache.org/axis/wsdd/providers/java" xmlns:ns2="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.array" xmlns:ns3="http://xml.apache.org/axis/wsdd/"/>
+
+<ns3:typeMapping encodingStyle="" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" type="ns1:gov.nih.nci.caarray.domain.array.Gene" qname="ns2:Gene" xmlns:ns1="http://xml.apache.org/axis/wsdd/providers/java" xmlns:ns2="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.array" xmlns:ns3="http://xml.apache.org/axis/wsdd/"/>
+
+<ns3:typeMapping encodingStyle="" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" type="ns1:gov.nih.nci.caarray.domain.array.Accession" qname="ns2:Accession" xmlns:ns1="http://xml.apache.org/axis/wsdd/providers/java" xmlns:ns2="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.array" xmlns:ns3="http://xml.apache.org/axis/wsdd/"/>
+
+<ns3:typeMapping encodingStyle="" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" type="ns1:gov.nih.nci.caarray.domain.array.LogicalProbe" qname="ns2:LogicalProbe" xmlns:ns1="http://xml.apache.org/axis/wsdd/providers/java" xmlns:ns2="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.array" xmlns:ns3="http://xml.apache.org/axis/wsdd/"/>
+
+<ns3:typeMapping encodingStyle="" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" type="ns1:gov.nih.nci.caarray.domain.array.PhysicalProbe" qname="ns2:PhysicalProbe" xmlns:ns1="http://xml.apache.org/axis/wsdd/providers/java" xmlns:ns2="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.array" xmlns:ns3="http://xml.apache.org/axis/wsdd/"/>
+
+<ns3:typeMapping encodingStyle="" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" type="ns1:gov.nih.nci.caarray.domain.array.ProbeGroup" qname="ns2:ProbeGroup" xmlns:ns1="http://xml.apache.org/axis/wsdd/providers/java" xmlns:ns2="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.array" xmlns:ns3="http://xml.apache.org/axis/wsdd/"/>
+
+<ns3:typeMapping encodingStyle="" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" type="ns1:gov.nih.nci.caarray.domain.array.SNPProbeAnnotation" qname="ns2:SNPProbeAnnotation" xmlns:ns1="http://xml.apache.org/axis/wsdd/providers/java" xmlns:ns2="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.array" xmlns:ns3="http://xml.apache.org/axis/wsdd/"/>
+
+<ns3:typeMapping encodingStyle="" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" type="ns1:gov.nih.nci.caarray.domain.publication.Publication" qname="ns2:Publication" xmlns:ns1="http://xml.apache.org/axis/wsdd/providers/java" xmlns:ns2="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.publication" xmlns:ns3="http://xml.apache.org/axis/wsdd/"/>
+
+<ns3:typeMapping encodingStyle="" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" type="ns1:edu.georgetown.pir.AdditionalOrganismName" qname="ns2:AdditionalOrganismName" xmlns:ns1="http://xml.apache.org/axis/wsdd/providers/java" xmlns:ns2="gme://Internal.caArray.caBIG/2.4/edu.georgetown.pir" xmlns:ns3="http://xml.apache.org/axis/wsdd/"/>
+
+<ns3:typeMapping encodingStyle="" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" type="ns1:edu.georgetown.pir.Organism" qname="ns2:Organism" xmlns:ns1="http://xml.apache.org/axis/wsdd/providers/java" xmlns:ns2="gme://Internal.caArray.caBIG/2.4/edu.georgetown.pir" xmlns:ns3="http://xml.apache.org/axis/wsdd/"/>
+
+<ns3:typeMapping encodingStyle="" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" type="ns1:gov.nih.nci.caarray.domain.vocabulary.Category" qname="ns2:Category" xmlns:ns1="http://xml.apache.org/axis/wsdd/providers/java" xmlns:ns2="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.vocabulary" xmlns:ns3="http://xml.apache.org/axis/wsdd/"/>
+
+<ns3:typeMapping encodingStyle="" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" type="ns1:gov.nih.nci.caarray.domain.vocabulary.Term" qname="ns2:Term" xmlns:ns1="http://xml.apache.org/axis/wsdd/providers/java" xmlns:ns2="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.vocabulary" xmlns:ns3="http://xml.apache.org/axis/wsdd/"/>
+
+<ns3:typeMapping encodingStyle="" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" type="ns1:gov.nih.nci.caarray.domain.vocabulary.TermSource" qname="ns2:TermSource" xmlns:ns1="http://xml.apache.org/axis/wsdd/providers/java" xmlns:ns2="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.vocabulary" xmlns:ns3="http://xml.apache.org/axis/wsdd/"/>
+
+<ns3:typeMapping encodingStyle="" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" type="ns1:gov.nih.nci.caarray.domain.project.AbstractFactorValue" qname="ns2:AbstractFactorValue" xmlns:ns1="http://xml.apache.org/axis/wsdd/providers/java" xmlns:ns2="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.project" xmlns:ns3="http://xml.apache.org/axis/wsdd/"/>
+
+<ns3:typeMapping encodingStyle="" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" type="ns1:gov.nih.nci.caarray.domain.project.AssayType" qname="ns2:AssayType" xmlns:ns1="http://xml.apache.org/axis/wsdd/providers/java" xmlns:ns2="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.project" xmlns:ns3="http://xml.apache.org/axis/wsdd/"/>
+
+<ns3:typeMapping encodingStyle="" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" type="ns1:gov.nih.nci.caarray.domain.project.Experiment" qname="ns2:Experiment" xmlns:ns1="http://xml.apache.org/axis/wsdd/providers/java" xmlns:ns2="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.project" xmlns:ns3="http://xml.apache.org/axis/wsdd/"/>
+
+<ns3:typeMapping encodingStyle="" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" type="ns1:gov.nih.nci.caarray.domain.project.ExperimentContact" qname="ns2:ExperimentContact" xmlns:ns1="http://xml.apache.org/axis/wsdd/providers/java" xmlns:ns2="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.project" xmlns:ns3="http://xml.apache.org/axis/wsdd/"/>
+
+<ns3:typeMapping encodingStyle="" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" type="ns1:gov.nih.nci.caarray.domain.project.Factor" qname="ns2:Factor" xmlns:ns1="http://xml.apache.org/axis/wsdd/providers/java" xmlns:ns2="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.project" xmlns:ns3="http://xml.apache.org/axis/wsdd/"/>
+
+<ns3:typeMapping encodingStyle="" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" type="ns1:gov.nih.nci.caarray.domain.project.MeasurementFactorValue" qname="ns2:MeasurementFactorValue" xmlns:ns1="http://xml.apache.org/axis/wsdd/providers/java" xmlns:ns2="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.project" xmlns:ns3="http://xml.apache.org/axis/wsdd/"/>
+
+<ns3:typeMapping encodingStyle="" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" type="ns1:gov.nih.nci.caarray.domain.project.Project" qname="ns2:Project" xmlns:ns1="http://xml.apache.org/axis/wsdd/providers/java" xmlns:ns2="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.project" xmlns:ns3="http://xml.apache.org/axis/wsdd/"/>
+
+<ns3:typeMapping encodingStyle="" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" type="ns1:gov.nih.nci.caarray.domain.project.TermBasedFactorValue" qname="ns2:TermBasedFactorValue" xmlns:ns1="http://xml.apache.org/axis/wsdd/providers/java" xmlns:ns2="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.project" xmlns:ns3="http://xml.apache.org/axis/wsdd/"/>
+
+<ns3:typeMapping encodingStyle="" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" type="ns1:gov.nih.nci.caarray.domain.project.UserDefinedFactorValue" qname="ns2:UserDefinedFactorValue" xmlns:ns1="http://xml.apache.org/axis/wsdd/providers/java" xmlns:ns2="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.project" xmlns:ns3="http://xml.apache.org/axis/wsdd/"/>
+
+<ns3:typeMapping encodingStyle="" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" type="ns1:gov.nih.nci.caarray.domain.AbstractCaArrayEntity" qname="ns2:AbstractCaArrayEntity" xmlns:ns1="http://xml.apache.org/axis/wsdd/providers/java" xmlns:ns2="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain" xmlns:ns3="http://xml.apache.org/axis/wsdd/"/>
+
+<ns3:typeMapping encodingStyle="" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" type="ns1:gov.nih.nci.caarray.domain.AbstractCaArrayObject" qname="ns2:AbstractCaArrayObject" xmlns:ns1="http://xml.apache.org/axis/wsdd/providers/java" xmlns:ns2="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain" xmlns:ns3="http://xml.apache.org/axis/wsdd/"/>
+
+<ns3:typeMapping encodingStyle="" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" type="ns1:gov.nih.nci.caarray.domain.sample.AbstractBioMaterial" qname="ns2:AbstractBioMaterial" xmlns:ns1="http://xml.apache.org/axis/wsdd/providers/java" xmlns:ns2="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.sample" xmlns:ns3="http://xml.apache.org/axis/wsdd/"/>
+
+<ns3:typeMapping encodingStyle="" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" type="ns1:gov.nih.nci.caarray.domain.sample.AbstractCharacteristic" qname="ns2:AbstractCharacteristic" xmlns:ns1="http://xml.apache.org/axis/wsdd/providers/java" xmlns:ns2="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.sample" xmlns:ns3="http://xml.apache.org/axis/wsdd/"/>
+
+<ns3:typeMapping encodingStyle="" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" type="ns1:gov.nih.nci.caarray.domain.sample.Extract" qname="ns2:Extract" xmlns:ns1="http://xml.apache.org/axis/wsdd/providers/java" xmlns:ns2="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.sample" xmlns:ns3="http://xml.apache.org/axis/wsdd/"/>
+
+<ns3:typeMapping encodingStyle="" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" type="ns1:gov.nih.nci.caarray.domain.sample.LabeledExtract" qname="ns2:LabeledExtract" xmlns:ns1="http://xml.apache.org/axis/wsdd/providers/java" xmlns:ns2="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.sample" xmlns:ns3="http://xml.apache.org/axis/wsdd/"/>
+
+<ns3:typeMapping encodingStyle="" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" type="ns1:gov.nih.nci.caarray.domain.sample.MeasurementCharacteristic" qname="ns2:MeasurementCharacteristic" xmlns:ns1="http://xml.apache.org/axis/wsdd/providers/java" xmlns:ns2="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.sample" xmlns:ns3="http://xml.apache.org/axis/wsdd/"/>
+
+<ns3:typeMapping encodingStyle="" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" type="ns1:gov.nih.nci.caarray.domain.sample.Sample" qname="ns2:Sample" xmlns:ns1="http://xml.apache.org/axis/wsdd/providers/java" xmlns:ns2="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.sample" xmlns:ns3="http://xml.apache.org/axis/wsdd/"/>
+
+<ns3:typeMapping encodingStyle="" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" type="ns1:gov.nih.nci.caarray.domain.sample.Source" qname="ns2:Source" xmlns:ns1="http://xml.apache.org/axis/wsdd/providers/java" xmlns:ns2="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.sample" xmlns:ns3="http://xml.apache.org/axis/wsdd/"/>
+
+<ns3:typeMapping encodingStyle="" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" type="ns1:gov.nih.nci.caarray.domain.sample.TermBasedCharacteristic" qname="ns2:TermBasedCharacteristic" xmlns:ns1="http://xml.apache.org/axis/wsdd/providers/java" xmlns:ns2="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.sample" xmlns:ns3="http://xml.apache.org/axis/wsdd/"/>
+
+<ns3:typeMapping encodingStyle="" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" type="ns1:gov.nih.nci.caarray.domain.sample.UserDefinedCharacteristic" qname="ns2:UserDefinedCharacteristic" xmlns:ns1="http://xml.apache.org/axis/wsdd/providers/java" xmlns:ns2="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.sample" xmlns:ns3="http://xml.apache.org/axis/wsdd/"/>
+
+<ns3:typeMapping encodingStyle="" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" type="ns1:gov.nih.nci.caarray.domain.contact.AbstractContact" qname="ns2:AbstractContact" xmlns:ns1="http://xml.apache.org/axis/wsdd/providers/java" xmlns:ns2="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.contact" xmlns:ns3="http://xml.apache.org/axis/wsdd/"/>
+
+<ns3:typeMapping encodingStyle="" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" type="ns1:gov.nih.nci.caarray.domain.contact.Address" qname="ns2:Address" xmlns:ns1="http://xml.apache.org/axis/wsdd/providers/java" xmlns:ns2="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.contact" xmlns:ns3="http://xml.apache.org/axis/wsdd/"/>
+
+<ns3:typeMapping encodingStyle="" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" type="ns1:gov.nih.nci.caarray.domain.contact.Organization" qname="ns2:Organization" xmlns:ns1="http://xml.apache.org/axis/wsdd/providers/java" xmlns:ns2="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.contact" xmlns:ns3="http://xml.apache.org/axis/wsdd/"/>
+
+<ns3:typeMapping encodingStyle="" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" type="ns1:gov.nih.nci.caarray.domain.contact.Person" qname="ns2:Person" xmlns:ns1="http://xml.apache.org/axis/wsdd/providers/java" xmlns:ns2="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.contact" xmlns:ns3="http://xml.apache.org/axis/wsdd/"/>
+
+
+<!-- END INTRODUCE TYPEMAPPINGS --></deployment>

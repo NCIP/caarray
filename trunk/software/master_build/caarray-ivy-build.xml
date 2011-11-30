@@ -1,0 +1,96 @@
+<project name="caarray-ivy" default="retrieve-bda-dependencies" basedir=".." xmlns:ivy="antlib:org.apache.ivy.ant">
+
+    <property name="ivy.jar.file" value="ivy-2.0.0.jar"/>
+    <property name="ivy.src.url" value="https://ncimvn.nci.nih.gov/nexus/content/repositories/public/org/apache/ivy/ivy/2.0.0/${ivy.jar.file}"/>
+    <property name="ivy-bda.src.url.base" value="file:///${software.dir}/caarray-bda/downloads"/>
+    <property name="ivy.dest.file" value="${bda-utils.dir}/${ivy.jar.file}"/>
+    <property name="caarray.dependencies.file" value="ivy-caarray.xml"/>
+    <property name="caarray.ivy.settings.file" value="ivy-caarray-settings.xml"/>
+    <property name="bda-utils.dir" value="${software.dir}/bda-utils"/>
+
+    <condition property="bda.utils.build.file.not.present" value="true">
+        <not>
+            <available file="${bda.utils.build.file}" type="file"/>
+        </not>
+    </condition>
+
+    <condition property="internal.no.ivy" value="true">
+        <equals arg1="${no.ivy}" arg2="true" casesensitive="false" trim="true"/>
+    </condition>
+
+    <condition property="internal.clean.bootstrap.libs.and.ivy.cache" value="true">
+        <and>
+            <not>
+                <equals arg1="${no.ivy}" arg2="true" casesensitive="false" trim="true"/>
+            </not>
+            <and>
+                <equals arg1="${clean.bootstrap.libs.and.ivy.cache}" arg2="true" casesensitive="false" trim="true"/>
+                <not>
+                    <equals arg1="${psuedo_override.clean.bootstrap.libs.and.ivy.cache}" arg2="false" casesensitive="false" trim="true"/>
+                </not>
+            </and>
+        </and>
+    </condition>
+
+    <condition property="need.to.get.ivy.bootstrap.dependencies" value="true">
+        <and>
+            <not>
+                <equals arg1="${no.ivy}" arg2="true" casesensitive="false" trim="true"/>
+            </not>
+            <and>
+                <or>
+                    <isset property="internal.clean.bootstrap.libs.and.ivy.cache"/>
+                    <or>
+                        <not>
+                            <available type="file" file="${ivy.dest.file}"/>
+                        </not>
+                    </or>
+                </or>
+            </and>
+        </and>
+    </condition>
+
+    <target name="clean-bootstrap-libs-and-ivy-cache" if="internal.clean.bootstrap.libs.and.ivy.cache">
+        <delete dir="${bda-utils.dir}"/>
+        <delete dir="${ivy.cache.dir}"/>
+    </target>
+
+    <target name="get-ivy-bootstrap-dependencies" if="need.to.get.ivy.bootstrap.dependencies" depends="clean-bootstrap-libs-and-ivy-cache">
+        <mkdir dir="${bda-utils.dir}"/>
+        <get src="${ivy.src.url}" dest="${ivy.dest.file}"/>
+    </target>
+
+    <target name="retrieve-bda-dependencies" unless="internal.no.ivy" if="bda.utils.build.file.not.present" depends="get-ivy-bootstrap-dependencies">
+        <path id="ivy.classpath">
+            <fileset dir="${bda-utils.dir}">
+                <include name="ivy*.jar" />
+            </fileset>
+        </path>
+        <taskdef resource="org/apache/ivy/ant/antlib.xml" uri="antlib:org.apache.ivy.ant" classpathref="ivy.classpath"/>
+        <property name="ivy.cache.dir" value="${ivy.cache.dir}"/>
+        <property name="ivy.resolver.default.check.modified" value="${ivy.resolve.pessimistic}"/>
+        <ivy:settings file="${caarray.ivy.settings.file}" />
+        <ivy:resolve file="${caarray.dependencies.file}" refresh="true" conf="bda-utils" />
+        <ivy:retrieve pattern="${bda-utils.dir}/[artifact]-[revision].[ext]" conf="bda-utils" />
+        <unzip dest="${bda-utils.dir}">
+            <fileset dir="${bda-utils.dir}">
+                <include name="bda-build-utils*.zip"/>
+            </fileset>
+        </unzip>
+    </target>
+
+    <target name="retrieve-app-dependencies" unless="internal.no.ivy" depends="get-ivy-bootstrap-dependencies">
+        <path id="ivy.classpath">
+            <fileset dir="${bda-utils.dir}">
+                <include name="ivy*.jar" />
+            </fileset>
+        </path>
+        <taskdef resource="org/apache/ivy/ant/antlib.xml" uri="antlib:org.apache.ivy.ant" classpathref="ivy.classpath"/>
+        <property name="ivy.cache.dir" value="${ivy.cache.dir}"/>
+        <property name="ivy.resolver.default.check.modified" value="${ivy.resolve.pessimistic}"/>
+        <ivy:settings file="${caarray.ivy.settings.file}" />
+        <ivy:resolve file="${caarray.dependencies.file}" refresh="true" conf="asm_3.0, project" />
+        <ivy:retrieve pattern="${lib.dir}/caarray-[conf]/[artifact]-[revision].[ext]" conf="asm_3.0, project" />
+    </target>
+
+</project>

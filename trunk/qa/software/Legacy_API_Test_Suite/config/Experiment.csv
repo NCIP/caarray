@@ -1,0 +1,4 @@
+Test Case,API,Organism Scientific Name,Array Provider,Expected Results,Min Results,Login
+378,java,,,,100,
+381,java,Plasmodium falciparum,Affymetrix,1,,
+394,java,,,,100,TRUE

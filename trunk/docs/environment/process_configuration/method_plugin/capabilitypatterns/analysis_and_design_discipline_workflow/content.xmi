@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<org.eclipse.epf.uma:ProcessDescription xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI" xmlns:org.eclipse.epf.uma="http://www.eclipse.org/epf/uma/1.0.4/uma.ecore"
+    xmlns:epf="http://www.eclipse.org/epf" epf:version="1.2.0" xmlns:rmc="http://www.ibm.com/rmc"
+    rmc:version="7.2.0" xmi:id="-zdlaF_hAnTWk2g16eoPfBg"
+    name="analysis_and_design_discipline_workflow,_JMlNIQG6Ed28r8TwSmvtJw" guid="-zdlaF_hAnTWk2g16eoPfBg"/>

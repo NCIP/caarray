@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+    <preConditions>
+        <dbms type="mysql" />
+    </preConditions>
+
+    <!-- 2.4.0 changes -->    
+    <changeSet id="20803" author="dkokotov">
+       <comment>GF 20803 - liquibase upgrade - finalize by getting rid of schema_version</comment>
+       <delete tableName="config_parameter">
+           <where>param='SCHEMA_VERSION'</where>
+       </delete>
+    </changeSet>
+    
+   <changeSet id="25621" author="jscott">
+      <comment>GF 25621 - Illumina: Retrofit already-imported Illumina TXT data files</comment>
+      <update tableName="caarrayfile">
+         <column name="type" value="ILLUMINA_DERIVED_TXT"/>
+         <where>type = 'ILLUMINA_DATA_TXT'</where>
+      </update>
+   </changeSet>
+    
+    <changeSet id="26037.1" author="dkokotov">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">select count(id) from databasechangelog where id = '26037'</sqlCheck>
+        </preConditions>
+       <comment>GF 26037 - upgrade to CSM 4.2</comment>
+       <sqlFile path="db-upgrade/mysql/2.4.0/26037.sql"/>
+    </changeSet>    
+
+    <changeSet id="26323" author="dkokotov">
+       <comment>GF 26323 - improve workspace page performance</comment>
+       <sqlFile path="db-upgrade/mysql/2.4.0/26323.sql"/>
+    </changeSet>    
+
+    <changeSet id="26558" author="dkokotov">
+       <comment>GF 26558 - fix existing illumina CSV designs to use physical probes</comment>
+       <sqlFile path="db-upgrade/mysql/2.4.0/26558.sql"/>
+    </changeSet>    
+
+    <changeSet id="26324" author="dkokotov">
+       <comment>GF 26324 - improve performance of imported files</comment>
+       <sqlFile path="db-upgrade/mysql/2.4.0/26324.sql"/>
+    </changeSet>
+    
+    <changeSet id="27274" author="jscott" failOnError="false">
+      <comment>GF 27274 - Parse Agilent GEML/xml array designs for aCGH assays.</comment>
+      <sqlFile path="db-upgrade/mysql/2.4.0/27274.sql"/>
+   </changeSet>
+    
+    <changeSet id="27274-a" author="jscott">
+      <comment>GF 27274 - Parse Agilent GEML/xml array designs for aCGH assays.</comment>
+      <sqlFile path="db-upgrade/mysql/2.4.0/27274-a.sql"/>
+   </changeSet>
+   
+   <changeSet id="28412" author="dkokotov">
+      <comment>GF 28412 - Fix existing Nimblegen files.</comment>
+      <sqlFile path="db-upgrade/mysql/2.4.0/28412.sql"/>
+   </changeSet>   
+     
+   <changeSet id="27307" author="jscott">
+      <comment>GF 27307 - Parse Agilent GEML/xml array designs for aCGH assays - allow multiple gene accessions.</comment>
+      <sqlFile path="db-upgrade/mysql/2.4.0/27307.sql"/>
+   </changeSet>
+     
+   <changeSet id="28843" author="jscott">
+      <comment>GF 28843 - Bring back Gene attributes for Ensembl, Entrez, Genbank and UniGene accessions.</comment>
+      <sqlFile path="db-upgrade/mysql/2.4.0/28843.sql"/>
+   </changeSet>
+     
+   <changeSet id="27276" author="jscott">
+      <comment>GF 27276 - Parse Agilent GEML/xml array designs for miRNA assays.</comment>
+      <sqlFile path="db-upgrade/mysql/2.4.0/27276.sql"/>
+   </changeSet>
+     
+   <changeSet id="22060" author="dharley">
+      <comment>GF 22060 - [#22060] Source, sample description length limitation - passes validation fails import.</comment>
+      <sqlFile path="db-upgrade/mysql/2.4.0/22060.sql"/>
+   </changeSet>
+
+<!--     
+//TODO: JIRA# ARRAY-1934: Follow-on tasks stemming from decision whether or not to support 
+//direct upgrade from  pre-2.4.1 versions to v2.5. 
+//Temporarily comment out this section, pending decision on whether or not to support 
+//direct upgrade from pre-2.4.1 versions to v2.5.
+//Guice errors occur when running this liquibase custom task. 
+//Since this liquibase custom task is meant to upgrade to 2.4.1 level, 
+//it is probably ok to comment out when upgrading from 2.4.1 to 2.5.0
+//Might have to change if a decision was made to support direct upgrade from pre-2.4.1 versions 
+//directly to 2.5.0.
+
+    <changeSet id="28337" author="jscott">
+       <comment>GF-28337 - Fix already-imported Illumina genotyping CSV array designs to use correct probe ids.</comment>
+       <customChange class="gov.nih.nci.caarray.upgrade.FixIlluminaGenotypingCsvDesignProbeNamesMigrator"/>
+    </changeSet>
+-->
+
+    <changeSet id="29831" author="dkokotov">
+       <comment>GF-29831 - Improve memory performance of DesignElementList</comment>
+       <sqlFile path="db-upgrade/mysql/2.4.0/29831.sql"/>
+    </changeSet>
+   
+    <changeSet id="27244" author="jscott">
+        <comment>GF-28739 - MAGE-TAB import can change names of key term sources, breaking functionality</comment>
+        <sqlFile path="db-upgrade/mysql/2.4.0/27244.sql"/>
+    </changeSet>
+</databaseChangeLog>

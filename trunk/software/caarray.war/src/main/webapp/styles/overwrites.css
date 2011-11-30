@@ -1,0 +1,232 @@
+span.fieldError, .errorMessage {
+    color: red;
+    font-size: .95em;
+    font-weight: bold;
+    display: block;
+}
+
+div.message {
+    background: #ffffcc;
+    border: 1px solid #000;
+    color: #000000;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: normal;
+    margin: 10px auto;
+    padding: 3px;
+    text-align: left;
+    vertical-align: bottom;
+}
+
+.required {
+    font-weight: bold;
+    color: red;
+    background-color: #fff;
+}
+p>.required {
+    background-color: #FEF9EB;
+}
+
+.boxpad2extend
+{ padding:7px 3px 0 10px; border-top: 0px; border:1px solid #fff; border-bottom:1px solid #ccc; background:#e5e5e5; height:1%; }
+
+/* Tabs */
+#tabs
+{ overflow:hidden; position:relative; width:100% }
+#tabs UL
+{ height:28px; font-weight:bold; list-style:none; margin:0; padding-left:15px; padding-right:19px; clear:both; background:url("../images/bg_tabbar.gif") repeat-x bottom; border-bottom:1px solid #999   }
+:lang(en) #tabs UL
+{ height:30px }
+#tabs UL LI
+{ float:left;   margin:0;   padding:0 0 0 4px; text-align:center; min-height:.1%; height:20px }
+#tabs UL LI A
+{ white-space:nowrap; display:block; margin:0; padding:5px 10px; background:#9d9a8e url("../images/bg_headerbar_tan.gif") repeat-x; color:#fff; text-decoration:none; border:1px solid #999; }
+.tabs2 LI A
+{ min-width:78px; width: auto; }
+#tabs UL LI A:hover
+{   color:#333; background-color:#efeee9; text-decoration:none; }
+#tabs UL LI A.active
+{ outline:none; color:#333; background-color:#efeee9; border-bottom:3px solid #efeee9; background-image:none }
+#tabs UL LI.active
+{ color:#333;   background-color:#efeee9; }
+#tabs UL LI A:focus
+{ -moz-outline-style:none; }
+
+/* Tab Level 2 */
+
+#tablevel2 UL
+{ font-size:92%; height:3em; padding:0; font-weight:bold; }
+#tablevel2 UL LI
+{ float:left;   margin:0 4px 0 0;   padding:0; text-align:center; min-height:.1%; height:20px  }
+#tablevel2 UL LI A
+{   display:block; margin:0; padding:5px 10px; color:#333; text-decoration:none; border:1px solid #999; background:#e5e5e5 url("../images/bg_grad3d.gif") repeat-x; }
+#tablevel2 UL LI A.selected
+{   display:block; margin:0; padding:5px 10px; color:#333; text-decoration:none; border:1px solid #4e4e4e; border-right:1px solid #fff; border-bottom:1px solid #fff; background:url("../images/bg_grad3d_reverse.gif") repeat-x; }
+#tablevel2 UL LI A:hover
+{   display:block; margin:0; padding:5px 10px; color:#333; text-decoration:none; border:1px solid #000; background:#fff url("../images/bg_grad3d.gif") repeat-x 0 10px; }
+#tablevel2 UL LI A.selected:hover
+{   display:block; margin:0; padding:5px 10px; color:#333; text-decoration:none; border:1px solid #000; background:url("../images/bg_grad3d_reverse.gif") repeat-x; }
+
+/* Tab Level 2 */
+
+UL#tablevel2
+{ font-size:92%; height:3em; padding:0; font-weight:bold; }
+UL#tablevel2 LI
+{ float:left;   margin:0 4px 0 0;   padding:0; text-align:center; min-height:.1%; height:20px  }
+UL#tablevel2 LI A
+{   display:block; margin:0; padding:5px 10px; color:#333; text-decoration:none; border:1px solid #999; background:#e5e5e5 url("../images/bg_grad3d.gif") repeat-x; }
+UL#tablevel2 LI A.selected
+{   display:block; margin:0; padding:5px 10px; color:#333; text-decoration:none; border:1px solid #4e4e4e; border-right:1px solid #fff; border-bottom:1px solid #fff; background:url("../images/bg_grad3d_reverse.gif") repeat-x; }
+UL#tablevel2 LI A:hover
+{   display:block; margin:0; padding:5px 10px; color:#333; text-decoration:none; border:1px solid #000; background:#fff url("../images/bg_grad3d.gif") repeat-x 0 10px; }
+UL#tablevel2 LI A.selected:hover
+{   display:block; margin:0; padding:5px 10px; color:#333; text-decoration:none; border:1px solid #000; background:url("../images/bg_grad3d_reverse.gif") repeat-x; }
+
+/* Tab Scrolling */
+div.leftScrollBox
+{ position:absolute; left:0px; top:0px; width:17px; height:30px; cursor:pointer; background:transparent url(../images/bg_tabbar.gif) repeat-x scroll center bottom; padding-right:2px; border-bottom:1px solid #999}
+div.rightScrollBox
+{ position:absolute; right:0px; top:0px; width:17px; height:30px; cursor:pointer; background:transparent url(../images/bg_tabbar.gif) repeat-x scroll center bottom; padding-left:2px; border-bottom:1px solid #999}
+div.scrollButton
+{ width:15px; height:22px; background:#efeee9; border:1px solid #999; text-align:center; padding-top:5px; }
+
+TD.tdLabel
+{ width:28%; text-align:right; font-weight:bold; }
+TD LABEL
+{ display: inline; }
+TABLE.form TD INPUT, TABLE.form TD SELECT, TABLE.form TD TEXTAREA
+{ margin-top:-3px; margin-left:0 }
+TABLE.form TD SELECT.inline, TABLE.form TD INPUT.inline, INPUT.inline
+{ display:block; float:left }
+TABLE.form TD INPUT[type=radio], .searchresults INPUT[type=radio]
+{ margin-top:0 }
+TABLE.form TD TEXTAREA
+{ width:380px }
+TABLE.form TD .line
+{ margin:5px }
+TABLE.form TD .hidden INPUT, TABLE.form TD .hidden SELECT, TABLE.form TD .hidden TEXTAREA
+{ margin-top:0px }
+
+TABLE.permissiontable {
+  margin: 0px;
+}
+
+.selectListWrapper
+{ width:510px; height:1% }
+.selectListSide
+{ float:left; width:260px; }
+.scrolltable2
+{ height: 104px; }
+UL.selectList
+{ border:1px solid #999; background:url("../images/bg_shadow.gif") repeat-x fixed top ; clear:both; text-align:left; width:255px; height:100px; overflow:auto; }
+UL.selectList
+{ background-attachment:scroll }
+UL.selectList LI
+{ border-bottom:1px solid #eee; background: transparent url("../images/ico_add.gif") no-repeat scroll 0%; padding: 2px 2px 2px 20px; cursor: pointer; }
+UL.selectList LI:hover
+{ background: #e5e5e5 url("../images/ico_add.gif") no-repeat scroll 0%; }
+.selectListHeader
+{ text-align: left; padding-left: 4px; border:1px solid #999; border-top:1px solid #ccc; background:#e5e5e5 url("../images/bg_grad3d.gif") repeat-x 0 -5px; width:251px; height: 25px; }
+table.form td .selectListHeader input
+{margin-bottom: 1px; margin-top: 3px;}
+.selectListFilterLabel
+{font-size:100%; line-height:1.4em; padding-bottom:6px; font-weight: bold;}
+
+.selectListWrapper .selectionside h4
+{ width: 200px; }
+UL.selectedItemList
+{ border:1px solid #999; background:url("../images/bg_shadow.gif") repeat-x fixed top ; clear:both; text-align:left; width: 204px; height: 95px; overflow: auto; position: relative}
+UL.selectedItemList
+{ background-attachment:scroll }
+UL.selectedItemList li
+{ border-bottom:1px solid #eee; background: transparent url("../images/ico_cancel.gif") no-repeat scroll 0%; padding: 2px 2px 2px 20px; cursor: pointer; }
+UL.selectedItemList LI:hover
+{ background: #e5e5e5 url("../images/ico_cancel.gif") no-repeat scroll 0%; }
+
+.pagehelp
+{ width: auto; }
+.pagehelp A.help
+{ display: block; float: right }
+.pagehelp A.print
+{ display: block; float: right; margin-left: 10px }
+
+#profile_legend li {
+    color: #333;
+    font-size: 100%;
+}
+#profile_legend .bigbold {
+    padding: 0px;
+}
+
+.enableEnterSubmit
+{ width: 0px; height: 0px; border: none; position: absolute }
+
+#uploadProgressBar {
+    width:102px;
+    height:15px;
+    border:1px solid #ccc;
+    padding:0;
+    margin:0;
+    position:relative;
+    background-color: blue;
+}
+
+#uploadProgressBar div {
+    background-color:#fff;
+}
+
+#browsesearchwrapper
+{ width:598px }
+
+#browseboxhome
+{ width:294px }
+
+#searchboxhome
+{ width:294px }
+
+A.btn SPAN.btn_img
+{ background:transparent url("../images/bg_btn_left.gif") no-repeat; display:block; line-height:17px; padding:5px 0 2px 9px; }
+
+A.btn:hover SPAN.btn_img
+{ background:transparent url("../images/bg_btn_left.gif") no-repeat 0 -29px; display:block; line-height:17px; padding:5px 0 2px 9px; }
+
+A.btn:active SPAN.btn_img
+{ background-position:bottom left; background-attachment:scroll; padding:5px 0 2px 9px; /* push text down 1px */ }
+
+.source_node {
+  background-image: url("../images/ico_source.gif") !important;
+}
+
+.sample_node {
+  background-image: url("../images/ico_sample.gif") !important;
+}
+
+.extract_node {
+  background-image: url("../images/ico_extract.gif") !important;
+}
+
+.labeled_extract_node {
+  background-image: url("../images/ico_labeled_extract.gif") !important;
+}
+
+.hybridization_node {
+  background-image: url("../images/ico_hybridization.gif") !important;
+}
+
+.create_choice_form_item {
+  overflow: visible !important;
+}
+
+.create_choice_indented_item {
+  padding-left: 15px !important;
+}
+
+
+.simple_window {  
+    border:1px solid #000;  
+    background-color:#abc;  
+    padding:10px;  
+    text-align:left;  
+    font-family:"Lucida Grande",Verdana;  
+    font-size:12px;  
+    color:#333;  
+} 

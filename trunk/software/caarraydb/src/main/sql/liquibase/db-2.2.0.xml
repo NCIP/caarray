@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+    <preConditions>
+        <dbms type="mysql" />
+    </preConditions>
+    
+    <!-- initial population scripts, based on 2.2.0 patch1 -->
+    <changeSet id="baseline_2.2.0" author="dkokotov">
+        <preConditions onFail="MARK_RAN">
+            <not><tableExists tableName="config_parameter"/></not>
+        </preConditions>
+       <comment>Baseline schema population files - from v. 2.2.0 of the application</comment>
+       <sqlFile path="db-upgrade/mysql/2.2.0/create_schema.sql"/>
+       <sqlFile path="db-upgrade/mysql/2.2.0/init-caarray-schema.sql"/>
+       <sqlFile path="db-upgrade/mysql/2.2.0/init-csm-schema.sql"/>
+       <sqlFile path="db-upgrade/mysql/2.2.0/populate-csm.sql"/>
+       <sqlFile path="db-upgrade/mysql/2.2.0/populate-csm2.sql"/>
+       <update tableName="csm_application">
+         <column name="application_name" value="${csm.application.name}"/>
+         <where>application_name='caarray'</where>
+       </update>       
+       <update tableName="csm_protection_element">
+         <column name="protection_element_name" value="${csm.application.name}"/>
+         <where>protection_element_name='caarray'</where>
+       </update>       
+       <sqlFile path="db-upgrade/mysql/2.2.0/populate-mged.sql"/>
+       <sqlFile path="db-upgrade/mysql/2.2.0/populate-caarray.sql"/>
+       <sql>drop procedure if exists create_features;</sql>
+       <createProcedure>
+       <![CDATA[       
+       create procedure create_features (in rows int, in cols int, in design_details_id bigint)
+       begin
+            declare x int default 0;
+            declare y int default 0;
+            while (y < rows) do
+                while (x < cols) do
+                    insert into design_element (discriminator, feature_column, feature_row, block_column, block_row, feature_details_id) values ('F', x, y, 0, 0, design_details_id);
+                    set x = x + 1;
+                end while;
+                set y = y + 1;
+                set x = 0;
+            end while;
+        end;
+       ]]>
+       </createProcedure>
+    </changeSet>
+ </databaseChangeLog>

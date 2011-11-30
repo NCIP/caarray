@@ -1,0 +1,19 @@
+Test Case,API,Target Name,Association Name,Attribute Name,Attribute Value,Association Attribute Name,Association Attribute Value,Association Role,Expected Results,Min Results
+371,grid,gov.nih.nci.caarray.domain.sample.Sample,,,,,,,,5000
+373,grid,gov.nih.nci.caarray.domain.sample.Sample,,name,QaApiTestSample01,,,,1,
+375,grid,gov.nih.nci.caarray.domain.file.CaArrayFile,,,,,,,,9000
+377,grid,gov.nih.nci.caarray.domain.file.CaArrayFile,,name,MiaPaCa_panc_SS110885_HG-U133_Plus_2_HCHP-63400_.mas5.txt,,,,,1
+379,java,gov.nih.nci.caarray.domain.project.Experiment,,,,,,,,100
+380,grid,gov.nih.nci.caarray.domain.project.Experiment,,,,,,,,100
+382,java,gov.nih.nci.caarray.domain.project.Experiment,gov.nih.nci.caarray.domain.array.ArrayDesign,,,name,Test3,arrayDesigns,,1
+,,,gov.nih.nci.caarray.domain.vocabulary.Term,,,value,disease_state_design,experimentDesignTypes,,
+383,grid,gov.nih.nci.caarray.domain.project.Experiment,gov.nih.nci.caarray.domain.array.ArrayDesign,,,name,Test3,arrayDesigns,,1
+,,,gov.nih.nci.caarray.domain.vocabulary.Term,,,value,disease_state_design,experimentDesignTypes,,
+385,grid,gov.nih.nci.caarray.domain.data.QuantitationType,,,,,,,,123
+387,grid,gov.nih.nci.caarray.domain.data.QuantitationType,,name,CHPSignalLogRatio,,,,1,
+398,grid,gov.nih.nci.caarray.domain.project.AssayType,,,,,,,6,
+400,grid,gov.nih.nci.caarray.domain.vocabulary.Category,,,,,,,,200
+402,grid,gov.nih.nci.caarray.domain.vocabulary.Category,,name,DiseaseState,,,,1,
+404,grid,gov.nih.nci.caarray.domain.project.Factor,,,,,,,,100
+406.1,grid,gov.nih.nci.caarray.domain.project.Factor,,name,Age,,,,,1
+406.2,grid,gov.nih.nci.caarray.domain.sample.TermBasedCharacteristic,,id,1,,,,,1

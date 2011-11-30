@@ -1,0 +1,518 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+	<head>
+		<title>caArray - Manage Collaboration Groups</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+		<link rel="address bar icon" href="favicon.ico" />
+		<link rel="icon" href="favicon.ico" type="image/x-icon" />
+		<link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+		<link rel="stylesheet" type="text/css" href="common/style.css" />
+		
+		<script type="text/javascript" src="common/scripts/prototype.js"></script>		
+		<script type="text/javascript" src="common/scripts/control.tabs.js"></script>
+		<script type="text/javascript" src="common/scripts/showhide.js"></script>
+		<script type="text/javascript" src="common/scripts/checklist.js"></script>
+		
+	</head>
+	
+	<body id="twocol"><div id="wrapper">
+		
+		<a href="#content" id="navskip">Skip to Page Content</a>	
+			
+		<!--NCI/NIH Header-->
+		
+		<div id="nciheader">		
+			
+			<div id="ncilogo"><a href="http://www.cancer.gov"><img src="images/logotype.gif" width="283" height="37" alt="Logo: National Cancer Institute" /></a></div>	
+			<div id="nihtag"><a href="http://www.cancer.gov"><img src="images/tagline.gif" width="295" height="37" alt="Logo: U.S. National Institutes of Health | www.cancer.gov" /></a></div>
+			
+		</div>
+		
+		<!--/NCI/NIH Header-->
+		
+		<!--caArray Header-->			
+		
+		<div id="caarrayheader">
+		
+			<div id="caarraylogo"><a href="./"><img src="images/logo_caarray.gif" width="172" height="46" alt="Logo: caArray - Array Data Management System" /></a></div>
+			
+			<!--Top Search-->
+			
+			<div id="topsearch">
+				<table>
+					<tr>
+						<td colspan="3" class="alignright"><a href="search_advanced.htm">advanced search</a></td>
+					</tr>
+					<tr>
+						<td><input type="text" name="keyw" id="keyw" /></td>
+						<td>
+							<select name="searchcat" id="searchcat">
+								<option>(All Categories) </option>
+								<option>Experiment ID</option>
+								<option>Experiment Name</option>
+								<option>Manufacturer</option>
+								<option>Source Organism</option>
+								<option>Sample ID</option>
+								<option>Disease State</option>								
+							</select>
+						</td>
+						<td><input type="image" src="images/btn_search_top.gif" alt="Search" onclick="window.location='searchresults_loggedin.htm';"  /></td>
+					</tr>
+				</table>
+				
+			</div>
+			
+			<!--/Top Search-->
+			
+			
+		</div>
+		
+		<!--/caArray Header-->
+		
+		<!--caArray Infobar-->			
+		
+		<div id="infobar">
+		
+			<div id="rightinfo">caArray v2.0: NCICB <span class="bar">|</span> Welcome, Matt <span class="bar">|</span> <a href="account.htm">Account</a>  <span class="bar">|</span><a href="logout.htm">Logout</a></div>
+		
+		</div>
+		
+		<!--/caArray Infobar-->
+	
+		<!--Work Area-->
+	
+		<div id="workarea">
+		
+			<div id="mainwrapper">
+			
+				<div id="main">
+				
+					<div id="leftnavandcontent">			
+					
+						<div id="leftnav">
+							
+							<!--caArray Menu-->
+							
+							<div class="navheader">caArray Actions</div>
+							
+							<ul class="caarraymenu">
+																			
+								<li class="liheader">Experiments</li>
+								<li><a href="experiment_workspace.htm">My Experiment Workspace</a></li>
+								<li><a href="experiment_create.htm">Create/Propose Experiment</a></li>
+								<!--<li><a href="search_advanced.htm">Advanced Search</a></li>-->
+								
+								<li class="liheader">Users &amp; Groups</li>
+								<li><a href="manage_users.htm">Manage Users</a></li>
+								<!--<li><a href="manage_groups.htm">Manage Institutional Groups</a></li>-->
+								<li><a href="manage_collaboration_groups.htm" class="selected">Manage Collaboration Groups</a></li>			
+								
+								<li class="liheader">Curation</li>
+								<li><a href="import_array_designs.htm">Import Array Designs</a></li>
+								
+							</ul>
+							
+							<!--/caArray Menu-->								
+							
+							<!--caArray Home-->
+							
+							<ul class="welcomemenu">
+								<li class="liheader">Welcome to caArray</li>
+								<li><a href="./">Public Home</a></li>
+							</ul>
+							
+							<!--/caArray Home-->		
+							
+							<!--About Menu-->
+							
+							<ul class="aboutmenu">
+								<li class="liheader">About caArray</li>
+								<li><a href="about.htm">What is caArray?</a></li>
+								<li><a href="install.htm">Install caArray</a></li>
+								<li><a href="userguide.htm">User Guide</a></li>
+								<li><a href="releasenotes.htm">Release Notes</a></li>
+								<li><a href="techdocs.htm">Technical Documentation</a></li>		
+							</ul>
+							
+							<!--/About Menu-->
+						
+							<!--Quicklinks Menu-->
+							
+							<ul class="quicklinks">
+								<li class="liheader">Global Quick Links</li>
+								<li><a href="http://www.cancer.gov/" class="external">National Cancer Institute (NCI)</a></li>
+								<li><a href="http://ncicb.nci.nih.gov/" class="external">NCI Center for Bioinformatics (NCICB)</a></li>
+								<li><a href="https://cabig.nci.nih.gov/" class="external">caBIG&trade; - Cancer Biomedical Informatics Grid&trade;</a></li>
+							</ul>
+						
+							<!--/Quicklinks Menu-->
+							
+						</div>
+						
+						<!--Content-->
+						
+						<div id="content">
+							
+							<!--ADD CONTENT HERE-->
+							
+							<h1>Manage Collaboration Groups</h1>
+							
+							<div class="pagehelp">
+								<a href="#" class="help">Help</a>
+								<a href="#" class="print">Print</a>
+							</div>
+							
+							<div class="padme">								
+													
+							<!--Results-->
+								
+								<div id="tabboxwrapper_notabs">								
+									
+									<div class="boxpad2">
+								
+										<h3>
+											<a href="manage_collaboration_groups.htm">Collaboration Groups</a> &gt; 
+											<span class="dark">Add a New Collaboration Group</span>
+										</h3>
+										
+									</div>
+									
+									<div class="boxpad" style="padding-bottom:10px">
+									
+									<p class="instructions" style="margin-bottom:10px">First, save a Group Name. Next, add members to the group. To add a member, search for a user and click the corresponding <strong>Add icon</strong> in the column on the right.</p>
+									
+										<form name="editform" id="idform" action="">
+										
+											<table class="form">
+												<tr>
+													<td class="labelthin">Group Name:</td>
+													<td class="valuethin">
+														<input type="text" name="title" id="exptitle" value="" />
+													</td>
+													<td class="button">
+														<a href="#" class="btn" onclick="this.blur();"><span class="btn_img"><span class="save">Save</span></span></a>
+													</td>
+												</tr>
+											</table>
+											
+										</form>										
+									
+										<div class="line"></div>
+								
+										<h2 class="bolder">Add Group Members</h2>
+												
+										<!--Results-->
+										
+										<div id="tabboxwrapper">
+										
+											<!--Group Members-->
+												
+												<div id="userlist">
+												
+												<!--Searchbox-->
+												
+													<div id="searchboxwrapper">
+													
+														<form name="filterform" id="filterform" action="">
+															
+															<table class="form">
+																<tr>
+																	<td class="label" style="white-space:nowrap">Last Name:</td>
+																	<td class="value" style="padding-left:0"><input type="text" name="" style="width:140px;" /></td>
+																	<td class="label">Institution:</td>
+																	<td class="value">
+																		<select name="datafilter" style="width:350px">
+																			<option>(All Institutions)</option>
+																			<option>Institution ABC</option>
+																			<option>etc.</option>
+																		</select>
+																	</td>
+																</tr>
+																<tr>
+																	<td class="label">Role:</td>
+																	<td class="value">
+																		<select name="datafilter" style="width:140px">
+																			<option>(All Roles)</option>
+																			<option>Principal Investigator</option>
+																			<option>etc.</option>
+																		</select>
+																	</td>
+																	<td class="label">Status:</td>
+																	<td class="value">
+																		<select name="datafilter" style="width:140px">
+																		<option>(All Statuses)</option>
+																		<option>Enabled</option>
+																		<option>etc.</option>
+																	</select>
+																	</td>
+																</tr>
+															</table>
+															
+															<div class="actions">												
+												
+																<del class="btnwrapper">
+																	<ul id="btnrow2">
+																		<li><a href="#" class="btn" onclick="this.blur();"><span class="btn_img"><span class="filter">Filter</span></span></a></li>
+																	</ul>
+																</del>												
+																
+															</div>
+															
+														</form>
+													
+													</div>
+														
+												<!--/Searchbox-->
+													
+												<!--Paging-->
+										
+												<div class="pagecontrol">
+												
+													<p class="small">Displaying 1-25 of 300 Total Users in System.</p>
+															
+													<div class="paging">
+														Page 1 <span class="bar">|</span> <a href="#">2</a> <span class="bar">|</span> <a href="#">3</a> <span class="bar">|</span> <a href="#">4</a> <span class="bar">|</span> <a href="#">5</a> <span class="bar">|</span> <a href="#">6</a> <span class="bar">|</span> <a href="#">7</a> <span class="bar">|</span> <a href="#">8</a> <span class="bar">|</span> <a href="#">9</a> <span class="bar">|</span> <a href="#">10</a> <span class="bar">|</span> <a href="#">11</a> <span class="bar">|</span> <a href="#">12</a>
+														&nbsp;&nbsp;
+														&lt; Back <span class="bar">|</span> 
+														<a href="#">Next &gt;</a>
+													</div>
+										
+												</div>
+												
+												<!--/Paging-->
+													
+													<div class="scrolltable">
+														<table class="searchresults" cellspacing="0" style="margin-top:0">
+															<tr>
+																<th><a href="#">caArray User</a></th>
+																<th><a href="#">Institution</a></th>
+																<th><a href="#">Email Address</a></th>
+																<th class="actions">Add</th>
+															</tr>
+															<tr>
+																<td class="title"><a href="user_details.htm">Lastname, Firstname</a></td>
+																<td>Sample Institute </td>
+																<td><a href="mailto:email@email.com">email@email.com</a></td>
+																<td class="icon"><a href="#"><img src="images/ico_add.gif" alt="Add" /></a></td>
+															</tr>
+															<tr class="odd">
+																<td class="title"><a href="user_details.htm">Lastname, Firstname</a></td>
+																<td>Sample Institute </td>
+																<td><a href="mailto:email@email.com">email@email.com</a></td>
+																<td class="icon"><a href="#"><img src="images/ico_add.gif" alt="Add" /></a></td>
+															</tr>
+															<tr>
+																<td class="title"><a href="user_details.htm">Lastname, Firstname</a></td>
+																<td>Sample Institute </td>
+																<td><a href="mailto:email@email.com">email@email.com</a></td>
+																<td class="icon"><a href="#"><img src="images/ico_add.gif" alt="Add" /></a></td>
+															</tr>
+															<tr class="odd">
+																<td class="title"><a href="user_details.htm">Lastname, Firstname</a></td>
+																<td>Sample Institute </td>
+																<td><a href="mailto:email@email.com">email@email.com</a></td>
+																<td class="icon"><a href="#"><img src="images/ico_add.gif" alt="Add" /></a></td>
+															</tr>
+															<tr>
+																<td class="title"><a href="user_details.htm">Lastname, Firstname</a></td>
+																<td>Sample Institute </td>
+																<td><a href="mailto:email@email.com">email@email.com</a></td>
+																<td class="icon"><a href="#"><img src="images/ico_add.gif" alt="Add" /></a></td>
+															</tr>
+															<tr class="odd">
+																<td class="title"><a href="user_details.htm">Lastname, Firstname</a></td>
+																<td>Sample Institute </td>
+																<td><a href="mailto:email@email.com">email@email.com</a></td>
+																<td class="icon"><a href="#"><img src="images/ico_add.gif" alt="Add" /></a></td>
+															</tr>
+															<tr>
+																<td class="title"><a href="user_details.htm">Lastname, Firstname</a></td>
+																<td>Sample Institute </td>
+																<td><a href="mailto:email@email.com">email@email.com</a></td>
+																<td class="icon"><a href="#"><img src="images/ico_add.gif" alt="Add" /></a></td>
+															</tr>
+															<tr class="odd">
+																<td class="title"><a href="user_details.htm">Lastname, Firstname</a></td>
+																<td>Sample Institute </td>
+																<td><a href="mailto:email@email.com">email@email.com</a></td>
+																<td class="icon"><a href="#"><img src="images/ico_add.gif" alt="Add" /></a></td>
+															</tr>
+															<tr>
+																<td class="title"><a href="user_details.htm">Lastname, Firstname</a></td>
+																<td>Sample Institute </td>
+																<td><a href="mailto:email@email.com">email@email.com</a></td>
+																<td class="icon"><a href="#"><img src="images/ico_add.gif" alt="Add" /></a></td>
+															</tr>
+															<tr class="odd">
+																<td class="title"><a href="user_details.htm">Lastname, Firstname</a></td>
+																<td>Sample Institute </td>
+																<td><a href="mailto:email@email.com">email@email.com</a></td>
+																<td class="icon"><a href="#"><img src="images/ico_add.gif" alt="Add" /></a></td>
+															</tr>
+															<tr>
+																<td class="title"><a href="user_details.htm">Lastname, Firstname</a></td>
+																<td>Sample Institute </td>
+																<td><a href="mailto:email@email.com">email@email.com</a></td>
+																<td class="icon"><a href="#"><img src="images/ico_add.gif" alt="Add" /></a></td>
+															</tr>
+															<tr class="odd">
+																<td class="title"><a href="user_details.htm">Lastname, Firstname</a></td>
+																<td>Sample Institute </td>
+																<td><a href="mailto:email@email.com">email@email.com</a></td>
+																<td class="icon"><a href="#"><img src="images/ico_add.gif" alt="Add" /></a></td>
+															</tr>
+															<tr>
+																<td class="title"><a href="user_details.htm">Lastname, Firstname</a></td>
+																<td>Sample Institute </td>
+																<td><a href="mailto:email@email.com">email@email.com</a></td>
+																<td class="icon"><a href="#"><img src="images/ico_add.gif" alt="Add" /></a></td>
+															</tr>
+															<tr class="odd">
+																<td class="title"><a href="user_details.htm">Lastname, Firstname</a></td>
+																<td>Sample Institute </td>
+																<td><a href="mailto:email@email.com">email@email.com</a></td>
+																<td class="icon"><a href="#"><img src="images/ico_add.gif" alt="Add" /></a></td>
+															</tr>
+															<tr>
+																<td class="title"><a href="user_details.htm">Lastname, Firstname</a></td>
+																<td>Sample Institute </td>
+																<td><a href="mailto:email@email.com">email@email.com</a></td>
+																<td class="icon"><a href="#"><img src="images/ico_add.gif" alt="Add" /></a></td>
+															</tr>
+															<tr class="odd">
+																<td class="title"><a href="user_details.htm">Lastname, Firstname</a></td>
+																<td>Sample Institute </td>
+																<td><a href="mailto:email@email.com">email@email.com</a></td>
+																<td class="icon"><a href="#"><img src="images/ico_add.gif" alt="Add" /></a></td>
+															</tr>
+															<tr>
+																<td class="title"><a href="user_details.htm">Lastname, Firstname</a></td>
+																<td>Sample Institute </td>
+																<td><a href="mailto:email@email.com">email@email.com</a></td>
+																<td class="icon"><a href="#"><img src="images/ico_add.gif" alt="Add" /></a></td>
+															</tr>
+															<tr class="odd">
+																<td class="title"><a href="user_details.htm">Lastname, Firstname</a></td>
+																<td>Sample Institute </td>
+																<td><a href="mailto:email@email.com">email@email.com</a></td>
+																<td class="icon"><a href="#"><img src="images/ico_add.gif" alt="Add" /></a></td>
+															</tr>
+															<tr>
+																<td class="title"><a href="user_details.htm">Lastname, Firstname</a></td>
+																<td>Sample Institute </td>
+																<td><a href="mailto:email@email.com">email@email.com</a></td>
+																<td class="icon"><a href="#"><img src="images/ico_add.gif" alt="Add" /></a></td>
+															</tr>
+															<tr class="odd">
+																<td class="title"><a href="user_details.htm">Lastname, Firstname</a></td>
+																<td>Sample Institute </td>
+																<td><a href="mailto:email@email.com">email@email.com</a></td>
+																<td class="icon"><a href="#"><img src="images/ico_add.gif" alt="Add" /></a></td>
+															</tr>
+															<tr>
+																<td class="title"><a href="user_details.htm">Lastname, Firstname</a></td>
+																<td>Sample Institute </td>
+																<td><a href="mailto:email@email.com">email@email.com</a></td>
+																<td class="icon"><a href="#"><img src="images/ico_add.gif" alt="Add" /></a></td>
+															</tr>
+															<tr class="odd">
+																<td class="title"><a href="user_details.htm">Lastname, Firstname</a></td>
+																<td>Sample Institute </td>
+																<td><a href="mailto:email@email.com">email@email.com</a></td>
+																<td class="icon"><a href="#"><img src="images/ico_add.gif" alt="Add" /></a></td>
+															</tr>
+														</table>
+													</div>
+													
+													<!--Paging-->
+										
+												<div class="pagecontrol">
+												
+													<p class="small">Displaying 1-25 of 300 Total Users in System.</p>
+															
+													<div class="paging">
+														Page 1 <span class="bar">|</span> <a href="#">2</a> <span class="bar">|</span> <a href="#">3</a> <span class="bar">|</span> <a href="#">4</a> <span class="bar">|</span> <a href="#">5</a> <span class="bar">|</span> <a href="#">6</a> <span class="bar">|</span> <a href="#">7</a> <span class="bar">|</span> <a href="#">8</a> <span class="bar">|</span> <a href="#">9</a> <span class="bar">|</span> <a href="#">10</a> <span class="bar">|</span> <a href="#">11</a> <span class="bar">|</span> <a href="#">12</a>
+														&nbsp;&nbsp;
+														&lt; Back <span class="bar">|</span> 
+														<a href="#">Next &gt;</a>
+													</div>
+										
+												</div>
+												
+												<!--/Paging-->
+																	
+													
+												
+												</div>
+												
+												<!--/Group Members-->	
+											
+											</div>
+										
+											<div class="actions" style="margin:10px -6px -10px -9px;">												
+												
+												<del class="btnwrapper">
+													<ul id="btnrow">
+														<li><a href="manage_collaboration_groups.htm" class="btn" onclick="this.blur();"><span class="btn_img"><span class="cancel">Cancel</span></span></a></li>
+													</ul>
+												</del>
+												
+											</div>
+												
+										</div>
+										
+									</div>
+									
+								</div>
+									
+								<!--/Results-->
+								
+								
+								</div>
+							
+							<!--/ADD CONTENT HERE-->							
+							
+							<div class="clear"></div>							
+							
+						</div>
+						
+						<!--/Content-->
+						
+					</div>
+					
+				</div>
+				
+				
+		
+		</div>
+		
+		<!--Footer-->
+		
+		<div id="footerwrapper">
+			
+			<div id="footernavwrapper">		
+				<div id="footernav">				
+					<a href="contact.htm">Contact Us</a>
+					<a href="http://www.nih.gov/about/privacy.htm">Privacy Notice</a>
+					<a href="http://www.nih.gov/about/disclaim.htm">Disclaimer</a>
+					<a href="http://www3.cancer.gov/accessibility/nci508.htm">Accessibility</a>
+					<a href="help.htm" class="last">caArray Support</a>	
+				</div>
+			</div>
+
+			<div id="partnerlogos">				
+				<a href="http://www.cancer.gov"><img src="images/footer_nci.gif" width="63" height="31" alt="Logo: National Cancer Institute" /></a>
+				<a href="http://www.dhhs.gov"><img src="images/footer_hhs.gif" width="39" height="31" alt="Logo: Department of Health and Human Services" /></a>
+				<a href="http://www.nih.gov"><img src="images/footer_nih.gif" width="46" height="31" alt="Logo: National Institutes of Health" /></a>
+				<a href="http://www.usa.gov"><img src="images/footer_usagov.gif" width="91" height="31" alt="Logo: USA.gov" /></a>
+			</div>
+
+		</div>
+		
+		<!--/Footer-->
+	
+	</div></body>
+	
+</html>

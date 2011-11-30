@@ -1,0 +1,7 @@
+Test Case,API,Last Name,Id,Expected Results,Min Results
+69,java,,,,100
+70,grid,,,,100
+71,java,Wooster,,,2
+72,grid,Wooster,,,2
+71.2,java,,URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experiment.ExperimentalContact:59,,1
+72.2,grid,,URN:LSID:caarray.nci.nih.gov:gov.nih.nci.caarray.external.v1_0.experiment.ExperimentalContact:59,,1

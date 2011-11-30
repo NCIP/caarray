@@ -1,0 +1,42 @@
+div.accordion {
+        position: relative; /* required for bounding */
+        border:1px solid #656565
+}
+div.accordion div.top {
+        border-top:0;
+}
+div.accordion-toggle {
+        position: relative; /* required for effect */
+        z-index: 10;		/* required for effect */
+        background: #32466b url("../images/bg_bar_blue_dk.gif") repeat-x top;
+        color: #fff;
+        cursor: pointer;
+        padding: 9px 14px 6px 14px;
+        border-top: 1px solid #656565;
+        border-bottom: 1px solid #2e3b53;
+        font-weight:bold;
+}
+
+div.accordion-toggle-active{
+        background: url("../images/bg_bar_gray.gif") repeat-x top;
+        border-top: 1px solid #656565;
+        border-bottom: 1px solid #999;
+        color:#333;
+}
+div.accordion-toggle:hover{
+        background:#4478a9 url("../images/bg_bar_blue.gif") repeat-x top;
+        border-top: 1px solid #656565;
+        border-bottom: 1px solid #2e5c87;
+        color:#fff;
+}
+
+div.accordion-content{
+        overflow: hidden;	/* required for effect */
+        background: #fff;
+        padding: 0;
+        color: #333;
+}
+
+div.accordion-content p{
+        margin: 9px 24px 6px 24px;
+}

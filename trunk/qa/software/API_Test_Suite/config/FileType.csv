@@ -1,0 +1,9 @@
+Test Case,API,Name,Category,Expected Results,Min Results,Expected Name,Expected Category
+5,java,,,,40,,
+6,grid,,,,40,,
+7,java,AFFYMETRIX_CHP,,1,,AFFYMETRIX_CHP,
+8,grid,AFFYMETRIX_CHP,,1,,AFFYMETRIX_CHP,
+247,java,invalid#%!,,0,,,
+248,grid,invalid#%!,,0,,,
+328,java,AFFYMETRIX_CEL,,1,,,
+329,grid,AFFYMETRIX_CEL,,1,,,

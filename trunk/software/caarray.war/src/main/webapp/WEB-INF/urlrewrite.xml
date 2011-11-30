@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE urlrewrite PUBLIC "-//tuckey.org//DTD UrlRewrite 2.6//EN"
+        "http://tuckey.org/res/dtds/urlrewrite2.6.dtd">
+
+<urlrewrite>
+    <rule>
+        <from>/project/(.{1,5}-\d{5}|EXP-\d+)/sample/(.*)$</from>
+        <!-- must encode the intialTab2Url otherwise the 2nd param is not passed, use %26 instead of &amp; --> 
+        <to type="redirect">%{context-path}/project/details.action?project.experiment.publicIdentifier=$1&amp;initialTab=annotations&amp;initialTab2=samples&amp;initialTab2Url=%{context-path}/ajax/project/listTab/Samples/view.action?project.experiment.publicIdentifier=$1%26currentSample.externalId=$2</to>
+    </rule>
+    <rule>
+        <from>/project/(.{1,5}-\d{5}|EXP-\d+)/source/(.*)$</from>
+        <!-- must encode the intialTab2Url otherwise the 2nd param is not passed, use %26 instead of &amp; --> 
+        <to type="redirect">%{context-path}/project/details.action?project.experiment.publicIdentifier=$1&amp;initialTab=annotations&amp;initialTab2=sources&amp;initialTab2Url=%{context-path}/ajax/project/listTab/Sources/view.action?project.experiment.publicIdentifier=$1%26currentSource.externalId=$2</to>
+    </rule>
+    <rule>
+        <from>/project/(.{1,5}-\d{5}|EXP-\d+)/extract/(.*)$</from>
+        <!-- must encode the intialTab2Url otherwise the 2nd param is not passed, use %26 instead of &amp; --> 
+        <to type="redirect">%{context-path}/project/details.action?project.experiment.publicIdentifier=$1&amp;initialTab=annotations&amp;initialTab2=extracts&amp;initialTab2Url=%{context-path}/ajax/project/listTab/Extracts/view.action?project.experiment.publicIdentifier=$1%26currentExtract.externalId=$2</to>
+    </rule>
+    <rule>
+        <from>/project/(.{1,5}-\d{5}|EXP-\d+)/labeledExtract/(.*)$</from>
+        <!-- must encode the intialTab2Url otherwise the 2nd param is not passed, use %26 instead of &amp; --> 
+        <to type="redirect">%{context-path}/project/details.action?project.experiment.publicIdentifier=$1&amp;initialTab=annotations&amp;initialTab2=labeledExtracts&amp;initialTab2Url=%{context-path}/ajax/project/listTab/LabeledExtracts/view.action?project.experiment.publicIdentifier=$1%26currentLabeledExtract.externalId=$2</to>
+    </rule>
+
+    <rule>
+        <from>/project/(.{1,5}-\d{5}|EXP-\d+)$</from>
+        <to type="redirect">%{context-path}/project/details.action?project.experiment.publicIdentifier=$1</to>
+    </rule>
+            
+    <rule>
+        <from>^/project/files/upload.action/(\d+)$</from>
+        <to type="forward">/project/files/upload.action</to>
+        <set type="request" name="__multipart_upload_id">$1</set>
+    </rule>
+
+    <rule>
+        <from>^/protected/ajax/arrayDesign/save.action/(\d+)$</from>
+        <to type="forward">/protected/ajax/arrayDesign/save.action</to>
+        <set type="request" name="__multipart_upload_id">$1</set>
+    </rule>
+
+    <rule>
+        <from>^/j_security_check$</from>
+        <to type="redirect">%{context-path}/protected/project/workspace.action</to>
+    </rule>
+
+    <rule>
+        <from>^/(scripts|styles)/(.+)\.(\d+)\.(js|css)$</from>
+        <to>/$1/$2.$4</to>
+    </rule>
+
+    <outbound-rule>
+        <from>/project/details.action?project.experiment.publicIdentifier=(.{1,5}-\d{5}|EXP-\d+)</from>
+        <to>%{context-path}/project/$1</to>
+    </outbound-rule>
+
+</urlrewrite>
+

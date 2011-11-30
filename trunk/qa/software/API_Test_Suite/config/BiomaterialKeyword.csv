@@ -1,0 +1,23 @@
+Test Case,API,Keyword,Expected Results,Min Results,API Utils,Enumerate
+115.1,java,,,20000,,
+115.2,java,${empty},,20000,,
+115.3,java,invalid#%,0,,,
+116,java,QaApiTestExtract01,1,,,
+117,java,Plasmodium falciparum,8,,,
+118,java,AbcCarcinoma,,2,,
+119.1,grid,,,20000,,
+119.2,grid,${empty},,20000,,
+119.3,grid,invalid#%,0,,,
+120,grid,QaApiTestExtract01,1,,,
+121,grid,QA_API_TEST_EXTERNAL_ID_02,1,,,
+122,grid,Plasmodium falciparum,8,,,
+123,grid,AbcCarcinoma,,2,,
+124,java,,,20000,TRUE,
+350,grid,,,20000,,TRUE
+287,java,QA_API_TEST_EXTERNAL_ID_02,1,
+288,java,Blood,,500
+289,grid,QA_API_TEST_EXTERNAL_ID_02,1,
+290,grid,Blood,,500
+291,grid,QA Illumina Experiment for API,76,
+330,java,solid_tumor,,1
+333,grid,solid_tumor,,1

@@ -1,0 +1,99 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Selenium_RBT_TC38</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">Selenium_RBT_TC38</td></tr>
+</thead><tbody>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Advanced Search</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=Manage Lists</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=Manually type List</td>
+	<td></td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>typeSelector</td>
+	<td>label=Reporter-AFFY_100K_SNP_PROBE_SET</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>typeListIds</td>
+	<td>SNP_A-1708471<br />SNP_A-1748794</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>listName</td>
+	<td>my_probe_set</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>uploadButton</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Advanced Search</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>document.comparitivegenomicForm.method</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>queryName</td>
+	<td>NAKQ100E</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>snpIdSnpList</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>submittalButton</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//input[@value='Finalize Query']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>selectedQueries[0].queryName</td>
+	<td>label=NAKQ100E</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>validateButton</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>runReportButton</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForPopUp</td>
+	<td>_report56200717115</td>
+	<td>30000</td>
+</tr>
+
+</tbody></table>
+</body>
+</html>

@@ -1,0 +1,195 @@
+<!-- *********************************************************************** -->
+<!-- ** PROJECT:   caArray External API Test Suite                       ** -->
+<!-- *********************************************************************** -->
+
+<project name="caarrayExternalAPITestSuite" default="gui" basedir=".">
+	<!-- ******************************************************************* -->
+	<!-- ** SERVER CONNECTION PROPERTIES                                  ** -->
+	<!-- ******************************************************************* -->
+    
+    <property name="grid.server.hostname" value="array-qa.nci.nih.gov" />
+    <property name="grid.server.http.port" value="80" />
+    <property name="server.hostname" value="array-qa.nci.nih.gov" />
+    <property name="server.jndi.port" value="8080" />
+    
+    <!--
+    <property name="grid.server.hostname" value="localhost" />
+    <property name="grid.server.http.port" value="8080" />
+    <property name="server.hostname" value="localhost" />
+    <property name="server.jndi.port" value="8080" />
+    -->
+
+	<!-- ******************************************************************* -->
+	<!-- ** PROPERTIES NEEDED FOR BUILD                                   ** -->
+	<!-- ******************************************************************* -->
+    <property name="src.dir" value="${basedir}/src" />
+    <property name="package.dir" value="/caarray/client/test" />
+    <property name="gui.src.dir" value="${package.dir}/gui" />
+    <property name="grid.src.dir" value="${package.dir}/grid" />
+    <property name="java.src.dir" value="${package.dir}/java" />
+    <property name="full.src.dir" value="${package.dir}/full" />
+    <property name="classes.dir" value="${basedir}/classes" />
+    <property name="jar.dir" value="${basedir}/gui" />
+    <property name="jar.file" value="${jar.dir}/client_api_test_suite.jar" />
+    <property name="jar.dest.file" value="${basedir}/client_api_test_suite.jar" />
+    <property name="test.long.exclude" value="351,125,133,142,182,183,203,204,294,295,297,299,301,363,365,366,367,368,369,409,410,352,104,107,109,112,114,349,115,119,124,125,350,51,52,318,319" />
+	
+	<!-- ******************************************************************* -->
+	<!-- ** TEST SUITE PROPERTIES                                         ** -->
+	<!-- ******************************************************************* -->
+    <property name="test.version" value="all" />
+    <property name="threads.num" value="1" />
+
+	<!-- ******************************************************************* -->
+	<!-- ** TEST RESULT REPORT PROPERTIES                                 ** -->
+	<!-- ******************************************************************* -->
+    <property name="report.dir" value="${basedir}/report" />
+    <property name="report.file" value="External_API_Test_Results"/>
+    <property name="load.report.file" value="Load_Tests_API_Test_Results"/>
+    <property name="load.analysis.file" value="Load_Test_Analysis"/>
+
+
+    <path id="libs">
+        <fileset dir="../../../software/caarray-client.jar/target/" includes="caarray-client-external-v1_0.jar"/>
+        <fileset dir="../../../software/grid/v1_0/build/lib/" includes="*.jar"/>
+        <fileset dir="../../../software/grid/v1_0/lib/" includes="*.jar"/>
+        <fileset dir="../../../software/lib/caarray-project/" >
+            <include name="*.jar"/>
+            <exclude name="xercesImpl-1.7.0.jar" />
+            <exclude name="xerces-J-1.4.0.jar" />
+            <exclude name="pull-parser-2.jar"/>
+        </fileset>
+    </path>
+
+
+
+	<!-- ******************************************************************* -->
+	<!-- ** BUILD TARGETS                                                 ** -->
+	<!-- ******************************************************************* -->
+    <target name="clean">
+        <delete dir="${classes.dir}"/>
+    </target>
+
+    <target name="compile">
+        <mkdir dir="${classes.dir}" />
+        <javac srcdir="${src.dir}" includes="**/*.java" destdir="${classes.dir}" debug="true" includeantruntime="false">
+            <classpath>
+                <path refid="libs"/>
+            </classpath>
+        </javac>
+        <copy todir="${classes.dir}">
+            <fileset dir="${basedir}" includes="*.properties"/>
+        </copy>
+    </target>
+
+    <target name="run_tests_all" depends="compile">
+        <java classname="caarray.client.test.full.FullTest" fork="yes">
+            <classpath>
+                <path refid="libs"/>
+                <path location="${classes.dir}"/>
+            </classpath>
+            <jvmarg value="-Xms64m"/>
+            <jvmarg value="-Xmx1280m"/>
+            <sysproperty key="grid.server.hostname" value="${grid.server.hostname}" />
+            <sysproperty key="grid.server.http.port" value="${grid.server.http.port}" />
+            <sysproperty key="server.hostname" value="${server.hostname}" />
+            <sysproperty key="server.jndi.port" value="${server.jndi.port}" />
+            <sysproperty key="report.dir" value="${report.dir}"/>
+            <sysproperty key="report.file" value="${report.file}"/>
+            <sysproperty key="api.use" value="all"/>
+            <sysproperty key="test.version" value="${test.version}"/>
+            <sysproperty key="load.report.file" value="${load.report.file}"/>
+            <sysproperty key="load.analysis.file" value="${load.analysis.file}"/>
+            <sysproperty key="threads.num" value="${threads.num}" />
+            <sysproperty key="test.long.exclude" value="${test.long.exclude}" />
+        </java>
+    </target>
+
+    <target name="run_tests_grid" depends="compile">
+        <java classname="caarray.client.test.grid.GridTest"  fork="yes">
+            <classpath>
+                <path refid="libs"/>
+                <path location="${classes.dir}"/>
+            </classpath>
+            <jvmarg value="-Xms64m"/>
+            <jvmarg value="-Xmx1280m"/>
+            <sysproperty key="grid.server.hostname" value="${grid.server.hostname}" />
+            <sysproperty key="grid.server.http.port" value="${grid.server.http.port}" />
+            <sysproperty key="server.hostname" value="${server.hostname}" />
+            <sysproperty key="server.jndi.port" value="${server.jndi.port}" />
+            <sysproperty key="report.dir" value="${report.dir}"/>
+            <sysproperty key="report.file" value="${report.file}"/>
+            <sysproperty key="api.use" value="grid"/>
+            <sysproperty key="test.version" value="${test.version}"/>
+            <sysproperty key="load.report.file" value="${load.report.file}"/>
+            <sysproperty key="load.analysis.file" value="${load.analysis.file}"/>
+            <sysproperty key="threads.num" value="${threads.num}" />
+            <sysproperty key="test.long.exclude" value="${test.long.exclude}" />
+        </java>
+    </target>
+
+    <target name="run_tests_java" depends="compile">
+        <java classname="caarray.client.test.java.JavaTest" fork="yes">
+            <classpath>
+                <path refid="libs"/>
+                <path location="${classes.dir}"/>
+            </classpath>
+            <jvmarg value="-Xms64m"/>
+            <jvmarg value="-Xmx1280m"/>
+            <sysproperty key="grid.server.hostname" value="${grid.server.hostname}" />
+            <sysproperty key="grid.server.http.port" value="${grid.server.http.port}" />
+            <sysproperty key="server.hostname" value="${server.hostname}" />
+            <sysproperty key="server.jndi.port" value="${server.jndi.port}" />
+            <sysproperty key="report.dir" value="${report.dir}"/>
+            <sysproperty key="report.file" value="${report.file}"/>
+            <sysproperty key="api.use" value="java"/>
+            <sysproperty key="test.version" value="${test.version}"/>
+            <sysproperty key="load.report.file" value="${load.report.file}"/>
+            <sysproperty key="load.analysis.file" value="${load.analysis.file}"/>
+            <sysproperty key="threads.num" value="${threads.num}" />
+            <sysproperty key="test.long.exclude" value="${test.long.exclude}" />
+        </java>
+    </target>
+	
+    <target name="run_load_tests" depends="compile">
+        <java classname="caarray.client.test.full.LoadTest" fork="yes">
+            <classpath>
+                <path refid="libs"/>
+                <path location="${classes.dir}"/>
+            </classpath>
+            <jvmarg value="-Xms64m"/>
+            <jvmarg value="-Xmx1280m"/>
+            <sysproperty key="grid.server.hostname" value="${grid.server.hostname}" />
+            <sysproperty key="grid.server.http.port" value="${grid.server.http.port}" />
+            <sysproperty key="server.hostname" value="${server.hostname}" />
+            <sysproperty key="server.jndi.port" value="${server.jndi.port}" />
+            <sysproperty key="report.dir" value="${report.dir}"/>
+            <sysproperty key="report.file" value="${report.file}"/>
+            <sysproperty key="api.use" value="java"/>
+            <sysproperty key="test.version" value="${test.version}"/>
+            <sysproperty key="load.report.file" value="${load.report.file}"/>
+            <sysproperty key="load.analysis.file" value="${load.analysis.file}"/>
+            <sysproperty key="threads.num" value="${threads.num}" />
+            <sysproperty key="test.long.exclude" value="${test.long.exclude}" />
+        </java>
+    </target>
+
+    <target name="gui" depends="compile">
+        <java classname="caarray.client.test.gui.GuiMain" fork="yes">
+            <classpath>
+                <path refid="libs"/>
+                <path location="${classes.dir}"/>
+            </classpath>
+            <jvmarg value="-Xms64m"/>
+            <jvmarg value="-Xmx1280m"/>
+            <jvmarg value="-Xdebug"/>
+            <jvmarg value="-Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n"/>
+            <jvmarg value="-Djava.compiler=NONE"/>
+        </java>
+    </target>
+
+    <target name="test_java" depends="run_tests_java"/>
+    <target name="test_grid" depends="run_tests_grid"/>
+    <target name="load_test" depends="run_load_tests"/>
+
+</project>

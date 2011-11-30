@@ -1,0 +1,149 @@
+Test Case,API,File Reference,File,File Experiment,File Experiment Id,Quantitation Type,Hybridization,Hybridization Reference,Expected Probe Ids,Expected Quantitation Type,Expected Data Type,Expected Data Results,Expected Results,Min Results,Max Time
+165.1,java,,miRNA_251911812798_S01_miRNA-v1_10_Apr08_1_2.txt,QA_API_Agilent_aCGH_Test,,logRatio,,,345,logRatio,FLOAT,1,,,
+,,,,,,logRatioError,,,,logRatioError,FLOAT,1,,,
+,,,,,,pValueLogRatio,,,,pValueLogRatio,FLOAT,1,,,
+,,,,,,gProcessedSignal,,,,gProcessedSignal,FLOAT,1,,,
+,,,,,,rProcessedSignal,,,,rProcessedSignal,FLOAT,1,,,
+,,,,,,gProcessedSigError,,,,gProcessedSigError,FLOAT,1,,,
+,,,,,,rProcessedSigError,,,,rProcessedSigError,FLOAT,1,,,
+,,,,,,gMedianSignal,,,,gMedianSignal,FLOAT,1,,,
+,,,,,,rMedianSignal,,,,rMedianSignal,FLOAT,1,,,
+,,,,,,gTotalProbeSignal,,,,gTotalProbeSignal,FLOAT,1,,,
+,,,,,,gTotalProbeError,,,,gTotalProbeError,FLOAT,1,,,
+,,,,,,gTotalGeneError,,,,gTotalGeneError,FLOAT,1,,,
+,,,,,,gIsGeneDetected,,,,gIsGeneDetected,BOOLEAN,1,,,
+,,,,,,gTotalGeneSignal,,,,gTotalGeneSignal,FLOAT,1,,,
+165.2,java,,100448_532_norm_RMA_pair.txt,QA_API_Nimblegen_Pair_Test,,MATCH_INDEX,,,,MATCH_INDEX,INTEGER,1,,,
+,,,,,,PM,,,,PM,FLOAT,1
+,,,,,,MM,,,,MM,FLOAT,1
+,,,,,,X,,,,X,INTEGER,1
+,,,,,,Y,,,,Y,INTEGER,1
+165.3,java,,sample_GSM302898_from_GSE11977.txt,QA_API_Illumina_Geno_Matrix_Test,,Allele,,,,Allele,STRING,1
+,,,,,,GC_SCORE,,,,GC_SCORE,FLOAT,1
+,,,,,,Theta,,,,Theta,FLOAT,1
+,,,,,,R,,,,R,FLOAT,1
+,,,,,,B_Allele_Freq,,,,B_Allele_Freq,FLOAT,1
+,,,,,,Log_R_Ratio,,,,Log_R_Ratio,FLOAT,1
+165.4,java,,GEO_GSE12459_with_external_probe_ids.txt,QA_API_Illumina_Sample_Probe_Profile_Test,,MIN_Signal,,,,MIN_Signal,FLOAT,1
+,,,,,,AVG_Signal,,,,AVG_Signal,FLOAT,1
+,,,,,,MAX_Signal,,,,MAX_Signal,FLOAT,1
+,,,,,,NARRAYS,,,,NARRAYS,FLOAT,1
+,,,,,,ARRAY_STDEV,,,,ARRAY_STDEV,FLOAT,1
+,,,,,,BEAD_STDEV,,,,BEAD_STDEV,FLOAT,1
+,,,,,,Avg_NBEADS,,,,Avg_NBEADS,FLOAT,1,
+,,,,,,Detection,,,,Detection,FLOAT,1,
+165.5,java,,E09176_T_Hind_2.CN4.cnchp,QA_API_Affymetrix_CNCHP_Test,,Allele Difference,,,1,Allele Difference,FLOAT,1,
+,,,,,,ChipNum,,,,ChipNum,SHORT,1,
+,,,,,,Chromosome,,,,Chromosome,SHORT,1,
+,,,,,,CN4_CNState,,,,CN4_CNState,SHORT,1,
+,,,,,,CN5_CNState,,,,CN5_CNState,FLOAT,1,
+,,,,,,HmmMedianLog2Ratio,,,,HmmMedianLog2Ratio,FLOAT,1,
+,,,,,,ProbeSetName,,,,ProbeSetName,STRING,1,
+,,,,,,Log2Ratio,,,,Log2Ratio,FLOAT,1,
+,,,,,,LOH,,,,LOH,FLOAT,1,
+,,,,,,NegLog10PValue,,,,NegLog10PValue,FLOAT,1,
+,,,,,,Position,,,,Position,FLOAT,1,
+,,,,,,SmoothSignal,,,,SmoothSignal,FLOAT,1,
+166,java,,,,,,,,,,,,0
+166.1,java,,QaApiTestAffymetrixData.CHP,QA Affymetrix Experiment for API Testing,,CHPSignal,,,345,CHPSignal,FLOAT,345,
+166.2,java,URN:LSID:gov.nih.nci.caarray.external.v1_0.contact.Person:59,,,,CHPSignal,,,,,,,0
+166.3,java,,QaApiTestAffymetrixData.CHP,QA Affymetrix Experiment for API Testing,,CHPSignal,,,345,CHPSignal,FLOAT,345,
+,,,QaApiTestAffymetrixData02.CHP,QA Affymetrix Experiment for API Testing,,,,,,,,,
+166.4,java,,QaApiTestAffymetrixData.CHP,QA Affymetrix Experiment for API Testing,,CHPSignal,,,,,,,0
+,,,QaApiTestAffymetrixData.CEL,QA Affymetrix Experiment for API Testing,,,,,,,,,
+167.1,java,,,,,CHPSignal,QaApiTestHybridization01,,345,CHPSignal,FLOAT,345,
+167.2,java,,,,,CHPSignal,,URN:LSID:gov.nih.nci.caarray.external.v1_0.contact.Person:59,,,,,0
+167.3,java,,,,,CHPSignal,QaApiTestHybridization01,,345,CHPSignal,FLOAT,345,
+,,,,,,,QaApiTestHybridization02,,,,,,
+168.1,java,,QaApiTestAffymetrixData.CEL,QA Affymetrix Experiment for API Testing,,CELintensity,,,,CELIntensity,FLOAT,15876,
+168.2,java,,QaApiTestAffymetrixData.CHP,QA Affymetrix Experiment for API Testing,,"CaArrayEntityReference(""URN:LSID:gov.nih.nci.caarray.external.v1_0.contact.Person:59""",,,,,,,0
+168.3,java,,QaApiTestAffymetrixData.CHP,QA Affymetrix Experiment for API Testing,,CHPSignal,,,345,CHPSignal,FLOAT,345,
+,,,,,,CHPSignalLogRatio,,,,CHPSignalLogRatio,FLOAT,345,
+169,java,,ApiTestIlluminaData.csv,QA Illumina Experiment for API Testing,,Detection,,,10,Detection,FLOAT,10,
+,,,,,,Avg_NBEADS,,,,Avg_NBEADS,INTEGER,10,
+,,,,,,BEAD_STDEV,,,,BEAD_STDEV,FLOAT,10,
+,,,,,,AVG_Signal,,,,AVG_Signal,FLOAT,10
+170,java,,ApiTestGenepixData.gpr,QA Genepix Experiment for API Testing,,F635 Mean,,,6528,F635 Mean,INTEGER,6528
+,,,,,,F635 Median,,,,F635 Median,INTEGER,6528
+171.1,grid,,miRNA_251911812798_S01_miRNA-v1_10_Apr08_1_2.txt,QA_API_Agilent_aCGH_Test,,logRatio,,,345,logRatio,FLOAT,1
+,,,,,,logRatioError,,,,logRatioError,FLOAT,1
+,,,,,,pValueLogRatio,,,,pValueLogRatio,FLOAT,1
+,,,,,,gProcessedSignal,,,,gProcessedSignal,FLOAT,1
+,,,,,,rProcessedSignal,,,,rProcessedSignal,FLOAT,1
+,,,,,,gProcessedSigError,,,,gProcessedSigError,FLOAT,1
+,,,,,,rProcessedSigError,,,,rProcessedSigError,FLOAT,1
+,,,,,,gMedianSignal,,,,gMedianSignal,FLOAT,1
+,,,,,,rMedianSignal,,,,rMedianSignal,FLOAT,1
+,,,,,,gTotalProbeSignal,,,,gTotalProbeSignal,FLOAT,1
+,,,,,,gTotalProbeError,,,,gTotalProbeError,FLOAT,1
+,,,,,,gTotalGeneError,,,,gTotalGeneError,FLOAT,1
+,,,,,,gIsGeneDetected,,,,gIsGeneDetected,BOOLEAN,1
+,,,,,,gTotalGeneSignal,,,,gTotalGeneSignal,FLOAT,1
+171.2,grid,,100448_532_norm_RMA_pair.txt,QA_API_Nimblegen_Pair_Test,,MATCH_INDEX,,,,MATCH_INDEX,INTEGER,1
+,,,,,,PM,,,,PM,FLOAT,1
+,,,,,,MM,,,,MM,FLOAT,1
+,,,,,,X,,,,X,INTEGER,1
+,,,,,,Y,,,,Y,INTEGER,1
+171.3,grid,,sample_GSM302898_from_GSE11977.txt,QA_API_Illumina_Geno_Matrix_Test,,Allele,,,,Allele,STRING,1
+,,,,,,GC_SCORE,,,,GC_SCORE,FLOAT,1
+,,,,,,Theta,,,,Theta,FLOAT,1
+,,,,,,R,,,,R,FLOAT,1
+,,,,,,B_Allele_Freq,,,,B_Allele_Freq,FLOAT,1
+,,,,,,Log_R_Ratio,,,,Log_R_Ratio,FLOAT,1
+171.4,grid,,GEO_GSE12459_with_external_probe_ids.txt,QA_API_Illumina_Sample_Probe_Profile_Test,,MIN_Signal,,,,MIN_Signal,FLOAT,1
+,,,,,,AVG_Signal,,,,AVG_Signal,FLOAT,1
+,,,,,,MAX_Signal,,,,MAX_Signal,FLOAT,1
+,,,,,,NARRAYS,,,,NARRAYS,FLOAT,1
+,,,,,,ARRAY_STDEV,,,,ARRAY_STDEV,FLOAT,1
+,,,,,,BEAD_STDEV,,,,BEAD_STDEV,FLOAT,1
+,,,,,,Avg_NBEADS,,,,Avg_NBEADS,FLOAT,1
+,,,,,,Detection,,,,Detection,FLOAT,1
+171.5,grid,,E09176_T_Hind_2.CN4.cnchp,QA_API_Affymetrix_CNCHP_Test,,Allele Difference,,,1,Allele Difference,FLOAT,1
+,,,,,,ChipNum,,,,ChipNum,SHORT,1
+,,,,,,Chromosome,,,,Chromosome,SHORT,1
+,,,,,,CN4_CNState,,,,CN4_CNState,SHORT,1
+,,,,,,CN5_CNState,,,,CN5_CNState,FLOAT,1
+,,,,,,HmmMedianLog2Ratio,,,,HmmMedianLog2Ratio,FLOAT,1
+,,,,,,ProbeSetName,,,,ProbeSetName,STRING,1
+,,,,,,Log2Ratio,,,,Log2Ratio,FLOAT,1
+,,,,,,LOH,,,,LOH,FLOAT,1
+,,,,,,NegLog10PValue,,,,NegLog10PValue,FLOAT,1
+,,,,,,Position,,,,Position,FLOAT,1
+,,,,,,SmoothSignal,,,,SmoothSignal,FLOAT,1
+172,grid,,,,,,,,,,,,0
+172.1,grid,,QaApiTestAffymetrixData.CHP,QA Affymetrix Experiment for API Testing,,CHPSignal,,,345,CHPSignal,FLOAT,345,
+172.2,grid,URN:LSID:gov.nih.nci.caarray.external.v1_0.contact.Person:59,,,,CHPSignal,,,,,,,0
+172.3,grid,,QaApiTestAffymetrixData.CHP,QA Affymetrix Experiment for API Testing,,CHPSignal,,,345,CHPSignal,FLOAT,345,
+,,,QaApiTestAffymetrixData02.CHP,QA Affymetrix Experiment for API Testing,,,,,,,,,
+172.4,grid,,QaApiTestAffymetrixData.CHP,QA Affymetrix Experiment for API Testing,,CHPSignal,,,,,,,0
+,,,QaApiTestAffymetrixData.CEL,QA Affymetrix Experiment for API Testing,,,,,,,,,
+173.1,grid,,,,,CHPSignal,QaApiTestHybridization01,,345,CHPSignal,FLOAT,345,
+173.2,grid,,,,,CHPSignal,,URN:LSID:gov.nih.nci.caarray.external.v1_0.contact.Person:59,,,,,0
+173.3,grid,,,,,CHPSignal,QaApiTestHybridization01,,345,CHPSignal,FLOAT,345,
+,,,,,,,QaApiTestHybridization02,,,,,,
+174.1,grid,,QaApiTestAffymetrixData.CEL,QA Affymetrix Experiment for API Testing,,CELintensity,,,,CELIntensity,FLOAT,15876,
+174.2,grid,,QaApiTestAffymetrixData.CHP,QA Affymetrix Experiment for API Testing,,"CaArrayEntityReference(""URN:LSID:gov.nih.nci.caarray.external.v1_0.contact.Person:59""",,,,,,,0
+174.3,grid,,QaApiTestAffymetrixData.CHP,QA Affymetrix Experiment for API Testing,,CHPSignal,,,345,CHPSignal,FLOAT,345,
+,,,,,,CHPSignalLogRatio,,,,CHPSignalLogRatio,FLOAT,345,
+175,grid,,ApiTestIlluminaData.csv,QA Illumina Experiment for API Testing,,Detection,,,10,Detection,FLOAT,10,
+,,,,,,Avg_NBEADS,,,,Avg_NBEADS,INTEGER,10,,,
+,,,,,,BEAD_STDEV,,,,BEAD_STDEV,FLOAT,10,,,
+,,,,,,AVG_Signal,,,,AVG_Signal,FLOAT,10,,,
+176,grid,,ApiTestGenepixData.gpr,QA Genepix Experiment for API Testing,,F635 Mean,,,6528,F635 Mean,INTEGER,6528,,,
+,,,,,,F635 Median,,,,F635 Median,INTEGER,6528,,,
+205,java,,MiaPaCa_panc_SS110885_HG-U133_Plus_2_HCHP-63400_.CEL,,woost-00041,CELX,,,,CELX,,,,,60000
+,,,MiaPaCa_panc_SS110884_HG-U133_Plus_2_HCHP-74914_.CEL,,,CELY,,,,,,,,,
+,,,,,,CELintensity,,,,,,,,,
+,,,,,,CELIntensityStdev,,,,,,,,,
+,,,,,,CELMask,,,,,,,,,
+,,,,,,CELOutlier,,,,,,,,,
+,,,,,,CELPixels,,,,,,,,,
+206,grid,,MiaPaCa_panc_SS110885_HG-U133_Plus_2_HCHP-63400_.CEL,,woost-00041,CELX,,,,CELX,,,,,60000
+,,,MiaPaCa_panc_SS110884_HG-U133_Plus_2_HCHP-74914_.CEL,,,CELY,,,,,,,,,
+,,,,,,CELintensity,,,,,,,,,
+,,,,,,CELIntensityStdev,,,,,,,,,
+,,,,,,CELMask,,,,,,
+,,,,,,CELOutlier,,,,,,
+,,,,,,CELPixels,,,,,,
+411,grid,,QaApiTestAffymetrixData.CHP,QA Affymetrix Experiment for API Testing,,CHPSignal,,,345,CHPSignal,FLOAT,345
+412,grid,,QaApiTestAffymetrixData.CHP,QA Affymetrix Experiment for API Testing,,CHPSignal,,,345,CHPSignal,FLOAT,345

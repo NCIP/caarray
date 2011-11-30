@@ -1,0 +1,5 @@
+Investigation Title	dummy
+Experiment Description	Whatever
+SDRF File	no_biomaterial.sdrf.txt
+Term Source Name	Experimental Factor Ontology
+Term Source Version	1.5

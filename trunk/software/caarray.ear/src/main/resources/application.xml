@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<application
+       xmlns="http://java.sun.com/xml/ns/javaee"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
+       http://java.sun.com/xml/ns/javaee/application_5.xsd"
+       version="5">
+    <module>
+        <web>
+            <web-uri>caarray.war</web-uri>
+            <context-root>/caarray</context-root>
+        </web>
+    </module>
+    <module>
+        <ejb>caarray-ejb.jar</ejb>
+    </module>
+    <module>
+        <java>caarray-common.jar</java>
+    </module>
+    <security-role>
+        <description>A Principal Investigator (PI) typically owns experiments and studies/projects.</description>
+        <role-name>PrincipalInvestigator</role-name>
+    </security-role>
+</application>

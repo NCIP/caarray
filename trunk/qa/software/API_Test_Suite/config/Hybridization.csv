@@ -1,0 +1,9 @@
+Test Case,API,Name,Array Design,Expected Results,Min Results
+77,java,,,,4000
+78,grid,,,,4000
+79,java,TCGA-02-0009-01A-01D-0186-05,,,1
+80,grid,TCGA-02-0009-01A-01D-0186-05,,,1
+251,java,invalid!#&%,,0,
+252,grid,invalid!#&%,,0,
+253,java,,Mapping250K_Nsp,,676
+254,grid,,Mapping250K_Nsp,,676

@@ -1,0 +1,11 @@
+Test Case,API,Principal Investigators Expected Results,Characteristic Categories Experiment Title,Characteristic Categories Expected Results,Expected Characteristic Categories,Terms for Category Name,Terms for Category Min Results,Reference,Reference Expected Results,References,References Expected Results
+9,java,100,,,,,,,,,
+10,grid,100,,,,,,,,,
+11,java,,QA Affymetrix Experiment for API Testing,7,TumorGrading,,,,,,
+,,,,,OrganismPart,,,,,,
+,,,,,ExternalId,,,,,,
+12,grid,,QA Affymetrix Experiment for API Testing,7,TumorGrading,,,,,,
+,,,,,OrganismPart,,,,,,
+,,,,,ExternalId,,,,,,
+13,java,,,,,OrganismPart,50,,,,
+14,grid,,,,,OrganismPart,50,,,,

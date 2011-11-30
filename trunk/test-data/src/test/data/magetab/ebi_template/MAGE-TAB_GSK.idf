@@ -1,0 +1,65 @@
+#####################################################
+#
+# MAGE-TAB Submission
+#
+"# Please save this page to disk, and edit it using any spreadsheet program (e.g.,"
+"# Microsoft Excel, OpenOffice.org Calc). This file can be imported into either of"
+# these applications as a tab-delimited text file. It is highly recommended that
+"# you set the cell format to plain text throughout the spreadsheet, to avoid"
+# 'helpful' changes made by the spreadsheet application. Once you have completed
+# this spreadsheet please upload it using the submissions webpage alongside your
+# data files:
+#    http://caarraydb.nci.nih.gov/
+#
+# Please see http://tab2mage.sourceforge.net/docs/magetab_subs.html
+#  for information on filling in the IDF and SDRF sections below.
+# See http://mged.sourceforge.net/ontologies/MGEDontology.php
+# or http://nciterms.nci.nih.gov/NCIBrowser/Dictionary.do
+# for ontology term in filling sections below
+# All lines beginning with the '#' character are treated as comments and ignored.
+
+
+# This section contains the top-level information for your experiment.
+Investigation Title
+Experiment Description
+Experimental Design		disease_state_design	reference_design	co-expression_design
+Experimental Design Term Source REF		MO
+
+# Please create as many Experimental Factors here as you need to
+# describe the variables investigated by your experiment.
+Experimental Factor Name		DISEASESTATE
+Experimental Factor Type		disease_state
+Experimental Factor Term Source REF		MO
+
+"# Quality Control Type examples: dye_swap_quality_control, biological_replicate, technical_replicate"
+Quality Control Type
+Comment[Quality Control Description]
+Quality Control Term Source REF		MO
+
+"# Please list contact details in columns, below:"
+Person Last Name
+Person First Name
+Person Mid Initials
+Person Email
+Person Phone
+Person Address
+Person Affiliation
+Person Roles		submitter
+
+"# Please list all publications associated with this submission, in columns:"
+PubMed ID
+Publication Author List
+Publication Title
+Publication Status
+
+# The next section describes the protocols used in your
+# experiment. Please select your own Protocol Names (e.g. 'GROWTH')
+# for use within this spreadsheet.
+Protocol Name	GROWTH	EXTRACTION	LABELING	HYBRIDIZATION	SCANNING	NORMALIZATION
+Protocol Type	grow	nucleic_acid_extraction	labeling	hybridization	image_acquisition	bioassay_data_transformation
+Protocol Description	<your growth protocol text here>	<your nucleic acid extraction protocol text here>	<your labeling protocol text here>	<your hybridization protocol text here>	<your scanning protocol text here>	<your normalization protocol text here>
+Protocol Term Source REF	MO	MO	MO	MO	MO	MO
+
+SDRF File	MAGE-TAB_GSK.sdrf
+
+Term Source Name		MO

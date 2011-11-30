@@ -1,0 +1,23 @@
+Model Changes to be reviewed:
+
+The model being submitted for review (caArray Internal 2.4) differs from an already-registered model (caArray Internal 2.3) in the following ways:
+
+1. Removed the association array.RawArrayData.hybridizations to class hybridization.Hybridization.
+2. Added the association array.AbstractArrayData.hybridizations to class hybridization.Hybridization.
+3. Added association array.Gene.accessions to class array.Accession.
+4. Added a new class gov.nih.nci.caarray.domain.array.Accession CONCEPT C25402 (Accession Number)
+   * Attribute databaseName CONCEPT = Database Name
+   * Attribute accessionNumber CONCEPT = Identifier
+5. Added the following new attributes to gov.nih.nci.caarray.domain.array.Feature:
+   * x_Coordinate   CONCEPT = C44477  (X-Coordinate)
+   * y_Coordinate   CONCEPT = C44478 (Y-Coordinate)
+6. Added the following association to gov.nih.nci.caarray.domain.array.Feature:
+   * coordinateUnits (to class gov.nih.nci.caarray.domain.array.vocabulary.Term)
+7. Added the class java.lang.Double      CONCEPT = C48870 (Double)
+8. Added the following new attributes to the class gov.nih.nci.caarray.domain.array.ExpressionProbeAnnotation:
+   * chromosomeName CONCEPT = C13202 (Chromosome) C25337 (Number)
+   * chromosomeStartPosition CONCEPT = C25431 (Begin)
+   * chromosomeEndPosition CONCEPT = C25496 (End)
+9. Added the class gov.nih.nci.caarray.domain.array.MiRNAProbeAnnotation which extends AbstractProbeAnnotation  CONCEPT = C25966 (MicroRNA) C43523 (Probe) C44272 (Annotation)
+   * accessions = association to class Accession  
+

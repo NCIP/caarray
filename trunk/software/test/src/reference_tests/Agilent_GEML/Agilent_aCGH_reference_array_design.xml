@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE project SYSTEM "GEMLPattern.dtd">
+<!--Copyright (c) 2004 Agilent Technologies-->
+<!--Layout notes:-->
+<!--1) Layout is High-density (interlaced rectilinear grids).-->
+<!--2) Feature numbers are LR-TB relative to Agilent scanned images-->
+<!--(DNA back, barcode left).-->
+<!--3) X and Y are relative to writer (DNA front, barcode top).-->
+<!--AgilentTagVersion=2-->
+<!--NumFeaturesRows=1064, NumFeaturesColumns=340, AG_X_OFFSET_MICRONS=18.3308710467706, AG_Y_OFFSET_MICRONS=31.745-->
+<project by="Agilent Technologies" date="2009/01/07" name="Agilent-022522" company="Agilent Technologies">
+  <pattern name="Agilent-022522" owner="Agilent Technologies" description="170k BaBo UMCG plus Cancer Census" species_database="H. sapiens">
+    <reporter name="HsCGHBrightCorner" systematic_name="HsCGHBrightCorner" control_type="pos">
+      <feature number="1">
+        <position x="0.0" y="0.0" units="mm"></position>
+      </feature>
+      <gene systematic_name="HsCGHBrightCorner" primary_name="HsCGHBrightCorner"></gene>
+    </reporter>
+    <reporter name="DarkCorner2" systematic_name="DarkCorner2" control_type="pos">
+      <feature number="341">
+        <position x="0.0366617420935412" y="0.0" units="mm"></position>
+      </feature>
+      <gene systematic_name="DarkCorner2" primary_name="DarkCorner2"></gene>
+    </reporter>
+    <reporter name="DarkCorner2" systematic_name="DarkCorner2" control_type="pos">
+      <feature number="681">
+        <position x="0.0733234841870824" y="0.0" units="mm"></position>
+      </feature>
+      <gene systematic_name="DarkCorner2" primary_name="DarkCorner2"></gene>
+    </reporter>
+    <reporter name="DarkCorner2" systematic_name="DarkCorner2" control_type="pos">
+      <feature number="1021">
+        <position x="0.1099852262806236" y="0.0" units="mm"></position>
+      </feature>
+      <gene systematic_name="DarkCorner2" primary_name="DarkCorner2"></gene>
+    </reporter>
+    <reporter name="(-)3xSLv1" systematic_name="NegativeControl" control_type="neg">
+      <feature number="36551">
+        <position x="15.7645491002227" y="0" units="mm" />
+      </feature>
+      <gene systematic_name="NegativeControl" primary_name="NegativeControl" />
+    </reporter>
+    <reporter name="A_16_P00465041" systematic_name="chr2:127680689-127680748" active_sequence="TGTGTGAAGCAACAAGAGAGAAATGTCATTATAAGAGACAAATGTCCAGAGCAAACAGAG" start_coord="0">
+      <feature number="12921">
+        <position x="1.3931461995545655" y="0.0" units="mm"></position>
+      </feature>
+      <gene systematic_name="chr2:127680689-127680748" primary_name="AK131190" description="gb|Homo sapiens cDNA FLJ16008 fis, clone NT2NE2000390, weakly  similar to 25-HYDROXYVITAMIN D-1 ALPHA HYDROXYLASE, MITOCHONDRIAL PRECURSOR (EC 1.14.-.-).">
+        <accession database="gb" id="AK131190"></accession>
+        <other name="accessions" value="gb|AK131190"></other>
+        <other name="probe_mappings" value="chr2:127680689-127680748"></other>
+        <other name="tm" value="80.7"></other>
+        <other name="IsHomFiltered" value="0"></other>
+        <other name="NumPMHits" value="1"></other>
+      </gene>
+    </reporter>
+    <reporter name="A_18_P11892200" systematic_name="chr13:106421139-106421198" active_sequence="CCTGTAAGATGGCAATAAGGAAAATCATTTTTGTAGACATGGGTAATCTTATCTTGGCTG" start_coord="0">
+      <feature number="14961">
+        <position x="1.6131166521158127" y="0.0" units="mm"></position>
+      </feature>
+      <gene systematic_name="chr13_random:106421139-106421198" primary_name="chr13:106421139-106421198" description="Unknown">
+        <other name="probe_mappings" value="chr13:106421139-106421198"></other>
+        <other name="tm" value="79.44"></other>
+        <other name="IsHomFiltered" value="0"></other>
+        <other name="NumPMHits" value="1"></other>
+      </gene>
+    </reporter>
+    <reporter name="A_16_P35431180" systematic_name="chr1:200802204-200802263" active_sequence="TGGAGACAGTTACCACATGAACATACACAATATTTTTACATAAAAGATCCACCCCAACTC" start_coord="0">
+      <feature number="18021">
+        <position x="1.9430723309576836" y="0.0" units="mm"></position>
+      </feature>
+      <gene systematic_name="chrX:200802204-200802263" primary_name="PPP1R12B" description="ref|Homo sapiens protein phosphatase 1, regulatory (inhibitor) subunit 12B (PPP1R12B), transcript variant 1, mRNA.">
+        <accession database="ref" id="NM_002481"></accession>
+        <accession database="ref" id="NM_032105"></accession>
+        <accession database="ref" id="NM_032103"></accession>
+        <accession database="ref" id="NM_032104"></accession>
+        <other name="accessions" value="ref|NM_002481|ref|NM_032105|ref|NM_032103|ref|NM_032104"></other>
+        <other name="probe_mappings" value="chr1:200802204-200802263"></other>
+        <other name="tm" value="79.97"></other>
+        <other name="IsHomFiltered" value="0"></other>
+        <other name="NumPMHits" value="1"></other>
+      </gene>
+    </reporter>
+	<!--artificially created control_type="ignore"-->
+    <reporter name="NA" control_type="ignore">
+      <feature number="2">
+        <position x="11.456794404231626" y="0.0" units="mm"></position>
+      </feature>
+      <gene systematic_name="ignore control type" primary_name="artificial ignore" description="artificially created ignore control type"></gene>
+    </reporter>
+	<!--artificially created control_type="ignore" with no reporter name-->
+    <reporter name="" control_type="ignore">
+      <feature number="2">
+        <position x="11.456794404231626" y="0.0" units="mm"></position>
+      </feature>
+      <gene systematic_name="ignore control type" primary_name="artificial ignore" description="artificially created ignore control type"></gene>
+    </reporter>
+	<!--artificially created database="ens"-->
+    <reporter name="artificial database ens" systematic_name="chr2:127580689-127620738" active_sequence="TGTGTGAAGCAACTATAAGAGACAAATGTCCAGAGCAAACAGAG" start_coord="0">
+      <feature number="1292">
+        <position x="7.3921462495546655" y="7.3921462495546655" units="mm"></position>
+      </feature>
+      <gene systematic_name="chr2:127580689-127620738" primary_name="artificial ens" description="ens|Artificially created reporter for database = ens">
+        <accession database="ens" id="artificial database ens"></accession>
+        <accession database="ens" id="artificial database ens 2"></accession>
+        <other name="accessions" value="ens|database ens"></other>
+        <other name="probe_mappings" value="chr2:127580689-127620738"></other>
+        <other name="tm" value="80.7"></other>
+        <other name="IsHomFiltered" value="0"></other>
+        <other name="NumPMHits" value="1"></other>
+      </gene>
+    </reporter>
+	<!--artificially created database="thc"-->
+    <reporter name="artificial database thc" systematic_name="chr12:127580589-127620738" active_sequence="TGTGTGAAGCAACTATAAGATCCAATGTCCAGAGCAAACAGAG" start_coord="0">
+      <feature number="1212">
+        <position x="6.3921462495546655" y="6.3921462495546655" units="mm"></position>
+      </feature>
+      <gene systematic_name="chr12:127580589-127620738" primary_name="artificial thc" description="thc|Artificially created reporter for database = thc">
+        <accession database="thc" id="artificial database thc"></accession>
+        <accession database="thc" id="artificial database thc 2"></accession>
+        <other name="accessions" value="thc|database thc"></other>
+        <other name="probe_mappings" value="chr12:127580589-127620738"></other>
+        <other name="tm" value="80.7"></other>
+        <other name="IsHomFiltered" value="0"></other>
+        <other name="NumPMHits" value="1"></other>
+      </gene>
+    </reporter>
+    <other name="AG_TAG_VERSION" value="2"></other>
+    <other name="AG_ROW_SPACING_MICRONS" value="36.6617420935412"></other>
+    <other name="AG_COL_SPACING_MICRONS" value="63.49"></other>
+    <other name="AG_X_OFFSET_MICRONS" value="18.3308710467706"></other>
+    <other name="AG_Y_OFFSET_MICRONS" value="31.745"></other>
+    <other name="AG_ROW_SPOTSIZE_MICRONS" value="30.0"></other>
+    <other name="AG_COL_SPOTSIZE_MICRONS" value="30.0"></other>
+    <other name="NumArrays" value="4"></other>
+    <other name="ArraySpacingCol" value="15.74552"></other>
+    <other name="ArraySpacingRow" value="0.01"></other>
+    <other name="NumArrayRows" value="1"></other>
+    <other name="NumArrayCols" value="4"></other>
+    <other name="ArrayPadding" value="2.0"></other>
+    <other name="Array1LocRow" value="2.972100000000001"></other>
+    <other name="Array1LocCol" value="13.0"></other>
+    <other name="Fiducial1LocRow" value="0.0"></other>
+    <other name="Fiducial1LocCol" value="0.0"></other><!--Total Number of Reporters: 180880.0-->
+    <other name="AMADID" value="022522"></other>
+    <other name="array_design_type" value="CGH"></other>
+    <other name="control_grid_id" value="IS-180880-4-V2_4by180K_CGH_Hs_20081117"></other>
+    <other name="genomic_build" value="hg18:NCBI36:Mar2006"></other>
+    <other name="created_by" value="earray"></other>
+  </pattern>
+</project>

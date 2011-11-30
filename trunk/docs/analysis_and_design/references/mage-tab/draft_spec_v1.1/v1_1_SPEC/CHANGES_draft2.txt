@@ -1,0 +1,46 @@
+MAGE-TAB SPEC v1.1: CHANGES FROM DRAFT 1 TO DRAFT 2
+July 24, 2009
+
+1. Page 29, section 3.2.6, Table 5:
+   Added Reporter Group Term Accession Number and Control Type Term Accession Number.
+
+2. Page 36, section 3.3.6, Table 8:
+   Put Derived Array Data File in the right order.
+
+3. Page 20, section 2.3.8:
+   Added a short paragraph describing the difference between gene expression and other technology types.
+   In the table, changed technology type to the controlled vocabulary term "re-sequencing" from EFO.
+
+4. Changed "Version" to "MAGE-TAB Version" in several places:
+   Pages 23-24, section 3.1.1, including table.
+   Page 36, point 19 in "Notes on Table 7".
+   Page 40, section 4.2.
+
+5. Page 25, section 3.1.2:
+   Clarified that data files being in the same directory is a recommendation and not a requirement.
+   Also changed wording to say that case-sensitive file name interpretation is recommended.
+
+6. Page 25, section 3.1.3:
+   I found this suggestion rather confusing:
+   "recommendation for text for implementers - use the accession if available, if not use the investigation title."
+   It is not clear what "accession" refers to, and this recommendation might make things confusing for users. Don't you think saying that it is scoped to the enclosing document should be sufficient since it applies to all implementations?
+
+7. Page 36, "Notes on Table 7":
+   Changed note #15 to lose the "->" notation for empty fields.
+
+8. Page 36, Table 8:
+   Split into 2 tables: Table 8 gives cardinality of element nodes and factor values; Table 9 gives cardinalities of attributes with respect to their parent node.
+   Changed cardinality of the "Assay Name" column to 0..1.
+   Corrected "Image Name" to "Image File".
+   Corrected cardinality of the "Provider" column to 0..1.
+   Corrected cardinality of the "Material Type" column to 0..1.
+   Corrected cardinality of the "Label" column to 0..1.
+   Corrected cardinality of the "Performer" column to 0..1.
+   Corrected cardinality of the "Date" column to 0..1.
+   Corrected cardinality of the "Description" column to 0..1.
+
+9. Page 37, section 3.4:
+   Corrected text to say that protocol contacts are not obligatory.
+
+10. Page 4, Figure 1:
+   Added MAGE-TAB Version field to the IDF example.
