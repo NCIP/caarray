@@ -3345,6 +3345,88 @@
             password="${database.password}"
             classpathref="liquibase.dependencies.path"/>
     </target>
+	
+	<!-- ******************************************************************* -->
+	<!-- ** STANDALONE DATABASE UPDATE TARGETS                            ** -->
+	<!-- ******************************************************************* -->
+	
+	<target name="bda-lite:database:update:prepare" description="Prepares a zip file that contains all required artifacts for standalone db update.">
+		<property name="db-standalone.dir" value="${software.dir}/target/database-standalone" />
+		<property name="db-standalone.work.dir" value="${db-standalone.dir}/work" />
+		<property name="db-standalone.build.dir" value="${db-standalone.work.dir}/build" />
+		<property name="db-standalone.caarray-common.dir" value="${db-standalone.work.dir}/caarray-common.jar" />
+		<property name="db-standalone.caarray-ejb.dir" value="${db-standalone.work.dir}/caarray-ejb.jar" />
+		<property name="db-standalone.caarraydb.dir" value="${db-standalone.work.dir}/caarraydb" />
+		<property name="db-standalone.lib.dir" value="${db-standalone.work.dir}/lib" />
+		<property name="db-standalone.master-build.dir" value="${db-standalone.work.dir}/master_build" />
+		<property name="db-standalone.target.dir" value="${db-standalone.work.dir}/target" />
+		
+		<mkdir dir="${db-standalone.dir}" />
+		<mkdir dir="${db-standalone.work.dir}" />
+		<mkdir dir="${db-standalone.build.dir}" />
+		<copy todir="${db-standalone.build.dir}">
+			<fileset dir="${software.dir}/build">
+				<include name="build.xml" />
+				<include name="default.properties" />
+				<include name="macrodefs.xml" />
+			</fileset>
+		</copy>
+		<mkdir dir="${db-standalone.caarray-common.dir}" />
+		<copy todir="${db-standalone.caarray-common.dir}" file="${caarray-common.jar}" />
+		<mkdir dir="${db-standalone.caarray-ejb.dir}" />
+		<copy todir="${db-standalone.caarray-ejb.dir}" file="${caarray-ejb.jar}" />
+		<mkdir dir="${db-standalone.caarraydb.dir}" />
+		<copy todir="${db-standalone.caarraydb.dir}">
+			<fileset dir="${caarraydb.sql.src.dir}" includes="**/*.*" />
+		</copy>
+		<mkdir dir="${db-standalone.lib.dir}" />
+		<copy todir="${db-standalone.lib.dir}">
+			<fileset dir="${lib.dir}" includes="**/*.jar" />
+		</copy>
+		<mkdir dir="${db-standalone.master-build.dir}" />
+		<copy todir="${db-standalone.master-build.dir}">
+			<fileset dir="${software.dir}/master_build">
+				<include name="caarray-ivy-build.xml" />
+				<include name="ivy-caarray-settings.xml" />
+				<include name="ivy-caarray.xml" />
+				<include name="project.properties" />
+			</fileset>
+		</copy>
+		<mkdir dir="${db-standalone.target.dir}" />
+		<copy todir="${db-standalone.target.dir}/bda-utils">
+			<fileset dir="${software.dir}/target/bda-utils" includes="**/*.*" />
+		</copy>
+		
+		<!-- Zip the artifacts -->
+		<zip destfile="${db-standalone.dir}/caarray-database-standalone-update.zip">
+            <zipfileset dir="${db-standalone.work.dir}" />
+        </zip>
+	</target>
+	
+	<target name="bda-lite:database:update" description="Executes the standalone database update scripts.">
+		<path id="bda-lite:liquibase.dependencies.path">
+			<fileset dir="${basedir}/caarray-common.jar" includes="**/*.jar" />
+			<fileset dir="${basedir}/caarray-ejb.jar" includes="**/*.jar" />
+            <fileset dir="${basedir}/target/bda-utils" includes="**/*.jar" />
+			<fileset dir="${basedir}/lib/caarray-project" includes="**/*.jar" />
+	        <pathelement path="${basedir}/caarraydb/liquibase" />
+	    </path>
+		
+		<taskdef resource="liquibasetasks.properties">
+            <classpath refid="bda-lite:liquibase.dependencies.path"/>	 
+        </taskdef>
+		
+		<updateDatabase
+	        driver="${database.driver}"
+            url="${database.url}"
+            username="${database.user}"
+            password="${database.password}"
+            classpathref="bda-lite:liquibase.dependencies.path"
+            changeLogFile="db-upgrade.xml">            
+            <changeLogProperty name="csm.application.name" value="${csm.application.name}"/>
+            <changeLogProperty name="environment" value="${environment}"/>
+        </updateDatabase>
+    </target>
 
     <!-- ******************************************************************* -->
     <!-- ** LOCAL DEPLOY TARGETS                                                ** -->
@@ -3454,7 +3536,7 @@
         <delete>
             <fileset dir="${caarray-plugins.deploy.bundleCache.dir}" includes="**/*"/> 
         </delete>
-        <delete file="${caarray-plugins.bundledPlugins.zip}"/>							
+        <delete file="${caarray-plugins.bundledPlugins.zip}"/>                			
     </target>
 
     <target name="undeploy:caarray-grid-svc" depends="init:third-party-paths,undeploy:caarray-grid-svc-globus, undeploy:caarray-grid-svc-jboss"/>
