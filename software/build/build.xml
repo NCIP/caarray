@@ -3350,7 +3350,7 @@
 	<!-- ** STANDALONE DATABASE UPDATE TARGETS                            ** -->
 	<!-- ******************************************************************* -->
 	
-	<target name="bda-lite:database:update:prepare" description="Prepares a zip file that contains all required artifacts for standalone db update.">
+	<target name="bda-lite:database:update:prepare" depends="init:third-party-paths,build:caarray-common.jar,build:caarray-ejb.jar" description="Prepares a zip file that contains all required artifacts for standalone db update.">
 		<property name="db-standalone.dir" value="${software.dir}/target/database-standalone" />
 		<property name="db-standalone.work.dir" value="${db-standalone.dir}/work" />
 		<property name="db-standalone.build.dir" value="${db-standalone.work.dir}/build" />
