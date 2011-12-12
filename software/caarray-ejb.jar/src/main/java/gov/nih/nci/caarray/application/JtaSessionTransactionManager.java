@@ -82,34 +82,54 @@
  */
 package gov.nih.nci.caarray.application;
 
-import gov.nih.nci.caarray.application.file.FileManagementMDB;
+import gov.nih.nci.caarray.application.util.Utils;
 import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.platforms.SessionTransactionManager;
+
+import javax.ejb.EJBException;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.transaction.HeuristicMixedException;
+import javax.transaction.HeuristicRollbackException;
+import javax.transaction.NotSupportedException;
+import javax.transaction.RollbackException;
+import javax.transaction.SystemException;
+import javax.transaction.UserTransaction;
+
+import org.apache.log4j.Logger;
 
 import com.google.inject.Inject;
 
 /**
  * Implementation of SessionTransactionManager that forwards to the current Hibernate session and JTA transaction
  * manager (via FileManagementMDB).
- * 
+ *
  * @author dkokotov
  */
 public class JtaSessionTransactionManager implements SessionTransactionManager {
-    private FileManagementMDB fileManagementMDB;
+    private static final Logger LOG = Logger.getLogger(JtaSessionTransactionManager.class);
     private SearchDao searchDao;
+    private UserTransaction transaction;
 
     /**
      * {@inheritDoc}
      */
-    @Override
     public void beginTransaction() {
-        this.fileManagementMDB.beginTransaction();
+        try {
+            getTransaction().setTransactionTimeout(Utils.getBackgroundThreadTransactionTimeout());
+            getTransaction().begin();
+        } catch (final NotSupportedException e) {
+            LOG.error("Unexpected throwable -- transaction is supported", e);
+            throw new IllegalStateException(e);
+        } catch (final SystemException e) {
+            LOG.error("Couldn't start transaction", e);
+            throw new EJBException(e);
+        }
     }
 
     /**
      * {@inheritDoc}
      */
-    @Override
     public void clearSession() {
         this.searchDao.clearSession();
     }
@@ -117,15 +137,28 @@ public class JtaSessionTransactionManager implements SessionTransactionManager {
     /**
      * {@inheritDoc}
      */
-    @Override
     public void commitTransaction() {
-        this.fileManagementMDB.commitTransaction();
+        try {
+            getTransaction().commit();
+        } catch (final SecurityException e) {
+            LOG.error("Unexpected throwable -- transaction is supported", e);
+            throw new IllegalStateException(e);
+        } catch (final RollbackException e) {
+            LOG.error("Received rollback condition", e);
+            rollbackTransaction();
+        } catch (final HeuristicMixedException e) {
+            rollbackTransaction();
+        } catch (final HeuristicRollbackException e) {
+            rollbackTransaction();
+        } catch (final SystemException e) {
+            LOG.error("Couldn't commit transaction", e);
+            throw new EJBException(e);
+        }
     }
 
     /**
      * {@inheritDoc}
      */
-    @Override
     public void flushSession() {
         this.searchDao.flushSession();
     }
@@ -133,17 +166,16 @@ public class JtaSessionTransactionManager implements SessionTransactionManager {
     /**
      * {@inheritDoc}
      */
-    @Override
     public void rollbackTransaction() {
-        this.fileManagementMDB.rollbackTransaction();
-    }
-
-    /**
-     * @param fileManagementMDB the fileManagementMDB to set
-     */
-    @Inject
-    public void setFileManagementMDB(FileManagementMDB fileManagementMDB) {
-        this.fileManagementMDB = fileManagementMDB;
+        try {
+            getTransaction().rollback();
+        } catch (final SecurityException e) {
+            LOG.error("Unexpected throwable -- transaction is supported", e);
+            throw new IllegalStateException(e);
+        } catch (final SystemException e) {
+            LOG.error("Error rolling back transaction", e);
+            throw new EJBException(e);
+        }
     }
 
     /**
@@ -153,4 +185,22 @@ public class JtaSessionTransactionManager implements SessionTransactionManager {
     public void setSearchDao(SearchDao searchDao) {
         this.searchDao = searchDao;
     }
+
+    /**
+     * @return the transaction
+     */
+    private UserTransaction getTransaction() throws IllegalStateException {
+        if (transaction == null) {
+            try {
+                InitialContext ic = new InitialContext();
+                transaction = (UserTransaction) ic.lookup("java:comp/UserTransaction");
+            } catch (NamingException e) {
+                LOG.error("Couldn't get InitialContext", e);
+                throw new IllegalStateException(e);
+            }
+        }
+
+        return transaction;
+    }
+
 }

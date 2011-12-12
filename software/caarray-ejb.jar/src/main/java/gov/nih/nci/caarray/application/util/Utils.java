@@ -83,12 +83,20 @@
 
 package gov.nih.nci.caarray.application.util;
 
+import gov.nih.nci.caarray.application.ConfigurationHelper;
+import gov.nih.nci.caarray.domain.ConfigParamEnum;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+
 /**
  * Commonly used utility methods.
  * @author gax
  * @since 2.4.0
  */
 public final class Utils {
+    private static final int DEFAULT_TIMEOUT_SECONDS = 3600;
+    private static final Logger LOG = Logger.getLogger(Utils.class);
 
     private Utils() {
         //
@@ -157,5 +165,22 @@ public final class Utils {
         } catch (NumberFormatException e) {
             return false;
         }
+    }
+
+    /**
+     * Get the background thread timeout.
+     * @return the timeout val
+     */
+    public static int getBackgroundThreadTransactionTimeout() {
+        final String backgroundThreadTransactionTimeout =
+                ConfigurationHelper.getConfiguration().getString(
+                        ConfigParamEnum.BACKGROUND_THREAD_TRANSACTION_TIMEOUT.name());
+        int timeout = DEFAULT_TIMEOUT_SECONDS;
+        if (StringUtils.isNumeric(backgroundThreadTransactionTimeout)) {
+            timeout = Integer.parseInt(backgroundThreadTransactionTimeout);
+        }
+
+        LOG.debug("Transaction Timeout = " + timeout);
+        return timeout;
     }
 }

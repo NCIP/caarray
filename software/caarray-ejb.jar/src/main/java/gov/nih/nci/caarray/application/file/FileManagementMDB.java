@@ -82,9 +82,8 @@
  */
 package gov.nih.nci.caarray.application.file;
 
-import gov.nih.nci.caarray.application.ConfigurationHelper;
 import gov.nih.nci.caarray.application.ExceptionLoggingInterceptor;
-import gov.nih.nci.caarray.domain.ConfigParamEnum;
+import gov.nih.nci.caarray.application.util.Utils;
 import gov.nih.nci.caarray.domain.project.ExecutableJob;
 import gov.nih.nci.caarray.injection.InjectionInterceptor;
 import gov.nih.nci.caarray.jobqueue.JobQueue;
@@ -115,7 +114,6 @@ import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.google.inject.Inject;
@@ -143,23 +141,23 @@ public class FileManagementMDB implements MessageListener {
     static final String QUEUE_JNDI_NAME = "topic/caArray/FileManagement";
     private static ThreadLocal<FileManagementMDB> currentMDB = new ThreadLocal<FileManagementMDB>();
 
-    @Resource 
+    @Resource
     private UserTransaction transaction;
-    
+
     private CaArrayHibernateHelper hibernateHelper;
     private JobQueue jobQueue;
     private Provider<UsernameHolder> userHolderProvider;
 
     /**
-     * Default no-arg ctor is required by app container. 
+     * Default no-arg ctor is required by app container.
      */
     public FileManagementMDB() {
-        //no-op default ctor. Dependencies should be added through the setters. 
+        //no-op default ctor. Dependencies should be added through the setters.
     }
 
     /**
-     * STARTING WITH caArray 2.5.0 THIS VERSION OF THE CTOR IS A CONVENIENCE FOR TESTING USE ONLY. 
-     * 
+     * STARTING WITH caArray 2.5.0 THIS VERSION OF THE CTOR IS A CONVENIENCE FOR TESTING USE ONLY.
+     *
      * @param hibernateHelper the CaArrayHibernateHelper dependency
      * @param jobQueue the JobQueue dependency
      * @param userHolderProvider provides userHolder objects. Using a provider here to enable a possible
@@ -171,10 +169,10 @@ public class FileManagementMDB implements MessageListener {
         this.jobQueue = jobQueue;
         this.userHolderProvider = userHolderProvider;
     }
-    
+
     /**
      * Handles file management job message.
-     * 
+     *
      * @param message the JMS message to handle.
      */
     @Override
@@ -239,15 +237,7 @@ public class FileManagementMDB implements MessageListener {
      * @return the timeout val
      */
     protected int getBackgroundThreadTransactionTimeout() {
-        final String backgroundThreadTransactionTimeout =
-                ConfigurationHelper.getConfiguration().getString(
-                        ConfigParamEnum.BACKGROUND_THREAD_TRANSACTION_TIMEOUT.name());
-        int timeout = DEFAULT_TIMEOUT_SECONDS;
-        if (StringUtils.isNumeric(backgroundThreadTransactionTimeout)) {
-            timeout = Integer.parseInt(backgroundThreadTransactionTimeout);
-        }
-        LOG.debug("Background thread transaction timeout setting: " + timeout);
-        return timeout;
+        return Utils.getBackgroundThreadTransactionTimeout();
     }
 
     /**
@@ -302,7 +292,7 @@ public class FileManagementMDB implements MessageListener {
 
     /**
      * Handles unexpected errors.
-     * 
+     *
      * @param job the job.
      */
     protected void handleUnexpectedError(ExecutableJob job) {
@@ -346,7 +336,7 @@ public class FileManagementMDB implements MessageListener {
 
     /**
      * Get the instance of FileManagementMDB that is processing the current message.
-     * 
+     *
      * @return the current instance
      */
     public static FileManagementMDB getCurrentMDB() {
