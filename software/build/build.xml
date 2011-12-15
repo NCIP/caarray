@@ -1144,19 +1144,12 @@
         </path>
         <property name="guice-assistedinject.jar" refid="guice-assistedinject.jar.fileset" />
 
-        <path id="woodstox.jar.path">
-            <fileset dir="${project.lib}" id="woodstox.jar.fileset">
-                <include name="woodstox-*.jar"/>
+        <path id="wstx.jar.path">
+            <fileset dir="${project.lib}" id="wstx.jar.fileset">
+                <include name="wstx-*.jar"/>
             </fileset>
         </path>
-        <property name="woodstox.jar" refid="woodstox.jar.fileset" />
-
-        <path id="stax2-api.jar.path">
-            <fileset dir="${project.lib}" id="stax2-api.jar.fileset">
-                <include name="stax2-api-*.jar"/>
-            </fileset>
-        </path>
-        <property name="stax2-api.jar" refid="stax2-api.jar.fileset" />
+        <property name="wstx.jar" refid="wstx.jar.fileset" />
 
         <path id="mockito.jar.path">
             <fileset dir="${project.lib}" id="mockito.jar.fileset">
@@ -1245,8 +1238,7 @@
             <fileset refid="guice.jar.fileset"/>
             <fileset refid="guice-multibindings.jar.fileset"/>
             <fileset refid="guice-assistedinject.jar.fileset"/>
-            <fileset refid="woodstox.jar.fileset"/>
-            <fileset refid="stax2-api.jar.fileset"/>
+            <fileset refid="wstx.jar.fileset"/>
             <fileset refid="slf4j-api.jar.fileset"/>
             <fileset id="common.grid.dependencies.fileset" dir="${project.lib}">
                 <include name="${axis.jar}"/>
@@ -1349,6 +1341,7 @@
         <path id="war.compile.container-provided.depenendencies.path" >
             <fileset refid="xerces-J.jar.fileset"/>
             <fileset refid="xercesImpl.jar.fileset"/>
+            <fileset refid="wstx.jar.fileset" />
         </path>
         <pathtofileset name="war.compile.container-provided.depenendencies.fileset" pathrefid="war.compile.container-provided.depenendencies.path" dir="${project.lib}"/>
 

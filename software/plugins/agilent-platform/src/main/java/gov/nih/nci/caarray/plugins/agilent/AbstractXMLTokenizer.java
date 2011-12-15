@@ -100,9 +100,9 @@ import com.ctc.wstx.exc.WstxEOFException;
  * rationale is to abstract away the world of XML. An implementation of this class can be unit tested in isolation from
  * parsing code. The classes implementing the follow-on parser can be unit tested in terms of tokens instead in the more
  * cumbersome terms of XML elements and attributes.
- * 
+ *
  * @author jscott
- * 
+ *
  * @param <TokenT> the enumeration of tokens to be used
  */
 abstract class AbstractXMLTokenizer<TokenT extends Enum<TokenT>> implements XMLTokenizer<TokenT> {
@@ -119,13 +119,13 @@ abstract class AbstractXMLTokenizer<TokenT extends Enum<TokenT>> implements XMLT
     private boolean currentTokenIsAttribute;
     private int currentAttributeIndex;
     private final List<AttributeNameAndIndexWrapper> attributesAndIndexesList =
-        new ArrayList<AttributeNameAndIndexWrapper>();   
+        new ArrayList<AttributeNameAndIndexWrapper>();
     private Iterator<AttributeNameAndIndexWrapper> attributeIterator = attributesAndIndexesList.iterator();
-    
+
     private static final String END_OF_ATTRIBUTES_TOKEN_NAME = AbstractXMLTokenizer.class.getName()
         + ".END_OF_ATTRIBUTES_TOKEN_NAME";
     private static final int END_OF_ATTRIBUTES_INDEX_PLACEHOLDER = -1;
-    
+
     /**
      * @param inputReader a reader on the XML source to tokenized
      */
@@ -143,7 +143,7 @@ abstract class AbstractXMLTokenizer<TokenT extends Enum<TokenT>> implements XMLT
 
         currentToken = getNextToken();
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -191,7 +191,7 @@ abstract class AbstractXMLTokenizer<TokenT extends Enum<TokenT>> implements XMLT
             token = getDocumentStartToken();
             break;
 
-        case XMLEvent.START_ELEMENT:            
+        case XMLEvent.START_ELEMENT:
             setUpAttributes();
             token = findStartToken(reader.getLocalName());
             break;
@@ -256,7 +256,7 @@ abstract class AbstractXMLTokenizer<TokenT extends Enum<TokenT>> implements XMLT
 
     /**
      * Finds the token to return at the start of a given XML element.
-     * 
+     *
      * @param elementName the name of the XML element
      * @return the token
      */
@@ -269,7 +269,7 @@ abstract class AbstractXMLTokenizer<TokenT extends Enum<TokenT>> implements XMLT
 
     /**
      * Finds the token associated with a given XML attribute.
-     * 
+     *
      * @param attributeName the name of the XML attribute
      * @return the token
      */
@@ -320,7 +320,7 @@ abstract class AbstractXMLTokenizer<TokenT extends Enum<TokenT>> implements XMLT
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @return {@inheritDoc}
      */
     public String getStringValue() {
@@ -337,35 +337,29 @@ abstract class AbstractXMLTokenizer<TokenT extends Enum<TokenT>> implements XMLT
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @return {@inheritDoc}
      */
     public double getDoubleValue() {
         try {
-            if (currentTokenIsAttribute) {
-                return reader.getAttributeAsDouble(currentAttributeIndex);
-            } else {
-                return reader.getElementAsDouble();
-            }
-        } catch (XMLStreamException e) {
-            throw new AgilentParseException("StAX library error", e);
+            Double val = Double.parseDouble(getStringValue());
+            return val.doubleValue();
+        } catch (NumberFormatException e) {
+            throw new AgilentParseException("Parsing Error: Unable to parse the value to a double", e);
         }
     }
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @return {@inheritDoc}
      */
     public int getIntValue() {
         try {
-            if (currentTokenIsAttribute) {
-                return reader.getAttributeAsInt(currentAttributeIndex);
-            } else {
-                return reader.getElementAsInt();
-            }
-        } catch (XMLStreamException e) {
-            throw new AgilentParseException("StAX library error", e);
+            Integer val = Integer.parseInt(getStringValue());
+            return val.intValue();
+        } catch (NumberFormatException e) {
+            throw new AgilentParseException("Parsing Error: Unable to parse the value to an int", e);
         }
     }
 
@@ -383,26 +377,26 @@ abstract class AbstractXMLTokenizer<TokenT extends Enum<TokenT>> implements XMLT
             throw new AgilentParseException("StAX library error", e);
         }
     }
-    
+
     /**
      * wraps the name and index of an xml attribute.
      * @author dharley
      *
      */
     private static class AttributeNameAndIndexWrapper {
-        
+
         private final String attributeName;
         private final int attributeIndex;
-        
+
         AttributeNameAndIndexWrapper(String attributeName, int attributeIndex) {
             this.attributeName = attributeName;
             this.attributeIndex = attributeIndex;
         }
-        
+
         String getAttributeName() {
             return attributeName;
         }
-        
+
         int getAttributeIndex() {
             return attributeIndex;
         }
