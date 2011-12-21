@@ -99,6 +99,7 @@ public class CaArrayPackageScannerConfiguration extends SpringAwarePackageScanne
      */
     public CaArrayPackageScannerConfiguration() {
         super();
+        getPackageIncludes().add("gnu.regexp*");
         getPackageIncludes().add("com.google*");
         getPackageIncludes().add("com.ctc*");
         getPackageIncludes().add("org.codehaus*");
