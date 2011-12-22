@@ -177,6 +177,15 @@ public final class MageTabFileSet implements Serializable {
     }
 
     /**
+     * Gets whether this file set has any SDRF files.
+     * 
+     * @return true if there are SDRF files present, false otherwise.
+     */
+    public boolean hasSdrfFiles() {
+        return !this.sdrfFiles.isEmpty();
+    }
+    
+    /**
      * Get all the files in this file set.
      * @return all files
      */
