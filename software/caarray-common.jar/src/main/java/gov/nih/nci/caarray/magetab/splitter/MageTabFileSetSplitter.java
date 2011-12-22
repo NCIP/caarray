@@ -52,6 +52,7 @@ package gov.nih.nci.caarray.magetab.splitter;
 
 import gov.nih.nci.caarray.magetab.MageTabFileSet;
 
+import java.io.IOException;
 import java.util.Set;
 
 /**
@@ -81,6 +82,7 @@ public interface MageTabFileSetSplitter {
      * 
      * @param largeFileSet the input files to be split
      * @return collection of files
+     * @throws IOException if temporary file management fails during the split
      */
-    Set<MageTabFileSet> split(MageTabFileSet largeFileSet);
+    Set<MageTabFileSet> split(MageTabFileSet largeFileSet) throws IOException;
 }

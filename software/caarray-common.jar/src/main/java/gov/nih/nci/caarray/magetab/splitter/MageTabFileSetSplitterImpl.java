@@ -53,6 +53,7 @@ package gov.nih.nci.caarray.magetab.splitter;
 import gov.nih.nci.caarray.magetab.MageTabFileSet;
 import gov.nih.nci.caarray.magetab.io.FileRef;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -64,7 +65,7 @@ import java.util.Set;
  */
 public class MageTabFileSetSplitterImpl implements MageTabFileSetSplitter {
 
-    private SdrfSplitter singleFileSplitter = null;
+    private SdrfSplitter singleFileSplitter = new SdrfSplitterImpl();
     
     /**
      * Setter for splitter implementation.
@@ -79,7 +80,7 @@ public class MageTabFileSetSplitterImpl implements MageTabFileSetSplitter {
      * {@inheritDoc}
      */
     @Override
-    public Set<MageTabFileSet> split(MageTabFileSet largeFileSet) {
+    public Set<MageTabFileSet> split(MageTabFileSet largeFileSet) throws IOException {
         if (largeFileSet == null) {
             return null;
         }
@@ -87,7 +88,7 @@ public class MageTabFileSetSplitterImpl implements MageTabFileSetSplitter {
         return handleNonNullFileSet(largeFileSet);
     }
 
-    private Set<MageTabFileSet> handleNonNullFileSet(MageTabFileSet largeFileSet) {
+    private Set<MageTabFileSet> handleNonNullFileSet(MageTabFileSet largeFileSet) throws IOException {
         if (largeFileSet.getSdrfFiles().isEmpty()) {
             Set<MageTabFileSet> result = new HashSet<MageTabFileSet>();
             result.add(largeFileSet);
@@ -97,7 +98,7 @@ public class MageTabFileSetSplitterImpl implements MageTabFileSetSplitter {
         }
     }
 
-    private Set<MageTabFileSet> handleSdrfs(MageTabFileSet largeFileSet) {
+    private Set<MageTabFileSet> handleSdrfs(MageTabFileSet largeFileSet) throws IOException {
         Set<MageTabFileSet> result = new HashSet<MageTabFileSet>();
         Set<FileRef> sdrfs = new HashSet<FileRef>(largeFileSet.getSdrfFiles());
         for (FileRef curSdrf : sdrfs) {
@@ -106,11 +107,12 @@ public class MageTabFileSetSplitterImpl implements MageTabFileSetSplitter {
         return result;
     }
 
-    private Collection<MageTabFileSet> handleSingleSdrf(MageTabFileSet largeFileSet, FileRef bigSdrf) {
+    private Collection<MageTabFileSet> handleSingleSdrf(MageTabFileSet largeFileSet, FileRef bigSdrf) 
+            throws IOException {
         Set<MageTabFileSet> result = new HashSet<MageTabFileSet>();
         Set<FileRef> splitSdrfs = singleFileSplitter.split(bigSdrf);
         for (FileRef smallSdrf : splitSdrfs) {
-            MageTabFileSet curSet = largeFileSet.clone();
+            MageTabFileSet curSet = largeFileSet.makeCopy();
             curSet.getSdrfFiles().clear();
             curSet.addSdrf(smallSdrf);
             result.add(curSet);

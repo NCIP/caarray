@@ -16,9 +16,9 @@ public class MageTabFileSetTest {
      * Basic clone test.  Shallow comparison of files.
      */
     @Test
-    public void testClone() {
+    public void makeCopy() {
         MageTabFileSet orig = TestMageTabSets.MAGE_TAB_SPECIFICATION_INPUT_SET;
-        MageTabFileSet clone = (MageTabFileSet) orig.clone();
+        MageTabFileSet clone = (MageTabFileSet) orig.makeCopy();
         assertNotSame(orig, clone);
         assertEquals(orig.getAllFiles().size(), clone.getAllFiles().size());
         assertTrue(orig.getAllFiles().containsAll(clone.getAllFiles()));
@@ -31,7 +31,7 @@ public class MageTabFileSetTest {
         int sdrfFileCount = orig.getSdrfFiles().size();
         assumeTrue(totalFileCount != sdrfFileCount);
         
-        MageTabFileSet clone = orig.clone();
+        MageTabFileSet clone = orig.makeCopy();
         clone.clearSdrfs();
         assertEquals(0, clone.getSdrfFiles().size());
         assertEquals(totalFileCount - sdrfFileCount, clone.getAllFiles().size());

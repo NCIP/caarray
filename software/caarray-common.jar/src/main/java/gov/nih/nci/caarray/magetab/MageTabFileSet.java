@@ -92,7 +92,7 @@ import java.util.Set;
 /**
  * An set of potentially interrelated MAGE-TAB document files to be validated or parsed.
  */
-public final class MageTabFileSet implements Serializable, Cloneable {
+public final class MageTabFileSet implements Serializable {
 
     private static final long serialVersionUID = 7824150081647257549L;
 
@@ -196,10 +196,10 @@ public final class MageTabFileSet implements Serializable, Cloneable {
     }
 
     /**
-     * {@inheritDoc}
+     * Makes a shallow copy of the files contained in this set.
+     * @return shallow copy
      */
-    @Override
-    public MageTabFileSet clone() {
+    public MageTabFileSet makeCopy() {
         MageTabFileSet other = new MageTabFileSet();
         other.adfFiles.addAll(adfFiles);
         other.dataMatrixFiles.addAll(dataMatrixFiles);

@@ -50,6 +50,7 @@
  */
 package gov.nih.nci.caarray.magetab.splitter;
 
+import java.io.IOException;
 import java.util.Set;
 
 import gov.nih.nci.caarray.magetab.io.FileRef;
@@ -62,10 +63,11 @@ import gov.nih.nci.caarray.magetab.io.FileRef;
 public interface SdrfSplitter {
 
     /**
-     * Splits the input sdrf into smaller sdrfs.
+     * Splits the input sdrf into smaller sdrfs.  Nulls result in empty set, not null.
      * 
      * @param sdrf input file to split
      * @return split file
+     * @throws IOException if file does not exist, writing to new files fails, or any other io error
      */
-    Set<FileRef> split(FileRef sdrf);
+    Set<FileRef> split(FileRef sdrf) throws IOException;
 }

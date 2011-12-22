@@ -87,7 +87,7 @@ public abstract class AbstractMageTabDocument implements Serializable {
     /**
      * Lines starting with '#' will be ignored.
      */
-    protected static final String COMMENT_CHARACTER = "#";
+    public static final String COMMENT_CHARACTER = "#";
 
     private final MageTabDocumentSet documentSet;
     private final FileRef file;
