@@ -54,6 +54,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import gov.nih.nci.caarray.magetab.MageTabFileSet;
 import gov.nih.nci.caarray.magetab.io.FileRef;
 import gov.nih.nci.caarray.magetab.io.JavaIOFileRef;
@@ -66,7 +69,6 @@ import java.util.Set;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -128,25 +130,53 @@ public class MageTabFileSetSplitterTest {
         assertSingleFileSetSize(result, 4);
     }
 
-    /**
-     * Single line SDRF.
-     */
-    @Ignore(value = "TODO: This is the next test I am currently writing")
     @Test
-    public void singleLineSdrf() {
-        MageTabFileSet input = new MageTabFileSet();
-        FileRef fileRef = generateFileRef();
-        // TODO: actually have this be a valid SDRF file
-        input.addSdrf(fileRef);
-        Set<MageTabFileSet> result = splitter.split(input);
-        assertSingleFileSetSize(result, 1);
+    public void oneSDRF() {
+        assertSplit(1, 1);
+        assertSplit(1, 5);
     }
-
+    
+    @Test
+    public void multipleSDRFs() {
+        assertSplit(2, 7);
+        assertSplit(3, 7);
+        assertSplit(5, 9);
+    }
+    
+    private void assertSplit(int numSdrfs, int splitsPerSdrf) {
+        MageTabFileSet input = new MageTabFileSet();
+        input.addAdf(generateFileRef());
+        input.addDataMatrix(generateFileRef());
+        input.addIdf(generateFileRef());
+        input.addNativeData(generateFileRef());
+        for (int i = 0; i < numSdrfs; ++i) {
+            input.addSdrf(generateFileRef());
+        }
+        
+        Set<FileRef> fakedSplits = new HashSet<FileRef>();
+        for (int i = 0; i < splitsPerSdrf; ++i) {
+            fakedSplits.add(generateFileRef());
+        }
+        SdrfSplitter sdrfSplitter = mock(SdrfSplitter.class);
+        when(sdrfSplitter.split(any(FileRef.class))).thenReturn(fakedSplits);
+        ((MageTabFileSetSplitterImpl) splitter).setSdrfSplitter(sdrfSplitter);
+        
+        Set<MageTabFileSet> result = splitter.split(input);
+        // There should always be 5 files in the result:
+        // - adf, dataMatrix, idf, nativeData, and *1* sdrf
+        assertMultiFileSetSizes(result, splitsPerSdrf * numSdrfs, 5);
+    }
+    
     private void assertSingleFileSetSize(Set<MageTabFileSet> fileSets, int expectedFiles) {
+        assertMultiFileSetSizes(fileSets, 1, expectedFiles);
+    }
+    
+    private void assertMultiFileSetSizes(Set<MageTabFileSet> fileSets, int expectedSets, int expectedFilesPerSet) {
         assertNotNull(fileSets);
-        assertEquals(1, fileSets.size());
-        MageTabFileSet fs = fileSets.iterator().next();
-        assertEquals(expectedFiles, fs.getAllFiles().size());
+        assertEquals(expectedSets, fileSets.size());
+        for (MageTabFileSet fs : fileSets) {
+            assertEquals(expectedFilesPerSet, fs.getAllFiles().size());
+        }
     }
     
     private FileRef generateFileRef() {

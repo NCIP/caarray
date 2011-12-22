@@ -50,71 +50,22 @@
  */
 package gov.nih.nci.caarray.magetab.splitter;
 
-import gov.nih.nci.caarray.magetab.MageTabFileSet;
-import gov.nih.nci.caarray.magetab.io.FileRef;
-
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.Set;
 
+import gov.nih.nci.caarray.magetab.io.FileRef;
+
 /**
- * Basic implementation of the interface.
+ * Handles the details of splitting a single SDRF file into multiple smaller files.
  * 
  * @author tparnell
  */
-public class MageTabFileSetSplitterImpl implements MageTabFileSetSplitter {
+public interface SdrfSplitter {
 
-    private SdrfSplitter singleFileSplitter = null;
-    
     /**
-     * Setter for splitter implementation.
+     * Splits the input sdrf into smaller sdrfs.
      * 
-     * @param splitter splitter implementation to use.
+     * @param sdrf input file to split
+     * @return split file
      */
-    public void setSdrfSplitter(SdrfSplitter splitter) {
-        this.singleFileSplitter = splitter;
-    }
-    
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Set<MageTabFileSet> split(MageTabFileSet largeFileSet) {
-        if (largeFileSet == null) {
-            return null;
-        }
-        
-        return handleNonNullFileSet(largeFileSet);
-    }
-
-    private Set<MageTabFileSet> handleNonNullFileSet(MageTabFileSet largeFileSet) {
-        if (largeFileSet.getSdrfFiles().isEmpty()) {
-            Set<MageTabFileSet> result = new HashSet<MageTabFileSet>();
-            result.add(largeFileSet);
-            return result;
-        } else {
-            return handleSdrfs(largeFileSet);
-        }
-    }
-
-    private Set<MageTabFileSet> handleSdrfs(MageTabFileSet largeFileSet) {
-        Set<MageTabFileSet> result = new HashSet<MageTabFileSet>();
-        Set<FileRef> sdrfs = new HashSet<FileRef>(largeFileSet.getSdrfFiles());
-        for (FileRef curSdrf : sdrfs) {
-            result.addAll(handleSingleSdrf(largeFileSet, curSdrf));
-        }
-        return result;
-    }
-
-    private Collection<MageTabFileSet> handleSingleSdrf(MageTabFileSet largeFileSet, FileRef bigSdrf) {
-        Set<MageTabFileSet> result = new HashSet<MageTabFileSet>();
-        Set<FileRef> splitSdrfs = singleFileSplitter.split(bigSdrf);
-        for (FileRef smallSdrf : splitSdrfs) {
-            MageTabFileSet curSet = largeFileSet.clone();
-            curSet.getSdrfFiles().clear();
-            curSet.addSdrf(smallSdrf);
-            result.add(curSet);
-        }
-        return result;
-    }
+    Set<FileRef> split(FileRef sdrf);
 }

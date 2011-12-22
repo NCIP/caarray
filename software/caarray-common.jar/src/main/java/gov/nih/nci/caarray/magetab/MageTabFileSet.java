@@ -92,7 +92,7 @@ import java.util.Set;
 /**
  * An set of potentially interrelated MAGE-TAB document files to be validated or parsed.
  */
-public final class MageTabFileSet implements Serializable {
+public final class MageTabFileSet implements Serializable, Cloneable {
 
     private static final long serialVersionUID = 7824150081647257549L;
 
@@ -172,19 +172,15 @@ public final class MageTabFileSet implements Serializable {
         return this.nativeDataFiles;
     }
 
-    Set<FileRef> getSdrfFiles() {
+    /**
+     * Gets the set of Sdrf files.
+     * 
+     * @return current list of sdrf files.
+     */
+    public Set<FileRef> getSdrfFiles() {
         return this.sdrfFiles;
     }
 
-    /**
-     * Gets whether this file set has any SDRF files.
-     * 
-     * @return true if there are SDRF files present, false otherwise.
-     */
-    public boolean hasSdrfFiles() {
-        return !this.sdrfFiles.isEmpty();
-    }
-    
     /**
      * Get all the files in this file set.
      * @return all files
@@ -199,4 +195,25 @@ public final class MageTabFileSet implements Serializable {
         return files;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public MageTabFileSet clone() {
+        MageTabFileSet other = new MageTabFileSet();
+        other.adfFiles.addAll(adfFiles);
+        other.dataMatrixFiles.addAll(dataMatrixFiles);
+        other.idfFiles.addAll(idfFiles);
+        other.nativeDataFiles.addAll(nativeDataFiles);
+        other.sdrfFiles.addAll(sdrfFiles);
+        return other;
+    }
+
+    /**
+     * Removes any/all sdrf files contained within the file set.
+     */
+    public void clearSdrfs() {
+        this.sdrfFiles.clear();
+    }
+    
 }
