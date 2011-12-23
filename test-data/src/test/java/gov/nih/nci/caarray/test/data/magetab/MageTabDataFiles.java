@@ -618,8 +618,4 @@ public class MageTabDataFiles {
 
     public static final File GETS_NEW_TERM_SOURCE_SDRF = new File(MageTabDataFiles.class
             .getResource("/magetab/test_gets_new_term_source/test.sdrf").getFile());
-
-    public static final File GENEPIX_GENE_EXPRESSION_SDRF = new File(MageTabDataFiles.class
-            .getResource("/magetab/genepix_gene_expression/exportedGprMageTab.sdrf").getFile());
-    
 }
