@@ -121,7 +121,7 @@ public class SdrfSplitterImpl implements SdrfSplitter {
         for (int i = headerRow + 1; i < inputStrings.size(); ++i) {
             String curLine = inputStrings.get(i);
             if (!isCommentLine(curLine)) {
-                FileRef singleFile = handleSingleLine(sdrf.getName(), inputStrings.get(0), curLine);
+                FileRef singleFile = handleSingleLine(sdrf.getName(), inputStrings.get(headerRow), curLine);
                 result.add(singleFile);
             }
         }
@@ -135,11 +135,12 @@ public class SdrfSplitterImpl implements SdrfSplitter {
                 return i;
             }
         }
-        return -1;
+        throw new IllegalArgumentException("Could not find header row in sdrf file.  Was it validated?");
     }
 
     private boolean isCommentLine(String line) {
-        return line.isEmpty() || line.startsWith(SdrfDocument.COMMENT_CHARACTER);
+        String trimmedLine = line.trim();
+        return trimmedLine.isEmpty() || trimmedLine.startsWith(SdrfDocument.COMMENT_CHARACTER);
     }
     
     private FileRef handleSingleLine(String name, String header, String line) throws IOException {

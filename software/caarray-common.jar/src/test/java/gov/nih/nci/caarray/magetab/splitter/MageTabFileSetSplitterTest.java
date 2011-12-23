@@ -156,6 +156,16 @@ public class MageTabFileSetSplitterTest {
 
     }
     
+    @Test
+    public void multiIdfNoSplit() throws IOException {
+        MageTabFileSet input = new MageTabFileSet();
+        input.addSdrf(generateFileRef());
+        input.addIdf(generateFileRef());
+        input.addIdf(generateFileRef());
+        Set<MageTabFileSet> split = splitter.split(input);
+        assertSingleFileSetSize(split, 3);
+    }
+    
     private void assertSplit(int numSdrfs, int splitsPerSdrf) throws IOException {
         MageTabFileSet input = new MageTabFileSet();
         input.addAdf(generateFileRef());

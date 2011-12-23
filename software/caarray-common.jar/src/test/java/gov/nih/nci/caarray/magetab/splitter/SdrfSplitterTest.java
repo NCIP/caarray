@@ -52,12 +52,14 @@ package gov.nih.nci.caarray.magetab.splitter;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import gov.nih.nci.caarray.magetab.io.FileRef;
 import gov.nih.nci.caarray.magetab.io.JavaIOFileRef;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedMap;
@@ -67,23 +69,14 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 
 import com.google.common.base.Function;
+import com.google.common.collect.Lists;
 
 /**
  * Tests for the sdrf splitter.
  * 
  * @author tparnell
  */
-    
 public class SdrfSplitterTest {
-    /*
-     * ARRAY-2159 TODO:
-     * - line encoding variations
-     * - lines that are just whitespace (?)
-     * - whitespace + # + line (ie, comments that don't start at the beginning of line)
-     * 
-     * SdrfDocument only seems to check empty and startswith #.  But perl script strips
-     * more.  Which should I follow? Question out to rashmi in email.§
-     */
 
     private static SdrfSplitter splitter = new SdrfSplitterImpl();
     
@@ -97,39 +90,58 @@ public class SdrfSplitterTest {
     
     @Test
     public void commentBeforeHeader() throws IOException {
-        SortedMap<Integer, String> linesToAdd = new TreeMap<Integer, String>();
-        linesToAdd.put(0, "# I am a comment");
-        Function<File, File> transform = getTransform(linesToAdd);
-        specificationSdrfWithTransform(transform);
+        testComments(new int[] {0}, 
+                new String[] {"# I am a comment"});
     }
 
     @Test
     public void commentsBeforeHeader() throws IOException {
-        SortedMap<Integer, String> linesToAdd = new TreeMap<Integer, String>();
-        linesToAdd.put(0, "# I am a comment");
-        linesToAdd.put(1, "# I am another comment line");
-        
-        Function<File, File> transform = getTransform(linesToAdd);
-        specificationSdrfWithTransform(transform);
+        testComments(new int[] {0, 1}, 
+                new String[] {"# I am a comment", 
+                              "# I am another comment line",
+                              " "});
     }
     
     @Test
     public void commentAfterHeader() throws IOException {
-        SortedMap<Integer, String> linesToAdd = new TreeMap<Integer, String>();
-        linesToAdd.put(1, "# I am a comment");
-        
-        Function<File, File> transform = getTransform(linesToAdd);
-        specificationSdrfWithTransform(transform);
+        testComments(new int[] {1}, 
+                new String[] {"# I am a comment"});
+    }
+    
+    @Test
+    public void commentsWithLeadingWhitespace() throws IOException {
+        testComments(new int[] {0, 1, 2}, 
+                new String[] {" # I am a comment with leading whitespace", 
+                              "\t# I am a comment with leading tab",
+                              " "});
     }
     
     @Test
     public void emptyLines() throws IOException {
+        testComments(new int[] {0, 2}, new String[] {"", ""});
+    }
+    
+    private void testComments(int[] positions, String[] comments) throws IOException {
         SortedMap<Integer, String> linesToAdd = new TreeMap<Integer, String>();
-        linesToAdd.put(0, "");
-        linesToAdd.put(2, "");
+        for (int i = 0; i < positions.length; ++i) {
+            linesToAdd.put(positions[i], comments[i]);
+        }
         
         Function<File, File> transform = getTransform(linesToAdd);
-        specificationSdrfWithTransform(transform);
+        specificationSdrfWithTransform(transform);        
+    }
+    
+    /**
+     * Checks that sdrf files that should have failed validation
+     * @throws IOException
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void onlyComments() throws IOException {
+        List<String> content = Lists.newArrayList("# comment", "", "# another comment");
+        File file = File.createTempFile("test", ".sdrf");
+        FileUtils.writeLines(file, content);
+        FileRef fileRef = new JavaIOFileRef(file);
+        splitter.split(fileRef);
     }
     
     /**
@@ -159,13 +171,28 @@ public class SdrfSplitterTest {
         return transform;
     }
     
+    @SuppressWarnings("unchecked")
     private void specificationSdrfWithTransform(Function<File, File> transform) throws IOException {
         File f = MageTabDataFiles.SPECIFICATION_EXAMPLE_SDRF;
+        List<String> inputLines = FileUtils.readLines(f);
+        
         File transformed = transform == null ? f : transform.apply(f);
         FileRef fileRef = new JavaIOFileRef(transformed);
         Set<FileRef> split = splitter.split(fileRef);
+        
         assertNotNull(split);
-        assertEquals(6, split.size());
+        assertEquals(inputLines.size() - 1, split.size());
+
+        Set<String> splitLines = new HashSet<String>();
+        for (FileRef curRef : split) {
+            List<String> curFileLines = FileUtils.readLines(curRef.getAsFile());
+            assertEquals(2, curFileLines.size());
+            assertEquals(inputLines.get(0), curFileLines.get(0));
+            splitLines.add(curFileLines.get(1));
+        }
+        splitLines.add(inputLines.get(0));
+        assertEquals(inputLines.size(), splitLines.size());
+        assertTrue(splitLines.containsAll(inputLines));
     }
     
     /**

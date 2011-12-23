@@ -164,7 +164,12 @@ public final class MageTabFileSet implements Serializable {
         return this.dataMatrixFiles;
     }
 
-    Set<FileRef> getIdfFiles() {
+    /**
+     * Gets the set of Idf files.
+     * 
+     * @return current list of idf files.
+     */
+    public Set<FileRef> getIdfFiles() {
         return this.idfFiles;
     }
 

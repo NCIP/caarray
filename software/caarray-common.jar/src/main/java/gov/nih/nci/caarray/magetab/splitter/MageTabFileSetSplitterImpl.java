@@ -58,12 +58,18 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
+
+import com.google.common.collect.Sets;
+
 /**
  * Basic implementation of the interface.
  * 
  * @author tparnell
  */
 public class MageTabFileSetSplitterImpl implements MageTabFileSetSplitter {
+
+    private static final Logger LOG = Logger.getLogger(MageTabFileSetSplitterImpl.class);
 
     private SdrfSplitter singleFileSplitter = new SdrfSplitterImpl();
     
@@ -90,17 +96,22 @@ public class MageTabFileSetSplitterImpl implements MageTabFileSetSplitter {
 
     private Set<MageTabFileSet> handleNonNullFileSet(MageTabFileSet largeFileSet) throws IOException {
         if (largeFileSet.getSdrfFiles().isEmpty()) {
-            Set<MageTabFileSet> result = new HashSet<MageTabFileSet>();
-            result.add(largeFileSet);
-            return result;
+            return Sets.newHashSet(largeFileSet);
+        } else if (largeFileSet.getIdfFiles().size() > 1) {
+            LOG.warn(">1 IDF file.  Not splitting SDRFs.");
+            return Sets.newHashSet(largeFileSet);
         } else {
             return handleSdrfs(largeFileSet);
         }
-    }
+    }    
 
     private Set<MageTabFileSet> handleSdrfs(MageTabFileSet largeFileSet) throws IOException {
         Set<MageTabFileSet> result = new HashSet<MageTabFileSet>();
         Set<FileRef> sdrfs = new HashSet<FileRef>(largeFileSet.getSdrfFiles());
+        if (sdrfs.size() > 1) {
+            LOG.warn("Multiple SDRFs in import set.  Proceeding with split.  " 
+                        + "Split file associates may not be accurate");
+        }
         for (FileRef curSdrf : sdrfs) {
             result.addAll(handleSingleSdrf(largeFileSet, curSdrf));
         }

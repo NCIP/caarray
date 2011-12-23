@@ -63,7 +63,9 @@ import gov.nih.nci.caarray.magetab.io.FileRef;
 public interface SdrfSplitter {
 
     /**
-     * Splits the input sdrf into smaller sdrfs.  Nulls result in empty set, not null.
+     * Splits the input sdrf into smaller sdrfs.  Nulls result in empty set, not null.  The input
+     * is assumed to have passed validation.  Invalid files (e.g. no header row) will result in
+     * unchecked exceptions.
      * 
      * @param sdrf input file to split
      * @return split file
