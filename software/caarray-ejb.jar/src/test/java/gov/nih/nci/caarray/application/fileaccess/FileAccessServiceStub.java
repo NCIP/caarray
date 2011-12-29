@@ -139,9 +139,17 @@ public class FileAccessServiceStub implements FileAccessService, DataStorage {
 
     @Override
     public CaArrayFile add(File file) {
-        final CaArrayFile caArrayFile = new CaArrayFile();
+        CaArrayFile parent = null;
+        return add(file, parent);
+    }
+
+    public CaArrayFile add(File file, CaArrayFile parent) {
+        final CaArrayFile caArrayFile = new CaArrayFile(parent);
         caArrayFile.setName(file.getName());
         caArrayFile.setFileStatus(FileStatus.UPLOADED);
+        if (parent != null) {
+            parent.addChild(caArrayFile);
+        }
         setTypeFromExtension(caArrayFile, file.getName());
         this.nameToFile.put(caArrayFile.getName(), file);
         caArrayFile.setDataHandle(CaArrayUtils.makeUriQuietly(SCHEME, file.getName()));
@@ -162,9 +170,16 @@ public class FileAccessServiceStub implements FileAccessService, DataStorage {
 
     @Override
     public CaArrayFile add(File file, String filename) {
-        final CaArrayFile caArrayFile = new CaArrayFile();
+        return add(file, filename, null);
+    }
+
+    public CaArrayFile add(File file, String filename, CaArrayFile parent) {
+        final CaArrayFile caArrayFile = new CaArrayFile(parent);
         caArrayFile.setName(filename);
         caArrayFile.setFileStatus(FileStatus.UPLOADED);
+        if (parent != null) {
+            parent.addChild(caArrayFile);
+        }
         this.nameToFile.put(caArrayFile.getName(), file);
         return caArrayFile;
     }
@@ -249,6 +264,11 @@ public class FileAccessServiceStub implements FileAccessService, DataStorage {
      */
     @Override
     public CaArrayFile add(InputStream stream, String filename) {
+        return add(stream, filename, null);
+    }
+
+    public CaArrayFile add(InputStream stream, String filename,
+            CaArrayFile parent) {
         final CaArrayFile caArrayFile = new CaArrayFile();
         caArrayFile.setName(filename);
         caArrayFile.setFileStatus(FileStatus.UPLOADED);

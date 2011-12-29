@@ -89,6 +89,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyLong;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import gov.nih.nci.caarray.application.AbstractServiceTest;
@@ -99,6 +100,7 @@ import gov.nih.nci.caarray.dataStorage.StorageMetadata;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileStatus;
+import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.file.FileTypeRegistry;
 import gov.nih.nci.caarray.domain.file.FileTypeRegistryImpl;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
@@ -118,6 +120,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -162,12 +165,7 @@ public class FileAccessServiceTest extends AbstractServiceTest {
         final File file = File.createTempFile("pre", ".ext");
         file.deleteOnExit();
         final CaArrayFile caArrayFile = this.fileAccessService.add(file);
-        assertEquals(file.getName(), caArrayFile.getName());
-        assertEquals(FileStatus.UPLOADED, caArrayFile.getFileStatus());
-        assertNull(caArrayFile.getFileType());
-        assertEquals(TEST_METADATA.getUncompressedSize(), caArrayFile.getUncompressedSize());
-        assertEquals(TEST_METADATA.getCompressedSize(), caArrayFile.getCompressedSize());
-        assertEquals(TEST_METADATA.getHandle(), caArrayFile.getDataHandle());
+        doAsserts(file, caArrayFile, null, null, null, 0);
     }
 
     @Test
@@ -175,12 +173,20 @@ public class FileAccessServiceTest extends AbstractServiceTest {
         final File file = File.createTempFile("pre", ".idf");
         file.deleteOnExit();
         final CaArrayFile caArrayFile = this.fileAccessService.add(file);
-        assertEquals(file.getName(), caArrayFile.getName());
-        assertEquals(FileStatus.UPLOADED, caArrayFile.getFileStatus());
-        assertEquals(FileTypeRegistry.MAGE_TAB_IDF, caArrayFile.getFileType());
-        assertEquals(TEST_METADATA.getUncompressedSize(), caArrayFile.getUncompressedSize());
-        assertEquals(TEST_METADATA.getCompressedSize(), caArrayFile.getCompressedSize());
-        assertEquals(TEST_METADATA.getHandle(), caArrayFile.getDataHandle());
+        doAsserts(file, caArrayFile, FileTypeRegistry.MAGE_TAB_IDF, null, null, 0);
+    }
+
+    @Test
+    public void testAddKnownTypeWithParent() throws IOException, FileAccessException {
+        final File parentFile = File.createTempFile("parent", ".idf");
+        parentFile.deleteOnExit();
+        final CaArrayFile caArrayFileParent = this.fileAccessService.add(parentFile);
+        doAsserts(parentFile, caArrayFileParent, FileTypeRegistry.MAGE_TAB_IDF, null, null, 0);
+
+        final File childFile = File.createTempFile("child", ".idf");
+        childFile.deleteOnExit();
+        final CaArrayFile caArrayFileChild = this.fileAccessService.add(childFile, caArrayFileParent);
+        doAsserts(childFile, caArrayFileChild, FileTypeRegistry.MAGE_TAB_IDF, null, caArrayFileParent, 1);
     }
 
     @Test
@@ -188,12 +194,7 @@ public class FileAccessServiceTest extends AbstractServiceTest {
         final File file = File.createTempFile("pre", "ext");
         file.deleteOnExit();
         final CaArrayFile caArrayFile = this.fileAccessService.add(file, "testfile1.idf");
-        assertEquals("testfile1.idf", caArrayFile.getName());
-        assertEquals(FileStatus.UPLOADED, caArrayFile.getFileStatus());
-        assertEquals(FileTypeRegistry.MAGE_TAB_IDF, caArrayFile.getFileType());
-        assertEquals(TEST_METADATA.getUncompressedSize(), caArrayFile.getUncompressedSize());
-        assertEquals(TEST_METADATA.getCompressedSize(), caArrayFile.getCompressedSize());
-        assertEquals(TEST_METADATA.getHandle(), caArrayFile.getDataHandle());
+        doAsserts(file, caArrayFile, FileTypeRegistry.MAGE_TAB_IDF, "testfile1.idf", null, 0);
     }
 
     @Test
@@ -201,12 +202,42 @@ public class FileAccessServiceTest extends AbstractServiceTest {
         final String contents = "test";
         final CaArrayFile caArrayFile =
                 this.fileAccessService.add(new ByteArrayInputStream(contents.getBytes()), "testfile1.idf");
-        assertEquals("testfile1.idf", caArrayFile.getName());
+        doAsserts(null, caArrayFile, FileTypeRegistry.MAGE_TAB_IDF, "testfile1.idf", null, 0);
+    }
+
+    private void doAsserts(File file, CaArrayFile caArrayFile, FileType expectedFileType,
+            String expectedFilename, CaArrayFile parentFile, int expectedNumberOfChildren) {
+        if (file != null && expectedFilename == null) {
+            assertEquals(file.getName(), caArrayFile.getName());
+        } else {
+            assertEquals(expectedFilename, caArrayFile.getName());
+        }
+        if (expectedFileType == null) {
+            assertNull(caArrayFile.getFileType());
+        } else {
+            assertEquals(expectedFileType, caArrayFile.getFileType());
+        }
+
         assertEquals(FileStatus.UPLOADED, caArrayFile.getFileStatus());
-        assertEquals(FileTypeRegistry.MAGE_TAB_IDF, caArrayFile.getFileType());
         assertEquals(TEST_METADATA.getUncompressedSize(), caArrayFile.getUncompressedSize());
         assertEquals(TEST_METADATA.getCompressedSize(), caArrayFile.getCompressedSize());
         assertEquals(TEST_METADATA.getHandle(), caArrayFile.getDataHandle());
+
+        if (parentFile != null) {
+            assertEquals(caArrayFile.getParent().getId(), parentFile.getId());
+            assertEquals(caArrayFile.getParent().getName(), parentFile.getName());
+            assertEquals(caArrayFile.getParent(), parentFile);
+            if (expectedNumberOfChildren <= 0) {
+                assertFalse(caArrayFile.getParent().hasChildren());
+                assertFalse(parentFile.hasChildren());
+            } else {
+                assertTrue(caArrayFile.getParent().hasChildren());
+                assertTrue(parentFile.hasChildren());
+
+                assertEquals(expectedNumberOfChildren, caArrayFile.getParent().getChildren().size());
+                assertEquals(expectedNumberOfChildren, parentFile.getChildren().size());
+            }
+        }
     }
 
     @Test
@@ -284,5 +315,67 @@ public class FileAccessServiceTest extends AbstractServiceTest {
         assertTrue(h.getRawDataCollection().isEmpty());
         verify(this.fileDao).remove(f);
         verify(this.arrayDao).remove(ad);
+    }
+
+    @Test
+    public void testRemoveParentFile() {
+         testRemoveParentOrChildFile(true);
+    }
+
+    @Test
+    public void testRemoveChildFile() {
+        testRemoveParentOrChildFile(false);
+    }
+
+    private void testRemoveParentOrChildFile(boolean removeParentFile) {
+        final Project p = new Project();
+        p.setId(1L);
+
+        final CaArrayFile parentFile = getCaArrayFile(p, "Parent File", 1L, null);
+        final CaArrayFile childFile1 = getCaArrayFile(p, "Child File 1", 2L, parentFile);
+        final CaArrayFile childFile2 = getCaArrayFile(p, "Child File 2", 3L, parentFile);
+
+        when(this.fileDao.getDeletableFiles(1L)).thenReturn(Lists.newArrayList(parentFile, childFile1, childFile2));
+        when(this.arrayDao.getArrayData(anyLong())).thenReturn(null);
+
+        CaArrayFile fileToRemove = removeParentFile ? parentFile : childFile1;
+        final boolean removed = this.fileAccessService.remove(fileToRemove);
+        assertTrue(removed);
+
+        if (removeParentFile) {
+            assertTrue(p.getFiles().isEmpty());
+            verify(this.fileDao).remove(parentFile);
+            verify(this.fileDao).remove(childFile1);
+            verify(this.fileDao).remove(childFile2);
+        } else {
+            assertFalse(p.getFiles().isEmpty());
+            assertEquals(2, p.getFiles().size());
+
+            assertFalse(p.getFiles().contains(childFile1));
+            assertTrue(p.getFiles().contains(parentFile));
+            assertTrue(p.getFiles().contains(childFile2));
+
+            assertTrue(parentFile.hasChildren());
+            assertEquals(1, parentFile.getChildren().size());
+            assertFalse(parentFile.getChildren().contains(childFile1));
+            assertTrue(parentFile.getChildren().contains(childFile2));
+
+            verify(this.fileDao).remove(childFile1);
+            verify(this.fileDao, never()).remove(parentFile);
+            verify(this.fileDao, never()).remove(childFile2);
+        }
+    }
+
+    private CaArrayFile getCaArrayFile(Project p, String filename, Long id, CaArrayFile parentFile) {
+        final CaArrayFile caArrayFile = parentFile == null ? new CaArrayFile() : new CaArrayFile(parentFile);
+        caArrayFile.setName(filename);
+        caArrayFile.setId(id);
+        p.getFiles().add(caArrayFile);
+        caArrayFile.setProject(p);
+        if (parentFile != null) {
+            parentFile.addChild(caArrayFile);
+        }
+
+        return caArrayFile;
     }
 }

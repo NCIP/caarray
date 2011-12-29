@@ -93,6 +93,8 @@ import gov.nih.nci.caarray.validation.FileValidationResult;
 import java.net.URI;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -100,12 +102,14 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
@@ -132,13 +136,31 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
     private long uncompressedSize;
     private long compressedSize;
     private URI dataHandle;
+    private CaArrayFile parent;
+    private Set<CaArrayFile> children = new HashSet<CaArrayFile>();
 
     @Inject
     private static transient FileTypeRegistry typeRegistry;
 
     /**
+     * Default blank constructor.
+     */
+    public CaArrayFile() {
+        super();
+    }
+
+    /**
+     * Creates a CaArrayFile with a parent.
+     * @param parent the parent file.
+     */
+    public CaArrayFile(CaArrayFile parent) {
+        super();
+        this.parent = parent;
+    }
+
+    /**
      * Gets the name.
-     * 
+     *
      * @return the name
      */
     @Column(length = DEFAULT_STRING_COLUMN_SIZE)
@@ -149,7 +171,7 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
 
     /**
      * Sets the name.
-     * 
+     *
      * @param name the name
      */
     public void setName(final String name) {
@@ -195,6 +217,16 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
     }
 
     /**
+     * Indicates if the CaArrayFile has children (child CaArrayFile's) or not.
+     *
+     * @return a boolean flag that indicates if the CaArrayFile has children or not.
+     */
+    @Transient
+    public boolean hasChildren() {
+        return !getChildren().isEmpty();
+    }
+
+    /**
      * @return the project
      */
     @ManyToOne
@@ -212,6 +244,41 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
     }
 
     /**
+     * @return the parent
+     */
+    @ManyToOne
+    @JoinColumn(name = "parent_id", nullable = true, updatable = false)
+    @ForeignKey(name = "caarrayfile_parent_fk")
+    public CaArrayFile getParent() {
+        return parent;
+    }
+
+    /**
+     * @param parent the parent to set
+     */
+    @SuppressWarnings("unused")
+    private void setParent(CaArrayFile parent) {
+        this.parent = parent;
+    }
+
+    /**
+     * @return the children
+     */
+    @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY)
+    @Cascade({ org.hibernate.annotations.CascadeType.ALL })
+    public Set<CaArrayFile> getChildren() {
+        return children;
+    }
+
+    /**
+     * @param children the children to set
+     */
+    @SuppressWarnings("unused")
+    private void setChildren(Set<CaArrayFile> children) {
+        this.children = children;
+    }
+
+    /**
      * @return the uncompressed size, in bytes
      */
     public long getUncompressedSize() {
@@ -221,7 +288,7 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
     /**
      * This method should generally not be called directly, as file size is calculated when data is written to the file.
      * It is left public to support use in query by example and tooling relying on JavaBean property conventions
-     * 
+     *
      * @param uncompressedSize the uncompressed size of the file, in bytes
      */
     public void setUncompressedSize(long uncompressedSize) {
@@ -238,7 +305,7 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
     /**
      * This method should generally not be called directly, as file size is calculated when data is written to the file.
      * It is left public to support use in query by example and tooling relying on JavaBean property conventions
-     * 
+     *
      * @param compressedSize the compressed size of the file, in bytes
      */
     public void setCompressedSize(long compressedSize) {
@@ -341,8 +408,8 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
 
     /**
      * Check whether this file is eligible to be imported.
-     * 
-     * 
+     *
+     *
      * @return boolean
      */
     @Transient
@@ -352,8 +419,8 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
 
     /**
      * Check whether this file is eligible to be validated.
-     * 
-     * 
+     *
+     *
      * @return boolean
      */
     @Transient
@@ -364,7 +431,7 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
     /**
      * Check whether this is a file that was previously imported but not parsed, but now can be imported and parsed (due
      * to a parsing FileHandler being implemented for it).
-     * 
+     *
      * @return true if the file can be re-imported and parsed, false otherwise.
      */
     @Transient
@@ -390,4 +457,23 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
     public void setDataHandle(URI dataHandle) {
         this.dataHandle = dataHandle;
     }
+
+    /**
+     * Adds a new child CaArrayFile.
+     *
+     * @param child the child CaArrayFile to add.
+     */
+    public void addChild(CaArrayFile child) {
+        getChildren().add(child);
+    }
+
+    /**
+     * Removes a child CaArrayFile.
+     *
+     * @param child the child CaArrayFile to remove.
+     */
+    public void removeChild(CaArrayFile child) {
+        getChildren().remove(child);
+    }
+
 }

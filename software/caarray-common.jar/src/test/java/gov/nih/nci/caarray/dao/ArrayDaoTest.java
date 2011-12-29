@@ -121,7 +121,7 @@ import org.junit.Test;
 
 /**
  * Unit tests for the Array DAO.
- * 
+ *
  * @author Rashmi Srinivasa
  */
 @SuppressWarnings("PMD")
@@ -489,6 +489,8 @@ public class ArrayDaoTest extends AbstractDaoTest {
 
             tx = this.hibernateHelper.beginTransaction();
             retrievedArrayDesign = this.daoObject.getArrayDesign(DUMMY_ARRAYDESIGN_2.getId());
+            assertEquals(1, retrievedArrayDesign.getDesignFiles().size());
+            assertTrue(retrievedArrayDesign.getDesignFiles().iterator().next().getChildren().isEmpty());
             assertNotNull(retrievedArrayDesign.getDesignDetails());
             this.daoObject.deleteArrayDesignDetails(retrievedArrayDesign);
             tx.commit();

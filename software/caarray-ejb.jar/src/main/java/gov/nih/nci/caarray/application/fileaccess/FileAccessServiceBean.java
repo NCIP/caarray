@@ -133,10 +133,10 @@ public class FileAccessServiceBean implements FileAccessService {
     /**
      * {@inheritDoc}
      */
-    @Override
     public CaArrayFile add(File file) {
         LogUtil.logSubsystemEntry(LOG, file);
-        final CaArrayFile caArrayFile = add(file, file.getName());
+        CaArrayFile parent = null;
+        final CaArrayFile caArrayFile = add(file, parent);
         LogUtil.logSubsystemExit(LOG);
         return caArrayFile;
     }
@@ -144,12 +144,31 @@ public class FileAccessServiceBean implements FileAccessService {
     /**
      * {@inheritDoc}
      */
-    @Override
+    public CaArrayFile add(File file, CaArrayFile parent) {
+        LogUtil.logSubsystemEntry(LOG, file, parent);
+        final CaArrayFile caArrayFile = add(file, file.getName(), parent);
+        LogUtil.logSubsystemExit(LOG);
+        return caArrayFile;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public CaArrayFile add(File file, String filename) {
-        LogUtil.logSubsystemEntry(LOG, file);
+        LogUtil.logSubsystemEntry(LOG, file, filename);
+        final CaArrayFile caArrayFile = add(file, filename, null);
+        LogUtil.logSubsystemExit(LOG);
+        return caArrayFile;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public CaArrayFile add(File file, String filename, CaArrayFile parent) {
+        LogUtil.logSubsystemEntry(LOG, file, filename, parent);
         try {
             final InputStream is = FileUtils.openInputStream(file);
-            final CaArrayFile caArrayFile = add(is, filename);
+            final CaArrayFile caArrayFile = add(is, filename, parent);
             IOUtils.closeQuietly(is);
             return caArrayFile;
         } catch (final IOException e) {
@@ -161,9 +180,15 @@ public class FileAccessServiceBean implements FileAccessService {
     /**
      * {@inheritDoc}
      */
-    @Override
     public CaArrayFile add(InputStream stream, String filename) {
-        final CaArrayFile caArrayFile = createCaArrayFile(filename);
+        return add(stream, filename, null);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public CaArrayFile add(InputStream stream, String filename, CaArrayFile parent) {
+        final CaArrayFile caArrayFile = createCaArrayFile(filename, parent);
         try {
             final StorageMetadata metadata = this.dataStorageFacade.addFile(stream, false);
             caArrayFile.setCompressedSize(metadata.getCompressedSize());
@@ -175,18 +200,23 @@ public class FileAccessServiceBean implements FileAccessService {
         return caArrayFile;
     }
 
-    private CaArrayFile createCaArrayFile(String filename) {
-        final CaArrayFile caArrayFile = new CaArrayFile();
+    private CaArrayFile createCaArrayFile(String filename, CaArrayFile parent) {
+        final CaArrayFile caArrayFile = new CaArrayFile(parent);
         caArrayFile.setFileStatus(FileStatus.UPLOADED);
         caArrayFile.setName(filename);
         caArrayFile.setFileType(this.typeRegistry.getTypeFromExtension(filename));
+
+        // Add the child to the parent.
+        if (parent != null) {
+            parent.addChild(caArrayFile);
+        }
+
         return caArrayFile;
     }
 
     /**
      * {@inheritDoc}
      */
-    @Override
     public boolean remove(CaArrayFile caArrayFile) {
         LogUtil.logSubsystemEntry(LOG, caArrayFile);
 
@@ -203,18 +233,28 @@ public class FileAccessServiceBean implements FileAccessService {
             this.arrayDao.remove(data);
         }
 
-        caArrayFile.getProject().getFiles().remove(caArrayFile);
-        this.fileDao.remove(caArrayFile);
+        for (CaArrayFile childFile : caArrayFile.getChildren()) {
+            removeFile(childFile);
+        }
+
+        if (caArrayFile.getParent() != null) {
+            caArrayFile.getParent().removeChild(caArrayFile);
+        }
+        removeFile(caArrayFile);
         // the data storage will get cleaned up by the reaper
 
         LogUtil.logSubsystemExit(LOG);
         return true;
     }
 
+    private void removeFile(CaArrayFile caArrayFile) {
+        caArrayFile.getProject().getFiles().remove(caArrayFile);
+        this.fileDao.remove(caArrayFile);
+    }
+
     /**
      * {@inheritDoc}
      */
-    @Override
     public void synchronizeDataStorage() {
         final Set<URI> references = getActiveReferences();
         LOG.debug("Currently active references:" + references);
