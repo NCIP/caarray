@@ -77,7 +77,7 @@
                                 </c:when>
                                 <c:otherwise>
                                     <tr>
-                                        <td class="tdLabel"><label class="label"><span class="required">*</span>Assay Type</label></td>
+                                        <td class="tdLabel"><label class="label">Assay Type<span class="required">*</span></label></td>
                                         <td>
                                             <c:forEach items="${arrayDesign.assayTypes}" var="currType" varStatus="status">
                                                 <c:if test="${!status.first}">, </c:if>${currType.name}
