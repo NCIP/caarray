@@ -547,31 +547,51 @@ public class MageTabExporterBean implements MageTabExporter {
     }
 
     private AbstractSampleDataRelationshipNode createNode(AbstractArrayData caarrayNode) {
+        return createNode(caarrayNode, allArrayDataFiles, allArrayDataMatrixFiles, 
+                allDerivedArrayDataMatrixFiles, allDerivedArrayDataFiles);
+    }
+
+    /**
+     * Create new relationship node based upon the incoming abstract array data.  Adds the created node
+     * to one of the sets, based upon node type (raw or derived) and whether the file is a data matrix
+     * (or not.)
+     * 
+     * @param caarrayNode incoming node
+     * @param arrayDataFiles raw non-matrix set
+     * @param arrayDataMatrixFiles raw matrix set
+     * @param derivedArrayDataMatrixFiles derived matrix set
+     * @param derivedArrayDataFiles derived non-matrix set
+     * @return the newly created node
+     */
+    static AbstractSampleDataRelationshipNode createNode(AbstractArrayData caarrayNode,
+            Set<ArrayDataFile> arrayDataFiles, Set<ArrayDataMatrixFile> arrayDataMatrixFiles,
+            Set<DerivedArrayDataMatrixFile> derivedArrayDataMatrixFiles, 
+            Set<DerivedArrayDataFile> derivedArrayDataFiles) {
         AbstractSampleDataRelationshipNode node = null;
         if (caarrayNode.getClass() == RawArrayData.class) {
             final CaArrayFile file = ((RawArrayData) caarrayNode).getDataFile();
             if (file == null || !file.getFileType().isDataMatrix()) {
                 node = new gov.nih.nci.caarray.magetab.sdrf.ArrayDataFile();
-                this.allArrayDataFiles.add((gov.nih.nci.caarray.magetab.sdrf.ArrayDataFile) node);
+                arrayDataFiles.add((gov.nih.nci.caarray.magetab.sdrf.ArrayDataFile) node);
             } else {
                 node = new gov.nih.nci.caarray.magetab.sdrf.ArrayDataMatrixFile();
-                this.allArrayDataMatrixFiles.add((gov.nih.nci.caarray.magetab.sdrf.ArrayDataMatrixFile) node);
+                arrayDataMatrixFiles.add((gov.nih.nci.caarray.magetab.sdrf.ArrayDataMatrixFile) node);
             }
         } else if (caarrayNode.getClass() == DerivedArrayData.class) {
             final FileType fileType = ((DerivedArrayData) caarrayNode).getDataFile().getFileType();
-            if (!fileType.isDataMatrix()) {
+            if (fileType.isDataMatrix()) {
                 node = new gov.nih.nci.caarray.magetab.sdrf.DerivedArrayDataMatrixFile();
-                this.allDerivedArrayDataMatrixFiles
-                        .add((gov.nih.nci.caarray.magetab.sdrf.DerivedArrayDataMatrixFile) node);
+                derivedArrayDataMatrixFiles
+                    .add((gov.nih.nci.caarray.magetab.sdrf.DerivedArrayDataMatrixFile) node);
             } else {
                 node = new gov.nih.nci.caarray.magetab.sdrf.DerivedArrayDataFile();
-                this.allDerivedArrayDataFiles.add((gov.nih.nci.caarray.magetab.sdrf.DerivedArrayDataFile) node);
+                derivedArrayDataFiles.add((gov.nih.nci.caarray.magetab.sdrf.DerivedArrayDataFile) node);
             }
         }
         node.setName(caarrayNode.getName());
         return node;
     }
-
+    
     /**
      * Compound key for node lookup and caching.
      */

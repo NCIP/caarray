@@ -1,12 +1,17 @@
 package gov.nih.nci.caarray.application.translation.magetab;
 
  import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import gov.nih.nci.caarray.application.AbstractServiceTest;
 import gov.nih.nci.caarray.domain.contact.Organization;
+import gov.nih.nci.caarray.domain.data.AbstractArrayData;
+import gov.nih.nci.caarray.domain.data.DerivedArrayData;
 import gov.nih.nci.caarray.domain.data.RawArrayData;
+import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.ExperimentOntology;
@@ -24,6 +29,11 @@ import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 import gov.nih.nci.caarray.magetab.MageTabOntologyCategory;
 import gov.nih.nci.caarray.magetab.idf.IdfRowType;
+import gov.nih.nci.caarray.magetab.sdrf.AbstractSampleDataRelationshipNode;
+import gov.nih.nci.caarray.magetab.sdrf.ArrayDataFile;
+import gov.nih.nci.caarray.magetab.sdrf.ArrayDataMatrixFile;
+import gov.nih.nci.caarray.magetab.sdrf.DerivedArrayDataFile;
+import gov.nih.nci.caarray.magetab.sdrf.DerivedArrayDataMatrixFile;
 import gov.nih.nci.caarray.magetab.sdrf.SdrfColumnType;
 
 import java.io.File;
@@ -247,6 +257,72 @@ public class MageTabExporterTest extends AbstractServiceTest {
         verifyExperimentOverview(reader);
         reader.close();
     }
+    
+    /**
+     * Create node method, array data.
+     */
+    @Test
+    public void createArrayData() {
+        assertCreateNode(new RawArrayData(), Boolean.FALSE, new int[] {1, 0, 0, 0});
+    }
+    
+    /**
+     * Create node method, array data with a null file.
+     */
+    @Test
+    public void createArrayDataNullFile() {
+        assertCreateNode(new RawArrayData(), null, new int[] {1, 0, 0, 0});
+    }
+    
+    /**
+     * Create node method, array data matrix.
+     */
+    @Test
+    public void createArrayDataMatrix() {
+        assertCreateNode(new RawArrayData(), Boolean.TRUE, new int[] {0, 1, 0, 0});
+    }
+    
+    /**
+     * Create node method, derived array data.
+     */
+    @Test
+    public void createDerivedArrayData() {
+        assertCreateNode(new DerivedArrayData(), Boolean.FALSE, new int[] {0, 0, 1, 0});
+    }
+    
+    /**
+     * Create node method, derived array data matrix.
+     */
+    @Test
+    public void createDerivedArrayDataMatrix() {
+        assertCreateNode(new DerivedArrayData(), Boolean.TRUE, new int[] {0, 0, 0, 1});
+    }
+    
+    private void assertCreateNode(AbstractArrayData node, Boolean isDataMatrix, int[] expectedCounts) {
+        Set<ArrayDataFile> arrayDataFiles = new HashSet<ArrayDataFile>();
+        Set<ArrayDataMatrixFile> arrayDataMatrixFiles = new HashSet<ArrayDataMatrixFile>();
+        Set<DerivedArrayDataMatrixFile> derivedArrayDataMatrixFiles = new HashSet<DerivedArrayDataMatrixFile>();
+        Set<DerivedArrayDataFile> derivedArrayDataFiles = new HashSet<DerivedArrayDataFile>();
+
+        if (isDataMatrix != null) {
+            FileType fileType = mock(FileType.class);
+            when(fileType.isDataMatrix()).thenReturn(isDataMatrix);
+        
+            CaArrayFile dataFile = mock(CaArrayFile.class);
+            when(dataFile.getFileType()).thenReturn(fileType);
+        
+            node.setDataFile(dataFile);
+        }
+        
+        AbstractSampleDataRelationshipNode newNode = MageTabExporterBean.createNode(node, arrayDataFiles, 
+                arrayDataMatrixFiles, derivedArrayDataMatrixFiles, derivedArrayDataFiles);
+        assertNotNull(newNode);
+        assertEquals(expectedCounts[0], arrayDataFiles.size());
+        assertEquals(expectedCounts[1], arrayDataMatrixFiles.size());
+        assertEquals(expectedCounts[2], derivedArrayDataFiles.size());        
+        assertEquals(expectedCounts[3], derivedArrayDataMatrixFiles.size());
+    }
+    
 
     private Experiment createExperimentWithOneToOneChains() {
         Experiment experiment = new Experiment();
