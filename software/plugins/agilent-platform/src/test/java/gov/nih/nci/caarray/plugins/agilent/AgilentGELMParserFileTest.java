@@ -118,7 +118,6 @@ import org.junit.Test;
 public class AgilentGELMParserFileTest {
 
     private ArrayDesignBuilderImpl arrayDesignBuilder;
-    private ArrayDesignDetails arrayDesignDetails;
 
     @Test
     public void validatesTestAcghXmlFile() throws FileNotFoundException {
@@ -215,7 +214,6 @@ public class AgilentGELMParserFileTest {
         SearchDao searchDaoMock = mock(SearchDao.class);
         
         arrayDesignBuilder = new ArrayDesignBuilderImpl(arrayDesignDetailsMock, vocabularyDaoMock, arrayDaoMock, searchDaoMock);
-        arrayDesignDetails = arrayDesignBuilder.getArrayDesignDetails();
     }
 
 }
