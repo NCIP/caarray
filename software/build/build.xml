@@ -3373,6 +3373,7 @@
     <replaceregexp file="${db-standalone.build.dir}/default.properties" match="database.password=.*" replace="database.password=${database.password}" byline="true" />
     <replaceregexp file="${db-standalone.build.dir}/default.properties" match="database.url=.*" replace="database.url=${database.url}" byline="true" />
     <replaceregexp file="${db-standalone.build.dir}/default.properties" match="database.type=.*" replace="database.type=${database.type}" byline="true" />
+    <replaceregexp file="${db-standalone.build.dir}/default.properties" match="environment=.*" replace="environment=${environment}" byline="true" />
 
     <mkdir dir="${db-standalone.caarray-common.dir}" />
     <copy todir="${db-standalone.caarray-common.dir}" file="${caarray-common.jar}" />
