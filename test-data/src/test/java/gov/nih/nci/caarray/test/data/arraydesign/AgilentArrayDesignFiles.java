@@ -91,8 +91,11 @@ public class AgilentArrayDesignFiles {
         getResourceFile("/arraydesign/agilent/aCGH/022522_D_F_20090107.xml");
     
     public static final File TEST_SHORT_ACGH_XML =
-        getResourceFile("/arraydesign/agilent/aCGH/022522_D_F_20090107.short.xml");
-    
+            getResourceFile("/arraydesign/agilent/aCGH/022522_D_F_20090107.short.xml");
+        
+    public static final File TEST_SHORT_ACGH_XML_ERRORS =
+            getResourceFile("/arraydesign/agilent/aCGH/022522.short.witherrors.xml");
+        
     public static final File TEST_GENE_EXPRESSION_1_XML =
             getResourceFile("/arraydesign/agilent/gene_expression/015354_D_20061130.xml");
         
