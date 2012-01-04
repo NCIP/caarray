@@ -101,6 +101,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -152,9 +153,11 @@ public class IlluminaDataHandlerTest extends AbstractHandlerTest {
         assertEquals(3.6, signalColumn.getValues()[9], 0.00001);
         assertNotNull(hybridizationData.getHybridization().getArray());
         assertEquals(10, illuminaData.getDataSet().getDesignElementList().getDesignElements().size());
+        checkAnnotation(illuminaFile, 19);
     }
 
     @Test
+    @Ignore(value = "Not a unit test - low value over small data for build time penality")
     public void testIlluminaDataFull() throws InvalidDataFileException {
         final CaArrayFile illuminaFile =
                 getIlluminaCaArrayFile(IlluminaArrayDataFiles.HUMAN_WG6, ILLUMINA_HUMAN_WG_6_LSID_OBJECT_ID);
@@ -169,6 +172,7 @@ public class IlluminaDataHandlerTest extends AbstractHandlerTest {
         assertEquals(4, hybridizationData.getColumns().size());
         assertNotNull(hybridizationData.getHybridization().getArray());
         assertEquals(47293, illuminaData.getDataSet().getDesignElementList().getDesignElements().size());
+        checkAnnotation(illuminaFile, 19);
     }
 
     private CaArrayFile getIlluminaCaArrayFile(File file, String lsidObjectId) {
@@ -176,13 +180,5 @@ public class IlluminaDataHandlerTest extends AbstractHandlerTest {
         final ArrayDesign arrayDesign = this.daoFactoryStub.getArrayDao().getArrayDesign(null, null, lsidObjectId);
         caArrayFile.getProject().getExperiment().getArrayDesigns().add(arrayDesign);
         return caArrayFile;
-    }
-
-    @Test
-    public void testCreateAnnotationIllumina() throws InvalidDataFileException {
-        final CaArrayFile illuminaFile =
-                getIlluminaCaArrayFile(IlluminaArrayDataFiles.HUMAN_WG6, ILLUMINA_HUMAN_WG_6_LSID_OBJECT_ID);
-        this.arrayDataService.importData(illuminaFile, true, DEFAULT_IMPORT_OPTIONS);
-        checkAnnotation(illuminaFile, 19);
     }
 }
