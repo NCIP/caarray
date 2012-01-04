@@ -277,28 +277,8 @@ public class AgilentGELMTokenizerTest {
     }
     
     @Test
-    public void recognizesAllTokensInTestAcghXmlFile() throws FileNotFoundException {
-        recognizesAllTokensInFile(AgilentArrayDesignFiles.TEST_ACGH_XML);       
-    }
-    
-    @Test
-    public void recognizesAllTokensInTestGeneExpressionOneXmlFile() throws FileNotFoundException {
-        recognizesAllTokensInFile(AgilentArrayDesignFiles.TEST_GENE_EXPRESSION_1_XML);       
-    }
-    
-    @Test
     public void recognizesAllTokensInTestGeneExpressionTwoXmlFile() throws FileNotFoundException {
         recognizesAllTokensInFile(AgilentArrayDesignFiles.TEST_GENE_EXPRESSION_2_XML);       
-    }
-    
-    @Test
-    public void recognizesAllTokensInTestGeneExpressionThreeXmlFile() throws FileNotFoundException {
-        recognizesAllTokensInFile(AgilentArrayDesignFiles.TEST_GENE_EXPRESSION_3_XML);       
-    }
-    
-    @Test
-    public void recognizesAllTokensInTestMiRnaOneXmlFile() throws FileNotFoundException {
-        recognizesAllTokensInFile(AgilentArrayDesignFiles.TEST_MIRNA_1_XML);       
     }
     
     @Test
