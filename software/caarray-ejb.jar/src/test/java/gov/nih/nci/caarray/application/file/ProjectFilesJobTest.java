@@ -82,91 +82,162 @@
  */
 package gov.nih.nci.caarray.application.file;
 
-import gov.nih.nci.caarray.application.arraydata.DataImportOptions;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
-import gov.nih.nci.caarray.dao.ArrayDao;
+import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceBean;
 import gov.nih.nci.caarray.dao.ProjectDao;
 import gov.nih.nci.caarray.dao.SearchDao;
-import gov.nih.nci.caarray.domain.array.ArrayDesign;
+import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
+import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.security.authorization.domainobjects.User;
 
-import com.google.inject.Inject;
-import com.google.inject.Provider;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 
 /**
- * Creates jobs.
- * @author jscott
- *
+ * Verifies project files job functionality.
  */
-public class JobFactoryImpl implements JobFactory {
-    private final Provider<ArrayDao> arrayDaoProvider;
-    private final Provider<ArrayDataImporter> arrayDataImporterProvider;
-    private final Provider<MageTabImporter> mageTabImporterProvider;
-    private final Provider<ProjectDao> projectDaoProvider;
-    private final Provider<SearchDao> searchDaoProvider;
-    private final Provider<FileAccessService> fileAccessServiceProvider;
+public class ProjectFilesJobTest {
 
+    AbstractProjectFilesJob job;
+    @Mock Project project;
+    @Mock CaArrayFileSet fileSet;
+    @Mock ArrayDataImporter arrayDataImporter;
+    @Mock MageTabImporter mageTabImporter;
+    @Mock ProjectDao projectDao;
+    @Mock SearchDao searchDao;
+    @Mock FileAccessService fileAccessService;
     
-    /**
-     * @param arrayDaoProvider the Provider&lt;ArrayDao&gt; dependency
-     * @param arrayDataImporterProvider the Provider&lt;ArrayDataImporter&gt; dependency
-     * @param mageTabImporterProvider the Provider&lt;MageTabImporter&gt; dependency
-     * @param projectDaoProvider the Provider&lt;ProjectDao&gt; dependency
-     * @param searchDaoProvider the Provider&lt;SearchDao&gt; dependency
-     */
-    @Inject
-    @SuppressWarnings("PMD.ExcessiveParameterList")
-    // CHECKSTYLE:OFF more than 7 parameters are okay for injected constructor
-    public JobFactoryImpl(Provider<ArrayDao> arrayDaoProvider,
-            Provider<ArrayDataImporter> arrayDataImporterProvider, Provider<MageTabImporter> mageTabImporterProvider,
-            Provider<FileAccessService> fileAccessServiceProvider, Provider<ProjectDao> projectDaoProvider, 
-            Provider<SearchDao> searchDaoProvider) {
-    // CHECKSTYLE:ON
-        this.arrayDaoProvider = arrayDaoProvider;
-        this.arrayDataImporterProvider = arrayDataImporterProvider;
-        this.mageTabImporterProvider = mageTabImporterProvider;
-        this.fileAccessServiceProvider = fileAccessServiceProvider;
-        this.projectDaoProvider = projectDaoProvider;
-        this.searchDaoProvider = searchDaoProvider;
+    @SuppressWarnings("unchecked")
+    @Before
+    public void setUp() {
+        job = mock(AbstractProjectFilesJob.class, Mockito.CALLS_REAL_METHODS);
+        MockitoAnnotations.initMocks(this);
+        
+        setupProjectMock();
+        setupFileSet();
+
+        when(searchDao.retrieve(eq(Project.class), eq(1L))).thenReturn(project);
+        
+        List<CaArrayFile> value = new ArrayList<CaArrayFile>(fileSet.getFiles());
+        when(searchDao.retrieveByIds(eq(CaArrayFile.class), any(List.class))).thenReturn(value);
+        
+        job.init("testuser", project, fileSet, arrayDataImporter, mageTabImporter, 
+                 fileAccessService, projectDao, searchDao);
+    }
+
+    private void setupFileSet() {
+        CaArrayFile parent = mock(CaArrayFile.class);
+        when(parent.getId()).thenReturn(2L);
+        
+        CaArrayFile child = mock(CaArrayFile.class);
+        when(child.getId()).thenReturn(3L);
+
+        when(child.getParent()).thenReturn(parent);
+        when(parent.getChildren()).thenReturn(Collections.singleton(child));
+        
+        Set<CaArrayFile> files = new HashSet<CaArrayFile>();
+        files.add(parent);
+        files.add(child);
+        
+        when(fileSet.getFiles()).thenReturn(files);
+    }
+
+    private void setupProjectMock() {
+        when(project.getId()).thenReturn(1L);       
+        Experiment e = mock(Experiment.class);
+        when(e.getTitle()).thenReturn("experimentTitle");
+        when(project.getExperiment()).thenReturn(e);
     }
     
-    /**
-     * {@inheritDoc}
-     */
-    public AbstractFileManagementJob createArrayDesignFileImportJob(String user, ArrayDesign arrayDesign) {
-        return new ArrayDesignFileImportJob(user, arrayDesign, arrayDaoProvider.get());
+    @Test
+    public void construction() {
+        assertEquals("testuser", job.getOwnerName());
+        assertEquals("experimentTitle", job.getJobEntityName());
+        assertEquals(project.getId().longValue(), job.getJobEntityId());
+        assertEquals(fileSet.getFiles().size(), job.getFileSet().getFiles().size());
+        assertEquals(project, job.getProject());
+        assertEquals(mageTabImporter, job.getMageTabImporter());
+        assertEquals(projectDao, job.getProjectDao());
     }
     
-    /**
-     * {@inheritDoc}
-     */
-    public ProjectFilesImportJob createProjectFilesImportJob(String user, Project project, CaArrayFileSet fileSet,
-            DataImportOptions dataImportOptions) {
-        return new ProjectFilesImportJob(user, project, fileSet, dataImportOptions,
-                arrayDataImporterProvider.get(), mageTabImporterProvider.get(), 
-                fileAccessServiceProvider.get(), projectDaoProvider.get(),
-                searchDaoProvider.get());
+    @Test
+    public void hasReadAccess() {
+        User canRead = mock(User.class);
+        when(project.hasReadPermission(canRead)).thenReturn(true);
+        assertTrue(job.userHasReadAccess(canRead));
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    public ProjectFilesValidationJob createProjectFilesValidationJob(String user, Project project,
-            CaArrayFileSet fileSet) {
-        return new ProjectFilesValidationJob(user, project, fileSet,
-                arrayDataImporterProvider.get(), mageTabImporterProvider.get(), 
-                fileAccessServiceProvider.get(), projectDaoProvider.get(), searchDaoProvider.get());
+    
+    @Test
+    public void noReadAccess() {
+        User canRead = mock(User.class);
+        when(project.hasReadPermission(canRead)).thenReturn(false);
+        assertFalse(job.userHasReadAccess(canRead));
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    public ProjectFilesReparseJob createProjectFilesReparseJob(String user, Project project,
-            CaArrayFileSet fileSet) {
-        return new ProjectFilesReparseJob(user, project, fileSet,
-                arrayDataImporterProvider.get(), mageTabImporterProvider.get(), 
-                fileAccessServiceProvider.get(), projectDaoProvider.get(), searchDaoProvider.get());
+    
+    @Test
+    public void hasWriteAccess() {
+        User canWrite = mock(User.class);
+        when(project.hasWritePermission(canWrite)).thenReturn(true);
+        assertTrue(job.userHasWriteAccess(canWrite));
     }
-
+    
+    @Test
+    public void noWriteAccess() {
+        User noWrite = mock(User.class);
+        when(project.hasWritePermission(noWrite)).thenReturn(false);
+        assertFalse(job.userHasWriteAccess(noWrite));
+    }
+    
+    @Test
+    public void doValidate() throws InterruptedException {
+        job.doValidate(job.getFileSet());
+        verify(mageTabImporter).validateFiles(project, job.getFileSet());
+        verify(arrayDataImporter).validateFiles(job.getFileSet(), null, false);
+    }
+    
+    @Test
+    public void pullUpValidationMessagesOnExecute() {
+        doNothing().when(job).executeProjectFilesJob();
+        doReturn(fileSet).when(job).getFileSet();
+        job.doExecute();
+        verify(job).executeProjectFilesJob();
+        verify(fileSet).pullUpValidationMessages();
+    }
+    
+    @Test
+    public void deleteChildFilesOnExecute() {
+        doNothing().when(job).executeProjectFilesJob();
+        doReturn(fileSet).when(job).getFileSet();
+        job.doExecute();
+        
+        for (CaArrayFile file : fileSet.getFiles()) {
+            if (file.getParent() != null) {
+                verify(fileAccessService).remove(eq(file));
+            }
+        }
+        verifyNoMoreInteractions(fileAccessService);
+    }
+    
 }

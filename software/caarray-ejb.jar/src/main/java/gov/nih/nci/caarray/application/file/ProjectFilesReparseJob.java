@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.application.file;
 
+import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.dao.ProjectDao;
 import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
@@ -113,10 +114,10 @@ final class ProjectFilesReparseJob extends AbstractProjectFilesJob {
     // CHECKSTYLE:OFF more than 7 parameters are okay for injected constructor
     ProjectFilesReparseJob(String username, Project targetProject,
             CaArrayFileSet fileSet, ArrayDataImporter arrayDataImporter, MageTabImporter mageTabImporter,
-            ProjectDao projectDao, SearchDao searchDao) {
+            FileAccessService fileAccessService, ProjectDao projectDao, SearchDao searchDao) {
     // CHECKSTYLE:ON
         super(username, targetProject, fileSet,
-                arrayDataImporter, mageTabImporter, projectDao, searchDao);
+                arrayDataImporter, mageTabImporter, fileAccessService, projectDao, searchDao);
     }
 
     /**
@@ -127,7 +128,7 @@ final class ProjectFilesReparseJob extends AbstractProjectFilesJob {
     }
 
     @Override
-    protected void doExecute() {
+    protected void executeProjectFilesJob() {
         CaArrayFileSet fileSet = getFileSet();
         getArrayDataImporter().validateFiles(fileSet,
                 new MageTabDocumentSet(new MageTabFileSet(), new ValidatorSet()), true);

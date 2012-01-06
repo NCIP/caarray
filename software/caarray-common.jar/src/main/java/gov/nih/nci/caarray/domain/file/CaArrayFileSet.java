@@ -340,4 +340,12 @@ public class CaArrayFileSet implements Serializable {
         }
         return size;
     }
+
+    /**
+     * Validation messages on files that have parents are copies to the respective
+     * parents.  The parents do not have to be in the set.
+     */
+    public void pullUpValidationMessages() {
+        // TODO: in-progress work under ARRAY-2188
+    }
 }

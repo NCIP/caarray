@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.application.file;
 
+import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.dao.ProjectDao;
 import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
@@ -108,33 +109,64 @@ abstract class AbstractProjectFilesJob extends AbstractFileManagementJob {
 
     private static final long serialVersionUID = 1L;
 
-    private final long projectId;
-    private final Set<Long> fileIds = new HashSet<Long>();
-    private final ArrayDataImporter arrayDataImporter;
+    private long projectId;
+    private Set<Long> fileIds;
+    private ArrayDataImporter arrayDataImporter;
     private MageTabImporter mageTabImporter;
-    private final ProjectDao projectDao;
-    private final SearchDao searchDao;
-    private final String experimentName;
+    private FileAccessService fileAccessService;
+    private ProjectDao projectDao;
+    private SearchDao searchDao;
+    private String experimentName;
 
     @SuppressWarnings("PMD.ExcessiveParameterList")
     @Inject
     // CHECKSTYLE:OFF more than 7 parameters are okay for injected constructor
     AbstractProjectFilesJob(String username, Project targetProject,
             CaArrayFileSet fileSet, ArrayDataImporter arrayDataImporter, MageTabImporter mageTabImporter,
-            ProjectDao projectDao, SearchDao searchDao) {
+            FileAccessService fileAccessService, ProjectDao projectDao, SearchDao searchDao) {
     // CHECKSTYLE:ON
         super(username);
+        init(username, targetProject, fileSet, arrayDataImporter, mageTabImporter, fileAccessService,
+                projectDao, searchDao);
+    }
+
+    void init(String username, Project targetProject, CaArrayFileSet fileSet,
+            ArrayDataImporter arrayDataImporter,
+            MageTabImporter mageTabImporter, FileAccessService fileAccessService, ProjectDao projectDao,
+            SearchDao searchDao) {
+        setOwnerName(username);
         this.projectId = targetProject.getId();
         this.experimentName = targetProject.getExperiment().getTitle();
         this.arrayDataImporter = arrayDataImporter;
         this.mageTabImporter = mageTabImporter;
+        this.fileAccessService = fileAccessService;
         this.projectDao = projectDao;
         this.searchDao = searchDao;
+        this.fileIds = new HashSet<Long>();
         for (final CaArrayFile file : fileSet.getFiles()) {
             this.fileIds.add(file.getId());
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected final void doExecute() {
+        executeProjectFilesJob();
+        getFileSet().pullUpValidationMessages();
+        for (CaArrayFile file : getFileSet().getFiles()) {
+            if (file.getParent() != null) {
+                fileAccessService.remove(file);
+            }
+        }
+    }
+    
+    /**
+     * Primary execution method subclasses must implement.
+     */
+    protected abstract void executeProjectFilesJob();
+    
     /**
      * {@inheritDoc}
      */

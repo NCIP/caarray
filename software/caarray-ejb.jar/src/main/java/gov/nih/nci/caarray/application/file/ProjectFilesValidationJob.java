@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.application.file;
 
+import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.dao.ProjectDao;
 import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
@@ -103,10 +104,10 @@ final class ProjectFilesValidationJob extends AbstractProjectFilesJob {
     // CHECKSTYLE:OFF more than 7 parameters are okay for injected constructor
     ProjectFilesValidationJob(String username, Project project,
             CaArrayFileSet fileSet, ArrayDataImporter arrayDataImporter, MageTabImporter mageTabImporter,
-            ProjectDao projectDao, SearchDao searchDao) {
+            FileAccessService fileAccessService, ProjectDao projectDao, SearchDao searchDao) {
     // CHECKSTYLE:ON
         super(username, project, fileSet, arrayDataImporter, mageTabImporter,
-                projectDao, searchDao);
+                fileAccessService, projectDao, searchDao);
     }
 
     /**
@@ -117,7 +118,7 @@ final class ProjectFilesValidationJob extends AbstractProjectFilesJob {
     }
 
     @Override
-    protected void doExecute() {
+    protected void executeProjectFilesJob() {
         doValidate(getFileSet());
     }
 

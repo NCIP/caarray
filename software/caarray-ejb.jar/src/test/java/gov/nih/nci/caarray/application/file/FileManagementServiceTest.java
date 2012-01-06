@@ -65,6 +65,7 @@ import gov.nih.nci.caarray.application.arraydata.DataImportOptions;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignServiceStub;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
+import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceBean;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
 import gov.nih.nci.caarray.application.translation.magetab.MageTabTranslator;
 import gov.nih.nci.caarray.application.translation.magetab.MageTabTranslatorStub;
@@ -207,16 +208,19 @@ public class FileManagementServiceTest extends AbstractServiceTest {
                 new ArrayDataImporterImpl(arrayDataService, this.daoFactoryStub.getFileDao(),
                         this.daoFactoryStub.getProjectDao(), this.daoFactoryStub.getSearchDao());
 
+        final FileAccessService fileAccessService = mock(FileAccessService.class);
+        
         final Provider<ArrayDao> arrayDaoProvider = Providers.of(this.daoFactoryStub.getArrayDao());
         final Provider<ArrayDataImporter> arrayDataImporterProvider = Providers.of(arrayDataImporter);
         final Provider<MageTabImporter> mageTabeImporterProvider = Providers.of(mageTabImporter);
+        final Provider<FileAccessService> fileAccessServiceProvider = Providers.of(fileAccessService);
         final Provider<ProjectDao> projectDaoProvider = Providers.of(this.daoFactoryStub.getProjectDao());
         final Provider<SearchDao> searchDaoProvider = Providers.of(this.daoFactoryStub.getSearchDao());
         final Provider<UsernameHolder> usernameHolderProvider = Providers.of(mock(UsernameHolder.class));
 
         final JobFactory jobFactory =
                 new JobFactoryImpl(arrayDaoProvider, arrayDataImporterProvider,
-                        mageTabeImporterProvider, projectDaoProvider, searchDaoProvider);
+                        mageTabeImporterProvider, fileAccessServiceProvider, projectDaoProvider, searchDaoProvider);
 
         fileManagementServiceBean.setArrayDao(this.daoFactoryStub.getArrayDao());
         fileManagementServiceBean.setFileDao(this.daoFactoryStub.getFileDao());

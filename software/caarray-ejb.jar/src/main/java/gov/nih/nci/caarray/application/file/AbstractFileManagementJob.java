@@ -104,22 +104,33 @@ import com.google.inject.Inject;
  */
 public abstract class AbstractFileManagementJob implements Serializable, ExecutableJob {
 
-    private static final Logger LOG = Logger.getLogger(AbstractFileManagementJob.class);
     private static final long serialVersionUID = 1L;
     
-    private final String ownerName;
-    private final Date timeRequested;
+    private String ownerName;
+    private Date timeRequested;
     private Date timeStarted;
-    private int position;
     private UUID jobId;
     private JobStatus jobStatus;
 
     @Inject
     AbstractFileManagementJob(String username) {
-        this.ownerName = username;
-        this.timeRequested = new Date();
+        init(username);
     }
 
+    final void init(String username) {
+        setOwnerName(username);
+        this.timeRequested = new Date();
+    }
+    
+    /**
+     * Sets the ownerName.
+     * 
+     * @param ownerName new owner name
+     */
+    final void setOwnerName(String ownerName) {
+        this.ownerName = ownerName;
+    }
+    
     /**
      * {@inheritDoc}
      */
@@ -242,13 +253,6 @@ public abstract class AbstractFileManagementJob implements Serializable, Executa
         return timeStarted;
     }
     
-    /**
-     * @param position the position to set
-     */
-    public void setPosition(int position) {
-        this.position = position;
-    }
-
     /**
      * {@inheritDoc}
      */

@@ -82,91 +82,90 @@
  */
 package gov.nih.nci.caarray.application.file;
 
-import gov.nih.nci.caarray.application.arraydata.DataImportOptions;
-import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
-import gov.nih.nci.caarray.dao.ArrayDao;
-import gov.nih.nci.caarray.dao.ProjectDao;
-import gov.nih.nci.caarray.dao.SearchDao;
-import gov.nih.nci.caarray.domain.array.ArrayDesign;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
-import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.domain.file.FileStatus;
+import gov.nih.nci.caarray.domain.project.JobStatus;
 
-import com.google.inject.Inject;
-import com.google.inject.Provider;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 
 /**
- * Creates jobs.
- * @author jscott
- *
+ * Verifies the functionality of the abstract file management job.  Basic control methods
+ * and status checks.
  */
-public class JobFactoryImpl implements JobFactory {
-    private final Provider<ArrayDao> arrayDaoProvider;
-    private final Provider<ArrayDataImporter> arrayDataImporterProvider;
-    private final Provider<MageTabImporter> mageTabImporterProvider;
-    private final Provider<ProjectDao> projectDaoProvider;
-    private final Provider<SearchDao> searchDaoProvider;
-    private final Provider<FileAccessService> fileAccessServiceProvider;
+public class FileManagementJobTest {
 
+    AbstractFileManagementJob job = null;
+    @Mock CaArrayFileSet fileSet;
     
-    /**
-     * @param arrayDaoProvider the Provider&lt;ArrayDao&gt; dependency
-     * @param arrayDataImporterProvider the Provider&lt;ArrayDataImporter&gt; dependency
-     * @param mageTabImporterProvider the Provider&lt;MageTabImporter&gt; dependency
-     * @param projectDaoProvider the Provider&lt;ProjectDao&gt; dependency
-     * @param searchDaoProvider the Provider&lt;SearchDao&gt; dependency
-     */
-    @Inject
-    @SuppressWarnings("PMD.ExcessiveParameterList")
-    // CHECKSTYLE:OFF more than 7 parameters are okay for injected constructor
-    public JobFactoryImpl(Provider<ArrayDao> arrayDaoProvider,
-            Provider<ArrayDataImporter> arrayDataImporterProvider, Provider<MageTabImporter> mageTabImporterProvider,
-            Provider<FileAccessService> fileAccessServiceProvider, Provider<ProjectDao> projectDaoProvider, 
-            Provider<SearchDao> searchDaoProvider) {
-    // CHECKSTYLE:ON
-        this.arrayDaoProvider = arrayDaoProvider;
-        this.arrayDataImporterProvider = arrayDataImporterProvider;
-        this.mageTabImporterProvider = mageTabImporterProvider;
-        this.fileAccessServiceProvider = fileAccessServiceProvider;
-        this.projectDaoProvider = projectDaoProvider;
-        this.searchDaoProvider = searchDaoProvider;
+    @Before
+    public void setUp() {
+        job = mock(AbstractFileManagementJob.class, Mockito.CALLS_REAL_METHODS);
+        MockitoAnnotations.initMocks(this);
     }
     
-    /**
-     * {@inheritDoc}
-     */
-    public AbstractFileManagementJob createArrayDesignFileImportJob(String user, ArrayDesign arrayDesign) {
-        return new ArrayDesignFileImportJob(user, arrayDesign, arrayDaoProvider.get());
+    @Test
+    public void construction() {
+        job.init("foo");
+        assertEquals("foo", job.getOwnerName());
+        assertTrue(job.getTimeRequested().getTime() <= System.currentTimeMillis());
+        assertEquals(FileStatus.IN_QUEUE, job.getInQueueStatus());
+        assertNull(job.getJobStatus());
+        assertNull(job.getTimeStarted());
+        assertNull(job.getJobId());
+    }
+ 
+    @Test
+    public void execute() {
+        doNothing().when(job).doExecute();
+        job.execute();
+        assertTrue(job.getTimeStarted().getTime() <= System.currentTimeMillis());
+        verify(job).doExecute();
     }
     
-    /**
-     * {@inheritDoc}
-     */
-    public ProjectFilesImportJob createProjectFilesImportJob(String user, Project project, CaArrayFileSet fileSet,
-            DataImportOptions dataImportOptions) {
-        return new ProjectFilesImportJob(user, project, fileSet, dataImportOptions,
-                arrayDataImporterProvider.get(), mageTabImporterProvider.get(), 
-                fileAccessServiceProvider.get(), projectDaoProvider.get(),
-                searchDaoProvider.get());
+    @Test
+    public void markAsCancelledNoFiles() {
+        doReturn(null).when(job).getFileSet();
+        job.markAsCancelled();
+        assertEquals(JobStatus.CANCELLED, job.getJobStatus());
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public ProjectFilesValidationJob createProjectFilesValidationJob(String user, Project project,
-            CaArrayFileSet fileSet) {
-        return new ProjectFilesValidationJob(user, project, fileSet,
-                arrayDataImporterProvider.get(), mageTabImporterProvider.get(), 
-                fileAccessServiceProvider.get(), projectDaoProvider.get(), searchDaoProvider.get());
+    @Test
+    public void markAsCancelledWithFiles() {
+        doReturn(fileSet).when(job).getFileSet();
+        job.markAsCancelled();
+        assertEquals(JobStatus.CANCELLED, job.getJobStatus());
+        verify(fileSet).updateStatus(FileStatus.UPLOADED);
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    public ProjectFilesReparseJob createProjectFilesReparseJob(String user, Project project,
-            CaArrayFileSet fileSet) {
-        return new ProjectFilesReparseJob(user, project, fileSet,
-                arrayDataImporterProvider.get(), mageTabImporterProvider.get(), 
-                fileAccessServiceProvider.get(), projectDaoProvider.get(), searchDaoProvider.get());
+    
+    @Test
+    public void markInProgress() {
+        doReturn(fileSet).when(job).getFileSet();
+        doReturn(FileStatus.IMPORTING).when(job).getInProgressStatus();
+        job.markAsInProgress();
+        assertEquals(JobStatus.RUNNING, job.getJobStatus());
+        assertTrue(job.isInProgress());
+        verify(fileSet).updateStatus(FileStatus.IMPORTING);
     }
-
+    
+    @Test
+    public void markInQueue() {
+        doReturn(fileSet).when(job).getFileSet();
+        doReturn(FileStatus.IN_QUEUE).when(job).getInQueueStatus();
+        job.markAsInQueue();
+        assertEquals(JobStatus.IN_QUEUE, job.getJobStatus());
+        assertFalse(job.isInProgress());
+        verify(fileSet).updateStatus(FileStatus.IN_QUEUE);
+    }
 }

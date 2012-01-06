@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.application.file;
 
 import gov.nih.nci.caarray.application.arraydata.DataImportOptions;
+import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.dao.ProjectDao;
 import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
@@ -111,10 +112,11 @@ final class ProjectFilesImportJob extends AbstractProjectFilesJob {
     @Inject
     ProjectFilesImportJob(String username, Project targetProject,
             CaArrayFileSet fileSet, DataImportOptions dataImportOptions, ArrayDataImporter arrayDataImporter,
-            MageTabImporter mageTabImporter, ProjectDao projectDao, SearchDao searchDao) {
+            MageTabImporter mageTabImporter, FileAccessService fileAccessService, ProjectDao projectDao, 
+            SearchDao searchDao) {
     // CHECKSTYLE:ON
         super(username, targetProject, fileSet, arrayDataImporter,
-                mageTabImporter, projectDao, searchDao);
+                mageTabImporter, fileAccessService, projectDao, searchDao);
         this.dataImportOptions = dataImportOptions;
     }
 
@@ -126,7 +128,7 @@ final class ProjectFilesImportJob extends AbstractProjectFilesJob {
     }
 
     @Override
-    protected void doExecute() {
+    protected void executeProjectFilesJob() {
         CaArrayFileSet fileSet = getFileSet();
         doValidate(fileSet);
         final FileStatus status = getFileSet().getStatus();
