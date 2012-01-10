@@ -95,7 +95,7 @@ import org.apache.commons.lang.ArrayUtils;
  * Simple JavaBean class to hold values of various array data import options.
  * @author dkokotov
  */
-public class DataImportOptions implements Serializable {    
+public final class DataImportOptions implements Serializable {    
     private static final long serialVersionUID = 1L;
     private static final DataImportOptions AUTOCREATE_PER_FILE_INSTANCE = new DataImportOptions(
             DataImportTargetAnnotationOption.AUTOCREATE_PER_FILE, null, null, Arrays

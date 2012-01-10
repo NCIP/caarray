@@ -85,6 +85,7 @@ package gov.nih.nci.caarray.application.file;
 import java.io.IOException;
 import java.util.Set;
 
+import gov.nih.nci.caarray.application.ServiceLocatorFactory;
 import gov.nih.nci.caarray.application.arraydata.DataImportOptions;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.application.util.CaArrayFileSetSplitter;
@@ -111,6 +112,8 @@ class ProjectFilesImportJob extends AbstractProjectFilesJob {
     private static final Logger LOG = Logger.getLogger(ProjectFilesImportJob.class);
 
     private final DataImportOptions dataImportOptions;
+    private FileManagementService fileManagementService = ServiceLocatorFactory.getFileManagementService();
+    // TODO: work ongoing under ARRAY-2189 - this is a fake implementation that never splits
     private CaArrayFileSetSplitter splitter = new CaArrayFileSetSplitter() {
 
         @Override
@@ -143,22 +146,31 @@ class ProjectFilesImportJob extends AbstractProjectFilesJob {
 
     @Override
     protected void executeProjectFilesJob() {
-        CaArrayFileSet fileSet = getFileSet();
-        doValidate(fileSet);
-        final FileStatus status = getFileSet().getStatus();
-        if (status.equals(FileStatus.VALIDATED) || status.equals(FileStatus.VALIDATED_NOT_PARSED)) {
-            try {
-                Set<CaArrayFileSet> splits = splitter.split(fileSet);
-                if (splits.size() == 1) {
-                    importAnnotationAndData(fileSet);
-                } else {
-                    // create other jobs
-                }
-            } catch (IOException e) {
-                LOG.warn("Unable to split file set.  Falling back to non-split import.", e);
-                importAnnotationAndData(fileSet);
-            }
+        doValidate(getFileSet());
+        
+        FileStatus status = getFileSet().getStatus();
+        if (!FileStatus.VALIDATED.equals(status)) {
+            return;
         }
+        boolean didSplit = splitAndImport(getFileSet());
+        if (!didSplit) {
+            importAnnotationAndData(getFileSet());
+        }
+    }
+
+    private boolean splitAndImport(CaArrayFileSet fileSet) {
+        try {
+            Set<CaArrayFileSet> splits = splitter.split(getFileSet());
+            if (splits.size() != 1) {
+                for (CaArrayFileSet curSet : splits) {
+                    fileManagementService.importFiles(getProject(), curSet, dataImportOptions);
+                }
+                return true;
+            }
+        } catch (IOException e) {
+            LOG.warn("Unable to split file set.  Falling back to non-split import.", e);
+        }        
+        return false;
     }
 
     private void importAnnotationAndData(CaArrayFileSet fileSet) {
@@ -195,5 +207,14 @@ class ProjectFilesImportJob extends AbstractProjectFilesJob {
      */
     public void setSplitter(CaArrayFileSetSplitter fileSetSplitter) {
         splitter = fileSetSplitter;
+    }
+    
+    /**
+     * Injects an alternative file management service for testing purposes.
+     * 
+     * @param service implementation of service
+     */
+    public void setFileManagementService(FileManagementService service) {
+        fileManagementService = service;
     }
 }

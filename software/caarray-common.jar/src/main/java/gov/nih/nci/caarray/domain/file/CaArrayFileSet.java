@@ -85,7 +85,6 @@ package gov.nih.nci.caarray.domain.file;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.ValidationMessage;
-import gov.nih.nci.caarray.validation.ValidationResult;
 
 import java.io.File;
 import java.io.Serializable;

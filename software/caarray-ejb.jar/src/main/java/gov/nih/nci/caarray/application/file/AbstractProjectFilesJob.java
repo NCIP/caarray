@@ -130,18 +130,21 @@ abstract class AbstractProjectFilesJob extends AbstractFileManagementJob {
                 projectDao, searchDao);
     }
 
-    void init(String username, Project targetProject, CaArrayFileSet fileSet,
-            ArrayDataImporter arrayDataImporter,
-            MageTabImporter mageTabImporter, FileAccessService fileAccessService, ProjectDao projectDao,
-            SearchDao searchDao) {
+    @SuppressWarnings("PMD.ExcessiveParameterList")
+    // CHECKSTYLE:OFF more than 7 parameters are okay for injected constructor
+    final void init(String username, Project targetProject, CaArrayFileSet fileSet,
+            ArrayDataImporter arrayDataImptr,
+            MageTabImporter mageTabImptr, FileAccessService fileAccessSvc, ProjectDao pDao,
+            SearchDao sDao) {
+        // CHECKSTYLE:ON
         setOwnerName(username);
         this.projectId = targetProject.getId();
         this.experimentName = targetProject.getExperiment().getTitle();
-        this.arrayDataImporter = arrayDataImporter;
-        this.mageTabImporter = mageTabImporter;
-        this.fileAccessService = fileAccessService;
-        this.projectDao = projectDao;
-        this.searchDao = searchDao;
+        this.arrayDataImporter = arrayDataImptr;
+        this.mageTabImporter = mageTabImptr;
+        this.fileAccessService = fileAccessSvc;
+        this.projectDao = pDao;
+        this.searchDao = sDao;
         this.fileIds = new HashSet<Long>();
         for (final CaArrayFile file : fileSet.getFiles()) {
             this.fileIds.add(file.getId());

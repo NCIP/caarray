@@ -85,7 +85,8 @@ package gov.nih.nci.caarray.application.file;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
-import edu.emory.mathcs.backport.java.util.Collections;
+import gov.nih.nci.caarray.application.ServiceLocator;
+import gov.nih.nci.caarray.application.ServiceLocatorFactory;
 import gov.nih.nci.caarray.application.arraydata.DataImportOptions;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.application.util.CaArrayFileSetSplitter;
@@ -100,6 +101,7 @@ import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.magetab.MageTabParsingException;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -119,20 +121,24 @@ import com.google.common.collect.Sets;
 public class ProjectFilesImportJobTest {
 
     String username;
+    DataImportOptions dataImportOptions;
     @Mock Project project;
     @Mock CaArrayFileSet fileset;
-    @Mock DataImportOptions dataImportOptions;
     @Mock ArrayDataImporter arrayDataImporter;
     @Mock MageTabImporter mageTabImporter;
     @Mock FileAccessService fileAccessService;
     @Mock ProjectDao projectDao;
     @Mock SearchDao searchDao;
+    @Mock FileManagementService fileManagementService;
+    @Mock ServiceLocator serviceLocator;
     ProjectFilesImportJob job;
     
     @Before
     public void setUp() {
         username = "testuser";
+        dataImportOptions = DataImportOptions.getAutoCreatePerFileOptions();
         MockitoAnnotations.initMocks(this);
+        ServiceLocatorFactory.setLocator(serviceLocator);
         ProjectFilesJobTest.setupProjectMock(project);
         job = new ProjectFilesImportJob(username, project, fileset, dataImportOptions, 
                 arrayDataImporter, mageTabImporter, fileAccessService, projectDao, searchDao);
@@ -151,35 +157,41 @@ public class ProjectFilesImportJobTest {
     
     @Test
     public void basicNoSplitFlow() throws MageTabParsingException {
-        CaArrayFile file = checkValidate(FileStatus.VALIDATED);
+        CaArrayFile file = checkValidateExecuted(FileStatus.VALIDATED);
         assertImportDidHappen(file);
     }
 
     @Test
     public void validationFail() throws MageTabParsingException {
-        checkValidate(FileStatus.VALIDATION_ERRORS);
+        checkValidateExecuted(FileStatus.VALIDATION_ERRORS);
         assertImportDidNotHappen();
     }
     
     @Test
     public void splitNoImport() throws IOException, MageTabParsingException {
+        final CaArrayFileSet split1 = mock(CaArrayFileSet.class);
+        final CaArrayFileSet split2 = mock(CaArrayFileSet.class);
+        final Set<CaArrayFileSet> splits = Sets.newHashSet(split1, split2);
+        
         CaArrayFileSetSplitter fileSetSplitter = mock(CaArrayFileSetSplitter.class);
         when(fileSetSplitter.split(any(CaArrayFileSet.class))).thenAnswer(new Answer<Set<CaArrayFileSet>>() {
 
             @Override
             public Set<CaArrayFileSet> answer(InvocationOnMock invocation)
                     throws Throwable {
-                Object[] args = invocation.getArguments();
-                CaArrayFileSet input = (CaArrayFileSet) args[0];
-                CaArrayFileSet secondSplit = mock(CaArrayFileSet.class);
                 // two outputs -> 'split happened' -> no import
-                return Sets.newHashSet(input, secondSplit);
+                return splits;
             } 
         });
         
+        job.setFileManagementService(fileManagementService);
+        
         job.setSplitter(fileSetSplitter);
-        checkValidate(FileStatus.VALIDATED);
+        checkValidateExecuted(FileStatus.VALIDATED);
         assertImportDidNotHappen();
+        for (CaArrayFileSet fileSet : splits) {
+            verify(fileManagementService).importFiles(eq(project), eq(fileSet), eq(dataImportOptions));
+        }
     }
     
     @Test
@@ -187,7 +199,7 @@ public class ProjectFilesImportJobTest {
         CaArrayFileSetSplitter fileSetSplitter = mock(CaArrayFileSetSplitter.class);
         when(fileSetSplitter.split(any(CaArrayFileSet.class))).thenThrow(new IOException());
         job.setSplitter(fileSetSplitter);
-        CaArrayFile file = checkValidate(FileStatus.VALIDATED);
+        CaArrayFile file = checkValidateExecuted(FileStatus.VALIDATED);
         assertImportDidHappen(file);
     }
     
@@ -209,7 +221,7 @@ public class ProjectFilesImportJobTest {
     }
     
     @SuppressWarnings("unchecked")
-    private CaArrayFile checkValidate(FileStatus singleFileStatus) throws MageTabParsingException {
+    private CaArrayFile checkValidateExecuted(FileStatus singleFileStatus) throws MageTabParsingException {
         CaArrayFile file = mock(CaArrayFile.class);
         when(file.getFileStatus()).thenReturn(singleFileStatus);
         
