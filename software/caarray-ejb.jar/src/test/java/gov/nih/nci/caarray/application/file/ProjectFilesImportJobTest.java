@@ -83,179 +83,160 @@
 package gov.nih.nci.caarray.application.file;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
+import edu.emory.mathcs.backport.java.util.Collections;
+import gov.nih.nci.caarray.application.arraydata.DataImportOptions;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
+import gov.nih.nci.caarray.application.util.CaArrayFileSetSplitter;
 import gov.nih.nci.caarray.dao.ProjectDao;
 import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
-import gov.nih.nci.caarray.domain.project.Experiment;
+import gov.nih.nci.caarray.domain.file.FileStatus;
+import gov.nih.nci.caarray.domain.project.JobType;
 import gov.nih.nci.caarray.domain.project.Project;
-import gov.nih.nci.security.authorization.domainobjects.User;
+import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
+import gov.nih.nci.caarray.magetab.MageTabParsingException;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
+import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
+
+import com.google.common.collect.Sets;
 
 /**
- * Verifies project files job functionality.
+ * Verifies import job functionality.
  */
-public class ProjectFilesJobTest {
+public class ProjectFilesImportJobTest {
 
-    AbstractProjectFilesJob job;
+    String username;
     @Mock Project project;
-    @Mock CaArrayFileSet fileSet;
+    @Mock CaArrayFileSet fileset;
+    @Mock DataImportOptions dataImportOptions;
     @Mock ArrayDataImporter arrayDataImporter;
     @Mock MageTabImporter mageTabImporter;
+    @Mock FileAccessService fileAccessService;
     @Mock ProjectDao projectDao;
     @Mock SearchDao searchDao;
-    @Mock FileAccessService fileAccessService;
+    ProjectFilesImportJob job;
     
-    @SuppressWarnings("unchecked")
     @Before
     public void setUp() {
-        job = mock(AbstractProjectFilesJob.class, Mockito.CALLS_REAL_METHODS);
+        username = "testuser";
         MockitoAnnotations.initMocks(this);
+        ProjectFilesJobTest.setupProjectMock(project);
+        job = new ProjectFilesImportJob(username, project, fileset, dataImportOptions, 
+                arrayDataImporter, mageTabImporter, fileAccessService, projectDao, searchDao);
         
-        setupProjectMock(project);
-        setupFileSet();
+    }
+    
+    @Test
+    public void jobType() {
+        assertEquals(JobType.DATA_FILE_IMPORT, job.getJobType());
+    }
+    
+    @Test
+    public void inProgressStatus() {
+        assertEquals(FileStatus.IMPORTING, job.getInProgressStatus());
+    }
+    
+    @Test
+    public void basicNoSplitFlow() throws MageTabParsingException {
+        CaArrayFile file = checkValidate(FileStatus.VALIDATED);
+        assertImportDidHappen(file);
+    }
 
+    @Test
+    public void validationFail() throws MageTabParsingException {
+        checkValidate(FileStatus.VALIDATION_ERRORS);
+        assertImportDidNotHappen();
+    }
+    
+    @Test
+    public void splitNoImport() throws IOException, MageTabParsingException {
+        CaArrayFileSetSplitter fileSetSplitter = mock(CaArrayFileSetSplitter.class);
+        when(fileSetSplitter.split(any(CaArrayFileSet.class))).thenAnswer(new Answer<Set<CaArrayFileSet>>() {
+
+            @Override
+            public Set<CaArrayFileSet> answer(InvocationOnMock invocation)
+                    throws Throwable {
+                Object[] args = invocation.getArguments();
+                CaArrayFileSet input = (CaArrayFileSet) args[0];
+                CaArrayFileSet secondSplit = mock(CaArrayFileSet.class);
+                // two outputs -> 'split happened' -> no import
+                return Sets.newHashSet(input, secondSplit);
+            } 
+        });
+        
+        job.setSplitter(fileSetSplitter);
+        checkValidate(FileStatus.VALIDATED);
+        assertImportDidNotHappen();
+    }
+    
+    @Test
+    public void splitWithIOException() throws IOException, MageTabParsingException {
+        CaArrayFileSetSplitter fileSetSplitter = mock(CaArrayFileSetSplitter.class);
+        when(fileSetSplitter.split(any(CaArrayFileSet.class))).thenThrow(new IOException());
+        job.setSplitter(fileSetSplitter);
+        CaArrayFile file = checkValidate(FileStatus.VALIDATED);
+        assertImportDidHappen(file);
+    }
+    
+    private void assertImportDidHappen(CaArrayFile file)
+            throws MageTabParsingException {
+        verify(mageTabImporter).importFiles(eq(project), argThat(getCaArrayFileSetMatcher(file)));
+        verify(projectDao).flushSession();
+        verify(projectDao).clearSession();
+        verify(arrayDataImporter).importFiles(argThat(getCaArrayFileSetMatcher(file)), 
+                eq(dataImportOptions), any(MageTabDocumentSet.class));
+    }
+    
+    private void assertImportDidNotHappen() throws MageTabParsingException {
+        verify(mageTabImporter, never()).importFiles(any(Project.class), any(CaArrayFileSet.class));
+        verify(projectDao, never()).flushSession();
+        verify(projectDao, never()).clearSession();
+        verify(arrayDataImporter, never()).importFiles(any(CaArrayFileSet.class), 
+                any(DataImportOptions.class), any(MageTabDocumentSet.class));
+    }
+    
+    @SuppressWarnings("unchecked")
+    private CaArrayFile checkValidate(FileStatus singleFileStatus) throws MageTabParsingException {
+        CaArrayFile file = mock(CaArrayFile.class);
+        when(file.getFileStatus()).thenReturn(singleFileStatus);
+        
+        when(searchDao.retrieveByIds(eq(CaArrayFile.class), 
+                any(List.class))).thenReturn(Collections.singletonList(file));
         when(searchDao.retrieve(eq(Project.class), eq(1L))).thenReturn(project);
-        
-        List<CaArrayFile> value = new ArrayList<CaArrayFile>(fileSet.getFiles());
-        when(searchDao.retrieveByIds(eq(CaArrayFile.class), any(List.class))).thenReturn(value);
-        
-        job.init("testuser", project, fileSet, arrayDataImporter, mageTabImporter, 
-                 fileAccessService, projectDao, searchDao);
-    }
 
-    private void setupFileSet() {
-        CaArrayFile parent = mock(CaArrayFile.class);
-        when(parent.getId()).thenReturn(2L);
+        MageTabDocumentSet mageTabDocSet = mock(MageTabDocumentSet.class);
+        when(mageTabImporter.importFiles(eq(project), 
+                argThat(getCaArrayFileSetMatcher(file)))).thenReturn(mageTabDocSet);
         
-        CaArrayFile child = mock(CaArrayFile.class);
-        when(child.getId()).thenReturn(3L);
-
-        when(child.getParent()).thenReturn(parent);
-        when(parent.getChildren()).thenReturn(Collections.singleton(child));
+        job.executeProjectFilesJob();
         
-        Set<CaArrayFile> files = new HashSet<CaArrayFile>();
-        files.add(parent);
-        files.add(child);
-        
-        when(fileSet.getFiles()).thenReturn(files);
-    }
-
-    /**
-     * Creates reasonable mock project suitable for construction of a project files job.
-     * @param project mock project to set up
-     */
-    static void setupProjectMock(Project project) {
-        when(project.getId()).thenReturn(1L);       
-        Experiment e = mock(Experiment.class);
-        when(e.getTitle()).thenReturn("experimentTitle");
-        when(project.getExperiment()).thenReturn(e);
-    }
-    
-    @Test
-    public void construction() {
-        assertEquals("testuser", job.getOwnerName());
-        assertEquals("experimentTitle", job.getJobEntityName());
-        assertEquals(project.getId().longValue(), job.getJobEntityId());
-        assertEquals(fileSet.getFiles().size(), job.getFileSet().getFiles().size());
-        assertEquals(project, job.getProject());
-        assertEquals(mageTabImporter, job.getMageTabImporter());
-        assertEquals(projectDao, job.getProjectDao());
-    }
-    
-    @Test
-    public void hasReadAccess() {
-        User canRead = mock(User.class);
-        when(project.hasReadPermission(canRead)).thenReturn(true);
-        assertTrue(job.userHasReadAccess(canRead));
-    }
-    
-    @Test
-    public void noReadAccess() {
-        User canRead = mock(User.class);
-        when(project.hasReadPermission(canRead)).thenReturn(false);
-        assertFalse(job.userHasReadAccess(canRead));
-    }
-    
-    @Test
-    public void hasWriteAccess() {
-        User canWrite = mock(User.class);
-        when(project.hasWritePermission(canWrite)).thenReturn(true);
-        assertTrue(job.userHasWriteAccess(canWrite));
-    }
-    
-    @Test
-    public void noWriteAccess() {
-        User noWrite = mock(User.class);
-        when(project.hasWritePermission(noWrite)).thenReturn(false);
-        assertFalse(job.userHasWriteAccess(noWrite));
-    }
-    
-    @Test
-    public void doValidate() throws InterruptedException {
-        job.doValidate(job.getFileSet());
         verify(mageTabImporter).validateFiles(project, job.getFileSet());
         verify(arrayDataImporter).validateFiles(job.getFileSet(), null, false);
+        return file;
     }
     
-    @Test
-    public void pullUpValidationMessagesOnExecute() {
-        doNothing().when(job).executeProjectFilesJob();
-        doReturn(fileSet).when(job).getFileSet();
-        job.doExecute();
-        verify(job).executeProjectFilesJob();
-        verify(fileSet).pullUpValidationMessages();
-    }
-    
-    @Test
-    public void deleteChildFilesOnExecute() {
-        doNothing().when(job).executeProjectFilesJob();
-        doReturn(fileSet).when(job).getFileSet();
-        job.doExecute();
-        
-        for (CaArrayFile file : fileSet.getFiles()) {
-            if (file.getParent() != null) {
-                verify(fileAccessService).remove(eq(file));
+    private ArgumentMatcher<CaArrayFileSet> getCaArrayFileSetMatcher(final CaArrayFile expected) {
+        return new ArgumentMatcher<CaArrayFileSet>() {
+
+            @Override
+            public boolean matches(Object argument) {
+                CaArrayFileSet fileSet = (CaArrayFileSet) argument;
+                return fileSet.getFiles().size() == 1 && fileSet.getFiles().contains(expected);
             }
-        }
-        verifyNoMoreInteractions(fileAccessService);
+            
+        };
     }
-    
-    /**
-     * The hibernate flush mode for all jobs is COMMIT, which means that changes made
-     * during the job are not visible to queries without a flush.  This test verifies
-     * flush is called as part of the job management.  See the class for why this is
-     * a bit of a hack.
-     */
-    @Test
-    public void sessionFlushCalled() {
-        doNothing().when(job).executeProjectFilesJob();
-        job.doExecute();
-        
-        verify(projectDao).flushSession();
-        verifyNoMoreInteractions(projectDao);
-    }
-    
 }

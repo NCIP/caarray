@@ -110,7 +110,7 @@ import java.util.Set;
  * within them.
  */
 @SuppressWarnings("PMD.TooManyMethods")
-public final class MageTabDocumentSet implements Serializable {
+public class MageTabDocumentSet implements Serializable {
 
     private static final long serialVersionUID = -2836359210806454994L;
 

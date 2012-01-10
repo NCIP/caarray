@@ -82,8 +82,12 @@
  */
 package gov.nih.nci.caarray.application.file;
 
+import java.io.IOException;
+import java.util.Set;
+
 import gov.nih.nci.caarray.application.arraydata.DataImportOptions;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
+import gov.nih.nci.caarray.application.util.CaArrayFileSetSplitter;
 import gov.nih.nci.caarray.dao.ProjectDao;
 import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
@@ -95,17 +99,27 @@ import gov.nih.nci.caarray.magetab.MageTabParsingException;
 
 import org.apache.log4j.Logger;
 
+import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 
 /**
  * Encapsulates the functionality necessary for importing a set of files into a project.
  */
-final class ProjectFilesImportJob extends AbstractProjectFilesJob {
+class ProjectFilesImportJob extends AbstractProjectFilesJob {
 
     private static final long serialVersionUID = 1L;
     private static final Logger LOG = Logger.getLogger(ProjectFilesImportJob.class);
 
     private final DataImportOptions dataImportOptions;
+    private CaArrayFileSetSplitter splitter = new CaArrayFileSetSplitter() {
+
+        @Override
+        public Set<CaArrayFileSet> split(CaArrayFileSet largeFileSet)
+                throws IOException {
+            return Sets.newHashSet(largeFileSet);
+        }
+        
+    };
 
     // CHECKSTYLE:OFF more than 7 parameters are okay for injected constructor
     @SuppressWarnings("PMD.ExcessiveParameterList")
@@ -133,9 +147,23 @@ final class ProjectFilesImportJob extends AbstractProjectFilesJob {
         doValidate(fileSet);
         final FileStatus status = getFileSet().getStatus();
         if (status.equals(FileStatus.VALIDATED) || status.equals(FileStatus.VALIDATED_NOT_PARSED)) {
-            MageTabDocumentSet mageTabDocSet = importAnnotation(fileSet);
-            importArrayData(fileSet, mageTabDocSet);
+            try {
+                Set<CaArrayFileSet> splits = splitter.split(fileSet);
+                if (splits.size() == 1) {
+                    importAnnotationAndData(fileSet);
+                } else {
+                    // create other jobs
+                }
+            } catch (IOException e) {
+                LOG.warn("Unable to split file set.  Falling back to non-split import.", e);
+                importAnnotationAndData(fileSet);
+            }
         }
+    }
+
+    private void importAnnotationAndData(CaArrayFileSet fileSet) {
+        MageTabDocumentSet mageTabDocSet = importAnnotation(fileSet);
+        importArrayData(fileSet, mageTabDocSet);
     }
 
     private MageTabDocumentSet importAnnotation(CaArrayFileSet fileSet) {
@@ -160,4 +188,12 @@ final class ProjectFilesImportJob extends AbstractProjectFilesJob {
         return FileStatus.IMPORTING;
     }
 
+    /**
+     * Injects an alternative splitter for testing purposes.
+     * 
+     * @param fileSetSplitter implementation of splitter interface
+     */
+    public void setSplitter(CaArrayFileSetSplitter fileSetSplitter) {
+        splitter = fileSetSplitter;
+    }
 }
