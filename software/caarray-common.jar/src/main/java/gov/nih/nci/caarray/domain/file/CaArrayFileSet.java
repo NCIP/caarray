@@ -83,6 +83,9 @@
 package gov.nih.nci.caarray.domain.file;
 
 import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.validation.FileValidationResult;
+import gov.nih.nci.caarray.validation.ValidationMessage;
+import gov.nih.nci.caarray.validation.ValidationResult;
 
 import java.io.File;
 import java.io.Serializable;
@@ -346,6 +349,32 @@ public class CaArrayFileSet implements Serializable {
      * parents.  The parents do not have to be in the set.
      */
     public void pullUpValidationMessages() {
-        // TODO: in-progress work under ARRAY-2188
+        for (CaArrayFile file : getFiles()) {
+            pullUpSingleFileValidation(file);
+        }
+    }
+
+    private void pullUpSingleFileValidation(CaArrayFile file) {
+        if (needToPullUpFrom(file)) {
+            CaArrayFile parent = file.getParent();
+            FileValidationResult childResults = file.getValidationResult();
+            FileValidationResult parentResults = getOrCreateValdationResults(parent);
+            for (ValidationMessage message : childResults.getMessages()) {
+                parentResults.addMessage(new ValidationMessage(message));
+            }
+        }
+    }
+
+    private boolean needToPullUpFrom(CaArrayFile file) {
+        return file.getParent() != null 
+                && file.getValidationResult() != null 
+                && !file.getValidationResult().getMessages().isEmpty();
+    }
+    
+    private FileValidationResult getOrCreateValdationResults(CaArrayFile parent) {
+        if (parent.getValidationResult() == null) {
+            parent.setValidationResult(new FileValidationResult());
+        }
+        return parent.getValidationResult();
     }
 }

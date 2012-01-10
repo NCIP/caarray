@@ -96,7 +96,7 @@ import javax.persistence.Id;
  * A single entry in a <code>ValidationResult</code> that describes an issue and the location (if known).
  */
 @Entity
-public final class ValidationMessage implements Serializable, Comparable<ValidationMessage> {
+public class ValidationMessage implements Serializable, Comparable<ValidationMessage> {
 
     private static final long serialVersionUID = 8575821452264941994L;
 
@@ -124,6 +124,15 @@ public final class ValidationMessage implements Serializable, Comparable<Validat
         super();
         setType(type);
         setMessage(message);
+    }
+    
+    /**
+     * Copy constructor.
+     * 
+     * @param from message to take values from
+     */
+    public ValidationMessage(ValidationMessage from) {
+        this(from.getLine(), from.getColumn(), from.getType(), from.getMessage());
     }
 
     /**
