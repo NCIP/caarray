@@ -119,8 +119,18 @@ public class CaArrayFileSet implements Serializable {
     }
 
     /**
+     * @param projectId Id of the project that this file set is associated with
+     */
+    public CaArrayFileSet(Long projectId) {
+        if (projectId == null) {
+            throw new IllegalArgumentException("Project Id must be non-null");
+        }
+        this.projectId = projectId;
+    }
+
+    /**
      * Construct a new file set, with the same files and associated project.
-     * 
+     *
      * @param baseFileSet file set on which to base the new file set
      */
     public CaArrayFileSet(CaArrayFileSet baseFileSet) {
@@ -144,12 +154,12 @@ public class CaArrayFileSet implements Serializable {
 
     /**
      * Adds a file to the set.
-     * 
+     *
      * @param file the file to add
      */
     public void add(CaArrayFile file) {
         final Long fileProjectId = file.getProject() == null ? null : file.getProject().getId();
-        if (!ObjectUtils.equals(fileProjectId, this.projectId)) {
+        if (!ObjectUtils.equals(fileProjectId, this.getProjectId())) {
             throw new IllegalArgumentException("file's project and fileset project not the same");
         }
         this.files.add(file);
@@ -157,7 +167,7 @@ public class CaArrayFileSet implements Serializable {
 
     /**
      * Returns the contained files.
-     * 
+     *
      * @return the files.
      */
     public Set<CaArrayFile> getFiles() {
@@ -166,12 +176,12 @@ public class CaArrayFileSet implements Serializable {
 
     /**
      * Get a subset of CaArrayFile objects with file type specified.
-     * 
+     *
      * @param ft File type must not be null
      * @return set of CaArrayFile objects
      */
     public Set<CaArrayFile> getFilesByType(FileType ft) {
-        Preconditions.checkNotNull(ft);        
+        Preconditions.checkNotNull(ft);
         final Set<CaArrayFile> sdrfFiles = new HashSet<CaArrayFile>();
         for (final CaArrayFile fileIt : this.files) {
             if (ft.equals(fileIt.getFileType())) {
@@ -183,7 +193,7 @@ public class CaArrayFileSet implements Serializable {
 
     /**
      * Get a subset of CaArrayFile objects that are array data file types.
-     * 
+     *
      * @return set of CaArrayFile objects
      */
     public Set<CaArrayFile> getArrayDataFiles() {
@@ -198,7 +208,7 @@ public class CaArrayFileSet implements Serializable {
 
     /**
      * Returns the aggregate status of the file set.
-     * 
+     *
      * @return status of the set.
      */
     public FileStatus getStatus() {
@@ -238,7 +248,7 @@ public class CaArrayFileSet implements Serializable {
 
     /**
      * tells if the status is in the set.
-     * 
+     *
      * @param status the status.
      * @return true if it is in the set.
      */
@@ -253,7 +263,7 @@ public class CaArrayFileSet implements Serializable {
 
     /**
      * Adds a collection of files to this set.
-     * 
+     *
      * @param fileCollection files to add.
      */
     public void addAll(Collection<CaArrayFile> fileCollection) {
@@ -264,7 +274,7 @@ public class CaArrayFileSet implements Serializable {
 
     /**
      * Update the status of each file in this file set to the given status.
-     * 
+     *
      * @param status the new status which each file in this set should have.
      */
     public void updateStatus(FileStatus status) {
@@ -283,7 +293,7 @@ public class CaArrayFileSet implements Serializable {
 
     /**
      * Returns the <code>CaArrayFile</code> in the set corresponding to the given file object or null if no match.
-     * 
+     *
      * @param file get <code>CaArrayFile</code> for this file.
      * @return the matching <code>CaArrayFile</code>.
      */
@@ -298,7 +308,7 @@ public class CaArrayFileSet implements Serializable {
 
     /**
      * Returns true if this <code>CaArrayFile</code> wraps access to the given physical file.
-     * 
+     *
      * @param file check if this is the wrapped file
      * @return true if this is the wrapped file.
      */
@@ -308,7 +318,7 @@ public class CaArrayFileSet implements Serializable {
 
     /**
      * Returns the <code>CaArrayFile</code> in the set with the given name or null if no match.
-     * 
+     *
      * @param name the name of the file to find
      * @return the <code>CaArrayFile</code> with given name, or null if no such file exists in this set.
      */
@@ -365,15 +375,23 @@ public class CaArrayFileSet implements Serializable {
     }
 
     private boolean needToPullUpFrom(CaArrayFile file) {
-        return file.getParent() != null 
-                && file.getValidationResult() != null 
+        return file.getParent() != null
+                && file.getValidationResult() != null
                 && !file.getValidationResult().getMessages().isEmpty();
     }
-    
+
     private FileValidationResult getOrCreateValdationResults(CaArrayFile parent) {
         if (parent.getValidationResult() == null) {
             parent.setValidationResult(new FileValidationResult());
         }
         return parent.getValidationResult();
+    }
+
+    /**
+     * Returns a value to indicate if the fileset has been validated or not.
+     * @return a boolean value to indicate if the fileset has been validated or not.
+     */
+    public boolean isValidated() {
+        return getStatus().equals(FileStatus.VALIDATED) || getStatus().equals(FileStatus.VALIDATED_NOT_PARSED);
     }
 }

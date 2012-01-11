@@ -56,8 +56,7 @@ import java.io.IOException;
 import java.util.Set;
 
 /**
- * Splits a large CaArrayFileSet manageable chunks, based upon SDRF rows.  This is a utility
- * interface that depends on MageTabFileSetSplitter.
+ * Splits a large CaArrayFileSet into smaller manageable chunks.
  *
  * @author kkanchinadam
  */
@@ -65,7 +64,7 @@ public interface CaArrayFileSetSplitter {
 
     /**
      * Accepts a (potentially) large file set and creates a set of smaller file sets, with the appropriate
-     * CaArrayFile parent/child relationships.
+     * CaArrayFile parent/child relationships between SDRF files.
      *
      * <p>This method is null safe.  Null input results in null output.
      *
@@ -74,4 +73,5 @@ public interface CaArrayFileSetSplitter {
      * @throws IOException if temporary file management fails during the split
      */
     Set<CaArrayFileSet> split(CaArrayFileSet largeFileSet) throws IOException;
+
 }
