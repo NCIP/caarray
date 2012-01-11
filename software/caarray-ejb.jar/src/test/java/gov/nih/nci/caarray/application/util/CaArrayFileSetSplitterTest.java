@@ -85,32 +85,23 @@ package gov.nih.nci.caarray.application.util;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import gov.nih.nci.caarray.application.file.CaArrayFileRef;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.dataStorage.DataStorageFacade;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
-import gov.nih.nci.caarray.domain.file.FileCategory;
-import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.file.FileTypeRegistry;
-import gov.nih.nci.caarray.domain.file.FileTypeRegistryImpl;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.magetab.MageTabFileSet;
 import gov.nih.nci.caarray.magetab.io.FileRef;
 import gov.nih.nci.caarray.magetab.splitter.MageTabFileSetSplitter;
-import gov.nih.nci.caarray.platforms.spi.DataFileHandler;
-import gov.nih.nci.caarray.platforms.spi.DesignFileHandler;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.Set;
 
-import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.google.common.collect.Sets;
@@ -124,12 +115,6 @@ import com.google.common.collect.Sets;
 public class CaArrayFileSetSplitterTest  {
     private CaArrayFileSetSplitterImpl cafsSplitter;
 
-    private Set<File> tmpFiles = new HashSet<File>();
-    private FileTypeRegistry fileTypeRegistry;
-
-    private static FileType DATAMATRIX_TYPE = new FileType("DATAMATRIX_TYPE", FileCategory.RAW_DATA, true, "DMT");
-    private static FileType NATIVE_TYPE = new FileType("NATIVE_TYPE", FileCategory.RAW_DATA, true, "NAT");
-
     private FileAccessService fileAccessService;
     private DataStorageFacade dataStorageFacade;
     private MageTabFileSetSplitter mageTabFileSetSplitter;
@@ -139,27 +124,10 @@ public class CaArrayFileSetSplitterTest  {
      */
     @Before
     public void setup() {
-        final DataFileHandler dataHandler = mock(DataFileHandler.class);
-        when(dataHandler.getSupportedTypes()).thenReturn(Sets.newHashSet(DATAMATRIX_TYPE, NATIVE_TYPE));
-
-        final DesignFileHandler designHandler = mock(DesignFileHandler.class);
-        fileTypeRegistry = new FileTypeRegistryImpl(Sets.newHashSet(dataHandler),
-                Sets.newHashSet(designHandler));
-        
         fileAccessService = mock(FileAccessService.class);
         dataStorageFacade = mock(DataStorageFacade.class);
         mageTabFileSetSplitter = mock(MageTabFileSetSplitter.class);
         cafsSplitter = new CaArrayFileSetSplitterImpl(fileAccessService, dataStorageFacade, mageTabFileSetSplitter);
-    }
-
-    /**
-     * Deletes the temporary files.
-     */
-    @After
-    public void cleanup() throws IOException {
-        for (File f : tmpFiles) {
-            f.delete();
-        }
     }
 
     @Test
@@ -209,6 +177,8 @@ public class CaArrayFileSetSplitterTest  {
 
         FileRef idfRef = new CaArrayFileRef(idfFile, null);
         FileRef splitSdrfFileRef = mock(FileRef.class);
+        File splitSdrfFile = mock(File.class);
+        when(splitSdrfFileRef.getAsFile()).thenReturn(splitSdrfFile );
 
         MageTabFileSet mtfs = mock(MageTabFileSet.class);
         when(mtfs.getAllFiles()).thenReturn(Sets.newHashSet(idfRef, splitSdrfFileRef));
@@ -221,5 +191,8 @@ public class CaArrayFileSetSplitterTest  {
         for(CaArrayFileSet fs : results) {
             assertEquals(2, fs.getFiles().size());
         }
+        
+        verify(mageTabFileSetSplitter).split(any(MageTabFileSet.class));
+        verify(fileAccessService).add(eq(splitSdrfFile), (CaArrayFile) isNull());
     }
 }
