@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.application.file;
 
 import gov.nih.nci.caarray.application.arraydata.DataImportOptions;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
+import gov.nih.nci.caarray.application.util.CaArrayFileSetSplitter;
 import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.dao.ProjectDao;
 import gov.nih.nci.caarray.dao.SearchDao;
@@ -106,6 +107,7 @@ public class JobFactoryImpl implements JobFactory {
     private final Provider<ProjectDao> projectDaoProvider;
     private final Provider<SearchDao> searchDaoProvider;
     private final Provider<FileAccessService> fileAccessServiceProvider;
+    private final Provider<CaArrayFileSetSplitter> caArrayFileSetSplitterProvider;
 
     
     /**
@@ -121,7 +123,7 @@ public class JobFactoryImpl implements JobFactory {
     public JobFactoryImpl(Provider<ArrayDao> arrayDaoProvider,
             Provider<ArrayDataImporter> arrayDataImporterProvider, Provider<MageTabImporter> mageTabImporterProvider,
             Provider<FileAccessService> fileAccessServiceProvider, Provider<ProjectDao> projectDaoProvider, 
-            Provider<SearchDao> searchDaoProvider) {
+            Provider<SearchDao> searchDaoProvider, Provider<CaArrayFileSetSplitter> caArrayFileSetSplitter) {
     // CHECKSTYLE:ON
         this.arrayDaoProvider = arrayDaoProvider;
         this.arrayDataImporterProvider = arrayDataImporterProvider;
@@ -129,6 +131,7 @@ public class JobFactoryImpl implements JobFactory {
         this.fileAccessServiceProvider = fileAccessServiceProvider;
         this.projectDaoProvider = projectDaoProvider;
         this.searchDaoProvider = searchDaoProvider;
+        this.caArrayFileSetSplitterProvider = caArrayFileSetSplitter;
     }
     
     /**
@@ -146,7 +149,7 @@ public class JobFactoryImpl implements JobFactory {
         return new ProjectFilesImportJob(user, project, fileSet, dataImportOptions,
                 arrayDataImporterProvider.get(), mageTabImporterProvider.get(), 
                 fileAccessServiceProvider.get(), projectDaoProvider.get(),
-                searchDaoProvider.get());
+                searchDaoProvider.get(), caArrayFileSetSplitterProvider.get());
     }
 
     /**

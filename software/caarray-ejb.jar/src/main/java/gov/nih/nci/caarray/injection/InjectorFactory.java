@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.injection;
 
 import gov.nih.nci.caarray.application.ApplicationModule;
 import gov.nih.nci.caarray.application.file.FileModule;
+import gov.nih.nci.caarray.application.util.UtilModule;
 import gov.nih.nci.caarray.dao.DaoModule;
 import gov.nih.nci.caarray.platforms.PlatformJtaTransactionModule;
 import gov.nih.nci.caarray.platforms.PlatformModule;
@@ -151,8 +152,6 @@ public final class InjectorFactory {
         InjectorSingletonHolder.injector = null;
     }
     
-    
-    
     /**
      * Intended for integration tests that need to override modules and create their own injectors.
      * 
@@ -162,7 +161,7 @@ public final class InjectorFactory {
         final Module[] modules =
                 new Module[] {new CaArrayEjbStaticInjectionModule(), new CaArrayHibernateHelperModule(),
                         new DaoModule(), new ServicesModule(), new FileModule(), new ApplicationModule(),
-                        PLATFORM_MODULE, platformTransactionMoudle };
+                        new UtilModule(), PLATFORM_MODULE, platformTransactionMoudle };
 
         return Modules.combine(modules);
     }

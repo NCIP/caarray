@@ -89,6 +89,7 @@ import gov.nih.nci.caarray.application.ServiceLocatorFactory;
 import gov.nih.nci.caarray.application.arraydata.DataImportOptions;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.application.util.CaArrayFileSetSplitter;
+import gov.nih.nci.caarray.application.util.CaArrayFileSetSplitterImpl;
 import gov.nih.nci.caarray.dao.ProjectDao;
 import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
@@ -114,15 +115,7 @@ class ProjectFilesImportJob extends AbstractProjectFilesJob {
     private final DataImportOptions dataImportOptions;
     private FileManagementService fileManagementService = ServiceLocatorFactory.getFileManagementService();
     // TODO: work ongoing under ARRAY-2189 - this is a fake implementation that never splits
-    private CaArrayFileSetSplitter splitter = new CaArrayFileSetSplitter() {
-
-        @Override
-        public Set<CaArrayFileSet> split(CaArrayFileSet largeFileSet)
-                throws IOException {
-            return Sets.newHashSet(largeFileSet);
-        }
-        
-    };
+    private CaArrayFileSetSplitter splitter;
 
     // CHECKSTYLE:OFF more than 7 parameters are okay for injected constructor
     @SuppressWarnings("PMD.ExcessiveParameterList")
@@ -130,11 +123,12 @@ class ProjectFilesImportJob extends AbstractProjectFilesJob {
     ProjectFilesImportJob(String username, Project targetProject,
             CaArrayFileSet fileSet, DataImportOptions dataImportOptions, ArrayDataImporter arrayDataImporter,
             MageTabImporter mageTabImporter, FileAccessService fileAccessService, ProjectDao projectDao, 
-            SearchDao searchDao) {
+            SearchDao searchDao, CaArrayFileSetSplitter splitter) {
     // CHECKSTYLE:ON
         super(username, targetProject, fileSet, arrayDataImporter,
                 mageTabImporter, fileAccessService, projectDao, searchDao);
         this.dataImportOptions = dataImportOptions;
+        this.splitter = splitter;
     }
 
     /**
@@ -200,15 +194,6 @@ class ProjectFilesImportJob extends AbstractProjectFilesJob {
         return FileStatus.IMPORTING;
     }
 
-    /**
-     * Injects an alternative splitter for testing purposes.
-     * 
-     * @param fileSetSplitter implementation of splitter interface
-     */
-    public void setSplitter(CaArrayFileSetSplitter fileSetSplitter) {
-        splitter = fileSetSplitter;
-    }
-    
     /**
      * Injects an alternative file management service for testing purposes.
      * 

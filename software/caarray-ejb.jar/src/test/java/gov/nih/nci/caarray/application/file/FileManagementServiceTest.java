@@ -69,6 +69,7 @@ import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceBean;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
 import gov.nih.nci.caarray.application.translation.magetab.MageTabTranslator;
 import gov.nih.nci.caarray.application.translation.magetab.MageTabTranslatorStub;
+import gov.nih.nci.caarray.application.util.CaArrayFileSetSplitter;
 import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.dao.ProjectDao;
 import gov.nih.nci.caarray.dao.SearchDao;
@@ -217,10 +218,13 @@ public class FileManagementServiceTest extends AbstractServiceTest {
         final Provider<ProjectDao> projectDaoProvider = Providers.of(this.daoFactoryStub.getProjectDao());
         final Provider<SearchDao> searchDaoProvider = Providers.of(this.daoFactoryStub.getSearchDao());
         final Provider<UsernameHolder> usernameHolderProvider = Providers.of(mock(UsernameHolder.class));
-
+        final Provider<CaArrayFileSetSplitter> caArrayFileSetSplitterProvider = 
+                Providers.of(mock(CaArrayFileSetSplitter.class));
+        
         final JobFactory jobFactory =
                 new JobFactoryImpl(arrayDaoProvider, arrayDataImporterProvider,
-                        mageTabeImporterProvider, fileAccessServiceProvider, projectDaoProvider, searchDaoProvider);
+                        mageTabeImporterProvider, fileAccessServiceProvider, projectDaoProvider, searchDaoProvider,
+                        caArrayFileSetSplitterProvider);
 
         fileManagementServiceBean.setArrayDao(this.daoFactoryStub.getArrayDao());
         fileManagementServiceBean.setFileDao(this.daoFactoryStub.getFileDao());
