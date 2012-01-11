@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="software/grid/legacy/build/stubs-CaArraySvc/src"/>
-	<classpathentry kind="src" path="software/third-party"/>
 	<classpathentry kind="src" path="software/plugins/copynumber-platform/src/test/java"/>
 	<classpathentry kind="src" path="software/plugins/copynumber-platform/src/main/java"/>
 	<classpathentry kind="src" path="software/plugins/genepix-platform/src/main/java"/>
@@ -88,6 +87,5 @@
 	<classpathentry kind="lib" path="software/grid/v1_0/lib/caGrid-wsEnum-1.2.jar"/>
 	<classpathentry kind="lib" path="software/grid/v1_0/lib/caGrid-wsEnum-stubs-1.2.jar"/>
 	<classpathentry kind="con" path="org.apache.ivyde.eclipse.cpcontainer.IVYDE_CONTAINER/?ivyXmlPath=software%2Fmaster_build%2Fivy-caarray.xml&amp;confs=*&amp;ivySettingsPath=project%3A%2F%2F%2Fsoftware%2Fmaster_build%2Fivy-caarray-settings-eclipse.xml&amp;loadSettingsOnDemand=false&amp;propertyFiles="/>
-	<classpathentry kind="lib" path="software/master_build/.ivy2-caarray-cache/org.twdata.pkgscanner/package-scanner/jars/package-scanner-0.9.5-caarray.jar" sourcepath="software/third-party/org.twdata.package-scanner/src/main/java/org"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
