@@ -475,12 +475,4 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
     public void removeChild(CaArrayFile child) {
         getChildren().remove(child);
     }
-
-    /**
-     * @param typeRegistry the typeRegistry to set
-     */
-    public void setTypeRegistry(FileTypeRegistry typeRegistry) {
-        this.typeRegistry = typeRegistry;
-    }
-
 }

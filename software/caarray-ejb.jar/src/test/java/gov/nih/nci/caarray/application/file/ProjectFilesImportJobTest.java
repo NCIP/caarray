@@ -113,6 +113,7 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 
 /**
@@ -159,7 +160,15 @@ public class ProjectFilesImportJobTest {
     }
     
     @Test
-    public void basicNoSplitFlow() throws MageTabParsingException {
+    public void basicNoSplitFlow() throws MageTabParsingException, IOException {
+        when(fileSetSplitter.split(any(CaArrayFileSet.class))).thenAnswer(new Answer<Set<CaArrayFileSet>>() {
+            @Override
+            public Set<CaArrayFileSet> answer(InvocationOnMock invocation)
+                    throws Throwable {
+                return ImmutableSet.of((CaArrayFileSet) invocation.getArguments()[0]);
+            } 
+        });
+        
         CaArrayFile file = checkValidateExecuted(FileStatus.VALIDATED);
         assertImportDidHappen(file);
     }

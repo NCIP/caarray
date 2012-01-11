@@ -112,7 +112,6 @@ class ProjectFilesImportJob extends AbstractProjectFilesJob {
 
     private final DataImportOptions dataImportOptions;
     private FileManagementService fileManagementService = ServiceLocatorFactory.getFileManagementService();
-    // TODO work ongoing under ARRAY-2189 - this is a fake implementation that never splits
     private final CaArrayFileSetSplitter splitter;
 
     // CHECKSTYLE:OFF more than 7 parameters are okay for injected constructor
@@ -152,7 +151,7 @@ class ProjectFilesImportJob extends AbstractProjectFilesJob {
 
     private boolean splitAndImport(CaArrayFileSet fileSet) {
         try {
-            Set<CaArrayFileSet> splits = splitter.split(getFileSet());
+            Set<CaArrayFileSet> splits = splitter.split(fileSet);
             if (splits.size() != 1) {
                 for (CaArrayFileSet curSet : splits) {
                     fileManagementService.importFiles(getProject(), curSet, dataImportOptions);

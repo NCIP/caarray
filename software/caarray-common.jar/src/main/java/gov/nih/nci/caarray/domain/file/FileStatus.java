@@ -168,13 +168,13 @@ public enum FileStatus {
      * The set of FileStatuses in which a file can be imported.
      */    
     public static final Set<FileStatus> IMPORTABLE_FILE_STATUSES = EnumSet.of(UPLOADED, IMPORT_FAILED, VALIDATED,
-            VALIDATED_NOT_PARSED, VALIDATION_ERRORS);
+            VALIDATED_NOT_PARSED, VALIDATION_ERRORS, IN_QUEUE);
 
     /**
      * The set of FileStatuses in which a file can be validated.
      */    
     public static final Set<FileStatus> VALIDATABLE_FILE_STATUSES = EnumSet.of(UPLOADED, IMPORT_FAILED, VALIDATED,
-            VALIDATED_NOT_PARSED, VALIDATION_ERRORS);
+            VALIDATED_NOT_PARSED, VALIDATION_ERRORS, IN_QUEUE);
 
     /**
      * @return the deletable

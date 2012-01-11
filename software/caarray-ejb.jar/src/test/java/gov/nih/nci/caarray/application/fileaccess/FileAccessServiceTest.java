@@ -190,7 +190,8 @@ public class FileAccessServiceTest extends AbstractServiceTest {
         final File childFile = File.createTempFile("child", ".idf");
         childFile.deleteOnExit();
         final CaArrayFile caArrayFileChild = this.fileAccessService.add(childFile, caArrayFileParent);
-        doAsserts(childFile, caArrayFileChild, FileTypeRegistry.MAGE_TAB_IDF, null, caArrayFileParent, 1);
+        doAsserts(childFile, caArrayFileChild, FileTypeRegistry.MAGE_TAB_IDF, 
+                caArrayFileParent.getName(), caArrayFileParent, 1);
     }
 
     @Test

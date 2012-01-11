@@ -146,7 +146,8 @@ public class FileAccessServiceBean implements FileAccessService {
      */
     public CaArrayFile add(File file, CaArrayFile parent) {
         LogUtil.logSubsystemEntry(LOG, file, parent);
-        final CaArrayFile caArrayFile = add(file, file.getName(), parent);
+        String name = (parent == null) ? file.getName() : parent.getName();
+        final CaArrayFile caArrayFile = add(file, name, parent);
         LogUtil.logSubsystemExit(LOG);
         return caArrayFile;
     }
