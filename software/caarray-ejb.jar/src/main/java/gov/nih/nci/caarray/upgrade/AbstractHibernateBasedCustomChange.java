@@ -84,7 +84,9 @@ package gov.nih.nci.caarray.upgrade;
 
 import gov.nih.nci.caarray.application.ApplicationModule;
 import gov.nih.nci.caarray.application.file.FileModule;
+import gov.nih.nci.caarray.application.util.UtilModule;
 import gov.nih.nci.caarray.dao.DaoModule;
+import gov.nih.nci.caarray.magetab.MageTabModule;
 import gov.nih.nci.caarray.platforms.PlatformModule;
 import gov.nih.nci.caarray.services.ServicesModule;
 import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
@@ -151,6 +153,8 @@ public abstract class AbstractHibernateBasedCustomChange extends AbstractCustomC
                 new ServicesModule(),
                 new FileModule(),
                 new ApplicationModule(),
+                new MageTabModule(),
+                new UtilModule(),
                 PLATFORM_MODULE,
             };
     }
