@@ -68,6 +68,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.google.common.collect.Sets;
+import com.google.inject.Inject;
 
 /**
  * Basic implementation of the interface.
@@ -89,6 +90,7 @@ public class CaArrayFileSetSplitterImpl implements CaArrayFileSetSplitter {
      * @param fileAccessService the FileAccessService.
      * @param dataStorageFacade the DataStorageFacade.
      */
+    @Inject
     public CaArrayFileSetSplitterImpl(FileAccessService fileAccessService,
             DataStorageFacade dataStorageFacade, MageTabFileSetSplitter mageTabFileSetSplitter) {
         this.fileAccessService = fileAccessService;
