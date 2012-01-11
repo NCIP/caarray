@@ -82,14 +82,10 @@
  */
 package gov.nih.nci.caarray.application.file;
 
-import java.io.IOException;
-import java.util.Set;
-
 import gov.nih.nci.caarray.application.ServiceLocatorFactory;
 import gov.nih.nci.caarray.application.arraydata.DataImportOptions;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.application.util.CaArrayFileSetSplitter;
-import gov.nih.nci.caarray.application.util.CaArrayFileSetSplitterImpl;
 import gov.nih.nci.caarray.dao.ProjectDao;
 import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
@@ -99,9 +95,11 @@ import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.magetab.MageTabParsingException;
 
+import java.io.IOException;
+import java.util.Set;
+
 import org.apache.log4j.Logger;
 
-import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 
 /**
@@ -114,15 +112,15 @@ class ProjectFilesImportJob extends AbstractProjectFilesJob {
 
     private final DataImportOptions dataImportOptions;
     private FileManagementService fileManagementService = ServiceLocatorFactory.getFileManagementService();
-    // TODO: work ongoing under ARRAY-2189 - this is a fake implementation that never splits
-    private CaArrayFileSetSplitter splitter;
+    // TODO work ongoing under ARRAY-2189 - this is a fake implementation that never splits
+    private final CaArrayFileSetSplitter splitter;
 
     // CHECKSTYLE:OFF more than 7 parameters are okay for injected constructor
     @SuppressWarnings("PMD.ExcessiveParameterList")
     @Inject
     ProjectFilesImportJob(String username, Project targetProject,
             CaArrayFileSet fileSet, DataImportOptions dataImportOptions, ArrayDataImporter arrayDataImporter,
-            MageTabImporter mageTabImporter, FileAccessService fileAccessService, ProjectDao projectDao, 
+            MageTabImporter mageTabImporter, FileAccessService fileAccessService, ProjectDao projectDao,
             SearchDao searchDao, CaArrayFileSetSplitter splitter) {
     // CHECKSTYLE:ON
         super(username, targetProject, fileSet, arrayDataImporter,
@@ -141,7 +139,7 @@ class ProjectFilesImportJob extends AbstractProjectFilesJob {
     @Override
     protected void executeProjectFilesJob() {
         doValidate(getFileSet());
-        
+
         FileStatus status = getFileSet().getStatus();
         if (!FileStatus.VALIDATED.equals(status)) {
             return;
@@ -163,7 +161,7 @@ class ProjectFilesImportJob extends AbstractProjectFilesJob {
             }
         } catch (IOException e) {
             LOG.warn("Unable to split file set.  Falling back to non-split import.", e);
-        }        
+        }
         return false;
     }
 
@@ -173,7 +171,7 @@ class ProjectFilesImportJob extends AbstractProjectFilesJob {
     }
 
     private MageTabDocumentSet importAnnotation(CaArrayFileSet fileSet) {
-        MageTabDocumentSet mageTabDocSet = null; 
+        MageTabDocumentSet mageTabDocSet = null;
         try {
             mageTabDocSet = getMageTabImporter().importFiles(getProject(), fileSet);
         } catch (final MageTabParsingException e) {
@@ -196,7 +194,7 @@ class ProjectFilesImportJob extends AbstractProjectFilesJob {
 
     /**
      * Injects an alternative file management service for testing purposes.
-     * 
+     *
      * @param service implementation of service
      */
     public void setFileManagementService(FileManagementService service) {

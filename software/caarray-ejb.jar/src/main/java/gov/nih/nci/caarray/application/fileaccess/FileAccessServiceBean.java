@@ -206,8 +206,9 @@ public class FileAccessServiceBean implements FileAccessService {
         caArrayFile.setName(filename);
         caArrayFile.setFileType(this.typeRegistry.getTypeFromExtension(filename));
 
-        // Add the child to the parent.
+        // set the child file's project to that of the parent. Add the child to the parent.
         if (parent != null) {
+            caArrayFile.setProject(parent.getProject());
             parent.addChild(caArrayFile);
         }
 
