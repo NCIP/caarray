@@ -59,7 +59,6 @@ import gov.nih.nci.caarray.domain.file.FileTypeRegistry;
 import gov.nih.nci.caarray.magetab.MageTabFileSet;
 import gov.nih.nci.caarray.magetab.io.FileRef;
 import gov.nih.nci.caarray.magetab.splitter.MageTabFileSetSplitter;
-import gov.nih.nci.caarray.magetab.splitter.MageTabFileSetSplitterImpl;
 
 import java.io.File;
 import java.io.IOException;
@@ -67,8 +66,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-
-import org.apache.log4j.Logger;
 
 import com.google.common.collect.Sets;
 
@@ -79,13 +76,12 @@ import com.google.common.collect.Sets;
  */
 public class CaArrayFileSetSplitterImpl implements CaArrayFileSetSplitter {
 
-    private static final Logger LOG = Logger.getLogger(CaArrayFileSetSplitterImpl.class);
     private CaArrayFileSet inputFileSet;
     private Long projectId;
     private final DataStorageFacade dataStorageFacade;
     private final FileAccessService fileAccessService;
     private Map<FileRef, CaArrayFile> fileRefToCaArrayMap = new HashMap<FileRef, CaArrayFile>();
-    private MageTabFileSetSplitter mageTabFileSetSplitter;
+    private final MageTabFileSetSplitter mageTabFileSetSplitter;
 
 
     /**
@@ -94,25 +90,9 @@ public class CaArrayFileSetSplitterImpl implements CaArrayFileSetSplitter {
      * @param dataStorageFacade the DataStorageFacade.
      */
     public CaArrayFileSetSplitterImpl(FileAccessService fileAccessService,
-            DataStorageFacade dataStorageFacade) {
+            DataStorageFacade dataStorageFacade, MageTabFileSetSplitter mageTabFileSetSplitter) {
         this.fileAccessService = fileAccessService;
         this.dataStorageFacade = dataStorageFacade;
-
-        this.mageTabFileSetSplitter = new MageTabFileSetSplitterImpl();
-    }
-
-    /**
-     * @return the mageTabFileSetSplitter
-     */
-    public MageTabFileSetSplitter getMageTabFileSetSplitter() {
-        return mageTabFileSetSplitter;
-    }
-
-    /**
-     * @param mageTabFileSetSplitter the mageTabFileSetSplitter to set
-     */
-    public void setMageTabFileSetSplitter(
-            MageTabFileSetSplitter mageTabFileSetSplitter) {
         this.mageTabFileSetSplitter = mageTabFileSetSplitter;
     }
 
@@ -141,7 +121,7 @@ public class CaArrayFileSetSplitterImpl implements CaArrayFileSetSplitter {
 
         // get the large mage tab file set, and split.
         MageTabFileSet largeMageTabFileSet = getMageTabFileSet();
-        Set<MageTabFileSet> splitMageTabFileSet = this.getMageTabFileSetSplitter().split(largeMageTabFileSet);
+        Set<MageTabFileSet> splitMageTabFileSet = mageTabFileSetSplitter.split(largeMageTabFileSet);
 
         CaArrayFile parentSdrfCaArrayFile = getParentSdrfCaArrayFile();
         return handleNonNullSplitFileSet(splitMageTabFileSet, parentSdrfCaArrayFile);
@@ -193,7 +173,7 @@ public class CaArrayFileSetSplitterImpl implements CaArrayFileSetSplitter {
         File file = fileRef.getAsFile();
         CaArrayFile caArrayFile = this.fileAccessService.add(file, parent);
         // this is probably not needed, but update the fileRefToCaArrayMap anyways.
-        fileRefToCaArrayMap.put(fileRef,  caArrayFile);
+        fileRefToCaArrayMap.put(fileRef, caArrayFile);
         return caArrayFile;
     }
 

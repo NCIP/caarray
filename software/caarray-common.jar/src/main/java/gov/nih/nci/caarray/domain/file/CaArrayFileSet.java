@@ -160,7 +160,9 @@ public class CaArrayFileSet implements Serializable {
     public void add(CaArrayFile file) {
         final Long fileProjectId = file.getProject() == null ? null : file.getProject().getId();
         if (!ObjectUtils.equals(fileProjectId, this.getProjectId())) {
-            throw new IllegalArgumentException("file's project and fileset project not the same");
+            throw new IllegalArgumentException(
+                    String.format("file's project's (%s) and fileset project (%s) not the same", 
+                            fileProjectId, this.getProjectId()));
         }
         this.files.add(file);
     }

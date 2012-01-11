@@ -83,7 +83,6 @@
 package gov.nih.nci.caarray.application.util;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
@@ -100,7 +99,6 @@ import gov.nih.nci.caarray.domain.file.FileTypeRegistryImpl;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.magetab.MageTabFileSet;
 import gov.nih.nci.caarray.magetab.io.FileRef;
-import gov.nih.nci.caarray.magetab.io.JavaIOFileRef;
 import gov.nih.nci.caarray.magetab.splitter.MageTabFileSetSplitter;
 import gov.nih.nci.caarray.platforms.spi.DataFileHandler;
 import gov.nih.nci.caarray.platforms.spi.DesignFileHandler;
@@ -114,7 +112,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.mockito.Mock;
 
 import com.google.common.collect.Sets;
 
@@ -133,6 +130,10 @@ public class CaArrayFileSetSplitterTest  {
     private static FileType DATAMATRIX_TYPE = new FileType("DATAMATRIX_TYPE", FileCategory.RAW_DATA, true, "DMT");
     private static FileType NATIVE_TYPE = new FileType("NATIVE_TYPE", FileCategory.RAW_DATA, true, "NAT");
 
+    private FileAccessService fileAccessService;
+    private DataStorageFacade dataStorageFacade;
+    private MageTabFileSetSplitter mageTabFileSetSplitter;
+
     /**
      * setup init data.
      */
@@ -144,6 +145,11 @@ public class CaArrayFileSetSplitterTest  {
         final DesignFileHandler designHandler = mock(DesignFileHandler.class);
         fileTypeRegistry = new FileTypeRegistryImpl(Sets.newHashSet(dataHandler),
                 Sets.newHashSet(designHandler));
+        
+        fileAccessService = mock(FileAccessService.class);
+        dataStorageFacade = mock(DataStorageFacade.class);
+        mageTabFileSetSplitter = mock(MageTabFileSetSplitter.class);
+        cafsSplitter = new CaArrayFileSetSplitterImpl(fileAccessService, dataStorageFacade, mageTabFileSetSplitter);
     }
 
     /**
@@ -158,20 +164,12 @@ public class CaArrayFileSetSplitterTest  {
 
     @Test
     public void nullInputCaArrayFileSet() throws IOException {
-        FileAccessService fileAccessService = mock(FileAccessService.class);
-        DataStorageFacade dataStorageFacade = mock(DataStorageFacade.class);
-        cafsSplitter = new CaArrayFileSetSplitterImpl(fileAccessService, dataStorageFacade);
-
         Set<CaArrayFileSet> smallFileSets = cafsSplitter.split(null);
         assertNull(smallFileSets);
     }
 
     @Test
     public void  emptyInputCaArrayFileSet() throws IOException {
-        FileAccessService fileAccessService = mock(FileAccessService.class);
-        DataStorageFacade dataStorageFacade = mock(DataStorageFacade.class);
-        cafsSplitter = new CaArrayFileSetSplitterImpl(fileAccessService, dataStorageFacade);
-
         CaArrayFileSet arrayFileSet = mock(CaArrayFileSet.class);
         when(arrayFileSet.getFiles()).thenReturn(Sets.<CaArrayFile> newHashSet());
 
@@ -179,30 +177,23 @@ public class CaArrayFileSetSplitterTest  {
         MageTabFileSet mtfs = mock(MageTabFileSet.class);
         when(mtfs.getAllFiles()).thenReturn(Sets.<FileRef>newHashSet());
 
-        MageTabFileSetSplitter mtfsSplitter = mock(MageTabFileSetSplitter.class);
-        when(mtfsSplitter.split(any(MageTabFileSet.class))).thenReturn(Sets.newHashSet(mtfs));
-
-        cafsSplitter.setMageTabFileSetSplitter(mtfsSplitter);
+        when(mageTabFileSetSplitter.split(any(MageTabFileSet.class))).thenReturn(Sets.newHashSet(mtfs));
 
         Set<CaArrayFileSet> results = cafsSplitter.split(arrayFileSet);
         assertEquals(1, results.size());
-        for(CaArrayFileSet fs : results) {
+        for (CaArrayFileSet fs : results) {
             assertEquals(0, fs.getFiles().size());
         }
     }
 
     @Test
-    public void noSdrfs() throws IOException {
-        FileAccessService fileAccessService = mock(FileAccessService.class);
-        DataStorageFacade dataStorageFacade = mock(DataStorageFacade.class);
-        cafsSplitter = new CaArrayFileSetSplitterImpl(fileAccessService, dataStorageFacade);
+    public void oneSdrfs() throws IOException {
+        Project project = mock(Project.class);
+        when(project.getId()).thenReturn(1L);
 
         CaArrayFile childFile = mock(CaArrayFile.class);
+        when(childFile.getProject()).thenReturn(project);
         when(fileAccessService.add(any(File.class), any(CaArrayFile.class))).thenReturn(childFile);
-
-
-        Project project = mock(Project.class);
-        project.setId(1L);
 
         CaArrayFile sdrfFile = mock(CaArrayFile.class);
         when(sdrfFile.getFileType()).thenReturn(FileTypeRegistry.MAGE_TAB_SDRF);
@@ -222,28 +213,13 @@ public class CaArrayFileSetSplitterTest  {
         MageTabFileSet mtfs = mock(MageTabFileSet.class);
         when(mtfs.getAllFiles()).thenReturn(Sets.newHashSet(idfRef, splitSdrfFileRef));
 
-
-        MageTabFileSetSplitter mtfsSplitter = mock(MageTabFileSetSplitter.class);
         Set<MageTabFileSet> mageTabFileSets = Sets.newHashSet(mtfs);
-        when(mtfsSplitter.split(any(MageTabFileSet.class))).thenReturn(mageTabFileSets);
-
-        cafsSplitter.setMageTabFileSetSplitter(mtfsSplitter);
+        when(mageTabFileSetSplitter.split(any(MageTabFileSet.class))).thenReturn(mageTabFileSets);
 
         Set<CaArrayFileSet> results = cafsSplitter.split(arrayFileSet);
         assertEquals(1, results.size());
         for(CaArrayFileSet fs : results) {
-            assertEquals(0, fs.getFiles().size());
+            assertEquals(2, fs.getFiles().size());
         }
     }
-
-    @Ignore
-    public void oneSdrf() throws IOException {
-
-    }
-
-    @Ignore
-    public void multipleSdrfs() throws IOException {
-
-    }
-
 }
