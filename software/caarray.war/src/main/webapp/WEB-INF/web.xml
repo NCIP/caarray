@@ -475,23 +475,9 @@
     </listener>
     
     <servlet>
-        <servlet-name>dwr</servlet-name>
-        <servlet-class>uk.ltd.getahead.dwr.DWRServlet</servlet-class>
-        <init-param>
-            <param-name>debug</param-name>
-            <param-value>true</param-value>
-        </init-param>
-    </servlet>
-    
-    <servlet>
         <servlet-name>plugins</servlet-name>
         <servlet-class>com.atlassian.plugin.servlet.ServletModuleContainerServlet</servlet-class>
     </servlet>
-    
-    <servlet-mapping>
-        <servlet-name>dwr</servlet-name>
-        <url-pattern>/dwr/*</url-pattern>
-    </servlet-mapping>
     
     <servlet-mapping>
         <servlet-name>plugins</servlet-name>

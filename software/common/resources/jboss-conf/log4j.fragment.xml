@@ -1,4 +1,12 @@
     <!-- start caarray custom configuration -->
+
+    <!-- JBoss uses interceptors incorrectly, then outputs ugly logs.  Suppress.
+         https://issues.jboss.org/browse/EJBTHREE-1246 
+    -->
+    <category name="org.jboss.ejb3.interceptors">
+      <priority value="ERROR" />
+    </category>
+    
     <category name="org.hibernate">
       <priority value="WARN"/>
     </category>
