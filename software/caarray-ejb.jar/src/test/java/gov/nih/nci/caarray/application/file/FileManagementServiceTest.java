@@ -65,10 +65,10 @@ import gov.nih.nci.caarray.application.arraydata.DataImportOptions;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignService;
 import gov.nih.nci.caarray.application.arraydesign.ArrayDesignServiceStub;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
-import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceBean;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
 import gov.nih.nci.caarray.application.translation.magetab.MageTabTranslator;
 import gov.nih.nci.caarray.application.translation.magetab.MageTabTranslatorStub;
+import gov.nih.nci.caarray.application.util.CaArrayFileSetNonSplitter;
 import gov.nih.nci.caarray.application.util.CaArrayFileSetSplitter;
 import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.dao.ProjectDao;
@@ -218,8 +218,10 @@ public class FileManagementServiceTest extends AbstractServiceTest {
         final Provider<ProjectDao> projectDaoProvider = Providers.of(this.daoFactoryStub.getProjectDao());
         final Provider<SearchDao> searchDaoProvider = Providers.of(this.daoFactoryStub.getSearchDao());
         final Provider<UsernameHolder> usernameHolderProvider = Providers.of(mock(UsernameHolder.class));
+        
+        final CaArrayFileSetSplitter splitter = new CaArrayFileSetNonSplitter();
         final Provider<CaArrayFileSetSplitter> caArrayFileSetSplitterProvider = 
-                Providers.of(mock(CaArrayFileSetSplitter.class));
+                Providers.of(splitter);
         
         final JobFactory jobFactory =
                 new JobFactoryImpl(arrayDaoProvider, arrayDataImporterProvider,

@@ -50,23 +50,28 @@
  */
 package gov.nih.nci.caarray.application.util;
 
-import com.google.inject.AbstractModule;
+import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
+
+import java.io.IOException;
+import java.util.Set;
+
+import com.google.common.collect.ImmutableSet;
 
 /**
- * Guice module for the util package.
-
+ * Degenerate implementation that doesn't actually split, but rather returns
+ * the input back as the only member of the set.
+ * 
  * @author tparnell
  */
-public class UtilModule extends AbstractModule {
+public class CaArrayFileSetNonSplitter implements CaArrayFileSetSplitter {
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected void configure() {
-        // ARRAY-2189 - wiring with fake version for now.  Uncomment to use real version.
-//      bind(CaArrayFileSetSplitter.class).to(CaArrayFileSetSplitterImpl.class);
-        bind(CaArrayFileSetSplitter.class).to(CaArrayFileSetNonSplitter.class);
+    public Set<CaArrayFileSet> split(CaArrayFileSet largeFileSet)
+            throws IOException {
+        return ImmutableSet.of(largeFileSet);
     }
 
 }
