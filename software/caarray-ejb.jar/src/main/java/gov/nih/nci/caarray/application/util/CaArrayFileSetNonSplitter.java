@@ -55,23 +55,23 @@ import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import java.io.IOException;
 import java.util.Set;
 
+import com.google.common.collect.ImmutableSet;
+
 /**
- * Splits a large CaArrayFileSet into smaller manageable chunks.
- *
- * @author kkanchinadam
+ * Degenerate implementation that doesn't actually split, but rather returns
+ * the input back as the only member of the set.
+ * 
+ * @author tparnell
  */
-public interface CaArrayFileSetSplitter {
+public class CaArrayFileSetNonSplitter implements CaArrayFileSetSplitter {
 
     /**
-     * Accepts a (potentially) large file set and creates a set of smaller file sets, with the appropriate
-     * CaArrayFile parent/child relationships between SDRF files.
-     *
-     * <p>This method is null safe.  Null input results in null output.
-     *
-     * @param largeFileSet the input files to be split
-     * @return collection of files
-     * @throws IOException if temporary file management fails during the split
+     * {@inheritDoc}
      */
-    Set<CaArrayFileSet> split(CaArrayFileSet largeFileSet) throws IOException;
+    @Override
+    public Set<CaArrayFileSet> split(CaArrayFileSet largeFileSet)
+            throws IOException {
+        return ImmutableSet.of(largeFileSet);
+    }
 
 }

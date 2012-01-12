@@ -50,28 +50,23 @@
  */
 package gov.nih.nci.caarray.application.util;
 
-import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
-
-import java.io.IOException;
-import java.util.Set;
+import com.google.inject.AbstractModule;
 
 /**
- * Splits a large CaArrayFileSet into smaller manageable chunks.
- *
- * @author kkanchinadam
+ * Guice module for the util package.
+
+ * @author tparnell
  */
-public interface CaArrayFileSetSplitter {
+public class UtilModule extends AbstractModule {
 
     /**
-     * Accepts a (potentially) large file set and creates a set of smaller file sets, with the appropriate
-     * CaArrayFile parent/child relationships between SDRF files.
-     *
-     * <p>This method is null safe.  Null input results in null output.
-     *
-     * @param largeFileSet the input files to be split
-     * @return collection of files
-     * @throws IOException if temporary file management fails during the split
+     * {@inheritDoc}
      */
-    Set<CaArrayFileSet> split(CaArrayFileSet largeFileSet) throws IOException;
+    @Override
+    protected void configure() {
+        // ARRAY-2189 - wiring with fake version for now.  Uncomment to use real version.
+//      bind(CaArrayFileSetSplitter.class).to(CaArrayFileSetSplitterImpl.class);
+        bind(CaArrayFileSetSplitter.class).to(CaArrayFileSetNonSplitter.class);
+    }
 
 }

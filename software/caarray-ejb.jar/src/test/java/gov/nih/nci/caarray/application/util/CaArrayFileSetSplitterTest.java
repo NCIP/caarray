@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caArray
+ * source code form and machine readable, binary, object code form. The caarray-ejb-jar
  * Software was developed in conjunction with the National Cancer Institute
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent
  * government employees are authors, any rights in such works shall be subject
  * to Title 17 of the United States Code, section 105.
  *
- * This caArray Software License (the License) is between NCI and You. You (or
+ * This caarray-ejb-jar Software License (the License) is between NCI and You. You (or
  * Your) shall mean a person or an entity, and all other entities that control,
  * are controlled by, or are under common control with the entity. Control for
  * purposes of this definition means (i) the direct or indirect power to cause
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up,
  * no-charge, irrevocable, transferable and royalty-free right and license in
- * its rights in the caArray Software to (i) use, install, access, operate,
+ * its rights in the caarray-ejb-jar Software to (i) use, install, access, operate,
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caArray Software; (ii) distribute and
- * have distributed to and by third parties the caArray Software and any
+ * and prepare derivative works of the caarray-ejb-jar Software; (ii) distribute and
+ * have distributed to and by third parties the caarray-ejb-jar Software and any
  * modifications and derivative works thereof; and (iii) sublicense the
  * foregoing rights set out in (i) and (ii) to third parties, including the
  * right to license such rights to further third parties. For sake of clarity,
@@ -80,96 +80,119 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.application.file;
+package gov.nih.nci.caarray.application.util;
 
-import gov.nih.nci.caarray.application.arraydata.DataImportOptions;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.*;
+import gov.nih.nci.caarray.application.file.CaArrayFileRef;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
-import gov.nih.nci.caarray.application.util.CaArrayFileSetSplitter;
-import gov.nih.nci.caarray.dao.ArrayDao;
-import gov.nih.nci.caarray.dao.ProjectDao;
-import gov.nih.nci.caarray.dao.SearchDao;
-import gov.nih.nci.caarray.domain.array.ArrayDesign;
+import gov.nih.nci.caarray.dataStorage.DataStorageFacade;
+import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
+import gov.nih.nci.caarray.domain.file.FileTypeRegistry;
 import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.magetab.MageTabFileSet;
+import gov.nih.nci.caarray.magetab.io.FileRef;
+import gov.nih.nci.caarray.magetab.splitter.MageTabFileSetSplitter;
 
-import com.google.inject.Inject;
-import com.google.inject.Provider;
+import java.io.File;
+import java.io.IOException;
+import java.util.Set;
+
+import org.junit.Before;
+import org.junit.Test;
+
+import com.google.common.collect.Sets;
 
 /**
- * Creates jobs.
- * @author jscott
+ * Class to test the CaArrayFileSetSplitter
  *
+ * @author kkanchinadam
  */
-public class JobFactoryImpl implements JobFactory {
-    private final Provider<ArrayDao> arrayDaoProvider;
-    private final Provider<ArrayDataImporter> arrayDataImporterProvider;
-    private final Provider<MageTabImporter> mageTabImporterProvider;
-    private final Provider<ProjectDao> projectDaoProvider;
-    private final Provider<SearchDao> searchDaoProvider;
-    private final Provider<FileAccessService> fileAccessServiceProvider;
-    private final Provider<CaArrayFileSetSplitter> caArrayFileSetSplitterProvider;
 
-    
-    /**
-     * @param arrayDaoProvider the Provider&lt;ArrayDao&gt; dependency
-     * @param arrayDataImporterProvider the Provider&lt;ArrayDataImporter&gt; dependency
-     * @param mageTabImporterProvider the Provider&lt;MageTabImporter&gt; dependency
-     * @param projectDaoProvider the Provider&lt;ProjectDao&gt; dependency
-     * @param searchDaoProvider the Provider&lt;SearchDao&gt; dependency
-     */
-    @Inject
-    @SuppressWarnings("PMD.ExcessiveParameterList")
-    // CHECKSTYLE:OFF more than 7 parameters are okay for injected constructor
-    public JobFactoryImpl(Provider<ArrayDao> arrayDaoProvider,
-            Provider<ArrayDataImporter> arrayDataImporterProvider, Provider<MageTabImporter> mageTabImporterProvider,
-            Provider<FileAccessService> fileAccessServiceProvider, Provider<ProjectDao> projectDaoProvider, 
-            Provider<SearchDao> searchDaoProvider, Provider<CaArrayFileSetSplitter> caArrayFileSetSplitter) {
-    // CHECKSTYLE:ON
-        this.arrayDaoProvider = arrayDaoProvider;
-        this.arrayDataImporterProvider = arrayDataImporterProvider;
-        this.mageTabImporterProvider = mageTabImporterProvider;
-        this.fileAccessServiceProvider = fileAccessServiceProvider;
-        this.projectDaoProvider = projectDaoProvider;
-        this.searchDaoProvider = searchDaoProvider;
-        this.caArrayFileSetSplitterProvider = caArrayFileSetSplitter;
-    }
-    
-    /**
-     * {@inheritDoc}
-     */
-    public AbstractFileManagementJob createArrayDesignFileImportJob(String user, ArrayDesign arrayDesign) {
-        return new ArrayDesignFileImportJob(user, arrayDesign, arrayDaoProvider.get());
-    }
-    
-    /**
-     * {@inheritDoc}
-     */
-    public ProjectFilesImportJob createProjectFilesImportJob(String user, Project project, CaArrayFileSet fileSet,
-            DataImportOptions dataImportOptions) {
-        return new ProjectFilesImportJob(user, project, fileSet, dataImportOptions,
-                arrayDataImporterProvider.get(), mageTabImporterProvider.get(), 
-                fileAccessServiceProvider.get(), projectDaoProvider.get(),
-                searchDaoProvider.get(), caArrayFileSetSplitterProvider.get());
-    }
+public class CaArrayFileSetSplitterTest  {
+    private CaArrayFileSetSplitterImpl cafsSplitter;
+
+    private FileAccessService fileAccessService;
+    private DataStorageFacade dataStorageFacade;
+    private MageTabFileSetSplitter mageTabFileSetSplitter;
 
     /**
-     * {@inheritDoc}
+     * setup init data.
      */
-    public ProjectFilesValidationJob createProjectFilesValidationJob(String user, Project project,
-            CaArrayFileSet fileSet) {
-        return new ProjectFilesValidationJob(user, project, fileSet,
-                arrayDataImporterProvider.get(), mageTabImporterProvider.get(), 
-                fileAccessServiceProvider.get(), projectDaoProvider.get(), searchDaoProvider.get());
+    @Before
+    public void setup() {
+        fileAccessService = mock(FileAccessService.class);
+        dataStorageFacade = mock(DataStorageFacade.class);
+        mageTabFileSetSplitter = mock(MageTabFileSetSplitter.class);
+        cafsSplitter = new CaArrayFileSetSplitterImpl(fileAccessService, dataStorageFacade, mageTabFileSetSplitter);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public ProjectFilesReparseJob createProjectFilesReparseJob(String user, Project project,
-            CaArrayFileSet fileSet) {
-        return new ProjectFilesReparseJob(user, project, fileSet,
-                arrayDataImporterProvider.get(), mageTabImporterProvider.get(), 
-                fileAccessServiceProvider.get(), projectDaoProvider.get(), searchDaoProvider.get());
+    @Test
+    public void nullInputCaArrayFileSet() throws IOException {
+        Set<CaArrayFileSet> smallFileSets = cafsSplitter.split(null);
+        assertNull(smallFileSets);
     }
 
+    @Test
+    public void  emptyInputCaArrayFileSet() throws IOException {
+        CaArrayFileSet arrayFileSet = mock(CaArrayFileSet.class);
+        when(arrayFileSet.getFiles()).thenReturn(Sets.<CaArrayFile> newHashSet());
+
+        // Set up FileRefs & the mock splitter
+        MageTabFileSet mtfs = mock(MageTabFileSet.class);
+        when(mtfs.getAllFiles()).thenReturn(Sets.<FileRef>newHashSet());
+
+        when(mageTabFileSetSplitter.split(any(MageTabFileSet.class))).thenReturn(Sets.newHashSet(mtfs));
+
+        Set<CaArrayFileSet> results = cafsSplitter.split(arrayFileSet);
+        assertEquals(1, results.size());
+        for (CaArrayFileSet fs : results) {
+            assertEquals(0, fs.getFiles().size());
+        }
+    }
+
+    @Test
+    public void oneSdrfs() throws IOException {
+        Project project = mock(Project.class);
+        when(project.getId()).thenReturn(1L);
+
+        CaArrayFile childFile = mock(CaArrayFile.class);
+        when(childFile.getProject()).thenReturn(project);
+        when(fileAccessService.add(any(File.class), any(CaArrayFile.class))).thenReturn(childFile);
+
+        CaArrayFile sdrfFile = mock(CaArrayFile.class);
+        when(sdrfFile.getFileType()).thenReturn(FileTypeRegistry.MAGE_TAB_SDRF);
+        when(sdrfFile.getProject()).thenReturn(project);
+
+        CaArrayFile idfFile = mock(CaArrayFile.class);
+        when(idfFile.getFileType()).thenReturn(FileTypeRegistry.MAGE_TAB_IDF);
+        when(idfFile.getProject()).thenReturn(project);
+
+        CaArrayFileSet arrayFileSet = mock(CaArrayFileSet.class);
+        when(arrayFileSet.getFiles()).thenReturn(Sets.newHashSet(sdrfFile, idfFile));
+        when(arrayFileSet.getProjectId()).thenReturn(1L);
+
+        FileRef idfRef = new CaArrayFileRef(idfFile, null);
+        FileRef splitSdrfFileRef = mock(FileRef.class);
+        File splitSdrfFile = mock(File.class);
+        when(splitSdrfFileRef.getAsFile()).thenReturn(splitSdrfFile );
+
+        MageTabFileSet mtfs = mock(MageTabFileSet.class);
+        when(mtfs.getAllFiles()).thenReturn(Sets.newHashSet(idfRef, splitSdrfFileRef));
+
+        Set<MageTabFileSet> mageTabFileSets = Sets.newHashSet(mtfs);
+        when(mageTabFileSetSplitter.split(any(MageTabFileSet.class))).thenReturn(mageTabFileSets);
+
+        Set<CaArrayFileSet> results = cafsSplitter.split(arrayFileSet);
+        assertEquals(1, results.size());
+        for(CaArrayFileSet fs : results) {
+            assertEquals(2, fs.getFiles().size());
+        }
+        
+        verify(mageTabFileSetSplitter).split(any(MageTabFileSet.class));
+        verify(fileAccessService).add(eq(splitSdrfFile), (CaArrayFile) isNull());
+    }
 }

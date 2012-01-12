@@ -178,15 +178,20 @@ public class FileAccessServiceTest extends AbstractServiceTest {
 
     @Test
     public void testAddKnownTypeWithParent() throws IOException, FileAccessException {
+        Project project = new Project();
+        project.setId(1L);
+
         final File parentFile = File.createTempFile("parent", ".idf");
         parentFile.deleteOnExit();
         final CaArrayFile caArrayFileParent = this.fileAccessService.add(parentFile);
+        caArrayFileParent.setProject(project);
         doAsserts(parentFile, caArrayFileParent, FileTypeRegistry.MAGE_TAB_IDF, null, null, 0);
 
         final File childFile = File.createTempFile("child", ".idf");
         childFile.deleteOnExit();
         final CaArrayFile caArrayFileChild = this.fileAccessService.add(childFile, caArrayFileParent);
-        doAsserts(childFile, caArrayFileChild, FileTypeRegistry.MAGE_TAB_IDF, null, caArrayFileParent, 1);
+        doAsserts(childFile, caArrayFileChild, FileTypeRegistry.MAGE_TAB_IDF, 
+                caArrayFileParent.getName(), caArrayFileParent, 1);
     }
 
     @Test
@@ -227,6 +232,7 @@ public class FileAccessServiceTest extends AbstractServiceTest {
             assertEquals(caArrayFile.getParent().getId(), parentFile.getId());
             assertEquals(caArrayFile.getParent().getName(), parentFile.getName());
             assertEquals(caArrayFile.getParent(), parentFile);
+            assertEquals(caArrayFile.getProject().getId(), parentFile.getProject().getId());
             if (expectedNumberOfChildren <= 0) {
                 assertFalse(caArrayFile.getParent().hasChildren());
                 assertFalse(parentFile.hasChildren());

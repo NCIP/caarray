@@ -92,7 +92,7 @@ import java.util.Set;
 /**
  * An set of potentially interrelated MAGE-TAB document files to be validated or parsed.
  */
-public final class MageTabFileSet implements Serializable {
+public class MageTabFileSet implements Serializable {
 
     private static final long serialVersionUID = 7824150081647257549L;
 
@@ -166,7 +166,7 @@ public final class MageTabFileSet implements Serializable {
 
     /**
      * Gets the set of Idf files.
-     * 
+     *
      * @return current list of idf files.
      */
     public Set<FileRef> getIdfFiles() {
@@ -179,7 +179,7 @@ public final class MageTabFileSet implements Serializable {
 
     /**
      * Gets the set of Sdrf files.
-     * 
+     *
      * @return current list of sdrf files.
      */
     public Set<FileRef> getSdrfFiles() {
@@ -220,5 +220,5 @@ public final class MageTabFileSet implements Serializable {
     public void clearSdrfs() {
         this.sdrfFiles.clear();
     }
-    
+
 }

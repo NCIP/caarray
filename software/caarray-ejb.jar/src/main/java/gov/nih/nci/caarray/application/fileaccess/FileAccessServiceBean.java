@@ -146,7 +146,8 @@ public class FileAccessServiceBean implements FileAccessService {
      */
     public CaArrayFile add(File file, CaArrayFile parent) {
         LogUtil.logSubsystemEntry(LOG, file, parent);
-        final CaArrayFile caArrayFile = add(file, file.getName(), parent);
+        String name = (parent == null) ? file.getName() : parent.getName();
+        final CaArrayFile caArrayFile = add(file, name, parent);
         LogUtil.logSubsystemExit(LOG);
         return caArrayFile;
     }
@@ -206,8 +207,9 @@ public class FileAccessServiceBean implements FileAccessService {
         caArrayFile.setName(filename);
         caArrayFile.setFileType(this.typeRegistry.getTypeFromExtension(filename));
 
-        // Add the child to the parent.
+        // set the child file's project to that of the parent. Add the child to the parent.
         if (parent != null) {
+            caArrayFile.setProject(parent.getProject());
             parent.addChild(caArrayFile);
         }
 

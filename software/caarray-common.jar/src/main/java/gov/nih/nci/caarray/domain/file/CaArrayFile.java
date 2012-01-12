@@ -475,5 +475,4 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
     public void removeChild(CaArrayFile child) {
         getChildren().remove(child);
     }
-
 }

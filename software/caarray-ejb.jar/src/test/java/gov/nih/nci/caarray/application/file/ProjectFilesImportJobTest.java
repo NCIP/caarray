@@ -113,6 +113,7 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 
 /**
@@ -131,6 +132,7 @@ public class ProjectFilesImportJobTest {
     @Mock SearchDao searchDao;
     @Mock FileManagementService fileManagementService;
     @Mock ServiceLocator serviceLocator;
+    @Mock CaArrayFileSetSplitter fileSetSplitter;
     ProjectFilesImportJob job;
     
     @Before
@@ -140,8 +142,10 @@ public class ProjectFilesImportJobTest {
         MockitoAnnotations.initMocks(this);
         ServiceLocatorFactory.setLocator(serviceLocator);
         ProjectFilesJobTest.setupProjectMock(project);
+        fileSetSplitter = mock(CaArrayFileSetSplitter.class);
         job = new ProjectFilesImportJob(username, project, fileset, dataImportOptions, 
-                arrayDataImporter, mageTabImporter, fileAccessService, projectDao, searchDao);
+                arrayDataImporter, mageTabImporter, fileAccessService, projectDao, searchDao,
+                fileSetSplitter);
         
     }
     
@@ -156,7 +160,15 @@ public class ProjectFilesImportJobTest {
     }
     
     @Test
-    public void basicNoSplitFlow() throws MageTabParsingException {
+    public void basicNoSplitFlow() throws MageTabParsingException, IOException {
+        when(fileSetSplitter.split(any(CaArrayFileSet.class))).thenAnswer(new Answer<Set<CaArrayFileSet>>() {
+            @Override
+            public Set<CaArrayFileSet> answer(InvocationOnMock invocation)
+                    throws Throwable {
+                return ImmutableSet.of((CaArrayFileSet) invocation.getArguments()[0]);
+            } 
+        });
+        
         CaArrayFile file = checkValidateExecuted(FileStatus.VALIDATED);
         assertImportDidHappen(file);
     }
@@ -173,7 +185,6 @@ public class ProjectFilesImportJobTest {
         final CaArrayFileSet split2 = mock(CaArrayFileSet.class);
         final Set<CaArrayFileSet> splits = Sets.newHashSet(split1, split2);
         
-        CaArrayFileSetSplitter fileSetSplitter = mock(CaArrayFileSetSplitter.class);
         when(fileSetSplitter.split(any(CaArrayFileSet.class))).thenAnswer(new Answer<Set<CaArrayFileSet>>() {
 
             @Override
@@ -186,7 +197,6 @@ public class ProjectFilesImportJobTest {
         
         job.setFileManagementService(fileManagementService);
         
-        job.setSplitter(fileSetSplitter);
         checkValidateExecuted(FileStatus.VALIDATED);
         assertImportDidNotHappen();
         for (CaArrayFileSet fileSet : splits) {
@@ -196,9 +206,7 @@ public class ProjectFilesImportJobTest {
     
     @Test
     public void splitWithIOException() throws IOException, MageTabParsingException {
-        CaArrayFileSetSplitter fileSetSplitter = mock(CaArrayFileSetSplitter.class);
         when(fileSetSplitter.split(any(CaArrayFileSet.class))).thenThrow(new IOException());
-        job.setSplitter(fileSetSplitter);
         CaArrayFile file = checkValidateExecuted(FileStatus.VALIDATED);
         assertImportDidHappen(file);
     }
