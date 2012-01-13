@@ -114,11 +114,6 @@ public class IlluminaArrayDesignServiceTest extends AbstractArrayDesignServiceTe
     }
 
     @Test
-    public void testValidateDesign_IlluminaHumanHap300() {
-        this.testValidDesign(IlluminaArrayDesignFiles.HUMAN_HAP_300_CSV);
-    }
-
-    @Test
     public void testValidateDesign_IlluminaHumanWG6() {
         this.testValidDesign(IlluminaArrayDesignFiles.HUMAN_WG6_CSV);
         this.testInValidDesign(IlluminaArrayDesignFiles.HUMAN_WG6_CSV_INVALID_HEADERS, true);
@@ -152,27 +147,32 @@ public class IlluminaArrayDesignServiceTest extends AbstractArrayDesignServiceTe
 
     @Test
     public void testImportDesignAndDetails_IlluminaHumanHap300() {
-        this.testImportDesignAndDetails(IlluminaArrayDesignFiles.HUMAN_HAP_300_CSV, "HumanHap300v2_A", "illumina.com",
-                "PhysicalArrayDesign", "HumanHap300v2_A", 318237, 318237);
+        this.testImportDesignAndDetails(IlluminaArrayDesignFiles.HUMAN_HAP_300_SMALL_CSV, "HumanHap300v2_A_small",
+                "HumanHap300v2_A_small", 18237, 18237, true);
     }
 
     @Test
     public void testImportDesignAndDetails_IlluminaHumanWG6() {
-        this.testImportDesignAndDetails(IlluminaArrayDesignFiles.HUMAN_WG6_CSV, "Human_WG-6", "illumina.com",
-                "PhysicalArrayDesign", "Human_WG-6", 47296, 47296);
+        this.testImportDesignAndDetails(IlluminaArrayDesignFiles.HUMAN_WG6_CSV, "Human_WG-6",
+                "Human_WG-6", 47296, 47296, false);
     }
 
-    private void testImportDesignAndDetails(File file, String name, String lsidAuthority, String lsidNamespace,
-            String lsidObjectId, int expectedFeatures, int expectedProbes) {
+    private void testImportDesignAndDetails(File file, String name, String lsidObjectId, int expectedFeatures,
+            int expectedProbes, boolean validateFile) {
         final CaArrayFile designFile = getIlluminaCaArrayFile(file);
+        final ValidationResult result = this.arrayDesignService.validateDesign(Collections.singleton(designFile));
+        if (validateFile) {
+            assertTrue(result.isValid());
+        }
+
         final ArrayDesign arrayDesign = new ArrayDesign();
         arrayDesign.addDesignFile(designFile);
         this.arrayDesignService.importDesign(arrayDesign);
         this.arrayDesignService.importDesignDetails(arrayDesign);
 
         assertEquals(name, arrayDesign.getName());
-        assertEquals(lsidAuthority, arrayDesign.getLsidAuthority());
-        assertEquals(lsidNamespace, arrayDesign.getLsidNamespace());
+        assertEquals("illumina.com", arrayDesign.getLsidAuthority());
+        assertEquals("PhysicalArrayDesign", arrayDesign.getLsidNamespace());
         assertEquals(lsidObjectId, arrayDesign.getLsidObjectId());
         assertEquals(expectedFeatures, arrayDesign.getNumberOfFeatures().intValue());
         assertEquals(expectedProbes, arrayDesign.getDesignDetails().getProbes().size());
