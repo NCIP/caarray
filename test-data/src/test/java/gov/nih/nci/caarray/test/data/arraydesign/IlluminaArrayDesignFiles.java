@@ -89,6 +89,9 @@ public class IlluminaArrayDesignFiles {
     public static final File HUMAN_WG6_CSV =
         new File(IlluminaArrayDesignFiles.class.getResource("/arraydesign/illumina/Human_WG-6.csv").getFile());
 
+    public static final File HUMAN_WG6_CSV_REDUCED =
+            new File(IlluminaArrayDesignFiles.class.getResource("/arraydesign/illumina/Human_WG-6_reduced.csv").getFile());
+
     public static final File HUMAN_WG6_CSV_INVALID_HEADERS =
         new File(IlluminaArrayDesignFiles.class.getResource("/arraydesign/illumina/Human_WG-6_invalid_headers.csv").getFile());
 

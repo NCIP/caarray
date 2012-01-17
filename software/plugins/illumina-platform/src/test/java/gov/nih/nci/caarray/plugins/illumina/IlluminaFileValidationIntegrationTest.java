@@ -107,7 +107,7 @@ import org.junit.Test;
 
 /**
  * Integration test for the FileManagementService.
- * 
+ *
  * @author Steve Lustbader
  */
 @SuppressWarnings("PMD")
@@ -120,13 +120,13 @@ public class IlluminaFileValidationIntegrationTest extends AbstractFileValidatio
     @Test
     public void testValidateDefect18625Hybes() throws Exception {
         final ArrayDesign design =
-                importArrayDesign(IlluminaArrayDesignFiles.HUMAN_WG6_CSV, IlluminaCsvDesignHandler.DESIGN_CSV_FILE_TYPE);
+                importArrayDesign(IlluminaArrayDesignFiles.HUMAN_WG6_CSV_REDUCED, IlluminaCsvDesignHandler.DESIGN_CSV_FILE_TYPE);
         addDesignToExperiment(design);
 
         final Map<File, FileType> files = new HashMap<File, FileType>();
-        files.put(IlluminaArrayDataFiles.DEFECT_18652_IDF, FileTypeRegistry.MAGE_TAB_IDF);
-        files.put(IlluminaArrayDataFiles.DEFECT_18652_SDRF, FileTypeRegistry.MAGE_TAB_SDRF);
-        files.put(IlluminaArrayDataFiles.HUMAN_WG6_SMALL, CsvDataHandler.DATA_CSV_FILE_TYPE);
+        files.put(IlluminaArrayDataFiles.DEFECT_18652_IDF_REDUCED, FileTypeRegistry.MAGE_TAB_IDF);
+        files.put(IlluminaArrayDataFiles.DEFECT_18652_SDRF_REDUCED, FileTypeRegistry.MAGE_TAB_SDRF);
+        files.put(IlluminaArrayDataFiles.HUMAN_WG6_REDUCED, CsvDataHandler.DATA_CSV_FILE_TYPE);
 
         uploadAndValidateFiles(files);
 
@@ -147,13 +147,13 @@ public class IlluminaFileValidationIntegrationTest extends AbstractFileValidatio
     @Test
     public void testInvalidHybridizationsInSDRF() throws Exception {
         final FileFileTypeWrapper[] dataFiles = new FileFileTypeWrapper[3];
-        dataFiles[0] = new FileFileTypeWrapper(IlluminaArrayDataFiles.DEFECT_18652_IDF, FileTypeRegistry.MAGE_TAB_IDF);
+        dataFiles[0] = new FileFileTypeWrapper(IlluminaArrayDataFiles.DEFECT_18652_IDF_REDUCED, FileTypeRegistry.MAGE_TAB_IDF);
         dataFiles[1] =
-                new FileFileTypeWrapper(IlluminaArrayDataFiles.DEFECT_18652_SDRF, FileTypeRegistry.MAGE_TAB_SDRF);
+                new FileFileTypeWrapper(IlluminaArrayDataFiles.DEFECT_18652_SDRF_REDUCED, FileTypeRegistry.MAGE_TAB_SDRF);
         dataFiles[2] =
-                new FileFileTypeWrapper(IlluminaArrayDataFiles.HUMAN_WG6_SMALL, CsvDataHandler.DATA_CSV_FILE_TYPE);
+                new FileFileTypeWrapper(IlluminaArrayDataFiles.HUMAN_WG6_REDUCED, CsvDataHandler.DATA_CSV_FILE_TYPE);
         final FileFileTypeWrapper design =
-                new FileFileTypeWrapper(IlluminaArrayDesignFiles.HUMAN_WG6_CSV,
+                new FileFileTypeWrapper(IlluminaArrayDesignFiles.HUMAN_WG6_CSV_REDUCED,
                         IlluminaCsvDesignHandler.DESIGN_CSV_FILE_TYPE);
         final List<String[]> expectedErrorsList = new ArrayList<String[]>();
         final String[] expectedSdrfErrors =
