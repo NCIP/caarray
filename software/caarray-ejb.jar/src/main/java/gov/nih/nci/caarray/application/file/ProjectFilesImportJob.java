@@ -139,8 +139,7 @@ class ProjectFilesImportJob extends AbstractProjectFilesJob {
     protected void executeProjectFilesJob() {
         doValidate(getFileSet());
 
-        FileStatus status = getFileSet().getStatus();
-        if (!FileStatus.VALIDATED.equals(status)) {
+        if (!passedValidation(getFileSet())) {
             return;
         }
         boolean didSplit = splitAndImport(getFileSet());
@@ -149,6 +148,11 @@ class ProjectFilesImportJob extends AbstractProjectFilesJob {
         }
     }
 
+    private boolean passedValidation(CaArrayFileSet fileSet) {
+        FileStatus setStatus = fileSet.getStatus();
+        return FileStatus.VALIDATED.equals(setStatus) || FileStatus.VALIDATED_NOT_PARSED.equals(setStatus);
+    }
+    
     private boolean splitAndImport(CaArrayFileSet fileSet) {
         try {
             Set<CaArrayFileSet> splits = splitter.split(fileSet);
