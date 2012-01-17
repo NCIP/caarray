@@ -137,17 +137,21 @@ public class MageTabFileSetSplitterImpl implements MageTabFileSetSplitter {
         Set<MageTabFileSet> result = new HashSet<MageTabFileSet>();
         Set<FileRef> splitSdrfs = singleFileSplitter.split(bigSdrf);
         for (FileRef smallSdrf : splitSdrfs) {
-            Set<String> referencedDataFiles = dataFileFinder.identifyReferencedDataFiles(smallSdrf);
             MageTabFileSet curSet = largeFileSet.makeCopy();
             curSet.getSdrfFiles().clear();
             curSet.addSdrf(smallSdrf);
-            FilePredicate filePredicate = new FilePredicate(referencedDataFiles);
-            // FIXME
-            curSet.getDataMatrixFiles().removeAll(Sets.filter(curSet.getDataMatrixFiles(), filePredicate));
-            curSet.getNativeDataFiles().removeAll(Sets.filter(curSet.getDataMatrixFiles(), filePredicate));
+            filterDataFiles(largeFileSet, smallSdrf, curSet);
             
             result.add(curSet);
         }
         return result;
+    }
+
+    private void filterDataFiles(MageTabFileSet largeFileSet, FileRef smallSdrf, MageTabFileSet curSet) 
+            throws IOException {
+        Set<String> referencedDataFiles = dataFileFinder.identifyReferencedDataFiles(smallSdrf);
+        FilePredicate filePredicate = new FilePredicate(referencedDataFiles);
+        curSet.getDataMatrixFiles().removeAll(Sets.filter(largeFileSet.getDataMatrixFiles(), filePredicate));
+        curSet.getNativeDataFiles().removeAll(Sets.filter(largeFileSet.getDataMatrixFiles(), filePredicate));
     }
 }
