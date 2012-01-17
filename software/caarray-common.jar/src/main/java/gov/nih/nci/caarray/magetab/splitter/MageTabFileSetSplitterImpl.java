@@ -60,7 +60,9 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
+import com.google.common.base.Predicate;
 import com.google.common.collect.Sets;
+import com.google.inject.Inject;
 
 /**
  * Basic implementation of the interface.
@@ -69,17 +71,29 @@ import com.google.common.collect.Sets;
  */
 public class MageTabFileSetSplitterImpl implements MageTabFileSetSplitter {
 
+    private final class FilePredicate implements Predicate<FileRef> {
+        private final Set<String> referencedDataFiles;
+
+        public FilePredicate(Set<String> referencedDataFiles) {
+            this.referencedDataFiles = referencedDataFiles;
+        }
+
+        @Override
+        public boolean apply(FileRef curRef) {
+            String fileName = curRef.getName();
+            return !referencedDataFiles.contains(fileName);
+        }
+    }
+
     private static final Logger LOG = Logger.getLogger(MageTabFileSetSplitterImpl.class);
 
-    private SdrfSplitter singleFileSplitter = new SdrfSplitterImpl();
+    private SdrfSplitter singleFileSplitter;
+    private SdrfDataFileFinder dataFileFinder;
     
-    /**
-     * Setter for splitter implementation.
-     * 
-     * @param splitter splitter implementation to use.
-     */
-    public void setSdrfSplitter(SdrfSplitter splitter) {
-        this.singleFileSplitter = splitter;
+    @Inject
+    public MageTabFileSetSplitterImpl(SdrfSplitter singleFileSplitter, SdrfDataFileFinder dataFileFinder) {
+        this.singleFileSplitter = singleFileSplitter;
+        this.dataFileFinder = dataFileFinder;
     }
     
     /**
@@ -123,9 +137,15 @@ public class MageTabFileSetSplitterImpl implements MageTabFileSetSplitter {
         Set<MageTabFileSet> result = new HashSet<MageTabFileSet>();
         Set<FileRef> splitSdrfs = singleFileSplitter.split(bigSdrf);
         for (FileRef smallSdrf : splitSdrfs) {
+            Set<String> referencedDataFiles = dataFileFinder.identifyReferencedDataFiles(smallSdrf);
             MageTabFileSet curSet = largeFileSet.makeCopy();
             curSet.getSdrfFiles().clear();
             curSet.addSdrf(smallSdrf);
+            FilePredicate filePredicate = new FilePredicate(referencedDataFiles);
+            // FIXME
+            curSet.getDataMatrixFiles().removeAll(Sets.filter(curSet.getDataMatrixFiles(), filePredicate));
+            curSet.getNativeDataFiles().removeAll(Sets.filter(curSet.getDataMatrixFiles(), filePredicate));
+            
             result.add(curSet);
         }
         return result;

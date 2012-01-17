@@ -133,6 +133,15 @@ public class MageTabFileSet implements Serializable {
     }
 
     /**
+     * Gets the set of Sdrf files.
+     *
+     * @return current list of sdrf files.
+     */
+    public Set<FileRef> getSdrfFiles() {
+        return this.sdrfFiles;
+    }
+
+    /**
      * Adds the file as a data matrix file to the document set to be parsed.
      *
      * @param file the data matrix file
@@ -141,7 +150,7 @@ public class MageTabFileSet implements Serializable {
         checkFile(file);
         dataMatrixFiles.add(file);
     }
-
+    
     /**
      * Adds the file as a native data file to the document set to be parsed.
      *
@@ -160,7 +169,7 @@ public class MageTabFileSet implements Serializable {
         return this.adfFiles;
     }
 
-    Set<FileRef> getDataMatrixFiles() {
+    public Set<FileRef> getDataMatrixFiles() {
         return this.dataMatrixFiles;
     }
 
@@ -173,17 +182,8 @@ public class MageTabFileSet implements Serializable {
         return this.idfFiles;
     }
 
-    Set<FileRef> getNativeDataFiles() {
+    public Set<FileRef> getNativeDataFiles() {
         return this.nativeDataFiles;
-    }
-
-    /**
-     * Gets the set of Sdrf files.
-     *
-     * @return current list of sdrf files.
-     */
-    public Set<FileRef> getSdrfFiles() {
-        return this.sdrfFiles;
     }
 
     /**

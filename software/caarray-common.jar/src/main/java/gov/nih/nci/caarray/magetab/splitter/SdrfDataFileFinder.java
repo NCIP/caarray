@@ -48,25 +48,26 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.application.util;
+package gov.nih.nci.caarray.magetab.splitter;
 
-import com.google.inject.AbstractModule;
+import gov.nih.nci.caarray.magetab.io.FileRef;
+
+import java.io.IOException;
+import java.util.Set;
 
 /**
- * Guice module for the util package.
-
+ * Identifies the referenced data files within a given Sdrf file, by file name.
+ * 
  * @author tparnell
  */
-public class UtilModule extends AbstractModule {
+public interface SdrfDataFileFinder {
 
     /**
-     * {@inheritDoc}
+     * Accepts a (valid) sdrf file and returns the names of all data files referenced.
+     * 
+     * @param sdrf input sdrf files
+     * @return set of named files referenced by the sdrf
+     * @throws IOException if there's trouble accessing the input file
      */
-    @Override
-    protected void configure() {
-        // ARRAY-2189 - wiring with fake version for now.  Uncomment to use real version.
-        bind(CaArrayFileSetSplitter.class).to(CaArrayFileSetSplitterImpl.class);
-//        bind(CaArrayFileSetSplitter.class).to(CaArrayFileSetNonSplitter.class);
-    }
-
+    Set<String> identifyReferencedDataFiles(FileRef sdrf) throws IOException;
 }

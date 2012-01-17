@@ -48,25 +48,24 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.application.util;
+package gov.nih.nci.caarray.magetab.splitter;
 
 import com.google.inject.AbstractModule;
 
 /**
- * Guice module for the util package.
-
+ * Guice module for the splitter package.
+ * 
  * @author tparnell
  */
-public class UtilModule extends AbstractModule {
+public class SplitterModule extends AbstractModule {
 
     /**
      * {@inheritDoc}
      */
     @Override
     protected void configure() {
-        // ARRAY-2189 - wiring with fake version for now.  Uncomment to use real version.
-        bind(CaArrayFileSetSplitter.class).to(CaArrayFileSetSplitterImpl.class);
-//        bind(CaArrayFileSetSplitter.class).to(CaArrayFileSetNonSplitter.class);
+        bind(MageTabFileSetSplitter.class).to(MageTabFileSetSplitterImpl.class);
+        bind(SdrfSplitter.class).to(SdrfSplitterImpl.class);
     }
 
 }

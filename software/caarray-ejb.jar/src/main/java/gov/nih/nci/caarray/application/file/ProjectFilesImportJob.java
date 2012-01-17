@@ -88,6 +88,7 @@ import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.application.util.CaArrayFileSetSplitter;
 import gov.nih.nci.caarray.dao.ProjectDao;
 import gov.nih.nci.caarray.dao.SearchDao;
+import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.project.JobType;
@@ -154,6 +155,7 @@ class ProjectFilesImportJob extends AbstractProjectFilesJob {
             Set<CaArrayFileSet> splits = splitter.split(fileSet);
             if (splits.size() != 1) {
                 for (CaArrayFileSet curSet : splits) {
+                    curSet.updateStatus(FileStatus.VALIDATED);
                     fileManagementService.importFiles(getProject(), curSet, dataImportOptions);
                 }
                 return true;
