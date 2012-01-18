@@ -160,7 +160,12 @@ public class MageTabFileSet implements Serializable {
         return this.adfFiles;
     }
 
-    Set<FileRef> getDataMatrixFiles() {
+    /**
+     * Gets the set of Data Matrix files.
+     * 
+     * @return current set of data matrix files.
+     */
+    public Set<FileRef> getDataMatrixFiles() {
         return this.dataMatrixFiles;
     }
 
@@ -173,7 +178,12 @@ public class MageTabFileSet implements Serializable {
         return this.idfFiles;
     }
 
-    Set<FileRef> getNativeDataFiles() {
+    /**
+     * Gets the set of native data files.
+     * 
+     * @return current set of native data files.
+     */
+    public Set<FileRef> getNativeDataFiles() {
         return this.nativeDataFiles;
     }
 

@@ -63,13 +63,15 @@ import gov.nih.nci.caarray.magetab.io.JavaIOFileRef;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 /**
  * Tests for the file set splitter.
@@ -78,23 +80,20 @@ import org.junit.Test;
  */
 public class MageTabFileSetSplitterTest {
 
-    private static MageTabFileSetSplitter splitter;
+    private MageTabFileSetSplitter splitter;
     private Set<File> tmpFiles;
-    
-    /**
-     * Set up static resources.
-     */
-    @BeforeClass
-    public static void setupClass() {
-        splitter = new MageTabFileSetSplitterImpl();
-    }
-    
+    private SdrfSplitter sdrfSplitter;
+    private SdrfDataFileFinder sdrfDataFileFinder;
+        
     /**
      * Set up test-specific resources.
      */
     @Before
     public void setup() {
         tmpFiles = new HashSet<File>();
+        sdrfSplitter = mock(SdrfSplitter.class);
+        sdrfDataFileFinder = mock(SdrfDataFileFinder.class);
+        splitter = new MageTabFileSetSplitterImpl(sdrfSplitter, sdrfDataFileFinder);
     }
     
     @Test
@@ -134,11 +133,61 @@ public class MageTabFileSetSplitterTest {
         assertSplit(5, 9);
     }
     
+    @Test
+    public void singleDataFileReferenced() throws IOException {
+        MageTabFileSet fileSet = setupFileSet(1, 1, 4);
+        mockSplitter(1);
+        when(sdrfDataFileFinder.identifyReferencedDataFiles(any(FileRef.class)))
+            .thenReturn(Collections.singleton(fileSet.getDataMatrixFiles().iterator().next().getName()));
+        Set<MageTabFileSet> result = splitter.split(fileSet);
+        assertMultiFileSetSizes(result, 1, 3);
+    }
+    
+    private void useUnityDataFileFinder(final MageTabFileSet fileSet) throws IOException {
+        when(sdrfDataFileFinder.identifyReferencedDataFiles(any(FileRef.class))).thenAnswer(new Answer<Set<String>>() {
+            @Override
+            public Set<String> answer(InvocationOnMock invocation) throws Throwable {
+                Set<String> result = new HashSet<String>();
+                for (FileRef ref : fileSet.getAllFiles()) {
+                    result.add(ref.getName());
+                }
+                return result;
+            }
+        });
+    }
+
+    private void mockSplitter(int splitsPerSdrf) {
+        Set<FileRef> fakedSplits = new HashSet<FileRef>();
+        for (int i = 0; i < splitsPerSdrf; ++i) {
+            fakedSplits.add(generateFileRef());
+        }
+        try {
+            when(sdrfSplitter.split(any(FileRef.class))).thenReturn(fakedSplits);
+        } catch (IOException e) {
+            // shouldn't be able to happen
+            throw new RuntimeException(e);
+        }
+    }
+
+    private MageTabFileSet setupFileSet(int numIdfs, int numSdrfs, int numDataFiles) {
+        MageTabFileSet result = new MageTabFileSet();
+        for (int i = 0; i < numIdfs; ++i) {
+            result.addIdf(generateFileRef());
+        }
+        for (int i = 0; i < numSdrfs; ++i) {
+            result.addSdrf(generateFileRef());
+        }
+        for (int i = 0; i < numDataFiles; ++i) {
+            result.addDataMatrix(generateFileRef());
+        }
+        
+        return result;
+    }
+
     @Test 
     public void ioExceptionPropagated() {
         MageTabFileSet input = new MageTabFileSet();
         input.addSdrf(generateFileRef());
-        SdrfSplitter sdrfSplitter = mock(SdrfSplitter.class);
         IOException expectedException = new IOException();
         try {
             when(sdrfSplitter.split(any(FileRef.class))).thenThrow(expectedException);
@@ -146,7 +195,6 @@ public class MageTabFileSetSplitterTest {
             // shouldn't be able to happen
             throw new RuntimeException(e);
         }
-        ((MageTabFileSetSplitterImpl) splitter).setSdrfSplitter(sdrfSplitter);
         
         try {
             splitter.split(input);
@@ -166,33 +214,16 @@ public class MageTabFileSetSplitterTest {
         assertSingleFileSetSize(split, 3);
     }
     
+    
     private void assertSplit(int numSdrfs, int splitsPerSdrf) throws IOException {
-        MageTabFileSet input = new MageTabFileSet();
-        input.addAdf(generateFileRef());
-        input.addDataMatrix(generateFileRef());
-        input.addIdf(generateFileRef());
-        input.addNativeData(generateFileRef());
-        for (int i = 0; i < numSdrfs; ++i) {
-            input.addSdrf(generateFileRef());
-        }
-        
-        Set<FileRef> fakedSplits = new HashSet<FileRef>();
-        for (int i = 0; i < splitsPerSdrf; ++i) {
-            fakedSplits.add(generateFileRef());
-        }
-        SdrfSplitter sdrfSplitter = mock(SdrfSplitter.class);
-        try {
-            when(sdrfSplitter.split(any(FileRef.class))).thenReturn(fakedSplits);
-        } catch (IOException e) {
-            // shouldn't be able to happen
-            throw new RuntimeException(e);
-        }
-        ((MageTabFileSetSplitterImpl) splitter).setSdrfSplitter(sdrfSplitter);
+        MageTabFileSet input = setupFileSet(1, numSdrfs, 2);
+        mockSplitter(splitsPerSdrf);
+        useUnityDataFileFinder(input);
         
         Set<MageTabFileSet> result = splitter.split(input);
         // There should always be 5 files in the result:
-        // - adf, dataMatrix, idf, nativeData, and *1* sdrf
-        assertMultiFileSetSizes(result, splitsPerSdrf * numSdrfs, 5);
+        // - dataMatrix, idf, nativeData, and *1* sdrf
+        assertMultiFileSetSizes(result, splitsPerSdrf * numSdrfs, 4);
     }
     
     private void assertSingleFileSetSize(Set<MageTabFileSet> fileSets, int expectedFiles) {

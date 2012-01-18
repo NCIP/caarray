@@ -60,7 +60,9 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
+import com.google.common.base.Predicate;
 import com.google.common.collect.Sets;
+import com.google.inject.Inject;
 
 /**
  * Basic implementation of the interface.
@@ -69,17 +71,46 @@ import com.google.common.collect.Sets;
  */
 public class MageTabFileSetSplitterImpl implements MageTabFileSetSplitter {
 
+    /**
+     * Predicate that matches file references based upon the names of the files.
+     * 
+     * @author tparnell
+     */
+    private final class FilePredicate implements Predicate<FileRef> {
+        private final Set<String> referencedDataFiles;
+
+        /**
+         * Construct with the ilst of files to check against.
+         */
+        public FilePredicate(Set<String> referencedDataFiles) {
+            this.referencedDataFiles = referencedDataFiles;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public boolean apply(FileRef curRef) {
+            String fileName = curRef.getName();
+            return !referencedDataFiles.contains(fileName);
+        }
+    }
+
     private static final Logger LOG = Logger.getLogger(MageTabFileSetSplitterImpl.class);
 
-    private SdrfSplitter singleFileSplitter = new SdrfSplitterImpl();
+    private final SdrfSplitter singleFileSplitter;
+    private final SdrfDataFileFinder dataFileFinder;
     
     /**
-     * Setter for splitter implementation.
+     * Construct with injected dependencies.
      * 
-     * @param splitter splitter implementation to use.
+     * @param singleFileSplitter file splitter
+     * @param dataFileFinder data file finder
      */
-    public void setSdrfSplitter(SdrfSplitter splitter) {
-        this.singleFileSplitter = splitter;
+    @Inject
+    public MageTabFileSetSplitterImpl(SdrfSplitter singleFileSplitter, SdrfDataFileFinder dataFileFinder) {
+        this.singleFileSplitter = singleFileSplitter;
+        this.dataFileFinder = dataFileFinder;
     }
     
     /**
@@ -126,8 +157,18 @@ public class MageTabFileSetSplitterImpl implements MageTabFileSetSplitter {
             MageTabFileSet curSet = largeFileSet.makeCopy();
             curSet.getSdrfFiles().clear();
             curSet.addSdrf(smallSdrf);
+            filterDataFiles(largeFileSet, smallSdrf, curSet);
+            
             result.add(curSet);
         }
         return result;
+    }
+
+    private void filterDataFiles(MageTabFileSet largeFileSet, FileRef smallSdrf, MageTabFileSet curSet) 
+            throws IOException {
+        Set<String> referencedDataFiles = dataFileFinder.identifyReferencedDataFiles(smallSdrf);
+        FilePredicate filePredicate = new FilePredicate(referencedDataFiles);
+        curSet.getDataMatrixFiles().removeAll(Sets.filter(largeFileSet.getDataMatrixFiles(), filePredicate));
+        curSet.getNativeDataFiles().removeAll(Sets.filter(largeFileSet.getNativeDataFiles(), filePredicate));
     }
 }

@@ -90,6 +90,7 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -98,13 +99,12 @@ import gov.nih.nci.caarray.dao.ProjectDao;
 import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
+import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.security.authorization.domainobjects.User;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -113,6 +113,9 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 
 /**
  * Verifies project files job functionality.
@@ -128,25 +131,36 @@ public class ProjectFilesJobTest {
     @Mock SearchDao searchDao;
     @Mock FileAccessService fileAccessService;
     
-    @SuppressWarnings("unchecked")
     @Before
     public void setUp() {
         job = mock(AbstractProjectFilesJob.class, Mockito.CALLS_REAL_METHODS);
         MockitoAnnotations.initMocks(this);
         
         setupProjectMock(project);
-        setupFileSet();
+        setupNonChildFileSet();
 
         when(searchDao.retrieve(eq(Project.class), eq(1L))).thenReturn(project);
         
-        List<CaArrayFile> value = new ArrayList<CaArrayFile>(fileSet.getFiles());
-        when(searchDao.retrieveByIds(eq(CaArrayFile.class), any(List.class))).thenReturn(value);
         
         job.init("testuser", project, fileSet, arrayDataImporter, mageTabImporter, 
                  fileAccessService, projectDao, searchDao);
     }
 
-    private void setupFileSet() {
+    @SuppressWarnings("unchecked")
+    private void initSearchDao() {
+        ImmutableList<CaArrayFile> filesList = ImmutableList.copyOf(fileSet.getFiles().iterator());
+        when(searchDao.retrieveByIds(eq(CaArrayFile.class), 
+                any(List.class))).thenReturn(filesList);
+    }
+    
+    private void setupNonChildFileSet() {
+        CaArrayFile file = mock(CaArrayFile.class);
+        when(file.getId()).thenReturn(1L);
+        when(fileSet.getFiles()).thenReturn(ImmutableSet.of(file));
+        initSearchDao();
+    }
+
+    private void setupParentChildFileSet() {
         CaArrayFile parent = mock(CaArrayFile.class);
         when(parent.getId()).thenReturn(2L);
         
@@ -156,11 +170,10 @@ public class ProjectFilesJobTest {
         when(child.getParent()).thenReturn(parent);
         when(parent.getChildren()).thenReturn(Collections.singleton(child));
         
-        Set<CaArrayFile> files = new HashSet<CaArrayFile>();
-        files.add(parent);
-        files.add(child);
+        Set<CaArrayFile> files = ImmutableSet.of(parent, child);
         
         when(fileSet.getFiles()).thenReturn(files);
+        initSearchDao();
     }
 
     /**
@@ -214,10 +227,21 @@ public class ProjectFilesJobTest {
     }
     
     @Test
-    public void doValidate() throws InterruptedException {
+    public void doValidate() {
         job.doValidate(job.getFileSet());
         verify(mageTabImporter).validateFiles(project, job.getFileSet());
         verify(arrayDataImporter).validateFiles(job.getFileSet(), null, false);
+    }
+    
+    @Test 
+    public void noValidateWithChildFileSets() {
+        setupParentChildFileSet();
+        job.doValidate(job.getFileSet());
+        verify(mageTabImporter, times(0)).validateFiles(any(Project.class), any(CaArrayFileSet.class));
+        verify(arrayDataImporter, times(0)).validateFiles(job.getFileSet(), null, false);
+        for (CaArrayFile file : job.getFileSet().getFiles()) {
+            verify(file).setFileStatus(eq(FileStatus.VALIDATED));
+        }
     }
     
     @Test
@@ -231,6 +255,7 @@ public class ProjectFilesJobTest {
     
     @Test
     public void deleteChildFilesOnExecute() {
+        setupParentChildFileSet();
         doNothing().when(job).executeProjectFilesJob();
         doReturn(fileSet).when(job).getFileSet();
         job.doExecute();

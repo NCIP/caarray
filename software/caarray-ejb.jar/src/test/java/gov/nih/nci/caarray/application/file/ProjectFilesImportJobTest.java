@@ -108,6 +108,7 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatcher;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
@@ -200,7 +201,9 @@ public class ProjectFilesImportJobTest {
         checkValidateExecuted(FileStatus.VALIDATED);
         assertImportDidNotHappen();
         for (CaArrayFileSet fileSet : splits) {
-            verify(fileManagementService).importFiles(eq(project), eq(fileSet), eq(dataImportOptions));
+            InOrder inOrder = inOrder(fileManagementService, fileSet);
+            inOrder.verify(fileSet).updateStatus(eq(FileStatus.VALIDATED));
+            inOrder.verify(fileManagementService).importFiles(eq(project), eq(fileSet), eq(dataImportOptions));
         }
     }
     

@@ -139,7 +139,7 @@ class ProjectFilesImportJob extends AbstractProjectFilesJob {
     protected void executeProjectFilesJob() {
         doValidate(getFileSet());
 
-        if(!getFileSet().isValidated()) {
+        if (!getFileSet().isValidated()) {
             return;
         }
 
@@ -154,6 +154,7 @@ class ProjectFilesImportJob extends AbstractProjectFilesJob {
             Set<CaArrayFileSet> splits = splitter.split(fileSet);
             if (splits.size() != 1) {
                 for (CaArrayFileSet curSet : splits) {
+                    curSet.updateStatus(FileStatus.VALIDATED);
                     fileManagementService.importFiles(getProject(), curSet, dataImportOptions);
                 }
                 return true;
