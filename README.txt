@@ -17,8 +17,9 @@ Contents
 Introduction
 ---------------------------
 
-caArray2 is a microarray repository, allowing researchers to share microarray experiment annotations and data. It is a J2EE web application, built 
-with EJB3, Hibernate, Struts2 and several other open source technologies. It includes a "Java API" (a set of remote EJBs), and a caGrid API.
+caArray2 is a microarray repository, allowing researchers to share microarray experiment annotations and data. It is a
+J2EE web application, built with EJB3, Hibernate, Struts2 and several other open source technologies. It includes a
+"Java API" (a set of remote EJBs), and a caGrid API.
 
 Layout
 ------------------------
@@ -77,18 +78,23 @@ Prerequisites
 
 The following tools are needed for working on caArray2 code:
 
-- JDK 1.6.0_20 (or the latest 1.6 release). The Java binaries should be on your PATH and JAVA_HOME variable should be set to the location
-where the JDK is installed.
-- Ant 1.7.0 or later. ant should be on your PATH and ANT_HOME environment variable should be set to the location where Ant is installed. 
-  - You should also set the ANT_OPTS variable to "-Xmx256m"; otherwise, you may get an OutOfMemoryException when when running unit tests during
-    report generation
-- MySQL 5.0.45 is officially supported version. MySQL 5.1.x (up to 5.1.48) is known to work. Should be downloaded and installed from the MySQL download site.
-	- when installing, ensure the root user has the password defined in software/build/default.properties under the key "database.system.password" 
-  	- copy $CAARRAY_HOME/software/build/resources/my.cnf to the location from where MySQL reads its option files. This varies depending on
-      OS, refer to http://dev.mysql.com/doc/refman/5.0/en/option-files.html.
-      Alternatively, if you already have a MySQL my.cnf file, add the lines in the file above to it.
-- caGrid 1.2. This is optional, as it is needed only if you are working on grid services. This can be obtained from http://cagrid.org/display/downloads/caGrid+1.2.
-  You can use either the installer or the source code distribution and build it.
+- JDK 1.6.0_20 (or the latest 1.6 release).
+  - Set JAVA_HOME to your jdk location
+  - Add JAVA_HOME/bin to your PATH variable
+- Ant 1.7.0 or later.
+  - Set ANT_OPTS to "-Xmx256m"
+    Otherwise, you may get an OutOfMemoryException when running unit tests during report generation
+  - Set ANT_HOME to your ant install directory
+  - Add ANT_HOME/bin to your PATH variable
+- MySQL 5.0.45 is officially supported, but MySQL 5.1.x (up to 5.1.48) is known to work.
+  Should be downloaded and installed from the MySQL download site.
+  - Set a root password (if not set during install). This will be referenced under the key database.system.password in
+    /software/local.properties and your copy of /software/master_build/install.properties.  Steps to configure these
+    files described in the next section. To set the password, you can execute:
+    $ mysqladmin -u root password NEWPASSWORD
+- caGrid 1.2. This is optional, as it is needed only if you are working on grid services. This can be obtained from
+  http://cagrid.org/display/downloads/caGrid+1.2. You can use either the installer or the source code distribution
+  and build it.
 
 Getting Started
 ------------------------
@@ -96,46 +102,79 @@ Getting Started
 - Make sure you have installed and configured all of the prerequisites as described above.
 - Check out caArray. Most likely, you will check out the trunk - see the Source Control section for URL locations.
   Below, we use $CAARRAY_HOME to refer to the location of the caArray checkout.
-- Copy the "$CAARRAY_HOME/software/master_build/install.properties" file, rename it to whatever you wish, and configure it with values appropriate for your 
-  desired local deployment.
-- Create and configure a "$CAARRAY_HOME/software/build/local.properties" file.
-  - Database setup (values should be same as in install.properties copy above): 
-      database.system.user
-      database.system.password
-      database.server
-      database.port
-      database.name
-      database.user
-      database.password. 
-  - JBoss setup: 
-    - jboss.home set its value to be what is set for application.base.path in the install.properties file copy above, with jboss-5.1.0.GA-nci appended 
-      (e.g., application.base.path set to /usr/local/caarray, so jboss.home is set to /usr/local/caarray/jboss-5.1.0.GA-nci). 
+- Copy $CAARRAY_HOME/software/build/resources/my.cnf to the location from where MySQL reads its option files.
+  This varies depending on OS, refer to http://dev.mysql.com/doc/refman/5.0/en/option-files.html.
+  Alternatively, if you already have a MySQL my.cnf file, add the lines in the file above to it.
+- Copy the "$CAARRAY_HOME/software/master_build/install.properties" file, rename it to whatever you wish, and configure
+  it with values appropriate for your desired local deployment. You should at least edit:
+    - application.base.path
+    - database.system.user
+    - database.system.password
+    - database.name
+    - database.user
+    - database.password
+    - dataStorage.fileSystem.baseDir (if any of the other dataStorage properties are set to file-system)
+- Create and configure a "$CAARRAY_HOME/software/build/local.properties" file. The purpose of this file is to allow
+  developers to override property values from $CAARRAY_HOME/software/build/default.properties file and thus prevent
+  accidental check-in of $CAARRAY_HOME/software/build/default.properties, so localize your environment in
+  $CAARRAY_HOME/software/build/local.properties rather than $CAARRAY_HOME/software/build/default.properties.
+  - Database setup (values should be same as in install.properties copy above):
+    - database.system.user
+    - database.system.password
+    - database.server
+    - database.port
+    - database.name
+    - database.user
+    - database.password
+    - dataStorage.fileSystem.baseDir
+  - JBoss setup (values should be same as in install.properties copy above if they exist): 
+    - jboss.home set its value to be what is set for application.base.path in the install.properties file copy above,
+      with jboss-5.1.0.GA-nci appended (e.g., application.base.path set to /usr/local/caarray, so jboss.home is set to
+      /usr/local/caarray/jboss-5.1.0.GA-nci).
+    - jboss.server.jndi.port
+    - jboss.server.port
   - Ivy Resolution. This will speed up ivy resolution.  Unset if dependencies change (or clean out your cache):
     - ivy.resolve.pessimistic=false  
     - ivy.noclean=true
-  The purpose of the $CAARRAY_HOME/software/build/local.properties file is to allow developers to override property values from
-  $CAARRAY_HOME/software/build/default.properties file and thus prevent accidental check-in of $CAARRAY_HOME/software/build/default.properties, so localize 
-  your environment in $CAARRAY_HOME/software/build/local.properties rather than $CAARRAY_HOME/software/build/default.properties.
-- To create the caArray DB schema (prerequisite for installation), 
-1.  create schema caarraydb;
-2.  create user 'caarrayop'
-3.  grant all on caarraydb.* to 'db-user'@'%' identified by 'db-password' with grant option;
-4.  grant all on caarraydb.* to 'db-user'@'localhost' identified by 'db-password' with grant option;
-5.  flush privileges;
-where db-user and db-password are the values you set in local.properties and your copy of install.properties. 
-Then open a command prompt and from $CAARRAY_HOME/software/build, execute
-  ant database:reinitialize
-- Then, to install caArray application, cd to $CAARRAY_HOME/software/master_build, execute (replace "<absolute path to install.properties file copy>" with actual path)
-  ant -Dproperties.file=<absolute path to install.properties file copy> deploy:local:install
-- caArray will be installed locally and both caArray JBoss and grid service JBoss will be started automatically.
+    - local.repo.dir (optional if you checked out the ivy repository. See Build Management below)
+  - Grid Services
+    - globoss.home
+    - application.base.path
+- Create the caArray DB schema (prerequisite for installation),
+    $ mysql -u root -p
+    mysql> create schema caarraydb;
+    mysql> create user 'caarrayop'
+    mysql> grant all on caarraydb.* to 'db-user'@'%' identified by 'db-password' with grant option;
+    mysql> grant all on caarraydb.* to 'db-user'@'localhost' identified by 'db-password' with grant option;
+    mysql> flush privileges;
+  where db-user and db-password are the values you set in local.properties and your copy of install.properties.
+- To initialize the database, open a command prompt and execute
+    $ cd $CAARRAY_HOME/software/build
+    $ ant database:reinitialize
+- To install the caArray application,
+    $ cd $CAARRAY_HOME/software/master_build
+    $ ant -Dproperties.file=<absolute path to install.properties file copy> deploy:local:install
+  (replace "<absolute path to install.properties file copy>" with actual path)
+  caArray will be installed locally and both caArray JBoss and grid service JBoss will be started automatically.
 
-You can now access the application at http://${jboss.server.hostname}:${jboss.server.port}/caarray. The Grid services
-will be available at http://${grid.server.hostname}:${18080}/wsrf/services/cagrid/CaArraySvc (Legacy) and 
-http://${grid.server.hostname}:${18080}/wsrf/services/cagrid/CaArraySvc_v1_0 (External v. 1.0)
+You can now access the application at http://${jboss.server.hostname}:${jboss.server.port}/caarray.
+Default logins are
+  caarrayuser/caArray2!
+  caarrayadmin/caArray2!
+*NOTE: Please change these passwords immediately for any non-development environment
 
-During your iterative development process for working on an issue, you can just deploy modified code to the caArray installation by opening a command prompt at
-$CAARRAY_HOME/software/build and executing ant deploy, which will build the caarray.ear file, and copy it to your caArray JBoss server (defined by jboss.home property
-in $CAARRAY_HOME/software/build/local.properties" file).
+The Grid services will be available at http://${grid.server.hostname}:${globoss.server.http.port}/wsrf/services/cagrid/CaArraySvc (Legacy)
+and http://${grid.server.hostname}:${globoss.server.http.port}/wsrf/services/cagrid/CaArraySvc_v1_0 (External v. 1.0)
+
+During your iterative development process for working on an issue, you can just deploy modified code to the caArray
+installation by opening a command prompt at $CAARRAY_HOME/software/build and executing ant deploy, which will build the
+caarray.ear file and copy it to your caArray JBoss server (defined by jboss.home property in
+$CAARRAY_HOME/software/build/local.properties" file).
+
+After deploying your code, you can restart jboss using:
+  $ ant deploy:stop-jboss-servers
+  $ ant deploy:start-jboss-servers
+
 
 Build Management
 -----------------------
@@ -209,28 +248,21 @@ db-*.xml file referencing the script. You can use the schema file from the previ
 Source Control
 ------------------------
 
-The base Subversion URL is https://gforge.nci.nih.gov/svnroot/caarray2. The mainline of development is under the "trunk" subdirectory,
-thus typically you would want to check out https://gforge.nci.nih.gov/svnroot/caarray2/trunk.
+The base Subversion URL is https://ncisvn.nci.nih.gov/svn/caarray2. The mainline of development is under the "trunk" subdirectory,
+thus typically you would want to check out https://ncisvn.nci.nih.gov/svn/caarray2/trunk.
 
-Branches are created as needed under https://gforge.nci.nih.gov/svnroot/caarray2/branches for work on previous or future versions of
+Branches are created as needed under https://ncisvn.nci.nih.gov/svn/caarray2/branches for work on previous or future versions of
 caArray in parallel with mainline development. Also, developers should create their own private branches here for work that spans 
 more than 1-2 days.
 
-Tags are created under https://gforge.nci.nih.gov/svnroot/caarray2/tags for each milestone, release candidate and GA release.
+Tags are created under https://ncisvn.nci.nih.gov/svn/caarray2/tags for each milestone, release candidate and GA release.
 
 Issue Tracking
 ------------------------
 
-caArray uses GForge for tracking bugs and feature requests. We use the tracker portion of GForge for this:
+caArray uses JIRA for tracking bugs, feature requests, and project management.
 
-https://gforge.nci.nih.gov/tracker/?group_id=305
-
-More specifically, we use two trackers. The Implementation Items tracker (https://gforge.nci.nih.gov/tracker/?atid=1344&group_id=305)
-is used by the DEV team for all features, feature enhancements, bugs, code improvements, and other changes to the source code.
-
-The Community Change Requests tracker (https://gforge.nci.nih.gov/tracker/?atid=1339&group_id=305) is used for managing requests from
-the caArray user community. Eventually, as the requests are accepted and slated for releases, corresponding items are created in the
-Implementation Items tracker.
+https://tracker.nci.nih.gov/browse/ARRAY
 
 Developing with Eclipse
 ------------------------
@@ -241,11 +273,12 @@ series, but should work with earlier versions as well.
 To import the caArray into Eclipse, simply invoke File->Import, then select General->Existing Projects into Workspace. In the resulting dialog
 box, select the "choose root directory" option and point it at the base directory of the caArray checkout.
 
-We recommend using the JEE distribution of Eclipse with the following plugins:
+You must install the IvyDE plugin, which is required for Ivy integration.
+
+We also recommend using the JEE distribution of Eclipse with the following plugins:
 - Subversive or Subclipse (for Subversion integration)
 - Checkstyle
 - PMD
-- IvyDE (for Ivy integration)
 
 The Checkstyle and PMD plugins should then be configured to use the caArray rulesets (see static analysis section).
 
@@ -255,15 +288,3 @@ Static Analysis
 caArray uses static analysis tools to ensure code quality and conformance to standards. Currently we use Checkstyle and PMD. 
 
 The rulesets for these are in software/build/resources/caarray_checks.xml and software/build/resources/pmd-ruleset.xml respectively.
-
-Continuous Integration
-------------------------
-
-caArray uses the Hudson CI server. Two types of builds exist: the continuous-integration build is run after every commit and the nightly build
-is run every night just after midnight. Builds are set up for the trunk and each active release branch.
-
-The continuous integration build does a clean build, and runs the static analysis and junit tests. The nightly build also runs the selenium
-and API tests.
-
-The Hudson CI server url is http://cbvapp-c1003.nci.nih.gov:48080/hudson. It can only be accessed from within the NCI network.
-
