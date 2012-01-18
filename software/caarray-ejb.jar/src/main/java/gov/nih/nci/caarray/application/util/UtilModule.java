@@ -64,9 +64,7 @@ public class UtilModule extends AbstractModule {
      */
     @Override
     protected void configure() {
-        // ARRAY-2189 - wiring with fake version for now.  Uncomment to use real version.
         bind(CaArrayFileSetSplitter.class).to(CaArrayFileSetSplitterImpl.class);
-//        bind(CaArrayFileSetSplitter.class).to(CaArrayFileSetNonSplitter.class);
     }
 
 }

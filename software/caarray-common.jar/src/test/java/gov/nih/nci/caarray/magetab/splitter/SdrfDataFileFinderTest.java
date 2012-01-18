@@ -22,10 +22,8 @@ public class SdrfDataFileFinderTest {
     
     @Test
     public void specificationSdrf() throws IOException {
-//        File f = MageTabDataFiles.SPECIFICATION_EXAMPLE_SDRF;
+        File f = MageTabDataFiles.SPECIFICATION_EXAMPLE_SDRF;
         SdrfDataFileFinder finder = new SdrfDataFileFinderImpl();
-        
-        File f = new File("/Users/tparnell/dev/caarray/test-data/target/magetab/specification/e-mexp-428_v1.0.sdrf");
         FileRef sdrf = new JavaIOFileRef(f);
         Set<String> referenced = finder.identifyReferencedDataFiles(sdrf);
         Set<String> expectedDataFiles = ImmutableSet.of("e-mexp-428data_v1.0.data", "H_TK6 MDR1 replicate 1.CEL", 

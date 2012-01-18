@@ -87,8 +87,8 @@ public class MageTabFileSetSplitterImpl implements MageTabFileSetSplitter {
 
     private static final Logger LOG = Logger.getLogger(MageTabFileSetSplitterImpl.class);
 
-    private SdrfSplitter singleFileSplitter;
-    private SdrfDataFileFinder dataFileFinder;
+    private final SdrfSplitter singleFileSplitter;
+    private final SdrfDataFileFinder dataFileFinder;
     
     @Inject
     public MageTabFileSetSplitterImpl(SdrfSplitter singleFileSplitter, SdrfDataFileFinder dataFileFinder) {
@@ -152,6 +152,6 @@ public class MageTabFileSetSplitterImpl implements MageTabFileSetSplitter {
         Set<String> referencedDataFiles = dataFileFinder.identifyReferencedDataFiles(smallSdrf);
         FilePredicate filePredicate = new FilePredicate(referencedDataFiles);
         curSet.getDataMatrixFiles().removeAll(Sets.filter(largeFileSet.getDataMatrixFiles(), filePredicate));
-        curSet.getNativeDataFiles().removeAll(Sets.filter(largeFileSet.getDataMatrixFiles(), filePredicate));
+        curSet.getNativeDataFiles().removeAll(Sets.filter(largeFileSet.getNativeDataFiles(), filePredicate));
     }
 }

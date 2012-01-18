@@ -103,7 +103,7 @@ public class MageTabFileSet implements Serializable {
     private final Set<FileRef> nativeDataFiles = new HashSet<FileRef>();
 
     /**
-     * Adds the file as an IDF to the document set to be parsed.
+     * Adds the file as an IDF to the document set to be parsed.ÿ
      *
      * @param file the IDF
      */
@@ -133,15 +133,6 @@ public class MageTabFileSet implements Serializable {
     }
 
     /**
-     * Gets the set of Sdrf files.
-     *
-     * @return current list of sdrf files.
-     */
-    public Set<FileRef> getSdrfFiles() {
-        return this.sdrfFiles;
-    }
-
-    /**
      * Adds the file as a data matrix file to the document set to be parsed.
      *
      * @param file the data matrix file
@@ -150,7 +141,7 @@ public class MageTabFileSet implements Serializable {
         checkFile(file);
         dataMatrixFiles.add(file);
     }
-    
+
     /**
      * Adds the file as a native data file to the document set to be parsed.
      *
@@ -169,6 +160,11 @@ public class MageTabFileSet implements Serializable {
         return this.adfFiles;
     }
 
+    /**
+     * Gets the set of Data Matrix files.
+     * 
+     * @return current set of data matrix files.
+     */
     public Set<FileRef> getDataMatrixFiles() {
         return this.dataMatrixFiles;
     }
@@ -182,8 +178,22 @@ public class MageTabFileSet implements Serializable {
         return this.idfFiles;
     }
 
+    /**
+     * Gets the set of native data files.
+     * 
+     * @return current set of native data files.
+     */
     public Set<FileRef> getNativeDataFiles() {
         return this.nativeDataFiles;
+    }
+
+    /**
+     * Gets the set of Sdrf files.
+     *
+     * @return current list of sdrf files.
+     */
+    public Set<FileRef> getSdrfFiles() {
+        return this.sdrfFiles;
     }
 
     /**
