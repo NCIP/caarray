@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!--
-$Id: install.xml 4757 2008-05-15 20:43:31Z zengje $
-$HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
+$Id: install.xml $
+$HeadURL: https://ncisvn.nci.nih.gov/svn/caarray2/trunk/software/master_build/install.xml $
 -->
 <project name="caarray-installer" default="upgrade" basedir="." xmlns:ivy="antlib:org.apache.ivy.ant">
     <description>
@@ -26,7 +26,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
     <property name="log.dir" location="${basedir}/logs" />
     <property name="working.dir" value="${basedir}/working" />
     <property name="temp.dir" location="${working.dir}/temp" />
-    
+
     <!-- Install Time properties -->
     <!-- Source and target directories -->
     <property name="bda-utils.dir" location="${basedir}/bda-utils" />
@@ -52,7 +52,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
 
     <property name="temp.dir" value="${basedir}/temp" />
     <property name="this.dir" value="${basedir}" />
-    
+
     <!-- Set application.base.path based on platform -->
     <condition property="application.base.path" value="${application.base.path.linux}">
         <or>
@@ -89,7 +89,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/caarray/trunk/software/install.xml $
 
     <!-- Includes-->
     <import file="${bda-utils.dir}/bda-build-utils-${bda.version}.xml" />
-    <import file="${basedir}/macrodefs.xml" /> 
+    <import file="${basedir}/macrodefs.xml" />
 
     <!-- Start logging moved out of target so all targets are logged -->
     <!--<property name="install-logs.dir" location="${application.base.path}/change-logs"/> -->
@@ -385,17 +385,17 @@ properties.list="jboss.server.jndi.port,jboss.server.port,jboss.cobraorb.port,jb
         <copy file="${temp.dir}/caarray.ear.to_deploy/${caarray.ear.file}" todir="${jboss.home}/server/${jboss.server.name}/deploy" overwrite="true" />
         <copy file="${database.driver.file}" todir="${jboss.home}/server/${jboss.server.name}/lib" overwrite="true" />
     </target>
-    
+
     <target name="common:jboss:caarray:configure-plugins">
         <process-plugins pluginJarsRootDir="${basedir}/plugins" />
     </target>
-    
+
     <target name="common:jboss:caarray:configure-filestorage">
         <process-filestorage />
     </target>
 
     <target name="install:jboss:caarray:re-configure" description="Update xml files in meta-inf directory of ear that have deployment attributes" depends="common:jboss:init, common:init, common:jboss:caarray:configure-plugins, common:jboss:caarray:configure-filestorage">
-    	<configure-caarray-ear temp.dir="${temp.dir}" template.ear.path="${caarray.dir.dist}/${caarray.ear.file}" project.properties="${basedir}/project.properties" properties.file="${properties.file}"/>
+      <configure-caarray-ear temp.dir="${temp.dir}" template.ear.path="${caarray.dir.dist}/${caarray.ear.file}" project.properties="${basedir}/project.properties" properties.file="${properties.file}"/>
 
         <!-- punt old commons lang jar -->
         <delete dir="${jboss.home}/server/${jboss.server.name}/deploy/jbossweb-tomcat55.sar/jsf-libs" includes="commons-lang*.jar" quiet="true"/>
@@ -676,8 +676,8 @@ depends="
     </target>
 
     <target name="-install:jboss:configure:update-runscripts" description="Updates run.bat and run.sh so remote RMI clients can connect.">
-        <set-host-flag-in-start-jboss-scripts 
-jboss.bin.dir="${jboss.home}/bin" 
+        <set-host-flag-in-start-jboss-scripts
+jboss.bin.dir="${jboss.home}/bin"
 host.flag.value="${jboss.server.hostname}"
             />
         <chmod dir="${jboss.home}/bin" perm="ugo+rx" includes="**/*" osfamily="unix"/>
@@ -777,7 +777,7 @@ host.flag.value="${jboss.server.hostname}"
         install:validation:post-install
         "/-->
     <!-- Generic targets to call appropriate upgrade path targets, just change the depends to use alternate ugprade path -->
-    <target name="upgrade:jboss" description="Wrapper target to call all targets required to upgrade jboss container." unless="exclude.jboss" 
+    <target name="upgrade:jboss" description="Wrapper target to call all targets required to upgrade jboss container." unless="exclude.jboss"
 depends="upgrade:jboss:init,common:init,upgrade-ncm:jboss,-install:jboss:configure:web-container,-install:jboss:configure:log4j,-install:jboss:configure:disable-credential-caching,-install:jboss:configure:api:streaming:port">
     </target>
 
@@ -803,7 +803,7 @@ depends="upgrade:jboss:init,common:init,upgrade-ncm:jboss,-install:jboss:configu
             <param name="skip.clean" value="true"/>
         </antcall>
     </target>
-        
+
     <target name="upgrade:tier:grid" description="Upgrades caArray installation on NCICB tier."
         depends="
         upgrade:jboss:init,
@@ -935,7 +935,7 @@ depends="upgrade:jboss:init,common:init,upgrade-ncm:jboss,-install:jboss:configu
         install:common:validation:post-install
         ">
     </target>
-    
+
     <!-- Upgrade with No Container Modification (NCM) -->
     <target name="upgrade-ncm:jboss" description="Wrapper target to call all targets required to upgrade jboss container." unless="exclude.jboss"
         depends="
@@ -1103,7 +1103,7 @@ depends="upgrade:jboss:init,common:init,upgrade-ncm:jboss,-install:jboss:configu
         <delete>
             <fileset dir="${grid.home}/server/${grid.server.name}/lib" includes="cog-jglobus.jar cog-tomcat.jar cryptix32.jar cryptix.jar cryptix-asn1.jar jce-jdk13-125.jar log4j-1.2.8.jar puretls.jar"/>
         </delete>
-    	<configure-caarray-grid-services properties.file="${properties.file}" project.properties="${basedir}/project.properties" temp.dir="${temp.dir}" grid.template.basedir="${basedir}/grid" grid.target.basedir="${basedir}/grid"/>
+      <configure-caarray-grid-services properties.file="${properties.file}" project.properties="${basedir}/project.properties" temp.dir="${temp.dir}" grid.template.basedir="${basedir}/grid" grid.target.basedir="${basedir}/grid"/>
         <for param="version" list="${caarray-grid-svc.versions}">
             <sequential>
                 <if>

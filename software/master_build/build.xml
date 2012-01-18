@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!--
-$Id: build.xml 4839 2008-05-21 14:45:51Z zengje $
-$HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
+$Id: build.xml $
+$HeadURL: https://ncisvn.nci.nih.gov/svn/caarray2/trunk/software/master_build/build.xml $
 -->
 <project name="caarray-build" default="build:all" basedir="."
     xmlns:ivy="antlib:org.apache.ivy.ant"
@@ -77,7 +77,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
     <property name="common.target.dir" value="${caarray.dist.dir}/${common.dist.relative.dir}" />
 
     <!-- TODO: Update these to get dynamically from SVN -->
-    
+
 
     <property name="caarray.name.installer" value="caarray_install_" />
     <property name="caarray.name.upgrader" value="caarray_upgrade_" />
@@ -86,14 +86,14 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
     <property name="caarray.src.dir" value="${software.dir}" />
     <property name="caarray.sql.target.dir" value="${caarray.src.dir}/caarraydb/target/sql" />
     <property name="caarray.sql.src.dir" value="${caarray.src.dir}/caarraydb/src/main/sql" />
-    
+
     <property name="tools.dist.dir" value="${software.dir}/tools"/>
     <property name="jboss.dest.file" value="${tools.dist.dir}/${jboss.binaries.file}"/>
     <property name="grid.dest.file" value="${tools.dist.dir}/${jboss.grid-binaries.file}"/>
 
     <property name="db.src.dir" value="${software.dir}/${db.dist.relative.dir}" />
     <property name="jboss-conf.target.dir" value="${caarray.dist.dir}/${jboss-conf.dist.relative.dir}" />
-    
+
     <property name="cagrid-console.dest.file" value="${download.dir}/${cagrid-console.binaries.file}" />
     <property name="cagrid.target.co.dir" location="${target.dir}/cagrid-target"/>
 
@@ -109,7 +109,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
     <property name="dist.exploded.dir" value="${dist.dir}/exploded" />
     <property name="caarray.ear.target.dir" value="${dist.exploded.dir}/ear" />
     <property name="caarray-bundled-plugins.dir" value="${dist.exploded.dir}/plugins" />
-    <property name="caarray.grid.dir" value="${dist.exploded.dir}/grid" />    
+    <property name="caarray.grid.dir" value="${dist.exploded.dir}/grid" />
     <property name="tools.dist.dir" value="${dist.exploded.dir}/${tools.dist.relative.dir}" />
     <property name="common.dist.dir" value="${dist.exploded.dir}/${common.dist.relative.dir}" />
     <property name="db-install.dist.dir" value="${dist.exploded.dir}/${db-install.dist.relative.dir}" />
@@ -121,11 +121,11 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
     <property name="cagrid-base-war.dest.file" value="${download.dir}/${cagrid-base-war.binaries.file}" />
     <property name="cagrid-console.dest.file" value="${download.dir}/${cagrid-console.binaries.file}" />
     <property name="cagrid.target.co.dir" location="${target.dir}/cagrid-target"/>
-    
+
     <property name="caarray.dist.dir" value="${dist.exploded.dir}" />
     <property name="db.dir" value="${caarray.dist.dir}/db" />
     <property name="config.dir" value="${caarray.dist.dir}/config" />
-    
+
     <!-- retrive ivy.jar.files then retrieve bda files and librarires -->
     <condition property="commonlibrary.dir" value="">
         <or>
@@ -270,9 +270,9 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
             </if>
 
         </then>
-    </if>        
+    </if>
     </target>
-    
+
     <target name="ivy:clean" description="Cleans up the ivy cache of this project and all sub-projects">
         <ivy:settings file="${ivy.settings.dir}/${ivy.settings.file}" />
         <ivy:cleancache />
@@ -284,8 +284,8 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
         <!--
         <ant inheritAll="false" inheritRefs="false" antfile="${bda-blueprints-webapp.build.file}" target="ivy-clean" dir="${bda-blueprints-webapp.base.dir}" />
         -->
-    </target>    
-    
+    </target>
+
     <target name="validate:pre:build">
         <mkdir dir="${download.dir}"/>
         <validate-pre-build/>
@@ -337,13 +337,13 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
     <!-- Creates upgrader distribution -->
     <target name="dist:upgrader" depends="dist:upgrader:prep">
         <delete file="${dist.dir}/${caarray.upgrade.zip.file}" />
-        
+
         <!-- Set environment name to external -->
         <copy todir="${dist.exploded.dir}" overwrite="true">
             <fileset dir="${build.dir}">
                 <include name="upgrade.properties" />
-            </fileset>              
-        </copy>         
+            </fileset>
+        </copy>
         <delete file="${dist.exploded.dir}/install.properties"/>
         <replaceregexp file="${dist.exploded.dir}/upgrade.properties" byline="true" match="^(env.name)=.*" replace="\1=external" />
 
@@ -355,7 +355,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
             optional.property.list="upt.url,ldap.url,ldap.searchbase,ldap.searchprefix,"
             delete.property.list="application.base.path.windows,application.base.path.linux"
             />
-        
+
         <replaceregexp file="${dist.exploded.dir}/build.xml" byline="true" match="(&lt;property name=&quot;properties.file&quot;\s+value=&quot;).*(&quot;\s*\/&gt;)" replace="\1upgrade.properties\2" />
         <zip destfile="${dist.dir}/${caarray.upgrade.zip.file}">
             <zipfileset dir="${caarray.dist.dir}" prefix="${caarray.upgrade.name}_${caarray.version}" excludes="tools/**/*"
@@ -369,7 +369,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
             <zipfileset dir="${software.dir}" excludes="lib/**, *download.dir*/**, *env.GLOBOSS_HOME*/**, dist/**, tools/**, bda-utils/**, local-ivy-repo/**, target/**, load-test/**, **/eclipse-out/**, **/.svn/**" prefix="${caarray.src.name}_${caarray.version}"/>
         </zip>
     </target>
-    
+
     <target name="dist:example-api-zips">
         <delete file="${dist.dir}/grid_api_client_examples_v1_0.zip" />
         <zip destfile="${dist.dir}/grid_api_client_examples_v1_0.zip">
@@ -384,7 +384,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
             <zipfileset dir="${software.dir}/../api_client_examples/legacy_api_client_examples" excludes="dist/**, tools/**, bda-utils/**, local-ivy-repo/**, target/**, load-test/**, **/eclipse-out/**, **/.svn/**" prefix="legacy_api_client_examples"/>
         </zip>
     </target>
-    
+
     <target name="dist:cn2magetab">
         <delete file="${dist.dir}/cn2magetab.jar" />
         <copy file="${software.dir}/copy-number-converter/target/cn2magetab.jar" tofile="${dist.dir}/cn2magetab.jar"/>
@@ -534,7 +534,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
                 <include name="local.properties" />
             </zipfileset>
             -->
-        </zip>          
+        </zip>
     </target>
 
     <target name="dist:upgrade:tier:jboss" depends="dist:installer:prep">
@@ -552,13 +552,13 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
                 <include name="properties.template" />
                 <include name="project.properties" />
             </zipfileset>
-        </zip>          
+        </zip>
     </target>
 
     <target name="dist:upgrade:tier:tomcat" depends="dist:installer:prep">
         <delete file="${dist.dir}/${caarray-webapp.install.name}_${caarray-webapp.version}-tomcat.zip"/>
         <zip destfile="${dist.dir}/${caarray-webapp.install.name}_${caarray-webapp.version}-tomcat.zip">
-            <zipfileset dir="${caarray-webapp.dist.dir}" prefix="${caarray-webapp.dist.relative.dir}"/>            
+            <zipfileset dir="${caarray-webapp.dist.dir}" prefix="${caarray-webapp.dist.relative.dir}"/>
             <zipfileset dir="${tools.dist.dir}" prefix="${tools.dist.relative.dir}">
                 <include name="*tomcat*"/>
             </zipfileset>
@@ -570,7 +570,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
                 <include name="properties.template" />
                 <include name="project.properties" />
             </zipfileset>
-        </zip>          
+        </zip>
     </target>
     <target name="dist:upgrade:tier"
         depends="
@@ -632,7 +632,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
     </target>
 
     <target name="dist:tools:retrieve" depends="retrieve:jboss,retrieve:jboss405,dist:tools:retrieve:cagrid,dist:tools:retrieve:cagrid-console"/>
-    
+
     <target name="dist:tools:retrieve:jboss-bindings"  description="Downloads JBOSS bindings filefrom binary repository and verifies checksum">
         <get src="${jboss4-bindings.src.url}" dest="${dist.exploded.dir}/${jboss4-bindings.file}" />
         <get src="${jboss5-bindings.src.url}" dest="${dist.exploded.dir}/${jboss5-bindings.file}" />
@@ -642,14 +642,14 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
         <get src="${cagrid-libs.src.url}" dest="${cagrid-libs.dest.file}" />
         <get src="${cagrid-base-war.src.url}" dest="${cagrid-base-war.dest.file}" />
     </target>
-    
+
     <target name="run-caarray2-build" depends="
         clean,
         init,
         build:caarray,
         build:init-sql">
     </target>
-    
+
     <target name="dist:tools:retrieve:sync-gts"  description="Downloads synch-gts from binary repository" depends="dist:tools:retrieve:cagrid-target">
         <if>
             <not>
@@ -662,7 +662,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
         <property name="sync-gts.dist.dir" location="${dist.exploded.dir}/${sync-gts.dist.relative.dir}"/>
         <unzip src="${download.dir}/${sync-gts.binaries.file}" dest="${sync-gts.dist.dir}"/>
     </target>
-    
+
     <target name="dist:tools:retrieve:cagrid-target">
         <mkdir dir="${cagrid.target.co.dir}"/>
         <if>
@@ -682,7 +682,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
             <fileset dir="${cagrid.target.co.dir}"/>
         </copy>
     </target>
-    
+
     <target name="dist:tools:retrieve:cgmm" if="jboss.cgmm.enable">
         <ivy-retrieve-cgmm ivy.dir="${bda-utils.dir}/resource/ivy"
             />
@@ -694,7 +694,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
             </fileset>
         </copy>
     </target>
-    
+
     <target name="deploy:remote:upgrade:ahp" description="Installs and configures the application and required binaries and re-creates the datbase  on a remote machine. Used for NCI tiers (dev, qa, stg, prod)" >
         <!--
           * Will use the target from install.xml specified in ${upgrade.target} (defaults to upgrade unless passed in on command line).
@@ -711,7 +711,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
         <!-- SSH to machine ant run ant command line to install application -->
         <remote-ssh remotesshcommand=". .bash_profile;cd ${ssh.dir.temp}; ant -Dproperties.file=${properties.file.name} -Dforce.reinstall=true ${override.properties.string} ${upgrade.target}" />
     </target>
-    
+
     <target name="dist:tools:retrieve:cagrid-console" description="Downloads grid console from binary repository">
         <if>
             <not>
@@ -760,7 +760,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
                 <include name="**/*.jar" />
             </fileset>
         </copy>
-        
+
         <copy todir="${caarray.dist.dir}/tools">
             <fileset dir="${tools.dist.dir}">
                 <include name="*.jar"/>
@@ -769,7 +769,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
         </copy>
 
         <dist-prep />
-        
+
         <copy tofile="${caarray.dist.dir}/${properties.file.name}" file="${properties.file}" overwrite="true"/>
     </target>
 
@@ -778,7 +778,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
         <mkdir dir="${caarray-bundled-plugins.dir}" />
         <copy file="${software.dir}/plugins/target/${caarray-plugins.bundledPlugins.zip.name}" todir="${caarray-bundled-plugins.dir}" />
     </target>
-    
+
     <target name="install:set-default-target">
         <copy todir="${caarray.dist.dir}" overwrite="true" file="install.properties" />
 
@@ -807,21 +807,21 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
                 <include name="**/*.jar" />
             </fileset>
         </copy>
-        
+
         <dist-prep
             copy.tools.flag="N"
             default.target="upgrade"
             />
-            
+
         <copy tofile="${caarray.dist.dir}/${properties.file.name}" file="${properties.file}" overwrite="true"/>
-        
+
         <!-- For DAC upgrades
         <dist-prep
             copy.tools.flag="Y"
             default.target="upgrade"
             />
         -->
-    
+
     </target>
 
     <target name="create-installer-zip">
@@ -907,14 +907,14 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
         <remote-ssh remoteSshUser="${ssh.grid.username}" remotesshcommand=". .bash_profile;mkdir ${ssh.grid.dir.temp}" />
         <deploy-files ssh.user="${ssh.grid.username}" dist.file="${caarray.upgrade.zip.file}" remote.directory.property.name="ssh.grid.dir.temp" />
         <remote-ssh remoteSshUser="${ssh.grid.username}" remotesshcommand=". .bash_profile;cd ${ssh.grid.dir.temp}/${caarray.upgrade.name}_${caarray.version}; ant -Dproperties.file=${properties.file.name} -Dforce.reinstall=true upgrade:tier:grid" />
-    </target>    
-    
+    </target>
+
     <target name="deploy:remote:upgrade:db"
            depends="
         build:all,
         dist:upgrade:tier:db
         ">
-        <deploy-files 
+        <deploy-files
             ssh.user="${db.ssh.server.username}"
             ssh.host="${db.ssh.server.hostname}"
             remote.directory.property.name="db.ssh.dir.temp"
@@ -922,13 +922,13 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
                />
         <remote-ssh remotesshcommand=". .bash_profile;cd ${db.ssh.dir.temp}./${caarray.upgrade.name}_${caarray.version}; ant -Dproperties.file=${properties.file.name} -Dforce.reinstall=true -Dexclude.jboss=true -Dexclude.tomcat=true upgrade:database" />
     </target>
-    
+
     <target name="deploy:remote:upgrade:jboss"
            depends="
         build:all,
         dist:upgrade:tier:jboss
         ">
-        <deploy-files 
+        <deploy-files
             ssh.user="${jboss.ssh.server.username}"
             ssh.host="${jboss.ssh.server.hostname}"
             remote.directory.property.name="jboss.ssh.dir.temp"
@@ -936,13 +936,13 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
                />
         <remote-ssh remotesshcommand=". .bash_profile;cd ${jboss.ssh.dir.temp}/${caarray.upgrade.name}_${caarray.version}; ant -Dproperties.file=${properties.file.name} -Dforce.reinstall=true -Dexclude.tomcat=true -Dexclude.database=true upgrade:jboss" />
     </target>
-    
+
     <target name="deploy:remote:upgrade:tomcat"
            depends="
         build:all,
         dist:upgrade:tier:tomcat
         ">
-        <deploy-files 
+        <deploy-files
             ssh.user="${tomcat.ssh.server.username}"
             ssh.host="${tomcat.ssh.server.hostname}"
             remote.directory.property.name="tomcat.ssh.dir.temp"
@@ -954,13 +954,13 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
     <target name="report:grand" depends="dist:installer:prep" description="Generates target flow diagrams for build files">
         <!-- Temporary fix to make grand work for install.xml -->
 
-        <report-grand 
-            build.file.location="build.xml" 
-            output.file.dir="${grand.rpt.dir}" 
+        <report-grand
+            build.file.location="build.xml"
+            output.file.dir="${grand.rpt.dir}"
             output.file.name="generic-root-build.xml" />
-        <report-grand 
-            build.file.location="${dist.exploded.dir}/build.xml" 
-            output.file.dir="${grand.rpt.dir}" 
+        <report-grand
+            build.file.location="${dist.exploded.dir}/build.xml"
+            output.file.dir="${grand.rpt.dir}"
             output.file.name="generic-root-install.xml" />
     </target>
 
@@ -1071,31 +1071,31 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/ncia/trunk/software/build.xml $
             ivy.add.xml.src.location="${build.dir}/install.xml"
             />
     </target>
-    
+
     <target name="report:erd">
-        <generate-erd   
+        <generate-erd
             schemaspy.jar="schemaspy-3.1.1.jar"
             database.driver.jar="mysql-connector-java-5.0.5.jar"
-            />                      
+            />
     </target>
 
     <target name="report:uml">
         <property name="uml.dir" value="${reports.dir}/uml"/>
         <path id="caarray.classpath.ref">
             <fileset dir="${lib.dir}/runtime">
-                <include name="**/*.jar" />     
-            </fileset>              
-        </path>         
-        <generate-uml   
-            uml.dir="${uml.dir}"    
+                <include name="**/*.jar" />
+            </fileset>
+        </path>
+        <generate-uml
+            uml.dir="${uml.dir}"
             src.java.dir="${caarray-webapp.base.dir}/src/java"
             uml.source.path="caarray.classpath.ref"
-            />                      
+            />
     </target>
 
     <target name="keygen">
         <generate-jar-signing-keystore
             />
-    </target>    
-    
+    </target>
+
 </project>
