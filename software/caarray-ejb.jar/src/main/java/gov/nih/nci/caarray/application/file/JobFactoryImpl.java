@@ -149,7 +149,7 @@ public class JobFactoryImpl implements JobFactory {
         return new ProjectFilesImportJob(user, project, fileSet, dataImportOptions,
                 arrayDataImporterProvider.get(), mageTabImporterProvider.get(), 
                 fileAccessServiceProvider.get(), projectDaoProvider.get(),
-                searchDaoProvider.get(), caArrayFileSetSplitterProvider.get());
+                searchDaoProvider.get());
     }
 
     /**

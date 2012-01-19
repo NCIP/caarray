@@ -103,7 +103,11 @@ public enum JobType {
     /**
      * Indicates a data file reparse job.
      */
-    DATA_FILE_REPARSE("Data File Reparse");
+    DATA_FILE_REPARSE("Data File Reparse"), 
+    /**
+     * Indicates a data file split job.
+     */
+    DATA_FILE_SPLIT("Data File Split");
     
     private final String displayName;
 

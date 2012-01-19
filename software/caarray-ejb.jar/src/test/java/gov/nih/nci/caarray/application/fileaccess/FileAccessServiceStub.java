@@ -148,6 +148,7 @@ public class FileAccessServiceStub implements FileAccessService, DataStorage {
         caArrayFile.setName(file.getName());
         caArrayFile.setFileStatus(FileStatus.UPLOADED);
         if (parent != null) {
+            caArrayFile.setProject(parent.getProject());
             parent.addChild(caArrayFile);
         }
         setTypeFromExtension(caArrayFile, file.getName());
@@ -178,6 +179,7 @@ public class FileAccessServiceStub implements FileAccessService, DataStorage {
         caArrayFile.setName(filename);
         caArrayFile.setFileStatus(FileStatus.UPLOADED);
         if (parent != null) {
+            caArrayFile.setProject(parent.getProject());
             parent.addChild(caArrayFile);
         }
         this.nameToFile.put(caArrayFile.getName(), file);

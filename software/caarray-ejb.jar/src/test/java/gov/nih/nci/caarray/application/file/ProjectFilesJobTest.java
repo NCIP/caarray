@@ -233,17 +233,6 @@ public class ProjectFilesJobTest {
         verify(arrayDataImporter).validateFiles(job.getFileSet(), null, false);
     }
     
-    @Test 
-    public void noValidateWithChildFileSets() {
-        setupParentChildFileSet();
-        job.doValidate(job.getFileSet());
-        verify(mageTabImporter, times(0)).validateFiles(any(Project.class), any(CaArrayFileSet.class));
-        verify(arrayDataImporter, times(0)).validateFiles(job.getFileSet(), null, false);
-        for (CaArrayFile file : job.getFileSet().getFiles()) {
-            verify(file).setFileStatus(eq(FileStatus.VALIDATED));
-        }
-    }
-    
     @Test
     public void pullUpValidationMessagesOnExecute() {
         doNothing().when(job).executeProjectFilesJob();
