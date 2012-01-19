@@ -124,12 +124,12 @@ public class AffymetrixArrayDataServiceTest extends AbstractArrayDataServiceTest
 
     @Before
     public void onSetup() {
-        focusCel = getCelCaArrayFile(AffymetrixArrayDataFiles.HG_FOCUS_CEL, HG_FOCUS_LSID_OBJECT_ID);
-        focusCalvinCel = getCelCaArrayFile(AffymetrixArrayDataFiles.HG_FOCUS_CALVIN_CEL,
-                HG_FOCUS_LSID_OBJECT_ID);
-        focusChp = getChpCaArrayFile(AffymetrixArrayDataFiles.HG_FOCUS_CHP, HG_FOCUS_LSID_OBJECT_ID);
-        focusCalvinChp = getChpCaArrayFile(AffymetrixArrayDataFiles.HG_FOCUS_CALVIN_CHP,
-                HG_FOCUS_LSID_OBJECT_ID);
+        focusCel = getCelCaArrayFile(AffymetrixArrayDataFiles.TEST3_CEL, AFFY_TEST3_LSID_OBJECT_ID);
+        focusCalvinCel = getCelCaArrayFile(AffymetrixArrayDataFiles.TEST3_CALVIN_CEL,
+                AFFY_TEST3_LSID_OBJECT_ID);
+        focusChp = getChpCaArrayFile(AffymetrixArrayDataFiles.TEST3_CHP, AFFY_TEST3_LSID_OBJECT_ID);
+        focusCalvinChp = getChpCaArrayFile(AffymetrixArrayDataFiles.TEST3_CALVIN_CHP,
+                AFFY_TEST3_LSID_OBJECT_ID);
 
         focusCalvinCel.setProject(focusCel.getProject());
         focusChp.setProject(focusCel.getProject());
