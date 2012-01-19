@@ -82,10 +82,8 @@
  */
 package gov.nih.nci.caarray.application.file;
 
-import gov.nih.nci.caarray.application.ServiceLocatorFactory;
 import gov.nih.nci.caarray.application.arraydata.DataImportOptions;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
-import gov.nih.nci.caarray.application.util.CaArrayFileSetSplitter;
 import gov.nih.nci.caarray.dao.ProjectDao;
 import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
@@ -94,9 +92,6 @@ import gov.nih.nci.caarray.domain.project.JobType;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.magetab.MageTabParsingException;
-
-import java.io.IOException;
-import java.util.Set;
 
 import org.apache.log4j.Logger;
 
@@ -111,21 +106,18 @@ class ProjectFilesImportJob extends AbstractProjectFilesJob {
     private static final Logger LOG = Logger.getLogger(ProjectFilesImportJob.class);
 
     private final DataImportOptions dataImportOptions;
-    private FileManagementService fileManagementService = ServiceLocatorFactory.getFileManagementService();
-    private final CaArrayFileSetSplitter splitter;
 
     // CHECKSTYLE:OFF more than 7 parameters are okay for injected constructor
     @SuppressWarnings("PMD.ExcessiveParameterList")
     @Inject
     ProjectFilesImportJob(String username, Project targetProject,
             CaArrayFileSet fileSet, DataImportOptions dataImportOptions, ArrayDataImporter arrayDataImporter,
-            MageTabImporter mageTabImporter, FileAccessService fileAccessService, ProjectDao projectDao,
-            SearchDao searchDao, CaArrayFileSetSplitter splitter) {
+            MageTabImporter mageTabImporter, FileAccessService fileAccessService, ProjectDao projectDao, 
+            SearchDao searchDao) {
     // CHECKSTYLE:ON
         super(username, targetProject, fileSet, arrayDataImporter,
                 mageTabImporter, fileAccessService, projectDao, searchDao);
         this.dataImportOptions = dataImportOptions;
-        this.splitter = splitter;
     }
 
     /**
@@ -138,31 +130,9 @@ class ProjectFilesImportJob extends AbstractProjectFilesJob {
     @Override
     protected void executeProjectFilesJob() {
         doValidate(getFileSet());
-
-        if (!getFileSet().isValidated()) {
-            return;
-        }
-
-        boolean didSplit = splitAndImport(getFileSet());
-        if (!didSplit) {
+        if (getFileSet().isValidated()) {
             importAnnotationAndData(getFileSet());
         }
-    }
-
-    private boolean splitAndImport(CaArrayFileSet fileSet) {
-        try {
-            Set<CaArrayFileSet> splits = splitter.split(fileSet);
-            if (splits.size() != 1) {
-                for (CaArrayFileSet curSet : splits) {
-                    curSet.updateStatus(FileStatus.VALIDATED);
-                    fileManagementService.importFiles(getProject(), curSet, dataImportOptions);
-                }
-                return true;
-            }
-        } catch (IOException e) {
-            LOG.warn("Unable to split file set.  Falling back to non-split import.", e);
-        }
-        return false;
     }
 
     private void importAnnotationAndData(CaArrayFileSet fileSet) {
@@ -190,14 +160,5 @@ class ProjectFilesImportJob extends AbstractProjectFilesJob {
     @Override
     protected FileStatus getInProgressStatus() {
         return FileStatus.IMPORTING;
-    }
-
-    /**
-     * Injects an alternative file management service for testing purposes.
-     *
-     * @param service implementation of service
-     */
-    public void setFileManagementService(FileManagementService service) {
-        fileManagementService = service;
     }
 }

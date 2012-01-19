@@ -90,7 +90,6 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -99,7 +98,6 @@ import gov.nih.nci.caarray.dao.ProjectDao;
 import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
-import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.security.authorization.domainobjects.User;
@@ -231,17 +229,6 @@ public class ProjectFilesJobTest {
         job.doValidate(job.getFileSet());
         verify(mageTabImporter).validateFiles(project, job.getFileSet());
         verify(arrayDataImporter).validateFiles(job.getFileSet(), null, false);
-    }
-    
-    @Test 
-    public void noValidateWithChildFileSets() {
-        setupParentChildFileSet();
-        job.doValidate(job.getFileSet());
-        verify(mageTabImporter, times(0)).validateFiles(any(Project.class), any(CaArrayFileSet.class));
-        verify(arrayDataImporter, times(0)).validateFiles(job.getFileSet(), null, false);
-        for (CaArrayFile file : job.getFileSet().getFiles()) {
-            verify(file).setFileStatus(eq(FileStatus.VALIDATED));
-        }
     }
     
     @Test

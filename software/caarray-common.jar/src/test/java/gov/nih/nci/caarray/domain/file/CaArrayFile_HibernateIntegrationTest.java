@@ -114,7 +114,7 @@ public class CaArrayFile_HibernateIntegrationTest extends AbstractCaArrayEntity_
     @Override
     protected void setValues(CaArrayFile caArrayFile) {
         super.setValues(caArrayFile);
-        caArrayFile.setStatus(getNextValue(FileStatus.values(), caArrayFile.getFileStatus()).name());
+        caArrayFile.setFileStatus(getNextValue(FileStatus.values(), caArrayFile.getFileStatus()));
         caArrayFile.setName(getUniqueStringValue());
         if (caArrayFile.getProject() == null) {
             final TermSource ts = new TermSource();

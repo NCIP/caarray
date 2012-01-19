@@ -82,105 +82,113 @@
  */
 package gov.nih.nci.caarray.application.file;
 
+import java.io.IOException;
+import java.util.Set;
+
+import org.apache.log4j.Logger;
+
+import com.google.common.collect.ImmutableSet;
+
 import gov.nih.nci.caarray.application.arraydata.DataImportOptions;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.application.util.CaArrayFileSetSplitter;
-import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.dao.ProjectDao;
 import gov.nih.nci.caarray.dao.SearchDao;
-import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
+import gov.nih.nci.caarray.domain.file.FileStatus;
+import gov.nih.nci.caarray.domain.project.JobType;
 import gov.nih.nci.caarray.domain.project.Project;
 
-import com.google.inject.Inject;
-import com.google.inject.Provider;
-
 /**
- * Creates jobs.
- * @author jscott
- *
+ * Splits large Mage-Tab File sets into smaller chunks.  Dispatches to ProjectFilesImportJob
+ * after splitting.
  */
-public class JobFactoryImpl implements JobFactory {
-    private final Provider<ArrayDao> arrayDaoProvider;
-    private final Provider<ArrayDataImporter> arrayDataImporterProvider;
-    private final Provider<MageTabImporter> mageTabImporterProvider;
-    private final Provider<ProjectDao> projectDaoProvider;
-    private final Provider<SearchDao> searchDaoProvider;
-    private final Provider<FileAccessService> fileAccessServiceProvider;
-    private final Provider<CaArrayFileSetSplitter> caArrayFileSetSplitterProvider;
+class ProjectFilesSplitJob extends AbstractProjectFilesJob {
 
+    private static final long serialVersionUID = -6505339669676465113L;
+    private static final Logger LOG = Logger.getLogger(ProjectFilesSplitJob.class);
     
+    private final CaArrayFileSetSplitter splitter;
+    private final DataImportOptions dataImportOptions;
+    private final FileManagementJobSubmitter jobSubmitter;
+
     /**
-     * @param arrayDaoProvider the Provider&lt;ArrayDao&gt; dependency
-     * @param arrayDataImporterProvider the Provider&lt;ArrayDataImporter&gt; dependency
-     * @param mageTabImporterProvider the Provider&lt;MageTabImporter&gt; dependency
-     * @param projectDaoProvider the Provider&lt;ProjectDao&gt; dependency
-     * @param searchDaoProvider the Provider&lt;SearchDao&gt; dependency
+     * Injected constructor.
+     * 
+     * @param username user requesting job
+     * @param targetProject project
+     * @param fileSet set to split
+     * @param arrayDataImporter not used
+     * @param mageTabImporter not used
+     * @param fileAccessService for creating new files
+     * @param projectDao dao
+     * @param searchDao dao
+     * @param dataImportOptions import options for new sets
+     * @param splitter file set splitter
      */
-    @Inject
-    @SuppressWarnings("PMD.ExcessiveParameterList")
     // CHECKSTYLE:OFF more than 7 parameters are okay for injected constructor
-    public JobFactoryImpl(Provider<ArrayDao> arrayDaoProvider,
-            Provider<ArrayDataImporter> arrayDataImporterProvider, Provider<MageTabImporter> mageTabImporterProvider,
-            Provider<FileAccessService> fileAccessServiceProvider, Provider<ProjectDao> projectDaoProvider, 
-            Provider<SearchDao> searchDaoProvider, Provider<CaArrayFileSetSplitter> caArrayFileSetSplitter) {
-    // CHECKSTYLE:ON
-        this.arrayDaoProvider = arrayDaoProvider;
-        this.arrayDataImporterProvider = arrayDataImporterProvider;
-        this.mageTabImporterProvider = mageTabImporterProvider;
-        this.fileAccessServiceProvider = fileAccessServiceProvider;
-        this.projectDaoProvider = projectDaoProvider;
-        this.searchDaoProvider = searchDaoProvider;
-        this.caArrayFileSetSplitterProvider = caArrayFileSetSplitter;
-    }
-    
-    /**
-     * {@inheritDoc}
-     */
-    public AbstractFileManagementJob createArrayDesignFileImportJob(String user, ArrayDesign arrayDesign) {
-        return new ArrayDesignFileImportJob(user, arrayDesign, arrayDaoProvider.get());
-    }
-    
-    /**
-     * {@inheritDoc}
-     */
-    public ProjectFilesImportJob createProjectFilesImportJob(String user, Project project, CaArrayFileSet fileSet,
-            DataImportOptions dataImportOptions) {
-        return new ProjectFilesImportJob(user, project, fileSet, dataImportOptions,
-                arrayDataImporterProvider.get(), mageTabImporterProvider.get(), 
-                fileAccessServiceProvider.get(), projectDaoProvider.get(),
-                searchDaoProvider.get());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public ProjectFilesValidationJob createProjectFilesValidationJob(String user, Project project,
-            CaArrayFileSet fileSet) {
-        return new ProjectFilesValidationJob(user, project, fileSet,
-                arrayDataImporterProvider.get(), mageTabImporterProvider.get(), 
-                fileAccessServiceProvider.get(), projectDaoProvider.get(), searchDaoProvider.get());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public ProjectFilesReparseJob createProjectFilesReparseJob(String user, Project project,
-            CaArrayFileSet fileSet) {
-        return new ProjectFilesReparseJob(user, project, fileSet,
-                arrayDataImporterProvider.get(), mageTabImporterProvider.get(), 
-                fileAccessServiceProvider.get(), projectDaoProvider.get(), searchDaoProvider.get());
+    @SuppressWarnings("PMD.ExcessiveParameterList")
+    ProjectFilesSplitJob(String username, Project targetProject,
+            CaArrayFileSet fileSet, ArrayDataImporter arrayDataImporter,
+            MageTabImporter mageTabImporter,
+            FileAccessService fileAccessService, ProjectDao projectDao,
+            SearchDao searchDao, DataImportOptions dataImportOptions, CaArrayFileSetSplitter splitter,
+            FileManagementJobSubmitter jobSubmitter) {
+        // CHECKSTYLE:ON
+        super(username, targetProject, fileSet, arrayDataImporter, mageTabImporter,
+                fileAccessService, projectDao, searchDao);
+        this.dataImportOptions = dataImportOptions;
+        this.splitter = splitter;
+        this.jobSubmitter = jobSubmitter;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public ProjectFilesSplitJob createProjectFilesSplitJob(String user, Project project, CaArrayFileSet fileSet,
-            DataImportOptions dataImportOptions, FileManagementJobSubmitter submitter) {
-        return new ProjectFilesSplitJob(user, project, fileSet, arrayDataImporterProvider.get(),
-                mageTabImporterProvider.get(), fileAccessServiceProvider.get(), projectDaoProvider.get(),
-                searchDaoProvider.get(), dataImportOptions, caArrayFileSetSplitterProvider.get(), submitter);
+    protected void executeProjectFilesJob() {
+        CaArrayFileSet fileSet = getFileSet();
+        doValidate(fileSet);
+        
+        if (fileSet.isValidated()) {
+            importSplits(fileSet);
+        }
     }
 
+    private void importSplits(CaArrayFileSet origFileSet) {
+        Set<CaArrayFileSet> splits = getSplitsToImport(origFileSet);
+        for (CaArrayFileSet curSplit : splits) {
+            curSplit.updateStatus(FileStatus.VALIDATED);
+            handleSessionMess(); // new job needs the new split sdrf to have an id
+            ProjectFilesImportJob job = new ProjectFilesImportJob(getOwnerName(), getProject(), curSplit, 
+                    dataImportOptions, getArrayDataImporter(), getMageTabImporter(), getFileAccessService(), 
+                    getProjectDao(), getSearchDao());
+            jobSubmitter.submitJob(job);
+        }
+    }
+    
+    private Set<CaArrayFileSet> getSplitsToImport(CaArrayFileSet origFileSet) {
+        try {
+            return splitter.split(origFileSet);
+        } catch (IOException e) {
+            LOG.warn("Unable to split file set.  Falling back to non-split import.", e);
+            return ImmutableSet.of(origFileSet);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected FileStatus getInProgressStatus() {
+        return FileStatus.IMPORTING;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public JobType getJobType() {
+        return JobType.DATA_FILE_SPLIT;
+    }
 }

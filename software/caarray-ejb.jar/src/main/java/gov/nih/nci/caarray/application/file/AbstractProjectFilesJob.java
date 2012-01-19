@@ -158,7 +158,7 @@ abstract class AbstractProjectFilesJob extends AbstractFileManagementJob {
     protected final void doExecute() {
         executeProjectFilesJob();
         getFileSet().pullUpValidationMessages();
-        handleSessionMess();
+        handleSessionMess(); // fileAccessService needs file status written to db
         for (CaArrayFile file : getFileSet().getFiles()) {
             if (file.getParent() != null) {
                 fileAccessService.remove(file);
@@ -169,15 +169,13 @@ abstract class AbstractProjectFilesJob extends AbstractFileManagementJob {
     /**
      * This method is necessary because the Hibernate Session FlushMode is set to
      * FlushMode.COMMIT.  This means that queries will not flush prior to running.
-     * FileAccessService verifies that files can be deleted prior to actually deleting
-     * by performing a query.  So, somewhere in the Job we need to be aware of
-     * the flush explicitly.  
+     * Call this method only when a dependency needs database state to be correct.
      * 
      * This is a compromise - it's misplaced responsibility to do session management
      * at this level.  We'd be better off not exposing CaArrayDao.flushSession(), but 
      * since we have it and use it in many places, this is just one of many.
      */
-    private void handleSessionMess() {
+    protected void handleSessionMess() {
         projectDao.flushSession();
     }
     
@@ -246,6 +244,20 @@ abstract class AbstractProjectFilesJob extends AbstractFileManagementJob {
         return projectDao;
     }
     
+    /**
+     * @return the fileAccessService
+     */
+    protected FileAccessService getFileAccessService() {
+        return fileAccessService;
+    }
+
+    /**
+     * @return the searchDao
+     */
+    protected SearchDao getSearchDao() {
+        return searchDao;
+    }
+
     /**
      * {@inheritDoc}
      */

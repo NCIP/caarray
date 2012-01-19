@@ -588,6 +588,7 @@ public abstract class AbstractFileManagementServiceIntegrationTest extends Abstr
 
         final FileManagementServiceBean bean = new FileManagementServiceBean();
         this.injector.injectMembers(bean);
+        locatorStub.addLookup(FileManagementService.JNDI_NAME, bean);
 
         return bean;
     }

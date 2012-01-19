@@ -114,6 +114,18 @@ public interface JobFactory {
             DataImportOptions dataImportOptions);
     
     /**
+     * Create a new job for importing project data files using the splitting job.
+     * @param user the user id of the user who requested the job
+     * @param project the project containing the data files
+     * @param fileSet the data files to import
+     * @param dataImportOptions options to apply to the import job
+     * @param submitter job submitter for associated sub-jobs
+     * @return the new job
+     */
+    ProjectFilesSplitJob createProjectFilesSplitJob(String user, Project project, CaArrayFileSet fileSet,
+            DataImportOptions dataImportOptions, FileManagementJobSubmitter submitter);
+    
+    /**
      * Create a new job for validating project files.
      * @param user the user id of the user who requested the job
      * @param project the project containing the files

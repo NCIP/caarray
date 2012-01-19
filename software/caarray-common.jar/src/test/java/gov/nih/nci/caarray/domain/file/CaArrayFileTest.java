@@ -114,19 +114,34 @@ public class CaArrayFileTest {
     }
 
     @Test
-    public void testSetStatus() {
-        final CaArrayFile file = new CaArrayFile();
-        file.setStatus("IMPORTED");
-        assertEquals(FileStatus.IMPORTED, file.getFileStatus());
-        assertEquals("IMPORTED", file.getStatus());
-        file.setStatus(null);
-        assertEquals(null, file.getFileStatus());
-        assertEquals(null, file.getStatus());
-        try {
-            file.setStatus("ILLEGAL STATUS");
-            fail("Shouldn't be able to set status not in FileStatus");
-        } catch (final IllegalArgumentException e) {
-            // expected
-        }
+    public void singleChildSetsParentStatus() {
+        CaArrayFile parent = new CaArrayFile();
+        parent.setFileStatus(FileStatus.IMPORTING);
+        
+        CaArrayFile child = new CaArrayFile(parent);
+        child.setFileStatus(FileStatus.IMPORTING);        
+        parent.addChild(child);
+        
+        child.setFileStatus(FileStatus.IMPORTED);
+        
+        assertEquals(FileStatus.IMPORTED, parent.getFileStatus());
+    }
+    
+    @Test
+    public void parentStatusNotSetWithMultipleChildren() {
+        CaArrayFile parent = new CaArrayFile();
+        parent.setFileStatus(FileStatus.IMPORTING);
+        
+        CaArrayFile child1 = new CaArrayFile(parent);
+        child1.setFileStatus(FileStatus.IMPORTING);        
+        parent.addChild(child1);
+        
+        CaArrayFile child2 = new CaArrayFile(parent);
+        child2.setFileStatus(FileStatus.IMPORTING);        
+        parent.addChild(child2);
+        
+        child1.setFileStatus(FileStatus.IMPORTED);
+        assertEquals(FileStatus.IMPORTING, parent.getFileStatus());
+        
     }
 }

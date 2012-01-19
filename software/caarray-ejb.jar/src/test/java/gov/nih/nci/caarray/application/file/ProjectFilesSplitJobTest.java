@@ -82,105 +82,133 @@
  */
 package gov.nih.nci.caarray.application.file;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
 import gov.nih.nci.caarray.application.arraydata.DataImportOptions;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.application.util.CaArrayFileSetSplitter;
-import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.dao.ProjectDao;
 import gov.nih.nci.caarray.dao.SearchDao;
-import gov.nih.nci.caarray.domain.array.ArrayDesign;
+import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
+import gov.nih.nci.caarray.domain.file.FileStatus;
+import gov.nih.nci.caarray.domain.project.JobType;
 import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.magetab.MageTabParsingException;
 
-import com.google.inject.Inject;
-import com.google.inject.Provider;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.ArgumentMatcher;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
+
+import com.google.common.collect.ImmutableSet;
 
 /**
- * Creates jobs.
- * @author jscott
- *
+ * Job splitter tests.
  */
-public class JobFactoryImpl implements JobFactory {
-    private final Provider<ArrayDao> arrayDaoProvider;
-    private final Provider<ArrayDataImporter> arrayDataImporterProvider;
-    private final Provider<MageTabImporter> mageTabImporterProvider;
-    private final Provider<ProjectDao> projectDaoProvider;
-    private final Provider<SearchDao> searchDaoProvider;
-    private final Provider<FileAccessService> fileAccessServiceProvider;
-    private final Provider<CaArrayFileSetSplitter> caArrayFileSetSplitterProvider;
+public class ProjectFilesSplitJobTest {
 
-    
-    /**
-     * @param arrayDaoProvider the Provider&lt;ArrayDao&gt; dependency
-     * @param arrayDataImporterProvider the Provider&lt;ArrayDataImporter&gt; dependency
-     * @param mageTabImporterProvider the Provider&lt;MageTabImporter&gt; dependency
-     * @param projectDaoProvider the Provider&lt;ProjectDao&gt; dependency
-     * @param searchDaoProvider the Provider&lt;SearchDao&gt; dependency
-     */
-    @Inject
-    @SuppressWarnings("PMD.ExcessiveParameterList")
-    // CHECKSTYLE:OFF more than 7 parameters are okay for injected constructor
-    public JobFactoryImpl(Provider<ArrayDao> arrayDaoProvider,
-            Provider<ArrayDataImporter> arrayDataImporterProvider, Provider<MageTabImporter> mageTabImporterProvider,
-            Provider<FileAccessService> fileAccessServiceProvider, Provider<ProjectDao> projectDaoProvider, 
-            Provider<SearchDao> searchDaoProvider, Provider<CaArrayFileSetSplitter> caArrayFileSetSplitter) {
-    // CHECKSTYLE:ON
-        this.arrayDaoProvider = arrayDaoProvider;
-        this.arrayDataImporterProvider = arrayDataImporterProvider;
-        this.mageTabImporterProvider = mageTabImporterProvider;
-        this.fileAccessServiceProvider = fileAccessServiceProvider;
-        this.projectDaoProvider = projectDaoProvider;
-        this.searchDaoProvider = searchDaoProvider;
-        this.caArrayFileSetSplitterProvider = caArrayFileSetSplitter;
+    DataImportOptions dataImportOptions;
+    @Mock Project project;
+    @Mock CaArrayFileSet fileset;
+    @Mock ArrayDataImporter arrayDataImporter;
+    @Mock MageTabImporter mageTabImporter;
+    @Mock ProjectDao projectDao;
+    @Mock FileAccessService fileAccessService;
+    @Mock SearchDao searchDao;
+    @Mock CaArrayFileSetSplitter fileSetSplitter;
+    @Mock FileManagementJobSubmitter jobSubmitter;
+    private ProjectFilesSplitJob job;
+    private CaArrayFile file;
+
+    @SuppressWarnings("unchecked")
+    @Before
+    public void before() {
+        dataImportOptions = DataImportOptions.getAutoCreatePerFileOptions();
+        MockitoAnnotations.initMocks(this);
+        ProjectFilesJobTest.setupProjectMock(project);
+        job = new ProjectFilesSplitJob("testuser", project, fileset, arrayDataImporter, mageTabImporter, 
+                fileAccessService, projectDao, 
+                searchDao, dataImportOptions, fileSetSplitter, jobSubmitter);
+        
+        file = mock(CaArrayFile.class);
+        
+        when(searchDao.retrieveByIds(eq(CaArrayFile.class), 
+                any(List.class))).thenReturn(Collections.singletonList(file));
+        when(searchDao.retrieve(eq(Project.class), eq(1L))).thenReturn(project);
     }
     
-    /**
-     * {@inheritDoc}
-     */
-    public AbstractFileManagementJob createArrayDesignFileImportJob(String user, ArrayDesign arrayDesign) {
-        return new ArrayDesignFileImportJob(user, arrayDesign, arrayDaoProvider.get());
+    @Test
+    public void jobType() {
+        assertEquals(JobType.DATA_FILE_SPLIT, job.getJobType());
     }
     
-    /**
-     * {@inheritDoc}
-     */
-    public ProjectFilesImportJob createProjectFilesImportJob(String user, Project project, CaArrayFileSet fileSet,
-            DataImportOptions dataImportOptions) {
-        return new ProjectFilesImportJob(user, project, fileSet, dataImportOptions,
-                arrayDataImporterProvider.get(), mageTabImporterProvider.get(), 
-                fileAccessServiceProvider.get(), projectDaoProvider.get(),
-                searchDaoProvider.get());
+    @Test
+    public void inProgressStatus() {
+        assertEquals(FileStatus.IMPORTING, job.getInProgressStatus());
+    }
+    
+    @Test
+    public void basicFlow() throws MageTabParsingException, IOException {
+        when(file.getFileStatus()).thenReturn(FileStatus.VALIDATED);
+        when(fileSetSplitter.split(any(CaArrayFileSet.class))).thenAnswer(new Answer<Set<CaArrayFileSet>>() {
+            @Override
+            public Set<CaArrayFileSet> answer(InvocationOnMock invocation)
+                    throws Throwable {
+                return ImmutableSet.of((CaArrayFileSet) invocation.getArguments()[0]);
+            } 
+        });
+
+        job.executeProjectFilesJob();
+        verifyValidateCalled();
+        verifyImportCalled();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public ProjectFilesValidationJob createProjectFilesValidationJob(String user, Project project,
-            CaArrayFileSet fileSet) {
-        return new ProjectFilesValidationJob(user, project, fileSet,
-                arrayDataImporterProvider.get(), mageTabImporterProvider.get(), 
-                fileAccessServiceProvider.get(), projectDaoProvider.get(), searchDaoProvider.get());
+    @Test
+    public void ioExceptionFlow() throws IOException {
+        when(file.getFileStatus()).thenReturn(FileStatus.VALIDATED);
+        when(fileSetSplitter.split(any(CaArrayFileSet.class))).thenThrow(new IOException());
+        job.executeProjectFilesJob();
+        verifyValidateCalled();
+        verifyImportCalled();
+    }
+    
+    @Test
+    public void validateFail() {
+        when(file.getFileStatus()).thenReturn(FileStatus.VALIDATION_ERRORS);
+        job.executeProjectFilesJob();
+        verifyValidateCalled();
+        verify(jobSubmitter, never()).submitJob(any(ProjectFilesImportJob.class));
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public ProjectFilesReparseJob createProjectFilesReparseJob(String user, Project project,
-            CaArrayFileSet fileSet) {
-        return new ProjectFilesReparseJob(user, project, fileSet,
-                arrayDataImporterProvider.get(), mageTabImporterProvider.get(), 
-                fileAccessServiceProvider.get(), projectDaoProvider.get(), searchDaoProvider.get());
+    private void verifyValidateCalled() {
+        verify(mageTabImporter).validateFiles(project, job.getFileSet());
+        verify(arrayDataImporter).validateFiles(job.getFileSet(), null, false);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public ProjectFilesSplitJob createProjectFilesSplitJob(String user, Project project, CaArrayFileSet fileSet,
-            DataImportOptions dataImportOptions, FileManagementJobSubmitter submitter) {
-        return new ProjectFilesSplitJob(user, project, fileSet, arrayDataImporterProvider.get(),
-                mageTabImporterProvider.get(), fileAccessServiceProvider.get(), projectDaoProvider.get(),
-                searchDaoProvider.get(), dataImportOptions, caArrayFileSetSplitterProvider.get(), submitter);
+    private void verifyImportCalled() {
+        verify(projectDao).flushSession();
+        verify(jobSubmitter).submitJob(argThat(new ArgumentMatcher<AbstractFileManagementJob>() {
+            @Override
+            public boolean matches(Object argument) {
+                ProjectFilesImportJob importJob = (ProjectFilesImportJob) argument;
+                return importJob.getOwnerName().equals(job.getOwnerName())
+                        && importJob.getProject().equals(job.getProject())
+                        && importJob.getArrayDataImporter().equals(job.getArrayDataImporter())
+                        && importJob.getMageTabImporter().equals(job.getMageTabImporter())
+                        && importJob.getFileAccessService().equals(job.getFileAccessService())
+                        && importJob.getProjectDao().equals(job.getProjectDao())
+                        && importJob.getSearchDao().equals(job.getSearchDao());
+            }
+        }));
     }
-
 }

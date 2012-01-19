@@ -191,7 +191,7 @@ public class FileManagementServiceBean implements FileManagementService {
         LogUtil.logSubsystemEntry(LOG, fileSet);
         checkForImport(fileSet);
         clearValidationMessages(fileSet);
-        sendImportJobMessage(targetProject, fileSet, dataImportOptions);
+        sendSplitJobMessage(targetProject, fileSet, dataImportOptions);
         LogUtil.logSubsystemExit(LOG);
     }
 
@@ -203,10 +203,10 @@ public class FileManagementServiceBean implements FileManagementService {
     }
 
     private void
-            sendImportJobMessage(Project targetProject, CaArrayFileSet fileSet, DataImportOptions dataImportOptions) {
-        final ProjectFilesImportJob job =
-                this.jobFactory.createProjectFilesImportJob(CaArrayUsernameHolder.getUser(), targetProject, fileSet,
-                        dataImportOptions);
+            sendSplitJobMessage(Project targetProject, CaArrayFileSet fileSet, DataImportOptions dataImportOptions) {
+        final ProjectFilesSplitJob job =
+                this.jobFactory.createProjectFilesSplitJob(CaArrayUsernameHolder.getUser(), targetProject, fileSet,
+                        dataImportOptions, jobSubmitter);
         this.jobSubmitter.submitJob(job);
     }
 

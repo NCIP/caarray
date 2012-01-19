@@ -83,13 +83,17 @@
 package gov.nih.nci.caarray.application.file;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.argThat;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import gov.nih.nci.caarray.application.ServiceLocator;
 import gov.nih.nci.caarray.application.ServiceLocatorFactory;
 import gov.nih.nci.caarray.application.arraydata.DataImportOptions;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
-import gov.nih.nci.caarray.application.util.CaArrayFileSetSplitter;
 import gov.nih.nci.caarray.dao.ProjectDao;
 import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
@@ -100,22 +104,14 @@ import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.magetab.MageTabParsingException;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatcher;
-import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
-
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Sets;
 
 /**
  * Verifies import job functionality.
@@ -133,7 +129,6 @@ public class ProjectFilesImportJobTest {
     @Mock SearchDao searchDao;
     @Mock FileManagementService fileManagementService;
     @Mock ServiceLocator serviceLocator;
-    @Mock CaArrayFileSetSplitter fileSetSplitter;
     ProjectFilesImportJob job;
     
     @Before
@@ -143,10 +138,8 @@ public class ProjectFilesImportJobTest {
         MockitoAnnotations.initMocks(this);
         ServiceLocatorFactory.setLocator(serviceLocator);
         ProjectFilesJobTest.setupProjectMock(project);
-        fileSetSplitter = mock(CaArrayFileSetSplitter.class);
         job = new ProjectFilesImportJob(username, project, fileset, dataImportOptions, 
-                arrayDataImporter, mageTabImporter, fileAccessService, projectDao, searchDao,
-                fileSetSplitter);
+                arrayDataImporter, mageTabImporter, fileAccessService, projectDao, searchDao);
         
     }
     
@@ -161,15 +154,7 @@ public class ProjectFilesImportJobTest {
     }
     
     @Test
-    public void basicNoSplitFlow() throws MageTabParsingException, IOException {
-        when(fileSetSplitter.split(any(CaArrayFileSet.class))).thenAnswer(new Answer<Set<CaArrayFileSet>>() {
-            @Override
-            public Set<CaArrayFileSet> answer(InvocationOnMock invocation)
-                    throws Throwable {
-                return ImmutableSet.of((CaArrayFileSet) invocation.getArguments()[0]);
-            } 
-        });
-        
+    public void basicFlow() throws MageTabParsingException {
         CaArrayFile file = checkValidateExecuted(FileStatus.VALIDATED);
         assertImportDidHappen(file);
     }
@@ -180,46 +165,12 @@ public class ProjectFilesImportJobTest {
         assertImportDidNotHappen();
     }
     
-    @Test
-    public void splitNoImport() throws IOException, MageTabParsingException {
-        final CaArrayFileSet split1 = mock(CaArrayFileSet.class);
-        final CaArrayFileSet split2 = mock(CaArrayFileSet.class);
-        final Set<CaArrayFileSet> splits = Sets.newHashSet(split1, split2);
-        
-        when(fileSetSplitter.split(any(CaArrayFileSet.class))).thenAnswer(new Answer<Set<CaArrayFileSet>>() {
-
-            @Override
-            public Set<CaArrayFileSet> answer(InvocationOnMock invocation)
-                    throws Throwable {
-                // two outputs -> 'split happened' -> no import
-                return splits;
-            } 
-        });
-        
-        job.setFileManagementService(fileManagementService);
-        
-        checkValidateExecuted(FileStatus.VALIDATED);
-        assertImportDidNotHappen();
-        for (CaArrayFileSet fileSet : splits) {
-            InOrder inOrder = inOrder(fileManagementService, fileSet);
-            inOrder.verify(fileSet).updateStatus(eq(FileStatus.VALIDATED));
-            inOrder.verify(fileManagementService).importFiles(eq(project), eq(fileSet), eq(dataImportOptions));
-        }
-    }
-    
-    @Test
-    public void splitWithIOException() throws IOException, MageTabParsingException {
-        when(fileSetSplitter.split(any(CaArrayFileSet.class))).thenThrow(new IOException());
-        CaArrayFile file = checkValidateExecuted(FileStatus.VALIDATED);
-        assertImportDidHappen(file);
-    }
-    
     private void assertImportDidHappen(CaArrayFile file)
             throws MageTabParsingException {
-        verify(mageTabImporter).importFiles(eq(project), argThat(getCaArrayFileSetMatcher(file)));
+        verify(mageTabImporter).importFiles(eq(project), argThat(new SingleFileCaArrayFileSetMatcher(file)));
         verify(projectDao).flushSession();
         verify(projectDao).clearSession();
-        verify(arrayDataImporter).importFiles(argThat(getCaArrayFileSetMatcher(file)), 
+        verify(arrayDataImporter).importFiles(argThat(new SingleFileCaArrayFileSetMatcher(file)), 
                 eq(dataImportOptions), any(MageTabDocumentSet.class));
     }
     
@@ -242,24 +193,12 @@ public class ProjectFilesImportJobTest {
 
         MageTabDocumentSet mageTabDocSet = mock(MageTabDocumentSet.class);
         when(mageTabImporter.importFiles(eq(project), 
-                argThat(getCaArrayFileSetMatcher(file)))).thenReturn(mageTabDocSet);
+                argThat(new SingleFileCaArrayFileSetMatcher(file)))).thenReturn(mageTabDocSet);
         
         job.executeProjectFilesJob();
         
         verify(mageTabImporter).validateFiles(project, job.getFileSet());
         verify(arrayDataImporter).validateFiles(job.getFileSet(), null, false);
         return file;
-    }
-    
-    private ArgumentMatcher<CaArrayFileSet> getCaArrayFileSetMatcher(final CaArrayFile expected) {
-        return new ArgumentMatcher<CaArrayFileSet>() {
-
-            @Override
-            public boolean matches(Object argument) {
-                CaArrayFileSet fileSet = (CaArrayFileSet) argument;
-                return fileSet.getFiles().size() == 1 && fileSet.getFiles().contains(expected);
-            }
-            
-        };
     }
 }
