@@ -130,7 +130,7 @@ import com.google.inject.Inject;
 
 /**
  * Export valid Experiments to a GEO SOFT format. Note: This class doesn't need to be an EJB.
- * 
+ *
  * @author gax
  * @since 2.3.1
  */
@@ -414,7 +414,7 @@ public class GeoSoftExporterBean implements GeoSoftExporter {
                 size += dad.getDataFile().getCompressedSize();
             }
         }
-        for (final CaArrayFile f : experiment.getProject().getSupplementalFiles()) {
+        for (final CaArrayFile f : experiment.getProject().getUserVisibleSupplementalFiles()) {
             size += f.getCompressedSize();
         }
 
@@ -428,7 +428,7 @@ public class GeoSoftExporterBean implements GeoSoftExporter {
             addDataFiles(h.getRawDataCollection(), zout);
             addDataFiles(h.getDerivedDataCollection(), zout);
         }
-        for (final CaArrayFile f : experiment.getProject().getSupplementalFiles()) {
+        for (final CaArrayFile f : experiment.getProject().getUserVisibleSupplementalFiles()) {
             this.fileAccessHelper.addFileToArchive(f, zout);
         }
     }

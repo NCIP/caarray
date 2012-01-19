@@ -145,7 +145,7 @@ import com.opensymphony.xwork2.Action;
 
 /**
  * @author Scott Miller
- * 
+ *
  */
 @SuppressWarnings("PMD")
 public class ProjectFilesActionTest extends AbstractDownloadTest {
@@ -1112,6 +1112,45 @@ public class ProjectFilesActionTest extends AbstractDownloadTest {
         assertEquals(2, this.action.getFileTypes().size());
         assertTrue(this.action.getFileTypes().contains(AFFYMETRIX_CEL.getName()));
         assertTrue(this.action.getFileTypes().contains(AFFYMETRIX_CHP.getName()));
+    }
+
+    @Test
+    public void testUserVisibleFiles() {
+        final SortedSet<CaArrayFile> fileSet = new TreeSet<CaArrayFile>();
+
+        final CaArrayFile file1 = new CaArrayFile();
+        file1.setName("file1");
+        file1.setType(AFFYMETRIX_CDF.getName());
+        file1.setFileStatus(FileStatus.IMPORTED);
+        fileSet.add(file1);
+
+        final CaArrayFile file1child = new CaArrayFile(file1);
+        file1child.setName("file1 child");
+        file1child.setType(AFFYMETRIX_CDF.getName());
+        file1child.setFileStatus(FileStatus.IMPORTED);
+        fileSet.add(file1child);
+
+        final TestProject project = new TestProject();
+        assertEquals(0, this.action.getFiles().size());
+        this.action.setProject(project);
+
+        project.setImportedFiles(fileSet);
+        assertEquals(LIST_IMPORTED, this.action.listImported());
+        assertEquals(1, this.action.getFiles().size());
+
+        project.setUnimportedFiles(fileSet);
+        assertEquals(LIST_UNIMPORTED, this.action.listUnimported());
+        assertEquals(1, this.action.getFiles().size());
+
+        project.setFiles(fileSet);
+        assertEquals(Action.SUCCESS, this.action.downloadFiles());
+        assertEquals(1, this.action.getFiles().size());
+
+        final List<CaArrayFile> selectedFiles = new ArrayList<CaArrayFile>();
+        this.action.setSelectedFiles(selectedFiles);
+        selectedFiles.add(file1);
+        assertEquals(LIST_UNIMPORTED, this.action.addSupplementalFiles());
+        assertEquals(1, this.fileManagementServiceStub.getSupplementalFileCount());
     }
 
     private class LocalHttpServletResponse extends MockHttpServletResponse {

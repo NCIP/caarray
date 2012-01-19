@@ -138,7 +138,7 @@ import com.opensymphony.xwork2.validator.annotations.Validations;
 
 /**
  * @author Scott Miller
- * 
+ *
  */
 @SuppressWarnings({"unchecked", "PMD.ExcessiveClassLength", "PMD.CyclomaticComplexity", "PMD.TooManyFields",
         "PMD.TooManyMethods" })
@@ -231,8 +231,9 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
             this.selectedFileIds.clear();
         }
         setListAction(ACTION_UNIMPORTED);
-        setFilesMatchingTypeAndStatus(getProject().getUnImportedFiles());
-        setFileTypeNamesAndStatuses(getProject().getUnImportedFiles());
+        SortedSet<CaArrayFile> unimportedFiles = getProject().getUserVisibleUnImportedFiles();
+        setFilesMatchingTypeAndStatus(unimportedFiles);
+        setFileTypeNamesAndStatuses(unimportedFiles);
         setFileStatusCountMap(computeFileStatusCounts());
         findDeletableFiles();
         return ACTION_UNIMPORTED;
@@ -241,7 +242,8 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
     private String prepListImportedPage() {
         setListAction(ACTION_IMPORTED);
         setFiles(new HashSet<CaArrayFile>());
-        for (final CaArrayFile f : getProject().getImportedFiles()) {
+        SortedSet<CaArrayFile> importedFiles = getProject().getUserVisibleImportedFiles();
+        for (final CaArrayFile f : importedFiles) {
             if (getFileType() == null
                     || (f.getFileType() != null && f.getFileType().getName().equals(getFileType())
                             || (KNOWN_FILE_TYPE.equals(getFileType()) && f.getFileType() != null) || (UNKNOWN_FILE_TYPE
@@ -249,7 +251,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
                 getFiles().add(f);
             }
         }
-        setFileTypeNamesAndStatuses(getProject().getImportedFiles());
+        setFileTypeNamesAndStatuses(importedFiles);
         findDeletableFiles();
         return ACTION_IMPORTED;
     }
@@ -265,19 +267,20 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
 
     /**
      * Method to get the list of files.
-     * 
+     *
      * @return the string matching the result to follow
      */
     @SkipValidation
     public String downloadFiles() {
-        setFilesMatchingTypeAndStatus(getProject().getFiles());
-        setFileTypeNamesAndStatuses(getProject().getFiles());
+        SortedSet<CaArrayFile> allFiles = getProject().getUserVisibleFiles();
+        setFilesMatchingTypeAndStatus(allFiles);
+        setFileTypeNamesAndStatuses(allFiles);
         return Action.SUCCESS;
     }
 
     /**
      * display dowload options.
-     * 
+     *
      * @return the string matching the result to follow
      */
     @SkipValidation
@@ -333,14 +336,14 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
 
     private String prepListSupplementalPage() {
         setListAction(ACTION_SUPPLEMENTAL);
-        setFiles(getProject().getSupplementalFiles());
+        setFiles(getProject().getUserVisibleSupplementalFiles());
         findDeletableFiles();
         return ACTION_SUPPLEMENTAL;
     }
 
     /**
      * Method to get the list of files.
-     * 
+     *
      * @return the string matching the result to follow
      */
     @SkipValidation
@@ -350,7 +353,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
 
     /**
      * Method to get the list of files while leaving checkboxes checked.
-     * 
+     *
      * @return the string matching the result to follow
      */
     @SkipValidation
@@ -361,7 +364,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
 
     /**
      * Method to get the list of files.
-     * 
+     *
      * @return the string matching the result to follow
      */
     @SkipValidation
@@ -372,7 +375,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
 
     /**
      * Method to get the list of files.
-     * 
+     *
      * @return the string matching the result to follow
      */
     @SkipValidation
@@ -383,7 +386,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
 
     /**
      * Method to get the list of files.
-     * 
+     *
      * @return the string matching the result to follow
      */
     @SkipValidation
@@ -394,7 +397,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
 
     /**
      * Method to get the list of files.
-     * 
+     *
      * @return the string matching the result to follow
      */
     @SkipValidation
@@ -404,7 +407,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
 
     /**
      * Method to get the list of supplemental files.
-     * 
+     *
      * @return the string matching the result to follow
      */
     @SkipValidation
@@ -414,7 +417,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
 
     /**
      * Method to get the list of files.
-     * 
+     *
      * @return the string matching the result to follow
      */
     @SkipValidation
@@ -425,7 +428,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
 
     /**
      * Method to get the list of files.
-     * 
+     *
      * @return the string matching the result to follow
      */
     @SkipValidation
@@ -436,7 +439,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
 
     /**
      * Ajax-only call to handle changing the filter extension.
-     * 
+     *
      * @return success.
      */
     @SkipValidation
@@ -446,7 +449,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
 
     /**
      * Ajax-only call to handle sorting.
-     * 
+     *
      * @return success
      */
     @SkipValidation
@@ -456,7 +459,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
 
     /**
      * Method to delete files.
-     * 
+     *
      * @return the string representing the UI to display.
      */
     public String deleteFiles() {
@@ -466,7 +469,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
 
     /**
      * Method to delete files that have been imported.
-     * 
+     *
      * @return the string representing the UI to display.
      */
     public String deleteImportedFiles() {
@@ -476,7 +479,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
 
     /**
      * Method to unpack files.
-     * 
+     *
      * @return the string representing the UI to display.
      */
     public String unpackFiles() {
@@ -503,7 +506,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
 
     /**
      * Method to delete supplemental files.
-     * 
+     *
      * @return the string representing the UI to display.
      */
     public String deleteSupplementalFiles() {
@@ -530,7 +533,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
 
     /**
      * load files for editing.
-     * 
+     *
      * @return the string matching the result to follow
      */
     public String editFiles() {
@@ -539,7 +542,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
 
     /**
      * Save the selected files.
-     * 
+     *
      * @return the string matching the result to follow
      */
     public String saveFiles() {
@@ -558,7 +561,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
 
     /**
      * Save the selected files with a new file type.
-     * 
+     *
      * @return the string matching the result to follow
      */
     public String changeFileType() {
@@ -572,7 +575,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
 
     /**
      * Method to validate the files.
-     * 
+     *
      * @return the string matching the result to follow
      */
     @SuppressWarnings({"PMD.ExcessiveMethodLength", "PMD.NPathComplexity" })
@@ -606,7 +609,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
 
     /**
      * Method to select all files that ref an sdrf.
-     * 
+     *
      * @return the string matching the result to follow
      */
     public String findRefFiles() {
@@ -696,7 +699,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
 
     /**
      * AJAX call to determine if all selected files can be imported.
-     * 
+     *
      * @return null
      */
     @SkipValidation
@@ -726,7 +729,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
 
     /**
      * Method to import the files.
-     * 
+     *
      * @return the string matching the result to follow
      */
     @SuppressWarnings("PMD.ExcessiveMethodLength")
@@ -764,7 +767,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
 
     /**
      * Checks on which of the selected files can be imported, and stores counts of those that cannot be.
-     * 
+     *
      * @param errors object that stores the error counts
      * @return the set of importable files
      */
@@ -786,7 +789,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
 
     /**
      * Method to reparse the imported-not-parsed files which now have parsers.
-     * 
+     *
      * @return the string matching the result to follow
      */
     @SuppressWarnings("PMD.ExcessiveMethodLength")
@@ -828,7 +831,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
 
     /**
      * Adds supplemental data files to the system.
-     * 
+     *
      * @return the string matching the result to follow
      */
     public String addSupplementalFiles() {
@@ -853,7 +856,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
 
     /**
      * View the validation messages for the selected files.
-     * 
+     *
      * @return the string matching the result to use.
      */
     public String validationMessages() {
@@ -862,7 +865,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
 
     /**
      * uploads file.
-     * 
+     *
      * @return the string matching the result to follow
      */
     @SkipValidation
@@ -900,7 +903,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
 
     /**
      * Implements file download. Writes a zip of the selected files to the servlet output stream
-     * 
+     *
      * @return null - the result is written to the servlet output stream
      * @throws IOException if there is an error writing to the stream
      */
@@ -920,7 +923,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
     /**
      * This method will download a group of files if the group number is specified or if there is only one download
      * group.
-     * 
+     *
      * @param project the project
      * @param contentFiles all selected files
      * @return downloadGroups if no group number is specified and there are multiple groups
@@ -941,7 +944,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
 
     /**
      * Download an archive containg files filterd by fileType property.
-     * 
+     *
      * @return null
      * @throws IOException if there is an error writing to the stream.
      */
@@ -954,7 +957,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
 
     /**
      * Returns the filename for a zip of files for the given project, assuming that the download will not be grouped.
-     * 
+     *
      * @param project the project whose files are downloaded
      * @return the filename
      */
@@ -966,7 +969,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
 
     /**
      * validates user permissions and required file for upload.
-     * 
+     *
      * @return true if validation passes
      */
     private boolean validateUpload() {
@@ -984,7 +987,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
 
     /**
      * validates user permissions.
-     * 
+     *
      * @return true if validation passes
      */
     private boolean validatePermissions() {
@@ -1001,7 +1004,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
 
     /**
      * Calculates and returns the JSON for the nodes that are the children of the passed in node. in the experiment tree
-     * 
+     *
      * @return null - the JSON is written directly to the response stream
      */
     @SkipValidation
@@ -1166,7 +1169,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
 
     /**
      * Action for displaying the upload in background form.
-     * 
+     *
      * @return the string matching the result to follow
      */
     @SkipValidation
@@ -1179,7 +1182,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
 
     /**
      * uploaded file.
-     * 
+     *
      * @return uploads uploaded files
      */
     public List<File> getUpload() {
@@ -1188,7 +1191,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
 
     /**
      * sets file uploads.
-     * 
+     *
      * @param inUploads List
      */
     public void setUpload(List<File> inUploads) {
@@ -1197,7 +1200,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
 
     /**
      * returns uploaded file name.
-     * 
+     *
      * @return uploadFileNames
      */
     public List<String> getUploadFileName() {
@@ -1206,7 +1209,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
 
     /**
      * sets uploaded file names.
-     * 
+     *
      * @param inUploadFileNames List
      */
     public void setUploadFileName(List<String> inUploadFileNames) {
@@ -1339,9 +1342,9 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
 
     /**
      * Returns the names of the files selected to be unpacked.
-     * 
+     *
      * @return fileNamesToUnpack
-     * 
+     *
      */
     private List<String> fileNamesToUnpack() {
         List<String> fileNamesToUnpack = null;
@@ -1455,7 +1458,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
 
     /**
      * Computes a file status count for each type of file status.
-     * 
+     *
      * @return Map, map contains key value pair (status, count)
      */
     public EnumMap<FileStatus, Integer> computeFileStatusCounts() {

@@ -83,8 +83,6 @@
 
 package gov.nih.nci.caarray.domain.project;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Iterables;
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
@@ -134,6 +132,10 @@ import org.hibernate.annotations.Where;
 import org.hibernate.validator.NotNull;
 import org.hibernate.validator.Valid;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Sets;
+
 /**
  * A microarray project.
  */
@@ -144,7 +146,7 @@ import org.hibernate.validator.Valid;
 public class Project extends AbstractCaArrayEntity implements Comparable<Project>, Protectable {
     private static final long serialVersionUID = 1234567890L;
 
-    
+
 
     private boolean locked;
     private Experiment experiment = new Experiment();
@@ -220,6 +222,21 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
     }
 
     /**
+     * Gets the user visible files from the given set.
+     * Only files with no parent are user visible.
+     * @param fileSet A set of files
+     * @return A set of user visible files
+     */
+    private SortedSet<CaArrayFile> filterForUserVisibleFiles(SortedSet<CaArrayFile> fileSet) {
+        return Collections.unmodifiableSortedSet(Sets.newTreeSet(Iterables.filter(fileSet,
+                new Predicate<CaArrayFile>() {
+            public boolean apply(CaArrayFile file) {
+                return file.getParent() == null;
+            }
+        })));
+    }
+
+    /**
      * Gets all the files.
      *
      * @return the files
@@ -229,6 +246,15 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
     @Filter(name = Experiment.SECURITY_FILTER_NAME, condition = Experiment.FILES_FILTER)
     public SortedSet<CaArrayFile> getFiles() {
         return this.files;
+    }
+
+    /**
+     * Get user visible imported files.
+     * @return the files.
+     */
+    @Transient
+    public SortedSet<CaArrayFile> getUserVisibleFiles() {
+        return filterForUserVisibleFiles(getFiles());
     }
 
     @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
@@ -244,6 +270,15 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
     @Transient
     public SortedSet<CaArrayFile> getImportedFiles() {
         return Collections.unmodifiableSortedSet(getImportedFileSet());
+    }
+
+    /**
+     * Get user visible imported files.
+     * @return the files.
+     */
+    @Transient
+    public SortedSet<CaArrayFile> getUserVisibleImportedFiles() {
+        return filterForUserVisibleFiles(getImportedFiles());
     }
 
     /**
@@ -293,13 +328,12 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
     }
 
     /**
-     * Get the files.
-     *
+     * Get user visible supplemental files.
      * @return the files.
      */
     @Transient
-    public SortedSet<CaArrayFile> getSupplementalFiles() {
-        return Collections.unmodifiableSortedSet(getSupplementalFileSet());
+    public SortedSet<CaArrayFile> getUserVisibleSupplementalFiles() {
+        return filterForUserVisibleFiles(getSupplementalFileSet());
     }
 
     /**
@@ -328,6 +362,15 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
     @Transient
     public SortedSet<CaArrayFile> getUnImportedFiles() {
         return Collections.unmodifiableSortedSet(getUnImportedFileSet());
+    }
+
+    /**
+     * Get user visible unimported files.
+     * @return the files.
+     */
+    @Transient
+    public SortedSet<CaArrayFile> getUserVisibleUnImportedFiles() {
+        return filterForUserVisibleFiles(getUnImportedFiles());
     }
 
     /**
