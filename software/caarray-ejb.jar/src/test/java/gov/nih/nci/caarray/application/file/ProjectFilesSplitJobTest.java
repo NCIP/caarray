@@ -196,6 +196,7 @@ public class ProjectFilesSplitJobTest {
     }
 
     private void verifyImportCalled() {
+        verify(projectDao).flushSession();
         verify(jobSubmitter).submitJob(argThat(new ArgumentMatcher<AbstractFileManagementJob>() {
             @Override
             public boolean matches(Object argument) {
