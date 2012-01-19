@@ -82,123 +82,118 @@
  */
 package gov.nih.nci.caarray.application.file;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.argThat;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import gov.nih.nci.caarray.application.ServiceLocator;
+import java.io.IOException;
+import java.util.Set;
+
+import org.apache.log4j.Logger;
+
+import com.google.common.collect.ImmutableSet;
+
 import gov.nih.nci.caarray.application.ServiceLocatorFactory;
 import gov.nih.nci.caarray.application.arraydata.DataImportOptions;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
+import gov.nih.nci.caarray.application.util.CaArrayFileSetSplitter;
 import gov.nih.nci.caarray.dao.ProjectDao;
 import gov.nih.nci.caarray.dao.SearchDao;
-import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.project.JobType;
 import gov.nih.nci.caarray.domain.project.Project;
-import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
-import gov.nih.nci.caarray.magetab.MageTabParsingException;
-
-import java.util.Collections;
-import java.util.List;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.ArgumentMatcher;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 
 /**
- * Verifies import job functionality.
+ * Splits large Mage-Tab File sets into smaller chunks.  Dispatches to ProjectFilesImportJob
+ * after splitting.
  */
-public class ProjectFilesImportJobTest {
+class ProjectFilesSplitJob extends AbstractProjectFilesJob {
 
-    String username;
-    DataImportOptions dataImportOptions;
-    @Mock Project project;
-    @Mock CaArrayFileSet fileset;
-    @Mock ArrayDataImporter arrayDataImporter;
-    @Mock MageTabImporter mageTabImporter;
-    @Mock FileAccessService fileAccessService;
-    @Mock ProjectDao projectDao;
-    @Mock SearchDao searchDao;
-    @Mock FileManagementService fileManagementService;
-    @Mock ServiceLocator serviceLocator;
-    ProjectFilesImportJob job;
+    private static final long serialVersionUID = -6505339669676465113L;
+    private static final Logger LOG = Logger.getLogger(ProjectFilesSplitJob.class);
     
-    @Before
-    public void setUp() {
-        username = "testuser";
-        dataImportOptions = DataImportOptions.getAutoCreatePerFileOptions();
-        MockitoAnnotations.initMocks(this);
-        ServiceLocatorFactory.setLocator(serviceLocator);
-        ProjectFilesJobTest.setupProjectMock(project);
-        job = new ProjectFilesImportJob(username, project, fileset, dataImportOptions, 
-                arrayDataImporter, mageTabImporter, fileAccessService, projectDao, searchDao);
-        
-    }
-    
-    @Test
-    public void jobType() {
-        assertEquals(JobType.DATA_FILE_IMPORT, job.getJobType());
-    }
-    
-    @Test
-    public void inProgressStatus() {
-        assertEquals(FileStatus.IMPORTING, job.getInProgressStatus());
-    }
-    
-    @Test
-    public void basicFlow() throws MageTabParsingException {
-        CaArrayFile file = checkValidateExecuted(FileStatus.VALIDATED);
-        assertImportDidHappen(file);
+    private final CaArrayFileSetSplitter splitter;
+    private final DataImportOptions dataImportOptions;
+    private FileManagementService fileManagementService = ServiceLocatorFactory.getFileManagementService();;
+
+    /**
+     * Injected constructor.
+     * 
+     * @param username user requesting job
+     * @param targetProject project
+     * @param fileSet set to split
+     * @param arrayDataImporter not used
+     * @param mageTabImporter not used
+     * @param fileAccessService for creating new files
+     * @param projectDao dao
+     * @param searchDao dao
+     * @param dataImportOptions import options for new sets
+     * @param splitter file set splitter
+     */
+    // CHECKSTYLE:OFF more than 7 parameters are okay for injected constructor
+    @SuppressWarnings("PMD.ExcessiveParameterList")
+    ProjectFilesSplitJob(String username, Project targetProject,
+            CaArrayFileSet fileSet, ArrayDataImporter arrayDataImporter,
+            MageTabImporter mageTabImporter,
+            FileAccessService fileAccessService, ProjectDao projectDao,
+            SearchDao searchDao, DataImportOptions dataImportOptions, CaArrayFileSetSplitter splitter) {
+        // CHECKSTYLE:ON
+        super(username, targetProject, fileSet, arrayDataImporter, mageTabImporter,
+                fileAccessService, projectDao, searchDao);
+        this.dataImportOptions = dataImportOptions;
+        this.splitter = splitter;
     }
 
-    @Test
-    public void validationFail() throws MageTabParsingException {
-        checkValidateExecuted(FileStatus.VALIDATION_ERRORS);
-        assertImportDidNotHappen();
-    }
-    
-    private void assertImportDidHappen(CaArrayFile file)
-            throws MageTabParsingException {
-        verify(mageTabImporter).importFiles(eq(project), argThat(new SingleFileCaArrayFileSetMatcher(file)));
-        verify(projectDao).flushSession();
-        verify(projectDao).clearSession();
-        verify(arrayDataImporter).importFiles(argThat(new SingleFileCaArrayFileSetMatcher(file)), 
-                eq(dataImportOptions), any(MageTabDocumentSet.class));
-    }
-    
-    private void assertImportDidNotHappen() throws MageTabParsingException {
-        verify(mageTabImporter, never()).importFiles(any(Project.class), any(CaArrayFileSet.class));
-        verify(projectDao, never()).flushSession();
-        verify(projectDao, never()).clearSession();
-        verify(arrayDataImporter, never()).importFiles(any(CaArrayFileSet.class), 
-                any(DataImportOptions.class), any(MageTabDocumentSet.class));
-    }
-    
-    @SuppressWarnings("unchecked")
-    private CaArrayFile checkValidateExecuted(FileStatus singleFileStatus) throws MageTabParsingException {
-        CaArrayFile file = mock(CaArrayFile.class);
-        when(file.getFileStatus()).thenReturn(singleFileStatus);
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void executeProjectFilesJob() {
+        CaArrayFileSet fileSet = getFileSet();
+        doValidate(fileSet);
         
-        when(searchDao.retrieveByIds(eq(CaArrayFile.class), 
-                any(List.class))).thenReturn(Collections.singletonList(file));
-        when(searchDao.retrieve(eq(Project.class), eq(1L))).thenReturn(project);
+        if (fileSet.isValidated()) {
+            importSplits(fileSet);
+        }
+    }
 
-        MageTabDocumentSet mageTabDocSet = mock(MageTabDocumentSet.class);
-        when(mageTabImporter.importFiles(eq(project), 
-                argThat(new SingleFileCaArrayFileSetMatcher(file)))).thenReturn(mageTabDocSet);
-        
-        job.executeProjectFilesJob();
-        
-        verify(mageTabImporter).validateFiles(project, job.getFileSet());
-        verify(arrayDataImporter).validateFiles(job.getFileSet(), null, false);
-        return file;
+    private void importSplits(CaArrayFileSet origFileSet) {
+        Set<CaArrayFileSet> splits = getSplitsToImport(origFileSet);
+        for (CaArrayFileSet curSplit : splits) {
+            curSplit.updateStatus(FileStatus.VALIDATED);
+            fileManagementService.importFiles(getProject(), curSplit, dataImportOptions);
+        }
     }
+    
+    private Set<CaArrayFileSet> getSplitsToImport(CaArrayFileSet origFileSet) {
+        try {
+            return splitter.split(origFileSet);
+        } catch (IOException e) {
+            LOG.warn("Unable to split file set.  Falling back to non-split import.", e);
+            return ImmutableSet.of(origFileSet);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected FileStatus getInProgressStatus() {
+        return FileStatus.IMPORTING;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public JobType getJobType() {
+        return JobType.DATA_FILE_SPLIT;
+    }
+
+    /**
+     * Override the fileManagementService.  For unit tests.
+     * 
+     * @param fileManagementService new file management service
+     */
+    void setFileManagementService(FileManagementService fileManagementService) {
+        this.fileManagementService = fileManagementService;
+    }
+
 }
