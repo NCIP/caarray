@@ -195,6 +195,7 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
         } else {
             setStatus(null);
         }
+        propigateStatusToParent();
     }
 
     /**
@@ -343,12 +344,19 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
         return this.status;
     }
 
-    /**
-     * @param status the status to set
-     */
-    public void setStatus(String status) {
+    private void setStatus(String status) {
         checkForLegalStatusValue(status);
         this.status = status;
+    }
+
+    private void propigateStatusToParent() {
+        if (thisIsOnlyChild()) {
+            parent.setStatus(status);
+        }
+    }
+
+    private boolean thisIsOnlyChild() {
+        return parent != null && parent.getChildren().size() == 1;
     }
 
     private void checkForLegalStatusValue(String checkStatus) {
