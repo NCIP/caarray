@@ -103,6 +103,7 @@ import java.io.File;
 import java.util.Arrays;
 
 import org.junit.Test;
+import org.junit.Before;
 
 /**
  * Affymetrix-specific tests of array data system. These tests need to be refactored to be independent of
@@ -110,107 +111,107 @@ import org.junit.Test;
  */
 @SuppressWarnings("PMD")
 public class AffymetrixArrayDataServiceTest extends AbstractArrayDataServiceTest {
+    private CaArrayFile focusCel;
+    private CaArrayFile focusCalvinCel;
+    private CaArrayFile focusChp;
+    private CaArrayFile focusCalvinChp;
+    private Experiment experiment;
+
     @Override
     protected void configurePlatforms(PlatformModule platformModule) {
         platformModule.addPlatform(new AffymetrixModule());
+    }
+
+    @Before
+    public void onSetup() {
+        focusCel = getCelCaArrayFile(AffymetrixArrayDataFiles.HG_FOCUS_CEL, HG_FOCUS_LSID_OBJECT_ID);
+        focusCalvinCel = getCelCaArrayFile(AffymetrixArrayDataFiles.HG_FOCUS_CALVIN_CEL,
+                HG_FOCUS_LSID_OBJECT_ID);
+        focusChp = getChpCaArrayFile(AffymetrixArrayDataFiles.HG_FOCUS_CHP, HG_FOCUS_LSID_OBJECT_ID);
+        focusCalvinChp = getChpCaArrayFile(AffymetrixArrayDataFiles.HG_FOCUS_CALVIN_CHP,
+                HG_FOCUS_LSID_OBJECT_ID);
+
+        focusCalvinCel.setProject(focusCel.getProject());
+        focusChp.setProject(focusCel.getProject());
+        focusCalvinChp.setProject(focusCel.getProject());
     }
 
     @Test
     public void testImportRawAndDerivedSameName() throws InvalidDataFileException {
         // tests that imports of raw and derived data files with same base name go
         // to the same hybridization chain
-        final CaArrayFile focusCel = getCelCaArrayFile(AffymetrixArrayDataFiles.HG_FOCUS_CEL, HG_FOCUS_LSID_OBJECT_ID);
-        final CaArrayFile focusCalvinCel = getCelCaArrayFile(AffymetrixArrayDataFiles.HG_FOCUS_CALVIN_CEL,
-                HG_FOCUS_LSID_OBJECT_ID);
-        final CaArrayFile focusChp = getChpCaArrayFile(AffymetrixArrayDataFiles.HG_FOCUS_CHP, HG_FOCUS_LSID_OBJECT_ID);
-        final CaArrayFile focusCalvinChp = getChpCaArrayFile(AffymetrixArrayDataFiles.HG_FOCUS_CALVIN_CHP,
-                HG_FOCUS_LSID_OBJECT_ID);
-        focusCalvinCel.setProject(focusCel.getProject());
-        focusChp.setProject(focusCel.getProject());
-        focusCalvinChp.setProject(focusCel.getProject());
-        this.arrayDataService.importData(focusCel, true, DEFAULT_IMPORT_OPTIONS);
-        this.arrayDataService.importData(focusCalvinCel, true, DEFAULT_IMPORT_OPTIONS);
-        this.arrayDataService.importData(focusChp, true, DEFAULT_IMPORT_OPTIONS);
-        this.arrayDataService.importData(focusCalvinChp, true, DEFAULT_IMPORT_OPTIONS);
-        checkAnnotation(focusCel, 2);
-        final Experiment exp = focusCel.getProject().getExperiment();
-        assertEquals(2, exp.getHybridizations().size());
-        for (final Hybridization h : exp.getHybridizations()) {
-            assertEquals(1, h.getRawDataCollection().size());
-            assertEquals(1, h.getDerivedDataCollection().size());
-            if (h.getRawDataCollection().iterator().next().getDataFile().equals(focusCel)) {
-                assertEquals(focusChp, h.getDerivedDataCollection().iterator().next().getDataFile());
-            } else if (h.getRawDataCollection().iterator().next().getDataFile().equals(focusCalvinCel)) {
-                assertEquals(focusCalvinChp, h.getDerivedDataCollection().iterator().next().getDataFile());
-            } else {
-                fail("Expected hybridization to be linked to either focus or calvin focus CEL");
-            }
-        }
+        this.importData(DEFAULT_IMPORT_OPTIONS);
+        this.assertData(2, 2, 1, 1, true);
     }
 
     @Test
     public void testImportSingleAnnotationChain() throws InvalidDataFileException {
         // tests the import of multiple files to single annotation chain
-        final CaArrayFile focusCel = getCelCaArrayFile(AffymetrixArrayDataFiles.HG_FOCUS_CEL, HG_FOCUS_LSID_OBJECT_ID);
-        final CaArrayFile focusCalvinCel = getCelCaArrayFile(AffymetrixArrayDataFiles.HG_FOCUS_CALVIN_CEL,
-                HG_FOCUS_LSID_OBJECT_ID);
-        final CaArrayFile focusChp = getChpCaArrayFile(AffymetrixArrayDataFiles.HG_FOCUS_CHP, HG_FOCUS_LSID_OBJECT_ID);
-        final CaArrayFile focusCalvinChp = getChpCaArrayFile(AffymetrixArrayDataFiles.HG_FOCUS_CALVIN_CHP,
-                HG_FOCUS_LSID_OBJECT_ID);
-        focusCalvinCel.setProject(focusCel.getProject());
-        focusChp.setProject(focusCel.getProject());
-        focusCalvinChp.setProject(focusCel.getProject());
         final DataImportOptions options = DataImportOptions.getAutoCreateSingleOptions("TEST_NAME");
-        this.arrayDataService.importData(focusCel, true, options);
-        this.arrayDataService.importData(focusCalvinCel, true, options);
-        this.arrayDataService.importData(focusChp, true, options);
-        this.arrayDataService.importData(focusCalvinChp, true, options);
-        checkAnnotation(focusCel, 1);
-        final Experiment exp = focusCel.getProject().getExperiment();
-        assertEquals(1, exp.getHybridizations().size());
-        final Hybridization h = exp.getHybridizations().iterator().next();
-        assertEquals(2, h.getRawDataCollection().size());
-        assertEquals(2, h.getDerivedDataCollection().size());
+        this.importData(options);
+        this.assertData(1, 1, 2, 2, false);
     }
 
     @SuppressWarnings("deprecation")
     @Test
     public void testImportToTargetSources() throws InvalidDataFileException {
         // tests the import of multiple files to single annotation chain
-        final CaArrayFile focusCel = getCelCaArrayFile(AffymetrixArrayDataFiles.HG_FOCUS_CEL, HG_FOCUS_LSID_OBJECT_ID);
-        final CaArrayFile focusCalvinCel = getCelCaArrayFile(AffymetrixArrayDataFiles.HG_FOCUS_CALVIN_CEL,
-                HG_FOCUS_LSID_OBJECT_ID);
-        final CaArrayFile focusChp = getChpCaArrayFile(AffymetrixArrayDataFiles.HG_FOCUS_CHP, HG_FOCUS_LSID_OBJECT_ID);
-        final CaArrayFile focusCalvinChp = getChpCaArrayFile(AffymetrixArrayDataFiles.HG_FOCUS_CALVIN_CHP,
-                HG_FOCUS_LSID_OBJECT_ID);
-        focusCalvinCel.setProject(focusCel.getProject());
-        focusChp.setProject(focusCel.getProject());
-        focusCalvinChp.setProject(focusCel.getProject());
-
-        final Source targetSrc1 = new Source();
-        targetSrc1.setId(1L);
-        targetSrc1.setName("targetSrc1");
-        targetSrc1.setExperiment(focusCel.getProject().getExperiment());
-        this.searchDaoStub.save(targetSrc1);
-        final Source targetSrc2 = new Source();
-        targetSrc2.setName("targetSrc2");
-        targetSrc2.setId(2L);
-        this.searchDaoStub.save(targetSrc2);
-        targetSrc2.setExperiment(focusCel.getProject().getExperiment());
+        Source targetSrc1 = this.addSourceToFocusCel(1L, "targetSrc1");
+        Source targetSrc2 = this.addSourceToFocusCel(2L, "targetSrc2");
         focusCel.getProject().getExperiment().getSources().addAll(Arrays.asList(targetSrc1, targetSrc2));
 
         final DataImportOptions options = DataImportOptions.getAssociateToBiomaterialsOptions(
                 ExperimentDesignNodeType.SOURCE, Arrays.asList(targetSrc1.getId(), targetSrc2.getId()));
-        this.arrayDataService.importData(focusCel, true, options);
-        this.arrayDataService.importData(focusCalvinCel, true, options);
-        this.arrayDataService.importData(focusChp, true, options);
-        this.arrayDataService.importData(focusCalvinChp, true, options);
-        final Experiment exp = focusCel.getProject().getExperiment();
-        assertEquals(2, exp.getSources().size());
-        assertEquals(2, exp.getSamples().size());
-        assertEquals(2, exp.getHybridizations().size());
+        this.importData(options);
+
+        assertEquals(2, this.experiment.getSources().size());
+        assertEquals(2, this.experiment.getSamples().size());
+        assertEquals(2, this.experiment.getHybridizations().size());
         assertEquals(2, targetSrc1.getSamples().size());
         assertEquals(2, targetSrc2.getSamples().size());
+    }
+
+    private Source addSourceToFocusCel(Long id, String sourceName) {
+        Source source = new Source();
+        source.setId(id);
+        source.setName(sourceName);
+        source.setExperiment(this.focusCel.getProject().getExperiment());
+        this.searchDaoStub.save(source);
+
+        this.focusCel.getProject().getExperiment().getSources().add(source);
+        return source;
+    }
+
+    private void importData(DataImportOptions dataImportOptions) throws InvalidDataFileException {
+        this.arrayDataService.importData(focusCel, true, dataImportOptions);
+        this.arrayDataService.importData(focusCalvinCel, true, dataImportOptions);
+        this.arrayDataService.importData(focusChp, true, dataImportOptions);
+        this.arrayDataService.importData(focusCalvinChp, true, dataImportOptions);
+
+        this.experiment = focusCel.getProject().getExperiment();
+    }
+
+    private void assertData(int expectedSamples, int expectedHybridizations,
+        int expectedRawData, int expectedDerivedData, boolean testForImportRawAndDerivedSameName) {
+        checkAnnotation(focusCel, expectedSamples);
+        assertEquals(expectedHybridizations, this.experiment.getHybridizations().size());
+        for (Hybridization h : this.experiment.getHybridizations()) {
+            assertEquals(expectedRawData, h.getRawDataCollection().size());
+            assertEquals(expectedDerivedData, h.getDerivedDataCollection().size());
+            if (testForImportRawAndDerivedSameName) {
+                assertForImportRawAndDerivedSameName(h);
+            }
+        }
+    }
+
+    private void assertForImportRawAndDerivedSameName(Hybridization h) {
+        if (h.getRawDataCollection().iterator().next().getDataFile().equals(focusCel)) {
+            assertEquals(focusChp, h.getDerivedDataCollection().iterator().next().getDataFile());
+        } else if (h.getRawDataCollection().iterator().next().getDataFile().equals(focusCalvinCel)) {
+            assertEquals(focusCalvinChp, h.getDerivedDataCollection().iterator().next().getDataFile());
+        } else {
+            fail("Expected hybridization to be linked to either focus or calvin focus CEL");
+        }
     }
 
     @Test
