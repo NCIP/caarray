@@ -89,7 +89,6 @@ import org.apache.log4j.Logger;
 
 import com.google.common.collect.ImmutableSet;
 
-import gov.nih.nci.caarray.application.ServiceLocatorFactory;
 import gov.nih.nci.caarray.application.arraydata.DataImportOptions;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.application.util.CaArrayFileSetSplitter;
@@ -111,7 +110,7 @@ class ProjectFilesSplitJob extends AbstractProjectFilesJob {
     
     private final CaArrayFileSetSplitter splitter;
     private final DataImportOptions dataImportOptions;
-    private FileManagementService fileManagementService = ServiceLocatorFactory.getFileManagementService();;
+    private final FileManagementJobSubmitter jobSubmitter;
 
     /**
      * Injected constructor.
@@ -133,12 +132,14 @@ class ProjectFilesSplitJob extends AbstractProjectFilesJob {
             CaArrayFileSet fileSet, ArrayDataImporter arrayDataImporter,
             MageTabImporter mageTabImporter,
             FileAccessService fileAccessService, ProjectDao projectDao,
-            SearchDao searchDao, DataImportOptions dataImportOptions, CaArrayFileSetSplitter splitter) {
+            SearchDao searchDao, DataImportOptions dataImportOptions, CaArrayFileSetSplitter splitter,
+            FileManagementJobSubmitter jobSubmitter) {
         // CHECKSTYLE:ON
         super(username, targetProject, fileSet, arrayDataImporter, mageTabImporter,
                 fileAccessService, projectDao, searchDao);
         this.dataImportOptions = dataImportOptions;
         this.splitter = splitter;
+        this.jobSubmitter = jobSubmitter;
     }
 
     /**
@@ -158,7 +159,10 @@ class ProjectFilesSplitJob extends AbstractProjectFilesJob {
         Set<CaArrayFileSet> splits = getSplitsToImport(origFileSet);
         for (CaArrayFileSet curSplit : splits) {
             curSplit.updateStatus(FileStatus.VALIDATED);
-            fileManagementService.importFiles(getProject(), curSplit, dataImportOptions);
+            ProjectFilesImportJob job = new ProjectFilesImportJob(getOwnerName(), getProject(), curSplit, 
+                    dataImportOptions, getArrayDataImporter(), getMageTabImporter(), getFileAccessService(), 
+                    getProjectDao(), getSearchDao());
+            jobSubmitter.submitJob(job);
         }
     }
     
@@ -186,14 +190,4 @@ class ProjectFilesSplitJob extends AbstractProjectFilesJob {
     public JobType getJobType() {
         return JobType.DATA_FILE_SPLIT;
     }
-
-    /**
-     * Override the fileManagementService.  For unit tests.
-     * 
-     * @param fileManagementService new file management service
-     */
-    void setFileManagementService(FileManagementService fileManagementService) {
-        this.fileManagementService = fileManagementService;
-    }
-
 }

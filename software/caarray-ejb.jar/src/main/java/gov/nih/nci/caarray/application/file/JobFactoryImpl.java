@@ -172,4 +172,15 @@ public class JobFactoryImpl implements JobFactory {
                 fileAccessServiceProvider.get(), projectDaoProvider.get(), searchDaoProvider.get());
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public ProjectFilesSplitJob createProjectFilesSplitJob(String user, Project project, CaArrayFileSet fileSet,
+            DataImportOptions dataImportOptions, FileManagementJobSubmitter submitter) {
+        return new ProjectFilesSplitJob(user, project, fileSet, arrayDataImporterProvider.get(),
+                mageTabImporterProvider.get(), fileAccessServiceProvider.get(), projectDaoProvider.get(),
+                searchDaoProvider.get(), dataImportOptions, caArrayFileSetSplitterProvider.get(), submitter);
+    }
+
 }

@@ -85,10 +85,10 @@ package gov.nih.nci.caarray.application.file;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
-import gov.nih.nci.caarray.application.ServiceLocator;
-import gov.nih.nci.caarray.application.ServiceLocatorFactory;
 import gov.nih.nci.caarray.application.arraydata.DataImportOptions;
+import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.application.util.CaArrayFileSetSplitter;
+import gov.nih.nci.caarray.dao.ProjectDao;
 import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
@@ -104,6 +104,7 @@ import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
@@ -121,10 +122,11 @@ public class ProjectFilesSplitJobTest {
     @Mock CaArrayFileSet fileset;
     @Mock ArrayDataImporter arrayDataImporter;
     @Mock MageTabImporter mageTabImporter;
+    @Mock ProjectDao projectDao;
+    @Mock FileAccessService fileAccessService;
     @Mock SearchDao searchDao;
-    @Mock ServiceLocator serviceLocator;
     @Mock CaArrayFileSetSplitter fileSetSplitter;
-    @Mock FileManagementService fileManagementService;
+    @Mock FileManagementJobSubmitter jobSubmitter;
     private ProjectFilesSplitJob job;
     private CaArrayFile file;
 
@@ -133,18 +135,16 @@ public class ProjectFilesSplitJobTest {
     public void before() {
         dataImportOptions = DataImportOptions.getAutoCreatePerFileOptions();
         MockitoAnnotations.initMocks(this);
-        ServiceLocatorFactory.setLocator(serviceLocator);
         ProjectFilesJobTest.setupProjectMock(project);
-        job = new ProjectFilesSplitJob(null, project, fileset, arrayDataImporter, mageTabImporter, null, null, 
-                searchDao, dataImportOptions, fileSetSplitter);
+        job = new ProjectFilesSplitJob("testuser", project, fileset, arrayDataImporter, mageTabImporter, 
+                fileAccessService, projectDao, 
+                searchDao, dataImportOptions, fileSetSplitter, jobSubmitter);
         
         file = mock(CaArrayFile.class);
         
         when(searchDao.retrieveByIds(eq(CaArrayFile.class), 
                 any(List.class))).thenReturn(Collections.singletonList(file));
         when(searchDao.retrieve(eq(Project.class), eq(1L))).thenReturn(project);
-        
-        job.setFileManagementService(fileManagementService);
     }
     
     @Test
@@ -187,8 +187,7 @@ public class ProjectFilesSplitJobTest {
         when(file.getFileStatus()).thenReturn(FileStatus.VALIDATION_ERRORS);
         job.executeProjectFilesJob();
         verifyValidateCalled();
-        verify(fileManagementService, never()).importFiles(any(Project.class), any(CaArrayFileSet.class), 
-                any(DataImportOptions.class));
+        verify(jobSubmitter, never()).submitJob(any(ProjectFilesImportJob.class));
     }
 
     private void verifyValidateCalled() {
@@ -197,7 +196,18 @@ public class ProjectFilesSplitJobTest {
     }
 
     private void verifyImportCalled() {
-        verify(fileManagementService).importFiles(eq(project), argThat(new SingleFileCaArrayFileSetMatcher(file)), 
-                eq(dataImportOptions));
+        verify(jobSubmitter).submitJob(argThat(new ArgumentMatcher<AbstractFileManagementJob>() {
+            @Override
+            public boolean matches(Object argument) {
+                ProjectFilesImportJob importJob = (ProjectFilesImportJob) argument;
+                return importJob.getOwnerName().equals(job.getOwnerName())
+                        && importJob.getProject().equals(job.getProject())
+                        && importJob.getArrayDataImporter().equals(job.getArrayDataImporter())
+                        && importJob.getMageTabImporter().equals(job.getMageTabImporter())
+                        && importJob.getFileAccessService().equals(job.getFileAccessService())
+                        && importJob.getProjectDao().equals(job.getProjectDao())
+                        && importJob.getSearchDao().equals(job.getSearchDao());
+            }
+        }));
     }
 }

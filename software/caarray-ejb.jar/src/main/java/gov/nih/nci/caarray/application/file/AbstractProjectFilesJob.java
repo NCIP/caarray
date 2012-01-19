@@ -247,6 +247,20 @@ abstract class AbstractProjectFilesJob extends AbstractFileManagementJob {
     }
     
     /**
+     * @return the fileAccessService
+     */
+    protected FileAccessService getFileAccessService() {
+        return fileAccessService;
+    }
+
+    /**
+     * @return the searchDao
+     */
+    protected SearchDao getSearchDao() {
+        return searchDao;
+    }
+
+    /**
      * {@inheritDoc}
      */
     public boolean userHasReadAccess(User user) {
