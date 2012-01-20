@@ -95,7 +95,7 @@ import java.util.UUID;
  * @author jscott
  *
  */
-public interface ExecutableJob extends BaseJob {   
+public interface ExecutableJob extends BaseChildAwareJob {   
     /**
      * Perform the job.
      */

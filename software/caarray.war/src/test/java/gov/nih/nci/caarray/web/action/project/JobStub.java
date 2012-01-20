@@ -84,11 +84,13 @@
 package gov.nih.nci.caarray.web.action.project;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+import gov.nih.nci.caarray.domain.project.BaseChildAwareJob;
 import gov.nih.nci.caarray.domain.project.Job;
 import gov.nih.nci.caarray.domain.project.JobStatus;
 import gov.nih.nci.caarray.domain.project.JobType;
 
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -112,6 +114,9 @@ public class JobStub extends AbstractCaArrayEntity implements Job {
 
     private boolean userHasOwnership;
 
+	private BaseChildAwareJob parent;
+    private List<BaseChildAwareJob> children;
+    
     /**
      * {@inheritDoc}
      */
@@ -297,5 +302,33 @@ public class JobStub extends AbstractCaArrayEntity implements Job {
     public void setJobId(UUID jobId) {
         this.jobId = jobId;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+	public BaseChildAwareJob getParent() {
+		return parent;
+	}
+
+    /**
+     * {@inheritDoc}
+     */
+	public void setParent(BaseChildAwareJob parent) {
+		this.parent = parent;
+	}
+
+    /**
+     * {@inheritDoc}
+     */
+	public List<BaseChildAwareJob> getChildren() {
+		return children;
+	}
+
+    /**
+     * {@inheritDoc}
+     */
+	public void setChildren(List<BaseChildAwareJob> children) {
+		this.children = children;
+	}
 
 }

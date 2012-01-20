@@ -82,29 +82,21 @@
  */
 package gov.nih.nci.caarray.domain.project;
 
+import java.util.List;
 
 /**
- * @author jscott
+ * Introduces the notion of parent/children into the jobs.
+ * @author pshrabstein
  *
  */
-public interface Job extends BaseChildAwareJob {
+public interface BaseChildAwareJob extends BaseJob {
     /**
-     * @return true if the user has read access to this job
+     * @return parent of this job or null if this is top-level job
      */
-    boolean getUserHasReadAccess();
-    
+	BaseChildAwareJob getParent();
+	
     /**
-     * @return true if the user has write access to this job
+     * @return children of this job or null if there is none
      */
-    boolean getUserHasWriteAccess();
-    
-    /**
-     * @return true if the user is the owner of the job
-     */
-    boolean getUserHasOwnership();
-    
-    /**
-     * @return the position in the queue
-     */
-    int getPosition();
+	List<BaseChildAwareJob> getChildren();
 }

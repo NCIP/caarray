@@ -84,6 +84,7 @@ package gov.nih.nci.caarray.application.file;
 
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileStatus;
+import gov.nih.nci.caarray.domain.project.BaseChildAwareJob;
 import gov.nih.nci.caarray.domain.project.ExecutableJob;
 import gov.nih.nci.caarray.domain.project.JobStatus;
 import gov.nih.nci.caarray.domain.project.JobType;
@@ -93,6 +94,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 import com.google.inject.Inject;
@@ -109,6 +111,9 @@ public abstract class AbstractFileManagementJob implements Serializable, Executa
     private Date timeStarted;
     private UUID jobId;
     private JobStatus jobStatus;
+
+	private BaseChildAwareJob parent;
+    private List<BaseChildAwareJob> children;
 
     @Inject
     AbstractFileManagementJob(String username) {
@@ -264,4 +269,32 @@ public abstract class AbstractFileManagementJob implements Serializable, Executa
     public UUID getJobId() {
         return jobId;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+	public BaseChildAwareJob getParent() {
+		return parent;
+	}
+
+    /**
+     * {@inheritDoc}
+     */
+	public void setParent(BaseChildAwareJob parent) {
+		this.parent = parent;
+	}
+
+    /**
+     * {@inheritDoc}
+     */
+	public List<BaseChildAwareJob> getChildren() {
+		return children;
+	}
+
+    /**
+     * {@inheritDoc}
+     */
+	public void setChildren(List<BaseChildAwareJob> children) {
+		this.children = children;
+	}
 }
