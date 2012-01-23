@@ -105,7 +105,7 @@ import com.google.inject.Inject;
 public abstract class AbstractFileManagementJob implements Serializable, ExecutableJob {
 
     private static final long serialVersionUID = 1L;
-    
+
     private String ownerName;
     private Date timeRequested;
     private Date timeStarted;
@@ -124,19 +124,20 @@ public abstract class AbstractFileManagementJob implements Serializable, Executa
         setOwnerName(username);
         this.timeRequested = new Date();
     }
-    
+
     /**
      * Sets the ownerName.
-     * 
+     *
      * @param ownerName new owner name
      */
     final void setOwnerName(String ownerName) {
         this.ownerName = ownerName;
     }
-    
+
     /**
      * {@inheritDoc}
      */
+    @Override
     public String getOwnerName() {
         return this.ownerName;
     }
@@ -145,79 +146,94 @@ public abstract class AbstractFileManagementJob implements Serializable, Executa
      * Perform the job.
      */
     protected abstract void doExecute();
-    
+
     /**
      * Perform the job by delegating to subclasses.
      */
+    @Override
     public void execute() {
         timeStarted = new Date();
         doExecute();
     }
-    
+
     /**
      * @return the file set this job is operating on
      */
+    @Override
     public abstract CaArrayFileSet getFileSet();
 
     /**
      * @return the FileStatus used to indicate that this job is in progress
      */
     protected abstract FileStatus getInProgressStatus();
-    
+
     /**
      * Set the appropriate fileset and job status value indicating that the job has been cancelled.
      */
+    @Override
     public void markAsCancelled() {
         setFilesetStatus(FileStatus.UPLOADED);
         setJobStatus(JobStatus.CANCELLED);
     }
-    
+
     /**
      * Set the appropriate fileset and job status value indicating that the job is in progress.
      */
+    @Override
     public void markAsInProgress() {
         setFilesetStatus(getInProgressStatus());
         setJobStatus(JobStatus.RUNNING);
     }
-    
+
+    /**
+     * Set the job status value indicating that the job has been processed.
+     */
+    @Override
+    public void markAsProcessed() {
+        setJobStatus(JobStatus.PROCESSED);
+    }
+
     /**
      * @return the FileStatus used to indicate that this job is in the queue
      */
     protected FileStatus getInQueueStatus() {
         return FileStatus.IN_QUEUE;
     }
-    
+
    /**
      * Set the appropriate fileset and job status value indicating that the job is in the queue.
      */
+    @Override
     public void markAsInQueue() {
-        setFilesetStatus(getInQueueStatus());    
+        setFilesetStatus(getInQueueStatus());
         setJobStatus(JobStatus.IN_QUEUE);
     }
-    
+
     private void setFilesetStatus(FileStatus fileStatus) {
         if (getFileSet() != null) {
-            getFileSet().updateStatus(fileStatus);    
+            getFileSet().updateStatus(fileStatus);
         }
     }
-    
+
     /**
      * @return true if the job is in progress
      */
+    @Override
     public boolean isInProgress() {
         return jobStatus.equals(JobStatus.RUNNING);
     }
-    
+
     /**
      * set the appropriate job status value.
      */
     private void setJobStatus(JobStatus status) {
         jobStatus = status;
     }
-   
+
     /**
      * {@inheritDoc}
      */
+    @Override
     public JobStatus getJobStatus() {
         return jobStatus;
     }
@@ -225,26 +241,31 @@ public abstract class AbstractFileManagementJob implements Serializable, Executa
     /**
      * {@inheritDoc}
      */
+    @Override
     public abstract PreparedStatement getUnexpectedErrorPreparedStatement(Connection con) throws SQLException;
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public abstract String getJobEntityName();
-    
+
     /**
      * {@inheritDoc}
      */
+    @Override
     public abstract long getJobEntityId();
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public abstract JobType getJobType();
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public Date getTimeRequested() {
          return timeRequested;
     }
@@ -252,13 +273,15 @@ public abstract class AbstractFileManagementJob implements Serializable, Executa
     /**
      * {@inheritDoc}
      */
+    @Override
     public Date getTimeStarted() {
         return timeStarted;
     }
-    
+
     /**
      * {@inheritDoc}
      */
+    @Override
     public void setJobId(UUID jobId) {
         this.jobId = jobId;
     }
@@ -266,6 +289,7 @@ public abstract class AbstractFileManagementJob implements Serializable, Executa
     /**
      * {@inheritDoc}
      */
+    @Override
     public UUID getJobId() {
         return jobId;
     }
@@ -273,7 +297,8 @@ public abstract class AbstractFileManagementJob implements Serializable, Executa
     /**
      * {@inheritDoc}
      */
-	public BaseChildAwareJob getParent() {
+	@Override
+    public BaseChildAwareJob getParent() {
 		return parent;
 	}
 
@@ -287,7 +312,8 @@ public abstract class AbstractFileManagementJob implements Serializable, Executa
     /**
      * {@inheritDoc}
      */
-	public List<BaseChildAwareJob> getChildren() {
+	@Override
+    public List<BaseChildAwareJob> getChildren() {
 		return children;
 	}
 

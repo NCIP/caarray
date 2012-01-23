@@ -60,7 +60,9 @@
         <display:column sortProperty="TIME_STARTED" title="Time Started" sortable="false" >
           <fmt:formatDate value="${row.timeStarted}" pattern="${jobQueueDatePattern}"/>
         </display:column>
-        <display:column sortProperty="STATUS" title="Status" sortable="false" >${row.jobStatus.displayValue}</display:column>
+        <display:column sortProperty="STATUS" title="Status" sortable="false" >
+          ${row.jobStatus.displayValue}
+        </display:column>
         <c:url value="/protected/project/cancelJob.action" var="cancelJobUrl">
             <c:param name="jobId" value="${row.jobId}" />     
         </c:url>

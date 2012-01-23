@@ -84,12 +84,17 @@ package gov.nih.nci.caarray.web.action.project;
 
 import gov.nih.nci.caarray.application.ServiceLocatorFactory;
 import gov.nih.nci.caarray.application.jobqueue.JobQueueService;
+import gov.nih.nci.caarray.domain.project.BaseChildAwareJob;
 import gov.nih.nci.caarray.domain.project.Job;
+import gov.nih.nci.caarray.domain.project.UserVisibleJob;
 import gov.nih.nci.caarray.domain.search.JobSortCriterion;
 import gov.nih.nci.caarray.util.CaArrayUsernameHolder;
 import gov.nih.nci.security.authorization.domainobjects.User;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.struts2.interceptor.validation.SkipValidation;
 
@@ -110,7 +115,7 @@ public class ProjectJobQueueAction extends ActionSupport {
     private final SortablePaginatedList<Job, JobSortCriterion> jobs =
             new SortablePaginatedList<Job, JobSortCriterion>(PAGE_SIZE, JobSortCriterion.POSITION.name(),
                     JobSortCriterion.class);
-    
+
     /**
      * Renders the job queue page.
      *
@@ -118,21 +123,38 @@ public class ProjectJobQueueAction extends ActionSupport {
      */
     @SkipValidation
     public String jobQueue() {
-        JobQueueService jobQueueService = ServiceLocatorFactory.getJobQueueService(); 
+        JobQueueService jobQueueService = ServiceLocatorFactory.getJobQueueService();
         User user = CaArrayUsernameHolder.getCsmUser();
         List<Job> jobsList = jobQueueService.getJobsForUser(user);
-        this.jobs.setList(jobsList);
-        this.jobs.setFullListSize(jobQueueService.getJobCount(user));
+        List<Job> userVisibleJobs = getUserVisibleJobs(jobsList);
+        this.jobs.setList(userVisibleJobs);
+        this.jobs.setFullListSize(userVisibleJobs.size());
         return Action.SUCCESS;
     }
-    
+
+    private List<Job> getUserVisibleJobs(List<Job> jobsList) {
+        Set<BaseChildAwareJob> parents = new HashSet<BaseChildAwareJob>();
+        List<Job> visibleJobs = new ArrayList<Job>();
+        int position = 1;
+        for (Job job: jobsList) {
+            BaseChildAwareJob parent = job.getParent();
+            if (parent == null) {
+                visibleJobs.add(new UserVisibleJob(job, position++));
+            } else if (!parents.contains(parent)) {
+                parents.add(parent);
+                visibleJobs.add(new UserVisibleJob(job, position++));
+            }
+        }
+        return visibleJobs;
+    }
+
     /**
      * @return the jobs
      */
     public SortablePaginatedList<Job, JobSortCriterion> getJobs() {
         return jobs;
     }
-    
+
     /**
      * Cancels the job.
      * @return a boolean value that indicates if the job was cancelled or not.
@@ -145,7 +167,7 @@ public class ProjectJobQueueAction extends ActionSupport {
     }
 
     /**
-     * Sets the job id. 
+     * Sets the job id.
      * @param jobId the job id to set.
      */
     public void setJobId(String jobId) {

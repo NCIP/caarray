@@ -282,6 +282,7 @@ public class FileManagementMDB implements MessageListener {
         LOG.info("Starting job of type: " + job.getClass().getSimpleName());
         try {
             job.execute();
+            job.markAsProcessed();
         } catch (final RuntimeException e) {
             rollbackTransaction();
             handleUnexpectedError(job);

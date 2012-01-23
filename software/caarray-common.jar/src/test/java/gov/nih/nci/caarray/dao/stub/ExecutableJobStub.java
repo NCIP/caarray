@@ -99,7 +99,7 @@ import java.util.List;
 import java.util.UUID;
 
 /**
-* Stub for ExecutableJob. 
+* Stub for ExecutableJob.
 * @author kkanchinadam
 */
 public class ExecutableJobStub extends AbstractCaArrayEntity implements ExecutableJob {
@@ -262,6 +262,12 @@ public class ExecutableJobStub extends AbstractCaArrayEntity implements Executab
      * {@inheritDoc}
      */
     public void markAsInProgress() {
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void markAsProcessed() {
     }
 
     /**
