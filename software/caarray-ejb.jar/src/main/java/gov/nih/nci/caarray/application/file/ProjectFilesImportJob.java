@@ -129,6 +129,10 @@ class ProjectFilesImportJob extends AbstractProjectFilesJob {
 
     @Override
     protected void executeProjectFilesJob() {
+    	try {
+			Thread.sleep(20000);
+		} catch (InterruptedException e) {
+		}
         doValidate(getFileSet());
         if (getFileSet().isValidated()) {
             importAnnotationAndData(getFileSet());

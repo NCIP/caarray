@@ -84,7 +84,6 @@ package gov.nih.nci.caarray.domain.project;
 
 import gov.nih.nci.security.authorization.domainobjects.User;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -97,7 +96,7 @@ import java.util.UUID;
  *
  */
 public class JobSnapshot implements Job {
-    private final BaseJob originalJob;
+    private final BaseChildAwareJob originalJob;
     private final UUID jobId;
     private final String ownerName;
     private final String jobEntityName;
@@ -112,9 +111,6 @@ public class JobSnapshot implements Job {
     private final boolean canUserCancelJob;
     private final boolean inProgress;
     private final int position;
-	private final BaseChildAwareJob parent;
-    private final List<BaseChildAwareJob> children;
-    
 
     /**
      * @param user the current user
@@ -139,8 +135,6 @@ public class JobSnapshot implements Job {
         doesUserHaveOwnership = originalJob.getOwnerName().equalsIgnoreCase(user.getLoginName());
         // Currently, only job owners can cancel a job. Refer to ARRAY-1953 for more information. 
         canUserCancelJob = doesUserHaveOwnership && !inProgress; 
-        parent = originalJob.getParent();
-        children = new ArrayList<BaseChildAwareJob>( originalJob.getChildren() );
     }
 
     /**
@@ -252,13 +246,13 @@ public class JobSnapshot implements Job {
      * {@inheritDoc}
      */
 	public BaseChildAwareJob getParent() {
-		return parent;
+		return originalJob.getParent();
 	}
 
     /**
      * {@inheritDoc}
      */
 	public List<BaseChildAwareJob> getChildren() {
-		return children;
+		return originalJob.getChildren();
 	}
 }

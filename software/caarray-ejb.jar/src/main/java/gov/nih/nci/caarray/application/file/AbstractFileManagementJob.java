@@ -112,8 +112,8 @@ public abstract class AbstractFileManagementJob implements Serializable, Executa
     private UUID jobId;
     private JobStatus jobStatus;
 
-	private BaseChildAwareJob parent;
-    private List<BaseChildAwareJob> children;
+	protected BaseChildAwareJob parent;
+    protected List<BaseChildAwareJob> children;
 
     @Inject
     AbstractFileManagementJob(String username) {

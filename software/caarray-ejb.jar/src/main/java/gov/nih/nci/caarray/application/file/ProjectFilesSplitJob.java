@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.application.file;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -96,6 +97,7 @@ import gov.nih.nci.caarray.dao.ProjectDao;
 import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileStatus;
+import gov.nih.nci.caarray.domain.project.BaseChildAwareJob;
 import gov.nih.nci.caarray.domain.project.JobType;
 import gov.nih.nci.caarray.domain.project.Project;
 
@@ -156,18 +158,16 @@ class ProjectFilesSplitJob extends AbstractProjectFilesJob {
     }
 
     private void importSplits(CaArrayFileSet origFileSet) {
+        children = new ArrayList<BaseChildAwareJob>();
         Set<CaArrayFileSet> splits = getSplitsToImport(origFileSet);
         for (CaArrayFileSet curSplit : splits) {
-            try {
-				Thread.sleep(30000);
-			} catch (InterruptedException e) {
-			}
-            System.out.println("Spawning job");
         	curSplit.updateStatus(FileStatus.VALIDATED);
             handleSessionMess(); // new job needs the new split sdrf to have an id
             ProjectFilesImportJob job = new ProjectFilesImportJob(getOwnerName(), getProject(), curSplit, 
                     dataImportOptions, getArrayDataImporter(), getMageTabImporter(), getFileAccessService(), 
                     getProjectDao(), getSearchDao());
+            children.add(job);
+            job.setParent(this);
             jobSubmitter.submitJob(job);
         }
     }
