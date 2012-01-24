@@ -109,7 +109,7 @@ public class CaArrayPackageScannerConfiguration extends SpringAwarePackageScanne
         getPackageIncludes().add("com.opensymphony.xwork2*");
         getPackageIncludes().add("org.slf4j*");
         getPackageIncludes().add("affymetrix.*");
-        getPackageIncludes().add("com.csvreader.*");
+        getPackageIncludes().add("com.csvreader*");
         getPackageExcludes().add("org.apache.commons.logging*");
 
         final Map<String, String> pkgVersions = new HashMap<String, String>();
