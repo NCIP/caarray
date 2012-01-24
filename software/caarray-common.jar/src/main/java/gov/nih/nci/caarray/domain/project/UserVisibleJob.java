@@ -284,7 +284,7 @@ public class UserVisibleJob implements Job {
      * @return true if the user can cancel this job
      */
     public boolean getUserCanCancelJob() {
-        return getUserHasOwnership() && !isInProgress();
+        return getUserHasOwnership() && !isInProgress() && getParent()==null;
     }
 
     /**
