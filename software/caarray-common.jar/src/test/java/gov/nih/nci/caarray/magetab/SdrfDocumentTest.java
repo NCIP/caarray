@@ -80,62 +80,45 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.magetab.splitter;
+package gov.nih.nci.caarray.magetab;
 
-import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
-import gov.nih.nci.caarray.magetab.MageTabFileSet;
-import gov.nih.nci.caarray.magetab.MageTabParsingException;
-import gov.nih.nci.caarray.magetab.io.FileRef;
+import static org.junit.Assert.assertTrue;
+import gov.nih.nci.caarray.magetab.io.JavaIOFileRef;
 import gov.nih.nci.caarray.magetab.sdrf.SdrfDocument;
+import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
+import gov.nih.nci.caarray.validation.InvalidDataException;
+import gov.nih.nci.caarray.validation.ValidationMessage;
+import gov.nih.nci.caarray.validation.ValidationResult;
 
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
+import org.junit.Test;
 
-import org.apache.log4j.Logger;
-
-/**
- * Default implementation of the interface.
- * 
- * @author tparnell
- */
-public class SdrfDataFileFinderImpl implements SdrfDataFileFinder {
-
-    private static final Logger LOG = Logger.getLogger(SdrfDataFileFinderImpl.class);
+public class SdrfDocumentTest {
 
     /**
-     * {@inheritDoc}
+     * Want clean info message, not error or NPE.
      */
-    @Override
-    public Set<String> identifyReferencedDataFiles(FileRef sdrf) throws IOException {
-        SdrfDocument doc = extractDocFromRef(sdrf);
-        parse(doc);
-        return extractReferencedFileNames(doc);        
-    }
+    @Test
+    public void parseSdrfNoIdf() throws InvalidDataException, MageTabParsingException {
+        JavaIOFileRef sdrf = new JavaIOFileRef(MageTabDataFiles.SPECIFICATION_EXAMPLE_SDRF);
+        MageTabFileSet inputFileSet = new MageTabFileSet();
+        inputFileSet.addSdrf(sdrf);
+        MageTabDocumentSet documentSet = new MageTabDocumentSet(inputFileSet);
 
-    private SdrfDocument extractDocFromRef(FileRef sdrf) {
-        MageTabFileSet mageTabFileSet = new MageTabFileSet();
-        SdrfDocument doc = new SdrfDocument(new MageTabDocumentSet(mageTabFileSet), sdrf);
+        SdrfDocument sdrfDocument = new SdrfDocument(documentSet, sdrf);
+        sdrfDocument.parseNoIdfCheck();
         
-        return doc;
+        ValidationResult validationResult = documentSet.getValidationResult();
+        assertFactorInfoMessage(validationResult);
     }
     
-    private void parse(SdrfDocument doc) {
-        try {
-            doc.parseNoIdfCheck();
-        } catch (MageTabParsingException e) {
-           LOG.warn(String.format("Got parsing exception inside splitter.  " 
-                   + "Code assumes the referenced sdrf (%s) is valid. ", doc.getFile().getName()), e);
-           throw new IllegalArgumentException("Invalid sdrf file: " + doc.getFile().getName(), e);
+    private void assertFactorInfoMessage(ValidationResult validationResult) {
+        boolean foundFactorInfoMessage = false;
+        for (ValidationMessage message : validationResult.getMessages()) {
+            if (ValidationMessage.Type.INFO.equals(message.getType()) 
+                    && message.getMessage().startsWith("Factor parsing disabled")) {
+                foundFactorInfoMessage = true;
+            }
         }
-    }
-    
-    private Set<String> extractReferencedFileNames(SdrfDocument doc) {
-        Set<String> result = new HashSet<String>();
-        result.addAll(doc.getReferencedDataMatrixFileNames());
-        result.addAll(doc.getReferencedDerivedFileNames());
-        result.addAll(doc.getReferencedRawFileNames());
-        
-        return result;
+        assertTrue("No factor parsing message.  Validation result: " + validationResult, foundFactorInfoMessage);
     }
 }

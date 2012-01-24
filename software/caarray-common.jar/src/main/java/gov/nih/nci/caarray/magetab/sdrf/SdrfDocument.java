@@ -870,6 +870,15 @@ public final class SdrfDocument extends AbstractMageTabDocument {
     }
 
     private void handleFactorValue(SdrfColumn column, String value, SdrfColumn nextColumn, SdrfColumn nextNextColumn) {
+        if (!this.checkHasIdf()) {
+            addInfoMessage("Factor parsing disabled.");
+        } else {
+            handleFactorValueWithIdf(column, value, nextColumn, nextNextColumn);
+        }
+    }
+    
+    private void handleFactorValueWithIdf(SdrfColumn column, String value, 
+            SdrfColumn nextColumn, SdrfColumn nextNextColumn) {
         FactorValue factorValue = new FactorValue();
         factorValue.setFactor(idfDocument.getFactor(column.getHeading().getQualifier()));
         if (factorValue.getFactor() != null) {
@@ -1326,7 +1335,7 @@ public final class SdrfDocument extends AbstractMageTabDocument {
     public List<FactorValue> getAllFactorValues() {
         return allFactorValues;
     }
-
+    
     /**
      * Adds an error message with the current line and column number.
      *
@@ -1343,6 +1352,15 @@ public final class SdrfDocument extends AbstractMageTabDocument {
      */
     private void addWarning(String message) {
         addWarningMessage(currentLineNumber, currentColumnNumber, message);
+    }
+
+    /**
+     * Adds an info message with the current line and column number.
+     *
+     * @param message info message
+     */
+    private void addInfo(String message) {
+        addInfoMessage(currentLineNumber, currentColumnNumber, message);
     }
 
     /**
