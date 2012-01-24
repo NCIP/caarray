@@ -138,11 +138,13 @@ public class UserVisibleJob implements Job {
                 statusCounts.put(cStatus, 0);
             }
             for (BaseChildAwareJob job : parent.getChildren()) {
-                if (job.getTimeRequested().before(tmpTimeRequested)) {
-                    tmpTimeRequested = job.getTimeRequested();
+                Date cTimeRequested = job.getTimeRequested();
+                if (cTimeRequested != null && cTimeRequested.before(tmpTimeRequested)) {
+                    tmpTimeRequested = cTimeRequested;
                 }
-                if (job.getTimeStarted().before(tmpTimeStarted)) {
-                    tmpTimeStarted = job.getTimeStarted();
+                Date cTimeStarted = job.getTimeStarted();
+                if (cTimeStarted != null && cTimeStarted.before(tmpTimeStarted)) {
+                    tmpTimeStarted = cTimeStarted;
                 }
                 JobStatus cStatus = job.getJobStatus();
                 statusCounts.put(cStatus, statusCounts.get(cStatus)+1);
