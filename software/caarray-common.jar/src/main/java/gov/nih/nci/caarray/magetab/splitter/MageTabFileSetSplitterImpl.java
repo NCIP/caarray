@@ -71,8 +71,6 @@ import com.google.inject.Inject;
  */
 public class MageTabFileSetSplitterImpl implements MageTabFileSetSplitter {
 
-    // TODO: testing CI notifications.  Will remove.
-
     /**
      * Predicate that matches file references based upon the names of the files.
      * 
