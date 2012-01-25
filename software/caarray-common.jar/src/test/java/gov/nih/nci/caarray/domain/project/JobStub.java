@@ -82,90 +82,56 @@
  */
 package gov.nih.nci.caarray.domain.project;
 
+
+import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
+
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 /**
- * This object is a synthetic "job" used to represent the aggregate of a set of split jobs. Since job splitting should
- * be transparent to the user, this is the object represented on the UI instead of the individual split jobs
  * @author wcheng
+ *
  */
-public class UserVisibleJob implements Job {
-    private final UUID jobId;
-    private final BaseChildAwareJob parent;
-    private final String ownerName;
-    private final String jobEntityName;
-    private final long jobEntityId;
-    private final JobType jobType;
+public class JobStub extends AbstractCaArrayEntity implements Job {
+    private static final long serialVersionUID = 1234567891L;
+
+    private int position;
+    private String ownerName;
+    private String jobEntityName;
+    private long jobEntityId;
+    private JobType jobType;
     private Date timeRequested;
     private Date timeStarted;
     private JobStatus jobStatus;
-    private final boolean doesUserHaveReadAccess;
-    private final boolean doesUserHaveWriteAccess;
-    private final boolean doesUserHaveOwnership;
-    private final int position;
+    private boolean userHasReadAccess;
+    private boolean userHasWriteAccess;
+    private boolean inProgress;
+    private UUID jobId;
 
-    private final Map<JobStatus, Integer> statusCounts = new HashMap<JobStatus, Integer>();
+    private boolean userHasOwnership;
+
+    private BaseChildAwareJob parent;
+    private List<BaseChildAwareJob> children = new ArrayList<BaseChildAwareJob>();
 
     /**
-     * Create an object representing the given job and all its siblings.
-     * @param childJob one of the sibling jobs this object is an aggregate of
-     * @param position the position of the job in the job queue at the time this snapshot is created
+     * {@inheritDoc}
      */
-    public UserVisibleJob(Job childJob, int position) {
-        jobId = UUID.randomUUID();
-        parent = childJob.getParent();
-        ownerName = childJob.getOwnerName();
-        jobEntityName = childJob.getJobEntityName();
-        jobEntityId = childJob.getJobEntityId();
-        jobType = childJob.getJobType();
-        doesUserHaveReadAccess = childJob.getUserHasReadAccess();
-        doesUserHaveWriteAccess = childJob.getUserHasWriteAccess();
-        doesUserHaveOwnership = childJob.getUserHasOwnership();
-        timeRequested = childJob.getTimeRequested();
-        timeStarted = childJob.getTimeStarted();
-        jobStatus = childJob.getJobStatus();
+    public int getPosition() {
+        return position;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void setPosition(int position) {
         this.position = position;
-
-        if (parent != null) {
-            setJobStatusFromChildren();
-            setTimeRequestedFromChildren();
-            setTimeStartedFromChildren();
-        }
-
     }
 
     /**
      * {@inheritDoc}
      */
-    @Override
-    public BaseChildAwareJob getParent() {
-        return parent;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<BaseChildAwareJob> getChildren() {
-        return parent.getChildren();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public UUID getJobId() {
-        return jobId;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public String getOwnerName() {
         return ownerName;
     }
@@ -173,7 +139,13 @@ public class UserVisibleJob implements Job {
     /**
      * {@inheritDoc}
      */
-    @Override
+    public void setUsername(String username) {
+        this.ownerName = username;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public String getJobEntityName() {
         return jobEntityName;
     }
@@ -181,7 +153,13 @@ public class UserVisibleJob implements Job {
     /**
      * {@inheritDoc}
      */
-    @Override
+    public void setJobEntityName(String jobEntityName) {
+        this.jobEntityName = jobEntityName;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public long getJobEntityId() {
         return jobEntityId;
     }
@@ -189,7 +167,13 @@ public class UserVisibleJob implements Job {
     /**
      * {@inheritDoc}
      */
-    @Override
+    public void setJobEntityId(long jobEntityId) {
+        this.jobEntityId = jobEntityId;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public JobType getJobType() {
         return jobType;
     }
@@ -197,7 +181,13 @@ public class UserVisibleJob implements Job {
     /**
      * {@inheritDoc}
      */
-    @Override
+    public void setJobType(JobType jobType) {
+        this.jobType = jobType;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public Date getTimeRequested() {
         return timeRequested;
     }
@@ -205,7 +195,13 @@ public class UserVisibleJob implements Job {
     /**
      * {@inheritDoc}
      */
-    @Override
+    public void setTimeRequested(Date timeRequested) {
+        this.timeRequested = timeRequested;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public Date getTimeStarted() {
         return timeStarted;
     }
@@ -213,7 +209,13 @@ public class UserVisibleJob implements Job {
     /**
      * {@inheritDoc}
      */
-    @Override
+    public void setTimeStarted(Date timeStarted) {
+        this.timeStarted = timeStarted;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public JobStatus getJobStatus() {
         return jobStatus;
     }
@@ -221,109 +223,111 @@ public class UserVisibleJob implements Job {
     /**
      * {@inheritDoc}
      */
-    @Override
+    public void setJobStatus(JobStatus jobStatus) {
+        this.jobStatus = jobStatus;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public boolean isInProgress() {
-        return jobStatus.equals(JobStatus.RUNNING);
+        return this.inProgress;
+    }
+
+    /**
+     * @param inProgress
+     *            true if the job is in progress
+     */
+    public void setIsInProgress(boolean inProgress) {
+        this.inProgress = inProgress;
     }
 
     /**
      * {@inheritDoc}
      */
-    @Override
     public boolean getUserHasReadAccess() {
-        return doesUserHaveReadAccess;
+        return userHasReadAccess;
+    }
+
+    /**
+     * @param value
+     *            true if the user should have read access
+     */
+    public void setUserReadAccess(boolean value) {
+        userHasReadAccess = value;
     }
 
     /**
      * {@inheritDoc}
      */
-    @Override
     public boolean getUserHasWriteAccess() {
-        return doesUserHaveWriteAccess;
+        return userHasWriteAccess;
+    }
+
+    /**
+     * @param value
+     *            true if the user should have write access
+     */
+    public void setUserWriteAccess(boolean value) {
+        userHasWriteAccess = value;
     }
 
     /**
      * {@inheritDoc}
      */
-    @Override
     public boolean getUserHasOwnership() {
-        return doesUserHaveOwnership;
+        return this.userHasOwnership;
+    }
+
+    /**
+     * @param value
+     *            true if the user is the owner of the job
+     */
+    public void setuserHasOwnership(boolean value) {
+        userHasOwnership = value;
     }
 
     /**
      * {@inheritDoc}
      */
-    @Override
-    public int getPosition() {
-        return position;
+    public UUID getJobId() {
+        return jobId;
     }
 
     /**
-     * @return true if the user can cancel this job
+     * {@inheritDoc}
      */
-    public boolean getUserCanCancelJob() {
-        return getUserHasOwnership() && !isInProgress() && getParent() == null;
+    public void setJobId(UUID jobId) {
+        this.jobId = jobId;
     }
 
     /**
-     * @return a map of the number of jobs by status
+     * {@inheritDoc}
      */
-    public Map<JobStatus, Integer> getStatusCounts() {
-        return statusCounts;
+    public BaseChildAwareJob getParent() {
+        return parent;
     }
 
     /**
-     * @return the number of jobs processed
+     * {@inheritDoc}
      */
-    public int getJobsProcessed() {
-        Integer count = statusCounts.get(JobStatus.PROCESSED);
-        return count == null ? 0 : count;
+    public void setParent(BaseChildAwareJob parent) {
+        this.parent = parent;
     }
 
     /**
-     * Sets the job status based on the statuses of the children.
+     * {@inheritDoc}
      */
-    private void setJobStatusFromChildren() {
-        for (JobStatus cStatus : JobStatus.values()) {
-            statusCounts.put(cStatus, 0);
-        }
-        for (BaseChildAwareJob job : parent.getChildren()) {
-            JobStatus cStatus = job.getJobStatus();
-            statusCounts.put(cStatus, statusCounts.get(cStatus) + 1);
-        }
-        if (statusCounts.get(JobStatus.CANCELLED) > 0) {
-            jobStatus = JobStatus.CANCELLED;
-        } else if (statusCounts.get(JobStatus.RUNNING) > 0) {
-            jobStatus = JobStatus.RUNNING;
-        } else if (statusCounts.get(JobStatus.IN_QUEUE) > 0) {
-            jobStatus = JobStatus.IN_QUEUE;
-        } else {
-            jobStatus = JobStatus.RUNNING;
-        }
+    public List<BaseChildAwareJob> getChildren() {
+        return children;
     }
 
     /**
-     * Sets time requested to the earliest child.
+     * {@inheritDoc}
      */
-    private void setTimeRequestedFromChildren() {
-        for (BaseChildAwareJob job : parent.getChildren()) {
-            Date cTimeRequested = job.getTimeRequested();
-            if (cTimeRequested != null && cTimeRequested.before(timeRequested)) {
-                timeRequested = cTimeRequested;
-            }
-        }
-    }
-
-    /**
-     * Sets time started to the earliest child.
-     */
-    private void setTimeStartedFromChildren() {
-        for (BaseChildAwareJob job : parent.getChildren()) {
-            Date cTimeStarted = job.getTimeStarted();
-            if (cTimeStarted.before(timeStarted)) {
-                timeStarted = cTimeStarted;
-            }
-        }
+    public void setChildren(List<BaseChildAwareJob> children) {
+        this.children = children;
     }
 
 }
+

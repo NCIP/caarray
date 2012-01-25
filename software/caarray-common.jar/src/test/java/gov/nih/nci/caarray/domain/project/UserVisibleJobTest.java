@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caArray
+ * source code form and machine readable, binary, object code form. The caArray2
  * Software was developed in conjunction with the National Cancer Institute
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent
  * government employees are authors, any rights in such works shall be subject
  * to Title 17 of the United States Code, section 105.
  *
- * This caArray Software License (the License) is between NCI and You. You (or
+ * This caArray2 Software License (the License) is between NCI and You. You (or
  * Your) shall mean a person or an entity, and all other entities that control,
  * are controlled by, or are under common control with the entity. Control for
  * purposes of this definition means (i) the direct or indirect power to cause
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up,
  * no-charge, irrevocable, transferable and royalty-free right and license in
- * its rights in the caArray Software to (i) use, install, access, operate,
+ * its rights in the caArray2 Software to (i) use, install, access, operate,
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caArray Software; (ii) distribute and
- * have distributed to and by third parties the caArray Software and any
+ * and prepare derivative works of the caArray2 Software; (ii) distribute and
+ * have distributed to and by third parties the caArray2 Software and any
  * modifications and derivative works thereof; and (iii) sublicense the
  * foregoing rights set out in (i) and (ii) to third parties, including the
  * right to license such rights to further third parties. For sake of clarity,
@@ -82,58 +82,88 @@
  */
 package gov.nih.nci.caarray.domain.project;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.Date;
-import java.util.UUID;
+import java.util.Map;
+
+import org.junit.Test;
 
 /**
- * @author jscott
+ * @author wcheng
  *
  */
-public interface BaseJob {
-    /**
-     * @return the job id
-     */
-    UUID getJobId();
+public class UserVisibleJobTest {
+    @Test
+    public void jobWithoutParent() {
+        Job originalJob = getJob(1, "smith", "EXP-1", JobType.DATA_FILE_IMPORT, true, true, true, new Date(), new Date(),
+                JobStatus.IN_QUEUE, 2, null);
+        UserVisibleJob job = new UserVisibleJob(originalJob, 1);
+        assertEquals(1, job.getJobEntityId());
+        assertEquals("smith", job.getOwnerName());
+        assertEquals("EXP-1", job.getJobEntityName());
+        assertEquals(JobType.DATA_FILE_IMPORT, job.getJobType());
+        assertTrue(job.getUserHasReadAccess());
+        assertTrue(job.getUserHasWriteAccess());
+        assertTrue(job.getUserHasOwnership());
+        assertTrue(job.getUserCanCancelJob());
+        assertEquals(JobStatus.IN_QUEUE, job.getJobStatus());
+        assertFalse(job.isInProgress());
+        assertEquals(1, job.getPosition());
+        assertNull(job.getParent());
+    }
 
-    /**
-     * @return the name of the user who owns the job
-     */
-    String getOwnerName();
+    @Test
+    public void jobWithParent() {
+        long now = (new Date()).getTime();
+        Date date1 = new Date(now+100);
+        Date date2 = new Date(now+200);
+        Date date3 = new Date(now+300);
+        Job parent = getJob(1, "smith", "EXP-1", JobType.DATA_FILE_IMPORT, true, true, true, new Date(), new Date(),
+                JobStatus.IN_QUEUE, 1, null);
+        Job child1 = getJob(2, "smith", "EXP-1", JobType.DATA_FILE_IMPORT, true, true, true, date1, date3,
+                JobStatus.PROCESSED, 2, parent);
+        Job child2 = getJob(3, "smith", "EXP-1", JobType.DATA_FILE_IMPORT, true, true, true, date2, date2,
+                JobStatus.IN_QUEUE, 3, parent);
+        Job child3 = getJob(4, "smith", "EXP-1", JobType.DATA_FILE_IMPORT, true, true, true, date3, date1,
+                JobStatus.CANCELLED, 4, parent);
+        parent.getChildren().add(child1);
+        parent.getChildren().add(child2);
+        parent.getChildren().add(child3);
 
-    /**
-     * @return the name of the experiment or array desing related to the job.
-     */
-    String getJobEntityName();
+        UserVisibleJob job = new UserVisibleJob(child2, 1);
+        assertEquals(JobStatus.CANCELLED, job.getJobStatus());
+        assertEquals(date1.getTime(), job.getTimeRequested().getTime());
+        assertEquals(date1.getTime(), job.getTimeStarted().getTime());
+        assertFalse(job.getUserCanCancelJob());
+        assertEquals(1, job.getJobsProcessed());
+        Map<JobStatus, Integer> statusCounts = job.getStatusCounts();
+        assertEquals(1, statusCounts.get(JobStatus.PROCESSED).intValue());
+        assertEquals(1, statusCounts.get(JobStatus.IN_QUEUE).intValue());
+        assertEquals(1, statusCounts.get(JobStatus.CANCELLED).intValue());
+        assertEquals(0, statusCounts.get(JobStatus.RUNNING).intValue());
+    }
 
-    /**
-     * @return the id of the experiment or array design related to the job.
-     */
-    long getJobEntityId();
+    private Job getJob(int jobEntityId, String username, String experimentName, JobType jobType, boolean readAccess,
+            boolean writeAccess, boolean ownership, Date timeRequested, Date timeStarted, JobStatus status,
+            int position, Job parent) {
+        JobStub job = new JobStub();
+        job.setUsername(username);
+        job.setJobEntityName(experimentName);
+        job.setJobEntityId(jobEntityId);
+        job.setJobType(jobType);
+        job.setUserReadAccess(readAccess);
+        job.setUserWriteAccess(writeAccess);
+        job.setuserHasOwnership(ownership);
+        job.setTimeRequested(timeRequested);
+        job.setTimeStarted(timeStarted);
+        job.setJobStatus(status);
+        job.setPosition(position);
+        job.setParent(parent);
+        return job;
+    }
 
-    /**
-     * @return the jobType
-     */
-    JobType getJobType();
-
-    /**
-     * The time requested is never null.
-     * @return the timeRequested
-     */
-    Date getTimeRequested();
-
-    /**
-     * @return the timeStarted
-     */
-    Date getTimeStarted();
-
-
-    /**
-     * @return the job status
-     */
-    JobStatus getJobStatus();
-
-    /**
-     * @return true if the job is in progress
-     */
-    boolean isInProgress();
 }
