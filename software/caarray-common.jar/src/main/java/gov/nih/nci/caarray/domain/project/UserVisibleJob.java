@@ -308,7 +308,7 @@ public class UserVisibleJob implements Job {
     private void setTimeRequestedFromChildren() {
         for (BaseChildAwareJob job : parent.getChildren()) {
             Date cTimeRequested = job.getTimeRequested();
-            if (cTimeRequested != null && cTimeRequested.before(timeRequested)) {
+            if (cTimeRequested.before(timeRequested)) {
                 timeRequested = cTimeRequested;
             }
         }
@@ -320,7 +320,7 @@ public class UserVisibleJob implements Job {
     private void setTimeStartedFromChildren() {
         for (BaseChildAwareJob job : parent.getChildren()) {
             Date cTimeStarted = job.getTimeStarted();
-            if (cTimeStarted.before(timeStarted)) {
+            if (cTimeStarted != null && cTimeStarted.before(timeStarted)) {
                 timeStarted = cTimeStarted;
             }
         }
