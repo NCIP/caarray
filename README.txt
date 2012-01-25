@@ -12,7 +12,7 @@ Contents
    8. Issue Tracking
    9. Developing with Eclipse
    10. Static Analysis
-   11. Continuous Integration
+   11. Testing
 
 Introduction
 ---------------------------
@@ -277,10 +277,22 @@ You must install the IvyDE plugin, which is required for Ivy integration.
 
 We also recommend using the JEE distribution of Eclipse with the following plugins:
 - Subversive or Subclipse (for Subversion integration)
-- Checkstyle
+- Checkstyle (v4.4.3. Current caarray_checks.xml is incompatible with v5+)
 - PMD
 
 The Checkstyle and PMD plugins should then be configured to use the caArray rulesets (see static analysis section).
+
+To debug caArray from Eclipse, do the following:
+- Edit [jboss.home]/bin/run.conf (run.conf.bat for Windows) and uncomment the line for remote socket debugging.  It will look something like
+JAVA_OPTS="$JAVA_OPTS -Xrunjdwp:transport=dt_socket,address=8787,server=y,suspend=n"
+- Start jboss
+- From Eclipse
+  - Run > Debug Configurations > Remote Java Application
+  - Click "New" button and set the following
+    - Project = caArray2
+    - Host = localhost
+    - Port = 8787 (or whatever you specified in run.conf)
+  - Click Debug
 
 Static Analysis
 ------------------------
@@ -288,3 +300,19 @@ Static Analysis
 caArray uses static analysis tools to ensure code quality and conformance to standards. Currently we use Checkstyle and PMD. 
 
 The rulesets for these are in software/build/resources/caarray_checks.xml and software/build/resources/pmd-ruleset.xml respectively.
+
+Testing
+------------------------
+
+caArray uses JUnit for unit testing. To run the unit test, execute "ant test" from software/build.
+If you want to run a specific module, you can use one of the following ant targets: 
+- test:junit-caarray-common.jar
+- test:junit-caarray-ejb.jar,
+- test:junit-caarray.war,
+- test:junit-caarray-plugins,
+- test:junit-cn2magetab,
+- test:junit-report,
+
+If you want to be even more specific and run only selected test files, you may edit local.properties and add:
+- test.source.include (e.g. test.source.include=**/IlluminaFileImportIntegrationTest.java)
+- test.source.exclude
