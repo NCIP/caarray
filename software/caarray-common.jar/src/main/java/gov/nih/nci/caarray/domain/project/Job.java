@@ -87,7 +87,7 @@ package gov.nih.nci.caarray.domain.project;
  * @author jscott
  *
  */
-public interface Job extends BaseJob {
+public interface Job extends BaseChildAwareJob {
     /**
      * @return true if the user has read access to this job
      */

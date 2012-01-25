@@ -99,14 +99,18 @@ public enum JobStatus {
     /**
      * Indicates the job has been cancelled.
      */
-    CANCELLED("Cancelled");
-    
+    CANCELLED("Cancelled"),
+    /**
+     * Indicates the job has been processed.
+     */
+    PROCESSED("Processed");
+
     private final String displayName;
 
     JobStatus(String displayName) {
         this.displayName = displayName;
     }
-    
+
     /**
      * @return File status display name.
      */

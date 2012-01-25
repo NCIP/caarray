@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caArray
+ * source code form and machine readable, binary, object code form. The caArray2
  * Software was developed in conjunction with the National Cancer Institute
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent
  * government employees are authors, any rights in such works shall be subject
  * to Title 17 of the United States Code, section 105.
  *
- * This caArray Software License (the License) is between NCI and You. You (or
+ * This caArray2 Software License (the License) is between NCI and You. You (or
  * Your) shall mean a person or an entity, and all other entities that control,
  * are controlled by, or are under common control with the entity. Control for
  * purposes of this definition means (i) the direct or indirect power to cause
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up,
  * no-charge, irrevocable, transferable and royalty-free right and license in
- * its rights in the caArray Software to (i) use, install, access, operate,
+ * its rights in the caArray2 Software to (i) use, install, access, operate,
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caArray Software; (ii) distribute and
- * have distributed to and by third parties the caArray Software and any
+ * and prepare derivative works of the caArray2 Software; (ii) distribute and
+ * have distributed to and by third parties the caArray2 Software and any
  * modifications and derivative works thereof; and (iii) sublicense the
  * foregoing rights set out in (i) and (ii) to third parties, including the
  * right to license such rights to further third parties. For sake of clarity,
@@ -80,116 +80,90 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.application.file;
+package gov.nih.nci.caarray.domain.project;
 
-import gov.nih.nci.caarray.application.arraydata.DataImportOptions;
-import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
-import gov.nih.nci.caarray.application.util.CaArrayFileSetSplitter;
-import gov.nih.nci.caarray.dao.ProjectDao;
-import gov.nih.nci.caarray.dao.SearchDao;
-import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
-import gov.nih.nci.caarray.domain.file.FileStatus;
-import gov.nih.nci.caarray.domain.project.JobType;
-import gov.nih.nci.caarray.domain.project.Project;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
-import java.io.IOException;
-import java.util.Set;
+import java.util.Date;
+import java.util.Map;
 
-import org.apache.log4j.Logger;
-
-import com.google.common.collect.ImmutableSet;
+import org.junit.Test;
 
 /**
- * Splits large Mage-Tab File sets into smaller chunks.  Dispatches to ProjectFilesImportJob
- * after splitting.
+ * @author wcheng
+ *
  */
-class ProjectFilesSplitJob extends AbstractProjectFilesJob {
-
-    private static final long serialVersionUID = -6505339669676465113L;
-    private static final Logger LOG = Logger.getLogger(ProjectFilesSplitJob.class);
-
-    private final CaArrayFileSetSplitter splitter;
-    private final DataImportOptions dataImportOptions;
-    private final FileManagementJobSubmitter jobSubmitter;
-
-    /**
-     * Injected constructor.
-     *
-     * @param username user requesting job
-     * @param targetProject project
-     * @param fileSet set to split
-     * @param arrayDataImporter not used
-     * @param mageTabImporter not used
-     * @param fileAccessService for creating new files
-     * @param projectDao dao
-     * @param searchDao dao
-     * @param dataImportOptions import options for new sets
-     * @param splitter file set splitter
-     */
-    // CHECKSTYLE:OFF more than 7 parameters are okay for injected constructor
-    @SuppressWarnings("PMD.ExcessiveParameterList")
-    ProjectFilesSplitJob(String username, Project targetProject,
-            CaArrayFileSet fileSet, ArrayDataImporter arrayDataImporter,
-            MageTabImporter mageTabImporter,
-            FileAccessService fileAccessService, ProjectDao projectDao,
-            SearchDao searchDao, DataImportOptions dataImportOptions, CaArrayFileSetSplitter splitter,
-            FileManagementJobSubmitter jobSubmitter) {
-        // CHECKSTYLE:ON
-        super(username, targetProject, fileSet, arrayDataImporter, mageTabImporter,
-                fileAccessService, projectDao, searchDao);
-        this.dataImportOptions = dataImportOptions;
-        this.splitter = splitter;
-        this.jobSubmitter = jobSubmitter;
+public class UserVisibleJobTest {
+    @Test
+    public void jobWithoutParent() {
+        Job originalJob = getJob(1, "smith", "EXP-1", JobType.DATA_FILE_IMPORT, true, true, true, new Date(), new Date(),
+                JobStatus.IN_QUEUE, 2, null);
+        UserVisibleJob job = new UserVisibleJob(originalJob, 1);
+        assertEquals(1, job.getJobEntityId());
+        assertEquals("smith", job.getOwnerName());
+        assertEquals("EXP-1", job.getJobEntityName());
+        assertEquals(JobType.DATA_FILE_IMPORT, job.getJobType());
+        assertTrue(job.getUserHasReadAccess());
+        assertTrue(job.getUserHasWriteAccess());
+        assertTrue(job.getUserHasOwnership());
+        assertTrue(job.getUserCanCancelJob());
+        assertEquals(JobStatus.IN_QUEUE, job.getJobStatus());
+        assertFalse(job.isInProgress());
+        assertEquals(1, job.getPosition());
+        assertNull(job.getParent());
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void executeProjectFilesJob() {
-        CaArrayFileSet fileSet = getFileSet();
-        doValidate(fileSet);
+    @Test
+    public void jobWithParent() {
+        long now = (new Date()).getTime();
+        Date date1 = new Date(now+100);
+        Date date2 = new Date(now+200);
+        Date date3 = new Date(now+300);
+        Job parent = getJob(1, "smith", "EXP-1", JobType.DATA_FILE_IMPORT, true, true, true, new Date(), new Date(),
+                JobStatus.IN_QUEUE, 1, null);
+        Job child1 = getJob(2, "smith", "EXP-1", JobType.DATA_FILE_IMPORT, true, true, true, date1, date3,
+                JobStatus.PROCESSED, 2, parent);
+        Job child2 = getJob(3, "smith", "EXP-1", JobType.DATA_FILE_IMPORT, true, true, true, date2, date2,
+                JobStatus.IN_QUEUE, 3, parent);
+        Job child3 = getJob(4, "smith", "EXP-1", JobType.DATA_FILE_IMPORT, true, true, true, date3, date1,
+                JobStatus.CANCELLED, 4, parent);
+        parent.getChildren().add(child1);
+        parent.getChildren().add(child2);
+        parent.getChildren().add(child3);
 
-        if (fileSet.isValidated()) {
-            importSplits(fileSet);
-        }
+        UserVisibleJob job = new UserVisibleJob(child2, 1);
+        assertEquals(JobStatus.CANCELLED, job.getJobStatus());
+        assertEquals(date1.getTime(), job.getTimeRequested().getTime());
+        assertEquals(date1.getTime(), job.getTimeStarted().getTime());
+        assertFalse(job.getUserCanCancelJob());
+        assertEquals(1, job.getJobsProcessed());
+        Map<JobStatus, Integer> statusCounts = job.getStatusCounts();
+        assertEquals(1, statusCounts.get(JobStatus.PROCESSED).intValue());
+        assertEquals(1, statusCounts.get(JobStatus.IN_QUEUE).intValue());
+        assertEquals(1, statusCounts.get(JobStatus.CANCELLED).intValue());
+        assertEquals(0, statusCounts.get(JobStatus.RUNNING).intValue());
     }
 
-    private void importSplits(CaArrayFileSet origFileSet) {
-        Set<CaArrayFileSet> splits = getSplitsToImport(origFileSet);
-        for (CaArrayFileSet curSplit : splits) {
-            curSplit.updateStatus(FileStatus.VALIDATED);
-            handleSessionMess(); // new job needs the new split sdrf to have an id
-            ProjectFilesImportJob job = new ProjectFilesImportJob(getOwnerName(), getProject(), curSplit,
-                    dataImportOptions, getArrayDataImporter(), getMageTabImporter(), getFileAccessService(),
-                    getProjectDao(), getSearchDao(), this);
-            getChildren().add(job);
-            jobSubmitter.submitJob(job);
-        }
+    private Job getJob(int jobEntityId, String username, String experimentName, JobType jobType, boolean readAccess,
+            boolean writeAccess, boolean ownership, Date timeRequested, Date timeStarted, JobStatus status,
+            int position, Job parent) {
+        JobStub job = new JobStub();
+        job.setUsername(username);
+        job.setJobEntityName(experimentName);
+        job.setJobEntityId(jobEntityId);
+        job.setJobType(jobType);
+        job.setUserReadAccess(readAccess);
+        job.setUserWriteAccess(writeAccess);
+        job.setuserHasOwnership(ownership);
+        job.setTimeRequested(timeRequested);
+        job.setTimeStarted(timeStarted);
+        job.setJobStatus(status);
+        job.setPosition(position);
+        job.setParent(parent);
+        return job;
     }
 
-    private Set<CaArrayFileSet> getSplitsToImport(CaArrayFileSet origFileSet) {
-        try {
-            return splitter.split(origFileSet);
-        } catch (IOException e) {
-            LOG.warn("Unable to split file set.  Falling back to non-split import.", e);
-            return ImmutableSet.of(origFileSet);
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected FileStatus getInProgressStatus() {
-        return FileStatus.IMPORTING;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public JobType getJobType() {
-        return JobType.DATA_FILE_SPLIT;
-    }
 }

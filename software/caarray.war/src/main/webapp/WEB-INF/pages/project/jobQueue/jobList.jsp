@@ -60,7 +60,21 @@
         <display:column sortProperty="TIME_STARTED" title="Time Started" sortable="false" >
           <fmt:formatDate value="${row.timeStarted}" pattern="${jobQueueDatePattern}"/>
         </display:column>
-        <display:column sortProperty="STATUS" title="Status" sortable="false" >${row.jobStatus.displayValue}</display:column>
+        <display:column sortProperty="STATUS" title="Status" sortable="false" >
+          ${row.jobStatus.displayValue}
+          <c:if test="${!empty row.parent}">
+            <div class="tooltip small">
+              (<c:out value="${row.jobsProcessed}"/>/<c:out value="${fn:length(row.children)}"/> Processed)
+              <span>
+                <c:forEach var="entry" items="${row.statusCounts}">
+                  <c:if test="${entry.value > 0}">
+                    <c:out value="${entry.value} ${entry.key.displayValue}"/><br/>
+                  </c:if>
+                </c:forEach>
+              </span>
+            </div>
+          </c:if>
+        </display:column>
         <c:url value="/protected/project/cancelJob.action" var="cancelJobUrl">
             <c:param name="jobId" value="${row.jobId}" />     
         </c:url>

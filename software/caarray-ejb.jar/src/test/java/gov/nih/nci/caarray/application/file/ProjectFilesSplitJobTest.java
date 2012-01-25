@@ -83,8 +83,15 @@
 package gov.nih.nci.caarray.application.file;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.argThat;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import gov.nih.nci.caarray.application.arraydata.DataImportOptions;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.application.util.CaArrayFileSetSplitter;
@@ -99,6 +106,7 @@ import gov.nih.nci.caarray.magetab.MageTabParsingException;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -129,6 +137,11 @@ public class ProjectFilesSplitJobTest {
     @Mock FileManagementJobSubmitter jobSubmitter;
     private ProjectFilesSplitJob job;
     private CaArrayFile file;
+    private ProjectFilesSplitJob compositeJob;
+    private Set<CaArrayFileSet> superSet;
+    
+    private static final int CHILD_JOB_COUNT=5;
+    
 
     @SuppressWarnings("unchecked")
     @Before
@@ -141,7 +154,17 @@ public class ProjectFilesSplitJobTest {
                 searchDao, dataImportOptions, fileSetSplitter, jobSubmitter);
         
         file = mock(CaArrayFile.class);
+
+        superSet = new HashSet<CaArrayFileSet>();
+        for( int i=0; i<CHILD_JOB_COUNT; i++ ) {
+        	CaArrayFileSet fileSet = mock(CaArrayFileSet.class);
+        	superSet.add(fileSet);
+        }
         
+        compositeJob = new ProjectFilesSplitJob("testuser", project, fileset, arrayDataImporter, mageTabImporter, 
+                fileAccessService, projectDao, 
+                searchDao, dataImportOptions, fileSetSplitter, jobSubmitter);
+
         when(searchDao.retrieveByIds(eq(CaArrayFile.class), 
                 any(List.class))).thenReturn(Collections.singletonList(file));
         when(searchDao.retrieve(eq(Project.class), eq(1L))).thenReturn(project);
@@ -174,6 +197,21 @@ public class ProjectFilesSplitJobTest {
     }
 
     @Test
+    public void childJobsVerificationFlow() throws MageTabParsingException, IOException {
+        when(file.getFileStatus()).thenReturn(FileStatus.VALIDATED);
+        when(fileSetSplitter.split(any(CaArrayFileSet.class))).thenAnswer(new Answer<Set<CaArrayFileSet>>() {
+            @Override
+            public Set<CaArrayFileSet> answer(InvocationOnMock invocation)
+                    throws Throwable {
+                return superSet;
+            } 
+        });
+
+        compositeJob.executeProjectFilesJob();
+        verifyChildrenCreation();
+    }
+
+	@Test
     public void ioExceptionFlow() throws IOException {
         when(file.getFileStatus()).thenReturn(FileStatus.VALIDATED);
         when(fileSetSplitter.split(any(CaArrayFileSet.class))).thenThrow(new IOException());
@@ -211,4 +249,13 @@ public class ProjectFilesSplitJobTest {
             }
         }));
     }
+
+    private void verifyChildrenCreation() {
+    	assertTrue( CHILD_JOB_COUNT>1 );
+    	assertEquals( CHILD_JOB_COUNT, compositeJob.getChildren().size() );
+    	assertEquals( compositeJob.getChildren().get(0).getParent().getJobId(), compositeJob.getJobId() );
+    	assertEquals( compositeJob.getChildren().get(CHILD_JOB_COUNT-1).getParent().getJobId(), compositeJob.getJobId() );
+    	assertNotSame( compositeJob.getChildren().get(0), compositeJob.getChildren().get(CHILD_JOB_COUNT-1) );
+	}
+
 }

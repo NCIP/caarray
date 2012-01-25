@@ -94,43 +94,44 @@ public interface BaseJob {
      * @return the job id
      */
     UUID getJobId();
-    
+
     /**
      * @return the name of the user who owns the job
      */
     String getOwnerName();
-    
+
     /**
      * @return the name of the experiment or array desing related to the job.
      */
     String getJobEntityName();
-    
+
     /**
      * @return the id of the experiment or array design related to the job.
      */
     long getJobEntityId();
-    
+
     /**
      * @return the jobType
      */
     JobType getJobType();
-    
+
     /**
+     * The time requested is never null.
      * @return the timeRequested
      */
     Date getTimeRequested();
-    
+
     /**
      * @return the timeStarted
      */
     Date getTimeStarted();
-    
-    
+
+
     /**
      * @return the job status
      */
     JobStatus getJobStatus();
-   
+
     /**
      * @return true if the job is in progress
      */

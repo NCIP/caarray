@@ -88,6 +88,7 @@ import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileStatus;
+import gov.nih.nci.caarray.domain.project.BaseChildAwareJob;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.security.authorization.domainobjects.User;
@@ -124,8 +125,19 @@ abstract class AbstractProjectFilesJob extends AbstractFileManagementJob {
     AbstractProjectFilesJob(String username, Project targetProject,
             CaArrayFileSet fileSet, ArrayDataImporter arrayDataImporter, MageTabImporter mageTabImporter,
             FileAccessService fileAccessService, ProjectDao projectDao, SearchDao searchDao) {
+        // CHECKSTYLE:ON
+        this(username, targetProject, fileSet, arrayDataImporter, mageTabImporter,
+                fileAccessService, projectDao, searchDao, null);
+    }
+
+    @SuppressWarnings("PMD.ExcessiveParameterList")
+    @Inject
+    // CHECKSTYLE:OFF more than 7 parameters are okay for injected constructor
+    AbstractProjectFilesJob(String username, Project targetProject,
+            CaArrayFileSet fileSet, ArrayDataImporter arrayDataImporter, MageTabImporter mageTabImporter,
+            FileAccessService fileAccessService, ProjectDao projectDao, SearchDao searchDao, BaseChildAwareJob parent) {
     // CHECKSTYLE:ON
-        super(username);
+        super(username, parent);
         init(username, targetProject, fileSet, arrayDataImporter, mageTabImporter, fileAccessService,
                 projectDao, searchDao);
     }
@@ -170,20 +182,20 @@ abstract class AbstractProjectFilesJob extends AbstractFileManagementJob {
      * This method is necessary because the Hibernate Session FlushMode is set to
      * FlushMode.COMMIT.  This means that queries will not flush prior to running.
      * Call this method only when a dependency needs database state to be correct.
-     * 
+     *
      * This is a compromise - it's misplaced responsibility to do session management
-     * at this level.  We'd be better off not exposing CaArrayDao.flushSession(), but 
+     * at this level.  We'd be better off not exposing CaArrayDao.flushSession(), but
      * since we have it and use it in many places, this is just one of many.
      */
     protected void handleSessionMess() {
         projectDao.flushSession();
     }
-    
+
     /**
      * Primary execution method subclasses must implement.
      */
     protected abstract void executeProjectFilesJob();
-    
+
     /**
      * {@inheritDoc}
      */
@@ -197,7 +209,7 @@ abstract class AbstractProjectFilesJob extends AbstractFileManagementJob {
     public long getJobEntityId() {
         return projectId;
     }
-   
+
     @Override
     public CaArrayFileSet getFileSet() {
         CaArrayFileSet fileSet = new CaArrayFileSet(getProject());
@@ -243,7 +255,7 @@ abstract class AbstractProjectFilesJob extends AbstractFileManagementJob {
     protected ProjectDao getProjectDao() {
         return projectDao;
     }
-    
+
     /**
      * @return the fileAccessService
      */
@@ -264,14 +276,14 @@ abstract class AbstractProjectFilesJob extends AbstractFileManagementJob {
     public boolean userHasReadAccess(User user) {
        return userCanAccessProject(user, false);
     }
-   
+
     /**
      * {@inheritDoc}
      */
     public boolean userHasWriteAccess(User user) {
         return userCanAccessProject(user, true);
     }
-    
+
     private boolean userCanAccessProject(User user, boolean checkForWriteAccess) {
         boolean hasAccess = false;
         Project p = getProject();

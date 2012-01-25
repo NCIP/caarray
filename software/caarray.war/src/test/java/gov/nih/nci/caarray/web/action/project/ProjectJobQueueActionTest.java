@@ -90,10 +90,11 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import gov.nih.nci.caarray.application.jobqueue.JobQueueService;
+import gov.nih.nci.caarray.domain.project.BaseChildAwareJob;
 import gov.nih.nci.caarray.domain.project.Job;
 import gov.nih.nci.caarray.domain.project.JobStatus;
 import gov.nih.nci.caarray.domain.project.JobType;
-import gov.nih.nci.caarray.domain.search.JobSortCriterion;
+import gov.nih.nci.caarray.domain.project.UserVisibleJob;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import gov.nih.nci.caarray.web.AbstractBaseStrutsTest;
 import gov.nih.nci.security.authorization.domainobjects.User;
@@ -101,12 +102,11 @@ import gov.nih.nci.security.authorization.domainobjects.User;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.junit.Before;
 import org.junit.Test;
-
-import com.fiveamsolutions.nci.commons.web.displaytag.SortablePaginatedList;
 
 
 /**
@@ -116,59 +116,83 @@ import com.fiveamsolutions.nci.commons.web.displaytag.SortablePaginatedList;
 public class ProjectJobQueueActionTest extends AbstractBaseStrutsTest {
     private ProjectJobQueueAction action;
     private JobQueueService jqService;
-    private User user; 
     private List<Job> jobList;
-    private SortablePaginatedList<Job, JobSortCriterion> jobs;
-    private UUID jobIdToCancel;
-    
+
     @Before
     public void setup() throws Exception {
         ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
-        
         action = new ProjectJobQueueAction();
         jqService = mock(JobQueueService.class);
         locatorStub.addLookup(JobQueueService.JNDI_NAME, jqService);
-        user = mock(User.class);
-        
         initJobList();
-        jobIdToCancel = jobList.get(1).getJobId();
-        action.setJobId(jobIdToCancel.toString());
-        
-        when(jqService.cancelJob(jobIdToCancel.toString(), user)).thenReturn(true);
    }
-    
+
     @Test
     public void testJobQueue() {
-        when(jqService.getJobsForUser(user)).thenReturn(jobList);
-        when(jqService.getJobCount(user)).thenReturn(jobList.size());
-        
+        when(jqService.getJobsForUser((User) anyObject())).thenReturn(jobList);
+
         assertEquals("success", action.jobQueue());
         assertNotNull(action.getJobs());
         assertNotNull(action.getJobs().getList());
         verify(jqService).getJobsForUser((User) anyObject());
     }
-    
+
     @Test
     public void testCancelJob() {
+        when(jqService.cancelJob(anyString(), (User) anyObject())).thenReturn(true);
+
+        UUID jobIdToCancel = jobList.get(1).getJobId();
         action.setJobId(jobIdToCancel.toString());
         assertEquals("success", action.cancelJob());
         verify(jqService).cancelJob(anyString(), (User) anyObject());
     }
-    
-    private void initJobList() {
-        jobList = new ArrayList<Job>();
-        jobList.add(getJob(1, "smith", "Private", JobType.DATA_FILE_VALIDATION, new Date(), new Date(), JobStatus.RUNNING));
-        jobList.add(getJob(2, "Private", "EXP-12", JobType.DATA_FILE_IMPORT, new Date(), new Date(), JobStatus.IN_QUEUE));
-        jobList.add(getJob(3, "jdoe", "Private", JobType.DATA_FILE_IMPORT, new Date(), new Date(), JobStatus.IN_QUEUE));
-        jobList.add(getJob(4, "jdoe", "EXP-11", JobType.DATA_FILE_VALIDATION, new Date(), new Date(), JobStatus.IN_QUEUE));
-        
-        jobs =  new SortablePaginatedList<Job, JobSortCriterion>(10, JobSortCriterion.POSITION.name(),
-                    JobSortCriterion.class);
-        jobs.setList(jobList);
+
+    @Test
+    public void testSplitJobs() {
+        when(jqService.getJobsForUser((User) anyObject())).thenReturn(jobList);
+
+        assertEquals("success", action.jobQueue());
+
+        List<Job> visibleJobs = action.getJobs().getList();
+        assertNotNull(visibleJobs);
+        assertEquals(6, jobList.size());
+        assertEquals(5, visibleJobs.size());
+
+        UserVisibleJob splitJob = (UserVisibleJob)visibleJobs.get(4);
+        Map<JobStatus, Integer> statusCounts = splitJob.getStatusCounts();
+        assertEquals(5, splitJob.getPosition());
+        assertEquals(JobStatus.CANCELLED, splitJob.getJobStatus());
+        assertEquals(1, splitJob.getJobsProcessed());
+        assertEquals(3, splitJob.getChildren().size());
+        assertEquals(1, statusCounts.get(JobStatus.PROCESSED).intValue());
+        assertEquals(1, statusCounts.get(JobStatus.IN_QUEUE).intValue());
+        assertEquals(1, statusCounts.get(JobStatus.CANCELLED).intValue());
+        assertEquals(0, statusCounts.get(JobStatus.RUNNING).intValue());
     }
-    
-    private Job getJob(int position, String username, String experimentName, JobType jobType, Date timeRequested, 
-            Date timeStarted, JobStatus status) {
+
+    private void initJobList() {
+        Job parent = getJob(0, "kdallas", "Split files", JobType.DATA_FILE_SPLIT, new Date(), new Date(), JobStatus.IN_QUEUE, null);
+        Job child1 = getJob(0, "kdallas", "Split files", JobType.DATA_FILE_IMPORT, new Date(), new Date(), JobStatus.PROCESSED, parent);
+        Job child2 = getJob(5, "kdallas", "Split files", JobType.DATA_FILE_IMPORT, new Date(), new Date(), JobStatus.IN_QUEUE, parent);
+        Job child3 = getJob(6, "kdallas", "Split files", JobType.DATA_FILE_IMPORT, new Date(), new Date(), JobStatus.CANCELLED, parent);
+        List<BaseChildAwareJob> children = new ArrayList<BaseChildAwareJob>();
+        children.add(child1);
+        children.add(child2);
+        children.add(child3);
+        ((JobStub)parent).setChildren(children);
+
+        jobList = new ArrayList<Job>();
+        jobList.add(getJob(1, "smith", "Private", JobType.DATA_FILE_VALIDATION, new Date(), new Date(), JobStatus.RUNNING, null));
+        jobList.add(getJob(2, "Private", "EXP-12", JobType.DATA_FILE_IMPORT, new Date(), new Date(), JobStatus.IN_QUEUE, null));
+        jobList.add(getJob(3, "jdoe", "Private", JobType.DATA_FILE_IMPORT, new Date(), new Date(), JobStatus.IN_QUEUE, null));
+        jobList.add(getJob(4, "jdoe", "EXP-11", JobType.DATA_FILE_VALIDATION, new Date(), new Date(), JobStatus.IN_QUEUE, null));
+        jobList.add(child2);
+        jobList.add(child3);
+
+    }
+
+    private Job getJob(int position, String username, String experimentName, JobType jobType, Date timeRequested,
+            Date timeStarted, JobStatus status, Job parent) {
         JobStub job = new JobStub();
         job.setJobId(UUID.randomUUID());
         job.setPosition(position);
@@ -179,6 +203,7 @@ public class ProjectJobQueueActionTest extends AbstractBaseStrutsTest {
         job.setTimeRequested(timeRequested);
         job.setTimeStarted(timeStarted);
         job.setJobStatus(status);
+        job.setParent(parent);
         return job;
     }
 }

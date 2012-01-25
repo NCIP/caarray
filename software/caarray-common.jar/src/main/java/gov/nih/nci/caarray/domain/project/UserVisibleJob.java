@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caArray
+ * source code form and machine readable, binary, object code form. The caArray2
  * Software was developed in conjunction with the National Cancer Institute
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent
  * government employees are authors, any rights in such works shall be subject
  * to Title 17 of the United States Code, section 105.
  *
- * This caArray Software License (the License) is between NCI and You. You (or
+ * This caArray2 Software License (the License) is between NCI and You. You (or
  * Your) shall mean a person or an entity, and all other entities that control,
  * are controlled by, or are under common control with the entity. Control for
  * purposes of this definition means (i) the direct or indirect power to cause
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up,
  * no-charge, irrevocable, transferable and royalty-free right and license in
- * its rights in the caArray Software to (i) use, install, access, operate,
+ * its rights in the caArray2 Software to (i) use, install, access, operate,
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caArray Software; (ii) distribute and
- * have distributed to and by third parties the caArray Software and any
+ * and prepare derivative works of the caArray2 Software; (ii) distribute and
+ * have distributed to and by third parties the caArray2 Software and any
  * modifications and derivative works thereof; and (iii) sublicense the
  * foregoing rights set out in (i) and (ii) to third parties, including the
  * right to license such rights to further third parties. For sake of clarity,
@@ -82,92 +82,114 @@
  */
 package gov.nih.nci.caarray.domain.project;
 
-import gov.nih.nci.security.authorization.domainobjects.User;
-
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
- * Represents the read-only state of another job at the time an instance of this
- * class is created.
- * 
- * @author jscott
- *
+ * This object is a synthetic "job" used to represent the aggregate of a set of split jobs. Since job splitting should
+ * be transparent to the user, this is the object represented on the UI instead of the individual split jobs
+ * @author wcheng
  */
-public class JobSnapshot implements Job {
-    private final BaseChildAwareJob originalJob;
+public class UserVisibleJob implements Job {
     private final UUID jobId;
+    private final BaseChildAwareJob parent;
     private final String ownerName;
     private final String jobEntityName;
     private final long jobEntityId;
     private final JobType jobType;
-    private final Date timeRequested;
-    private final Date timeStarted;
-    private final JobStatus jobStatus;
+    private Date timeRequested;
+    private Date timeStarted;
+    private JobStatus jobStatus;
     private final boolean doesUserHaveReadAccess;
     private final boolean doesUserHaveWriteAccess;
     private final boolean doesUserHaveOwnership;
-    private final boolean canUserCancelJob;
-    private final boolean inProgress;
     private final int position;
 
+    private final Map<JobStatus, Integer> statusCounts = new HashMap<JobStatus, Integer>();
+
     /**
-     * @param user the current user
-     * @param originalJob the job this object is a snapshot of
+     * Create an object representing the given job and all its siblings.
+     * @param childJob one of the sibling jobs this object is an aggregate of
      * @param position the position of the job in the job queue at the time this snapshot is created
      */
-    public JobSnapshot(User user, ExecutableJob originalJob, int position) {
-        this.originalJob = originalJob;
+    public UserVisibleJob(Job childJob, int position) {
+        jobId = UUID.randomUUID();
+        parent = childJob.getParent();
+        ownerName = childJob.getOwnerName();
+        jobEntityName = childJob.getJobEntityName();
+        jobEntityId = childJob.getJobEntityId();
+        jobType = childJob.getJobType();
+        doesUserHaveReadAccess = childJob.getUserHasReadAccess();
+        doesUserHaveWriteAccess = childJob.getUserHasWriteAccess();
+        doesUserHaveOwnership = childJob.getUserHasOwnership();
+        timeRequested = childJob.getTimeRequested();
+        timeStarted = childJob.getTimeStarted();
+        jobStatus = childJob.getJobStatus();
         this.position = position;
-        
-        this.jobId = originalJob.getJobId();
-        ownerName = originalJob.getOwnerName();
-        jobEntityName = originalJob.getJobEntityName();
-        jobEntityId = originalJob.getJobEntityId();
-        jobType = originalJob.getJobType();
-        timeRequested = originalJob.getTimeRequested();
-        timeStarted = originalJob.getTimeStarted();
-        jobStatus = originalJob.getJobStatus();
-        doesUserHaveReadAccess = originalJob.userHasReadAccess(user);
-        doesUserHaveWriteAccess = originalJob.userHasWriteAccess(user);
-        inProgress = originalJob.isInProgress();
-        doesUserHaveOwnership = originalJob.getOwnerName().equalsIgnoreCase(user.getLoginName());
-        // Currently, only job owners can cancel a job. Refer to ARRAY-1953 for more information. 
-        canUserCancelJob = doesUserHaveOwnership && !inProgress; 
+
+        if (parent != null) {
+            setJobStatusFromChildren();
+            setTimeRequestedFromChildren();
+            setTimeStartedFromChildren();
+        }
+
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
+    public BaseChildAwareJob getParent() {
+        return parent;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<BaseChildAwareJob> getChildren() {
+        return parent.getChildren();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public UUID getJobId() {
-        return this.jobId;
+        return jobId;
     }
-    
+
     /**
      * {@inheritDoc}
      */
+    @Override
     public String getOwnerName() {
-        return this.ownerName;
+        return ownerName;
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public String getJobEntityName() {
-        return this.jobEntityName;
-    }
-    
-    /**
-     * {@inheritDoc}
-     */
-    public long getJobEntityId() {
-        return this.jobEntityId;
+        return jobEntityName;
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
+    public long getJobEntityId() {
+        return jobEntityId;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public JobType getJobType() {
         return jobType;
     }
@@ -175,6 +197,7 @@ public class JobSnapshot implements Job {
     /**
      * {@inheritDoc}
      */
+    @Override
     public Date getTimeRequested() {
         return timeRequested;
     }
@@ -182,6 +205,7 @@ public class JobSnapshot implements Job {
     /**
      * {@inheritDoc}
      */
+    @Override
     public Date getTimeStarted() {
         return timeStarted;
     }
@@ -189,6 +213,7 @@ public class JobSnapshot implements Job {
     /**
      * {@inheritDoc}
      */
+    @Override
     public JobStatus getJobStatus() {
         return jobStatus;
     }
@@ -196,6 +221,15 @@ public class JobSnapshot implements Job {
     /**
      * {@inheritDoc}
      */
+    @Override
+    public boolean isInProgress() {
+        return jobStatus.equals(JobStatus.RUNNING);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public boolean getUserHasReadAccess() {
         return doesUserHaveReadAccess;
     }
@@ -203,6 +237,7 @@ public class JobSnapshot implements Job {
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean getUserHasWriteAccess() {
         return doesUserHaveWriteAccess;
     }
@@ -210,49 +245,85 @@ public class JobSnapshot implements Job {
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean getUserHasOwnership() {
         return doesUserHaveOwnership;
     }
-    
-    /**
-     * {@inheritDoc}
-     */
-    public boolean getUserCanCancelJob() {
-        return canUserCancelJob;
-    }
 
     /**
      * {@inheritDoc}
      */
-    public boolean isInProgress() {
-        return inProgress;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public int getPosition() {
         return position;
     }
 
     /**
-     * @return the job represented by this snapshot
+     * @return true if the user can cancel this job
      */
-    public BaseJob getOriginalJob() {
-        return originalJob;
-    }
-    
-    /**
-     * {@inheritDoc}
-     */
-    public BaseChildAwareJob getParent() {
-        return originalJob.getParent();
+    public boolean getUserCanCancelJob() {
+        return getUserHasOwnership() && !isInProgress() && getParent() == null;
     }
 
     /**
-     * {@inheritDoc}
+     * @return a map of the number of jobs by status
      */
-    public List<BaseChildAwareJob> getChildren() {
-        return originalJob.getChildren();
+    public Map<JobStatus, Integer> getStatusCounts() {
+        return statusCounts;
     }
+
+    /**
+     * @return the number of jobs processed
+     */
+    public int getJobsProcessed() {
+        Integer count = statusCounts.get(JobStatus.PROCESSED);
+        return count == null ? 0 : count;
+    }
+
+    /**
+     * Sets the job status based on the statuses of the children.
+     */
+    private void setJobStatusFromChildren() {
+        for (JobStatus cStatus : JobStatus.values()) {
+            statusCounts.put(cStatus, 0);
+        }
+        for (BaseChildAwareJob job : parent.getChildren()) {
+            JobStatus cStatus = job.getJobStatus();
+            statusCounts.put(cStatus, statusCounts.get(cStatus) + 1);
+        }
+        if (statusCounts.get(JobStatus.CANCELLED) > 0) {
+            jobStatus = JobStatus.CANCELLED;
+        } else if (statusCounts.get(JobStatus.RUNNING) > 0) {
+            jobStatus = JobStatus.RUNNING;
+        } else if (statusCounts.get(JobStatus.IN_QUEUE) > 0) {
+            jobStatus = JobStatus.IN_QUEUE;
+        } else {
+            jobStatus = JobStatus.RUNNING;
+        }
+    }
+
+    /**
+     * Sets time requested to the earliest child.
+     */
+    private void setTimeRequestedFromChildren() {
+        for (BaseChildAwareJob job : parent.getChildren()) {
+            Date cTimeRequested = job.getTimeRequested();
+            if (cTimeRequested.before(timeRequested)) {
+                timeRequested = cTimeRequested;
+            }
+        }
+    }
+
+    /**
+     * Sets time started to the earliest child.
+     */
+    private void setTimeStartedFromChildren() {
+        for (BaseChildAwareJob job : parent.getChildren()) {
+            Date cTimeStarted = job.getTimeStarted();
+            if (cTimeStarted != null && cTimeStarted.before(timeStarted)) {
+                timeStarted = cTimeStarted;
+            }
+        }
+    }
+
 }

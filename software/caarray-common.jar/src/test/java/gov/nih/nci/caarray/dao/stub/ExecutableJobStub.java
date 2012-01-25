@@ -85,6 +85,7 @@ package gov.nih.nci.caarray.dao.stub;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
+import gov.nih.nci.caarray.domain.project.BaseChildAwareJob;
 import gov.nih.nci.caarray.domain.project.ExecutableJob;
 import gov.nih.nci.caarray.domain.project.JobStatus;
 import gov.nih.nci.caarray.domain.project.JobType;
@@ -94,10 +95,11 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 /**
-* Stub for ExecutableJob. 
+* Stub for ExecutableJob.
 * @author kkanchinadam
 */
 public class ExecutableJobStub extends AbstractCaArrayEntity implements ExecutableJob {
@@ -112,6 +114,8 @@ public class ExecutableJobStub extends AbstractCaArrayEntity implements Executab
     private Date timeStarted;
     private JobStatus jobStatus;
     private boolean readWriteAccess;
+	private BaseChildAwareJob parent;
+    private List<BaseChildAwareJob> children;
 
     public void setReadWriteAccess(boolean readWriteAccess) {
         this.readWriteAccess = readWriteAccess;
@@ -263,6 +267,12 @@ public class ExecutableJobStub extends AbstractCaArrayEntity implements Executab
     /**
      * {@inheritDoc}
      */
+    public void markAsProcessed() {
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public boolean userHasReadAccess(User user) {
         return readWriteAccess;
     }
@@ -289,6 +299,32 @@ public class ExecutableJobStub extends AbstractCaArrayEntity implements Executab
         return new CaArrayFileSet();
     }
 
+    /**
+     * {@inheritDoc}
+     */
+	public BaseChildAwareJob getParent() {
+		return parent;
+	}
 
+    /**
+     * {@inheritDoc}
+     */
+	public void setParent(BaseChildAwareJob parent) {
+		this.parent = parent;
+	}
+
+    /**
+     * {@inheritDoc}
+     */
+	public List<BaseChildAwareJob> getChildren() {
+		return children;
+	}
+
+    /**
+     * {@inheritDoc}
+     */
+	public void setChildren(List<BaseChildAwareJob> children) {
+		this.children = children;
+	}
 
 }
