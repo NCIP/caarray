@@ -75,7 +75,7 @@ div.accordion-content div.tableboxpad
                         </div>
                     </s:iterator>
 
-                    <c:if test="${!empty project.supplementalFiles}">
+                    <c:if test="${!empty project.userVisibleSupplementalFiles}">
                         <c:url var="downloadUrl" value="/project/files/downloadByType.action">
                             <c:param name="project.id" value="${project.id}" />
                             <c:param name="fileStatus" value="SUPPLEMENTAL" />
