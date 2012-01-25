@@ -93,6 +93,7 @@ import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -112,11 +113,17 @@ public abstract class AbstractFileManagementJob implements Serializable, Executa
     private UUID jobId;
     private JobStatus jobStatus;
 
-	protected BaseChildAwareJob parent;
-    protected List<BaseChildAwareJob> children;
+    private final BaseChildAwareJob parent;
+    private final List<BaseChildAwareJob> children = new ArrayList<BaseChildAwareJob>();
 
     @Inject
     AbstractFileManagementJob(String username) {
+        this(username, null);
+    }
+
+    @Inject
+    AbstractFileManagementJob(String username, BaseChildAwareJob parent) {
+        this.parent = parent;
         init(username);
     }
 
@@ -297,30 +304,16 @@ public abstract class AbstractFileManagementJob implements Serializable, Executa
     /**
      * {@inheritDoc}
      */
-	@Override
+    @Override
     public BaseChildAwareJob getParent() {
-		return parent;
-	}
+        return parent;
+    }
 
     /**
      * {@inheritDoc}
      */
-	public void setParent(BaseChildAwareJob parent) {
-		this.parent = parent;
-	}
-
-    /**
-     * {@inheritDoc}
-     */
-	@Override
+    @Override
     public List<BaseChildAwareJob> getChildren() {
-		return children;
-	}
-
-    /**
-     * {@inheritDoc}
-     */
-	public void setChildren(List<BaseChildAwareJob> children) {
-		this.children = children;
-	}
+        return children;
+    }
 }

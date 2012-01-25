@@ -88,6 +88,7 @@ import gov.nih.nci.caarray.dao.ProjectDao;
 import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileStatus;
+import gov.nih.nci.caarray.domain.project.BaseChildAwareJob;
 import gov.nih.nci.caarray.domain.project.JobType;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
@@ -112,11 +113,23 @@ class ProjectFilesImportJob extends AbstractProjectFilesJob {
     @Inject
     ProjectFilesImportJob(String username, Project targetProject,
             CaArrayFileSet fileSet, DataImportOptions dataImportOptions, ArrayDataImporter arrayDataImporter,
-            MageTabImporter mageTabImporter, FileAccessService fileAccessService, ProjectDao projectDao, 
+            MageTabImporter mageTabImporter, FileAccessService fileAccessService, ProjectDao projectDao,
             SearchDao searchDao) {
     // CHECKSTYLE:ON
+        this(username, targetProject, fileSet, dataImportOptions, arrayDataImporter,
+                mageTabImporter, fileAccessService, projectDao, searchDao, null);
+    }
+
+    // CHECKSTYLE:OFF more than 7 parameters are okay for injected constructor
+    @SuppressWarnings("PMD.ExcessiveParameterList")
+    @Inject
+    ProjectFilesImportJob(String username, Project targetProject,
+            CaArrayFileSet fileSet, DataImportOptions dataImportOptions, ArrayDataImporter arrayDataImporter,
+            MageTabImporter mageTabImporter, FileAccessService fileAccessService, ProjectDao projectDao,
+            SearchDao searchDao, BaseChildAwareJob parent) {
+    // CHECKSTYLE:ON
         super(username, targetProject, fileSet, arrayDataImporter,
-                mageTabImporter, fileAccessService, projectDao, searchDao);
+                mageTabImporter, fileAccessService, projectDao, searchDao, parent);
         this.dataImportOptions = dataImportOptions;
     }
 
@@ -129,10 +142,6 @@ class ProjectFilesImportJob extends AbstractProjectFilesJob {
 
     @Override
     protected void executeProjectFilesJob() {
-    	try {
-			Thread.sleep(20000);
-		} catch (InterruptedException e) {
-		}
         doValidate(getFileSet());
         if (getFileSet().isValidated()) {
             importAnnotationAndData(getFileSet());

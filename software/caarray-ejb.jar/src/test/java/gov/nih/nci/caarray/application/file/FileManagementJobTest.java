@@ -108,13 +108,13 @@ public class FileManagementJobTest {
 
     AbstractFileManagementJob job = null;
     @Mock CaArrayFileSet fileSet;
-    
+
     @Before
     public void setUp() {
         job = mock(AbstractFileManagementJob.class, Mockito.CALLS_REAL_METHODS);
         MockitoAnnotations.initMocks(this);
     }
-    
+
     @Test
     public void construction() {
         job.init("foo");
@@ -124,8 +124,10 @@ public class FileManagementJobTest {
         assertNull(job.getJobStatus());
         assertNull(job.getTimeStarted());
         assertNull(job.getJobId());
+        assertNull(job.getParent());
+        assertNull(job.getChildren());
     }
- 
+
     @Test
     public void execute() {
         doNothing().when(job).doExecute();
@@ -133,7 +135,7 @@ public class FileManagementJobTest {
         assertTrue(job.getTimeStarted().getTime() <= System.currentTimeMillis());
         verify(job).doExecute();
     }
-    
+
     @Test
     public void markAsCancelledNoFiles() {
         doReturn(null).when(job).getFileSet();
@@ -148,7 +150,7 @@ public class FileManagementJobTest {
         assertEquals(JobStatus.CANCELLED, job.getJobStatus());
         verify(fileSet).updateStatus(FileStatus.UPLOADED);
     }
-    
+
     @Test
     public void markInProgress() {
         doReturn(fileSet).when(job).getFileSet();
@@ -158,7 +160,7 @@ public class FileManagementJobTest {
         assertTrue(job.isInProgress());
         verify(fileSet).updateStatus(FileStatus.IMPORTING);
     }
-    
+
     @Test
     public void markInQueue() {
         doReturn(fileSet).when(job).getFileSet();
@@ -167,5 +169,12 @@ public class FileManagementJobTest {
         assertEquals(JobStatus.IN_QUEUE, job.getJobStatus());
         assertFalse(job.isInProgress());
         verify(fileSet).updateStatus(FileStatus.IN_QUEUE);
+    }
+
+    @Test
+    public void markAsProcessed() {
+        job.markAsProcessed();
+        assertEquals(JobStatus.PROCESSED, job.getJobStatus());
+        assertFalse(job.isInProgress());
     }
 }

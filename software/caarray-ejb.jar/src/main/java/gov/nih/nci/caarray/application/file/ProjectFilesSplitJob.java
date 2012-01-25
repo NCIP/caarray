@@ -82,14 +82,6 @@
  */
 package gov.nih.nci.caarray.application.file;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Set;
-
-import org.apache.log4j.Logger;
-
-import com.google.common.collect.ImmutableSet;
-
 import gov.nih.nci.caarray.application.arraydata.DataImportOptions;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.application.util.CaArrayFileSetSplitter;
@@ -97,9 +89,15 @@ import gov.nih.nci.caarray.dao.ProjectDao;
 import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileStatus;
-import gov.nih.nci.caarray.domain.project.BaseChildAwareJob;
 import gov.nih.nci.caarray.domain.project.JobType;
 import gov.nih.nci.caarray.domain.project.Project;
+
+import java.io.IOException;
+import java.util.Set;
+
+import org.apache.log4j.Logger;
+
+import com.google.common.collect.ImmutableSet;
 
 /**
  * Splits large Mage-Tab File sets into smaller chunks.  Dispatches to ProjectFilesImportJob
@@ -109,14 +107,14 @@ class ProjectFilesSplitJob extends AbstractProjectFilesJob {
 
     private static final long serialVersionUID = -6505339669676465113L;
     private static final Logger LOG = Logger.getLogger(ProjectFilesSplitJob.class);
-    
+
     private final CaArrayFileSetSplitter splitter;
     private final DataImportOptions dataImportOptions;
     private final FileManagementJobSubmitter jobSubmitter;
 
     /**
      * Injected constructor.
-     * 
+     *
      * @param username user requesting job
      * @param targetProject project
      * @param fileSet set to split
@@ -151,27 +149,25 @@ class ProjectFilesSplitJob extends AbstractProjectFilesJob {
     protected void executeProjectFilesJob() {
         CaArrayFileSet fileSet = getFileSet();
         doValidate(fileSet);
-        
+
         if (fileSet.isValidated()) {
             importSplits(fileSet);
         }
     }
 
     private void importSplits(CaArrayFileSet origFileSet) {
-        children = new ArrayList<BaseChildAwareJob>();
         Set<CaArrayFileSet> splits = getSplitsToImport(origFileSet);
         for (CaArrayFileSet curSplit : splits) {
-        	curSplit.updateStatus(FileStatus.VALIDATED);
+            curSplit.updateStatus(FileStatus.VALIDATED);
             handleSessionMess(); // new job needs the new split sdrf to have an id
-            ProjectFilesImportJob job = new ProjectFilesImportJob(getOwnerName(), getProject(), curSplit, 
-                    dataImportOptions, getArrayDataImporter(), getMageTabImporter(), getFileAccessService(), 
-                    getProjectDao(), getSearchDao());
-            children.add(job);
-            job.setParent(this);
+            ProjectFilesImportJob job = new ProjectFilesImportJob(getOwnerName(), getProject(), curSplit,
+                    dataImportOptions, getArrayDataImporter(), getMageTabImporter(), getFileAccessService(),
+                    getProjectDao(), getSearchDao(), this);
+            getChildren().add(job);
             jobSubmitter.submitJob(job);
         }
     }
-    
+
     private Set<CaArrayFileSet> getSplitsToImport(CaArrayFileSet origFileSet) {
         try {
             return splitter.split(origFileSet);

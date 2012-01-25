@@ -147,7 +147,7 @@ public class UserVisibleJob implements Job {
                     tmpTimeStarted = cTimeStarted;
                 }
                 JobStatus cStatus = job.getJobStatus();
-                statusCounts.put(cStatus, statusCounts.get(cStatus)+1);
+                statusCounts.put(cStatus, statusCounts.get(cStatus) + 1);
             }
             timeRequested = tmpTimeRequested;
             timeStarted = tmpTimeStarted;
@@ -284,7 +284,7 @@ public class UserVisibleJob implements Job {
      * @return true if the user can cancel this job
      */
     public boolean getUserCanCancelJob() {
-        return getUserHasOwnership() && !isInProgress() && getParent()==null;
+        return getUserHasOwnership() && !isInProgress() && getParent() == null;
     }
 
     /**

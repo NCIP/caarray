@@ -136,7 +136,7 @@ public class ProjectJobQueueAction extends ActionSupport {
         Set<BaseChildAwareJob> parents = new HashSet<BaseChildAwareJob>();
         List<Job> visibleJobs = new ArrayList<Job>();
         int position = 1;
-        for (Job job: jobsList) {
+        for (Job job : jobsList) {
             BaseChildAwareJob parent = job.getParent();
             if (parent == null) {
                 visibleJobs.add(new UserVisibleJob(job, position++));
