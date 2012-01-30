@@ -311,7 +311,7 @@ public class UserVisibleJob implements Job {
         } else if (statusCounts.get(JobStatus.IN_QUEUE) > 0) {
             jobStatus = JobStatus.IN_QUEUE;
         } else {
-            jobStatus = JobStatus.RUNNING;
+            jobStatus = JobStatus.PROCESSED;
         }
     }
 

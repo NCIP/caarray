@@ -83,13 +83,16 @@
 package gov.nih.nci.caarray.application.jobqueue;
 
 import gov.nih.nci.caarray.application.ExceptionLoggingInterceptor;
+import gov.nih.nci.caarray.domain.project.BaseChildAwareJob;
 import gov.nih.nci.caarray.domain.project.Job;
 import gov.nih.nci.caarray.injection.InjectionInterceptor;
 import gov.nih.nci.caarray.jobqueue.JobQueue;
 import gov.nih.nci.caarray.util.io.logging.LogUtil;
 import gov.nih.nci.security.authorization.domainobjects.User;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import javax.ejb.Local;
 import javax.ejb.Stateless;
@@ -111,7 +114,7 @@ import com.google.inject.Inject;
 public class JobQueueServiceBean implements JobQueueService {
     private static final Logger LOG = Logger.getLogger(JobQueueServiceBean.class);
     private JobQueue jobQueue;
-    
+
     /**
      * No-arg ctor required for all EJB Beans. Dependencies should be added through the setters.
      */
@@ -121,17 +124,17 @@ public class JobQueueServiceBean implements JobQueueService {
 
     /**
      * Set the JobQueue to use.
-     * 
+     *
      * @param jobQueue the jobQueue dependency
      */
     @Inject
     public void setJobQueue(JobQueue jobQueue) {
         this.jobQueue = jobQueue;
     }
-    
+
     /**
      * STARTING WITH caArray 2.5.0 THIS VERSION OF THE CTOR IS A CONVENIENCE FOR TESTING USE ONLY.
-     * 
+     *
      * @param jobQueue the jobQueue dependency
      */
     @Inject
@@ -163,7 +166,26 @@ public class JobQueueServiceBean implements JobQueueService {
      */
     @Override
     public boolean cancelJob(String jobId, User user) {
-        return this.jobQueue.cancelJob(jobId, user);
+        List<Job> jobsList = getJobsForUser(user);
+        List<BaseChildAwareJob> jobsToCancel = new ArrayList<BaseChildAwareJob>();
+        for (Job job : jobsList) {
+            if (job.getJobId().equals(UUID.fromString(jobId))) {
+                if (job.getParent() == null) {
+                    jobsToCancel.add(job);
+                } else {
+                    jobsToCancel.addAll(job.getParent().getChildren());
+                }
+                break;
+            }
+        }
+        boolean cancelledJob = false;
+        for (BaseChildAwareJob job : jobsToCancel) {
+            if (jobQueue.cancelJob(job.getJobId().toString(), user)) {
+               cancelledJob = true;
+            }
+        }
+
+        return cancelledJob;
     }
 
 }

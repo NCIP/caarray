@@ -149,15 +149,6 @@ public class ProjectJobQueueActionTest extends AbstractBaseStrutsTest {
         action.setJobId(jobIdToCancel);
         assertEquals("success", action.cancelJob());
         verify(jqService).cancelJob(eq(jobIdToCancel), (User) anyObject());
-
-        String splitJobId = visibleJobs.get(4).getJobId().toString();
-        when(jqService.cancelJob(eq(child2Id.toString()), (User) anyObject())).thenReturn(true);
-        when(jqService.cancelJob(eq(child3Id.toString()), (User) anyObject())).thenReturn(true);
-        action.setJobId(splitJobId);
-        assertEquals("success", action.cancelJob());
-        verify(jqService).cancelJob(eq(child1Id.toString()), (User) anyObject());
-        verify(jqService).cancelJob(eq(child2Id.toString()), (User) anyObject());
-        verify(jqService).cancelJob(eq(child3Id.toString()), (User) anyObject());
     }
 
     @Test

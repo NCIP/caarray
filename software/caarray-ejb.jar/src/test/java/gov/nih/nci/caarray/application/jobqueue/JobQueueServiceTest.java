@@ -51,10 +51,11 @@
 package gov.nih.nci.caarray.application.jobqueue;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import gov.nih.nci.caarray.dao.stub.ExecutableJobStub;
+import gov.nih.nci.caarray.domain.project.BaseChildAwareJob;
 import gov.nih.nci.caarray.domain.project.ExecutableJob;
 import gov.nih.nci.caarray.domain.project.Job;
 import gov.nih.nci.caarray.domain.project.JobSnapshot;
@@ -76,17 +77,22 @@ import com.google.inject.Module;
 
 @SuppressWarnings("PMD")
 public class JobQueueServiceTest {
+    private final UUID JOB_ID_1 = UUID.randomUUID();
+    private final UUID JOB_ID_2 = UUID.randomUUID();
+    private final UUID CHILD_ID_1 = UUID.randomUUID();
+    private final UUID CHILD_ID_2 = UUID.randomUUID();
+    private final UUID CHILD_ID_3 = UUID.randomUUID();
     private JobQueueService bean;
     private JobQueue jobQueue;
     private List<Job> jobs;
     private User user;
-    
+
     @Before
     public void setUp() {
         jobQueue = mock(JobQueue.class);
         user = mock(User.class);
         bean = new JobQueueServiceBean(jobQueue);
-        
+
         final Module testModule = new AbstractModule() {
             @Override
             protected void configure() {
@@ -94,7 +100,7 @@ public class JobQueueServiceTest {
                 bind(JobQueueService.class).toInstance(bean);
             }
         };
-        
+
         final Injector injector = Guice.createInjector(testModule);
         // setup data.
         jobs = getJobs();
@@ -103,48 +109,77 @@ public class JobQueueServiceTest {
     @Test
     public void testGetJobCount() {
         when(jobQueue.getJobsForUser(user)).thenReturn(jobs);
-        assertEquals(5, bean.getJobCount(user));
+        assertEquals(7, bean.getJobCount(user));
     }
-    
+
     @Test
     public void testGetJobsForUser() {
         when(jobQueue.getJobsForUser(user)).thenReturn(jobs);
-        assertEquals(5, bean.getJobCount(user));
+        assertEquals(7, bean.getJobCount(user));
         assertEquals(jobs, bean.getJobsForUser(user));
     }
-    
+
     @Test
     public void testCancelJob() {
         when(jobQueue.getJobsForUser(user)).thenReturn(jobs);
-        when(jobQueue.cancelJob(any(String.class), any(User.class))).thenReturn(true);
-        assertEquals(true, bean.cancelJob(any(String.class), any(User.class)));
-    }
-    
-    private List<Job> getJobs() {
-         List<ExecutableJob> originalJobs = new ArrayList<ExecutableJob>();
-         originalJobs.add(createExecutableJob("owner1", "exp1", 1, JobStatus.RUNNING, false));
-         originalJobs.add(createExecutableJob("owner2", "exp2", 2, JobStatus.IN_QUEUE, false));
-         originalJobs.add(createExecutableJob("owner3", "exp3", 3, JobStatus.IN_QUEUE, true));
-         originalJobs.add(createExecutableJob("owner1", "exp4", 4, JobStatus.IN_QUEUE, true));
-         originalJobs.add(createExecutableJob("owner1", "exp5", 5, JobStatus.IN_QUEUE, true));
+        when(jobQueue.cancelJob(JOB_ID_1.toString(), user)).thenReturn(false);
+        when(jobQueue.cancelJob(JOB_ID_2.toString(), user)).thenReturn(true);
+        when(jobQueue.cancelJob(CHILD_ID_1.toString(), user)).thenReturn(false);
+        when(jobQueue.cancelJob(CHILD_ID_2.toString(), user)).thenReturn(true);
+        when(jobQueue.cancelJob(CHILD_ID_3.toString(), user)).thenReturn(true);
 
-         List<Job> snapshotList = new ArrayList<Job>();
-         int position = 1;
-         for (ExecutableJob originalJob : originalJobs) {
-             snapshotList.add(new JobSnapshot(user, originalJob, position++));
-         }
-         
+        assertEquals(false, bean.cancelJob(JOB_ID_1.toString(), user));
+        verify(jobQueue).cancelJob(JOB_ID_1.toString(), user);
+
+        assertEquals(true, bean.cancelJob(JOB_ID_2.toString(), user));
+        verify(jobQueue).cancelJob(JOB_ID_2.toString(), user);
+
+        assertEquals(true, bean.cancelJob(CHILD_ID_2.toString(), user));
+        verify(jobQueue).cancelJob(CHILD_ID_1.toString(), user);
+        verify(jobQueue).cancelJob(CHILD_ID_2.toString(), user);
+        verify(jobQueue).cancelJob(CHILD_ID_3.toString(), user);
+    }
+
+    private List<Job> getJobs() {
+        ExecutableJob parent =
+                createExecutableJob(UUID.randomUUID(), "owner1", "exp6", 6, JobStatus.PROCESSED, true, null);
+        ExecutableJob child1 = createExecutableJob(CHILD_ID_1, "owner1", "exp6", 6, JobStatus.PROCESSED, true, parent);
+        ExecutableJob child2 = createExecutableJob(CHILD_ID_2, "owner1", "exp6", 6, JobStatus.IN_QUEUE, true, parent);
+        ExecutableJob child3 = createExecutableJob(CHILD_ID_3, "owner1", "exp6", 6, JobStatus.IN_QUEUE, true, parent);
+        List<BaseChildAwareJob> children = new ArrayList<BaseChildAwareJob>();
+        children.add(child1);
+        children.add(child2);
+        children.add(child3);
+        ((ExecutableJobStub) parent).setChildren(children);
+
+        List<ExecutableJob> originalJobs = new ArrayList<ExecutableJob>();
+        originalJobs.add(createExecutableJob(JOB_ID_1, "owner1", "exp1", 1, JobStatus.RUNNING, false, null));
+        originalJobs.add(createExecutableJob(JOB_ID_2, "owner2", "exp2", 2, JobStatus.IN_QUEUE, false, null));
+        originalJobs.add(createExecutableJob(UUID.randomUUID(), "owner3", "exp3", 3, JobStatus.IN_QUEUE, true, null));
+        originalJobs.add(createExecutableJob(UUID.randomUUID(), "owner1", "exp4", 4, JobStatus.IN_QUEUE, true, null));
+        originalJobs.add(createExecutableJob(UUID.randomUUID(), "owner1", "exp5", 5, JobStatus.IN_QUEUE, true, null));
+        originalJobs.add(child2);
+        originalJobs.add(child3);
+
+        List<Job> snapshotList = new ArrayList<Job>();
+        int position = 1;
+        for (ExecutableJob originalJob : originalJobs) {
+            snapshotList.add(new JobSnapshot(user, originalJob, position++));
+        }
+
         return snapshotList;
     }
-    
-    private ExecutableJob createExecutableJob(String ownerName, String jobEntityName, long jobEntityId, JobStatus jobStatus, boolean readWriteAccess) {
+
+    private ExecutableJob createExecutableJob(UUID uuid, String ownerName, String jobEntityName, long jobEntityId,
+            JobStatus jobStatus, boolean readWriteAccess, BaseChildAwareJob parent) {
         ExecutableJobStub origJob = new ExecutableJobStub();
-        origJob.setJobId(UUID.randomUUID());
+        origJob.setJobId(uuid);
         origJob.setOwnerName(ownerName);
         origJob.setJobEntityName(jobEntityName);
         origJob.setJobEntityId(jobEntityId);
         origJob.setJobStatus(jobStatus);
         origJob.setReadWriteAccess(readWriteAccess);
+        origJob.setParent(parent);
         return origJob;
     }
 }
