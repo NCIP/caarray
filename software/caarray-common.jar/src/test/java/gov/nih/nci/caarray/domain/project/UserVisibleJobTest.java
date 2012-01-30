@@ -138,7 +138,7 @@ public class UserVisibleJobTest {
         assertEquals(JobStatus.CANCELLED, job.getJobStatus());
         assertEquals(date1.getTime(), job.getTimeRequested().getTime());
         assertEquals(date1.getTime(), job.getTimeStarted().getTime());
-        assertFalse(job.getUserCanCancelJob());
+        assertTrue(job.getUserCanCancelJob());
         assertEquals(1, job.getJobsProcessed());
         Map<JobStatus, Integer> statusCounts = job.getStatusCounts();
         assertEquals(1, statusCounts.get(JobStatus.PROCESSED).intValue());

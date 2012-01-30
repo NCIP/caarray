@@ -116,7 +116,7 @@ public class UserVisibleJob implements Job {
      * @param position the position of the job in the job queue at the time this snapshot is created
      */
     public UserVisibleJob(Job childJob, int position) {
-        jobId = UUID.randomUUID();
+        jobId = childJob.getJobId();
         parent = childJob.getParent();
         ownerName = childJob.getOwnerName();
         jobEntityName = childJob.getJobEntityName();
@@ -259,10 +259,23 @@ public class UserVisibleJob implements Job {
     }
 
     /**
+     * A user can only cancel a job which is in_queue, or one of its children is in_queue.
      * @return true if the user can cancel this job
      */
     public boolean getUserCanCancelJob() {
-        return getUserHasOwnership() && !isInProgress() && getParent() == null;
+        if (!getUserHasOwnership()) return false;
+        if (getParent() == null) {
+            return JobStatus.IN_QUEUE.equals(getJobStatus());
+        } else {
+            boolean canCancel = false;
+            for (BaseChildAwareJob job : getChildren()) {
+                if (JobStatus.IN_QUEUE.equals(job.getJobStatus())) {
+                    canCancel = true;
+                    break;
+                }
+            }
+            return canCancel;
+        }
     }
 
     /**
@@ -325,5 +338,4 @@ public class UserVisibleJob implements Job {
             }
         }
     }
-
 }

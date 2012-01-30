@@ -95,6 +95,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import org.apache.struts2.interceptor.validation.SkipValidation;
 
@@ -160,7 +161,27 @@ public class ProjectJobQueueAction extends ActionSupport {
      * @return a boolean value that indicates if the job was cancelled or not.
      */
     public String cancelJob() {
-        if (!ServiceLocatorFactory.getJobQueueService().cancelJob(jobId, CaArrayUsernameHolder.getCsmUser())) {
+        JobQueueService jobQueueService = ServiceLocatorFactory.getJobQueueService();
+        User user = CaArrayUsernameHolder.getCsmUser();
+        List<Job> jobsList = getUserVisibleJobs(jobQueueService.getJobsForUser(user));
+        List<BaseChildAwareJob> jobsToCancel = new ArrayList<BaseChildAwareJob>();
+        for (Job job : jobsList) {
+            if (job.getJobId().equals(UUID.fromString(jobId))) {
+                if (job.getParent() == null) {
+                    jobsToCancel.add(job);
+                } else {
+                    jobsToCancel.addAll(job.getParent().getChildren());
+                }
+                break;
+            }
+        }
+        boolean cancelledJob = false;
+        for (BaseChildAwareJob job : jobsToCancel) {
+            if (jobQueueService.cancelJob(job.getJobId().toString(), user)) {
+               cancelledJob = true;
+            }
+        }
+        if (!cancelledJob) {
             ActionHelper.saveMessage(getText("jobQueue.cancel.unableToCancel"));
         }
         return Action.SUCCESS;
