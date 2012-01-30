@@ -125,7 +125,6 @@ public class FileManagementJobTest {
         assertNull(job.getTimeStarted());
         assertNull(job.getJobId());
         assertNull(job.getParent());
-        assertNull(job.getChildren());
     }
 
     @Test
