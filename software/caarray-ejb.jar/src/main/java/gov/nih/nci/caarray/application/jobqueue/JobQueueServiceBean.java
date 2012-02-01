@@ -83,7 +83,7 @@
 package gov.nih.nci.caarray.application.jobqueue;
 
 import gov.nih.nci.caarray.application.ExceptionLoggingInterceptor;
-import gov.nih.nci.caarray.domain.project.BaseChildAwareJob;
+import gov.nih.nci.caarray.domain.project.BaseJob;
 import gov.nih.nci.caarray.domain.project.Job;
 import gov.nih.nci.caarray.injection.InjectionInterceptor;
 import gov.nih.nci.caarray.jobqueue.JobQueue;
@@ -167,7 +167,7 @@ public class JobQueueServiceBean implements JobQueueService {
     @Override
     public boolean cancelJob(String jobId, User user) {
         List<Job> jobsList = getJobsForUser(user);
-        List<BaseChildAwareJob> jobsToCancel = new ArrayList<BaseChildAwareJob>();
+        List<BaseJob> jobsToCancel = new ArrayList<BaseJob>();
         for (Job job : jobsList) {
             if (job.getJobId().equals(UUID.fromString(jobId))) {
                 if (job.getParent() == null) {
@@ -179,7 +179,7 @@ public class JobQueueServiceBean implements JobQueueService {
             }
         }
         boolean cancelledJob = false;
-        for (BaseChildAwareJob job : jobsToCancel) {
+        for (BaseJob job : jobsToCancel) {
             if (jobQueue.cancelJob(job.getJobId().toString(), user)) {
                cancelledJob = true;
             }

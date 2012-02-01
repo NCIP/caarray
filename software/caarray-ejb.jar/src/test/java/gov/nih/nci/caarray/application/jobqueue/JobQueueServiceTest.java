@@ -54,12 +54,12 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import gov.nih.nci.caarray.dao.stub.ExecutableJobStub;
-import gov.nih.nci.caarray.domain.project.BaseChildAwareJob;
+import gov.nih.nci.caarray.domain.project.BaseJob;
 import gov.nih.nci.caarray.domain.project.ExecutableJob;
 import gov.nih.nci.caarray.domain.project.Job;
 import gov.nih.nci.caarray.domain.project.JobSnapshot;
 import gov.nih.nci.caarray.domain.project.JobStatus;
+import gov.nih.nci.caarray.domain.project.ParentJob;
 import gov.nih.nci.caarray.jobqueue.JobQueue;
 import gov.nih.nci.security.authorization.domainobjects.User;
 
@@ -141,23 +141,20 @@ public class JobQueueServiceTest {
     }
 
     private List<Job> getJobs() {
-        ExecutableJob parent =
-                createExecutableJob(UUID.randomUUID(), "owner1", "exp6", 6, JobStatus.PROCESSED, true, null);
-        ExecutableJob child1 = createExecutableJob(CHILD_ID_1, "owner1", "exp6", 6, JobStatus.PROCESSED, true, parent);
-        ExecutableJob child2 = createExecutableJob(CHILD_ID_2, "owner1", "exp6", 6, JobStatus.IN_QUEUE, true, parent);
-        ExecutableJob child3 = createExecutableJob(CHILD_ID_3, "owner1", "exp6", 6, JobStatus.IN_QUEUE, true, parent);
-        List<BaseChildAwareJob> children = new ArrayList<BaseChildAwareJob>();
-        children.add(child1);
-        children.add(child2);
-        children.add(child3);
-        ((ExecutableJobStub) parent).setChildren(children);
+        ParentJob parent = mockParentJob();
+        ExecutableJob child1 = mockExecutableJob(CHILD_ID_1, "owner1", "exp6", 6, JobStatus.PROCESSED, true, parent);
+        ExecutableJob child2 = mockExecutableJob(CHILD_ID_2, "owner1", "exp6", 6, JobStatus.IN_QUEUE, true, parent);
+        ExecutableJob child3 = mockExecutableJob(CHILD_ID_3, "owner1", "exp6", 6, JobStatus.IN_QUEUE, true, parent);
+        parent.getChildren().add(child1);
+        parent.getChildren().add(child2);
+        parent.getChildren().add(child3);
 
         List<ExecutableJob> originalJobs = new ArrayList<ExecutableJob>();
-        originalJobs.add(createExecutableJob(JOB_ID_1, "owner1", "exp1", 1, JobStatus.RUNNING, false, null));
-        originalJobs.add(createExecutableJob(JOB_ID_2, "owner2", "exp2", 2, JobStatus.IN_QUEUE, false, null));
-        originalJobs.add(createExecutableJob(UUID.randomUUID(), "owner3", "exp3", 3, JobStatus.IN_QUEUE, true, null));
-        originalJobs.add(createExecutableJob(UUID.randomUUID(), "owner1", "exp4", 4, JobStatus.IN_QUEUE, true, null));
-        originalJobs.add(createExecutableJob(UUID.randomUUID(), "owner1", "exp5", 5, JobStatus.IN_QUEUE, true, null));
+        originalJobs.add(mockExecutableJob(JOB_ID_1, "owner1", "exp1", 1, JobStatus.RUNNING, false, null));
+        originalJobs.add(mockExecutableJob(JOB_ID_2, "owner2", "exp2", 2, JobStatus.IN_QUEUE, false, null));
+        originalJobs.add(mockExecutableJob(UUID.randomUUID(), "owner3", "exp3", 3, JobStatus.IN_QUEUE, true, null));
+        originalJobs.add(mockExecutableJob(UUID.randomUUID(), "owner1", "exp4", 4, JobStatus.IN_QUEUE, true, null));
+        originalJobs.add(mockExecutableJob(UUID.randomUUID(), "owner1", "exp5", 5, JobStatus.IN_QUEUE, true, null));
         originalJobs.add(child2);
         originalJobs.add(child3);
 
@@ -170,16 +167,24 @@ public class JobQueueServiceTest {
         return snapshotList;
     }
 
-    private ExecutableJob createExecutableJob(UUID uuid, String ownerName, String jobEntityName, long jobEntityId,
-            JobStatus jobStatus, boolean readWriteAccess, BaseChildAwareJob parent) {
-        ExecutableJobStub origJob = new ExecutableJobStub();
-        origJob.setJobId(uuid);
-        origJob.setOwnerName(ownerName);
-        origJob.setJobEntityName(jobEntityName);
-        origJob.setJobEntityId(jobEntityId);
-        origJob.setJobStatus(jobStatus);
-        origJob.setReadWriteAccess(readWriteAccess);
-        origJob.setParent(parent);
-        return origJob;
+    private ExecutableJob mockExecutableJob(UUID uuid, String ownerName, String jobEntityName, long jobEntityId,
+            JobStatus jobStatus, boolean readWriteAccess, ParentJob parent) {
+        ExecutableJob job = mock(ExecutableJob.class);
+        when(job.getJobId()).thenReturn(uuid);
+        when(job.getOwnerName()).thenReturn(ownerName);
+        when(job.getJobEntityName()).thenReturn(jobEntityName);
+        when(job.getJobEntityId()).thenReturn(jobEntityId);
+        when(job.getJobStatus()).thenReturn(jobStatus);
+        when(job.userHasReadAccess(user)).thenReturn(readWriteAccess);
+        when(job.userHasWriteAccess(user)).thenReturn(readWriteAccess);
+        when(job.getParent()).thenReturn(parent);
+        return job;
+    }
+
+    private ParentJob mockParentJob() {
+        ParentJob job = mock(ParentJob.class);
+        List<BaseJob> children = new ArrayList<BaseJob>();
+        when(job.getChildren()).thenReturn(children);
+        return job;
     }
 }

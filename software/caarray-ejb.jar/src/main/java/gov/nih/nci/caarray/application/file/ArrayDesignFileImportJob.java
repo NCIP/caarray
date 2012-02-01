@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.application.file;
 
 import gov.nih.nci.caarray.application.ServiceLocatorFactory;
+import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
@@ -108,8 +109,9 @@ final class ArrayDesignFileImportJob extends AbstractFileManagementJob {
     private final String arrayDesignName;
 
     @Inject
-    ArrayDesignFileImportJob(String username, ArrayDesign arrayDesign, ArrayDao arrayDao) {
-        super(username);
+    ArrayDesignFileImportJob(String username, ArrayDesign arrayDesign, ArrayDao arrayDao,
+            FileAccessService fileAccessService) {
+        super(username, fileAccessService);
         this.arrayDesignId = arrayDesign.getId();
         this.arrayDesignName = arrayDesign.getName();
         this.arrayDao = arrayDao;
@@ -121,14 +123,14 @@ final class ArrayDesignFileImportJob extends AbstractFileManagementJob {
     public String getJobEntityName() {
         return arrayDesignName;
     }
-    
+
     /**
      * {@inheritDoc}
      */
     public long getJobEntityId() {
         return arrayDesignId;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -142,7 +144,7 @@ final class ArrayDesignFileImportJob extends AbstractFileManagementJob {
     public String getExperimentName() {
         return arrayDesignName;
     }
-    
+
     long getArrayDesignId() {
         return this.arrayDesignId;
     }
@@ -157,12 +159,12 @@ final class ArrayDesignFileImportJob extends AbstractFileManagementJob {
     private ArrayDesign getArrayDesign() {
         return arrayDao.getArrayDesign(getArrayDesignId());
     }
-    
+
     @Override
     protected FileStatus getInProgressStatus() {
         return FileStatus.IMPORTING;
     };
-    
+
     @Override
     public CaArrayFileSet getFileSet() {
         return getArrayDesign().getDesignFileSet();

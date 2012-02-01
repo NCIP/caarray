@@ -84,18 +84,19 @@
 package gov.nih.nci.caarray.web.action.project;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
-import gov.nih.nci.caarray.domain.project.BaseChildAwareJob;
+import gov.nih.nci.caarray.domain.project.BaseJob;
 import gov.nih.nci.caarray.domain.project.Job;
 import gov.nih.nci.caarray.domain.project.JobStatus;
 import gov.nih.nci.caarray.domain.project.JobType;
+import gov.nih.nci.caarray.domain.project.ParentJob;
 
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
 /**
-
-   */
+ *
+ */
 public class JobStub extends AbstractCaArrayEntity implements Job {
     private static final long serialVersionUID = 1234567890L;
 
@@ -114,9 +115,9 @@ public class JobStub extends AbstractCaArrayEntity implements Job {
 
     private boolean userHasOwnership;
 
-	private BaseChildAwareJob parent;
-    private List<BaseChildAwareJob> children;
-    
+    private ParentJob parent;
+    private List<BaseJob> children;
+
     /**
      * {@inheritDoc}
      */
@@ -221,7 +222,7 @@ public class JobStub extends AbstractCaArrayEntity implements Job {
     public JobStatus getJobStatus() {
         return jobStatus;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -306,28 +307,28 @@ public class JobStub extends AbstractCaArrayEntity implements Job {
     /**
      * {@inheritDoc}
      */
-	public BaseChildAwareJob getParent() {
+	public ParentJob getParent() {
 		return parent;
 	}
 
     /**
      * {@inheritDoc}
      */
-	public void setParent(BaseChildAwareJob parent) {
+	public void setParent(ParentJob parent) {
 		this.parent = parent;
 	}
 
     /**
      * {@inheritDoc}
      */
-	public List<BaseChildAwareJob> getChildren() {
+	public List<BaseJob> getChildren() {
 		return children;
 	}
 
     /**
      * {@inheritDoc}
      */
-	public void setChildren(List<BaseChildAwareJob> children) {
+	public void setChildren(List<BaseJob> children) {
 		this.children = children;
 	}
 

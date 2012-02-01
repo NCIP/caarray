@@ -88,8 +88,8 @@ import gov.nih.nci.caarray.dao.ProjectDao;
 import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileStatus;
-import gov.nih.nci.caarray.domain.project.BaseChildAwareJob;
 import gov.nih.nci.caarray.domain.project.JobType;
+import gov.nih.nci.caarray.domain.project.ParentJob;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.magetab.MageTabParsingException;
@@ -126,7 +126,7 @@ class ProjectFilesImportJob extends AbstractProjectFilesJob {
     ProjectFilesImportJob(String username, Project targetProject,
             CaArrayFileSet fileSet, DataImportOptions dataImportOptions, ArrayDataImporter arrayDataImporter,
             MageTabImporter mageTabImporter, FileAccessService fileAccessService, ProjectDao projectDao,
-            SearchDao searchDao, BaseChildAwareJob parent) {
+            SearchDao searchDao, ParentJob parent) {
     // CHECKSTYLE:ON
         super(username, targetProject, fileSet, arrayDataImporter,
                 mageTabImporter, fileAccessService, projectDao, searchDao, parent);

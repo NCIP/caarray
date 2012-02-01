@@ -85,10 +85,11 @@ package gov.nih.nci.caarray.dao.stub;
 
 import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
-import gov.nih.nci.caarray.domain.project.BaseChildAwareJob;
+import gov.nih.nci.caarray.domain.project.BaseJob;
 import gov.nih.nci.caarray.domain.project.ExecutableJob;
 import gov.nih.nci.caarray.domain.project.JobStatus;
 import gov.nih.nci.caarray.domain.project.JobType;
+import gov.nih.nci.caarray.domain.project.ParentJob;
 import gov.nih.nci.security.authorization.domainobjects.User;
 
 import java.sql.Connection;
@@ -114,8 +115,8 @@ public class ExecutableJobStub extends AbstractCaArrayEntity implements Executab
     private Date timeStarted;
     private JobStatus jobStatus;
     private boolean readWriteAccess;
-	private BaseChildAwareJob parent;
-    private List<BaseChildAwareJob> children;
+    private ParentJob parent;
+    private List<BaseJob> children;
 
     public void setReadWriteAccess(boolean readWriteAccess) {
         this.readWriteAccess = readWriteAccess;
@@ -302,29 +303,28 @@ public class ExecutableJobStub extends AbstractCaArrayEntity implements Executab
     /**
      * {@inheritDoc}
      */
-	public BaseChildAwareJob getParent() {
+	public ParentJob getParent() {
 		return parent;
 	}
 
     /**
      * {@inheritDoc}
      */
-	public void setParent(BaseChildAwareJob parent) {
+	public void setParent(ParentJob parent) {
 		this.parent = parent;
 	}
 
     /**
      * {@inheritDoc}
      */
-	public List<BaseChildAwareJob> getChildren() {
+	public List<BaseJob> getChildren() {
 		return children;
 	}
 
     /**
      * {@inheritDoc}
      */
-	public void setChildren(List<BaseChildAwareJob> children) {
+	public void setChildren(List<BaseJob> children) {
 		this.children = children;
 	}
-
 }

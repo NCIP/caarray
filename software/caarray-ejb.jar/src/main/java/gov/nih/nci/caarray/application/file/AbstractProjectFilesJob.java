@@ -88,7 +88,7 @@ import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileStatus;
-import gov.nih.nci.caarray.domain.project.BaseChildAwareJob;
+import gov.nih.nci.caarray.domain.project.ParentJob;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.security.authorization.domainobjects.User;
@@ -114,7 +114,6 @@ abstract class AbstractProjectFilesJob extends AbstractFileManagementJob {
     private Set<Long> fileIds;
     private ArrayDataImporter arrayDataImporter;
     private MageTabImporter mageTabImporter;
-    private FileAccessService fileAccessService;
     private ProjectDao projectDao;
     private SearchDao searchDao;
     private String experimentName;
@@ -135,26 +134,22 @@ abstract class AbstractProjectFilesJob extends AbstractFileManagementJob {
     // CHECKSTYLE:OFF more than 7 parameters are okay for injected constructor
     AbstractProjectFilesJob(String username, Project targetProject,
             CaArrayFileSet fileSet, ArrayDataImporter arrayDataImporter, MageTabImporter mageTabImporter,
-            FileAccessService fileAccessService, ProjectDao projectDao, SearchDao searchDao, BaseChildAwareJob parent) {
+            FileAccessService fileAccessService, ProjectDao projectDao, SearchDao searchDao, ParentJob parent) {
     // CHECKSTYLE:ON
-        super(username, parent);
-        init(username, targetProject, fileSet, arrayDataImporter, mageTabImporter, fileAccessService,
-                projectDao, searchDao);
+        super(username, parent, fileAccessService);
+        init(username, targetProject, fileSet, arrayDataImporter, mageTabImporter, projectDao, searchDao);
     }
 
     @SuppressWarnings("PMD.ExcessiveParameterList")
     // CHECKSTYLE:OFF more than 7 parameters are okay for injected constructor
-    final void init(String username, Project targetProject, CaArrayFileSet fileSet,
-            ArrayDataImporter arrayDataImptr,
-            MageTabImporter mageTabImptr, FileAccessService fileAccessSvc, ProjectDao pDao,
-            SearchDao sDao) {
+    final void init(String username, Project targetProject, CaArrayFileSet fileSet, ArrayDataImporter arrayDataImptr,
+            MageTabImporter mageTabImptr, ProjectDao pDao, SearchDao sDao) {
         // CHECKSTYLE:ON
         setOwnerName(username);
         this.projectId = targetProject.getId();
         this.experimentName = targetProject.getExperiment().getTitle();
         this.arrayDataImporter = arrayDataImptr;
         this.mageTabImporter = mageTabImptr;
-        this.fileAccessService = fileAccessSvc;
         this.projectDao = pDao;
         this.searchDao = sDao;
         this.fileIds = new HashSet<Long>();
@@ -173,7 +168,7 @@ abstract class AbstractProjectFilesJob extends AbstractFileManagementJob {
         handleSessionMess(); // fileAccessService needs file status written to db
         for (CaArrayFile file : getFileSet().getFiles()) {
             if (file.getParent() != null) {
-                fileAccessService.remove(file);
+                getFileAccessService().remove(file);
             }
         }
     }
@@ -254,13 +249,6 @@ abstract class AbstractProjectFilesJob extends AbstractFileManagementJob {
 
     protected ProjectDao getProjectDao() {
         return projectDao;
-    }
-
-    /**
-     * @return the fileAccessService
-     */
-    protected FileAccessService getFileAccessService() {
-        return fileAccessService;
     }
 
     /**

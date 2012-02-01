@@ -90,10 +90,11 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import gov.nih.nci.caarray.application.jobqueue.JobQueueService;
-import gov.nih.nci.caarray.domain.project.BaseChildAwareJob;
+import gov.nih.nci.caarray.domain.project.BaseJob;
 import gov.nih.nci.caarray.domain.project.Job;
 import gov.nih.nci.caarray.domain.project.JobStatus;
 import gov.nih.nci.caarray.domain.project.JobType;
+import gov.nih.nci.caarray.domain.project.ParentJob;
 import gov.nih.nci.caarray.domain.project.UserVisibleJob;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import gov.nih.nci.caarray.web.AbstractBaseStrutsTest;
@@ -174,15 +175,13 @@ public class ProjectJobQueueActionTest extends AbstractBaseStrutsTest {
 
     private void initJobList() {
         // parent and child1 are not in the queue
-        Job parent = getJob(0, "kdallas", "Split files", JobType.DATA_FILE_SPLIT, new Date(), new Date(), JobStatus.PROCESSED);
+        ParentJob parent = mockParentJob();
         Job child1 = getJob(0, child1Id, "kdallas", "Split files", JobType.DATA_FILE_IMPORT, new Date(), new Date(), JobStatus.PROCESSED, parent);
         Job child2 = getJob(5, child2Id, "kdallas", "Split files", JobType.DATA_FILE_IMPORT, new Date(), new Date(), JobStatus.IN_QUEUE, parent);
         Job child3 = getJob(6, child3Id, "kdallas", "Split files", JobType.DATA_FILE_IMPORT, new Date(), new Date(), JobStatus.CANCELLED, parent);
-        List<BaseChildAwareJob> children = new ArrayList<BaseChildAwareJob>();
-        children.add(child1);
-        children.add(child2);
-        children.add(child3);
-        ((JobStub)parent).setChildren(children);
+        parent.getChildren().add(child1);
+        parent.getChildren().add(child2);
+        parent.getChildren().add(child3);
 
         jobList = new ArrayList<Job>();
         jobList.add(getJob(1, "smith", "Private", JobType.DATA_FILE_VALIDATION, new Date(), new Date(), JobStatus.RUNNING));
@@ -201,7 +200,7 @@ public class ProjectJobQueueActionTest extends AbstractBaseStrutsTest {
     }
 
     private Job getJob(int position, UUID uuid, String username, String experimentName, JobType jobType,
-            Date timeRequested, Date timeStarted, JobStatus status, Job parent) {
+            Date timeRequested, Date timeStarted, JobStatus status, ParentJob parent) {
         JobStub job = new JobStub();
         job.setJobId(uuid);
         job.setPosition(position);
@@ -213,6 +212,13 @@ public class ProjectJobQueueActionTest extends AbstractBaseStrutsTest {
         job.setTimeStarted(timeStarted);
         job.setJobStatus(status);
         job.setParent(parent);
+        return job;
+    }
+
+    private ParentJob mockParentJob() {
+        ParentJob job = mock(ParentJob.class);
+        List<BaseJob> children = new ArrayList<BaseJob>();
+        when(job.getChildren()).thenReturn(children);
         return job;
     }
 }

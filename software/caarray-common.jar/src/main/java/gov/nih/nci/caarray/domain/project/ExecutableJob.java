@@ -95,7 +95,7 @@ import java.util.UUID;
  * @author jscott
  *
  */
-public interface ExecutableJob extends BaseChildAwareJob {
+public interface ExecutableJob extends BaseJob {
     /**
      * Perform the job.
      */
@@ -113,9 +113,9 @@ public interface ExecutableJob extends BaseChildAwareJob {
     void markAsInQueue();
 
     /**
-    * Set the appropriate fileset and job status values, indicating that the job has been cancelled.
-    */
-   void markAsCancelled();
+     * Set the appropriate fileset and job status values, indicating that the job has been cancelled.
+     */
+    void markAsCancelled();
 
     /**
      * Set the appropriate fileset and job status values, indicating that the job is in progress.
@@ -123,9 +123,9 @@ public interface ExecutableJob extends BaseChildAwareJob {
     void markAsInProgress();
 
     /**
-    * Set the appropriate job status values, indicating that the job has been processed.
-    */
-   void markAsProcessed();
+     * Set the appropriate job status values, indicating that the job has been processed.
+     */
+    void markAsProcessed();
 
     /**
      * @param user the given user

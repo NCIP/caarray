@@ -89,10 +89,18 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
+import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileStatus;
+import gov.nih.nci.caarray.domain.project.BaseJob;
 import gov.nih.nci.caarray.domain.project.JobStatus;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -175,5 +183,60 @@ public class FileManagementJobTest {
         job.markAsProcessed();
         assertEquals(JobStatus.PROCESSED, job.getJobStatus());
         assertFalse(job.isInProgress());
+    }
+
+    @Test
+    public void cancelledChildrenFlag() {
+        // setup parent and child jobs
+        AbstractFileManagementJob parent = mock(AbstractFileManagementJob.class, Mockito.CALLS_REAL_METHODS);
+        AbstractFileManagementJob child1 = mock(AbstractFileManagementJob.class, Mockito.CALLS_REAL_METHODS);
+        AbstractFileManagementJob child2 = mock(AbstractFileManagementJob.class, Mockito.CALLS_REAL_METHODS);
+        AbstractFileManagementJob child3 = mock(AbstractFileManagementJob.class, Mockito.CALLS_REAL_METHODS);
+        List<BaseJob> children = new ArrayList<BaseJob>();
+        children.add(child1);
+        children.add(child2);
+        children.add(child3);
+        when(parent.getChildren()).thenReturn(children);
+        when(child1.getParent()).thenReturn(parent);
+        when(child2.getParent()).thenReturn(parent);
+        when(child3.getParent()).thenReturn(parent);
+
+        // setup parent and child files
+        CaArrayFile parentFile = new CaArrayFile();
+        CaArrayFile childFile1 = new CaArrayFile(parentFile);
+        CaArrayFile childFile2 = new CaArrayFile(parentFile);
+        CaArrayFile childFile3 = new CaArrayFile(parentFile);
+        parentFile.setFileStatus(FileStatus.IN_QUEUE);
+        childFile1.setFileStatus(FileStatus.IN_QUEUE);
+        childFile2.setFileStatus(FileStatus.IN_QUEUE);
+        childFile3.setFileStatus(FileStatus.IN_QUEUE);
+        CaArrayFileSet parentFileSet = new CaArrayFileSet();
+        CaArrayFileSet child1FileSet = new CaArrayFileSet();
+        CaArrayFileSet child2FileSet = new CaArrayFileSet();
+        CaArrayFileSet child3FileSet = new CaArrayFileSet();
+        parentFileSet.add(parentFile);
+        child1FileSet.add(childFile1);
+        child2FileSet.add(childFile2);
+        child3FileSet.add(childFile3);
+        doReturn(parentFileSet).when(parent).getFileSet();
+        doReturn(child1FileSet).when(child1).getFileSet();
+        doReturn(child2FileSet).when(child2).getFileSet();
+        doReturn(child3FileSet).when(child3).getFileSet();
+
+        FileAccessService fas = mock(FileAccessService.class);
+        when(child2.getFileAccessService()).thenReturn(fas);
+
+        child1.markAsProcessed();
+        verify(parent).handleChildProcessed();
+        assertEquals(FileStatus.IN_QUEUE, parentFile.getFileStatus());
+
+        child2.markAsCancelled();
+        verify(parent).handleChildCancelled();
+        verify(fas).remove(childFile2);
+        assertEquals(FileStatus.IN_QUEUE, parentFile.getFileStatus());
+
+        child3.markAsProcessed();
+        verify(parent, times(2)).handleChildProcessed();
+        assertEquals(FileStatus.UPLOADED, parentFile.getFileStatus());
     }
 }

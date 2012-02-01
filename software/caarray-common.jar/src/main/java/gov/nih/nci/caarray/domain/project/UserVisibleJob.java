@@ -95,7 +95,7 @@ import java.util.UUID;
  */
 public class UserVisibleJob implements Job {
     private final UUID jobId;
-    private final BaseChildAwareJob parent;
+    private final ParentJob parent;
     private final String ownerName;
     private final String jobEntityName;
     private final long jobEntityId;
@@ -142,7 +142,7 @@ public class UserVisibleJob implements Job {
      * {@inheritDoc}
      */
     @Override
-    public BaseChildAwareJob getParent() {
+    public ParentJob getParent() {
         return parent;
     }
 
@@ -150,7 +150,7 @@ public class UserVisibleJob implements Job {
      * {@inheritDoc}
      */
     @Override
-    public List<BaseChildAwareJob> getChildren() {
+    public List<BaseJob> getChildren() {
         return parent.getChildren();
     }
 
@@ -268,7 +268,7 @@ public class UserVisibleJob implements Job {
             return JobStatus.IN_QUEUE.equals(getJobStatus());
         } else {
             boolean canCancel = false;
-            for (BaseChildAwareJob job : getChildren()) {
+            for (BaseJob job : getChildren()) {
                 if (JobStatus.IN_QUEUE.equals(job.getJobStatus())) {
                     canCancel = true;
                     break;
@@ -300,7 +300,7 @@ public class UserVisibleJob implements Job {
         for (JobStatus cStatus : JobStatus.values()) {
             statusCounts.put(cStatus, 0);
         }
-        for (BaseChildAwareJob job : parent.getChildren()) {
+        for (BaseJob job : parent.getChildren()) {
             JobStatus cStatus = job.getJobStatus();
             statusCounts.put(cStatus, statusCounts.get(cStatus) + 1);
         }
@@ -319,7 +319,7 @@ public class UserVisibleJob implements Job {
      * Sets time requested to the earliest child.
      */
     private void setTimeRequestedFromChildren() {
-        for (BaseChildAwareJob job : parent.getChildren()) {
+        for (BaseJob job : parent.getChildren()) {
             Date cTimeRequested = job.getTimeRequested();
             if (cTimeRequested.before(timeRequested)) {
                 timeRequested = cTimeRequested;
@@ -331,7 +331,7 @@ public class UserVisibleJob implements Job {
      * Sets time started to the earliest child.
      */
     private void setTimeStartedFromChildren() {
-        for (BaseChildAwareJob job : parent.getChildren()) {
+        for (BaseJob job : parent.getChildren()) {
             Date cTimeStarted = job.getTimeStarted();
             if (cTimeStarted != null && cTimeStarted.before(timeStarted)) {
                 timeStarted = cTimeStarted;

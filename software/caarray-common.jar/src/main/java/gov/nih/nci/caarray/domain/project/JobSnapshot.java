@@ -91,12 +91,12 @@ import java.util.UUID;
 /**
  * Represents the read-only state of another job at the time an instance of this
  * class is created.
- * 
+ *
  * @author jscott
  *
  */
 public class JobSnapshot implements Job {
-    private final BaseChildAwareJob originalJob;
+    private final BaseJob originalJob;
     private final UUID jobId;
     private final String ownerName;
     private final String jobEntityName;
@@ -120,7 +120,7 @@ public class JobSnapshot implements Job {
     public JobSnapshot(User user, ExecutableJob originalJob, int position) {
         this.originalJob = originalJob;
         this.position = position;
-        
+
         this.jobId = originalJob.getJobId();
         ownerName = originalJob.getOwnerName();
         jobEntityName = originalJob.getJobEntityName();
@@ -133,8 +133,8 @@ public class JobSnapshot implements Job {
         doesUserHaveWriteAccess = originalJob.userHasWriteAccess(user);
         inProgress = originalJob.isInProgress();
         doesUserHaveOwnership = originalJob.getOwnerName().equalsIgnoreCase(user.getLoginName());
-        // Currently, only job owners can cancel a job. Refer to ARRAY-1953 for more information. 
-        canUserCancelJob = doesUserHaveOwnership && !inProgress; 
+        // Currently, only job owners can cancel a job. Refer to ARRAY-1953 for more information.
+        canUserCancelJob = doesUserHaveOwnership && !inProgress;
     }
 
     /**
@@ -143,7 +143,7 @@ public class JobSnapshot implements Job {
     public UUID getJobId() {
         return this.jobId;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -157,7 +157,7 @@ public class JobSnapshot implements Job {
     public String getJobEntityName() {
         return this.jobEntityName;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -213,7 +213,7 @@ public class JobSnapshot implements Job {
     public boolean getUserHasOwnership() {
         return doesUserHaveOwnership;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -241,18 +241,18 @@ public class JobSnapshot implements Job {
     public BaseJob getOriginalJob() {
         return originalJob;
     }
-    
+
     /**
      * {@inheritDoc}
      */
-    public BaseChildAwareJob getParent() {
+    public ParentJob getParent() {
         return originalJob.getParent();
     }
 
     /**
      * {@inheritDoc}
      */
-    public List<BaseChildAwareJob> getChildren() {
+    public List<BaseJob> getChildren() {
         return originalJob.getChildren();
     }
 }

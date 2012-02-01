@@ -109,7 +109,7 @@ public class JobFactoryImpl implements JobFactory {
     private final Provider<FileAccessService> fileAccessServiceProvider;
     private final Provider<CaArrayFileSetSplitter> caArrayFileSetSplitterProvider;
 
-    
+
     /**
      * @param arrayDaoProvider the Provider&lt;ArrayDao&gt; dependency
      * @param arrayDataImporterProvider the Provider&lt;ArrayDataImporter&gt; dependency
@@ -122,7 +122,7 @@ public class JobFactoryImpl implements JobFactory {
     // CHECKSTYLE:OFF more than 7 parameters are okay for injected constructor
     public JobFactoryImpl(Provider<ArrayDao> arrayDaoProvider,
             Provider<ArrayDataImporter> arrayDataImporterProvider, Provider<MageTabImporter> mageTabImporterProvider,
-            Provider<FileAccessService> fileAccessServiceProvider, Provider<ProjectDao> projectDaoProvider, 
+            Provider<FileAccessService> fileAccessServiceProvider, Provider<ProjectDao> projectDaoProvider,
             Provider<SearchDao> searchDaoProvider, Provider<CaArrayFileSetSplitter> caArrayFileSetSplitter) {
     // CHECKSTYLE:ON
         this.arrayDaoProvider = arrayDaoProvider;
@@ -133,21 +133,21 @@ public class JobFactoryImpl implements JobFactory {
         this.searchDaoProvider = searchDaoProvider;
         this.caArrayFileSetSplitterProvider = caArrayFileSetSplitter;
     }
-    
+
     /**
      * {@inheritDoc}
      */
     public AbstractFileManagementJob createArrayDesignFileImportJob(String user, ArrayDesign arrayDesign) {
-        return new ArrayDesignFileImportJob(user, arrayDesign, arrayDaoProvider.get());
+        return new ArrayDesignFileImportJob(user, arrayDesign, arrayDaoProvider.get(), fileAccessServiceProvider.get());
     }
-    
+
     /**
      * {@inheritDoc}
      */
     public ProjectFilesImportJob createProjectFilesImportJob(String user, Project project, CaArrayFileSet fileSet,
             DataImportOptions dataImportOptions) {
         return new ProjectFilesImportJob(user, project, fileSet, dataImportOptions,
-                arrayDataImporterProvider.get(), mageTabImporterProvider.get(), 
+                arrayDataImporterProvider.get(), mageTabImporterProvider.get(),
                 fileAccessServiceProvider.get(), projectDaoProvider.get(),
                 searchDaoProvider.get());
     }
@@ -158,7 +158,7 @@ public class JobFactoryImpl implements JobFactory {
     public ProjectFilesValidationJob createProjectFilesValidationJob(String user, Project project,
             CaArrayFileSet fileSet) {
         return new ProjectFilesValidationJob(user, project, fileSet,
-                arrayDataImporterProvider.get(), mageTabImporterProvider.get(), 
+                arrayDataImporterProvider.get(), mageTabImporterProvider.get(),
                 fileAccessServiceProvider.get(), projectDaoProvider.get(), searchDaoProvider.get());
     }
 
@@ -168,7 +168,7 @@ public class JobFactoryImpl implements JobFactory {
     public ProjectFilesReparseJob createProjectFilesReparseJob(String user, Project project,
             CaArrayFileSet fileSet) {
         return new ProjectFilesReparseJob(user, project, fileSet,
-                arrayDataImporterProvider.get(), mageTabImporterProvider.get(), 
+                arrayDataImporterProvider.get(), mageTabImporterProvider.get(),
                 fileAccessServiceProvider.get(), projectDaoProvider.get(), searchDaoProvider.get());
     }
 

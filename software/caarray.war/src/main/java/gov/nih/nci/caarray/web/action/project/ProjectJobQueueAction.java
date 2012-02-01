@@ -84,8 +84,8 @@ package gov.nih.nci.caarray.web.action.project;
 
 import gov.nih.nci.caarray.application.ServiceLocatorFactory;
 import gov.nih.nci.caarray.application.jobqueue.JobQueueService;
-import gov.nih.nci.caarray.domain.project.BaseChildAwareJob;
 import gov.nih.nci.caarray.domain.project.Job;
+import gov.nih.nci.caarray.domain.project.ParentJob;
 import gov.nih.nci.caarray.domain.project.UserVisibleJob;
 import gov.nih.nci.caarray.domain.search.JobSortCriterion;
 import gov.nih.nci.caarray.util.CaArrayUsernameHolder;
@@ -95,6 +95,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import org.apache.struts2.interceptor.validation.SkipValidation;
 
@@ -133,11 +134,11 @@ public class ProjectJobQueueAction extends ActionSupport {
     }
 
     private List<Job> getUserVisibleJobs(List<Job> jobsList) {
-        Set<BaseChildAwareJob> parents = new HashSet<BaseChildAwareJob>();
+        Set<ParentJob> parents = new HashSet<ParentJob>();
         List<Job> visibleJobs = new ArrayList<Job>();
         int position = 1;
         for (Job job : jobsList) {
-            BaseChildAwareJob parent = job.getParent();
+            ParentJob parent = job.getParent();
             if (parent == null) {
                 visibleJobs.add(new UserVisibleJob(job, position++));
             } else if (!parents.contains(parent)) {
@@ -162,6 +163,14 @@ public class ProjectJobQueueAction extends ActionSupport {
     public String cancelJob() {
         if (!ServiceLocatorFactory.getJobQueueService().cancelJob(jobId, CaArrayUsernameHolder.getCsmUser())) {
             ActionHelper.saveMessage(getText("jobQueue.cancel.unableToCancel"));
+        } else {
+            JobQueueService jobQueueService = ServiceLocatorFactory.getJobQueueService();
+            List<Job> jobsList = jobQueueService.getJobsForUser(CaArrayUsernameHolder.getCsmUser());
+            for (Job job : jobsList) {
+                if (job.getJobId().equals(UUID.fromString(jobId))) {
+                    ActionHelper.saveMessage(getText("jobQueue.cancel.partialCancel"));
+                }
+            }
         }
         return Action.SUCCESS;
     }

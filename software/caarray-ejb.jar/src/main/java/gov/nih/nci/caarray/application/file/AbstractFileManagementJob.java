@@ -82,12 +82,15 @@
  */
 package gov.nih.nci.caarray.application.file;
 
+import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
+import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileStatus;
-import gov.nih.nci.caarray.domain.project.BaseChildAwareJob;
+import gov.nih.nci.caarray.domain.project.BaseJob;
 import gov.nih.nci.caarray.domain.project.ExecutableJob;
 import gov.nih.nci.caarray.domain.project.JobStatus;
 import gov.nih.nci.caarray.domain.project.JobType;
+import gov.nih.nci.caarray.domain.project.ParentJob;
 
 import java.io.Serializable;
 import java.sql.Connection;
@@ -103,7 +106,7 @@ import com.google.inject.Inject;
 /**
  * Base class for file handling jobs.
  */
-public abstract class AbstractFileManagementJob implements Serializable, ExecutableJob {
+public abstract class AbstractFileManagementJob implements Serializable, ExecutableJob, ParentJob {
 
     private static final long serialVersionUID = 1L;
 
@@ -112,18 +115,21 @@ public abstract class AbstractFileManagementJob implements Serializable, Executa
     private Date timeStarted;
     private UUID jobId;
     private JobStatus jobStatus;
+    private boolean childrenCancelled;
+    private FileAccessService fileAccessService;
 
-    private final BaseChildAwareJob parent;
-    private final List<BaseChildAwareJob> children = new ArrayList<BaseChildAwareJob>();
+    private final ParentJob parent;
+    private final List<BaseJob> children = new ArrayList<BaseJob>();
 
     @Inject
-    AbstractFileManagementJob(String username) {
-        this(username, null);
+    AbstractFileManagementJob(String username, FileAccessService fileAccessService) {
+        this(username, null, fileAccessService);
     }
 
     @Inject
-    AbstractFileManagementJob(String username, BaseChildAwareJob parent) {
+    AbstractFileManagementJob(String username, ParentJob parent, FileAccessService fileAccessService) {
         this.parent = parent;
+        this.fileAccessService = fileAccessService;
         init(username);
     }
 
@@ -179,6 +185,16 @@ public abstract class AbstractFileManagementJob implements Serializable, Executa
      */
     @Override
     public void markAsCancelled() {
+        if (getParent() != null) {
+            getParent().handleChildCancelled();
+        }
+        if (getFileSet() != null) {
+            for (CaArrayFile file : getFileSet().getFiles()) {
+                if (file.getParent() != null) {
+                    getFileAccessService().remove(file);
+                }
+            }
+        }
         setFilesetStatus(FileStatus.UPLOADED);
         setJobStatus(JobStatus.CANCELLED);
     }
@@ -197,6 +213,9 @@ public abstract class AbstractFileManagementJob implements Serializable, Executa
      */
     @Override
     public void markAsProcessed() {
+        if (getParent() != null) {
+            getParent().handleChildProcessed();
+        }
         setJobStatus(JobStatus.PROCESSED);
     }
 
@@ -214,6 +233,24 @@ public abstract class AbstractFileManagementJob implements Serializable, Executa
     public void markAsInQueue() {
         setFilesetStatus(getInQueueStatus());
         setJobStatus(JobStatus.IN_QUEUE);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void handleChildCancelled() {
+        childrenCancelled = true;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void handleChildProcessed() {
+        if (childrenCancelled) {
+            setFilesetStatus(FileStatus.UPLOADED);
+        }
     }
 
     private void setFilesetStatus(FileStatus fileStatus) {
@@ -305,7 +342,7 @@ public abstract class AbstractFileManagementJob implements Serializable, Executa
      * {@inheritDoc}
      */
     @Override
-    public BaseChildAwareJob getParent() {
+    public ParentJob getParent() {
         return parent;
     }
 
@@ -313,7 +350,14 @@ public abstract class AbstractFileManagementJob implements Serializable, Executa
      * {@inheritDoc}
      */
     @Override
-    public List<BaseChildAwareJob> getChildren() {
+    public List<BaseJob> getChildren() {
         return children;
+    }
+
+    /**
+     * @return the fileAccessService
+     */
+    protected FileAccessService getFileAccessService() {
+        return fileAccessService;
     }
 }

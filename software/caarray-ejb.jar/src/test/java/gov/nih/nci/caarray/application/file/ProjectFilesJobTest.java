@@ -128,29 +128,30 @@ public class ProjectFilesJobTest {
     @Mock ProjectDao projectDao;
     @Mock SearchDao searchDao;
     @Mock FileAccessService fileAccessService;
-    
+
     @Before
     public void setUp() {
         job = mock(AbstractProjectFilesJob.class, Mockito.CALLS_REAL_METHODS);
         MockitoAnnotations.initMocks(this);
-        
+
         setupProjectMock(project);
         setupNonChildFileSet();
 
+        when(job.getFileAccessService()).thenReturn(fileAccessService);
         when(searchDao.retrieve(eq(Project.class), eq(1L))).thenReturn(project);
-        
-        
-        job.init("testuser", project, fileSet, arrayDataImporter, mageTabImporter, 
-                 fileAccessService, projectDao, searchDao);
+
+
+        job.init("testuser", project, fileSet, arrayDataImporter, mageTabImporter,
+                projectDao, searchDao);
     }
 
     @SuppressWarnings("unchecked")
     private void initSearchDao() {
         ImmutableList<CaArrayFile> filesList = ImmutableList.copyOf(fileSet.getFiles().iterator());
-        when(searchDao.retrieveByIds(eq(CaArrayFile.class), 
+        when(searchDao.retrieveByIds(eq(CaArrayFile.class),
                 any(List.class))).thenReturn(filesList);
     }
-    
+
     private void setupNonChildFileSet() {
         CaArrayFile file = mock(CaArrayFile.class);
         when(file.getId()).thenReturn(1L);
@@ -161,15 +162,15 @@ public class ProjectFilesJobTest {
     private void setupParentChildFileSet() {
         CaArrayFile parent = mock(CaArrayFile.class);
         when(parent.getId()).thenReturn(2L);
-        
+
         CaArrayFile child = mock(CaArrayFile.class);
         when(child.getId()).thenReturn(3L);
 
         when(child.getParent()).thenReturn(parent);
         when(parent.getChildren()).thenReturn(Collections.singleton(child));
-        
+
         Set<CaArrayFile> files = ImmutableSet.of(parent, child);
-        
+
         when(fileSet.getFiles()).thenReturn(files);
         initSearchDao();
     }
@@ -179,12 +180,12 @@ public class ProjectFilesJobTest {
      * @param project mock project to set up
      */
     static void setupProjectMock(Project project) {
-        when(project.getId()).thenReturn(1L);       
+        when(project.getId()).thenReturn(1L);
         Experiment e = mock(Experiment.class);
         when(e.getTitle()).thenReturn("experimentTitle");
         when(project.getExperiment()).thenReturn(e);
     }
-    
+
     @Test
     public void construction() {
         assertEquals("testuser", job.getOwnerName());
@@ -195,42 +196,42 @@ public class ProjectFilesJobTest {
         assertEquals(mageTabImporter, job.getMageTabImporter());
         assertEquals(projectDao, job.getProjectDao());
     }
-    
+
     @Test
     public void hasReadAccess() {
         User canRead = mock(User.class);
         when(project.hasReadPermission(canRead)).thenReturn(true);
         assertTrue(job.userHasReadAccess(canRead));
     }
-    
+
     @Test
     public void noReadAccess() {
         User canRead = mock(User.class);
         when(project.hasReadPermission(canRead)).thenReturn(false);
         assertFalse(job.userHasReadAccess(canRead));
     }
-    
+
     @Test
     public void hasWriteAccess() {
         User canWrite = mock(User.class);
         when(project.hasWritePermission(canWrite)).thenReturn(true);
         assertTrue(job.userHasWriteAccess(canWrite));
     }
-    
+
     @Test
     public void noWriteAccess() {
         User noWrite = mock(User.class);
         when(project.hasWritePermission(noWrite)).thenReturn(false);
         assertFalse(job.userHasWriteAccess(noWrite));
     }
-    
+
     @Test
     public void doValidate() {
         job.doValidate(job.getFileSet());
         verify(mageTabImporter).validateFiles(project, job.getFileSet());
         verify(arrayDataImporter).validateFiles(job.getFileSet(), null, false);
     }
-    
+
     @Test
     public void pullUpValidationMessagesOnExecute() {
         doNothing().when(job).executeProjectFilesJob();
@@ -239,14 +240,14 @@ public class ProjectFilesJobTest {
         verify(job).executeProjectFilesJob();
         verify(fileSet).pullUpValidationMessages();
     }
-    
+
     @Test
     public void deleteChildFilesOnExecute() {
         setupParentChildFileSet();
         doNothing().when(job).executeProjectFilesJob();
         doReturn(fileSet).when(job).getFileSet();
         job.doExecute();
-        
+
         for (CaArrayFile file : fileSet.getFiles()) {
             if (file.getParent() != null) {
                 verify(fileAccessService).remove(eq(file));
@@ -254,7 +255,7 @@ public class ProjectFilesJobTest {
         }
         verifyNoMoreInteractions(fileAccessService);
     }
-    
+
     /**
      * The hibernate flush mode for all jobs is COMMIT, which means that changes made
      * during the job are not visible to queries without a flush.  This test verifies
@@ -265,9 +266,9 @@ public class ProjectFilesJobTest {
     public void sessionFlushCalled() {
         doNothing().when(job).executeProjectFilesJob();
         job.doExecute();
-        
+
         verify(projectDao).flushSession();
         verifyNoMoreInteractions(projectDao);
     }
-    
+
 }

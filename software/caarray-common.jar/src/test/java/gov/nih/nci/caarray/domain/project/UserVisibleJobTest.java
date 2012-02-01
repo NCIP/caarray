@@ -86,8 +86,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -107,7 +111,7 @@ public class UserVisibleJobTest {
 
     @Test
     public void jobWithoutParent() {
-        Job originalJob = getJob(1, JOB_ID_1, "smith", "EXP-1", JobType.DATA_FILE_IMPORT, true, true, true, REQUESTED,
+        Job originalJob = mockJob(1, JOB_ID_1, "smith", "EXP-1", JobType.DATA_FILE_IMPORT, true, true, true, REQUESTED,
                 STARTED, JobStatus.IN_QUEUE, 2, null);
         UserVisibleJob job = new UserVisibleJob(originalJob, 1);
         assertEquals(JOB_ID_1, job.getJobId());
@@ -131,14 +135,13 @@ public class UserVisibleJobTest {
         Date date1 = new Date(now+100);
         Date date2 = new Date(now+200);
         Date date3 = new Date(now+300);
-        Job parent = getJob(1, UUID.randomUUID(), "smith", "EXP-1", JobType.DATA_FILE_IMPORT, true, true, true,
-                REQUESTED, STARTED, JobStatus.IN_QUEUE, 1, null);
-        Job child1 = getJob(2, JOB_ID_1, "smith", "EXP-1", JobType.DATA_FILE_IMPORT, true, true, true, date1, date3,
-                JobStatus.PROCESSED, 2, parent);
-        Job child2 = getJob(3, JOB_ID_2, "smith", "EXP-1", JobType.DATA_FILE_IMPORT, true, true, true, date2, date2,
-                JobStatus.IN_QUEUE, 3, parent);
-        Job child3 = getJob(4, JOB_ID_3, "smith", "EXP-1", JobType.DATA_FILE_IMPORT, true, true, true, date3, date1,
-                JobStatus.CANCELLED, 4, parent);
+        ParentJob parent = mockParentJob();
+        Job child1 = mockJob(2, JOB_ID_1, "smith", "EXP-1", JobType.DATA_FILE_IMPORT, true, true, true,
+                date1, date3, JobStatus.PROCESSED, 2, parent);
+        Job child2 = mockJob(3, JOB_ID_2, "smith", "EXP-1", JobType.DATA_FILE_IMPORT, true, true, true,
+                date2, date2, JobStatus.IN_QUEUE, 3, parent);
+        Job child3 = mockJob(4, JOB_ID_3, "smith", "EXP-1", JobType.DATA_FILE_IMPORT, true, true, true,
+                date3, date1, JobStatus.CANCELLED, 4, parent);
         parent.getChildren().add(child1);
         parent.getChildren().add(child2);
         parent.getChildren().add(child3);
@@ -164,7 +167,7 @@ public class UserVisibleJobTest {
         Date date2 = new Date(now+200);
         Date date3 = new Date(now+300);
 
-        Job parent = new JobStub();
+        ParentJob parent = mockParentJob();
         Job child1 = getJobWithTimes(date1, date3, parent);
         Job child2 = getJobWithTimes(date2, date2, parent);
         Job child3 = getJobWithTimes(date3, date1, parent);
@@ -189,7 +192,7 @@ public class UserVisibleJobTest {
         UserVisibleJob noParent1 = new UserVisibleJob(noParent, 1);
         Assert.assertTrue(noParent1.getUserCanCancelJob());
 
-        Job parent = new JobStub();
+        ParentJob parent = mockParentJob();
         Job childRunning = getJobWithStatus(true, JobStatus.RUNNING, parent);
         Job childInQueue = getJobWithStatus(true, JobStatus.IN_QUEUE, parent);
         Job childCancelled = getJobWithStatus(true, JobStatus.CANCELLED, parent);
@@ -212,7 +215,7 @@ public class UserVisibleJobTest {
 
     @Test
     public void testJobStatus() {
-        Job parent = new JobStub();
+        ParentJob parent = mockParentJob();
         Job childRunning = getJobWithStatus(true, JobStatus.RUNNING, parent);
         Job childInQueue = getJobWithStatus(true, JobStatus.IN_QUEUE, parent);
         Job childCancelled = getJobWithStatus(true, JobStatus.CANCELLED, parent);
@@ -235,43 +238,49 @@ public class UserVisibleJobTest {
         assertEquals(JobStatus.CANCELLED, job.getJobStatus());
     }
 
-    private Job getJobWithStatus(boolean ownership, JobStatus jobStatus, Job parent) {
-        JobStub job = new JobStub();
-        job.setParent(parent);
-        job.setTimeRequested(REQUESTED);
-        job.setTimeStarted(STARTED);
-        job.setuserHasOwnership(ownership);
-        job.setJobStatus(jobStatus);
+    private Job getJobWithStatus(boolean ownership, JobStatus jobStatus, ParentJob parent) {
+        Job job = mock(Job.class);
+        when(job.getParent()).thenReturn(parent);
+        when(job.getUserHasOwnership()).thenReturn(ownership);
+        when(job.getTimeRequested()).thenReturn(REQUESTED);
+        when(job.getTimeStarted()).thenReturn(STARTED);
+        when(job.getJobStatus()).thenReturn(jobStatus);
         return job;
     }
 
-    private Job getJobWithTimes(Date timeRequested, Date timeStarted, Job parent) {
-        JobStub job = new JobStub();
-        job.setParent(parent);
-        job.setTimeRequested(timeRequested);
-        job.setTimeStarted(timeStarted);
-        job.setJobStatus(JobStatus.IN_QUEUE);
+    private Job getJobWithTimes(Date timeRequested, Date timeStarted, ParentJob parent) {
+        Job job = mock(Job.class);
+        when(job.getParent()).thenReturn(parent);
+        when(job.getTimeRequested()).thenReturn(timeRequested);
+        when(job.getTimeStarted()).thenReturn(timeStarted);
+        when(job.getJobStatus()).thenReturn(JobStatus.IN_QUEUE);
         return job;
     }
 
-    private Job getJob(int jobEntityId, UUID uuid, String username, String experimentName, JobType jobType,
+    private Job mockJob(long jobEntityId, UUID uuid, String username, String experimentName, JobType jobType,
             boolean readAccess, boolean writeAccess, boolean ownership, Date timeRequested, Date timeStarted,
-            JobStatus status, int position, Job parent) {
-        JobStub job = new JobStub();
-        job.setJobId(uuid);
-        job.setParent(parent);
-        job.setUsername(username);
-        job.setJobEntityName(experimentName);
-        job.setJobEntityId(jobEntityId);
-        job.setJobType(jobType);
-        job.setUserReadAccess(readAccess);
-        job.setUserWriteAccess(writeAccess);
-        job.setuserHasOwnership(ownership);
-        job.setTimeRequested(timeRequested);
-        job.setTimeStarted(timeStarted);
-        job.setJobStatus(status);
-        job.setPosition(position);
+            JobStatus status, int position, ParentJob parent) {
+        Job job = mock(Job.class);
+        when(job.getJobId()).thenReturn(uuid);
+        when(job.getParent()).thenReturn(parent);
+        when(job.getOwnerName()).thenReturn(username);
+        when(job.getJobEntityName()).thenReturn(experimentName);
+        when(job.getJobEntityId()).thenReturn(jobEntityId);
+        when(job.getJobType()).thenReturn(jobType);
+        when(job.getUserHasReadAccess()).thenReturn(readAccess);
+        when(job.getUserHasWriteAccess()).thenReturn(writeAccess);
+        when(job.getUserHasOwnership()).thenReturn(ownership);
+        when(job.getTimeRequested()).thenReturn(timeRequested);
+        when(job.getTimeStarted()).thenReturn(timeStarted);
+        when(job.getJobStatus()).thenReturn(status);
+        when(job.getPosition()).thenReturn(position);
         return job;
     }
 
+    private ParentJob mockParentJob() {
+        ParentJob job = mock(ParentJob.class);
+        List<BaseJob> children = new ArrayList<BaseJob>();
+        when(job.getChildren()).thenReturn(children);
+        return job;
+    }
 }

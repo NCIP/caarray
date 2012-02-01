@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.domain.project;
 
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -136,4 +137,15 @@ public interface BaseJob {
      * @return true if the job is in progress
      */
     boolean isInProgress();
+
+    /**
+     * @return parent of this job or null if this is top-level job
+     */
+    ParentJob getParent();
+
+    /**
+     * Return an empty list if there are no children.
+     * @return children of this job
+     */
+    List<BaseJob> getChildren();
 }
