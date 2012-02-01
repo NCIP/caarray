@@ -1368,6 +1368,7 @@
 
             <!-- all jars that are provided by the container -->
             <fileset refid="war.compile.container-provided.depenendencies.fileset" />
+            <fileset refid="spring.jar.fileset"/>
 
         </path>
         <pathtofileset name="war.compile.dependencies.fileset" pathrefid="war.compile.dependencies.path" dir="${project.lib}"/>
