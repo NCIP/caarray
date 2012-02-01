@@ -110,6 +110,11 @@ import org.hibernate.annotations.TypeDefs;
 /**
  * Subclasses of <code>AbstractDataColumn</code> contain the actual array data corresponding to a single
  * <code>QuantitationType</code>.
+ * 
+ * <p><b>Note:</b> AbstractDataColumn is <em>not</em> a normal hibernate object.  The values API (getValuesAsArray,
+ * initializeArray, and setValuesFromArray) does not manipulate hibernate-managed information.  Instead,
+ * values are managed by the DataStorageFacade.  To properly initialize this class, ParsedDataPersister
+ * must be utilized.  NPEs will result from incorrect usage.
  */
 @TypeDefs(@TypeDef(name = "uri", typeClass = URIUserType.class))
 @Entity
@@ -122,6 +127,10 @@ public abstract class AbstractDataColumn extends AbstractCaArrayObject {
 
     /** separator to use for encoding an array of values as string, except for StringColumn. */
     protected static final String SEPARATOR = " ";
+    
+    /** Error message for incorrect usage of uninitialized values array. */
+    protected static final String ERROR_NOT_INITIALIZED = 
+            "Cannot get uninitialized values array - must be loaded from DataStorage";
 
     private HybridizationData hybridizationData;
     private QuantitationType quantitationType;
@@ -173,9 +182,7 @@ public abstract class AbstractDataColumn extends AbstractCaArrayObject {
      * @return true if data has been loaded.
      */
     @Transient
-    public boolean isLoaded() {
-        return this.getValuesAsArray() != null;
-    }
+    public abstract boolean isLoaded();
 
     /**
      * @return the hybridizationData
@@ -213,6 +220,8 @@ public abstract class AbstractDataColumn extends AbstractCaArrayObject {
     }
 
     /**
+     * Serialized values, from the DataStorageFacade.
+     * 
      * @return the values in this column as an array. Subclasses should return an array of the appropriate primitive
      *         type or String.
      */
@@ -220,12 +229,17 @@ public abstract class AbstractDataColumn extends AbstractCaArrayObject {
     public abstract Serializable getValuesAsArray();
 
     /**
-     * Set the values of this column from a value array.
+     * Set the values of this column from a value array.  The incoming values should be coming
+     * from either a parsed file, or the DataStorageFacade.
      * 
      * @param array the values for this column. Should be an array of the appropriate primitive or String type.
      */
     public abstract void setValuesFromArray(Serializable array);
 
+    
+    // get/setValuesAsString is called via xml-mapping.xml for the remote APIs.  These are the only clients
+    // to these methods.  Do not remove them.
+    
     /**
      * @return the values of this column, in a space-separated representation, where each value is encoded using the
      *         literal representation of the xs:short type defined in the XML Schema standard.

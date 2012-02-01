@@ -108,6 +108,7 @@ public class BooleanColumn extends AbstractDataColumn {
      */
     @Transient
     public boolean[] getValues() {
+        Preconditions.checkNotNull(values, ERROR_NOT_INITIALIZED);
         return this.values;
     }
 
@@ -150,6 +151,7 @@ public class BooleanColumn extends AbstractDataColumn {
     @Override
     @Transient
     public Serializable getValuesAsArray() {
+        Preconditions.checkNotNull(values, ERROR_NOT_INITIALIZED);
         return this.values;
     }
 
@@ -159,5 +161,14 @@ public class BooleanColumn extends AbstractDataColumn {
     @Override
     public void initializeArray(int numberOfValues) {
         setValues(new boolean[numberOfValues]);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transient
+    public boolean isLoaded() {
+        return values != null;
     }
 }

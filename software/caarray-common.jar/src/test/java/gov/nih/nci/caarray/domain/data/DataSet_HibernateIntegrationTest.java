@@ -117,6 +117,7 @@ public class DataSet_HibernateIntegrationTest extends AbstractCaArrayObject_Hibe
     protected void setValues(DataSet dataSet) {
         super.setValues(dataSet);
         final StringColumn stringColumn = (StringColumn) dataSet.getHybridizationDataList().get(0).getColumns().get(0);
+        // ARRAY-2282 - column not initialized by Hibernate any more.  Design revisit needed.
         // stringColumn.initializeArray(NUMBER_OF_DATA_ROWS);
         // setValues(stringColumn.getValues());
         stringColumn.setDataHandle(DUMMY_HANDLE);

@@ -108,6 +108,7 @@ public class ShortColumn extends AbstractDataColumn {
      */
     @Transient
     public short[] getValues() {
+        Preconditions.checkNotNull(values, ERROR_NOT_INITIALIZED);
         return this.values;
     }
 
@@ -154,6 +155,7 @@ public class ShortColumn extends AbstractDataColumn {
     @Override
     @Transient
     public Serializable getValuesAsArray() {
+        Preconditions.checkNotNull(values, ERROR_NOT_INITIALIZED);
         return this.values;
     }
 
@@ -165,4 +167,12 @@ public class ShortColumn extends AbstractDataColumn {
         setValues(new short[numberOfValues]);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transient
+    public boolean isLoaded() {
+        return values != null;
+    }
 }

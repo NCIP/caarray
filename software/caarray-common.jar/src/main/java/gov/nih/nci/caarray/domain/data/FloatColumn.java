@@ -108,6 +108,7 @@ public class FloatColumn extends AbstractDataColumn {
      */
     @Transient
     public float[] getValues() {
+        Preconditions.checkNotNull(values, ERROR_NOT_INITIALIZED);
         return this.values;
     }
 
@@ -154,6 +155,7 @@ public class FloatColumn extends AbstractDataColumn {
     @Override
     @Transient
     public Serializable getValuesAsArray() {
+        Preconditions.checkNotNull(values, ERROR_NOT_INITIALIZED);
         return this.values;
     }
 
@@ -163,5 +165,14 @@ public class FloatColumn extends AbstractDataColumn {
     @Override
     public void initializeArray(int numberOfValues) {
         setValues(new float[numberOfValues]);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transient
+    public boolean isLoaded() {
+        return values != null;
     }
 }

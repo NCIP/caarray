@@ -108,6 +108,7 @@ public class IntegerColumn extends AbstractDataColumn {
      */
     @Transient
     public int[] getValues() {
+        Preconditions.checkNotNull(values, ERROR_NOT_INITIALIZED);
         return this.values;
     }
 
@@ -154,6 +155,7 @@ public class IntegerColumn extends AbstractDataColumn {
     @Override
     @Transient
     public Serializable getValuesAsArray() {
+        Preconditions.checkNotNull(values, ERROR_NOT_INITIALIZED);
         return this.values;
     }
 
@@ -163,5 +165,14 @@ public class IntegerColumn extends AbstractDataColumn {
     @Override
     public void initializeArray(int numberOfValues) {
         setValues(new int[numberOfValues]);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transient
+    public boolean isLoaded() {
+        return values != null;
     }
 }

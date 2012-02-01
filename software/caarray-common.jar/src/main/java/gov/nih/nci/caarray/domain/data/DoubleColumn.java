@@ -108,6 +108,7 @@ public class DoubleColumn extends AbstractDataColumn {
      */
     @Transient
     public double[] getValues() {
+        Preconditions.checkNotNull(values, ERROR_NOT_INITIALIZED);
         return this.values;
     }
 
@@ -150,6 +151,7 @@ public class DoubleColumn extends AbstractDataColumn {
     @Override
     @Transient
     public Serializable getValuesAsArray() {
+        Preconditions.checkNotNull(values, ERROR_NOT_INITIALIZED);
         return this.values;
     }
 
@@ -159,5 +161,14 @@ public class DoubleColumn extends AbstractDataColumn {
     @Override
     public void initializeArray(int numberOfValues) {
         setValues(new double[numberOfValues]);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transient
+    public boolean isLoaded() {
+        return values != null;
     }
 }

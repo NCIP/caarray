@@ -112,6 +112,7 @@ public class StringColumn_HibernateIntegrationTest extends AbstractCaArrayObject
     @Override
     protected void setValues(StringColumn stringColumn) {
         super.setValues(stringColumn);
+        // ARRAY-2282 - column not initialized by Hibernate any more.  Design revisit needed.
         // stringColumn.initializeArray(NUMBER_OF_DATA_ROWS);
         // setValues(stringColumn.getValues());
         stringColumn.setDataHandle(DUMMY_HANDLE);

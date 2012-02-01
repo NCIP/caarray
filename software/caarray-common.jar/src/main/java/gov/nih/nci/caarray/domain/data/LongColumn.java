@@ -108,6 +108,7 @@ public class LongColumn extends AbstractDataColumn {
      */
     @Transient
     public long[] getValues() {
+        Preconditions.checkNotNull(values, ERROR_NOT_INITIALIZED);
         return this.values;
     }
 
@@ -154,6 +155,7 @@ public class LongColumn extends AbstractDataColumn {
     @Override
     @Transient
     public Serializable getValuesAsArray() {
+        Preconditions.checkNotNull(values, ERROR_NOT_INITIALIZED);
         return this.values;
     }
 
@@ -165,4 +167,12 @@ public class LongColumn extends AbstractDataColumn {
         setValues(new long[numberOfValues]);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transient
+    public boolean isLoaded() {
+        return values != null;
+    }
 }

@@ -3136,7 +3136,7 @@
         <fail if="pmd.failure" message="There were PMD failures." />
     </target>
 
-    <target name="check:checkstyle" depends="init:third-party-paths,build:caarray-common.jar,build:caarray-ejb.jar,compile:caarray.war,compile:cn2magetab">
+    <target name="check:checkstyle" depends="init:third-party-paths">
         <mkdir dir="${site.dir}/checkstyle" />
         <!-- Checkstyle chokes on @throws CustomChangeException in gov.nih.nci.caarray.upgrade.AbstractCustomChange.java -->
         <!-- exclude the Fix* migrations pending resolution of how to treat them (ARRAY-1942) -->
