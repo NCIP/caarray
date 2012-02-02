@@ -105,7 +105,7 @@ public final class BeanMapperLookup {
         CONFIG_FILES.put(VERSION_1_0, "dozerBeanMapping_v1_0.xml");
     }
 
-    private static final Map<String, DozerBeanMapper> MAPPERS = new HashMap<String, DozerBeanMapper>();
+    private static final Map<String, MapperIF> MAPPERS = new HashMap<String, MapperIF>();
 
     private BeanMapperLookup() {
         // NOOP
@@ -117,12 +117,22 @@ public final class BeanMapperLookup {
      * @return the mapper
      */
     public static synchronized MapperIF getMapper(String apiVersion) {
-        DozerBeanMapper mapper = MAPPERS.get(apiVersion);
+        MapperIF mapper = MAPPERS.get(apiVersion);
         if (mapper == null) {
             String configFile = CONFIG_FILES.get(apiVersion);
             mapper = new DozerBeanMapper(Collections.singletonList(configFile));
             MAPPERS.put(apiVersion, mapper);
         }
         return mapper;
+    }
+    
+    /**
+     * Adds a new api -> mapper association.  For use by unit tests.
+     * 
+     * @param apiVersion version of api
+     * @param mapper associated mapper for that api version
+     */
+    public static void addMapper(String apiVersion, MapperIF mapper) {
+        MAPPERS.put(apiVersion, mapper);
     }
 }

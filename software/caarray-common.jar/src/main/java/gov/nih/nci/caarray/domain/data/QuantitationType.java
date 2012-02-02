@@ -101,7 +101,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 @Entity
 @org.hibernate.annotations.Entity(mutable = false)
 @Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
-public final class QuantitationType extends AbstractCaArrayObject {
+public class QuantitationType extends AbstractCaArrayObject {
 
     private static final long serialVersionUID = 7207891070185665511L;
     private static final Set<Class<?>> SUPPORTED_TYPES = new HashSet<Class<?>>();

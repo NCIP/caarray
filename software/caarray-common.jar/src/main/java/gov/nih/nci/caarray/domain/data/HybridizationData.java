@@ -105,7 +105,7 @@ import org.hibernate.annotations.IndexColumn;
  * Value holder for all the data values associated with a specific hybridization.
  */
 @Entity
-public final class HybridizationData extends AbstractCaArrayObject {
+public class HybridizationData extends AbstractCaArrayObject {
 
     private static final long serialVersionUID = 8804648118447372387L;
 

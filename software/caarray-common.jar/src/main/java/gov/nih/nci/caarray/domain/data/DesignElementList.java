@@ -116,7 +116,7 @@ import org.hibernate.annotations.LazyCollectionOption;
                 @UniqueConstraintField(name = "lsidNamespace"),
                 @UniqueConstraintField(name = "lsidObjectId") }) },
                 message = "{designElementList.uniqueConstraint}")
-public final class DesignElementList extends AbstractCaArrayEntity {
+public class DesignElementList extends AbstractCaArrayEntity {
 
     private static final long serialVersionUID = 4430513886275629776L;
     private static final int MAX_SERIALIZABLE_SIZE = 100000;

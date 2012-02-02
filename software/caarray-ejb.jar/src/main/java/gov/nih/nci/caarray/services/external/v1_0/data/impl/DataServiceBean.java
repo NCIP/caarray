@@ -87,8 +87,10 @@ import gov.nih.nci.caarray.application.ServiceLocatorFactory;
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCache;
 import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.dataStorage.DataStorageFacade;
+import gov.nih.nci.caarray.dataStorage.ParsedDataPersister;
 import gov.nih.nci.caarray.domain.ConfigParamEnum;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
+import gov.nih.nci.caarray.domain.data.AbstractDataColumn;
 import gov.nih.nci.caarray.domain.data.DerivedArrayData;
 import gov.nih.nci.caarray.domain.data.DesignElementList;
 import gov.nih.nci.caarray.domain.data.HybridizationData;
@@ -173,6 +175,7 @@ import com.healthmarketscience.rmiio.SimpleRemoteInputStream;
     private ArrayDao arrayDao;
     private DataStorageFacade dataStorageFacade;
     private TemporaryFileCache temporaryFileCache;
+    private ParsedDataPersister parsedDataPersister;
 
     /**
      * {@inheritDoc}
@@ -266,7 +269,9 @@ import com.healthmarketscience.rmiio.SimpleRemoteInputStream;
     private void copyColumns(HybridizationData hybridizationData, HybridizationData copyFromHybridizationData,
             List<gov.nih.nci.caarray.domain.data.QuantitationType> quantitationTypes) {
         for (final gov.nih.nci.caarray.domain.data.QuantitationType type : quantitationTypes) {
-            hybridizationData.getColumns().add(copyFromHybridizationData.getColumn(type));
+            AbstractDataColumn column = copyFromHybridizationData.getColumn(type);
+            parsedDataPersister.loadFromStorage(column);
+            hybridizationData.getColumns().add(column);
         }
     }
 
@@ -491,5 +496,13 @@ import com.healthmarketscience.rmiio.SimpleRemoteInputStream;
     @Inject
     public void setTemporaryFileCache(TemporaryFileCache temporaryFileCache) {
         this.temporaryFileCache = temporaryFileCache;
+    }
+
+    /**
+     * @param parsedDataPersister the parsedDataPersister to set
+     */
+    @Inject
+    public void setParsedDataPersister(ParsedDataPersister parsedDataPersister) {
+        this.parsedDataPersister = parsedDataPersister;
     }
 }

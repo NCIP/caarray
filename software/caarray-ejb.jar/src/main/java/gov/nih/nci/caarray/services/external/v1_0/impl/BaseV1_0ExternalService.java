@@ -152,6 +152,7 @@ public class BaseV1_0ExternalService extends AbstractExternalService {
      */
     private final EntityHandlerRegistry entityHandlerRegistry = new EntityHandlerRegistry();
     private FileTypeRegistry fileTypeRegistry;
+    private String mapperVersionKey = BeanMapperLookup.VERSION_1_0;
 
     /**
      * Constructor.
@@ -266,7 +267,16 @@ public class BaseV1_0ExternalService extends AbstractExternalService {
      */
     @Override
     protected String getMapperVersionKey() {
-        return BeanMapperLookup.VERSION_1_0;
+        return mapperVersionKey;
+    }
+    
+    /**
+     * Set a new mapper version key.  Used by test code.
+     * 
+     * @param mapperVersionKey new key
+     */
+    public void setMapperVersionKey(String mapperVersionKey) {
+        this.mapperVersionKey = mapperVersionKey;
     }
 
     /**
