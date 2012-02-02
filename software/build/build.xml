@@ -1363,13 +1363,16 @@
                 <include name="${urlrewrite.jar}"/>
             </fileset>
 
+            <!-- All spring related dependencies go here -->
+            <fileset refid="spring.jar.fileset" />
+
             <!-- all jars that should go in the caarray.ear!/lib/ -->
             <fileset refid="war.compile.ear-provided.depenendencies.fileset"/>
 
             <!-- all jars that are provided by the container -->
             <fileset refid="war.compile.container-provided.depenendencies.fileset" />
-
         </path>
+
         <pathtofileset name="war.compile.dependencies.fileset" pathrefid="war.compile.dependencies.path" dir="${project.lib}"/>
 
         <path id="pmd.dependencies.path">
