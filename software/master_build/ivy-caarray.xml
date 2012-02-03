@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet type="text/xsl" href="http://gforge.nci.nih.gov/svnroot/commonlibrary/trunk/ivy-xsl/ivy.xsl"?>
 
-<ivy-module
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.0"
-    xsi:noNamespaceSchemaLocation="http://ant.apache.org/ivy/schemas/ivy.xsd"
-    xmlns:m="http://ant.apache.org/ivy/maven">
+<ivy-module xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.0" xsi:noNamespaceSchemaLocation="http://ant.apache.org/ivy/schemas/ivy.xsd">
     <info module="caArray-project" organisation="ncicb"/>
     <configurations defaultconfmapping="*->*">
         <conf name="asm_3.0"/>
@@ -12,11 +9,6 @@
         <conf name="bda-utils"/>
     </configurations>
     <dependencies>
-    <!-- STRUTS 2.3.1.5 dependency START-->
-    <dependency conf="project" org="org.testng" name="testng" rev="5.1" transitive="false">
-        <artifact name="testng" type="jar" m:classifier="jdk15" url="https://ncimvn.nci.nih.gov/nexus/content/repositories/public/org/testng/testng/5.1/testng-5.1-jdk15.jar"/>
-   </dependency>
-    <!-- STRUTS 2.3.1.5 dependency END-->
         <!-- CONF = BDA-UTILS START -->
      <dependency conf="bda-utils" org="ncicb" name="bda-utils" rev="${bda.version}" force="true" />
     <!-- CONF = BDA-UTILS END -->
@@ -24,13 +16,13 @@
     <dependency conf="asm_3.0" org="objectweb" name="asm" rev="3.0" transitive="false" />
     <!-- CONF = ASM_3.0 END -->
     <!-- CONF = PROJECT START -->
-    <dependency conf="project" org="log4j" name="log4j" rev="1.2.14nci" transitive="false" />
     <dependency conf="project" org="asm" name="asm" rev="1.5.3nci" transitive="false" />
     <dependency conf="project" org="asm" name="asm-attrs" rev="1.5.3nci" transitive="false" />
     <dependency conf="project" org="objectweb" name="asm-tree" rev="3.0" transitive="false" />
     <dependency conf="project" org="org.apache.jakarta" name="jmeter" rev="2.3nci" transitive="false" />
     <dependency conf="project" org="ant-jmeter" name="ant-jmeter" rev="2.3nci" transitive="false" />
     <dependency conf="project" org="apachejmeter" name="apachejmeter_java" rev="2.3nci" transitive="false" />
+    <dependency conf="project" org="log4j" name="log4j" rev="1.2.14nci" transitive="false" />
     <dependency conf="project" org="org.acegisecurity" name="acegi-security" rev="1.0.5" transitive="false" />
     <dependency conf="project" org="org.acegisecurity" name="acegi-security-jboss" rev="1.0.5" transitive="false" />
     <dependency conf="project" org="com.affymetrix" name="fusion" rev="1.1nci" transitive="false" />
@@ -58,10 +50,18 @@
     <dependency conf="project" org="checkstyle" name="checkstyle-optional" rev="4.3" transitive="false" />
     <dependency conf="project" org="checkstyle" name="checkstyle" rev="4.3" transitive="false" />
     <dependency conf="project" org="cobertura" name="cobertura" rev="1.9.3" transitive="false" />
+    <dependency conf="project" org="commons-beanutils" name="commons-beanutils" rev="1.7.0" transitive="false" />
     <dependency conf="project" org="commons-httpclient" name="commons-httpclient" rev="3.0.1" transitive="false" />
     <dependency conf="project" org="commons-el" name="commons-el" rev="1.0" transitive="false" />
+    <dependency conf="project" org="commons-fileupload" name="commons-fileupload" rev="1.2.1nci" transitive="false" />
+    <dependency conf="project" org="commons-collections" name="commons-collections" rev="3.2" transitive="false" />
+    <dependency conf="project" org="commmons-io" name="commons-io" rev="1.4" transitive="false">
+      <artifact name="commons-io" type="jar" url="https://ncimvn.nci.nih.gov/nexus/content/repositories/public/commons-io/commons-io/1.4/commons-io-1.4.jar" />
+    </dependency>
+    <dependency conf="project" org="commons-lang" name="commons-lang" rev="2.4" transitive="false" />
     <dependency conf="project" org="commons-cli" name="commons-cli" rev="1.2" transitive="false" />
     <dependency conf="project" org="commons-configuration" name="commons-configuration" rev="1.5" transitive="false" />
+    <dependency conf="project" org="commons-logging" name="commons-logging" rev="1.1.1nci" transitive="false" />
     <dependency conf="project" org="org.apache.commons" name="commons-compress" rev="1.0" transitive="false" />
     <dependency conf="project" org="javax.javaee" name="javaee" rev="5.0nci" transitive="false" />
     <dependency conf="project" org="dom4j" name="dom4j" rev="1.6.1" transitive="false" />
@@ -91,10 +91,8 @@
       <artifact name="selenium-java-client-driver" type="jar" url="https://ncimvn.nci.nih.gov/nexus/content/repositories/public/org/seleniumhq/selenium/client-drivers/selenium-java-client-driver/1.0.2/selenium-java-client-driver-1.0.2.jar" />
       <artifact name="selenium-java-client-driver-tests" type="jar" url="https://ncimvn.nci.nih.gov/nexus/content/repositories/public/org/seleniumhq/selenium/client-drivers/selenium-java-client-driver/1.0.2/selenium-java-client-driver-1.0.2-tests.jar" />
     </dependency>
-    <dependency conf="project" org="org.springframework" name="spring-context" rev="3.0.5.RELEASE" transitive="false" />
-    <dependency conf="project" org="org.springframework" name="spring-web" rev="3.0.5.RELEASE" transitive="false" />
-    <dependency conf="project" org="org.springframework" name="spring-beans" rev="3.0.5.RELEASE" transitive="false" />
-    <dependency conf="project" org="org.springframework" name="spring-mock" rev="2.0.8" transitive="false" />
+    <dependency conf="project" org="org.springframework" name="spring" rev="2.5.6" transitive="false" />
+    <dependency conf="project" org="org.springframework" name="spring-mock" rev="2.0.3" transitive="false" />
     <dependency conf="project" org="net.sourceforge.javacsv" name="javacsv" rev="2.0" transitive="false" />
     <dependency conf="project" org="csmapi" name="csmapi" rev="4.2" transitive="false" />
     <dependency conf="project" org="svntask" name="svntask" rev="1.0.7nci" transitive="false" />
@@ -103,11 +101,14 @@
     </dependency>
     <dependency conf="project" org="opensymphony" name="oscache" rev="2.4.1nci" transitive="false" />
     <dependency conf="project" org="opensymphony" name="sitemesh" rev="2.3" transitive="false" />
+    <dependency conf="project" org="com.opensymphony" name="xwork-core" rev="2.1.6" transitive="false" />
+    <dependency conf="project" org="org.freemarker" name="freemarker" rev="2.3.15" transitive="false" />
 
+    <dependency conf="project" org="ognl" name="ognl" rev="2.7.3" transitive="false" />
     <dependency conf="project" org="displaytag" name="displaytag" rev="1.1.1nci" transitive="false" />
     <dependency conf="project" org="org.tuckey" name="urlrewrite" rev="2.6.0nci" transitive="false" />
     <dependency conf="project" org="axis" name="axis" rev="1.4.2_10nci" transitive="false" />
-    <dependency conf="project" org="org.apache.struts" name="struts2-core" rev="2.3.1.2" transitive="true" />
+    <dependency conf="project" org="org.apache.struts" name="struts2-core" rev="2.1.8" transitive="false" />
     <dependency conf="project" org="jboss" name="jboss-cache" rev="1.4.1.GA" transitive="false" />
     <dependency conf="project" org="org.jboss" name="jboss-system-jmx-client" rev="5.1.0.GAnci" transitive="false" />
     <dependency conf="project" org="jboss" name="jboss-system-client" rev="5.1.0.GAnci" transitive="false" />
