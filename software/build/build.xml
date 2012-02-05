@@ -1363,6 +1363,8 @@
                 <include name="${urlrewrite.jar}"/>
             </fileset>
 
+            <fileset refid="spring.jar.fileset" />
+
             <!-- all jars that should go in the caarray.ear!/lib/ -->
             <fileset refid="war.compile.ear-provided.depenendencies.fileset"/>
 
