@@ -295,7 +295,7 @@
 
         <path id="asm.jar.path">
             <fileset dir="${project.lib}" id="asm.jar.fileset">
-                <include name="asm-*.jar"/>
+                <include name="asm-1*.jar"/>
                 <exclude name="asm-attrs-*.jar"/>
                 <exclude name="asm-tree-*.jar"/>
             </fileset>
@@ -1266,7 +1266,7 @@
                 <include name="${csmapi.jar}"/>
             </fileset>
             <fileset dir="${project.lib}">
-            	<include name="atlassian-core*.jar"/>
+                <include name="atlassian-core*.jar"/>
                 <include name="atlassian-util*.jar"/>
                 <include name="atlassian-event*.jar"/>
                 <include name="atlassian-velocity*.jar"/>
