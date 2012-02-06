@@ -210,7 +210,6 @@
     <dependency conf="project" org="org.apache.ant" name="ant-nodeps" rev="1.7.0" transitive="false" />
     <dependency conf="project" org="org.apache.ant" name="ant-testutil" rev="1.7.0" transitive="false" />
     <dependency conf="project" org="xerces" name="xercesImpl" rev="2.8.1" transitive="false" />
-    <dependency conf="project" org="org.apache.ant" name="ant" rev="1.7.0" transitive="false" />
     <dependency conf="project" org="org.apache.ant" name="ant-starteam" rev="1.7.0" transitive="false" />
     <dependency conf="project" org="org.apache.ant" name="ant-launcher" rev="1.7.0" transitive="false" />
     <dependency conf="project" org="org.apache.ant" name="ant-apache-bcel" rev="1.7.0nci" transitive="false" />
