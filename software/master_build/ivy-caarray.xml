@@ -27,7 +27,6 @@
     <dependency conf="project" org="log4j" name="log4j" rev="1.2.14nci" transitive="false" />
     <dependency conf="project" org="asm" name="asm" rev="1.5.3nci" transitive="false" />
     <dependency conf="project" org="asm" name="asm-attrs" rev="1.5.3nci" transitive="false" />
-    <dependency conf="project" org="objectweb" name="asm-tree" rev="3.0" transitive="false" />
     <dependency conf="project" org="org.apache.jakarta" name="jmeter" rev="2.3nci" transitive="false" />
     <dependency conf="project" org="ant-jmeter" name="ant-jmeter" rev="2.3nci" transitive="false" />
     <dependency conf="project" org="apachejmeter" name="apachejmeter_java" rev="2.3nci" transitive="false" />
@@ -220,7 +219,6 @@
     <dependency conf="project" org="org.apache.ant" name="ant-jmf" rev="1.7.0" transitive="false" />
     <dependency conf="project" org="com.svnkit" name="svnkit" rev="1.3nci" transitive="false" />
     <dependency conf="project" org="commons-dbcp" name="commons-dbcp" rev="1.2.1" transitive="false" />
-    <dependency conf="project" org="cryptix" name="cryptix" rev="1.2nci" transitive="false" />
     <dependency conf="project" org="cryptix" name="cryptix" rev="3.2nci" transitive="false" />
     <dependency conf="project" org="cryptix" name="cryptix-asn1" rev="0.1.11nci" transitive="false" />
     <dependency conf="project" org="stax" name="stax-api" rev="1.0.1" transitive="false" />
