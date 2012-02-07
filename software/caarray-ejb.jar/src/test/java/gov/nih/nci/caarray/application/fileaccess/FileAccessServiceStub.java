@@ -297,7 +297,6 @@ public class FileAccessServiceStub implements FileAccessService, DataStorage {
 
     @Override
     public StorageMetadata add(InputStream stream, boolean compressed) throws DataStoreException {
-        // TODO Auto-generated method stub
         return null;
     }
 

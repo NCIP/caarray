@@ -60,41 +60,30 @@ public class MockTermHibernateProxy extends Term implements HibernateProxy {
             }
 
             public boolean isUninitialized() {
-                // TODO Auto-generated method stub
                 return false;
             }
 
             public boolean isUnwrap() {
-                // TODO Auto-generated method stub
                 return false;
             }
 
             public void setIdentifier(Serializable id) {
-                // TODO Auto-generated method stub
-
             }
 
             public void setImplementation(Object target) {
-                // TODO Auto-generated method stub
-
             }
 
             public void setSession(SessionImplementor s)
                     throws HibernateException {
-                // TODO Auto-generated method stub
-
             }
 
             public void setUnwrap(boolean unwrap) {
-                // TODO Auto-generated method stub
-
             }
 
         };
     }
 
     public Object writeReplace() {
-        // TODO Auto-generated method stub
         return null;
     }
 }

@@ -107,7 +107,6 @@ public class SampleDaoStub extends AbstractDaoStub implements SampleDao {
      * {@inheritDoc}
      */
     public int countSamplesByCharacteristicCategory(Category c, String keyword) {
-        // TODO Auto-generated method stub
         return 0;
     }
 
@@ -115,7 +114,6 @@ public class SampleDaoStub extends AbstractDaoStub implements SampleDao {
      * {@inheritDoc}
      */
     public int countSourcesByCharacteristicCategory(Category c, String keyword) {
-        // TODO Auto-generated method stub
         return 0;
     }
 
@@ -140,7 +138,6 @@ public class SampleDaoStub extends AbstractDaoStub implements SampleDao {
      */
     public int searchCount(String keyword, Class<? extends AbstractBioMaterial> biomaterialClass,
             BiomaterialSearchCategory... categories) {
-        // TODO Auto-generated method stub
         return 0;
     }
 
