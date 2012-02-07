@@ -295,7 +295,7 @@
 
         <path id="asm.jar.path">
             <fileset dir="${project.lib}" id="asm.jar.fileset">
-                <include name="asm-*.jar"/>
+                <include name="asm-1*.jar"/>
                 <exclude name="asm-attrs-*.jar"/>
                 <exclude name="asm-tree-*.jar"/>
             </fileset>
@@ -1266,7 +1266,7 @@
                 <include name="${csmapi.jar}"/>
             </fileset>
             <fileset dir="${project.lib}">
-            <include name="atlassian-core*.jar"/>
+                <include name="atlassian-core*.jar"/>
                 <include name="atlassian-util*.jar"/>
                 <include name="atlassian-event*.jar"/>
                 <include name="atlassian-velocity*.jar"/>
@@ -1281,6 +1281,7 @@
             <include name="velocity-*.jar"/>
             <include name="peaberry-*.jar"/>
             <include name="${xwork.jar}"/>
+            <include name="${aopalliance.jar}"/>
             </fileset>
         </path>
         <pathtofileset name="common.compile.dependencies.fileset" pathrefid="common.compile.dependencies.path" dir="${project.lib}"/>
@@ -1362,6 +1363,8 @@
                 <include name="${ognl.jar}"/>
                 <include name="${urlrewrite.jar}"/>
             </fileset>
+
+            <fileset refid="spring.jar.fileset" />
 
             <!-- all jars that should go in the caarray.ear!/lib/ -->
             <fileset refid="war.compile.ear-provided.depenendencies.fileset"/>
