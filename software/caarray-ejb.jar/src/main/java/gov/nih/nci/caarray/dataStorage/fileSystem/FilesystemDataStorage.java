@@ -109,7 +109,6 @@ import org.apache.commons.lang.StringUtils;
 
 import com.google.common.collect.Sets;
 import com.google.common.io.ByteStreams;
-import com.google.common.io.CountingOutputStream;
 import com.google.common.io.Files;
 import com.google.common.io.PatternFilenameFilter;
 import com.google.inject.Inject;
@@ -146,23 +145,21 @@ public class FilesystemDataStorage implements DataStorage {
 
         final File compressedFile = compressedFile(fileHandle);
         final File uncompressedFile = uncompressedFile(fileHandle);
-        long compressedSize = 0;
-        long uncompressedSize = 0;
 
         try {
             if (compressed) {
-                compressedSize = writeFileData(stream, new FileOutputStream(compressedFile));
+                writeFileData(stream, new FileOutputStream(compressedFile));
                 final FileInputStream fis = Files.newInputStreamSupplier(compressedFile).getInput();
-                uncompressedSize = uncompressAndWriteFile(fis, uncompressedFile);
+                uncompressAndWriteFile(fis, uncompressedFile);
                 IOUtils.closeQuietly(fis);
             } else {
-                uncompressedSize = writeFileData(stream, new FileOutputStream(uncompressedFile));
+                writeFileData(stream, new FileOutputStream(uncompressedFile));
                 final FileInputStream fis = Files.newInputStreamSupplier(uncompressedFile).getInput();
-                compressedSize = compressAndWriteFile(fis, compressedFile);
+                compressAndWriteFile(fis, compressedFile);
                 IOUtils.closeQuietly(fis);
             }
-            metadata.setUncompressedSize(uncompressedSize);
-            metadata.setCompressedSize(compressedSize);
+            metadata.setUncompressedSize(uncompressedFile.length());
+            metadata.setCompressedSize(compressedFile.length());
             return metadata;
         } catch (final IOException e) {
             throw new DataStoreException("Could not add data", e);
@@ -219,20 +216,18 @@ public class FilesystemDataStorage implements DataStorage {
         return compressed ? compressedFile(fileHandle) : uncompressedFile(fileHandle);
     }
 
-    private long writeFileData(InputStream in, OutputStream out) throws IOException {
-        final CountingOutputStream cos = new CountingOutputStream(out);
+    private void writeFileData(InputStream in, OutputStream out) throws IOException {
         ByteStreams.copy(in, out);
-        cos.flush();
-        cos.close();
-        return cos.getCount();
+        out.flush();
+        out.close();
     }
 
-    private long compressAndWriteFile(InputStream in, File file) throws IOException {
-        return writeFileData(in, new GZIPOutputStream(new FileOutputStream(file)));
+    private void compressAndWriteFile(InputStream in, File file) throws IOException {
+        writeFileData(in, new GZIPOutputStream(new FileOutputStream(file)));
     }
 
-    private long uncompressAndWriteFile(InputStream in, File file) throws IOException {
-        return writeFileData(new GZIPInputStream(in), new FileOutputStream(file));
+    private void uncompressAndWriteFile(InputStream in, File file) throws IOException {
+        writeFileData(new GZIPInputStream(in), new FileOutputStream(file));
     }
 
     private void checkScheme(URI handle) {

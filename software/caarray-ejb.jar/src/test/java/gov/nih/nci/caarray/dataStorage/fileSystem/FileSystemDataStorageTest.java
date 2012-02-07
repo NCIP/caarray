@@ -161,6 +161,8 @@ public class FileSystemDataStorageTest extends AbstractDataStorageTest {
         assertTrue(cfile.exists());
         assertEquals(DUMMY_DATA, Files.toString(file, Charset.defaultCharset()));
         assertEquals(DUMMY_DATA, new String(CaArrayUtils.gunzip(Files.toByteArray(cfile))));
+        assertEquals(sm.getUncompressedSize(), file.length());
+        assertEquals(sm.getCompressedSize(), cfile.length());
     }
 
     @Test
