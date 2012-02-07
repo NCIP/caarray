@@ -127,7 +127,7 @@ import gov.nih.nci.caarray.util.CaArrayUtils;
 
 /**
  * @author Scott Miller
- * 
+ *
  */
 public class FileDaoTest extends AbstractDaoTest {
     private FileDao DAO_OBJECT;
@@ -149,14 +149,14 @@ public class FileDaoTest extends AbstractDaoTest {
 
     private URI DUMMY_DATA_HANDLE;
 
-    private VocabularyDao VOCABULARY_DAO;    
+    private VocabularyDao VOCABULARY_DAO;
 
     /**
      * Define the dummy objects that will be used by the tests.
      */
     @Before
     public void setup() {
-        initializeDao(); 
+        initializeDao();
         // Experiment
         DUMMY_ORGANISM = new Organism();
         DUMMY_PROVIDER = new Organization();
@@ -176,19 +176,19 @@ public class FileDaoTest extends AbstractDaoTest {
         DUMMY_QUANT_TYPE = new QuantitationType();
         DUMMY_QUANT_TYPE.setDataType(DataType.BOOLEAN);
         DUMMY_QUANT_TYPE.setName("dummy_quant");
-        
+
         DUMMY_DATA_HANDLE = CaArrayUtils.makeUriQuietly("file-system:foo");
-        
+
     }
-    
+
     // Has dependency on AbstractHibernateTest.baseIntegrationSetUp() being called first !!!
-    // Otherwise CaArrayDaoFactoryImpl.CaArrayHibernateHelper will not have been initialized 
+    // Otherwise CaArrayDaoFactoryImpl.CaArrayHibernateHelper will not have been initialized
     // via Guice injection, and the DAO created will not have a hibernateHelper
     private void initializeDao() {
         if (DAO_OBJECT == null) {
             DAO_OBJECT = CaArrayDaoFactory.INSTANCE.getFileDao();
         }
-        
+
         if (VOCABULARY_DAO == null) {
             VOCABULARY_DAO = CaArrayDaoFactory.INSTANCE.getVocabularyDao();
         }
@@ -681,5 +681,37 @@ public class FileDaoTest extends AbstractDaoTest {
         assertEquals(f3, files.get(2));
         assertEquals(f5, files.get(3));
         tx.commit();
+    }
+
+    @Test
+    public void testCleanupUnreferencedChildren() {
+        Transaction tx = this.hibernateHelper.beginTransaction();
+        final CaArrayFile f1 = createDummyFile("dummy1", null);
+        final CaArrayFile parent = createDummyFile("parent", null);
+        final CaArrayFile child1 = createDummyFile("child1", parent);
+        final CaArrayFile child2 = createDummyFile("child2", parent);
+        DAO_OBJECT.save(f1);
+        DAO_OBJECT.save(parent);
+        DAO_OBJECT.save(child1);
+        DAO_OBJECT.save(child2);
+        tx.commit();
+
+        tx = this.hibernateHelper.beginTransaction();
+        List<URI> allFiles = DAO_OBJECT.getAllFileHandles();
+        assertEquals(4, allFiles.size());
+
+        DAO_OBJECT.cleanupUnreferencedChildren();
+
+        allFiles = DAO_OBJECT.getAllFileHandles();
+        assertEquals(2, allFiles.size());
+        tx.commit();
+    }
+
+    private CaArrayFile createDummyFile(String name, CaArrayFile parent) {
+        CaArrayFile file = new CaArrayFile(parent);
+        file.setName(name);
+        file.setFileStatus(FileStatus.UPLOADED);
+        file.setDataHandle(DUMMY_DATA_HANDLE);
+        return file;
     }
 }

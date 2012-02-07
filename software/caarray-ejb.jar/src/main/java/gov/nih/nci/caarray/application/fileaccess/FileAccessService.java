@@ -173,4 +173,12 @@ public interface FileAccessService {
      * This method should be called on a regular scheduled basis, eg by a timer task
      */
     void synchronizeDataStorage();
+
+    /**
+     * Cleans up unreferenced children files.
+     *
+     * This method deletes all files with parents and should only be called on startup, when the job queue is empty.
+     * It allows the clean up any child files in the database not currently associated to any jobs.
+     */
+    void cleanupUnreferencedChildren();
 }

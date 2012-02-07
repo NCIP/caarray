@@ -102,6 +102,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
+import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.Disjunction;
@@ -121,7 +122,7 @@ class FileDaoImpl extends AbstractCaArrayDaoImpl implements FileDao {
     private final FileTypeRegistry typeRegistry;
 
     /**
-     * 
+     *
      * @param hibernateHelper the CaArrayHibernateHelper dependency
      */
     @Inject
@@ -235,4 +236,26 @@ class FileDaoImpl extends AbstractCaArrayDaoImpl implements FileDao {
         q.setString("importedStatus", FileStatus.IMPORTED.name());
         return q.list();
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void cleanupUnreferencedChildren() {
+        getHibernateHelper().doUnfiltered(new UnfilteredCallback() {
+            @Override
+            public Object doUnfiltered(Session s) {
+                try {
+                    final String hql = "delete from " + CaArrayFile.class.getName() + " where parent is not null";
+                    s.createQuery(hql).executeUpdate();
+                } catch (final HibernateException he) {
+                    LOG.error("Unable to remove entity", he);
+                    throw new DAOException("Unable to remove entity", he);
+                }
+                return null;
+
+            }
+        });
+    }
+
 }

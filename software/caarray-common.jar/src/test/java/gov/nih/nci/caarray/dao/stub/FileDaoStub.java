@@ -113,4 +113,9 @@ public class FileDaoStub extends AbstractDaoStub implements FileDao {
     public List<URI> getAllFileHandles() {
         return Collections.emptyList();
     }
+
+    @Override
+    public void cleanupUnreferencedChildren() {
+        // no op
+    }
 }

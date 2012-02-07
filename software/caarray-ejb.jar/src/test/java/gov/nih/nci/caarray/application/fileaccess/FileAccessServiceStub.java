@@ -286,6 +286,15 @@ public class FileAccessServiceStub implements FileAccessService, DataStorage {
         // no-op
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void cleanupUnreferencedChildren() {
+        // no-op
+    }
+
+
     @Override
     public StorageMetadata add(InputStream stream, boolean compressed) throws DataStoreException {
         // TODO Auto-generated method stub

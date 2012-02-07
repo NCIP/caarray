@@ -92,12 +92,12 @@ import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
 
 /**
  * DAO for entities in the <code>gov.nih.nci.caarray.domain.file</code> package.
- * 
+ *
  */
 public interface FileDao extends CaArrayDao {
     /**
      * Performs a query for files by the given criteria.
-     * 
+     *
      * @param params paging and sorting parameters
      * @param criteria the criteria for the search
      * @return a list of matching files
@@ -106,7 +106,7 @@ public interface FileDao extends CaArrayDao {
 
     /**
      * Find files belonging to given project that can be deleted.
-     * 
+     *
      * @param projectId id of the project
      * @return a list of deletable files in given project
      */
@@ -114,8 +114,16 @@ public interface FileDao extends CaArrayDao {
 
     /**
      * Get the data handles for all file data in the persistent store.
-     * 
+     *
      * @return a List of URIs for the data handles corresponding to the data underlying all CaArrayFiles in the system
      */
     List<URI> getAllFileHandles();
+
+    /**
+     * Cleans up unreferenced children files.
+     *
+     * This method deletes all files with parents and should only be called on startup, when the job queue is empty.
+     * It allows the clean up any child files in the database not currently associated to any jobs.
+     */
+    void cleanupUnreferencedChildren();
 }

@@ -85,6 +85,7 @@ package gov.nih.nci.caarray.web.listener;
 import gov.nih.nci.caarray.application.ServiceLocatorFactory;
 import gov.nih.nci.caarray.application.arraydata.ArrayDataService;
 import gov.nih.nci.caarray.application.fileaccess.DataStorageCleanupThread;
+import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.application.fileaccess.FileCleanupThread;
 import gov.nih.nci.caarray.injection.InjectorFactory;
 import gov.nih.nci.caarray.plugins.CaArrayPluginsFacade;
@@ -113,7 +114,7 @@ public class StartupListener implements ServletContextListener {
     /**
      * Creates connection to DataService as well as sets configuration in application scope. Initiates scheduled task to
      * cleanup files every 15 mins
-     * 
+     *
      * @param event ServletContextEvent
      */
     @Override
@@ -127,6 +128,15 @@ public class StartupListener implements ServletContextListener {
                 (ArrayDataService) ServiceLocatorFactory.getLocator().lookup(ArrayDataService.JNDI_NAME);
         arrayDataService.initialize();
         SecurityUtils.init();
+        boolean privilevedMode = SecurityUtils.isPrivilegedMode();
+        try {
+            SecurityUtils.setPrivilegedMode(true);
+            final FileAccessService fileAccessService =
+                    (FileAccessService) ServiceLocatorFactory.getLocator().lookup(FileAccessService.JNDI_NAME);
+            fileAccessService.cleanupUnreferencedChildren();
+        } finally {
+            SecurityUtils.setPrivilegedMode(privilevedMode);
+        }
         hibernateHelper.unbindAndCleanupSession();
 
         final Timer fileCleanupTimer = new Timer(true);

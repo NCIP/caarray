@@ -270,6 +270,16 @@ public class FileAccessServiceBean implements FileAccessService {
     }
 
     /**
+     * {@inheritDoc}
+     */
+    public void cleanupUnreferencedChildren() {
+        LogUtil.logSubsystemEntry(LOG);
+        fileDao.cleanupUnreferencedChildren();
+        LogUtil.logSubsystemExit(LOG);
+    }
+
+
+    /**
      * @param fileDao the fileDao to set
      */
     @Inject
