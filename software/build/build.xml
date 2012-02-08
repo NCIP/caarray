@@ -1907,6 +1907,8 @@
     <!-- ** BUILD TARGETS                                                 ** -->
     <!-- ******************************************************************* -->
 
+  <target name="bda-lite:generate-artifacts" depends="clean-build-for-bda-lite, bda-lite:database:update:prepare" />
+
   <target name="clean-build-for-bda-lite" depends="clean-build-with-zips, -configure-for-bda-lite"/>
 
     <property name="bda.lite.ear.cfg.properties.file" value="${caarray-ear.target.dir}/bda_lite_cfg/temp/bda_lite_cfg.properties"/>
