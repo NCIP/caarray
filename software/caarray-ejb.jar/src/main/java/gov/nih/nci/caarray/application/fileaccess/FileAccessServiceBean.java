@@ -221,6 +221,8 @@ public class FileAccessServiceBean implements FileAccessService {
      */
     public boolean remove(CaArrayFile caArrayFile) {
         LogUtil.logSubsystemEntry(LOG, caArrayFile);
+        
+        this.fileDao.flushSession(); // bean called in Session FlushMode.COMMIT.  Must flush prior to dao check
 
         if (caArrayFile.getProject() != null
                 && !this.fileDao.getDeletableFiles(caArrayFile.getProject().getId()).contains(caArrayFile)) {

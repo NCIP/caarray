@@ -89,9 +89,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyLong;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import gov.nih.nci.caarray.application.AbstractServiceTest;
 import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.dao.FileDao;
@@ -122,6 +120,7 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -347,6 +346,10 @@ public class FileAccessServiceTest extends AbstractServiceTest {
         CaArrayFile fileToRemove = removeParentFile ? parentFile : childFile1;
         final boolean removed = this.fileAccessService.remove(fileToRemove);
         assertTrue(removed);
+        
+        InOrder inOrder = inOrder(fileDao);
+        inOrder.verify(fileDao).flushSession();
+        inOrder.verify(fileDao).getDeletableFiles(any(Long.class));
 
         if (removeParentFile) {
             assertTrue(p.getFiles().isEmpty());

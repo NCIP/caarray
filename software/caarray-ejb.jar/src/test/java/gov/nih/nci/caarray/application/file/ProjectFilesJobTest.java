@@ -255,20 +255,4 @@ public class ProjectFilesJobTest {
         }
         verifyNoMoreInteractions(fileAccessService);
     }
-
-    /**
-     * The hibernate flush mode for all jobs is COMMIT, which means that changes made
-     * during the job are not visible to queries without a flush.  This test verifies
-     * flush is called as part of the job management.  See the class for why this is
-     * a bit of a hack.
-     */
-    @Test
-    public void sessionFlushCalled() {
-        doNothing().when(job).executeProjectFilesJob();
-        job.doExecute();
-
-        verify(projectDao).flushSession();
-        verifyNoMoreInteractions(projectDao);
-    }
-
 }

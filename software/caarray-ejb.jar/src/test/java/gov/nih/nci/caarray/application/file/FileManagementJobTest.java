@@ -86,12 +86,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
@@ -104,9 +99,12 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+
+import com.google.common.collect.ImmutableSet;
 
 /**
  * Verifies the functionality of the abstract file management job.  Basic control methods
@@ -233,10 +231,31 @@ public class FileManagementJobTest {
         child2.markAsCancelled();
         verify(parent).handleChildCancelled();
         verify(fas).remove(childFile2);
+        assertEquals(FileStatus.UPLOADED, childFile2.getFileStatus());
         assertEquals(FileStatus.IN_QUEUE, parentFile.getFileStatus());
 
         child3.markAsProcessed();
         verify(parent, times(2)).handleChildProcessed();
         assertEquals(FileStatus.UPLOADED, parentFile.getFileStatus());
+    }    
+    
+    @Test
+    public void setStatusThenRemove() {
+        AbstractFileManagementJob job = mock(AbstractFileManagementJob.class, Mockito.CALLS_REAL_METHODS);
+        
+        CaArrayFile parent = mock(CaArrayFile.class);
+        CaArrayFile child = mock(CaArrayFile.class);
+        when(child.getParent()).thenReturn(parent);
+        CaArrayFileSet fileSet = mock(CaArrayFileSet.class);
+        when(fileSet.getFiles()).thenReturn(ImmutableSet.of(child));
+        doReturn(fileSet).when(job).getFileSet();
+        
+        FileAccessService fas = mock(FileAccessService.class);
+        when(job.getFileAccessService()).thenReturn(fas);
+        
+        job.markAsCancelled();
+        InOrder inOrder = inOrder(fileSet, fas);
+        inOrder.verify(fileSet).updateStatus(FileStatus.UPLOADED);
+        inOrder.verify(fas).remove(child);
     }
 }

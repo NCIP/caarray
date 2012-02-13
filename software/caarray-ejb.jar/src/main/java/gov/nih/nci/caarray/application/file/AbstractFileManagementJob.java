@@ -188,14 +188,16 @@ public abstract class AbstractFileManagementJob implements Serializable, Executa
         if (getParent() != null) {
             getParent().handleChildCancelled();
         }
+        
         if (getFileSet() != null) {
+            setFilesetStatus(FileStatus.UPLOADED);
+
             for (CaArrayFile file : getFileSet().getFiles()) {
                 if (file.getParent() != null) {
                     getFileAccessService().remove(file);
                 }
             }
         }
-        setFilesetStatus(FileStatus.UPLOADED);
         setJobStatus(JobStatus.CANCELLED);
     }
 
