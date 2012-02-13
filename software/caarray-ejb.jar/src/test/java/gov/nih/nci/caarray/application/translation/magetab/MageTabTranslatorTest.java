@@ -666,15 +666,15 @@ public class MageTabTranslatorTest extends AbstractServiceTest {
         final MageTabDocumentSet docSet = MageTabParser.INSTANCE.parse(TestMageTabSets.INVALID_FEATURE_13141_INPUT_SET);
         final ValidationResult vResult = this.translator.validate(docSet, fileSet);
         assertFalse(vResult.getMessages().isEmpty());
-        assertEquals(3, vResult.getMessages(ValidationMessage.Type.ERROR).size());
+        assertEquals(3, vResult.getMessages(ValidationMessage.Type.WARNING).size());
         final String string = "[ExternalSampleId] value '%s"
             + "' is referenced multiple times (ExternalSampleId must be unique). "
-            + "Please correct and try again.";
-        assertEquals(String.format(string, "345"), vResult.getMessages(ValidationMessage.Type.ERROR).get(0)
+            + "Existing value will be reused.";
+        assertEquals(String.format(string, "345"), vResult.getMessages(ValidationMessage.Type.WARNING).get(0)
                 .getMessage());
-        assertEquals(String.format(string, "234"), vResult.getMessages(ValidationMessage.Type.ERROR).get(1)
+        assertEquals(String.format(string, "234"), vResult.getMessages(ValidationMessage.Type.WARNING).get(1)
                 .getMessage());
-        assertEquals(String.format(string, "123"), vResult.getMessages(ValidationMessage.Type.ERROR).get(2)
+        assertEquals(String.format(string, "123"), vResult.getMessages(ValidationMessage.Type.WARNING).get(2)
                 .getMessage());
         final CaArrayTranslationResult result = this.translator.translate(docSet, fileSet);
 

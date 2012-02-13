@@ -274,9 +274,9 @@ final class SdrfTranslator extends AbstractTranslator {
                 if (isExternalId && !StringUtils.isEmpty(sdrfCharacteristic.getValue())) {
                     final boolean added = externalIds.add(sdrfCharacteristic.getValue());
                     if (!added) {
-                        document.addErrorMessage("[" + category + "] value '" + sdrfCharacteristic.getValue()
+                        document.addWarningMessage("[" + category + "] value '" + sdrfCharacteristic.getValue()
                                 + "' is referenced multiple times (" + category + " must be unique). "
-                                + "Please correct and try again.");
+                                + "Existing value will be reused.");
                     }
                 }
                 if (ExperimentOntologyCategory.ORGANISM.getCategoryName().equalsIgnoreCase(category)

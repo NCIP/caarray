@@ -227,7 +227,7 @@ public final class TestMageTabSets {
     public static final MageTabFileSet VALID_FEATURE_13141_INPUT_SET = getValidFeature13141InputSet();
 
     /**
-     * MAGE-TAB input set containing valid usage of Characteristics[ExternalSampleId] for Sample(s).
+     * MAGE-TAB input set containing invalid usage of Characteristics[ExternalSampleId] for Sample(s).
      */
     public static final MageTabFileSet INVALID_FEATURE_13141_INPUT_SET = getInvalidFeature13141InputSet();
 
