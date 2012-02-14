@@ -27,8 +27,8 @@ and can be overridden via local.properties or -D on the ant command line.
                 <ivy pattern="${local.repo.dir}/[organisation]/[module]/[revision]/ivy.xml"/>
             </filesystem>
             <filesystem name="ivy-bda.repo" local="true">
-                <artifact pattern="${software.dir}/caarray-bda/ivy-repo/[organisation]/[module]/[revision]/[artifact]-[revision].[ext]" />
-                <ivy pattern="${software.dir}/caarray-bda/ivy-repo/[organisation]/[module]/[revision]/ivy.xml"/>
+                <artifact pattern="${basedir}/../caarray-bda/ivy-repo/[organisation]/[module]/[revision]/[artifact]-[revision].[ext]" />
+                <ivy pattern="${basedir}/../caarray-bda/ivy-repo/[organisation]/[module]/[revision]/ivy.xml"/>
             </filesystem>
             <url name="ncicb-ivy-repo">
                 <artifact pattern="https://ncisvn.nci.nih.gov/svn/deprecated-ivy-repo/trunk/[organisation]/[module]/[revision]/[artifact]-[revision].[ext]"/>
