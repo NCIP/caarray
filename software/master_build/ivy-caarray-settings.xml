@@ -14,8 +14,6 @@ and can be overridden via local.properties or -D on the ant command line.
 
 <ivysettings>
     <settings defaultResolver="ncicb-chain"/>
-    <property name="ivy-bda.local.repo" value="${software.dir}/caarray-bda/ivy-repo"/>
-    <property name="tmp.local.repo" value="${software.dir}/tmp.local.ivy.repo"/>
     <!-- defaultCacheDir causes the caarray to use it's own ivy cache directory -->
     <!-- useOrigin=true doesn't copy artifacts to the cache, useOrigin=false does -->
     <caches defaultCacheDir="${ivy.settings.dir}/.ivy2-caarray-cache" useOrigin="false"/>
@@ -28,12 +26,12 @@ and can be overridden via local.properties or -D on the ant command line.
                 <ivy pattern="${local.repo.dir}/[organisation]/[module]/[revision]/ivy.xml"/>
             </filesystem>
             <filesystem name="ivy-bda.repo" local="true">
-                <artifact pattern="${ivy-bda.local.repo}/[organisation]/[module]/[revision]/[artifact]-[revision].[ext]" />
-                <ivy pattern="${ivy-bda.local.repo}/[organisation]/[module]/[revision]/ivy.xml"/>
+                <artifact pattern="${software.dir}/caarray-bda/ivy-repo/[organisation]/[module]/[revision]/[artifact]-[revision].[ext]" />
+                <ivy pattern="${software.dir}/caarray-bda/ivy-repo/[organisation]/[module]/[revision]/ivy.xml"/>
             </filesystem>
             <filesystem name="tmp.local.repo" local="true">
-                <artifact pattern="${tmp.local.repo}/[organisation]/[module]/[revision]/[artifact]-[revision].[ext]" />
-                <ivy pattern="${tmp.local.repo}/[organisation]/[module]/[revision]/ivy.xml"/>
+                <artifact pattern="${software.dir}/tmp.local.ivy.repo/[organisation]/[module]/[revision]/[artifact]-[revision].[ext]" />
+                <ivy pattern="${software.dir}/tmp.local.ivy.repo/[organisation]/[module]/[revision]/ivy.xml"/>
             </filesystem>
             <url name="ncicb-ivy-repo">
                 <artifact pattern="https://ncisvn.nci.nih.gov/svn/deprecated-ivy-repo/trunk/[organisation]/[module]/[revision]/[artifact]-[revision].[ext]"/>
