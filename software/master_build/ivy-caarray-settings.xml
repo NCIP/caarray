@@ -22,20 +22,21 @@ and can be overridden via local.properties or -D on the ant command line.
         <!-- this is where you read from -->
         <chain name="ncicb-chain">
             <!-- this is the local repository, in case don't have network access, or trying new modules -->
-            <filesystem name="local-repo" local="true" checkmodified="true">
+            <filesystem name="local-repo" local="true" checkmodified="false">
                 <artifact pattern="${local.repo.dir}/[organisation]/[module]/[revision]/[artifact]-[revision].[ext]"/>
                 <ivy pattern="${local.repo.dir}/[organisation]/[module]/[revision]/ivy.xml"/>
             </filesystem>
             <url name="ncicb-ivy-repo">
-                <artifact pattern="http://gforge.nci.nih.gov/svnroot/commonlibrary/trunk/ivy-repo/[organisation]/[module]/[revision]/[artifact]-[revision].[ext]"/>
-                <ivy pattern="http://gforge.nci.nih.gov/svnroot/commonlibrary/trunk/ivy-repo/[organisation]/[module]/[revision]/ivy.xml"/>
+                <artifact pattern="https://ncisvn.nci.nih.gov/svn/deprecated-ivy-repo/trunk/[organisation]/[module]/[revision]/[artifact]-[revision].[ext]"/>
+                <ivy pattern="https://ncisvn.nci.nih.gov/svn/deprecated-ivy-repo/trunk/[organisation]/[module]/[revision]/ivy.xml"/>
             </url>
             <url name="cbiit-ivy-repo">
                 <!-- remote enterprise repository -->
-                <artifact pattern="https://ncisvn.nci.nih.gov/svn/cbiit-ivy-repo/trunk/[organisation]/[module]/[revision]/[artifact]-[revision].[ext]" />
-                <ivy pattern="https://ncisvn.nci.nih.gov/svn/cbiit-ivy-repo/trunk/[organisation]/[module]/[revision]/ivy.xml" />
+                <artifact pattern="https://ncisvn.nci.nih.gov/svn/deprecated-cbiit-ivy-repo/trunk/[organisation]/[module]/[revision]/[artifact]-[revision].[ext]" />
+                <ivy pattern="https://ncisvn.nci.nih.gov/svn/deprecated-cbiit-ivy-repo/trunk/[organisation]/[module]/[revision]/ivy.xml" />
             </url>
-           <ibiblio name="cbiit-maven-mirror" m2compatible="true" root="https://ncisvn.nci.nih.gov/svn/maven-mirror/trunk" changingPattern=".*SNAPSHOT" />
+            <ibiblio name="nexus-repo-public" m2compatible="true" root="https://ncimvn.nci.nih.gov/nexus/content/repositories/public"
+            pattern="[organisation]/[module]/[revision]/[artifact]-[revision].[ext]"/>
         </chain>
     </resolvers>
 </ivysettings>
