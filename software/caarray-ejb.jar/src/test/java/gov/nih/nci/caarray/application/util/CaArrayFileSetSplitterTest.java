@@ -104,6 +104,7 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 
 /**
@@ -156,6 +157,34 @@ public class CaArrayFileSetSplitterTest  {
 
     @Test
     public void oneSdrfs() throws IOException {
+        CaArrayFile sdrfFile = getSdrfFile();
+        CaArrayFile idfFile = getIdfFile(sdrfFile);
+        File splitSdrfFile = setupMageTabFileSets(idfFile);
+
+        Set<CaArrayFileSet> results = splitFiles(sdrfFile, idfFile);
+        
+        assertEquals(1, results.size());
+        for(CaArrayFileSet fs : results) {
+            assertEquals(2, fs.getFiles().size());
+        }
+        
+        verify(mageTabFileSetSplitter).split(any(MageTabFileSet.class));
+        verify(fileAccessService).add(eq(splitSdrfFile), (CaArrayFile) isNull());
+    }
+
+    @Test
+    public void cleanupExistingSdrfChildren() throws IOException {
+        CaArrayFile sdrfFile = getSdrfFile();
+        CaArrayFile idfFile = getIdfFile(sdrfFile);
+        setupMageTabFileSets(idfFile);
+        CaArrayFile orphan = addChild(sdrfFile);
+        
+        splitFiles(sdrfFile, idfFile);
+
+        verify(fileAccessService).remove(orphan);
+    }
+
+    private CaArrayFile getSdrfFile() {
         Project project = mock(Project.class);
         when(project.getId()).thenReturn(1L);
 
@@ -166,33 +195,44 @@ public class CaArrayFileSetSplitterTest  {
         CaArrayFile sdrfFile = mock(CaArrayFile.class);
         when(sdrfFile.getFileType()).thenReturn(FileTypeRegistry.MAGE_TAB_SDRF);
         when(sdrfFile.getProject()).thenReturn(project);
+        return sdrfFile;
+    }
 
+    private CaArrayFile getIdfFile(CaArrayFile sdrfFile) {
         CaArrayFile idfFile = mock(CaArrayFile.class);
         when(idfFile.getFileType()).thenReturn(FileTypeRegistry.MAGE_TAB_IDF);
+        Project project = sdrfFile.getProject();
         when(idfFile.getProject()).thenReturn(project);
+        return idfFile;
+    }
 
-        CaArrayFileSet arrayFileSet = mock(CaArrayFileSet.class);
-        when(arrayFileSet.getFiles()).thenReturn(Sets.newHashSet(sdrfFile, idfFile));
-        when(arrayFileSet.getProjectId()).thenReturn(1L);
-
+    private File setupMageTabFileSets(CaArrayFile idfFile) throws IOException {
         FileRef idfRef = new CaArrayFileRef(idfFile, null);
         FileRef splitSdrfFileRef = mock(FileRef.class);
         File splitSdrfFile = mock(File.class);
-        when(splitSdrfFileRef.getAsFile()).thenReturn(splitSdrfFile );
+        when(splitSdrfFileRef.getAsFile()).thenReturn(splitSdrfFile);
 
         MageTabFileSet mtfs = mock(MageTabFileSet.class);
         when(mtfs.getAllFiles()).thenReturn(Sets.newHashSet(idfRef, splitSdrfFileRef));
 
         Set<MageTabFileSet> mageTabFileSets = Sets.newHashSet(mtfs);
         when(mageTabFileSetSplitter.split(any(MageTabFileSet.class))).thenReturn(mageTabFileSets);
+        return splitSdrfFile;
+    }
+    
+    private Set<CaArrayFileSet> splitFiles(CaArrayFile sdrfFile,
+            CaArrayFile idfFile) throws IOException {
+        CaArrayFileSet arrayFileSet = mock(CaArrayFileSet.class);
+        when(arrayFileSet.getFiles()).thenReturn(Sets.newHashSet(sdrfFile, idfFile));
+        when(arrayFileSet.getProjectId()).thenReturn(1L);
 
         Set<CaArrayFileSet> results = cafsSplitter.split(arrayFileSet);
-        assertEquals(1, results.size());
-        for(CaArrayFileSet fs : results) {
-            assertEquals(2, fs.getFiles().size());
-        }
-        
-        verify(mageTabFileSetSplitter).split(any(MageTabFileSet.class));
-        verify(fileAccessService).add(eq(splitSdrfFile), (CaArrayFile) isNull());
+        return results;
+    }
+
+    private CaArrayFile addChild(CaArrayFile sdrfFile) {
+        CaArrayFile child = mock(CaArrayFile.class);
+        when(sdrfFile.getChildren()).thenReturn(ImmutableSet.of(child));
+        return child;
     }
 }

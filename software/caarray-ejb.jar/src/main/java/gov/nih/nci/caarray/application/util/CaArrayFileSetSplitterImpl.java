@@ -67,6 +67,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
+
 import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 
@@ -77,6 +79,8 @@ import com.google.inject.Inject;
  */
 public class CaArrayFileSetSplitterImpl implements CaArrayFileSetSplitter {
 
+    private static final Logger LOG = Logger.getLogger(CaArrayFileSetSplitterImpl.class);
+    
     private CaArrayFileSet inputFileSet;
     private Long projectId;
     private final DataStorageFacade dataStorageFacade;
@@ -117,6 +121,8 @@ public class CaArrayFileSetSplitterImpl implements CaArrayFileSetSplitter {
             return Sets.newHashSet(this.inputFileSet);
         }
 
+        cleanupFileOrphans();
+        
         this.projectId = this.inputFileSet.getProjectId();
 
         // setup the initial FileRef to CaArrayFile map.
@@ -128,6 +134,15 @@ public class CaArrayFileSetSplitterImpl implements CaArrayFileSetSplitter {
 
         CaArrayFile parentSdrfCaArrayFile = getParentSdrfCaArrayFile();
         return handleNonNullSplitFileSet(splitMageTabFileSet, parentSdrfCaArrayFile);
+    }
+
+    private void cleanupFileOrphans() {
+        for (CaArrayFile file : inputFileSet.getFiles()) {
+            for (CaArrayFile child : file.getChildren()) {
+                LOG.info("Cleaning up orphaned child for parent file id=" + file.getId());
+                fileAccessService.remove(child);
+            }
+        }
     }
 
     private Map<FileRef, CaArrayFile> getFileRefToCaArrayFileMap() {
