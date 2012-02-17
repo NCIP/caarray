@@ -334,28 +334,6 @@ public class CaArrayFileSet implements Serializable {
     }
 
     /**
-     * @return the combined compressed size of the files in this fileset
-     */
-    public long getTotalCompressedSize() {
-        long size = 0;
-        for (final CaArrayFile file : this.files) {
-            size += file.getCompressedSize();
-        }
-        return size;
-    }
-
-    /**
-     * @return the combined uncompressed size of the files in this fileset
-     */
-    public long getTotalUncompressedSize() {
-        long size = 0;
-        for (final CaArrayFile file : this.files) {
-            size += file.getUncompressedSize();
-        }
-        return size;
-    }
-
-    /**
      * Validation messages on files that have parents are copies to the respective
      * parents.  The parents do not have to be in the set.
      */

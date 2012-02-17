@@ -21,7 +21,6 @@
     fileSizeLookup = new Object();
     jobSize = 0;
     jobNumFiles = 0;
-    MAX_JOB_SIZE = <s:property value="@gov.nih.nci.caarray.web.action.project.ProjectFilesAction@MAX_IMPORT_TOTAL_SIZE"/>;
     SDRF_FILE_TYPE = '<s:property value="@gov.nih.nci.caarray.domain.file.FileTypeRegistry@MAGE_TAB_SDRF"/>';
     IDF_FILE_TYPE = '<s:property value="@gov.nih.nci.caarray.domain.file.FileTypeRegistry@MAGE_TAB_IDF"/>';
     GPR_FILE_TYPE = '<s:property value="@gov.nih.nci.caarray.plugins.genepix.GprHandler@GPR_FILE_TYPE"/>';
@@ -160,8 +159,6 @@
     importFiles = function(importUrl) {
         if (!checkAnyFilesSelected()) {
             alert("At least one file must be selected");
-        } else if (jobSize >= MAX_JOB_SIZE) {
-            alert("<fmt:message key='project.fileImport.error.jobTooLarge'/>");
         } else if (isGprImport() && !isMageTabImport()) {
             alert("Genepix GPR files can only be imported/validated as part of a MAGE-TAB dataset with at least one IDF and SDRF file.");
         } else if (isMageTabImport()) {

@@ -153,11 +153,6 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
     private static final Logger LOG = Logger.getLogger(ProjectFilesAction.class);
 
     /**
-     * The maximum allowable size of an import job (defined as sum of uncompressed sizes of files in the job).
-     */
-    public static final long MAX_IMPORT_TOTAL_SIZE = 3221225472L;
-
-    /**
      * Object to keep count of errors and generate error messages.
      */
     private class ErrorCounts {
@@ -742,25 +737,21 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
     public String importFiles() {
         final ErrorCounts errors = new ErrorCounts();
         final CaArrayFileSet fileSet = checkImportFiles(errors);
-        if (fileSet.getTotalUncompressedSize() > MAX_IMPORT_TOTAL_SIZE) {
-            ActionHelper.saveMessage(getText("project.fileImport.error.jobTooLarge"));
-        } else {
-            if (!fileSet.getFiles().isEmpty()) {
-                final List<Long> entityIds = new ArrayList<Long>(this.targetNodeIds);
-                final ExperimentDesignNodeType targetNodeType =
-                        (this.nodeType == null ? null : this.nodeType.getNodeType());
-                final DataImportOptions dataImportOptions =
-                        DataImportOptions.getDataImportOptions(this.targetAnnotationOption, this.newAnnotationName,
-                                targetNodeType, entityIds);
-                ServiceLocatorFactory.getFileManagementService().importFiles(getProject(), fileSet, dataImportOptions);
-            }
-            ActionHelper.saveMessage(getText("project.fileImport.success",
-                    new String[] {String.valueOf(fileSet.getFiles().size()) }));
-            for (final String msg : errors.getMessages()) {
-                ActionHelper.saveMessage(msg);
-            }
-            refreshProject();
+        if (!fileSet.getFiles().isEmpty()) {
+            final List<Long> entityIds = new ArrayList<Long>(this.targetNodeIds);
+            final ExperimentDesignNodeType targetNodeType =
+                    (this.nodeType == null ? null : this.nodeType.getNodeType());
+            final DataImportOptions dataImportOptions =
+                    DataImportOptions.getDataImportOptions(this.targetAnnotationOption, this.newAnnotationName,
+                            targetNodeType, entityIds);
+            ServiceLocatorFactory.getFileManagementService().importFiles(getProject(), fileSet, dataImportOptions);
         }
+        ActionHelper.saveMessage(getText("project.fileImport.success",
+                new String[] {String.valueOf(fileSet.getFiles().size()) }));
+        for (final String msg : errors.getMessages()) {
+            ActionHelper.saveMessage(msg);
+        }
+        refreshProject();
         this.clearCheckboxes = false;
         return prepListUnimportedPage();
     }
@@ -814,16 +805,12 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
             ActionHelper.saveMessage(msg);
         }
 
-        if (fileSet.getTotalUncompressedSize() > MAX_IMPORT_TOTAL_SIZE) {
-            ActionHelper.saveMessage(getText("project.fileImport.error.jobTooLarge"));
-        } else {
-            if (!fileSet.getFiles().isEmpty()) {
-                ServiceLocatorFactory.getFileManagementService().reimportAndParseProjectFiles(getProject(), fileSet);
-            }
-            ActionHelper.saveMessage(getText("project.fileImport.success",
-                    new String[] {String.valueOf(fileSet.getFiles().size()) }));
-            refreshProject();
+        if (!fileSet.getFiles().isEmpty()) {
+            ServiceLocatorFactory.getFileManagementService().reimportAndParseProjectFiles(getProject(), fileSet);
         }
+        ActionHelper.saveMessage(getText("project.fileImport.success",
+                new String[] {String.valueOf(fileSet.getFiles().size()) }));
+        refreshProject();
 
         this.clearCheckboxes = false;
         return prepListUnimportedPage();
