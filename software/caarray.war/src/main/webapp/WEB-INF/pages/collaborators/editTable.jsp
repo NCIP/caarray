@@ -19,7 +19,11 @@
 				<c:param name="users" value="${row.userId}"/>
 				<c:param name="targetGroup" value="${targetGroup.id}"/>
 			</c:url>
-			<a href="${removeUrl}"><img src="<c:url value="/images/ico_remove.gif"/>" alt="<fmt:message key="button.remove"/>"/></a>
+			<a href="${removeUrl}">
+				<img src="<c:url value="/images/ico_remove.gif"/>" 
+					 alt="<fmt:message key="button.remove"/>"
+					 title="<fmt:message key="button.remove"/>"/>
+			</a>
 		</display:column>
 	</display:table>
 </ajax:displayTag>

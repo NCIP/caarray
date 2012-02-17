@@ -80,7 +80,11 @@
         </c:url>
         <display:column title="Action" sortable="false" >
             <c:if test="${row.userCanCancelJob}">
-                <a href="${cancelJobUrl}"><img src="<c:url value="/images/ico_cancel.gif"/>" alt="Cancel" /></a>
+                <a href="${cancelJobUrl}">
+                	<img src="<c:url value="/images/ico_cancel.gif"/>" 
+                		 alt="Cancel" 
+                		 title="Cancel"/>
+               	</a>
             </c:if>
         </display:column>
     </display:table>

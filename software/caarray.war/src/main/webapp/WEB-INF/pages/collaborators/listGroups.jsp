@@ -44,7 +44,11 @@
                 </display:column>
                 <display:column titleKey="button.edit">
                   <c:if test="${fn:toLowerCase(row.owner.loginName) eq caarrayfn:currentUsername()}">
-                      <a href="${editUrl}"><img src="<c:url value="/images/ico_edit.gif"/>" alt="<fmt:message key="button.edit"/>" /></a>
+                      <a href="${editUrl}">
+                      	<img src="<c:url value="/images/ico_edit.gif"/>"
+                      		 alt="<fmt:message key="button.edit"/>" 
+                      		 title="<fmt:message key="button.edit"/>"/>
+                    </a>
                   </c:if>
                 </display:column>
                 <display:column titleKey="button.delete">
@@ -52,7 +56,11 @@
                     <c:url value="/protected/collaborators/delete.action" var="deleteUrl">
                       <c:param name="targetGroup" value="${row.id}"/>
                     </c:url>
-                     <a href="${deleteUrl}"><img src="<c:url value="/images/ico_delete.gif"/>" alt="<fmt:message key="button.delete"/>" /></a>
+                     <a href="${deleteUrl}">
+                     	<img src="<c:url value="/images/ico_delete.gif"/>"
+                     		 alt="<fmt:message key="button.delete"/>" 
+                     		 title="<fmt:message key="button.delete"/>"/>
+                     </a>
                    </c:if>
                 </display:column>
             </display:table>

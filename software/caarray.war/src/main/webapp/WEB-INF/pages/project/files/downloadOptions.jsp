@@ -56,7 +56,13 @@ div.accordion-content div.tableboxpad
                         <c:param name="project.id" value="${project.id}" />
                     </c:url>
                     <div class="row">
-                        <div class="export_type_icon"><a href="${downloadAllUrl}"><img src="<c:url value="/images/ico_zip.png"/>" alt="Zip" /></a></div>
+                        <div class="export_type_icon">
+                        	<a href="${downloadAllUrl}">
+                        		<img src="<c:url value="/images/ico_zip.png"/>"
+                        			 alt="Zip"
+                        			 title="Zip"/>
+                       		</a>
+                      	</div>
                         <h5><a href="${downloadAllUrl}">All Experiment Files</a></h5>
                         <div class="descr">Download all experiment files in a .ZIP</div>
                         <div class="clear"></div>
@@ -68,7 +74,13 @@ div.accordion-content div.tableboxpad
                             <c:param name="fileType" value="${type}" />
                         </c:url>
                         <div class="row">
-                            <div class="export_type_icon"><a href="${downloadUrl}"><img src="<c:url value="/images/ico_zip.png"/>" alt="Zip" /></a></div>
+                            <div class="export_type_icon">
+                            	<a href="${downloadUrl}">
+                            		<img src="<c:url value="/images/ico_zip.png"/>" 
+                            			 alt="Zip"
+                            			 title="Zip"/>
+                            	</a>
+                           	</div>
                             <h5><a href="${downloadUrl}">All ${type} Files</a></h5>
                             <div class="descr">Download all ${type} files in a .ZIP</div>
                             <div class="clear"></div>
@@ -81,7 +93,13 @@ div.accordion-content div.tableboxpad
                             <c:param name="fileStatus" value="SUPPLEMENTAL" />
                         </c:url>
                         <div class="row">
-                            <div class="export_type_icon"><a href="${downloadUrl}"><img src="<c:url value="/images/ico_zip.png"/>" alt="Zip" /></a></div>
+                            <div class="export_type_icon">
+                            	<a href="${downloadUrl}">
+                            		<img src="<c:url value="/images/ico_zip.png"/>" 
+                            			 alt="Zip"
+                            			 title="Zip"/>
+                          		</a>
+                         	</div>
                             <h5><a href="${downloadUrl}">All SUPPLEMENTAL Files</a></h5>
                             <div class="descr">Download all SUPPLEMENTAL files in a .ZIP</div>
                             <div class="clear"></div>

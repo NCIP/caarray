@@ -18,7 +18,13 @@
         <p class="instructions">You may choose to download experiment data in one of two GEO SOFT export types, or in MAGE-TAB format.</p>
             <h4>Microarray and Gene Expression Tabular Format (MAGE-TAB)</h4>
             <div class="row">
-                <div class="export_type_icon"><a href="${exportToMageTabUrl}"><img src="<c:url value="/images/ico_zip.png"/>" alt="Zip" /></a></div>
+                <div class="export_type_icon">
+                	<a href="${exportToMageTabUrl}">
+                		<img src="<c:url value="/images/ico_zip.png"/>" 
+                			 alt="Zip"
+                			 title="Zip"/>
+              		</a>
+             	</div>
                 <h5><a href="${exportToMageTabUrl}">MAGE-TAB (Annotations Only)</a></h5>
                 <div class="descr">Export experiment annotations in MAGE-TAB IDF and SDRF format.</div>
                 <div class="clear"></div>
@@ -29,7 +35,13 @@
 
             <s:if test="geoValidation.isEmpty()">
             <div class="row">
-                <div class="export_type_icon"><a href="${exportToGeoInfoUrl}"><img src="<c:url value="/images/ico_geo.png"/>" alt="GEO SOFT (File Only)" /></a></div>
+                <div class="export_type_icon">
+                	<a href="${exportToGeoInfoUrl}">
+                		<img src="<c:url value="/images/ico_geo.png"/>" 
+                			 alt="GEO SOFT (File Only)"
+                			 title="GEO SOFT (File Only)"/>
+               		</a>
+              	</div>
                 <h5><a href="${exportToGeoInfoUrl}">GEO SOFT (File Only)</a></h5>
                 <div class="descr">Export experiment annotations in GEO SOFT format.</div>
                 <div class="clear"></div>
@@ -38,12 +50,24 @@
 
             <div class="row">
                 <s:if test="geoZipOk">
-                <div class="export_type_icon"><a href="${exportToGeoZipUrl}"><img src="<c:url value="/images/ico_zip.png"/>" alt="Zip" /></a></div>
+                <div class="export_type_icon">
+                	<a href="${exportToGeoZipUrl}">
+                		<img src="<c:url value="/images/ico_zip.png"/>" 
+                			 alt="Zip" 
+                			 title="Zip"/>
+               		</a>
+              	</div>
                 <h5><a href="${exportToGeoZipUrl}">GEO SOFT (Submissions Package)</a></h5>
                 <div class="descr">Export experiment annotations in GEO SOFT format, packaged with experiment data files.</div>
                 </s:if>
                 <s:else>
-                <div class="export_type_icon"><a href="${exportToGeoTgzUrl}"><img src="<c:url value="/images/ico_gz.png"/>" alt="Tgz" /></a></div>
+                <div class="export_type_icon">
+                	<a href="${exportToGeoTgzUrl}">
+                		<img src="<c:url value="/images/ico_gz.png"/>" 
+                			 alt="Tgz"
+                			 title="Tgz"/>
+               		</a>
+              	</div>
                 <h5><a href="${exportToGeoTgzUrl}">GEO SOFT (Submissions Package)</a></h5>
                 <div class="descr">Export experiment annotations in GEO SOFT format, packaged with experiment data files. Note that the
                     files are packaged in TGZ format, which may not be accepted by the GEO SOFT automatic submission process.</div>

@@ -71,7 +71,11 @@
                                 <c:url value="/protected/arrayDesign/edit.action" var="editDesignUrl">
                                      <c:param name="arrayDesign.id" value="${row.id}" />
                                 </c:url>
-                                <a href="${editDesignUrl}"><img src="<c:url value="/images/ico_edit.gif"/>" alt="<fmt:message key="button.edit"/>" /></a>
+                                <a href="${editDesignUrl}">
+                                	<img src="<c:url value="/images/ico_edit.gif"/>" 
+                                		 alt="<fmt:message key="button.edit"/>" 
+                                		 title="<fmt:message key="button.edit"/>"/>
+                               	</a>
                           </c:if>
                         </display:column>
                         <display:column titleKey="button.editFile" class="centered" headerClass="centered">
@@ -81,7 +85,11 @@
                                 <c:url value="/protected/ajax/arrayDesign/editFile.action" var="editFileDesignUrl">
                                      <c:param name="arrayDesign.id" value="${row.id}" />
                                 </c:url>
-                                <a href="#" onclick="openEditFileWindow('${editFileDesignUrl}')"><img src="<c:url value="/images/ico_edit.gif"/>" alt="<fmt:message key="button.editFile"/>" /></a>
+                                <a href="#" onclick="openEditFileWindow('${editFileDesignUrl}')">
+                                	<img src="<c:url value="/images/ico_edit.gif"/>" 
+                                		 alt="<fmt:message key="button.editFile"/>" 
+                                		 title="<fmt:message key="button.editFile"/>"/>
+                               	</a>
                             </c:if>
                         </display:column>
                         <display:column titleKey="button.delete" class="centered" headerClass="centered">
@@ -91,7 +99,11 @@
                                      <c:param name="arrayDesign.id" value="${row.id}" />
                                 </c:url>
                                 <div id="delete_button${row.id}">
-                                    <a href="${deleteDesignUrl}" onclick="return confirmDeleteArrayDesign(${row.id});"><img src="<c:url value="/images/ico_delete.gif"/>" alt="<fmt:message key="button.delete"/>" /></a>
+                                    <a href="${deleteDesignUrl}" onclick="return confirmDeleteArrayDesign(${row.id});">
+                                    	<img src="<c:url value="/images/ico_delete.gif"/>" 
+                                    		 alt="<fmt:message key="button.delete"/>"
+                                    		 title="<fmt:message key="button.delete"/>"/>
+                                   	</a>
                                 </div>
                           </c:if>
                         </display:column>
@@ -100,7 +112,11 @@
                                 <c:url value="/protected/arrayDesign/reimport.action" var="reimportDesignUrl">
                                      <c:param name="arrayDesign.id" value="${row.id}" />
                                 </c:url>
-                                <a href="${reimportDesignUrl}"><img src="<c:url value="/images/ico_import.gif"/>" alt="<fmt:message key="button.reimport"/>" /></a>
+                                <a href="${reimportDesignUrl}">
+                                	<img src="<c:url value="/images/ico_import.gif"/>" 
+                                		 alt="<fmt:message key="button.reimport"/>"
+                                		 title="<fmt:message key="button.reimport"/>"/>
+                           	    </a>
                           </c:if>
                         </display:column>
                         <display:column sortProperty="designFileSet.status" titleKey="experiment.files.status" sortable="true" url="/protected/arrayDesign/view.action" paramId="arrayDesign.id" paramProperty="id" >

@@ -29,7 +29,11 @@
 <c:choose>
     <c:when test="${empty linkRenderer}">
         <c:if test="${empty linkContent}">
-            <c:set var="linkContent"><img src="<c:url value="/images/ico_${action}.gif"/>" alt="<fmt:message key="button.${action}"/>"></c:set>
+            <c:set var="linkContent">
+            	<img src="<c:url value="/images/ico_${action}.gif"/>" 
+            		 alt="<fmt:message key="button.${action}"/>"
+            		 title="<fmt:message key="button.${action}"/>">
+          	</c:set>
         </c:if>
         <a href="#" onclick="if (!${showPopup} || confirm('${confirmText}')) { TabUtils.${loadTabFunction}('${tabCaption}', '${actionUrl}');} return false;">
             <caarray:abbreviate value="${linkContent}" maxWidth="${maxWidth}" escapeXml="false"/>

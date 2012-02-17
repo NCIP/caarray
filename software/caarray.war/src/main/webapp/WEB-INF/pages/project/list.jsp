@@ -79,7 +79,11 @@
                 <c:url value="/protected/project/permissions/editPermissions.action" var="editProjectPermissionsUrl">
                     <c:param name="project.id" value="${row.id}" />
                 </c:url>
-                <a href="${editProjectPermissionsUrl}"><img src="<c:url value="/images/ico_permissions.gif"/>" alt="Permissions" /></a>
+                <a href="${editProjectPermissionsUrl}">
+                	<img src="<c:url value="/images/ico_permissions.gif"/>" 
+                		 alt="Permissions" 
+                		 title="Permissions"/>
+               	</a>
             </c:if>
         </display:column>
         <display:column titleKey="button.reimport" class="centered" headerClass="centered">
@@ -90,7 +94,11 @@
                     <c:param name="initialTab2" value="importedData"/>
 
                 </c:url>
-                <a href="${reimportProjectUrl}"><img src="<c:url value="/images/ico_import.gif"/>" alt="<fmt:message key="button.reimport"/>" /></a>
+                <a href="${reimportProjectUrl}">
+                	<img src="<c:url value="/images/ico_import.gif"/>" 
+                	     alt="<fmt:message key="button.reimport"/>" 
+                	     title="<fmt:message key="button.reimport"/>"/>
+                </a>
           </c:if>
         </display:column>
         <display:column titleKey="button.edit" class="centered" headerClass="centered">
@@ -98,7 +106,11 @@
                 <c:url value="/protected/project/edit.action" var="editProjectUrl">
                     <c:param name="project.id" value="${row.id}" />
                 </c:url>
-                <a href="${editProjectUrl}"><img src="<c:url value="/images/ico_edit.gif"/>" alt="<fmt:message key="button.edit"/>" /></a>
+                <a href="${editProjectUrl}">
+                	<img src="<c:url value="/images/ico_edit.gif"/>" 
+                	     alt="<fmt:message key="button.edit"/>" 
+                	     title="<fmt:message key="button.edit"/>"/>
+               	</a>
             </c:if>
         </display:column>
         <display:column titleKey="button.delete" class="centered" headerClass="centered">
@@ -106,7 +118,11 @@
                 <c:url value="/protected/project/delete.action" var="deleteProjectUrl">
                     <c:param name="project.id" value="${row.id}" />
                 </c:url>
-                <a href="${deleteProjectUrl}" onclick="return confirmDelete();"><img src="<c:url value="/images/ico_delete.gif"/>" alt="<fmt:message key="button.delete"/>" /></a>
+                <a href="${deleteProjectUrl}" onclick="return confirmDelete();">
+                	<img src="<c:url value="/images/ico_delete.gif"/>" 
+                		 alt="<fmt:message key="button.delete"/>" 
+                		 title="<fmt:message key="button.delete"/>"/>
+               	</a>
             </c:if>
         </display:column>
     </display:table>

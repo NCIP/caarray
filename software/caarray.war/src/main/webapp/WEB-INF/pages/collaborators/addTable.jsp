@@ -22,7 +22,11 @@
 				<c:param name="targetUser.firstName" value="${targetUser.firstName}"/>
 				<c:param name="targetUser.organization" value="${targetUser.organization}"/>
 			</c:url>
-			<a href="${addUrl}"><img src="<c:url value="/images/ico_add.gif"/>" alt="<fmt:message key="button.add"/>"/></a>
+			<a href="${addUrl}">
+				<img src="<c:url value="/images/ico_add.gif"/>" 
+					 alt="<fmt:message key="button.add"/>"
+					 title="<fmt:message key="button.add"/>"/>
+			</a>
 		</display:column>
 	</display:table>
 </ajax:displayTag>

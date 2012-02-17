@@ -26,12 +26,16 @@
                 <c:param name="initialTab2Url" value="${actionUrl}"/>    
             </c:url>
             <a onclick="TabUtils.loadLinkInTab('Data', '${showDataTabDownloadDataSubTabWithDownloadGroupsUrl}'); return false;">
-                <img src="<c:url value="/images/ico_download.gif"/>" alt="<fmt:message key="button.download"/>">
+                <img src="<c:url value="/images/ico_download.gif"/>" 
+                	 alt="<fmt:message key="button.download"/>"
+                	 title="<fmt:message key="button.download"/>">
             </a>
         </c:when>
         <c:otherwise>
             <a href="${actionUrl}">
-                <img src="<c:url value="/images/ico_download.gif"/>" alt="<fmt:message key="button.download"/>">
+                <img src="<c:url value="/images/ico_download.gif"/>" 
+                	 alt="<fmt:message key="button.download"/>"
+                	 title="<fmt:message key="button.download"/>">
             </a>
         </c:otherwise>
     </c:choose>

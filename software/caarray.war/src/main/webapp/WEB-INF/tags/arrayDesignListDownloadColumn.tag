@@ -14,7 +14,10 @@
     </c:url>
 
     <a href="${actionUrl}">
-          <img src="<c:url value="/images/ico_download.gif"/>" alt="<fmt:message key="button.download"/>">
+          <img src="<c:url value="/images/ico_download.gif"/>" 
+               alt="<fmt:message key="button.download"/>"
+               title="<fmt:message key="button.download"/>"
+          >
     </a>
 
 </display:column>

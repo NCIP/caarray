@@ -43,7 +43,11 @@
                             <c:param name="protocol.id" value="${row.id}" />
                         </c:url>
                         <ajax:anchors target="tabboxwrapper">
-                            <a href="${editProtocolUrl}"><img src="<c:url value="/images/ico_edit.gif"/>" alt="<fmt:message key="button.edit"/>" /></a>
+                            <a href="${editProtocolUrl}">
+                            	<img src="<c:url value="/images/ico_edit.gif"/>" 
+                            		 alt="<fmt:message key="button.edit"/>" 
+                            		 title="<fmt:message key="button.edit"/>"/>
+                          	</a>
                         </ajax:anchors>
                     </c:if>
                 </display:column>

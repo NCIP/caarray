@@ -8,7 +8,11 @@
             <c:url value="/protected/arrayDesign/reimport.action" var="reimportDesignUrl">
                  <c:param name="arrayDesign.id" value="${row.id}" />
             </c:url>
-            <a href="${reimportDesignUrl}"><img src="<c:url value="/images/ico_import.gif"/>" alt="<fmt:message key="button.reimport"/>" /></a>
+            <a href="${reimportDesignUrl}">
+            	<img src="<c:url value="/images/ico_import.gif"/>" 
+            		 alt="<fmt:message key="button.reimport"/>" 
+            		 title="<fmt:message key="button.reimport"/>"/>
+            </a>
         </display:column>
     </display:table>
 </ajax:displayTag>
