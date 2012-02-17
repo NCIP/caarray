@@ -1,6 +1,6 @@
 <%@ include file="/WEB-INF/pages/common/taglibs.jsp"%>
 
-<page:applyDecorator name="popup">
+<page:applyDecorator name="upload">
     <html>
         <head>
             <title>Experiment Data Upload</title>
@@ -22,76 +22,108 @@
     </c:url>
 
     <iframe id='target_upload' name='target_upload' src='' style='display: none'> </iframe>
+
+<!--
     <div id="uploadFileDiv">
         <div class="boxpad2extend">
-            <p>Due to browser limitations, the combined size of the files you upload must be less than 2 GB. If you need to upload more data,
-               please do so in multiple steps.</p>
+            <p>Limitation: The size of each file you upload must be less than 2 GB in Internet Explorer.</p>
             <c:if test="${!project.locked && caarrayfn:canWrite(project, caarrayfn:currentUser())}">
                 <s:form action="project/files/upload" id="fileupload" namespace="" enctype="multipart/form-data" method="post"  target="target_upload">
                     <input type=hidden name="project.id" value="<s:property value='%{project.id}'/>"/>
                     <input type=hidden name="selectedFilesToUnpack" value="-1" />
-                    <div class="row fileupload-buttonbar">
-            <div class="span7">
-                <!-- The fileinput-button span is used to style the file input field as button -->
-                <span class="btn btn-success fileinput-button">
-                    <span><i class="icon-plus icon-white"></i> Add files...</span>
-                    <input type="file" multiple="" name="files[]">
-                </span>
-                <button class="btn btn-primary start" type="submit">
-                    <i class="icon-upload icon-white"></i> Start upload
-                </button>
-                <button class="btn btn-warning cancel" type="reset">
-                    <i class="icon-ban-circle icon-white"></i> Cancel upload
-                </button>
-                <button class="btn btn-danger delete" type="button">
-                    <i class="icon-trash icon-white"></i> Delete
-                </button>
-                <input type="checkbox" class="toggle">
-            </div>
-            <div class="span5">
-                <!-- The global progress bar -->
-                <div class="progress progress-success progress-striped active fade">
-                    <div style="width:0%;" class="bar"></div>
-                </div>
-            </div>
-        </div>
-        <!-- The loading indicator is shown during image processing -->
-        <div class="fileupload-loading"></div>
-        <br>
-        <!-- The table listing the files available for upload/download -->
-        <table class="table table-striped"><tbody data-target="#modal-gallery" data-toggle="modal-gallery" class="files"></tbody></table>
-
-
-                    <!--
-                    <s:file id="upload0" name="upload" label="File" onchange="setCheckboxVal(this.value, this.id)">
-                         <s:param name="after">
-                             <s:checkbox id="checkbox0" name="selectedFilesToUnpack" fieldValue="0" value="false" theme="simple"/>
-                             <s:label for="uploadForm_selectedFilesToUnpack" value="Unpack Compressed Archive" theme="simple"/>
-                         </s:param>
-                    </s:file>
-                    -->
+                    <div class="row">
+                        <div class="span16">
+                            <table class="zebra-striped"><tbody class="files"></tbody></table>
+                        </div>
+                    </div>
                 </s:form>
                 <caarray:actions>
                     <div class="span16 fileupload-buttonbar">
                         <div class="progressbar fileupload-progressbar fade"><div style="width:0%;"></div></div>
-                        <span id="button_add" class="btn success fileinput-button">
-                            <span>Add files...</span>
-                        </span>
-                        <button type="submit" class="btn primary start">Start upload</button>
-                        <button type="reset" class="btn info cancel">Cancel upload</button>
+                        <button type="reset" class="btn info cancel" onclick="window.close()">Cancel</button>
+                        <span id="button_add" class="btn success fileinput-button"><span>Add More Files</span></span>
+                        <button type="submit" class="btn primary start">Upload</button>
                     </div>
                 </caarray:actions>
-                <!--
-                <caarray:actions>
-                    <caarray:linkButton actionClass="cancel" text="Cancel" onclick="window.close()"/>
-                    <caarray:linkButton actionClass="add" text="Add More Files" onclick="moreUploads();"/>
-                    <caarray:linkButton actionClass="save" text="Upload" onclick="beginUpload()"/>
-                </caarray:actions>
-                -->
             </c:if>
         </div>
     </div>
+ -->
+<!--
+    <div id="uploadFileDiv">
+        <div class="boxpad2extend">
+            <p>Limitation: The size of each file you upload must be less than 2 GB in Internet Explorer.</p>
+            <c:if test="${!project.locked && caarrayfn:canWrite(project, caarrayfn:currentUser())}">
+                <s:form action="project/files/upload" id="fileupload" namespace="" enctype="multipart/form-data" method="post"  target="target_upload">
+                    <input type=hidden name="project.id" value="<s:property value='%{project.id}'/>"/>
+                    <input type=hidden name="selectedFilesToUnpack" value="-1" />
+                    <div class="row">
+                        <div class="span16">
+                            <table class="table table-striped"><tbody class="files" data-toggle="modal-gallery" data-target="#modal-gallery"></tbody></table>
+                        </div>
+                    </div>
+                </s:form>
+                <caarray:actions>
+                    <div class="row fileupload-buttonbar">
+                        <div class="span7">
+                            <span class="btn btn-success fileinput-button">
+                                <span><i class="icon-plus icon-white"></i>Add More Files</span><input name="files[]" multiple="" type="file">
+                            </span>
+                            <button type="submit" class="btn btn-primary start"><i class="icon-upload icon-white"></i>Upload</button>
+                            <button type="reset" class="btn btn-warning cancel"><i class="icon-ban-circle icon-white"></i>Cancel</button>
+                        </div>
+                        <div class="span5">
+                            <div class="progress progress-success progress-striped active fade">
+                                <div class="bar" style="width:0%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </caarray:actions>
+            </c:if>
+        </div>
+    </div>
+-->
 
+    <div id="uploadFileDiv">
+        <div class="boxpad2extend">
+            <p>Limitation: The size of each file you upload must be less than 2 GB in Internet Explorer.</p>
+            <c:if test="${!project.locked && caarrayfn:canWrite(project, caarrayfn:currentUser())}">
+                <s:form action="project/files/upload" id="fileupload" namespace="" enctype="multipart/form-data" method="post"  target="target_upload">
+                    <input type=hidden name="project.id" value="<s:property value='%{project.id}'/>"/>
+                    <input type=hidden name="selectedFilesToUnpack" value="-1" />
+                    <div class="fileupload-loading"></div><br>
+                    <table class="table table-striped"><tbody class="files" data-toggle="modal-gallery" data-target="#modal-gallery"></tbody></table>
+                    <caarray:actions>
+                        <div class="row fileupload-buttonbar">
+                            <div class="span7">
+                                <span class="btn btn-success fileinput-button"><span><i class="icon-plus icon-white"></i>Add Files</span><input name="files[]" multiple="" type="file"></span>
+                                <button type="submit" class="btn btn-primary start"><i class="icon-upload icon-white"></i>Upload</button>
+                                <button type="reset" class="btn btn-warning cancel"><i class="icon-ban-circle icon-white"></i>Cancel</button>
+                                <input class="toggle" type="checkbox">
+                            </div>
+                            <div class="span5"><div class="progress progress-success progress-striped active fade"><div class="bar" style="width:0%;"></div></div></div>
+                        </div>
+                    </caarray:actions>
+                </s:form>
+            </c:if>
+        </div>
+    </div>
+  <!--
+    <form id="fileupload" action="server/php/" method="POST" enctype="multipart/form-data">
+        <div class="row fileupload-buttonbar">
+            <div class="span7">
+                <span class="btn btn-success fileinput-button"><span><i class="icon-plus icon-white"></i>Add Files</span><input name="files[]" multiple="" type="file"></span>
+                <button type="submit" class="btn btn-primary start"><i class="icon-upload icon-white"></i>Upload</button>
+                <button type="reset" class="btn btn-warning cancel"><i class="icon-ban-circle icon-white"></i>Cancel</button>
+                <input class="toggle" type="checkbox">
+            </div>
+            <div class="span5"><div class="progress progress-success progress-striped active fade"><div class="bar" style="width:0%;"></div></div></div>
+        </div>
+        <div class="fileupload-loading"></div><br>
+        <table class="table table-striped"><tbody class="files" data-toggle="modal-gallery" data-target="#modal-gallery"></tbody></table>
+    </form>
+
+-->
     <div class="padme" id="uploadProgress" style="display: none">
         <div id="tabboxwrapper_notabs">
             <div class="boxpad2">
@@ -123,7 +155,6 @@
            </div>
        </div>
    </div>
-
 
 <script>
 var fileUploadErrors = {
@@ -185,7 +216,6 @@ var fileUploadErrors = {
     </tr>
 {% } %}
 </script>
-
 
 <script type="text/javascript">
     var progressBar;

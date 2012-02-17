@@ -19,7 +19,7 @@
         <script type="text/javascript" src="<caarray:writeVersionedUrl value="/scripts/ajaxtags_parser.js"/>"></script>
 
         <script type="text/javascript" src="<c:url value='/scripts/upload/jquery.min.js'/>"></script>
-        <script type="text/javascript" src="<c:url value='/scripts/vendor/jquery.ui.widget.js'/>"></script>
+        <script type="text/javascript" src="<c:url value='/scripts/upload/vendor/jquery.ui.widget.js'/>"></script>
         <script type="text/javascript" src="<c:url value='/scripts/upload/tmpl.min.js'/>"></script>
         <script type="text/javascript" src="<c:url value='/scripts/upload/load-image.min.js'/>"></script>
 
