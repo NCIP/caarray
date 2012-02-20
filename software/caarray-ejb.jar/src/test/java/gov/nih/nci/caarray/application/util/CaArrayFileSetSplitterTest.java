@@ -103,6 +103,8 @@ import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
@@ -174,14 +176,28 @@ public class CaArrayFileSetSplitterTest  {
 
     @Test
     public void cleanupExistingSdrfChildren() throws IOException {
+        // Need the behavior inside of fileAccessService so that naive iteration 
+        // through the children will result in a concurrent modification exception
+        when(fileAccessService.remove(any(CaArrayFile.class))).thenAnswer(new Answer<Boolean>() {
+            @Override
+            public Boolean answer(InvocationOnMock invocation) throws Throwable {
+                CaArrayFile file = (CaArrayFile) invocation.getArguments()[0];
+                file.getParent().getChildren().remove(file);
+                
+                return true;
+            }
+        });
+        
         CaArrayFile sdrfFile = getSdrfFile();
         CaArrayFile idfFile = getIdfFile(sdrfFile);
         setupMageTabFileSets(idfFile);
-        CaArrayFile orphan = addChild(sdrfFile);
+        Set<CaArrayFile> orphans = addChildren(sdrfFile);
         
         splitFiles(sdrfFile, idfFile);
 
-        verify(fileAccessService).remove(orphan);
+        for (CaArrayFile orphan : orphans) {
+            verify(fileAccessService).remove(orphan);
+        }
     }
 
     private CaArrayFile getSdrfFile() {
@@ -230,9 +246,14 @@ public class CaArrayFileSetSplitterTest  {
         return results;
     }
 
-    private CaArrayFile addChild(CaArrayFile sdrfFile) {
-        CaArrayFile child = mock(CaArrayFile.class);
-        when(sdrfFile.getChildren()).thenReturn(ImmutableSet.of(child));
-        return child;
+    private Set<CaArrayFile> addChildren(CaArrayFile sdrfFile) {
+        CaArrayFile child1 = mock(CaArrayFile.class);
+        when(child1.getParent()).thenReturn(sdrfFile);
+        CaArrayFile child2 = mock(CaArrayFile.class);
+        when(child2.getParent()).thenReturn(sdrfFile);
+        Set<CaArrayFile> result = Sets.newHashSet(child1, child2);
+        when(sdrfFile.getChildren()).thenReturn(result);
+        
+        return result;
     }
 }

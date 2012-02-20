@@ -83,7 +83,6 @@
 package gov.nih.nci.caarray.application.file;
 
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
-import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.project.BaseJob;
@@ -188,16 +187,7 @@ public abstract class AbstractFileManagementJob implements Serializable, Executa
         if (getParent() != null) {
             getParent().handleChildCancelled();
         }
-        
-        if (getFileSet() != null) {
-            setFilesetStatus(FileStatus.UPLOADED);
-
-            for (CaArrayFile file : getFileSet().getFiles()) {
-                if (file.getParent() != null) {
-                    getFileAccessService().remove(file);
-                }
-            }
-        }
+        setFilesetStatus(FileStatus.UPLOADED);
         setJobStatus(JobStatus.CANCELLED);
     }
 
@@ -256,9 +246,7 @@ public abstract class AbstractFileManagementJob implements Serializable, Executa
     }
 
     private void setFilesetStatus(FileStatus fileStatus) {
-        if (getFileSet() != null) {
-            getFileSet().updateStatus(fileStatus);
-        }
+        getFileSet().updateStatus(fileStatus);
     }
 
     /**

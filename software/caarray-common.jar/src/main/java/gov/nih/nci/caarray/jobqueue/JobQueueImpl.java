@@ -84,7 +84,6 @@ package gov.nih.nci.caarray.jobqueue;
 
 
 import gov.nih.nci.caarray.dao.FileDao;
-import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.project.ExecutableJob;
 import gov.nih.nci.caarray.domain.project.Job;
 import gov.nih.nci.caarray.domain.project.JobMessageSender;
@@ -222,10 +221,8 @@ public class JobQueueImpl implements JobQueue {
                     
                     if (queue.remove(originalJob)) {
                         originalJob.markAsCancelled();
-                        for (CaArrayFile file : originalJob.getFileSet().getFiles()) {
-                            fileDao.save(file);
-                            fileDao.evictObject(file);
-                        }
+                        fileDao.flushSession();
+                        fileDao.clearSession();
                         return true;
                     }
                 }

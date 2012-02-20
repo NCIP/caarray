@@ -89,9 +89,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import gov.nih.nci.caarray.dao.FileDao;
 import gov.nih.nci.caarray.dao.stub.ExecutableJobStub;
 import gov.nih.nci.caarray.domain.project.ExecutableJob;
@@ -106,6 +104,7 @@ import java.util.UUID;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.InOrder;
 
 
 public class JobQueueTest {
@@ -115,11 +114,12 @@ public class JobQueueTest {
     private List<ExecutableJob> mockJobs;
     private int jobIndex;
     private JobMessageSender jobMessageSender;
+    private FileDao fileDao;
 
     @Before
     public void setUp() {
         jobMessageSender = mock(JobMessageSender.class);
-        FileDao fileDao = mock(FileDao.class);
+        fileDao = mock(FileDao.class);
         systemUnderTest = new JobQueueImpl(jobMessageSender, fileDao);        
         mockJobs = createMockJobsList(NUMBER_OF_MOCK_JOBS);
         jobIndex = 0;
@@ -325,6 +325,11 @@ public class JobQueueTest {
         for (Job job : snapshotList) {
             assertFalse(jobIdToCancel.equals(job.getJobId()));
         }
+        
+        // Confirm session management
+        InOrder inorder = inOrder(fileDao, fileDao);
+        inorder.verify(fileDao).flushSession();
+        inorder.verify(fileDao).clearSession();
     }
     
     @Test

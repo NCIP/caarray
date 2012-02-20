@@ -138,7 +138,9 @@ public class CaArrayFileSetSplitterImpl implements CaArrayFileSetSplitter {
 
     private void cleanupFileOrphans() {
         for (CaArrayFile file : inputFileSet.getFiles()) {
-            for (CaArrayFile child : file.getChildren()) {
+            Set<CaArrayFile> orphans = new HashSet<CaArrayFile>();
+            orphans.addAll(file.getChildren());
+            for (CaArrayFile child : orphans) {
                 LOG.info("Cleaning up orphaned child for parent file id=" + file.getId());
                 fileAccessService.remove(child);
             }

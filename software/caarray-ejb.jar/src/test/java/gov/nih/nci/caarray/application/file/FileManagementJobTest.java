@@ -142,18 +142,12 @@ public class FileManagementJobTest {
     }
 
     @Test
-    public void markAsCancelledNoFiles() {
-        doReturn(null).when(job).getFileSet();
-        job.markAsCancelled();
-        assertEquals(JobStatus.CANCELLED, job.getJobStatus());
-    }
-
-    @Test
     public void markAsCancelledWithFiles() {
         doReturn(fileSet).when(job).getFileSet();
         job.markAsCancelled();
         assertEquals(JobStatus.CANCELLED, job.getJobStatus());
         verify(fileSet).updateStatus(FileStatus.UPLOADED);
+        verify(job).getFileSet();
     }
 
     @Test
@@ -230,7 +224,6 @@ public class FileManagementJobTest {
 
         child2.markAsCancelled();
         verify(parent).handleChildCancelled();
-        verify(fas).remove(childFile2);
         assertEquals(FileStatus.UPLOADED, childFile2.getFileStatus());
         assertEquals(FileStatus.IN_QUEUE, parentFile.getFileStatus());
 
@@ -238,24 +231,4 @@ public class FileManagementJobTest {
         verify(parent, times(2)).handleChildProcessed();
         assertEquals(FileStatus.UPLOADED, parentFile.getFileStatus());
     }    
-    
-    @Test
-    public void setStatusThenRemove() {
-        AbstractFileManagementJob job = mock(AbstractFileManagementJob.class, Mockito.CALLS_REAL_METHODS);
-        
-        CaArrayFile parent = mock(CaArrayFile.class);
-        CaArrayFile child = mock(CaArrayFile.class);
-        when(child.getParent()).thenReturn(parent);
-        CaArrayFileSet fileSet = mock(CaArrayFileSet.class);
-        when(fileSet.getFiles()).thenReturn(ImmutableSet.of(child));
-        doReturn(fileSet).when(job).getFileSet();
-        
-        FileAccessService fas = mock(FileAccessService.class);
-        when(job.getFileAccessService()).thenReturn(fas);
-        
-        job.markAsCancelled();
-        InOrder inOrder = inOrder(fileSet, fas);
-        inOrder.verify(fileSet).updateStatus(FileStatus.UPLOADED);
-        inOrder.verify(fas).remove(child);
-    }
 }
