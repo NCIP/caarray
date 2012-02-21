@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.application.file;
 
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
+import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.project.BaseJob;
@@ -241,8 +242,22 @@ public abstract class AbstractFileManagementJob implements Serializable, Executa
     @Override
     public void handleChildProcessed() {
         if (childrenCancelled) {
-            setFilesetStatus(FileStatus.UPLOADED);
+            for (CaArrayFile file : getFileSet().getFiles()) {
+                if (isNonImportedArrayData(file) || isNotArrayData(file)) {
+                    file.setFileStatus(FileStatus.UPLOADED);
+                }
+            }
         }
+    }
+
+    private boolean isNotArrayData(CaArrayFile file) {
+        return !file.getFileType().isArrayData();
+    }
+
+    private boolean isNonImportedArrayData(CaArrayFile file) {
+        return file.getFileType().isArrayData() 
+                && !(file.getFileStatus().equals(FileStatus.IMPORTED) 
+                        || file.getFileStatus().equals(FileStatus.IMPORTED_NOT_PARSED));
     }
 
     private void setFilesetStatus(FileStatus fileStatus) {

@@ -91,6 +91,7 @@ import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
 import gov.nih.nci.caarray.domain.file.FileStatus;
+import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.project.BaseJob;
 import gov.nih.nci.caarray.domain.project.JobStatus;
 
@@ -194,11 +195,12 @@ public class FileManagementJobTest {
         when(child3.getParent()).thenReturn(parent);
 
         // setup parent and child files
-        CaArrayFile parentFile = new CaArrayFile();
+        CaArrayFile parentFile = getNonArrayFile();
+        when(parentFile.getFileStatus()).thenReturn(FileStatus.IN_QUEUE);
+        
         CaArrayFile childFile1 = new CaArrayFile(parentFile);
         CaArrayFile childFile2 = new CaArrayFile(parentFile);
         CaArrayFile childFile3 = new CaArrayFile(parentFile);
-        parentFile.setFileStatus(FileStatus.IN_QUEUE);
         childFile1.setFileStatus(FileStatus.IN_QUEUE);
         childFile2.setFileStatus(FileStatus.IN_QUEUE);
         childFile3.setFileStatus(FileStatus.IN_QUEUE);
@@ -229,6 +231,50 @@ public class FileManagementJobTest {
 
         child3.markAsProcessed();
         verify(parent, times(2)).handleChildProcessed();
-        assertEquals(FileStatus.UPLOADED, parentFile.getFileStatus());
+        verify(parentFile).setFileStatus(eq(FileStatus.UPLOADED));
     }    
+    
+    @Test
+    public void cancelKeepsDataFilesInImportedStatus() {
+        CaArrayFile nonArrayDataFile = getNonArrayFile();
+        
+        CaArrayFile importedArrayDataFile = getArrayDataFile();
+        when(importedArrayDataFile.getFileStatus()).thenReturn(FileStatus.IMPORTED);
+        
+        CaArrayFile importedUnparsedDataFile = getArrayDataFile();
+        when(importedUnparsedDataFile.getFileStatus()).thenReturn(FileStatus.IMPORTED_NOT_PARSED);
+        
+        CaArrayFile validatedArrayDataFile = getArrayDataFile();
+        when(validatedArrayDataFile.getFileStatus()).thenReturn(FileStatus.VALIDATED);
+        
+        when(fileSet.getFiles()).thenReturn(ImmutableSet.of(nonArrayDataFile, importedArrayDataFile, 
+                importedUnparsedDataFile, validatedArrayDataFile));
+        
+        AbstractFileManagementJob job = mock(AbstractFileManagementJob.class, Mockito.CALLS_REAL_METHODS);
+        doReturn(fileSet).when(job).getFileSet();
+        
+        job.handleChildCancelled();
+        job.handleChildProcessed();
+        
+        verify(nonArrayDataFile).setFileStatus(eq(FileStatus.UPLOADED));
+        verify(validatedArrayDataFile).setFileStatus(eq(FileStatus.UPLOADED));
+        verify(importedArrayDataFile, times(0)).setFileStatus(any(FileStatus.class));
+        verify(importedUnparsedDataFile, times(0)).setFileStatus(any(FileStatus.class));
+    }
+
+    private CaArrayFile getArrayDataFile() {
+        FileType arrayDataType = mock(FileType.class);
+        when(arrayDataType.isArrayData()).thenReturn(true);
+        CaArrayFile arrayDataFile = mock(CaArrayFile.class);
+        when(arrayDataFile.getFileType()).thenReturn(arrayDataType);
+        return arrayDataFile;
+    }
+
+    private CaArrayFile getNonArrayFile() {
+        FileType nonArrayDataType = mock(FileType.class);
+        when(nonArrayDataType.isArrayData()).thenReturn(false);
+        CaArrayFile nonArrayDataFile = mock(CaArrayFile.class);
+        when(nonArrayDataFile.getFileType()).thenReturn(nonArrayDataType);
+        return nonArrayDataFile;
+    }
 }
