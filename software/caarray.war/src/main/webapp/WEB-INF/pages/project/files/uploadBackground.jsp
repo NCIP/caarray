@@ -21,10 +21,12 @@
         <c:param name="initialTab" value="data" />
     </c:url>
 
+<!--
     <iframe id='target_upload' name='target_upload' src='' style='display: none'> </iframe>
     <div id="uploadFileDiv">
         <div class="boxpad2extend">
-            <p>Limitation: The size of each file you upload must be less than 2 GB in Internet Explorer.</p>
+            <p>Due to browser limitations, the combined size of the files you upload must be less than 2 GB. If you need to upload more data,
+               please do so in multiple steps.</p>
             <c:if test="${!project.locked && caarrayfn:canWrite(project, caarrayfn:currentUser())}">
                 <s:form action="project/files/upload" id="fileupload" namespace="" enctype="multipart/form-data" method="post"  target="target_upload">
                     <input type=hidden name="project.id" value="<s:property value='%{project.id}'/>"/>
@@ -46,14 +48,40 @@
             </c:if>
         </div>
     </div>
-  <!--
-    <form id="fileupload" action="server/php/" method="POST" enctype="multipart/form-data">
-        <div class="row fileupload-buttonbar">
-            <div class="span7">
-                <span class="btn btn-success fileinput-button"><span><i class="icon-plus icon-white"></i>Add Files</span><input name="files[]" multiple="" type="file"></span>
-                <button type="submit" class="btn btn-primary start"><i class="icon-upload icon-white"></i>Upload</button>
-                <button type="reset" class="btn btn-warning cancel"><i class="icon-ban-circle icon-white"></i>Cancel</button>
-                <input class="toggle" type="checkbox">
+ -->
+
+<iframe id='target_upload' name='target_upload' src='' style='display: none'> </iframe>
+<div id="uploadFileDiv">
+        <div class="boxpad2extend">
+            <p>Limitation: The size of each file you upload must be less than 2 GB in Internet Explorer.</p>
+            <c:if test="${!project.locked && caarrayfn:canWrite(project, caarrayfn:currentUser())}">
+                <s:form action="project/files/upload" id="fileupload" namespace="" enctype="multipart/form-data" method="post"  target="target_upload">
+                    <input type=hidden name="project.id" value="<s:property value='%{project.id}'/>"/>
+                    <input type=hidden name="selectedFilesToUnpack" value="-1" />
+                    <div class="fileupload-loading"></div><br>
+                    <table class="table table-striped"><tbody class="files" data-toggle="modal-gallery" data-target="#modal-gallery"></tbody></table>
+                    <caarray:actions>
+                        <div class="row fileupload-buttonbar">
+                            <div class="span7">
+                                <span class="btn btn-success fileinput-button"><span><i class="icon-plus icon-white"></i>Add Files</span><input name="upload" multiple="" type="file"></span>
+                                <button type="submit" class="btn btn-primary start"><i class="icon-upload icon-white"></i>Upload</button>
+                                <button type="reset" class="btn btn-warning cancel"><i class="icon-ban-circle icon-white"></i>Cancel</button>
+                                <input class="toggle" type="checkbox">
+                            </div>
+                            <div class="span5"><div class="progress progress-success progress-striped active fade"><div class="bar" style="width:0%;"></div></div></div>
+                        </div>
+                    </caarray:actions>
+                </s:form>
+            </c:if>
+        </div>
+    </div>
+
+    <div class="padme" id="uploadProgress" style="display: none">
+        <div id="tabboxwrapper_notabs">
+            <div class="boxpad2">
+                <h3>
+                    <span class="dark">Experiment:</span> ${project.experiment.title}
+                </h3>
             </div>
             <div class="span5"><div class="progress progress-success progress-striped active fade"><div class="bar" style="width:0%;"></div></div></div>
         </div>
@@ -63,6 +91,17 @@
 
 -->
 
+
+<script>
+var fileUploadErrors = {
+    maxFileSize: 'File is too big',
+    minFileSize: 'File is too small',
+    acceptFileTypes: 'Filetype not allowed',
+    maxNumberOfFiles: 'Max number of files exceeded',
+    uploadedBytes: 'Uploaded bytes exceed file size',
+    emptyResult: 'Empty file upload result'
+};
+</script>
 
 <script>
 var fileUploadErrors = {
@@ -114,16 +153,13 @@ var fileUploadErrors = {
             <td colspan="2"></td>
         {% } %}
         <td class="delete" style="width: 7em;">
-<!--
-            <button class="btn danger" data-type="{%=file.delete_type%}" data-url="{%=file.delete_url%}">Delete</button>
-            <input type="checkbox" name="delete" value="1">
--->
             <div style="width: 24px; height: 24px;"><img src="images/ok.png" width="100%" height="100%"/></div>
         </td>
         <td style="width: 1%">&nbsp;</td>
     </tr>
 {% } %}
 </script>
+
 
 <script type="text/javascript">
     var progressBar;

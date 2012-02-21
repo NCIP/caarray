@@ -100,7 +100,6 @@ import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
 import gov.nih.nci.caarray.injection.InjectorFactory;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.CaArrayUsernameHolder;
-import gov.nih.nci.caarray.web.fileupload.MonitoredMultiPartRequest;
 import gov.nih.nci.caarray.web.helper.DownloadHelper;
 
 import java.io.File;
@@ -895,7 +894,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
                 LOG.error(msg, e);
                 ActionHelper.saveMessage(getText("errors.uploading"));
             } finally {
-                MonitoredMultiPartRequest.releaseProgressMonitor(ServletActionContext.getRequest());
+
             }
         }
         return UPLOAD_INPUT;

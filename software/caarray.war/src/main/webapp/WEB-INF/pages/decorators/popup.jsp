@@ -17,24 +17,8 @@
         <script type="text/javascript" src="<caarray:writeVersionedUrl value="/scripts/ajaxtags.js"/>"></script>
         <script type="text/javascript" src="<caarray:writeVersionedUrl value="/scripts/ajaxtags_controls.js"/>"></script>
         <script type="text/javascript" src="<caarray:writeVersionedUrl value="/scripts/ajaxtags_parser.js"/>"></script>
-
-        <script type="text/javascript" src="<c:url value='/scripts/upload/jquery.min.js'/>"></script>
-        <script type="text/javascript" src="<c:url value='/scripts/upload/vendor/jquery.ui.widget.js'/>"></script>
-        <script type="text/javascript" src="<c:url value='/scripts/upload/tmpl.min.js'/>"></script>
-        <script type="text/javascript" src="<c:url value='/scripts/upload/load-image.min.js'/>"></script>
-
-        <script type="text/javascript" src="<c:url value='/scripts/upload/jquery.iframe-transport.js'/>"></script>
-        <script type="text/javascript" src="<c:url value='/scripts/upload/jquery.fileupload.js'/>"></script>
-        <script type="text/javascript" src="<c:url value='/scripts/upload/jquery.fileupload-ui.js'/>"></script>
-        <script type="text/javascript" src="<c:url value='/scripts/upload/jquery.fileupload-fallback.js'/>"></script>
-        <script type="text/javascript" src="<c:url value='/scripts/upload/application.js'/>"></script>
-        <script type="text/javascript" src="<c:url value='/scripts/upload/cors/jquery.xdr-transport.js'/>"></script>
-
-        <link rel="stylesheet" type="text/css" media="all" href="<c:url value='/styles/upload/bootstrap.min.css'/>" />
-        <link rel="stylesheet" type="text/css" media="all" href="<c:url value='/styles/upload/jquery.fileupload-ui.css'/>" />
-
         <script type="text/javascript" language="javascript">
-    // for help script - popup.jsp
+    // for help script
     var contextPath = "<%=request.getContextPath()%>";
     </script>
         <decorator:head/>
