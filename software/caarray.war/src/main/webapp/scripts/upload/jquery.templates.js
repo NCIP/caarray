@@ -53,7 +53,7 @@ var fileUploadErrors = {
             <button class="btn danger" data-type="{%=file.delete_type%}" data-url="{%=file.delete_url%}">Delete</button>
             <input type="checkbox" name="delete" value="1">
 -->
-            <div style="width: 24px; height: 24px;"><img src="images/ok.png" width="100%" height="100%"/></div>
+            <div style="width: 24px; height: 24px;"><img src="../images/ok.png" width="100%" height="100%"/></div>
         </td>
         <td style="width: 1%">&nbsp;</td>
     </tr>

@@ -137,39 +137,6 @@ public class UploadServlet implements MultiPartRequest {
     }
 
     /**
-     * Retrieves the identifier for the current upload request.
-     * @param request the current HTTP request
-     * @return an identifier used to refer to this upload when checking for progress
-     */
-    public static String getUploadKey(HttpServletRequest request) {
-        String uploadId = request.getParameter(UPLOAD_ID_ATTRIBUTE);
-        if (uploadId == null) {
-            uploadId = StringUtils.defaultString((String) request.getAttribute(UPLOAD_ID_ATTRIBUTE));
-        }
-        return ProgressMonitor.SESSION_PROGRESS_MONITOR + uploadId;
-    }
-
-    /**
-     * Returns the progress monitor.
-     * @param request the current HTTP request
-     * @return the progress monitor
-     */
-    public static ProgressMonitor getProgressMonitor(HttpServletRequest request) {
-        String uploadKey = getUploadKey(request);
-        return (ProgressMonitor) ServletActionContext.getRequest().getSession().getAttribute(uploadKey);
-    }
-
-    /**
-     * Release the progress monitor for the upload associated with the given request.
-     *
-     * @param request the current HTTP request
-     */
-    public static void releaseProgressMonitor(HttpServletRequest request) {
-        String uploadKey = getUploadKey(request);
-        request.getSession().removeAttribute(uploadKey);
-    }
-
-    /**
      * {@inheritDoc}
      */
     @SuppressWarnings({"unchecked", "PMD.CyclomaticComplexity" })

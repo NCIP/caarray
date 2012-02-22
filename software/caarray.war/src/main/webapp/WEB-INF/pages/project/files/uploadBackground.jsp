@@ -21,6 +21,11 @@
         <c:param name="initialTab" value="data" />
     </c:url>
 
+<!--
+<s:checkbox id="checkbox0" name="selectedFilesToUnpack" fieldValue="0" value="false" theme="simple"/>
+<s:label for="uploadForm_selectedFilesToUnpack" value="Unpack Compressed Archive" theme="simple"/>
+ -->
+
 <iframe id='target_upload' name='target_upload' src='' style='display: none'> </iframe>
 <div id="uploadFileDiv">
         <div class="boxpad2extend">
@@ -51,35 +56,12 @@
     </div>
 
     <div class="padme" id="uploadProgress" style="display: none">
-        <div id="tabboxwrapper_notabs">
-            <div class="boxpad2">
-                <h3>
-                    <span class="dark">Experiment:</span> ${project.experiment.title}
-                </h3>
-            </div>
-
-            <div class="boxpad">
-               <div id="uploadingMessage">
-                  <fmt:message key="data.file.upload.inProgress"/>
-               </div>
-
-               <table id="uploadProgressFileList" class="searchresults">
-                  <tbody>
-                      <tr>
-                          <td><span class="dark">Overall progress</span></td>
-                          <td><div style="float: right"><span id="uploadPercent">0</span>%</div><div id="uploadProgressBar"></div></td>
-                      </tr>
-                  </tbody>
-               </table>
-
-               <div id="closeWindow" style="display: none">
-                    <caarray:actions>
-                        <caarray:action actionClass="cancel" text="Close Window" onclick="window.close()" />
-                        <caarray:action actionClass="import" text="Close Window and go to Experiment Data" onclick="closeAndGoToProjectData()" />
-                    </caarray:actions>
-               </div>
-           </div>
-       </div>
+         <div id="closeWindow" style="display: none">
+              <caarray:actions>
+                  <caarray:action actionClass="cancel" text="Close Window" onclick="window.close()" />
+                  <caarray:action actionClass="import" text="Close Window and go to Experiment Data" onclick="closeAndGoToProjectData()" />
+              </caarray:actions>
+         </div>
    </div>
 
 <script>
@@ -93,10 +75,29 @@ var fileUploadErrors = {
 };
 </script>
 
+<script id="template-upload111" type="text/html">
+{% for (var i=0, files=o.files, l=files.length, file=files[0]; i<l; file=files[++i]) { %}
+    <tr class="template-upload fade">
+        <td class="preview">{%=i+1 %}</td>
+        <td class="name">{%=file.name%}</td>
+        <td class="size">{%=o.formatFileSize(file.size)%}</td>
+        {% if (file.error) { %}
+            <td class="error" colspan="2"><span class="label important">Error</span> {%=fileUploadErrors[file.error] || file.error%}</td>
+        {% } else if (o.files.valid && !i) { %}
+            <td class="progress"><div class="progressbar"><div style="width:0%;"></div></div></td>
+            <td class="start" style="width: 2%">{% if (!o.options.autoUpload) { %}<button class="btn primary">Start</button>{% } %}</td>
+        {% } else { %}
+            <td colspan="2"></td>
+        {% } %}
+        <td class="cancel" style="width: 7em;">{% if (!i) { %}<button class="btn info">Cancel</button>{% } %}</td>
+        <td style="width: 1%">&nbsp;</td>
+    </tr>
+{% } %}
+</script>
+
 <script id="template-upload" type="text/html">
 {% for (var i=0, files=o.files, l=files.length, file=files[0]; i<l; file=files[++i]) { %}
     <tr class="template-upload fade">
-        <td class="preview"><span class="fade"></span></td>
         <td class="name">{%=file.name%}</td>
         <td class="size">{%=o.formatFileSize(file.size)%}</td>
         {% if (file.error) { %}
@@ -116,6 +117,24 @@ var fileUploadErrors = {
 <script id="template-download" type="text/html">
 {% for (var i=0, files=o.files, l=files.length, file=files[0]; i<l; file=files[++i]) { %}
     <tr class="template-download fade">
+        <td class="name">{%=file.name%}</td>
+        <td class="size">{%=o.formatFileSize(file.size)%}</td>
+        {% if (file.error) { %}
+            <td class="error" colspan="2"><span class="label important">Error</span> {%=fileUploadErrors[file.error] || file.error%}</td>
+        {% } else { %}
+            <td colspan="2"></td>
+        {% } %}
+        <td class="delete" style="width: 7em;">
+            <div style="width: 24px; height: 24px;"><img src="/images/ok.png" width="100%" height="100%"/></div>
+        </td>
+        <td style="width: 1%">&nbsp;</td>
+    </tr>
+{% } %}
+</script>
+
+<script id="template-download11" type="text/html">
+{% for (var i=0, files=o.files, l=files.length, file=files[0]; i<l; file=files[++i]) { %}
+    <tr class="template-download fade">
         {% if (file.error) { %}
             <td></td>
             <td class="name">{%=file.name%}</td>
@@ -132,7 +151,7 @@ var fileUploadErrors = {
             <td colspan="2"></td>
         {% } %}
         <td class="delete" style="width: 7em;">
-            <div style="width: 24px; height: 24px;"><img src="images/ok.png" width="100%" height="100%"/></div>
+            <div style="width: 24px; height: 24px;"><img src="/images/ok.png" width="100%" height="100%"/></div>
         </td>
         <td style="width: 1%">&nbsp;</td>
     </tr>

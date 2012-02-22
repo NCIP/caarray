@@ -29,8 +29,8 @@
         <link rel="stylesheet" type="text/css" media="all" href="<c:url value='/styles/upload/jquery.fileupload-ui.css'/>" />
 
         <script type="text/javascript" language="javascript">
-    // for help script - upload.jsp
-    var contextPath = "<%=request.getContextPath()%>";
+            // for help script - upload.jsp
+            var contextPath = "<%=request.getContextPath()%>";
     </script>
         <decorator:head/>
     </head>
