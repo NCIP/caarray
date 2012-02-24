@@ -78,7 +78,7 @@
             <s:else>
             <div class="row">
                 <div class="export_error"><img src="<c:url value="/images/ico_error.gif"/>" class="erroricon" alt="">
-                    <b>GEO SOFT export is not available for this experiment for the folowing reasons:</b>
+                    <b>GEO SOFT export is not available for this experiment for the following reasons:</b>
                     <ul class="export_error">
                     <s:iterator value="geoValidation" id = "message">
                         <li><c:out value="${message}"/></li>
