@@ -46,7 +46,7 @@
 
 .progressbar div {
   width: auto;
-  background: url('../images/progressbar.gif');
+  background: url('../../images/progressbar.gif');
 }
 
 .fileupload-progressbar {
