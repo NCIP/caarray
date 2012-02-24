@@ -47,14 +47,18 @@
                     <td class="name">{%=file.name%}</td>
                     <td class="size">{%=o.formatFileSize(file.size)%}</td>
                     {% if (file.error) { %}
-                        <td class="error" colspan="2"><span class="label important">Error</span> {%=fileUploadErrors[file.error] || file.error%}</td>
+                        <td class="error" colspan="2"><span class="label label-important">Error</span> {%=fileUploadErrors[file.error] || file.error%}</td>
                     {% } else if (o.files.valid && !i) { %}
-                        <td class="progress"><div class="progressbar"><div style="width:0%;"></div></div></td>
-                        <td class="start" style="width: 2%">{% if (!o.options.autoUpload) { %}<button class="btn primary">Start</button>{% } %}</td>
+                        <td><div class="progress progress-success progress-striped active"><div class="bar" style="width:0%;"></div></div></td>
+                        <td class="start">
+                            {% if (!o.options.autoUpload) { %}<button class="btn btn-primary"><i class="icon-upload icon-white"></i>Start</button>{% } %}
+                        </td>
                     {% } else { %}
                         <td colspan="2"></td>
                     {% } %}
-                    <td class="cancel" style="width: 7em;">{% if (!i) { %}<button class="btn info">Cancel</button>{% } %}</td>
+                    <td class="cancel">
+                        {% if (!i) { %}<button class="btn btn-warning"><i class="icon-ban-circle icon-white"></i>Cancel</button>{% } %}
+                    </td>
                     <td style="width: 1%">&nbsp;</td>
                 </tr>
             {% } %}
