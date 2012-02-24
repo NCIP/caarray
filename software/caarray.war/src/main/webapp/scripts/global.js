@@ -857,7 +857,7 @@ var ListPickerUtils = {
 function openHelpWindow() {
     // Get the URL
     var pageURL = "https://wiki.nci.nih.gov/x/LBo9Ag";
-    window.open (pageURL,"caArray User's Guide", "status,scrollbars,resizable");
+    window.open (pageURL,"caArray_User_Guide", "status,scrollbars,resizable");
 }
 
 function formatFileSize(value) {
