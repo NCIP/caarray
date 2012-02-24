@@ -219,6 +219,8 @@
                 } else {
                     that._trigger('failed', e, data);
                 }
+
+                alert("error");
             },
             // Callback for upload progress events:
             progress: function (e, data) {
