@@ -16,13 +16,13 @@
     <div class="pagingtop"><span class="pagebanner">{0} {1} found, displaying {2} to {3}.</span>
 </display:setProperty>
 <display:setProperty name="paging.banner.full">
-    <span class="pagelinks">[<a href="{1}">First</a>/<a href="{2}">Prev</a>]{0}[<a href="{3}">Next</a>/<a href="{4}">Last</a>]</span></div>
+    <span class="pagelinks">[<a href="{1}">First</a>/<a href="{2}">Prev</a>] {0} [<a href="{3}">Next</a>/<a href="{4}">Last</a>]</span></div>
 </display:setProperty>
 <display:setProperty name="paging.banner.first">
-    <span class="pagelinks">[First/Prev] {0}[<a href="{3}">Next</a>/<a href="{4}">Last</a>]</span></div>
+    <span class="pagelinks">[First/Prev] {0} [<a href="{3}">Next</a>/<a href="{4}">Last</a>]</span></div>
 </display:setProperty>
 <display:setProperty name="paging.banner.last">
-    <span class="pagelinks">[<a href="{1}">First</a>/<a href="{2}">Prev</a>]{0} [Next/Last]</span></div>
+    <span class="pagelinks">[<a href="{1}">First</a>/<a href="{2}">Prev</a>] {0} [Next/Last]</span></div>
 </display:setProperty>
 <display:setProperty name="paging.banner.onepage">
     <span class="pagelinks"></span></div>
