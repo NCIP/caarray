@@ -232,7 +232,7 @@ import com.healthmarketscience.rmiio.SimpleRemoteInputStream;
         } else if (allDesignElementListsAreConsistent(dataSets)) {
             dataSet.setDesignElementList(dataSets.get(0).getDesignElementList());
         } else {
-            throw new InconsistentDataSetsException("The DataSet requested data from inconsistent design elemeents");
+            throw new InconsistentDataSetsException("The DataSet requested data from inconsistent design elements");
         }
     }
 

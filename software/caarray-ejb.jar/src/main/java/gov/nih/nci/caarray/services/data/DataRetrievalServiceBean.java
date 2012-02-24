@@ -178,7 +178,7 @@ public class DataRetrievalServiceBean implements DataRetrievalService {
         } else if (allDesignElementListsAreConsistent(dataSets)) {
             dataSet.setDesignElementList(dataSets.get(0).getDesignElementList());
         } else {
-            throw new IllegalArgumentException("The DataSet requested data from inconsistent design elemeents");
+            throw new IllegalArgumentException("The DataSet requested data from inconsistent design elements");
         }
     }
 
