@@ -86,7 +86,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import gov.nih.nci.caarray.domain.array.ArrayDesign;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
-import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.validation.FileValidationResult;
@@ -101,56 +100,6 @@ import java.util.Map;
 import org.hibernate.Transaction;
 
 public abstract class AbstractFileValidationIntegrationTest extends AbstractFileManagementServiceIntegrationTest {
-    // @Test
-    // public void testInvalidProbeNamesForDataMatrixCopyNumberData() throws Exception {
-    // final FileFileTypeWrapper[] dataFiles = new FileFileTypeWrapper[3];
-    // dataFiles[0] =
-    // new FileFileTypeWrapper(MageTabDataFiles.BAD_DATA_MATRIX_COPY_NUMER_IDF, FileTypeRegistry.MAGE_TAB_IDF);
-    // dataFiles[1] =
-    // new FileFileTypeWrapper(MageTabDataFiles.BAD_DATA_MATRIX_COPY_NUMER_SDRF,
-    // FileTypeRegistry.MAGE_TAB_SDRF);
-    // dataFiles[2] =
-    // new FileFileTypeWrapper(MageTabDataFiles.BAD_DATA_MATRIX_COPY_NUMER_DATA,
-    // DataMatrixCopyNumberHandler.COPY_NUMBER_FILE_TYPE);
-    // final FileFileTypeWrapper design =
-    // new FileFileTypeWrapper(AgilentArrayDesignFiles.TEST_SHORT_ACGH_XML,
-    // AgilentXmlDesignFileHandler.XML_FILE_TYPE);
-    // final List<String[]> expectedErrorsList = new ArrayList<String[]>();
-    // final String[] expectedErrors =
-    // new String[] {"Probe with name 'foo' was not found in array design '022522_D_F_20090107.short' version '2.0'." };
-    // expectedErrorsList.add(expectedErrors);
-    // doValidation(dataFiles, design, new FileType[] {DataMatrixCopyNumberHandler.COPY_NUMBER_FILE_TYPE },
-    // expectedErrorsList);
-    // }
-    //
-    // @Test
-    // public void testInvalidArrayDesignNameInSdrf() throws Exception {
-    // final FileFileTypeWrapper[] dataFiles = new FileFileTypeWrapper[3];
-    // dataFiles[0] =
-    // new FileFileTypeWrapper(MageTabDataFiles.BAD_DATA_MATRIX_COPY_NUMER_BAD_SDRF_IDF,
-    // FileTypeRegistry.MAGE_TAB_IDF);
-    // dataFiles[1] =
-    // new FileFileTypeWrapper(MageTabDataFiles.BAD_DATA_MATRIX_COPY_NUMER_BAD_SDRF_SDRF,
-    // FileTypeRegistry.MAGE_TAB_SDRF);
-    // dataFiles[2] =
-    // new FileFileTypeWrapper(MageTabDataFiles.BAD_DATA_MATRIX_COPY_NUMER_DATA,
-    // DataMatrixCopyNumberHandler.COPY_NUMBER_FILE_TYPE);
-    // final FileFileTypeWrapper design =
-    // new FileFileTypeWrapper(AgilentArrayDesignFiles.TEST_SHORT_ACGH_XML,
-    // AgilentXmlDesignFileHandler.XML_FILE_TYPE);
-    // final String arrayDesignName = "Agilent.com:PhysicalArrayDesign:022522_D_F_20090107";
-    // final List<String[]> expectedErrorsList = new ArrayList<String[]>();
-    // final String[] expectedErrors =
-    // new String[] {
-    // String.format(MessageTemplates.NON_EXISTING_ARRAY_DESIGN_ERROR_MESSAGE_TEMPLATE,
-    // arrayDesignName),
-    // String.format(
-    // MessageTemplates.ARRAY_DESIGN_NOT_ASSOCIATED_WITH_EXPERIMENT_ERROR_MESSAGE_TEMPLATE,
-    // arrayDesignName) };
-    // expectedErrorsList.add(expectedErrors);
-    // doValidation(dataFiles, design, new FileType[] {FileTypeRegistry.MAGE_TAB_SDRF }, expectedErrorsList);
-    // }
-
     protected static final class FileFileTypeWrapper {
         final File file;
         final FileType fileType;
@@ -164,6 +113,17 @@ public abstract class AbstractFileValidationIntegrationTest extends AbstractFile
 
     protected void doValidation(FileFileTypeWrapper[] datafiles, FileFileTypeWrapper arrayDesign,
             final FileType[] invalidFileTypes, final List<String[]> expectedErrorsForFileTypes) throws Exception {
+        List<String[]> expectedWarnings = new ArrayList<String[]>(expectedErrorsForFileTypes.size());
+        for (int i = 0; i < expectedErrorsForFileTypes.size(); ++i) {
+            expectedWarnings.add(new String[] {});
+        }
+        
+        doValidation(datafiles, arrayDesign, invalidFileTypes, expectedErrorsForFileTypes, expectedWarnings);
+    }
+    
+    protected void doValidation(FileFileTypeWrapper[] datafiles, FileFileTypeWrapper arrayDesign,
+            final FileType[] invalidFileTypes, final List<String[]> expectedErrorsForFileTypes,
+            final List<String[]> expectedWarningsForFileTypes) throws Exception {
         final Map<File, FileType> files = new HashMap<File, FileType>();
         for (final FileFileTypeWrapper datafileWrapper : datafiles) {
             files.put(datafileWrapper.file, datafileWrapper.fileType);
@@ -176,8 +136,10 @@ public abstract class AbstractFileValidationIntegrationTest extends AbstractFile
         int expectedErrorFileCounter = 0;
         for (final CaArrayFile caArrayFile : project.getFiles()) {
             if (isIn(caArrayFile.getFileType(), invalidFileTypes)) {
-                validateFileHasExpectedValidationErrors(caArrayFile,
+                validateFileHasExpectedValidationMessages(caArrayFile, ValidationMessage.Type.ERROR,
                         expectedErrorsForFileTypes.get(expectedErrorFileCounter));
+                validateFileHasExpectedValidationMessages(caArrayFile, ValidationMessage.Type.WARNING,
+                        expectedWarningsForFileTypes.get(expectedErrorFileCounter));
                 expectedErrorFileCounter++;
             }
         }
@@ -193,28 +155,29 @@ public abstract class AbstractFileValidationIntegrationTest extends AbstractFile
         return false;
     }
 
-    private void validateFileHasExpectedValidationErrors(final CaArrayFile file, final String[] expectedErrors) {
-        System.out.println("file =" + file + "=");
-        System.out.println("file.getFileStatus() =" + file.getFileStatus() + "=");
-        System.out.println("file.getValidationResult() =" + file.getValidationResult() + "=");
-        System.out.println("file.getValidationResult().getMessages(ValidationMessage.Type.ERROR) ="
-                + file.getValidationResult().getMessages(ValidationMessage.Type.ERROR) + "=");
-        assertEquals("The file lacks validation errors.", FileStatus.VALIDATION_ERRORS, file.getFileStatus());
+    private void validateFileHasExpectedValidationMessages(final CaArrayFile file, ValidationMessage.Type type, 
+            final String[] expectedMessages) {
         final FileValidationResult validationResult = file.getValidationResult();
-        assertEquals("Wrong number of validation errors.", expectedErrors.length,
-                validationResult.getMessages(ValidationMessage.Type.ERROR).size());
-        final List<String> validationErrorsAsList = getValidationErrorsAsList(validationResult);
-        for (final String expectedError : expectedErrors) {
-            assertTrue("The expected error '" + expectedError + "' was not found.",
-                    validationErrorsAsList.contains(expectedError));
+        int validationSize = (validationResult == null) ? 0 : validationResult.getMessages(type).size();
+        assertEquals("Wrong number of validation messages for file=" + file.getName() + ", validation message type=" 
+                + type + ", messages=" + validationResult, 
+                expectedMessages.length,
+                validationSize);
+        final List<String> validationMessagesAsList = getValidationMessagesAsList(validationResult, type);
+        for (final String expectedMessage : expectedMessages) {
+            assertTrue("The expected message '" + expectedMessage + "' was not found.",
+                    validationMessagesAsList.contains(expectedMessage));
         }
     }
 
-    private List<String> getValidationErrorsAsList(final FileValidationResult validationResult) {
-        final List<String> validationErrorsAsList = new ArrayList<String>();
-        for (final ValidationMessage validationMessage : validationResult.getMessages(ValidationMessage.Type.ERROR)) {
-            validationErrorsAsList.add(validationMessage.getMessage());
+    private List<String> getValidationMessagesAsList(final FileValidationResult validationResult, 
+            ValidationMessage.Type type) {
+        final List<String> validationMessagesAsList = new ArrayList<String>();
+        if (validationResult != null) {
+            for (final ValidationMessage validationMessage : validationResult.getMessages(type)) {
+                validationMessagesAsList.add(validationMessage.getMessage());
+            }
         }
-        return validationErrorsAsList;
+        return validationMessagesAsList;
     }
 }

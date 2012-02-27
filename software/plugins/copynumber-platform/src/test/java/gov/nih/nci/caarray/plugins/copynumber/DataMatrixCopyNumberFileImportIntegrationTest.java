@@ -97,7 +97,6 @@ import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 
 import org.hibernate.Transaction;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -113,7 +112,7 @@ public class DataMatrixCopyNumberFileImportIntegrationTest extends AbstractFileM
     }
 
     @Test
-    public void testDataMatrixCopyNumberMageTabImportSuccess() throws Exception {
+    public void importSuccess() throws Exception {
         final ArrayDesign design =
                 importArrayDesign(AgilentArrayDesignFiles.TEST_SHORT_ACGH_XML,
                         AgilentXmlDesignFileHandler.XML_FILE_TYPE);
@@ -131,17 +130,22 @@ public class DataMatrixCopyNumberFileImportIntegrationTest extends AbstractFileM
         tx.commit();
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
-    public void testDataMatrixCopyNumberMageTabImportFailDueToBadSdrfHybCount() throws Exception {
+    @Test
+    public void partialSdrfHybCount() throws Exception {
         final ArrayDesign design =
                 importArrayDesign(AgilentArrayDesignFiles.TEST_SHORT_ACGH_XML,
                         AgilentXmlDesignFileHandler.XML_FILE_TYPE);
         addDesignToExperiment(design);
         final MageTabFileSet fileSet = new MageTabFileSet();
-        fileSet.addIdf(new JavaIOFileRef(MageTabDataFiles.BAD_DATA_MATRIX_COPY_NUMER_WRONG_HYB_COUNT_IDF));
-        fileSet.addSdrf(new JavaIOFileRef(MageTabDataFiles.BAD_DATA_MATRIX_COPY_NUMER_WRONG_HYB_COUNT_SDRF));
+        fileSet.addIdf(new JavaIOFileRef(MageTabDataFiles.DATA_MATRIX_COPY_NUMER_HYB_SUBSET_IDF));
+        fileSet.addSdrf(new JavaIOFileRef(MageTabDataFiles.DATA_MATRIX_COPY_NUMER_HYB_SUBSET_SDRF));
         fileSet.addDataMatrix(new JavaIOFileRef(MageTabDataFiles.GOOD_DATA_MATRIX_COPY_NUMER_DATA));
         importFiles(fileSet, DataMatrixCopyNumberHandler.COPY_NUMBER_FILE_TYPE);
-        assertEquals(Boolean.TRUE.toString(), Boolean.FALSE.toString());
+
+        final Transaction tx = this.hibernateHelper.beginTransaction();
+        final Project project = getTestProject();
+        assertEquals(FileStatus.IMPORTED, project.getFileSet().getStatus());
+        assertEquals(2, project.getExperiment().getHybridizations().size());
+        tx.commit();
     }
 }

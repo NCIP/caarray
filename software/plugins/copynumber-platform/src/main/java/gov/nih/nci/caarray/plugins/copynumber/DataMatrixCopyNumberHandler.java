@@ -129,6 +129,12 @@ import com.google.inject.Inject;
 @SuppressWarnings({"PMD.CyclomaticComplexity" })
 public final class DataMatrixCopyNumberHandler extends AbstractDataFileHandler {
 
+    /**
+     * Warning message when data file has more hybridizations than the split SDRF.
+     */
+    public static final String PARTIAL_SDRF_WARNING = "Partial SDRF import.  Verify all hybridizations in data "
+            + " file are present in full SDRF.";
+    
     private static final String HYBRIDIZATION_REF = "Hybridization REF";
     private static final String REPORTER_REF = "Reporter REF";
     private static final String CHROMOSOME = "Chromosome";
@@ -152,7 +158,6 @@ public final class DataMatrixCopyNumberHandler extends AbstractDataFileHandler {
     private int reporterRefColumnIndex = UNINITIALIZED_INDEX;
     private int chromosomeColumnIndex = UNINITIALIZED_INDEX;
     private int positionColumnIndex = UNINITIALIZED_INDEX;
-    private String[] hybridizations = null;
     private Map<String, Integer> hybridizationNamesToColumnIndexesMapping = null;
     private Set<Integer> hybridizationColumnIndexesBasedOnLog2RatioColumnPosition = null;
     private List<String> headersOfColumnsToBeIgnored = null;
@@ -230,7 +235,6 @@ public final class DataMatrixCopyNumberHandler extends AbstractDataFileHandler {
 
     private void unInitializeAndClose(DelimitedFileReader delimitedFileReader) {
         this.hasBeenInitialized = false;
-        this.hybridizations = null;
         this.hybridizationNamesToColumnIndexesMapping = null;
         this.hybridizationColumnIndexesBasedOnLog2RatioColumnPosition = null;
         this.headersOfColumnsToBeIgnored = null;
@@ -270,9 +274,8 @@ public final class DataMatrixCopyNumberHandler extends AbstractDataFileHandler {
             int rowIndex = 0;
             while (delimitedFileReader.hasNextLine()) {
                 final List<String> values = delimitedFileReader.nextLine();
-                for (int i = 0; i < this.hybridizations.length; i++) {
-                    final String hybridization = this.hybridizations[i];
-                    final HybridizationData hybridizationData = dataSet.getHybridizationDataList().get(i);
+                for (HybridizationData hybridizationData : dataSet.getHybridizationDataList()) {
+                    final String hybridization = hybridizationData.getHybridization().getName();
                     final AbstractDataColumn[] orderedColumns = getOrderedColumns(hybridizationData);
                     this.valueParser.setValue(orderedColumns[CHROMOSOME_DATA_COLUMN_ARRAY_POSITION], rowIndex,
                             values.get(this.chromosomeColumnIndex));
@@ -350,12 +353,6 @@ public final class DataMatrixCopyNumberHandler extends AbstractDataFileHandler {
                 }
             }
             break;
-        }
-        this.hybridizations = new String[this.hybridizationNamesToColumnIndexesMapping.size()];
-        int index = 0;
-        for (final String hybridizationName : this.hybridizationNamesToColumnIndexesMapping.keySet()) {
-            this.hybridizations[index] = hybridizationName;
-            index++;
         }
     }
 
@@ -447,6 +444,14 @@ public final class DataMatrixCopyNumberHandler extends AbstractDataFileHandler {
                 }
             }
         }
+        int mageTabHybridizations = 0;
+        for (List<?> curList : mTabSet.getSdrfHybridizations().values()) {
+            mageTabHybridizations += curList.size();
+        }
+        if (this.hybridizationNamesToColumnIndexesMapping.size() != mageTabHybridizations) {
+            result.addMessage(Type.WARNING, PARTIAL_SDRF_WARNING);
+        }
+            
         if (UNINITIALIZED_INDEX == this.reporterRefColumnIndex) {
             result.addMessage(Type.ERROR, "No '" + REPORTER_REF + "' column found.");
         }
