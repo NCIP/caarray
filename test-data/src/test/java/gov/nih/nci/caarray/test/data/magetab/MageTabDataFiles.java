@@ -230,11 +230,11 @@ public class MageTabDataFiles {
     public static final File BAD_DATA_MATRIX_COPY_NUMER_BAD_SDRF_SDRF = new File(MageTabDataFiles.class.getResource(
             "/magetab/data_matrix_copy_number/data_matrix_copy_number.bad_sdrf.sdrf").getFile());
 
-    public static final File BAD_DATA_MATRIX_COPY_NUMER_WRONG_HYB_COUNT_IDF = new File(MageTabDataFiles.class.getResource(
-            "/magetab/data_matrix_copy_number/data_matrix_copy_number.wrong_hyb_count.idf").getFile());
+    public static final File DATA_MATRIX_COPY_NUMER_HYB_SUBSET_IDF = new File(MageTabDataFiles.class.getResource(
+            "/magetab/data_matrix_copy_number/data_matrix_copy_number.hyb_subset.idf").getFile());
 
-    public static final File BAD_DATA_MATRIX_COPY_NUMER_WRONG_HYB_COUNT_SDRF = new File(MageTabDataFiles.class.getResource(
-            "/magetab/data_matrix_copy_number/data_matrix_copy_number.wrong_hyb_count.sdrf").getFile());
+    public static final File DATA_MATRIX_COPY_NUMER_HYB_SUBSET_SDRF = new File(MageTabDataFiles.class.getResource(
+            "/magetab/data_matrix_copy_number/data_matrix_copy_number.hyb_subset.sdrf").getFile());
 
     public static final File BAD_DATA_MATRIX_COPY_NUMER_DATA = new File(MageTabDataFiles.class.getResource(
             "/magetab/data_matrix_copy_number/data_matrix_copy_number.data.bad.txt").getFile());
