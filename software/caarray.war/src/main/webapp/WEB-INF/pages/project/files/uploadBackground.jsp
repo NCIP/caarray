@@ -21,11 +21,6 @@
         <c:param name="initialTab" value="data" />
     </c:url>
 
-<!--
-<s:checkbox id="checkbox0" name="selectedFilesToUnpack" fieldValue="0" value="false" theme="simple"/>
-<s:label for="uploadForm_selectedFilesToUnpack" value="Unpack Compressed Archive" theme="simple"/>
- -->
-
 <iframe id='target_upload' name='target_upload' src='' style='display: none'> </iframe>
 <div id="uploadFileDiv">
         <div class="boxpad2extend">
@@ -36,8 +31,7 @@
                     <input type=hidden name="selectedFilesToUnpack" value="-1" />
                     <div class="fileupload-loading"></div><br>
                     <div class="row fileupload-buttonbar">
-                        <div class="span5"><div class="progress progress-success progress-striped active fade"><div class="bar" style="width:0%;"></div></div></div>
-                    </div>
+                    <div class="span5"><div class="progress progress-success progress-striped active fade"><div class="bar" style="width:0%;"></div></div></div>
                     <table class="table table-striped"><tbody class="files" data-toggle="modal-gallery" data-target="#modal-gallery"></tbody></table>
                     <caarray:actions>
                         <div class="row fileupload-buttonbar">
