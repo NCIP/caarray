@@ -119,8 +119,8 @@
     <dependency conf="project" org="com.fiveamsolutions" name="nci-commons-core" rev="1.2.17" transitive="false" />
     <dependency conf="project" org="nci-commons-struts2" name="nci-commons-struts2" rev="1.2.17nci" transitive="false" />
     <dependency conf="project" org="net.sf.ezmorph" name="ezmorph" rev="1.0.4" transitive="false" />
-    <dependency conf="project" org="net.sf.json-lib" name="json-lib" rev="2.2.2" transitive="false">
-      <artifact name="json-lib" type="jar" url="https://ncimvn.nci.nih.gov/nexus/content/repositories/public/net/sf/json-lib/json-lib/2.2.2/json-lib-2.2.2-jdk15.jar" />
+    <dependency conf="project" org="net.sf.json-lib" name="json-lib" rev="2.4" transitive="false">
+      <artifact name="json-lib" type="jar" url="https://ncimvn.nci.nih.gov/nexus/content/repositories/public/net/sf/json-lib/json-lib/2.4/json-lib-2.4-jdk15.jar" />
     </dependency>
     <dependency conf="project" org="org.codehaus.castor" name="castor" rev="1.0.4nci" transitive="false" />
     <dependency conf="project" org="mail" name="mail" rev="1.2nci" transitive="false" />

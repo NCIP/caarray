@@ -32,7 +32,11 @@
                     <div class="fileupload-loading"></div><br>
                     <div class="row fileupload-buttonbar">
                     <div class="span5"><div class="progress progress-success progress-striped active fade"><div class="bar" style="width:0%;"></div></div></div>
-                    <table class="table table-striped"><tbody class="files" data-toggle="modal-gallery" data-target="#modal-gallery"></tbody></table>
+                    <table class="table table-striped" border="2">
+                        <tbody class="files" data-toggle="modal-gallery" data-target="#modal-gallery">
+
+                        </tbody>
+                    </table>
                     <caarray:actions>
                         <div class="row fileupload-buttonbar">
                             <div class="span7">

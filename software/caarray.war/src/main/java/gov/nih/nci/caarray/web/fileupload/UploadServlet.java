@@ -103,13 +103,14 @@ import org.apache.commons.fileupload.disk.DiskFileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.StrutsConstants;
 import org.apache.struts2.dispatcher.multipart.MultiPartRequest;
 
 import com.opensymphony.xwork2.inject.Inject;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 /**
  * File upload functionality.
@@ -119,8 +120,6 @@ import com.opensymphony.xwork2.inject.Inject;
 @SuppressWarnings("PMD.CyclomaticComplexity")
 public class UploadServlet implements MultiPartRequest {
     private static final Logger LOG = Logger.getLogger(UploadServlet.class);
-
-    private static final String UPLOAD_ID_ATTRIBUTE = "__multipart_upload_id";
 
     private final Map<String, List<FileItem>> files = new HashMap<String, List<FileItem>>();
     private final Map<String, List<String>> params = new HashMap<String, List<String>>();
@@ -151,6 +150,9 @@ public class UploadServlet implements MultiPartRequest {
             ServletFileUpload upload = new ServletFileUpload(fac);
             upload.setSizeMax(maxSize);
             List<FileItem> items = (List<FileItem>) upload.parseRequest(createRequestContext(servletRequest));
+            List<Map<String,Object>> uploads = new ArrayList<Map<String,Object>>();
+            Map<String,Object> map = new HashMap<String,Object>();
+
             for (FileItem item : items) {
                 LOG.debug((new StringBuilder()).append("Found item ").append(item.getFieldName()).toString());
                 if (item.isFormField()) {
@@ -170,6 +172,17 @@ public class UploadServlet implements MultiPartRequest {
                         files.put(item.getFieldName(), values);
                     }
                     values.add(item);
+
+                    map.put("name", item.getName());
+                    map.put("type", item.getContentType());
+                    map.put("size", item.getSize());
+                    uploads.add(map);
+                }
+
+                if (!uploads.isEmpty()) {
+                    String jsonString = JSONArray.fromObject(uploads.toArray()).toString();
+                    ServletActionContext.getResponse().setContentType("text/plain");
+                    ServletActionContext.getResponse().getWriter().write(jsonString);
                 }
             }
         } catch (FileUploadException e) {

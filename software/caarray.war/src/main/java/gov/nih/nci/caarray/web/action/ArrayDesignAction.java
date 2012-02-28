@@ -105,7 +105,6 @@ import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.InvalidDataFileException;
 import gov.nih.nci.caarray.validation.InvalidNumberOfArgsException;
 import gov.nih.nci.caarray.validation.ValidationMessage;
-import gov.nih.nci.caarray.web.fileupload.MonitoredMultiPartRequest;
 import gov.nih.nci.caarray.web.helper.DownloadHelper;
 
 import java.io.File;
@@ -513,8 +512,6 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
         } else {
             returnVal = "importComplete";
         }
-
-        MonitoredMultiPartRequest.releaseProgressMonitor(ServletActionContext.getRequest());
 
         return returnVal;
     }

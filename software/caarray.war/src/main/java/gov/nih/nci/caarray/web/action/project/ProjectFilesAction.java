@@ -182,7 +182,6 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
      */
     public static final long MAX_DOWNLOAD_SIZE = 1024 * 1024 * 1536;
 
-    private static final String UPLOAD_INPUT = "upload";
     private static final long serialVersionUID = 1L;
     private static final String ACTION_UNIMPORTED = "listUnimported";
     private static final String ACTION_IMPORTED = "listImported";
@@ -897,7 +896,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
 
             }
         }
-        return UPLOAD_INPUT;
+        return null;
     }
 
     /**

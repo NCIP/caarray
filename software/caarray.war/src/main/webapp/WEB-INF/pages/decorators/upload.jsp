@@ -41,9 +41,19 @@
          </script>
 
          <script id="template-upload" type="text/html">
-            {% for (var i=0, files=o.files, l=files.length, file=files[0]; i<l; file=files[++i]) { %}
+            {% for (var i=0, files=o.files, l=files.length, file=files[0]; i<l; file=files[++i]) {
+                    var match = file.name.match('\.zip$');
+                    var chkId = "checkbox" + l;
+            %}
                 <tr class="template-upload fade">
-                    <td>check</td>
+                    <td>
+                        {% if (match) { %}
+                            <input type="checkbox" id="checkbox0" name="selectedFilesToUnpack" value="0" checked="true"/>
+                        {% } else { %}
+                            <input type="checkbox" id="checkbox0" name="selectedFilesToUnpack" value="0" disabled="true"/>
+                        {% } %}
+                        <label for="uploadForm_selectedFilesToUnpack" value="Unpack Compressed Archive" />
+                    </td>
                     <td class="name">{%=file.name%}</td>
                     <td class="size">{%=o.formatFileSize(file.size)%}</td>
                     {% if (file.error) { %}
