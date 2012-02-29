@@ -166,6 +166,8 @@
                         }
                     );
                 }
+                // hook into the custom done event.
+                onUploadDone();
             },
             // Callback for failed (abort or error) uploads:
             fail: function (e, data) {

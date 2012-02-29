@@ -975,11 +975,6 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
             return false;
         }
 
-        final List<String> fileNames = getUploadFileName();
-        if (fileNames == null || fileNames.isEmpty()) {
-            ActionHelper.saveMessage(getText("fileRequired"));
-            return false;
-        }
         return true;
     }
 

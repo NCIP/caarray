@@ -32,32 +32,28 @@
                     <div class="row fileupload-buttonbar">
                     <div class="span5"><div class="progress progress-success progress-striped active fade"><div class="bar" style="width:0%;"></div></div></div>
                     <table class="table table-striped"><tbody class="files" data-toggle="modal-gallery" data-target="#modal-gallery"></tbody></table>
-                    <caarray:actions>
-                        <div class="row fileupload-buttonbar">
-                            <div class="span7">
-                                <span class="btn btn-success fileinput-button">
-                                    <span><i class="icon-plus icon-white"></i>Add Files</span>
-                                    <input id="upload0" name="upload" multiple="" type="file">
-                                </span>
-                                <button type="submit" class="btn btn-primary start" onclick="beginUpload()"><i class="icon-upload icon-white"></i>Upload All</button>
-                                <button type="reset" class="btn btn-warning cancel"><i class="icon-ban-circle icon-white"></i>Cancel All Uploads</button>
-                                <span id="closeWindow" style="display:none">
-                                    <button type="button" class="btn btn-warning cancel" onclick="window.close()">Close Window</button>
-                                    <button type="button" class="btn btn-warning cancel" onclick="closeAndGoToProjectData()">Close Window and go to Experiment Data</button>
-                                </span>
-                            </div>
+                    <div class="row fileupload-buttonbar">
+                        <div class="span7">
+                            <span class="btn btn-success fileinput-button">
+                                <span><i class="icon-plus icon-white"></i>Add Files</span>
+                                <input id="upload0" name="upload" multiple="" type="file">
+                            </span>
+                            <button type="submit" class="btn btn-primary start" onclick="beginUpload()"><i class="icon-upload icon-white"></i>Upload All</button>
+                            <button type="reset" class="btn btn-warning cancel"><i class="icon-ban-circle icon-white"></i>Cancel All Uploads</button>
                         </div>
-                    </caarray:actions>
+                    </div>
                 </s:form>
             </c:if>
         </div>
     </div>
 
-    <div id="divCloseWinddow" style="display:none">
-         <caarray:actions>
-             <caarray:action actionClass="cancel" text="Close Window" onclick="window.close()" />
-             <caarray:action actionClass="import" text="Close Window and go to Experiment Data" onclick="closeAndGoToProjectData()" />
-         </caarray:actions>
+    <div id="tabboxwrapper_notabs">
+        <div id="closeWindow" style="display:none">
+            <caarray:actions>
+                <caarray:action actionClass="cancel" text="Close Window" onclick="window.close()" />
+                <caarray:action actionClass="import" text="Close Window and go to Experiment Data" onclick="closeAndGoToProjectData()" />
+            </caarray:actions>
+         </div>
     </div>
 
 <script type="text/javascript">
@@ -68,6 +64,7 @@
     function onUploadDone() {
         if (processingFinished()) {
             document.getElementById("closeWindow").style.display = "block";
+            document.getElementById("uploadProgress").style.display = "block";
         }
     }
 
