@@ -156,7 +156,6 @@ public class ProjectFilesActionTest extends AbstractDownloadTest {
     private static final String LIST_UNIMPORTED_FORM = "listUnimportedForm";
 
     private static final String LIST_SUPPLEMENTAL = "listSupplemental";
-    private static final String UPLOAD = "upload";
 
     private final ProjectManagementServiceStub projectManagementServiceStub = new ProjectManagementServiceStub();
     private final LocalFileManagementServiceStub fileManagementServiceStub = new LocalFileManagementServiceStub();
@@ -199,9 +198,7 @@ public class ProjectFilesActionTest extends AbstractDownloadTest {
 
     @Test
     public void testZipUpload() throws Exception {
-        assertEquals(UPLOAD, this.action.upload());
-        assertTrue(ActionHelper.getMessages().get(0).contains("fileRequired"));
-
+        assertEquals(null, this.action.upload());
         final File file = File.createTempFile("tmp", ".zip");
 
         final List<File> files = new ArrayList<File>();
@@ -212,7 +209,7 @@ public class ProjectFilesActionTest extends AbstractDownloadTest {
         contentTypes.add("test");
         this.action.setUpload(files);
         this.action.setUploadFileName(fileNames);
-        assertEquals(UPLOAD, this.action.upload());
+        assertEquals(null, this.action.upload());
         assertEquals(1, this.projectManagementServiceStub.getFilesAddedCount());
     }
 
