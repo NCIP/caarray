@@ -152,11 +152,8 @@ public class UploadServlet implements MultiPartRequest {
             List<FileItem> items = (List<FileItem>) upload.parseRequest(createRequestContext(servletRequest));
             List<Map<String, Object>> uploads = new ArrayList<Map<String, Object>>();
             Map<String, Object> map = new HashMap<String, Object>();
-
             for (FileItem item : items) {
-                LOG.debug((new StringBuilder()).append("Found item ").append(item.getFieldName()).toString());
                 if (item.isFormField()) {
-                    LOG.debug("Item is a normal form field");
                     List<String> values = params.get(item.getFieldName());
                     if (values == null) {
                         values = new ArrayList<String>();
@@ -165,14 +162,12 @@ public class UploadServlet implements MultiPartRequest {
                     String charset = servletRequest.getCharacterEncoding();
                     values.add(charset != null ? item.getString(charset) : item.getString());
                 } else {
-                    LOG.debug("Item is a file upload");
                     List<FileItem> values = files.get(item.getFieldName());
                     if (values == null) {
                         values = new ArrayList<FileItem>();
                         files.put(item.getFieldName(), values);
                     }
                     values.add(item);
-
                     map.put("name", item.getName());
                     map.put("type", item.getContentType());
                     map.put("size", item.getSize());

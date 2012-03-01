@@ -879,8 +879,6 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
                 final String msg = "Unable to upload file: " + e.getMessage();
                 LOG.error(msg, e);
                 ActionHelper.saveMessage(getText("errors.uploading"));
-            } finally {
-
             }
         }
         return null;
