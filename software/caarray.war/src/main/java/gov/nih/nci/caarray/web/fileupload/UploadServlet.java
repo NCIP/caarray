@@ -94,6 +94,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import net.sf.json.JSONArray;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Transformer;
 import org.apache.commons.fileupload.FileItem;
@@ -109,8 +111,6 @@ import org.apache.struts2.StrutsConstants;
 import org.apache.struts2.dispatcher.multipart.MultiPartRequest;
 
 import com.opensymphony.xwork2.inject.Inject;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 
 /**
  * File upload functionality.
@@ -150,8 +150,8 @@ public class UploadServlet implements MultiPartRequest {
             ServletFileUpload upload = new ServletFileUpload(fac);
             upload.setSizeMax(maxSize);
             List<FileItem> items = (List<FileItem>) upload.parseRequest(createRequestContext(servletRequest));
-            List<Map<String,Object>> uploads = new ArrayList<Map<String,Object>>();
-            Map<String,Object> map = new HashMap<String,Object>();
+            List<Map<String, Object>> uploads = new ArrayList<Map<String, Object>>();
+            Map<String, Object> map = new HashMap<String, Object>();
 
             for (FileItem item : items) {
                 LOG.debug((new StringBuilder()).append("Found item ").append(item.getFieldName()).toString());

@@ -118,7 +118,6 @@ import java.util.TreeSet;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.UnhandledException;
-import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 
 import com.fiveamsolutions.nci.commons.web.struts2.action.ActionHelper;
