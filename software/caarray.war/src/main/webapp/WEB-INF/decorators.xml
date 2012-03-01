@@ -13,4 +13,5 @@
         <pattern>/*</pattern>
     </decorator>
     <decorator name="popup" page="/WEB-INF/pages/decorators/popup.jsp"/>
+    <decorator name="upload" page="/WEB-INF/pages/decorators/upload.jsp"/>
 </decorators>

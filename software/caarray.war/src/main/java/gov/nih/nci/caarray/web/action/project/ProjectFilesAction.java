@@ -100,7 +100,6 @@ import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
 import gov.nih.nci.caarray.injection.InjectorFactory;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.CaArrayUsernameHolder;
-import gov.nih.nci.caarray.web.fileupload.MonitoredMultiPartRequest;
 import gov.nih.nci.caarray.web.helper.DownloadHelper;
 
 import java.io.File;
@@ -178,7 +177,6 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
      */
     public static final long MAX_DOWNLOAD_SIZE = 1024 * 1024 * 1536;
 
-    private static final String UPLOAD_INPUT = "upload";
     private static final long serialVersionUID = 1L;
     private static final String ACTION_UNIMPORTED = "listUnimported";
     private static final String ACTION_IMPORTED = "listImported";
@@ -882,10 +880,10 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
                 LOG.error(msg, e);
                 ActionHelper.saveMessage(getText("errors.uploading"));
             } finally {
-                MonitoredMultiPartRequest.releaseProgressMonitor(ServletActionContext.getRequest());
+
             }
         }
-        return UPLOAD_INPUT;
+        return null;
     }
 
     /**
@@ -964,11 +962,6 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
             return false;
         }
 
-        final List<String> fileNames = getUploadFileName();
-        if (fileNames == null || fileNames.isEmpty()) {
-            ActionHelper.saveMessage(getText("fileRequired"));
-            return false;
-        }
         return true;
     }
 

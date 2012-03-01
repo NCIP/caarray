@@ -6,14 +6,14 @@
 <struts>
     <constant name="struts.objectFactory" value="osgi" />
     <constant name="struts.objectFactory.delegate" value="struts" />
-    	
+
     <bean type="gov.nih.nci.caarray.web.plugins.DefaultBundleAccessor" class="gov.nih.nci.caarray.web.plugins.DefaultBundleAccessor" />
     <bean type="gov.nih.nci.caarray.web.plugins.BundlePackageLoader" class="gov.nih.nci.caarray.web.plugins.BundlePackageLoader" />
-    
+
     <bean name="osgi" type="com.opensymphony.xwork2.ObjectFactory" class="gov.nih.nci.caarray.web.plugins.DelegatingObjectFactory" />
     <bean name="osgi" type="com.opensymphony.xwork2.config.PackageProvider" class="gov.nih.nci.caarray.web.plugins.OsgiConfigurationProvider" />
     <bean name="osgi" type="com.opensymphony.xwork2.util.finder.ClassLoaderInterface" class="gov.nih.nci.caarray.web.plugins.BundleClassLoaderInterface" />
-    
+
     <!-- Configuration for the default package. -->
     <package name="default" extends="struts-default">
         <interceptors>
@@ -176,7 +176,7 @@
         <action name="ajax/project/pluginTab/*/*"
             class="gov.nih.nci.caarray.web.action.project.ProjectTabPluginAction">
             <param name="key">{1}</param>
-            <param name="method">{2}</param>            
+            <param name="method">{2}</param>
             <result name="input">/WEB-INF/pages/project/tab{1}.jsp</result>
             <result name="success">/WEB-INF/pages/project/tab{1}.jsp</result>
             <result name="workspace">/WEB-INF/pages/project/backToWorkspace.jsp</result>
@@ -211,7 +211,6 @@
         </action>
 
         <action name="project/files/*" class="gov.nih.nci.caarray.web.action.project.ProjectFilesAction" method="{1}">
-            <result name="upload">/WEB-INF/pages/project/files/uploadComplete.jsp</result>
             <result name="input">/error.jsp</result>
             <result name="denied" type="chain">project/details</result>
         </action>
@@ -242,11 +241,11 @@
             <result name="input">/WEB-INF/pages/project/export/details.jsp</result>
             <result name="success">/WEB-INF/pages/project/export/{1}.jsp</result>
         </action>
-        
-		<action name="plugins/*" class="gov.nih.nci.caarray.web.action.PluginsAction" method="{1}">
+
+        <action name="plugins/*" class="gov.nih.nci.caarray.web.action.PluginsAction" method="{1}">
             <result name="success">/WEB-INF/pages/plugins.jsp</result>
         </action>
-        
+
     </package>
 
     <package name="protected" namespace="/protected" extends="default">
@@ -270,11 +269,11 @@
         <action name="ajax/project/viewJobQueue" class="gov.nih.nci.caarray.web.action.project.ProjectJobQueueAction" method="jobQueue">
             <result name="success">/WEB-INF/pages/project/jobQueue/jobQueue.jsp</result>
         </action>
-        
+
         <action name="project/cancelJob" class="gov.nih.nci.caarray.web.action.project.ProjectJobQueueAction" method="cancelJob">
             <result name="success" type="redirectAction">project/viewJobQueue</result>
         </action>
-        
+
         <action name="project/create" class="gov.nih.nci.caarray.web.action.project.ProjectAction" method="create">
             <result name="input">/WEB-INF/pages/project/form.jsp</result>
         </action>

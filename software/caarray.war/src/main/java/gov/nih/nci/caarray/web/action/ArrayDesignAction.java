@@ -105,7 +105,6 @@ import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.InvalidDataFileException;
 import gov.nih.nci.caarray.validation.InvalidNumberOfArgsException;
 import gov.nih.nci.caarray.validation.ValidationMessage;
-import gov.nih.nci.caarray.web.fileupload.MonitoredMultiPartRequest;
 import gov.nih.nci.caarray.web.helper.DownloadHelper;
 
 import java.io.File;
@@ -163,10 +162,10 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
     public ArrayDesignAction() {
         this(InjectorFactory.getInjector());
     }
-    
+
     /**
      * Constructs a new action.
-     * 
+     *
      * @param injector for injection
      */
     public ArrayDesignAction(Injector injector) {
@@ -197,7 +196,7 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
 
     /**
      * uploaded file.
-     * 
+     *
      * @return uploads uploaded files
      */
     public List<File> getUpload() {
@@ -206,7 +205,7 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
 
     /**
      * sets file uploads.
-     * 
+     *
      * @param inUploads List
      */
     public void setUpload(List<File> inUploads) {
@@ -355,7 +354,7 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
 
     /**
      * Retrieves the list of all array designs.
-     * 
+     *
      * @return list
      */
     @SkipValidation
@@ -366,7 +365,7 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
 
     /**
      * Edit view of an array design.
-     * 
+     *
      * @return input
      */
     @SkipValidation
@@ -378,7 +377,7 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
 
     /**
      * Edit view of an import file.
-     * 
+     *
      * @return input
      */
     @SkipValidation
@@ -390,7 +389,7 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
 
     /**
      * Read-only view of an array design.
-     * 
+     *
      * @return input
      */
     @SkipValidation
@@ -402,7 +401,7 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
 
     /**
      * Creation of a new array design.
-     * 
+     *
      * @return input
      */
     @SkipValidation
@@ -414,7 +413,7 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
 
     /**
      * Save a new or existing array design.
-     * 
+     *
      * @return success
      */
     @SuppressWarnings("PMD.AvoidDuplicateLiterals")
@@ -425,7 +424,7 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
             message = "") },
         requiredFields = {
                 @RequiredFieldValidator(fieldName = "arrayDesign.provider", key = "errors.required", message = ""),
-                @RequiredFieldValidator(fieldName = "arrayDesign.technologyType", key = "errors.required", 
+                @RequiredFieldValidator(fieldName = "arrayDesign.technologyType", key = "errors.required",
                         message = ""),
                 @RequiredFieldValidator(fieldName = "arrayDesign.organism", key = "errors.required", message = "") })
     /**
@@ -453,7 +452,7 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
 
     /**
      * download data files for an array design.
-     * 
+     *
      * @return download
      * @throws IOException on file error
      */
@@ -470,7 +469,7 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
 
     /**
      * Returns the filename for a zip of files for the given project, assuming that the download will not be grouped.
-     * 
+     *
      * @return the filename
      */
     private String determineDownloadFileName() {
@@ -480,7 +479,7 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
 
     /**
      * Save/Update file associated with array design.
-     * 
+     *
      * @return input
      */
     @SkipValidation
@@ -514,14 +513,12 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
             returnVal = "importComplete";
         }
 
-        MonitoredMultiPartRequest.releaseProgressMonitor(ServletActionContext.getRequest());
-
         return returnVal;
     }
 
     /**
      * Delete an array design.
-     * 
+     *
      * @return input
      */
     @SkipValidation
@@ -599,7 +596,7 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
 
     /**
      * Action is used for an ajax call by the list generator.
-     * 
+     *
      * @return the string indicating which result to follow.
      */
     @SkipValidation
@@ -698,7 +695,7 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
 
     /**
      * Handles reimporting an array design that was previously imported-not-parsed but now can be parsed.
-     * 
+     *
      * @return "list"
      */
     public String reimport() {

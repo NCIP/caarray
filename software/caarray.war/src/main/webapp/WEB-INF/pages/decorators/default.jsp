@@ -24,18 +24,18 @@
         <script type="text/javascript" src="<caarray:writeVersionedUrl value='/scripts/ext-all-debug.js'/>"></script>
         <script type="text/javascript" src="<caarray:writeVersionedUrl value='/scripts/accordion.js'/>"></script>
         <script type="text/javascript" language="javascript">
-        // for help script
+        // for help script - default.jsp
            var contextPath = "<%=request.getContextPath()%>";
     </script>
-	    <script type="text/javascript" src="http://www.google.com/jsapi"></script>
-    	<script type="text/javascript">
-      		google.load("visualization", "1", {});
-    	</script>
+        <script type="text/javascript" src="http://www.google.com/jsapi"></script>
+        <script type="text/javascript">
+              google.load("visualization", "1", {});
+        </script>
 
-	    <script type="text/javascript" src="<caarray:writeVersionedUrl value='/scripts/bioheatmap.js'/>"></script>
-	    <script type="text/javascript" src="<caarray:writeVersionedUrl value='/scripts/overlay.js'/>"></script>
-    	    <decorator:head/>
-    	</head>
+        <script type="text/javascript" src="<caarray:writeVersionedUrl value='/scripts/bioheatmap.js'/>"></script>
+        <script type="text/javascript" src="<caarray:writeVersionedUrl value='/scripts/overlay.js'/>"></script>
+            <decorator:head/>
+        </head>
 
     <c:if test="${pageContext.request.remoteUser == null}">
         <c:set var="showLoginSidebar"><decorator:getProperty property="meta.showLoginSidebar" default="false"/></c:set>
