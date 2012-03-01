@@ -23,6 +23,7 @@
         <script type="text/javascript" src="<c:url value='/scripts/upload/jquery.fileupload-fallback.js'/>"></script>
         <script type="text/javascript" src="<c:url value='/scripts/upload/application.js'/>"></script>
         <script type="text/javascript" src="<c:url value='/scripts/upload/cors/jquery.xdr-transport.js'/>"></script>
+
         <link rel="stylesheet" type="text/css" media="all" href="<c:url value='/styles/upload/bootstrap.min.css'/>" />
         <link rel="stylesheet" type="text/css" media="all" href="<c:url value='/styles/upload/jquery.fileupload-ui.css'/>" />
         <script type="text/javascript" language="javascript">
@@ -39,61 +40,8 @@
                 emptyResult: 'Empty file upload result'
             };
          </script>
-
-         <script id="template-upload" type="text/html">
-            {% for (var i=0, files=o.files, l=files.length, file=files[0]; i<l; file=files[++i]) {
-                    var match = file.name.match('\.zip$');
-                    var chkId = "checkbox" + l;
-            %}
-                <tr class="template-upload fade">
-                    <td>
-                        {% if (match) { %}
-                            <input type="checkbox" id="checkbox0" name="selectedFilesToUnpack" value="0" checked="true"/>
-                        {% } else { %}
-                            <input type="checkbox" id="checkbox0" name="selectedFilesToUnpack" value="0" disabled="true"/>
-                        {% } %}
-                        <label for="uploadForm_selectedFilesToUnpack" value="Unpack Compressed Archive" />
-                    </td>
-                    <td class="name">{%=file.name%}</td>
-                    <td class="size">{%=o.formatFileSize(file.size)%}</td>
-                    {% if (file.error) { %}
-                        <td class="error" colspan="2"><span class="label label-important">Error</span> {%=fileUploadErrors[file.error] || file.error%}</td>
-                    {% } else if (o.files.valid && !i) { %}
-                        <td><div class="progress progress-success progress-striped active"><div class="bar" style="width:0%;"></div></div></td>
-                        <td class="start">
-                            {% if (!o.options.autoUpload) { %}<button class="btn btn-primary"><i class="icon-upload icon-white"></i>Start</button>{% } %}
-                        </td>
-                    {% } else { %}
-                        <td colspan="2"></td>
-                    {% } %}
-                    <td class="cancel">
-                        {% if (!i) { %}<button class="btn btn-warning"><i class="icon-ban-circle icon-white"></i>Cancel</button>{% } %}
-                    </td>
-                    <td style="width: 1%">&nbsp;</td>
-                </tr>
-            {% } %}
-       </script>
-
-        <script id="template-download" type="text/html">
-            {% for (var i=0, files=o.files, l=files.length, file=files[0]; i<l; file=files[++i]) { %}
-                <tr class="template-download fade">
-                    <td class="name">{%=file.name%}</td>
-                    <td class="size">{%=o.formatFileSize(file.size)%}</td>
-                    {% if (file.error) { %}
-                        <td class="error" colspan="2"><span class="label important">Error</span> {%=fileUploadErrors[file.error] || file.error%}</td>
-                    {% } else { %}
-                        <td colspan="2"></td>
-                    {% } %}
-                    <td class="delete" style="width: 7em;">
-                        <div style="width: 24px; height: 24px;"><img src="/caarray/images/ok.png" width="100%" height="100%"/></div>
-                    </td>
-                    <td style="width: 1%">&nbsp;</td>
-                </tr>
-            {% } %}
-        </script>
-        <decorator:head/>
+         <decorator:head/>
     </head>
-
     <body>
       <div id="leftnavandcontent" style="background: none">
          <decorator:body/>
