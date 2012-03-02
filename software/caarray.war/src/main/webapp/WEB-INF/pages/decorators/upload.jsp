@@ -26,6 +26,8 @@
 
         <link rel="stylesheet" type="text/css" media="all" href="<c:url value='/styles/upload/bootstrap.min.css'/>" />
         <link rel="stylesheet" type="text/css" media="all" href="<c:url value='/styles/upload/jquery.fileupload-ui.css'/>" />
+
+        <script type="text/javascript" src="<c:url value='/scripts/data-files-upload.js'/>"></script>
         <script type="text/javascript" language="javascript">
             // for help script - upload.jsp
             var contextPath = "<%=request.getContextPath()%>";

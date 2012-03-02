@@ -4,7 +4,6 @@
     <html>
         <head>
             <title>Experiment Data Upload</title>
-            <script type="text/javascript" src="<c:url value='/scripts/data-files-upload.js'/>"></script>
         </head>
         <body>
             <h1>Experiment Data Upload</h1>
@@ -26,7 +25,6 @@
                             <input type=hidden name="project.id" value="<s:property value='%{project.id}'/>"/>
                             <input type=hidden name="selectedFilesToUnpack" value="-1" />
                             <div class="fileupload-loading"></div><br>
-                            <div class="row fileupload-buttonbar">
                             <div class="span5"><div class="progress progress-success progress-striped active fade"><div class="bar" style="width:0%;"></div></div></div>
                             <table class="table table-striped"><tbody class="files" data-toggle="modal-gallery" data-target="#modal-gallery"></tbody></table>
                             <div class="row fileupload-buttonbar">

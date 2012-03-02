@@ -94,8 +94,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import net.sf.json.JSONArray;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Transformer;
 import org.apache.commons.fileupload.FileItem;
@@ -105,6 +103,7 @@ import org.apache.commons.fileupload.disk.DiskFileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.StrutsConstants;
@@ -113,13 +112,16 @@ import org.apache.struts2.dispatcher.multipart.MultiPartRequest;
 import com.opensymphony.xwork2.inject.Inject;
 
 /**
- * File upload functionality.
+ * Implementation of the Struts2 Multipart request that allows for progress monitoring. Based on work by Dave Casserly
+ * at http://www.davidjc.com/ajaxfileupload/demo!input.action
  *
- * @author kkanchinadam
+ * @author kokotovd
  */
 @SuppressWarnings("PMD.CyclomaticComplexity")
-public class UploadServlet implements MultiPartRequest {
-    private static final Logger LOG = Logger.getLogger(UploadServlet.class);
+public class MonitoredMultiPartRequest implements MultiPartRequest {
+    private static final Logger LOG = Logger.getLogger(MonitoredMultiPartRequest.class);
+
+    private static final String UPLOAD_ID_ATTRIBUTE = "__multipart_upload_id";
 
     private final Map<String, List<FileItem>> files = new HashMap<String, List<FileItem>>();
     private final Map<String, List<String>> params = new HashMap<String, List<String>>();
@@ -136,6 +138,39 @@ public class UploadServlet implements MultiPartRequest {
     }
 
     /**
+     * Retrieves the identifier for the current upload request.
+     * @param request the current HTTP request
+     * @return an identifier used to refer to this upload when checking for progress
+     */
+    public static String getUploadKey(HttpServletRequest request) {
+        String uploadId = request.getParameter(UPLOAD_ID_ATTRIBUTE);
+        if (uploadId == null) {
+            uploadId = StringUtils.defaultString((String) request.getAttribute(UPLOAD_ID_ATTRIBUTE));
+        }
+        return ProgressMonitor.SESSION_PROGRESS_MONITOR + uploadId;
+    }
+
+    /**
+     * Returns the progress monitor.
+     * @param request the current HTTP request
+     * @return the progress monitor
+     */
+    public static ProgressMonitor getProgressMonitor(HttpServletRequest request) {
+        String uploadKey = getUploadKey(request);
+        return (ProgressMonitor) ServletActionContext.getRequest().getSession().getAttribute(uploadKey);
+    }
+
+    /**
+     * Release the progress monitor for the upload associated with the given request.
+     *
+     * @param request the current HTTP request
+     */
+    public static void releaseProgressMonitor(HttpServletRequest request) {
+        String uploadKey = getUploadKey(request);
+        request.getSession().removeAttribute(uploadKey);
+    }
+
+    /**
      * {@inheritDoc}
      */
     @SuppressWarnings({"unchecked", "PMD.CyclomaticComplexity" })
@@ -145,15 +180,19 @@ public class UploadServlet implements MultiPartRequest {
         if (saveDir != null) {
             fac.setRepository(new File(saveDir));
         }
-
+        ProgressMonitor monitor = null;
         try {
             ServletFileUpload upload = new ServletFileUpload(fac);
             upload.setSizeMax(maxSize);
+            monitor = new ProgressMonitor();
+            upload.setProgressListener(monitor);
+            String uploadKey = getUploadKey(servletRequest);
+            servletRequest.getSession().setAttribute(uploadKey, monitor);
             List<FileItem> items = (List<FileItem>) upload.parseRequest(createRequestContext(servletRequest));
-            List<Map<String, Object>> uploads = new ArrayList<Map<String, Object>>();
-            Map<String, Object> map = new HashMap<String, Object>();
             for (FileItem item : items) {
+                LOG.debug((new StringBuilder()).append("Found item ").append(item.getFieldName()).toString());
                 if (item.isFormField()) {
+                    LOG.debug("Item is a normal form field");
                     List<String> values = params.get(item.getFieldName());
                     if (values == null) {
                         values = new ArrayList<String>();
@@ -162,25 +201,20 @@ public class UploadServlet implements MultiPartRequest {
                     String charset = servletRequest.getCharacterEncoding();
                     values.add(charset != null ? item.getString(charset) : item.getString());
                 } else {
+                    LOG.debug("Item is a file upload");
                     List<FileItem> values = files.get(item.getFieldName());
                     if (values == null) {
                         values = new ArrayList<FileItem>();
                         files.put(item.getFieldName(), values);
                     }
                     values.add(item);
-                    map.put("name", item.getName());
-                    map.put("type", item.getContentType());
-                    map.put("size", item.getSize());
-                    uploads.add(map);
-                }
-
-                if (!uploads.isEmpty()) {
-                    String jsonString = JSONArray.fromObject(uploads.toArray()).toString();
-                    ServletActionContext.getResponse().setContentType("text/plain");
-                    ServletActionContext.getResponse().getWriter().write(jsonString);
                 }
             }
+
         } catch (FileUploadException e) {
+            if (monitor != null) {
+                monitor.abort();
+            }
             LOG.warn("Error processing upload", e);
             errors.add(e.getMessage());
         }

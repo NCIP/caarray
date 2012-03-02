@@ -198,7 +198,7 @@ public class ProjectFilesActionTest extends AbstractDownloadTest {
 
     @Test
     public void testZipUpload() throws Exception {
-        assertEquals(null, this.action.upload());
+        assertNull(this.action.upload());
         final File file = File.createTempFile("tmp", ".zip");
 
         final List<File> files = new ArrayList<File>();
@@ -209,7 +209,7 @@ public class ProjectFilesActionTest extends AbstractDownloadTest {
         contentTypes.add("test");
         this.action.setUpload(files);
         this.action.setUploadFileName(fileNames);
-        assertEquals(null, this.action.upload());
+        assertNull(this.action.upload());
         assertEquals(1, this.projectManagementServiceStub.getFilesAddedCount());
     }
 
