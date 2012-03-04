@@ -152,7 +152,7 @@ public class PasswordStackingCasLoginModule extends CasLoginModule {
      * @param options Login module options.
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void delegateInitialize(Subject subject, CallbackHandler callbackHandler, Map sharedState, Map options) {
+    protected void delegateInitialize(Subject subject, CallbackHandler callbackHandler, Map sharedState, Map options) {
         super.initialize(subject, callbackHandler, sharedState, options);
     }
 
@@ -176,7 +176,7 @@ public class PasswordStackingCasLoginModule extends CasLoginModule {
      * @return true if login is successful.
      * @throws LoginException by superclass contract.
      */
-    public boolean delegateLogin() throws LoginException {
+    protected boolean delegateLogin() throws LoginException {
         return super.login();
     }
 
