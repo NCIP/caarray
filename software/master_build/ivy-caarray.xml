@@ -222,6 +222,8 @@
     <dependency conf="project" org="stax" name="stax-api" rev="1.0.1" transitive="false" />
     <dependency conf="project" org="org.hamcrest" name="hamcrest-core" rev="1.1nci" transitive="false" />
     <dependency conf="project" org="woodstox" name="wstx-asl" rev="3.2.6" />
+    <dependency conf="project" org="org.jasig.cas.client" name="cas-client-core" rev="3.2.1" transitive="false" />
+    <dependency conf="project" org="org.jasig.cas.client" name="cas-client-integration-jboss" rev="3.2.1" transitive="false" />
     <!-- CONF = PROJECT END -->
     <exclude org="pull-parser" module="pull-parser"/>
     <conflict manager="all" />

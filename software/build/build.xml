@@ -1179,6 +1179,20 @@
         </path>
         <property name="joda-time.jar" refid="joda-time.jar.fileset" />
 
+        <path id="cas-client-core.jar.path">
+            <fileset dir="${project.lib}" id="cas-client-core.jar.fileset">
+                <include name="cas-client-core*.jar"/>
+            </fileset>
+        </path>
+        <property name="cas-client-core.jar" refid="cas-client-core.jar.fileset" />
+
+    	<path id="cas-client-integration-jboss.jar.path">
+            <fileset dir="${project.lib}" id="cas-client-integration-jboss.jar.fileset">
+                <include name="cas-client-integration-jboss*.jar"/>
+            </fileset>
+        </path>
+        <property name="cas-client-integration-jboss.jar" refid="cas-client-integration-jboss.jar.fileset" />
+
 
         <path id="jboss.dependencies.path">
             <fileset id="jboss.dependencies.fileset" dir="${project.lib}">
@@ -1273,15 +1287,19 @@
                 <include name="atlassian-trusted*.jar"/>
                 <include name="atlassian-plugins*.jar"/>
                 <include name="atlassian-template*.jar"/>
-            <include name="sal-*.jar"/>
-            <include name="package-scanner-*.jar"/>
-            <include name="org.apache.felix*.jar"/>
-            <include name="bndlib*.jar"/>
-            <include name="spring-osgi-*.jar"/>
-            <include name="velocity-*.jar"/>
-            <include name="peaberry-*.jar"/>
-            <include name="${xwork.jar}"/>
-            <include name="${aopalliance.jar}"/>
+                <include name="sal-*.jar"/>
+                <include name="package-scanner-*.jar"/>
+                <include name="org.apache.felix*.jar"/>
+                <include name="bndlib*.jar"/>
+                <include name="spring-osgi-*.jar"/>
+                <include name="velocity-*.jar"/>
+                <include name="peaberry-*.jar"/>
+                <include name="${xwork.jar}"/>
+                <include name="${aopalliance.jar}"/>
+            </fileset>
+            <fileset dir="${project.lib}">
+                <include name="${cas-client-core.jar}"/>
+                <include name="${cas-client-integration-jboss.jar}"/>
             </fileset>
         </path>
         <pathtofileset name="common.compile.dependencies.fileset" pathrefid="common.compile.dependencies.path" dir="${project.lib}"/>

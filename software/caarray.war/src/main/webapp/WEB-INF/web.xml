@@ -6,6 +6,16 @@
  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
     <display-name>caarray</display-name>
 
+	<!-- CAS Settings -->
+	<context-param>
+		<param-name>service</param-name>
+		<param-value>http://localhost:38080/caarray</param-value>
+	</context-param>
+	<context-param>
+		<param-name>casServerLoginUrl</param-name>
+		<param-value>https://localhost:8443/cas/login</param-value>
+	</context-param>
+ 
     <!-- Define the basename for a resource bundle for I18N -->
     <context-param>
         <param-name>javax.servlet.jsp.jstl.fmt.localizationContext</param-name>
@@ -63,6 +73,16 @@
             </param-value>
     </context-param>
     
+	<!-- Only 2 CAS filters are required for JAAS support -->
+	<filter>
+		<filter-name>CASWebAuthenticationFilter</filter-name>
+		<filter-class>org.jasig.cas.client.jboss.authentication.WebAuthenticationFilter</filter-class>
+	</filter>
+	<filter>
+		<filter-name>CASAuthenticationFilter</filter-name>
+		<filter-class>org.jasig.cas.client.authentication.AuthenticationFilter</filter-class>
+	</filter>
+
     <filter>
         <filter-name>temporaryFilesFilter</filter-name>
         <filter-class>gov.nih.nci.caarray.web.filter.TemporaryFilesCleanupFilter</filter-class>
@@ -305,12 +325,24 @@
         </init-param>
     </filter>
     
-    
     <filter>
         <filter-name>sessionFixation</filter-name>
         <filter-class>com.fiveamsolutions.nci.commons.web.filter.SessionFixationProtectionFilter</filter-class>
     </filter>
 
+	<!-- CAS client filter mappings -->
+	<!-- The order of the following filters is vitally important -->
+<!--    
+	<filter-mapping>
+		<filter-name>CASWebAuthenticationFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>CASAuthenticationFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+-->
+   
     <filter-mapping>
            <filter-name>urlrewrite</filter-name>
            <url-pattern>/*</url-pattern>
@@ -463,7 +495,7 @@
         <dispatcher>REQUEST</dispatcher>
         <dispatcher>FORWARD</dispatcher>
     </filter-mapping>
-    
+
     <listener>
         <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
     </listener>
