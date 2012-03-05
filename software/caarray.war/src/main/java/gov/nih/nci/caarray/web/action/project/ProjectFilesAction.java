@@ -100,6 +100,7 @@ import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
 import gov.nih.nci.caarray.injection.InjectorFactory;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.CaArrayUsernameHolder;
+import gov.nih.nci.caarray.web.fileupload.MonitoredMultiPartRequest;
 import gov.nih.nci.caarray.web.helper.DownloadHelper;
 
 import java.io.File;
@@ -857,31 +858,81 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
     public String upload() {
         final Injector injector = InjectorFactory.getInjector();
         final FileUploadUtils fileUploadUtils = injector.getInstance(FileUploadUtils.class);
-        if (validateUpload()) {
-            try {
-                final FileProcessingResult uploadResult =
-                        fileUploadUtils
-                                .uploadFiles(getProject(), getUpload(), getUploadFileName(), fileNamesToUnpack());
+
+        StringBuffer sbf = new StringBuffer();
+        String errorMsg = null;
+
+        try {
+            if (validateUpload()) {
+                final FileProcessingResult uploadResult = fileUploadUtils.uploadFiles(getProject(), getUpload(),
+                        getUploadFileName(), fileNamesToUnpack());
 
                 for (final String conflict : uploadResult.getConflictingFiles()) {
-                    ActionHelper.saveMessage(getText("experiment.files.upload.filename.exists",
-                            new String[] {conflict }));
+                    errorMsg = getText("experiment.files.upload.filename.exists", new String[] {conflict });
+                    ActionHelper.saveMessage(errorMsg);
+                    sbf.append(errorMsg).append("; ");
                 }
                 ActionHelper.saveMessage(uploadResult.getCount() + " file(s) uploaded.");
-            } catch (final InvalidFileException ue) {
-                final String errorKey =
-                        fileNamesToUnpack().contains(ue.getFile()) ? "errors.uploadingErrorWithZip"
-                                : "errors.uploadingErrorWithAdding";
-                ActionHelper.saveMessage(getText(errorKey, new String[] {ue.getFile(), getText(ue.getResourceKey()) }));
-                ActionHelper.saveMessage(getText("errors.unpackingErrorWithZip",
-                        new String[] {ue.getFile(), getText(ue.getResourceKey()) }));
-            } catch (final Exception e) {
-                final String msg = "Unable to upload file: " + e.getMessage();
-                LOG.error(msg, e);
-                ActionHelper.saveMessage(getText("errors.uploading"));
+            }
+        } catch (final InvalidFileException ue) {
+            final String errorKey = fileNamesToUnpack().contains(ue.getFile()) ? "errors.uploadingErrorWithZip"
+                    : "errors.uploadingErrorWithAdding";
+            errorMsg = getText(errorKey, new String[] {ue.getFile(), getText(ue.getResourceKey()) });
+            ActionHelper.saveMessage(errorMsg);
+            sbf.append(errorMsg).append("; ");
+            errorMsg = getText("errors.unpackingErrorWithZip", new String[] {ue.getFile(),
+                    getText(ue.getResourceKey()) });
+            ActionHelper.saveMessage(errorMsg);
+            sbf.append(errorMsg).append("; ");
+        } catch (final Exception e) {
+            final String msg = "Unable to upload file: " + e.getMessage();
+            LOG.error(msg, e);
+            errorMsg = getText("errors.uploading");
+            ActionHelper.saveMessage(errorMsg);
+            sbf.append(errorMsg).append("; ");
+        } finally {
+            // Bit of a hack. Data File Uploads do not use the Progress Monitor, but it uses the
+            // MonitoredMultiPartRequest. Thus, we need to release the progress monitor here.
+            MonitoredMultiPartRequest.releaseProgressMonitor(ServletActionContext.getRequest());
+        }
+
+        if (this.hasErrors()) {
+            sbf.append(getActionErrorsAsString());
+        }
+        writeJsonOutputToResponse(getUploadFileName(), sbf.toString());
+        return null;
+    }
+
+    private void writeJsonOutputToResponse(List<String> filenames, String errors) {
+        List<Map<String, Object>> uploadsList = new ArrayList<Map<String, Object>>();
+        for (String filename : filenames) {
+             Map<String, Object> result = new HashMap<String, Object>();
+             result.put("name", filename);
+             result.put("error", errors);
+             uploadsList.add(result);
+        }
+
+        String jsonString = JSONArray.fromObject(uploadsList.toArray()).toString();
+        ServletActionContext.getResponse().setContentType("text/plain");
+        try {
+            ServletActionContext.getResponse().getWriter().write(jsonString);
+        } catch (IOException e) {
+            LOG.warn("Swallowed exception - Cannot write to the response", e);
+        }
+    }
+
+    private String getActionErrorsAsString() {
+        StringBuffer sbf = new StringBuffer();
+        for (String error : this.getActionErrors()) {
+            sbf.append(error).append("; ");
+        }
+
+        for (Map.Entry<String, List<String>> entry : this.getFieldErrors().entrySet()) {
+            for (String error : entry.getValue()) {
+                sbf.append(error).append("; ");
             }
         }
-        return null;
+        return sbf.toString();
     }
 
     /**

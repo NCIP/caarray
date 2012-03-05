@@ -129,6 +129,7 @@ import java.util.TreeSet;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 import org.apache.commons.io.IOUtils;
@@ -198,7 +199,7 @@ public class ProjectFilesActionTest extends AbstractDownloadTest {
 
     @Test
     public void testZipUpload() throws Exception {
-        assertEquals(null, this.action.upload());
+        assertNull(this.action.upload());
         final File file = File.createTempFile("tmp", ".zip");
 
         final List<File> files = new ArrayList<File>();
@@ -209,8 +210,19 @@ public class ProjectFilesActionTest extends AbstractDownloadTest {
         contentTypes.add("test");
         this.action.setUpload(files);
         this.action.setUploadFileName(fileNames);
-        assertEquals(null, this.action.upload());
+
+        LocalHttpServletResponse response = new LocalHttpServletResponse();
+        ServletActionContext.setResponse(response);
+
+        assertNull(this.action.upload());
         assertEquals(1, this.projectManagementServiceStub.getFilesAddedCount());
+        System.out.println(response.getResponseText());
+        JSONArray jsonResult = JSONArray.fromObject(response.getResponseText());
+        assertEquals(1, jsonResult.size());
+        @SuppressWarnings("rawtypes")
+        Map map = jsonResult.getJSONObject(0);
+        assertEquals(2, map.keySet().size());
+        assertTrue(map.get("name").toString().contains(".zip"));
     }
 
     @Test

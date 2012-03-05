@@ -105,6 +105,7 @@ import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.InvalidDataFileException;
 import gov.nih.nci.caarray.validation.InvalidNumberOfArgsException;
 import gov.nih.nci.caarray.validation.ValidationMessage;
+import gov.nih.nci.caarray.web.fileupload.MonitoredMultiPartRequest;
 import gov.nih.nci.caarray.web.helper.DownloadHelper;
 
 import java.io.File;
@@ -118,6 +119,7 @@ import java.util.TreeSet;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.UnhandledException;
+import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 
 import com.fiveamsolutions.nci.commons.web.struts2.action.ActionHelper;
@@ -511,6 +513,8 @@ public class ArrayDesignAction extends ActionSupport implements Preparable {
         } else {
             returnVal = "importComplete";
         }
+
+        MonitoredMultiPartRequest.releaseProgressMonitor(ServletActionContext.getRequest());
 
         return returnVal;
     }

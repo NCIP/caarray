@@ -4,7 +4,6 @@
     <html>
         <head>
             <title>Experiment Data Upload</title>
-            <script type="text/javascript" src="<c:url value='/scripts/data-files-upload.js'/>"></script>
         </head>
         <body>
             <h1>Experiment Data Upload</h1>
@@ -26,17 +25,16 @@
                             <input type=hidden name="project.id" value="<s:property value='%{project.id}'/>"/>
                             <input type=hidden name="selectedFilesToUnpack" value="-1" />
                             <div class="fileupload-loading"></div><br>
-                            <div class="row fileupload-buttonbar">
                             <div class="span5"><div class="progress progress-success progress-striped active fade"><div class="bar" style="width:0%;"></div></div></div>
                             <table class="table table-striped"><tbody class="files" data-toggle="modal-gallery" data-target="#modal-gallery"></tbody></table>
                             <div class="row fileupload-buttonbar">
                                 <div class="span7">
-                                    <span class="btn btn-success fileinput-button">
+                                    <span class="btn btn-gray fileinput-button">
                                         <span><i class="icon-plus icon-white"></i>Add Files</span>
                                         <input id="upload0" name="upload" multiple="" type="file">
                                     </span>
-                                    <button type="submit" class="btn btn-primary start" onclick="beginUpload()"><i class="icon-upload icon-white"></i>Upload All</button>
-                                    <button type="reset" class="btn btn-warning cancel"><i class="icon-ban-circle icon-white"></i>Cancel All Uploads</button>
+                                    <button type="submit" class="btn btn-gray start" onclick="beginUpload()"><i class="icon-upload icon-white"></i>Upload All</button>
+                                    <button type="reset" class="btn btn-gray cancel"><i class="icon-ban-circle icon-white"></i>Cancel All Uploads</button>
                                 </div>
                             </div>
                         </s:form>
