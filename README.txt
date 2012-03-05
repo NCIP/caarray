@@ -114,8 +114,7 @@ will be available at http://${grid.server.hostname}:${18080}/wsrf/services/cagri
 http://${grid.server.hostname}:${18080}/wsrf/services/cagrid/CaArraySvc_v1_0 (External v. 1.0)
 
 During your iterative development process for working on an issue, you can just deploy modified code to the caArray installation by opening a command prompt at
-$CAARRAY_HOME/software/build and executing ant deploy, which will build the caarray.ear file, and copy it to your caArray JBoss server (defined by jboss.home property
-in $CAARRAY_HOME/software/build/local.properties" file).
+$CAARRAY_HOME/software/build and executing the command "ant deploy", which will build the caarray.ear file, and copy it to your caArray JBoss server (defined by jboss.home property in $CAARRAY_HOME/software/build/local.properties" file).
 
 Build Management
 -----------------------
@@ -155,8 +154,10 @@ put properties specific to your local checkout. They will take precedence over t
 subversion, and is set to be svn:ignored.
 
 Another important aspect is that caArray uses Ivy for dependency management. The ivy settings file is at software/ivy-caarray-settings.xml,
-and the ivy project file is at software/ivy-caarray.xml. All dependencies should be configured in this latter file. caArray references the
-NCICB ivy repository, at http://gforge.nci.nih.gov/svnroot/commonlibrary/trunk/ivy-repo.
+and the ivy project file is at software/ivy-caarray.xml. All dependencies should be configured in this latter file. caArray references the deprecated/read-only
+NCICB ivy repositories available at
+* https://ncisvn.nci.nih.gov/svn/deprecated-ivy-repo/trunk, and
+* https://ncisvn.nci.nih.gov/svn/deprecated-cbiit-ivy-repo/trunk
 
 It is recommended, for quicker builds, to check out this ivy repository to a local directory (this requires about 0.75 GB of hard drive space).
 Then, set the "local.repo.dir" build property to point to this directory. This will make the build fetch dependencies from your local copy first,
@@ -189,28 +190,21 @@ db-*.xml file referencing the script. You can use the schema file from the previ
 Source Control
 ------------------------
 
-The base Subversion URL is https://gforge.nci.nih.gov/svnroot/caarray2. The mainline of development is under the "trunk" subdirectory,
+The base Subversion URL is https://ncisvn.nci.nih.gov/svn/caarray2. The mainline of development is under the "trunk" subdirectory,
 thus typically you would want to check out https://gforge.nci.nih.gov/svnroot/caarray2/trunk.
 
-Branches are created as needed under https://gforge.nci.nih.gov/svnroot/caarray2/branches for work on previous or future versions of
+Branches are created as needed under https://ncisvn.nci.nih.gov/svn/caarray2/branches for work on previous or future versions of
 caArray in parallel with mainline development. Also, developers should create their own private branches here for work that spans 
 more than 1-2 days.
 
-Tags are created under https://gforge.nci.nih.gov/svnroot/caarray2/tags for each milestone, release candidate and GA release.
+Tags are created under https://ncisvn.nci.nih.gov/svn/caarray2/tags for each milestone, release candidate and GA release.
 
 Issue Tracking
 ------------------------
 
-caArray uses GForge for tracking bugs and feature requests. We use the tracker portion of GForge for this:
+caArray uses JIRA for tracking bugs, feature requests, and project management.
 
-https://gforge.nci.nih.gov/tracker/?group_id=305
-
-More specifically, we use two trackers. The Implementation Items tracker (https://gforge.nci.nih.gov/tracker/?atid=1344&group_id=305)
-is used by the DEV team for all features, feature enhancements, bugs, code improvements, and other changes to the source code.
-
-The Community Change Requests tracker (https://gforge.nci.nih.gov/tracker/?atid=1339&group_id=305) is used for managing requests from
-the caArray user community. Eventually, as the requests are accepted and slated for releases, corresponding items are created in the
-Implementation Items tracker.
+https://tracker.nci.nih.gov/browse/ARRAY
 
 Developing with Eclipse
 ------------------------
