@@ -106,7 +106,7 @@ public class PasswordStackingCasLoginModuleTest {
     public void setUp() {
         loginModule = mock( PasswordStackingCasLoginModule.class );
     }
-
+    
     @Test
     @SuppressWarnings({ "rawtypes" })
     public void initializeSuccess() {
@@ -121,9 +121,8 @@ public class PasswordStackingCasLoginModuleTest {
         assertSame(loginModule.getState(), sharedState);
     }
 
-    @Test
     @SuppressWarnings({ "rawtypes" })
-    public void loginSuccess() throws LoginException {
+    private void doLogin( boolean success ) throws LoginException {
         AttributePrincipal principal = mock( AttributePrincipal.class );
         when(principal.toString()).thenReturn("johndoe");
         Assertion assertion = mock(Assertion.class);
@@ -134,8 +133,13 @@ public class PasswordStackingCasLoginModuleTest {
         doNothing().when(loginModule).delegateInitialize(null, null, sharedState, null);        
         loginModule.initialize(null, null, sharedState, null);
         doCallRealMethod().when(loginModule).login();        
-        doReturn(true).when(loginModule).delegateLogin();   // Stubbing CAS ticket validation success
+        doReturn(success).when(loginModule).delegateLogin();   // Stubbing CAS ticket validation success
         loginModule.login();
+    }
+
+    @Test
+    public void loginSuccess() throws LoginException {
+        doLogin(true);
         when(loginModule.getState()).thenCallRealMethod();
         assertTrue(
                 loginModule.getAssertion().getPrincipal().equals(
@@ -149,20 +153,8 @@ public class PasswordStackingCasLoginModuleTest {
     }
 
     @Test
-    @SuppressWarnings({ "rawtypes" })
     public void loginFailure() throws LoginException {
-        AttributePrincipal principal = mock( AttributePrincipal.class );
-        when(principal.toString()).thenReturn("johndoe");
-        Assertion assertion = mock(Assertion.class);
-        when(assertion.getPrincipal()).thenReturn(principal);
-        when(loginModule.getAssertion()).thenReturn(assertion);
-        Map sharedState = new HashMap();
-        doCallRealMethod().when(loginModule).initialize(null, null, sharedState, null);        
-        doNothing().when(loginModule).delegateInitialize(null, null, sharedState, null);        
-        loginModule.initialize(null, null, sharedState, null);
-        doCallRealMethod().when(loginModule).login();        
-        doReturn(false).when(loginModule).delegateLogin();  // Stubbing CAS ticket validation failure
-        loginModule.login();
+        doLogin(false);
         when(loginModule.getState()).thenCallRealMethod();
         assertFalse(
                 loginModule.getAssertion().getPrincipal().equals(

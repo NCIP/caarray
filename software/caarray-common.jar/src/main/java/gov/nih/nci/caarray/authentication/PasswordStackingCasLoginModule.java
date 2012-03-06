@@ -121,7 +121,7 @@ public class PasswordStackingCasLoginModule extends CasLoginModule {
      * Returns a <code>state</code>.
      * @return a <code>state</code>.
      */
-    public Map<String, Object> getState() {
+    protected Map<String, Object> getState() {
         return state;
     }
 
@@ -129,7 +129,7 @@ public class PasswordStackingCasLoginModule extends CasLoginModule {
      * Returns an <code>assertion</code>.
      * @return an <code>assertion</code>.
      */
-    public Assertion getAssertion() {
+    protected Assertion getAssertion() {
         return this.assertion;
     }
 

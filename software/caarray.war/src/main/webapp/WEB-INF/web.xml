@@ -330,6 +330,11 @@
         <filter-class>com.fiveamsolutions.nci.commons.web.filter.SessionFixationProtectionFilter</filter-class>
     </filter>
 
+    <!-- The block below is commented out as only Part I of the CAS implementation is complete -->
+    <!--         in accordance with https://tracker.nci.nih.gov/browse/ARRAY-2339 -->
+    <!-- Part || is captured in tasks under https://tracker.nci.nih.gov/browse/ARRAY-2366 and pending -->
+    <!--         their completion this block will get uncommented -->  
+     
 	<!-- CAS client filter mappings -->
 	<!-- The order of the following filters is vitally important -->
 <!--    
