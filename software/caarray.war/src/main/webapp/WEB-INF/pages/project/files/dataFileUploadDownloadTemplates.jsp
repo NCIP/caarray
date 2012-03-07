@@ -13,7 +13,7 @@
                 {% } else { %}
                     <input type="checkbox" id="checkbox0" name="selectedFilesToUnpack" value="0" disabled="true"/>
                 {% } %}
-                <label for="uploadForm_selectedFilesToUnpack" value="Unpack Compressed Archive" />
+                <label for="uploadForm_selectedFilesToUnpack" value="Unpack Compressed Archive">Unpack Archive?</label>
             </td>
             <td class="name">{%=file.name%}</td>
             <td class="size">{%=o.formatFileSize(file.size)%}</td>
