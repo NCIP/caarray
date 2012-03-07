@@ -15,6 +15,7 @@
     <property name="heap.size" value="256m" />
     <property name="src.dir" value="${basedir}/src" />
     <property name="lib.dir" value="${basedir}/lib" />
+    <property name="lib.jboss510-client.dir" value="${lib.dir}/jboss510-client" />
     <property name="classes.dir" value="${basedir}/classes" />
     <property name="client-zip.unpacked.dir" value="${user.home}/caarray_client_external_v1_0" />
 
@@ -24,15 +25,18 @@
     <target name="clean">
         <delete dir="${classes.dir}" />
     </target>
-	
-	<target name="-copy-libs">
-		<copy todir="${lib.dir}">
-			<fileset dir="${client-zip.unpacked.dir}/" includes="caarray-client-external*.jar"/>
-		</copy>
-		<copy todir="${lib.dir}">
-			<fileset dir="${client-zip.unpacked.dir}/lib/java" includes="*.jar"/>
-		</copy>
-	</target>
+
+    <target name="-copy-libs">
+        <copy todir="${lib.dir}">
+            <fileset dir="${client-zip.unpacked.dir}/" includes="caarray-client-external*.jar"/>
+        </copy>
+        <copy todir="${lib.dir}">
+            <fileset dir="${client-zip.unpacked.dir}/lib/java" includes="*.jar"/>
+        </copy>
+        <copy todir="${lib.jboss510-client.dir}">
+            <fileset dir="${client-zip.unpacked.dir}/lib/jboss510-client" includes="*.jar"/>
+        </copy>
+    </target>
 
     <target name="build" depends="-copy-libs">
         <mkdir dir="${classes.dir}" />
@@ -45,22 +49,22 @@
         </javac>
     </target>
 
-	<macrodef name="run-example">
-		<attribute name="classname"/>
-		<sequential>
-	        <java classname="@{classname}" fork="yes">
-	            <classpath>
-	                <pathelement path="${classes.dir}" />
-	                <fileset dir="${lib.dir}">
-	                    <include name="**/*.jar" />
-	                </fileset>
-	            </classpath>
-	            <sysproperty key="server.hostname" value="${server.hostname}" />
-	            <sysproperty key="server.jndi.port" value="${server.jndi.port}" />
-	            <jvmarg value="-Xmx${heap.size}"/>
-	        </java>		
-		</sequential>
-	</macrodef>
+    <macrodef name="run-example">
+        <attribute name="classname"/>
+        <sequential>
+            <java classname="@{classname}" fork="yes">
+                <classpath>
+                    <pathelement path="${classes.dir}" />
+                    <fileset dir="${lib.dir}">
+                        <include name="**/*.jar" />
+                    </fileset>
+                </classpath>
+                <sysproperty key="server.hostname" value="${server.hostname}" />
+                <sysproperty key="server.jndi.port" value="${server.jndi.port}" />
+                <jvmarg value="-Xmx${heap.size}"/>
+            </java>
+        </sequential>
+    </macrodef>
 
     <!-- ******************************************************************* -->
     <!-- ** SEARCH FOR EXPERIMENTS                                        ** -->

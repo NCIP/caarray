@@ -1186,7 +1186,7 @@
         </path>
         <property name="cas-client-core.jar" refid="cas-client-core.jar.fileset" />
 
-    	<path id="cas-client-integration-jboss.jar.path">
+        <path id="cas-client-integration-jboss.jar.path">
             <fileset dir="${project.lib}" id="cas-client-integration-jboss.jar.fileset">
                 <include name="cas-client-integration-jboss*.jar"/>
             </fileset>
@@ -2148,11 +2148,45 @@
     <macrodef name="build-caarray-client-external.zip">
         <attribute name="version"/>
 
+        <!-- Check if jboss has been downloaded. if not, download and explode -->
         <sequential>
+            <property name="jboss.dest.file" value="${software.dir}/tools/${jboss.binaries.file}"/>
+            <property name="jboss.exploded.dir" value="${target.dir}/jboss_exploded"/>
+            <available file="${jboss.dest.file}" property="jboss.tools.exists"/>
+
+            <mkdir dir="${jboss.exploded.dir}" />
+            <if>
+                <isset property="jboss.tools.exists" />
+                <then>
+                    <unzip src="${jboss.dest.file}" dest="${jboss.exploded.dir}"/>
+                </then>
+                <else>
+                    <get src="${jboss.src.url}" dest="${target.dir}/${jboss.binaries.file}"/>
+                    <unzip src="${target.dir}/${jboss.binaries.file}" dest="${jboss.exploded.dir}"/>
+                </else>
+            </if>
+
+            <property name="jboss.exploded.client.dir" value="${jboss.exploded.dir}/jboss-5.1.0.GA-nci/client"/>
+
             <zip destfile="${caarray-client.target.dir}/${caarray.client-external-zip.zip.file}">
                 <zipfileset dir="${caarray-client.target.dir}" includes="caarray-client-external-@{version}.jar" prefix="${caarray.client-zip.name}_external_v${caarray.api_version}"/>
                 <zipfileset dir="${caarray-client.dir}/src/distribution/resources/external/@{version}" prefix="${caarray.client-zip.name}_external_v${caarray.api_version}"/>
                 <zipfileset prefix="${caarray.client-zip.name}_external_v${caarray.api_version}/lib/java" refid="caarray-client.external.@{version}.java.dependencies.fileset" />
+                <zipfileset prefix="${caarray.client-zip.name}_external_v${caarray.api_version}/lib/jboss510-client" dir="${jboss.exploded.client.dir}">
+                    <include name="concurrent.jar" />
+                    <include name="jboss-aspect-jdk50-client.jar" />
+                    <include name="jboss-ejb3-common-client.jar" />
+                    <include name="jboss-ejb3-core-client.jar" />
+                    <include name="jboss-ejb3-proxy-impl-client.jar" />
+                    <include name="jboss-ejb3-proxy-spi-client.jar" />
+                    <include name="jboss-ejb3-security-client.jar" />
+                    <include name="jboss-integration.jar" />
+                    <include name="jboss-javaee.jar" />
+                    <include name="jboss-remoting.jar" />
+                    <include name="jboss-security-spi.jar" />
+                    <include name="jbosssx-client.jar" />
+                    <include name="jnp-client.jar" />
+                </zipfileset>
                 <zipfileset prefix="${caarray.client-zip.name}_external_v${caarray.api_version}/docs/api" dir="${caarray-client.target.dir}/docs/api" includes="external/@{version}/**" />
                 <zipfileset prefix="${caarray.client-zip.name}_external_v${caarray.api_version}/docs/model" dir="${docs.dir}/analysis_and_design/models" includes="caarray_external_model.eap" />
                 <zipfileset prefix="${caarray.client-zip.name}_external_v${caarray.api_version}/lib/grid" refid="caarray-client.external.@{version}.grid.dependencies.fileset" />
