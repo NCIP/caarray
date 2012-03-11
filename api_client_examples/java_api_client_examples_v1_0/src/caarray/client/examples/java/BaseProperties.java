@@ -114,6 +114,12 @@ public final class BaseProperties {
 
     // Data File names
     public static final String CEL_DATA_FILE_NAME = "ApiTestAffymetrixData.CEL";
+    
+    // Properties used by for CAS Remote EJB example
+    public static final String SERVICE_URL = "http://localhost:38080/caarray";
+    public static final String CAS_URL = "https://localhost:8443/cas";
+    public static final String USERNAME = "caarrayadmin";
+    public static final String PASSWORD = "******";
 
     // Getters for Connection properties
     public static String getServerHostname() {

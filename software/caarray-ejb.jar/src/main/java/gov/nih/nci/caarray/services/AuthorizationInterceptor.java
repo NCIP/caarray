@@ -85,10 +85,14 @@ package gov.nih.nci.caarray.services;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.CaArrayUsernameHolder;
 
+import java.security.Principal;
+
 import javax.annotation.Resource;
 import javax.ejb.SessionContext;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.InvocationContext;
+
+import org.jboss.security.SecurityAssociation;
 
 /**
  * Associates the current authenticated user (if any) of remote EJBs with the current
@@ -108,10 +112,19 @@ public class AuthorizationInterceptor {
      */
     @AroundInvoke
     @SuppressWarnings({"PMD.SignatureDeclareThrowsException", "ucd" }) 
-    public Object prepareReturnValue(InvocationContext invContext) throws Exception {
-        String username;
+    public Object prepareReturnValue(InvocationContext invContext)
+            throws Exception {
+        String username = null;
         try {
-            username = sessionContext.getCallerPrincipal().getName();
+            for (Principal p : SecurityAssociation.getSubject().getPrincipals()) {
+                if (p instanceof org.jasig.cas.client.jaas.AssertionPrincipal) {
+                    username = p.getName();
+                    break;
+                }
+            }
+            if (username == null) {
+                username = sessionContext.getCallerPrincipal().getName();
+            }
         } catch (IllegalStateException e) {
             username = SecurityUtils.ANONYMOUS_USERNAME;
         }

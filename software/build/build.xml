@@ -1017,7 +1017,14 @@
         </path>
         <property name="jgroups.jar" refid="jgroups.jar.fileset" />
 
-        <path id="concurrent.jar.path">
+        <path id="jbosssx-client.jar.path">
+            <fileset dir="${project.lib}" id="jbosssx-client.jar.fileset">
+                <include name="jbosssx-client-*.jar"/>
+            </fileset>
+        </path>
+        <property name="jbosssx-client.jar" refid="jbosssx-client.jar.fileset" />
+
+    	<path id="concurrent.jar.path">
             <fileset dir="${project.lib}" id="concurrent.jar.fileset">
                 <include name="concurrent-*.jar"/>
             </fileset>
@@ -1193,6 +1200,27 @@
         </path>
         <property name="cas-client-integration-jboss.jar" refid="cas-client-integration-jboss.jar.fileset" />
 
+        <path id="httpcore.jar.path">
+            <fileset dir="${project.lib}" id="httpcore.jar.fileset">
+                <include name="httpcore*.jar"/>
+            </fileset>
+        </path>
+        <property name="httpcore.jar" refid="httpcore.jar.fileset" />
+
+        <path id="httpclient.jar.path">
+            <fileset dir="${project.lib}" id="httpclient.jar.fileset">
+                <include name="httpclient*.jar"/>
+            </fileset>
+        </path>
+        <property name="httpclient.jar" refid="httpclient.jar.fileset" />
+
+        <path id="jsoup.jar.path">
+            <fileset dir="${project.lib}" id="jsoup.jar.fileset">
+                <include name="jsoup*.jar"/>
+            </fileset>
+        </path>
+        <property name="jsoup.jar" refid="jsoup.jar.fileset" />
+
 
         <path id="jboss.dependencies.path">
             <fileset id="jboss.dependencies.fileset" dir="${project.lib}">
@@ -1217,6 +1245,7 @@
                 <include name="${javassist.jar}"/>
                 <include name="${hibernate-jbosscache.jar}"/>
                 <include name="${jgroups.jar}"/>
+                <include name="${jbosssx-client.jar}"/>
             </fileset>
         </path>
 
@@ -1300,6 +1329,9 @@
             <fileset dir="${project.lib}">
                 <include name="${cas-client-core.jar}"/>
                 <include name="${cas-client-integration-jboss.jar}"/>
+                <include name="${httpcore.jar}"/>
+                <include name="${httpclient.jar}"/>
+                <include name="${jsoup.jar}"/>
             </fileset>
         </path>
         <pathtofileset name="common.compile.dependencies.fileset" pathrefid="common.compile.dependencies.path" dir="${project.lib}"/>

@@ -156,4 +156,11 @@
     <target name="download_array_design" depends="build">
         <run-example classname="caarray.client.examples.java.DownloadArrayDesignForHybridization"/>
     </target>
+
+    <!-- ******************************************************************* -->
+    <!-- ** DOWNLOAD ARRAY DESIGN FILES                                   ** -->
+    <!-- ******************************************************************* -->
+    <target name="cas_remote_ejb_client" depends="build">
+        <run-example classname="caarray.client.examples.java.CASRemoteEJBClient"/>
+    </target>
 </project>

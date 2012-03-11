@@ -121,11 +121,21 @@ public class SearchExperimentsByCriteria {
             CaArrayServer server = new CaArrayServer(BaseProperties.getServerHostname(), BaseProperties
                     .getServerJndiPort());
             server.connect();
+            seeker.doSearch(server);
+        } catch (Throwable t) {
+            System.out.println("Error during experiment search by criteria.");
+            t.printStackTrace();
+        }
+    }
+
+    public void doSearch( CaArrayServer server ) {
+        try {
             searchService = server.getSearchService();
             searchServiceHelper = new JavaSearchApiUtils(searchService);
             System.out.println("Searching for " + ORGANISM_NAME + " " + TISSUE_SITE_VALUE + " " + PROVIDER_NAME + " "
                     + ASSAY_TYPE + " experiments by " + PI_NAME + "...");
-            seeker.search();
+            search();
+            System.out.println("");
         } catch (Throwable t) {
             System.out.println("Error during experiment search by criteria.");
             t.printStackTrace();
