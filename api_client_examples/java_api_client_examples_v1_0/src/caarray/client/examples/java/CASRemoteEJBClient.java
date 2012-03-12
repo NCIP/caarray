@@ -53,23 +53,24 @@ public class CASRemoteEJBClient {
         String ticket = login( true ); // Emulating caIntegrator login
         login( false ); // Emulating SSO caArray2 login
         
-        server.connect( BaseProperties.SERVICE_URL, ticket );
+        server.connect( BaseProperties.getServiceURLforCAS(), ticket );
         se.doSearch( server );
     }
 
     private String login( boolean bPostingCredentials ) throws ClientProtocolException, IOException {
         String result = "";
         printCookies("---HTTP--- Initial set of cookies:");
-        HttpGet httpget = new HttpGet(BaseProperties.SERVICE_URL);
+        HttpGet httpget = new HttpGet(BaseProperties.getServiceURLforCAS());
         HttpResponse response = httpclient.execute(httpget);
         printCookies("---HTTP--- Cookies after first get:");
         HttpEntity entity = response.getEntity();
         String content = IOUtils.toString(entity.getContent());
-/*
-            <input type="hidden" name="lt" value="LT-38-TPi7eJ2w3UNbO2dK0qPphKUPGuZJna" />
-            <input type="hidden" name="execution" value="e1s1" />
-            <input type="hidden" name="_eventId" value="submit" />
-*/
+        
+        // These 3 input fields are set in the CAS login page, CAS server expects them to facilitate its workflows,
+        //      we will be capturing them from the page and adding to username/password combination when posting login
+        //  <input type="hidden" name="lt" value="LT-38-TPi7eJ2w3UNbO2dK0qPphKUPGuZJna" />
+        //  <input type="hidden" name="execution" value="e1s1" />
+        //  <input type="hidden" name="_eventId" value="submit" />
         Document doc = Jsoup.parse(content);
         String loginTicket = doc.select("input[name=lt]").attr("value");
         String execution = doc.select("input[name=execution]").attr("value");
@@ -81,7 +82,7 @@ public class CASRemoteEJBClient {
         
         if( bPostingCredentials ) {
             String postURL = BaseProperties.CAS_URL + "/login?" + 
-                    URLEncoder.encode( BaseProperties.SERVICE_URL, HTTP.UTF_8 ); 
+                    URLEncoder.encode( BaseProperties.getServiceURLforCAS(), HTTP.UTF_8 ); 
             HttpPost httpost = new HttpPost( postURL );
     
             List <NameValuePair> nvps = new ArrayList <NameValuePair>();
