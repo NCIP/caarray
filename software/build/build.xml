@@ -1221,7 +1221,6 @@
         </path>
         <property name="jsoup.jar" refid="jsoup.jar.fileset" />
 
-
         <path id="jboss.dependencies.path">
             <fileset id="jboss.dependencies.fileset" dir="${project.lib}">
                 <include name="${jboss-annotations-ejb3.jar}"/>
@@ -1263,6 +1262,14 @@
         <path id="cn2magetab.test.dependencies.path">
             <path refid="cn2magetab.dependencies.compile.path"/>
             <path refid="unit.test.dependencies.path"/>
+        </path>
+
+        <path id="cas.remote.ejb.client.dependencies.path">
+            <fileset id="cas.remote.ejb.client.dependencies.fileset" dir="${project.lib}">
+                <include name="${httpcore.jar}"/>
+                <include name="${httpclient.jar}"/>
+                <include name="${jsoup.jar}"/>
+           </fileset>
         </path>
 
         <path id="common.compile.dependencies.path">
@@ -1329,14 +1336,12 @@
             <fileset dir="${project.lib}">
                 <include name="${cas-client-core.jar}"/>
                 <include name="${cas-client-integration-jboss.jar}"/>
-                <include name="${httpcore.jar}"/>
-                <include name="${httpclient.jar}"/>
-                <include name="${jsoup.jar}"/>
             </fileset>
+            <fileset refid="cas.remote.ejb.client.dependencies.fileset"/>
         </path>
         <pathtofileset name="common.compile.dependencies.fileset" pathrefid="common.compile.dependencies.path" dir="${project.lib}"/>
 
-        <path id="external.api.dependencies.path">
+    	<path id="external.api.dependencies.path">
             <fileset refid="dozer.jar.fileset"/>
             <fileset refid="rmiio.jar.fileset"/>
             <fileset refid="guava.jar.fileset"/>
@@ -1601,6 +1606,7 @@
             <fileset refid="external.api.dependencies.fileset"/>
             <fileset dir="${project.lib}" includes="${mysql-connector-java.jar}"/>
             <fileset refid="xercesImpl.jar.fileset"/>
+            <fileset refid="cas.remote.ejb.client.dependencies.fileset"/>
         </path>
         <pathtofileset name="caarray-client.external.v1_0.java.dependencies.fileset" pathrefid="caarray-client.external.v1_0.java.dependencies.path" dir="${project.lib}"/>
 

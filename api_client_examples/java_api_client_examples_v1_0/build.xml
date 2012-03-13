@@ -158,9 +158,9 @@
     </target>
 
     <!-- ******************************************************************* -->
-    <!-- ** DOWNLOAD ARRAY DESIGN FILES                                   ** -->
+    <!-- ** INTERNAL TEST FOR CAS REMOTE EJB CLIENT                       ** -->
     <!-- ******************************************************************* -->
-    <target name="cas_remote_ejb_client" depends="build">
+    <target name="internal:cas_remote_ejb_client" depends="build">
         <run-example classname="caarray.client.examples.java.CASRemoteEJBClient"/>
     </target>
 </project>
