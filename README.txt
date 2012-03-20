@@ -158,7 +158,7 @@ Getting Started
   caArray will be installed locally and both caArray JBoss and grid service JBoss will be started automatically.
 
 You can now access the application at http://${jboss.server.hostname}:${jboss.server.port}/caarray.
-Default logins are
+Default logins are:
   caarrayuser/caArray2!
   caarrayadmin/caArray2!
 *NOTE: Please change these passwords immediately for any non-development environment
