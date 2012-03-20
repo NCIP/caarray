@@ -92,6 +92,7 @@ import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.Factor;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
+import gov.nih.nci.caarray.domain.sample.AbstractCharacteristic;
 import gov.nih.nci.caarray.domain.sample.Extract;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 import gov.nih.nci.caarray.domain.sample.Sample;
@@ -363,6 +364,14 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
         t1.setId(1L);
         terms.add(t1);
         return terms;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<AbstractCharacteristic> getCharacteristicsForExperiment(Experiment experiment) {
+        return null;
     }
 
     /**

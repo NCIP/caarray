@@ -109,6 +109,7 @@ import gov.nih.nci.caarray.domain.project.Factor;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.publication.Publication;
 import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
+import gov.nih.nci.caarray.domain.sample.AbstractCharacteristic;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.search.AdHocSortCriterion;
@@ -1172,6 +1173,25 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
         }
     }
 
+    @Test
+    public void testGetCharacteristicsForExperiment() {
+        Transaction tx = null;
+        try {
+            tx = this.hibernateHelper.beginTransaction();
+            saveSupportingObjects();
+            daoObject.save(DUMMY_PROJECT_1);
+            tx.commit();
+
+            tx = this.hibernateHelper.beginTransaction();
+            List<AbstractCharacteristic> lst = daoObject.getCharacteristicsForExperiment(DUMMY_EXPERIMENT_1);
+            assertEquals(1, lst.size());
+            tx.commit();
+        } catch (final DAOException e) {
+            this.hibernateHelper.rollbackTransaction(tx);
+            throw e;
+        }
+    }
+    
     @Test
     public void testGetBioMaterialsForExperiment() throws Exception {
         Transaction tx = null;

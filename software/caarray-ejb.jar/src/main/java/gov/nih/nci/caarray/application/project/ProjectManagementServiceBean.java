@@ -656,6 +656,14 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
      * {@inheritDoc}
      */
     @Override
+    public List<AbstractCharacteristic> getCharacteristicsForExperiment(Experiment experiment) {
+        return this.projectDao.getCharacteristicsForExperiment(experiment);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public List<CaArrayFile> getDeletableFiles(Long projectId) {
         return this.fileDao.getDeletableFiles(projectId);
     }

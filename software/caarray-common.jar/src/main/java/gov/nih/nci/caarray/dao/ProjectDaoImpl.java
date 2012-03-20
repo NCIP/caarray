@@ -93,6 +93,7 @@ import gov.nih.nci.caarray.domain.project.ExperimentContact;
 import gov.nih.nci.caarray.domain.project.ExperimentOntologyCategory;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
+import gov.nih.nci.caarray.domain.sample.AbstractCharacteristic;
 import gov.nih.nci.caarray.domain.sample.Extract;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 import gov.nih.nci.caarray.domain.sample.Sample;
@@ -457,9 +458,14 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
      */
     @Override
     @SuppressWarnings(UNCHECKED)
-    public List<Term> getTissueSitesForExperiment(Experiment experiment) {
-        final String hsql = MessageFormat.format(TERM_FOR_EXPERIMENT_HSQL, "tissueSite", SOURCES);
-        return getCurrentSession().createQuery(hsql).setLong(EXP_ID_PARAM, experiment.getId()).list();
+    public List<AbstractCharacteristic> getCharacteristicsForExperiment(
+            Experiment experiment) {
+        String queryStr = "SELECT DISTINCT acs from Experiment e left join e.biomaterials abs "
+                + "left join abs.characteristics acs "
+                + "WHERE e.id = :experiment";
+        Query q = getCurrentSession().createQuery(queryStr);
+        q.setEntity("experiment", experiment);
+        return q.list();
     }
 
     /**
@@ -477,6 +483,16 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
             types.addAll(getCurrentSession().createQuery(hsql).setLong(EXP_ID_PARAM, experiment.getId()).list());
         }
         return new ArrayList<Term>(types);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @SuppressWarnings(UNCHECKED)
+    public List<Term> getTissueSitesForExperiment(Experiment experiment) {
+        final String hsql = MessageFormat.format(TERM_FOR_EXPERIMENT_HSQL, "tissueSite", SOURCES);
+        return getCurrentSession().createQuery(hsql).setLong(EXP_ID_PARAM, experiment.getId()).list();
     }
 
     /**

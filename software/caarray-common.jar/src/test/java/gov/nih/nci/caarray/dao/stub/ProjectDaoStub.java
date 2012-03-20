@@ -87,6 +87,7 @@ import gov.nih.nci.caarray.domain.project.AssayType;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
+import gov.nih.nci.caarray.domain.sample.AbstractCharacteristic;
 import gov.nih.nci.caarray.domain.sample.Extract;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 import gov.nih.nci.caarray.domain.sample.Sample;
@@ -94,15 +95,15 @@ import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.domain.search.ExperimentSearchCriteria;
 import gov.nih.nci.caarray.domain.search.SearchCategory;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
-
 import gov.nih.nci.security.authorization.domainobjects.User;
+
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
-import java.util.ArrayList;
 
 /**
  *
@@ -174,6 +175,13 @@ public class ProjectDaoStub extends AbstractDaoStub implements ProjectDao {
      * {@inheritDoc}
      */
     public List<Term> getTissueSitesForExperiment(Experiment experiment) {
+        return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public List<AbstractCharacteristic> getCharacteristicsForExperiment(Experiment experiment) {
         return null;
     }
 

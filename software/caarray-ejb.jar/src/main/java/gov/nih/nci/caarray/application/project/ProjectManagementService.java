@@ -90,6 +90,7 @@ import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.Factor;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
+import gov.nih.nci.caarray.domain.sample.AbstractCharacteristic;
 import gov.nih.nci.caarray.domain.sample.Extract;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 import gov.nih.nci.caarray.domain.sample.Sample;
@@ -395,6 +396,14 @@ public interface ProjectManagementService {
     List<Term> getDiseaseStatesForExperiment(Experiment experiment);
 
     /**
+     * Get all characteristics for the experiment.
+     * 
+     * @param experiment the experiment
+     * @return the list of characteristics
+     */
+    List<AbstractCharacteristic> getCharacteristicsForExperiment(Experiment experiment);
+
+    /**
      * Returns the biomaterial of given type for a given project with the given public identifier.
      * 
      * @param <T> the type of biomaterial desired
@@ -517,4 +526,5 @@ public interface ProjectManagementService {
      * @return the list of characteristic categories
      */
     List<Category> getAllCharacteristicCategories(Experiment experiment);
+
 }
