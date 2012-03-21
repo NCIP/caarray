@@ -522,6 +522,13 @@
         </path>
         <property name="wsrf_core_stubs_enum.jar" refid="wsrf_core_stubs_enum.jar.fileset" />
 
+        <path id="wsrf_core_stubs.jar.path">
+            <fileset dir="${project.lib}" id="wsrf_core_stubs.jar.fileset">
+                <include name="wsrf_core_stubs-*.jar"/>
+            </fileset>
+        </path>
+        <property name="wsrf_core_stubs.jar" refid="wsrf_core_stubs.jar.fileset" />
+
         <path id="wss4j.jar.path">
             <fileset dir="${project.lib}" id="wss4j.jar.fileset">
                 <include name="wss4j-*.jar"/>
@@ -1370,6 +1377,7 @@
                 <include name="${jce.jar}"/>
                 <include name="${wsrf_core_enum.jar}"/>
                 <include name="${wsrf_core_stubs_enum.jar}"/>
+                <include name="${wsrf_core_stubs.jar}"/>
                 <include name="${wss4j.jar}"/>
                 <include name="${xercesImpl.jar}"/>
             </fileset>
@@ -1521,6 +1529,7 @@
                 <include name="${jce.jar}" />
                 <include name="${wsrf_core_enum.jar}"/>
                 <include name="${wsrf_core_stubs_enum.jar}"/>
+                <include name="${wsrf_core_stubs.jar}"/>
                 <include name="${wss4j.jar}" />
                 <include name="${xercesImpl.jar}" />
                 <include name="${castor.jar}" />
@@ -1570,6 +1579,11 @@
                 <include name="${guava.jar}"/>
                 <include name="${nci-commons-core.jar}"/>
                 <include name="${caGrid-cql.jar}"/>
+                <include name="${cog-jglobus.jar}"/>
+                <include name="${jbossall-client.jar}"/>
+                <include name="${wsrf_core_enum.jar}"/>
+                <include name="${wsrf_core_stubs_enum.jar}"/>
+                <include name="${wsrf_core_stubs.jar}"/>
             </fileset>
         </path>
         <pathtofileset name="caarray-client.common.grid.dependencies.fileset" pathrefid="caarray-client.common.grid.dependencies.path" dir="${project.lib}"/>
