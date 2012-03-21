@@ -135,6 +135,17 @@ public interface SampleDao extends CaArrayDao {
     List<Sample> searchSamplesByExperimentAndCategory(String keyword, Experiment e, SearchSampleCategory... c);
 
     /**
+     * Performs a query for all samples which are related to an experiment and contain a value match in given arbitrary 
+     * characteristic category. The keyword is matched like %keyword%
+     * 
+     * @param keyword text keyword
+     * @param e experiment
+     * @param c arbitrary characteristic category to perform search within
+     * @return a list of samples matching this arbitrary characteristic value
+     */
+    List<Sample> searchSamplesByExperimentAndArbitraryCharacteristicValue(String keyword, Experiment e, Category c);
+
+    /**
      * Get number of results from query for all samples which contain a characteristic and category supplied.
      * @param c category
      * @param keyword text keyword
@@ -206,4 +217,5 @@ public interface SampleDao extends CaArrayDao {
      */
     <T extends AbstractBioMaterial> List<T> searchByCriteria(PageSortParams<T> params,
             BiomaterialSearchCriteria criteria);
+
 }

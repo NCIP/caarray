@@ -94,6 +94,7 @@ import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.domain.search.ExperimentSearchCriteria;
 import gov.nih.nci.caarray.domain.search.SearchCategory;
+import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.security.authorization.domainobjects.User;
 
@@ -181,10 +182,20 @@ public class ProjectDaoStub extends AbstractDaoStub implements ProjectDao {
     /**
      * {@inheritDoc}
      */
-    public List<AbstractCharacteristic> getCharacteristicsForExperiment(Experiment experiment) {
+    public List<AbstractCharacteristic> getArbitraryCharacteristicsForExperimentSamples(Experiment experiment) {
         return null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    public List<Category> getArbitraryCharacteristicsCategoriesForExperimentSamples(Experiment experiment) {
+        return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public Set<AbstractBioMaterial> getUnfilteredBiomaterialsForProject(Long projectId) {
         return new HashSet<AbstractBioMaterial>();
     }

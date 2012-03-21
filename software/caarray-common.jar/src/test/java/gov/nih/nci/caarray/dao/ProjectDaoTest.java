@@ -112,6 +112,8 @@ import gov.nih.nci.caarray.domain.sample.AbstractBioMaterial;
 import gov.nih.nci.caarray.domain.sample.AbstractCharacteristic;
 import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 import gov.nih.nci.caarray.domain.sample.Sample;
+import gov.nih.nci.caarray.domain.sample.TermBasedCharacteristic;
+import gov.nih.nci.caarray.domain.sample.UserDefinedCharacteristic;
 import gov.nih.nci.caarray.domain.search.AdHocSortCriterion;
 import gov.nih.nci.caarray.domain.search.AnnotationCriterion;
 import gov.nih.nci.caarray.domain.search.ExperimentSearchCriteria;
@@ -1174,17 +1176,42 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
     }
 
     @Test
-    public void testGetCharacteristicsForExperiment() {
+    public void testGetArbitraryCharacteristicsAndCategoriesForExperiment() {
         Transaction tx = null;
         try {
             tx = this.hibernateHelper.beginTransaction();
+            DUMMY_SAMPLE.getCharacteristics().clear();
+            TermBasedCharacteristic characteristic1 = new TermBasedCharacteristic();
+            characteristic1.setCategory(DUMMY_CATEGORY);
+            characteristic1.setTerm(DUMMY_REPLICATE_TYPE);
+            characteristic1.setBioMaterial(DUMMY_SAMPLE);
+            DUMMY_SAMPLE.getCharacteristics().add(characteristic1);
+
+            UserDefinedCharacteristic characteristic2 = new UserDefinedCharacteristic();
+            characteristic2.setCategory(DUMMY_CATEGORY);
+            characteristic2.setValue(DUMMY_NORMALIZATION_TYPE.getValue());
+            characteristic2.setBioMaterial(DUMMY_SAMPLE);
+            DUMMY_SAMPLE.getCharacteristics().add(characteristic2);
+            assertEquals(2, DUMMY_SAMPLE.getCharacteristics().size());
+            
             saveSupportingObjects();
             daoObject.save(DUMMY_PROJECT_1);
             tx.commit();
 
             tx = this.hibernateHelper.beginTransaction();
-            List<AbstractCharacteristic> lst = daoObject.getCharacteristicsForExperiment(DUMMY_EXPERIMENT_1);
-            assertEquals(1, lst.size());
+            List<AbstractCharacteristic> lst1 = daoObject.getArbitraryCharacteristicsForExperimentSamples(DUMMY_EXPERIMENT_1);
+            assertEquals(2, lst1.size());
+            if( lst1.get(0) instanceof TermBasedCharacteristic ) {
+                assertEquals(DUMMY_REPLICATE_TYPE, ((TermBasedCharacteristic)lst1.get(0)).getTerm());
+                assertEquals(DUMMY_NORMALIZATION_TYPE.getValue(), ((UserDefinedCharacteristic)lst1.get(1)).getValue());
+            } else {
+                assertEquals(DUMMY_NORMALIZATION_TYPE.getValue(), ((UserDefinedCharacteristic)lst1.get(0)).getValue());
+                assertEquals(DUMMY_REPLICATE_TYPE, ((TermBasedCharacteristic)lst1.get(1)).getTerm());
+            }
+            
+            List<Category> lst2 = daoObject.getArbitraryCharacteristicsCategoriesForExperimentSamples(DUMMY_EXPERIMENT_1);
+            assertEquals(1, lst2.size());
+            assertEquals(DUMMY_CATEGORY.getId(), lst2.get(0).getId());
             tx.commit();
         } catch (final DAOException e) {
             this.hibernateHelper.rollbackTransaction(tx);

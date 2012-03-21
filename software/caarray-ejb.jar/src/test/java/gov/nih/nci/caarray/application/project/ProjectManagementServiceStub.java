@@ -370,7 +370,15 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
      * {@inheritDoc}
      */
     @Override
-    public List<AbstractCharacteristic> getCharacteristicsForExperiment(Experiment experiment) {
+    public List<AbstractCharacteristic> getArbitraryCharacteristicsForExperimentSamples(Experiment experiment) {
+        return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Category> getArbitraryCharacteristicsCategoriesForExperimentSamples(Experiment experiment) {
         return null;
     }
 
@@ -480,6 +488,15 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Sample> searchSamplesByExperimentAndArbitraryCharacteristicValue( String keyword, Experiment e, 
+            Category c ) {
+        return Collections.emptyList();
+    }
+
+	/**
      * {@inheritDoc}
      */
     @Override

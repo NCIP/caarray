@@ -9,10 +9,11 @@ import gov.nih.nci.caarray.domain.permissions.SampleSecurityLevel;
 import gov.nih.nci.caarray.domain.permissions.SecurityLevel;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.search.SearchSampleCategory;
+import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.security.SecurityUtils;
-import gov.nih.nci.caarray.util.LabelValue;
 import gov.nih.nci.caarray.util.CaArrayUsernameHolder;
+import gov.nih.nci.caarray.util.LabelValue;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -209,12 +210,30 @@ public class ProjectPermissionsAction extends AbstractBaseProjectAction {
     }
 
     private void searchForSamples() {
-        ProjectManagementService pms = ServiceLocatorFactory.getProjectManagementService();
-        SearchSampleCategory[] categories = new SearchSampleCategory[]{SearchSampleCategory.valueOf(permSampleSearch)};
-        sampleResults = pms.searchSamplesByExperimentAndCategory(permSampleKeyword,
-                getProject().getExperiment(), categories);
-        sampleResultsCount = Integer.valueOf(sampleResults.size());
+        ProjectManagementService pms = ServiceLocatorFactory
+                .getProjectManagementService();
+        SearchSampleCategory[] categories = new SearchSampleCategory[] {SearchSampleCategory
+                .valueOf(permSampleSearch) };
+        if (categories[0].equals(SearchSampleCategory.SAMPLE_ARBITRARY_CHARACTERISTIC)) {
+            sampleResults = pms.searchSamplesByExperimentAndArbitraryCharacteristicValue(
+                    permSampleKeyword, getProject().getExperiment(),
+                    getSelectedArbitraryCharacteristicCategory());
 
+        } else {
+            sampleResults = pms.searchSamplesByExperimentAndCategory(permSampleKeyword, 
+                    getProject().getExperiment(), categories);
+        }
+        sampleResultsCount = Integer.valueOf(sampleResults.size());
+    }
+
+    private Category getSelectedArbitraryCharacteristicCategory() {
+        // TODO Create an actual implementation, replace randomly generated
+        // value by user-selected one
+        ProjectManagementService pms = ServiceLocatorFactory.getProjectManagementService();
+        List<Category> lst = pms.getArbitraryCharacteristicsCategoriesForExperimentSamples(getProject()
+                .getExperiment());
+        int index = (int) (Math.random() * lst.size());
+        return lst.get(index);
     }
 
     /**

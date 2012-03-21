@@ -608,6 +608,15 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
      * {@inheritDoc}
      */
     @Override
+    public List<Sample> searchSamplesByExperimentAndArbitraryCharacteristicValue(String keyword, Experiment e, 
+            Category c) {
+        return this.sampleDao.searchSamplesByExperimentAndArbitraryCharacteristicValue(keyword, e, c);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public int searchCount(String keyword, SearchCategory... categories) {
         return this.projectDao.searchCount(keyword, categories);
     }
@@ -656,8 +665,16 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
      * {@inheritDoc}
      */
     @Override
-    public List<AbstractCharacteristic> getCharacteristicsForExperiment(Experiment experiment) {
-        return this.projectDao.getCharacteristicsForExperiment(experiment);
+    public List<AbstractCharacteristic> getArbitraryCharacteristicsForExperimentSamples(Experiment experiment) {
+        return this.projectDao.getArbitraryCharacteristicsForExperimentSamples(experiment);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Category> getArbitraryCharacteristicsCategoriesForExperimentSamples(Experiment experiment) {
+        return this.projectDao.getArbitraryCharacteristicsCategoriesForExperimentSamples(experiment);
     }
 
     /**

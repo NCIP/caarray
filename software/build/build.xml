@@ -2951,7 +2951,7 @@
     </target>
 
     <target name="test:cobertura-check" unless="nocobertura" depends="init:cobertura-runcheck,init:third-party-paths">
-        <cobertura-check failureproperty="cobertura.failure" datafile="${cobertura.file}" haltonfailure="false" linerate="0" packagebranchrate="0" packagelinerate="0" totalbranchrate="70" totallinerate="78" />
+        <cobertura-check failureproperty="cobertura.failure" datafile="${cobertura.file}" haltonfailure="false" linerate="0" packagebranchrate="0" packagelinerate="0" totalbranchrate="72" totallinerate="78" />
     </target>
 
     <!-- Functional (Selenium) and API Test Targets -->

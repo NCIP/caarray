@@ -401,7 +401,15 @@ public interface ProjectManagementService {
      * @param experiment the experiment
      * @return the list of characteristics
      */
-    List<AbstractCharacteristic> getCharacteristicsForExperiment(Experiment experiment);
+    List<AbstractCharacteristic> getArbitraryCharacteristicsForExperimentSamples(Experiment experiment);
+
+    /**
+     * Get all characteristics for the experiment.
+     * 
+     * @param experiment the experiment
+     * @return the list of characteristics categories
+     */
+    List<Category> getArbitraryCharacteristicsCategoriesForExperimentSamples(Experiment experiment);
 
     /**
      * Returns the biomaterial of given type for a given project with the given public identifier.
@@ -452,6 +460,17 @@ public interface ProjectManagementService {
      * @return a list if samples with experiment matching e and category matching c
      */
     List<Sample> searchSamplesByExperimentAndCategory(String keyword, Experiment e, SearchSampleCategory... c);
+
+    /**
+     * Performs a query for all samples which are related to an experiment and contain a value match in given arbitrary 
+     * characteristic category.
+     * 
+     * @param keyword text keyword
+     * @param e experiment
+     * @param c arbitrary characteristic category to perform search within
+     * @return a list of samples matching this arbitrary characteristic value
+     */
+    List<Sample> searchSamplesByExperimentAndArbitraryCharacteristicValue(String keyword, Experiment e, Category c);
 
     /**
      * Performs a query for all sources which contain a characteristic and category supplied. Keyword is matched on

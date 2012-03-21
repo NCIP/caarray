@@ -169,6 +169,12 @@ public class SampleDaoStub extends AbstractDaoStub implements SampleDao {
         return Collections.emptyList();
     }
 
+    @Override
+    public List<Sample> searchSamplesByExperimentAndArbitraryCharacteristicValue( String keyword, Experiment e, 
+            Category c ) {
+        return Collections.emptyList();
+    }
+
     public List<Sample> searchSamplesByCharacteristicCategory(
             PageSortParams<Sample> params, Category c, String keyword) {
         return Collections.emptyList();
@@ -183,4 +189,5 @@ public class SampleDaoStub extends AbstractDaoStub implements SampleDao {
             BiomaterialSearchCriteria criteria) {
         return Collections.emptyList();
     }
+
 }

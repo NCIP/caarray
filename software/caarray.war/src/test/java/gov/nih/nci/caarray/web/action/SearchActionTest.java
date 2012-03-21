@@ -235,7 +235,7 @@ public class SearchActionTest extends AbstractBaseStrutsTest {
 
     @Test
     public void testGetSearchAdvSampleCategories() {
-        assertEquals(SearchSampleCategory.values().length + 2, this.searchAction.getSearchBiometricCategories().size());
+        assertEquals(SearchSampleCategory.values().length-1 + 2, this.searchAction.getSearchBiometricCategories().size());
     }
 
     @Test

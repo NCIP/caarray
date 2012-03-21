@@ -101,6 +101,7 @@ import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.domain.search.AnnotationCriterion;
 import gov.nih.nci.caarray.domain.search.ExperimentSearchCriteria;
 import gov.nih.nci.caarray.domain.search.SearchCategory;
+import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
@@ -458,13 +459,31 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
      */
     @Override
     @SuppressWarnings(UNCHECKED)
-    public List<AbstractCharacteristic> getCharacteristicsForExperiment(
+    public List<AbstractCharacteristic> getArbitraryCharacteristicsForExperimentSamples(
             Experiment experiment) {
         String queryStr = "SELECT DISTINCT acs from Experiment e left join e.biomaterials abs "
                 + "left join abs.characteristics acs "
-                + "WHERE e.id = :experiment";
+                + "WHERE abs.class = :sc AND e.id = :exp";
         Query q = getCurrentSession().createQuery(queryStr);
-        q.setEntity("experiment", experiment);
+        q.setString("sc", Sample.DISCRIMINATOR);
+        q.setEntity("exp", experiment);
+        return q.list();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @SuppressWarnings(UNCHECKED)
+    public List<Category> getArbitraryCharacteristicsCategoriesForExperimentSamples(
+            Experiment experiment) {
+        String sQuery = "SELECT DISTINCT acs.category from @EXPERIMENT@ e left join e.biomaterials abs "
+                + "left join abs.characteristics acs "
+                + "WHERE abs.class = :sc AND e.id = :exp";
+        sQuery = sQuery.replaceAll("@EXPERIMENT@", Experiment.class.getName());
+        Query q = getCurrentSession().createQuery(sQuery);
+        q.setString("sc", Sample.DISCRIMINATOR);
+        q.setEntity("exp", experiment);
         return q.list();
     }
 

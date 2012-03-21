@@ -169,16 +169,15 @@ public enum SearchSampleCategory implements BiomaterialSearchCategory {
      * Arbitrary Characteristic.
      */
     SAMPLE_ARBITRARY_CHARACTERISTIC ("search.category.arbitraryCharacteristic",
-            new String[]{"this.characteristics chs"},
+            ArrayUtils.EMPTY_STRING_ARRAY,
             ArrayUtils.EMPTY_STRING_ARRAY) {
-
-                /**
-                 * {@inheritDoc}
-                 */
-                public String getWhereClause() {
-                        return "(1=1)";
-                }
-            };
+        /**
+         * {@inheritDoc}
+         */
+        public String getWhereClause() {
+            return "(1=1)";
+        }
+    };
 
     private final String resourceKey;
     private final String[] joins;
@@ -227,8 +226,8 @@ public enum SearchSampleCategory implements BiomaterialSearchCategory {
     public static SearchSampleCategory[] getPermSearchCategories() {
         return new SearchSampleCategory[]{SAMPLE_NAME, SAMPLE_EXTERNAL_ID,
                 SAMPLE_CELL_TYPE, SAMPLE_DISEASE_STATE, SAMPLE_MATERIAL_TYPE,
-                SAMPLE_ORGANISM, SAMPLE_PROVIDER, SAMPLE_TISSUE_SITE, SAMPLE_ARBITRARY_CHARACTERISTIC};
+                SAMPLE_ORGANISM, SAMPLE_PROVIDER, SAMPLE_TISSUE_SITE, 
+                SAMPLE_ARBITRARY_CHARACTERISTIC};
     }
-
 
 }

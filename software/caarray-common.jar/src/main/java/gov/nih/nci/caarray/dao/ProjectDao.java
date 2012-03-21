@@ -93,6 +93,7 @@ import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.domain.search.ExperimentSearchCriteria;
 import gov.nih.nci.caarray.domain.search.SearchCategory;
+import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.domain.vocabulary.Term;
 import gov.nih.nci.security.authorization.domainobjects.User;
 
@@ -220,7 +221,14 @@ public interface ProjectDao extends CaArrayDao {
      * @param experiment the experiment
      * @return the list of characteristics
      */
-    List<AbstractCharacteristic> getCharacteristicsForExperiment(Experiment experiment);
+    List<AbstractCharacteristic> getArbitraryCharacteristicsForExperimentSamples(Experiment experiment);
+
+    /**
+     * Get all characteristics categories for the experiment.
+     * @param experiment the experiment
+     * @return the list of characteristics
+     */
+    List<Category> getArbitraryCharacteristicsCategoriesForExperimentSamples(Experiment experiment);
 
     /**
      * Return the full list of AbstractBiomaterials for a project with given id,  bypassing instance security filters.

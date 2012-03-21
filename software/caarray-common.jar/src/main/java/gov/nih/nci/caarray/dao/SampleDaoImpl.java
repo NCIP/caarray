@@ -98,6 +98,7 @@ import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -360,6 +361,41 @@ public class SampleDaoImpl extends AbstractCaArrayDaoImpl implements SampleDao {
         return q.list();
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public List<Sample> searchSamplesByExperimentAndArbitraryCharacteristicValue(String keyword, Experiment e, 
+            Category c) {
+
+        String sQueryPattern =
+  "select distinct s " 
++ "from @CHARACTERISTIC@ ch " 
++ "     join ch.bioMaterial s " 
++ "where s.class = :sc" 
++ "      and s.experiment = :exp" 
++ "      and ch.category = :cat " 
++ "      and @VALUE@ like :keyw";
+
+        String[][] sQuerySubstitutes = {
+                {"TermBasedCharacteristic", "ch.term.value"},
+                {"UserDefinedCharacteristic", "ch.value"},
+                {"MeasurementCharacteristic", "ch.value"} 
+        };
+        List lst = new ArrayList();
+        for (String[] substitute : sQuerySubstitutes) {
+            String sQuery = sQueryPattern
+                    .replaceAll("@CHARACTERISTIC@", substitute[0])
+                    .replaceAll("@VALUE@", substitute[1]);
+            Query q = getCurrentSession().createQuery(sQuery);
+            q.setString("sc", Sample.DISCRIMINATOR);
+            q.setEntity("exp", e);
+            q.setEntity("cat", c);
+            q.setString("keyw", "%" + keyword + "%");
+            lst.addAll(q.list());
+        }
+        return lst;
+    }
 
     /**
      * {@inheritDoc}
@@ -572,4 +608,5 @@ public class SampleDaoImpl extends AbstractCaArrayDaoImpl implements SampleDao {
         sb.append(')');
         return sb.toString();
     }
+
 }

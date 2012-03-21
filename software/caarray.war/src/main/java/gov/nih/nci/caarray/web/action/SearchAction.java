@@ -659,6 +659,10 @@ public class SearchAction extends ActionSupport {
     public static List<LabelValue> getSearchBiometricCategories() {
         List<LabelValue> searchCats = new ArrayList<LabelValue>();
         for (SearchSampleCategory cat : SearchSampleCategory.values()) {
+            // Arbitrary Characteristic search applies only to permission management
+            if (cat.equals(SearchSampleCategory.SAMPLE_ARBITRARY_CHARACTERISTIC)) {
+                continue;
+            }   
             searchCats.add(new LabelValue(cat.getResourceKey(), cat.name()));
         }
         searchCats.add(new LabelValue("search.category.other.characteristics", SEARCH_CATEGORY_OTHER_CHAR));

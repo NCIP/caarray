@@ -92,6 +92,7 @@ import gov.nih.nci.caarray.domain.sample.Extract;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.domain.sample.TermBasedCharacteristic;
+import gov.nih.nci.caarray.domain.sample.UserDefinedCharacteristic;
 import gov.nih.nci.caarray.domain.search.AdHocSortCriterion;
 import gov.nih.nci.caarray.domain.search.AnnotationCriterion;
 import gov.nih.nci.caarray.domain.search.BiomaterialSearchCriteria;
@@ -513,6 +514,55 @@ public class SampleDaoTest extends AbstractProjectDaoTest {
 
             assertEquals(DUMMY_SAMPLE, retrievedSamples.get(0));
 
+        } catch (final DAOException e) {
+            this.hibernateHelper.rollbackTransaction(tx);
+            throw e;
+        }
+    }
+
+    /**
+     * Tests retrieving the <code>Sample</code> with the given char category and keyword. Test encompasses save and
+     * delete of a <code>Sample</code>.
+     */
+    @Test
+    public void testSearchSamplesByExperimentAndArbitraryCharacteristicValue() {
+        Transaction tx = null;
+
+        try {
+            tx = this.hibernateHelper.beginTransaction();
+            DUMMY_SAMPLE.getCharacteristics().clear();
+            TermBasedCharacteristic characteristic1 = new TermBasedCharacteristic();
+            characteristic1.setCategory(DUMMY_CATEGORY);
+            characteristic1.setTerm(DUMMY_REPLICATE_TYPE);
+            characteristic1.setBioMaterial(DUMMY_SAMPLE);
+            DUMMY_SAMPLE.getCharacteristics().add(characteristic1);
+
+            UserDefinedCharacteristic characteristic2 = new UserDefinedCharacteristic();
+            characteristic2.setCategory(DUMMY_CATEGORY);
+            characteristic2.setValue(DUMMY_NORMALIZATION_TYPE.getValue());
+            characteristic2.setBioMaterial(DUMMY_SAMPLE);
+            DUMMY_SAMPLE.getCharacteristics().add(characteristic2);
+            assertEquals(2, DUMMY_SAMPLE.getCharacteristics().size());
+            
+            saveSupportingObjects();
+            this.daoObject.save(DUMMY_PROJECT_1);
+            tx.commit();
+
+            tx = this.hibernateHelper.beginTransaction();
+            String queryParam = characteristic1.getTerm().getValue();
+            List<Sample> retrievedSamples = 
+                    this.daoObject.searchSamplesByExperimentAndArbitraryCharacteristicValue( 
+                            queryParam, DUMMY_EXPERIMENT_1, DUMMY_CATEGORY );
+            assertEquals(1, retrievedSamples.size());
+            assertEquals(DUMMY_SAMPLE.getId(), retrievedSamples.get(0).getId());
+
+            queryParam = characteristic2.getValue();
+            retrievedSamples = 
+                    this.daoObject.searchSamplesByExperimentAndArbitraryCharacteristicValue( 
+                            queryParam, DUMMY_EXPERIMENT_1, DUMMY_CATEGORY );
+            assertEquals(1, retrievedSamples.size());
+            assertEquals(DUMMY_SAMPLE.getId(), retrievedSamples.get(0).getId());
+            tx.commit();
         } catch (final DAOException e) {
             this.hibernateHelper.rollbackTransaction(tx);
             throw e;
