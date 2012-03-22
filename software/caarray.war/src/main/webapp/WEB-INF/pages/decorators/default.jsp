@@ -14,6 +14,7 @@
         <link rel="stylesheet" type="text/css" media="all" href="<caarray:writeVersionedUrl value='/styles/caarray.css'/>" />
         <link rel="stylesheet" type="text/css" media="all" href="<caarray:writeVersionedUrl value='/styles/accordion.css'/>" />
         <link rel="stylesheet" type="text/css" media="all" href="<caarray:writeVersionedUrl value='/styles/overwrites.css'/>" />
+        <script type="text/javascript" src="<caarray:writeVersionedUrl value='/scripts/jquery-min.js'/>"></script>
         <script type="text/javascript" src="<caarray:writeVersionedUrl value='/scripts/prototype.js'/>"></script>
         <script type="text/javascript" src="<c:url value='/scriptslib/scriptaculous.js'/>"></script>
         <script type="text/javascript" src="<caarray:writeVersionedUrl value='/scripts/global.js'/>"></script>

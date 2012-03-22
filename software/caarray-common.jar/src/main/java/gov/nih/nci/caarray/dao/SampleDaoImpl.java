@@ -372,8 +372,8 @@ public class SampleDaoImpl extends AbstractCaArrayDaoImpl implements SampleDao {
   "select distinct s " 
 + "from @CHARACTERISTIC@ ch " 
 + "     join ch.bioMaterial s " 
-+ "where s.class = :sc" 
-+ "      and s.experiment = :exp" 
++ "where s.class = :cls" 
++ "      and s.experiment = :exp " 
 + "      and ch.category = :cat " 
 + "      and @VALUE@ like :keyw";
 
@@ -382,19 +382,28 @@ public class SampleDaoImpl extends AbstractCaArrayDaoImpl implements SampleDao {
                 {"UserDefinedCharacteristic", "ch.value"},
                 {"MeasurementCharacteristic", "ch.value"} 
         };
-        List lst = new ArrayList();
-        for (String[] substitute : sQuerySubstitutes) {
-            String sQuery = sQueryPattern
-                    .replaceAll("@CHARACTERISTIC@", substitute[0])
-                    .replaceAll("@VALUE@", substitute[1]);
-            Query q = getCurrentSession().createQuery(sQuery);
-            q.setString("sc", Sample.DISCRIMINATOR);
-            q.setEntity("exp", e);
-            q.setEntity("cat", c);
-            q.setString("keyw", "%" + keyword + "%");
-            lst.addAll(q.list());
+        List lstSamples = new ArrayList();
+        for (String cl : new String[] {Sample.DISCRIMINATOR, Source.DISCRIMINATOR}) {
+            for (String[] substitute : sQuerySubstitutes) {
+                String sQuery = sQueryPattern
+                        .replaceAll("@CHARACTERISTIC@", substitute[0])
+                        .replaceAll("@VALUE@", substitute[1]);
+                Query q = getCurrentSession().createQuery(sQuery);
+                q.setString("cls", cl);
+                q.setEntity("exp", e);
+                q.setEntity("cat", c);
+                q.setString("keyw", "%" + keyword + "%");
+                List<AbstractBioMaterial> lstBioMaterials = (List<AbstractBioMaterial>) q.list();
+                for (AbstractBioMaterial bioMaterial : lstBioMaterials) {
+                    if (bioMaterial instanceof Sample) {
+                        lstSamples.add(bioMaterial);
+                    } else {
+                        lstSamples.addAll(((Source) bioMaterial).getSamples());
+                    }
+                }
+            }
         }
-        return lst;
+        return lstSamples;
     }
 
     /**

@@ -43,10 +43,14 @@ public class ProjectPermissionsAction extends AbstractBaseProjectAction {
     private List<Long> sampleSecurityLevels = new ArrayList<Long>();
     private String permSampleKeyword;
     private String permSampleSearch;
+    private List<Category> arbitraryCharacteristicCategories = new ArrayList<Category>();
+    private final Map<Long, Category> mapArbitraryCharacteristicCategories = new HashMap<Long, Category>();
+    private Long arbitraryCharacteristicCategoryId;
     private List<Sample> sampleResults = new ArrayList<Sample>();
     private Integer sampleResultsCount = null;
     private String actionButton;
     private SampleSecurityLevel securityChoices;
+    private ProjectManagementService projectManagementService = null;
     
     /**
      * {@inheritDoc}
@@ -79,6 +83,15 @@ public class ProjectPermissionsAction extends AbstractBaseProjectAction {
         accessProfiles = new TreeSet<AccessProfile>();
         accessProfiles.add(getProject().getPublicProfile());
         accessProfiles.addAll(getProject().getGroupProfiles().values());
+        
+        if (projectManagementService == null) {
+            projectManagementService = ServiceLocatorFactory.getProjectManagementService();
+        }
+        arbitraryCharacteristicCategories = projectManagementService
+                .getArbitraryCharacteristicsCategoriesForExperimentSamples(getExperiment());
+        for (Category category : arbitraryCharacteristicCategories) {
+            mapArbitraryCharacteristicCategories.put(category.getId(), category);
+        }
     }
 
     /**
@@ -210,32 +223,31 @@ public class ProjectPermissionsAction extends AbstractBaseProjectAction {
     }
 
     private void searchForSamples() {
-        ProjectManagementService pms = ServiceLocatorFactory
-                .getProjectManagementService();
+        if (projectManagementService == null) {
+            projectManagementService = ServiceLocatorFactory.getProjectManagementService();
+        }
         SearchSampleCategory[] categories = new SearchSampleCategory[] {SearchSampleCategory
                 .valueOf(permSampleSearch) };
         if (categories[0].equals(SearchSampleCategory.SAMPLE_ARBITRARY_CHARACTERISTIC)) {
-            sampleResults = pms.searchSamplesByExperimentAndArbitraryCharacteristicValue(
+            sampleResults = projectManagementService.searchSamplesByExperimentAndArbitraryCharacteristicValue(
                     permSampleKeyword, getProject().getExperiment(),
-                    getSelectedArbitraryCharacteristicCategory());
+                            mapArbitraryCharacteristicCategories.get(getArbitraryCharacteristicCategoryId()));
 
         } else {
-            sampleResults = pms.searchSamplesByExperimentAndCategory(permSampleKeyword, 
+            sampleResults = projectManagementService.searchSamplesByExperimentAndCategory(permSampleKeyword, 
                     getProject().getExperiment(), categories);
         }
         sampleResultsCount = Integer.valueOf(sampleResults.size());
     }
 
-    private Category getSelectedArbitraryCharacteristicCategory() {
-        // TODO Create an actual implementation, replace randomly generated
-        // value by user-selected one
-        ProjectManagementService pms = ServiceLocatorFactory.getProjectManagementService();
-        List<Category> lst = pms.getArbitraryCharacteristicsCategoriesForExperimentSamples(getProject()
-                .getExperiment());
-        int index = (int) (Math.random() * lst.size());
-        return lst.get(index);
+    /**
+     * @return true if (Other Characteristics) is selected in category drop-down
+     */
+    public boolean isSelectedArbitraryCharacteristicCategory() {
+        return SearchSampleCategory.valueOf(permSampleSearch).equals(
+                SearchSampleCategory.SAMPLE_ARBITRARY_CHARACTERISTIC);
     }
-
+    
     /**
      * @return list of label value beans.
      */
@@ -389,5 +401,49 @@ public class ProjectPermissionsAction extends AbstractBaseProjectAction {
      */
     public void setSampleResultsCount(Integer sampleResultsCount) {
         this.sampleResultsCount = sampleResultsCount;
+    }
+
+    /**
+     * @return the arbitraryCharacteristicCategories
+     */
+    public List<Category> getArbitraryCharacteristicCategories() {
+        return arbitraryCharacteristicCategories;
+    }
+
+    /**
+     * @param arbitraryCharacteristicCategories the arbitraryCharacteristicCategories to set
+     */
+    public void setArbitraryCharacteristicCategories(
+            List<Category> arbitraryCharacteristicCategories) {
+        this.arbitraryCharacteristicCategories = arbitraryCharacteristicCategories;
+    }
+
+    /**
+     * @return the arbitraryCharacteristicCategoryId
+     */
+    public Long getArbitraryCharacteristicCategoryId() {
+        return arbitraryCharacteristicCategoryId;
+    }
+
+    /**
+     * @param arbitraryCharacteristicCategoryId the arbitraryCharacteristicCategoryId to set
+     */
+    public void setArbitraryCharacteristicCategoryId(
+            Long arbitraryCharacteristicCategoryId) {
+        this.arbitraryCharacteristicCategoryId = arbitraryCharacteristicCategoryId;
+    }
+
+    /**
+     * @return the projectManagementService
+     */
+    public ProjectManagementService getProjectManagementService() {
+        return projectManagementService;
+    }
+
+    /**
+     * @param projectManagementService the projectManagementService to set
+     */
+    public void setProjectManagementService(ProjectManagementService projectManagementService) {
+        this.projectManagementService = projectManagementService;
     }
 }

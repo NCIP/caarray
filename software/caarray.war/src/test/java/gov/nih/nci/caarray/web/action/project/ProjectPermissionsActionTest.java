@@ -82,9 +82,11 @@
  */
 package gov.nih.nci.caarray.web.action.project;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
+
+import java.util.ArrayList;
+
 import gov.nih.nci.caarray.application.GenericDataService;
 import gov.nih.nci.caarray.application.GenericDataServiceStub;
 import gov.nih.nci.caarray.application.permissions.PermissionsManagementService;
@@ -95,8 +97,10 @@ import gov.nih.nci.caarray.domain.permissions.AccessProfile;
 import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
 import gov.nih.nci.caarray.domain.permissions.SampleSecurityLevel;
 import gov.nih.nci.caarray.domain.permissions.SecurityLevel;
+import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.sample.Sample;
+import gov.nih.nci.caarray.domain.vocabulary.Category;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import gov.nih.nci.caarray.web.AbstractBaseStrutsTest;
@@ -135,6 +139,11 @@ public class ProjectPermissionsActionTest extends AbstractBaseStrutsTest {
     @SuppressWarnings("deprecation")
     @Test
     public void testPrepare() throws Exception {
+        final ProjectManagementService pms = mock(ProjectManagementService.class);
+        when(pms.getArbitraryCharacteristicsCategoriesForExperimentSamples(any(Experiment.class))).thenReturn(
+                new ArrayList<Category>());
+        action.setProjectManagementService(pms);
+        
         // no collab group or access profile
         action.prepare();
         assertNull(action.getCollaboratorGroup().getId());

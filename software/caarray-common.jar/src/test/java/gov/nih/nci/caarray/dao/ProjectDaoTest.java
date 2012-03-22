@@ -1200,7 +1200,7 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
 
             tx = this.hibernateHelper.beginTransaction();
             List<AbstractCharacteristic> lst1 = daoObject.getArbitraryCharacteristicsForExperimentSamples(DUMMY_EXPERIMENT_1);
-            assertEquals(2, lst1.size());
+            assertEquals(3, lst1.size());
             if( lst1.get(0) instanceof TermBasedCharacteristic ) {
                 assertEquals(DUMMY_REPLICATE_TYPE, ((TermBasedCharacteristic)lst1.get(0)).getTerm());
                 assertEquals(DUMMY_NORMALIZATION_TYPE.getValue(), ((UserDefinedCharacteristic)lst1.get(1)).getValue());

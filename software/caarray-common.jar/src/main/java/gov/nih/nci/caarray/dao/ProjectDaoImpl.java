@@ -461,12 +461,7 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
     @SuppressWarnings(UNCHECKED)
     public List<AbstractCharacteristic> getArbitraryCharacteristicsForExperimentSamples(
             Experiment experiment) {
-        String queryStr = "SELECT DISTINCT acs from Experiment e left join e.biomaterials abs "
-                + "left join abs.characteristics acs "
-                + "WHERE abs.class = :sc AND e.id = :exp";
-        Query q = getCurrentSession().createQuery(queryStr);
-        q.setString("sc", Sample.DISCRIMINATOR);
-        q.setEntity("exp", experiment);
+        Query q = generateArbitraryCharacteristicsCategoriesPreparedQuery(experiment, "acs");
         return q.list();
     }
 
@@ -477,14 +472,26 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
     @SuppressWarnings(UNCHECKED)
     public List<Category> getArbitraryCharacteristicsCategoriesForExperimentSamples(
             Experiment experiment) {
-        String sQuery = "SELECT DISTINCT acs.category from @EXPERIMENT@ e left join e.biomaterials abs "
-                + "left join abs.characteristics acs "
-                + "WHERE abs.class = :sc AND e.id = :exp";
-        sQuery = sQuery.replaceAll("@EXPERIMENT@", Experiment.class.getName());
-        Query q = getCurrentSession().createQuery(sQuery);
-        q.setString("sc", Sample.DISCRIMINATOR);
-        q.setEntity("exp", experiment);
+        Query q = generateArbitraryCharacteristicsCategoriesPreparedQuery(experiment, "acs.category");
         return q.list();
+    }
+    
+    private Query generateArbitraryCharacteristicsCategoriesPreparedQuery(Experiment experiment, String entityToken) {
+        String sQuery = 
+  "select distinct @ENTITY@ " 
++ "from @EXPERIMENT@ e " 
++ "     left join e.biomaterials abs "
++ "     left join abs.characteristics acs "
++ "where (abs.class = :sample_class or abs.class = :source_class) " 
++ "      and e.id = :exp";
+        sQuery = sQuery
+                .replaceAll("@ENTITY@", entityToken)
+                .replaceAll("@EXPERIMENT@", Experiment.class.getName());
+        Query q = getCurrentSession().createQuery(sQuery);
+        q.setString("sample_class", Sample.DISCRIMINATOR);
+        q.setString("source_class", Source.DISCRIMINATOR);
+        q.setEntity("exp", experiment);
+        return q;
     }
 
     /**

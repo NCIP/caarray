@@ -11,7 +11,7 @@
         <link rel="stylesheet" type="text/css" media="all" href="<caarray:writeVersionedUrl value='/styles/caarray.css'/>" />
         <link rel="stylesheet" type="text/css" media="all" href="<caarray:writeVersionedUrl value='/styles/overwrites.css'/>" />
 
-        <script type="text/javascript" src="<c:url value='/scripts/upload/jquery.min.js'/>"></script>
+        <script type="text/javascript" src="<c:url value='/scripts/jquery.min.js'/>"></script>
         <script type="text/javascript" src="<c:url value='/scripts/upload/vendor/jquery.ui.widget.js'/>"></script>
         <script type="text/javascript" src="<c:url value='/scripts/upload/tmpl.min.js'/>"></script>
         <script type="text/javascript" src="<c:url value='/scripts/upload/load-image.min.js'/>"></script>

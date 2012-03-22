@@ -902,4 +902,16 @@ function fireEvent(eventElement, firefoxEvent, ieEvent) {
     }
 }
 
+(function($){
+    $(function() {
+        $('body').delegate('select[name="permSampleSearch"]', 'change', function() {
+            if( $(this).val() == 'SAMPLE_ARBITRARY_CHARACTERISTIC' ) {
+            	$('#characteristic_category_dropdown_id').show();
+            } else {
+            	$('#characteristic_category_dropdown_id').hide();
+            }
+        });
+    });
+})(jQuery);
+
 

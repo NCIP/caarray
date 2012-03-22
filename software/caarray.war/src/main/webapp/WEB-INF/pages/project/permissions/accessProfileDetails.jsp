@@ -41,7 +41,6 @@
                 </c:choose>
             </td>
         </tr>
-
     </table>
 
     <div class="datatable" style="padding-bottom: 0px">
@@ -66,6 +65,17 @@
                     <s:select name="permSampleSearch" label="Search Samples"
                             list="@gov.nih.nci.caarray.web.action.project.ProjectPermissionsAction@getSearchSampleCategories()"
                             listValue="%{getText(label)}" listKey="value"/>
+            </td>
+        </tr>
+        <tr id="characteristic_category_dropdown_id" 
+		        <c:if test="${!selectedArbitraryCharacteristicCategory}">style="display:none"</c:if> >
+            <td class="left">
+	            <s:label><b><fmt:message key="search.category.arbitraryCharacteristic.label"/>:</b></s:label>
+            </td>
+            <td colspan="2" class="right">
+	            <s:select name="arbitraryCharacteristicCategoryId" label="Search Samples"
+		                list="arbitraryCharacteristicCategories"
+                        listKey="id" listValue="name" />
             </td>
         </tr>
         <tr class="odd">
