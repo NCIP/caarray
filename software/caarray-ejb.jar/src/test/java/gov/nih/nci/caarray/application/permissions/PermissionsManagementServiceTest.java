@@ -131,7 +131,6 @@ import com.google.inject.Injector;
 /**
  * Test cases for service.
  */
-@SuppressWarnings("PMD")
 public class PermissionsManagementServiceTest extends AbstractServiceTest {
     private static Injector injector;
     private static CaArrayHibernateHelper hibernateHelper;

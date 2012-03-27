@@ -98,7 +98,6 @@ import org.junit.Before;
 
 public class DataSet_HibernateIntegrationTest extends AbstractCaArrayObject_HibernateIntegrationTest<DataSet> {
     private static final URI DUMMY_HANDLE = CaArrayUtils.makeUriQuietly("foo:baz");
-    private static final int NUMBER_OF_DATA_ROWS = 100;
     private QuantitationType stringType;
     private QuantitationType floatType;
 
