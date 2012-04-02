@@ -1,7 +1,7 @@
 <%@ include file="/WEB-INF/pages/common/taglibs.jsp"%>
 
 <c:url value="/protected/ajax/project/files/listUnimportedForm.action" var="listUnimportedFormUrl" />
-<c:url value="/protected/ajax/project/files/uploadInBackground.action" var="uploadInBackgroundUrl">
+<c:url value="/protected/ajax/project/files/upload/uploadInBackground.action" var="uploadInBackgroundUrl">
     <c:param name="project.id" value="${project.id}"/>
 </c:url>
 
@@ -10,7 +10,7 @@
 </c:url>
 <c:url value="/ajax/project/listTab/Hybridizations/jsonList.action" var="hybsJsonListUrl">
     <c:param name="project.id" value="${project.id}"/>
-</c:url> 
+</c:url>
 
 <c:url value="/ajax/project/files/importTreeNodesJson.action" var="nodesJsonUrl"/>
 <c:url value="/protected/ajax/project/files/validateSelectedImportFiles.action" var="validateImportFilesUrl"/>
@@ -97,7 +97,7 @@
     for (i = 0; i < checkboxes.length; ++i) {
       if (checkboxes[i].checked) {
         params['selectedFileIds'].push(checkboxes[i].value);
-      }        
+      }
     }
     TabUtils.showSubmittingText();
     Caarray.submitAjaxForm('selectFilesForm', 'tabboxlevel2wrapper', { url: findRefUrl, extraArgs: params});

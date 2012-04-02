@@ -21,7 +21,7 @@
                 <div class="boxpad2extend">
                     <p id="ie_limitation_text"></p>
                     <c:if test="${!project.locked && caarrayfn:canWrite(project, caarrayfn:currentUser())}">
-                        <s:form action="project/files/upload" id="fileupload" namespace="" enctype="multipart/form-data" method="post"  target="target_upload">
+                        <s:form id="fileupload" action="upload.action" enctype="multipart/form-data" method="post" target="target_upload">
                             <input type=hidden name="project.id" value="<s:property value='%{project.id}'/>"/>
                             <input type=hidden name="selectedFilesToUnpack" value="-1" />
                             <div class="fileupload-loading"></div><br>
@@ -31,7 +31,7 @@
                                 <div class="span7">
                                     <span class="btn btn-gray fileinput-button">
                                         <span><i class="icon-plus icon-white"></i>Add Files</span>
-                                        <input id="upload0" name="upload" multiple="" type="file">
+                                        <input id="upload0" name="upload" multiple="multiple" type="file">
                                     </span>
                                     <button type="submit" class="btn btn-gray start" onclick="beginUpload()"><i class="icon-upload icon-white"></i>Upload All</button>
                                     <button type="reset" class="btn btn-gray cancel"><i class="icon-ban-circle icon-white"></i>Cancel All Uploads</button>

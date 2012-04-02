@@ -232,9 +232,12 @@
             <result name="listSupplemental">/WEB-INF/pages/project/files/listSupplemental.jsp</result>
             <result name="listUnimportedForm">/WEB-INF/pages/project/files/listUnimportedForm.jsp</result>
             <result name="listImportedForm">/WEB-INF/pages/project/files/listImportedForm.jsp</result>
-            <result name="uploadInBackground">/WEB-INF/pages/project/files/uploadBackground.jsp</result>
             <result name="table">/WEB-INF/pages/project/files/listTable.jsp</result>
             <result name="success">/WEB-INF/pages/project/files/{1}.jsp</result>
+        </action>
+
+        <action name="ajax/project/files/upload/*" class="gov.nih.nci.caarray.web.action.project.UploadProjectFilesAction" method="{1}">
+            <result name="uploadInBackground">/WEB-INF/pages/project/files/uploadBackground.jsp</result>
         </action>
 
         <action name="ajax/project/export/*" class="gov.nih.nci.caarray.web.action.project.ProjectExportAction" method="{1}">

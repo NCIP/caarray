@@ -151,7 +151,7 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
 
-@SuppressWarnings("PMD")
+@SuppressWarnings({ "deprecation", "serial" })
 public class ProjectManagementServiceTest extends AbstractServiceTest {
     private static Injector injector;
     private static CaArrayHibernateHelper hibernateHelper;
@@ -188,7 +188,6 @@ public class ProjectManagementServiceTest extends AbstractServiceTest {
     @Before
     public void setUpService() {
         CaArrayUsernameHolder.setUser(STANDARD_USER);
-        final DataStorageFacade dataStorageFacade = mock(DataStorageFacade.class);
         final ProjectManagementServiceBean pmsBean = new ProjectManagementServiceBean();
 
         pmsBean.setProjectDao(this.daoFactoryStub.getProjectDao());
@@ -252,7 +251,7 @@ public class ProjectManagementServiceTest extends AbstractServiceTest {
         final List<File> files = new ArrayList<File>();
         final List<String> filesToUnpack = new ArrayList<String>();
         final DataStorageFacade dataStorageFacade = mock(DataStorageFacade.class);
-        final FileUploadUtils fileUploadUtils = new FileUploadUtils(dataStorageFacade);
+        FileUploadUtils fileUploadUtils = new FileUploadUtils(dataStorageFacade);
 
         // add a zip file which contains some non-zip files and 1 zip file (11 in total)
         files.add(MageTabDataFiles.SPECIFICATION_ZIP_WITH_NEXTED_ZIP);
@@ -280,6 +279,7 @@ public class ProjectManagementServiceTest extends AbstractServiceTest {
         assertTrue(result.getConflictingFiles().contains(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF.getName()));
         // attempt to re-upload a bunch of the files that were just uploaded to get
         // to get back nothing, showing that if a file has the same name, we do not add it.
+        fileUploadUtils = new FileUploadUtils(dataStorageFacade);
         result = fileUploadUtils.uploadFiles(project, files, fileNames, filesToUnpack);
         assertEquals(0, result.getCount());
         assertEquals(12, project.getFiles().size());
@@ -427,7 +427,6 @@ public class ProjectManagementServiceTest extends AbstractServiceTest {
      * Test method for {@link ProjectManagementService#saveProject(Project, PersistentObject...)}.
      */
     @Test
-    @SuppressWarnings("deprecation")
     public void testSaveProjectWithImportingFiles() throws Exception {
         final Project project = new Project() {
             @Override
@@ -530,30 +529,6 @@ public class ProjectManagementServiceTest extends AbstractServiceTest {
         assertNotNull(abm);
         assertEquals("Test2", abm.getName());
         assertEquals("Test", abm.getDescription());
-    }
-
-    /**
-     * @param project
-     */
-    private void createProtectionGroup(Project project) {
-        // Perform voodoo magic
-        try {
-            final Method m =
-                    SecurityUtils.class.getDeclaredMethod("createProtectionGroup", Protectable.class, User.class);
-            m.setAccessible(true);
-            m.invoke(null, project, CaArrayUsernameHolder.getCsmUser());
-        } catch (final SecurityException e) {
-            e.printStackTrace();
-        } catch (final NoSuchMethodException e) {
-            e.printStackTrace();
-        } catch (final IllegalArgumentException e) {
-            e.printStackTrace();
-        } catch (final IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (final InvocationTargetException e) {
-            e.printStackTrace();
-        }
-
     }
 
     @Test(expected = IllegalStateException.class)
@@ -708,9 +683,6 @@ public class ProjectManagementServiceTest extends AbstractServiceTest {
             return caArrayObject.getId();
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public List<Project> getProjectsForCurrentUser(PageSortParams<Project> pageSortParams) {
             return new ArrayList<Project>();
@@ -720,10 +692,6 @@ public class ProjectManagementServiceTest extends AbstractServiceTest {
         public void remove(PersistentObject caArrayEntity) {
             this.lastDeleted = caArrayEntity;
             this.savedObjects.remove(caArrayEntity.getId());
-        }
-
-        public PersistentObject getLastDeleted() {
-            return this.lastDeleted;
         }
 
     }
@@ -766,10 +734,6 @@ public class ProjectManagementServiceTest extends AbstractServiceTest {
             return null;
         }
 
-        /**
-         * {@inheritDoc}
-         */
-        @SuppressWarnings("deprecation")
         private Project getProject(Long id) {
             if (this.projectDao.savedObjects.containsKey(id)) {
                 return (Project) this.projectDao.savedObjects.get(id);
@@ -804,7 +768,6 @@ public class ProjectManagementServiceTest extends AbstractServiceTest {
             return s;
         }
 
-        @SuppressWarnings("deprecation")
         private Factor getFactor(Long entityId) {
             final Factor f = new Factor();
             f.setName("Test");
@@ -812,7 +775,6 @@ public class ProjectManagementServiceTest extends AbstractServiceTest {
             return f;
         }
 
-        @SuppressWarnings("deprecation")
         private void setABM(AbstractBioMaterial abm, Long entityId) {
             abm.setName("Test");
             abm.setDescription("Test");

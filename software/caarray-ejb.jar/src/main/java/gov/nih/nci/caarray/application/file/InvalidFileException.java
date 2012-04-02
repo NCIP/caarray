@@ -89,6 +89,7 @@ import gov.nih.nci.caarray.application.project.FileProcessingResult;
  * @author Winston Cheng
  */
 public class InvalidFileException extends Exception {
+    private static final long serialVersionUID = 1L;
     private final String file;
     private final FileProcessingResult result;
     private final String resourceKey;
@@ -133,7 +134,7 @@ public class InvalidFileException extends Exception {
      * @param cause underlying exception that caused the error
      * @param result the partial result of processing the file until the error occurred
      */
-    public InvalidFileException(String file, String key, FileProcessingResult result, String message, 
+    public InvalidFileException(String file, String key, FileProcessingResult result, String message,
             Throwable cause) {
         super(message, cause);
         this.file = file;
@@ -160,5 +161,5 @@ public class InvalidFileException extends Exception {
      */
     public FileProcessingResult getResult() {
         return result;
-    }        
+    }
 }

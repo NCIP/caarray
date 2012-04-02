@@ -13,7 +13,6 @@ function beginUpload() {
 // This method is invoked from the "fileuploadstop" event in application.js
 function onUploadDone() {
     document.getElementById("closeWindow").style.display = "block";
-    document.getElementById("uploadProgress").style.display = "block";
 }
 
 function closeAndGoToProjectData(projectDetailsUrl) {

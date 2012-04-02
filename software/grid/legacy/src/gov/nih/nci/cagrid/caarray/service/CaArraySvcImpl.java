@@ -110,7 +110,7 @@ public class CaArraySvcImpl extends CaArraySvcImplBase {
     /**
      * Returns the bytes of the requested file's contents.
      *
-     * @param file the caArray file to retrieve
+     * @param caArrayFile the caArray file to retrieve
      * @return file contents
      * @see FileRetrievalService
      */

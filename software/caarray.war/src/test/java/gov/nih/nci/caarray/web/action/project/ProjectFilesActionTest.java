@@ -82,10 +82,7 @@
  */
 package gov.nih.nci.caarray.web.action.project;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import gov.nih.nci.caarray.application.GenericDataService;
 import gov.nih.nci.caarray.application.GenericDataServiceStub;
 import gov.nih.nci.caarray.application.file.FileManagementService;
@@ -111,12 +108,9 @@ import gov.nih.nci.caarray.validation.ValidationMessage.Type;
 import gov.nih.nci.caarray.web.AbstractDownloadTest;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -129,7 +123,6 @@ import java.util.TreeSet;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 import org.apache.commons.io.IOUtils;
@@ -144,11 +137,7 @@ import com.google.common.base.Predicates;
 import com.google.common.collect.Iterables;
 import com.opensymphony.xwork2.Action;
 
-/**
- * @author Scott Miller
- *
- */
-@SuppressWarnings("PMD")
+@SuppressWarnings({"serial", "deprecation"})
 public class ProjectFilesActionTest extends AbstractDownloadTest {
 
     private static final String LIST_IMPORTED = "listImported";
@@ -178,9 +167,6 @@ public class ProjectFilesActionTest extends AbstractDownloadTest {
         this.action = new ProjectFilesAction() {
             private static final long serialVersionUID = 1L;
 
-            /**
-             * {@inheritDoc}
-             */
             @Override
             protected void refreshProject() {
                 // empty on purpose
@@ -198,38 +184,9 @@ public class ProjectFilesActionTest extends AbstractDownloadTest {
     }
 
     @Test
-    public void testZipUpload() throws Exception {
-        assertNull(this.action.upload());
-        final File file = File.createTempFile("tmp", ".zip");
-
-        final List<File> files = new ArrayList<File>();
-        final List<String> fileNames = new ArrayList<String>();
-        final List<String> contentTypes = new ArrayList<String>();
-        files.add(file);
-        fileNames.add(file.getName());
-        contentTypes.add("test");
-        this.action.setUpload(files);
-        this.action.setUploadFileName(fileNames);
-
-        LocalHttpServletResponse response = new LocalHttpServletResponse();
-        ServletActionContext.setResponse(response);
-
-        assertNull(this.action.upload());
-        assertEquals(1, this.projectManagementServiceStub.getFilesAddedCount());
-        System.out.println(response.getResponseText());
-        JSONArray jsonResult = JSONArray.fromObject(response.getResponseText());
-        assertEquals(1, jsonResult.size());
-        @SuppressWarnings("rawtypes")
-        Map map = jsonResult.getJSONObject(0);
-        assertEquals(2, map.keySet().size());
-        assertTrue(map.get("name").toString().contains(".zip"));
-    }
-
-    @Test
     public void testZipUploadAndUnpack() throws Exception {
         assertEquals(LIST_UNIMPORTED, this.action.unpackFiles());
         assertTrue(ActionHelper.getMessages().get(0).contains("0 file(s) unpacked"));
-        final List<CaArrayFile> selectedFiles = new ArrayList<CaArrayFile>();
         final CaArrayFile file = new CaArrayFile();
         file.setProject(this.action.getProject());
         file.setFileStatus(FileStatus.UPLOADED);
@@ -387,34 +344,6 @@ public class ProjectFilesActionTest extends AbstractDownloadTest {
         this.action.setSelectedFiles(selectedFiles);
         assertEquals(LIST_UNIMPORTED, this.action.findRefFiles());
         assertEquals(5, this.action.getSelectedFiles().size());
-    }
-
-    private void setCompressedSize(CaArrayFile f, int size) {
-        try {
-            final Method m = CaArrayFile.class.getDeclaredMethod("setCompressedSize", Integer.TYPE);
-            m.setAccessible(true);
-            m.invoke(f, size);
-        } catch (final NoSuchMethodException e) {
-            throw new IllegalArgumentException(e);
-        } catch (final IllegalAccessException e) {
-            throw new IllegalArgumentException(e);
-        } catch (final InvocationTargetException e) {
-            throw new IllegalArgumentException(e);
-        }
-    }
-
-    private void setId(CaArrayFile f, Long id) {
-        try {
-            final Method m = CaArrayFile.class.getSuperclass().getSuperclass().getDeclaredMethod("setId", Long.class);
-            m.setAccessible(true);
-            m.invoke(f, id);
-        } catch (final NoSuchMethodException e) {
-            throw new IllegalArgumentException(e);
-        } catch (final IllegalAccessException e) {
-            throw new IllegalArgumentException(e);
-        } catch (final InvocationTargetException e) {
-            throw new IllegalArgumentException(e);
-        }
     }
 
     @Test
@@ -802,7 +731,6 @@ public class ProjectFilesActionTest extends AbstractDownloadTest {
         assertEquals(LIST_SUPPLEMENTAL, this.action.getListAction());
     }
 
-    @SuppressWarnings("deprecation")
     @Test
     public void testExperimentTreeJson() throws Exception {
         final Experiment exp = this.action.getProject().getExperiment();

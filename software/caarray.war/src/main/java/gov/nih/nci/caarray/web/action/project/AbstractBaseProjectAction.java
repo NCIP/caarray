@@ -107,7 +107,7 @@ import com.opensymphony.xwork2.validator.annotations.CustomValidator;
 
 /**
  * Base Action class for all actions dealing with Project lifecycle.
- * 
+ *
  * @author Dan Kokotov
  */
 public abstract class AbstractBaseProjectAction extends ActionSupport implements Preparable {
@@ -137,7 +137,7 @@ public abstract class AbstractBaseProjectAction extends ActionSupport implements
     private boolean editMode;
 
     /**
-     *
+     * constructor.
      */
     public AbstractBaseProjectAction() {
         super();
@@ -165,7 +165,7 @@ public abstract class AbstractBaseProjectAction extends ActionSupport implements
 
     /**
      * get the csm user. This method is extracted so it can be overwritten in test cases.
-     * 
+     *
      * @return the csm user.
      */
     protected User getCsmUser() {
@@ -189,7 +189,7 @@ public abstract class AbstractBaseProjectAction extends ActionSupport implements
 
     /**
      * Convenience method for getting the experiment of the current project.
-     * 
+     *
      * @return the project's experiment
      */
     protected Experiment getExperiment() {
@@ -212,7 +212,7 @@ public abstract class AbstractBaseProjectAction extends ActionSupport implements
 
     /**
      * code inspired by outputUrl.tag.
-     * 
+     *
      * @return the current project's permanent URL.
      */
     protected String getProjectPermaLink() {
