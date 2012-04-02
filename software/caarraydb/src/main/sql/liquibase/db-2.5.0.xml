@@ -24,4 +24,8 @@
        <comment>array-2187 - Add a parent column to the caarrayfile table.</comment>
        <sqlFile path="db-upgrade/mysql/2.5.0/array-2187.sql"/>
     </changeSet>
+    <changeSet id="auto-refresh-exp" author="pshrabstein">
+       <comment>ARRAY-2273 - Automatic Refresh. Implement API to return whether the given experiment was changed in the given time period.</comment>
+       <sqlFile path="db-upgrade/mysql/2.5.0/auto-refresh-exp.sql"/>
+    </changeSet>
 </databaseChangeLog>

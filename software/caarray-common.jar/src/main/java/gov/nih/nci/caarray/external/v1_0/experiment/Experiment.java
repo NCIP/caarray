@@ -89,6 +89,7 @@ import gov.nih.nci.caarray.external.v1_0.array.AssayType;
 import gov.nih.nci.caarray.external.v1_0.factor.Factor;
 import gov.nih.nci.caarray.external.v1_0.vocabulary.Term;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -113,6 +114,7 @@ public class Experiment extends AbstractCaArrayEntity {
     private Set<AssayType> assayTypes = new HashSet<AssayType>();
     private Set<Factor> factors = new HashSet<Factor>();
     private Set<ArrayDesign> arrayDesigns = new HashSet<ArrayDesign>();
+    private Date lastDataModificationDate;
 
     /**
      * @return the public identifier for this experiment. This is a human readable permanent identifier for this
@@ -297,4 +299,19 @@ public class Experiment extends AbstractCaArrayEntity {
     public void setArrayDesigns(Set<ArrayDesign> arrayDesigns) {
         this.arrayDesigns = arrayDesigns;
     }
+
+    /**
+     * @return the date when the data of this experiment was last modified.
+     */
+    public Date getLastDataModificationDate() {
+        return this.lastDataModificationDate;
+    }
+
+    /**
+     * @param lastDataModificationDate the lastDataModificationDate to set.
+     */
+    public void setLastDataModificationDate(final Date lastDataModificationDate) {
+        this.lastDataModificationDate = lastDataModificationDate;
+    }
+
 }

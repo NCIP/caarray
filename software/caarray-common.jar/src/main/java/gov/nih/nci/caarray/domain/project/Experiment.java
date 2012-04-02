@@ -238,7 +238,8 @@ public class Experiment extends AbstractCaArrayEntity {
     private Set<Hybridization> hybridizations = new HashSet<Hybridization>();
     private String publicIdentifier;
     private Project project;
-
+    private Date lastDataModificationDate;
+    
     /**
      * {@inheritDoc}
      */
@@ -975,6 +976,23 @@ public class Experiment extends AbstractCaArrayEntity {
          });     
     }
 
+    /**
+     * @return the date when the data of this experiment was last modified.
+     */
+    @Temporal(TemporalType.TIMESTAMP)
+    @AttributePolicy(allow = SecurityPolicy.BROWSE_POLICY_NAME)
+    public Date getLastDataModificationDate() {
+        return this.lastDataModificationDate;
+    }
+
+    /**
+     * @param lastDataModificationDate the lastDataModificationDate to set.
+     */
+    public void setLastDataModificationDate(final Date lastDataModificationDate) {
+        this.lastDataModificationDate = lastDataModificationDate;
+    }
+
+    
     /**
      * Predicate to match biomaterial/hybridization names.
      */
