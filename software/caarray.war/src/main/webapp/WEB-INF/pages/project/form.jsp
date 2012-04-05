@@ -17,14 +17,14 @@
     <c:param name="project.id" value="${project.id}" />
     <c:param name="editMode" value="${editMode}" />
     <c:param name="initialTab" value="data"/>
-    <c:param name="initialTab2" value="downloadData"/>    
-    <c:param name="initialTab2Url" value="${downloadGroupsUrl}"/>    
+    <c:param name="initialTab2" value="downloadData"/>
+    <c:param name="initialTab2Url" value="${downloadGroupsUrl}"/>
 </c:url>
 <c:url var="removeUrl" value="/images/ico_remove.gif"/>
 <c:url var="addUrl" value="/images/ico_add.gif"/>
 
 <script type="text/javascript">
-  downloadMgr = new DownloadMgr('${downloadUrl}', '${showDataTabDownloadDataSubTabWithDownloadGroupsUrl}','${removeUrl}','${addUrl}',<s:property value="@gov.nih.nci.caarray.web.action.project.ProjectFilesAction@MAX_DOWNLOAD_SIZE"/>);
+  downloadMgr = new DownloadMgr('${downloadUrl}', '${showDataTabDownloadDataSubTabWithDownloadGroupsUrl}','${removeUrl}','${addUrl}');
   setExperimentTitleHeader = function(value) {
     $('experimentTitleHeader').innerHTML = value || 'New Experiment';
   }
@@ -109,12 +109,12 @@
             <c:set value="${param.initialTab2Url}" scope="session" var="initialTab2Url" />
         </c:if>
     </c:if>
-    <c:if test="${param.initialTab == 'data' && param.initialTab2 != null}"> 
+    <c:if test="${param.initialTab == 'data' && param.initialTab2 != null}">
         <c:set value="${param.initialTab2}" scope="session" var="initialTab2" />
         <c:if test="${param.initialTab2Url != null}">
             <c:set value="${param.initialTab2Url}" scope="session" var="initialTab2Url" />
         </c:if>
-    </c:if>    
+    </c:if>
     <div class="padme">
         <h2>
             <span class="dark">Experiment:</span>
@@ -134,7 +134,7 @@
     				<c:url value="${projectTab.url}" var="tabUrl">
         				<c:param name="project.id" value="${project.id}" />
         				<c:param name="editMode" value="${editMode}" />
-    				</c:url>                
+    				</c:url>
                 	<caarray:tab caption="${projectTab.label}" baseUrl="${tabUrl}" defaultTab="${param.initialTab == projectTab.key}" />
     			</c:forEach>
             </c:if>

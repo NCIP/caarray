@@ -268,7 +268,7 @@ var TabUtils = {
         }
     },
 
-    showLoadingText : function(keepMainContent) {    		
+    showLoadingText : function(keepMainContent) {
         var elts = document.getElementsByClassName('loadingText');
         var loadingElt = elts.length > 0 ? elts[0] : null;
         if (loadingElt) {
@@ -463,13 +463,12 @@ var PermissionUtils = {
 // Download stuff here
 //
 
-function DownloadMgr(dUrl, dgUrl, removeImageUrl, addImageUrl, maxDownloadSize) {
+function DownloadMgr(dUrl, dgUrl, removeImageUrl, addImageUrl) {
   this.downloadUrl = dUrl;
   this.downloadGroupsUrl = dgUrl;
   this.removeImageUrl = removeImageUrl;
   this.files = new Object();
   this.downloadFiles = new Object();
-  this.maxDownloadSize = maxDownloadSize;
   this.totalDownloadSize = 0;
   this.addImageUrl = addImageUrl;
   this.hideQueue = true;
@@ -608,30 +607,22 @@ DownloadMgr.prototype.doDownloadFiles = function() {
     return;
   }
 
-  if (this.totalDownloadSize < this.maxDownloadSize) {
-      var form = document.createElement("form");
-      form.method="post";
-      form.style.display="none";
-      form.action=this.downloadUrl;
-      for (i = 0; i < files.length; ++i) {
-          var elt = document.createElement("input");
-          elt.type="hidden";
-          elt.name="selectedFileIds";
-          elt.value=files[i].id;
-          form.appendChild(elt);
-      }
-      document.body.appendChild(form);
-      form.submit();
-      $(form).remove();
-      this.resetDownloadInfo();
-  } else {
-      var params = '';
-      for (i = 0; i < files.length; ++i) {
-          params = params + '&selectedFileIds=' + files[i].id;
-      }
-      var url = this.downloadGroupsUrl + encodeURIComponent(params);
-      TabUtils.loadLinkInTab('Data', url);
+  var form = document.createElement("form");
+  form.method="post";
+  form.style.display="none";
+  form.action=this.downloadUrl;
+  for (i = 0; i < files.length; ++i) {
+      var elt = document.createElement("input");
+      elt.type="hidden";
+      elt.name="selectedFileIds";
+      elt.value=files[i].id;
+      form.appendChild(elt);
   }
+  document.body.appendChild(form);
+  form.submit();
+  $(form).remove();
+  this.resetDownloadInfo();
+
 }
 
 DownloadMgr.prototype.addAll = function() {

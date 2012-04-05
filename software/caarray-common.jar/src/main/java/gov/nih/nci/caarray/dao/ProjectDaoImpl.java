@@ -137,7 +137,7 @@ import com.google.inject.Inject;
 
 /**
  * DAO for entities in the <code>gov.nih.nci.caarray.domain.project</code> package.
- * 
+ *
  * @author Rashmi Srinivasa
  */
 @SuppressWarnings("PMD.CyclomaticComplexity")
@@ -152,7 +152,7 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
     private final FileTypeRegistry typeRegistry;
 
     /**
-     * 
+     *
      * @param hibernateHelper the CaArrayHibernateHelper dependency
      * @return
      */
@@ -165,7 +165,7 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
     /**
      * Saves a project by first updating the lastUpdated field, and then saves the entity to persistent storage,
      * updating or inserting as necessary.
-     * 
+     *
      * @param persistentObject the entity to save
      */
     @Override
@@ -190,7 +190,7 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
 
     @Override
     @SuppressWarnings(UNCHECKED)
-    public List<Project> getProjectsForCurrentUser(PageSortParams pageSortParams) {
+    public List<Project> getProjectsForCurrentUser(PageSortParams<Project> pageSortParams) {
         final Query q = getProjectsForUserQuery(false, pageSortParams);
         q.setFirstResult(pageSortParams.getIndex());
         q.setMaxResults(pageSortParams.getPageSize());
@@ -200,7 +200,6 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
     /**
      * {@inheritDoc}
      */
-
     @Override
     public List<Project> getProjectsForOwner(User user) {
         final String q =
@@ -475,15 +474,15 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
         Query q = generateArbitraryCharacteristicsCategoriesPreparedQuery(experiment, "acs.category");
         return q.list();
     }
-    
+
     private Query generateArbitraryCharacteristicsCategoriesPreparedQuery(Experiment experiment, String entityToken) {
         String sQuery = 
-  "select distinct @ENTITY@ " 
-+ "from @EXPERIMENT@ e " 
-+ "     left join e.biomaterials abs "
-+ "     left join abs.characteristics acs "
-+ "where (abs.class = :sample_class or abs.class = :source_class) " 
-+ "      and e.id = :exp";
+                "select distinct @ENTITY@ "
+            + "from @EXPERIMENT@ e "
+            + "     left join e.biomaterials abs "
+            + "     left join abs.characteristics acs "
+            + "where (abs.class = :sample_class or abs.class = :source_class) "
+            + "      and e.id = :exp";
         sQuery = sQuery
                 .replaceAll("@ENTITY@", entityToken)
                 .replaceAll("@EXPERIMENT@", Experiment.class.getName());

@@ -106,14 +106,16 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
 
   /**
-   * 
+   *
    */
 @Entity
 @DiscriminatorValue(Sample.DISCRIMINATOR)
 public class Sample extends AbstractBioMaterial implements Protectable {
     private static final long serialVersionUID = 1234567890L;
 
-    /** the Hibernate discriminator for this biomaterial subclass. */
+    /**
+     * the Hibernate discriminator for this biomaterial subclass.
+     */
     public static final String DISCRIMINATOR = "SA";
 
     private Set<Source> sources = new HashSet<Source>();

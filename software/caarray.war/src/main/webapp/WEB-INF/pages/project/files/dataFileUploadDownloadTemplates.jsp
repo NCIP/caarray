@@ -27,7 +27,7 @@
                     <span class="label label-important">Error</span> {%=fileUploadErrors[file.error] || file.error%}
                 </td>
             {% } else if (o.files.valid && i !== undefined) { %}
-                <td style="display:none">
+                <td>
                     <div class="progress progress-success progress-striped active">
                         <div class="bar" style="width:0%;"></div>
                     </div>

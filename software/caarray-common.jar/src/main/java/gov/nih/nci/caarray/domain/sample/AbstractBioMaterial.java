@@ -98,6 +98,7 @@ import gov.nih.nci.caarray.validation.UniqueConstraintField;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -116,6 +117,8 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang.StringUtils;
@@ -130,10 +133,11 @@ import org.hibernate.validator.NotNull;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterators;
+import com.google.common.collect.Sets;
 
 /**
  * AbstractBiomaterial represents a biomaterial at some stage prior to being hybridized to an array.
- * @author dkokotov 
+ * @author dkokotov
  */
 @Entity
 @Table(name = "biomaterial")
@@ -158,6 +162,8 @@ public abstract class AbstractBioMaterial extends AbstractExperimentDesignNode {
     private List<ProtocolApplication> protocolApplications = new ArrayList<ProtocolApplication>();
     private Organism organism;
     private Experiment experiment;
+    private Date lastModifiedDataTime;
+
 
     /**
      * {@inheritDoc}
@@ -287,7 +293,7 @@ public abstract class AbstractBioMaterial extends AbstractExperimentDesignNode {
     public void setDescription(final String descriptionVal) {
         this.description = descriptionVal;
     }
-    
+
     /**
      * @return the externalId
      */
@@ -324,12 +330,27 @@ public abstract class AbstractBioMaterial extends AbstractExperimentDesignNode {
     private void setCharacteristics(final Set<AbstractCharacteristic> characteristicsVal) {
         this.characteristics = characteristicsVal;
     }
-    
+
+    /**
+     * @return the date when the data of this sample was last modified.
+     */
+    @Temporal(TemporalType.TIMESTAMP)
+    public Date getLastModifiedDataTime() {
+        return this.lastModifiedDataTime;
+    }
+
+    /**
+     * @param lastModifiedDataTime the lastDataModificationDate to set.
+     */
+    public void setLastModifiedDataTime(final Date lastModifiedDataTime) {
+        this.lastModifiedDataTime = lastModifiedDataTime;
+    }
+
     /**
      * Return the characteristic with given category name in this biomaterial. If multiple characteristics
      * have the same category name, return one at random.
      * If there is none, return null.
-     * 
+     *
      * @param categoryName name of category for which to find a characteristic.
      * @return the characteristic with given category name or null if there is none.
      */
@@ -342,8 +363,8 @@ public abstract class AbstractBioMaterial extends AbstractExperimentDesignNode {
     }
 
     /**
-     * Return the characteristics with given category in this biomaterial. 
-     * 
+     * Return the characteristics with given category in this biomaterial.
+     *
      * @param category category
      * @return the characteristics with given category.
      */
@@ -355,36 +376,43 @@ public abstract class AbstractBioMaterial extends AbstractExperimentDesignNode {
             }
         }));
 
-        // special handling for the built-in characteristics
-        Map<ExperimentOntologyCategory, Term> builtins = getSpecialCharacteristics();        
+        chars.addAll(getBuiltInCharacteristics(category));
+        addUserDefinedCharacteristic(chars, category);
+
+        return chars;
+    }
+
+    private Set<AbstractCharacteristic> getBuiltInCharacteristics(Category category) {
+        Set<AbstractCharacteristic> builtInCharacteristics = Sets.newHashSet();
+        Map<ExperimentOntologyCategory, Term> builtins = getSpecialCharacteristics();
         for (Map.Entry<ExperimentOntologyCategory, Term> builtin : builtins.entrySet()) {
             if (builtin.getValue() != null && category.getName().equals(builtin.getKey().getCategoryName())) {
                 TermBasedCharacteristic c = new TermBasedCharacteristic();
                 c.setBioMaterial(this);
                 c.setCategory(category);
                 c.setTerm(builtin.getValue());
-                chars.add(c);
+                builtInCharacteristics.add(c);
             }
         }
-        
-        // special handling for the external id
+        return builtInCharacteristics;
+    }
+
+    private void addUserDefinedCharacteristic(Set<AbstractCharacteristic> chars, Category category) {
         if (StringUtils.isNotEmpty(this.externalId)
                 && category.getName().equals(ExperimentOntologyCategory.EXTERNAL_ID.getCategoryName())) {
-            UserDefinedCharacteristic c = new UserDefinedCharacteristic();
-            c.setBioMaterial(this);
-            c.setCategory(category);
-            c.setValue(this.externalId);
-            chars.add(c);
+            UserDefinedCharacteristic userDefined = new UserDefinedCharacteristic();
+            userDefined.setBioMaterial(this);
+            userDefined.setCategory(category);
+            userDefined.setValue(this.externalId);
+            chars.add(userDefined);
         }
-        
-        return chars;
-    }    
-    
+    }
+
     /**
      * Returns the characteristics that are handled specially and have their own fields in AbstractBioMaterial or
      * one of its subclasses, rather than being placed in the general characteristics collection. These are returned
-     * as a map, with keys being category constants defining the category of the special characteristic, and the 
-     * values being the Term values of the characteristic.  
+     * as a map, with keys being category constants defining the category of the special characteristic, and the
+     * values being the Term values of the characteristic.
      * For AbstractBioMaterial, this will return a map with four entries:
      * <ul>
      * <li>ExperimentOntologyCategory.DISEASE_STATE -> this.diseaseState
@@ -549,7 +577,7 @@ public abstract class AbstractBioMaterial extends AbstractExperimentDesignNode {
         this.getCharacteristics().addAll(newChars);
         bm.getCharacteristics().removeAll(newChars);
     }
-    
+
     /**
      * {@inheritDoc}
      */

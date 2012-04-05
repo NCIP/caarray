@@ -28,4 +28,9 @@
        <comment>ARRAY-2273 - Automatic Refresh. Implement API to return whether the given experiment was changed in the given time period.</comment>
        <sqlFile path="db-upgrade/mysql/2.5.0/auto-refresh-exp.sql"/>
     </changeSet>
+    <changeSet id="array-1932" author="aswift">
+       <comment>ARRAY-1932 - Automatic Refresh. Implement API to return whether the given sample was changed in the given time period.</comment>
+       <sqlFile path="db-upgrade/mysql/2.5.0/array-1932-auto-refresh-sample.sql"/>
+    </changeSet>
+
 </databaseChangeLog>
