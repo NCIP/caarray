@@ -160,6 +160,24 @@ public interface ProjectManagementService {
             InconsistentProjectStateException;
 
     /**
+     * Adds a file chunk to a project.  If the file has been partially uploaded, this chunk will be appended to it.
+     * Otherwise, a new <code>CaArrayFile</code> is added to the project.
+     * 
+     * @param project project to add the file to
+     * @param file the file to add to the project
+     * @param filename the filename to use for the file. Allows the created CaArrayFile to have a different name from
+     *            the file containing the content. This is useful for adding uploaded temporary files that don't use the
+     *            original file name.
+     * @param fileSize the size of the complete file, as opposed to the size of a chunk.
+     * @return the <code>CaArrayFile</code>.
+     * @throws ProposalWorkflowException if the project cannot currently be modified due to workflow status
+     * @throws InconsistentProjectStateException if the project cannot currently be modified because its state is not
+     *             internally consistent
+     */
+    CaArrayFile addFileChunk(Project project, File file, String filename, long fileSize)
+            throws ProposalWorkflowException, InconsistentProjectStateException;
+
+    /**
      * Associates a single file with a project. After calling this method, clients can expect a new
      * <code>CaArrayFile</code> to be associated with the project.
      * 

@@ -22,7 +22,7 @@
                     <p id="ie_limitation_text"></p>
                     <c:if test="${!project.locked && caarrayfn:canWrite(project, caarrayfn:currentUser())}">
                         <s:form id="fileupload" action="upload.action" enctype="multipart/form-data" method="post" target="target_upload">
-                            <input type=hidden name="project.id" value="<s:property value='%{project.id}'/>"/>
+                            <input type=hidden name="project.id" id="uploadProjectId" value="<s:property value='%{project.id}'/>"/>
                             <input type=hidden name="selectedFilesToUnpack" value="-1" />
                             <div class="fileupload-loading"></div><br>
                             <div class="span5"><div class="progress progress-success progress-striped active fade"><div class="bar" style="width:0%;"></div></div></div>

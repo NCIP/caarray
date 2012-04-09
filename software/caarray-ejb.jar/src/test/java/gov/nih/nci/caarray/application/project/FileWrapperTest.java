@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caarray-common-jar
+ * source code form and machine readable, binary, object code form. The caArray2
  * Software was developed in conjunction with the National Cancer Institute 
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent 
  * government employees are authors, any rights in such works shall be subject 
  * to Title 17 of the United States Code, section 105. 
  *
- * This caarray-common-jar Software License (the License) is between NCI and You. You (or 
+ * This caArray2 Software License (the License) is between NCI and You. You (or 
  * Your) shall mean a person or an entity, and all other entities that control, 
  * are controlled by, or are under common control with the entity. Control for 
  * purposes of this definition means (i) the direct or indirect power to cause 
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described 
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up, 
  * no-charge, irrevocable, transferable and royalty-free right and license in 
- * its rights in the caarray-common-jar Software to (i) use, install, access, operate, 
+ * its rights in the caArray2 Software to (i) use, install, access, operate, 
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caarray-common-jar Software; (ii) distribute and 
- * have distributed to and by third parties the caarray-common-jar Software and any 
+ * and prepare derivative works of the caArray2 Software; (ii) distribute and 
+ * have distributed to and by third parties the caArray2 Software and any 
  * modifications and derivative works thereof; and (iii) sublicense the 
  * foregoing rights set out in (i) and (ii) to third parties, including the 
  * right to license such rights to further third parties. For sake of clarity, 
@@ -80,121 +80,61 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.dataStorage;
+package gov.nih.nci.caarray.application.project;
 
-import java.io.Serializable;
-import java.net.URI;
-import java.util.Date;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.when;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.apache.commons.lang.builder.ToStringBuilder;
+import java.io.File;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 /**
- * StorageMetadata describes the metadata for a binary data block stored in the data storage subsystem.
- * 
- * @author dkokotov
+ * @author wcheng
+ *
  */
-public class StorageMetadata implements Serializable {
-    private static final long serialVersionUID = 1L;
+public class FileWrapperTest {
+    private static final String DUMMY_FILE_NAME = "testFile";
+    private static final long FILE_SIZE = 100L;
 
-    private long compressedSize;
-    private long uncompressedSize;
-    private long partialSize;
-    private URI handle;
-    private Date creationTimestamp;
-
-    /**
-     * @return the compressedSize
-     */
-    public long getCompressedSize() {
-        return this.compressedSize;
+    @Mock
+    private File dummyFile;
+    
+    @Before
+    public void setUp() {
+        MockitoAnnotations.initMocks(this);
+        when(dummyFile.length()).thenReturn(FILE_SIZE);
     }
 
-    /**
-     * @param compressedSize the compressedSize to set
-     */
-    public void setCompressedSize(long compressedSize) {
-        this.compressedSize = compressedSize;
+    @Test
+    public void testFields() {
+        FileWrapper fileWrapper = new FileWrapper();
+        fileWrapper.setCompressed(true);
+        fileWrapper.setFile(dummyFile);
+        fileWrapper.setFileName(DUMMY_FILE_NAME);
+        fileWrapper.setTotalFileSize(FILE_SIZE);
+
+        assertTrue(fileWrapper.isCompressed());
+        assertEquals(dummyFile, fileWrapper.getFile());
+        assertEquals(DUMMY_FILE_NAME, fileWrapper.getFileName());
+        assertEquals(FILE_SIZE, fileWrapper.getTotalFileSize());
     }
 
-    /**
-     * @return the uncompressedSize
-     */
-    public long getUncompressedSize() {
-        return this.uncompressedSize;
-    }
-
-    /**
-     * @param uncompressedSize the uncompressedSize to set
-     */
-    public void setUncompressedSize(long uncompressedSize) {
-        this.uncompressedSize = uncompressedSize;
-    }
-
-    /**
-     * @return the partialSize
-     */
-    public long getPartialSize() {
-        return partialSize;
-    }
-
-    /**
-     * @param partialSize the partialSize to set
-     */
-    public void setPartialSize(long partialSize) {
-        this.partialSize = partialSize;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String toString() {
-        return ToStringBuilder.reflectionToString(this);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean equals(Object obj) {
-        return EqualsBuilder.reflectionEquals(this, obj);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int hashCode() {
-        return HashCodeBuilder.reflectionHashCode(this);
-    }
-
-    /**
-     * @return the handle
-     */
-    public URI getHandle() {
-        return this.handle;
-    }
-
-    /**
-     * @param handle the handle to set
-     */
-    public void setHandle(URI handle) {
-        this.handle = handle;
-    }
-
-    /**
-     * @return the creationTimestamp
-     */
-    public Date getCreationTimestamp() {
-        return this.creationTimestamp;
-    }
-
-    /**
-     * @param creationTimestamp the creationTimestamp to set
-     */
-    public void setCreationTimestamp(Date creationTimestamp) {
-        this.creationTimestamp = creationTimestamp;
+    @Test
+    public void testIdPartial() {
+        FileWrapper partialFile = new FileWrapper();
+        partialFile.setFile(dummyFile);
+        partialFile.setTotalFileSize(2*FILE_SIZE);
+        assertTrue(partialFile.isPartial());
+        
+        FileWrapper completeFile = new FileWrapper();
+        completeFile.setFile(dummyFile);
+        completeFile.setTotalFileSize(FILE_SIZE);
+        assertFalse(completeFile.isPartial());
     }
 }

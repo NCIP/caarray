@@ -287,4 +287,29 @@ public class DataStorageFacade {
     public StorageMetadata addParsed(InputStream in, boolean compressed) {
         return parsedDataStorageEngine().add(in, compressed);
     }
+    
+    /**
+     * Appends file data to an existing block in the storage system. If no handle is given, a new block is created.
+     * The client must call completeFile() after the last chunk has been added.
+     * 
+     * @param handle the handle referencing the data to be appended to.
+     * @param in a stream from which data will be read.
+     * @return a StorageMetadata object describing the added block of data, must include a handle for later access to
+     *         the data and the size of the partially uploaded file.
+     */
+    public StorageMetadata addFileChunk(URI handle, InputStream in) {
+        return fileDataStorageEngine().addChunk(handle, in);
+    }
+    
+    /**
+     * When a file is added in chunks, this method must be called after the final chunk is added.  This will perform
+     * any necessary processing after all the chunks have been put together.
+     * 
+     * @param handle the handle referencing the data.
+     * @return a StorageMetadata object describing the block of data, must include a handle for later access to the
+     *         data and the compressed/uncompressed sizes of the file.
+     */
+    public StorageMetadata finalizeChunkedFile(URI handle) {
+        return fileDataStorageEngine().finalizeChunkedFile(handle);
+    }
 }

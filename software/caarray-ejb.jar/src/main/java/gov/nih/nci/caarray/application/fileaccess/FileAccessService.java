@@ -181,4 +181,15 @@ public interface FileAccessService {
      * It allows the clean up any child files in the database not currently associated to any jobs.
      */
     void cleanupUnreferencedChildren();
+    
+    /**
+     * Adds a new file chunk to caArray file storage.
+     * 
+     * @param file the file chunk to add
+     * @param fileName the file name
+     * @param fileSize the complete file size
+     * @param caArrayFile the file to append to or null to create a new file
+     * @return the CaArrayFile
+     */
+    CaArrayFile addChunk(File file, String fileName, Long fileSize, CaArrayFile caArrayFile);
 }

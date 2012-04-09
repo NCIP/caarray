@@ -92,6 +92,7 @@ import com.google.common.collect.Sets;
 public class FileProcessingResult {
     private final SortedSet<String> conflictingFiles = Sets.newTreeSet();
     private final SortedSet<String> successfullyProcessedFiles = Sets.newTreeSet();
+    private boolean partialUpload;
 
     /**
      * @return the number of files successfully processed
@@ -128,6 +129,20 @@ public class FileProcessingResult {
      */
     public void addConflictingFile(String conflictingFile) {
         this.conflictingFiles.add(conflictingFile);
+    }
+
+    /**
+     * @return the partialUpload
+     */
+    public boolean isPartialUpload() {
+        return partialUpload;
+    }
+
+    /**
+     * @param partialUpload the partialUpload to set
+     */
+    public void setPartialUpload(boolean partialUpload) {
+        this.partialUpload = partialUpload;
     }
 
 }

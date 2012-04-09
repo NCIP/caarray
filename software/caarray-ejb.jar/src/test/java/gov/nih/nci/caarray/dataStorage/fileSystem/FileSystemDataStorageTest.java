@@ -116,6 +116,9 @@ public class FileSystemDataStorageTest extends AbstractDataStorageTest {
     private File storageDir;
     private static final URI INVALID_SCHEME_URI = CaArrayUtils.makeUriQuietly("foobar:something");
     private static final String DUMMY_DATA = "Fake Data 123";
+    private static final int chunkIndex = DUMMY_DATA.length()/2;
+    private static final String CHUNK_1 = DUMMY_DATA.substring(0,chunkIndex);
+    private static final String CHUNK_2 = DUMMY_DATA.substring(chunkIndex);
 
     @Before
     public void setupStorageDirectory() {
@@ -148,6 +151,30 @@ public class FileSystemDataStorageTest extends AbstractDataStorageTest {
         final StorageMetadata sm = this.DS
                 .add(new ByteArrayInputStream(CaArrayUtils.gzip(DUMMY_DATA.getBytes())), true);
         verifyDataStoredForAdd(sm);
+    }
+
+    @Test
+    public void testAddChunk() throws IOException {
+        StorageMetadata sm = DS.addChunk(null, new ByteArrayInputStream(CHUNK_1.getBytes()));
+        File partialFile = new File(storageDir, sm.getHandle().getSchemeSpecificPart() + ".unc");
+        assertEquals(CHUNK_1, Files.toString(partialFile, Charset.defaultCharset()));
+        assertEquals(sm.getPartialSize(), partialFile.length());
+
+        StorageMetadata sm2 = DS.addChunk(sm.getHandle(), new ByteArrayInputStream(CHUNK_2.getBytes()));
+        final File completeFile = new File(storageDir, sm2.getHandle().getSchemeSpecificPart() + ".unc");
+        assertEquals(sm.getHandle(), sm2.getHandle());
+        assertEquals(DUMMY_DATA, Files.toString(completeFile, Charset.defaultCharset()));
+        assertEquals(sm2.getPartialSize(), completeFile.length());
+    }
+    
+    @Test
+    public void testFinalizeChunkedFile() throws IOException {
+        StorageMetadata sm = DS.addChunk(null, new ByteArrayInputStream(CHUNK_1.getBytes()));
+        URI handle = sm.getHandle();
+        DS.addChunk(handle, new ByteArrayInputStream(CHUNK_2.getBytes()));
+        StorageMetadata smFinal = DS.finalizeChunkedFile(handle);
+        verifyDataStoredForAdd(smFinal);
+
     }
 
     private void verifyDataStoredForAdd(StorageMetadata sm) throws IOException {

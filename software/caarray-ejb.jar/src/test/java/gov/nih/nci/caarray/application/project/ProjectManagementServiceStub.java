@@ -152,6 +152,11 @@ public class ProjectManagementServiceStub implements ProjectManagementService {
         return null;
     }
 
+    public CaArrayFile addFileChunk(Project project, File file, String filename, long fileSize)
+            throws ProposalWorkflowException, InconsistentProjectStateException {
+        return null;
+    }
+    
     /**
      * {@inheritDoc}
      */

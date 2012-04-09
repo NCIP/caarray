@@ -82,10 +82,20 @@
  */
 package gov.nih.nci.caarray.web.action.project;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyListOf;
+import static org.mockito.Matchers.anyLong;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import gov.nih.nci.caarray.application.file.InvalidFileException;
 import gov.nih.nci.caarray.application.project.FileUploadUtils;
+import gov.nih.nci.caarray.application.project.FileWrapper;
+import gov.nih.nci.caarray.dao.FileDao;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.project.Project;
@@ -117,6 +127,8 @@ public class UploadProjectFilesActionTest extends AbstractBaseStrutsTest {
 
     @Mock
     private FileUploadUtils mockUploadUtils;
+    @Mock
+    private FileDao fileDao;
     private UploadProjectFilesAction action = new UploadProjectFilesAction();
     Project project = new Project();
 
@@ -124,6 +136,7 @@ public class UploadProjectFilesActionTest extends AbstractBaseStrutsTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         action.setFileUploadUtils(mockUploadUtils);
+        action.setFileDao(fileDao);
         project.getExperiment().setPublicIdentifier("publicId");
         CaArrayFile file = new CaArrayFile();
         file.setFileStatus(FileStatus.UPLOADED);
@@ -178,8 +191,7 @@ public class UploadProjectFilesActionTest extends AbstractBaseStrutsTest {
         }
 
         when(
-                mockUploadUtils.uploadFiles(any(Project.class), anyListOf(File.class), anyListOf(String.class),
-                        anyListOf(String.class))).thenThrow(
+                mockUploadUtils.uploadFiles(any(Project.class), anyListOf(FileWrapper.class))).thenThrow(
                 new InvalidFileException(file.getName(), errorKey, errorMessage));
 
         MockHttpServletResponse response = new MockHttpServletResponse();
@@ -197,6 +209,20 @@ public class UploadProjectFilesActionTest extends AbstractBaseStrutsTest {
     }
 
     @Test
+    public void testPartialUploadCheck() throws Exception {
+        action.setChunkedFileName("testfile");
+        action.setChunkedFileSize(1234L);
+        CaArrayFile file = new CaArrayFile();
+        file.setPartialSize(111L);
+        when(fileDao.getPartialFile(anyLong(), eq("testfile"), eq(1234L))).thenReturn(file);
+        MockHttpServletResponse response = new MockHttpServletResponse();
+        ServletActionContext.setResponse(response);
+        assertEquals(ActionSupport.NONE, action.partialUploadCheck());
+        JSONObject asdf = JSONObject.fromObject(response.getContentAsString());
+        assertEquals(111L, asdf.getLong("size"));
+    }
+    
+    @Test
     public void testUpload_InvalidFileExceptionUnpack() throws Exception {
         String expectedErrorKey = "errors.uploadingErrorWithAdding";
         doInvalidFileExceptionTest(expectedErrorKey, false);
@@ -213,8 +239,7 @@ public class UploadProjectFilesActionTest extends AbstractBaseStrutsTest {
         action.setUploadFileName(uploadFileNames);
 
         when(
-                mockUploadUtils.uploadFiles(any(Project.class), anyListOf(File.class), anyListOf(String.class),
-                        anyListOf(String.class))).thenThrow(new IllegalStateException());
+                mockUploadUtils.uploadFiles(any(Project.class), anyListOf(FileWrapper.class))).thenThrow(new IllegalStateException());
 
         MockHttpServletResponse response = new MockHttpServletResponse();
         ServletActionContext.setResponse(response);

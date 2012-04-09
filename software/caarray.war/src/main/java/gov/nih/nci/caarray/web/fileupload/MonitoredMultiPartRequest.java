@@ -85,6 +85,7 @@ package gov.nih.nci.caarray.web.fileupload;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -109,6 +110,7 @@ import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.StrutsConstants;
 import org.apache.struts2.dispatcher.multipart.MultiPartRequest;
 
+import com.google.common.collect.Lists;
 import com.opensymphony.xwork2.inject.Inject;
 
 /**
@@ -122,6 +124,10 @@ public class MonitoredMultiPartRequest implements MultiPartRequest {
     private static final Logger LOG = Logger.getLogger(MonitoredMultiPartRequest.class);
 
     private static final String UPLOAD_ID_ATTRIBUTE = "__multipart_upload_id";
+    private static final String UPLOAD_SIZE_HEADER = "x-file-size";
+    private static final String UPLOAD_NAME_HEADER = "x-file-name";
+    private static final String UPLOAD_SIZE_FIELD = "chunkedFileSize";
+    private static final String UPLOAD_NAME_FIELD = "chunkedFileName";
 
     private final Map<String, List<FileItem>> files = new HashMap<String, List<FileItem>>();
     private final Map<String, List<String>> params = new HashMap<String, List<String>>();
@@ -192,25 +198,12 @@ public class MonitoredMultiPartRequest implements MultiPartRequest {
             for (FileItem item : items) {
                 LOG.debug((new StringBuilder()).append("Found item ").append(item.getFieldName()).toString());
                 if (item.isFormField()) {
-                    LOG.debug("Item is a normal form field");
-                    List<String> values = params.get(item.getFieldName());
-                    if (values == null) {
-                        values = new ArrayList<String>();
-                        params.put(item.getFieldName(), values);
-                    }
-                    String charset = servletRequest.getCharacterEncoding();
-                    values.add(charset != null ? item.getString(charset) : item.getString());
+                    handleFormField(servletRequest, item);
                 } else {
-                    LOG.debug("Item is a file upload");
-                    List<FileItem> values = files.get(item.getFieldName());
-                    if (values == null) {
-                        values = new ArrayList<FileItem>();
-                        files.put(item.getFieldName(), values);
-                    }
-                    values.add(item);
+                    handleFileUpload(item);
                 }
             }
-
+            handleChunkedUploadHeaders(servletRequest);
         } catch (FileUploadException e) {
             if (monitor != null) {
                 monitor.abort();
@@ -220,6 +213,39 @@ public class MonitoredMultiPartRequest implements MultiPartRequest {
         }
     }
 
+    private void handleFormField(HttpServletRequest servletRequest, FileItem item)
+            throws UnsupportedEncodingException {
+        LOG.debug("Item is a normal form field");
+        List<String> values = params.get(item.getFieldName());
+        if (values == null) {
+            values = new ArrayList<String>();
+            params.put(item.getFieldName(), values);
+        }
+        String charset = servletRequest.getCharacterEncoding();
+        values.add(charset != null ? item.getString(charset) : item.getString());
+    }
+    
+    private void handleFileUpload(FileItem item) {
+        LOG.debug("Item is a file upload");
+        List<FileItem> values = files.get(item.getFieldName());
+        if (values == null) {
+            values = new ArrayList<FileItem>();
+            files.put(item.getFieldName(), values);
+        }
+        values.add(item);
+    }
+    
+    private void handleChunkedUploadHeaders(HttpServletRequest servletRequest) {
+        String fileSize = servletRequest.getHeader(UPLOAD_SIZE_HEADER);
+        if (fileSize != null) {
+            params.put(UPLOAD_SIZE_FIELD, Lists.newArrayList(fileSize));
+        }
+        String fileName = servletRequest.getHeader(UPLOAD_NAME_HEADER);
+        if (fileName != null) {
+            params.put(UPLOAD_NAME_FIELD, Lists.newArrayList(fileName));
+        }
+    }
+    
     /**
      * {@inheritDoc}
      */
@@ -317,7 +343,6 @@ public class MonitoredMultiPartRequest implements MultiPartRequest {
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("unchecked")
     public List getErrors() {
         return errors;
     }

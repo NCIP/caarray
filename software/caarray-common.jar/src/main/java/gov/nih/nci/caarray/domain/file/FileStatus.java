@@ -91,6 +91,11 @@ import java.util.Set;
 public enum FileStatus {
 
     /**
+     * Partially uploaded.
+     */
+    UPLOADING("Uploading"),
+
+    /**
      * Uploaded, but not yet validated.
      */
     UPLOADED("Uploaded"),
@@ -161,8 +166,8 @@ public enum FileStatus {
     /**
      * The set of FileStatuses in which a file can be deleted.
      */    
-    public static final Set<FileStatus> DELETABLE_FILE_STATUSES = EnumSet.of(UPLOADED, IMPORTED, IMPORT_FAILED,
-            IMPORTED_NOT_PARSED, VALIDATED, VALIDATED_NOT_PARSED, VALIDATION_ERRORS, SUPPLEMENTAL);
+    public static final Set<FileStatus> DELETABLE_FILE_STATUSES = EnumSet.of(UPLOADING, UPLOADED, IMPORTED,
+            IMPORT_FAILED, IMPORTED_NOT_PARSED, VALIDATED, VALIDATED_NOT_PARSED, VALIDATION_ERRORS, SUPPLEMENTAL);
 
     /**
      * The set of FileStatuses in which a file can be imported.

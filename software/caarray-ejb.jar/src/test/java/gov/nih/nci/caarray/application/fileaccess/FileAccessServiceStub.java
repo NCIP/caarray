@@ -185,6 +185,10 @@ public class FileAccessServiceStub implements FileAccessService, DataStorage {
         this.nameToFile.put(caArrayFile.getName(), file);
         return caArrayFile;
     }
+    
+    public CaArrayFile addChunk(File file, String fileName, Long fileSize, CaArrayFile caArrayFile) {
+        return null; // unused.  Trying to get eventually rid of stub classes.
+    }
 
     @Override
     public boolean remove(CaArrayFile caArrayFile) {
@@ -276,6 +280,17 @@ public class FileAccessServiceStub implements FileAccessService, DataStorage {
         caArrayFile.setFileStatus(FileStatus.UPLOADED);
         this.nameToFile.put(caArrayFile.getName(), new File(filename));
         return caArrayFile;
+    }
+
+    public StorageMetadata addChunk(URI handle, InputStream stream) throws DataStoreException {
+        return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public StorageMetadata finalizeChunkedFile(URI handle) {
+        return null;
     }
 
     /**

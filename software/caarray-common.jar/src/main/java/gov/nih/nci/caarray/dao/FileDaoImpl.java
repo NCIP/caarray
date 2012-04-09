@@ -258,4 +258,21 @@ class FileDaoImpl extends AbstractCaArrayDaoImpl implements FileDao {
         });
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public CaArrayFile getPartialFile(Long projectId, String fileName, long fileSize) {
+        final String hql = "from " + CaArrayFile.class.getName()
+                        + " f where f.project.id = :projectId and f.status =:uploadingStatus "
+                        + " and f.uncompressedSize = :fileSize and f.name = :fileName";
+        final Query q = getCurrentSession().createQuery(hql);
+        q.setLong("projectId", projectId);
+        q.setString("uploadingStatus", FileStatus.UPLOADING.name());
+        q.setLong("fileSize", fileSize);
+        q.setString("fileName", fileName);
+        return (CaArrayFile) q.uniqueResult();
+
+    }
+
 }

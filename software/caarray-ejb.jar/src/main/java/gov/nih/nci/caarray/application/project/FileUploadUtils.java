@@ -87,6 +87,7 @@ import gov.nih.nci.caarray.application.file.InvalidFileException;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.dataStorage.DataStorageFacade;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.project.Project;
 
 import java.io.File;
@@ -102,7 +103,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 
-import com.google.common.collect.Iterables;
 import com.google.inject.Inject;
 
 /**
@@ -137,31 +137,85 @@ public class FileUploadUtils {
      *
      * @param project the project the files are being uploaded in to.
      * @param files the files being uploaded.
-     * @param fileNames the file names to use.
-     * @param fileNamesToUnpack the file names to unpack.
      * @return a result object with information about number of files actually added to the project and conflicting
      *         files
      * @throws InvalidFileException on error
      */
-    public FileProcessingResult uploadFiles(Project project, List<File> files, List<String> fileNames,
-            List<String> fileNamesToUnpack) throws InvalidFileException {
-        int index = 0;
+    public FileProcessingResult uploadFiles(Project project, List<FileWrapper> files) throws InvalidFileException {
+        for (final FileWrapper currentFile : files) {
+            final String fileName = currentFile.getFileName();
 
-        for (final File currentFile : files) {
-            final String fileName = fileNames.get(index);
             if (StringUtils.isNotBlank(fileName)) {
-                if (Iterables.contains(fileNamesToUnpack, fileName)) {
-                    unpackUploadedFile(project, currentFile, fileName);
+                if (currentFile.isPartial()) {
+                    addFileChunk(project, currentFile);
+                } else if (currentFile.isCompressed()) {
+                    unpackUploadedFile(project, currentFile.getFile(), fileName);
                 } else {
-                    addUploadedFile(project, currentFile, fileName);
+                    addUploadedFile(project, currentFile.getFile(), fileName);
                 }
             }
-            index++;
         }
-
         return result;
     }
+    
+    /**
+     * Uploads a file chunk to a project.
+     * @param project the project the file is being uploaded in to.
+     * @param wrapper FileWrapper for the chunk being uploaded.
+     */
+    private void addFileChunk(Project project, FileWrapper wrapper) throws InvalidFileException {
+        File file = wrapper.getFile();
+        String fileName = wrapper.getFileName();
+        try {
+            if (!checkDuplicateFilename(project, fileName)) {
+                CaArrayFile caArrayFile = getProjectManagementService().addFileChunk(project, file, fileName,
+                        wrapper.getTotalFileSize());
+                if (caArrayFile.getFileStatus().equals(FileStatus.UPLOADED)) {
+                    handleLastChunk(project, caArrayFile, fileName, wrapper.isCompressed());
+                } else {
+                    result.setPartialUpload(true);
+                }
+            }
 
+        } catch (final Exception e) {
+            throw new InvalidFileException(fileName, "errors.addingFile", result,
+                    "Unable to add file tp persistent store", e);
+        }
+
+    }
+    
+    /**
+     * Additional handling if this is the last chunk of a file being uploaded.
+     * 
+     * @param project the project the file is being uploaded in to.
+     * @param caArrayFile the uploaded file
+     * @param fileName the file name
+     * @param compressed set to true if this file should be unpacked.
+     * @throws InvalidFileException
+     */
+    private void handleLastChunk(Project project, CaArrayFile caArrayFile, String fileName, boolean compressed)
+            throws InvalidFileException {
+        if (compressed) {
+            getFileAccessService().remove(caArrayFile);
+            final InputStream is = this.dataStorageFacade.openInputStream(caArrayFile.getDataHandle(), false);
+            unpackFile(project, caArrayFile.getName(), is);
+        } else {
+            result.addSuccessfulFile(fileName);
+        }
+        
+    }
+    
+    private boolean checkDuplicateFilename(Project project, String fileName) {
+        for (CaArrayFile projectFile : project.getFiles()) {
+            if (projectFile.getName().equals(fileName)
+                    && !projectFile.getFileStatus().equals(FileStatus.UPLOADING)) {
+                result.addConflictingFile(fileName);
+                return true;
+            }
+        }
+        return false;
+    }
+    
     private void unpackUploadedFile(Project project, File currentFile, String fileName) throws InvalidFileException {
         checkIsZipFile(fileName);
         try {

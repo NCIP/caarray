@@ -88,7 +88,9 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.argThat;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import gov.nih.nci.caarray.application.fileaccess.TemporaryFileCache;
 import gov.nih.nci.caarray.dao.MultipartBlobDao;
 import gov.nih.nci.caarray.dao.SearchDao;
@@ -115,6 +117,8 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 import com.google.common.collect.Sets;
 import com.google.common.io.ByteStreams;
@@ -127,6 +131,9 @@ import com.google.inject.Provider;
 public class DatabaseMultiPartBlobDataStorageTest extends AbstractDataStorageTest {
     private static final URI INVALID_SCHEME_URI = CaArrayUtils.makeUriQuietly("foobar:something");
     private static final String DUMMY_DATA = "Fake Data 123";
+    private static final int CHUNK_INDEX = DUMMY_DATA.length()/2;
+    private static final String CHUNK_1 = DUMMY_DATA.substring(0,CHUNK_INDEX);
+    private static final String CHUNK_2 = DUMMY_DATA.substring(CHUNK_INDEX);
 
     @Mock
     private MultipartBlobDao blobDao;
@@ -149,6 +156,15 @@ public class DatabaseMultiPartBlobDataStorageTest extends AbstractDataStorageTes
                         return DatabaseMultiPartBlobDataStorageTest.this.temporaryFileCache;
                     }
                 });
+        when(blobDao.save(any(MultiPartBlob.class))).thenAnswer(new Answer<Long>() {
+            public Long answer(InvocationOnMock invocation) throws Throwable {
+                MultiPartBlob blob = (MultiPartBlob) invocation.getArguments()[0];
+                if (blob.getId() == null) {
+                    blob.setId(COUNTER++);
+                }
+                return blob.getId();
+            }
+        });
     }
 
     @After
@@ -168,7 +184,6 @@ public class DatabaseMultiPartBlobDataStorageTest extends AbstractDataStorageTes
 
     private void testAdd(boolean compressed, byte[] data) throws IOException {
         // given
-        given(this.blobDao.save(any(MultiPartBlob.class))).willReturn(COUNTER++);
 
         // when
         final StorageMetadata sm = this.DS.add(new ByteArrayInputStream(compressed ? CaArrayUtils.gzip(data) : data),
@@ -186,6 +201,50 @@ public class DatabaseMultiPartBlobDataStorageTest extends AbstractDataStorageTes
         assertTrue(Arrays.equals(data, ByteStreams.toByteArray(in)));
     }
 
+    @Test
+    public void testAddChunk() throws IOException {
+        StorageMetadata sm = DS.addChunk(null, new ByteArrayInputStream(CHUNK_1.getBytes()));
+
+        ArgumentCaptor<MultiPartBlob> argument = ArgumentCaptor.forClass(MultiPartBlob.class);
+        verify(blobDao).save(argument.capture());
+        MultiPartBlob blob = argument.getValue();
+        byte[] partialFile = ByteStreams.toByteArray(blob.readCompressedContents());
+        assertNotNull(sm.getHandle());
+        assertEquals(sm.getPartialSize(), partialFile.length);
+        assertTrue(Arrays.equals(CHUNK_1.getBytes(), partialFile));
+
+        when(searchDao.retrieve(MultiPartBlob.class, blob.getId())).thenReturn(blob);
+        StorageMetadata sm2 = DS.addChunk(sm.getHandle(), new ByteArrayInputStream(CHUNK_2.getBytes()));
+
+        byte[] completeFile = ByteStreams.toByteArray(blob.readCompressedContents());
+        assertNotNull(sm2.getHandle());
+        assertEquals(sm2.getPartialSize(), completeFile.length);
+        assertTrue(Arrays.equals(DUMMY_DATA.getBytes(), completeFile));
+    }
+    
+    @Test
+    public void testFinalizeChunkedFile() throws IOException {
+        StorageMetadata sm = DS.addChunk(null, new ByteArrayInputStream(CHUNK_1.getBytes()));
+
+        ArgumentCaptor<MultiPartBlob> argument = ArgumentCaptor.forClass(MultiPartBlob.class);
+        verify(blobDao).save(argument.capture());
+        MultiPartBlob blob = argument.getValue();
+        when(searchDao.retrieve(MultiPartBlob.class, blob.getId())).thenReturn(blob);
+
+        DS.addChunk(sm.getHandle(), new ByteArrayInputStream(CHUNK_2.getBytes()));
+        StorageMetadata smFinal = DS.finalizeChunkedFile(sm.getHandle());
+
+        ArgumentCaptor<MultiPartBlob> argument2 = ArgumentCaptor.forClass(MultiPartBlob.class);
+        verify(blobDao, times(3)).save(argument2.capture());
+        MultiPartBlob finalBlob = argument2.getAllValues().get(2);
+        byte[] compressedFile = ByteStreams.toByteArray(finalBlob.readCompressedContents());
+        byte[] uncompressedFile = ByteStreams.toByteArray(finalBlob.readUncompressedContents());
+        assertEquals(smFinal.getCompressedSize(), compressedFile.length);
+        assertEquals(smFinal.getUncompressedSize(), uncompressedFile.length);
+        assertTrue(Arrays.equals(DUMMY_DATA.getBytes(), uncompressedFile));
+    }
+
+    
     @Test
     public void testOpenFileUncompressed() throws IOException {
         // given

@@ -87,6 +87,7 @@ import gov.nih.nci.caarray.domain.AbstractCaArrayEntity;
 import gov.nih.nci.caarray.domain.AbstractCaArrayObject;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.CaArrayFileSet;
+import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.permissions.AccessProfile;
 import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
 import gov.nih.nci.caarray.domain.permissions.SecurityLevel;
@@ -231,7 +232,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
         return Collections.unmodifiableSortedSet(Sets.newTreeSet(Iterables.filter(fileSet,
                 new Predicate<CaArrayFile>() {
             public boolean apply(CaArrayFile file) {
-                return file.getParent() == null;
+                return file.getParent() == null && !file.getFileStatus().equals(FileStatus.UPLOADING);
             }
         })));
     }

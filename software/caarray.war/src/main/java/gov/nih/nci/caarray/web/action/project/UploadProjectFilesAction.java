@@ -85,6 +85,9 @@ package gov.nih.nci.caarray.web.action.project;
 import gov.nih.nci.caarray.application.file.InvalidFileException;
 import gov.nih.nci.caarray.application.project.FileProcessingResult;
 import gov.nih.nci.caarray.application.project.FileUploadUtils;
+import gov.nih.nci.caarray.application.project.FileWrapper;
+import gov.nih.nci.caarray.dao.FileDao;
+import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.injection.InjectorFactory;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.util.CaArrayUsernameHolder;
@@ -92,11 +95,13 @@ import gov.nih.nci.caarray.web.fileupload.MonitoredMultiPartRequest;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 import org.apache.commons.lang.text.StrBuilder;
 import org.apache.log4j.Logger;
@@ -104,6 +109,7 @@ import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 
 import com.fiveamsolutions.nci.commons.web.struts2.action.ActionHelper;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.inject.Injector;
@@ -136,10 +142,13 @@ public class UploadProjectFilesAction extends AbstractBaseProjectAction implemen
     static final String PERMISSION_DENIED_ERROR_KEY = "project.permissionDenied";
 
     private FileUploadUtils fileUploadUtils;
+    private FileDao fileDao;
 
     private List<String> selectedFilesToUnpack = Lists.newArrayList();
     private List<File> upload = Lists.newArrayList();
     private List<String> uploadFileName = Lists.newArrayList();
+    private Long chunkedFileSize;
+    private String chunkedFileName;
 
     /**
      *
@@ -149,6 +158,7 @@ public class UploadProjectFilesAction extends AbstractBaseProjectAction implemen
         super.prepare();
         final Injector injector = InjectorFactory.getInjector();
         setFileUploadUtils(injector.getInstance(FileUploadUtils.class));
+        setFileDao(injector.getInstance(FileDao.class));
     }
 
     /**
@@ -161,11 +171,13 @@ public class UploadProjectFilesAction extends AbstractBaseProjectAction implemen
         StringBuilder errorString = new StringBuilder();
         try {
             if (validateUpload()) {
-                FileProcessingResult uploadResult = fileUploadUtils.uploadFiles(getProject(), getUpload(),
-                        getUploadFileName(), selectedFilesToUnpack);
+                initChunkedUploads();
+                FileProcessingResult uploadResult = fileUploadUtils.uploadFiles(getProject(), getFileWrappers());
 
                 handleConflicts(uploadResult, errorString);
-                ActionHelper.saveMessage(uploadResult.getCount() + " file(s) uploaded.");
+                if (!uploadResult.isPartialUpload()) {
+                    ActionHelper.saveMessage(uploadResult.getCount() + " file(s) uploaded.");
+                }
             }
         } catch (InvalidFileException e) {
             handleInvalidFileException(errorString, e, selectedFilesToUnpack);
@@ -188,6 +200,34 @@ public class UploadProjectFilesAction extends AbstractBaseProjectAction implemen
         return NONE;
     }
 
+    /**
+     * Checks for an existing partial upload of a file.
+     * @return the size of the file, if it exists.
+     */
+    @SkipValidation
+    public String partialUploadCheck() {
+        JSONObject result = new JSONObject();
+        if (chunkedFileName != null && chunkedFileSize != null) {
+            CaArrayFile file = fileDao.getPartialFile(getProject().getId(), chunkedFileName, chunkedFileSize);
+            if (file != null) {
+                result.put("size", file.getPartialSize());
+            }
+            try {
+                ServletActionContext.getResponse().setContentType("text/plain");
+                ServletActionContext.getResponse().getWriter().write(result.toString());
+            } catch (IOException e) {
+                LOG.warn("Swallowed exception - Cannot write to the response", e);
+            }
+        }
+        return NONE;
+    }
+    
+    private void initChunkedUploads() {
+        if (chunkedFileName != null) {
+            setUploadFileName(Lists.newArrayList(chunkedFileName));
+        }
+    }
+    
     private void handleConflicts(FileProcessingResult uploadResult, StringBuilder sbf) {
         for (String conflict : uploadResult.getConflictingFiles()) {
             addErrorMessage(sbf, FILE_CONFLICT_ERROR_KEY, conflict);
@@ -242,11 +282,7 @@ public class UploadProjectFilesAction extends AbstractBaseProjectAction implemen
      * @return true if validation passes
      */
     private boolean validateUpload() {
-        if (!validatePermissions()) {
-            return false;
-        }
-
-        return true;
+        return validatePermissions() && getUpload().size() > 0;
     }
 
     /**
@@ -264,6 +300,25 @@ public class UploadProjectFilesAction extends AbstractBaseProjectAction implemen
             return false;
         }
         return true;
+    }
+
+    private List<FileWrapper> getFileWrappers() {
+        List<FileWrapper> files = new ArrayList<FileWrapper>();
+        for (int i = 0; i < getUpload().size(); i++) {
+            File file = getUpload().get(i);
+            FileWrapper wrapper = new FileWrapper();
+            String fileName = getUploadFileName().get(i);
+            wrapper.setFile(file);
+            wrapper.setFileName(fileName);
+            wrapper.setCompressed((Iterables.contains(selectedFilesToUnpack, fileName)));
+            if (getChunkedFileSize() != null) {
+                wrapper.setTotalFileSize(getChunkedFileSize());
+            } else {
+                wrapper.setTotalFileSize(file.length());
+            }
+            files.add(wrapper);
+        }
+        return files;
     }
 
     /**
@@ -318,6 +373,34 @@ public class UploadProjectFilesAction extends AbstractBaseProjectAction implemen
     }
 
     /**
+     * @return the total size of the file being uploaded.
+     */
+    public Long getChunkedFileSize() {
+        return chunkedFileSize;
+    }
+
+    /**
+     * @param chunkedFileSize the total size of the file being uploaded.
+     */
+    public void setChunkedFileSize(Long chunkedFileSize) {
+        this.chunkedFileSize = chunkedFileSize;
+    }
+
+    /**
+     * @return the name of the file being uploaded
+     */
+    public String getChunkedFileName() {
+        return chunkedFileName;
+    }
+
+    /**
+     * @param chunkedFileName the name of the file being uploaded
+     */
+    public void setChunkedFileName(String chunkedFileName) {
+        this.chunkedFileName = chunkedFileName;
+    }
+
+    /**
      * @return the selectedFilesToUnpack
      */
     public List<String> getSelectedFilesToUnpack() {
@@ -338,6 +421,13 @@ public class UploadProjectFilesAction extends AbstractBaseProjectAction implemen
      */
     public void setFileUploadUtils(FileUploadUtils uploadUtils) {
         this.fileUploadUtils = uploadUtils;
+    }
+
+    /**
+     * @param fileDao the fileDao to set
+     */
+    public void setFileDao(FileDao fileDao) {
+        this.fileDao = fileDao;
     }
 
 }

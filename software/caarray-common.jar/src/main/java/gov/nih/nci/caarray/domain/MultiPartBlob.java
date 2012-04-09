@@ -189,8 +189,6 @@ public class MultiPartBlob implements PersistentObject {
      * @throws IOException on error reading from the stream.
      */
     public void writeData(InputStream data, boolean compress, int blobPartSize) throws IOException {
-        long uncompressedBytes = 0;
-        long compressedBytes = 0;
         final ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
         OutputStream writeStream;
         if (compress) {
@@ -202,19 +200,17 @@ public class MultiPartBlob implements PersistentObject {
         final byte[] uncompressed = new byte[blobPartSize];
         int len = 0;
         while ((len = data.read(uncompressed)) > 0) {
-            uncompressedBytes += len;
+            uncompressedSize += len;
             writeStream.write(uncompressed, 0, len);
             if (byteStream.size() + unwritten.length >= blobPartSize) {
-                compressedBytes += byteStream.size();
+                compressedSize += byteStream.size();
                 unwritten = writeData(ArrayUtils.addAll(unwritten, byteStream.toByteArray()), blobPartSize, false);
                 byteStream.reset();
             }
         }
         IOUtils.closeQuietly(writeStream);
-        compressedBytes += byteStream.size();
+        compressedSize += byteStream.size();
         writeData(ArrayUtils.addAll(unwritten, byteStream.toByteArray()), blobPartSize, true);
-        this.compressedSize = compressedBytes;
-        this.uncompressedSize = uncompressedBytes;
     }
 
     /**

@@ -84,12 +84,18 @@ package gov.nih.nci.caarray.application.fileaccess;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyLong;
-import static org.mockito.Mockito.*;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.isNull;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import gov.nih.nci.caarray.application.AbstractServiceTest;
 import gov.nih.nci.caarray.dao.ArrayDao;
 import gov.nih.nci.caarray.dao.FileDao;
@@ -118,7 +124,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.Mock;
@@ -132,8 +137,13 @@ import com.google.common.collect.Sets;
  */
 @SuppressWarnings("PMD.AvoidDuplicateLiterals")
 public class FileAccessServiceTest extends AbstractServiceTest {
-    private static final StorageMetadata TEST_METADATA = new StorageMetadata(10, 100,
-            CaArrayUtils.makeUriQuietly("test:1"), new Date());
+    private static final String DUMMY_FILE_NAME = "file";
+    private static final long DUMMY_SIZE = 100L;
+    private static final long DUMMY_COMPRESSED_SIZE = 10L;
+    private static final long DUMMY_CHUNK_SIZE = 20L;
+    
+    private final StorageMetadata TEST_METADATA = getStorageMetadata(
+            DUMMY_COMPRESSED_SIZE, DUMMY_SIZE, 0, CaArrayUtils.makeUriQuietly("test:1"), new Date());
 
     @Mock
     private FileDao fileDao;
@@ -246,6 +256,36 @@ public class FileAccessServiceTest extends AbstractServiceTest {
     }
 
     @Test
+    public void testAddFirstChunk() throws IOException {
+        File firstChunk = File.createTempFile("chunk", ".first");
+        File lastChunk = File.createTempFile("chunk", ".last");
+        firstChunk.deleteOnExit();
+        lastChunk.deleteOnExit();
+
+        URI handle = CaArrayUtils.makeUriQuietly("chunk:1");
+        StorageMetadata firstMetadata = getStorageMetadata(0, 0, DUMMY_CHUNK_SIZE, handle, null);
+        StorageMetadata lastMetadata = getStorageMetadata(0, 0, DUMMY_SIZE, handle, null);
+        StorageMetadata finalizedMetadata = getStorageMetadata(DUMMY_COMPRESSED_SIZE, DUMMY_SIZE, 0, handle, null);
+        when(dataStorageFacade.addFileChunk((URI)isNull(), any(InputStream.class))).thenReturn(firstMetadata);
+        when(dataStorageFacade.addFileChunk(eq(handle), any(InputStream.class))).thenReturn(lastMetadata);
+        when(dataStorageFacade.finalizeChunkedFile(handle)).thenReturn(finalizedMetadata);
+
+        CaArrayFile partialFile = fileAccessService.addChunk(firstChunk, DUMMY_FILE_NAME, DUMMY_SIZE, null);
+        assertNotNull(partialFile);
+        assertEquals(DUMMY_FILE_NAME, partialFile.getName());
+        assertEquals(DUMMY_CHUNK_SIZE, partialFile.getPartialSize());
+        assertEquals(FileStatus.UPLOADING, partialFile.getFileStatus());
+        verify(dataStorageFacade).addFileChunk((URI)isNull(), any(InputStream.class));
+
+        CaArrayFile completeFile = fileAccessService.addChunk(lastChunk, DUMMY_FILE_NAME, DUMMY_SIZE, partialFile);
+        assertEquals(DUMMY_SIZE, completeFile.getUncompressedSize());
+        assertEquals(DUMMY_COMPRESSED_SIZE, completeFile.getCompressedSize());
+        assertEquals(FileStatus.UPLOADED, completeFile.getFileStatus());
+        verify(dataStorageFacade).addFileChunk(eq(handle), any(InputStream.class));
+        verify(dataStorageFacade).finalizeChunkedFile(handle);
+    }
+    
+    @Test
     public void testSynchronizeWithStorage() {
         final List<URI> fileRefs = Lists.newArrayList(CaArrayUtils.makeUriQuietly("foo:bar"));
         final List<URI> parsedRefs = Lists.newArrayList(CaArrayUtils.makeUriQuietly("bar:foo"));
@@ -331,7 +371,7 @@ public class FileAccessServiceTest extends AbstractServiceTest {
     public void testRemoveChildFile() {
         testRemoveParentOrChildFile(false);
     }
-
+    
     private void testRemoveParentOrChildFile(boolean removeParentFile) {
         final Project p = new Project();
         p.setId(1L);
@@ -386,5 +426,15 @@ public class FileAccessServiceTest extends AbstractServiceTest {
         }
 
         return caArrayFile;
+    }
+    
+    private StorageMetadata getStorageMetadata(long compressedSize, long uncompressedSize, long partialSize, URI handle, Date date) {
+        StorageMetadata metadata = new StorageMetadata();
+        metadata.setCompressedSize(compressedSize);
+        metadata.setUncompressedSize(uncompressedSize);
+        metadata.setPartialSize(partialSize);
+        metadata.setHandle(handle);
+        metadata.setCreationTimestamp(date);
+        return metadata;
     }
 }

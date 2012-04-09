@@ -126,4 +126,15 @@ public interface FileDao extends CaArrayDao {
      * It allows the clean up any child files in the database not currently associated to any jobs.
      */
     void cleanupUnreferencedChildren();
+    
+    /**
+     * Finds a partially uploaded file.
+     * 
+     * @param projectId id of the project
+     * @param fileName file name
+     * @param fileSize size of the complete file
+     * @return the CaArrayFile if any is found
+     */
+    CaArrayFile getPartialFile(Long projectId, String fileName, long fileSize);
+
 }

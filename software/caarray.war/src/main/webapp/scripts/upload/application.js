@@ -16,7 +16,23 @@ $(function () {
     'use strict'; //What is this?
 
     // Initialize the jQuery File Upload widget:
-    $('#fileupload').fileupload();
+    $('#fileupload').fileupload({
+        maxChunkSize : 1500000, // ~1.5 MB
+        add: function (e, data) {
+            var that = this;
+            var uploadCheckAction = $('#fileupload').prop('action').replace('upload.action','partialUploadCheck.action');
+            var params = {
+                    chunkedFileName: data.files[0].name,
+                    chunkedFileSize: data.files[0].size,
+                    'project.id': $('#uploadProjectId').val()
+            };
+            $.getJSON(uploadCheckAction, params, function (file) {
+                data.uploadedBytes = file && file.size;
+                $.blueimpUI.fileupload.prototype
+                    .options.add.call(that, e, data);
+            });
+        }
+    });
 
     // Load existing files:
     $.getJSON($('#fileupload').prop('action'), function (files) {

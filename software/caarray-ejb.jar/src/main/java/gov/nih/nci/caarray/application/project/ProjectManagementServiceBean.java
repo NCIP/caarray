@@ -216,6 +216,23 @@ public class ProjectManagementServiceBean implements ProjectManagementService {
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     @TransactionTimeout(UPLOAD_TIMEOUT)
+    public CaArrayFile addFileChunk(Project project, File file, String filename, long fileSize)
+            throws ProposalWorkflowException, InconsistentProjectStateException {
+        LogUtil.logSubsystemEntry(LOG, project, file);
+        checkIfProjectSaveAllowed(project);
+        CaArrayFile partialFile = fileDao.getPartialFile(project.getId(), filename, fileSize);
+        final CaArrayFile caArrayFile = getFileAccessService().addChunk(file, filename, fileSize, partialFile);
+        addCaArrayFileToProject(project, caArrayFile);
+        LogUtil.logSubsystemExit(LOG);
+        return caArrayFile;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @TransactionAttribute(TransactionAttributeType.REQUIRED)
+    @TransactionTimeout(UPLOAD_TIMEOUT)
     public CaArrayFile addFile(Project project, InputStream data, String filename) throws ProposalWorkflowException,
     InconsistentProjectStateException {
         LogUtil.logSubsystemEntry(LOG, project);

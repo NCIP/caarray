@@ -32,5 +32,8 @@
        <comment>ARRAY-1932 - Automatic Refresh. Implement API to return whether the given sample was changed in the given time period.</comment>
        <sqlFile path="db-upgrade/mysql/2.5.0/array-1932-auto-refresh-sample.sql"/>
     </changeSet>
-
+    <changeSet id="partial-uploads" author="wcheng">
+       <comment>ARRAY-1627 - Implement chunked uploads.</comment>
+       <sqlFile path="db-upgrade/mysql/2.5.0/partial-uploads.sql"/>
+    </changeSet>
 </databaseChangeLog>

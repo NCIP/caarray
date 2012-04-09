@@ -135,6 +135,7 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
     private FileValidationResult validationResult;
     private long uncompressedSize;
     private long compressedSize;
+    private long partialSize;
     private URI dataHandle;
     private CaArrayFile parent;
     private Set<CaArrayFile> children = new HashSet<CaArrayFile>();
@@ -311,6 +312,20 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
      */
     public void setCompressedSize(long compressedSize) {
         this.compressedSize = compressedSize;
+    }
+
+    /**
+     * @return the partialSize
+     */
+    public long getPartialSize() {
+        return partialSize;
+    }
+
+    /**
+     * @param partialSize the partialSize to set
+     */
+    public void setPartialSize(long partialSize) {
+        this.partialSize = partialSize;
     }
 
     /**

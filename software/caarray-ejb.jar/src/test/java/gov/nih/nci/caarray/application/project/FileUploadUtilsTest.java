@@ -1,14 +1,15 @@
 package gov.nih.nci.caarray.application.project;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.util.List;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import gov.nih.nci.caarray.application.file.InvalidFileException;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
 import gov.nih.nci.caarray.dataStorage.DataStorageFacade;
@@ -16,6 +17,12 @@ import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileStatus;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -45,9 +52,7 @@ public class FileUploadUtilsTest {
     CaArrayFile existingFile = new CaArrayFile();
 
     Project project = new Project();
-    List<File> files = Lists.newArrayList();
-    List<String> uploadFileNames = Lists.newArrayList();
-    List<String> filesToUnpack = Lists.newArrayList();
+    List<FileWrapper> fileWrappers = Lists.newArrayList();
 
     @Before
     public void setUp() {
@@ -69,18 +74,19 @@ public class FileUploadUtilsTest {
         File file = File.createTempFile("tmp", NON_ZIP_EXTENSION);
         addFileUpload(file, false);
 
-        FileProcessingResult result = uploadUtils.uploadFiles(project, files, uploadFileNames, filesToUnpack);
+        FileProcessingResult result = uploadUtils.uploadFiles(project, fileWrappers);
         assertEquals(1, result.getCount());
         assertTrue(result.getSuccessfullyProcessedFiles().contains(file.getName()));
         assertTrue(result.getConflictingFiles().isEmpty());
     }
 
     private void addFileUpload(File file, boolean unpack) {
-        files.add(file);
-        uploadFileNames.add(file.getName());
-        if (unpack) {
-            filesToUnpack.add(file.getName());
-        }
+        FileWrapper fileWrapper = new FileWrapper();
+        fileWrapper.setFile(file);
+        fileWrapper.setFileName(file.getName());
+        fileWrapper.setCompressed(unpack);
+        fileWrapper.setTotalFileSize(file.length());
+        fileWrappers.add(fileWrapper);
     }
 
     @Test
@@ -89,7 +95,7 @@ public class FileUploadUtilsTest {
         addFileUpload(file, true);
 
         try {
-            uploadUtils.uploadFiles(project, files, uploadFileNames, filesToUnpack);
+            uploadUtils.uploadFiles(project, fileWrappers);
             fail("An InvalidFileException should have been thrown!");
         } catch (InvalidFileException e) {
             assertEquals(FileUploadUtils.UNPACKING_ERROR_KEY, e.getResourceKey());
@@ -102,7 +108,7 @@ public class FileUploadUtilsTest {
         File file = File.createTempFile("tmp", FileUploadUtils.VALID_ZIP_EXTENSION);
         addFileUpload(file, false);
 
-        FileProcessingResult result = uploadUtils.uploadFiles(project, files, uploadFileNames, filesToUnpack);
+        FileProcessingResult result = uploadUtils.uploadFiles(project, fileWrappers);
         assertEquals(1, result.getCount());
         assertTrue(result.getSuccessfullyProcessedFiles().contains(file.getName()));
         assertTrue(result.getConflictingFiles().isEmpty());
@@ -116,7 +122,7 @@ public class FileUploadUtilsTest {
 
         addFileUpload(zipFile, true);
 
-        FileProcessingResult result = uploadUtils.uploadFiles(project, files, uploadFileNames, filesToUnpack);
+        FileProcessingResult result = uploadUtils.uploadFiles(project, fileWrappers);
         assertEquals(1, result.getCount());
         assertTrue(result.getSuccessfullyProcessedFiles().contains(contentFile.getName()));
         assertTrue(result.getConflictingFiles().isEmpty());
@@ -148,7 +154,7 @@ public class FileUploadUtilsTest {
         addFileUpload(file, false);
         addFileUpload(file2, false);
 
-        FileProcessingResult result = uploadUtils.uploadFiles(project, files, uploadFileNames, filesToUnpack);
+        FileProcessingResult result = uploadUtils.uploadFiles(project, fileWrappers);
         assertEquals(2, result.getCount());
         assertTrue(result.getSuccessfullyProcessedFiles().containsAll(
                 Lists.newArrayList(file.getName(), file2.getName())));
@@ -167,7 +173,7 @@ public class FileUploadUtilsTest {
         addFileUpload(zipFile1, true);
         addFileUpload(zipFile2, true);
 
-        FileProcessingResult result = uploadUtils.uploadFiles(project, files, uploadFileNames, filesToUnpack);
+        FileProcessingResult result = uploadUtils.uploadFiles(project, fileWrappers);
         assertEquals(3, result.getCount());
         assertTrue(result.getSuccessfullyProcessedFiles().containsAll(
                 Lists.newArrayList(contentFile.getName(), contentFile2.getName(), contentFile3.getName())));
@@ -188,7 +194,7 @@ public class FileUploadUtilsTest {
 
         existingFile.setName(contentFile.getName());
 
-        FileProcessingResult result = uploadUtils.uploadFiles(project, files, uploadFileNames, filesToUnpack);
+        FileProcessingResult result = uploadUtils.uploadFiles(project, fileWrappers);
         assertEquals(2, result.getCount());
         assertTrue(result.getSuccessfullyProcessedFiles().containsAll(
                 Lists.newArrayList(contentFile2.getName(), contentFile3.getName())));
@@ -209,7 +215,7 @@ public class FileUploadUtilsTest {
         addFileUpload(zipFile2, true);
         addFileUpload(zipFile3, false);
 
-        FileProcessingResult result = uploadUtils.uploadFiles(project, files, uploadFileNames, filesToUnpack);
+        FileProcessingResult result = uploadUtils.uploadFiles(project, fileWrappers);
         assertEquals(4, result.getCount());
         assertTrue(result.getSuccessfullyProcessedFiles().containsAll(
                 Lists.newArrayList(contentFile.getName(), contentFile2.getName(), contentFile3.getName(),
@@ -224,7 +230,7 @@ public class FileUploadUtilsTest {
         addFileUpload(file, false);
         addFileUpload(file2, false);
 
-        FileProcessingResult result = uploadUtils.uploadFiles(project, files, uploadFileNames, filesToUnpack);
+        FileProcessingResult result = uploadUtils.uploadFiles(project, fileWrappers);
         assertEquals(2, result.getCount());
         assertTrue(result.getSuccessfullyProcessedFiles().containsAll(
                 Lists.newArrayList(file.getName(), file2.getName())));
@@ -240,7 +246,7 @@ public class FileUploadUtilsTest {
 
         existingFile.setName(file1.getName());
 
-        FileProcessingResult result = uploadUtils.uploadFiles(project, files, uploadFileNames, filesToUnpack);
+        FileProcessingResult result = uploadUtils.uploadFiles(project, fileWrappers);
         assertEquals(1, result.getCount());
         assertTrue(result.getSuccessfullyProcessedFiles().containsAll(Lists.newArrayList(file2.getName())));
         assertTrue(result.getConflictingFiles().contains(file1.getName()));
@@ -255,7 +261,7 @@ public class FileUploadUtilsTest {
         addFileUpload(zipFile, false);
         addFileUpload(file2, false);
 
-        FileProcessingResult result = uploadUtils.uploadFiles(project, files, uploadFileNames, filesToUnpack);
+        FileProcessingResult result = uploadUtils.uploadFiles(project, fileWrappers);
         assertEquals(3, result.getCount());
         assertTrue(result.getSuccessfullyProcessedFiles().containsAll(
                 Lists.newArrayList(file.getName(), file2.getName(), zipFile.getName())));
@@ -274,7 +280,7 @@ public class FileUploadUtilsTest {
         addFileUpload(zipFile, true);
         addFileUpload(file2, false);
 
-        FileProcessingResult result = uploadUtils.uploadFiles(project, files, uploadFileNames, filesToUnpack);
+        FileProcessingResult result = uploadUtils.uploadFiles(project, fileWrappers);
         assertEquals(4, result.getCount());
         assertTrue(result.getSuccessfullyProcessedFiles().containsAll(
                 Lists.newArrayList(file.getName(), file2.getName(), contentFile.getName(), contentFile2.getName())));
@@ -297,7 +303,7 @@ public class FileUploadUtilsTest {
         addFileUpload(file2, false);
         addFileUpload(zipFile2, false);
 
-        FileProcessingResult result = uploadUtils.uploadFiles(project, files, uploadFileNames, filesToUnpack);
+        FileProcessingResult result = uploadUtils.uploadFiles(project, fileWrappers);
         List<String> expectedUploadedFiles = Lists.newArrayList(file.getName(), file2.getName(), contentFile.getName(),
                 contentFile2.getName(), zipFile2.getName());
         assertEquals(expectedUploadedFiles.size(), result.getCount());
@@ -327,7 +333,7 @@ public class FileUploadUtilsTest {
         }
         addFileUpload(file2, false);
 
-        FileProcessingResult result = uploadUtils.uploadFiles(project, files, uploadFileNames, filesToUnpack);
+        FileProcessingResult result = uploadUtils.uploadFiles(project, fileWrappers);
         List<String> expectedUploadedFiles = Lists.newArrayList(file.getName(), file2.getName(), contentFile.getName());
         assertEquals(expectedUploadedFiles.size(), result.getCount());
         assertTrue("Expected: " + expectedUploadedFiles + " But found :"
@@ -352,7 +358,7 @@ public class FileUploadUtilsTest {
                 new IllegalStateException("Hooray for failures!"));
 
         try {
-            uploadUtils.uploadFiles(project, files, uploadFileNames, filesToUnpack);
+            uploadUtils.uploadFiles(project, fileWrappers);
             fail("An InvalidFileException should have been thrown!");
         } catch (InvalidFileException e) {
             assertTrue(e.getCause() instanceof InvalidFileException);
@@ -372,7 +378,7 @@ public class FileUploadUtilsTest {
         addFileUpload(zipFile, true);
 
         try {
-            uploadUtils.uploadFiles(project, files, uploadFileNames, filesToUnpack);
+            uploadUtils.uploadFiles(project, fileWrappers);
             fail("An InvalidFileException should have been thrown!");
         } catch (InvalidFileException e) {
             assertTrue(e.getCause() instanceof InvalidFileException);

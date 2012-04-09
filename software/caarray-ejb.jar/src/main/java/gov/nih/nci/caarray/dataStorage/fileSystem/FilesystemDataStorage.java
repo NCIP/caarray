@@ -169,6 +169,53 @@ public class FilesystemDataStorage implements DataStorage {
     /**
      * {@inheritDoc}
      */
+    public StorageMetadata addChunk(URI handle, InputStream stream) throws DataStoreException {
+        final StorageMetadata metadata = new StorageMetadata();
+        try {
+            File file;
+            if (handle == null) {
+                final String fileHandle = UUID.randomUUID().toString();
+                file = uncompressedFile(fileHandle);
+                writeFileData(stream, new FileOutputStream(file));
+                metadata.setHandle(makeHandle(fileHandle));
+            } else {
+                file = openFile(handle, false);
+                writeFileData(stream, new FileOutputStream(file, true));
+                metadata.setHandle(handle);
+            }
+            metadata.setPartialSize(file.length());
+        } catch (final IOException e) {
+            throw new DataStoreException("Could not add data", e);
+        }
+        return metadata;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public StorageMetadata finalizeChunkedFile(URI handle) {
+        String fileHandle = handle.getSchemeSpecificPart();
+        File uncompressedFile = openFile(handle, false);
+        File compressedFile = compressedFile(fileHandle);
+
+        try {
+            final FileInputStream fis = Files.newInputStreamSupplier(uncompressedFile).getInput();
+            compressAndWriteFile(fis, compressedFile(handle.getSchemeSpecificPart()));
+            IOUtils.closeQuietly(fis);
+
+            final StorageMetadata metadata = new StorageMetadata();
+            metadata.setHandle(handle);
+            metadata.setUncompressedSize(uncompressedFile.length());
+            metadata.setCompressedSize(compressedFile.length());
+            return metadata;
+        } catch (final IOException e) {
+            throw new DataStoreException("Could not add data", e);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Iterable<StorageMetadata> list() {
         final Set<StorageMetadata> metadatas = Sets.newHashSet();

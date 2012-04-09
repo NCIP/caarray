@@ -125,7 +125,7 @@ import com.google.inject.Inject;
  *
  * @author mshestopalov
  */
-@SuppressWarnings({ "PMD.CyclomaticComplexity", "PMD.TooManyMethods" })
+@SuppressWarnings({ "PMD.CyclomaticComplexity", "PMD.TooManyMethods", "PMD.ExcessiveClassLength" })
 public class SampleDaoImpl extends AbstractCaArrayDaoImpl implements SampleDao {
     private static final String UNCHECKED = "unchecked";
     private static final String FROM_KEYWORD = " FROM ";

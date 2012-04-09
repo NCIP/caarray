@@ -173,6 +173,44 @@ public class DatabaseMultipartBlobDataStorage implements DataStorage {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    public StorageMetadata addChunk(URI handle, InputStream stream) throws DataStoreException {
+        try {
+            MultiPartBlob multiPartBlob;
+            if (handle == null) {
+                multiPartBlob = new MultiPartBlob();
+                multiPartBlob.setCreationTimestamp(new Date());
+            } else {
+                multiPartBlob = searchDao.retrieve(MultiPartBlob.class, Long.valueOf(handle.getSchemeSpecificPart()));
+            }
+            multiPartBlob.writeData(stream, false, blobPartSize);
+            blobDao.save(multiPartBlob);
+
+            final StorageMetadata metadata = new StorageMetadata();
+            metadata.setHandle(makeHandle(multiPartBlob.getId()));
+            metadata.setPartialSize(multiPartBlob.getUncompressedSize());
+            return metadata;
+        } catch (final IOException e) {
+            throw new DataStoreException("Could not add data", e);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public StorageMetadata finalizeChunkedFile(URI handle) {
+        MultiPartBlob multiPartBlob =
+                searchDao.retrieve(MultiPartBlob.class, Long.valueOf(handle.getSchemeSpecificPart()));
+        try {
+            InputStream is = multiPartBlob.readCompressedContents();
+            return add(is, false);
+        } catch (IOException e) {
+            throw new DataStoreException("Could not add data", e);
+        }
+    }
+
     private void checkScheme(URI handle) {
         if (!SCHEME.equals(handle.getScheme())) {
             throw new UnsupportedSchemeException("Unsupported scheme: " + handle.getScheme());

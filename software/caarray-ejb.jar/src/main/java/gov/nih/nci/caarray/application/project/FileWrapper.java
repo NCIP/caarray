@@ -1,12 +1,12 @@
 /**
  * The software subject to this notice and license includes both human readable
- * source code form and machine readable, binary, object code form. The caarray-common-jar
+ * source code form and machine readable, binary, object code form. The caArray2
  * Software was developed in conjunction with the National Cancer Institute 
  * (NCI) by NCI employees and 5AM Solutions, Inc. (5AM). To the extent 
  * government employees are authors, any rights in such works shall be subject 
  * to Title 17 of the United States Code, section 105. 
  *
- * This caarray-common-jar Software License (the License) is between NCI and You. You (or 
+ * This caArray2 Software License (the License) is between NCI and You. You (or 
  * Your) shall mean a person or an entity, and all other entities that control, 
  * are controlled by, or are under common control with the entity. Control for 
  * purposes of this definition means (i) the direct or indirect power to cause 
@@ -17,10 +17,10 @@
  * This License is granted provided that You agree to the conditions described 
  * below. NCI grants You a non-exclusive, worldwide, perpetual, fully-paid-up, 
  * no-charge, irrevocable, transferable and royalty-free right and license in 
- * its rights in the caarray-common-jar Software to (i) use, install, access, operate, 
+ * its rights in the caArray2 Software to (i) use, install, access, operate, 
  * execute, copy, modify, translate, market, publicly display, publicly perform,
- * and prepare derivative works of the caarray-common-jar Software; (ii) distribute and 
- * have distributed to and by third parties the caarray-common-jar Software and any 
+ * and prepare derivative works of the caArray2 Software; (ii) distribute and 
+ * have distributed to and by third parties the caArray2 Software and any 
  * modifications and derivative works thereof; and (iii) sublicense the 
  * foregoing rights set out in (i) and (ii) to third parties, including the 
  * right to license such rights to further third parties. For sake of clarity, 
@@ -80,121 +80,72 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package gov.nih.nci.caarray.dataStorage;
+package gov.nih.nci.caarray.application.project;
 
-import java.io.Serializable;
-import java.net.URI;
-import java.util.Date;
-
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.apache.commons.lang.builder.ToStringBuilder;
+import java.io.File;
 
 /**
- * StorageMetadata describes the metadata for a binary data block stored in the data storage subsystem.
- * 
- * @author dkokotov
+ * @author wcheng
+ *
  */
-public class StorageMetadata implements Serializable {
-    private static final long serialVersionUID = 1L;
-
-    private long compressedSize;
-    private long uncompressedSize;
-    private long partialSize;
-    private URI handle;
-    private Date creationTimestamp;
+public class FileWrapper {
+    private File file;
+    private String fileName;
+    private long totalFileSize;
+    private boolean compressed;
 
     /**
-     * @return the compressedSize
+     * @return the file
      */
-    public long getCompressedSize() {
-        return this.compressedSize;
+    public File getFile() {
+        return file;
     }
-
     /**
-     * @param compressedSize the compressedSize to set
+     * @param file the file to set
      */
-    public void setCompressedSize(long compressedSize) {
-        this.compressedSize = compressedSize;
+    public void setFile(File file) {
+        this.file = file;
     }
-
     /**
-     * @return the uncompressedSize
+     * @return the fileName
      */
-    public long getUncompressedSize() {
-        return this.uncompressedSize;
+    public String getFileName() {
+        return fileName;
     }
-
     /**
-     * @param uncompressedSize the uncompressedSize to set
+     * @param fileName the fileName to set
      */
-    public void setUncompressedSize(long uncompressedSize) {
-        this.uncompressedSize = uncompressedSize;
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
     }
-
     /**
-     * @return the partialSize
+     * @return the totalFileSize
      */
-    public long getPartialSize() {
-        return partialSize;
+    public long getTotalFileSize() {
+        return totalFileSize;
     }
-
     /**
-     * @param partialSize the partialSize to set
+     * @param totalFileSize the totalFileSize to set
      */
-    public void setPartialSize(long partialSize) {
-        this.partialSize = partialSize;
+    public void setTotalFileSize(long totalFileSize) {
+        this.totalFileSize = totalFileSize;
     }
-
     /**
-     * {@inheritDoc}
+     * @return the unpack
      */
-    @Override
-    public String toString() {
-        return ToStringBuilder.reflectionToString(this);
+    public boolean isCompressed() {
+        return compressed;
     }
-
     /**
-     * {@inheritDoc}
+     * @param compressed the unpack to set
      */
-    @Override
-    public boolean equals(Object obj) {
-        return EqualsBuilder.reflectionEquals(this, obj);
+    public void setCompressed(boolean compressed) {
+        this.compressed = compressed;
     }
-
     /**
-     * {@inheritDoc}
+     * @return the partial
      */
-    @Override
-    public int hashCode() {
-        return HashCodeBuilder.reflectionHashCode(this);
-    }
-
-    /**
-     * @return the handle
-     */
-    public URI getHandle() {
-        return this.handle;
-    }
-
-    /**
-     * @param handle the handle to set
-     */
-    public void setHandle(URI handle) {
-        this.handle = handle;
-    }
-
-    /**
-     * @return the creationTimestamp
-     */
-    public Date getCreationTimestamp() {
-        return this.creationTimestamp;
-    }
-
-    /**
-     * @param creationTimestamp the creationTimestamp to set
-     */
-    public void setCreationTimestamp(Date creationTimestamp) {
-        this.creationTimestamp = creationTimestamp;
+    public boolean isPartial() {
+        return file.length() != totalFileSize;
     }
 }

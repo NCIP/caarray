@@ -706,6 +706,31 @@ public class FileDaoTest extends AbstractDaoTest {
         assertEquals(2, allFiles.size());
         tx.commit();
     }
+    
+    @Test
+    public void testGetPartialFile() {
+        Transaction tx = this.hibernateHelper.beginTransaction();
+
+        saveSupportingObjects();
+        final CaArrayFile f1 = new CaArrayFile();
+        f1.setName("dummy1");
+        f1.setFileType(FileTypeRegistry.MAGE_TAB_IDF);
+        f1.setFileStatus(FileStatus.UPLOADING);
+        f1.setDataHandle(DUMMY_DATA_HANDLE);
+        f1.setProject(DUMMY_PROJECT_1);
+        f1.setUncompressedSize(12345);
+        DUMMY_PROJECT_1.getFiles().add(f1);
+        DAO_OBJECT.save(f1);
+        
+        tx.commit();
+
+        tx = this.hibernateHelper.beginTransaction();
+        CaArrayFile file = DAO_OBJECT.getPartialFile(DUMMY_PROJECT_1.getId(), "dummy1", 12345);
+        CaArrayFile file2 = DAO_OBJECT.getPartialFile(DUMMY_PROJECT_1.getId(), "dummy1", 12346);
+        assertEquals(f1, file);
+        assertNull(file2);
+        tx.commit();
+    }
 
     private CaArrayFile createDummyFile(String name, CaArrayFile parent) {
         CaArrayFile file = new CaArrayFile(parent);

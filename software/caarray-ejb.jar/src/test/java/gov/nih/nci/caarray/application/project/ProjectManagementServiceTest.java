@@ -89,6 +89,7 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import gov.nih.nci.caarray.application.AbstractServiceTest;
 import gov.nih.nci.caarray.application.GenericDataService;
@@ -97,6 +98,7 @@ import gov.nih.nci.caarray.application.fileaccess.FileAccessService;
 import gov.nih.nci.caarray.application.fileaccess.FileAccessServiceStub;
 import gov.nih.nci.caarray.application.project.InconsistentProjectStateException.Reason;
 import gov.nih.nci.caarray.dao.CaArrayDaoFactory;
+import gov.nih.nci.caarray.dao.FileDao;
 import gov.nih.nci.caarray.dao.ProjectDao;
 import gov.nih.nci.caarray.dao.SearchDao;
 import gov.nih.nci.caarray.dao.stub.DaoFactoryStub;
@@ -118,7 +120,6 @@ import gov.nih.nci.caarray.domain.sample.Source;
 import gov.nih.nci.caarray.domain.search.ProjectSortCriterion;
 import gov.nih.nci.caarray.domain.search.SearchSampleCategory;
 import gov.nih.nci.caarray.security.PermissionDeniedException;
-import gov.nih.nci.caarray.security.Protectable;
 import gov.nih.nci.caarray.security.SecurityUtils;
 import gov.nih.nci.caarray.test.data.magetab.MageTabDataFiles;
 import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
@@ -128,8 +129,6 @@ import gov.nih.nci.caarray.util.j2ee.ServiceLocatorStub;
 import gov.nih.nci.security.authorization.domainobjects.User;
 
 import java.io.File;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -143,6 +142,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import com.fiveamsolutions.nci.commons.data.persistent.PersistentObject;
 import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
@@ -158,10 +159,18 @@ public class ProjectManagementServiceTest extends AbstractServiceTest {
 
     private ProjectManagementService projectManagementService;
     private final LocalDaoFactoryStub daoFactoryStub = new LocalDaoFactoryStub();
-    private final FileAccessServiceStub fileAccessService = new FileAccessServiceStub();
+    private final FileAccessServiceStub fileAccessServiceStub = new FileAccessServiceStub();
     private final GenericDataService genericDataService = new GenericDataServiceStub();
     private Transaction transaction;
 
+    private ServiceLocatorStub locatorStub;
+    
+    @Mock
+    private FileDao fileDao;
+    @Mock
+    private FileAccessService fileAccessService;
+
+    
     /**
      * post-construct lifecycle method; intializes the Guice injector that will provide dependencies.
      */
@@ -187,17 +196,18 @@ public class ProjectManagementServiceTest extends AbstractServiceTest {
 
     @Before
     public void setUpService() {
+        MockitoAnnotations.initMocks(this);
         CaArrayUsernameHolder.setUser(STANDARD_USER);
         final ProjectManagementServiceBean pmsBean = new ProjectManagementServiceBean();
 
         pmsBean.setProjectDao(this.daoFactoryStub.getProjectDao());
-        pmsBean.setFileDao(this.daoFactoryStub.getFileDao());
+        pmsBean.setFileDao(fileDao);
         pmsBean.setSampleDao(this.daoFactoryStub.getSampleDao());
         pmsBean.setSearchDao(this.daoFactoryStub.getSearchDao());
         pmsBean.setVocabularyDao(this.daoFactoryStub.getVocabularyDao());
 
-        final ServiceLocatorStub locatorStub = ServiceLocatorStub.registerEmptyLocator();
-        locatorStub.addLookup(FileAccessService.JNDI_NAME, this.fileAccessService);
+        locatorStub = ServiceLocatorStub.registerEmptyLocator();
+        locatorStub.addLookup(FileAccessService.JNDI_NAME, this.fileAccessServiceStub);
         locatorStub.addLookup(GenericDataService.JNDI_NAME, this.genericDataService);
         final MysqlDataSource ds = new MysqlDataSource();
         final Configuration config = hibernateHelper.getConfiguration();
@@ -243,33 +253,60 @@ public class ProjectManagementServiceTest extends AbstractServiceTest {
         assertNotNull(project.getFiles().iterator().next().getProject());
         assertContains(project.getFiles(), MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF.getName());
     }
+    
+    @Test
+    public void testAddFileChunk() throws Exception {
+        // Trying to get rid of stub classes.  Using a mock fileAccessService here.
+        locatorStub.addLookup(FileAccessService.JNDI_NAME, fileAccessService);
+        Project project = new Project();
+        CaArrayFile partialFile = new CaArrayFile();
+        File file = mock(File.class);
+        String fileName = "testFile";
+        long fileSize = 1234L;
 
+        when(fileDao.getPartialFile(project.getId(), fileName, fileSize)).thenReturn(partialFile);
+        when(fileAccessService.addChunk(file, fileName, fileSize, partialFile)).thenReturn(partialFile);
+        
+        CaArrayFile result = projectManagementService.addFileChunk(project, file, fileName, fileSize);
+        assertEquals(partialFile, result);
+        assertEquals(project,partialFile.getProject());
+        verify(fileDao).getPartialFile(project.getId(), fileName, fileSize);
+        verify(fileAccessService).addChunk(file, fileName, fileSize, partialFile);
+        verify(fileDao).save(partialFile);
+    }
+
+    private FileWrapper createFileWrapper(File file, String fileName, boolean compressed) {
+        FileWrapper fileWrapper = new FileWrapper();
+        fileWrapper.setFile(file);
+        fileWrapper.setFileName(fileName);
+        fileWrapper.setCompressed(compressed);
+        fileWrapper.setTotalFileSize(file.length());
+        return fileWrapper;
+    }
+    
     @Test
     public void testUploadFiles() throws Exception {
         final Project project = this.daoFactoryStub.getSearchDao().retrieve(Project.class, 123L);
-        final List<String> fileNames = new ArrayList<String>();
-        final List<File> files = new ArrayList<File>();
-        final List<String> filesToUnpack = new ArrayList<String>();
+        final List<FileWrapper> fileWrappers = new ArrayList<FileWrapper>();
         final DataStorageFacade dataStorageFacade = mock(DataStorageFacade.class);
         FileUploadUtils fileUploadUtils = new FileUploadUtils(dataStorageFacade);
 
         // add a zip file which contains some non-zip files and 1 zip file (11 in total)
-        files.add(MageTabDataFiles.SPECIFICATION_ZIP_WITH_NEXTED_ZIP);
-        fileNames.add("specification.zip");
         // the top layer zip will be unpacked
-        filesToUnpack.add("specification.zip");
+        fileWrappers.add(createFileWrapper(
+                MageTabDataFiles.SPECIFICATION_ZIP_WITH_NEXTED_ZIP, "specification.zip", true));
         // also attempt to add a file with a blank file name
-        files.add(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF);
-        fileNames.add("  ");
+        fileWrappers.add(createFileWrapper(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF, "  ", false));
         // attempt to add a file that is already inside nested zip
         // this should be fine (this file plus contents of zip will make the total 12)
-        files.add(MageTabDataFiles.SPECIFICATION_ZIP_WITH_NEXTED_ZIP_TXT_FILE);
-        fileNames.add(MageTabDataFiles.SPECIFICATION_ZIP_WITH_NEXTED_ZIP_TXT_FILE.getName());
+        fileWrappers.add(createFileWrapper(
+                MageTabDataFiles.SPECIFICATION_ZIP_WITH_NEXTED_ZIP_TXT_FILE,
+                MageTabDataFiles.SPECIFICATION_ZIP_WITH_NEXTED_ZIP_TXT_FILE.getName(), false));
         // attempt to add file that is already part of the zip
         // this should cause a conflict
-        files.add(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF);
-        fileNames.add(MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF.getName());
-        FileProcessingResult result = fileUploadUtils.uploadFiles(project, files, fileNames, filesToUnpack);
+        fileWrappers.add(createFileWrapper(
+                MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF, MageTabDataFiles.SPECIFICATION_EXAMPLE_IDF.getName(), false));
+        FileProcessingResult result = fileUploadUtils.uploadFiles(project, fileWrappers);
         assertEquals(12, result.getCount());
         assertEquals(12, project.getFiles().size());
         assertNotNull(project.getFiles().iterator().next().getProject());
@@ -280,7 +317,7 @@ public class ProjectManagementServiceTest extends AbstractServiceTest {
         // attempt to re-upload a bunch of the files that were just uploaded to get
         // to get back nothing, showing that if a file has the same name, we do not add it.
         fileUploadUtils = new FileUploadUtils(dataStorageFacade);
-        result = fileUploadUtils.uploadFiles(project, files, fileNames, filesToUnpack);
+        result = fileUploadUtils.uploadFiles(project, fileWrappers);
         assertEquals(0, result.getCount());
         assertEquals(12, project.getFiles().size());
         assertNotNull(project.getFiles().iterator().next().getProject());
@@ -299,17 +336,11 @@ public class ProjectManagementServiceTest extends AbstractServiceTest {
         // the zip file does not contain the txt file.
         // the txt file should be unknown.
         final Project project = this.daoFactoryStub.getSearchDao().retrieve(Project.class, 123L);
-        final List<String> fileNames = new ArrayList<String>();
-        final List<File> files = new ArrayList<File>();
-        files.add(MageTabDataFiles.SPECIFICATION_ZIP);
-        fileNames.add("specification.zip");
-
-        files.add(MageTabDataFiles.SPECIFICATION_ZIP_WITH_NEXTED_ZIP_TXT_FILE);
-        fileNames.add("Test1.txt");
-
-        final List<String> filesToUnpack = new ArrayList<String>();
-        filesToUnpack.add("specification.zip");
-        final FileProcessingResult result = fileUploadUtils.uploadFiles(project, files, fileNames, filesToUnpack);
+        final List<FileWrapper> fileWrappers = new ArrayList<FileWrapper>();
+        fileWrappers.add(createFileWrapper(MageTabDataFiles.SPECIFICATION_ZIP, "specification.zip", true));
+        fileWrappers.add(createFileWrapper(
+                MageTabDataFiles.SPECIFICATION_ZIP_WITH_NEXTED_ZIP_TXT_FILE, "Test1.txt", false));
+        final FileProcessingResult result = fileUploadUtils.uploadFiles(project, fileWrappers);
         assertEquals(17, result.getCount());
         assertEquals(17, project.getFiles().size());
         assertNotNull(project.getFiles().iterator().next().getProject());
@@ -324,7 +355,7 @@ public class ProjectManagementServiceTest extends AbstractServiceTest {
         // add a file
         final Project project = this.daoFactoryStub.getSearchDao().retrieve(Project.class, 123L);
         final CaArrayFile file = this.projectManagementService.addFile(project, MageTabDataFiles.SPECIFICATION_ZIP);
-        this.fileAccessService.setDeletableStatus(file, true);
+        this.fileAccessServiceStub.setDeletableStatus(file, true);
         assertEquals(MageTabDataFiles.SPECIFICATION_ZIP.getName(), file.getName());
         assertEquals(1, project.getFiles().size());
         assertNotNull(project.getFiles().iterator().next().getProject());
@@ -345,7 +376,7 @@ public class ProjectManagementServiceTest extends AbstractServiceTest {
         final FileProcessingResult result = fileUploadUtils.unpackFiles(project, cFileList);
         // the unpack should have added 10 files and removed the zip archive
         assertEquals(16, result.getCount());
-        assertEquals(1, this.fileAccessService.getRemovedFileCount());
+        assertEquals(1, this.fileAccessServiceStub.getRemovedFileCount());
         assertEquals(16, project.getFiles().size());
         assertNotNull(project.getFiles().iterator().next().getProject());
         assertNotContains(project.getFiles(), "specification.zip");

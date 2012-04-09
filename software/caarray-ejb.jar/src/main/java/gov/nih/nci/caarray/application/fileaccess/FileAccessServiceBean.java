@@ -181,6 +181,46 @@ public class FileAccessServiceBean implements FileAccessService {
     /**
      * {@inheritDoc}
      */
+    public CaArrayFile addChunk(File file, String fileName, Long fileSize, CaArrayFile caArrayFile) {
+        if (caArrayFile == null) {
+            caArrayFile = getFile(fileName, fileSize);
+        }
+        readChunk(file, caArrayFile);
+        if (caArrayFile.getPartialSize() == fileSize) {
+            finalizeUpload(caArrayFile);
+        }
+        return caArrayFile;
+    }
+
+    private CaArrayFile getFile(String fileName, long fileSize) {
+        CaArrayFile caArrayFile = createCaArrayFile(fileName, null, FileStatus.UPLOADING);
+        caArrayFile.setUncompressedSize(fileSize);
+        return caArrayFile;
+    }
+    
+    private void readChunk(File chunk, CaArrayFile caArrayFile) {
+        try {
+            final InputStream is = FileUtils.openInputStream(chunk);
+            final StorageMetadata metadata = this.dataStorageFacade.addFileChunk(caArrayFile.getDataHandle(), is);
+            caArrayFile.setDataHandle(metadata.getHandle());
+            caArrayFile.setPartialSize(metadata.getPartialSize());
+            IOUtils.closeQuietly(is);
+        } catch (final IOException e) {
+            throw new FileAccessException("File " + caArrayFile.getName() + " couldn't be read", e);
+        }
+    }
+    
+    private void finalizeUpload(CaArrayFile caArrayFile) {
+        StorageMetadata metadata = dataStorageFacade.finalizeChunkedFile(caArrayFile.getDataHandle());
+        caArrayFile.setDataHandle(metadata.getHandle());
+        caArrayFile.setCompressedSize(metadata.getCompressedSize());
+        caArrayFile.setUncompressedSize(metadata.getUncompressedSize());
+        caArrayFile.setFileStatus(FileStatus.UPLOADED);
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
     public CaArrayFile add(InputStream stream, String filename) {
         return add(stream, filename, null);
     }
@@ -189,7 +229,7 @@ public class FileAccessServiceBean implements FileAccessService {
      * {@inheritDoc}
      */
     public CaArrayFile add(InputStream stream, String filename, CaArrayFile parent) {
-        final CaArrayFile caArrayFile = createCaArrayFile(filename, parent);
+        final CaArrayFile caArrayFile = createCaArrayFile(filename, parent, FileStatus.UPLOADED);
         try {
             final StorageMetadata metadata = this.dataStorageFacade.addFile(stream, false);
             caArrayFile.setCompressedSize(metadata.getCompressedSize());
@@ -201,9 +241,9 @@ public class FileAccessServiceBean implements FileAccessService {
         return caArrayFile;
     }
 
-    private CaArrayFile createCaArrayFile(String filename, CaArrayFile parent) {
+    private CaArrayFile createCaArrayFile(String filename, CaArrayFile parent, FileStatus status) {
         final CaArrayFile caArrayFile = new CaArrayFile(parent);
-        caArrayFile.setFileStatus(FileStatus.UPLOADED);
+        caArrayFile.setFileStatus(status);
         caArrayFile.setName(filename);
         caArrayFile.setFileType(this.typeRegistry.getTypeFromExtension(filename));
 

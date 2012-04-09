@@ -118,4 +118,9 @@ public class FileDaoStub extends AbstractDaoStub implements FileDao {
     public void cleanupUnreferencedChildren() {
         // no op
     }
+
+    @Override
+    public CaArrayFile getPartialFile(Long projectId, String fileName, long fileSize) {
+        return null; // unused. Trying to get rid of stub classes.
+    }
 }
