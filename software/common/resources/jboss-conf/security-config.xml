@@ -24,11 +24,11 @@
                 <module-option name="encryption-enabled">YES</module-option>
             </login-module>
 
-<!-- 
+            <!-- TODO Need comment out as necessary during build -->
             <login-module code="gov.nih.nci.caarray.authentication.PasswordStackingCasLoginModule" flag="optional">
                 <module-option name="ticketValidatorClass">org.jasig.cas.client.validation.Cas20ServiceTicketValidator</module-option>
-                <module-option name="casServerUrlPrefix">https://localhost:8443/cas</module-option>
-                <module-option name="service">http://localhost:38080/caarray</module-option>
+                <module-option name="casServerUrlPrefix">https://@cas.server.hostname@:@cas.server.port@/cas</module-option>
+                <module-option name="service">http://@jboss.server.hostname@:@jboss.server.port@/caarray</module-option>
                 <module-option name="defaultRoles">UserRole</module-option>
                 <module-option name="roleAttributeNames">groupMembership</module-option>
                 <module-option name="principalGroupName">CallerPrincipal</module-option>
@@ -37,8 +37,7 @@
                 <module-option name="tolerance">20000</module-option>
                 <module-option name="cacheTimeout">480</module-option>
             </login-module>
--->
-			
+
             <login-module code="org.jboss.security.auth.spi.DatabaseServerLoginModule" flag="required">
                 <module-option name="password-stacking">useFirstPass</module-option>
                 <module-option name="dsJndiName">java:jdbc/CaArrayDataSource</module-option>

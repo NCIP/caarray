@@ -1,21 +1,18 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<web-app id="WebApp_9" version="2.5"
- xmlns="http://java.sun.com/xml/ns/javaee"
- xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
- xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="WebApp_9" version="2.5" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
     <display-name>caarray</display-name>
 
 	<!-- CAS Settings -->
+    <!-- TODO Need comment out as necessary during build -->
 	<context-param>
 		<param-name>service</param-name>
-		<param-value>http://localhost:38080/caarray</param-value>
+		<param-value>http://@jboss.server.hostname@:@jboss.server.port@/caarray</param-value>
 	</context-param>
 	<context-param>
 		<param-name>casServerLoginUrl</param-name>
-		<param-value>https://localhost:8443/cas/login</param-value>
+		<param-value>https://@cas.server.hostname@:@cas.server.port@/cas/login</param-value>
 	</context-param>
- 
+
     <!-- Define the basename for a resource bundle for I18N -->
     <context-param>
         <param-name>javax.servlet.jsp.jstl.fmt.localizationContext</param-name>
@@ -72,7 +69,7 @@
                 classpath:/applicationContext-plugins.xml
             </param-value>
     </context-param>
-    
+
 	<!-- Only 2 CAS filters are required for JAAS support -->
 	<filter>
 		<filter-name>CASWebAuthenticationFilter</filter-name>
@@ -111,7 +108,7 @@
         <filter-name>action2-cleanup</filter-name>
         <filter-class>org.apache.struts2.dispatcher.ActionContextCleanUp</filter-class>
     </filter>
-    
+
     <filter>
         <filter-name>filter-plugin-dispatcher-after-encoding-request</filter-name>
         <filter-class>com.atlassian.plugin.servlet.filter.ServletFilterModuleContainerFilter</filter-class>
@@ -160,7 +157,7 @@
             <param-value>ERROR</param-value>
         </init-param>
     </filter>
-    
+
     <filter>
         <filter-name>filter-plugin-dispatcher-before-login-request</filter-name>
         <filter-class>com.atlassian.plugin.servlet.filter.ServletFilterModuleContainerFilter</filter-class>
@@ -209,7 +206,7 @@
             <param-value>ERROR</param-value>
         </init-param>
     </filter>
-    
+
     <filter>
         <filter-name>filter-plugin-dispatcher-before-decoration-request</filter-name>
         <filter-class>com.atlassian.plugin.servlet.filter.ServletFilterModuleContainerFilter</filter-class>
@@ -258,7 +255,7 @@
             <param-value>ERROR</param-value>
         </init-param>
     </filter>
-    
+
     <filter>
         <filter-name>sitemesh</filter-name>
         <filter-class>com.opensymphony.module.sitemesh.filter.PageFilter</filter-class>
@@ -275,7 +272,7 @@
             <param-value>true</param-value>
         </init-param>
     </filter>
-    
+
         <filter>
         <filter-name>filter-plugin-dispatcher-before-dispatch-request</filter-name>
         <filter-class>com.atlassian.plugin.servlet.filter.ServletFilterModuleContainerFilter</filter-class>
@@ -324,20 +321,14 @@
             <param-value>ERROR</param-value>
         </init-param>
     </filter>
-    
+
     <filter>
         <filter-name>sessionFixation</filter-name>
         <filter-class>com.fiveamsolutions.nci.commons.web.filter.SessionFixationProtectionFilter</filter-class>
     </filter>
 
-    <!-- The block below is commented out as only Part I of the CAS implementation is complete -->
-    <!--         in accordance with https://tracker.nci.nih.gov/browse/ARRAY-2339 -->
-    <!-- Part || is captured in tasks under https://tracker.nci.nih.gov/browse/ARRAY-2366 and pending -->
-    <!--         their completion this block will get uncommented -->  
-     
 	<!-- CAS client filter mappings -->
 	<!-- The order of the following filters is vitally important -->
-<!--    
 	<filter-mapping>
 		<filter-name>CASWebAuthenticationFilter</filter-name>
 		<url-pattern>/*</url-pattern>
@@ -346,8 +337,7 @@
 		<filter-name>CASAuthenticationFilter</filter-name>
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
--->
-   
+
     <filter-mapping>
            <filter-name>urlrewrite</filter-name>
            <url-pattern>/*</url-pattern>
@@ -433,7 +423,7 @@
         <url-pattern>/*</url-pattern>
         <dispatcher>ERROR</dispatcher>
     </filter-mapping>
-    
+
     <filter-mapping>
         <filter-name>userFilter</filter-name>
         <url-pattern>/*</url-pattern>
@@ -446,7 +436,7 @@
         <dispatcher>REQUEST</dispatcher>
         <dispatcher>FORWARD</dispatcher>
     </filter-mapping>
-    
+
     <filter-mapping>
         <filter-name>filter-plugin-dispatcher-before-decoration-request</filter-name>
         <url-pattern>/*</url-pattern>
@@ -467,12 +457,12 @@
         <url-pattern>/*</url-pattern>
         <dispatcher>ERROR</dispatcher>
     </filter-mapping>
-    
+
     <filter-mapping>
         <filter-name>sitemesh</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
-    
+
     <filter-mapping>
         <filter-name>filter-plugin-dispatcher-before-dispatch-request</filter-name>
         <url-pattern>/*</url-pattern>
@@ -493,7 +483,7 @@
         <url-pattern>/*</url-pattern>
         <dispatcher>ERROR</dispatcher>
     </filter-mapping>
-    
+
     <filter-mapping>
         <filter-name>struts2</filter-name>
         <url-pattern>/*</url-pattern>
@@ -510,20 +500,20 @@
     <listener>
         <listener-class>gov.nih.nci.caarray.web.listener.StartupListener</listener-class>
     </listener>
-    
+
     <servlet>
         <servlet-name>plugins</servlet-name>
         <servlet-class>com.atlassian.plugin.servlet.ServletModuleContainerServlet</servlet-class>
     </servlet>
-    
+
     <servlet-mapping>
         <servlet-name>plugins</servlet-name>
         <url-pattern>/plugins/servlet/*</url-pattern>
     </servlet-mapping>
-    
+
     <session-config>
       <session-timeout>30</session-timeout>
-    </session-config>   
+    </session-config>
 
     <welcome-file-list>
         <welcome-file>index.jsp</welcome-file>
@@ -597,37 +587,37 @@
     </security-role>
 
     <security-role>
-        <description></description>
+        <description/>
         <role-name>__anonymous__</role-name>
     </security-role>
 
     <security-role>
-        <description></description>
+        <description/>
         <role-name>ResearchScientist</role-name>
     </security-role>
 
     <security-role>
-        <description></description>
+        <description/>
         <role-name>LabAdministrator</role-name>
     </security-role>
 
     <security-role>
-        <description></description>
+        <description/>
         <role-name>Biostatistician</role-name>
     </security-role>
 
     <security-role>
-        <description></description>
+        <description/>
         <role-name>SystemAdministrator</role-name>
     </security-role>
 
     <security-role>
-        <description></description>
+        <description/>
         <role-name>Collaborator</role-name>
     </security-role>
 
     <security-role>
-        <description></description>
+        <description/>
         <role-name>LabScientist</role-name>
     </security-role>
 </web-app>

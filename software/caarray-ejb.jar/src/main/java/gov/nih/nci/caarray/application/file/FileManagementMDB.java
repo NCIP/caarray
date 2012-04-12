@@ -133,7 +133,6 @@ import com.google.inject.Provider;
 public class FileManagementMDB implements MessageListener {
 
     private static final Logger LOG = Logger.getLogger(FileManagementMDB.class);
-    private static final int DEFAULT_TIMEOUT_SECONDS = 3600;
 
     /**
      * JNDI name for file management handling Topic.

@@ -136,6 +136,10 @@ Getting Started
       /usr/local/caarray/jboss-5.1.0.GA-nci).
     - jboss.server.jndi.port
     - jboss.server.port
+  + CAS Setup (if using Single Sign on)
+    - single.sign.on.install
+    - cas.server.hostname
+    - cas.server.port
   In addition to the copied property values above, also look at the following properties for necessary changes:
   + Ivy Resolution. This will speed up ivy resolution.  Unset if dependencies change (or clean out your cache):
     - ivy.resolve.pessimistic=false
@@ -320,3 +324,100 @@ If you want to run a specific module, you can use one of the following ant targe
 If you want to be even more specific and run only selected test files, you may edit local.properties and add:
 - test.source.include (e.g. test.source.include=**/IlluminaFileImportIntegrationTest.java)
 - test.source.exclude
+
+Setting up Local CAS SSO Server
+----------------------------------------
+1.) Download the CAS SSO Source from http://www.jasig.org/cas
+2.) Unzip the CAS archive to a working directory, ex. <USER DIRECTORY>/CAS
+3.) Download the Tomact application server from http://tomcat.apache.org/ and unzip it to a working directory, ex. <USER DIRECTORY>/Tomcat
+    -From now on we will refer to the <Tomcat install dir>/apache-tomcat-version (The base directory of the tomcat server) as $CATALINA_HOME
+4.) Next we will want to generate an SSL certificate so that the caArray application can communicate to the cas server via https
+    -Make sure the $JAVA_HOME/bin directory is in your PATH, otherwise all references to keytool must be prefixed with $JAVA_HOME/bin/
+  1. keytool -genkey -alias tomcat -keyalg RSA [-keystore \path\to\my\keystore]
+    * if keytool is already in your path you can leave off the full path to the utility
+    * The keystore argument is optional and points to where you want to put this new keystore, all directories must exist. If you do not specify this argument the keystore will exist as .keystore in your User directory
+    * Note: The first question you are asked is "What is your first and last name?" you MUST enter the localhost for this.
+    * When creating the keystore you will be asked for a password, the default is "changeit"
+  2. Now that we have our certificate created we want to export it from its keystore, we do this by executing:
+  keytool -export -alias tomcat -file <Insert Export File Here> -keystore <Path to Keystore here>
+    * You can leave off the keystore argument if you are using the default keystore location
+    * the file argument seems to be any sort of file, I named mine cert.cer and it worked fine.
+  3. Finally we want to import the created certificate into the main java certificates so the Jboss server has access to it. We do this by the following command:
+  keytool -import -alias tomcat -keystore $JAVA_HOME/lib/security/cacerts -file <Export File Name>
+    * You may have issues running this command as you might not have write permissions to the JDK certificate location, in that case you should run it preceeding with the sudo command (*Nix) or run your terminal as administrator (Windows).
+    * The Export file name is what was indicated in step 2
+5.) Open the server.xml file found at $CATALINA_HOME/conf/server.xml and add the following configuration:
+    <Connector port="8443" maxThreads="200"
+           scheme="https" secure="true" SSLEnabled="true"
+           keystoreFile="<PATH TO KEYSTORE>/.keystore" keystorePass="<PASSWORD from 4.1>"
+           clientAuth="false" sslProtocol="TLS"/>
+   -If you did not specify a directory for the keystore in 4.1 you can put ${user.home} instead.
+6.) Next we want to set up an OpenDS LDAP so that our CAS server can authenticate. OpenDS can be found at http://opends.java.net/
+7.) When installing, make note of the BaseDN selected, or you can set it to "dc=nci,dc=nih,dc=gov" to minimize changes needed.
+8.) After OpenDS is installed, open the control panel by executing <OPENDS_HOME>/bin/control-panel
+9.) Add new user accounts in the LDAP for users caarrayadmin and caarrayuser by
+  1. Select the Manage Entries option from the left menu,
+  2. Make sure your Base DN is selected in drop down menu and right click on it, Select "New User..."
+  3. Enter user information for the new user
+10.) Next we want to set up the CAS webapp to connect to our OpenDS LDAP, we do this by opening up the deployerConfigContext.xml found in the cas-server-webapp/src/main/WEB-INF directory.
+  -  Replace the existing SimpleTestUsernamePasswordAuthenticationHandler definition with the following:
+                <bean class="org.jasig.cas.adaptors.ldap.BindLdapAuthenticationHandler">
+                    <property name="filter" value="cn=%u" />
+                    <property name="searchBase" value="dc=nci,dc=nih,dc=gov" />    <!-- value attribute should be equal to the defined Base DN in OpenDS-->
+                    <property name="contextSource" ref="contextSource" />
+                </bean>
+  - Additionally we need to define the contextSource, the information for connecting to the OpenDS LDAP, this will be defined and added in a section at the bottom of the file:
+     <bean id="contextSource" class="org.springframework.ldap.core.support.LdapContextSource">
+          <property name="pooled" value="false" />
+          <property name="url" value="ldap://localhost:1389" /> <!-- Port should be equal to LDAP port of OpenDS -->
+          <property name="baseEnvironmentProperties">
+               <map>
+                    <entry key="com.sun.jndi.ldap.connect.timeout" value="3000" />
+                    <entry key="com.sun.jndi.ldap.read.timeout" value="3000" />
+                    <entry key="java.naming.security.authentication" value="simple" />
+               </map>
+          </property>
+     </bean>
+11.) We need to make sure that the webapp build includes the necessary LDAP module, we do this by editing the pom.xml found at the root of the cas-server-webapp folder and add the following dependency:
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>cas-server-support-ldap</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+12.) Now we need to build the CAS webapp, this is done by executing the "mvn install" command from the cas-server-webapp directory.
+13.) Build should be successful, now copy the cas.war file from the target directory to $CATALINA_HOME/webapps
+14.) Start the CAS Tomcat server by executing $CATALINA_HOME/bin/startup, after startup you should be able to go to https://localhost:8443/cas/login and see the CAS login page and logging in should give you a "Login Successful" page.
+15.) Make sure that the following properties are set up correctly in your local.properties:
+    single.sign.on.install=true
+    cas.server.hostname=localhost
+    cas.server.port=8443
+
+Deciding Login Method when Building caArray
+---------------------------------------------
+caArray's build allows for configuring the application to log in via database, LDAP, or CAS Single sign on. Since you can only have 1
+type of sign on capability active when deploying the application you will need to set certain properties within the build properties (both install and local preferably) to
+make sure that the application is set up correctly.
+Database Sign on:
+    *Make sure that the following properties are empty or false:
+        -single.sign.on.install
+        -ldap.install
+    *Make sure that the following properties are set (they should be for other database operations already):
+        -database.url
+        -database.user
+        -database.password
+        -database.driver
+LDAP Sign On:
+    *Make sure that the following property are empty or false:
+        -single.sign.on.install
+    *Make sure that the following property is set to true:
+        -ldap.install
+    *Make sure that the following properties are set to the correct values:
+        -ldap.url
+        -ldap.searchbase
+        -ldap.searchprefix
+CAS Single Sign On:
+    *Make sure that the following property is set to true:
+        -single.sign.on.install
+    *Make sure that the following properties are set to the correct values:
+        -cas.server.hostname
+        -cas.server.port
