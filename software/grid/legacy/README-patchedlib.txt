@@ -1,5 +1,4 @@
-This service uses a patched version of lib/caGrid-1.1-core.jar  The patch is core.patch, and can be applied to
-the following CVS directory:
+This service uses a patched version of lib/caGrid-1.4-core.jar  The patch is core.patch, and can be applied to
+the following SVN directory:
 
-:ext:anonymous@cbiocvs2.nci.nih.gov:/share/content/gforge/cagrid-1-0
-cagrid-1-0/caGrid/projects/core
+https://ncisvn.nci.nih.gov/svn/cagrid/branches/caGrid-1_4_release/Software/core/caGrid/projects/core
