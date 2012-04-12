@@ -151,8 +151,8 @@
 	</target>
 
 	<target name="defineClasspaths" depends="checkGlobus">
-		<path id="tasks.run.extended.classpath" />
 		<runtarget target="defineExtendedClasspaths" />
+		<path id="tasks.run.extended.classpath" />
 		<path id="base.classpath">
 			<fileset dir="${lib.dir}">
 				<include name="*.jar" />
@@ -257,7 +257,7 @@
 		<runtarget target="postStubs" />
 	</target>
 
-	<target name="stubGenerationPostProcessor">
+	<target name="stubGenerationPostProcessor" depends="defineClasspaths">
 		<taskdef name="fixSoapBindingStubs" classname="gov.nih.nci.cagrid.introduce.servicetasks.axis.FixSoapBindingStub" classpathref="tasks.run.classpath">
 		</taskdef>
 		<fixSoapBindingStubs />

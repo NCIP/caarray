@@ -1,19 +1,33 @@
 package gov.nih.nci.caarray.services.external.v1_0.grid.client;
 
-import gov.nih.nci.caarray.services.external.v1_0.grid.stubs.CaArraySvc_v1_0PortType;
-import gov.nih.nci.caarray.services.external.v1_0.grid.stubs.service.CaArraySvc_v1_0ServiceAddressingLocator;
-import gov.nih.nci.cagrid.introduce.security.client.ServiceSecurityClient;
-
 import java.io.InputStream;
 import java.rmi.RemoteException;
 
+import javax.xml.namespace.QName;
+
+import java.util.Calendar;
+import java.util.List;
+
 import org.apache.axis.EngineConfiguration;
 import org.apache.axis.client.AxisClient;
+import org.apache.axis.client.Stub;
 import org.apache.axis.configuration.FileProvider;
 import org.apache.axis.message.addressing.EndpointReferenceType;
 import org.apache.axis.types.URI.MalformedURIException;
+
 import org.globus.gsi.GlobusCredential;
+
+import org.globus.wsrf.NotifyCallback;
 import org.globus.wsrf.NotificationConsumerManager;
+import org.globus.wsrf.container.ContainerException;
+
+import org.oasis.wsrf.lifetime.ImmediateResourceTermination;
+import org.oasis.wsrf.lifetime.WSResourceLifetimeServiceAddressingLocator;
+
+import gov.nih.nci.caarray.services.external.v1_0.grid.stubs.CaArraySvc_v1_0PortType;
+import gov.nih.nci.caarray.services.external.v1_0.grid.stubs.service.CaArraySvc_v1_0ServiceAddressingLocator;
+import gov.nih.nci.caarray.services.external.v1_0.grid.common.CaArraySvc_v1_0I;
+import gov.nih.nci.cagrid.introduce.security.client.ServiceSecurityClient;
 
 
 /**
@@ -25,7 +39,7 @@ import org.globus.wsrf.NotificationConsumerManager;
  * On construction the class instance will contact the remote service and retrieve it's security
  * metadata description which it will use to configure the Stub specifically for each method call.
  * 
- * @created by Introduce Toolkit version 1.2
+ * @created by Introduce Toolkit version 1.4
  */
 public abstract class CaArraySvc_v1_0ClientBase extends ServiceSecurityClient {	
 	protected CaArraySvc_v1_0PortType portType;
@@ -43,12 +57,12 @@ public abstract class CaArraySvc_v1_0ClientBase extends ServiceSecurityClient {
 		initialize();
 	}
 	
-	private void initialize() throws RemoteException {
+	protected void initialize() throws RemoteException {
 	    this.portTypeMutex = new Object();
 		this.portType = createPortType();
 	}
 
-	private CaArraySvc_v1_0PortType createPortType() throws RemoteException {
+	protected CaArraySvc_v1_0PortType createPortType() throws RemoteException {
 
 		CaArraySvc_v1_0ServiceAddressingLocator locator = new CaArraySvc_v1_0ServiceAddressingLocator();
 		// attempt to load our context sensitive wsdd file

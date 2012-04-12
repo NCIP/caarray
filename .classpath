@@ -49,8 +49,6 @@
 	<classpathentry kind="lib" path="software/grid/legacy/lib/globus_wsrf_servicegroup_stubs.jar"/>
 	<classpathentry kind="lib" path="software/grid/legacy/lib/globus_wsrf_servicegroup.jar"/>
 	<classpathentry kind="lib" path="software/grid/legacy/lib/jdom-1.0.jar"/>
-	<classpathentry kind="lib" path="software/grid/v1_0/lib/caGrid-wsEnum-1.2.jar"/>
-	<classpathentry kind="lib" path="software/grid/v1_0/lib/caGrid-wsEnum-stubs-1.2.jar"/>
 	<classpathentry kind="con" path="org.apache.ivyde.eclipse.cpcontainer.IVYDE_CONTAINER/?ivyXmlPath=software%2Fmaster_build%2Fivy-caarray.xml&amp;confs=*&amp;ivySettingsPath=project%3A%2F%2F%2Fsoftware%2Fmaster_build%2Fivy-caarray-settings-eclipse.xml&amp;loadSettingsOnDemand=false&amp;propertyFiles="/>
 	<classpathentry kind="lib" path="software/grid/legacy/lib/caGrid-advertisement-1.4.jar"/>
 	<classpathentry kind="lib" path="software/grid/legacy/lib/caGrid-caDSR-1.4.jar"/>
@@ -89,5 +87,7 @@
 	<classpathentry kind="lib" path="software/grid/legacy/lib/caGrid-Transfer-tests-1.4.jar"/>
 	<classpathentry kind="lib" path="software/grid/legacy/lib/castor-1.0.2.jar"/>
 	<classpathentry kind="lib" path="software/grid/legacy/lib/jasciidammit-1.1.jar"/>
+	<classpathentry kind="lib" path="software/grid/v1_0/lib/caGrid-wsEnum-1.4.jar"/>
+	<classpathentry kind="lib" path="software/grid/v1_0/lib/caGrid-wsEnum-stubs-1.4.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
