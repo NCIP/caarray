@@ -36,41 +36,11 @@
 	<classpathentry kind="src" path="test-data/src/test/java"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="test-data/src/test/data"/>
-	<classpathentry kind="lib" path="software/grid/legacy/lib/caGrid-advertisement-1.2.jar"/>
-	<classpathentry kind="lib" path="software/grid/legacy/lib/caGrid-caDSR-client-1.2.jar"/>
-	<classpathentry kind="lib" path="software/grid/legacy/lib/caGrid-caDSR-common-1.2.jar"/>
-	<classpathentry kind="lib" path="software/grid/legacy/lib/caGrid-caDSR-portal-1.2.jar"/>
-	<classpathentry kind="lib" path="software/grid/legacy/lib/caGrid-caDSR-service-1.2.jar"/>
-	<classpathentry kind="lib" path="software/grid/legacy/lib/caGrid-caDSR-stubs-1.2.jar"/>
-	<classpathentry kind="lib" path="software/grid/legacy/lib/caGrid-caDSR-tests-1.2.jar"/>
-	<classpathentry kind="lib" path="software/grid/legacy/lib/caGrid-core-1.2.jar"/>
-	<classpathentry kind="lib" path="software/grid/legacy/lib/caGrid-core-resources-1.2.jar"/>
-	<classpathentry kind="lib" path="software/grid/legacy/lib/caGrid-data-common-1.2.jar"/>
-	<classpathentry kind="lib" path="software/grid/legacy/lib/caGrid-data-cql-1.2.jar"/>
-	<classpathentry kind="lib" path="software/grid/legacy/lib/caGrid-data-service-1.2.jar"/>
-	<classpathentry kind="lib" path="software/grid/legacy/lib/caGrid-data-stubs-1.2.jar"/>
-	<classpathentry kind="lib" path="software/grid/legacy/lib/caGrid-data-tools-1.2.jar"/>
-	<classpathentry kind="lib" path="software/grid/legacy/lib/caGrid-data-utils-1.2.jar"/>
-	<classpathentry kind="lib" path="software/grid/legacy/lib/caGrid-data-validation-1.2.jar"/>
 	<classpathentry kind="lib" path="software/grid/legacy/lib/caGrid-dataExtensions-core-1.2.jar"/>
 	<classpathentry kind="lib" path="software/grid/legacy/lib/caGrid-dataExtensions-sdkstyle-1.2.jar"/>
 	<classpathentry kind="lib" path="software/grid/legacy/lib/caGrid-dataExtensions-tests-1.2.jar"/>
 	<classpathentry kind="lib" path="software/grid/legacy/lib/caGrid-dataExtensions-ui-1.2.jar"/>
 	<classpathentry kind="lib" path="software/grid/legacy/lib/caGrid-dataExtensions-upgrades-1.2.jar"/>
-	<classpathentry kind="lib" path="software/grid/legacy/lib/caGrid-Introduce-serviceTools-1.2.jar"/>
-	<classpathentry kind="lib" path="software/grid/legacy/lib/caGrid-metadata-common-1.2.jar"/>
-	<classpathentry kind="lib" path="software/grid/legacy/lib/caGrid-metadata-data-1.2.jar"/>
-	<classpathentry kind="lib" path="software/grid/legacy/lib/caGrid-metadata-security-1.2.jar"/>
-	<classpathentry kind="lib" path="software/grid/legacy/lib/caGrid-metadatautils-1.2.jar"/>
-	<classpathentry kind="lib" path="software/grid/legacy/lib/caGrid-ServiceSecurityProvider-client-1.2.jar"/>
-	<classpathentry kind="lib" path="software/grid/legacy/lib/caGrid-ServiceSecurityProvider-common-1.2.jar"/>
-	<classpathentry kind="lib" path="software/grid/legacy/lib/caGrid-ServiceSecurityProvider-service-1.2.jar"/>
-	<classpathentry kind="lib" path="software/grid/legacy/lib/caGrid-ServiceSecurityProvider-stubs-1.2.jar"/>
-	<classpathentry kind="lib" path="software/grid/legacy/lib/caGrid-Transfer-client-1.2.jar"/>
-	<classpathentry kind="lib" path="software/grid/legacy/lib/caGrid-Transfer-common-1.2.jar"/>
-	<classpathentry kind="lib" path="software/grid/legacy/lib/caGrid-Transfer-service-1.2.jar"/>
-	<classpathentry kind="lib" path="software/grid/legacy/lib/caGrid-Transfer-stubs-1.2.jar"/>
-	<classpathentry kind="lib" path="software/grid/legacy/lib/caGrid-Transfer-tests-1.2.jar"/>
 	<classpathentry kind="lib" path="software/grid/legacy/lib/commons-codec-1.3.jar"/>
 	<classpathentry kind="lib" path="software/grid/legacy/lib/commons-httpclient-3.0.jar"/>
 	<classpathentry kind="lib" path="software/grid/legacy/lib/core.jar"/>
@@ -79,13 +49,45 @@
 	<classpathentry kind="lib" path="software/grid/legacy/lib/globus_wsrf_servicegroup_stubs.jar"/>
 	<classpathentry kind="lib" path="software/grid/legacy/lib/globus_wsrf_servicegroup.jar"/>
 	<classpathentry kind="lib" path="software/grid/legacy/lib/jdom-1.0.jar"/>
-	<classpathentry kind="lib" path="software/grid/legacy/lib/mobius_common_client-1.1.jar"/>
-	<classpathentry kind="lib" path="software/grid/legacy/lib/mobius_factories-1.1.jar"/>
-	<classpathentry kind="lib" path="software/grid/legacy/lib/mobius_gme_client-1.1.jar"/>
-	<classpathentry kind="lib" path="software/grid/legacy/lib/mobius_mako_client-1.1.jar"/>
-	<classpathentry kind="lib" path="software/grid/legacy/lib/mobius_tools-1.1.jar"/>
 	<classpathentry kind="lib" path="software/grid/v1_0/lib/caGrid-wsEnum-1.2.jar"/>
 	<classpathentry kind="lib" path="software/grid/v1_0/lib/caGrid-wsEnum-stubs-1.2.jar"/>
 	<classpathentry kind="con" path="org.apache.ivyde.eclipse.cpcontainer.IVYDE_CONTAINER/?ivyXmlPath=software%2Fmaster_build%2Fivy-caarray.xml&amp;confs=*&amp;ivySettingsPath=project%3A%2F%2F%2Fsoftware%2Fmaster_build%2Fivy-caarray-settings-eclipse.xml&amp;loadSettingsOnDemand=false&amp;propertyFiles="/>
+	<classpathentry kind="lib" path="software/grid/legacy/lib/caGrid-advertisement-1.4.jar"/>
+	<classpathentry kind="lib" path="software/grid/legacy/lib/caGrid-caDSR-1.4.jar"/>
+	<classpathentry kind="lib" path="software/grid/legacy/lib/caGrid-caDSR-tests-1.4.jar"/>
+	<classpathentry kind="lib" path="software/grid/legacy/lib/caGrid-core-1.4.jar"/>
+	<classpathentry kind="lib" path="software/grid/legacy/lib/caGrid-core-resources-1.4.jar"/>
+	<classpathentry kind="lib" path="software/grid/legacy/lib/caGrid-CQL-cql.1.0-1.4.jar"/>
+	<classpathentry kind="lib" path="software/grid/legacy/lib/caGrid-CQL-cql.2.0-1.4.jar"/>
+	<classpathentry kind="lib" path="software/grid/legacy/lib/caGrid-CQL-dcql.2.0-1.4.jar"/>
+	<classpathentry kind="lib" path="software/grid/legacy/lib/caGrid-CQL-mappings-1.4.jar"/>
+	<classpathentry kind="lib" path="software/grid/legacy/lib/caGrid-CQL-utils-1.4.jar"/>
+	<classpathentry kind="lib" path="software/grid/legacy/lib/caGrid-data-common-1.4.jar"/>
+	<classpathentry kind="lib" path="software/grid/legacy/lib/caGrid-data-cql-1.4.jar"/>
+	<classpathentry kind="lib" path="software/grid/legacy/lib/caGrid-data-service-1.4.jar"/>
+	<classpathentry kind="lib" path="software/grid/legacy/lib/caGrid-data-stubs-1.4.jar"/>
+	<classpathentry kind="lib" path="software/grid/legacy/lib/caGrid-data-tools-1.4.jar"/>
+	<classpathentry kind="lib" path="software/grid/legacy/lib/caGrid-data-utils-1.4.jar"/>
+	<classpathentry kind="lib" path="software/grid/legacy/lib/caGrid-data-validation-1.4.jar"/>
+	<classpathentry kind="lib" path="software/grid/legacy/lib/caGrid-Introduce-serviceTools-1.4.jar"/>
+	<classpathentry kind="lib" path="software/grid/legacy/lib/caGrid-metadata-common-1.4.jar"/>
+	<classpathentry kind="lib" path="software/grid/legacy/lib/caGrid-metadata-data-1.4.jar"/>
+	<classpathentry kind="lib" path="software/grid/legacy/lib/caGrid-metadata-security-1.4.jar"/>
+	<classpathentry kind="lib" path="software/grid/legacy/lib/caGrid-metadata-validator-1.4.jar"/>
+	<classpathentry kind="lib" path="software/grid/legacy/lib/caGrid-metadatautils-1.4.jar"/>
+	<classpathentry kind="lib" path="software/grid/legacy/lib/caGrid-mms-client-1.4.jar"/>
+	<classpathentry kind="lib" path="software/grid/legacy/lib/caGrid-mms-common-1.4.jar"/>
+	<classpathentry kind="lib" path="software/grid/legacy/lib/caGrid-mms-stubs-1.4.jar"/>
+	<classpathentry kind="lib" path="software/grid/legacy/lib/caGrid-ServiceSecurityProvider-client-1.4.jar"/>
+	<classpathentry kind="lib" path="software/grid/legacy/lib/caGrid-ServiceSecurityProvider-common-1.4.jar"/>
+	<classpathentry kind="lib" path="software/grid/legacy/lib/caGrid-ServiceSecurityProvider-service-1.4.jar"/>
+	<classpathentry kind="lib" path="software/grid/legacy/lib/caGrid-ServiceSecurityProvider-stubs-1.4.jar"/>
+	<classpathentry kind="lib" path="software/grid/legacy/lib/caGrid-Transfer-client-1.4.jar"/>
+	<classpathentry kind="lib" path="software/grid/legacy/lib/caGrid-Transfer-common-1.4.jar"/>
+	<classpathentry kind="lib" path="software/grid/legacy/lib/caGrid-Transfer-service-1.4.jar"/>
+	<classpathentry kind="lib" path="software/grid/legacy/lib/caGrid-Transfer-stubs-1.4.jar"/>
+	<classpathentry kind="lib" path="software/grid/legacy/lib/caGrid-Transfer-tests-1.4.jar"/>
+	<classpathentry kind="lib" path="software/grid/legacy/lib/castor-1.0.2.jar"/>
+	<classpathentry kind="lib" path="software/grid/legacy/lib/jasciidammit-1.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

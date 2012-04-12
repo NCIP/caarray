@@ -1,19 +1,33 @@
 package gov.nih.nci.cagrid.caarray.client;
 
-import gov.nih.nci.cagrid.caarray.stubs.CaArraySvcPortType;
-import gov.nih.nci.cagrid.caarray.stubs.service.CaArraySvcServiceAddressingLocator;
-import gov.nih.nci.cagrid.introduce.security.client.ServiceSecurityClient;
-
 import java.io.InputStream;
 import java.rmi.RemoteException;
 
+import javax.xml.namespace.QName;
+
+import java.util.Calendar;
+import java.util.List;
+
 import org.apache.axis.EngineConfiguration;
 import org.apache.axis.client.AxisClient;
+import org.apache.axis.client.Stub;
 import org.apache.axis.configuration.FileProvider;
 import org.apache.axis.message.addressing.EndpointReferenceType;
 import org.apache.axis.types.URI.MalformedURIException;
+
 import org.globus.gsi.GlobusCredential;
+
+import org.globus.wsrf.NotifyCallback;
 import org.globus.wsrf.NotificationConsumerManager;
+import org.globus.wsrf.container.ContainerException;
+
+import org.oasis.wsrf.lifetime.ImmediateResourceTermination;
+import org.oasis.wsrf.lifetime.WSResourceLifetimeServiceAddressingLocator;
+
+import gov.nih.nci.cagrid.caarray.stubs.CaArraySvcPortType;
+import gov.nih.nci.cagrid.caarray.stubs.service.CaArraySvcServiceAddressingLocator;
+import gov.nih.nci.cagrid.caarray.common.CaArraySvcI;
+import gov.nih.nci.cagrid.introduce.security.client.ServiceSecurityClient;
 
 
 /**
@@ -25,7 +39,7 @@ import org.globus.wsrf.NotificationConsumerManager;
  * On construction the class instance will contact the remote service and retrieve it's security
  * metadata description which it will use to configure the Stub specifically for each method call.
  * 
- * @created by Introduce Toolkit version 1.2
+ * @created by Introduce Toolkit version 1.4
  */
 public abstract class CaArraySvcClientBase extends ServiceSecurityClient {	
 	protected CaArraySvcPortType portType;
@@ -43,12 +57,12 @@ public abstract class CaArraySvcClientBase extends ServiceSecurityClient {
 		initialize();
 	}
 	
-	private void initialize() throws RemoteException {
+	protected void initialize() throws RemoteException {
 	    this.portTypeMutex = new Object();
 		this.portType = createPortType();
 	}
 
-	private CaArraySvcPortType createPortType() throws RemoteException {
+	protected CaArraySvcPortType createPortType() throws RemoteException {
 
 		CaArraySvcServiceAddressingLocator locator = new CaArraySvcServiceAddressingLocator();
 		// attempt to load our context sensitive wsdd file
