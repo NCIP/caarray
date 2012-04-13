@@ -15,9 +15,11 @@
     <!-- STRUTS 2.3.1.5 dependency START-->
     <dependency conf="project" org="org.testng" name="testng" rev="5.1" transitive="false">
         <artifact name="testng" type="jar" m:classifier="jdk15" url="https://ncimvn.nci.nih.gov/nexus/content/repositories/public/org/testng/testng/5.1/testng-5.1-jdk15.jar"/>
-   </dependency>
+    </dependency>
     <!-- STRUTS 2.3.1.5 dependency END-->
-
+    <!-- CONF = BDA-UTILS START -->
+    <dependency conf="bda-utils" org="ncicb" name="bda-utils" rev="${bda.version}" force="true" />
+    <!-- CONF = BDA-UTILS END -->
     <!--  CONF = ASM_3.0 START -->
     <dependency conf="asm_3.0" org="objectweb" name="asm" rev="3.0" transitive="false" />
     <!-- CONF = ASM_3.0 END -->
