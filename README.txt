@@ -424,12 +424,14 @@ CAS Single Sign On:
 
 Necessary Configuration for different Login Methods post deployment
 ---------------------------------------------------------------------
-Occasionally after deploying the caArray system you might find a time where you would like to change from the login method that was selected during build / install
-Below you will find the necessary configuration sections that must be added / removed to have the specific build types enabled,
+Occasionally after deploying the caArray system you might find a time where you would like to change from the login method that was selected during build / install.
+You will need to open the .ear file that is created during build / install to make the modifications to certain files. This ear file should be able to be found at
+$JBOSS_HOME/server/<server name>/deploy. You will need to unarchive the ear (using winzip or another tool) as well as the caarray.war file within to access the files.
+All paths are relative to the unarchived ear file. Below you will find the necessary configuration sections that must be added / removed to have the specific build types enabled,
 replace any necessary parameters (indicated by surrounding '@') with actual values:
 -In the security-config.xml the SessionFixationProtectionLoginModule and the DatabaseServerLoginModule must always be the first and last modules defined (respectivately)
 CAS Single Sign On:
-    *software/caarray.war/src/main/webapp/WEB-INF/web.xml
+    *caarray.war/src/main/webapp/WEB-INF/web.xml
         -Add the following sections to the web.xml file:
         -At the top of the file under the <display-name> tag:
             <context-param>
@@ -439,6 +441,11 @@ CAS Single Sign On:
             <context-param>
                 <param-name>casServerLoginUrl</param-name>
                 <param-value>https://@cas.server.hostname@:@cas.server.port@/cas/login</param-value>
+            </context-param>
+            <context-param>
+                <description>This parameter indicates to the application that single sign on is enabled and it should not show login fields.</description>
+                <param-name>ssoEnabled</param-name>
+                <param-value>true</param-value>
             </context-param>
         -Add the following right above the other <filter> tags (ARRAY-2453):
             <filter>
@@ -459,7 +466,7 @@ CAS Single Sign On:
                 <url-pattern>/protected/*</url-pattern>
                 <url-pattern>/login.action</url-pattern>
             </filter-mapping>
-    *software/common/resources/jboss-conf/security-config.xml
+    *META_INF/security-config.xml
         -Replace <login-module> tags referring to the CommonsLDAPLoginModule and CommonsDBLoginModule with the following:
             <login-module code="gov.nih.nci.caarray.authentication.PasswordStackingCasLoginModule" flag="required">
                 <module-option name="ticketValidatorClass">org.jasig.cas.client.validation.Cas20ServiceTicketValidator</module-option>
@@ -475,7 +482,7 @@ CAS Single Sign On:
             </login-module>
 LDAP Login:
     -Remove All CAS related configuration (if moving from CAS install)
-    *software/common/resources/jboss-conf/security-config.xml:
+    *META_INF//security-config.xml:
         -LDAP install provides failover to DB if a user is not in the LDAP
         <login-module code="com.fiveamsolutions.nci.commons.authentication.CommonsLDAPLoginModule" flag="optional">
             <module-option name="ldapHost">@ldap host@</module-option>
@@ -493,7 +500,7 @@ LDAP Login:
         </login-module>
 DB Login:
     -Remove All CAS related configuration (if moving from CAS install)
-    *software/common/resources/jboss-conf/security-config.xml:
+    *META_INF//security-config.xml:
         -Remove the CommonsLDAPLoginModule definition if necessary
         <login-module code="com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule" flag="required" >
             <module-option name="driver">@database driver@</module-option>

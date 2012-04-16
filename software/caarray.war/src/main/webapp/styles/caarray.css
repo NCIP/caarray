@@ -211,6 +211,10 @@ SUP
 { padding:0 }
 .headerbar
 { padding:0 3px }
+.topbuffer
+{ padding-top: 10px; }
+.fillcontent
+{ width: 100%; }
 
 
 /* Homepage Content */
