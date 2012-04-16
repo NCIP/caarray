@@ -421,3 +421,86 @@ CAS Single Sign On:
     *Make sure that the following properties are set to the correct values:
         -cas.server.hostname
         -cas.server.port
+
+Necessary Configuration for different Login Methods post deployment
+---------------------------------------------------------------------
+Occasionally after deploying the caArray system you might find a time where you would like to change from the login method that was selected during build / install
+Below you will find the necessary configuration sections that must be added / removed to have the specific build types enabled,
+replace any necessary parameters (indicated by surrounding '@') with actual values:
+-In the security-config.xml the SessionFixationProtectionLoginModule and the DatabaseServerLoginModule must always be the first and last modules defined (respectivately)
+CAS Single Sign On:
+    *software/caarray.war/src/main/webapp/WEB-INF/web.xml
+        -Add the following sections to the web.xml file:
+        -At the top of the file under the <display-name> tag:
+            <context-param>
+                <param-name>service</param-name>
+                <param-value>http://@jboss.server.hostname@:@jboss.server.port@/caarray</param-value>
+            </context-param>
+            <context-param>
+                <param-name>casServerLoginUrl</param-name>
+                <param-value>https://@cas.server.hostname@:@cas.server.port@/cas/login</param-value>
+            </context-param>
+        -Add the following right above the other <filter> tags (ARRAY-2453):
+            <filter>
+                <filter-name>CASWebAuthenticationFilter</filter-name>
+                <filter-class>gov.nih.nci.caarray.web.filter.CasWebAuthenticationFilter</filter-class>
+            </filter>
+            <filter>
+                <filter-name>CASAuthenticationFilter</filter-name>
+                <filter-class>org.jasig.cas.client.authentication.AuthenticationFilter</filter-class>
+            </filter>
+        -Add the following right above the other <filter-mapping> tags:
+            <filter-mapping>
+                <filter-name>CASWebAuthenticationFilter</filter-name>
+                <url-pattern>*</url-pattern>
+            </filter-mapping>
+            <filter-mapping>
+                <filter-name>CASAuthenticationFilter</filter-name>
+                <url-pattern>/protected/*</url-pattern>
+                <url-pattern>/login.action</url-pattern>
+            </filter-mapping>
+    *software/common/resources/jboss-conf/security-config.xml
+        -Replace <login-module> tags referring to the CommonsLDAPLoginModule and CommonsDBLoginModule with the following:
+            <login-module code="gov.nih.nci.caarray.authentication.PasswordStackingCasLoginModule" flag="required">
+                <module-option name="ticketValidatorClass">org.jasig.cas.client.validation.Cas20ServiceTicketValidator</module-option>
+                <module-option name="casServerUrlPrefix">https://@cas.server.hostname@:@cas.server.port@/cas</module-option>
+                <module-option name="service">http://@jboss.server.hostname@:@jboss.server.port@/caarray</module-option>
+                <module-option name="defaultRoles">UserRole</module-option>
+                <module-option name="roleAttributeNames">groupMembership</module-option>
+                <module-option name="principalGroupName">CallerPrincipal</module-option>
+                <module-option name="roleGroupName">Roles</module-option>
+                <module-option name="cacheAssertions">true</module-option>
+                <module-option name="tolerance">20000</module-option>
+                <module-option name="cacheTimeout">480</module-option>
+            </login-module>
+LDAP Login:
+    -Remove All CAS related configuration (if moving from CAS install)
+    *software/common/resources/jboss-conf/security-config.xml:
+        -LDAP install provides failover to DB if a user is not in the LDAP
+        <login-module code="com.fiveamsolutions.nci.commons.authentication.CommonsLDAPLoginModule" flag="optional">
+            <module-option name="ldapHost">@ldap host@</module-option>
+            <module-option name="ldapSearchableBase">@ldap search base@</module-option>
+            <module-option name="ldapUserIdLabel">@ldap user id label@</module-option>
+        </login-module>
+
+        <login-module code="com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule" flag="optional" >
+            <module-option name="driver">@database driver@</module-option>
+            <module-option name="url">@database url@</module-option>
+            <module-option name="user">@database username@</module-option>
+            <module-option name="passwd">@database password@</module-option>
+            <module-option name="query">SELECT * FROM csm_user WHERE login_name=? and password=?</module-option>
+            <module-option name="encryption-enabled">YES</module-option>
+        </login-module>
+DB Login:
+    -Remove All CAS related configuration (if moving from CAS install)
+    *software/common/resources/jboss-conf/security-config.xml:
+        -Remove the CommonsLDAPLoginModule definition if necessary
+        <login-module code="com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule" flag="required" >
+            <module-option name="driver">@database driver@</module-option>
+            <module-option name="url">@database url@</module-option>
+            <module-option name="user">@database username@</module-option>
+            <module-option name="passwd">@database password@</module-option>
+            <module-option name="query">SELECT * FROM csm_user WHERE login_name=? and password=?</module-option>
+            <module-option name="encryption-enabled">YES</module-option>
+        </login-module>
+

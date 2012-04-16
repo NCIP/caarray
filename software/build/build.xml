@@ -1207,6 +1207,14 @@
         </path>
         <property name="cas-client-integration-jboss.jar" refid="cas-client-integration-jboss.jar.fileset" />
 
+		<!--TODO ARRAY-2453 Remove when moving back to official CAS Web Authentication Filter -->
+    	<path id="jboss.tomcat.jar.path">
+            <fileset dir="${project.lib}" id="jboss.tomcat.jar.fileset">
+                <include name="jboss-as-tomcat*.jar"/>
+            </fileset>
+        </path>
+        <property name="jboss.tomcat.jar" refid="jboss.tomcat.jar.fileset" />
+
         <path id="httpcore.jar.path">
             <fileset dir="${project.lib}" id="httpcore.jar.fileset">
                 <include name="httpcore*.jar"/>
@@ -1406,6 +1414,8 @@
             <fileset refid="xerces-J.jar.fileset"/>
             <fileset refid="xercesImpl.jar.fileset"/>
             <fileset refid="wstx.jar.fileset" />
+            <!--TODO ARRAY-2453 Remove the below reference when moving back to official CAS Web Authentication Filter -->
+            <fileset refid="jboss.tomcat.jar.fileset" />
         </path>
         <pathtofileset name="war.compile.container-provided.depenendencies.fileset" pathrefid="war.compile.container-provided.depenendencies.path" dir="${project.lib}"/>
 

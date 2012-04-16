@@ -17,9 +17,6 @@
         <artifact name="testng" type="jar" m:classifier="jdk15" url="https://ncimvn.nci.nih.gov/nexus/content/repositories/public/org/testng/testng/5.1/testng-5.1-jdk15.jar"/>
     </dependency>
     <!-- STRUTS 2.3.1.5 dependency END-->
-    <!-- CONF = BDA-UTILS START -->
-    <dependency conf="bda-utils" org="ncicb" name="bda-utils" rev="${bda.version}" force="true" />
-    <!-- CONF = BDA-UTILS END -->
     <!--  CONF = ASM_3.0 START -->
     <dependency conf="asm_3.0" org="objectweb" name="asm" rev="3.0" transitive="false" />
     <!-- CONF = ASM_3.0 END -->
@@ -229,10 +226,16 @@
     <dependency conf="project" org="woodstox" name="wstx-asl" rev="3.2.6" />
     <dependency conf="project" org="org.jasig.cas.client" name="cas-client-core" rev="3.2.1" transitive="false" />
     <dependency conf="project" org="org.jasig.cas.client" name="cas-client-integration-jboss" rev="3.2.1" transitive="false" />
+	<!--TODO ARRAY-2453 Remove the following dependency when moving back to official CAS Web Authentication Filter as it will no longer be necessary. -->
+    <dependency conf="project" org="org.jboss.jbossas" name="jboss-as-tomcat" rev="5.1.0.GA" transitive="false" />
     <dependency conf="project" org="org.apache.httpcomponents" name="httpclient" rev="4.2-beta1" transitive="false" />
     <dependency conf="project" org="org.apache.httpcomponents" name="httpcore" rev="4.2-beta1" transitive="false" />
     <dependency conf="project" org="org.jsoup" name="jsoup" rev="1.6.1" transitive="false" />
     <!-- CONF = PROJECT END -->
+    <!-- CONF = BDA-UTILS START -->
+    <dependency conf="bda-utils" org="ncicb" name="bda-utils" rev="${bda.version}" force="true" />
+    <!-- CONF = BDA-UTILS END -->
+
     <exclude org="pull-parser" module="pull-parser"/>
     <conflict manager="all" />
     </dependencies>
