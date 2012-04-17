@@ -100,6 +100,7 @@ import gov.nih.nci.caarray.domain.vocabulary.TermSource;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -230,5 +231,16 @@ public class HybridizationTest {
         chars = h1.getCharacteristicsRecursively(c2);
         assertEquals(1, chars.size());
         assertEquals(mf, chars.iterator().next());
+    }
+    
+    @Test
+    public void testPropagateLastModifiedDataTime() {
+        Date date = new Date();
+        Hybridization h = new Hybridization();
+        LabeledExtract le = new LabeledExtract();
+        h.getLabeledExtracts().add(le);
+        le.getHybridizations().add(h);
+        h.propagateLastModifiedDataTime(date);
+        assertEquals(date, le.getLastModifiedDataTime());
     }
 }

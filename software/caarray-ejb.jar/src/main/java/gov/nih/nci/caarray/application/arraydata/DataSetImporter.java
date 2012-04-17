@@ -110,6 +110,7 @@ import gov.nih.nci.caarray.platforms.unparsed.FallbackUnparsedDataHandler;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -180,6 +181,7 @@ class DataSetImporter extends AbstractArrayDataUtility {
 
         AbstractArrayData importData(boolean createAnnnotation) throws PlatformFileReadException {
             lookupOrCreateArrayData(createAnnnotation);
+            updateLastModifiedData();
             if (StringUtils.isBlank(this.arrayData.getName())) {
                 this.arrayData.setName(this.caArrayFile.getName());
             }
@@ -264,6 +266,7 @@ class DataSetImporter extends AbstractArrayDataUtility {
             }
 
             getArrayDao().save(this.arrayData);
+            getArrayDao().flushSession();
         }
 
         private void associateToHybridization(Hybridization hyb) {
@@ -282,6 +285,14 @@ class DataSetImporter extends AbstractArrayDataUtility {
             for (final QuantitationType type : quantitationTypes) {
                 this.arrayData.getDataSet().addQuantitationType(type);
             }
+        }
+        
+        private void updateLastModifiedData() {
+            Date date = new Date();
+            for (final Hybridization hybridization : this.arrayData.getHybridizations()) {
+                hybridization.propagateLastModifiedDataTime(date);
+            }
+            caArrayFile.getProject().getExperiment().setLastDataModificationDate(date);
         }
 
         private List<QuantitationType> getQuantitationTypes() {

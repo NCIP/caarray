@@ -99,6 +99,7 @@ import gov.nih.nci.caarray.web.helper.DownloadHelper;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -306,11 +307,16 @@ public class ProjectHybridizationsAction extends AbstractProjectAssociatedAnnota
      */
     @Override
     protected boolean handleDelete() {
+        
+        Set<CaArrayFile> dataFiles = getCurrentHybridization().getAllDataFiles();
+        if (!dataFiles.isEmpty()) {
+            getCurrentHybridization().propagateLastModifiedDataTime(new Date());
+        }
         for (LabeledExtract le : getCurrentAssociationsCollection()) {
             le.getHybridizations().remove(getCurrentHybridization());
         }
         // clean up upstream associations to the subgraph of objects
-        getProject().getFiles().removeAll(getCurrentHybridization().getAllDataFiles());
+        getProject().getFiles().removeAll(dataFiles);
         // clean up factor value associations
         for (AbstractFactorValue fv : getCurrentHybridization().getFactorValues()) {
             fv.getFactor().getFactorValues().remove(fv);

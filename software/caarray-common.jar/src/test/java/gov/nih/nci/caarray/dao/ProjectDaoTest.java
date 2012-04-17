@@ -85,6 +85,7 @@ package gov.nih.nci.caarray.dao;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -140,6 +141,7 @@ import gov.nih.nci.security.exceptions.CSTransactionException;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -166,6 +168,57 @@ import com.fiveamsolutions.nci.commons.data.search.PageSortParams;
 @SuppressWarnings("PMD")
 public class ProjectDaoTest extends AbstractProjectDaoTest {
     private static final Logger LOG = Logger.getLogger(ProjectDaoTest.class);
+
+    @Test
+    public void testSaveModifiedSamples() {
+        Transaction tx = null;
+        try {
+            tx = this.hibernateHelper.beginTransaction();
+            saveSupportingObjects();
+            daoObject.save(DUMMY_PROJECT_1);
+            tx.commit();
+
+            tx = this.hibernateHelper.beginTransaction();
+            Project retrievedProject = searchDao.retrieve(Project.class, DUMMY_PROJECT_1.getId());
+            Date modifiedDate = retrievedProject.getExperiment().getLastDataModificationDate();
+            Sample sample = new Sample();
+            sample.setName("added sample");
+            retrievedProject.getExperiment().getSamples().add(sample);
+            daoObject.save(retrievedProject);
+            assertNotSame(modifiedDate, retrievedProject.getExperiment().getLastDataModificationDate());
+            tx.commit();
+        } catch (final DAOException e) {
+            this.hibernateHelper.rollbackTransaction(tx);
+            throw e;
+        }
+
+    }
+
+    @Test
+    public void testSaveModifiedFiles() {
+        Transaction tx = null;
+        try {
+            tx = this.hibernateHelper.beginTransaction();
+            saveSupportingObjects();
+            daoObject.save(DUMMY_PROJECT_1);
+            tx.commit();
+
+            tx = this.hibernateHelper.beginTransaction();
+            Project retrievedProject = searchDao.retrieve(Project.class, DUMMY_PROJECT_1.getId());
+            Date modifiedDate = retrievedProject.getExperiment().getLastDataModificationDate();
+            CaArrayFile file = new CaArrayFile();
+            file.setFileStatus(FileStatus.SUPPLEMENTAL);
+            file.setDataHandle(DUMMY_HANDLE);
+            retrievedProject.getFiles().add(file);
+            daoObject.save(retrievedProject);
+            assertNotSame(modifiedDate, retrievedProject.getExperiment().getLastDataModificationDate());
+            tx.commit();
+        } catch (final DAOException e) {
+            this.hibernateHelper.rollbackTransaction(tx);
+            throw e;
+        }
+
+    }
 
     /**
      * Tests retrieving the <code>Project</code> with the given id. Test encompasses save and delete of a

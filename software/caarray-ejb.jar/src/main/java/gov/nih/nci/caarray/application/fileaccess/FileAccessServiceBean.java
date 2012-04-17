@@ -100,6 +100,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.util.Date;
 import java.util.Set;
 
 import javax.ejb.Local;
@@ -273,8 +274,13 @@ public class FileAccessServiceBean implements FileAccessService {
         if (data != null) {
             for (final Hybridization h : data.getHybridizations()) {
                 h.removeArrayData(data);
+                h.propagateLastModifiedDataTime(new Date());
             }
             this.arrayDao.remove(data);
+        }
+        
+        if (data != null || FileStatus.SUPPLEMENTAL.equals(caArrayFile.getFileStatus())) {
+            caArrayFile.getProject().getExperiment().setLastDataModificationDate(new Date());
         }
 
         for (CaArrayFile childFile : caArrayFile.getChildren()) {

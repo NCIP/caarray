@@ -162,7 +162,7 @@ public abstract class AbstractBioMaterial extends AbstractExperimentDesignNode {
     private List<ProtocolApplication> protocolApplications = new ArrayList<ProtocolApplication>();
     private Organism organism;
     private Experiment experiment;
-    private Date lastModifiedDataTime;
+    private Date lastModifiedDataTime = new Date();
 
 
     /**
@@ -344,6 +344,15 @@ public abstract class AbstractBioMaterial extends AbstractExperimentDesignNode {
      */
     public void setLastModifiedDataTime(final Date lastModifiedDataTime) {
         this.lastModifiedDataTime = lastModifiedDataTime;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void propagateLastModifiedDataTime(final Date lastModifiedDate) {
+        this.lastModifiedDataTime = lastModifiedDate;
+        super.propagateLastModifiedDataTime(lastModifiedDate);
     }
 
     /**

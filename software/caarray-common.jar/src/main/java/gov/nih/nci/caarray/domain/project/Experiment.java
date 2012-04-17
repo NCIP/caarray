@@ -150,7 +150,7 @@ import com.google.common.collect.Iterables;
 @UniqueConstraint(fields = @UniqueConstraintField(name = "publicIdentifier"))
 @SuppressWarnings({"PMD.TooManyFields", "PMD.ExcessiveClassLength",
                    "PMD.ExcessivePublicCount", "PMD.AvoidDuplicateLiterals" })
-@FilterDef(name = "BiomaterialFilter")                   
+@FilterDef(name = Experiment.BIOMATERIAL_FILTER_NAME)                   
 public class Experiment extends AbstractCaArrayEntity {
     // Experiment is central object -- can't reduce set of linked entities
 
@@ -168,6 +168,9 @@ public class Experiment extends AbstractCaArrayEntity {
     private static final String READABLE_SAMPLE_CLAUSE = "(select t.attribute_value from csm_sample_id_group t "
         + "where t.group_id IN (:GROUP_NAMES) and t.privilege_id=3)";
     
+    /** Biomaterial Filter name. */
+    public static final String BIOMATERIAL_FILTER_NAME = "BiomaterialFilter";
+
     /** Filter name used for instance level security filters. */
     public static final String SECURITY_FILTER_NAME = "Project1";
 
@@ -605,7 +608,7 @@ public class Experiment extends AbstractCaArrayEntity {
      */
     @OneToMany(mappedBy = "experiment", targetEntity = AbstractBioMaterial.class, fetch = FetchType.LAZY)
     @Filters({
-        @Filter(name = "BiomaterialFilter", condition = "discriminator = '" + Sample.DISCRIMINATOR + "'"),              
+        @Filter(name = BIOMATERIAL_FILTER_NAME, condition = "discriminator = '" + Sample.DISCRIMINATOR + "'"),
         @Filter(name = SECURITY_FILTER_NAME, condition = SAMPLES_FILTER)
     }
     )

@@ -85,6 +85,7 @@ package gov.nih.nci.caarray.web.action.project;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -111,6 +112,7 @@ import gov.nih.nci.caarray.web.helper.DownloadHelper;
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -131,6 +133,8 @@ public class ProjectHybridizationsActionTest extends AbstractDownloadTest {
 
     private static Hybridization DUMMY_HYBRIDIZATION = new Hybridization();
     private static LabeledExtract DUMMY_LABELED_EXTRACT = new LabeledExtract();
+    private static RawArrayData DUMMY_ARRAY_DATA = new RawArrayData();
+    private static CaArrayFile DUMMY_FILE = new CaArrayFile();
 
     @SuppressWarnings("deprecation")
     @Before
@@ -140,6 +144,8 @@ public class ProjectHybridizationsActionTest extends AbstractDownloadTest {
         locatorStub.addLookup(ProjectManagementService.JNDI_NAME, new ProjectManagementServiceStub());
         locatorStub.addLookup(VocabularyService.JNDI_NAME, new VocabularyServiceStub());
         DUMMY_HYBRIDIZATION.setId(1L);
+        DUMMY_HYBRIDIZATION.getRawDataCollection().add(DUMMY_ARRAY_DATA);
+        DUMMY_ARRAY_DATA.setDataFile(DUMMY_FILE);
     }
 
     @SuppressWarnings("deprecation")
@@ -217,11 +223,14 @@ public class ProjectHybridizationsActionTest extends AbstractDownloadTest {
 
     @Test
     public void testDelete() {
+        Date date = new Date();
+        DUMMY_LABELED_EXTRACT.setLastModifiedDataTime(date);
         DUMMY_LABELED_EXTRACT.getHybridizations().add(DUMMY_HYBRIDIZATION);
         DUMMY_HYBRIDIZATION.getLabeledExtracts().add(DUMMY_LABELED_EXTRACT);
         this.action.setCurrentHybridization(DUMMY_HYBRIDIZATION);
         assertEquals("list", this.action.delete());
         assertFalse(DUMMY_LABELED_EXTRACT.getHybridizations().contains(DUMMY_HYBRIDIZATION));
+        assertNotSame(date, DUMMY_LABELED_EXTRACT.getLastModifiedDataTime());
     }
 
     @SuppressWarnings("deprecation")

@@ -92,6 +92,7 @@ import gov.nih.nci.caarray.domain.vocabulary.Category;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -325,4 +326,15 @@ public abstract class AbstractExperimentDesignNode extends AbstractCaArrayEntity
      */
     @Transient
     public abstract Set<CaArrayFile> getAllDataFiles();
+
+    /**
+     * Propagates the last modified data time up the chain.
+     * @param lastModifiedDataTime the lastDataModificationDate to set.
+     */
+    public void propagateLastModifiedDataTime(final Date lastModifiedDataTime) {
+        for (AbstractExperimentDesignNode node : getDirectPredecessors()) {
+            node.propagateLastModifiedDataTime(lastModifiedDataTime);
+        }
+    }
+
 }

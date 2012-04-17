@@ -83,6 +83,7 @@
 package gov.nih.nci.caarray.domain.sample;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import gov.nih.nci.caarray.domain.permissions.AccessProfile;
 import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
@@ -91,6 +92,7 @@ import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.Project;
 
 import java.lang.reflect.Method;
+import java.util.Date;
 
 import org.junit.Test;
 
@@ -209,4 +211,18 @@ public class SampleTest {
         assertEquals(SampleSecurityLevel.NONE, p.getGroupProfiles().get(cg4).getSampleSecurityLevels().get(sample1));
     }
 
+    @Test
+    public void testPropagateLastModifiedDataTime() {
+        Date date = new Date();
+        Source src = new Source();
+        Sample s = new Sample();
+        Extract e = new Extract();
+        src.getSamples().add(s);
+        s.getSources().add(src);
+        s.getExtracts().add(e);
+        e.getSamples().add(s);
+        s.propagateLastModifiedDataTime(date);
+        assertEquals(date, src.getLastModifiedDataTime());
+        assertNotSame(date, e.getLastModifiedDataTime());
+    }
 }

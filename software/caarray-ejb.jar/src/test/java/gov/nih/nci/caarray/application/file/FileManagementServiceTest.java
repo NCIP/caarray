@@ -52,6 +52,7 @@ package gov.nih.nci.caarray.application.file;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
@@ -120,6 +121,7 @@ import gov.nih.nci.caarray.validation.ValidationResult;
 import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -484,7 +486,9 @@ public class FileManagementServiceTest extends AbstractServiceTest {
     @Test
     public void testAddSupplementalFiles() {
         final Project project = getTgaBroadTestProject();
+        Date lastModified = project.getExperiment().getLastDataModificationDate();
         this.fileManagementService.addSupplementalFiles(project, project.getFileSet());
+        assertNotSame(lastModified, project.getExperiment().getLastDataModificationDate());
         for (final CaArrayFile file : project.getFiles()) {
             assertEquals(FileStatus.SUPPLEMENTAL, file.getFileStatus());
         }

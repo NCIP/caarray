@@ -85,6 +85,7 @@ package gov.nih.nci.caarray.application.fileaccess;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
@@ -109,6 +110,7 @@ import gov.nih.nci.caarray.domain.file.FileTypeRegistry;
 import gov.nih.nci.caarray.domain.file.FileTypeRegistryImpl;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Project;
+import gov.nih.nci.caarray.domain.sample.LabeledExtract;
 import gov.nih.nci.caarray.platforms.spi.DataFileHandler;
 import gov.nih.nci.caarray.platforms.spi.DesignFileHandler;
 import gov.nih.nci.caarray.util.CaArrayUtils;
@@ -348,8 +350,14 @@ public class FileAccessServiceTest extends AbstractServiceTest {
         ad.setId(1L);
         final Hybridization h = new Hybridization();
         h.setId(1L);
+        final LabeledExtract le = new LabeledExtract();
         ad.addHybridization(h);
         h.getRawDataCollection().add(ad);
+        le.getHybridizations().add(h);
+        h.getLabeledExtracts().add(le);
+        Date lastModifiedDate = new Date();
+        le.setLastModifiedDataTime(lastModifiedDate);
+        p.getExperiment().setLastDataModificationDate(lastModifiedDate);
 
         when(this.fileDao.getDeletableFiles(1L)).thenReturn(Lists.newArrayList(f));
         when(this.arrayDao.getArrayData(1L)).thenReturn(ad);
@@ -358,6 +366,8 @@ public class FileAccessServiceTest extends AbstractServiceTest {
         assertTrue(removed);
         assertTrue(p.getFiles().isEmpty());
         assertTrue(h.getRawDataCollection().isEmpty());
+        assertNotSame(lastModifiedDate, p.getExperiment().getLastDataModificationDate());
+        assertNotSame(lastModifiedDate, le.getLastModifiedDataTime());
         verify(this.fileDao).remove(f);
         verify(this.arrayDao).remove(ad);
     }

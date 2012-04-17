@@ -140,7 +140,7 @@ import com.google.inject.Inject;
  *
  * @author Rashmi Srinivasa
  */
-@SuppressWarnings("PMD.CyclomaticComplexity")
+@SuppressWarnings({ "PMD.CyclomaticComplexity", "PMD.ExcessiveClassLength" })
 class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
     private static final String UNCHECKED = "unchecked";
     private static final String EXP_ID_PARAM = "expId";
@@ -171,13 +171,44 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
     @Override
     public Long save(PersistentObject persistentObject) {
         if (persistentObject instanceof Project) {
+            Project project = (Project) persistentObject;
             // ideally, the lastUpdated property should be updated by AutoPropertiesInterceptor,
             // but it's a lot harder to update the parent project when child objects are updated.
-            ((Project) persistentObject).setLastUpdated(new Date());
+            project.setLastUpdated(new Date());
+            manageLastDataModificationDate(project);
         }
         return super.save(persistentObject);
     }
 
+    private void manageLastDataModificationDate(Project project) {
+        if (isExperimentDataModified(project)) {
+            project.getExperiment().setLastDataModificationDate(new Date());
+        }
+    }
+    
+    private boolean isExperimentDataModified(Project project) {
+        if (project.getId() != null) {
+            Session tempSession = getHibernateHelper().getSessionFactory().openSession();
+            try {
+                tempSession.enableFilter(Experiment.BIOMATERIAL_FILTER_NAME);
+                Project prePersistPrj = (Project) tempSession.load(Project.class, project.getId());
+                return samplesChanged(prePersistPrj, project) || filesChanged(prePersistPrj, project);
+            } finally {
+                tempSession.close();
+            }
+        } else {
+            return true;
+        }
+    }
+    
+    private boolean samplesChanged(Project proj1, Project proj2) {
+        return proj1.getExperiment().getSamples().size() != proj2.getExperiment().getSamples().size();
+    }
+
+    private boolean filesChanged(Project proj1, Project proj2) {
+        return proj1.getUserVisibleFiles().size() != proj2.getUserVisibleFiles().size();
+    }
+    
     /**
      * {@inheritDoc}
      */

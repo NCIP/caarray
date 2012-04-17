@@ -105,6 +105,7 @@ import gov.nih.nci.caarray.util.io.logging.LogUtil;
 import gov.nih.nci.caarray.validation.InvalidDataFileException;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.ejb.Local;
@@ -342,6 +343,7 @@ public class FileManagementServiceBean implements FileManagementService {
             this.fileDao.save(caArrayFile);
             targetProject.getFiles().add(caArrayFile);
         }
+        targetProject.getExperiment().setLastDataModificationDate(new Date());
         this.projectDao.save(targetProject);
     }
 
