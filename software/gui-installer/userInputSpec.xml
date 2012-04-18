@@ -77,8 +77,8 @@
     <panel order="5">
         <field type="title" txt="Configure your JBoss application server" bold="true" size="1" />
         <field type="divider" align="top"/>
-    <field type="staticText" align="left" txt="As part of this installtion, JBoss will be installed in ${UserPathPanelVariable}.  It will be configured based on the values you enter below.  NOTE: The Hostname below (and on other panels of this installer) is the host name accesible from this machine and others on the local network. To access this JBoss application server from the Internet, you may need to provide the JBoss HTTP Port to your Network administrator to allow access through the firewall."/>
-    <field type="space"/>
+        <field type="staticText" align="left" txt="As part of this installtion, JBoss will be installed in ${UserPathPanelVariable}.  It will be configured based on the values you enter below.  NOTE: The Hostname below (and on other panels of this installer) is the host name accesible from this machine and others on the local network. To access this JBoss application server from the Internet, you may need to provide the JBoss HTTP Port to your Network administrator to allow access through the firewall."/>
+        <field type="space"/>
         <field type="text" align="left" variable="jboss.server.hostname">
             <spec txt="Application Host Name" size="15" set="$HOST_NAME"/>
 
@@ -99,21 +99,21 @@
                 class="com.izforge.izpack.util.PortValidator" txt="The jndi port number is already in use">
             </validator>
         </field>
-    <field type="password" align="left" variable="jboss.web.password">
-        <spec>
-            <pwd txt="Application JBoss Web Password " size="15" set=""/>
-            <pwd txt="Confirm JBoss Web Password " size="15" set=""/>
-        </spec>
-        <validator
-            class="com.izforge.izpack.util.NotEmptyValidator" txt="JBoss Web Console Passwords are required fields">
-        </validator>
-        <validator class="com.izforge.izpack.util.PasswordEqualityValidator" txt="Passwords do not match. Please re-enter your JBoss Web Console passwords"/>
-    </field>
+        <field type="password" align="left" variable="jboss.web.password">
+            <spec>
+                <pwd txt="Application JBoss Web Password " size="15" set=""/>
+                <pwd txt="Confirm JBoss Web Password " size="15" set=""/>
+            </spec>
+            <validator
+                class="com.izforge.izpack.util.NotEmptyValidator" txt="JBoss Web Console Passwords are required fields">
+            </validator>
+            <validator class="com.izforge.izpack.util.PasswordEqualityValidator" txt="Passwords do not match. Please re-enter your JBoss Web Console passwords"/>
+        </field>
         <field type="text" variable="jboss.server.name">
             <spec txt="Application Server Name " size="15" set="default"/>
-        <validator
-            class="com.izforge.izpack.util.NotEmptyValidator" txt="Application Server Name is a  required field">
-        </validator>
+            <validator
+                class="com.izforge.izpack.util.NotEmptyValidator" txt="Application Server Name is a  required field">
+            </validator>
         </field>
         <field type="text" variable="jboss.server.rmi.port">
             <spec txt="Application RMI Port Number " size="15" set="31098"/>
@@ -154,7 +154,6 @@
                 class="com.izforge.izpack.util.PortValidator" txt="The rmiobject port number is already in use">
             </validator>
         </field>
-
     </panel>
 
     <panel order="6">
@@ -162,29 +161,27 @@
         <field type="staticText" align="left" txt="The password you enter below is the password used to access the JBoss web console. This is a password you are creating, so you must keep track of this password for future use."/>
         <field type="divider" align="top"/>
 
-    <field type="password" align="left" variable="jboss.web.password">
-        <spec>
-            <pwd txt="Application JBoss Web Password " size="15" set=""/>
-            <pwd txt="Confirm JBoss Web Password " size="15" set=""/>
-        </spec>
-        <validator
-            class="com.izforge.izpack.util.NotEmptyValidator" txt="Application JBoss Web Password are required fields">
-        </validator>
-        <validator class="com.izforge.izpack.util.PasswordEqualityValidator" txt="Passwords do not match. Please re-enter your JBoss Web Console passwords."/>
-    </field>
-    <field type="space" />
-    <field type="password" align="left" variable="grid.web.password">
-        <spec>
-            <pwd txt="Grid JBoss Web Password " size="15" set=""/>
-            <pwd txt="Confirm JBoss Web Password " size="15" set=""/>
-        </spec>
-        <validator
-            class="com.izforge.izpack.util.NotEmptyValidator" txt="Grid JBoss Web Password are required fields">
-        </validator>
-        <validator class="com.izforge.izpack.util.PasswordEqualityValidator" txt="The grid web passwords did not match"/>
-    </field>
-
-
+        <field type="password" align="left" variable="jboss.web.password">
+            <spec>
+                <pwd txt="Application JBoss Web Password " size="15" set=""/>
+                <pwd txt="Confirm JBoss Web Password " size="15" set=""/>
+            </spec>
+            <validator
+                class="com.izforge.izpack.util.NotEmptyValidator" txt="Application JBoss Web Password are required fields">
+            </validator>
+            <validator class="com.izforge.izpack.util.PasswordEqualityValidator" txt="Passwords do not match. Please re-enter your JBoss Web Console passwords."/>
+        </field>
+        <field type="space" />
+        <field type="password" align="left" variable="grid.web.password">
+            <spec>
+                <pwd txt="Grid JBoss Web Password " size="15" set=""/>
+                <pwd txt="Confirm JBoss Web Password " size="15" set=""/>
+            </spec>
+            <validator
+                class="com.izforge.izpack.util.NotEmptyValidator" txt="Grid JBoss Web Password are required fields">
+            </validator>
+            <validator class="com.izforge.izpack.util.PasswordEqualityValidator" txt="The grid web passwords did not match"/>
+        </field>
 
         <variable name="jboss.server.hostname" value="$HOST_NAME"/>
         <variable name="jboss.server.port" value="38080"/>
@@ -238,7 +235,6 @@
         <variable name="max.pool.size" value="30"/>
         <variable name="idle.timeout.minutes" value="300"/>
         <variable name="ldap.authentication.enabled" value="false"/>
-
     </panel>
 
     <panel order="7">
@@ -330,13 +326,12 @@
                 class="com.izforge.izpack.util.PortValidator" txt="The messaging port number is already in use" >
             </validator>
         </field>
-
     </panel>
 
     <!-- Install -->
     <panel order="8">
         <field type="title" txt="Configure your Grid application server" bold="true" size="1" />
-    <field type="staticText" align="left" txt="For detailed descriptions on each of the properties below, see the Grid Settings section at ${installer.properties.wiki.page}"/>
+        <field type="staticText" align="left" txt="For detailed descriptions on each of the properties below, see the Grid Settings section at ${installer.properties.wiki.page}"/>
         <field type="divider" align="top"/>
         <field type="text" align="left" variable="grid.server.hostname">
             <spec txt="Grid Server Host Name" size="15" set="$HOST_NAME"/>
@@ -356,16 +351,16 @@
                 class="com.izforge.izpack.util.PortValidator" txt="The jndi port number is already in use">
             </validator>
         </field>
-    <field type="password" align="left" variable="grid.web.password">
-        <spec>
-            <pwd txt="Grid JBoss Web Password " size="15" set=""/>
-            <pwd txt="Confirm JBoss Web Password " size="15" set=""/>
-        </spec>
-        <validator
-            class="com.izforge.izpack.util.NotEmptyValidator" txt="Grid JBoss Web Password are required fields">
-        </validator>
-    <validator class="com.izforge.izpack.util.PasswordEqualityValidator" txt="Passwords do not match. Please re-enter your Grid Web Console passwords"/>
-    </field>
+        <field type="password" align="left" variable="grid.web.password">
+            <spec>
+                <pwd txt="Grid JBoss Web Password " size="15" set=""/>
+                <pwd txt="Confirm JBoss Web Password " size="15" set=""/>
+            </spec>
+            <validator
+                class="com.izforge.izpack.util.NotEmptyValidator" txt="Grid JBoss Web Password are required fields">
+            </validator>
+            <validator class="com.izforge.izpack.util.PasswordEqualityValidator" txt="Passwords do not match. Please re-enter your Grid Web Console passwords"/>
+        </field>
         <field type="text" variable="grid.server.name">
             <spec txt="Grid Server Name" size="15" set="default"/>
         <validator
@@ -411,9 +406,7 @@
                 class="com.izforge.izpack.util.PortValidator" txt="The rmiobject port number is already in use">
             </validator>
         </field>
-
     </panel>
-
 
     <panel order="9">
         <field type="title" txt="Additional Grid installation options" bold="true" size="1" />
@@ -439,7 +432,6 @@
                 class="com.izforge.izpack.util.PortValidator" txt="The jms port number is already in use">
             </validator>
         </field>
-
 
         <field type="text" variable="grid.ejbinvoker.port">
             <spec txt="Grid Server ejbinvoker Port Number " size="15" set="13873"/>
@@ -497,7 +489,6 @@
                 class="com.izforge.izpack.util.PortValidator" txt="The messaging port number is already in use">
             </validator>
         </field>
-
     </panel>
 
     <!-- upgrade -->
@@ -547,8 +538,7 @@
         </validator>
         </field>
 
-
-<field type="text" align="left" variable="grid.server.hostname">
+        <field type="text" align="left" variable="grid.server.hostname">
             <spec txt="Grid Server Host Name " size="15" set="$HOST_NAME"/>
             <validator
                 class="com.izforge.izpack.util.HostNameValidator" txt="Enter a valid Grid Host name or the Host is not reachable">
@@ -600,7 +590,7 @@
             <spec txt="caArray's UPT Application Name " size="25" set="caarray"/>
             <validator class="com.izforge.izpack.util.NotEmptyValidator" txt="caArray's UPT Application Name is a required field" />
         </field>
-    <fileextractor>
+        <fileextractor>
             <extractfile filename="res/filestreamingport.xml" toDirName="."/>               
         </fileextractor>
         <panelreader classname="res/filestreamingport.xml" methodname="set-filestreaming-port-number-as-property" language="ant" shouldExecuteAtPanelValidationTime="true">
@@ -609,9 +599,7 @@
         </panelreader>
     </panel>
 
-
-
-<panel order="11">
+    <panel order="11">
         <field type="title" txt="Configure your Java API file streaming port on JBoss application server" bold="true" size="1" />
         <field type="text" variable="java.api.filestreaming.port">
             <spec txt="Java API file streaming Port Number " size="15" set="${java.api.filestreaming.port}"/>
@@ -705,10 +693,8 @@
         </field>
     </panel>
 
-
     <!-- Install -->
     <panel order="13">
-
         <field type="title" txt="Configuring your MySQL database connection " bold="true" size="1" />
         <field type="staticText" align="left" txt="The information you enter below will connect you to an existing MySQL database. It's highly recommended that 'Database Host Name' NOT be the machine from which you are currently installing. The 'Database User' must have full access to 'Database Name'. It's highly recommended you contact your database administrator to obtain this information. NOTE: All database objects for 'Database Name' will be dropped and recreated during the installation process. For detailed descriptions on each of the properties below, see the Database Settings section at ${installer.properties.wiki.page}"/>
         <field type="divider" align="top"/>
@@ -759,7 +745,33 @@
     </panel>
 
     <panel order="15">
-    
+        <field type="title" txt="Single Sign-On" bold="true" size="1" />
+        <field type="staticText" align="left" txt="Single Sign-On (SSO) is a property of access control of multiple related, but independent software systems. With this property a user logs in once and gains access to all systems without being prompted to log in again at each of them."/>
+        <field type="staticText" align="left" txt="caArray supports CAS technology as way of facilitating Single Sign-On. Make a selection if you plan to use your system in SSO-enabled mode."/>
+        <field type="divider" align="top"/>
+        <field type="radio" variable="single.sign.on.install">
+            <description align="left" txt="Use CAS Single Sign-On:"/>
+            <spec>
+                <choice txt="SSO Disabled" value="false" set="false" />
+                <choice txt="SSO Enabled" value="true" />
+            </spec>
+        </field>
+    </panel>
+
+    <panel order="16">
+        <field type="title" txt="Single Sign-On Configuration" bold="true" size="1" />
+        <field type="staticText" align="left" txt="Provide the CAS server settings."/>
+        <field type="divider" align="top"/>
+        <field type="text" variable="cas.server.hostname">
+            <spec txt="CAS Server Hostname " size="25" set=""/>
+            <validator class="com.izforge.izpack.util.NotEmptyValidator" txt="CAS Server Hostname is a required field"/>
+        </field>
+        <field type="text" variable="cas.server.port">
+            <spec txt="CAS Server Port Number " size="25" set="8443"/>
+        </field>
+    </panel>
+
+    <panel order="17">
         <field type="title" txt="Authentication Type" bold="true" size="1" />
         <field type="staticText" align="left" txt="There are two types of ways to authenticate users: against database or using an LDAP server. To connect to LDAP, you must have an LDAP server available in your network."/>
         <field type="divider" align="top"/>
@@ -772,7 +784,7 @@
         </field>
     </panel>
 
-    <panel order="16">
+    <panel order="18">
         <field type="title" txt="LDAP Configuration" bold="true" size="1" />
         <field type="staticText" align="left" txt="Choose the URL for the LDAP server and the Base DN for authenticating users."/>
         <field type="divider" align="top"/>
@@ -790,7 +802,7 @@
         </field>
     </panel>
 
-    <panel order="17">
+    <panel order="19">
         <field type="title" txt="Configure Global Settings" bold="true" size="1" />
         <field type="staticText" align="left" txt="The information you enter below will connect you to an existing Index Server. The Externally Accessible Hostname is the Hostname or the Domain name for the installation machine. This hostname must be accessible by the 'Index URL'. UPT URL is where the UPT application is being installed. For detailed descriptions on each of the properties below, see the Global Settings section at ${installer.properties.wiki.page}"/>
         <field type="divider" align="top"/>
@@ -819,8 +831,7 @@
         </field>
     </panel>
 
-
-    <panel order="18">
+    <panel order="20">
         <field type="title" txt="Database Configuration " bold="true" size="1" />
         <field type="staticText" align="left" txt="For detailed descriptions on each of the properties below, see the Database Settings section at ${installer.properties.wiki.page}"/>
         <field type="divider" align="top"/>
@@ -835,8 +846,7 @@
         </field>
     </panel>
 
-
-    <panel order="19">
+    <panel order="21">
         <field type="title" txt="Mail Server Configuration" bold="true" size="1" />
         <field type="staticText" align="left" txt="Mail Server Hostname and Mail Server Port Number is the hostname where the mail server is being configured.For detailed descriptions on each of the properties below, see the Mail Settings section at ${installer.properties.wiki.page}"/>
         <field type="divider" align="top"/>
@@ -871,7 +881,7 @@
         </field>
     </panel>
 
-    <panel order="20">
+    <panel order="22">
         <field type="title" txt="JBoss Server Java Opts" bold="true" size="1" />
         <field type="staticText" align="left" txt="Please configure the options that will be passed to the caArray JBoss server's JVM."/>
         <field type="divider" align="top"/>
@@ -880,8 +890,7 @@
         </field>
     </panel>
 
-    <panel order="21">
-
+    <panel order="23">
         <variable name="INSTALL_PATH" value="${UserPathPanelVariable}"/>
         
         <field type="title" txt="Installation Summary" bold="true" size="1" />
@@ -915,8 +924,7 @@
         <field type="staticText" align="left" txt="File Storage Base Directory [${dataStorage.fileSystem.baseDir}] - This is where the design and/or data files will be stored." conditionid="dataEngine.file-system"/>
     </panel>
 
-    <panel order="22">
-
+    <panel order="24">
         <variable name="INSTALL_PATH" value="${existing.installation.home}"/>
         
         <field type="title" txt="Installation Summary" bold="true" size="1" />

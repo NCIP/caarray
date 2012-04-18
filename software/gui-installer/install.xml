@@ -24,7 +24,6 @@
     <property name="installer.properties.wiki.page" value="https://wiki.nci.nih.gov/x/sgO8AQ"/>
     <property name="upgrade.properties.wiki.page" value="https://wiki.nci.nih.gov/x/wQO8AQ"/>
 
-
     <taskdef name="IzPack" classpath="${compile.jar.dir}/lib/compiler.jar" classname="com.izforge.izpack.ant.IzPackTask"/>
 
     <target name="prepare:installer">
@@ -151,6 +150,14 @@
                         <condition type="ref" refid="upgrade"/>
                         <condition type="ref" refid="installonwindows" />
                     </condition>
+                    <condition type="variable" id="cas.install">
+                        <name>single.sign.on.install</name>
+                        <value>true</value>
+                    </condition>
+                    <condition type="variable" id="non.cas.install">
+                        <name>single.sign.on.install</name>
+                        <value>false</value>
+                    </condition>
                     <condition type="variable" id="ldap.setup">
                         <name>ldap.authentication.enabled</name>
                         <value>true</value>
@@ -171,7 +178,7 @@
                         <condition type="ref" refid="install"/>
                         <condition type="ref" refid="typical.installation.type" />
                     </condition>
-                    <condition type="or" id="custom.installation|upgrade">
+                    <condition type="or" id="custom_installation_or_upgrade">
                         <condition type="ref" refid="custom.installation"/>
                         <condition type="ref" refid="upgrade" />
                     </condition>
@@ -186,6 +193,18 @@
                     <condition type="or" id="dataEngine.file-system">
                         <condition type="ref" refid="fileDataEngine.file-system"/>
                         <condition type="ref" refid="parsedDataEngine.file-system" />
+                    </condition>
+                    <condition type="and" id="cas_settings.panel">
+                        <condition type="ref" refid="custom_installation_or_upgrade"/>
+                        <condition type="ref" refid="cas.install" />
+                    </condition>
+                    <condition type="and" id="db_or_ldap.panel">
+                        <condition type="ref" refid="custom_installation_or_upgrade"/>
+                        <condition type="ref" refid="non.cas.install" />
+                    </condition>
+                    <condition type="and" id="ldap_configuration.panel">
+                        <condition type="ref" refid="ldap.setup"/>
+                        <condition type="ref" refid="non.cas.install" />
                     </condition>
                 </conditions>
 
@@ -233,14 +252,16 @@
                     <panel classname="UserInputPanel"  id="UserInputPanel.13" condition="install"/>
                     <panel classname="MySQLColumnValueAnalyzerPanel"  id="MySQLColumnValueAnalyzerPanel.1" condition="upgrade"/>
                     <panel classname="UserInputPanel"  id="UserInputPanel.14" condition="should.show.duplicate.hybridization.details.panel.condition"/>
-                    <panel classname="UserInputPanel"  id="UserInputPanel.15" condition="custom.installation|upgrade"/>
-                    <panel classname="UserInputPanel"  id="UserInputPanel.16" condition="ldap.setup"/>
-                    <panel classname="UserInputPanel"  id="UserInputPanel.17" condition="install"/>
-                    <panel classname="UserInputPanel"  id="UserInputPanel.18" condition="custom.installation"/>
+                    <panel classname="UserInputPanel"  id="UserInputPanel.15" condition="custom.installation"/>
+                    <panel classname="UserInputPanel"  id="UserInputPanel.16" condition="cas_settings.panel"/>
+                    <panel classname="UserInputPanel"  id="UserInputPanel.17" condition="db_or_ldap.panel"/>
+                    <panel classname="UserInputPanel"  id="UserInputPanel.18" condition="ldap_configuration.panel"/>
                     <panel classname="UserInputPanel"  id="UserInputPanel.19" condition="install"/>
-                    <panel classname="UserInputPanel"  id="UserInputPanel.20"/>
+                    <panel classname="UserInputPanel"  id="UserInputPanel.20" condition="custom.installation"/>
                     <panel classname="UserInputPanel"  id="UserInputPanel.21" condition="install"/>
-                    <panel classname="UserInputPanel"  id="UserInputPanel.22" condition="upgrade"/>
+                    <panel classname="UserInputPanel"  id="UserInputPanel.22"/>
+                    <panel classname="UserInputPanel"  id="UserInputPanel.23" condition="install"/>
+                    <panel classname="UserInputPanel"  id="UserInputPanel.24" condition="upgrade"/>
                     <panel classname="InstallationGroupPanel"/>
                     <panel classname="ExtendedInstallPanel"/>
                     <panel classname="SimpleFinishPanel"/>
@@ -253,9 +274,6 @@
 
                     <listener installer="AntActionInstallerListener" uninstaller="AntActionUninstallerListener" />
                 </listeners>
-
-
-
 
                 <!--
                 The packs section.
