@@ -18,6 +18,7 @@ import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.sample.TermBasedCharacteristic;
+import gov.nih.nci.caarray.domain.sample.UserDefinedCharacteristic;
 import gov.nih.nci.cagrid.caarray.common.CaArraySvcI;
 import gov.nih.nci.cagrid.caarray.util.GridTransferResultHandler;
 import gov.nih.nci.cagrid.cqlquery.Attribute;
@@ -97,7 +98,7 @@ public class CaArraySvcClient extends CaArraySvcClientBase implements CaArraySvc
                 Object target = new Object();
                 cqlQuery.setTarget(target);
 
-                target.setName(TermBasedCharacteristic.class.getName());
+                target.setName(UserDefinedCharacteristic.class.getName());
                 Attribute a = new Attribute();
                 a.setName("id");
                 a.setValue("1");
@@ -114,7 +115,7 @@ public class CaArraySvcClient extends CaArraySvcClientBase implements CaArraySvc
                 System.out.println("Time for simple data service retrieval: " + sw.toString());
               
                 CaArrayFile file = new CaArrayFile();
-                file.setId(21L);
+                file.setId(3L);
                 byte[] fileData = client.readFileUsingGridTransfer(file);
                 System.out.println("File data: ");
                 IOUtils.write(fileData, System.out);
@@ -130,7 +131,7 @@ public class CaArraySvcClient extends CaArraySvcClientBase implements CaArraySvc
                 qt.setId(3L);
                 drr.addQuantitationType(qt);
                 Hybridization h = new Hybridization();
-                h.setId(7L);
+                h.setId(1L);
                 drr.addHybridization(h);
                 DataSet ds = client.getDataSet(drr);
                 introspectDataSet(client, ds);

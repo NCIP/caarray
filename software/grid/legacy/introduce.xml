@@ -315,19 +315,22 @@
   <ns32:Extension name="data" version="1.5" xsi:type="ns32:ExtensionType">
    <ns32:ExtensionData>
     <ns25:Data type="ns25:Data" xmlns:ns25="http://CQL.caBIG/1/gov.nih.nci.cagrid.data.extension">
-                     <ns25:ServiceFeatures type="ns25:ServiceFeatures" useBdt="false" useGridIdeitifiers="false" useWsEnumeration="false"/>
+                         <ns25:ServiceFeatures type="ns25:ServiceFeatures" useBdt="false" useGridIdeitifiers="false" useWsEnumeration="false"/>
 
 
 
 
-                     <ns1:ModelInformation source="mms" xmlns:ns1="http://CQL.caBIG/1/gov.nih.nci.cagrid.data.extension">
-                      <ns2:UMLProjectIdentifer identifier="caArray" sourceIdentifier="http://cadsr-dataservice.nci.nih.gov:80/wsrf/services/cagrid/CaDSRDataService" version="2" xmlns:ns2="gme://caGrid.caBIG/1.0/org.cagrid.mms.domain"/>
+
+                         <ns1:ModelInformation source="mms" xmlns:ns1="http://CQL.caBIG/1/gov.nih.nci.cagrid.data.extension">
+                          <ns2:UMLProjectIdentifer identifier="caArray" sourceIdentifier="http://cadsr-dataservice.nci.nih.gov:80/wsrf/services/cagrid/CaDSRDataService" version="2" xmlns:ns2="gme://caGrid.caBIG/1.0/org.cagrid.mms.domain"/>
+
 
 
 
 
 
 </ns1:ModelInformation>
+
 
 
 

@@ -11,7 +11,7 @@
   <!-- Place any other properties you will need here                  -->
   <!-- ============================================================== -->
   <property name="jboss.server.hostname" value="localhost"/>
-  <property name="jboss.server.jndi.port" value="1099"/>
+  <property name="jboss.server.jndi.port" value="31099"/>
   <property name="project.lib" value="../../lib/caarray-project"/>
   <property name="caarray-grid-svc.common.target.dir" value="../common/target"/>
 
