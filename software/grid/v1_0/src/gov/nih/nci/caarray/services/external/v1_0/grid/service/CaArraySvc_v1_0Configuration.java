@@ -16,13 +16,14 @@ import org.globus.wsrf.Constants;
  * This class holds all service properties which were defined for the service to have
  * access to.
  * 
- * @created by Introduce Toolkit version 1.2
+ * @created by Introduce Toolkit version 1.5
  * 
  */
 public class CaArraySvc_v1_0Configuration implements ServiceConfiguration {
 
 	public static CaArraySvc_v1_0Configuration  configuration = null;
-
+    public String etcDirectoryPath;
+    	
 	public static CaArraySvc_v1_0Configuration getConfiguration() throws Exception {
 		if (CaArraySvc_v1_0Configuration.configuration != null) {
 			return CaArraySvc_v1_0Configuration.configuration;
@@ -42,16 +43,28 @@ public class CaArraySvc_v1_0Configuration implements ServiceConfiguration {
 		return CaArraySvc_v1_0Configuration.configuration;
 	}
 	
-	private String etcDirectoryPath;
+
+	
+	private String caGridWsEnumeration_iterImplType;
 	
 	
-	
-	public String getEtcDirectoryPath() {
+    public String getEtcDirectoryPath() {
 		return ContainerConfig.getBaseDirectory() + File.separator + etcDirectoryPath;
 	}
 	
 	public void setEtcDirectoryPath(String etcDirectoryPath) {
 		this.etcDirectoryPath = etcDirectoryPath;
+	}
+
+
+	
+	public String getCaGridWsEnumeration_iterImplType() {
+		return caGridWsEnumeration_iterImplType;
+	}
+	
+	
+	public void setCaGridWsEnumeration_iterImplType(String caGridWsEnumeration_iterImplType) {
+		this.caGridWsEnumeration_iterImplType = caGridWsEnumeration_iterImplType;
 	}
 
 	

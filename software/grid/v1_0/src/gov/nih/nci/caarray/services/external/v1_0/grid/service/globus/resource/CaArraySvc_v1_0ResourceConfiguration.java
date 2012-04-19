@@ -7,7 +7,7 @@ package gov.nih.nci.caarray.services.external.v1_0.grid.service.globus.resource;
  * This class is used by the resource to get configuration information about the 
  * resource.
  * 
- * @created by Introduce Toolkit version 1.2
+ * @created by Introduce Toolkit version 1.5
  * 
  */
 public class CaArraySvc_v1_0ResourceConfiguration {

@@ -8,5 +8,20 @@
     <ns1:None xsi:type="ns1:None"/>
    </ns1:CommunicationMechanism>
   </ns1:Operation>
+  <ns1:Operation name="GetMultipleResourceProperties" xsi:type="ns1:Operation">
+   <ns1:CommunicationMechanism anonymousPermitted="true" xsi:type="ns1:CommunicationMechanism">
+    <ns1:None xsi:type="ns1:None"/>
+   </ns1:CommunicationMechanism>
+  </ns1:Operation>
+  <ns1:Operation name="GetResourceProperty" xsi:type="ns1:Operation">
+   <ns1:CommunicationMechanism anonymousPermitted="true" xsi:type="ns1:CommunicationMechanism">
+    <ns1:None xsi:type="ns1:None"/>
+   </ns1:CommunicationMechanism>
+  </ns1:Operation>
+  <ns1:Operation name="QueryResourceProperties" xsi:type="ns1:Operation">
+   <ns1:CommunicationMechanism anonymousPermitted="true" xsi:type="ns1:CommunicationMechanism">
+    <ns1:None xsi:type="ns1:None"/>
+   </ns1:CommunicationMechanism>
+  </ns1:Operation>
  </ns1:operations>
 </ns1:ServiceSecurityMetadata>

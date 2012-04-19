@@ -1,4 +1,4 @@
-<ns1:ServiceDescription introduceVersion="1.4" xmlns:ns1="gme://gov.nih.nci.cagrid/1/Introduce">
+<ns1:ServiceDescription introduceVersion="1.5" xmlns:ns1="gme://gov.nih.nci.cagrid/1/Introduce">
  <ns2:Namespaces xsi:type="ns2:NamespacesType" xmlns:ns2="gme://gov.nih.nci.cagrid.introduce/1/Namespace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <ns2:Namespace location="./v1_0_gov.nih.nci.caarray.external.sample.xsd" namespace="gme://External.caArray.caBIG/1.0/gov.nih.nci.caarray.external.sample" packageName="gov.nih.nci.caarray.external.v1_0.sample" xsi:type="ns2:NamespaceType">
    <ns2:SchemaElement className="AbstractExperimentGraphNode" deserializer="gov.nih.nci.caarray.services.grid.util.DeserializationFactory" serializer="gov.nih.nci.caarray.services.grid.util.SerializationFactory" type="AbstractExperimentGraphNode" xsi:type="ns2:SchemaElementType"/>
@@ -492,9 +492,9 @@
   </ns3:Service>
  </ns3:Services>
  <ns106:Extensions xsi:type="ns106:ExtensionsType" xmlns:ns106="gme://gov.nih.nci.cagrid.introduce/1/Extension" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <ns106:Extension name="cagrid_metadata" version="1.4" xsi:type="ns106:ExtensionType"/>
-  <ns106:Extension name="cagrid_wsEnum" version="1.4" xsi:type="ns106:ExtensionType"/>
-  <ns106:Extension name="caGrid_Transfer" version="1.4" xsi:type="ns106:ExtensionType"/>
+  <ns106:Extension name="cagrid_metadata" version="1.5" xsi:type="ns106:ExtensionType"/>
+  <ns106:Extension name="cagrid_wsEnum" version="1.5" xsi:type="ns106:ExtensionType"/>
+  <ns106:Extension name="caGrid_Transfer" version="1.5" xsi:type="ns106:ExtensionType"/>
  </ns106:Extensions>
  <ns107:ServiceProperties xmlns:ns107="gme://gov.nih.nci.cagrid.introduce/1/Property">
   <ns107:Property description="" isFromETC="false" key="caGridWsEnumeration_iterImplType" value="CAGRID_CONCURRENT_COMPLETE"/>
