@@ -1,7 +1,4 @@
-<!-- 
-	Model was removed from bottom of file during 1.2 -> 1.4 migration.  Need to eval this.
- -->
-<ns1:ServiceDescription introduceVersion="1.4" xmlns:ns1="gme://gov.nih.nci.cagrid/1/Introduce">
+<ns1:ServiceDescription introduceVersion="1.5" xmlns:ns1="gme://gov.nih.nci.cagrid/1/Introduce">
  <ns2:Namespaces xsi:type="ns2:NamespacesType" xmlns:ns2="gme://gov.nih.nci.cagrid.introduce/1/Namespace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <ns2:Namespace location="./gov.nih.nci.caarray.domain.file.xsd" namespace="gme://Internal.caArray.caBIG/2.4/gov.nih.nci.caarray.domain.file" packageName="gov.nih.nci.caarray.domain.file" xsi:type="ns2:NamespaceType">
    <ns2:SchemaElement className="CaArrayFile" deserializer="gov.nih.nci.cagrid.caarray.util.DeserializationFactory" serializer="gov.nih.nci.cagrid.caarray.util.SerializationFactory" type="CaArrayFile" xsi:type="ns2:SchemaElementType"/>
@@ -314,22 +311,28 @@
   </ns3:Service>
  </ns3:Services>
  <ns32:Extensions xsi:type="ns32:ExtensionsType" xmlns:ns32="gme://gov.nih.nci.cagrid.introduce/1/Extension" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <ns32:Extension name="cagrid_metadata" version="1.4" xsi:type="ns32:ExtensionType"/>
-  <ns32:Extension name="data" version="1.4" xsi:type="ns32:ExtensionType">
+  <ns32:Extension name="cagrid_metadata" version="1.5" xsi:type="ns32:ExtensionType"/>
+  <ns32:Extension name="data" version="1.5" xsi:type="ns32:ExtensionType">
    <ns32:ExtensionData>
     <ns25:Data type="ns25:Data" xmlns:ns25="http://CQL.caBIG/1/gov.nih.nci.cagrid.data.extension">
-         <ns25:ServiceFeatures type="ns25:ServiceFeatures" useBdt="false" useGridIdeitifiers="false" useWsEnumeration="false"/>
+                 <ns25:ServiceFeatures type="ns25:ServiceFeatures" useBdt="false" useGridIdeitifiers="false" useWsEnumeration="false"/>
 
-         <ns1:ModelInformation source="mms" xmlns:ns1="http://CQL.caBIG/1/gov.nih.nci.cagrid.data.extension">
-          <ns2:UMLProjectIdentifer identifier="caArray" sourceIdentifier="http://cadsr-dataservice.nci.nih.gov:80/wsrf/services/cagrid/CaDSRDataService" version="2" xmlns:ns2="gme://caGrid.caBIG/1.0/org.cagrid.mms.domain"/>
+
+
+                 <ns1:ModelInformation source="mms" xmlns:ns1="http://CQL.caBIG/1/gov.nih.nci.cagrid.data.extension">
+                  <ns2:UMLProjectIdentifer identifier="caArray" sourceIdentifier="http://cadsr-dataservice.nci.nih.gov:80/wsrf/services/cagrid/CaDSRDataService" version="2" xmlns:ns2="gme://caGrid.caBIG/1.0/org.cagrid.mms.domain"/>
+
+
 
 
 </ns1:ModelInformation>
 
+
+
     </ns25:Data>
    </ns32:ExtensionData>
   </ns32:Extension>
-  <ns32:Extension name="caGrid_Transfer" version="1.4" xsi:type="ns32:ExtensionType"/>
+  <ns32:Extension name="caGrid_Transfer" version="1.5" xsi:type="ns32:ExtensionType"/>
  </ns32:Extensions>
  <ns33:ServiceProperties xmlns:ns33="gme://gov.nih.nci.cagrid.introduce/1/Property">
   <ns33:Property description="" isFromETC="false" key="queryProcessorClass" value="gov.nih.nci.cagrid.caarray.stubs.cql.CaArrayCQLQueryProcessor"/>
