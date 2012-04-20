@@ -2427,9 +2427,14 @@
 
     	<!-- Remove CAS Configuration from the web.xml if not using CAS SSO-->
     	<if>
-            <not>
-            	<equals arg1="${single.sign.on.install}" arg2="true" />
-    		</not>
+    		<and>
+                <not>
+                    <equals arg1="${preserve.login.config.in.ear.for.dist}" arg2="true" />
+                </not>
+                <not>
+                    <equals arg1="${single.sign.on.install}" arg2="true" />
+                </not>
+    		</and>	
     		<then>
     			<xmltask source="${caarray-war.target.dir}/xml/web.xml" dest="${caarray-war.target.dir}/xml/web.xml">
                     <remove path="//:context-param[:param-name/text()='service']"/>
@@ -2490,38 +2495,50 @@
 	            </filterset>
 	        </copy>
             <if>
-                <equals arg1="${single.sign.on.install}" arg2="true" />
+                <equals arg1="${preserve.login.config.in.ear.for.dist}" arg2="true" />
                 <then>
-                	<property name="remove.ldap.login.config.from.ear" value="true"/>
-                	<property name="remove.db.login.config.from.ear" value="true"/>
-                	<xmltask source="${caarray-ear.target.dir}/xml/security-config.xml" dest="${caarray-ear.target.dir}/xml/security-config.xml">
-                        <replace path="//authentication/login-module[@code='gov.nih.nci.caarray.authentication.PasswordStackingCasLoginModule']/@flag" withText="required"/>
-                    </xmltask>
+                    <property name="remove.db.login.config.from.ear" value="false"/>
+                	<property name="remove.ldap.login.config.from.ear" value="false"/>
+                    <property name="remove.cas.login.config.from.ear" value="false"/>
                 </then>
-                <else>
-                	<property name="remove.cas.login.config.from.ear" value="true"/>
+            	<else>
                     <if>
-                        <equals arg1="${ldap.authentication.enabled}" arg2="true" />
+                        <equals arg1="${single.sign.on.install}" arg2="true" />
                         <then>
+                            <property name="remove.ldap.login.config.from.ear" value="true"/>
+                            <property name="remove.db.login.config.from.ear" value="true"/>
                             <xmltask source="${caarray-ear.target.dir}/xml/security-config.xml" dest="${caarray-ear.target.dir}/xml/security-config.xml">
-                                <replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsLDAPLoginModule']/module-option[@name='ldapHost']/text()" withText="${ldap.url}"/>
-                                <replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsLDAPLoginModule']/module-option[@name='ldapSearchableBase']/text()" withText="${ldap.searchbase}"/>
-                                <replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsLDAPLoginModule']/module-option[@name='ldapUserIdLabel']/text()" withText="${ldap.searchprefix}"/>
+                                <replace path="//authentication/login-module[@code='gov.nih.nci.caarray.authentication.PasswordStackingCasLoginModule']/@flag" withText="required"/>
                             </xmltask>
                         </then>
                         <else>
-                            <property name="remove.ldap.login.config.from.ear" value="true"/>
+                            <property name="remove.cas.login.config.from.ear" value="true"/>
                             <xmltask source="${caarray-ear.target.dir}/xml/security-config.xml" dest="${caarray-ear.target.dir}/xml/security-config.xml">
-                            	<replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule']/@flag" withText="required"/>
                                 <replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule']/module-option[@name='url']/text()" withText="${database.url}"/>
                                 <replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule']/module-option[@name='user']/text()" withText="${database.user}"/>
                                 <replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule']/module-option[@name='passwd']/text()" withText="${database.password}"/>
                                 <replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule']/module-option[@name='driver']/text()" withText="${database.driver}"/>
                             </xmltask>
+                            <if>
+                                <equals arg1="${ldap.authentication.enabled}" arg2="true" />
+                                <then>
+                                    <xmltask source="${caarray-ear.target.dir}/xml/security-config.xml" dest="${caarray-ear.target.dir}/xml/security-config.xml">
+                                        <replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsLDAPLoginModule']/module-option[@name='ldapHost']/text()" withText="${ldap.url}"/>
+                                        <replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsLDAPLoginModule']/module-option[@name='ldapSearchableBase']/text()" withText="${ldap.searchbase}"/>
+                                        <replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsLDAPLoginModule']/module-option[@name='ldapUserIdLabel']/text()" withText="${ldap.searchprefix}"/>
+                                    </xmltask>
+                                </then>
+                                <else>
+                                    <property name="remove.ldap.login.config.from.ear" value="true"/>
+                                    <xmltask source="${caarray-ear.target.dir}/xml/security-config.xml" dest="${caarray-ear.target.dir}/xml/security-config.xml">
+                                        <replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule']/@flag" withText="required"/>
+                                    </xmltask>
+                                </else>
+                            </if>
                         </else>
                     </if>
-                </else>
-            </if>
+        		</else>
+        	</if>
 
         	<if>
                 <equals arg1="${remove.ldap.login.config.from.ear}" arg2="true"/>
