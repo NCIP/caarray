@@ -17,7 +17,6 @@ import gov.nih.nci.caarray.domain.data.StringColumn;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.project.Experiment;
-import gov.nih.nci.caarray.domain.sample.TermBasedCharacteristic;
 import gov.nih.nci.caarray.domain.sample.UserDefinedCharacteristic;
 import gov.nih.nci.cagrid.caarray.common.CaArraySvcI;
 import gov.nih.nci.cagrid.caarray.util.GridTransferResultHandler;
@@ -60,9 +59,17 @@ import org.globus.gsi.GlobusCredential;
  * @created by Introduce Toolkit version 1.4
  */
 public class CaArraySvcClient extends CaArraySvcClientBase implements CaArraySvcI {	
-    private static final String EXPERIMENT_NAME = "hg133plus2";
-    private static final String QUANTITATION_TYPES_CSV_STRING = "CELX,CELY,CELintensity,CELintensityStdev,CELMask,CELOutlier,CELPixels";
 
+    // README
+    //
+    // Since introduce controls this class, we cannot easily parameterize the main method.
+    // Change these values to what matches your local environment.  
+    //
+    private static final String EXPERIMENT_TITLE = "Test3";
+    private static final String QUANTITATION_TYPES_CSV_STRING = "CELX,CELY,CELintensity,CELintensityStdev,CELMask,CELOutlier,CELPixels";
+    private static final String CHARACTERISTIC_ID = "1";
+    private static final long FILE_ID = 3;
+    
 	public CaArraySvcClient(String url) throws MalformedURIException, RemoteException {
 		this(url,null);	
 	}
@@ -83,76 +90,71 @@ public class CaArraySvcClient extends CaArraySvcClientBase implements CaArraySvc
 		System.out.println(CaArraySvcClient.class.getName() + " -url <service url>");
 	}
 	
-    public static void main(String [] args){
+    public static void main(String [] args) {
         System.out.println("Running the Grid Service Client");
-        try{
-        if(!(args.length < 2)){
-            if(args[0].equals("-url")){
-                CaArraySvcClient client = new CaArraySvcClient(args[1]);
-
-                StopWatch sw = new StopWatch();
-                sw.start();
-
-                CQLQuery cqlQuery = new CQLQuery();
-
-                Object target = new Object();
-                cqlQuery.setTarget(target);
-
-                target.setName(UserDefinedCharacteristic.class.getName());
-                Attribute a = new Attribute();
-                a.setName("id");
-                a.setValue("1");
-                a.setPredicate(Predicate.EQUAL_TO);
-                target.setAttribute(a);
-
-                CQLQueryResults results = client.query(cqlQuery);
-                CQLQueryResultsIterator iter = new CQLQueryResultsIterator(results, CaArraySvcClient.class.getResourceAsStream("client-config.wsdd"));
-                while (iter.hasNext()) {
-                    java.lang.Object o = iter.next();
-                    System.out.println("Characteristic: " + ToStringBuilder.reflectionToString(o));
-                }
-                sw.stop();
-                System.out.println("Time for simple data service retrieval: " + sw.toString());
-              
-                CaArrayFile file = new CaArrayFile();
-                file.setId(3L);
-                byte[] fileData = client.readFileUsingGridTransfer(file);
-                System.out.println("File data: ");
-                IOUtils.write(fileData, System.out);
-                
-                DataRetrievalRequest drr = new DataRetrievalRequest();
-                QuantitationType qt = new QuantitationType();
-                qt.setId(1L);
-                drr.addQuantitationType(qt);
-                qt = new QuantitationType();
-                qt.setId(2L);
-                drr.addQuantitationType(qt);
-                qt = new QuantitationType();
-                qt.setId(3L);
-                drr.addQuantitationType(qt);
-                Hybridization h = new Hybridization();
-                h.setId(1L);
-                drr.addHybridization(h);
-                DataSet ds = client.getDataSet(drr);
-                introspectDataSet(client, ds);
-                
-              // place client calls here if you want to use this main as a
-              // test....
-            } else {
-                usage();
-                System.exit(1);
-            }
-        } else {
+        if (args.length < 2 || !args[0].equals("-url")) {
             usage();
             System.exit(1);
         }
+        try {
+            CaArraySvcClient client = new CaArraySvcClient(args[1]);
+
+            cqlQueryTest(client);
+            gridTransferTest(client);
+            dataSetTest(client);
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(1);
         }
     }
+
+    private static void dataSetTest(CaArraySvcClient client) throws RemoteException, QueryProcessingExceptionType,
+            MalformedQueryExceptionType {
+        DataRetrievalRequest drr = new DataRetrievalRequest();
+        addQuantitationTypes(client, drr, QUANTITATION_TYPES_CSV_STRING);
+        addHybsByExperiment(client, drr, EXPERIMENT_TITLE);
+        DataSet ds = client.getDataSet(drr);
+        introspectDataSet(client, ds);
+    }
+
+    private static void gridTransferTest(CaArraySvcClient client) throws Exception, IOException {
+        CaArrayFile file = new CaArrayFile();
+        file.setId(FILE_ID);
+        byte[] fileData = client.readFileUsingGridTransfer(file);
+        System.out.println("File data: ");
+        IOUtils.write(fileData, System.out);
+    }
+
+    private static void cqlQueryTest(CaArraySvcClient client) throws RemoteException, QueryProcessingExceptionType,
+            MalformedQueryExceptionType {
+        StopWatch sw = new StopWatch();
+        sw.start();
+
+        CQLQuery cqlQuery = new CQLQuery();
+
+        Object target = new Object();
+        cqlQuery.setTarget(target);
+
+        target.setName(UserDefinedCharacteristic.class.getName());
+        Attribute a = new Attribute();
+        a.setName("id");
+        a.setValue(CHARACTERISTIC_ID);
+        a.setPredicate(Predicate.EQUAL_TO);
+        target.setAttribute(a);
+
+        CQLQueryResults results = client.query(cqlQuery);
+        CQLQueryResultsIterator iter = new CQLQueryResultsIterator(results, CaArraySvcClient.class.getResourceAsStream("client-config.wsdd"));
+        while (iter.hasNext()) {
+            java.lang.Object o = iter.next();
+            System.out.println("Characteristic: " + ToStringBuilder.reflectionToString(o));
+        }
+        sw.stop();
+        System.out.println("Time for simple data service retrieval: " + sw.toString());
+    }
     
-    private static void introspectDataSet(CaArraySvcClient client, DataSet dataSet) throws QueryProcessingExceptionType, MalformedQueryExceptionType, RemoteException {
+    private static void introspectDataSet(CaArraySvcClient client, DataSet dataSet) throws 
+        QueryProcessingExceptionType, MalformedQueryExceptionType, RemoteException {
+        
         int numValuesRetrieved = 0;
         int numColumns = 0;
 
@@ -168,7 +170,7 @@ public class CaArraySvcClient extends CaArraySvcClientBase implements CaArraySvc
             for (AbstractDataColumn column : oneHybData.getColumns()) {
                 numColumns++;
                 QuantitationType qType = column.getQuantitationType();
-                Class typeClass = qType.getTypeClass();
+                Class<?> typeClass = qType.getTypeClass();
                 // Retrieve the appropriate data depending on the type of the column.
                 if (typeClass == String.class) {
                     String[] values = ((StringColumn) column).getValues();
@@ -210,16 +212,15 @@ public class CaArraySvcClient extends CaArraySvcClientBase implements CaArraySvc
 
     }
     
-    private static void lookupExperiment(CaArraySvcClient client, DataRetrievalRequest request, String experimentName)
-            throws QueryProcessingExceptionType, MalformedQueryExceptionType, RemoteException {
-        // Locate the experiment and add its hybridizations to the request.
+    private static void addHybsByExperiment(CaArraySvcClient client, DataRetrievalRequest request, 
+            String experimentName) throws QueryProcessingExceptionType, MalformedQueryExceptionType, RemoteException {
         Experiment experiment = (Experiment) get(client, "gov.nih.nci.caarray.domain.project.Experiment", "title",
                 experimentName);
         Set<Hybridization> allHybs = experiment.getHybridizations();
         request.getHybridizations().addAll(allHybs);
     }
 
-    private static void lookupQuantitationTypes(CaArraySvcClient client, DataRetrievalRequest request,
+    private static void addQuantitationTypes(CaArraySvcClient client, DataRetrievalRequest request,
             String quantitationTypesCsv) throws QueryProcessingExceptionType, MalformedQueryExceptionType, RemoteException {
         String[] quantitationTypeNames = quantitationTypesCsv.split(",");
         if (quantitationTypeNames == null) {

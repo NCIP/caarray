@@ -431,7 +431,7 @@
     </ns4:Method>
    </ns4:Methods>
    <ns90:ResourcePropertiesList xsi:type="ns90:ResourcePropertiesListType" xmlns:ns90="gme://gov.nih.nci.cagrid.introduce/1/Resources">
-    <ns90:ResourceProperty qName="ns91:ServiceMetadata" fileLocation="serviceMetadata.xml" populateFromFile="true" register="true" xsi:type="ns90:ResourcePropertyType" xmlns:ns91="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata"/>
+    <ns90:ResourceProperty qName="ns91:ServiceMetadata" description="" fileLocation="serviceMetadata.xml" populateFromFile="true" register="true" xsi:type="ns90:ResourcePropertyType" xmlns:ns91="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata"/>
    </ns90:ResourcePropertiesList>
    <ns3:ResourceFrameworkOptions xsi:type="ns3:ResourceFrameworkOptions">
     <ns3:Main xsi:type="ns3:Main"/>

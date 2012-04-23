@@ -1,8 +1,8 @@
 <ns1:ServiceMetadata xmlns:ns1="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata">
  <ns1:serviceDescription>
-  <ns2:Service description="" name="CaArraySvc_v1_0" version="1.2" xmlns:ns2="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.service">
+  <ns2:Service description="CaArray v10 API" name="CaArraySvc_v1_0" version="1.2" xmlns:ns2="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.service">
    <ns2:pointOfContactCollection>
-    <ns3:PointOfContact affiliation="" email="" firstName="" lastName="" phoneNumber="" role="" xmlns:ns3="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.common"/>
+    <ns3:PointOfContact affiliation="National Cancer Institute Center for Bioinformatics - NCICB" email="duncanmk@mail.nih.gov" firstName="Maki" lastName="Duncan" phoneNumber="301-443-5307" role="Maintainer" xmlns:ns3="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.common"/>
    </ns2:pointOfContactCollection>
    <ns2:serviceContextCollection>
     <ns2:ServiceContext description="" name="CaArraySvc_v1_0">
@@ -10,7 +10,7 @@
       <ns2:Operation description="" name="getServiceSecurityMetadata">
        <ns2:inputParameterCollection/>
        <ns2:Output qName="ns4:ServiceSecurityMetadata" dimensionality="1" isArray="false" xmlns:ns4="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.security">
-        <ns5:UMLClass className="ServiceSecurityMetadata" description="An instance of the Security Service Metadata." id="BE04FA9C-90C7-6415-E040-BB89AD432D93" packageName="gov.nih.nci.cagrid.metadata.security" projectName="caGrid_Metadata_Models" projectVersion="1" xmlns:ns5="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.common">
+        <ns5:UMLClass className="ServiceSecurityMetadata" description="An instance of the Security Service Metadata." id="BE191889-6616-4CB0-E040-BB89AD431BEA" packageName="gov.nih.nci.cagrid.metadata.security" projectName="caGrid_Metadata_Models" projectVersion="1" xmlns:ns5="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.common">
          <ns5:umlAttributeCollection/>
          <ns5:SemanticMetadata conceptCode="C80736" conceptDefinition="A software system providing a public need." conceptName="Software Service" order="2"/>
          <ns5:SemanticMetadata conceptCode="C25669" conceptDefinition="Security; freedom from anxiety or fear." conceptName="Security" order="1"/>
@@ -267,7 +267,7 @@
       <ns2:Operation description="" name="getServiceSecurityMetadata">
        <ns2:inputParameterCollection/>
        <ns2:Output qName="ns63:ServiceSecurityMetadata" dimensionality="1" isArray="false" xmlns:ns63="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.security">
-        <ns64:UMLClass className="ServiceSecurityMetadata" description="An instance of the Security Service Metadata." id="BE04FA9C-90C7-6415-E040-BB89AD432D93" packageName="gov.nih.nci.cagrid.metadata.security" projectName="caGrid_Metadata_Models" projectVersion="1" xmlns:ns64="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.common">
+        <ns64:UMLClass className="ServiceSecurityMetadata" description="An instance of the Security Service Metadata." id="BE191889-6616-4CB0-E040-BB89AD431BEA" packageName="gov.nih.nci.cagrid.metadata.security" projectName="caGrid_Metadata_Models" projectVersion="1" xmlns:ns64="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.common">
          <ns64:umlAttributeCollection/>
          <ns64:SemanticMetadata conceptCode="C80736" conceptDefinition="A software system providing a public need." conceptName="Software Service" order="2"/>
          <ns64:SemanticMetadata conceptCode="C25669" conceptDefinition="Security; freedom from anxiety or fear." conceptName="Security" order="1"/>
@@ -286,7 +286,8 @@
  </ns1:serviceDescription>
  <ns1:hostingResearchCenter>
   <ns67:ResearchCenter displayName="National Cancer Institute Center for Bioinformatics - NCICB" shortName="NCICB" xmlns:ns67="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.common">
-   <ns67:Address country="US" locality="Rockville" postalCode="20852" stateProvince="MD" street1="2115 E. Jefferson Street"/>
+   <ns67:Address country="US" locality="Rockville" postalCode="20852" stateProvince="MD" street1="2115 E. Jefferson Street" street2=""/>
+   <ns67:ResearchCenterDescription description="" homepageURL="" imageURL="" rssNewsURL=""/>
    <ns67:pointOfContactCollection>
     <ns67:PointOfContact affiliation="National Cancer Institute Center for Bioinformatics - NCICB" email="duncanmk@mail.nih.gov" firstName="Maki" lastName="Duncan" phoneNumber="301-443-5307" role="Project Manager"/>
    </ns67:pointOfContactCollection>
