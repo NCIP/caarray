@@ -59,6 +59,10 @@
           <name>etcDirectoryPath</name>
           <value>ETC-PATH</value>
         </parameter>
+        <parameter>
+          <name>caGridWsEnumeration_iterImplType</name>
+          <value>@caGridWsEnumeration_iterImplType@</value>
+        </parameter>
       </resourceParams>
     </resource>
     <resource name="home" type="gov.nih.nci.caarray.services.external.v1_0.grid.service.globus.resource.CaArraySvc_v1_0ResourceHome">

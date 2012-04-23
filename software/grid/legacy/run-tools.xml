@@ -1,10 +1,9 @@
 <project name="run-tools file" basedir="." default="runClient">
-     <target name="runClient" depends="checkGlobus, defineClasspaths" description="Run the sample Client">
+     <target name="runClient" depends="init" description="Run the sample Client">
         <property name="service.url" value="http://localhost:8080/wsrf/services/cagrid/CaArraySvc" />
         <echo message="Connecting to service: ${service.url}" />
-        <java classname="gov.nih.nci.cagrid.caarray.client.CaArraySvcClient" classpathref="run.classpath" fork="true" maxmemory="512m">
+        <java failonerror="true" classname="gov.nih.nci.cagrid.caarray.client.CaArraySvcClient" classpathref="run.classpath" fork="yes">
             <jvmarg value="-DGLOBUS_LOCATION=${ext.globus.dir}" />
-            <jvmarg value="-agentlib:yjpagent=sessionname=GridClient"/>
             <arg value="-url" />
             <arg value="${service.url}" />
         </java>

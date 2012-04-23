@@ -11,6 +11,8 @@
     <parameter name="loadOnStartup" value="true" />
     <parameter name="securityMetadata" value="ETC-PATH/CaGridEnumeration-security-metadata.xml" />
     <parameter name="castorMapping" value="/gov/nih/nci/caarray/services/external/v1_0/grid/xml-mapping.xml" />
+    <parameter name="cagridenumeration-etcDirectoryPath" value="ETC-PATH" />
+    <parameter name="cagridenumeration-serviceName" value="CaGridEnumeration" />
   </service>
   <service name="SERVICE-INSTANCE-PREFIX/CaArraySvc_v1_0" provider="Handler" use="literal" style="document">
     <parameter name="className" value="gov.nih.nci.caarray.services.external.v1_0.grid.service.globus.CaArraySvc_v1_0ProviderImpl" />
@@ -23,6 +25,8 @@
     <parameter name="loadOnStartup" value="true" />
     <parameter name="securityMetadata" value="ETC-PATH/CaArraySvc_v1_0-security-metadata.xml" />
     <parameter name="castorMapping" value="/gov/nih/nci/caarray/services/external/v1_0/grid/xml-mapping.xml" />
+    <parameter name="caarraysvc_v1_0-etcDirectoryPath" value="ETC-PATH" />
+    <parameter name="caarraysvc_v1_0-serviceName" value="CaArraySvc_v1_0" />
   </service>
   <typeMapping name="AggregatorContent" qname="aggr:AggregatorContent" type="java:org.globus.mds.aggregator.types.AggregatorContent" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" />
   <!-- START INTRODUCE TYPEMAPPINGS -->
