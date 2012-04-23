@@ -7,6 +7,10 @@
     
     <panel order="1">
     
+        <variable name="single.sign.on.install" value=""/>
+        <variable name="cas.server.hostname" value=""/>
+        <variable name="cas.server.port" value=""/>
+        <variable name="ldap.authentication.enabled" value=""/>
         <variable name="ldap.url" value=""/>
         <variable name="ldap.search.base" value=""/>
         <variable name="ldap.search.prefix" value=""/>
@@ -234,6 +238,7 @@
         <variable name="min.pool.size" value="5"/>
         <variable name="max.pool.size" value="30"/>
         <variable name="idle.timeout.minutes" value="300"/>
+        <variable name="single.sign.on.install" value="false"/>
         <variable name="ldap.authentication.enabled" value="false"/>
     </panel>
 
@@ -750,10 +755,10 @@
         <field type="staticText" align="left" txt="caArray supports CAS technology as way of facilitating Single Sign-On. Make a selection if you plan to use your system in SSO-enabled mode."/>
         <field type="divider" align="top"/>
         <field type="radio" variable="single.sign.on.install">
-            <description align="left" txt="Use CAS Single Sign-On:"/>
+            <description align="left" txt=""/>
             <spec>
-                <choice txt="SSO Disabled" value="false" set="false" />
-                <choice txt="SSO Enabled" value="true" />
+                <choice txt="Do not use SSO" value="false" set="false" />
+                <choice txt="Use SSO" value="true" />
             </spec>
         </field>
     </panel>
