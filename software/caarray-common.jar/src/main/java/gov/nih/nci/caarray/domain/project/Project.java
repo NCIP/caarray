@@ -258,8 +258,11 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
         return filterForUserVisibleFiles(getFiles());
     }
 
-    @SuppressWarnings({"unused", "PMD.UnusedPrivateMethod" })
-    private void setFiles(final SortedSet<CaArrayFile> filesVal) {
+    /**
+     * Sets the files.
+     * @param filesVal the files to set
+     */
+    public void setFiles(final SortedSet<CaArrayFile> filesVal) {
         this.files = filesVal;
     }
 
