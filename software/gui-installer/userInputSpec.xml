@@ -7,11 +7,11 @@
     
     <panel order="1">
     
-        <variable name="single.sign.on.install" value=""/>
-        <variable name="cas.server.hostname" value=""/>
-        <variable name="cas.server.port" value=""/>
-        <variable name="ldap.authentication.enabled" value=""/>
-        <variable name="ldap.url" value=""/>
+        <variable name="single.sign.on.install" value="false"/>
+        <variable name="cas.server.hostname" value="localhost"/>
+        <variable name="cas.server.port" value="8443"/>
+        <variable name="ldap.authentication.enabled" value="false"/>
+        <variable name="ldap.url" value="ldaps://$HOST_NAME:636"/>
         <variable name="ldap.search.base" value=""/>
         <variable name="ldap.search.prefix" value=""/>
         
@@ -25,7 +25,7 @@
                 <choice txt="Upgrade" value="upgrade" />
             </spec>
         </field>
-    <fileextractor>
+        <fileextractor>
             <extractfile filename="res/cleanup.xml" toDirName="."/>               
         </fileextractor>
         <panelreader classname="res/cleanup.xml" methodname="cleanup" language="ant"/>
@@ -238,8 +238,6 @@
         <variable name="min.pool.size" value="5"/>
         <variable name="max.pool.size" value="30"/>
         <variable name="idle.timeout.minutes" value="300"/>
-        <variable name="single.sign.on.install" value="false"/>
-        <variable name="ldap.authentication.enabled" value="false"/>
     </panel>
 
     <panel order="7">
@@ -772,7 +770,7 @@
             <validator class="com.izforge.izpack.util.NotEmptyValidator" txt="CAS Server Hostname is a required field"/>
         </field>
         <field type="text" variable="cas.server.port">
-            <spec txt="CAS Server Port Number " size="25" set="8443"/>
+            <spec txt="CAS Server Port Number " size="25" set=""/>
         </field>
     </panel>
 
@@ -794,7 +792,7 @@
         <field type="staticText" align="left" txt="Choose the URL for the LDAP server and the Base DN for authenticating users."/>
         <field type="divider" align="top"/>
         <field type="text" variable="ldap.url">
-            <spec txt="LDAP URL " size="25" set="ldaps://$HOST_NAME:636"/>
+            <spec txt="LDAP URL " size="25" set=""/>
             <validator class="com.izforge.izpack.util.NotEmptyValidator" txt="LDAP URL is a required field" />
         </field>
         <field type="text" variable="ldap.search.base">
