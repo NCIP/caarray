@@ -121,13 +121,12 @@ import com.google.inject.Inject;
  */
 @Local(FileAccessService.class)
 @Stateless
-@Interceptors({ ExceptionLoggingInterceptor.class, InjectionInterceptor.class })
+@Interceptors({ExceptionLoggingInterceptor.class, InjectionInterceptor.class })
 public class FileAccessServiceBean implements FileAccessService {
     /** Minimum age of a data block that can be removed if it is unreferenced. */
     public static final int MIN_UNREFERENCABLE_DATA_AGE = 300000;
 
-    private static final Logger LOG = Logger
-            .getLogger(FileAccessServiceBean.class);
+    private static final Logger LOG = Logger.getLogger(FileAccessServiceBean.class);
 
     private FileDao fileDao;
     private ArrayDao arrayDao;
@@ -178,16 +177,14 @@ public class FileAccessServiceBean implements FileAccessService {
             return caArrayFile;
         } catch (final IOException e) {
             LogUtil.logSubsystemExit(LOG);
-            throw new FileAccessException("File " + filename
-                    + " couldn't be read", e);
+            throw new FileAccessException("File " + filename + " couldn't be read", e);
         }
     }
 
     /**
      * {@inheritDoc}
      */
-    public CaArrayFile addChunk(File file, String fileName, Long fileSize,
-            CaArrayFile caArrayFile) {
+    public CaArrayFile addChunk(File file, String fileName, Long fileSize, CaArrayFile caArrayFile) {
         if (caArrayFile == null) {
             caArrayFile = getFile(fileName, fileSize);
         }
@@ -199,35 +196,31 @@ public class FileAccessServiceBean implements FileAccessService {
     }
 
     private CaArrayFile getFile(String fileName, long fileSize) {
-        CaArrayFile caArrayFile = createCaArrayFile(fileName, null,
-                FileStatus.UPLOADING);
+        CaArrayFile caArrayFile = createCaArrayFile(fileName, null, FileStatus.UPLOADING);
         caArrayFile.setUncompressedSize(fileSize);
         return caArrayFile;
     }
-
+    
     private void readChunk(File chunk, CaArrayFile caArrayFile) {
         try {
             final InputStream is = FileUtils.openInputStream(chunk);
-            final StorageMetadata metadata = this.dataStorageFacade
-                    .addFileChunk(caArrayFile.getDataHandle(), is);
+            final StorageMetadata metadata = this.dataStorageFacade.addFileChunk(caArrayFile.getDataHandle(), is);
             caArrayFile.setDataHandle(metadata.getHandle());
             caArrayFile.setPartialSize(metadata.getPartialSize());
             IOUtils.closeQuietly(is);
         } catch (final IOException e) {
-            throw new FileAccessException("File " + caArrayFile.getName()
-                    + " couldn't be read", e);
+            throw new FileAccessException("File " + caArrayFile.getName() + " couldn't be read", e);
         }
     }
-
+    
     private void finalizeUpload(CaArrayFile caArrayFile) {
-        StorageMetadata metadata = dataStorageFacade
-                .finalizeChunkedFile(caArrayFile.getDataHandle());
+        StorageMetadata metadata = dataStorageFacade.finalizeChunkedFile(caArrayFile.getDataHandle());
         caArrayFile.setDataHandle(metadata.getHandle());
         caArrayFile.setCompressedSize(metadata.getCompressedSize());
         caArrayFile.setUncompressedSize(metadata.getUncompressedSize());
         caArrayFile.setFileStatus(FileStatus.UPLOADED);
     }
-
+    
     /**
      * {@inheritDoc}
      */
@@ -238,33 +231,26 @@ public class FileAccessServiceBean implements FileAccessService {
     /**
      * {@inheritDoc}
      */
-    public CaArrayFile add(InputStream stream, String filename,
-            CaArrayFile parent) {
-        final CaArrayFile caArrayFile = createCaArrayFile(filename, parent,
-                FileStatus.UPLOADED);
+    public CaArrayFile add(InputStream stream, String filename, CaArrayFile parent) {
+        final CaArrayFile caArrayFile = createCaArrayFile(filename, parent, FileStatus.UPLOADED);
         try {
-            final StorageMetadata metadata = this.dataStorageFacade.addFile(
-                    stream, false);
+            final StorageMetadata metadata = this.dataStorageFacade.addFile(stream, false);
             caArrayFile.setCompressedSize(metadata.getCompressedSize());
             caArrayFile.setUncompressedSize(metadata.getUncompressedSize());
             caArrayFile.setDataHandle(metadata.getHandle());
         } catch (final DataStoreException e) {
-            throw new FileAccessException("Stream " + filename
-                    + " couldn't be written", e);
+            throw new FileAccessException("Stream " + filename + " couldn't be written", e);
         }
         return caArrayFile;
     }
 
-    private CaArrayFile createCaArrayFile(String filename, CaArrayFile parent,
-            FileStatus status) {
+    private CaArrayFile createCaArrayFile(String filename, CaArrayFile parent, FileStatus status) {
         final CaArrayFile caArrayFile = new CaArrayFile(parent);
         caArrayFile.setFileStatus(status);
         caArrayFile.setName(filename);
-        caArrayFile.setFileType(this.typeRegistry
-                .getTypeFromExtension(filename));
+        caArrayFile.setFileType(this.typeRegistry.getTypeFromExtension(filename));
 
-        // set the child file's project to that of the parent. Add the child to
-        // the parent.
+        // set the child file's project to that of the parent. Add the child to the parent.
         if (parent != null) {
             caArrayFile.setProject(parent.getProject());
             parent.addChild(caArrayFile);
@@ -278,18 +264,15 @@ public class FileAccessServiceBean implements FileAccessService {
      */
     public boolean remove(CaArrayFile caArrayFile) {
         LogUtil.logSubsystemEntry(LOG, caArrayFile);
-
-        this.fileDao.flushSession(); // bean called in Session FlushMode.COMMIT.
-                                     // Must flush prior to dao check
+        
+        this.fileDao.flushSession(); // bean called in Session FlushMode.COMMIT.  Must flush prior to dao check
 
         if (caArrayFile.getProject() != null
-                && !this.fileDao.getDeletableFiles(
-                        caArrayFile.getProject().getId()).contains(caArrayFile)) {
+                && !this.fileDao.getDeletableFiles(caArrayFile.getProject().getId()).contains(caArrayFile)) {
             return false;
         }
 
-        final AbstractArrayData data = this.arrayDao.getArrayData(caArrayFile
-                .getId());
+        final AbstractArrayData data = this.arrayDao.getArrayData(caArrayFile.getId());
         if (data != null) {
             for (final Hybridization h : data.getHybridizations()) {
                 h.removeArrayData(data);
@@ -297,11 +280,9 @@ public class FileAccessServiceBean implements FileAccessService {
             }
             this.arrayDao.remove(data);
         }
-
-        if (data != null
-                || FileStatus.SUPPLEMENTAL.equals(caArrayFile.getFileStatus())) {
-            caArrayFile.getProject().getExperiment()
-                    .setLastDataModificationDate(new Date());
+        
+        if (data != null || FileStatus.SUPPLEMENTAL.equals(caArrayFile.getFileStatus())) {
+            caArrayFile.getProject().getExperiment().setLastDataModificationDate(new Date());
         }
 
         for (CaArrayFile childFile : caArrayFile.getChildren()) {
@@ -330,7 +311,7 @@ public class FileAccessServiceBean implements FileAccessService {
         // by id and calling remove on the Set with it still caused same error.
         // Current solution is re-adding all files to the new collection except
         // the one to be deleted: it is not pretty but gets the job done..
-
+        
         SortedSet<CaArrayFile> files = caArrayFile.getProject().getFiles();
         SortedSet<CaArrayFile> filesToKeep = new TreeSet<CaArrayFile>();
         Long fileId = caArrayFile.getId();
@@ -349,13 +330,11 @@ public class FileAccessServiceBean implements FileAccessService {
     public void synchronizeDataStorage() {
         final Set<URI> references = getActiveReferences();
         LOG.debug("Currently active references:" + references);
-        this.dataStorageFacade.removeUnreferencedData(references,
-                MIN_UNREFERENCABLE_DATA_AGE);
+        this.dataStorageFacade.removeUnreferencedData(references, MIN_UNREFERENCABLE_DATA_AGE);
     }
 
     private Set<URI> getActiveReferences() {
-        final Set<URI> references = Sets.newHashSet(this.fileDao
-                .getAllFileHandles());
+        final Set<URI> references = Sets.newHashSet(this.fileDao.getAllFileHandles());
         references.addAll(this.arrayDao.getAllParsedDataHandles());
         return references;
     }
@@ -369,9 +348,9 @@ public class FileAccessServiceBean implements FileAccessService {
         LogUtil.logSubsystemExit(LOG);
     }
 
+
     /**
-     * @param fileDao
-     *            the fileDao to set
+     * @param fileDao the fileDao to set
      */
     @Inject
     public void setFileDao(FileDao fileDao) {
@@ -379,8 +358,7 @@ public class FileAccessServiceBean implements FileAccessService {
     }
 
     /**
-     * @param arrayDao
-     *            the arrayDao to set
+     * @param arrayDao the arrayDao to set
      */
     @Inject
     public void setArrayDao(ArrayDao arrayDao) {
@@ -388,8 +366,7 @@ public class FileAccessServiceBean implements FileAccessService {
     }
 
     /**
-     * @param dataStorageFacade
-     *            the dataStorageFacade to set
+     * @param dataStorageFacade the dataStorageFacade to set
      */
     @Inject
     public void setDataStorageFacade(DataStorageFacade dataStorageFacade) {
@@ -397,8 +374,7 @@ public class FileAccessServiceBean implements FileAccessService {
     }
 
     /**
-     * @param typeRegistry
-     *            the typeRegistry to set
+     * @param typeRegistry the typeRegistry to set
      */
     @Inject
     public void setTypeRegistry(FileTypeRegistry typeRegistry) {
