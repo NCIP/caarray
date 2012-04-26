@@ -2034,8 +2034,9 @@
             properties.file="${bda.lite.grid.cfg.properties.file}"
             temp.dir="${caarray-grid-svc.base.dir}/target/bda_lite_cfg/temp"
             grid.template.basedir="${caarray-grid-svc.base.dir}/target/bda_lite_cfg"
-            grid.target.basedir="${caarray-grid-svc.base.dir}/target/bda_lite_cfg"/>
-      <delete dir="${caarray-grid-svc.base.dir}/target/bda_lite_cfg/temp"/>
+            grid.target.basedir="${caarray-grid-svc.base.dir}/target/bda_lite_cfg"
+            grid.svczip.dir="${caarray-grid-svc.base.dir}/target/bda_lite_cfg" />
+        <delete dir="${caarray-grid-svc.base.dir}/target/bda_lite_cfg/temp"/>
         <delete file="${bda.lite.grid.cfg.properties.file}"/>
     </target>
 
