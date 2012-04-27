@@ -82,9 +82,17 @@
  */
 package gov.nih.nci.caarray.util;
 
+import gov.nih.nci.caarray.domain.data.AbstractArrayData;
+import gov.nih.nci.caarray.domain.file.CaArrayFile;
+import gov.nih.nci.caarray.domain.file.FileCategory;
+import gov.nih.nci.caarray.domain.file.FileStatus;
+import gov.nih.nci.caarray.domain.file.FileType;
+import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.domain.permissions.AccessProfile;
 import gov.nih.nci.caarray.domain.permissions.CollaboratorGroup;
 import gov.nih.nci.caarray.domain.permissions.SampleSecurityLevel;
+import gov.nih.nci.caarray.domain.permissions.SecurityLevel;
+import gov.nih.nci.caarray.domain.project.Experiment;
 import gov.nih.nci.caarray.domain.project.Project;
 import gov.nih.nci.caarray.domain.sample.Sample;
 import gov.nih.nci.security.authorization.domainobjects.Group;
@@ -92,6 +100,7 @@ import gov.nih.nci.security.authorization.domainobjects.User;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -102,7 +111,6 @@ import com.fiveamsolutions.nci.commons.audit.AuditLogDetail;
 import com.fiveamsolutions.nci.commons.audit.AuditLogRecord;
 import com.fiveamsolutions.nci.commons.audit.AuditType;
 import com.fiveamsolutions.nci.commons.audit.DefaultProcessor;
-import gov.nih.nci.caarray.domain.permissions.SecurityLevel;
 
 /**
  *
@@ -115,17 +123,31 @@ public class CaArrayAuditLogProcessor extends DefaultProcessor {
         Project.class,
         AccessProfile.class,
         CollaboratorGroup.class,
-        Group.class
+        Group.class,
+        Experiment.class,
+        AbstractArrayData.class
     };
 
     private static final Logger LOG = Logger.getLogger(CaArrayAuditLogProcessor.class);
     /**
-     * default ctor, logs security classes.
+     * default constructor, logs security classes.
      */
     CaArrayAuditLogProcessor() {
         super(AUDITED_CLASSES);
     }
-
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isAuditableEntity(Object o) {
+        boolean isAuditable = super.isAuditableEntity(o);
+        if (!isAuditable && CaArrayFile.class.isAssignableFrom(o.getClass())) {
+            return FileStatus.SUPPLEMENTAL.equals(((CaArrayFile) o).getFileStatus());
+        }
+        return isAuditable;
+    }
+    
     /**
      * {@inheritDoc}
      */
@@ -142,6 +164,12 @@ public class CaArrayAuditLogProcessor extends DefaultProcessor {
             logGroup(record, (Group) entity, property, columnName, oldVal, newVal);
         } else if (entity instanceof CollaboratorGroup) {
             logCollaboratorGroup(record, (CollaboratorGroup) entity, property, columnName, oldVal, newVal);
+        } else if (entity instanceof Experiment) {
+            logExperiment(record, (Experiment) entity, property, columnName, oldVal, newVal);
+        } else if (entity instanceof AbstractArrayData) {
+            logArrayData(record, (AbstractArrayData) entity, property, columnName, oldVal, newVal);
+        } else if (entity instanceof CaArrayFile) {
+            logCaArrayFile(record, (CaArrayFile) entity, property, columnName, oldVal, newVal);
         } else {
             LOG.debug("ignoring property " + record.getEntityName() + "." + property);
         }
@@ -170,19 +198,45 @@ public class CaArrayAuditLogProcessor extends DefaultProcessor {
         }
     }
 
-    @SuppressWarnings("PMD.ExcessiveParameterList")
-    private void logProject(AuditLogRecord record, Project entity, String property, String columnName,
+    @SuppressWarnings({"PMD.ExcessiveParameterList", "unchecked" })
+    private void logProject(AuditLogRecord record, Project project, String property, String columnName,
             Object oldVal, Object newVal) {
         if ("locked".equals(property)) {
             AuditLogDetail detail = new AuditLogDetail(record, columnName, null, null);
             super.processDetail(detail, oldVal, newVal);
             String newS = Boolean.TRUE.equals(newVal) ? "Locked" : "Unlocked";
-            detail.setMessage("Experiment " + entity.getExperiment().getTitle() + " " + newS
+            detail.setMessage("Experiment " + project.getExperiment().getTitle() + " " + newS
                     + (record.getType() == AuditType.INSERT ?  " when created" : ""));
             record.getDetails().add(detail);
+        } else if ("files".equals(property)) {
+            Set<Long> newIds = new HashSet<Long>();
+            for (CaArrayFile newFile : (Set<CaArrayFile>) newVal) {
+                newIds.add(newFile.getId());
+            }
+            for (CaArrayFile oldFile : (Set<CaArrayFile>) oldVal) {
+                if (!newIds.contains(oldFile.getId()) && auditFileDeletion(oldFile)) {
+                    addExperimentDetail(record, columnName, project.getExperiment());
+                    AuditLogDetail detail = new AuditLogDetail(record, columnName, null, null);
+                    super.processDetail(detail, oldFile, null);
+                    detail.setMessage(" - File " + oldFile.getName() + " deleted");
+                    record.getDetails().add(detail);
+                }
+            }
         } else {
             LOG.debug("ignoring property " + record.getEntityName() + "." + property);
         }
+    }
+    
+    private boolean auditFileDeletion(CaArrayFile file) {
+        FileStatus fileStatus = file.getFileStatus();
+        if (FileStatus.SUPPLEMENTAL.equals(fileStatus)) {
+            return true;
+        } else if (FileStatus.IMPORTED.equals(fileStatus) || FileStatus.IMPORTED_NOT_PARSED.equals(fileStatus)) {
+            FileType fileType = file.getFileType();
+            FileCategory fileCat = fileType == null ? null : fileType.getCategory();
+            return FileCategory.DERIVED_DATA.equals(fileCat) || FileCategory.RAW_DATA.equals(fileCat);
+        }
+        return false;
     }
 
     @SuppressWarnings({"PMD.ExcessiveParameterList", "unchecked" })
@@ -243,7 +297,67 @@ public class CaArrayAuditLogProcessor extends DefaultProcessor {
             LOG.debug("ignoring property " + record.getEntityName() + "." + property);
         }
     }
+    
+    @SuppressWarnings({"PMD.ExcessiveParameterList", "unchecked" })
+    private void logExperiment(AuditLogRecord record, Experiment experiment, String property, 
+            String columnName, Object oldVal, Object newVal) {
+        if ("samples".equals(property)) {
+            Set<Long> oldIds = new HashSet<Long>();
+            Set<Long> newIds = new HashSet<Long>();
+            for (Sample s : (Set<Sample>) newVal) {
+                newIds.add(s.getId());
+            }
+            for (Sample s : (Set<Sample>) oldVal) {
+                oldIds.add(s.getId());
+                if (!newIds.contains(s.getId())) {
+                    addExperimentDetail(record, columnName, experiment);
+                    AuditLogDetail detail = new AuditLogDetail(record, columnName, null, null);
+                    super.processDetail(detail, s, null);
+                    detail.setMessage(" - Sample " + s.getName() + " deleted");
+                    record.getDetails().add(detail);
+                }
+            }
+            for (Sample s : (Set<Sample>) newVal) {
+                if (!oldIds.contains(s.getId())) {
+                    addExperimentDetail(record, columnName, experiment);
+                    AuditLogDetail detail = new AuditLogDetail(record, columnName, null, null);
+                    super.processDetail(detail, null, s);
+                    detail.setMessage(" - Sample " + s.getName() + " added");
+                    record.getDetails().add(detail);
+                }
+            }
+        }
+    }
+    
+    @SuppressWarnings("PMD.ExcessiveParameterList")
+    private void logCaArrayFile(AuditLogRecord record, CaArrayFile file, String property, 
+            String columnName, Object oldVal, Object newVal) {
+        if ("status".equals(property)
+                && FileStatus.valueOf((String) newVal) == FileStatus.SUPPLEMENTAL) {
+            addExperimentDetail(record, columnName, file.getProject().getExperiment());
+            AuditLogDetail detail = new AuditLogDetail(record, columnName, (String) oldVal, (String) newVal);
+            detail.setMessage(" - Supplementail File " + file.getName() + " added");
+            record.getDetails().add(detail);
+        }
+    }
 
+    @SuppressWarnings({"PMD.ExcessiveParameterList", "unchecked" })
+    private void logArrayData(AuditLogRecord record, AbstractArrayData ad, String property, 
+            String columnName, Object oldVal, Object newVal) {
+        if ("hybridizations".equals(property)) {
+            Set<Hybridization> oldHybs = oldVal == null ? new HashSet<Hybridization>() : (Set<Hybridization>) oldVal;
+            Set<Hybridization> newHybs = newVal == null ? new HashSet<Hybridization>() : (Set<Hybridization>) newVal;
+            if (newHybs.size() > oldHybs.size()) {
+                CaArrayFile file = ad.getDataFile();
+                addExperimentDetail(record, columnName, file.getProject().getExperiment());
+                AuditLogDetail detail = new AuditLogDetail(record, columnName, null, null);
+                super.processDetail(detail, null, newVal);
+                detail.setMessage(" - Data File " + file.getName() + " added");
+                record.getDetails().add(detail);
+            }
+        }
+    }
+    
     private void logAccessProfileSamples(AuditLogRecord record, AccessProfile entity, String columnName,
             Map<Sample, SampleSecurityLevel> o, Map<Sample, SampleSecurityLevel> n) {
         
@@ -291,6 +405,14 @@ public class CaArrayAuditLogProcessor extends DefaultProcessor {
         if (!added1Sample) {
             // no need for a header is nothing was added.
             record.getDetails().remove(detail);
+        }
+    }
+    
+    private void addExperimentDetail(AuditLogRecord record, String attribute, Experiment experiment) {
+        if (record.getDetails().size() == 0) {
+            AuditLogDetail detail = new AuditLogDetail(record, attribute, null, null);
+            detail.setMessage("Experiment " + experiment.getTitle() + ":");
+            record.getDetails().add(detail);
         }
     }
 }

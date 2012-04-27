@@ -300,18 +300,10 @@ public class FileAccessServiceBean implements FileAccessService {
     }
 
     private void removeFile(CaArrayFile caArrayFile) {
-        // Simple caArrayFile.getProject().getFiles().remove(caArrayFile);
-        // before attempting to remove it as a PersistentObject on the last line
-        // of this function does not work and leads to a bug ARRAY-2349
-
-        // The root cause was that the file was not getting removed from the
-        // files collection of the parent Project which caused error at removing
-        // it as a PersistentObject. The problem was not solved by trying to be
-        // more thorough on the removing side as well: finding file in the Set
-        // by id and calling remove on the Set with it still caused same error.
-        // Current solution is re-adding all files to the new collection except
-        // the one to be deleted: it is not pretty but gets the job done..
-        
+        // A hibernate bug is preventing us from simply calling caArrayFile.getProject().getFiles().remove(caArrayFile)
+        // https://hibernate.onjira.com/browse/HHH-3799
+        // The workaround is to clear the collection and re-add everything we don't want to delete.
+        // This is in reference to issue ARRAY-2349.
         SortedSet<CaArrayFile> files = caArrayFile.getProject().getFiles();
         SortedSet<CaArrayFile> filesToKeep = new TreeSet<CaArrayFile>();
         Long fileId = caArrayFile.getId();
@@ -320,7 +312,8 @@ public class FileAccessServiceBean implements FileAccessService {
                 filesToKeep.add(file);
             }
         }
-        caArrayFile.getProject().setFiles(filesToKeep);
+        files.clear();
+        files.addAll(filesToKeep);
         this.fileDao.remove(caArrayFile);
     }
 

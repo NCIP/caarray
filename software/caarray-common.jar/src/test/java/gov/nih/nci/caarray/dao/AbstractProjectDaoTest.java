@@ -179,8 +179,11 @@ public class AbstractProjectDaoTest extends AbstractDaoTest {
         DUMMY_PROJECT_1.setExperiment(DUMMY_EXPERIMENT_1);
         DUMMY_EXPERIMENT_1.setOrganism(DUMMY_ORGANISM);
         DUMMY_EXPERIMENT_1.setManufacturer(DUMMY_PROVIDER);
+        DUMMY_EXPERIMENT_1.setProject(DUMMY_PROJECT_1);
         DUMMY_PROJECT_2.setExperiment(DUMMY_EXPERIMENT_2);
+        DUMMY_EXPERIMENT_2.setProject(DUMMY_PROJECT_2);
         DUMMY_PROJECT_3.setExperiment(DUMMY_EXPERIMENT_3);
+        DUMMY_EXPERIMENT_3.setProject(DUMMY_PROJECT_3);
     }
 
     protected static void setHybridizations() {
@@ -302,8 +305,10 @@ public class AbstractProjectDaoTest extends AbstractDaoTest {
         DUMMY_FILE_2.setDataHandle(DUMMY_HANDLE);
 
         DUMMY_DATA_FILE.setName("dummy.cel");
-        DUMMY_DATA_FILE.setFileStatus(FileStatus.UPLOADED);
         DUMMY_DATA_FILE.setFileType(new FileType("AFFYMETRIX_CEL", FileCategory.RAW_DATA, true));
+        DUMMY_DATA_FILE.setFileStatus(FileStatus.UPLOADED);
+        DUMMY_PROJECT_2.getFiles().add(DUMMY_DATA_FILE);
+        DUMMY_DATA_FILE.setProject(DUMMY_PROJECT_2);
         DUMMY_DATA_FILE.setDataHandle(DUMMY_HANDLE);
     }
 

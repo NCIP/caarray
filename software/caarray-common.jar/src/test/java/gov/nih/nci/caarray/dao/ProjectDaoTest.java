@@ -194,32 +194,6 @@ public class ProjectDaoTest extends AbstractProjectDaoTest {
 
     }
 
-    @Test
-    public void testSaveModifiedFiles() {
-        Transaction tx = null;
-        try {
-            tx = this.hibernateHelper.beginTransaction();
-            saveSupportingObjects();
-            daoObject.save(DUMMY_PROJECT_1);
-            tx.commit();
-
-            tx = this.hibernateHelper.beginTransaction();
-            Project retrievedProject = searchDao.retrieve(Project.class, DUMMY_PROJECT_1.getId());
-            Date modifiedDate = retrievedProject.getExperiment().getLastDataModificationDate();
-            CaArrayFile file = new CaArrayFile();
-            file.setFileStatus(FileStatus.SUPPLEMENTAL);
-            file.setDataHandle(DUMMY_HANDLE);
-            retrievedProject.getFiles().add(file);
-            daoObject.save(retrievedProject);
-            assertNotSame(modifiedDate, retrievedProject.getExperiment().getLastDataModificationDate());
-            tx.commit();
-        } catch (final DAOException e) {
-            this.hibernateHelper.rollbackTransaction(tx);
-            throw e;
-        }
-
-    }
-
     /**
      * Tests retrieving the <code>Project</code> with the given id. Test encompasses save and delete of a
      * <code>Project</code>.

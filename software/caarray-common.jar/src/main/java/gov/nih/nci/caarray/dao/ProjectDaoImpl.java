@@ -192,7 +192,7 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
             try {
                 tempSession.enableFilter(Experiment.BIOMATERIAL_FILTER_NAME);
                 Project prePersistPrj = (Project) tempSession.load(Project.class, project.getId());
-                return samplesChanged(prePersistPrj, project) || filesChanged(prePersistPrj, project);
+                return samplesChanged(prePersistPrj, project);
             } finally {
                 tempSession.close();
             }
@@ -205,10 +205,6 @@ class ProjectDaoImpl extends AbstractCaArrayDaoImpl implements ProjectDao {
         return proj1.getExperiment().getSamples().size() != proj2.getExperiment().getSamples().size();
     }
 
-    private boolean filesChanged(Project proj1, Project proj2) {
-        return proj1.getUserVisibleFiles().size() != proj2.getUserVisibleFiles().size();
-    }
-    
     /**
      * {@inheritDoc}
      */

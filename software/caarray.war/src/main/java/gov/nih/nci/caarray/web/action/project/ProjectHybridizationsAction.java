@@ -310,7 +310,9 @@ public class ProjectHybridizationsAction extends AbstractProjectAssociatedAnnota
         
         Set<CaArrayFile> dataFiles = getCurrentHybridization().getAllDataFiles();
         if (!dataFiles.isEmpty()) {
-            getCurrentHybridization().propagateLastModifiedDataTime(new Date());
+            Date date = new Date();
+            getCurrentHybridization().propagateLastModifiedDataTime(date);
+            getExperiment().setLastDataModificationDate(date);
         }
         for (LabeledExtract le : getCurrentAssociationsCollection()) {
             le.getHybridizations().remove(getCurrentHybridization());
