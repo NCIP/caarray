@@ -3405,6 +3405,8 @@
         <copy file="${resource.dir}/pmd-ruleset.xml" tofile="${caarray-war.dir}/.ruleset" />
         <copy file="${resource.dir}/pmd-ruleset.xml" tofile="${caarray-ejb.dir}/.ruleset" />
     </target>
+	
+    <target name="configure-eclipse-for-unit-testing" depends="configure-datasource-for-test,test:copy-files-to-target-dir-and-unpack-test-data" />
 
     <!-- ******************************************************************* -->
     <!-- ** SITE TARGETS                                                  ** -->
