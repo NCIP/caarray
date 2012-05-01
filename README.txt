@@ -86,7 +86,7 @@ The following tools are needed for working on caArray2 code:
     Otherwise, you may get an OutOfMemoryException when running unit tests during report generation
   - Set ANT_HOME to your ant install directory
   - Add ANT_HOME/bin to your PATH variable
-- MySQL 5.0.45 is officially supported, but MySQL 5.1.x (up to 5.1.48) is known to work.
+- MySQL 5.1.48.
   Should be downloaded and installed from the MySQL download site.
   - Set a root password (if not set during install). This will be referenced under the key database.system.password in
     /software/local.properties and your copy of /software/master_build/install.properties.  Steps to configure these
