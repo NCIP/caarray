@@ -206,6 +206,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
     private EnumMap<FileStatus, Integer> fileStatusCountMap = new EnumMap<FileStatus, Integer>(FileStatus.class);
     private boolean clearCheckboxes = true;
     private final Map<CaArrayFile, Boolean> deletableFiles = new HashMap<CaArrayFile, Boolean>();
+    private String importDescription;
 
     private String prepListUnimportedPage() {
         if (this.clearCheckboxes) {
@@ -722,6 +723,7 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
                     (this.nodeType == null ? null : this.nodeType.getNodeType());
             final DataImportOptions dataImportOptions = DataImportOptions.getDataImportOptions(
                     this.targetAnnotationOption, this.newAnnotationName, targetNodeType, entityIds);
+            dataImportOptions.setImportDescription(importDescription);
             ServiceLocatorFactory.getFileManagementService().importFiles(getProject(), fileSet, dataImportOptions);
         }
         ActionHelper.saveMessage(getText("project.fileImport.success",
@@ -1343,5 +1345,19 @@ public class ProjectFilesAction extends AbstractBaseProjectAction implements Pre
      */
     public Set<FileType> getAvailableFileTypes() {
         return fileTypeRegistry.getAllTypes();
+    }
+
+    /**
+     * @return the importDescription
+     */
+    public String getImportDescription() {
+        return importDescription;
+    }
+
+    /**
+     * @param importDescription the importDescription to set
+     */
+    public void setImportDescription(String importDescription) {
+        this.importDescription = importDescription;
     }
 }

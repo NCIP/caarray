@@ -162,7 +162,7 @@
         } else if (isGprImport() && !isMageTabImport()) {
             alert("Genepix GPR files can only be imported/validated as part of a MAGE-TAB dataset with at least one IDF and SDRF file.");
         } else if (isMageTabImport()) {
-            doImportFiles(importUrl);
+            openImportDescDialog(importUrl);
         } else {
             openImportDialog(importUrl);
         }
@@ -178,9 +178,12 @@
         }
     }
 
-    doImportFiles = function(importUrl, createChoice, newAnnotationName, selectedNodes, selectedNodesType) {
+    doImportFiles = function(importUrl, importDescription, createChoice, newAnnotationName, selectedNodes, selectedNodesType) {
         var formData = Form.serialize('selectFilesForm');
         var extraArgs = new Object();
+        if (importDescription) {
+            extraArgs['importDescription'] = importDescription;
+        }
         if (createChoice) {
             extraArgs['targetAnnotationOption'] = createChoice;
         }
@@ -219,6 +222,45 @@
             var shouldDisable =  (node.attributes.nodeType != nodeType && node.attributes.checked != undefined);
             return shouldDisable;
         });
+    }
+    
+    openImportDescDialog = function(importUrl) {
+        var importDescriptionDialog = new Ext.Window({
+            title: 'Enter Description of Import',
+            closable: true,
+            width: 300,
+            height: 200,
+            modal: true,
+            bodyStyle: 'padding:5px',
+            items: [{
+                xtype: 'textarea',
+                id: 'importDescription',
+                name: 'importDescription',
+                width: 280,
+                height: 125,
+                autoScroll: true,
+                hideLabel: true
+            }],
+            buttons: [{
+                text: 'Import',
+                listeners: {
+                    'click' : {
+                        fn: function() {
+                            doImportFiles(importUrl, $('importDescription').value);
+                            importDescriptionDialog.close();
+                        }
+                    }
+                }
+            },{
+                text: 'Cancel',
+                listeners: {
+                'click' : {
+                    fn: function() { importDescriptionDialog.close(); }
+                }
+            }
+            }]
+        });
+        importDescriptionDialog.show();
     }
 
     openImportDialog = function(importUrl) {
@@ -355,7 +397,16 @@
                                                 hidden: true,
                                                 id: 'experiment_design_tree_instructions'
                                             },
-                                            tree
+                                            tree,
+                                            {
+                                                xtype: 'textarea',
+                                                fieldLabel: 'Import Description',
+                                                id: 'importDescription',
+                                                name: 'importDescription',
+                                                width: 280,
+                                                height: 125,
+                                                autoScroll: true,
+                                            }
                                        ]
                             }
             ]
@@ -366,6 +417,7 @@
             closable:true,
             width:650,
             height:570,
+            modal: true,
             items: [formPanel],
             buttons: [{
                 text: 'Import',
@@ -385,7 +437,7 @@
                             }
                             var checkedNodes = ExtTreeUtils.getCheckedNodes(tree.getRootNode(), 'entityId');
                             var checkedNodesType = getCheckedNodeType(tree.getRootNode());
-                            doImportFiles(importUrl, selectedCreateChoiceRadio.value, newAnnotationName, checkedNodes, checkedNodesType);
+                            doImportFiles(importUrl, $('importDescription').value, selectedCreateChoiceRadio.value, newAnnotationName, checkedNodes, checkedNodesType);
                             annotationDialog.close();
                         }
                     }

@@ -180,6 +180,9 @@ class DataSetImporter extends AbstractArrayDataUtility {
         }
 
         AbstractArrayData importData(boolean createAnnnotation) throws PlatformFileReadException {
+            if (dataImportOptions != null) {
+                caArrayFile.getProject().setImportDescription(dataImportOptions.getImportDescription());
+            }
             lookupOrCreateArrayData(createAnnnotation);
             updateLastModifiedData();
             if (StringUtils.isBlank(this.arrayData.getName())) {

@@ -156,7 +156,11 @@ class ProjectFilesImportJob extends AbstractProjectFilesJob {
     private MageTabDocumentSet importAnnotation(CaArrayFileSet fileSet) {
         MageTabDocumentSet mageTabDocSet = null;
         try {
-            mageTabDocSet = getMageTabImporter().importFiles(getProject(), fileSet);
+            Project p = getProject();
+            if (dataImportOptions != null) {
+                p.setImportDescription(dataImportOptions.getImportDescription());
+            }
+            mageTabDocSet = getMageTabImporter().importFiles(p, fileSet);
         } catch (final MageTabParsingException e) {
             LOG.error(e.getMessage(), e);
         }

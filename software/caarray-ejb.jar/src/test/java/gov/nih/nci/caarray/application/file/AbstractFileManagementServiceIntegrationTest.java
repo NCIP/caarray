@@ -251,6 +251,7 @@ public abstract class AbstractFileManagementServiceIntegrationTest extends Abstr
         this.testProject.setExperiment(this.testExperiment);
         this.testExperiment.setOrganism(this.testOrganism);
         this.testExperiment.setManufacturer(this.testOrganization);
+        this.testExperiment.setProject(this.testProject);
         this.testProject.setLocked(false);
     }
 

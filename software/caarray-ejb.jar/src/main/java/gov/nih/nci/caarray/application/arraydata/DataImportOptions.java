@@ -105,6 +105,7 @@ public final class DataImportOptions implements Serializable {
     private final String newAnnotationName;
     private final ExperimentDesignNodeType targetNodeType;
     private final List<Long> targetNodeIds = new ArrayList<Long>();
+    private String importDescription;
     
     /**
      * Create a new DataImportOptions instance with given options.
@@ -192,5 +193,19 @@ public final class DataImportOptions implements Serializable {
      */
     public ExperimentDesignNodeType getTargetNodeType() {
         return targetNodeType;
-    }    
+    }
+
+    /**
+     * @return the importDescription
+     */
+    public String getImportDescription() {
+        return importDescription;
+    }
+
+    /**
+     * @param importDescription the importDescription to set
+     */
+    public void setImportDescription(String importDescription) {
+        this.importDescription = importDescription;
+    }
 }

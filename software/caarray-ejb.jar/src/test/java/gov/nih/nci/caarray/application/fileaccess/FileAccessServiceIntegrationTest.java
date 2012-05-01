@@ -194,6 +194,7 @@ public class FileAccessServiceIntegrationTest extends AbstractServiceIntegration
         extract.getSamples().add(sample);
 
         final Project p = new Project();
+        p.getExperiment().setProject(p);
         p.getExperiment().setTitle("Foo");
         final Organism o = new Organism();
         o.setScientificName("baz");

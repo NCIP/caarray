@@ -160,6 +160,7 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
     private Map<CollaboratorGroup, AccessProfile> groupProfiles = new HashMap<CollaboratorGroup, AccessProfile>();
     private transient Set<User> owners;
     private Date lastUpdated = new Date();
+    private String importDescription;
 
     /**
      * Hibernate and caster constructor.
@@ -625,5 +626,20 @@ public class Project extends AbstractCaArrayEntity implements Comparable<Project
                 return file.isUnparsedAndReimportable();
             }
         });
+    }
+    
+    /**
+     * @return the importDescription
+     */
+    @Transient
+    public String getImportDescription() {
+        return importDescription;
+    }
+
+    /**
+     * @param importDescription the importDescription to set
+     */
+    public void setImportDescription(String importDescription) {
+        this.importDescription = importDescription;
     }
 }

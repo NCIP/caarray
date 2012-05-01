@@ -220,6 +220,7 @@ public class CaArrayAuditLogProcessorTest extends AbstractDaoTest {
         int initLogMessages = getLogMessages().size();
         
         Project p = ProjectTestHelper.getDummyProject();
+        p.setImportDescription("import description");
         RawArrayData rad = new RawArrayData();
         Hybridization h = ProjectTestHelper.getDummyHybridization();
         CaArrayFile dataFile = new CaArrayFile();
@@ -237,8 +238,9 @@ public class CaArrayAuditLogProcessorTest extends AbstractDaoTest {
 
         // check logs
         List<String> messages = getLogMessages();
-        assertEquals(2, messages.size() - initLogMessages);
+        assertEquals(3, messages.size() - initLogMessages);
         assertTrue(messages.contains("Experiment " + p.getExperiment().getTitle() + ":"));
+        assertTrue(messages.contains("Import Description: " + p.getImportDescription()));
         assertTrue(messages.contains(" - Data File " + dataFile.getName() + " added"));
 
         tx.commit();

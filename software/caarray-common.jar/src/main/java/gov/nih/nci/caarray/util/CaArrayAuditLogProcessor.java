@@ -105,6 +105,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.fiveamsolutions.nci.commons.audit.AuditLogDetail;
@@ -413,6 +414,11 @@ public class CaArrayAuditLogProcessor extends DefaultProcessor {
             AuditLogDetail detail = new AuditLogDetail(record, attribute, null, null);
             detail.setMessage("Experiment " + experiment.getTitle() + ":");
             record.getDetails().add(detail);
+            if (!StringUtils.isEmpty(experiment.getProject().getImportDescription())) {
+                AuditLogDetail importDescription = new AuditLogDetail(record, attribute, null, null);
+                importDescription.setMessage("Import Description: " + experiment.getProject().getImportDescription());
+                record.getDetails().add(importDescription);
+            }
         }
     }
 }
