@@ -303,17 +303,19 @@ JAVA_OPTS="$JAVA_OPTS -Xrunjdwp:transport=dt_socket,address=8787,server=y,suspen
   - Click Debug
   
 To run or debug one of the JUnit tests from Eclipse, do the following:
-- From ${project_home}/software/build run the ant target 
+1. From ${project_home}/software/build run the ant target 
     ant configure-eclipse-for-unit-testing
-- Open Eclipse or refresh the whole directory tree in the Project Explorer
-- Select File > Import, then Run/Debug > Launch Configurations, Next
-- Navigate to ${project_home}/software/test/eclipse, select "eclipse", Finish
-- From the Run > Run Configurations... or Run > Debug Configurations... navigate to JUnit > ProjectDaoTest
-- Run this configuration and observe the test output. The important part of the launch configuration settings is specified under
+2. Open Eclipse or refresh the whole directory tree in the Project Explorer
+3. Select File > Import, then Run/Debug > Launch Configurations, Next
+4. Navigate to ${project_home}/software/test/eclipse, select "eclipse", Finish
+5. From the Run > Run Configurations... or Run > Debug Configurations... navigate to JUnit > ProjectDaoTest
+6. Run this configuration and observe the test output. The important part of the launch configuration settings is specified under
 the Classpath tab, all entries there and their order are important to make it work
-- If the different JUnit run configuration is needed Contlol-click on ProjectDaoTest and duplicate it, then change fields from the 
+7. If the different JUnit run configuration is needed Contlol-click on ProjectDaoTest and duplicate it, then change fields from the 
 first tab "Test": Name, Test class, and if needed Test method to reflect the test being set up.
-
+Please note that the configuration being imported in steps 3..4 relies on the default caArray Eclipse project name of "caArray2". 
+If the project was renamed ${project_home}/software/test/eclipse/ProjectDaoTest.launch must be edited by performing global replacement of
+string "caArray2" inside it with the new Eclipse project name. This must precede step 3 of this instructions.
 
 Static Analysis
 ------------------------
