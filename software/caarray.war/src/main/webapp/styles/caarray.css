@@ -697,6 +697,8 @@ TD.button
 { border-right:1px dotted #fff }
 #partnerlogos
 { padding-top:10px; text-align:center; }
+#footerplugins
+{ padding-top:5px; text-align:center; }
 
 
 div.tooltip:hover {background:#ffffff; text-decoration:none;} /*BG color is a must for IE6*/

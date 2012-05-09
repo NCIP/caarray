@@ -1,6 +1,10 @@
 <%@ include file="/WEB-INF/pages/common/taglibs.jsp" %>
 
 <div id="footerwrapper">
+    <div id="footerplugins">
+        Download Plugins:&nbsp;&nbsp;<a title="Download Plugin Adobe Acrobat Reader" href="http://www.adobe.com/go/gntray_dl_get_reader" target="_blank"><img height="16" border="0" width="16" src="<c:url value="/images/ico_pdf.gif"/>" alt="Download Plugin Adobe Acrobat Reader"></a>
+    </div>
+
     <div id="footernavwrapper">
         <div id="footernav">
             <a href="mailto:ncicb@pop.nci.nih.gov">Contact Us</a>
