@@ -36,4 +36,8 @@
        <comment>ARRAY-1627 - Implement chunked uploads.</comment>
        <sqlFile path="db-upgrade/mysql/2.5.0/partial-uploads.sql"/>
     </changeSet>
+    <changeSet id="upt423-disable-group" author="pshrabstein">
+       <comment>ARRAY-2259 - Update installer to configure UPT to disallow user group creation for caArray within UPT.</comment>
+       <sqlFile path="db-upgrade/mysql/2.5.0/upt423-disable-group.sql"/>
+    </changeSet>
 </databaseChangeLog>
