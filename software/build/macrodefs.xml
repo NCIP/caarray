@@ -6,7 +6,7 @@
     <property name="caarray-plugins.deploy.bundleCache.dir" value="${plugins.deploy.baseDir}/bundle-cache" />
     <property name="caarray-plugins.bundledPlugins.zip.name" value="caarray-bundled-plugins.zip" />
     <property name="caarray-plugins.bundledPlugins.zip" value="${plugins.deploy.baseDir}/${caarray-plugins.bundledPlugins.zip.name}" />
-    
+
     <filterset id="embedded.filterset">
         <filter token="application.base.path" value="${application.base.path}"/>
         <filter token="application.url" value="${application.url}"/>
@@ -40,7 +40,7 @@
         <attribute name="classpathref.id" default="no.dependencies.path" />
         <attribute name="source.include" default="${test.source.include}" />
         <attribute name="source.exclude" default="${test.source.exclude}" />
-        <attribute name="forkmode" default="once" />        
+        <attribute name="forkmode" default="once" />
         <element name="extentions" optional="yes"/>
         <sequential>
             <mkdir dir="@{xml.output.dir}" />
@@ -163,8 +163,18 @@
             <apply-filters-to-dir filters.target.dir="@{temp.dir}/caarray-common.jar" properties.file="@{properties.file}" project.properties="@{project.properties}"/>
             <jar destfile="@{temp.dir}/caarray.ear/caarray-common.jar" basedir="@{temp.dir}/caarray-common.jar" update="false" manifest="@{temp.dir}/caarray-common.jar/META-INF/MANIFEST.MF"/>
 
+        	<get-jboss-protocol/>
             <propertyregex property="corrected.database.url" input="${read.database.url}" regexp="(.*)\?" select="\1" defaultValue="${database.url}"/>
-            <copy file="${jboss-conf.dist.relative.dir}/security-config.xml" tofile="@{temp.dir}/caarray.ear/META-INF/security-config.xml"/>
+            <copy file="${jboss-conf.dist.relative.dir}/security-config.xml" tofile="@{temp.dir}/caarray.ear/META-INF/security-config.xml">
+            	<filterset>
+                    <!-- Single Sign On Support -->
+                    <filter token="jboss.protocol" value="${jboss.protocol}" />
+                    <filter token="jboss.server.hostname" value="${jboss.server.hostname}" />
+                    <filter token="jboss.server.port" value="${jboss.server.port}" />
+                    <filter token="cas.server.hostname" value="${cas.server.hostname}" />
+                    <filter token="cas.server.port" value="${cas.server.port}" />
+                </filterset>
+            </copy>
             <replaceregexp file="@{temp.dir}/caarray.ear/META-INF/security-config.xml" match="&amp;" replace="&amp;amp;" byline="false"/>
             <if>
                 <equals arg1="${single.sign.on.install}" arg2="true" />
@@ -202,7 +212,7 @@
                         </else>
                     </if>
                 </else>
-            </if>   
+            </if>
 
             <!-- set the UptUrl value -->
             <replaceregexp file="@{temp.dir}/caarray.war/WEB-INF/web.xml" match="uptUrl&lt;/param-name&gt;\s{0,}&lt;param-value&gt;(.*)&lt;/param-value&gt;" replace="uptUrl&lt;/param-name&gt;&lt;param-value&gt;${upt.url}&lt;/param-value&gt;" byline="false"/>
@@ -218,10 +228,14 @@
                 <replace path="//*[local-name()='param-name'][text()='ldapUserIdLabel']/following-sibling::*/text()" withText="${ldap.searchprefix}"/>
             </xmltask>
 
+        	<get-jboss-protocol/>
+
             <!-- set CAS values in- or remove CAS blocks from web.xml -->
             <if>
                 <equals arg1="${single.sign.on.install}" arg2="true" />
                 <then>
+
+                    <replace file="@{temp.dir}/caarray.war/WEB-INF/web.xml" token="@jboss.protocol@" value="${jboss.protocol}"/>
                     <replace file="@{temp.dir}/caarray.war/WEB-INF/web.xml" token="@jboss.server.hostname@" value="${jboss.server.hostname}"/>
                     <replace file="@{temp.dir}/caarray.war/WEB-INF/web.xml" token="@jboss.server.port@" value="${jboss.server.port}"/>
                     <replace file="@{temp.dir}/caarray.war/WEB-INF/web.xml" token="@cas.server.hostname@" value="${cas.server.hostname}"/>
@@ -240,8 +254,8 @@
                     </xmltask>
                 </else>
             </if>
-            
-            
+
+
             <!-- replace the plugin property values -->
             <replaceregexp file="@{temp.dir}/caarray.war/WEB-INF/classes/caarray-plugins.properties" match="plugins.deploy.dir=(.*)" replace="plugins.deploy.dir=${caarray-plugins.deploy.dir}" byline="true"/>
             <replaceregexp file="@{temp.dir}/caarray.war/WEB-INF/classes/caarray-plugins.properties" match="plugins.cache.dir=(.*)" replace="plugins.cache.dir=${caarray-plugins.deploy.cache.dir}" byline="true"/>
@@ -262,7 +276,22 @@
             </ear>
         </sequential>
     </macrodef>
-    
+
+   <macrodef name="get-jboss-protocol">
+        <sequential>
+            <if>
+                <equals arg1="${jboss.ssl.enable}" arg2="true"/>
+                <then>
+                    <property name="jboss.protocol" value="https"/>
+                </then>
+                <else>
+                    <property name="jboss.protocol" value="http"/>
+                </else>
+            </if>
+
+        </sequential>
+    </macrodef>
+
     <macrodef name="configure-caarray-grid-services" description="configures the caArray grid services">
         <attribute name="project.properties"/>
         <attribute name="properties.file"/>
@@ -282,7 +311,7 @@
                             <var name="version.label" value="_@{version}"/>
                         </else>
                     </if>
-                    
+
                     <unzip dest="@{temp.dir}/grid${version.label}" src="@{grid.svczip.dir}/cagrid_CaArraySvc${version.label}.zip"/>
                     <unzip src="@{temp.dir}/grid${version.label}/WEB-INF/lib/CaArraySvc${version.label}-common.jar" dest="@{temp.dir}/grid${version.label}/WEB-INF/lib/CaArraySvc${version.label}-common" />
 
@@ -302,7 +331,7 @@
                                 <attr path="//*[local-name()='Service']//*[local-name()='PointOfContact']" attr="lastName" value="${grid.poc.science.name.last}"/>
                                 <attr path="//*[local-name()='Service']//*[local-name()='PointOfContact']" attr="phoneNumber" value="${grid.poc.science.phone}"/>
                                 <attr path="//*[local-name()='Service']//*[local-name()='PointOfContact']" attr="role" value="${grid.poc.science.role}"/>
-                                
+
                                 <!-- set research center POC info -->
                                 <attr path="//*[local-name()='ResearchCenter']//*[local-name()='PointOfContact']" attr="affiliation" value="${grid.poc.tech.affiliation}"/>
                                 <attr path="//*[local-name()='ResearchCenter']//*[local-name()='PointOfContact']" attr="email" value="${grid.poc.tech.email}"/>
@@ -310,7 +339,7 @@
                                 <attr path="//*[local-name()='ResearchCenter']//*[local-name()='PointOfContact']" attr="lastName" value="${grid.poc.tech.name.last}"/>
                                 <attr path="//*[local-name()='ResearchCenter']//*[local-name()='PointOfContact']" attr="phoneNumber" value="${grid.poc.tech.phone}"/>
                                 <attr path="//*[local-name()='ResearchCenter']//*[local-name()='PointOfContact']" attr="role" value="${grid.poc.tech.role}"/>
-                                
+
                                 <!-- set reseach center info -->
                                 <attr path="//*[local-name()='ResearchCenter']" attr="displayName" value="${grid.poc.tech.researchCenter.displayname}"/>
                                 <attr path="//*[local-name()='ResearchCenter']" attr="shortName" value="${grid.poc.tech.researchCenter.shortname}"/>
@@ -323,13 +352,13 @@
                             </xmltask>
                         </sequential>
                     </for>
-                    
+
                     <replaceregexp byline="true" match="^(java.naming.provider.url)=(.*)" replace="\1=jnp://${jboss.server.hostname}:${jboss.server.jndi.port}">
                         <fileset dir="@{temp.dir}/grid${version.label}/WEB-INF/lib/CaArraySvc${version.label}-common">
                             <include name="**/jndi.properties"/>
                         </fileset>
                     </replaceregexp>
-                    
+
                     <replace dir="@{temp.dir}" token="http://training03.cagrid.org:8080/wsrf/services/DefaultIndexService" value="${grid.index.url}">
                         <include name="**/*.xml"/>
                     </replace>

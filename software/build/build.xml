@@ -2040,28 +2040,28 @@
         <delete file="${bda.lite.grid.cfg.properties.file}"/>
     </target>
 
-  <target name="-configure-globus-instance-for-bda-lite">
-    <delete dir="${caarray-grid-svc.base.dir}/target/bda_lite_cfg/temp"/>
-        <mkdir dir="${caarray-grid-svc.base.dir}/target/bda_lite_cfg/temp"/>
-        <unzip src="${basedir}/build/resources/deploy/jboss-globus-serverinstance-config.zip" dest="${caarray-grid-svc.base.dir}/target/bda_lite_cfg/temp"/>
-    <replace dir="${caarray-grid-svc.base.dir}/target/bda_lite_cfg/temp" token="localhost:8080" value="${grid.static.hostname}:${grid.static.port}">
-        <include name="**/*.wsdl"/>
-    </replace>
+    <target name="-configure-globus-instance-for-bda-lite">
+        <delete dir="${caarray-grid-svc.base.dir}/target/bda_lite_cfg/temp"/>
+            <mkdir dir="${caarray-grid-svc.base.dir}/target/bda_lite_cfg/temp"/>
+            <unzip src="${basedir}/build/resources/deploy/jboss-globus-serverinstance-config.zip" dest="${caarray-grid-svc.base.dir}/target/bda_lite_cfg/temp"/>
+        <replace dir="${caarray-grid-svc.base.dir}/target/bda_lite_cfg/temp" token="localhost:8080" value="${grid.static.hostname}:${grid.static.port}">
+            <include name="**/*.wsdl"/>
+        </replace>
         <replace dir="${caarray-grid-svc.base.dir}/target/bda_lite_cfg/temp" token="http://index.training.cagrid.org:8080/wsrf/services/DefaultIndexService" value="${grid.index.url}">
             <include name="**/*.xml"/>
         </replace>
         <replace dir="${caarray-grid-svc.base.dir}/target/bda_lite_cfg/temp" token="@LOGICAL_HOST@" value="${grid.static.hostname}">
             <include name="**/*.wsdd"/>
         </replace>
-    <xmltask source="${caarray-grid-svc.base.dir}/target/bda_lite_cfg/temp/deploy/wsrf.war/WEB-INF/web.xml" dest="${caarray-grid-svc.base.dir}/target/bda_lite_cfg/temp/deploy/wsrf.war/WEB-INF/web.xml">
+        <xmltask source="${caarray-grid-svc.base.dir}/target/bda_lite_cfg/temp/deploy/wsrf.war/WEB-INF/web.xml" dest="${caarray-grid-svc.base.dir}/target/bda_lite_cfg/temp/deploy/wsrf.war/WEB-INF/web.xml">
             <xmlcatalog refid="bda.xml.catalog"/>
             <replace path="//init-param/param-name[text()='defaultPort']/following-sibling::param-value[1]/text()" withText="${grid.static.port}"/>
         </xmltask>
-    <zip destfile="${caarray-grid-svc.base.dir}/target/bda_lite_cfg/jboss-globus-serverinstance-config.zip">
+        <zip destfile="${caarray-grid-svc.base.dir}/target/bda_lite_cfg/jboss-globus-serverinstance-config.zip">
             <zipfileset dir="${caarray-grid-svc.base.dir}/target/bda_lite_cfg/temp" />
         </zip>
         <delete dir="${caarray-grid-svc.base.dir}/target/bda_lite_cfg/temp"/>
-  </target>
+    </target>
 
     <target name="clean-build-with-zips" depends="clean,
         build,
@@ -2406,6 +2406,9 @@
 
     <target name="build:caarray.war" depends="init:third-party-paths,compile:caarray.war,svn:getinfo,build:caarray.war:scriptsAndStyles">
         <mkdir dir="${caarray-war.target.dir}" />
+
+    	<get-jboss-protocol/>
+
         <copy todir="${caarray-war.target.dir}/xml" file="${caarray-war.webapp.dir}/WEB-INF/web.xml" overwrite="true">
             <filterset>
                 <filter token="svn.caarray.version" value="${svn.caarray.version}" />
@@ -2419,6 +2422,7 @@
                 <filter token="ldap.searchprefix" value="${ldap.searchprefix}" />
                 <filter token="ldap.install" value="${ldap.install}" />
             	<!-- Single Sign On Support -->
+                <filter token="jboss.protocol" value="${jboss.protocol}" />
                 <filter token="jboss.server.hostname" value="${jboss.server.hostname}" />
                 <filter token="jboss.server.port" value="${jboss.server.port}" />
                 <filter token="cas.server.hostname" value="${cas.server.hostname}" />
@@ -2435,7 +2439,7 @@
                 <not>
                     <equals arg1="${single.sign.on.install}" arg2="true" />
                 </not>
-    		</and>	
+    		</and>
     		<then>
     			<xmltask source="${caarray-war.target.dir}/xml/web.xml" dest="${caarray-war.target.dir}/xml/web.xml">
                     <remove path="//:context-param[:param-name/text()='service']"/>
@@ -2486,9 +2490,12 @@
                 <fileset dir="${caarray-ear.resources.dir}" includes="*.xml" excludes="application.xml" />
             </copy>
 
+            <get-jboss-protocol/>
+
         	<copy todir="${caarray-ear.target.dir}/xml" file="${common.resources.jboss.conf.dir}/security-config.xml" overwrite="true">
 	            <filterset>
 	                <!-- Single Sign On Support -->
+	                <filter token="jboss.protocol" value="${jboss.protocol}" />
 	                <filter token="jboss.server.hostname" value="${jboss.server.hostname}" />
 	                <filter token="jboss.server.port" value="${jboss.server.port}" />
 	                <filter token="cas.server.hostname" value="${cas.server.hostname}" />
@@ -3405,7 +3412,7 @@
         <copy file="${resource.dir}/pmd-ruleset.xml" tofile="${caarray-war.dir}/.ruleset" />
         <copy file="${resource.dir}/pmd-ruleset.xml" tofile="${caarray-ejb.dir}/.ruleset" />
     </target>
-	
+
     <target name="configure-eclipse-for-unit-testing" depends="configure-datasource-for-test,test:copy-files-to-target-dir-and-unpack-test-data" />
 
     <!-- ******************************************************************* -->

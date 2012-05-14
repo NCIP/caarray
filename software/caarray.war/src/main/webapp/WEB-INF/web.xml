@@ -7,7 +7,7 @@
 	<!-- CAS Settings -->
 	<context-param>
 		<param-name>service</param-name>
-		<param-value>http://@jboss.server.hostname@:@jboss.server.port@/caarray</param-value>
+		<param-value>@jboss.protocol@://@jboss.server.hostname@:@jboss.server.port@/caarray</param-value>
 	</context-param>
 	<context-param>
 		<param-name>casServerLoginUrl</param-name>
@@ -70,10 +70,10 @@
         <param-value>@ldap.install@</param-value>
     </context-param>
 	<context-param>
-            <param-name>contextConfigLocation</param-name>
-            <param-value>
-                classpath:/applicationContext-plugins.xml
-            </param-value>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>
+            classpath:/applicationContext-plugins.xml
+        </param-value>
     </context-param>
 
 	<!-- Only 2 CAS filters are required for JAAS support -->
