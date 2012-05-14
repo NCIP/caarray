@@ -136,7 +136,7 @@ public final class CaArrayHibernateHelperImpl extends CsmEnabledHibernateHelper 
     }
 
     private CaArrayHibernateHelperImpl() {
-        this(new AuditLogInterceptor());
+        this(new CaArrayAuditLogInterceptor());
     }
 
     private CaArrayHibernateHelperImpl(AuditLogInterceptor auditLogInterceptor) {

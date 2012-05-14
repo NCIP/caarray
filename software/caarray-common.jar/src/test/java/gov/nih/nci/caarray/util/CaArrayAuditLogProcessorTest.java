@@ -131,9 +131,7 @@ public class CaArrayAuditLogProcessorTest extends AbstractDaoTest {
         
         // remove files
         Project p = ProjectTestHelper.getDummyProject();
-        p.getFiles().remove(ProjectTestHelper.getDummyDataFile());
-        p.getFiles().remove(ProjectTestHelper.getDummySupplementalFile());
-        p.getFiles().remove(ProjectTestHelper.getDummyOtherFile());
+        p.getFiles().clear();
         this.hibernateHelper.getCurrentSession().saveOrUpdate(p);
         this.hibernateHelper.getCurrentSession().flush();
 

@@ -41,6 +41,7 @@
         <mapping class="gov.nih.nci.caarray.domain.array.PhysicalProbe"/>
         <mapping class="gov.nih.nci.caarray.domain.array.ProbeGroup"/>
         <mapping class="gov.nih.nci.caarray.domain.array.SNPProbeAnnotation"/>
+        <mapping class="gov.nih.nci.caarray.domain.audit.AuditLogSecurity" />
         <mapping class="gov.nih.nci.caarray.domain.contact.Address"/>
         <mapping class="gov.nih.nci.caarray.domain.contact.Organization"/>
         <mapping class="gov.nih.nci.caarray.domain.contact.Person"/>

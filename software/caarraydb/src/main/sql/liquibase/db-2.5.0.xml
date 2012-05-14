@@ -40,4 +40,8 @@
        <comment>ARRAY-2259 - Update installer to configure UPT to disallow user group creation for caArray within UPT.</comment>
        <sqlFile path="db-upgrade/mysql/2.5.0/upt423-disable-group.sql"/>
     </changeSet>
+    <changeSet id="audit-security" author="wcheng">
+       <comment>ARRAY-1933 - Implement security for audit logs.</comment>
+       <sqlFile path="db-upgrade/mysql/2.5.0/audit-security.sql"/>
+    </changeSet>
 </databaseChangeLog>

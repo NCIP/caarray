@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.dao;
 
+import gov.nih.nci.caarray.domain.audit.AuditLogSecurity;
 import gov.nih.nci.caarray.domain.search.AuditLogSearchCriteria;
 import gov.nih.nci.caarray.util.CaArrayHibernateHelper;
 
@@ -149,9 +150,8 @@ public class AuditLogDaoImpl extends AbstractCaArrayDaoImpl implements AuditLogD
     }
 
     private void buildHql(AuditLogSearchCriteria criteria, StringBuffer hql, String selectClause) {
-        hql.append("select ").append(selectClause).append(" from ").append(AuditLogRecord.class.getName())
-                .append(" r inner join r.details d");
-
+        hql.append("select ").append(selectClause).append(" from ").append(AuditLogSecurity.class.getName())
+                .append(" s inner join s.record r inner join r.details d");
         String where = " where";
         String and = "";
         if (StringUtils.isNotBlank(criteria.getUsername())) {

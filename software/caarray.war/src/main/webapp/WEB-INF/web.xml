@@ -578,7 +578,13 @@
             <url-pattern>/protected/audit/*</url-pattern>
         </web-resource-collection>
         <auth-constraint>
+            <role-name>PrincipalInvestigator</role-name>
+            <role-name>ResearchScientist</role-name>
+            <role-name>LabAdministrator</role-name>
+            <role-name>Biostatistician</role-name>
             <role-name>SystemAdministrator</role-name>
+            <role-name>Collaborator</role-name>
+            <role-name>LabScientist</role-name>
         </auth-constraint>
     </security-constraint>
 

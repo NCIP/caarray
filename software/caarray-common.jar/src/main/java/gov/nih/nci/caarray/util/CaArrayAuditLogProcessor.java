@@ -82,6 +82,7 @@
  */
 package gov.nih.nci.caarray.util;
 
+import gov.nih.nci.caarray.domain.audit.AuditLogSecurity;
 import gov.nih.nci.caarray.domain.data.AbstractArrayData;
 import gov.nih.nci.caarray.domain.file.CaArrayFile;
 import gov.nih.nci.caarray.domain.file.FileCategory;
@@ -100,6 +101,7 @@ import gov.nih.nci.security.authorization.domainobjects.User;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -119,6 +121,10 @@ import com.fiveamsolutions.nci.commons.audit.DefaultProcessor;
  */
 @SuppressWarnings("PMD.CyclomaticComplexity")
 public class CaArrayAuditLogProcessor extends DefaultProcessor {
+    private static final Long READ_PRIV_ID = 3L;
+    private static final Long PERMISSIONS_PRIV_ID = 8L;
+    private static final Long SYSADMIN_GROUP_ID = 7L;
+    private final Map<AuditLogRecord, Set<AuditLogSecurity>> securityEntries;
     
     private static final Class<?>[] AUDITED_CLASSES = {
         Project.class,
@@ -135,6 +141,7 @@ public class CaArrayAuditLogProcessor extends DefaultProcessor {
      */
     CaArrayAuditLogProcessor() {
         super(AUDITED_CLASSES);
+        securityEntries = new HashMap<AuditLogRecord, Set<AuditLogSecurity>>();
     }
     
     /**
@@ -174,6 +181,38 @@ public class CaArrayAuditLogProcessor extends DefaultProcessor {
         } else {
             LOG.debug("ignoring property " + record.getEntityName() + "." + property);
         }
+        addSecurity(AuditLogSecurity.GROUP, SYSADMIN_GROUP_ID, null, record);
+    }
+    
+    /**
+     * Returns a mapping of audit records with their associated security entries. The security entries are created in
+     * the processDetail method, but not persisted. This map allows us to store the security object created in
+     * processDetail and retrieve them later to persist them to the database.
+     * @return map of AuditLogRecord to AuditLogSecurity entries
+     */
+    public Map<AuditLogRecord, Set<AuditLogSecurity>> getSecurityEntries() {
+        return securityEntries;
+    }
+    
+    private void addProjectSecurity(AuditLogRecord record, Project project, Long privilegeId) {
+        addSecurity(AuditLogSecurity.PROJECT, project.getId(), privilegeId, record);
+    }
+    
+    private void addSecurity(String entityName, Long entityId, Long privilegeId, AuditLogRecord record) {
+        Set<AuditLogSecurity> entries = securityEntries.get(record);
+        if (entries == null) {
+            entries = new HashSet<AuditLogSecurity>();
+            securityEntries.put(record, entries);
+        }
+        for (AuditLogSecurity sec : entries) {
+            if (sec.getEntityName().equals(entityName)
+                    && sec.getEntityId().equals(entityId)
+                    && ((sec.getPrivilegeId() == null && privilegeId == null)
+                            || (sec.getPrivilegeId().equals(privilegeId)))) {
+                return; // found duplicate
+            }
+        }
+        entries.add(new AuditLogSecurity(entityName, entityId, privilegeId, record));
     }
 
     @SuppressWarnings({"PMD.ExcessiveParameterList", "unchecked", "PMD.NPathComplexity" })
@@ -183,14 +222,12 @@ public class CaArrayAuditLogProcessor extends DefaultProcessor {
             if (oldVal == null && newVal == SecurityLevel.NONE) {
                 return;
             }
-            AuditLogDetail detail = new AuditLogDetail(record, columnName, null, null);
-            super.processDetail(detail, oldVal, newVal);
-            String type = entity.isPublicProfile() ? "Public" : "Group";
-            detail.setMessage(type + " Access Profile for experiment " + entity.getProject().getExperiment().getTitle()
+            String message = (entity.isPublicProfile() ? "Public" : "Group")
+                    + " Access Profile for experiment " + entity.getProject().getExperiment().getTitle()
                     + (entity.isGroupProfile() ? " to group " + entity.getGroup().getGroup().getGroupName() : "")
-                    + (oldVal == null ? " set" : " changed from " + oldVal) + " to " + newVal);
-            record.getDetails().add(detail);
-
+                    + (oldVal == null ? " set" : " changed from " + oldVal) + " to " + newVal;
+            addDetail(record, columnName, message, oldVal, newVal);
+            addProjectSecurity(record, entity.getProject(), PERMISSIONS_PRIV_ID);
         } else if ("sampleSecurityLevels".equals(property)) {
             logAccessProfileSamples(record, entity, columnName, (Map<Sample, SampleSecurityLevel>) oldVal,
                     (Map<Sample, SampleSecurityLevel>) newVal);
@@ -203,12 +240,11 @@ public class CaArrayAuditLogProcessor extends DefaultProcessor {
     private void logProject(AuditLogRecord record, Project project, String property, String columnName,
             Object oldVal, Object newVal) {
         if ("locked".equals(property)) {
-            AuditLogDetail detail = new AuditLogDetail(record, columnName, null, null);
-            super.processDetail(detail, oldVal, newVal);
-            String newS = Boolean.TRUE.equals(newVal) ? "Locked" : "Unlocked";
-            detail.setMessage("Experiment " + project.getExperiment().getTitle() + " " + newS
-                    + (record.getType() == AuditType.INSERT ?  " when created" : ""));
-            record.getDetails().add(detail);
+            String message = "Experiment " + project.getExperiment().getTitle() + " "
+                    + (Boolean.TRUE.equals(newVal) ? "Locked" : "Unlocked")
+                    + (record.getType() == AuditType.INSERT ?  " when created" : "");
+            addDetail(record, columnName, message, oldVal, newVal);
+            addProjectSecurity(record, project, PERMISSIONS_PRIV_ID);
         } else if ("files".equals(property)) {
             Set<Long> newIds = new HashSet<Long>();
             for (CaArrayFile newFile : (Set<CaArrayFile>) newVal) {
@@ -216,13 +252,11 @@ public class CaArrayAuditLogProcessor extends DefaultProcessor {
             }
             for (CaArrayFile oldFile : (Set<CaArrayFile>) oldVal) {
                 if (!newIds.contains(oldFile.getId()) && auditFileDeletion(oldFile)) {
-                    addExperimentDetail(record, columnName, project.getExperiment());
-                    AuditLogDetail detail = new AuditLogDetail(record, columnName, null, null);
-                    super.processDetail(detail, oldFile, null);
-                    detail.setMessage(" - File " + oldFile.getName() + " deleted");
-                    record.getDetails().add(detail);
+                    addExperimentDetail(record, columnName, project);
+                    addDetail(record, columnName, " - File " + oldFile.getName() + " deleted", oldFile, null);
                 }
             }
+            addProjectSecurity(record, project, READ_PRIV_ID);
         } else {
             LOG.debug("ignoring property " + record.getEntityName() + "." + property);
         }
@@ -246,39 +280,27 @@ public class CaArrayAuditLogProcessor extends DefaultProcessor {
         if ("groupName".equals(property)) {
             // there is no group.users event on insert so we'll log new users here.
             if (record.getType() == AuditType.INSERT) {
-                AuditLogDetail detail = new AuditLogDetail(record, columnName, null, null);
-                super.processDetail(detail, oldVal, newVal);
-                detail.setMessage("Group " + newVal + " created");
-                record.getDetails().add(detail);
+                addDetail(record, columnName, "Group " + newVal + " created", oldVal, newVal);
                 if (entity.getUsers() != null) {
                     for (Object u : entity.getUsers()) {
-                        detail = new AuditLogDetail(record, columnName, null, null);
-                        super.processDetail(detail, null, u);
-                        detail.setMessage("User " + ((User) u).getLoginName() + " added to group "
-                                + entity.getGroupName());
-                        record.getDetails().add(detail);
+                        String msg = "User " + ((User) u).getLoginName() + " added to group " + entity.getGroupName();
+                        addDetail(record, columnName, msg, null, u);
                     }
                 }
             } else if (record.getType() == AuditType.UPDATE) {
-                AuditLogDetail detail = new AuditLogDetail(record, columnName, null, null);
-                super.processDetail(detail, oldVal, newVal);
-                detail.setMessage("Group name changed from " + oldVal + " to " + newVal);
-                record.getDetails().add(detail);
+                String msg = "Group name changed from " + oldVal + " to " + newVal;
+                addDetail(record, columnName, msg, oldVal, newVal);
             }
         } else if ("users".equals(property)) {
-            Collection<User> tmp = CollectionUtils.subtract((Set) oldVal, (Set) newVal);
+            Collection<User> tmp = CollectionUtils.subtract((Set<User>) oldVal, (Set<User>) newVal);
             for (User u : tmp) {
-                AuditLogDetail detail = new AuditLogDetail(record, columnName, null, null);
-                super.processDetail(detail, u, null);
-                detail.setMessage("User " + u.getLoginName() + " removed from group " + entity.getGroupName());
-                record.getDetails().add(detail);
+                String msg = "User " + u.getLoginName() + " removed from group " + entity.getGroupName();
+                addDetail(record, columnName, msg, u, null);
             }
-            tmp = CollectionUtils.subtract((Set) newVal, (Set) oldVal);
+            tmp = CollectionUtils.subtract((Set<User>) newVal, (Set<User>) oldVal);
             for (User u : tmp) {
-                AuditLogDetail detail = new AuditLogDetail(record, columnName, null, null);
-                super.processDetail(detail, null, u);
-                detail.setMessage("User " + u.getLoginName() + " added to group " + entity.getGroupName());
-                record.getDetails().add(detail);
+                String msg = "User " + u.getLoginName() + " added to group " + entity.getGroupName();
+                addDetail(record, columnName, msg, null, u);
             }
         } else {
             LOG.debug("ignoring property " + record.getEntityName() + "." + property);
@@ -289,11 +311,9 @@ public class CaArrayAuditLogProcessor extends DefaultProcessor {
     private void logCollaboratorGroup(AuditLogRecord record, CollaboratorGroup entity, String property, 
             String columnName, Object oldVal, Object newVal) {
         if ("ownerId".equals(property)) {
-            AuditLogDetail detail = new AuditLogDetail(record, columnName, null, null);
-            super.processDetail(detail, oldVal, newVal);
-            detail.setMessage("Collaborator Group " + entity.getGroup().getGroupName() + " owner set to "
-                    + entity.getOwner().getLoginName());
-            record.getDetails().add(detail);
+            String msg = "Collaborator Group " + entity.getGroup().getGroupName() + " owner set to "
+                    + entity.getOwner().getLoginName();
+            addDetail(record, columnName, msg, oldVal, newVal);
         } else {
             LOG.debug("ignoring property " + record.getEntityName() + "." + property);
         }
@@ -303,6 +323,7 @@ public class CaArrayAuditLogProcessor extends DefaultProcessor {
     private void logExperiment(AuditLogRecord record, Experiment experiment, String property, 
             String columnName, Object oldVal, Object newVal) {
         if ("samples".equals(property)) {
+            Project project = experiment.getProject();
             Set<Long> oldIds = new HashSet<Long>();
             Set<Long> newIds = new HashSet<Long>();
             for (Sample s : (Set<Sample>) newVal) {
@@ -311,22 +332,17 @@ public class CaArrayAuditLogProcessor extends DefaultProcessor {
             for (Sample s : (Set<Sample>) oldVal) {
                 oldIds.add(s.getId());
                 if (!newIds.contains(s.getId())) {
-                    addExperimentDetail(record, columnName, experiment);
-                    AuditLogDetail detail = new AuditLogDetail(record, columnName, null, null);
-                    super.processDetail(detail, s, null);
-                    detail.setMessage(" - Sample " + s.getName() + " deleted");
-                    record.getDetails().add(detail);
+                    addExperimentDetail(record, columnName, project);
+                    addDetail(record, columnName, " - Sample " + s.getName() + " deleted", s, null);
                 }
             }
             for (Sample s : (Set<Sample>) newVal) {
                 if (!oldIds.contains(s.getId())) {
-                    addExperimentDetail(record, columnName, experiment);
-                    AuditLogDetail detail = new AuditLogDetail(record, columnName, null, null);
-                    super.processDetail(detail, null, s);
-                    detail.setMessage(" - Sample " + s.getName() + " added");
-                    record.getDetails().add(detail);
+                    addExperimentDetail(record, columnName, project);
+                    addDetail(record, columnName, " - Sample " + s.getName() + " added", null, s);
                 }
             }
+            addProjectSecurity(record, project, READ_PRIV_ID);
         }
     }
     
@@ -335,10 +351,9 @@ public class CaArrayAuditLogProcessor extends DefaultProcessor {
             String columnName, Object oldVal, Object newVal) {
         if ("status".equals(property)
                 && FileStatus.valueOf((String) newVal) == FileStatus.SUPPLEMENTAL) {
-            addExperimentDetail(record, columnName, file.getProject().getExperiment());
-            AuditLogDetail detail = new AuditLogDetail(record, columnName, (String) oldVal, (String) newVal);
-            detail.setMessage(" - Supplementail File " + file.getName() + " added");
-            record.getDetails().add(detail);
+            addExperimentDetail(record, columnName, file.getProject());
+            addDetail(record, columnName, " - Supplementail File " + file.getName() + " added", oldVal, newVal);
+            addProjectSecurity(record, file.getProject(), READ_PRIV_ID);
         }
     }
 
@@ -350,11 +365,9 @@ public class CaArrayAuditLogProcessor extends DefaultProcessor {
             Set<Hybridization> newHybs = newVal == null ? new HashSet<Hybridization>() : (Set<Hybridization>) newVal;
             if (newHybs.size() > oldHybs.size()) {
                 CaArrayFile file = ad.getDataFile();
-                addExperimentDetail(record, columnName, file.getProject().getExperiment());
-                AuditLogDetail detail = new AuditLogDetail(record, columnName, null, null);
-                super.processDetail(detail, null, newVal);
-                detail.setMessage(" - Data File " + file.getName() + " added");
-                record.getDetails().add(detail);
+                addExperimentDetail(record, columnName, file.getProject());
+                addDetail(record, columnName, " - Data File " + file.getName() + " added", null, newVal);
+                addProjectSecurity(record, file.getProject(), READ_PRIV_ID);
             }
         }
     }
@@ -364,7 +377,6 @@ public class CaArrayAuditLogProcessor extends DefaultProcessor {
         
         // header message.
         String pname = entity.getProject().getExperiment().getTitle();
-        AuditLogDetail detail = new AuditLogDetail(record, columnName, null, null);
         StringBuffer sb = new StringBuffer("Access to samples on experiment ");
         sb.append(pname);
         if (entity.isPublicProfile()) {
@@ -372,21 +384,18 @@ public class CaArrayAuditLogProcessor extends DefaultProcessor {
         } else {
             sb.append("'s Access Profile to Group ")
                     .append(entity.getGroup().getGroup().getGroupName());
-        }        
-        detail.setMessage(sb.toString());
-        record.getDetails().add(detail);
+        }
+        AuditLogDetail detail = addDetail(record, columnName, sb.toString());
         boolean added1Sample = false;
 
         if (o != null) {
             for (Map.Entry<Sample, SampleSecurityLevel> e : o.entrySet()) {
                 SampleSecurityLevel v = n.get(e.getKey());
                 if (v != null && v != e.getValue()) {
-                    StringBuffer m = new StringBuffer(" - Access to sample ").append(e.getKey().getName());
-                    m.append(" changed from ").append(e.getValue()).append(" to ").append(v);                
-                    detail = new AuditLogDetail(record, columnName, null, null);
-                    super.processDetail(detail, e.getValue(), v);
-                    detail.setMessage(m.toString());
-                    record.getDetails().add(detail);
+                    StringBuffer m = new StringBuffer(" - Access to sample ");
+                    m.append(e.getKey().getName()).append(" changed from ");
+                    m.append(e.getValue()).append(" to ").append(v);
+                    detail = addDetail(record, columnName, m.toString(), e.getValue(), v);
                     added1Sample = true;
                 }
             }
@@ -395,30 +404,40 @@ public class CaArrayAuditLogProcessor extends DefaultProcessor {
         for (Map.Entry<Sample, SampleSecurityLevel> e : n.entrySet()) {
             // dont log transitions from null to NONE, as they occure when transitioning to a SELECTIVE state.
             if ((o == null || !o.containsKey(e.getKey())) && e.getValue() != SampleSecurityLevel.NONE) {
-                detail = new AuditLogDetail(record, columnName, null, null);
-                super.processDetail(detail, null, e.getValue());
-                detail.setMessage(" - Access on sample " + e.getKey().getName() + " set to "
-                        + e.getValue());
-                record.getDetails().add(detail);
+                String msg = " - Access on sample " + e.getKey().getName() + " set to " + e.getValue();
+                detail = addDetail(record, columnName, msg, null, e.getValue());
                 added1Sample = true;
             }
         }
-        if (!added1Sample) {
+        if (added1Sample) {
+            addProjectSecurity(record, entity.getProject(), PERMISSIONS_PRIV_ID);
+        } else {
             // no need for a header is nothing was added.
             record.getDetails().remove(detail);
         }
     }
     
-    private void addExperimentDetail(AuditLogRecord record, String attribute, Experiment experiment) {
+    private void addExperimentDetail(AuditLogRecord record, String attribute, Project project) {
         if (record.getDetails().size() == 0) {
-            AuditLogDetail detail = new AuditLogDetail(record, attribute, null, null);
-            detail.setMessage("Experiment " + experiment.getTitle() + ":");
-            record.getDetails().add(detail);
-            if (!StringUtils.isEmpty(experiment.getProject().getImportDescription())) {
-                AuditLogDetail importDescription = new AuditLogDetail(record, attribute, null, null);
-                importDescription.setMessage("Import Description: " + experiment.getProject().getImportDescription());
-                record.getDetails().add(importDescription);
+            addDetail(record, attribute, "Experiment " + project.getExperiment().getTitle() + ":");
+            if (!StringUtils.isEmpty(project.getImportDescription())) {
+                addDetail(record, attribute, "Import Description: " + project.getImportDescription());
             }
         }
+    }
+    
+    private AuditLogDetail addDetail(AuditLogRecord record, String attribute, String message) {
+        return addDetail(record, attribute, message, null, null);
+    }
+    
+    private AuditLogDetail addDetail(AuditLogRecord record, String attribute, String message,
+            Object oldVal, Object newVal) {
+        AuditLogDetail detail = new AuditLogDetail(record, attribute, null, null);
+        if (oldVal != null || newVal != null) {
+            super.processDetail(detail, oldVal, newVal);
+        }
+        detail.setMessage(message);
+        record.getDetails().add(detail);
+        return detail;
     }
 }

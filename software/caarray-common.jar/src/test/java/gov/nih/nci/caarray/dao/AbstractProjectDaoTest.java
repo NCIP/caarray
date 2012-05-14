@@ -307,8 +307,7 @@ public class AbstractProjectDaoTest extends AbstractDaoTest {
         DUMMY_DATA_FILE.setName("dummy.cel");
         DUMMY_DATA_FILE.setFileType(new FileType("AFFYMETRIX_CEL", FileCategory.RAW_DATA, true));
         DUMMY_DATA_FILE.setFileStatus(FileStatus.UPLOADED);
-        DUMMY_PROJECT_2.getFiles().add(DUMMY_DATA_FILE);
-        DUMMY_DATA_FILE.setProject(DUMMY_PROJECT_2);
+        DUMMY_DATA_FILE.setProject(DUMMY_PROJECT_1);
         DUMMY_DATA_FILE.setDataHandle(DUMMY_HANDLE);
     }
 
