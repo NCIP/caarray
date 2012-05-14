@@ -171,42 +171,6 @@ public class GalDesignHandlerTest {
     }
 
     @Test
-    public void failsValidationIfInvalidDoubleValueInBlockXOrigin() throws PlatformFileReadException, IOException {
-        final String xOrigin = "NOT-A-VALID-DOUBLE";
-        final String yOrigin = "32775.75";
-        final String testData = generateTestData(xOrigin, yOrigin);
-
-        final int expectedColumnNumber = 1;
-        final String expectedMessageSubstring = "xOrigin";
-
-        assertMessageInColumnContainsString(testData, expectedColumnNumber, expectedMessageSubstring);
-    }
-
-    @Test
-    public void failsValidationIfDoubleValueInBlockYOrigin() throws PlatformFileReadException, IOException {
-        final String xOrigin = "10875.876627999995";
-        final String yOrigin = "NOT-A-VALID-DOUBLE";
-        final String testData = generateTestData(xOrigin, yOrigin);
-
-        final int expectedColumnNumber = 2;
-        final String expectedMessageSubstring = "yOrigin";
-
-        assertMessageInColumnContainsString(testData, expectedColumnNumber, expectedMessageSubstring);
-    }
-
-    private void assertMessageInColumnContainsString(final String testData, final int expectedColumnNumber,
-            final String expectedMessageSubstring) throws IOException, PlatformFileReadException {
-        final ValidationResult validationResult = validateData(testData);
-        assertFalse(validationResult.isValid());
-        assertEquals(1, validationResult.getFileValidationResults().size());
-        final FileValidationResult fileValidationResult = validationResult.getFileValidationResults().get(0);
-        assertEquals(1, fileValidationResult.getMessages().size());
-        final ValidationMessage message = fileValidationResult.getMessages().get(0);
-        assertEquals(expectedColumnNumber, message.getColumn());
-        assertThat(message.getMessage(), containsString(expectedMessageSubstring));
-    }
-
-    @Test
     public void loadsWithoutExceptionWhenDoubleValueInBlockXOrigin() throws PlatformFileReadException, IOException {
         final String xOrigin = "10875.876627999995";
         final String yOrigin = "32775";
@@ -242,6 +206,15 @@ public class GalDesignHandlerTest {
         final String testData = generateTestData(xOrigin, yOrigin);
 
         galDesignHandlerCreatesDesignDetailsWithoutThrowing(testData);
+    }
+
+    @Test
+    public void allowsHeaderVariant() throws PlatformFileReadException, IOException {
+        final String xOrigin = "10875.876627999995";
+        final String yOrigin = "32775";
+        final String testData = generateTestDataWithHeaderVariant(xOrigin, yOrigin);
+
+        assertGalDesignHandlerValidatesData(testData);
     }
 
     private void assertGalDesignHandlerValidatesData(String testData) throws PlatformFileReadException, IOException {
@@ -316,6 +289,31 @@ public class GalDesignHandlerTest {
                 .append("\"URL=null\"\n").append("\"Supplier=Agilent Technologies\"\n")
                 .append("\"ArrayName=UNC_Perou_Lab_244K_custom_V3\"\n").append("\"Block1=");
         appendDelimitedList(builder, COMMA_SPACE, NO_QUOTE, xOrigin, yOrigin, "65.0", "5", "73.32348400000001", "1",
+                "63.5").append("\"\n");
+        appendTabDelimitedLine(builder, QUOTE, "Block", "Column", "Row", "Name", "ID", "RefNumber", "ControlType",
+                "GeneName", "TopHit", "Description");
+        appendTabDelimitedLine(builder, QUOTE, "1", "1", "1", "", "SPOT_1", "10", "false", "", "", "");
+        appendTabDelimitedLine(builder, QUOTE, "1", "2", "1", "", "SPOT_2", "20", "false", "", "", "");
+        appendTabDelimitedLine(builder, QUOTE, "1", "3", "1", "", "SPOT_3", "30", "false", "", "", "");
+        appendTabDelimitedLine(builder, QUOTE, "1", "4", "1", "", "SPOT_4", "40", "false", "", "", "");
+        appendTabDelimitedLine(builder, QUOTE, "1", "5", "1", "", "SPOT_5", "50", "false", "", "", "");
+
+        return builder.toString();
+    }
+
+    /**
+     * Test of a variant of the header where there is whitespace around the equals sign, and
+     * the origin and other values are separated by tabs instead of commas.
+     */
+    private String generateTestDataWithHeaderVariant(String xOrigin, String yOrigin) {
+        final StringBuilder builder = new StringBuilder();
+
+        appendTabDelimitedLine(builder, NO_QUOTE, "ATF", "1.0");
+        appendTabDelimitedLine(builder, NO_QUOTE, "7", "10");
+        builder.append("\"Type=GenePix ArrayList V1.0\"\n").append("\"BlockCount=1\"\n").append("\"BlockType=3\"\n")
+                .append("\"URL=null\"\n").append("\"Supplier=Agilent Technologies\"\n")
+                .append("\"ArrayName=UNC_Perou_Lab_244K_custom_V3\"\n").append("\"Block1 =\t");
+        appendDelimitedList(builder, TAB, NO_QUOTE, xOrigin, yOrigin, "65.0", "5", "73.32348400000001", "1",
                 "63.5").append("\"\n");
         appendTabDelimitedLine(builder, QUOTE, "Block", "Column", "Row", "Name", "ID", "RefNumber", "ControlType",
                 "GeneName", "TopHit", "Description");

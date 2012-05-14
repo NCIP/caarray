@@ -122,16 +122,16 @@ public class GalArrayDesignServiceTest extends AbstractArrayDesignServiceTest {
         design.addDesignFile(getGenepixCaArrayFile(GenepixArrayDesignFiles.DEMO_GAL));
         this.arrayDesignService.importDesign(design);
         this.arrayDesignService.importDesignDetails(design);
-        checkGenepixDesign(design, "Demo", 8064, 4, 4);
+        checkGenepixDesign(design, "Demo", 8064);
         design.getDesignFiles().clear();
         design.addDesignFile(getGenepixCaArrayFile(GenepixArrayDesignFiles.MEEBO));
         this.arrayDesignService.importDesign(design);
         this.arrayDesignService.importDesignDetails(design);
-        checkGenepixDesign(design, "MEEBO", 38880, 16, 13);
+        checkGenepixDesign(design, "MEEBO", 38880);
     }
 
     private void checkGenepixDesign(final ArrayDesign design, final String expectedName,
-            final int expectedNumberOfFeatures, final int largestExpectedBlockColumn, final int largestExpectedBlockRow) {
+            final int expectedNumberOfFeatures) {
         assertEquals(expectedName, design.getName());
         assertEquals(expectedNumberOfFeatures, design.getNumberOfFeatures().intValue());
         assertEquals(expectedNumberOfFeatures, design.getDesignDetails().getFeatures().size());
@@ -144,8 +144,6 @@ public class GalArrayDesignServiceTest extends AbstractArrayDesignServiceTest {
             final Feature feature = probe.getFeatures().iterator().next();
             assertTrue(feature.getBlockColumn() > 0);
             assertTrue(feature.getBlockRow() > 0);
-            assertTrue(feature.getBlockColumn() <= largestExpectedBlockColumn);
-            assertTrue(feature.getBlockRow() <= largestExpectedBlockRow);
             assertTrue(feature.getColumn() > 0);
             assertTrue(feature.getRow() > 0);
         }

@@ -105,7 +105,6 @@ import gov.nih.nci.caarray.validation.ValidationResult;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -126,31 +125,25 @@ import com.google.inject.Injector;
 /**
  * Manages validation and loading of array designs described in the GenePix GAL format.
  */
-@SuppressWarnings("PMD")
 public final class GalDesignHandler extends AbstractDesignFileHandler {
     private static final String LSID_AUTHORITY = AbstractCaArrayEntity.CAARRAY_LSID_AUTHORITY;
     private static final String LSID_NAMESPACE = AbstractCaArrayEntity.CAARRAY_LSID_NAMESPACE;
 
-    private static final int NUMBER_OF_BLOCK_INFORMATION_FIELDS = 7;
     private static final String BLOCK_HEADER = "Block";
-    private static final String BLOCK_COUNT_HEADER = "BlockCount";
-    private static final String BLOCK_TYPE_HEADER = "BlockType";
     private static final String COLUMN_HEADER = "Column";
     private static final String ROW_HEADER = "Row";
     private static final String ID_HEADER = "ID";
     private static final List<String> REQUIRED_DATA_COLUMN_HEADERS = Arrays.asList(new String[] {BLOCK_HEADER,
             COLUMN_HEADER, ROW_HEADER, ID_HEADER });
-    private static final String BLOCK_INDICATOR = "Block";
+    private static final short DEFAULT_BLOCK_ROW_NUM = 1;
 
     /**
-     * File Type for genepix GAL array design.
+     * File Type for Genepix GAL array design.
      */
     public static final FileType GAL_FILE_TYPE = new FileType("GENEPIX_GAL", FileCategory.ARRAY_DESIGN, true, "GAL");
     static final Set<FileType> SUPPORTED_TYPES = Sets.newHashSet(GAL_FILE_TYPE);
 
     private final Map<String, Integer> headerToPositionMap = new HashMap<String, Integer>();
-    private final List<BlockInfo> blockInfos = new ArrayList<BlockInfo>();
-    private final Map<Short, BlockInfo> numberToBlockMap = new HashMap<Short, BlockInfo>();
 
     private CaArrayFile designFile;
     private File fileOnDisk;
@@ -252,85 +245,13 @@ public final class GalDesignHandler extends AbstractDesignFileHandler {
                 loadHeaderToPositionMap(values);
                 break;
             }
-            handleHeaderLine(values);
         }
-        setBlockColumnsAndRows();
-    }
-
-    private void setBlockColumnsAndRows() throws IOException {
-        if (!this.blockInfos.isEmpty()) {
-            setBlockInfoFromHeaderData();
-        } else {
-            setBlockInfoFromDataRows();
-        }
-    }
-
-    private void setBlockInfoFromDataRows() throws IOException {
-        positionAtDataRecords();
-        short blockCount = 0;
-        while (this.reader.hasNextLine()) {
-            final short blockNumber = getBlockNumber(this.reader.nextLine());
-            if (blockNumber > blockCount) {
-                blockCount = blockNumber;
-            }
-        }
-        for (short i = 1; i <= blockCount; i++) {
-            final BlockInfo blockInfo = new BlockInfo(i, 0, 0);
-            blockInfo.setBlockColumn(i);
-            blockInfo.setBlockRow((short) 1);
-            this.numberToBlockMap.put(i, blockInfo);
-        }
-    }
-
-    private void setBlockInfoFromHeaderData() {
-        short blockRow = 0;
-        short blockColumn = 0;
-        double currentYOrigin = -1;
-        for (final BlockInfo blockInfo : this.blockInfos) {
-            if (blockInfo.getYOrigin() > currentYOrigin) {
-                blockColumn = 0;
-                currentYOrigin = blockInfo.getYOrigin();
-                blockRow++;
-            }
-            blockColumn++;
-            blockInfo.setBlockColumn(blockColumn);
-            blockInfo.setBlockRow(blockRow);
-        }
-    }
-
-    private void handleHeaderLine(List<String> values) {
-        if (values.get(0).contains("=")) {
-            handleHeaderRecord(values.get(0));
-        }
-    }
-
-    private void handleHeaderRecord(String record) {
-        final String[] parts = record.split("=");
-        final String name = parts[0].trim();
-        final String value = parts[1].trim();
-        if (isBlockInformationHeading(name)) {
-            handleBlockInformation(name, value);
-        }
-    }
-
-    private boolean isBlockInformationHeading(String name) {
-        return name.startsWith(BLOCK_INDICATOR) && !BLOCK_COUNT_HEADER.equals(name) && !BLOCK_TYPE_HEADER.equals(name);
-    }
-
-    private void handleBlockInformation(String name, String value) {
-        final String[] parts = value.split(",");
-        final short blockNumber = Short.parseShort(name.substring(BLOCK_INDICATOR.length()));
-        final double xOrigin = Double.parseDouble(parts[0].trim());
-        final double yOrigin = Double.parseDouble(parts[1].trim());
-        final BlockInfo blockInfo = new BlockInfo(blockNumber, xOrigin, yOrigin);
-        this.blockInfos.add(blockInfo);
-        this.numberToBlockMap.put(blockInfo.getBlockNumber(), blockInfo);
     }
 
     private void addToDetails(ArrayDesignDetails details, ProbeGroup group, List<String> values) {
         final Feature feature = new Feature(details);
         feature.setBlockColumn(getBlockColumn(values));
-        feature.setBlockRow(getBlockRow(values));
+        feature.setBlockRow(DEFAULT_BLOCK_ROW_NUM);
         feature.setColumn(getColumn(values));
         feature.setRow(getRow(values));
         details.getFeatures().add(feature);
@@ -346,12 +267,7 @@ public final class GalDesignHandler extends AbstractDesignFileHandler {
 
     private short getBlockColumn(List<String> values) {
         final short blockNumber = getBlockNumber(values);
-        return this.numberToBlockMap.get(blockNumber).getBlockColumn();
-    }
-
-    private short getBlockRow(List<String> values) {
-        final short blockNumber = getBlockNumber(values);
-        return this.numberToBlockMap.get(blockNumber).getBlockRow();
+        return blockNumber;
     }
 
     private short getBlockNumber(List<String> values) {
@@ -422,20 +338,12 @@ public final class GalDesignHandler extends AbstractDesignFileHandler {
         this.designFile.setValidationResult(fileResult);
 
         try {
-            validateFormat(fileResult);
-            if (result.isValid()) {
-                validateHeader(fileResult);
-            }
-            if (result.isValid()) {
-                validateData(fileResult);
+            if (validateHeader(fileResult)) {
+                validateDataRows(fileResult);
             }
         } catch (final IOException e) {
             result.addMessage(this.designFile.getName(), Type.ERROR, "Could not read file: " + e);
         }
-    }
-
-    private void validateFormat(FileValidationResult result) {
-        validateFileNotEmpty(result);
     }
 
     private void validateDataRows(FileValidationResult result) throws IOException {
@@ -502,168 +410,24 @@ public final class GalDesignHandler extends AbstractDesignFileHandler {
         }
     }
 
-    private void validateFileHasRowHeader(FileValidationResult result) throws IOException {
+    private boolean validateHeader(FileValidationResult result) throws IOException {
         this.reader.reset();
-        while (this.reader.hasNextLine()) {
-            if (isDataHeaderLine(this.reader.nextLine())) {
-                return;
-            }
-        }
-        result.addMessage(Type.ERROR, "The GAL file has no row header line");
-    }
-
-    private void validateFileNotEmpty(FileValidationResult result) {
         if (!this.reader.hasNextLine()) {
             result.addMessage(Type.ERROR, "The GAL file is empty");
+            return false;
         }
-    }
-
-    private void validateHeader(FileValidationResult result) throws IOException {
-        this.reader.reset();
-        validateFormatHeader(result);
-        if (result.isValid()) {
-            validateFileHasRowHeader(result);
-        }
-        if (result.isValid()) {
-            validateHeaderFields(result);
-        }
-        if (result.isValid()) {
-            validateBlockInformation(result);
-        }
-    }
-
-    private void validateFormatHeader(FileValidationResult result) throws IOException {
-        this.reader.reset();
         List<String> values = this.reader.nextLine();
         if (values.size() < 2 || !"ATF".equals(values.get(0))) {
             result.addMessage(Type.ERROR, "The GAL file doesn't begin with the required header (ATF\t1.0).");
-            return;
+            return false;
         }
-        if (!this.reader.hasNextLine()) {
-            result.addMessage(Type.ERROR, "The file is only one line long.");
-            return;
-        }
-        values = this.reader.nextLine();
-        if (values.size() < 2) {
-            result.addMessage(Type.ERROR, "The second line of the GAL file must contain two numeric fields.");
-            return;
-        }
-    }
-
-    private void validateHeaderFields(FileValidationResult result) throws IOException {
-        this.reader.reset();
-        this.reader.nextLine();
-        this.reader.nextLine();
         while (this.reader.hasNextLine()) {
-            final List<String> values = this.reader.nextLine();
-            if (isDataHeaderLine(values)) {
-                return;
-            }
-            if (!values.get(0).contains("=")) {
-                final ValidationMessage message =
-                    result.addMessage(Type.ERROR,
-                    "Illegal header line; headers must be of the format <name>=<value>");
-                message.setLine(this.reader.getCurrentLineNumber());
+            values = this.reader.nextLine();
+            if (!values.isEmpty() && (isDataHeaderLine(values))) {
+                return true;
             }
         }
+        result.addMessage(Type.ERROR, "The GAL file has no data header line of the format Block Row Column ID");
+        return false;
     }
-
-    private void validateBlockInformation(FileValidationResult result) throws IOException {
-        this.reader.reset();
-        while (this.reader.hasNextLine()) {
-            final List<String> values = this.reader.nextLine();
-            if (isDataHeaderLine(values)) {
-                return;
-            }
-            final String name = values.get(0).split("=")[0];
-            if (!values.isEmpty() && isBlockInformationHeading(name)) {
-                validateBlockInformation(values.get(0), this.reader.getCurrentLineNumber(), result);
-            }
-        }
-    }
-
-    private void validateBlockInformation(String headerField, int line, FileValidationResult result) {
-        final String[] parts = headerField.split("=");
-        final String name = parts[0];
-        final String information = parts[1];
-        if (!Utils.isShort(name.substring(BLOCK_INDICATOR.length()))) {
-            result.addMessage(Type.ERROR, "Illegal block header name: " + name);
-            return;
-        }
-        validateBlockInformationFields(information.split(","), line, result);
-    }
-
-    private void validateBlockInformationFields(String[] values, int line, FileValidationResult result) {
-        if (values.length != NUMBER_OF_BLOCK_INFORMATION_FIELDS) {
-            final ValidationMessage message =
-                result.addMessage(Type.ERROR,
-                "Block information must consist of exactly 7 comma-separated numeric values");
-            message.setLine(line);
-            message.setColumn(1);
-        }
-        if (!Utils.isDouble(values[0].trim())) {
-            final ValidationMessage message =
-                result.addMessage(Type.ERROR, "Block information must contain a valid xOrigin value");
-            message.setLine(line);
-            message.setColumn(1);
-        }
-        if (!Utils.isDouble(values[1].trim())) {
-            final ValidationMessage message =
-                result.addMessage(Type.ERROR, "Block information must contain a valid yOrigin value");
-            message.setLine(line);
-            message.setColumn(2);
-        }
-    }
-
-    private void validateData(FileValidationResult result) throws IOException {
-        validateDataRows(result);
-    }
-
-    /**
-     * Used to record location information for Genepix design blocks.
-     */
-    private static final class BlockInfo {
-        private final short blockNumber;
-        private short blockColumn;
-        private short blockRow;
-        private final double xOrigin;
-        private final double yOrigin;
-
-        private BlockInfo(short blockNumber, double xOrigin, double yOrigin) {
-            this.blockNumber = blockNumber;
-            this.xOrigin = xOrigin;
-            this.yOrigin = yOrigin;
-        }
-
-        private short getBlockColumn() {
-            return this.blockColumn;
-        }
-
-        private short getBlockNumber() {
-            return this.blockNumber;
-        }
-
-        private short getBlockRow() {
-            return this.blockRow;
-        }
-
-        @SuppressWarnings("unused")
-        private double getXOrigin() {
-            return this.xOrigin;
-        }
-
-        private double getYOrigin() {
-            return this.yOrigin;
-        }
-
-        private void setBlockColumn(short blockColumn) {
-            this.blockColumn = blockColumn;
-        }
-
-        private void setBlockRow(short blockRow) {
-            this.blockRow = blockRow;
-        }
-
-    }
-
 }

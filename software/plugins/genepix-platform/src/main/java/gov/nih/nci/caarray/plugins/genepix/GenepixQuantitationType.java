@@ -86,7 +86,7 @@ import gov.nih.nci.caarray.domain.data.DataType;
 import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
 
 /**
- * Quantitation type information for Affymetrix CEL files.
+ * Quantitation type information for Genepix GPR files.
  */
 public enum GenepixQuantitationType implements QuantitationTypeDescriptor {
     /**
