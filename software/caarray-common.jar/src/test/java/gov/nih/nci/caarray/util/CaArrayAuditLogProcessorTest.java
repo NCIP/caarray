@@ -201,7 +201,7 @@ public class CaArrayAuditLogProcessorTest extends AbstractDaoTest {
         List<String> messages = getLogMessages();
         assertEquals(2, messages.size() - initLogMessages);
         assertTrue(messages.contains("Experiment " + p.getExperiment().getTitle() + ":"));
-        assertTrue(messages.contains(" - Supplementail File " + supFile.getName() + " added"));
+        assertTrue(messages.contains(" - Supplemental File " + supFile.getName() + " added"));
 
         tx.commit();
     }

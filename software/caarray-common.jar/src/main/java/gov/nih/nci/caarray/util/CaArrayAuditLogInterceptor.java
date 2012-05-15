@@ -138,6 +138,10 @@ import com.fiveamsolutions.nci.commons.util.UsernameHolder;
  * the actor of the change request is determind with {@link UsernameHolder}.
  * Don't forget to define a sequence {@value #SEQUENCE_NAME}, if your database supports it.
  * @see UsernameHolder
+ * 
+ * This class was copied and modified from AuditLogInterceptor in nci-commons v1.2.17.
+ * This should be removed and integrated back into nci-commons when caArray updates to the newest version.
+ * Tracked in JIRA ticket ARRAY-2496.
  */
 
 @SuppressWarnings({"PMD.CyclomaticComplexity", "unchecked", "PMD.ExcessiveClassLength", "PMD.TooManyMethods" })
@@ -329,6 +333,9 @@ public class CaArrayAuditLogInterceptor extends AuditLogInterceptor {
                     session.save(audit.getAuditLogRecord());
 
                     // save audit log security entries
+                    // This code was added for ARRAY-1933, which required access to the session to save some security
+                    // entries. However, this should be delegated to the processor. We need to update
+                    // AuditLogInterceptor and DefaultProcessor in nci-commons.  See ARRAY-2496.
                     Map<AuditLogRecord, Set<AuditLogSecurity>> securityEntries =
                             ((CaArrayAuditLogProcessor) this.processor).getSecurityEntries();
                     Set<AuditLogSecurity> entriesForRecord = securityEntries.get(audit.getAuditLogRecord());
