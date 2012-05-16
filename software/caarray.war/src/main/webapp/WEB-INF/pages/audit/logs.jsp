@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Security Audit Log</title>
+        <title>Audit Log</title>
         <script type="text/javascript">
 function clearFilter() {
   $("criteria.username").value = '';
@@ -12,7 +12,7 @@ function clearFilter() {
         </script>
     </head>
     <body>
-        <h1>Security Audit Log</h1>
+        <h1>Audit Log</h1>
         <caarray:helpPrint/>
         <div class="padme">
             <p class="instructions" style="margin-bottom: 10px;">The list of displayed audit log entries can be filtered
