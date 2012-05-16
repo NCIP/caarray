@@ -352,7 +352,7 @@ public class CaArrayAuditLogProcessor extends DefaultProcessor {
         if ("status".equals(property)
                 && FileStatus.valueOf((String) newVal) == FileStatus.SUPPLEMENTAL) {
             addExperimentDetail(record, columnName, file.getProject());
-            addDetail(record, columnName, " - Supplementail File " + file.getName() + " added", oldVal, newVal);
+            addDetail(record, columnName, " - Supplemental File " + file.getName() + " added", oldVal, newVal);
             addProjectSecurity(record, file.getProject(), READ_PRIV_ID);
         }
     }
