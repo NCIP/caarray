@@ -202,7 +202,7 @@
     <dependency conf="project" org="org.apache.ant" name="ant-junit" rev="1.7.0" transitive="false" />
     <dependency conf="project" org="org.apache.ant" name="ant-commons-logging" rev="1.7.0" transitive="false" />
     <dependency conf="project" org="org.apache.ant" name="ant-commons-net" rev="1.7.0nci" transitive="false" />
-    <dependency conf="project" org="org.apache.ant" name="ant-antlr" rev="1.7.0" transitive="false" />
+    <dependency conf="project" org="antlr" name="antlr" rev="2.7.7" transitive="false" />
     <dependency conf="project" org="org.apache.ant" name="ant-stylebook" rev="1.7.0" transitive="false" />
     <dependency conf="project" org="org.apache.ant" name="ant-apache-regexp" rev="1.7.0nci" transitive="false" />
     <dependency conf="project" org="org.apache.ant" name="ant-jsch" rev="1.7.0" transitive="false" />
