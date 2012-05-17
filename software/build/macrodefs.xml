@@ -359,7 +359,7 @@
                         </fileset>
                     </replaceregexp>
 
-                    <replace dir="@{temp.dir}" token="http://training03.cagrid.org:8080/wsrf/services/DefaultIndexService" value="${grid.index.url}">
+                    <replace dir="@{temp.dir}" token="http://index.training.cagrid.org:8080/wsrf/services/DefaultIndexService" value="${grid.index.url}">
                         <include name="**/*.xml"/>
                     </replace>
 
