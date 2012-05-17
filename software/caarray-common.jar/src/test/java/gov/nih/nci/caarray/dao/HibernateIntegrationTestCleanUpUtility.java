@@ -117,23 +117,23 @@ import org.hibernate.metadata.ClassMetadata;
  */
 public final class HibernateIntegrationTestCleanUpUtility {
     private static final CaArrayHibernateHelper hibernateHelper = CaArrayHibernateHelperFactory
-            .getCaArrayHibernateHelper(); 
+            .getCaArrayHibernateHelper();
 
     private static final Logger LOG = Logger.getLogger(HibernateIntegrationTestCleanUpUtility.class);
     private static List<Class<?>> classesToRemove;
     private static List<Class<?>> collsToRemove;
     private static final String SELF_GROUP_PATTERN = "'" + SecurityUtils.SELF_GROUP_PREFIX + "%'";
-    
+
     // this sets up constraints that prevent some instances from being removed. these would be configuration
     // data that are expected to always be populated and are needed for proper operation of caArray
-    // if a persistence class is found in this map, its instances will only be deleted if they match the 
+    // if a persistence class is found in this map, its instances will only be deleted if they match the
     // constraint in the map
     private static final Map<Class<?>, String> CLASS_DELETE_CONSTRAINTS = new HashMap<Class<?>, String>();
     static {
         CLASS_DELETE_CONSTRAINTS.put(TermSource.class, "id > 0");
         CLASS_DELETE_CONSTRAINTS.put(Category.class, "id > 0");
         CLASS_DELETE_CONSTRAINTS.put(Term.class, "id > 0");
-        CLASS_DELETE_CONSTRAINTS.put(User.class, "id > 9");
+        CLASS_DELETE_CONSTRAINTS.put(User.class, "id > 11");
         CLASS_DELETE_CONSTRAINTS.put(Group.class, "id > 8 and not (groupName like " + SELF_GROUP_PATTERN + ")");
         CLASS_DELETE_CONSTRAINTS.put(ProtectionElement.class, "id > 2");
         CLASS_DELETE_CONSTRAINTS.put(Application.class, "0 = 1");
@@ -148,7 +148,7 @@ public final class HibernateIntegrationTestCleanUpUtility {
     }
 
     /**
-     * Delete all instances of CSM and caArray classes from the databases, except for a few 
+     * Delete all instances of CSM and caArray classes from the databases, except for a few
      */
     @SuppressWarnings("PMD")
     public static void cleanUp() {
@@ -183,7 +183,7 @@ public final class HibernateIntegrationTestCleanUpUtility {
         }
         return doCleanUp(sb.toString());
     }
-    
+
     private static boolean doCleanUp(String deleteSql) {
         Transaction tx = null;
         boolean removed = false;
@@ -218,7 +218,7 @@ public final class HibernateIntegrationTestCleanUpUtility {
         classesToRemove = new LinkedList<Class<?>>();
         for (ClassMetadata classMetadata : classMetadataMap.values()) {
             classesToRemove.add(classMetadata.getMappedClass(EntityMode.POJO));
-        }        
+        }
     }
 
     private static Session getSession() {

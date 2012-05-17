@@ -273,18 +273,15 @@ public class PermissionsManagementServiceTest extends AbstractServiceTest {
     @Test
     public void testRename() throws CSTransactionException, CSObjectNotFoundException {
         final CollaboratorGroup created = this.permissionsManagementService.create(TEST);
-        // Transaction tx = hibernateHelper.getCurrentSession().beginTransaction();
         this.permissionsManagementService.rename(created, "test2");
         final Group g = (Group) hibernateHelper.getCurrentSession().load(Group.class, created.getGroup().getGroupId());
         assertEquals("test2", g.getGroupName());
-        // tx.commit();
     }
 
     @Test
     @SuppressWarnings("unchecked")
     public void testAddUsersToCollaboratorGroup() throws CSTransactionException, CSObjectNotFoundException {
         final CollaboratorGroup created = this.permissionsManagementService.create(TEST);
-        // Transaction tx = hibernateHelper.getCurrentSession().beginTransaction();
         this.permissionsManagementService.addUsers(created, Arrays.asList(3L, 2L, 1L));
         final Group g = (Group) hibernateHelper.getCurrentSession().load(Group.class, created.getGroup().getGroupId());
         assertEquals(2, g.getUsers().size());
@@ -292,12 +289,13 @@ public class PermissionsManagementServiceTest extends AbstractServiceTest {
             assertTrue("caarrayuser".equals(u.getLoginName()) || "caarrayadmin".equals(u.getLoginName()));
         }
         assertEquals(TEST, g.getGroupName());
-        // tx.commit();
     }
 
+    /**
+     * @see http://gforge.nci.nih.gov/tracker/index.php?func=detail&aid=12306
+     */
     @Test
-    public void testAddUsersToAnonymousGroup() throws CSTransactionException, CSObjectNotFoundException {
-        // Transaction tx = hibernateHelper.getCurrentSession().beginTransaction();
+    public void testAddUserKeepsAnonUserInAnonGroup() throws CSTransactionException, CSObjectNotFoundException {
         final Predicate anonUserExists = new Predicate() {
             @Override
             public boolean evaluate(Object o) {
@@ -311,7 +309,6 @@ public class PermissionsManagementServiceTest extends AbstractServiceTest {
         this.permissionsManagementService.addUsers(SecurityUtils.ANONYMOUS_GROUP, "biostatistician");
         hibernateHelper.getCurrentSession().refresh(g);
         assertTrue(CollectionUtils.exists(g.getUsers(), anonUserExists));
-        // tx.commit();
     }
 
     @Test
@@ -353,8 +350,6 @@ public class PermissionsManagementServiceTest extends AbstractServiceTest {
     private static class LocalCollaboratorGroupDaoStub extends CollaboratorGroupDaoStub {
 
         final HashMap<Long, PersistentObject> savedObjects = new HashMap<Long, PersistentObject>();
-        PersistentObject lastSaved;
-        PersistentObject lastDeleted;
         private Long nextId = 1L;
 
         @SuppressWarnings("deprecation")
@@ -364,21 +359,14 @@ public class PermissionsManagementServiceTest extends AbstractServiceTest {
                 ((CollaboratorGroup) caArrayObject).setId(this.nextId++);
             }
             super.save(caArrayObject);
-            this.lastSaved = caArrayObject;
             this.savedObjects.put(caArrayObject.getId(), caArrayObject);
             return caArrayObject.getId();
         }
 
         @Override
         public void remove(PersistentObject caArrayEntity) {
-            this.lastDeleted = caArrayEntity;
             this.savedObjects.remove(caArrayEntity.getId());
         }
-
-        public PersistentObject getLastDeleted() {
-            return this.lastDeleted;
-        }
-
     }
 
     private static class LocalSearchDaoStub extends SearchDaoStub {
