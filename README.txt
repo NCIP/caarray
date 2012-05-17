@@ -92,9 +92,9 @@ The following tools are needed for working on caArray2 code:
     /software/local.properties and your copy of /software/master_build/install.properties.  Steps to configure these
     files described in the next section. To set the password, you can execute:
     $ mysqladmin -u root password 'NEWPASSWORD'
-- caGrid 1.2. This is optional, as it is needed only if you are working on grid services. This can be obtained from
-  http://cagrid.org/display/downloads/caGrid+1.2. You can use either the installer or the source code distribution
-  and build it.
+- caGrid 1.5. This is optional, as it is needed only if you are working on grid services. This can be obtained from
+  https://ncisvn.nci.nih.gov/svn/cagrid/branches/caGrid-1_5_release/Software/core/caGrid. Build from the source code 
+  distribution after patching per software/grid/legacy/core.patch.
 
 Getting Started
 ------------------------
@@ -163,6 +163,9 @@ Getting Started
     $ ant -Dproperties.file=<absolute path to install.properties file copy> deploy:local:install
   (replace "<absolute path to install.properties file copy>" with actual path)
   caArray will be installed locally and both caArray JBoss and grid service JBoss will be started automatically.
+  
+  TODO: ARRAY-2371/ARRAY-2499 address the grid server install/configuration
+  For now, download the jboss-5.1.0.GA distribution to whatever you set globoss.home to.
 
 You can now access the application at http://${jboss.server.hostname}:${jboss.server.port}/caarray.
 Default logins are
