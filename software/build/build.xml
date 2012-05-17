@@ -2430,26 +2430,31 @@
             </filterset>
         </copy>
 
-    	<!-- Remove CAS Configuration from the web.xml if not using CAS SSO-->
+    	<!-- Configure web.xml if using SSO or not.-->
     	<if>
-    		<and>
-                <not>
-                    <equals arg1="${preserve.login.config.in.ear.for.dist}" arg2="true" />
-                </not>
-                <not>
-                    <equals arg1="${single.sign.on.install}" arg2="true" />
-                </not>
-    		</and>
+            <not>
+                <equals arg1="${preserve.login.config.in.ear.for.dist}" arg2="true" />
+            </not>
     		<then>
-    			<xmltask source="${caarray-war.target.dir}/xml/web.xml" dest="${caarray-war.target.dir}/xml/web.xml">
-                    <remove path="//:context-param[:param-name/text()='service']"/>
-                    <remove path="//:context-param[:param-name/text()='casServerLoginUrl']"/>
-                    <remove path="//:context-param[:param-name/text()='ssoEnabled']"/>
-                    <remove path="//:filter[:filter-name/text()='CASWebAuthenticationFilter']"/>
-                    <remove path="//:filter[:filter-name/text()='CASAuthenticationFilter']"/>
-                    <remove path="//:filter-mapping[:filter-name/text()='CASWebAuthenticationFilter']"/>
-                    <remove path="//:filter-mapping[:filter-name/text()='CASAuthenticationFilter']"/>
-                </xmltask>
+    		     <if>
+	                <equals arg1="${single.sign.on.install}" arg2="true" />
+		            <then>
+		                <xmltask source="${caarray-war.target.dir}/xml/web.xml" dest="${caarray-war.target.dir}/xml/web.xml">
+		                    <remove path="//:security-constraint[:web-resource-collection/:web-resource-name/text()='Non-SSO Protection']"/>
+		                </xmltask>
+		            </then>
+    		     	<else>
+            			<xmltask source="${caarray-war.target.dir}/xml/web.xml" dest="${caarray-war.target.dir}/xml/web.xml">
+                            <remove path="//:context-param[:param-name/text()='service']"/>
+                            <remove path="//:context-param[:param-name/text()='casServerLoginUrl']"/>
+                            <remove path="//:context-param[:param-name/text()='ssoEnabled']"/>
+                            <remove path="//:filter[:filter-name/text()='CASWebAuthenticationFilter']"/>
+                            <remove path="//:filter[:filter-name/text()='CASAuthenticationFilter']"/>
+                            <remove path="//:filter-mapping[:filter-name/text()='CASWebAuthenticationFilter']"/>
+                            <remove path="//:filter-mapping[:filter-name/text()='CASAuthenticationFilter']"/>
+                        </xmltask>
+    		     	</else>
+		        </if>
     		</then>
 		</if>
 

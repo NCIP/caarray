@@ -114,21 +114,21 @@ public final class BaseProperties {
 
     // Data File names
     public static final String CEL_DATA_FILE_NAME = "ApiTestAffymetrixData.CEL";
-    
+
     // Properties used by for CAS Remote EJB example
 
     // Next 6 props are for compiling the CAS Service URL according to the pattern: http://localhost:38080/caarray
     public static final String SERVICE_URL_SCHEME_KEY = "cas.service.url.scheme";
     public static final String SERVICE_URL_PORT_KEY = "cas.service.url.port";
     public static final String SERVICE_URL_CTXROOT_KEY = "cas.service.url.ctxroot";
-    public static final String SERVICE_URL_SCHEME_DEFAULT = "https";
-    public static final String SERVICE_URL_PORT_DEFAULT = "443";
-    public static final String SERVICE_URL_CTXROOT_DEFAULT = "caarray";
-    
+    public static final String SERVICE_URL_SCHEME_DEFAULT = "http";
+    public static final String SERVICE_URL_PORT_DEFAULT = "47210";
+    public static final String SERVICE_URL_CTXROOT_DEFAULT = "caintegrator";
+
     // Rest of the CAS properties
     public static final String CAS_URL = "https://localhost:8443/cas";
-    public static final String USERNAME = "caarrayadmin";
-    public static final String PASSWORD = "******";
+    public static final String CAS_USERNAME = "casadmin";
+    public static final String CAS_PASSWORD = "casadmin";
 
     // Getters for Connection properties
     public static String getServerHostname() {
@@ -138,14 +138,14 @@ public final class BaseProperties {
     public static int getServerJndiPort() {
         return Integer.parseInt(System.getProperty(SERVER_JNDI_PORT_KEY, SERVER_JNDI_PORT_DEFAULT));
     }
-    
+
     // CAS service URL compilation
     public static String getServiceURLforCAS() {
         String scheme  = System.getProperty( SERVICE_URL_SCHEME_KEY, SERVICE_URL_SCHEME_DEFAULT );
         String host    = System.getProperty( SERVER_HOSTNAME_KEY, SERVER_HOSTNAME_DEFAULT);
         String port    = System.getProperty( SERVICE_URL_PORT_KEY, SERVICE_URL_PORT_DEFAULT );
         String ctxroot = System.getProperty( SERVICE_URL_CTXROOT_KEY, SERVICE_URL_CTXROOT_DEFAULT );
-        
+
         String serviceURL = scheme + "://" + host + ":" + port + "/" + ctxroot;
         return serviceURL;
     }

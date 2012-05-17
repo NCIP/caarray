@@ -25,7 +25,7 @@ function completeLogin() {
         <c:when test="${initParam.ssoEnabled == 'true'}">
             <div class="btnwrapper topbuffer fillcontent">
                 <ul id="btnrow">
-                    <c:url var="loginUrl" value="/login.action" />
+                    <c:url var="loginUrl" value="/protected/project/workspace.action" />
                     <li><caarray:linkButton actionClass="register" text="Login" tabindex="1" url="${loginUrl}"/></li>
                 </ul>
             </div>

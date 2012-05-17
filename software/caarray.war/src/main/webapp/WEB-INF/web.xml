@@ -6,8 +6,8 @@
 
 	<!-- CAS Settings -->
 	<context-param>
-		<param-name>service</param-name>
-		<param-value>@jboss.protocol@://@jboss.server.hostname@:@jboss.server.port@/caarray</param-value>
+		<param-name>serverName</param-name>
+		<param-value>@jboss.protocol@://@jboss.server.hostname@:@jboss.server.port@</param-value>
 	</context-param>
 	<context-param>
 		<param-name>casServerLoginUrl</param-name>
@@ -541,9 +541,9 @@
         <location>/403.jsp</location>
     </error-page>
 
-    <security-constraint>
+   <security-constraint>
         <web-resource-collection>
-            <web-resource-name>protected</web-resource-name>
+            <web-resource-name>Non-SSO Protection</web-resource-name>
             <url-pattern>/protected/*</url-pattern>
         </web-resource-collection>
         <auth-constraint>
@@ -556,7 +556,6 @@
             <role-name>LabScientist</role-name>
         </auth-constraint>
     </security-constraint>
-
     <security-constraint>
         <web-resource-collection>
             <web-resource-name>protected</web-resource-name>
@@ -588,7 +587,7 @@
         </auth-constraint>
     </security-constraint>
 
-    <login-config>
+     <login-config>
         <auth-method>FORM</auth-method>
         <form-login-config>
             <form-login-page>/login.jsp</form-login-page>

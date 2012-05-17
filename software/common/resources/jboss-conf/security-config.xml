@@ -27,7 +27,7 @@
             <login-module code="gov.nih.nci.caarray.authentication.PasswordStackingCasLoginModule" flag="optional">
                 <module-option name="ticketValidatorClass">org.jasig.cas.client.validation.Cas20ServiceTicketValidator</module-option>
                 <module-option name="casServerUrlPrefix">https://@cas.server.hostname@:@cas.server.port@/cas</module-option>
-                <module-option name="service">@jboss.protocol@://@jboss.server.hostname@:@jboss.server.port@/caarray</module-option>
+                <module-option name="serverName">@jboss.protocol@://@jboss.server.hostname@:@jboss.server.port@</module-option>
                 <module-option name="defaultRoles">UserRole</module-option>
                 <module-option name="roleAttributeNames">groupMembership</module-option>
                 <module-option name="principalGroupName">CallerPrincipal</module-option>
