@@ -272,8 +272,8 @@ public final class GprHandler extends AbstractDataFileHandler {
     // bogus warning from PMD
     private
     boolean areColumnHeaders(List<String> values) {
-        return values.size() > REQUIRED_INITIAL_ROW_HEADER_LENGTH && BLOCK_HEADER.equals(values.get(0))
-        && COLUMN_HEADER.equals(values.get(1)) && ROW_HEADER.equals(values.get(2));
+        return values.size() > REQUIRED_INITIAL_ROW_HEADER_LENGTH && values.contains(BLOCK_HEADER)
+        && values.contains(COLUMN_HEADER) && values.contains(ROW_HEADER);
     }
 
     private void reset(DelimitedFileReader reader) {
