@@ -35,19 +35,12 @@
                                     </span>
                                     <button type="submit" class="btn btn-gray start" onclick="beginUpload()"><i class="icon-upload icon-white"></i>Upload All</button>
                                     <button type="reset" class="btn btn-gray cancel"><i class="icon-ban-circle icon-white"></i>Cancel All Uploads</button>
+                                    <button type="reset" class="btn btn-gray cancel" onclick="closeAndGoToProjectData('${projectDetailsUrl}')"><i class="icon-upload icon-white"></i>Close Window</button>
                                 </div>
                             </div>
                         </s:form>
                     </c:if>
                 </div>
-            </div>
-            <div id="tabboxwrapper_notabs">
-                <div id="closeWindow" style="display:none">
-                    <caarray:actions>
-                        <caarray:action actionClass="cancel" text="Close Window" onclick="window.close()" />
-                        <caarray:action actionClass="import" text="Close Window and go to Experiment Data" onclick="closeAndGoToProjectData('${projectDetailsUrl}')" />
-                    </caarray:actions>
-                 </div>
             </div>
         </body>
     </html>
