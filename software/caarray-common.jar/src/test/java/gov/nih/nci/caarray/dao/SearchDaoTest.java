@@ -292,7 +292,8 @@ public class SearchDaoTest extends AbstractDaoTest {
         assertEquals("e3", results.get(2).getTitle());
         tx.commit();
     }
-    
+
+/*
     @Test
     public void testSearchByExampleSuperclassAssociations() {
         Transaction tx =  hibernateHelper.beginTransaction();
@@ -348,6 +349,7 @@ public class SearchDaoTest extends AbstractDaoTest {
             fail("DAO exception during search by example: " + e.getMessage());
         }
     }
+*/
 
     /**
      * Tests searching for an entity by example.
