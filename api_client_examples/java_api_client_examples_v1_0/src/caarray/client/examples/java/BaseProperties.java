@@ -129,6 +129,7 @@ public final class BaseProperties {
     public static final String CAS_URL = "https://localhost:8443/cas";
     public static final String CAS_USERNAME = "casadmin";
     public static final String CAS_PASSWORD = "casadmin";
+    public static final String CAS_USER_CAARRAY_PASSWORD = "caArray2!";
 
     // Getters for Connection properties
     public static String getServerHostname() {

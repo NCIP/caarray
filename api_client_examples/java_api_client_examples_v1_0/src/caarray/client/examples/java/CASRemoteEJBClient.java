@@ -57,11 +57,18 @@ public class CASRemoteEJBClient {
         String ticket = login();
 
         /*
-        * To properly authenticate users for EJB calls the caArray application requires 2 pieces of information:
+        * To properly authenticate users with CAS information for EJB calls the caArray application requires 2 pieces of information:
         * + The service value that was used at authentication time when the ticket was created
         * + The ticket value that was provided by CAS
         */
         server.connect(BaseProperties.getServiceURLforCAS(), ticket);
+        experimentSearchCriteria.doSearch(server);
+
+        /*
+         * This shows that in addition to being able to authenticate with CAS the application also provides
+         * the capability to authenticate against the database in an SSO environment.
+         */
+        server.connect(BaseProperties.CAS_USERNAME, BaseProperties.CAS_USER_CAARRAY_PASSWORD);
         experimentSearchCriteria.doSearch(server);
     }
 

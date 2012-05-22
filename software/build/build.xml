@@ -2519,19 +2519,10 @@
                         <equals arg1="${single.sign.on.install}" arg2="true" />
                         <then>
                             <property name="remove.ldap.login.config.from.ear" value="true"/>
-                            <property name="remove.db.login.config.from.ear" value="true"/>
-                            <xmltask source="${caarray-ear.target.dir}/xml/security-config.xml" dest="${caarray-ear.target.dir}/xml/security-config.xml">
-                                <replace path="//authentication/login-module[@code='gov.nih.nci.caarray.authentication.PasswordStackingCasLoginModule']/@flag" withText="required"/>
-                            </xmltask>
+
                         </then>
                         <else>
                             <property name="remove.cas.login.config.from.ear" value="true"/>
-                            <xmltask source="${caarray-ear.target.dir}/xml/security-config.xml" dest="${caarray-ear.target.dir}/xml/security-config.xml">
-                                <replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule']/module-option[@name='url']/text()" withText="${database.url}"/>
-                                <replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule']/module-option[@name='user']/text()" withText="${database.user}"/>
-                                <replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule']/module-option[@name='passwd']/text()" withText="${database.password}"/>
-                                <replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule']/module-option[@name='driver']/text()" withText="${database.driver}"/>
-                            </xmltask>
                             <if>
                                 <equals arg1="${ldap.authentication.enabled}" arg2="true" />
                                 <then>
@@ -2578,6 +2569,14 @@
                         <remove path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule']"/>
                     </xmltask>
                 </then>
+        		<else>
+        			<xmltask source="${caarray-ear.target.dir}/xml/security-config.xml" dest="${caarray-ear.target.dir}/xml/security-config.xml">
+                        <replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule']/module-option[@name='url']/text()" withText="${database.url}"/>
+                        <replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule']/module-option[@name='user']/text()" withText="${database.user}"/>
+                        <replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule']/module-option[@name='passwd']/text()" withText="${database.password}"/>
+                        <replace path="//authentication/login-module[@code='com.fiveamsolutions.nci.commons.authentication.CommonsDBLoginModule']/module-option[@name='driver']/text()" withText="${database.driver}"/>
+                    </xmltask>
+        		</else>
             </if>
 
 
