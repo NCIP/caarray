@@ -256,6 +256,8 @@
                         <remove path="//:filter[:filter-name/text()='CASAuthenticationFilter']"/>
                         <remove path="//:filter-mapping[:filter-name/text()='CASWebAuthenticationFilter']"/>
                         <remove path="//:filter-mapping[:filter-name/text()='CASAuthenticationFilter']"/>
+                    	<remove path="//:filter[:filter-name/text()='CASAuthenticationFilterGateway']"/>
+                        <remove path="//:filter-mapping[:filter-name/text()='CASAuthenticationFilterGateway']"/>
                     </xmltask>
                 </else>
             </if>

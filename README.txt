@@ -93,7 +93,7 @@ The following tools are needed for working on caArray2 code:
     files described in the next section. To set the password, you can execute:
     $ mysqladmin -u root password 'NEWPASSWORD'
 - caGrid 1.5. This is optional, as it is needed only if you are working on grid services. This can be obtained from
-  https://ncisvn.nci.nih.gov/svn/cagrid/branches/caGrid-1_5_release/Software/core/caGrid. Build from the source code 
+  https://ncisvn.nci.nih.gov/svn/cagrid/branches/caGrid-1_5_release/Software/core/caGrid. Build from the source code
   distribution after patching per software/grid/legacy/core.patch.
 
 Getting Started
@@ -163,7 +163,7 @@ Getting Started
     $ ant -Dproperties.file=<absolute path to install.properties file copy> deploy:local:install
   (replace "<absolute path to install.properties file copy>" with actual path)
   caArray will be installed locally and both caArray JBoss and grid service JBoss will be started automatically.
-  
+
   TODO: ARRAY-2371/ARRAY-2499 address the grid server install/configuration
   For now, download the jboss-5.1.0.GA distribution to whatever you set globoss.home to.
 
@@ -304,9 +304,9 @@ JAVA_OPTS="$JAVA_OPTS -Xrunjdwp:transport=dt_socket,address=8787,server=y,suspen
     - Host = localhost
     - Port = 8787 (or whatever you specified in run.conf)
   - Click Debug
-  
+
 To run or debug one of the JUnit tests from Eclipse, do the following:
-1. From ${project_home}/software/build run the ant target 
+1. From ${project_home}/software/build run the ant target
     ant configure-eclipse-for-unit-testing
 2. Open Eclipse or refresh the whole directory tree in the Project Explorer
 3. Select File > Import, then Run/Debug > Launch Configurations, Next
@@ -314,9 +314,9 @@ To run or debug one of the JUnit tests from Eclipse, do the following:
 5. From the Run > Run Configurations... or Run > Debug Configurations... navigate to JUnit > ProjectDaoTest
 6. Run this configuration and observe the test output. The important part of the launch configuration settings is specified under
 the Classpath tab, all entries there and their order are important to make it work
-7. If the different JUnit run configuration is needed Contlol-click on ProjectDaoTest and duplicate it, then change fields from the 
+7. If the different JUnit run configuration is needed Contlol-click on ProjectDaoTest and duplicate it, then change fields from the
 first tab "Test": Name, Test class, and if needed Test method to reflect the test being set up.
-Please note that the configuration being imported in steps 3..4 relies on the default caArray Eclipse project name of "caArray2". 
+Please note that the configuration being imported in steps 3..4 relies on the default caArray Eclipse project name of "caArray2".
 If the project was renamed ${project_home}/software/test/eclipse/ProjectDaoTest.launch must be edited by performing global replacement of
 string "caArray2" inside it with the new Eclipse project name. This must precede step 3 of this instructions.
 
@@ -453,8 +453,8 @@ CAS Single Sign On:
         -Add the following sections to the web.xml file:
         -At the top of the file under the <display-name> tag:
             <context-param>
-                <param-name>service</param-name>
-                <param-value>http://@jboss.server.hostname@:@jboss.server.port@/caarray</param-value>
+                <param-name>serverName</param-name>
+                <param-value>http://@jboss.server.hostname@:@jboss.server.port@</param-value>
             </context-param>
             <context-param>
                 <param-name>casServerLoginUrl</param-name>
@@ -471,6 +471,18 @@ CAS Single Sign On:
                 <filter-class>gov.nih.nci.caarray.web.filter.CasWebAuthenticationFilter</filter-class>
             </filter>
             <filter>
+                <filter-name>CASAuthenticationFilterGateway</filter-name>
+                <filter-class>gov.nih.nci.caarray.web.filter.CasAuthenticationFilter</filter-class>
+                <init-param>
+                    <param-name>gateway</param-name>
+                    <param-value>true</param-value>
+                </init-param>
+                <init-param>
+                    <param-name>excludePatterns</param-name>
+                    <param-value>.*/ajax/.*</param-value>
+                </init-param>
+            </filter>
+            <filter>
                 <filter-name>CASAuthenticationFilter</filter-name>
                 <filter-class>org.jasig.cas.client.authentication.AuthenticationFilter</filter-class>
             </filter>
@@ -478,6 +490,10 @@ CAS Single Sign On:
             <filter-mapping>
                 <filter-name>CASWebAuthenticationFilter</filter-name>
                 <url-pattern>*</url-pattern>
+            </filter-mapping>
+            <filter-mapping>
+                <filter-name>CASAuthenticationFilterGateway</filter-name>
+                <url-pattern>*.action</url-pattern>
             </filter-mapping>
             <filter-mapping>
                 <filter-name>CASAuthenticationFilter</filter-name>
