@@ -35,3 +35,7 @@ where class_name='gov.nih.nci.caarray.domain.sample.AbstractBioMaterial';
 
 update csm_project_id_group cpig, collaborator_group cg, access_profile ap set cpig.privilege_id=9
 where cpig.privilege_id=3 and cpig.group_id = cg.csm_group and cg.id = ap.group_id and cpig.attribute_value = ap.project_id and ap.security_level = 'READ_SELECTIVE';
+update csm_project_id_group cpig, collaborator_group cg, access_profile ap set cpig.privilege_id=9
+where cpig.privilege_id=3 and cpig.group_id = cg.csm_group and cg.id = ap.group_id and cpig.attribute_value = ap.project_id and ap.security_level = 'READ_WRITE_SELECTIVE';
+update csm_project_id_group cpig, collaborator_group cg, access_profile ap set cpig.privilege_id=10
+where cpig.privilege_id=4 and cpig.group_id = cg.csm_group and cg.id = ap.group_id and cpig.attribute_value = ap.project_id and ap.security_level = 'READ_WRITE_SELECTIVE';
