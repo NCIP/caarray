@@ -27,7 +27,7 @@
         <display:setProperty name="pagination.sortdirection.param" value="projects.sortDirection" />
         <display:setProperty name="pagination.pagenumber.param" value="projects.pageNumber" />
         <display:column sortProperty="PUBLIC_ID" title="Experiment ID" sortable="true" >
-            <c:set var="canReadRow" value="${projectPrivileges[row.id].read}"/>
+            <c:set var="canReadRow" value="${projectPrivileges[row.id].read || projectPrivileges[row.id].partialRead}"/>
             <c:set var="canWriteRow" value="${projectPrivileges[row.id].write}"/>
             <c:set var="canModifyPermissionsRow" value="${projectPrivileges[row.id].permissions}"/>
             <c:choose>

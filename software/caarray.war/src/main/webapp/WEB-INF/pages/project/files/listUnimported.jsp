@@ -459,7 +459,7 @@
 
     <div class="boxpad2">
         <h3><fmt:message key="project.tabs.unimportedFiles" /></h3>
-        <c:if test="${!project.locked && caarrayfn:canWrite(project, caarrayfn:currentUser()) && (!project.importingData)}">
+        <c:if test="${!project.locked && caarrayfn:canFullWrite(project, caarrayfn:currentUser()) && (!project.importingData)}">
             <div class="addlink">
                 <fmt:message key="experiment.data.upload" var="uploadLabel" />
                 <caarray:linkButton actionClass="add" text="${uploadLabel}" onclick="openUploadWindow()"/>

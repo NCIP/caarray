@@ -8,7 +8,6 @@
     </c:url>
 
     <div class="tableboxpad">
-    <c:set var="canWriteProject" value="${caarrayfn:canWrite(project, caarrayfn:currentUser())}"/>
     <ajax:displayTag id="datatable" ajaxFlag="true" tableClass="searchresults" preFunction="TabUtils.showLoadingTextKeepMainContent" postFunction="TabUtils.hideLoadingText">
         <display:table class="searchresults" cellspacing="0" list="${pagedItems}"
             requestURI="${sortUrl}" id="row" excludedParams="project.id">
@@ -24,8 +23,8 @@
             <display:column titleKey="experiment.sources.relatedSamples">
                 <caarray:projectListTabRelatedItemsLinks relatedItems="${row.samples}" relatedEntityName="Sample" nameProperty="name" isSubtab="true" maxWidth="30"/>
             </display:column>
-            <caarray:projectListTabActionColumns entityName="Source" item="${row}" actions="!edit,!copy,!delete" 
-                isSubtab="true" canWriteProject="${canWriteProject}"/>
+            <caarray:projectListTabActionColumns entityName="Source" item="${row}" actions="!edit,!!copy,!delete" 
+                isSubtab="true"/>
             <s:set name="showDownloadGroups" value="%{@gov.nih.nci.caarray.web.action.project.AbstractProjectProtocolAnnotationListTabAction@isWillPerformDownloadByGroups(#attr.row.getAllDataFiles())}"/>
             <caarray:projectListTabDownloadColumn entityName="Source" itemId="${row.id}" showDownloadGroups="${showDownloadGroups}"/>                        
         </display:table>

@@ -172,6 +172,10 @@ public final class SecurityUtils {
     public static final String WRITE_PRIVILEGE = "WRITE";
     /** The privilege for modifying the permissions of a Protectable. * */
     public static final String PERMISSIONS_PRIVILEGE = "PERMISSIONS";
+    /** The privilege for Partial Reading of a Protectable. * */
+    public static final String PARTIAL_READ_PRIVILEGE = "PARTIAL_READ";
+    /** The privilege for Partial Writing of a Protectable. * */
+    public static final String PARTIAL_WRITE_PRIVILEGE = "PARTIAL_WRITE";
 
     /** The role for Browsing a Protectable. * */
     public static final String BROWSE_ROLE = "Access";
@@ -181,6 +185,10 @@ public final class SecurityUtils {
     public static final String WRITE_ROLE = "Write";
     /** The role for modifying the permissions of a Protectable. * */
     public static final String PERMISSIONS_ROLE = "Permissions";
+    /** The role for Partial Reading of a Protectable. * */
+    public static final String PARTIAL_READ_ROLE = "Partial_Read";
+    /** The role for Partial Writing of a Protectable. * */
+    public static final String PARTIAL_WRITE_ROLE = "Partial_Write";
 
     private static final String[] OWNER_ROLES;
 
@@ -478,6 +486,12 @@ public final class SecurityUtils {
         if (securityLevel.isAllowsWrite()) {
             roleIds.add(getRoleByName(WRITE_ROLE).getId().toString());
         }
+        if (securityLevel.isPartialRead()) {
+            roleIds.add(getRoleByName(PARTIAL_READ_ROLE).getId().toString());
+        }
+        if (securityLevel.isPartialWrite()) {
+            roleIds.add(getRoleByName(PARTIAL_WRITE_ROLE).getId().toString());
+        }
 
         try {
             authMgr.assignGroupRoleToProtectionGroup(pg.getProtectionGroupId().toString(), targetGroup.getGroupId()
@@ -695,7 +709,8 @@ public final class SecurityUtils {
                         + "  AND pe.objectId = :objectId " + "  AND pe.value = :value "
                         + "  AND ugrpg.role.name in (:roleNames)";
         final Query q = hibernateHelper.getCurrentSession().createQuery(queryString);
-        q.setParameterList("roleNames", new String[] {BROWSE_ROLE, READ_ROLE, WRITE_ROLE, PERMISSIONS_ROLE });
+        q.setParameterList("roleNames", new String[] {BROWSE_ROLE, READ_ROLE, WRITE_ROLE, PERMISSIONS_ROLE,
+                PARTIAL_READ_ROLE, PARTIAL_WRITE_ROLE });
         q.setString("objectId", getUnderlyingEntityClass(p).getName());
         q.setString("value", p.getId().toString());
         return q.list();
@@ -795,29 +810,54 @@ public final class SecurityUtils {
     }
 
     /**
-     * Returns whether the given user has READ privilege for the given Protectable.
+     * Returns whether the given user has READ or PARTIAL_READ privileges for the given Protectable.
+     * 
+     * @param p the protectable to check
+     * @param user the user to check
+     * @param allowPartial set to true to allow the PARTIAL_READ permission
+     * @return whether the given user has READ privilege for the given Protectable
+     */
+    private static boolean canRead(Protectable p, User user, boolean allowPartial) {
+        return hasPrivilege(p, user, READ_PRIVILEGE) || (allowPartial && hasPrivilege(p, user, PARTIAL_READ_PRIVILEGE));
+    }
+
+    /**
+     * Returns whether the given user has READ or PARTIAL_READ privileges for the given Protectable.
      * 
      * @param p the protectable to check
      * @param user the user to check
      * @return whether the given user has READ privilege for the given Protectable
      */
     public static boolean canRead(Protectable p, User user) {
-        return hasPrivilege(p, user, READ_PRIVILEGE);
+        return canRead(p, user, true);
     }
 
     /**
-     * Returns whether the given user has WRITE privilege for a given entity. this is determined by either checking
-     * whether the user has the privilege for that entity directly (if it's a Protectable) or by checking whether the
-     * user has the privilege for any of the related Protectables (if it's a ProtectableDescendent). If it is neither of
-     * those, then return true.
+     * Returns whether the given user has READ privileges for the given Protectable.
+     * 
+     * @param p the protectable to check
+     * @param user the user to check
+     * @return whether the given user has READ privilege for the given Protectable
+     */
+    public static boolean canFullRead(Protectable p, User user) {
+        return canRead(p, user, false);
+    }
+
+    /**
+     * Returns whether the given user has WRITE or PARTIAL_WRITE privileges for a given entity.
+     * This is determined by either checking whether the user has WRITE or PARTIAL_WRITE privileges for that entity
+     * directly (if it's a Protectable) or by checking whether the user has the WRITE privilege for any of the related
+     * Protectables (if it's a ProtectableDescendent). If it is neither of those, then return true.
      * 
      * @param o the entity to check
      * @param user the user to check
+     * @param allowPartial set to true to allow the PARTIAL_WRITE permission
      * @return whether the given user has WRITE privilege for the given entity
      */
-    public static boolean canWrite(PersistentObject o, User user) {
+    private static boolean canWrite(PersistentObject o, User user, boolean allowPartial) {
         if (o instanceof Protectable) {
-            return hasPrivilege((Protectable) o, user, WRITE_PRIVILEGE);
+            return hasPrivilege((Protectable) o, user, WRITE_PRIVILEGE)
+                    || (allowPartial && hasPrivilege((Protectable) o, user, PARTIAL_WRITE_PRIVILEGE));
         }
         if (o instanceof ProtectableDescendent) {
             final Collection<? extends Protectable> protectables = ((ProtectableDescendent) o).relatedProtectables();
@@ -832,6 +872,34 @@ public final class SecurityUtils {
             return false;
         }
         return true;
+    }
+
+    /**
+     * Returns whether the given user has WRITE or PARTIAL_WRITE privileges for a given entity.
+     * This is determined by either checking whether the user has WRITE or PARTIAL_WRITE privileges for that entity
+     * directly (if it's a Protectable) or by checking whether the user has the WRITE privilege for any of the related
+     * Protectables (if it's a ProtectableDescendent). If it is neither of those, then return true.
+     * 
+     * @param o the entity to check
+     * @param user the user to check
+     * @return whether the given user has WRITE or PARTIAL_WRITE privilege for the given entity
+     */
+    public static boolean canWrite(PersistentObject o, User user) {
+        return canWrite(o, user, true);
+    }
+
+    /**
+     * Returns whether the given user has WRITE privileges for a given entity.
+     * This is determined by either checking whether the user has WRITE privileges for that entity
+     * directly (if it's a Protectable) or by checking whether the user has the WRITE privilege for any of the related
+     * Protectables (if it's a ProtectableDescendent). If it is neither of those, then return true.
+     * 
+     * @param o the entity to check
+     * @param user the user to check
+     * @return whether the given user has WRITE privilege for the given entity
+     */
+    public static boolean canFullWrite(PersistentObject o, User user) {
+        return canWrite(o, user, false);
     }
 
     /**

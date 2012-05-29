@@ -10,7 +10,6 @@
     </c:url>
 
     <div class="tableboxpad">
-    <c:set var="canWriteProject" value="${caarrayfn:canWrite(project, caarrayfn:currentUser())}"/>
     <ajax:displayTag id="datatable" ajaxFlag="true" tableClass="searchresults" preFunction="TabUtils.showLoadingTextKeepMainContent" postFunction="TabUtils.hideLoadingText">
         <display:table class="searchresults" cellspacing="0" list="${pagedItems}"
             requestURI="${sortUrl}" id="row" excludedParams="project.id">
@@ -28,7 +27,7 @@
                 <fmt:formatNumber value="${row.uncompressedSizeOfDataFiles / 1024}" maxFractionDigits="0"/>
             </display:column>
             <caarray:projectListTabActionColumns entityName="Hybridization" item="${row}" actions="!edit,!delete" isSubtab="true" 
-                confirmText="${msgText}" canWriteProject="${canWriteProject}"/>
+                confirmText="${msgText}"/>
             <s:set name="showDownloadGroups" value="%{@gov.nih.nci.caarray.web.action.project.AbstractProjectProtocolAnnotationListTabAction@isWillPerformDownloadByGroups(#attr.row.getAllDataFiles())}"/>
             <caarray:projectListTabDownloadColumn entityName="Hybridization" itemId="${row.id}" showDownloadGroups="${showDownloadGroups}"/>
         </display:table>

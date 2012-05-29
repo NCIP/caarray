@@ -8,7 +8,6 @@
     </c:url>
 
     <div class="tableboxpad">
-    <c:set var="canWriteProject" value="${caarrayfn:canWrite(project, caarrayfn:currentUser())}"/>
     <ajax:displayTag id="datatable" ajaxFlag="true" tableClass="searchresults" preFunction="TabUtils.showLoadingTextKeepMainContent" postFunction="TabUtils.hideLoadingText">
         <display:table class="searchresults" cellspacing="0" list="${pagedItems}"
             requestURI="${sortUrl}" id="row" excludedParams="project.id">
@@ -23,8 +22,7 @@
             <display:column titleKey="experiment.publications.uri" sortProperty="URI" sortable="true">
                 <a href="${row.uri}" target="_blank"><caarray:abbreviate value="${row.uri}" maxWidth="30"/></a>
             </display:column>
-            <caarray:projectListTabActionColumns entityName="Publication" item="${row}" actions="!edit,!delete" 
-                canWriteProject="${canWriteProject}"/>
+            <caarray:projectListTabActionColumns entityName="Publication" item="${row}" actions="!edit,!delete"/>
         </display:table>
     </ajax:displayTag>
 

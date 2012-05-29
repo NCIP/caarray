@@ -8,7 +8,6 @@
     </c:url>
 
     <div class="tableboxpad">
-    <c:set var="canWriteProject" value="${caarrayfn:canWrite(project, caarrayfn:currentUser())}"/>
     <ajax:displayTag id="datatable" ajaxFlag="true" tableClass="searchresults" preFunction="TabUtils.showLoadingTextKeepMainContent" postFunction="TabUtils.hideLoadingText">
         <display:table class="searchresults" cellspacing="0" list="${pagedItems}"
             requestURI="${sortUrl}" id="row" excludedParams="project.id">
@@ -23,8 +22,7 @@
             <display:column property="contact.email" sortProperty="EMAIL" titleKey="currentExperimentContact.contact.email" sortable="true" maxLength="30"/>
             <display:column property="contact.phone" sortProperty="PHONE" titleKey="currentExperimentContact.contact.phone" sortable="true" maxLength="30"/>
             <display:column property="roleNames" titleKey="currentExperimentContact.roleNames" maxLength="30"/>
-            <caarray:projectListTabActionColumns entityName="ExperimentContact" item="${row}" actions="!edit,!delete"
-                canWriteProject="${canWriteProject}"/>
+            <caarray:projectListTabActionColumns entityName="ExperimentContact" item="${row}" actions="!edit,!delete"/>
         </display:table>
     </ajax:displayTag>
 

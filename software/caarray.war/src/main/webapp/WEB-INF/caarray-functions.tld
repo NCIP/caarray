@@ -25,13 +25,25 @@
 
   <function>
     <description>
-      Sees if a user has write access to a protectable
+      Sees if a user has write access to a protectable. Includes both write and partial write access.
     </description>
     <name>canWrite</name>
     <function-class>gov.nih.nci.caarray.security.SecurityUtils</function-class>
     <function-signature>boolean canWrite(com.fiveamsolutions.nci.commons.data.persistent.PersistentObject, gov.nih.nci.security.authorization.domainobjects.User)</function-signature>
     <example>
       &lt;c:if test="${caarrayfn:canWrite(project, user)}">
+    </example>
+  </function>
+
+  <function>
+    <description>
+      Sees if a user has full write access to a protectable. Does not include partial write access.
+    </description>
+    <name>canFullWrite</name>
+    <function-class>gov.nih.nci.caarray.security.SecurityUtils</function-class>
+    <function-signature>boolean canFullWrite(com.fiveamsolutions.nci.commons.data.persistent.PersistentObject, gov.nih.nci.security.authorization.domainobjects.User)</function-signature>
+    <example>
+      &lt;c:if test="${caarrayfn:canFullWrite(project, user)}">
     </example>
   </function>
 

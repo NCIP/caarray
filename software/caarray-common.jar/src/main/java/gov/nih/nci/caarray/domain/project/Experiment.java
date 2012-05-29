@@ -158,8 +158,11 @@ public class Experiment extends AbstractCaArrayEntity {
     private static final String TERM_FK_NAME = "term_id";
     private static final String EXPERIMENT_REF = "experiment";
 
-    private static final String READABLE_PROJECT_CLAUSE = "(select t.attribute_value from csm_project_id_group t " 
-        + "where t.group_id IN (:GROUP_NAMES) and t.privilege_id=3)";
+    private static final String READABLE_PROJECT_CLAUSE = "(select t.attribute_value "
+        + "from csm_project_id_group t where t.group_id IN (:GROUP_NAMES) and t.privilege_id in (3,9))";
+    
+    private static final String FULLY_READABLE_PROJECT_CLAUSE = "(select t.attribute_value "
+        + "from csm_project_id_group t where t.group_id IN (:GROUP_NAMES) and t.privilege_id=3)";
 
     private static final String PROJECT_OWNER_CLAUSE = "(select t.attribute_value from csm_project_id_group t "
         + "join csm_group g on t.group_id = g.group_id "
@@ -210,6 +213,7 @@ public class Experiment extends AbstractCaArrayEntity {
         + "leh.hybridization_id left join extractlabeledextract ele on leh.labeledextract_id = ele.labeledextract_id "
         + "left join sampleextract se on ele.extract_id = se.extract_id left join biomaterial s on se.sample_id = s.id "
         + "where s.id is not null and s.id in " + READABLE_SAMPLE_CLAUSE 
+        + " or s.id is null and p.id in " + FULLY_READABLE_PROJECT_CLAUSE
         + " or (f.status = " + "'SUPPLEMENTAL' or f.status = 'IMPORTED' or f.status='IMPORTED_NOT_PARSED') "
         + "and s.id is null and p.id in " + READABLE_PROJECT_CLAUSE + " or p.id in "
         + PROJECT_OWNER_CLAUSE + ")";

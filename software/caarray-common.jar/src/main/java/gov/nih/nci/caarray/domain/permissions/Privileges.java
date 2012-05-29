@@ -63,4 +63,18 @@ public class Privileges {
     public boolean isPermissions() {
         return privilegeNames.contains(SecurityUtils.PERMISSIONS_PRIVILEGE);
     }
+
+    /**
+     * @return whether this includes the PARTIAL_READ privilege
+     */
+    public boolean isPartialRead() {
+        return privilegeNames.contains(SecurityUtils.PARTIAL_READ_PRIVILEGE);
+    }
+
+    /**
+     * @return whether this includes the PARTIAL_WRITE privilege
+     */
+    public boolean isPartialWrite() {
+        return privilegeNames.contains(SecurityUtils.PARTIAL_WRITE_PRIVILEGE);
+    }
 }

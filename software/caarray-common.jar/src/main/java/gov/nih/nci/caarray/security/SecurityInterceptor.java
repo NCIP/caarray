@@ -251,8 +251,8 @@ public class SecurityInterceptor extends EmptyInterceptor {
     }
 
     /**
-     * If enabled, checks whether the given user has WRITE privilege to given object, and if not, throws a
-     * PermissionDeniedException.
+     * If enabled, checks whether the given user has WRITE or PARTIAL_WRITE privilege to given object, and if not,
+     * throws a PermissionDeniedException.
      *
      * @param o the Object to check
      * @param user the user to check
