@@ -109,6 +109,7 @@ import java.util.Set;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.hibernate.Session;
 
 import com.fiveamsolutions.nci.commons.audit.AuditLogDetail;
 import com.fiveamsolutions.nci.commons.audit.AuditLogRecord;
@@ -182,6 +183,27 @@ public class CaArrayAuditLogProcessor extends DefaultProcessor {
             LOG.debug("ignoring property " + record.getEntityName() + "." + property);
         }
         addSecurity(AuditLogSecurity.GROUP, SYSADMIN_GROUP_ID, null, record);
+    }
+    
+    /**
+     * This method is called for any post processing required after the work from processDetail has been saved.
+     * 
+     * This method was added for ARRAY-1933, which required access to the session to save some security entries.
+     * However, this should be eventually incorporated into DefaultProcessor in nci-commons.  See ARRAY-2496.
+     * @param session hibernate session
+     * @param records collection of audit records to process
+     */
+    public void postProcessDetail(Session session, Collection<AuditLogRecord> records) {
+        // save audit log security entries
+        for (AuditLogRecord record : records) {
+            Set<AuditLogSecurity> entriesForRecord = securityEntries.get(record);
+            if (entriesForRecord != null) {
+                for (AuditLogSecurity entry : entriesForRecord) {
+                    session.save(entry);
+                }
+                securityEntries.remove(record);
+            }
+        }
     }
     
     /**

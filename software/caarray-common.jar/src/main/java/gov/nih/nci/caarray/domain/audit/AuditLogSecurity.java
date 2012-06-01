@@ -82,8 +82,6 @@
  */
 package gov.nih.nci.caarray.domain.audit;
 
-import gov.nih.nci.caarray.security.Protectable;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -103,8 +101,7 @@ import com.fiveamsolutions.nci.commons.audit.AuditLogRecord;
  */
 @Entity
 @Table(name = "audit_log_security")
-public class AuditLogSecurity implements Protectable {
-    private static final long serialVersionUID = 1L;
+public class AuditLogSecurity {
     /**
      * Security based on project permissions.
      */

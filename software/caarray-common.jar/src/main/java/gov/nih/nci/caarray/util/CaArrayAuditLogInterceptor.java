@@ -83,8 +83,6 @@
 
 package gov.nih.nci.caarray.util;
 
-import gov.nih.nci.caarray.domain.audit.AuditLogSecurity;
-
 import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.math.BigInteger;
@@ -331,21 +329,11 @@ public class CaArrayAuditLogInterceptor extends AuditLogInterceptor {
                                 detail.getProperty(), detail.getColumnName(), detail.getOldVal(), detail.getNewVal());
                     }
                     session.save(audit.getAuditLogRecord());
-
-                    // save audit log security entries
-                    // This code was added for ARRAY-1933, which required access to the session to save some security
-                    // entries. However, this should be delegated to the processor. We need to update
-                    // AuditLogInterceptor and DefaultProcessor in nci-commons.  See ARRAY-2496.
-                    Map<AuditLogRecord, Set<AuditLogSecurity>> securityEntries =
-                            ((CaArrayAuditLogProcessor) this.processor).getSecurityEntries();
-                    Set<AuditLogSecurity> entriesForRecord = securityEntries.get(audit.getAuditLogRecord());
-                    if (entriesForRecord != null) {
-                        for (AuditLogSecurity entry : entriesForRecord) {
-                            session.save(entry);
-                        }
-                        securityEntries.remove(audit.getAuditLogRecord());
-                    }
                 }
+                // This code was added for ARRAY-1933, which required access to the session to save the audit log
+                // security entries. This should be incorporated into AuditLogInterceptor and DefaultProcessor in
+                // nci-commons.  See ARRAY-2496.
+                ((CaArrayAuditLogProcessor) this.processor).postProcessDetail(session, records.get().values());
                 session.flush();
             } catch (HibernateException e) {
                 LOG.error(e);

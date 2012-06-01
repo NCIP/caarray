@@ -98,7 +98,7 @@ public enum AuditLogSortCriterion implements SortCriterion<AuditLogRecord> {
     /**
      * sort by event date.
      */
-    DATE("createdDate");
+    DATE("created_date");
     
     private final String orderField;
     
