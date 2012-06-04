@@ -56,4 +56,8 @@
        <comment>ARRAY-2517 - Removed audit security filter from db.</comment>
        <sqlFile path="db-upgrade/mysql/2.5.0/audit-security.1.sql"/>
     </changeSet>
+    <changeSet id="upt423-general-schema-upgrade" author="pshrabstein">
+       <comment>ARRAY-2518 - Upgrade caArray schema to UPT 4.2.3</comment>
+       <sqlFile path="db-upgrade/mysql/2.5.0/upt423-general-schema-upgrade.sql"/>
+    </changeSet>
 </databaseChangeLog>
