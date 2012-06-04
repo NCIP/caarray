@@ -52,4 +52,8 @@
        <comment>ARRAY-1342 - Allow collaborators to see uploaded files.</comment>
        <sqlFile path="db-upgrade/mysql/2.5.0/array-1342.sql"/>
     </changeSet>
+    <changeSet id="audit-security.1" author="wcheng">
+       <comment>ARRAY-2517 - Removed audit security filter from db.</comment>
+       <sqlFile path="db-upgrade/mysql/2.5.0/audit-security.1.sql"/>
+    </changeSet>
 </databaseChangeLog>
