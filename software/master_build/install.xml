@@ -157,11 +157,7 @@ $HeadURL: https://ncisvn.nci.nih.gov/svn/caarray2/trunk/software/master_build/in
                 <if>
                     <equals arg1="${jboss.major.version}" arg2="4" />
                     <then>
-                        <property name="jboss.server.binding.template.location" value="${basedir}/${jboss4-bindings.file}"/>
-                        <jboss-read-ports
-                            jboss.server.bindingfile.location="${jboss.server.binding.template.location}" />
-                        <jboss-bindings-validate jboss.server.bindingfile.location="${jboss.server.binding.template.location}"
-                    />
+                    	<fail message="JBoss 4 Not Supported"/>
                     </then>
                     <elseif>
                         <equals arg1="${jboss.major.version}" arg2="5" />
@@ -183,7 +179,7 @@ $HeadURL: https://ncisvn.nci.nih.gov/svn/caarray2/trunk/software/master_build/in
                 <if>
                     <equals arg1="${jboss.major.version}" arg2="4" />
                     <then>
-                        <property name="jboss.server.binding.template.location" value="${bda-utils.dir}/resource/${jboss.binaries.relative.dir}/bindings.xml" 					/>
+                    	<fail message="JBoss 4 Not Supported"/>
                     </then>
                     <else>
                         <property name="jboss.server.binding.template.location" value="${bda-utils.dir}/resource/${jboss.binaries.relative.dir}/bindings-jboss-beans.xml" 					/>
@@ -512,7 +508,7 @@ depends="
         -->
         <!-- Use below if you are defining all the ports in your install.xml not the NCICB port configuraitons-->
         <if>
-            <equals arg1="${jboss.major.version}" arg2="4"/>
+            <equals arg1="${jboss.major.version}" arg2="4"/> <!-- TODO: TCP - assumes grid = jboss 4 -->
             <then>
                 <jboss-configure jboss.grid.configure="true" />
                 <if>
@@ -665,7 +661,7 @@ depends="
                 <isset property="exclude.start.servers"/>
             </not>
             <then>
-                <jboss-start-jboss jboss.home="${grid.home}" jboss.server.name="${grid.server.name}" jboss.major.version="4"/>
+                <jboss-start-jboss jboss.home="${grid.home}" jboss.server.name="${grid.server.name}" jboss.major.version="5"/>
                 <sleep seconds="15"/>
             </then>
         </if>
@@ -979,6 +975,7 @@ depends="upgrade:jboss:init,common:init,upgrade-ncm:jboss,-install:jboss:configu
         ">
     </target>
 
+	<!-- TODO: TCP assumes JBoss 4 -->
     <target name="install:carray-grid" description="Grouping of caArray Grid application targets" depends="install:jboss:grid-binaries,install:grid:deploy">
         <jboss-configure
             jboss.server.bindingfile.location="${grid.home}/bindings/bindings.xml"
@@ -1045,6 +1042,7 @@ depends="upgrade:jboss:init,common:init,upgrade-ncm:jboss,-install:jboss:configu
         </for>
     </target>
 
+	<!-- TODO: TCP assumes JBoss 4 -->
     <target name="upgrade:carray-grid" description="Grouping of caArray Grid application targets" depends="install:grid:deploy">
             <for param="version" list="${caarray-grid-svc.versions}">
                 <sequential>
@@ -1073,16 +1071,7 @@ depends="upgrade:jboss:init,common:init,upgrade-ncm:jboss,-install:jboss:configu
                 </sequential>
             </for>
         </target>
-<!--
 
-    <target name="upgrade:carray-grid" description="Grouping of caArray Grid application targets"
-        depends="install:grid:deploy,
-        -install:grid:configure:wsdl,
-        -install:grid:configure:serviceMetadataXml,
-        -install:grid:configure:secure-console,
-        -install:grid:configure:webXml
-    "/>
--->
     <target name="install:grid:configure" description="Configure caarray" unless="exclude.jboss.grid"
         depends="install:jboss:grid-binaries,
         -install:grid:configure:ports,
@@ -1101,6 +1090,7 @@ depends="upgrade:jboss:init,common:init,upgrade-ncm:jboss,-install:jboss:configu
             <fileset dir="${grid.home}/server/${grid.server.name}/deploy" includes="${grid.dir.dest}"/>
         </delete>
         <delete>
+        	<!-- TODO: TCP assumes JBoss 4 -->
             <fileset dir="${grid.home}/server/${grid.server.name}/lib" includes="cog-jglobus.jar cog-tomcat.jar cryptix32.jar cryptix.jar cryptix-asn1.jar jce-jdk13-125.jar log4j-1.2.8.jar puretls.jar"/>
         </delete>
       <configure-caarray-grid-services properties.file="${properties.file}" project.properties="${basedir}/project.properties" temp.dir="${temp.dir}" grid.template.basedir="${basedir}/grid" grid.target.basedir="${basedir}/grid" grid.svczip.dir="${basedir}/grid" />
@@ -1121,6 +1111,7 @@ depends="upgrade:jboss:init,common:init,upgrade-ncm:jboss,-install:jboss:configu
         <unzip dest="${grid.home}/server/${grid.server.name}" src="${basedir}/grid/jboss-globus-serverinstance-config.zip" />
     </target>
 
+	<!-- TODO: TCP assumes JBoss 4?? -->
     <target name="-install:jboss:configure:ejb3-interceptors-aop">
         <copy todir="${jboss.home}/server/${jboss.server.name}/deploy" overwrite="true">
             <fileset dir="${jboss-conf.dist.relative.dir}">
@@ -1158,6 +1149,7 @@ depends="upgrade:jboss:init,common:init,upgrade-ncm:jboss,-install:jboss:configu
         </if>
     </target>
 
+	<!-- TODO: TCP assumes JBoss 4 -->
     <target name="-install:grid:configure:ports" description="Configure grid service based on properties">
 
         <replaceregexp file="${bda-utils.dir}/resource/template-binding.xml" byline="true"
@@ -1202,6 +1194,7 @@ depends="upgrade:jboss:init,common:init,upgrade-ncm:jboss,-install:jboss:configu
         </for>
     </target>
 
+	<!-- TODO: TCP assumes JBoss 4 -->
     <target name="-install:grid:configure:webXml" description="Configure caArray's grid service web.xml.">
         <xmltask source="${grid.home}/server/${jboss.server.name}/deploy/${grid.dir.dest}/WEB-INF/web.xml" dest="${grid.home}/server/${jboss.server.name}/deploy/${grid.dir.dest}/WEB-INF/web.xml">
             <xmlcatalog refid="bda.xml.catalog"/>
@@ -1209,6 +1202,7 @@ depends="upgrade:jboss:init,common:init,upgrade-ncm:jboss,-install:jboss:configu
         </xmltask>
     </target>
 
+	<!-- TODO: TCP assumes JBoss 4 -->
     <target name="-install:grid:configure:wsdl" description="Configure grid service based on properties">
         <replace dir="${grid.home}/server/${jboss.server.name}/deploy" token="%token.server.hostname%:%token.jboss.jndi.port%" value="${grid.server.hostname}:${grid.server.port}">
             <include name="${grid.dir.dest}/**/*.wsdl" />
@@ -1519,7 +1513,7 @@ depends="upgrade:jboss:init,common:init,upgrade-ncm:jboss,-install:jboss:configu
         <if>
             <equals arg1="${jboss.major.version}" arg2="4"/>
             <then>
-                <copy file="${copied.jboss.log4j.dir}/log4j.xml" todir="${jboss.home}/server/${jboss.server.name}/conf"/>
+                <fail message="JBoss 4 not supported"/>
             </then>
         </if>
         <if>

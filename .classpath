@@ -44,7 +44,7 @@
 	<classpathentry kind="lib" path="software/grid/legacy/lib/globus_wsrf_servicegroup_stubs.jar"/>
 	<classpathentry kind="lib" path="software/grid/legacy/lib/globus_wsrf_servicegroup.jar"/>
 	<classpathentry kind="lib" path="software/grid/legacy/lib/jdom-1.0.jar"/>
-	<classpathentry kind="con" path="org.apache.ivyde.eclipse.cpcontainer.IVYDE_CONTAINER/?ivyXmlPath=software%2Fmaster_build%2Fivy-caarray.xml&amp;confs=*&amp;ivySettingsPath=project%3A%2F%2F%2Fsoftware%2Fmaster_build%2Fivy-caarray-settings-eclipse.xml&amp;loadSettingsOnDemand=false&amp;propertyFiles="/>
+	<classpathentry kind="con" path="org.apache.ivyde.eclipse.cpcontainer.IVYDE_CONTAINER/?project=caArray2&amp;ivyXmlPath=software%2Fmaster_build%2Fivy-caarray.xml&amp;confs=*&amp;ivySettingsPath=%24%7Bworkspace_loc%3AcaArray2%2Fsoftware%2Fmaster_build%2Fivy-caarray-settings-eclipse.xml%7D&amp;loadSettingsOnDemand=false&amp;propertyFiles="/>
 	<classpathentry kind="lib" path="software/grid/legacy/lib/caGrid-mms-client-1.4.jar"/>
 	<classpathentry kind="lib" path="software/grid/legacy/lib/caGrid-mms-common-1.4.jar"/>
 	<classpathentry kind="lib" path="software/grid/legacy/lib/caGrid-mms-stubs-1.4.jar"/>

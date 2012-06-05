@@ -89,7 +89,6 @@ $HeadURL: https://ncisvn.nci.nih.gov/svn/caarray2/trunk/software/master_build/bu
 
     <property name="tools.dist.dir" value="${software.dir}/tools"/>
     <property name="jboss.dest.file" value="${tools.dist.dir}/${jboss.binaries.file}"/>
-    <property name="grid.dest.file" value="${tools.dist.dir}/${jboss.grid-binaries.file}"/>
 
     <property name="db.src.dir" value="${software.dir}/${db.dist.relative.dir}" />
     <property name="jboss-conf.target.dir" value="${caarray.dist.dir}/${jboss-conf.dist.relative.dir}" />
@@ -281,9 +280,6 @@ $HeadURL: https://ncisvn.nci.nih.gov/svn/caarray2/trunk/software/master_build/bu
             <property name="lib.dir" value="${lib.dir}" />
             <property name="software.dir" value="${software.dir}" />
         </ant>
-        <!--
-        <ant inheritAll="false" inheritRefs="false" antfile="${bda-blueprints-webapp.build.file}" target="ivy-clean" dir="${bda-blueprints-webapp.base.dir}" />
-        -->
     </target>
 
     <target name="validate:pre:build">
@@ -516,12 +512,6 @@ $HeadURL: https://ncisvn.nci.nih.gov/svn/caarray2/trunk/software/master_build/bu
         <zip destfile="${dist.dir}/${caarray-webapp.install.name}_${caarray-webapp.version}-db.zip">
             <zipfileset dir="${db-install.dist.dir}" prefix="${db-install.dist.relative.dir}" />
             <zipfileset dir="${db-upgrade.dist.dir}" prefix="${db-upgrade.dist.relative.dir}" />
-            <!-- not needed for this target
-            <zipfileset dir="${caarray-webapp.dist.dir}" prefix="${caarray-webapp.dist.relative.dir}"/>
-            <zipfileset dir="${grid-sample.dist.dir}" prefix="${grid-sample.dist.relative.dir}"/>
-            <zipfileset dir="${tools.dist.dir}" prefix="${tools.dist.relative.dir}"/>
-            <zipfileset dir="${common.dist.dir}" prefix="${common.dist.relative.dir}"/>
-            -->
             <zipfileset dir="${bda-utils.dir}" prefix="bda-utils"/>
             <zipfileset dir="${dist.exploded.dir}">
                 <include name="build.xml" />
@@ -529,11 +519,6 @@ $HeadURL: https://ncisvn.nci.nih.gov/svn/caarray2/trunk/software/master_build/bu
                 <include name="properties.template" />
                 <include name="project.properties" />
             </zipfileset>
-            <!--  might want to add this
-            <zipfileset dir="${build.dir}">
-                <include name="local.properties" />
-            </zipfileset>
-            -->
         </zip>
     </target>
 
@@ -615,26 +600,9 @@ $HeadURL: https://ncisvn.nci.nih.gov/svn/caarray2/trunk/software/master_build/bu
         </if>
     </target>
 
-    <target name="retrieve:jboss405" unless="grid.tools.exists">
-        <get src="${jboss.grid-src.url}"
-            dest="${grid.dest.file}"/>
-
-        <!-- delete unneeded "all" and "minimal" configurations as only "default" is needed -->
-        <property name="jboss.temp.staging.dir" value="${grid.dest.file}.jboss.temp.staging"/>
-        <mkdir dir="${jboss.temp.staging.dir}"/>
-        <unzip src="${grid.dest.file}" dest="${jboss.temp.staging.dir}"/>
-        <delete file="${grid.dest.file}"/>
-        <!-- be careful as these configurations might not be there in future if zip updated -->
-        <delete dir="${jboss.temp.staging.dir}/${jboss.grid-binaries.relative.dir}/server/all" failonerror="false"/>
-        <delete dir="${jboss.temp.staging.dir}/${jboss.grid-binaries.relative.dir}/server/minimal" failonerror="false"/>
-        <zip update="true" destfile="${grid.dest.file}" basedir="${jboss.temp.staging.dir}"/>
-        <delete dir="${jboss.temp.staging.dir}"/>
-    </target>
-
-    <target name="dist:tools:retrieve" depends="retrieve:jboss,retrieve:jboss405,dist:tools:retrieve:cagrid,dist:tools:retrieve:cagrid-console"/>
+    <target name="dist:tools:retrieve" depends="retrieve:jboss,dist:tools:retrieve:cagrid,dist:tools:retrieve:cagrid-console"/>
 
     <target name="dist:tools:retrieve:jboss-bindings"  description="Downloads JBOSS bindings filefrom binary repository and verifies checksum">
-        <get src="${jboss4-bindings.src.url}" dest="${dist.exploded.dir}/${jboss4-bindings.file}" />
         <get src="${jboss5-bindings.src.url}" dest="${dist.exploded.dir}/${jboss5-bindings.file}" />
     </target>
 
@@ -1011,20 +979,6 @@ $HeadURL: https://ncisvn.nci.nih.gov/svn/caarray2/trunk/software/master_build/bu
             <property name="dist.dir" value="${caarray-webapp.dist.dir}" />
         </ant>
     </target>
-
-    <!--target name="ivy-resolve-all" depends="init:ivy" description="Downloads all libraries included in the ivy definition file from ivy into local lib directory">
-        <ivy:resolve refresh="true" />
-    </target-->
-
-    <!--target name="report:ivy" description="Runs ivy reports on all dependencies in the ivy defnintion file, also produces dependency diagrams" depends="
-        ivy-resolve-all
-        ">
-        <property name="ivy.report.dir" value="${reports.dir}/ivy" />
-        <delete dir="${ivy.report.dir}" />
-        <mkdir dir="${ivy.report.dir}" />
-        <ivy:report outputpattern="target/reports/ivy/[organisation]-[module]-[conf].[ext]" dot="true" graph="false" />
-        <util-dot-on-dir dot-file.dir="target/reports/ivy" />
-    </target-->
 
     <!--  Though the general rule was that all install tasks happen as part of the install.xml we did decide to add hot deploys of the ear and web content as part of build.xml to increase the developer "friendlyness" of the build :) -->
     <target name="deploy:hot" depends="build:all" description="Hot deploys the deployment artifact">
