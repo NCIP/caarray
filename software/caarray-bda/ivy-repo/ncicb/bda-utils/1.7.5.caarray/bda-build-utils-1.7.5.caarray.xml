@@ -13,7 +13,7 @@ $HeadURL: https://ncisvn.nci.nih.gov/svn/caarray2/trunk/software/caarray-bda/ivy
   <property name="template.dbintegrate.file" location="${bda-utils.resource.dir}/template-db-integrate.xml"/>
 
   <!-- Supported versions -->
-  <property name="jboss.version.min" value="4.0.4"/>
+  <property name="jboss.version.min" value="5.1.0"/>
   <property name="jboss.version.max" value="5.1.999"/>
   <property name="tomcat.version.min" value="5.0.0"/>
   <property name="tomcat.version.max" value="6.999.999"/>
@@ -211,14 +211,6 @@ $HeadURL: https://ncisvn.nci.nih.gov/svn/caarray2/trunk/software/caarray-bda/ivy
       publicId="-//W3C//DTD/XMLSCHEMA 200102//EN"
       location="${bda-utils.resource.dir}/jboss-5.1.0.GA/dtd/XMLSchema.dtd"
       />
-
-    <!--
-    <dtd
-      publicId=""
-      location="${bda-utils.resource.dir}/jboss-4.0.5.GA-jems-ejb3/dtd/"
-      />
-      />
-    -->
     <dtd
       publicId="-//Hibernate/Hibernate Configuration DTD 3.0//EN"
       location="${bda-utils.resource.dir}/other-dtds/hibernate-configuration-3.0.dtd"
@@ -1840,50 +1832,12 @@ $HeadURL: https://ncisvn.nci.nih.gov/svn/caarray2/trunk/software/caarray-bda/ivy
     <!-- for 5.1 port config -->
     <attribute name="jboss.ncicb-standard.port-config" default="${jboss.ncicb-standard.port-config}"/>
     <sequential>
-      <var name="jboss.is.40" unset="true"/>
-      <propertyregex property="jboss.is.40"
-        input="@{jboss.home}"
-        regexp=".*jboss-4.*"
-        select="true"
-        />
       <var name="jboss.is.51" unset="true"/>
       <propertyregex property="jboss.is.51"
         input="@{jboss.home}"
         regexp=".*jboss-5.1.*"
         select="true"
         />
-      <if>
-        <isset property="jboss.is.40"/>
-        <then>
-          <jboss-bindings-40
-            jboss.home="@{jboss.home}"
-            jboss.server.name="@{jboss.server.name}"
-            jboss.server.ports.name="@{jboss.server.ports.name}"
-            jboss.server.bindingfile.location="@{jboss.server.bindingfile.location}"
-            jboss.server.binding.template.location="@{jboss.server.binding.template.location}"
-            jboss.server.jndi.port="@{jboss.server.jndi.port}"
-            jboss.server.port="@{jboss.server.port}"
-            jboss.cobraorb.port="@{jboss.cobraorb.port}"
-            jboss.ejbinvoker.port="@{jboss.ejbinvoker.port}"
-            jboss.hajndi.port="@{jboss.hajndi.port}"
-            jboss.hajrmi.port="@{jboss.hajrmi.port}"
-            jboss.jms.port="@{jboss.jms.port}"
-            jboss.jmx-rmi.port="@{jboss.jmx-rmi.port}"
-            jboss.messaging.port="@{jboss.messaging.port}"
-            jboss.pooledha.port="@{jboss.pooledha.port}"
-            jboss.remoting.port="@{jboss.remoting.port}"
-            jboss.server.bind.port="@{jboss.server.bind.port}"
-            jboss.server.rmi.port="@{jboss.server.rmi.port}"
-            jboss.service.rmiobject.port="@{jboss.service.rmiobject.port}"
-            jboss.snmp.port="@{jboss.snmp.port}"
-            jboss.snmp-trapd.port="@{jboss.snmp-trapd.port}"
-            jboss.web.service.port="@{jboss.web.service.port}"
-            grid.secure.port="@{grid.secure.port}"
-            jboss.http-connector.remove="@{jboss.http-connector.remove}"
-            jboss.ssl.port="@{jboss.ssl.port}"
-            />
-        </then>
-      </if>
       <if>
         <isset property="jboss.is.51"/>
         <then>
@@ -2019,107 +1973,6 @@ $HeadURL: https://ncisvn.nci.nih.gov/svn/caarray2/trunk/software/caarray-bda/ivy
             />
         </else>
       </if>
-    </sequential>
-  </macrodef>
-
-  <macrodef name="jboss-bindings-40" description="configures the binding.xml and the jboss-service.xml">
-    <attribute name="jboss.home" default="${jboss.home}"/>
-    <attribute name="jboss.server.name" default="${jboss.server.name}"/>
-    <attribute name="jboss.server.ports.name" default="${jboss.server.ports.name}"/>
-    <attribute name="jboss.server.bindingfile.location" default="${jboss.server.bindingfile.location}"/>
-    <attribute name="jboss.server.binding.template.location" default="${jboss.server.binding.template.location}"/>
-    <attribute name="jboss.server.jndi.port" default="${jboss.server.jndi.port}"/>
-    <attribute name="jboss.server.port" default="${jboss.server.port}"/>
-    <attribute name="jboss.cobraorb.port" default="${jboss.cobraorb.port}"/>
-    <attribute name="jboss.ejbinvoker.port" default="${jboss.ejbinvoker.port}"/>
-    <attribute name="jboss.hajndi.port" default="${jboss.hajndi.port}"/>
-    <attribute name="jboss.hajrmi.port" default="${jboss.hajrmi.port}"/>
-    <attribute name="jboss.jms.port" default="${jboss.jms.port}"/>
-    <attribute name="jboss.jmx-rmi.port" default="${jboss.jmx-rmi.port}"/>
-    <attribute name="jboss.messaging.port" default="${jboss.messaging.port}"/>
-    <attribute name="jboss.pooledha.port" default="${jboss.pooledha.port}"/>
-    <attribute name="jboss.remoting.port" default="${jboss.remoting.port}"/>
-    <attribute name="jboss.server.bind.port" default="${jboss.server.bind.port}"/>
-    <attribute name="jboss.server.rmi.port" default="${jboss.server.rmi.port}"/>
-    <attribute name="jboss.service.rmiobject.port" default="${jboss.service.rmiobject.port}"/>
-    <attribute name="jboss.snmp.port" default="${jboss.snmp.port}"/>
-    <attribute name="jboss.snmp-trapd.port" default="${jboss.snmp-trapd.port}"/>
-    <attribute name="jboss.web.service.port" default="${jboss.web.service.port}"/>
-    <!-- grid secure fixes -->
-    <attribute name="jboss.http-connector.remove" default="${jboss.http-connector.remove}"/>
-    <attribute name="grid.secure.port" default="${grid.secure.port}"/>
-    <attribute name="jboss.ssl.port" default="${jboss.ssl.port}"/>
-
-    <sequential>
-      <echo message="Bindings file location @{jboss.server.bindingfile.location}"/>
-      <copy tofile="@{jboss.server.bindingfile.location}" file="@{jboss.server.binding.template.location}" overwrite="true">
-        <filterset>
-          <filter token="jboss.server.ports.name" value="@{jboss.server.ports.name}"/>
-          <filter token="jboss.server.bindingfile.location" value="@{jboss.server.bindingfile.location}"/>
-          <filter token="jboss.server.jndi.port" value="@{jboss.server.jndi.port}"/>
-          <filter token="jboss.server.port" value="@{jboss.server.port}"/>
-          <filter token="jboss.cobraorb.port" value="@{jboss.cobraorb.port}"/>
-          <filter token="jboss.ejbinvoker.port" value="@{jboss.ejbinvoker.port}"/>
-          <filter token="jboss.hajndi.port" value="@{jboss.hajndi.port}"/>
-          <filter token="jboss.hajrmi.port" value="@{jboss.hajrmi.port}"/>
-          <filter token="jboss.jms.port" value="@{jboss.jms.port}"/>
-          <filter token="jboss.jmx-rmi.port" value="@{jboss.jmx-rmi.port}"/>
-          <filter token="jboss.messaging.port" value="@{jboss.messaging.port}"/>
-          <filter token="jboss.pooledha.port" value="@{jboss.pooledha.port}"/>
-          <filter token="jboss.remoting.port" value="@{jboss.remoting.port}"/>
-          <filter token="jboss.server.bind.port" value="@{jboss.server.bind.port}"/>
-          <filter token="jboss.server.rmi.port" value="@{jboss.server.rmi.port}"/>
-          <filter token="jboss.service.rmiobject.port" value="@{jboss.service.rmiobject.port}"/>
-          <filter token="jboss.snmp.port" value="@{jboss.snmp.port}"/>
-          <filter token="jboss.snmp-trapd.port" value="@{jboss.snmp-trapd.port}"/>
-          <filter token="jboss.web.service.port" value="@{jboss.web.service.port}"/>
-        </filterset>
-      </copy>
-      <if>
-        <equals arg1="@{jboss.http-connector.remove}" arg2="true"/>
-        <then>
-          <echo message="Changing redirect port in bindings file to @{grid.secure.port}"/>
-          <replaceregexp file="@{jboss.server.bindingfile.location}"
-            byline="true"
-            match="\$port \+ 363"
-            replace="@{grid.secure.port}"
-            />
-        </then>
-        <else>
-          <!-- Right now only  removing http port for grid ssl.
-          <echo message="Changing redirect port in bindings file to @{grid.secure.port}"/>
-          <replaceregexp file="@{jboss.server.bindingfile.location}"
-            byline="true"
-            match="\$port\s\++\s\+363"
-            replace="@{jboss.ssl.port}"
-            />
-          -->
-        </else>
-      </if>
-      <jboss-bindings-validate
-        jboss.server.ports.name="@{jboss.server.ports.name}"
-        jboss.server.bindingfile.location="@{jboss.server.bindingfile.location}"
-        />
-      <xmltask preservetype="true" source="@{jboss.home}/server/@{jboss.server.name}/conf/jboss-service.xml" dest="@{jboss.home}/server/@{jboss.server.name}/conf/jboss-service.xml">
-        <xmlcatalog refid="bda.xml.catalog"/>
-        <remove path="/server/mbean[@code='org.jboss.services.binding.ServiceBindingManager']"/>
-      </xmltask>
-      <xmltask preservetype="true" failWithoutMatch="true" source="@{jboss.home}/server/@{jboss.server.name}/conf/jboss-service.xml" dest="@{jboss.home}/server/@{jboss.server.name}/conf/jboss-service.xml">
-        <xmlcatalog refid="bda.xml.catalog"/>
-        <insert path="/server/mbean[@code='org.jboss.util.property.jmx.SystemPropertyClassValue']"
-          position="after">
-          <![CDATA[
-          <mbean code="org.jboss.services.binding.ServiceBindingManager"
-            name="jboss.system:service=ServiceBindingManager">
-            <attribute name="ServerName">@{jboss.server.ports.name}</attribute>
-            <attribute name="StoreURL">file:@{jboss.server.bindingfile.location}</attribute>
-            <attribute name="StoreFactoryClassName">
-              org.jboss.services.binding.XMLServicesStoreFactory
-            </attribute>
-          </mbean>
-          ]]>
-        </insert>
-      </xmltask>
     </sequential>
   </macrodef>
 
@@ -4249,12 +4102,6 @@ $HeadURL: https://ncisvn.nci.nih.gov/svn/caarray2/trunk/software/caarray-bda/ivy
         regexp=".*.jar"
         select="true"
         />
-      <var name="jboss.is.405" unset="true"/>
-      <propertyregex property="jboss.is.405"
-        input="@{jboss.binaries.file}"
-        regexp=".*jboss-4.0.5.*"
-        select="true"
-        />
       <var name="jboss.base.dir" unset="true"/>
       <dirname file="@{jboss.home}" property="jboss.base.dir"/>
       <if>
@@ -4288,7 +4135,6 @@ $HeadURL: https://ncisvn.nci.nih.gov/svn/caarray2/trunk/software/caarray-bda/ivy
       <if>
         <and>
           <or>
-            <isset property="jboss.is.405"/>
             <isset property="jboss.is.jar"/>
           </or>
           <isset property="jbosscp.exists"/>
@@ -4856,12 +4702,6 @@ $HeadURL: https://ncisvn.nci.nih.gov/svn/caarray2/trunk/software/caarray-bda/ivy
       <if>
         <equals arg1="@{grid.secure.enable}" arg2="true"/>
         <then>
-          <var name="is.jboss40" unset="true"/>
-          <propertyregex property="is.jboss40"
-            input="@{appserver.conf.dir}"
-            regexp="jboss-4.*"
-            select="true"
-            />
           <var name="is.tomcat50" unset="true"/>
           <propertyregex property="is.tomcat50"
             input="@{appserver.conf.dir}"
@@ -4888,24 +4728,23 @@ $HeadURL: https://ncisvn.nci.nih.gov/svn/caarray2/trunk/software/caarray-bda/ivy
             />
           <if>
             <or>
-              <isset property="is.jboss40"/>
               <isset property="is.jboss51"/>
               <isset property="is.tomcat55"/>
             </or>
             <then>
-              <echo message="is.tomcat50 = ${is.tomcat50} is.tomcat55 = ${is.tomcat55} is.jboss40 = ${is.jboss40} "/>
+              <echo message="is.tomcat50 = ${is.tomcat50} is.tomcat55 = ${is.tomcat55} "/>
               <var name="tomcat55.extras" value="protocolHandlerClassName=&quot;org.apache.coyote.http11.Http11Protocol&quot;${line.separator}socketFactory=&quot;org.globus.tomcat.catalina.net.BaseHTTPSServerSocketFactory&quot;"/>
             </then>
             <elseif>
               <isset property="is.tomcat50"/>
               <then>
-                <echo message="is.tomcat50 = ${is.tomcat50} is.tomcat55 = ${is.tomcat55} is.jboss40 = ${is.jboss40} "/>
+                <echo message="is.tomcat50 = ${is.tomcat50} is.tomcat55 = ${is.tomcat55} "/>
                 <var name="tomcat55.extras" value=""/>
               </then>
             </elseif>
             <else>
-              <echo message="is.tomcat50 = ${is.tomcat50} is.tomcat55 = ${is.tomcat55} is.jboss40 = ${is.jboss40} "/>
-              <fail message="Not using Jboss 4.x or Tomcat 5.0.x or Tomcat 5.5.x cannot configure a secure container, failing build.  Please be sure to include the applcation and version as the name of the directory for tomcat.home or jboss.home"/>
+              <echo message="is.tomcat50 = ${is.tomcat50} is.tomcat55 = ${is.tomcat55} "/>
+              <fail message="Not using Tomcat 5.0.x or Tomcat 5.5.x cannot configure a secure container, failing build.  Please be sure to include the applcation and version as the name of the directory for tomcat.home or jboss.home"/>
             </else>
           </if>
 
@@ -4953,12 +4792,6 @@ $HeadURL: https://ncisvn.nci.nih.gov/svn/caarray2/trunk/software/caarray-bda/ivy
     <attribute name="appserver.server-xml.file" default="${jboss.home}/server/${jboss.server.name}/deploy/jbossweb-tomcat55.sar/server.xml"/>
     <attribute name="appserver.server-xml.service.name" default="jboss.web"/>
     <sequential>
-      <var name="is.jboss40" unset="true"/>
-      <propertyregex property="is.jboss40"
-        input="@{appserver.server-xml.file}"
-        regexp="jboss-4.*"
-        select="true"
-        />
       <var name="is.tomcat50" unset="true"/>
       <propertyregex property="is.tomcat50"
         input="@{appserver.server-xml.file}"
@@ -4984,14 +4817,12 @@ $HeadURL: https://ncisvn.nci.nih.gov/svn/caarray2/trunk/software/caarray-bda/ivy
         regexp=".*jboss-5.1.*"
         select="true"
         />
-      <echo message="is.jboss40 = ${is.jboss40}"/>
       <echo message="is.jboss51 = ${is.jboss51}"/>
       <echo message="is.tomcat55 = ${is.tomcat55}"/>
       <echo message="is.tomcat60 = ${is.tomcat60}"/>
       <echo message="@{appserver.server-xml.file}"/>
       <if>
         <or>
-          <isset property="is.jboss40"/>
           <isset property="is.jboss51"/>
           <isset property="is.tomcat55"/>
           <isset property="is.tomcat60"/>
@@ -6225,57 +6056,12 @@ $HeadURL: https://ncisvn.nci.nih.gov/svn/caarray2/trunk/software/caarray-bda/ivy
       <var name="read.bindings.file" unset="true"/>
       <var name="read.bindings.file.raw" unset="true"/>
       <var name="read.bindings.port.ports.name" unset="true"/>
-      <var name="jboss.is.40" unset="true"/>
-      <propertyregex property="jboss.is.40"
-        input="@{jboss.home}"
-        regexp=".*jboss-4.*"
-        select="true"
-        />
       <var name="jboss.is.51" unset="true"/>
       <propertyregex property="jboss.is.51"
         input="@{jboss.home}"
         regexp=".*jboss-5.1.*"
         select="true"
         />
-      <if>
-        <isset property="jboss.is.40"/>
-        <then>
-          <xmltask preservetype="true" failWithoutMatch="true" source="@{jboss.home}/server/@{jboss.server.name}/conf/jboss-service.xml">
-            <xmlcatalog refid="bda.xml.catalog"/>
-            <copy path="/server/mbean[@code='org.jboss.services.binding.ServiceBindingManager']/attribute[@name='StoreURL']/text()" property="read.bindings.file.raw" />
-            <copy path="/server/mbean[@code='org.jboss.services.binding.ServiceBindingManager']/attribute[@name='ServerName']/text()" property="read.bindings.ports.name" />
-          </xmltask>
-          <trim-property
-            trim.property.name="read.bindings.file.raw"
-            />
-          <echo message="${read.bindings.file.raw}"/>
-          <var name="has.file" unset="true"/>
-          <propertyregex property="has.file"
-            input="${read.bindings.file.raw}"
-            regexp="^file:.*"
-            select="true"
-            />
-          <if>
-            <isset property="has.file"/>
-            <then>
-              <propertyregex property="read.bindings.file"
-                input="${read.bindings.file.raw}"
-                regexp="^.*?:(.*)"
-                select="\1"
-                />
-              <echo message="Stripping file: ${read.bindings.file}"/>
-            </then>
-            <else>
-              <property name="read.bindings.file" value="${read.bindings.file.raw}"/>
-            </else>
-          </if>
-
-          <echo message="Found bindings file ${read.bindings.file} ${read.bindings.ports.name}"/>
-          <property name="@{jboss.server.ports.name.property.name}" value="${read.bindings.ports.name}"/>
-          <property name="@{jboss.bindings.file.location.property.name}" value="${read.bindings.file}"/>
-          <var name="read.properties.list" value="${read.properties.list},${jboss-read-bindingsfile.properties.list}"/>
-        </then>
-      </if>
       <if>
         <isset property="jboss.is.51"/>
         <then>

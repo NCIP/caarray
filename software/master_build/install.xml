@@ -1090,8 +1090,7 @@ depends="upgrade:jboss:init,common:init,upgrade-ncm:jboss,-install:jboss:configu
             <fileset dir="${grid.home}/server/${grid.server.name}/deploy" includes="${grid.dir.dest}"/>
         </delete>
         <delete>
-        	<!-- TODO: TCP assumes JBoss 4 -->
-            <fileset dir="${grid.home}/server/${grid.server.name}/lib" includes="cog-jglobus.jar cog-tomcat.jar cryptix32.jar cryptix.jar cryptix-asn1.jar jce-jdk13-125.jar log4j-1.2.8.jar puretls.jar"/>
+            <fileset dir="${grid.home}/server/${grid.server.name}/lib" includes="cog-jglobus.jar cog-tomcat.jar cryptix32.jar cryptix.jar cryptix-asn1.jar jaxrpc.jar jce-jdk13-125.jar log4j-1.2.8.jar puretls.jar xml-apis.jar"/>
         </delete>
       <configure-caarray-grid-services properties.file="${properties.file}" project.properties="${basedir}/project.properties" temp.dir="${temp.dir}" grid.template.basedir="${basedir}/grid" grid.target.basedir="${basedir}/grid" grid.svczip.dir="${basedir}/grid" />
         <for param="version" list="${caarray-grid-svc.versions}">
