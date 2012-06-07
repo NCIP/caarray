@@ -164,9 +164,6 @@ Getting Started
   (replace "<absolute path to install.properties file copy>" with actual path)
   caArray will be installed locally and both caArray JBoss and grid service JBoss will be started automatically.
 
-  TODO: ARRAY-2371/ARRAY-2499 address the grid server install/configuration
-  For now, download the jboss-5.1.0.GA distribution to whatever you set globoss.home to.
-
 You can now access the application at http://${jboss.server.hostname}:${jboss.server.port}/caarray.
 Default logins are
   caarrayuser/caArray2!

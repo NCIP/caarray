@@ -3270,7 +3270,12 @@ $HeadURL: https://ncisvn.nci.nih.gov/svn/caarray2/trunk/software/caarray-bda/ivy
             />
         </then>
         <else>
-          <echo message="grid.secure.enable=false, skipping configuring secure grid services"/>
+          <echo message="grid.secure.enable=false, removing https connector"/>
+            <xmltask preservetype="true" source="@{appserver.server-xml.file}"
+              dest="@{appserver.server-xml.file}" >
+              <xmlcatalog refid="bda.xml.catalog"/>
+              <remove path="/Server/Service[@name='@{appserver.server-xml.service.name}']/Connector[@scheme='https']" />
+            </xmltask>
         </else>
 
       </if>
@@ -4430,7 +4435,12 @@ $HeadURL: https://ncisvn.nci.nih.gov/svn/caarray2/trunk/software/caarray-bda/ivy
           </xmltask>
         </then>
         <else>
-          <echo message="grid.secure.enable not set so secure grid not configured"/>
+          <echo message="grid.secure.enable not set, removing https connector"/>
+            <xmltask preservetype="true" source="@{appserver.server-xml.file}"
+              dest="@{appserver.server-xml.file}" >
+              <xmlcatalog refid="bda.xml.catalog"/>
+              <remove path="/Server/Service[@name='@{appserver.server-xml.service.name}']/Connector[@scheme='https']" />
+            </xmltask>
         </else>
       </if>
     </sequential>
