@@ -104,4 +104,10 @@ public interface FileRef {
      * @return true if this reference actually points to data.
      */
     boolean exists();
+    
+    /**
+     * @return true if the referenced file is a partial file.
+     */
+    boolean isPartialFile();
+
 }

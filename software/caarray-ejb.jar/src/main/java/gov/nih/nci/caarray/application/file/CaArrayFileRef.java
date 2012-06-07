@@ -121,6 +121,14 @@ public class CaArrayFileRef implements FileRef {
     }
 
     /**
+     * @return if the referenced file is a partial file or not.
+     */
+    @Override
+    public boolean isPartialFile() {
+        return file.isPartial();
+    }
+
+    /**
      * @return a java.io.File which has the contents of the CaArrayFile this wraps
      */
     @Override

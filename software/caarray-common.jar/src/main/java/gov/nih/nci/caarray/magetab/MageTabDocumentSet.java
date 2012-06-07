@@ -505,6 +505,18 @@ public class MageTabDocumentSet implements Serializable {
     }
 
     /**
+     * @return if this MageTabDocumentSet references only a partial sdrf file.
+     */
+    public boolean hasPartialSdrf() {
+        for (SdrfDocument doc : sdrfDocuments) {
+            if (doc.getFile().isPartialFile()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Exports the contents of the MAGE-TAB documents into files.
      */
     public void export() {

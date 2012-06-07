@@ -385,7 +385,9 @@ public final class SampleProbeProfileHandler extends AbstractDataFileHandler {
         protected boolean parseLoaders(List<String> line, int lineNum) {
             final boolean ok = super.parseLoaders(line, lineNum);
             if (ok) {
-                validateSdrfNames(this.mTabSet, lineNum);
+                if (mTabSet != null && !mTabSet.hasPartialSdrf()) {
+                    validateSdrfNames(mTabSet, lineNum);
+                }
                 validateColumnConsistency(lineNum);
             }
             return ok;

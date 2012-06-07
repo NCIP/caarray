@@ -151,4 +151,12 @@ public class JavaIOFileRef implements FileRef {
     public int hashCode() {
         return file.hashCode();
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isPartialFile() {
+        return false;
+    }
 }

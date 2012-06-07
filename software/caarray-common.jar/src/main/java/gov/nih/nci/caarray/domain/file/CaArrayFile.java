@@ -264,6 +264,14 @@ public class CaArrayFile extends AbstractCaArrayEntity implements Comparable<CaA
     }
 
     /**
+     * @return whether or not this is a partial file. This is indicated by the record containing a parent or not.
+     */
+    @Transient
+    public boolean isPartial() {
+        return getParent() != null;
+    }
+
+    /**
      * @return the children
      */
     @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY)
