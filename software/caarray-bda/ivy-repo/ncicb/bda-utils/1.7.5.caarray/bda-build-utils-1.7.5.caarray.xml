@@ -2879,7 +2879,7 @@ $HeadURL: https://ncisvn.nci.nih.gov/svn/caarray2/trunk/software/caarray-bda/ivy
     <attribute name="jboss.server.name" default="${jboss.server.name}"/>
     <attribute name="jboss.conf.dir" default="@{jboss.home}/server/@{jboss.server.name}/conf"/>
     <attribute name="jboss.webapp.dir" default="@{jboss.home}/server/@{jboss.server.name}/deploy"/>
-    <attribute name="jboss.server-xml.file" default="@{jboss.home}/server/@{jboss.server.name}/deploy/jbossweb-tomcat55.sar/server.xml"/>
+    <attribute name="jboss.server-xml.file" default="@{jboss.home}/server/@{jboss.server.name}/deploy/jbossweb.sar/server.xml"/>
     <attribute name="jboss.server-xml.service.name" default="jboss.web"/>
     <attribute name="jboss.port.http" default="${jboss.server.port}"/>
     <attribute name="jboss.port.ssl" default="${jboss.ssl.port}"/>
@@ -2924,8 +2924,6 @@ $HeadURL: https://ncisvn.nci.nih.gov/svn/caarray2/trunk/software/caarray-bda/ivy
     <attribute name="sync-gts.build.dir" default="${sync-gts.build.dir}"/>
     <attribute name="cagrid-target.dir" default="${cagrid-target.dir}"/>
     <attribute name="grid.target" default="${grid.target}"/>
-    <attribute name="cagrid-console.dir" default="${basedir}/caGrid-console"/>
-    <attribute name="cagrid-console.target" default="deployJBoss"/>
     <attribute name="wscore.src.url" default="${wscore.src.url}"/>
     <sequential>
       <grid-appserver-configure
@@ -2977,8 +2975,6 @@ $HeadURL: https://ncisvn.nci.nih.gov/svn/caarray2/trunk/software/caarray-bda/ivy
         sync-gts.build.dir="@{sync-gts.build.dir}"
         cagrid-target.dir="@{cagrid-target.dir}"
         grid.target="@{grid.target}"
-        cagrid-console.dir="@{cagrid-console.dir}"
-        cagrid-console.target="@{cagrid-console.target}"
         wscore.src.url="@{wscore.src.url}"
         />
     </sequential>
@@ -3033,8 +3029,6 @@ $HeadURL: https://ncisvn.nci.nih.gov/svn/caarray2/trunk/software/caarray-bda/ivy
     <attribute name="sync-gts.build.dir" default="${sync-gts.build.dir}"/>
     <attribute name="cagrid-target.dir" default="${cagrid-target.dir}"/>
     <attribute name="grid.target" default="${grid.target}"/>
-    <attribute name="cagrid-console.dir" default="${basedir}/caGrid-console"/>
-    <attribute name="cagrid-console.target" default="deployTomcat"/>
     <attribute name="wscore.src.url" default="${wscore.src.url}"/>
     <sequential>
       <grid-appserver-configure
@@ -3086,8 +3080,6 @@ $HeadURL: https://ncisvn.nci.nih.gov/svn/caarray2/trunk/software/caarray-bda/ivy
         sync-gts.build.dir="@{sync-gts.build.dir}"
         cagrid-target.dir="@{cagrid-target.dir}"
         grid.target="@{grid.target}"
-        cagrid-console.dir="@{cagrid-console.dir}"
-        cagrid-console.target="@{cagrid-console.target}"
         wscore.src.url="@{wscore.src.url}"
         />
     </sequential>
@@ -3097,7 +3089,7 @@ $HeadURL: https://ncisvn.nci.nih.gov/svn/caarray2/trunk/software/caarray-bda/ivy
     <attribute name="appserver.server.name" default="${jboss.server.name}"/>
     <attribute name="appserver.conf.dir" default="${jboss.home}/server/${jboss.server.name}/conf"/>
     <attribute name="appserver.webapp.dir" default="${jboss.home}/server/${jboss.server.name}/deploy"/>
-    <attribute name="appserver.server-xml.file" default="${jboss.home}/server/${jboss.server.name}/deploy/jbossweb-tomcat55.sar/server.xml"/>
+    <attribute name="appserver.server-xml.file" default="${jboss.home}/server/${jboss.server.name}/deploy/jbossweb.sar/server.xml"/>
     <attribute name="appserver.server-xml.service.name" default="jboss.web"/>
     <attribute name="appserver.port.http" default="${jboss.server.port}"/>
     <attribute name="appserver.port.ssl" default="${jboss.ssl.port}"/>
@@ -3141,8 +3133,6 @@ $HeadURL: https://ncisvn.nci.nih.gov/svn/caarray2/trunk/software/caarray-bda/ivy
     <attribute name="sync-gts.build.dir" default="${sync-gts.build.dir}"/>
     <attribute name="cagrid-target.dir" default="${cagrid-target.dir}"/>
     <attribute name="grid.target" default="${grid.target}"/>
-    <attribute name="cagrid-console.dir" default="${basedir}/caGrid-console"/>
-    <attribute name="cagrid-console.target" default="deployJboss"/>
     <attribute name="wscore.src.url" default="${wscore.src.url}"/>
     <sequential>
       <if>
@@ -3184,7 +3174,7 @@ $HeadURL: https://ncisvn.nci.nih.gov/svn/caarray2/trunk/software/caarray-bda/ivy
                   <get src="${temp.wscore.src.url}" dest="${tools.dist.relative.dir}/${temp.file.name}"/>
                 </then>
                 <else>
-                  <echo message="Installing WSCORE, and continuing onto cagrid-console install"/>
+                  <echo message="Installing WSCORE."/>
                   <unzip dest="${working.dir}" src="${tools.dist.relative.dir}/ws-core-enum-4.0.3.zip"/>
                 </else>
               </if>
@@ -3192,7 +3182,7 @@ $HeadURL: https://ncisvn.nci.nih.gov/svn/caarray2/trunk/software/caarray-bda/ivy
           </if>
         </then>
         <else>
-          <echo message="GLOBUS_LOCATION (${env.GLOBUS_LOCATION}) found continuing to cagrid-console install"/>
+          <echo message="GLOBUS_LOCATION (${env.GLOBUS_LOCATION}) found."/>
         </else>
       </if>
       <var name="ext.globus.dir" value="${env.GLOBUS_LOCATION}"/>
@@ -3371,45 +3361,6 @@ $HeadURL: https://ncisvn.nci.nih.gov/svn/caarray2/trunk/software/caarray-bda/ivy
         </fileset>
       </replaceregexp>
 
-      <!-- installs cagrid console -->
-      <replaceregexp file="@{cagrid-console.dir}/ivy-build.xml" byline="true"
-        match="ivy.instance"
-        replace="console-jboss"
-        />
-
-      <var name="classpath.colon.found" unset="true"/>
-      <propertyregex property="classpath.colon.found"
-        input="${java.classpath}"
-        regexp=":"
-        select="true"
-        />
-      <if>
-        <equals arg1="${classpath.colon.found}" arg2="true"/>
-        <then>
-          <echo message="not in gui-installer, using ant to run cagrid-console build"/>
-
-          <ant inheritAll="false" inheritRefs="false"
-            antfile="build.xml"
-            target="@{cagrid-console.target}"
-            dir="@{cagrid-console.dir}"
-            >
-            <property name="jboss.dir" value="@{appserver.home}"/>
-            <property name="wsrf.webapp.dir" value="@{appserver.webapp.dir}/@{grid.application.relative.dir}"/>
-            <property name="env.GLOBUS_LOCATION" value="${env.GLOBUS_LOCATION}"/>
-          </ant>
-        </then>
-        <else>
-          <echo message="in gui-installer, using exec to run cagrid-console build"/>
-          <exec osfamily="unix" executable="ant" dir="@{cagrid-console.dir}">
-            <arg line="-Djboss.dir=@{appserver.home} -Dwsrf.webapp.dir=@{appserver.webapp.dir}/@{grid.application.relative.dir} @{cagrid-console.target}"/>
-            <env key="GLOBUS_LOCATION" value="${env.GLOBUS_LOCATION}"/>
-          </exec>
-          <exec osfamily="windows" executable="ant.bat" dir="@{cagrid-console.dir}">
-            <arg line="-Djboss.dir=@{appserver.home} -Dwsrf.webapp.dir=@{appserver.webapp.dir}/@{grid.application.relative.dir} @{cagrid-console.target}"/>
-            <env key="GLOBUS_LOCATION" value="${env.GLOBUS_LOCATION}"/>
-          </exec>
-        </else>
-      </if>
       <delete>
         <fileset dir="@{appserver.webapp.dir}/@{grid.application.relative.dir}/WEB-INF/lib">
           <include name="commons-logging*.jar"/>
@@ -3492,303 +3443,6 @@ $HeadURL: https://ncisvn.nci.nih.gov/svn/caarray2/trunk/software/caarray-bda/ivy
             flags="g" byline="true"/>
         </sequential>
       </for>
-    </sequential>
-  </macrodef>
-  <macrodef name="secure-jboss41-console" description="Diagnose the host system before the installation">
-    <attribute name="jboss.home" default="${jboss.home}"/>
-    <attribute name="jboss.server.name" default="${jboss.server.name}"/>
-    <attribute name="jboss.web.user" default="${jboss.web.user}"/>
-    <attribute name="jboss.web.password" default="${jboss.web.password}"/>
-    <sequential>
-      <var name="jmx-console.web-xml.file" value="@{jboss.home}/server/@{jboss.server.name}/deploy/jmx-console.war/WEB-INF/web.xml"/>
-      <echo message="Updating ${jmx-console.web-xml.file}"/>
-      <xmltask preservetype="true" source="${jmx-console.web-xml.file}"
-        dest="${jmx-console.web-xml.file}">
-        <xmlcatalog refid="bda.xml.catalog"/>
-        <remove path="/web-app/security-constraint"/>
-        <remove path="/web-app/login-config"/>
-        <remove path="/web-app/security-role"/>
-      </xmltask>
-      <xmltask preservetype="true" source="${jmx-console.web-xml.file}"
-        dest="${jmx-console.web-xml.file}"
-        failWithoutMatch="true" >
-        <xmlcatalog refid="bda.xml.catalog"/>
-        <insert path="/web-app">
-          <![CDATA[
-          <security-constraint>
-            <web-resource-collection>
-              <web-resource-name>HtmlAdaptor</web-resource-name>
-              <description>An example security config that only allows users with the
-                role JBossAdmin to access the HTML JMX console web application
-              </description>
-              <url-pattern>/*</url-pattern>
-              <http-method>GET</http-method>
-              <http-method>POST</http-method>
-            </web-resource-collection>
-            <auth-constraint>
-              <role-name>JBossAdmin</role-name>
-            </auth-constraint>
-          </security-constraint>
-
-          ]]>
-        </insert>
-        <insert path="/web-app">
-          <![CDATA[
-          <login-config>
-            <auth-method>BASIC</auth-method>
-            <realm-name>JBoss JMX Console</realm-name>
-          </login-config>
-          ]]>
-        </insert>
-        <insert path="/web-app">
-          <![CDATA[
-          <security-role>
-            <role-name>JBossAdmin</role-name>
-          </security-role>
-          ]]>
-        </insert>
-      </xmltask>
-
-      <var name="jmx-console.jboss-web-xml.file" value="@{jboss.home}/server/@{jboss.server.name}/deploy/jmx-console.war/WEB-INF/jboss-web.xml"/>
-      <echo message="Updating ${jmx-console.jboss-web-xml.file}"/>
-      <xmltask preservetype="true" source="${jmx-console.jboss-web-xml.file}"
-        dest="${jmx-console.jboss-web-xml.file}">
-        <xmlcatalog refid="bda.xml.catalog"/>
-        <remove path="/jboss-web/security-domain"/>
-      </xmltask>
-      <xmltask preservetype="true" source="${jmx-console.jboss-web-xml.file}"
-        dest="${jmx-console.jboss-web-xml.file}"
-        failWithoutMatch="true" >
-        <xmlcatalog refid="bda.xml.catalog"/>
-        <insert path="/jboss-web">
-          <![CDATA[
-          <security-domain>java:/jaas/jmx-console</security-domain>
-          ]]>
-        </insert>
-      </xmltask>
-
-      <var name="jmx-console.user.file" value="@{jboss.home}/server/@{jboss.server.name}/conf/props/jmx-console-users.properties"/>
-      <if>
-        <isset property="jboss.web.user"/>
-        <then>
-          <var name="jmx-console.user.file" value="@{jboss.home}/server/@{jboss.server.name}/conf/props/jmx-console-users.properties"/>
-          <echo message="Updating ${jmx-console.user.file}"/>
-          <var name="jmx-console.user.matched" unset="true"/>
-          <loadfile
-            property="jmx-console.user.matched"
-            srcFile="${jmx-console.user.file}">
-            <filterchain>
-              <linecontainsregexp>
-                <regexp pattern="@{jboss.web.user}="/>
-              </linecontainsregexp>
-            </filterchain>
-          </loadfile>
-
-          <if>
-            <isset property="jmx-console.user.matched"/>
-            <then>
-              <echo message="@{jboss.web.user} found in ${jmx-console.user.file} updating record."/>
-              <replaceregexp file="${jmx-console.user.file}"
-                match="^(@{jboss.web.user})=.*"
-                replace="@{jboss.web.user}=@{jboss.web.password}"
-                flags="g" byline="true"/>
-            </then>
-            <else>
-              <echo message="@{jboss.web.user} not found in ${jmx-console.user.file} inserting record."/>
-              <echo file="${jmx-console.user.file}" append="true" message="@{jboss.web.user}=@{jboss.web.password}"/>
-            </else>
-              </if>
-          <var name="jmx-console.role.file" value="@{jboss.home}/server/@{jboss.server.name}/conf/props/jmx-console-roles.properties"/>
-          <echo message="Updating ${jmx-console.role.file}"/>
-          <var name="jmx-console.role.matched" unset="true"/>
-          <loadfile
-            property="jmx-console.role.matched"
-            srcFile="${jmx-console.role.file}">
-            <filterchain>
-              <linecontainsregexp>
-                <regexp pattern="@{jboss.web.user}="/>
-              </linecontainsregexp>
-            </filterchain>
-          </loadfile>
-
-          <if>
-            <isset property="jmx-console.role.matched"/>
-            <then>
-              <echo message="@{jboss.web.user} found in ${jmx-console.role.file} updating record."/>
-              <replaceregexp file="${jmx-console.role.file}"
-                match="^(@{jboss.web.user})=.*"
-                replace="@{jboss.web.user}=JBossAdmin,HttpInvoker"
-                flags="g" byline="true"/>
-            </then>
-            <else>
-              <echo message="@{jboss.web.user} not found in ${jmx-console.role.file} inserting record."/>
-              <echo file="${jmx-console.role.file}" append="true" message="@{jboss.web.user}=JBossAdmin,HttpInvoker"/>
-            </else>
-          </if>
-        </then>
-        <else>
-          <echo message="User not added to ${jmx-console.user.file}"/>
-        </else>
-      </if>
-
-      <var name="web-console.web-xml.file" value="@{jboss.home}/server/@{jboss.server.name}/deploy/management/console-mgr.sar/web-console.war/WEB-INF/web.xml"/>
-      <echo message="Updating ${web-console.web-xml.file}"/>
-      <xmltask preservetype="true" source="${web-console.web-xml.file}"
-        dest="${web-console.web-xml.file}">
-        <xmlcatalog refid="bda.xml.catalog"/>
-        <remove path="/web-app/security-constraint"/>
-        <remove path="/web-app/login-config"/>
-        <remove path="/web-app/security-role"/>
-      </xmltask>
-      <xmltask preservetype="true" source="${web-console.web-xml.file}"
-        dest="${web-console.web-xml.file}"
-        failWithoutMatch="true" >
-        <xmlcatalog refid="bda.xml.catalog"/>
-        <insert path="/web-app">
-          <![CDATA[
-          <security-constraint>
-            <web-resource-collection>
-              <web-resource-name>HtmlAdaptor</web-resource-name>
-              <description>An example security config that only allows users with the
-                role JBossAdmin to access the HTML JMX console web application
-              </description>
-              <url-pattern>/*</url-pattern>
-              <http-method>GET</http-method>
-              <http-method>POST</http-method>
-            </web-resource-collection>
-            <auth-constraint>
-              <role-name>JBossAdmin</role-name>
-            </auth-constraint>
-          </security-constraint>
-
-          ]]>
-        </insert>
-        <insert path="/web-app">
-          <![CDATA[
-          <login-config>
-            <auth-method>BASIC</auth-method>
-            <realm-name>JBoss Web Console</realm-name>
-          </login-config>
-          ]]>
-        </insert>
-        <insert path="/web-app">
-          <![CDATA[
-          <security-role>
-            <role-name>JBossAdmin</role-name>
-          </security-role>
-          ]]>
-        </insert>
-      </xmltask>
-
-      <var name="web-console.jboss-web-xml.file" value="@{jboss.home}/server/@{jboss.server.name}/deploy/management/console-mgr.sar/web-console.war/WEB-INF/jboss-web.xml"/>
-      <echo message="Updating ${web-console.jboss-web-xml.file}"/>
-
-      <xmltask preservetype="true" source="${web-console.jboss-web-xml.file}"
-        dest="${web-console.jboss-web-xml.file}">
-        <xmlcatalog refid="bda.xml.catalog"/>
-        <remove path="/jboss-web/security-domain"/>
-      </xmltask>
-      <xmltask preservetype="true" source="${web-console.jboss-web-xml.file}"
-        dest="${web-console.jboss-web-xml.file}"
-        failWithoutMatch="true" >
-        <xmlcatalog refid="bda.xml.catalog"/>
-        <insert path="/jboss-web">
-          <![CDATA[
-          <security-domain>java:/jaas/web-console</security-domain>
-          ]]>
-        </insert>
-      </xmltask>
-
-      <var name="web-console.classes.dir" value="@{jboss.home}/server/@{jboss.server.name}/deploy/management/console-mgr.sar/web-console.war/WEB-INF/classes"/>
-      <var name="jboss.props.dir" value="@{jboss.home}/server/@{jboss.server.name}/conf/props"/>
-      <copy todir="${jboss.props.dir}">
-        <fileset dir="${web-console.classes.dir}">
-          <include name="web-console-*.properties"/>
-        </fileset>
-      </copy>
-
-      <var name="web-console.user.file" value="@{jboss.home}/server/@{jboss.server.name}/conf/props/web-console-users.properties"/>
-      <if>
-        <isset property="jboss.web.user"/>
-        <then>
-          <var name="web-console.user.file" value="@{jboss.home}/server/@{jboss.server.name}/conf/props/web-console-users.properties"/>
-          <echo message="Updating ${web-console.user.file}"/>
-          <var name="web-console.user.matched" unset="true"/>
-          <loadfile
-            property="web-console.user.matched"
-            srcFile="${web-console.user.file}">
-            <filterchain>
-              <linecontainsregexp>
-                <regexp pattern="@{jboss.web.user}="/>
-              </linecontainsregexp>
-            </filterchain>
-          </loadfile>
-
-          <if>
-            <isset property="web-console.user.matched"/>
-            <then>
-              <echo message="@{jboss.web.user} found in ${web-console.user.file} updating record."/>
-              <replaceregexp file="${web-console.user.file}"
-                match="^(@{jboss.web.user})=.*"
-                replace="@{jboss.web.user}=@{jboss.web.password}"
-                flags="g" byline="true"/>
-            </then>
-            <else>
-              <echo message="@{jboss.web.user} not found in ${web-console.user.file} inserting record."/>
-              <echo file="${web-console.user.file}" append="true" message="@{jboss.web.user}=@{jboss.web.password}"/>
-            </else>
-          </if>
-          <var name="web-console.role.file" value="@{jboss.home}/server/@{jboss.server.name}/conf/props/web-console-roles.properties"/>
-          <echo message="Updating ${web-console.role.file}"/>
-          <var name="web-console.role.matched" unset="true"/>
-          <loadfile
-            property="web-console.role.matched"
-            srcFile="${web-console.role.file}">
-            <filterchain>
-              <linecontainsregexp>
-                <regexp pattern="@{jboss.web.user}="/>
-              </linecontainsregexp>
-            </filterchain>
-          </loadfile>
-
-          <if>
-            <isset property="web-console.role.matched"/>
-            <then>
-              <echo message="@{jboss.web.user} found in ${web-console.role.file} updating record."/>
-              <replaceregexp file="${web-console.role.file}"
-                match="^(@{jboss.web.user})=.*"
-                replace="@{jboss.web.user}=JBossAdmin"
-                flags="g" byline="true"/>
-            </then>
-            <else>
-              <echo message="@{jboss.web.user} not found in ${web-console.role.file} inserting record."/>
-              <echo file="${web-console.role.file}" append="true" message="@{jboss.web.user}=JBossAdmin,HttpInvoker"/>
-            </else>
-          </if>
-
-        </then>
-        <else>
-          <echo message="User not added to ${jmx-console.user.file}"/>
-        </else>
-      </if>
-
-      <!--
-      <var name="web-console.password.file" value="@{jboss.home}/server/@{jboss.server.name}/conf/props/web-console-users.properties"/>
-      <echo message="Updating ${web-console.password.file}"/>
-
-      <replaceregexp file="${web-console.password.file}"
-        match="^(admin)=.*"
-        replace="@{jboss.web.user}=@{jboss.web.password}"
-        flags="g" byline="true"/>
-
-      <var name="login-config.xml" value="@{jboss.home}/server/@{jboss.server.name}/conf/login-config.xml"/>
-      <echo message="Updating ${login-config.xml}"/>
-
-      <replaceregexp file="${login-config.xml}"
-        match="web-console-"
-        replace="props\/web-console-"
-        flags="g" byline="true"/>
-      -->
     </sequential>
   </macrodef>
   <macrodef name="gui-installer-prep">
@@ -4143,7 +3797,7 @@ $HeadURL: https://ncisvn.nci.nih.gov/svn/caarray2/trunk/software/caarray-bda/ivy
           <echo message="Patching jboss with @{jbosscp.binaries.file}."/>
           <unzip dest="@{jboss.home}" src="@{jbosscp.binaries.file}" />
           <!-- Copy of patched configuration files -->
-          <copy file="@{jboss.home}/config-patches/jboss-service.xml.patched" tofile="@{jboss.home}/server/@{jboss.server.name}/deploy/jbossweb-tomcat55.sar/META-INF/jboss-service.xml" overwrite="true"/>
+          <copy file="@{jboss.home}/config-patches/jboss-service.xml.patched" tofile="@{jboss.home}/server/@{jboss.server.name}/deploy/jbossweb.sar/META-INF/jboss-service.xml" overwrite="true"/>
           <copy file="@{jboss.home}/config-patches/jmx-invoker-service.xml.patched" tofile="@{jboss.home}/server/@{jboss.server.name}/deploy/jmx-invoker-service.xml" overwrite="true"/>
           <copy file="@{jboss.home}/config-patches/EntityEjb.jsp.patched" tofile="@{jboss.home}/server/@{jboss.server.name}/deploy/management/console-mgr.sar/web-console.war/EntityEjb.jsp" overwrite="true"/>
           <copy file="@{jboss.home}/config-patches/MdbEjb.jsp.patched" tofile="@{jboss.home}/server/@{jboss.server.name}/deploy/management/console-mgr.sar/web-console.war/MdbEjb.jsp" overwrite="true"/>
@@ -4151,14 +3805,7 @@ $HeadURL: https://ncisvn.nci.nih.gov/svn/caarray2/trunk/software/caarray-bda/ivy
           <copy file="@{jboss.home}/config-patches/StatelessEjb.jsp.patched" tofile="@{jboss.home}/server/@{jboss.server.name}/deploy/management/console-mgr.sar/web-console.war/StatelessEjb.jsp" overwrite="true"/>
         </then>
       </if>
-      <chmod dir="@{jboss.home}/bin" perm="ugo+rx" includes="**/*.sh" osfamily="unix"/>
-      <if>
-        <equals arg1="@{jboss.major.version}" arg2="5"/>
-        <then>
-          <chmod dir="@{jboss.home}/bin" perm="ugo+rx" includes="*_jboss"/>
-        </then>
-      </if>
-
+      <chmod dir="@{jboss.home}/bin" perm="ugo+rx" includes="**/*" osfamily="unix"/>
     </sequential>
   </macrodef>
   <macrodef name="jboss-login-config">
@@ -4501,7 +4148,7 @@ $HeadURL: https://ncisvn.nci.nih.gov/svn/caarray2/trunk/software/caarray-bda/ivy
 
   <macrodef name="appserver-ssl-configure" description="macro for enabling ssl in jboss">
     <attribute name="appserver.conf.dir" default="${jboss.home}/server/${jboss.server.name}/conf"/>
-    <attribute name="appserver.server-xml.file" default="${jboss.home}/server/${jboss.server.name}/deploy/jbossweb-tomcat55.sar/server.xml"/>
+    <attribute name="appserver.server-xml.file" default="${jboss.home}/server/${jboss.server.name}/deploy/jbossweb.sar/server.xml"/>
     <attribute name="appserver.server-xml.service.name" default="jboss.web"/>
     <attribute name="appserver.ssl.enable" default="${jboss.ssl.enable}"/>
     <attribute name="appserver.ssl.port" default="8443"/>
@@ -4524,7 +4171,7 @@ $HeadURL: https://ncisvn.nci.nih.gov/svn/caarray2/trunk/software/caarray-bda/ivy
           <!-- copy keystore to ${jboss.home}/server/${jboss.server.name}/conf -->
           <copy todir="@{appserver.conf.dir}" file="@{appserver.ssl.keystore.dir}/@{appserver.ssl.keystore.file}"/>
 
-          <!-- modify ${jboss.home}/server/${jboss.server.name}/deploy/jbossweb-tomcat55.sar/server.xml -->
+          <!-- modify ${jboss.home}/server/${jboss.server.name}/deploy/jbossweb.sar/server.xml -->
           <xmltask preservetype="true" source="@{appserver.server-xml.file}"
             dest="@{appserver.server-xml.file}">
             <xmlcatalog refid="bda.xml.catalog"/>
@@ -4691,7 +4338,7 @@ $HeadURL: https://ncisvn.nci.nih.gov/svn/caarray2/trunk/software/caarray-bda/ivy
 
   <macrodef name="grid-secure-configure-connector" description="Inserts a secure connector configuration into a tomcat configuration, including jboss tomcat">
     <attribute name="appserver.conf.dir" default="${jboss.home}/server/${jboss.server.name}/conf"/>
-    <attribute name="appserver.server-xml.file" default="${jboss.home}/server/${jboss.server.name}/deploy/jbossweb-tomcat55.sar/server.xml"/>
+    <attribute name="appserver.server-xml.file" default="${jboss.home}/server/${jboss.server.name}/deploy/jbossweb.sar/server.xml"/>
     <attribute name="appserver.server-xml.service.name" default="jboss.web"/>
     <attribute name="grid.secure.enable" default="${grid.secure.enable}"/>
     <attribute name="grid.secure.port" default="@{grid.secure.port}"/>
@@ -4789,7 +4436,7 @@ $HeadURL: https://ncisvn.nci.nih.gov/svn/caarray2/trunk/software/caarray-bda/ivy
     </sequential>
   </macrodef>
   <macrodef name="grid-secure-configure-valve">
-    <attribute name="appserver.server-xml.file" default="${jboss.home}/server/${jboss.server.name}/deploy/jbossweb-tomcat55.sar/server.xml"/>
+    <attribute name="appserver.server-xml.file" default="${jboss.home}/server/${jboss.server.name}/deploy/jbossweb.sar/server.xml"/>
     <attribute name="appserver.server-xml.service.name" default="jboss.web"/>
     <sequential>
       <var name="is.tomcat50" unset="true"/>
@@ -5051,7 +4698,7 @@ $HeadURL: https://ncisvn.nci.nih.gov/svn/caarray2/trunk/software/caarray-bda/ivy
     </sequential>
   </macrodef>
   <macrodef name="appserver-configure-external-hostname">
-    <attribute name="appserver.server-xml.file" default="${jboss.home}/server/${jboss.server.name}/deploy/jbossweb-tomcat55.sar/server.xml"/>
+    <attribute name="appserver.server-xml.file" default="${jboss.home}/server/${jboss.server.name}/deploy/jbossweb.sar/server.xml"/>
     <attribute name="appserver.server-xml.service.name" default="jboss.web"/>
     <attribute name="appserver.external.host" default="${jboss.external.ssl.host}"/>
     <attribute name="appserver.external.port" default="${jboss.external.ssl.port}"/>
@@ -5381,7 +5028,7 @@ $HeadURL: https://ncisvn.nci.nih.gov/svn/caarray2/trunk/software/caarray-bda/ivy
 
     <!-- appserver-ssl-configure -->
     <attribute name="jboss.conf.dir" default="${jboss.home}/server/${jboss.server.name}/conf"/>
-    <attribute name="jboss.server-xml.file" default="${jboss.home}/server/${jboss.server.name}/deploy/jbossweb-tomcat55.sar/server.xml"/>
+    <attribute name="jboss.server-xml.file" default="${jboss.home}/server/${jboss.server.name}/deploy/jbossweb.sar/server.xml"/>
     <attribute name="jboss.server-xml.service.name" default="jboss.web"/>
     <attribute name="jboss.ssl.enable" default="${jboss.ssl.enable}"/>
     <!-- This is the value inserted into the connector in server.xml, bindings updates this the real port at runtime. You could use the real value then the bindings would not match  and it would update, so this may change in the future. -->
@@ -5635,7 +5282,7 @@ $HeadURL: https://ncisvn.nci.nih.gov/svn/caarray2/trunk/software/caarray-bda/ivy
     </sequential>
   </macrodef>
   <macrodef name="appserver-configure-hostname">
-    <attribute name="appserver.server-xml.file" default="${jboss.home}/server/${jboss.server.name}/deploy/jbossweb-tomcat55.sar/server.xml"/>
+    <attribute name="appserver.server-xml.file" default="${jboss.home}/server/${jboss.server.name}/deploy/jbossweb.sar/server.xml"/>
     <attribute name="appserver.server-xml.service.name" default="jboss.web"/>
     <attribute name="appserver.hostname" default="${jboss.server.hostname}"/>
     <sequential>
@@ -5750,7 +5397,7 @@ $HeadURL: https://ncisvn.nci.nih.gov/svn/caarray2/trunk/software/caarray-bda/ivy
   <macrodef name="appserver-accesslog-configure" description="macro for enabling ssl in jboss">
     <attribute name="appserver.conf.dir" default="${jboss.home}/server/${jboss.server.name}/conf"/>
     <attribute name="appserver.logs.dir" default="${jboss.home}/server/${jboss.server.name}/log"/>
-    <attribute name="appserver.server-xml.file" default="${jboss.home}/server/${jboss.server.name}/deploy/jbossweb-tomcat55.sar/server.xml"/>
+    <attribute name="appserver.server-xml.file" default="${jboss.home}/server/${jboss.server.name}/deploy/jbossweb.sar/server.xml"/>
     <attribute name="appserver.server-xml.service.name" default="jboss.web"/>
     <attribute name="appserver.hostname" default="${jboss.server.hostname}"/>
     <sequential>
@@ -6232,7 +5879,7 @@ $HeadURL: https://ncisvn.nci.nih.gov/svn/caarray2/trunk/software/caarray-bda/ivy
 
   <macrodef name="jboss-read-ssl" description="macro for enabling ssl in jboss">
     <attribute name="jboss.home" default="${jboss.home}"/>
-    <attribute name="jboss.server-xml.file" default="@{jboss.home}/server/${jboss.server.name}/deploy/jbossweb-tomcat55.sar/server.xml"/>
+    <attribute name="jboss.server-xml.file" default="@{jboss.home}/server/${jboss.server.name}/deploy/jbossweb.sar/server.xml"/>
     <attribute name="jboss.server-xml.service.name" default="jboss.web"/>
     <attribute name="jboss.ssl.enable.property.name" default="jboss.ssl.enable"/>
     <attribute name="jboss.ssl.port.property.name" default="jboss.ssl.port"/>
@@ -6298,7 +5945,7 @@ $HeadURL: https://ncisvn.nci.nih.gov/svn/caarray2/trunk/software/caarray-bda/ivy
 
 
   <macrodef name="appserver-read-ssl" description="macro for enabling ssl in jboss">
-    <attribute name="appserver.server-xml.file" default="${jboss.home}/server/${jboss.server.name}/deploy/jbossweb-tomcat55.sar/server.xml"/>
+    <attribute name="appserver.server-xml.file" default="${jboss.home}/server/${jboss.server.name}/deploy/jbossweb.sar/server.xml"/>
     <attribute name="appserver.server-xml.service.name" default="jboss.web"/>
     <attribute name="appserver.ssl.enable.property.name" default="jboss.ssl.enable"/>
     <attribute name="appserver.ssl.port.property.name" default="jboss.ssl.port"/>
@@ -6410,7 +6057,7 @@ $HeadURL: https://ncisvn.nci.nih.gov/svn/caarray2/trunk/software/caarray-bda/ivy
   </macrodef>
   <macrodef name="jboss-read-external-hostname">
     <attribute name="jboss.home" default="${jboss.home}"/>
-    <attribute name="jboss.server-xml.file" default="@{jboss.home}/server/${jboss.server.name}/deploy/jbossweb-tomcat55.sar/server.xml"/>
+    <attribute name="jboss.server-xml.file" default="@{jboss.home}/server/${jboss.server.name}/deploy/jbossweb.sar/server.xml"/>
     <attribute name="jboss.server-xml.service.name" default="jboss.web"/>
     <attribute name="jboss.external.ssl.host.property.name" default="jboss.external.ssl.host"/>
     <attribute name="jboss.external.ssl.port.property.name" default="jboss.external.ssl.port"/>
@@ -6473,7 +6120,7 @@ $HeadURL: https://ncisvn.nci.nih.gov/svn/caarray2/trunk/software/caarray-bda/ivy
     </sequential>
   </macrodef>
   <macrodef name="appserver-read-external-hostname">
-    <attribute name="appserver.server-xml.file" default="${jboss.home}/server/${jboss.server.name}/deploy/jbossweb-tomcat55.sar/server.xml"/>
+    <attribute name="appserver.server-xml.file" default="${jboss.home}/server/${jboss.server.name}/deploy/jbossweb.sar/server.xml"/>
     <attribute name="appserver.server-xml.service.name" default="jboss.web"/>
     <attribute name="appserver.external.ssl.host.property.name" default="jboss.external.ssl.host"/>
     <attribute name="appserver.external.ssl.port.property.name" default="jboss.external.ssl.port"/>
@@ -6781,7 +6428,7 @@ $HeadURL: https://ncisvn.nci.nih.gov/svn/caarray2/trunk/software/caarray-bda/ivy
 
   <macrodef name="jboss-read-grid-secure" description="macro for enabling ssl in jboss">
     <attribute name="jboss.home" default="${jboss.home}"/>
-    <attribute name="jboss.server-xml.file" default="@{jboss.home}/server/${jboss.server.name}/deploy/jbossweb-tomcat55.sar/server.xml"/>
+    <attribute name="jboss.server-xml.file" default="@{jboss.home}/server/${jboss.server.name}/deploy/jbossweb.sar/server.xml"/>
     <attribute name="jboss.server-xml.service.name" default="jboss.web"/>
     <attribute name="jboss.grid.secure.enable.property.name" default="jboss.grid.secure.enable"/>
     <attribute name="jboss.grid.secure.port.property.name" default="jboss.grid.secure.port"/>
@@ -6843,7 +6490,7 @@ $HeadURL: https://ncisvn.nci.nih.gov/svn/caarray2/trunk/software/caarray-bda/ivy
   </macrodef>
 
   <macrodef name="appserver-read-grid-secure" description="macro for enabling ssl in jboss">
-    <attribute name="appserver.server-xml.file" default="${jboss.home}/server/${jboss.server.name}/deploy/jbossweb-tomcat55.sar/server.xml"/>
+    <attribute name="appserver.server-xml.file" default="${jboss.home}/server/${jboss.server.name}/deploy/jbossweb.sar/server.xml"/>
     <attribute name="appserver.server-xml.service.name" default="jboss.web"/>
     <attribute name="appserver.grid.secure.enable.property.name" default="jboss.grid.secure.enable"/>
     <attribute name="appserver.grid.secure.port.property.name" default="jboss.grid.secure.port"/>
@@ -7250,20 +6897,7 @@ $HeadURL: https://ncisvn.nci.nih.gov/svn/caarray2/trunk/software/caarray-bda/ivy
               <equals arg1="${nci.env}" arg2="true"/>
             </and>
             <then>
-              <jboss41-nci-customizations
-                jboss.home="@{jboss.home}"
-                jboss.server.name="@{jboss.server.name}"
-                application.base.path="@{application.base.path}"
-                project.name="@{project.name}"
-                logname="@{logname}"
-                java.home="@{java.home}"
-                jboss.server.jndi.port="@{jboss.server.jndi.port}"
-                filterset.name="@{filterset.name}"
-                jboss.java.opts="@{jboss.java.opts}"
-                database.type="@{database.type}"
-                start.jboss="@{start.jboss}"
-                env.name="@{env.name}"
-                />
+            	<fail message="JBoss 4 not supported"/>
             </then>
             <else>
               <echo message="Not setting up NCI customizations because jboss version = 4 and not running unix/mac or not a tier env.name"/>
@@ -7281,7 +6915,7 @@ $HeadURL: https://ncisvn.nci.nih.gov/svn/caarray2/trunk/software/caarray-bda/ivy
           <if>
             <equals arg1="${nci.jboss}" arg2="true"/>
             <then>
-              <echo message="Using JBoss 5 but not using NCI provided version, filtering init.conf file only."/>
+              <echo message="Using JBoss 5 NCI provided version, filtering init.conf file only."/>
               <jboss51-nci-filter
                 jboss.home="@{jboss.home}"
                 jboss.server.name="@{jboss.server.name}"
@@ -8452,7 +8086,7 @@ $HeadURL: https://ncisvn.nci.nih.gov/svn/caarray2/trunk/software/caarray-bda/ivy
     </sequential>
   </macrodef>
   <macrodef name="appserver-delete-http-connector" description="macro for enabling ssl in jboss">
-    <attribute name="appserver.server-xml.file" default="${jboss.home}/server/${jboss.server.name}/deploy/jbossweb-tomcat55.sar/server.xml"/>
+    <attribute name="appserver.server-xml.file" default="${jboss.home}/server/${jboss.server.name}/deploy/jbossweb.sar/server.xml"/>
     <attribute name="appserver.server-xml.service.name" default="jboss.web"/>
 
     <attribute name="appserver.http.port" default="${jboss.server.port}"/>
@@ -9130,91 +8764,6 @@ $HeadURL: https://ncisvn.nci.nih.gov/svn/caarray2/trunk/software/caarray-bda/ivy
       <property name="@{jboss.server.ports.name.property.name}" value="${read.default}"/>
     </sequential>
   </macrodef>
-  <macrodef name="jboss41-nci-customizations" description="deploys customized jboss management files, this target only works for linux">
-    <attribute name="jboss.home" default="${jboss.home}" />
-    <attribute name="jboss.server.name" default="${jboss.server.name}" />
-    <attribute name="application.base.path" default="${application.base.path}"/>
-    <attribute name="project.name" default="${project.name}"/>
-    <attribute name="logname" default="${env.LOGNAME}"/>
-    <attribute name="java.home" default="${env.JAVA_HOME}"/>
-    <attribute name="jboss.server.jndi.port" default="${jboss.server.jndi.port}"/>
-    <attribute name="filterset.name" default="jboss.nci.custom"/>
-    <attribute name="jboss.java.opts" default="${jboss.java.opts}"/>
-    <attribute name="database.type" default="${database.type}"/>
-    <attribute name="start.jboss" default="Y"/>
-    <attribute name="env.name" default="${env.name}"/>
-    <sequential>
-      <echo message="Setting up jboss-nci-customizations (this system is Unix or Mac)"/>
-      <filterset id="@{filterset.name}">
-        <filter token="application.base.path" value="@{application.base.path}"/>
-        <filter token="project.name" value="@{project.name}"/>
-        <filter token="jboss.home" value="@{jboss.home}"/>
-        <filter token="env.LOGNAME" value="@{logname}"/>
-        <filter token="jboss.server.name" value="@{jboss.server.name}"/>
-        <filter token="env.JAVA_HOME" value="@{java.home}"/>
-        <filter token="jboss.server.jndi.port" value="@{jboss.server.jndi.port}"/>
-      </filterset>
-      <mkdir dir="@{jboss.home}/server/@{jboss.server.name}/bin"/>
-      <copy todir="@{jboss.home}/server/@{jboss.server.name}/bin">
-            <filterset refid="@{filterset.name}"/>
-        <fileset dir="${bda-utils.resource.dir}/ncicb/jboss-custom/bin">
-          <include name="*"/>
-        </fileset>
-      </copy>
-
-      <chmod dir="@{jboss.home}/server/@{jboss.server.name}/bin" perm="ug+x" includes="*"/>
-      <jboss-configure-java_opts
-        jboss.bin.dir="@{jboss.home}/bin"
-        jboss.java.opts="@{jboss.java.opts}"
-        />
-      <copy tofile="@{jboss.home}/server/@{jboss.server.name}/conf/log4j.xml" file="${bda-utils.resource.dir}/ncicb/jboss-custom/conf/log4j.xml" overwrite="true"/>
-      <if>
-        <equals arg1="@{database.type}" arg2="oracle"/>
-        <then>
-          <echo message="Database.type is oracle, setting pad=true"/>
-          <var name="read.pad" unset="true"/>
-          <xmltask preservetype="true" source="@{jboss.home}/server/@{jboss.server.name}/conf/jboss-service.xml">
-            <xmlcatalog refid="bda.xml.catalog"/>
-            <copy path="/server/mbean[@code='org.jboss.tm.XidFactory']/attribute[@name='Pad']/text()" property="read.pad"/>
-          </xmltask>
-
-          <var name="pad.is.set" unset="true"/>
-          <propertyregex property="pad.is.set"
-            input="${read.pad}"
-            regexp="^[^\$]\S+"
-            select="\0"
-            />
-          <echo message="read.pad = ${read.pad}"/>
-          <if>
-            <not>
-              <isset property="pad.is.set"/>
-            </not>
-            <then>
-              <xmltask preservetype="true" failWithoutMatch="true" source="@{jboss.home}/server/@{jboss.server.name}/conf/jboss-service.xml" dest="@{jboss.home}/server/@{jboss.server.name}/conf/jboss-service.xml">
-                <xmlcatalog refid="bda.xml.catalog"/>
-                <insert path="/server/mbean[@code='org.jboss.tm.XidFactory']">
-                  <![CDATA[ <attribute name="Pad">true</attribute>]]>
-                </insert>
-              </xmltask>
-            </then>
-            <else>
-              <echo message="Pad already set"/>
-            </else>
-          </if>
-        </then>
-        <else>
-          <echo message="Database.type is not oracle, skipping pad"/>
-        </else>
-      </if>
-      <setup-apptab
-        jboss.home="@{jboss.home}"
-        jboss.server.name="@{jboss.server.name}"
-        application.base.path="@{application.base.path}"
-        logname="@{logname}"
-        start.jboss="@{start.jboss}"
-        />
-    </sequential>
-  </macrodef>
   <macrodef name="jboss51-nci-customizations" description="deploys customized jboss management files, this target only works for linux">
     <attribute name="jboss.home" default="${jboss.home}" />
     <attribute name="jboss.server.name" default="${jboss.server.name}" />
@@ -9482,13 +9031,7 @@ $HeadURL: https://ncisvn.nci.nih.gov/svn/caarray2/trunk/software/caarray-bda/ivy
       <if>
         <equals arg1="${jboss-sec.major.version}" arg2="4"/>
         <then>
-          <echo message="Securing the WEB console for JBoss 4"/>
-          <secure-jboss41-console
-            jboss.home="@{jboss.home}"
-            jboss.server.name="@{jboss.server.name}"
-            jboss.web.user="@{jboss.web.user}"
-            jboss.web.password="@{jboss.web.password}"
-            />
+          <fail message="JBoss 4 not supported"/>
         </then>
       </if>
       <if>
@@ -10055,7 +9598,7 @@ $HeadURL: https://ncisvn.nci.nih.gov/svn/caarray2/trunk/software/caarray-bda/ivy
   <macrodef name="jboss-configure-cgmm">
     <attribute name="jboss.home" default="${jboss.home}"/>
     <attribute name="jboss.server.name" default="${jboss.server.name}"/>
-    <attribute name="jboss.tomcat.dir" default="@{jboss.home}/server/@{jboss.server.name}/deploy/jbossweb-tomcat55.sar"/>
+    <attribute name="jboss.tomcat.dir" default="@{jboss.home}/server/@{jboss.server.name}/deploy/jbossweb.sar"/>
     <attribute name="jboss.lib.dir" default="@{jboss.home}/server/@{jboss.server.name}/lib"/>
     <attribute name="cgmm.conf.dest.dir" default="@{jboss.home}/server/@{jboss.server.name}/cgmm_config"/>
     <attribute name="cgmm.conf.src.dir" default="${jboss-conf.dir.dest}/cgmm"/>
