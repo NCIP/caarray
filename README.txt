@@ -131,9 +131,10 @@ Getting Started
     - database.user
     - database.password
   + JBoss setup (values should be same as in install.properties copy above if they exist):
-    - jboss.home set its value to be what is set for application.base.path in the install.properties file copy above,
-      with jboss-5.1.0.GA-nci appended (e.g., application.base.path set to /usr/local/caarray, so jboss.home is set to
-      /usr/local/caarray/jboss-5.1.0.GA-nci).
+    - jboss.home set its value to be what is set for install.properties:
+      ${application.path.path}/${jboss.relative.path}
+       (e.g., application.base.path set to /usr/local/caarray, so jboss.home is set to
+      /usr/local/caarray/app/jboss-5.1.0.GA-nci).
     - jboss.server.jndi.port
     - jboss.server.port
   + CAS Setup (if using Single Sign on)
