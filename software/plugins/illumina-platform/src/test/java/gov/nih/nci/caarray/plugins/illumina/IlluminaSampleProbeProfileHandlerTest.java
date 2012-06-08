@@ -84,6 +84,8 @@ package gov.nih.nci.caarray.plugins.illumina;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import gov.nih.nci.caarray.application.AbstractServiceTest;
 import gov.nih.nci.caarray.application.arraydata.ArrayDataServiceTest;
 import gov.nih.nci.caarray.application.arraydata.DataImportOptions;
@@ -101,11 +103,10 @@ import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.domain.hybridization.Hybridization;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.magetab.MageTabFileSet;
-import gov.nih.nci.caarray.magetab.io.JavaIOFileRef;
+import gov.nih.nci.caarray.magetab.io.FileRef;
 import gov.nih.nci.caarray.magetab.sdrf.SdrfDocument;
 import gov.nih.nci.caarray.platforms.PlatformModule;
 import gov.nih.nci.caarray.test.data.arraydata.IlluminaArrayDataFiles;
-import gov.nih.nci.caarray.test.data.magetab.SdrfTestFiles;
 import gov.nih.nci.caarray.validation.FileValidationResult;
 import gov.nih.nci.caarray.validation.ValidationMessage;
 
@@ -295,6 +296,25 @@ public class IlluminaSampleProbeProfileHandlerTest extends AbstractServiceTest {
     }
 
     @Test
+    public void testValidationPartialFile() {
+        String[] header =
+            {"Hyb2.AVG_Signal", "Hyb1.DETECTION PVAL", "ID_REF", "Hyb1.AVG_Signal", "Hyb2.DETECTION PVAL"};
+        FileRef mockFile = mock(FileRef.class);
+        when(mockFile.exists()).thenReturn(true);
+
+        // Sdrf only references Hyb1
+        when(mockFile.isPartialFile()).thenReturn(false);
+        String[] messages = {"Hybridization Hyb2 is not referenced in SDRF"};
+        final SampleProbeProfileHandler.ValidatingHeaderParser p =
+                processHeader(header, messages, Collections.singleton("Hyb1"), BgxDesignHandler.BGX_FILE_TYPE, mockFile);
+
+        // Sdrf is a partial file, so missing reference to Hyb2 should be ignored
+        when(mockFile.isPartialFile()).thenReturn(true);
+        String[] messages2 = {};
+        processHeader(header, messages2, Collections.singleton("Hyb1"), BgxDesignHandler.BGX_FILE_TYPE, mockFile);
+    }
+
+    @Test
     public void testValidationErrors_AllQTypes() {
         final String[] header = {"ID_REF", // 1
                 "Hyb1.MIN_Signal", // 2
@@ -329,12 +349,17 @@ public class IlluminaSampleProbeProfileHandlerTest extends AbstractServiceTest {
 
     static private SampleProbeProfileHandler.ValidatingHeaderParser processHeader(String[] headerColumns,
             String[] messages, Set<String> sdrf, FileType designType) {
+        return processHeader(headerColumns, messages, sdrf, designType, null);
+    }
+    
+    static private SampleProbeProfileHandler.ValidatingHeaderParser processHeader(String[] headerColumns,
+            String[] messages, Set<String> sdrf, FileType designType, FileRef sdrfFile) {
         final FileValidationResult result = new FileValidationResult();
         MageTabDocumentSet docSet = null;
         if (sdrf != null) {
             final MageTabFileSet fset = new MageTabFileSet();
             docSet = new MageTabDocumentSet(fset);
-            final SdrfDocument doc = new SdrfDocument(docSet, new JavaIOFileRef(SdrfTestFiles.MULTI_DERIVED_1_IDF));
+            final SdrfDocument doc = new SdrfDocument(docSet, sdrfFile);
             for (final String hn : sdrf) {
                 final gov.nih.nci.caarray.magetab.sdrf.Hybridization h =
                         new gov.nih.nci.caarray.magetab.sdrf.Hybridization();
@@ -353,5 +378,4 @@ public class IlluminaSampleProbeProfileHandlerTest extends AbstractServiceTest {
         assertTrue("expected messages " + l.toString(), l.isEmpty());
         return proc;
     }
-
 }

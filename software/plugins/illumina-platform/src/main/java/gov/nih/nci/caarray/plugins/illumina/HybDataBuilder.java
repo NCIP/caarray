@@ -88,7 +88,9 @@ import gov.nih.nci.caarray.domain.data.HybridizationData;
 import gov.nih.nci.caarray.domain.data.QuantitationTypeDescriptor;
 import gov.nih.nci.caarray.platforms.ValueParser;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Populates the hyb data from each row in the data table.
@@ -121,14 +123,18 @@ public class HybDataBuilder <QT extends Enum<QT> & QuantitationTypeDescriptor> e
      */
     @Override
     public boolean parse(List<String> row, int lineNum) {
-        int i = 0;
+        Map<String, AbstractHeaderParser<QT>.ValueLoader> hybMap =
+                new HashMap<String, AbstractHeaderParser<QT>.ValueLoader>();
         for (AbstractHeaderParser<QT>.ValueLoader vl : header.getLoaders()) {
-            HybridizationData d = dataSet.getHybridizationDataList().get(i++);
+            hybMap.put(vl.getHybName(), vl);
+        }
+        for (HybridizationData d : dataSet.getHybridizationDataList()) {
+            AbstractHeaderParser<QT>.ValueLoader vl = hybMap.get(d.getHybridization().getName());
             for (QT qt : vl.getQTypes()) {
                 String val = vl.getValue(qt, row);
                 valueParser.setValue(d.getColumn(qt), rowIndex, val);
             }
-        }        
+        }
         rowIndex++;
         return true;
     }
