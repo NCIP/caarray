@@ -131,9 +131,10 @@ Getting Started
     - database.user
     - database.password
   + JBoss setup (values should be same as in install.properties copy above if they exist):
-    - jboss.home set its value to be what is set for application.base.path in the install.properties file copy above,
-      with jboss-5.1.0.GA-nci appended (e.g., application.base.path set to /usr/local/caarray, so jboss.home is set to
-      /usr/local/caarray/jboss-5.1.0.GA-nci).
+    - jboss.home set its value to be what is set for install.properties:
+      ${application.path.path}/${jboss.relative.path}
+       (e.g., application.base.path set to /usr/local/caarray, so jboss.home is set to
+      /usr/local/caarray/app/jboss-5.1.0.GA-nci).
     - jboss.server.jndi.port
     - jboss.server.port
   + CAS Setup (if using Single Sign on)
@@ -163,9 +164,6 @@ Getting Started
     $ ant -Dproperties.file=<absolute path to install.properties file copy> deploy:local:install
   (replace "<absolute path to install.properties file copy>" with actual path)
   caArray will be installed locally and both caArray JBoss and grid service JBoss will be started automatically.
-
-  TODO: ARRAY-2371/ARRAY-2499 address the grid server install/configuration
-  For now, download the jboss-5.1.0.GA distribution to whatever you set globoss.home to.
 
 You can now access the application at http://${jboss.server.hostname}:${jboss.server.port}/caarray.
 Default logins are

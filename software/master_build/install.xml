@@ -157,11 +157,7 @@ $HeadURL: https://ncisvn.nci.nih.gov/svn/caarray2/trunk/software/master_build/in
                 <if>
                     <equals arg1="${jboss.major.version}" arg2="4" />
                     <then>
-                        <property name="jboss.server.binding.template.location" value="${basedir}/${jboss4-bindings.file}"/>
-                        <jboss-read-ports
-                            jboss.server.bindingfile.location="${jboss.server.binding.template.location}" />
-                        <jboss-bindings-validate jboss.server.bindingfile.location="${jboss.server.binding.template.location}"
-                    />
+                    	<fail message="JBoss 4 Not Supported"/>
                     </then>
                     <elseif>
                         <equals arg1="${jboss.major.version}" arg2="5" />
@@ -183,7 +179,7 @@ $HeadURL: https://ncisvn.nci.nih.gov/svn/caarray2/trunk/software/master_build/in
                 <if>
                     <equals arg1="${jboss.major.version}" arg2="4" />
                     <then>
-                        <property name="jboss.server.binding.template.location" value="${bda-utils.dir}/resource/${jboss.binaries.relative.dir}/bindings.xml" 					/>
+                    	<fail message="JBoss 4 Not Supported"/>
                     </then>
                     <else>
                         <property name="jboss.server.binding.template.location" value="${bda-utils.dir}/resource/${jboss.binaries.relative.dir}/bindings-jboss-beans.xml" 					/>
@@ -375,6 +371,7 @@ properties.list="jboss.server.jndi.port,jboss.server.port,jboss.cobraorb.port,jb
 
     <target name="install:jboss:grid-binaries" description="Unzip JBoss binary for grid services" unless="exclude.jboss.grid" depends="common:jboss:init, common:init">
         <jboss-install-binaries jboss.binaries.file="${tools.dir}/${jboss.grid-binaries.file}" jboss.server.name="${grid.server.name}" jboss.home="${grid.home}"/>
+        <jboss-nci-customizations jboss.server.name="${grid.server.name}" jboss.home="${grid.home}"/>
     </target>
 
     <target name="install:jboss:caarray" description="Deploy caarray caarray.ear" unless="exclude.jboss" depends="common:jboss:init, common:init">
@@ -398,7 +395,7 @@ properties.list="jboss.server.jndi.port,jboss.server.port,jboss.cobraorb.port,jb
       <configure-caarray-ear temp.dir="${temp.dir}" template.ear.path="${caarray.dir.dist}/${caarray.ear.file}" project.properties="${basedir}/project.properties" properties.file="${properties.file}"/>
 
         <!-- punt old commons lang jar -->
-        <delete dir="${jboss.home}/server/${jboss.server.name}/deploy/jbossweb-tomcat55.sar/jsf-libs" includes="commons-lang*.jar" quiet="true"/>
+        <delete dir="${jboss.home}/server/${jboss.server.name}/deploy/jbossweb.sar/jsf-libs" includes="commons-lang*.jar" quiet="true"/>
     </target>
 
     <target name="install:jboss:caarray:configure" description="Configure caarray application" unless="exclude.jboss" depends="common:jboss:init, common:init">
@@ -514,13 +511,7 @@ depends="
         <if>
             <equals arg1="${jboss.major.version}" arg2="4"/>
             <then>
-                <jboss-configure jboss.grid.configure="true" />
-                <if>
-                    <equals arg1="${jboss.cgmm.enable}" arg2="true" />
-                    <then>
-                        <jboss-configure-cgmm />
-                    </then>
-                </if>
+            	<fail message="JBoss 4 not supported"/>
             </then>
         </if>
         <if>
@@ -665,7 +656,7 @@ depends="
                 <isset property="exclude.start.servers"/>
             </not>
             <then>
-                <jboss-start-jboss jboss.home="${grid.home}" jboss.server.name="${grid.server.name}" jboss.major.version="4"/>
+                <jboss-start-jboss jboss.home="${grid.home}" jboss.server.name="${grid.server.name}" jboss.major.version="5"/>
                 <sleep seconds="15"/>
             </then>
         </if>
@@ -981,13 +972,13 @@ depends="upgrade:jboss:init,common:init,upgrade-ncm:jboss,-install:jboss:configu
 
     <target name="install:carray-grid" description="Grouping of caArray Grid application targets" depends="install:jboss:grid-binaries,install:grid:deploy">
         <jboss-configure
-            jboss.server.bindingfile.location="${grid.home}/bindings/bindings.xml"
-            jboss.server.binding.template.location="${bda-utils.dir}/resource/jboss-4.0.4.GA/bindings.xml"
+            jboss.server.bindingfile.location="${grid.home}/server/${jboss.server.name}/conf/bindingservice.beans/META-INF/bindings-jboss-beans.xml"
+            jboss.server.binding.template.location="${jboss.server.binding.template.location}"
             jboss.grid.configure="true"
             jboss.home="${grid.home}"
             jboss.server.name="${grid.server.name}"
             jboss.server.ports.name="${grid.server.ports.name}"
-            jboss.server-xml.file="${grid.home}/server/${grid.server.name}/deploy/jbossweb-tomcat55.sar/server.xml"
+            jboss.server-xml.file="${grid.home}/server/${grid.server.name}/deploy/jbossweb.sar/server.xml"
             jboss.web.user="${grid.web.user}"
             jboss.web.password="${grid.web.password}"
             jboss.server.jndi.port="${grid.server.jndi.port}"
@@ -1031,7 +1022,7 @@ depends="upgrade:jboss:init,common:init,upgrade-ncm:jboss,-install:jboss:configu
                     jboss.server.name="${grid.server.name}"
                     jboss.conf.dir="${grid.home}/server/${grid.server.name}/conf"
                     jboss.webapp.dir="${grid.home}/server/${grid.server.name}/deploy"
-                    jboss.server-xml.file="${grid.home}/server/${grid.server.name}/deploy/jbossweb-tomcat55.sar/server.xml"
+                    jboss.server-xml.file="${grid.home}/server/${grid.server.name}/deploy/jbossweb.sar/server.xml"
                     jboss.port.http="${grid.server.port}"
                     jboss.hostname="${grid.server.hostname}"
                     jboss.external.http.host="${grid.static.hostname}"
@@ -1060,7 +1051,7 @@ depends="upgrade:jboss:init,common:init,upgrade-ncm:jboss,-install:jboss:configu
                     <jboss-configure-grid
                         jboss.conf.dir="${grid.home}/server/${grid.server.name}/conf"
                         jboss.webapp.dir="${grid.home}/server/${grid.server.name}/deploy"
-                        jboss.server-xml.file="${grid.home}/server/${grid.server.name}/deploy/jbossweb-tomcat55.sar/server.xml"
+                        jboss.server-xml.file="${grid.home}/server/${grid.server.name}/deploy/jbossweb.sar/server.xml"
                         jboss.port.http="${grid.server.port}"
                         jboss.hostname="${grid.server.hostname}"
                         jboss.external.http.host="${grid.static.hostname}"
@@ -1073,16 +1064,7 @@ depends="upgrade:jboss:init,common:init,upgrade-ncm:jboss,-install:jboss:configu
                 </sequential>
             </for>
         </target>
-<!--
 
-    <target name="upgrade:carray-grid" description="Grouping of caArray Grid application targets"
-        depends="install:grid:deploy,
-        -install:grid:configure:wsdl,
-        -install:grid:configure:serviceMetadataXml,
-        -install:grid:configure:secure-console,
-        -install:grid:configure:webXml
-    "/>
--->
     <target name="install:grid:configure" description="Configure caarray" unless="exclude.jboss.grid"
         depends="install:jboss:grid-binaries,
         -install:grid:configure:ports,
@@ -1101,7 +1083,7 @@ depends="upgrade:jboss:init,common:init,upgrade-ncm:jboss,-install:jboss:configu
             <fileset dir="${grid.home}/server/${grid.server.name}/deploy" includes="${grid.dir.dest}"/>
         </delete>
         <delete>
-            <fileset dir="${grid.home}/server/${grid.server.name}/lib" includes="cog-jglobus.jar cog-tomcat.jar cryptix32.jar cryptix.jar cryptix-asn1.jar jce-jdk13-125.jar log4j-1.2.8.jar puretls.jar"/>
+            <fileset dir="${grid.home}/server/${grid.server.name}/lib" includes="cog-jglobus.jar cog-tomcat.jar cryptix32.jar cryptix.jar cryptix-asn1.jar jaxrpc.jar jce-jdk13-125.jar log4j-1.2.8.jar puretls.jar xml-apis.jar"/>
         </delete>
       <configure-caarray-grid-services properties.file="${properties.file}" project.properties="${basedir}/project.properties" temp.dir="${temp.dir}" grid.template.basedir="${basedir}/grid" grid.target.basedir="${basedir}/grid" grid.svczip.dir="${basedir}/grid" />
         <for param="version" list="${caarray-grid-svc.versions}">
@@ -1158,6 +1140,7 @@ depends="upgrade:jboss:init,common:init,upgrade-ncm:jboss,-install:jboss:configu
         </if>
     </target>
 
+	<!-- TODO: TCP assumes JBoss 4 -->
     <target name="-install:grid:configure:ports" description="Configure grid service based on properties">
 
         <replaceregexp file="${bda-utils.dir}/resource/template-binding.xml" byline="true"
@@ -1519,7 +1502,7 @@ depends="upgrade:jboss:init,common:init,upgrade-ncm:jboss,-install:jboss:configu
         <if>
             <equals arg1="${jboss.major.version}" arg2="4"/>
             <then>
-                <copy file="${copied.jboss.log4j.dir}/log4j.xml" todir="${jboss.home}/server/${jboss.server.name}/conf"/>
+                <fail message="JBoss 4 not supported"/>
             </then>
         </if>
         <if>
