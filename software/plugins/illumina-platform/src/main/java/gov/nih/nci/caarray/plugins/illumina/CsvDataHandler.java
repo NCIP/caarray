@@ -373,7 +373,7 @@ public class CsvDataHandler extends AbstractDataFileHandler {
         if (dataSet.getDesignElementList() == null) {
             loadDesignElementList(dataSet, reader, headers, design);
         }
-        final Map<String, Integer> groupIdToHybridizationDataIndexMap = getGroupIdToHybridizationDataIndexMap(headers);
+        final Map<String, HybridizationData> hybridizationNameToDataMap = getHybridizationNameToDataMap(dataSet);
         final Set<QuantitationType> typeSet = new HashSet<QuantitationType>();
         typeSet.addAll(types);
         positionAtData(reader);
@@ -381,8 +381,7 @@ public class CsvDataHandler extends AbstractDataFileHandler {
         while (reader.hasNextLine()) {
             final List<String> values = reader.nextLine();
             for (int i = 0; i < values.size(); i++) {
-                loadValue(values.get(i), headers.get(i), dataSet, typeSet, groupIdToHybridizationDataIndexMap,
-                        rowIndex);
+                loadValue(values.get(i), headers.get(i), dataSet, typeSet, hybridizationNameToDataMap, rowIndex);
             }
             rowIndex++;
         }
@@ -423,14 +422,15 @@ public class CsvDataHandler extends AbstractDataFileHandler {
 
     @SuppressWarnings("PMD.ExcessiveParameterList")
     private void loadValue(String value, String header, DataSet dataSet, Set<QuantitationType> typeSet,
-            Map<String, Integer> groupIdToHybridizationDataIndexMap, int rowIndex) {
+            Map<String, HybridizationData> hybridizationNameToDataMap, int rowIndex) {
         final String[] headerParts = header.split("-", 2);
         if (headerParts.length == 2) {
             final String typeHeader = headerParts[0];
             final String groupId = headerParts[1];
-            final int hybridizationDataIndex = groupIdToHybridizationDataIndexMap.get(groupId);
-            final HybridizationData hybridizationData = dataSet.getHybridizationDataList().get(hybridizationDataIndex);
-            setValue(hybridizationData, typeHeader, value, typeSet, rowIndex);
+            final HybridizationData hybridizationData = hybridizationNameToDataMap.get(groupId);
+            if (hybridizationData != null) {
+                setValue(hybridizationData, typeHeader, value, typeSet, rowIndex);
+            }
         }
     }
 
@@ -468,11 +468,10 @@ public class CsvDataHandler extends AbstractDataFileHandler {
         getHeaders(reader);
     }
 
-    private Map<String, Integer> getGroupIdToHybridizationDataIndexMap(List<String> headers) {
-        final List<String> groupIds = getSampleNamesFromHeaders(headers);
-        final Map<String, Integer> map = new HashMap<String, Integer>();
-        for (int i = 0; i < groupIds.size(); i++) {
-            map.put(groupIds.get(i), i);
+    private Map<String, HybridizationData> getHybridizationNameToDataMap(DataSet dataset) {
+        Map<String, HybridizationData> map = new HashMap<String, HybridizationData>();
+        for (HybridizationData hybData : dataset.getHybridizationDataList()) {
+            map.put(hybData.getHybridization().getName(), hybData);
         }
         return map;
     }
@@ -486,7 +485,8 @@ public class CsvDataHandler extends AbstractDataFileHandler {
         try {
             validateHeaders(reader, result);
             final List<String> hybNames = getHybridizationNames();
-            if (mTabSet.getSdrfDocuments() != null && !mTabSet.getSdrfDocuments().isEmpty()) {
+            if (mTabSet.getSdrfDocuments() != null && !mTabSet.getSdrfDocuments().isEmpty()
+                    && !mTabSet.hasPartialSdrf()) {
                 checkSdrfHybridizations(result, hybNames, mTabSet.getSdrfHybridizations());
             }
 

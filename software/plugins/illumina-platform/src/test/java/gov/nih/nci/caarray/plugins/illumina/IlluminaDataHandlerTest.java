@@ -99,7 +99,9 @@ import gov.nih.nci.caarray.validation.InvalidDataFileException;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -143,7 +145,7 @@ public class IlluminaDataHandlerTest extends AbstractHandlerTest {
         final DataSet dataSet = illuminaData.getDataSet();
         assertNotNull(dataSet.getDesignElementList());
         assertEquals(19, dataSet.getHybridizationDataList().size());
-        final HybridizationData hybridizationData = dataSet.getHybridizationDataList().get(0);
+        final HybridizationData hybridizationData = getHybridizationNameToDataMap(dataSet).get("A1");
         assertEquals(4, hybridizationData.getColumns().size());
         final FloatColumn signalColumn =
                 (FloatColumn) hybridizationData.getColumn(IlluminaExpressionQuantitationType.AVG_SIGNAL);
@@ -180,5 +182,13 @@ public class IlluminaDataHandlerTest extends AbstractHandlerTest {
         final ArrayDesign arrayDesign = this.daoFactoryStub.getArrayDao().getArrayDesign(null, null, lsidObjectId);
         caArrayFile.getProject().getExperiment().getArrayDesigns().add(arrayDesign);
         return caArrayFile;
+    }
+
+    private Map<String, HybridizationData> getHybridizationNameToDataMap(DataSet dataset) {
+        Map<String, HybridizationData> map = new HashMap<String, HybridizationData>();
+        for (HybridizationData hybData : dataset.getHybridizationDataList()) {
+            map.put(hybData.getHybridization().getName(), hybData);
+        }
+        return map;
     }
 }
