@@ -8,6 +8,7 @@ The changes are:
 - Patched EncodingUtils to enable fallback behavior in the serialization routines
 - Patched ServiceConfigUtil.hasConfigProperty.  Class.getMethod throws an exception, not return null, if a method is not present.
 - build fix for introduce with missing classpath initialization
+- case sensitivity problem with grid transfer patch to wsdl
 
 The patch is core.patch, and can be applied to the following SVN directory:
 
