@@ -41,6 +41,9 @@
 		<pathconvert targetos="unix" property="application.base.path.convert">
 			 <path location="${application.base.path.target}"/>
 		</pathconvert>
+        <pathconvert targetos="unix" property="dataStorage.fileSystem.baseDir.convert">
+             <path location="${dataStorage.fileSystem.baseDir}"/>
+        </pathconvert>
 
 		<replaceregexp file="${install.path}/${application_installer}/install.properties" byline="true"
 				match="^(application.base.path)=(.*)"
@@ -48,6 +51,12 @@
 		<replaceregexp file="${install.path}/${application_installer}/upgrade.properties" byline="true"
 				match="^(application.base.path)=(.*)"
 				replace="\1=${application.base.path.convert}"/>	
+        <replaceregexp file="${install.path}/${application_installer}/install.properties" byline="true"
+                match="^(dataStorage.fileSystem.baseDir)=(.*)"
+                replace="\1=${dataStorage.fileSystem.baseDir.convert}"/>
+        <replaceregexp file="${install.path}/${application_installer}/upgrade.properties" byline="true"
+                match="^(dataStorage.fileSystem.baseDir)=(.*)"
+                replace="\1=${dataStorage.fileSystem.baseDir.convert}"/> 
 	</target>
 	
 

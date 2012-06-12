@@ -21,6 +21,7 @@
             messageid="AntAction.convert-install-path"
             >
             <target name="convert-install-path"/>
+            <property name="dataStorage.fileSystem.baseDir" value="${dataStorage.fileSystem.baseDir}"/>
             <property name="application.base.path.target" value="${application.base.path.target}"/>
             <property name="install.path" value="$SYSTEM_user_home/${installer.dir}"/>
         </antcall>
