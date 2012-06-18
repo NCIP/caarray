@@ -91,6 +91,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyLong;
+import static org.mockito.Matchers.anySet;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.isNull;
 import static org.mockito.Mockito.inOrder;
@@ -120,6 +121,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -302,6 +304,16 @@ public class FileAccessServiceTest extends AbstractServiceTest {
 
         verify(this.dataStorageFacade).removeUnreferencedData(allRefs,
                 FileAccessServiceBean.MIN_UNREFERENCABLE_DATA_AGE);
+    }
+    
+    @Test
+    public void testSynchronizeWithNoData() {
+        when(this.fileDao.getAllFileHandles()).thenReturn(new ArrayList<URI>());
+        when(this.arrayDao.getAllParsedDataHandles()).thenReturn(new ArrayList<URI>());
+
+        this.fileAccessService.synchronizeDataStorage();
+
+        verify(this.dataStorageFacade, never()).removeUnreferencedData(anySet(), anyLong());
     }
 
     @Test

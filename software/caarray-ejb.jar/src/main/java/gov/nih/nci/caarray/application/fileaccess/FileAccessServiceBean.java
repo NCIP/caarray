@@ -323,7 +323,11 @@ public class FileAccessServiceBean implements FileAccessService {
     public void synchronizeDataStorage() {
         final Set<URI> references = getActiveReferences();
         LOG.debug("Currently active references:" + references);
-        this.dataStorageFacade.removeUnreferencedData(references, MIN_UNREFERENCABLE_DATA_AGE);
+        if (references.isEmpty()) {
+            LOG.warn("No active references found.  No files will be deleted.");
+        } else {
+            this.dataStorageFacade.removeUnreferencedData(references, MIN_UNREFERENCABLE_DATA_AGE);
+        }
     }
 
     private Set<URI> getActiveReferences() {
