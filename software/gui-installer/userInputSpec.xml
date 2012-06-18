@@ -705,9 +705,6 @@
         <field type="text" variable="database.server">
             <spec txt="Database Host Name "
                 size="25" set=""/>
-            <validator
-                class="com.izforge.izpack.util.HostNameValidator" txt="Database Server is a required field or the Server is not reachable">
-            </validator>
         </field>
         <field type="text" variable="database.port">
             <spec txt="Database Port "
@@ -729,7 +726,7 @@
                  <pwd txt="Password for the above-named user:" size="25" set=""/>
             </spec>
             <validator
-                class="com.izforge.izpack.util.DBConnectionValidator" txt="Unable to connect to this database with the Database Application User and Password you have entered.">
+                class="com.izforge.izpack.util.DBConnectionValidator" txt="Unable to connect to this database with the Database information you have entered.">
             </validator>
         </field>
     </panel>
