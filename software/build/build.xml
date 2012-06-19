@@ -97,7 +97,7 @@
     <property name="caarraydb.sql.test.dir" value="${caarraydb.dir}/src/test/sql" />
     <property name="caarraydb.sql.dir" value="${caarraydb.target.dir}/sql" />
 
-    <property name="cagrid.version" value="1.2" />
+    <property name="cagrid.version" value="1.5" />
     <property name="caarray-grid-svc.base.dir" value="${basedir}/grid" />
     <property name="caarray-grid-svc.versions.external" value="v1_0" />
     <property name="caarray-grid-svc.versions" value="legacy,${caarray-grid-svc.versions.external}" />
@@ -510,7 +510,7 @@
 
         <path id="wsrf_core_enum.jar.path">
             <fileset dir="${project.lib}" id="wsrf_core_enum.jar.fileset">
-                <include name="wsrf_core_enum-*.jar"/>
+                <include name="ws-enumeration-*.jar"/>
             </fileset>
         </path>
         <property name="wsrf_core_enum.jar" refid="wsrf_core_enum.jar.fileset" />
