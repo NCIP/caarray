@@ -251,6 +251,7 @@
                         <xmlcatalog refid="bda.xml.catalog"/>
                         <remove path="//:context-param[:param-name/text()='service']"/>
                         <remove path="//:context-param[:param-name/text()='casServerLoginUrl']"/>
+                        <remove path="//:context-param[:param-name/text()='casServerLogoutUrl']"/>
                         <remove path="//:context-param[:param-name/text()='ssoEnabled']"/>
                         <remove path="//:filter[:filter-name/text()='CASWebAuthenticationFilter']"/>
                         <remove path="//:filter[:filter-name/text()='CASAuthenticationFilter']"/>

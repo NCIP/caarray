@@ -120,10 +120,13 @@
         <action name="home" class="gov.nih.nci.caarray.web.action.HomeAction">
             <result name="input">/WEB-INF/pages/home.jsp</result>
         </action>
-        <action name="logout" class="com.fiveamsolutions.nci.commons.web.struts2.action.LogoutAction" method="logout">
+        <action name="logout" class="gov.nih.nci.caarray.web.action.LogoutAction" method="logout">
             <result name="success" type="redirectAction">
                 <param name="namespace">/</param>
                 <param name="actionName">home</param>
+            </result>
+            <result name="casLogout" type="redirect">
+                <param name="location">${casServerLogoutUrl}</param>
             </result>
         </action>
         <action name="login">
