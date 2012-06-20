@@ -104,7 +104,6 @@ import gov.nih.nci.caarray.domain.file.FileType;
 import gov.nih.nci.caarray.magetab.MageTabDocumentSet;
 import gov.nih.nci.caarray.platforms.AbstractDataFileHandler;
 import gov.nih.nci.caarray.platforms.DesignElementBuilder;
-import gov.nih.nci.caarray.platforms.ProbeLookup;
 import gov.nih.nci.caarray.platforms.ProbeNamesValidator;
 import gov.nih.nci.caarray.platforms.spi.PlatformFileReadException;
 import gov.nih.nci.caarray.plugins.agilent.AgilentTextParser.ParseException;
@@ -170,7 +169,6 @@ class AgilentRawTextDataHandler extends AbstractDataFileHandler {
     static final Set<FileType> SUPPORTED_TYPES = Sets.newHashSet(RAW_TXT_FILE_TYPE);
 
     private int expectedRowCount;
-    private LSID arrayDesignId;
     private Collection<String> columnNames;
     private boolean headerIsRead = false;
 
@@ -326,10 +324,7 @@ class AgilentRawTextDataHandler extends AbstractDataFileHandler {
             while (parser.hasNext()) {
                 parser.next();
 
-                if ("FEPARAMS".equalsIgnoreCase(parser.getSectionName())) {
-                    this.arrayDesignId =
-                            new LSID("Agilent.com", "PhysicalArrayDesign", parser.getStringValue("Grid_Name"));
-                } else if ("STATS".equalsIgnoreCase(parser.getSectionName())) {
+                if ("STATS".equalsIgnoreCase(parser.getSectionName())) {
                     // rough estimate of how many unique probe lines we'll find.
                     this.expectedRowCount = parser.getIntValue("TotalNumFeatures") / 2;
                     this.expectedRowCount = Math.max(this.expectedRowCount, MIN_EXPECTED_ROW_COUNT);
@@ -404,22 +399,17 @@ class AgilentRawTextDataHandler extends AbstractDataFileHandler {
     private ProbeHandler getValidationHandler(final FileValidationResult result, final ArrayDesign design,
             final Columns[] mandatoryColumns) {
         return new ProbeHandler() {
-            private final ProbeLookup probeLookup = new ProbeLookup(design.getDesignDetails().getProbes());
+            private final Set<String> probeList = arrayDao.getPhysicalProbeNames(design);
 
             @Override
             public void handle(String probeName, String systematicName, AgilentTextParser parser) {
                 final boolean columnsOkay = checkMandatoryColumns(parser, mandatoryColumns, result);
 
-                if (columnsOkay) {
-                    final boolean probeNameNotFound = probeName == null || null == this.probeLookup.getProbe(probeName);
-                    if (probeNameNotFound) {
-                        final boolean systematicNameNotFound =
-                                systematicName == null || null == this.probeLookup.getProbe(systematicName);
-                        if (systematicNameNotFound) {
-                            result.addMessage(Type.ERROR, ProbeNamesValidator.formatErrorMessage(new String[] {
-                                    probeName, systematicName }, design));
-                        }
-                    }
+                if (columnsOkay
+                        && (probeName == null || !probeList.contains(probeName))
+                        && (systematicName == null || !probeList.contains(systematicName))) {
+                    result.addMessage(Type.ERROR, ProbeNamesValidator.formatErrorMessage(new String[] {
+                            probeName, systematicName }, design));
                 }
             }
         };

@@ -118,6 +118,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -142,7 +143,8 @@ import com.google.inject.Inject;
  * 
  * @author Rashmi Srinivasa
  */
-@SuppressWarnings({"PMD.AvoidDuplicateLiterals", "PMD.CyclomaticComplexity", "PMD.TooManyMethods" })
+@SuppressWarnings({"PMD.AvoidDuplicateLiterals", "PMD.CyclomaticComplexity", "PMD.TooManyMethods",
+    "PMD.ExcessiveClassLength" })
 class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
     private final SearchDao searchDao;
     private final FileTypeRegistry typeRegistry;
@@ -359,6 +361,20 @@ class ArrayDaoImpl extends AbstractCaArrayDaoImpl implements ArrayDao {
         @SuppressWarnings("unchecked")
         final List<PhysicalProbe> results = query.list();
         return results;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Set<String> getPhysicalProbeNames(ArrayDesign design) {
+        String queryString = "select pp.name from " + PhysicalProbe.class.getName()
+                + " pp where pp.arrayDesignDetails = :details";
+        Query query = getCurrentSession().createQuery(queryString);
+        query.setParameter("details", design.getDesignDetails());
+        @SuppressWarnings("unchecked")
+        List<String> names = query.list();
+        return new HashSet<String>(names);
     }
 
     /**

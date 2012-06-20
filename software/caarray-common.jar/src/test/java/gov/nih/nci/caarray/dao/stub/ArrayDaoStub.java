@@ -100,6 +100,7 @@ import gov.nih.nci.caarray.domain.search.QuantitationTypeSearchCriteria;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -224,6 +225,15 @@ public class ArrayDaoStub extends AbstractDaoStub implements ArrayDao {
             }
         }
         return l;
+    }
+    
+    @Override
+    public Set<String> getPhysicalProbeNames(ArrayDesign design) {
+        Set<String> probeNames = new HashSet<String>();
+        for (PhysicalProbe pp : design.getDesignDetails().getProbes()) {
+            probeNames.add(pp.getName());
+        }
+        return probeNames;
     }
 
     @Override
