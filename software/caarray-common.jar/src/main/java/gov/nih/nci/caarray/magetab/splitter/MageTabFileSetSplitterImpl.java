@@ -73,7 +73,7 @@ public class MageTabFileSetSplitterImpl implements MageTabFileSetSplitter {
 
     /**
      * Predicate that matches file references based upon the names of the files.
-     * 
+     *
      * @author tparnell
      */
     private final class FilePredicate implements Predicate<FileRef> {
@@ -151,20 +151,32 @@ public class MageTabFileSetSplitterImpl implements MageTabFileSetSplitter {
 
     private Collection<MageTabFileSet> handleSingleSdrf(MageTabFileSet largeFileSet, FileRef bigSdrf) 
             throws IOException {
+        FileRef idfFile = largeFileSet.getIdfFiles().iterator().next();
         Set<MageTabFileSet> result = new HashSet<MageTabFileSet>();
-        Set<FileRef> splitSdrfs = singleFileSplitter.split(bigSdrf);
-        for (FileRef smallSdrf : splitSdrfs) {
-            MageTabFileSet curSet = largeFileSet.makeCopy();
-            curSet.getSdrfFiles().clear();
-            curSet.addSdrf(smallSdrf);
-            filterDataFiles(largeFileSet, smallSdrf, curSet);
-            
+        for (FileRef singleDataFile : largeFileSet.getNativeDataFiles()) {
+            MageTabFileSet curSet = addIdfAndSdrfForThisBatch(bigSdrf, idfFile, singleDataFile);
+            curSet.addNativeData(singleDataFile);
+            result.add(curSet);
+        }
+        for (FileRef singleDataFile : largeFileSet.getDataMatrixFiles()) {
+            MageTabFileSet curSet = addIdfAndSdrfForThisBatch(bigSdrf, idfFile, singleDataFile);
+            curSet.addDataMatrix(singleDataFile);
             result.add(curSet);
         }
         return result;
     }
 
-    private void filterDataFiles(MageTabFileSet largeFileSet, FileRef smallSdrf, MageTabFileSet curSet) 
+    private MageTabFileSet addIdfAndSdrfForThisBatch(FileRef bigSdrf, FileRef idfFile, FileRef singleDataFile)
+            throws IOException {
+        MageTabFileSet curSet = new MageTabFileSet();
+        curSet.addIdf(idfFile);
+        FileRef smallSdrf = singleFileSplitter.splitByDataFile(bigSdrf, singleDataFile);
+        curSet.addSdrf(smallSdrf);
+        return curSet;
+    }
+
+
+    private void filterDataFiles(MageTabFileSet largeFileSet, FileRef smallSdrf, MageTabFileSet curSet)
             throws IOException {
         Set<String> referencedDataFiles = dataFileFinder.identifyReferencedDataFiles(smallSdrf);
         FilePredicate filePredicate = new FilePredicate(referencedDataFiles);

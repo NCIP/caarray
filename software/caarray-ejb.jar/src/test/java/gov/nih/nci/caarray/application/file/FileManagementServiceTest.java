@@ -388,14 +388,10 @@ public class FileManagementServiceTest extends AbstractServiceTest {
                         this.fileAccessServiceStub);
         addFiles(project, newFiles.getFiles());
         this.fileManagementService.importFiles(project, newFiles, null);
-        // import should fail on update_annotations sdrf, but all original spec files should still be uploaded
+        // import should pass on update_annotations sdrf, because referenced data files can be imported later
         for (final CaArrayFile file : project.getFiles()) {
             if (file.getName().equals(MageTabDataFiles.SPECIFICATION_UPDATE_ANNOTATIONS_SDRF.getName())) {
-                assertEquals(FileStatus.VALIDATION_ERRORS, file.getFileStatus());
-            } else if (file.getName().equals(MageTabDataFiles.SPECIFICATION_UPDATE_ANNOTATIONS_IDF.getName())) {
-                assertEquals(FileStatus.VALIDATED, file.getFileStatus());
-            } else {
-                assertEquals(FileStatus.UPLOADED, file.getFileStatus());
+                assertEquals(FileStatus.IMPORTED, file.getFileStatus());
             }
         }
     }

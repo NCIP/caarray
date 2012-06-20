@@ -91,6 +91,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
@@ -127,7 +128,35 @@ public class SdrfSplitterImpl implements SdrfSplitter {
         }
         return result;
     }
-    
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public FileRef splitByDataFile(FileRef sdrf, FileRef dataFile) throws IOException {
+        List<String> outputLines = new ArrayList<String>();
+        @SuppressWarnings("unchecked")
+        // FileUtils is not generics aware
+        List<String> inputStrings = FileUtils.readLines(sdrf.getAsFile());
+        int headerRow = findHeaderRow(inputStrings);
+        outputLines.add(inputStrings.get(headerRow));
+        for (int i = headerRow + 1; i < inputStrings.size(); ++i) {
+            String curLine = inputStrings.get(i);
+            if (curLine != null
+                    && !isCommentLine(curLine)
+                    && curLine.toLowerCase(Locale.getDefault()).indexOf(
+                            dataFile.getName().toLowerCase(Locale.getDefault())) >= 0) {
+                // If line contains a reference to the data file name, then
+                // include the line in the sdrf.
+                outputLines.add(curLine);
+            }
+        }
+        File outputFile = File.createTempFile(sdrf.getName(), ".sdrf");
+        FileUtils.writeLines(outputFile, outputLines);
+        FileRef smallSdrf = new JavaIOFileRef(outputFile);
+        return smallSdrf;
+    }
+
     private int findHeaderRow(List<String> inputStrings) {
         for (int i = 0; i < inputStrings.size(); ++i) {
             String curLine = inputStrings.get(i);

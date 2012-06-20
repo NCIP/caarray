@@ -72,4 +72,16 @@ public interface SdrfSplitter {
      * @throws IOException if file does not exist, writing to new files fails, or any other io error
      */
     Set<FileRef> split(FileRef sdrf) throws IOException;
+
+    /**
+     * Splits the input sdrf into a smaller sdrf that has all rows that reference the input dataFile.
+     * The input is assumed to have passed validation. Invalid files (e.g. no header row) will result in
+     * unchecked exceptions.
+     * 
+     * @param sdrf input file to split
+     * @param dataFile data file to find references to in the sdrf
+     * @return small sdrf that has all rows that reference dataFile
+     * @throws IOException if file does not exist, writing to new files fails, or any other io error
+     */
+    FileRef splitByDataFile(FileRef sdrf, FileRef dataFile) throws IOException;
 }

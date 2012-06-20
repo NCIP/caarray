@@ -114,6 +114,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 import com.fiveamsolutions.nci.commons.util.io.DelimitedFileReader;
 import com.fiveamsolutions.nci.commons.util.io.DelimitedFileReaderFactoryImpl;
@@ -128,6 +129,7 @@ import com.google.inject.Inject;
  */
 @SuppressWarnings({"PMD.CyclomaticComplexity" })
 public final class DataMatrixCopyNumberHandler extends AbstractDataFileHandler {
+    private static final Logger LOG = Logger.getLogger(DataMatrixCopyNumberHandler.class);
 
     /**
      * Warning message when data file has more hybridizations than the split SDRF.
@@ -257,6 +259,24 @@ public final class DataMatrixCopyNumberHandler extends AbstractDataFileHandler {
      * {@inheritDoc}
      */
     @Override
+    public List<String> getHybridizationNames() {
+        List<String> hybNames = new ArrayList<String>();
+        try {
+            initialize();
+            hybNames.addAll(hybridizationNamesToColumnIndexesMapping.keySet());
+            return hybNames;
+        } catch (PlatformFileReadException e) {
+            LOG.error(e.getMessage(), e.getCause());
+            return hybNames;
+        } finally {
+            unInitializeAndClose(null);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void loadData(DataSet dataSet, List<QuantitationType> types, ArrayDesign design)
     throws PlatformFileReadException {
         DelimitedFileReader delimitedFileReader = null;
@@ -281,6 +301,10 @@ public final class DataMatrixCopyNumberHandler extends AbstractDataFileHandler {
                             values.get(this.chromosomeColumnIndex));
                     this.valueParser.setValue(orderedColumns[POSITION_DATA_COLUMN_ARRAY_POSITION], rowIndex,
                             values.get(this.positionColumnIndex));
+                    if (this.hybridizationNamesToColumnIndexesMapping.get(hybridization) == null) {
+                        throw new PlatformFileReadException(getFile(), "Log2Ratio column not found for hybridization "
+                                + hybridization);
+                    }
                     this.valueParser.setValue(orderedColumns[LOG2RATIO_DATA_COLUMN_ARRAY_POSITION], rowIndex,
                             values.get(this.hybridizationNamesToColumnIndexesMapping.get(hybridization).intValue()));
                 }
