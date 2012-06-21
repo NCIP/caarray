@@ -28,6 +28,7 @@
     </div>
     <div id="searchboxwrapper">
       <s:form action="/protected/ownership/newOwner.action" cssClass="form" id="filterForm">
+        <s:token/>
         <s:textfield name="user.lastName" key="label.lastName" size="30" tabindex="1" value="%{user.lastName}" id="targetUserLastName"/>
         <s:textfield name="user.firstName" key="label.firstName" size="30" tabindex="2" value="%{user.firstName}" id="targetUserFirstName"/>
         <s:textfield name="user.organization" key="label.institution" size="30" tabindex="3" value="%{user.organization}" id="targetUserOrganization"/>
@@ -47,6 +48,7 @@
       </caarray:actions>
     </div>
      <s:form action="/protected/ownership/reassign.action" theme="simple">
+        <s:token/>
         <%@ include file="/WEB-INF/pages/ownership/usersTable.jsp" %>
         <s:iterator value="projectIds" id="id">
             <s:hidden name="projectIds" value="%{id}"/>

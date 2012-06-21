@@ -10,6 +10,7 @@
     <div class="boxpad">
         <p class="instructions">Required fields are marked with <span class="required">*asterisks*</span>.</p>
         <s:form action="ajax/project/tab/ExperimentalDesign/save" cssClass="form" id="projectForm" onsubmit="TabUtils.submitTabForm('projectForm', 'tabboxlevel2wrapper'); return false;">
+            <s:token/>
             <caarray:termSelector baseId="experimentDesignTypes" category="<%= ExperimentOntologyCategory.EXPERIMENT_DESIGN_TYPE %>" termField="${project.experiment.experimentDesignTypes}"
                 tabIndex="1" termFieldName="project.experiment.experimentDesignTypes" returnInitialTab1="annotations" returnInitialTab2="experimentalDesign"
                 hideAddButton="true" required="true" multiple="true"/>

@@ -1,6 +1,7 @@
 <%@ include file="/WEB-INF/pages/common/taglibs.jsp"%>
 
 <s:form action="ajax/project/permissions/saveAccessProfile" theme="simple" id="profileForm" onsubmit="return false;">
+    <s:token/>
     <s:hidden name="project.id"/>
     <s:hidden name="accessProfile.id"/>
     <s:hidden id="actionButton" name="actionButton" />

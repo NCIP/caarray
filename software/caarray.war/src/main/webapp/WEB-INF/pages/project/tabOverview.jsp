@@ -19,6 +19,7 @@ setExperimentTitleHeader('${caarrayfn:escapeJavaScript(projectTitle)}');
             Required fields are marked with <span class="required">*asterisks*</span>.
         </p>
         <s:form action="ajax/project/tab/Overview/save" namespace="/protected" cssClass="form" id="projectForm" onsubmit="TabUtils.submitTabForm('projectForm', 'tabboxwrapper'); return false;">
+            <s:token/>
             <c:if test="${editMode}">
                 <s:textfield required="true" key="project.experiment.title" size="80" tabindex="1" maxlength="254"/>
             </c:if>

@@ -11,6 +11,7 @@
     <div class="boxpad">
         <p class="instructions">Required fields are marked with <span class="required">*asterisks*</span>.</p>
         <s:form action="ajax/vocabulary/save" cssClass="form" id="termForm" onsubmit="submitTermForm(); return false;">
+            <s:token/>
             <tr><th colspan="2">Term</th></tr>
             <tr>
               <td colspan="2">
